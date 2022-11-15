@@ -43,6 +43,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
 			} catch (Exception e) {
@@ -63,6 +64,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
 			} catch (Exception e) {
@@ -96,12 +98,14 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 								res.setCode(data.getItemCode());
 								res.setCodeDesc(data.getItemValue());
 								res.setDisplayName(data.getParam1());
+								res.setStatus(data.getStatus());
 								resList.add(res);
 							} else  {
 								if(loginData.getSubUserType().equalsIgnoreCase(data.getItemValue()) ) {
 									res.setCode(data.getItemCode());
 									res.setCodeDesc(data.getItemValue());
 									res.setDisplayName(data.getParam1());
+									res.setStatus(data.getStatus());
 									resList.add(res);
 								}
 							}
@@ -110,6 +114,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 								res.setCode(data.getItemCode());
 								res.setCodeDesc(data.getItemValue());
 								res.setDisplayName(data.getParam1());
+								res.setStatus(data.getStatus());
 								resList.add(res);
 							}
 						}
@@ -117,6 +122,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 						res.setCode(data.getItemCode());
 						res.setCodeDesc(data.getItemValue());
 						res.setDisplayName(data.getParam1());
+						res.setStatus(data.getStatus());
 						resList.add(res);
 					}
 					
@@ -139,6 +145,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
 			} catch (Exception e) {
@@ -159,6 +166,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
 			} catch (Exception e) {
@@ -180,6 +188,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
 			} catch (Exception e) {
@@ -200,6 +209,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
 			} catch (Exception e) {
@@ -220,6 +230,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
 			} catch (Exception e) {
@@ -240,6 +251,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
 			} catch (Exception e) {
@@ -260,6 +272,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
 			} catch (Exception e) {
@@ -280,6 +293,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
 			} catch (Exception e) {
@@ -300,6 +314,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
 			} catch (Exception e) {
@@ -320,6 +335,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
 			} catch (Exception e) {
@@ -340,6 +356,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
 			} catch (Exception e) {
@@ -360,6 +377,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
 			} catch (Exception e) {
@@ -379,6 +397,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
 					res.setCodeDesc(data.getItemValue());
+					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
 			} catch (Exception e) {

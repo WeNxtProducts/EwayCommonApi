@@ -80,6 +80,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -101,6 +102,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -121,6 +123,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -142,6 +145,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -163,6 +167,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -183,6 +188,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -203,6 +209,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -223,6 +230,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -243,6 +251,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -264,6 +273,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -285,6 +295,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -346,6 +357,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getCountryId().toString());
 				res.setCodeDesc(data.getCountryName());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}		
 		} catch (Exception e) {
@@ -410,6 +422,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getRegionCode().toString());
 				res.setCodeDesc(data.getRegionName());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}		
 		} catch (Exception e) {
@@ -476,6 +489,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getStateId().toString());
 				res.setCodeDesc(data.getStateName());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}		
 		} catch (Exception e) {
@@ -544,6 +558,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getCityId().toString());
 				res.setCodeDesc(data.getCityName());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}		
 		} catch (Exception e) {
@@ -565,6 +580,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -586,6 +602,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -607,6 +624,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -629,6 +647,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -651,6 +670,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -673,6 +693,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -695,6 +716,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -717,6 +739,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -739,6 +762,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -761,6 +785,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -783,6 +808,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -805,6 +831,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -827,6 +854,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -849,6 +877,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -871,6 +900,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -893,6 +923,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -915,6 +946,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -937,6 +969,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -959,6 +992,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -980,6 +1014,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1004,6 +1039,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 				if(ncdyear+2==Integer.valueOf(data.getItemCode())) {
 				break;			
@@ -1030,6 +1066,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1079,6 +1116,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1100,6 +1138,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1121,6 +1160,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1141,6 +1181,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
@@ -1161,6 +1202,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {

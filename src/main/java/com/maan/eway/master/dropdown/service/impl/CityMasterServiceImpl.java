@@ -158,6 +158,7 @@ public class CityMasterServiceImpl implements CityMasterService {
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getCityId().toString());
 					res.setCodeDesc(data.getCityName());
+					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
 			} catch (Exception e) {

@@ -141,6 +141,7 @@ public List<DropDownRes> getRegionMasterDropdown(RegionMasterDropDownReq req) {
 			DropDownRes res = new DropDownRes();
 			res.setCode(data.getRegionCode().toString());
 			res.setCodeDesc(data.getRegionName());
+			res.setStatus(data.getStatus());
 			resList.add(res);
 		}		
 	} catch (Exception e) {

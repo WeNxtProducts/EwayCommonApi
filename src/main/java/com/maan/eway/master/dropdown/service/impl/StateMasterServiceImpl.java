@@ -148,6 +148,7 @@ public class StateMasterServiceImpl implements StateMasterService {
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getStateId().toString());
 					res.setCodeDesc(data.getStateName());
+					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
 			} catch (Exception e) {

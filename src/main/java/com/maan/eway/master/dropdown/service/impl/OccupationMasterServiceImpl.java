@@ -132,6 +132,7 @@ try {
 		DropDownRes res = new DropDownRes();
 		res.setCode(data.getOccupationId());
 		res.setCodeDesc(data.getOccupationName());
+		res.setStatus(data.getStatus());
 		resList.add(res);
 	}
 }

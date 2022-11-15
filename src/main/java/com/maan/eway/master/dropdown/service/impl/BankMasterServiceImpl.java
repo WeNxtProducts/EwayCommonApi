@@ -208,6 +208,7 @@ public List<DropDownRes> getBankMasterDropdown() {
 			DropDownRes res = new DropDownRes();
 			res.setCode(data.getBankCode().toString());
 			res.setCodeDesc(data.getBankFullName());
+			res.setStatus(data.getStatus());
 			resList.add(res);
 		}		
 	} catch (Exception e) {

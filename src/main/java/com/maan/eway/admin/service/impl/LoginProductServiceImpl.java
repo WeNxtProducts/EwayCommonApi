@@ -988,6 +988,7 @@ List<Error> errorList = new ArrayList<Error>();
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getProductId().toString());
 				res.setCodeDesc(data.getProductName());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 			

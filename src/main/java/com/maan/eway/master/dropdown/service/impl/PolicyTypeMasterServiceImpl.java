@@ -494,6 +494,7 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getPolicyTypeId().toString());
 				res.setCodeDesc(data.getPolicyTypeName());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		}

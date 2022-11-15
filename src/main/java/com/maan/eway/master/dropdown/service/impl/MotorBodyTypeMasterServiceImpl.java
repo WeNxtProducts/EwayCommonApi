@@ -111,6 +111,7 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getBodyId().toString());
 				res.setCodeDesc(data.getBodyNameEn());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		}
@@ -174,6 +175,7 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getBodyId().toString());
 				res.setCodeDesc(data.getBodyNameEn());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		}

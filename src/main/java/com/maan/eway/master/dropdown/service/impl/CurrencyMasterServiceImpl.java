@@ -167,6 +167,7 @@ public List<CuurencyDropDownRes> getCurrencyMasterDropdown( CurrencyDropDownReq 
 			res.setCode(data.get("currencyId")==null?"" :data.get("currencyId").toString()  );
 			res.setCodeDesc(data.get("currencyName")==null?"" :data.get("currencyName").toString()  );
 			res.setExchangeRate(data.get("exchangeRate")==null?"0" : data.get("exchangeRate").toString() );
+			res.setStatus(data.get("status")==null?"":data.get("status").toString());
 			resList.add(res);
 		}		
 	} catch (Exception e) {

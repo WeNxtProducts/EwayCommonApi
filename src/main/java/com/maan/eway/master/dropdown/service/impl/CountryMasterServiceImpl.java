@@ -131,6 +131,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getCountryId().toString());
 					res.setCodeDesc(data.getCountryName());
+					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
 			} catch (Exception e) {

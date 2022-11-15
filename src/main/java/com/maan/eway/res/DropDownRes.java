@@ -11,6 +11,7 @@ public class DropDownRes {
 	private String code;
 	@JsonProperty("CodeDesc")
 	private String codeDesc;
-
+	@JsonProperty("Status")
+	private String status;
 	
 }

@@ -107,6 +107,7 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getMakeId().toString());
 				res.setCodeDesc(data.getMakeNameEn());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		}

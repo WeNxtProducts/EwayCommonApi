@@ -14,4 +14,6 @@ public class CuurencyDropDownRes {
 	private String codeDesc;
 	@JsonProperty("ExchangeRate")
 	private String exchangeRate;
+	@JsonProperty("Status")
+	private String status;
 }

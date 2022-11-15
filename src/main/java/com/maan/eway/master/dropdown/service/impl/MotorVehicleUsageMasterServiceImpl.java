@@ -129,6 +129,7 @@ public List<DropDownRes> getVehicleUsageDropdown(UsageDropDownReq req) {
 			DropDownRes res = new DropDownRes();
 			res.setCode(data.getVehicleUsageId().toString());
 			res.setCodeDesc(data.getVehicleUsageDesc());
+			res.setStatus(data.getStatus());
 			resList.add(res);
 		}
 	}

@@ -110,6 +110,7 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getColorId().toString());
 				res.setCodeDesc(data.getColorCode());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		}

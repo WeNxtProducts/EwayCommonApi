@@ -75,6 +75,7 @@ public List<DropDownRes> tableName() {
 			DropDownRes res = new DropDownRes();
 			res.setCode(data.getItemCode());
 			res.setCodeDesc(data.getItemValue());
+			res.setStatus(data.getStatus());
 			resList.add(res);
 		}
 	} catch (Exception e) {
@@ -96,6 +97,7 @@ public List<DropDownRes> columnName(ColumnNameDropDownlReq req) {
 			DropDownRes res = new DropDownRes();
 			res.setCode(data.getItemCode());
 			res.setCodeDesc(data.getDisplayName());
+			res.setStatus(data.getStatus());
 			resList.add(res);
 			}
 		}

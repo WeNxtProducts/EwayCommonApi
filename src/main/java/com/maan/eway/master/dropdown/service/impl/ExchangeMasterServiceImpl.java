@@ -109,6 +109,7 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getExchangeId().toString());
 				res.setCodeDesc(data.getCurrencyId());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {

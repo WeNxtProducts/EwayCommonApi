@@ -136,6 +136,7 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getModelId().toString());
 				res.setCodeDesc(data.getModelNameEn());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		}
