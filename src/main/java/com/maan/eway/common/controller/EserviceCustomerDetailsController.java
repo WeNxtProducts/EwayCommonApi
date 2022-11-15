@@ -1,0 +1,131 @@
+package com.maan.eway.common.controller;
+
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.maan.eway.common.req.EserviceCustomerSaveReq;
+import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
+import com.maan.eway.common.req.GetAllCustomerDetailsReq;
+import com.maan.eway.common.req.GetCustomerDetailsReq;
+import com.maan.eway.common.req.MsPersonalInfoGetReq;
+import com.maan.eway.common.req.MsPersonalInfoGetallReq;
+import com.maan.eway.common.req.MsPersonalInfoSaveReq;
+import com.maan.eway.common.res.CustomerDetailsGetRes;
+import com.maan.eway.common.res.MsPersonalInfoGetRes;
+import com.maan.eway.common.service.EserviceCustomerDetailsService;
+import com.maan.eway.error.Error;
+import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.SuccessRes;
+import com.maan.eway.service.PrintReqService;
+
+import io.swagger.annotations.Api;
+
+@RestController
+@RequestMapping("/api")
+@Api(tags = "3. COMMON : Eservice Customer Details ", description = "API's")
+public class EserviceCustomerDetailsController {
+
+	
+	@Autowired 
+	private EserviceCustomerDetailsService entityService ; 
+	
+	@Autowired
+	private PrintReqService reqPrinter;
+	
+	@PostMapping("/savecustomerdetails")
+	public ResponseEntity<CommonRes> saveCustomerDetails(@RequestBody  EserviceCustomerSaveReq req) {
+
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<Error> validation = entityService.validateCustomerDetails(req);
+		//// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else {
+			/////// save
+			SuccessRes res = entityService.saveCustomerDetails(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+    } 
+	
+	
+	
+	// Get
+	@PostMapping("/getcustomerdetails")
+	public ResponseEntity<CommonRes> getMsPersonalInfo(@RequestBody GetCustomerDetailsReq req){
+	CommonRes data = new CommonRes();
+	reqPrinter.reqPrint(req);
+	CustomerDetailsGetRes res = entityService.getCustomerDetails(req);
+	data.setCommonResponse(res);
+	data.setErrorMessage(Collections.emptyList());
+	data.setIsError(false);
+	data.setMessage("Success");
+	if(res!=null) {
+		return new ResponseEntity<CommonRes>(data,HttpStatus.CREATED);
+	}
+	else {
+		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+	}
+	}
+			
+	//Getall
+	@PostMapping("/getallcustomerdetails")
+	public ResponseEntity<CommonRes> getallCustomerDetails(@RequestBody GetAllCustomerDetailsReq req){
+	CommonRes data = new CommonRes();
+	reqPrinter.reqPrint(req);
+	List<CustomerDetailsGetRes> res = entityService.getallCustomerDetails(req);
+	data.setCommonResponse(res);
+	data.setErrorMessage(Collections.emptyList());
+	data.setIsError(false);
+	data.setMessage("Success");
+	if(res!=null) {
+		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+	}
+	else {
+	return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);	
+	}
+	}
+
+	// Search by Vr Tin No
+	
+	@PostMapping("/searchbyvrtinno")
+	public ResponseEntity<CommonRes> getbyvrtinno(@RequestBody EserviceCustomerSearchVrtinReq req){
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		CustomerDetailsGetRes res = entityService.getbyvrtinno(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+	if(res!=null) {
+		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+	}
+	else {
+		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+	}
+	}
+	
+	
+	
+}

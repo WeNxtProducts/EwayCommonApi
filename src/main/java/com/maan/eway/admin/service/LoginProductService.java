@@ -1,0 +1,43 @@
+package com.maan.eway.admin.service;
+
+import java.util.Date;
+import java.util.List;
+
+import com.maan.eway.admin.req.AttachCompnayProductRequest;
+import com.maan.eway.admin.req.BrokerCompanyProductGetReq;
+import com.maan.eway.admin.req.BrokerCompanyProductsGetRes;
+import com.maan.eway.admin.req.BrokerProductGetReq;
+import com.maan.eway.admin.res.BrokerProductGetRes;
+import com.maan.eway.admin.res.LoginCreationRes;
+import com.maan.eway.admin.res.LoginProductCriteriaRes;
+import com.maan.eway.auth.dto.BrokerProductCompaniesRes;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.dropdown.req.BrokerCompanyProductReq;
+import com.maan.eway.master.dropdown.req.BrokerProductChangeReq;
+import com.maan.eway.master.dropdown.req.BrokerProductReq;
+import com.maan.eway.master.dropdown.res.CompanyProductMasterRes;
+import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
+
+public interface LoginProductService {
+
+	LoginCreationRes saveBrokerProductDetails(AttachCompnayProductRequest req);
+
+	BrokerProductGetRes getBrokerProducts(BrokerProductGetReq req);
+
+	List<BrokerCompanyProductsGetRes> getBrokerCompanyProducts(BrokerCompanyProductGetReq req);
+
+	List<LoginProductCriteriaRes> getBrokerProductDetails(String loginId, List<String> companyIds, Date today);
+
+	SuccessRes updateBrokerCompanyProductDetails(BrokerCompanyProductReq req);
+
+	List<Error> validateUpdateBrokerCompanyProductDetails(BrokerCompanyProductReq req);
+
+	List<CompanyProductMasterRes> getallNonSelectedBrokerCompanyProducts(BrokerCompanyProductGetReq req);
+
+	SuccessRes changeStatusOfCompanyProduct(BrokerProductChangeReq req);
+
+	List<DropDownRes> getBrokerProductDropdown(BrokerProductReq req);
+
+	
+}
