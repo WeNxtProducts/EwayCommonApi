@@ -99,4 +99,6 @@ public interface DropDownService {
 
 	List<DropDownRes> getFuelType();
 
+	List<DropDownRes> getTableDetails();
+
 }

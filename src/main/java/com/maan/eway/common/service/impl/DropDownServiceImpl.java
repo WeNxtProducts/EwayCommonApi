@@ -1,6 +1,8 @@
 package com.maan.eway.common.service.impl;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -8,10 +10,12 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
@@ -25,6 +29,8 @@ import com.maan.eway.bean.CompanyCityMaster;
 import com.maan.eway.bean.CompanyRegionMaster;
 import com.maan.eway.bean.CompanyStateMaster;
 import com.maan.eway.bean.CountryMaster;
+import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.req.NcdDetailsGetReq;
 import com.maan.eway.common.service.DropDownService;
@@ -1196,6 +1202,67 @@ public class DropDownServiceImpl  implements DropDownService{
 	public List<DropDownRes> getFuelType() {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("FUEL_TYPE", "Y");
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+	@Override
+	public List<DropDownRes> getTableDetails() {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+//			String tableName = "Eservice_Customer_Details" ;
+//			List<String> removerUnderScore = new ArrayList<>(Arrays.asList(tableName.split("_")) ) ;
+//			
+//			Object entityName = null ;
+//			for (String ent : removerUnderScore) {
+//				String lowerCase = ent.toLowerCase() ;
+//				String firstLetterCaps =  lowerCase.substring(0, 1).toUpperCase() + lowerCase.substring(1) ;
+//				entityName = entityName +  firstLetterCaps ; 
+//				
+//			}
+//			  
+//			
+//
+//			Class table = (Class) entityName ;
+			EserviceCustomerDetails eserCust = new EserviceCustomerDetails();
+			Field[] members = eserCust.getClass().getDeclaredFields();
+			
+			        for(Field member:members){
+			        	if(! member.getName().equalsIgnoreCase("serialVersionUID") ) {
+			        		System.out.println(member.getName());
+			        		String output = member.getName().substring(0, 1).toUpperCase() + member.getName().substring(1);
+		        			String field =output.replaceAll("(.)([A-Z])", "$1_$2");
+		        			System.out.println(field);
+		        			String display =output.replaceAll("(.)([A-Z])", "$1 $2");
+			        			System.out.println(display);
+			        			    
+			        	//	customerReferenceNo
+			        	//	Customer Reference No
+			        	//	Customer_Reference_No
+			        	}
+//			            System.out.println(member.getClass().getSimpleName());
+//			            System.out.println(member.getClass().getCanonicalName());
+//			            System.out.println(member.getClass().getTypeName());
+//			            System.out.println(member.getClass().getComponentType());
+//			            System.out.println(member.getClass().getModifiers());
+//			            System.out.println(member.getClass().getAnnotations());
+			        }			
+			
+			
 			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("FUEL_TYPE", "Y");
 
 			for (ListItemValue data : getList) {
