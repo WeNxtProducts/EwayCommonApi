@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import com.maan.eway.bean.CustomerDetails;
@@ -36,7 +37,25 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface EServiceMotorDetailsRepository  extends JpaRepository<EserviceMotorDetails,EserviceMotorDetailsId > , JpaSpecificationExecutor<EserviceMotorDetails> {
   
 
+ 
+	List<EserviceMotorDetails> findByRequestReferenceNoAndIdNumber(String requestReferenceNo, String idNumber);
 
-	EserviceMotorDetails findByRequestReferenceNoAndIdNumberAndVehicleId(String requestReferenceNo, String idNumber,
-			Integer valueOf);
+	List<EserviceMotorDetails> findByRequestReferenceNoAndIdNumberOrderByVehicleIdDesc(String requestReferenceNo,
+			String idNumber);
+
+	List<EserviceMotorDetails> findByRequestReferenceNo(String requestReferenceNo);
+
+	List<EserviceMotorDetails> findByRequestReferenceNoAndIdNumberAndVehicleId(String requestReferenceNo,
+			String idNumber, Integer valueOf);
+
+	EserviceMotorDetails findByRequestReferenceNoAndVehicleId(String requestReferenceNo, Integer vehId);
+
+	List<EserviceMotorDetails> findByRequestReferenceNoInOrderByUpdatedDateDesc(List<String> reqRefNos);
+
+	List<EserviceMotorDetails> findByRequestReferenceNoOrderByVehicleIdAsc(String requestReferenceNo);
+
+
+
+
+
 }
