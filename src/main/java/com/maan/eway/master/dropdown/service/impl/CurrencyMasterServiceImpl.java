@@ -127,7 +127,7 @@ public List<CuurencyDropDownRes> getCurrencyMasterDropdown( CurrencyDropDownReq 
 		exchangeRate.where(a7,a8,a9,a10,a17);
 
 		// Select
-		query.multiselect(c.get("currencyId").alias("currencyId") ,c.get("currencyName").alias("currencyName") , exchangeRate.alias("exchangeRate"));
+		query.multiselect(c.get("currencyId").alias("currencyId") ,c.get("currencyName").alias("currencyName"),c.get("status").alias("status") , exchangeRate.alias("exchangeRate"));
 		
 	
 		// Order By
