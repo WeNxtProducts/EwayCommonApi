@@ -37,4 +37,13 @@ public interface FactorRateRequestDetailsRepository  extends JpaRepository<Facto
 
 	List<FactorRateRequestDetails> findByRequestReferenceNoAndVehicleIdOrderByCoverIdAsc(String requestReferenceNo, Integer vehicleId);
 
+	List<FactorRateRequestDetails> findByRequestReferenceNoAndDiscLoadIdOrderByVehicleIdAsc(String requestReferenceNo,
+			int i);
+
+	List<FactorRateRequestDetails> findByRequestReferenceNoAndVehicleIdOrderByVehicleIdAsc(String requestReferenceNo,
+			Integer vehicleId);
+
+	List<FactorRateRequestDetails> findByRequestReferenceNoAndDiscLoadIdAndVehicleIdOrderByVehicleIdAsc(
+			String requestReferenceNo, int i, Integer vehicleId);
+
 }

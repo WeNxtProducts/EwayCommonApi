@@ -31,7 +31,10 @@ import com.maan.eway.bean.HomePositionMasterId;
  
 public interface HomePositionMasterRepository  extends JpaRepository<HomePositionMaster,HomePositionMasterId > , JpaSpecificationExecutor<HomePositionMaster> {
 
-	List<HomePositionMaster> findByCustomerIdAndProductIdAndLoginIdOrderByUpdatedDateAsc(Integer valueOf,
-			Integer valueOf2, String createdBy);
+	HomePositionMaster findByQuoteNo(String quoteNo);
+
+	Long countByQuoteNo(String quoteNo);
+
+	void deleteByQuoteNo(String quoteNo);
 
 }

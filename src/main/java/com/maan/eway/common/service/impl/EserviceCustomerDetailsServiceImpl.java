@@ -12,11 +12,13 @@ import java.util.regex.Pattern;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -30,10 +32,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.maan.eway.bean.CityMaster;
+import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.MsCustomerDetails;
 import com.maan.eway.bean.OccupationMaster;
+import com.maan.eway.bean.StateMaster;
 import com.maan.eway.common.req.EserviceCustomerSaveReq;
 import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
 import com.maan.eway.common.req.GetAllCustomerDetailsReq;
@@ -137,31 +142,31 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			} else if (req.getRegionCode().length() > 20) {
 				errorList.add(new Error("18", "RegionCode", "Please Enter RegionCode within 20 Characters"));
 			}
-			if (req.getStreet().length() > 100) {
+			if (StringUtils.isNotBlank(req.getStreet()) && req.getStreet().length() > 100) {
 				errorList.add(new Error("19", "Street", "Please Enter Street within 100 Characters"));
 			}
-			if (req.getFax().length() > 20) {
+			if (StringUtils.isNotBlank(req.getFax()) &&  req.getFax().length() > 20) {
 				errorList.add(new Error("20", "Fax", "Please Enter Fax within 20 Characters"));
 			}
-			if (StringUtils.isBlank(req.getTelephoneNo1())) {
+		/*	if (StringUtils.isBlank(req.getTelephoneNo1())) {
 				errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo1"));
 			} else if (req.getTelephoneNo1().length() > 20) {
 				errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo1 within 20 Characters"));
 			} else if (!req.getTelephoneNo1().matches("\\d+")) {
 				errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo1 only in numbers"));
-			} 
+			} */
 
 			if (StringUtils.isBlank(req.getMobileNo1())) {
 				errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo1"));
 			} else if (req.getMobileNo1().length() > 20) {
 				errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo1 within 20 Characters"));
 			}
-			if (req.getMobileNo2().length() > 20) {
+			if (StringUtils.isNotBlank(req.getMobileNo2()) && req.getMobileNo2().length() > 20) {
 				errorList.add(new Error("25", "MobileNo2", "Please Enter MobileNo2 within 20 Characters"));
 			}
-			if (req.getMobileNo3().length() > 20) {
+			if (StringUtils.isNotBlank(req.getMobileNo3()) && req.getMobileNo3().length() > 20) {
 				errorList.add(new Error("26", "MobileNo3", "Please Enter MobileNo3 within 20 Characters"));
-			}
+			} 
 			if (StringUtils.isBlank(req.getEmail1())) {
 				errorList.add(new Error("27", "Email1", "Please Enter Email1"));
 			} else if (req.getEmail1().length() > 20) {
@@ -175,7 +180,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 
 			if (StringUtils.isNotBlank(req.getEmail2()) && req.getEmail2().length() > 20) {
 				errorList.add(new Error("28", "Email2", "Please Enter Email2 within 20 Characters"));
-			} else {
+			} else if(StringUtils.isNotBlank(req.getEmail2()) ) {
 				boolean b = isValidMail(req.getEmail2());
 
 				if (b == false) {
@@ -184,7 +189,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			}
 			if (StringUtils.isNotBlank(req.getEmail3()) && req.getEmail3().length() > 20) {
 				errorList.add(new Error("29", "Email3", "Please Enter Email3 within 20 Characters"));
-			} else {
+			} else if(StringUtils.isNotBlank(req.getEmail3()) ) {
 				boolean b = isValidMail(req.getEmail3());
 				if (b == false) {
 					errorList.add(new Error("29", "Email3", "Please Enter Email3 in correct format"));
@@ -193,6 +198,41 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			if (StringUtils.isBlank(req.getLanguage())) {
 				errorList.add(new Error("30", "Language", "Please Select Language"));
 			}
+			
+			if (StringUtils.isNotBlank(req.getEmail1()) && StringUtils.isNotBlank(req.getEmail2())  && req.getEmail1().equalsIgnoreCase(req.getEmail2()) ) {
+				errorList.add(new Error("28", "Email2", "Email2 Is Already Available In Email1"));
+			}
+			if (StringUtils.isNotBlank(req.getEmail1()) && StringUtils.isNotBlank(req.getEmail3())  && req.getEmail1().equalsIgnoreCase(req.getEmail3()) ) {
+				errorList.add(new Error("28", "Email2", "Email3 Is Already Available In Email1"));
+			}
+			if (StringUtils.isNotBlank(req.getEmail2()) && StringUtils.isNotBlank(req.getEmail3())  && req.getEmail2().equalsIgnoreCase(req.getEmail3()) ) {
+				errorList.add(new Error("28", "Email3", "Email3 Is Already Available In Email2"));
+			}
+			
+			if (StringUtils.isNotBlank(req.getTelephoneNo1()) && StringUtils.isNotBlank(req.getTelephoneNo2())  && req.getTelephoneNo1().equalsIgnoreCase(req.getTelephoneNo2()) ) {
+				errorList.add(new Error("28", "TelephoneNo2", "TelephoneNo2 Is Already Available In TelephoneNo1"));
+			}
+			if (StringUtils.isNotBlank(req.getTelephoneNo1()) && StringUtils.isNotBlank(req.getTelephoneNo3())  && req.getTelephoneNo1().equalsIgnoreCase(req.getTelephoneNo3()) ) {
+				errorList.add(new Error("28", "TelephoneNo2", "TelephoneNo2 Is Already Available In TelephoneNo1"));
+			}
+			if (StringUtils.isNotBlank(req.getTelephoneNo2()) && StringUtils.isNotBlank(req.getTelephoneNo3())  && req.getTelephoneNo2().equalsIgnoreCase(req.getTelephoneNo3()) ) {
+				errorList.add(new Error("28", "TelephoneNo3", "TelephoneNo3 Is Already Available In TelephoneNo2"));
+			}
+			
+			if (StringUtils.isNotBlank(req.getMobileNo1()) && StringUtils.isNotBlank(req.getMobileNo2())  && req.getMobileNo1().equalsIgnoreCase(req.getMobileNo2()) ) {
+				errorList.add(new Error("28", "MobileNo2", "MobileNo2 Is Already Available In MobileNo1"));
+			}
+			if (StringUtils.isNotBlank(req.getMobileNo1()) && StringUtils.isNotBlank(req.getMobileNo3())  && req.getMobileNo1().equalsIgnoreCase(req.getMobileNo3()) ) {
+				errorList.add(new Error("28", "MobileNo2", "MobileNo3 Is Already Available In MobileNo1"));
+			}
+			if (StringUtils.isNotBlank(req.getMobileNo2()) && StringUtils.isNotBlank(req.getMobileNo3())  && req.getMobileNo2().equalsIgnoreCase(req.getMobileNo3()) ) {
+				errorList.add(new Error("28", "MobileNo3", "MobileNo3 Is Already Available In MobileNo2"));
+			}
+			
+			if (StringUtils.isNotBlank(req.getAddress1()) && StringUtils.isNotBlank(req.getAddress2())  && req.getAddress1().equalsIgnoreCase(req.getAddress2()) ) {
+				errorList.add(new Error("28", "Address2", "Address2 Is Already Available In Address1"));
+			}
+			
 			if (StringUtils.isBlank(req.getIsTaxExempted())) {
 				errorList.add(new Error("31", "IsTaxExempted", "Please Select IsTaxExempted"));
 
@@ -408,6 +448,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setCustomerReferenceNo(custRefNo);
 			saveData.setStatus(req.getStatus());
+			saveData.setClientStatusDesc(req.getClientStatus().equalsIgnoreCase("N") ? "DeActive" :"Active" );
 			saveData.setGender(StringUtils.isBlank(req.getGender())? "M" :req.getGender() );
 			saveData.setOccupation(StringUtils.isBlank(req.getOccupation())? "2" :req.getOccupation() );
 			
@@ -420,13 +461,30 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			ListItemValue gender = listRepo.findByItemTypeAndItemCode("GENDER", saveData.getGender());
 			ListItemValue title = listRepo.findByItemTypeAndItemCode("NAME_TITLE", req.getTitle());
 			ListItemValue language = listRepo.findByItemTypeAndItemCode("LANGUAGE", req.getLanguage());
+			ListItemValue policyHolderType = listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_TYPE", req.getPolicyHolderType());
+			ListItemValue policyHolderTypeId = listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_ID_TYPE", req.getPolicyHolderTypeid());
+			
+			if( StringUtils.isNotBlank(req.getBusinessType()) ) {
+				ListItemValue businessType = listRepo.findByItemTypeAndItemCode("BUSINESS_TYPE", req.getBusinessType());
+				saveData.setBusinessTypeDesc(businessType.getItemValue());
+			}
+			
 			OccupationMaster occupation =occupationRepo.findByOccupationId(saveData.getOccupation());
 			saveData.setGenderDesc(gender.getItemValue());
 			saveData.setTitleDesc(title.getItemValue());
 			saveData.setLanguageDesc(language.getItemValue());
 			saveData.setOccupationDesc(occupation.getOccupationName());
-			saveData.setAge(age);
+			saveData.setPolicyHolderTypeDesc(policyHolderType.getItemValue());
+			saveData.setPolicyHolderTypeIdDesc(policyHolderTypeId.getItemValue());
 			saveData.setIdType(req.getPolicyHolderTypeid());
+			saveData.setIdTypeDesc(policyHolderTypeId.getItemValue());
+			saveData.setAge(age);
+			
+			List<Tuple> stateCityNames = 	getStateAndCityName(req.getNationality(),  req.getCityCode());
+			
+			saveData.setCityName(stateCityNames.get(0).get("cityName") == null ? "" :  stateCityNames.get(0).get("cityName").toString());
+			saveData.setStateName(stateCityNames.get(0).get("stateName") == null ? "" :  stateCityNames.get(0).get("stateName").toString());
+			
 			repository.save(saveData);
 
 			// Response
@@ -439,6 +497,90 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		return res;
 
 	}
+	
+	public List<Tuple> getStateAndCityName(String countryId , String cityId  ) {
+		List<Tuple> list = new ArrayList<Tuple>();
+		try {
+			Date today = new Date();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+			// Find All
+			Root<CityMaster> c = query.from(CityMaster.class);
+			
+			// City Effective Date Max Filter
+			Subquery<Long> effectiveDate1 = query.subquery(Long.class);
+			Root<CityMaster> ocpm1 = effectiveDate1.from(CityMaster.class);
+			effectiveDate1.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate c1 = cb.equal(ocpm1.get("cityId"), c.get("cityId"));
+			Predicate c2 = cb.equal(ocpm1.get("stateId"), c.get("stateId"));
+			Predicate c3 = cb.equal(ocpm1.get("countryId"), c.get("countryId"));
+			Predicate c4 = cb.equal(ocpm1.get("status"),c.get("status"));
+			Predicate c5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate1.where(c1,c2,c3,c4,c5);
+			
+			Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate1);
+			Predicate n2 = cb.equal(c.get("cityId"), cityId);
+			Predicate n4 = cb.equal(c.get("countryId"), countryId);
+			Predicate n5 = cb.equal(c.get("status"), "Y");
+			
+			// State Effective Date Max Filter
+			Subquery<Long> state = query.subquery(Long.class);
+			Root<StateMaster> s = state.from(StateMaster.class);
+			
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<StateMaster> ocpm2 = effectiveDate2.from(StateMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateStart")));
+			Predicate seff1 = cb.equal(ocpm2.get("stateId"), s.get("stateId"));
+			Predicate seff2 = cb.equal(ocpm2.get("countryId"), s.get("countryId"));
+			Predicate seff3 = cb.equal(ocpm2.get("status"),s.get("status"));
+			Predicate seff4 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
+			effectiveDate2.where(seff1,seff2,seff3,seff4);
+			
+			// State Name Max Filter
+			state .select(s.get("stateName"));
+			Predicate s1 = cb.equal(s.get("stateId"), c.get("stateId"));
+			Predicate s2 = cb.equal(s.get("countryId"), c.get("countryId"));
+			Predicate s3 = cb.equal(s.get("status"), c.get("status"));
+			Predicate s4 = cb.equal(s.get("effectiveDateStart"), effectiveDate2);
+			state.where(s1,s2,s3,s4);
+			
+			// Country Effective Date Max Filter
+			Subquery<Long> country = query.subquery(Long.class);
+			Root<CountryMaster> cm = country.from(CountryMaster.class);
+			
+			Subquery<Long> effectiveDate3 = query.subquery(Long.class);
+			Root<CountryMaster> ocpm3 = effectiveDate3.from(CountryMaster.class);
+			effectiveDate3.select(cb.max(ocpm3.get("effectiveDateStart")));
+			Predicate ceff2 = cb.equal(ocpm3.get("countryId"), cm.get("countryId"));
+			Predicate ceff3 = cb.equal(ocpm3.get("status"),cm.get("status"));
+			Predicate ceff4 = cb.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
+			effectiveDate3.where(ceff2,ceff3,ceff4);
+			
+			// Country Name Max Filter
+			country .select(cm.get("countryName"));
+			Predicate cm2 = cb.equal(cm.get("countryId"), c.get("countryId"));
+			Predicate cm3 = cb.equal(cm.get("status"), c.get("status"));
+			Predicate cm4 = cb.equal(cm.get("effectiveDateStart"), effectiveDate3);
+			country.where(cm2,cm3,cm4);
+			
+			// Select
+			query.multiselect( c.get("cityId").alias("cityId") ,c.get("cityName").alias("cityName") , state.alias("stateName") ,country.alias("countryName") );
+			
+			query.where(n1,n2,n4,n5);
+			// Get Result
+			TypedQuery<Tuple> result = em.createQuery(query);
+			list = result.getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+		}
+		return list;
+	}
+	
 
 	@Override
 	public CustomerDetailsGetRes getCustomerDetails(GetCustomerDetailsReq req) {

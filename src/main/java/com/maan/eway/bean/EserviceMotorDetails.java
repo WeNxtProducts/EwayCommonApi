@@ -395,6 +395,12 @@ public class EserviceMotorDetails implements Serializable {
 	    @Column(name="SUB_USER_TYPE")
 	    private String     subUserType ;
 	    
+	    @Column(name="QUOTE_NO")
+	    private String     quoteNo;
+	    
+	    @Column(name="CUSTOMER_ID")
+	    private String     customerId;
+	    
 	    //--- ENTITY LINKS ( RELATIONSHIP )
 
 

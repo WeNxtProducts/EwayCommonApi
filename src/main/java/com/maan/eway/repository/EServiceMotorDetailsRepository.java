@@ -54,6 +54,9 @@ public interface EServiceMotorDetailsRepository  extends JpaRepository<EserviceM
 
 	List<EserviceMotorDetails> findByRequestReferenceNoOrderByVehicleIdAsc(String requestReferenceNo);
 
+	EserviceMotorDetails findByRequestReferenceNoAndVehicleIdOrderByVehicleIdAsc(String requestReferenceNo,
+			Integer vehicleId);
+
 
 
 

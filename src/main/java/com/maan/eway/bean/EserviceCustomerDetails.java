@@ -69,9 +69,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="POLICY_HOLDER_TYPEID", nullable=false, length=100)
     private String     policyHolderTypeid ;
     
-    @Column(name="ID_TYPE", nullable=false, length=2)
-    private String     idType ;
     
+    @Column(name="ID_TYPE", length=100)
+    private String     idType;
+    
+    @Column(name="ID_TYPE_DESC", length=100)
+    private String     idTypeDesc;
     @Column(name="ID_NUMBER", nullable=false, length=100)
     private String     idNumber ;
     
@@ -122,10 +125,13 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="POLICY_HOLDER_TYPE", length=2)
     private String     policyHolderType ;
+    
+    @Column(name="POLICY_HOLDER_TYPE_DESC", length=100)
+    private String     policyHolderTypeDesc ;
 
-    @Column(name="ID_TYPE_DESC", length=100)
-    private String     idTypeDesc ;
-
+    @Column(name="POLICY_HOLDER_TYPE_ID_DESC", length=100)
+    private String     policyHolderTypeIdDesc ;
+    
     @Temporal(TemporalType.DATE)
     @Column(name="DOB_OR_REG_DATE")
     private Date       dobOrRegDate ;
