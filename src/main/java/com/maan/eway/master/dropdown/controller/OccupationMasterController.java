@@ -56,15 +56,15 @@ public class OccupationMasterController {
 	private  PrintReqService reqPrinter;
 
 	// Occupation Master Drop Down Type
-	@GetMapping("/dropdown/occupation")
+	@PostMapping("/dropdown/occupation")
 	@ApiOperation(value = "This method is get Occupation Master Drop Down")
 
-	public ResponseEntity<CommonRes> getOccupationMasterDropdown() {
+	public ResponseEntity<CommonRes> getOccupationMasterDropdown(@RequestBody OccupationDropDownReq req) {
 
 		CommonRes data = new CommonRes();
 
 		// Save
-		List<DropDownRes> res = service.getOccupationMasterDropdown();
+		List<DropDownRes> res = service.getOccupationMasterDropdown(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());

@@ -32,9 +32,9 @@ public class BankMasterId implements Serializable {
     //--- ENTITY KEY ATTRIBUTES 
     private String     bankCode ;
     
-    private Date       effectiveDateStart ;
+    private String     companyId;
+
+    private String     branchCode;
     
-    private Date       effectiveDateEnd ;
-    
-     
+    private Integer    amendId;
 }

@@ -13,7 +13,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -49,17 +48,29 @@ public class OccupationMaster implements Serializable {
 	// --- ENTITY PRIMARY KEY
 	@Id
 	@Column(name = "OCCUPATION_ID", nullable = false, length = 20)
-	private String occupationId;
+	private Integer occupationId;
 
-	@Id
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "EFFECTIVE_DATE_START", nullable = false)
-	private Date effectiveDateStart;
+    @Id
+    @Column(name="AMEND_ID")
+    private Integer     amendId ;
+    
+    @Id
+    @Column(name="COMPANY_ID", length=20)
+    private String     companyId;
 
-	@Id
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "EFFECTIVE_DATE_END", nullable = false)
-	private Date effectiveDateEnd;
+    @Id
+    @Column(name="BRANCH_CODE", length=20)
+    private String     branchCode;
+
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_START", nullable=false)
+    private Date       effectiveDateStart ;
+
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_END", nullable=false)
+    private Date       effectiveDateEnd ;
 
 	// --- ENTITY DATA FIELDS
 	@Column(name = "OCCUPATION_NAME", length = 100)
@@ -73,9 +84,6 @@ public class OccupationMaster implements Serializable {
 
 	@Column(name = "REGULATORY_CODE", length = 20)
 	private String regulatoryCode;
-
-	@Column(name = "AMEND_ID")
-	private Integer amendId;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "ENTRY_DATE")

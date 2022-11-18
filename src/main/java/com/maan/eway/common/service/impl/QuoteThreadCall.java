@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -20,8 +21,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
+import javax.transaction.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.CoverDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
@@ -52,6 +55,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
+@Transactional
 public class QuoteThreadCall implements Callable<Object>  {
 	
 	private Logger log = LogManager.getLogger(getClass());
@@ -124,14 +128,15 @@ public class QuoteThreadCall implements Callable<Object>  {
 		return map;
 	}
 	
-	private Map<String,Object> call_CustomerSave(QuoteThreadReq request) {
+	@Transactional
+	private synchronized Map<String,Object> call_CustomerSave(QuoteThreadReq request) {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			// FindData 
 			Long findInfo =  perInfoRepo.countByCustomerId(request.getCustomerId());
 			if (findInfo > 0 ) {
-				perInfoRepo.deleteByCustomerId(request.getCustomerId());
+			perInfoRepo.deleteByCustomerId(request.getCustomerId());
 			}
 			
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -178,7 +183,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 		return res;
 	}
 	
-	
+
+	@Transactional
 	private synchronized  Map<String,Object>  call_MotorSave(QuoteThreadReq  request  ) {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		 DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -271,7 +277,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		return res;
 	}
 	
-	
+	@Transactional
 	private synchronized  Map<String,Object>  call_CoverSave(QuoteThreadReq  request) {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		try {
@@ -334,6 +340,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 	}
 		
 
+		@Transactional
 		private Map<String,Object>  InsertCoverDetails(List<FactorRateRequestDetails> covers) {
 			Map<String,Object> res= new HashMap<String,Object>() ;
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -363,7 +370,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 			return res;
 		}
 		
-	private QuoteThreadRes call_QuoteSave(QuoteThreadReq  request) {
+	
+	@Transactional
+	private synchronized QuoteThreadRes call_QuoteSave(QuoteThreadReq  request) {
 		QuoteThreadRes res= new QuoteThreadRes() ;
 		String pattern = "#####0.00";
 		DecimalFormat df = new DecimalFormat(pattern);

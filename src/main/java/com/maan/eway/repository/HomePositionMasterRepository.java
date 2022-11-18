@@ -15,6 +15,8 @@ package com.maan.eway.repository;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import com.maan.eway.bean.HomePositionMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -28,7 +30,7 @@ import com.maan.eway.bean.HomePositionMasterId;
  */
  
  
- 
+@Transactional 
 public interface HomePositionMasterRepository  extends JpaRepository<HomePositionMaster,HomePositionMasterId > , JpaSpecificationExecutor<HomePositionMaster> {
 
 	HomePositionMaster findByQuoteNo(String quoteNo);

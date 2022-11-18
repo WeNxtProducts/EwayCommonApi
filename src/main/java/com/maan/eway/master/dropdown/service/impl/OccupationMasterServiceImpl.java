@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.master.dropdown.controller.OccupationDropDownReq;
 import com.maan.eway.master.dropdown.req.CurrencyMasterGetAllReq;
 import com.maan.eway.master.dropdown.req.CurrencyMasterGetReq;
 import com.maan.eway.master.dropdown.req.CurrencyMasterSaveReq;
@@ -80,17 +81,13 @@ private Logger log=LogManager.getLogger(OccupationMasterServiceImpl.class);
 
 
 @Override
-public List<DropDownRes> getOccupationMasterDropdown() {
+public List<DropDownRes> getOccupationMasterDropdown(OccupationDropDownReq req) {
 List<DropDownRes> resList = new ArrayList<DropDownRes>();
 try {
 	Date today = new Date();
 	Calendar cal = new GregorianCalendar();
 	cal.setTime(today);
-	cal.set(Calendar.HOUR_OF_DAY, 23);;
-	cal.set(Calendar.MINUTE, 1);
 	today = cal.getTime();
-	cal.set(Calendar.HOUR_OF_DAY, 1);
-	cal.set(Calendar.MINUTE, 1);
 	Date todayEnd = cal.getTime();
 	
 	// Criteria
@@ -123,14 +120,18 @@ try {
 	Predicate n1 = cb.equal(c.get("status"),"Y");
 	Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 	Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
-	query.where(n1,n2,n3).orderBy(orderList);
+	Predicate n4 = cb.equal(c.get("companyId"),req.getInsuranceId());
+	Predicate n5 = cb.equal(c.get("branchCode"),req.getBranchCode());
+	Predicate n6 = cb.equal(c.get("branchCode"),"99999");
+	Predicate n7 = cb.or(n5,n6);
+	query.where(n1,n2,n3,n4,n7).orderBy(orderList);
 	// Get Result
 	TypedQuery<OccupationMaster> result = em.createQuery(query);
 	list = result.getResultList();
 	for (OccupationMaster data : list) {
 		// Response 
 		DropDownRes res = new DropDownRes();
-		res.setCode(data.getOccupationId());
+		res.setCode(data.getOccupationId().toString());
 		res.setCodeDesc(data.getOccupationName());
 		res.setStatus(data.getStatus());
 		resList.add(res);

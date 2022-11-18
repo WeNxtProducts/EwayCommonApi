@@ -58,12 +58,24 @@ private static final long serialVersionUID = 1L;
     private String     bankCode ;
 
     @Id
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="AMEND_ID")
+    private Integer     amendId ;
+    
+    @Id
+    @Column(name="COMPANY_ID", length=20)
+    private String     companyId;
+
+    @Id
+    @Column(name="BRANCH_CODE", length=20)
+    private String     branchCode;
+
+    
+    @Temporal(TemporalType.DATE)
     @Column(name="EFFECTIVE_DATE_START", nullable=false)
     private Date       effectiveDateStart ;
 
-    @Id
-    @Temporal(TemporalType.TIMESTAMP)
+    
+    @Temporal(TemporalType.DATE)
     @Column(name="EFFECTIVE_DATE_END", nullable=false)
     private Date       effectiveDateEnd ;
 
@@ -84,9 +96,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="CORE_APP_CODE", length=20)
     private String     coreAppCode ;
 
-    @Column(name="AMEND_ID")
-    private Integer     amendId ;
-
+   
     @Column(name="REMARKS", length=100)
     private String     remarks ;
 

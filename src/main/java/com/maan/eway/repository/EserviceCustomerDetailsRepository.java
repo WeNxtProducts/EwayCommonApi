@@ -12,6 +12,8 @@
 
 package com.maan.eway.repository;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,6 +22,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceCustomerDetailsId;
 
+@Transactional
 public interface EserviceCustomerDetailsRepository  extends JpaRepository<EserviceCustomerDetails,EserviceCustomerDetailsId > , JpaSpecificationExecutor<EserviceCustomerDetails> {
 
 	EserviceCustomerDetails findByCustomerReferenceNo(String requestReferenceNo);

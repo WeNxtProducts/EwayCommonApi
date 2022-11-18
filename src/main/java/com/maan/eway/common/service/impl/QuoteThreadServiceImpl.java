@@ -22,8 +22,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import javax.transaction.Transactional;
 
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.QuoteThreadReq;
@@ -46,6 +48,7 @@ import com.maan.eway.thread.MyTaskList;
 import lombok.Synchronized;
 
 @Service
+@Transactional
 public class QuoteThreadServiceImpl implements QuoteThreadService {
 
 	
@@ -81,7 +84,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	private LoginMasterRepository loginRepo ;
 	
 	@Override
-	@Synchronized
+	@Transactional
 	public CommonRes call_OT_Insert(NewQuoteReq req) {
 		CommonRes commonRes = new CommonRes();
 		NewQuoteRes response = new NewQuoteRes();
@@ -135,7 +138,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             
             ForkJoinPool forkjoin = new ForkJoinPool(threadCount); 
             ConcurrentLinkedQueue<Future<Object>> invoke  = (ConcurrentLinkedQueue<Future<Object>>) forkjoin.invoke(taskList) ;
-           
+            
 			for (Future<Object> callable : invoke) {
 
 				log.info(callable.getClass() + "," + callable.isDone());
@@ -157,7 +160,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					success++;
 				}
 			}
-			
+	
 			// Cust Res
 			if( custRes.get("Response")!=null && custRes.get("Response").toString().equals("Failed") ) {
 				errors.add(new Error("01","Customer Save",custRes.get("Errors").toString()));
@@ -232,10 +235,11 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						success++;
 					}
 				}
+			//	HomePositionMaster homeData = homeRepo.findByQuoteNo(request.getQuoteNo());
 				
-				response.setQuoteNo(quoteRes.getQuoteNo());
-				response.setRequestReferenceNo(quoteRes.getRequestReferenceNo());
-				response.setCustomerId(quoteRes.getCustomerId());
+				response.setQuoteNo(request.getQuoteNo());
+				response.setRequestReferenceNo(request.getRequestReferenceNo());
+				response.setCustomerId(request.getCustomerId());
 				response.setResponse("Saved SuccessFully");
 				 
 				// Response 

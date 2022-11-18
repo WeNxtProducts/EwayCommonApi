@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.dropdown.service;
 
+import com.maan.eway.master.dropdown.controller.OccupationDropDownReq;
 import com.maan.eway.master.dropdown.req.OccupationChangeStatusReq;
 import com.maan.eway.master.dropdown.req.OccupationMasterGetAllReq;
 import com.maan.eway.master.dropdown.req.OccupationMasterGetReq;
@@ -20,7 +21,6 @@ import java.util.List;
 */
 public interface OccupationMasterService  {
 
-	List<DropDownRes> getOccupationMasterDropdown();
 	/*
 	List<Error> validateOccupation(OccupationMasterSaveReq req);
 
@@ -33,4 +33,6 @@ public interface OccupationMasterService  {
 	List<OccupationMasterRes> getActiveOccupation(OccupationMasterGetAllReq req);
 	SuccessRes changeStatusOfOccupation(OccupationChangeStatusReq req);
 */
+
+	List<DropDownRes> getOccupationMasterDropdown(OccupationDropDownReq req);
 }

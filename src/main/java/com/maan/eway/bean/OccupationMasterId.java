@@ -30,11 +30,13 @@ public class OccupationMasterId implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //--- ENTITY KEY ATTRIBUTES 
-	private String occupationId;
+	private Integer occupationId;
     
-    private Date       effectiveDateStart ;
+	private String     companyId;
+
+    private String     branchCode;
     
-    private Date       effectiveDateEnd ;
+    private Integer    amendId;
     
      
 }

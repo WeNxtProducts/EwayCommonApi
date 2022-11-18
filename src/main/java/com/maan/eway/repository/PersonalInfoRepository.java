@@ -15,6 +15,8 @@ package com.maan.eway.repository;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import com.maan.eway.bean.PersonalInfo;
 
 import org.springframework.data.domain.Page;
@@ -31,7 +33,7 @@ import com.maan.eway.bean.PersonalInfoId;
  */
  
  
- 
+@Transactional
 public interface PersonalInfoRepository  extends JpaRepository<PersonalInfo,PersonalInfoId > , JpaSpecificationExecutor<PersonalInfo> {
 
 
