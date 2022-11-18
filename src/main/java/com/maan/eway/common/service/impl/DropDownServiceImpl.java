@@ -32,6 +32,7 @@ import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.common.controller.CompanyDropDownReq;
 import com.maan.eway.common.req.NcdDetailsGetReq;
 import com.maan.eway.common.service.DropDownService;
 import com.maan.eway.master.dropdown.req.CityDropDownReq;
@@ -45,6 +46,7 @@ import com.maan.eway.repository.CompanyStateMasterRepository;
 import com.maan.eway.repository.CountryMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.req.SubUserTypeReq;
+import com.maan.eway.res.ColummnDropRes;
 import com.maan.eway.res.DropDownRes;
 
 @Service
@@ -1221,23 +1223,23 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> getTableDetails() {
-		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+	public List<ColummnDropRes> getTableDetails() {
+		List<ColummnDropRes> resList = new ArrayList<ColummnDropRes>();
 		try {
-//			String tableName = "Eservice_Customer_Details" ;
-//			List<String> removerUnderScore = new ArrayList<>(Arrays.asList(tableName.split("_")) ) ;
-//			
-//			Object entityName = null ;
-//			for (String ent : removerUnderScore) {
-//				String lowerCase = ent.toLowerCase() ;
-//				String firstLetterCaps =  lowerCase.substring(0, 1).toUpperCase() + lowerCase.substring(1) ;
-//				entityName = entityName +  firstLetterCaps ; 
-//				
-//			}
-//			  
-//			
-//
-//			Class table = (Class) entityName ;
+			String tableName = "Eservice_Customer_Details" ;
+			List<String> removerUnderScore = new ArrayList<>(Arrays.asList(tableName.split("_")) ) ;
+			
+			Object entityName =null;
+			for (String ent : removerUnderScore) {
+				String lowerCase = ent.toLowerCase() ;
+				String firstLetterCaps =  lowerCase.substring(0, 1).toUpperCase() + lowerCase.substring(1) ;
+				entityName = entityName==null ? firstLetterCaps  :entityName +  firstLetterCaps ; 
+				
+			}
+			  
+			entityName = entityName + ".class" ;
+
+		//	Class table = (Class) entityName ;
 			EserviceCustomerDetails eserCust = new EserviceCustomerDetails();
 			Field[] members = eserCust.getClass().getDeclaredFields();
 			
@@ -1249,6 +1251,11 @@ public class DropDownServiceImpl  implements DropDownService{
 		        			System.out.println(field);
 		        			String display =output.replaceAll("(.)([A-Z])", "$1 $2");
 			        			System.out.println(display);
+			        			ColummnDropRes res = new ColummnDropRes();
+			    				res.setColumnName(field);
+			    				res.setDispalyName(display);
+			    				res.setFieldName( member.getName());
+			    				resList.add(res);
 			        			    
 			        	//	customerReferenceNo
 			        	//	Customer Reference No
@@ -1263,8 +1270,74 @@ public class DropDownServiceImpl  implements DropDownService{
 			        }			
 			
 			
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("FUEL_TYPE", "Y");
+		/*	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("FUEL_TYPE", "Y");
 
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			} */
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+	@Override
+	public List<DropDownRes> constructType(CompanyDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeAsc("CONST_MATERIAL", "Y" , req.getInsuranceId());
+			
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+	@Override
+	public List<DropDownRes> consecutiveDays(CompanyDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeAsc("CONSECUTIVE_DAYS", "Y" , req.getInsuranceId());
+			
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+	@Override
+	public List<DropDownRes> buildingType(CompanyDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeAsc("BUILDING_TYPE", "Y" , req.getInsuranceId());
+			
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());

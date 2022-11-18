@@ -46,4 +46,7 @@ public interface ListItemValueRepository  extends JpaRepository<ListItemValue,Do
 
 	List<ListItemValue> findByItemTypeAndStatusOrderByParam2Asc(String userType, String string);
 
+	List<ListItemValue> findByItemTypeAndStatusAndCompanyIdOrderByItemCodeAsc(String string, String string2,
+			String insuranceId);
+
 }

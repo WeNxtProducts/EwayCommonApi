@@ -18,6 +18,7 @@ import com.maan.eway.master.dropdown.req.CityDropDownReq;
 import com.maan.eway.master.dropdown.req.RegionDropDownReq;
 import com.maan.eway.master.dropdown.req.StateDropDownReq;
 import com.maan.eway.req.SubUserTypeReq;
+import com.maan.eway.res.ColummnDropRes;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 
@@ -58,7 +59,7 @@ public class DropDownController {
 	public ResponseEntity<CommonRes> getTableDetails() {
 		CommonRes data = new CommonRes();
 
-		List<DropDownRes> res = dropDownService.getTableDetails();
+		List<ColummnDropRes> res = dropDownService.getTableDetails();
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());
@@ -134,6 +135,63 @@ public class DropDownController {
 		CommonRes data = new CommonRes();
 
 		List<DropDownRes> res = dropDownService.insuranceClass();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	
+	@PostMapping("/contructtype")
+	@ApiOperation(value = "This method is to Construct Type Drop Down")
+	public ResponseEntity<CommonRes> constructType(@RequestBody CompanyDropDownReq req ) {
+		CommonRes data = new CommonRes();
+
+		List<DropDownRes> res = dropDownService.constructType(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	
+	@PostMapping("/consecutivedays")
+	@ApiOperation(value = "This method is to Construct Type Drop Down")
+	public ResponseEntity<CommonRes> consecutiveDays(@RequestBody CompanyDropDownReq req ) {
+		CommonRes data = new CommonRes();
+
+		List<DropDownRes> res = dropDownService.consecutiveDays(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	
+	@PostMapping("/buildingtype")
+	@ApiOperation(value = "This method is to Construct Type Drop Down")
+	public ResponseEntity<CommonRes> buildingType(@RequestBody CompanyDropDownReq req ) {
+		CommonRes data = new CommonRes();
+
+		List<DropDownRes> res = dropDownService.buildingType(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());

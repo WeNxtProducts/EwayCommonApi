@@ -76,6 +76,12 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="STATUS", length=30)
     private String     status ;
+    
+    @Column(name="COMPANY_ID", length=30)
+    private String     companyId ;
+    
+    @Column(name="BRANCH_CODE", length=30)
+    private String     branchCode ;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )

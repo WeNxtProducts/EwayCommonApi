@@ -2,11 +2,13 @@ package com.maan.eway.common.service;
 
 import java.util.List;
 
+import com.maan.eway.common.controller.CompanyDropDownReq;
 import com.maan.eway.common.req.NcdDetailsGetReq;
 import com.maan.eway.master.dropdown.req.CityDropDownReq;
 import com.maan.eway.master.dropdown.req.RegionDropDownReq;
 import com.maan.eway.master.dropdown.req.StateDropDownReq;
 import com.maan.eway.req.SubUserTypeReq;
+import com.maan.eway.res.ColummnDropRes;
 import com.maan.eway.res.DropDownRes;
 
 public interface DropDownService {
@@ -99,6 +101,12 @@ public interface DropDownService {
 
 	List<DropDownRes> getFuelType();
 
-	List<DropDownRes> getTableDetails();
+	List<ColummnDropRes> getTableDetails();
+
+	List<DropDownRes> constructType(CompanyDropDownReq req);
+
+	List<DropDownRes> consecutiveDays(CompanyDropDownReq req);
+
+	List<DropDownRes> buildingType(CompanyDropDownReq req);
 
 }
