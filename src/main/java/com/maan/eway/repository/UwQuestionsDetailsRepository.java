@@ -10,8 +10,9 @@ import com.maan.eway.bean.UwQuestionsDetailsId;
 public interface UwQuestionsDetailsRepository  extends JpaRepository<UwQuestionsDetails,UwQuestionsDetailsId > , JpaSpecificationExecutor<UwQuestionsDetails> {
 
 
-	List<UwQuestionsDetails> findByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleId(String companyId, Integer valueOf,
-			String requestReferenceNo, Integer valueOf2);
+	
+	List<UwQuestionsDetails> findByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleId(String insuranceId,
+			String productId, String requestReferenceNo, String vehicleId);
 
 
 

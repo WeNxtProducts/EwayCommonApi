@@ -47,7 +47,7 @@ public class CommonCalculator {
 	protected List<Tuple> vehicles=null;
 	protected List<Tuple> customers =null;
 	protected List<Cover> calculatedcover=null;
-	
+	protected List<Tuple> prorata=null;
 	 
 
 	/*public void setEngine(CalcEngine engine,List<Cover> c) {
@@ -55,12 +55,13 @@ public class CommonCalculator {
 		this.calculatedcover=c;
 	}
 	*/
-	public void setEngine(CalcEngine engine,List<Cover> c,List<Tuple> result,List<Tuple> vehicles,List<Tuple> customers) {
+	public void setEngine(CalcEngine engine,List<Cover> c,List<Tuple> result,List<Tuple> vehicles,List<Tuple> customers,List<Tuple> prorata) {
 		this.engine = engine;
 		this.calculatedcover=c;
 		this.result=result;
 		this.vehicles=vehicles;
 		this.customers=customers;
+		this.prorata=prorata;
 	}
 	
 	

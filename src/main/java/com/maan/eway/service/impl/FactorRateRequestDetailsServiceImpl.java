@@ -303,8 +303,8 @@ this.repository = repo;
 				EserviceMotorDetails findData =   eserMotorRepo.findByRequestReferenceNoAndVehicleId(req.getRequestReferenceNo()  ,Integer.valueOf(req.getVehicleId()));
 				findData.setActualPremiumLc(premiumLc ==null ? null :Double.valueOf(df.format(premiumLc )));
 				findData.setActualPremiumFc(premiumFc ==null ? null :Double.valueOf(df.format(premiumFc )));
-				findData.setOverAllPremiumLc(overAllPremiumLc ==null ? null :Double.valueOf(df.format(overAllPremiumLc )));
-				findData.setOverAllPremiumFc(overAllPremiumFc ==null ? null :Double.valueOf(df.format(overAllPremiumFc )));
+				findData.setOverallPremiumLc(overAllPremiumLc ==null ? null :Double.valueOf(df.format(overAllPremiumLc )));
+				findData.setOverallPremiumFc(overAllPremiumFc ==null ? null :Double.valueOf(df.format(overAllPremiumFc )));
 				eserMotorRepo.save(findData);
 				
 			}
