@@ -5,22 +5,15 @@
 */
 package com.maan.eway.master.dropdown.service;
 
-import com.maan.eway.master.dropdown.controller.OccupationDropDownReq;
-import com.maan.eway.master.dropdown.req.OccupationChangeStatusReq;
-import com.maan.eway.master.dropdown.req.OccupationMasterGetAllReq;
-import com.maan.eway.master.dropdown.req.OccupationMasterGetReq;
-import com.maan.eway.master.dropdown.req.OccupationMasterSaveReq;
-import com.maan.eway.master.dropdown.res.OccupationMasterRes;
-import com.maan.eway.error.Error;
-import com.maan.eway.res.DropDownRes;
-import com.maan.eway.res.SuccessRes;
-
 import java.util.List;
+
+import com.maan.eway.common.req.UwMasterDropdownReq;
+import com.maan.eway.res.DropDownRes;
 /**
 * <h2>BankMasterServiceimpl</h2>
 */
 public interface UwQuestionMasterService  {
 
 
-	List<DropDownRes> getUwQuestionMasterDropdown(OccupationDropDownReq req);
+	List<DropDownRes> getUwQuestionMasterDropdown(UwMasterDropdownReq req);
 }

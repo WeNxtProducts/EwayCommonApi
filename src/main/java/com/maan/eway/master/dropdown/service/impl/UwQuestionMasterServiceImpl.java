@@ -54,6 +54,8 @@ import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.ExchangeMaster;
 import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.StateMaster;
+import com.maan.eway.bean.UWQuestionsMaster;
+import com.maan.eway.common.req.UwMasterDropdownReq;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.CurrencyMasterRepository;
 import com.maan.eway.repository.OccupationMasterRepository;
@@ -82,7 +84,7 @@ private Logger log=LogManager.getLogger(UwQuestionMasterServiceImpl.class);
 
 
 @Override
-public List<DropDownRes> getUwQuestionMasterDropdown(OccupationDropDownReq req) {
+public List<DropDownRes> getUwQuestionMasterDropdown(UwMasterDropdownReq req) {
 List<DropDownRes> resList = new ArrayList<DropDownRes>();
 try {
 	Date today = new Date();
@@ -93,47 +95,49 @@ try {
 	
 	// Criteria
 	CriteriaBuilder cb = em.getCriteriaBuilder();
-	CriteriaQuery<OccupationMaster> query=  cb.createQuery(OccupationMaster.class);
-	List<OccupationMaster> list = new ArrayList<OccupationMaster>();
+	CriteriaQuery<UWQuestionsMaster> query=  cb.createQuery(UWQuestionsMaster.class);
+	List<UWQuestionsMaster> list = new ArrayList<UWQuestionsMaster>();
 	// Find All
-	Root<OccupationMaster> c = query.from(OccupationMaster.class);
+	Root<UWQuestionsMaster> c = query.from(UWQuestionsMaster.class);
 	//Select
 	query.select(c);
 	// Order By
 	List<Order> orderList = new ArrayList<Order>();
-	orderList.add(cb.asc(c.get("occupationName")));
+	orderList.add(cb.asc(c.get("uwQuestionDesc")));
 	
 	// Effective Date Start Max Filter
 	Subquery<Long> effectiveDate = query.subquery(Long.class);
-	Root<OccupationMaster> ocpm1 = effectiveDate.from(OccupationMaster.class);
+	Root<UWQuestionsMaster> ocpm1 = effectiveDate.from(UWQuestionsMaster.class);
 	effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-	Predicate a1 = cb.equal(c.get("occupationId"),ocpm1.get("occupationId"));
+	Predicate a1 = cb.equal(c.get("uwQuestionId"),ocpm1.get("uwQuestionId"));
 	Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 	effectiveDate.where(a1,a2);
 	// Effective Date End Max Filter
 	Subquery<Long> effectiveDate2 = query.subquery(Long.class);
-	Root<OccupationMaster> ocpm2 = effectiveDate2.from(OccupationMaster.class);
+	Root<UWQuestionsMaster> ocpm2 = effectiveDate2.from(UWQuestionsMaster.class);
 	effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-	Predicate a3 = cb.equal(c.get("occupationId"),ocpm2.get("occupationId"));
+	Predicate a3 = cb.equal(c.get("uwQuestionId"),ocpm2.get("uwQuestionId"));
 	Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 	effectiveDate2.where(a3,a4);
 	// Where
 	Predicate n1 = cb.equal(c.get("status"),"Y");
 	Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 	Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
-	Predicate n4 = cb.equal(c.get("companyId"),req.getInsuranceId());
+	Predicate n4 = cb.equal(c.get("companyId"),req.getCompanyId());
 	Predicate n5 = cb.equal(c.get("branchCode"),req.getBranchCode());
 	Predicate n6 = cb.equal(c.get("branchCode"),"99999");
 	Predicate n7 = cb.or(n5,n6);
+	Predicate n8 = cb.equal(c.get("productId"),req.getProductId());
+
 	query.where(n1,n2,n3,n4,n7).orderBy(orderList);
 	// Get Result
-	TypedQuery<OccupationMaster> result = em.createQuery(query);
+	TypedQuery<UWQuestionsMaster> result = em.createQuery(query);
 	list = result.getResultList();
-	for (OccupationMaster data : list) {
+	for (UWQuestionsMaster data : list) {
 		// Response 
 		DropDownRes res = new DropDownRes();
-		res.setCode(data.getOccupationId().toString());
-		res.setCodeDesc(data.getOccupationName());
+		res.setCode(data.getUwQuestionId().toString());
+		res.setCodeDesc(data.getUwQuestionDesc());
 		res.setStatus(data.getStatus());
 		resList.add(res);
 	}

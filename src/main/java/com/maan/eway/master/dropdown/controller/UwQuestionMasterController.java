@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.req.UwMasterDropdownReq;
 import com.maan.eway.master.dropdown.service.UwQuestionMasterService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
@@ -43,7 +44,7 @@ public class UwQuestionMasterController {
 	@PostMapping("/dropdown/uwquestion")
 	@ApiOperation(value = "This method is get Uw Question Master Drop Down")
 
-	public ResponseEntity<CommonRes> getUwQuestionMasterDropdown(@RequestBody OccupationDropDownReq req) {
+	public ResponseEntity<CommonRes> getUwQuestionMasterDropdown(@RequestBody UwMasterDropdownReq req) {
 
 		CommonRes data = new CommonRes();
 
