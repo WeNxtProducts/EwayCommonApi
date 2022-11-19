@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -148,8 +147,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="OVERRIDE_PERCENTAGE")
     private Double     overridePercentage ;
 
+    @Temporal(TemporalType.DATE)
     @Column(name="REGISTRATION_YEAR")
-    private Integer    registrationYear ;
+    private Date    registrationYear ;
+
 
     @Column(name="SEATING_CAPACITY")
     private Integer    seatingCapacity ;
@@ -288,7 +289,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="DRIVEN_BY", length=5)
     private String     drivenBy ;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name="POLICY_START_DATE")
     private Date       policyStartDate ;
 
@@ -298,12 +299,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="DRIVEN_BY_UNDER_AGE", length=5)
     private String     drivenByUnderAge ;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name="POLICY_END_DATE")
     private Date       policyEndDate ;
 
     @Column(name="CURRENCY")
-    private Integer    currency ;
+    private String    currency ;
 
     @Column(name="DEFECTIVE_VISION_OR_HEARING", length=5)
     private String     defectiveVisionOrHearing ;

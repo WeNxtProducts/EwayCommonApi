@@ -201,15 +201,15 @@ this.repository = repo;
 					saveCover.setPremiumBeforeDiscountLc(coverData.getPremiumBeforeDiscountLC()==null ? null : Double.valueOf(df.format(coverData.getPremiumBeforeDiscountLC())));
 					saveCover.setPremiumExcludedTaxLc(coverData.getPremiumExcluedTaxLC()==null ? null : Double.valueOf(df.format(coverData.getPremiumExcluedTaxLC())));
 					saveCover.setPremiumIncludedTaxLc(coverData.getPremiumIncludedTaxLC()==null ? null : Double.valueOf(df.format(coverData.getPremiumIncludedTaxLC())));
-					
-					if(coverData.getTaxes()!=null && coverData.getTaxes().size() > 0 ) {
-						saveCover.setTax1(coverData.getTaxes().get(0).getTaxAmount()==null ? null : Double.valueOf(df.format(coverData.getTaxes().get(0).getTaxAmount())) );
-						if(coverData.getTaxes().size() > 1  ) 
-						saveCover.setTax2( coverData.getTaxes().get(1).getTaxAmount()==null ? null : Double.valueOf(df.format(coverData.getTaxes().get(1).getTaxAmount())) );
-						if(coverData.getTaxes().size() > 2  ) 
-						saveCover.setTax3(coverData.getTaxes().get(2).getTaxAmount()==null ? null : Double.valueOf(df.format(coverData.getTaxes().get(2).getTaxAmount())) );
-						
-					}
+//					
+//					if(coverData.getTaxes()!=null && coverData.getTaxes().size() > 0 ) {
+//						saveCover.setTax1(coverData.getTaxes().get(0).getTaxAmount()==null ? null : Double.valueOf(df.format(coverData.getTaxes().get(0).getTaxAmount())) );
+//						if(coverData.getTaxes().size() > 1  ) 
+//						saveCover.setTax2( coverData.getTaxes().get(1).getTaxAmount()==null ? null : Double.valueOf(df.format(coverData.getTaxes().get(1).getTaxAmount())) );
+//						if(coverData.getTaxes().size() > 2  ) 
+//						saveCover.setTax3(coverData.getTaxes().get(2).getTaxAmount()==null ? null : Double.valueOf(df.format(coverData.getTaxes().get(2).getTaxAmount())) );
+//						
+//					}
 					
 					repository.saveAndFlush(saveCover);
 					premiumLc = premiumLc + (saveCover.getPremiumExcludedTaxLc()==null ? 0D :saveCover.getPremiumExcludedTaxLc() );
@@ -267,13 +267,13 @@ this.repository = repo;
 						saveSubCover.setPremiumExcludedTaxLc(subCoverData.getPremiumExcluedTaxLC()==null ? null : Double.valueOf(df.format(subCoverData.getPremiumExcluedTaxLC())));
 						saveSubCover.setPremiumIncludedTaxLc(subCoverData.getPremiumIncludedTaxLC()==null ? null : Double.valueOf(df.format(subCoverData.getPremiumIncludedTaxLC())));
 						
-						if(subCoverData.getTaxes()!=null && subCoverData.getTaxes().size() > 0 ) {
-							saveSubCover.setTax1(subCoverData.getTaxes().get(0).getTaxAmount()==null ? null : Double.valueOf(df.format(subCoverData.getTaxes().get(0).getTaxAmount())) );
-							if(coverData.getTaxes().size() > 1  ) 
-								saveSubCover.setTax2( subCoverData.getTaxes().get(1).getTaxAmount()==null ? null : Double.valueOf(df.format(subCoverData.getTaxes().get(1).getTaxAmount())) );
-							if(coverData.getTaxes().size() > 2  ) 
-								saveSubCover.setTax3(subCoverData.getTaxes().get(2).getTaxAmount()==null ? null : Double.valueOf(df.format(subCoverData.getTaxes().get(2).getTaxAmount())) );
-						}
+//						if(subCoverData.getTaxes()!=null && subCoverData.getTaxes().size() > 0 ) {
+//							saveSubCover.setTax1(subCoverData.getTaxes().get(0).getTaxAmount()==null ? null : Double.valueOf(df.format(subCoverData.getTaxes().get(0).getTaxAmount())) );
+//							if(coverData.getTaxes().size() > 1  ) 
+//								saveSubCover.setTax2( subCoverData.getTaxes().get(1).getTaxAmount()==null ? null : Double.valueOf(df.format(subCoverData.getTaxes().get(1).getTaxAmount())) );
+//							if(coverData.getTaxes().size() > 2  ) 
+//								saveSubCover.setTax3(subCoverData.getTaxes().get(2).getTaxAmount()==null ? null : Double.valueOf(df.format(subCoverData.getTaxes().get(2).getTaxAmount())) );
+//						}
 						
 						premiumLc = premiumLc + (saveSubCover.getPremiumExcludedTaxLc()==null ? 0D :saveSubCover.getPremiumExcludedTaxLc() );
 						premiumFc = premiumFc + (saveSubCover.getPremiumExcludedTaxFc()==null ? 0D :saveSubCover.getPremiumExcludedTaxFc() );
@@ -303,8 +303,8 @@ this.repository = repo;
 				EserviceMotorDetails findData =   eserMotorRepo.findByRequestReferenceNoAndVehicleId(req.getRequestReferenceNo()  ,Integer.valueOf(req.getVehicleId()));
 				findData.setActualPremiumLc(premiumLc ==null ? null :Double.valueOf(df.format(premiumLc )));
 				findData.setActualPremiumFc(premiumFc ==null ? null :Double.valueOf(df.format(premiumFc )));
-				findData.setOverAllPremiumLc(overAllPremiumLc ==null ? null :Double.valueOf(df.format(overAllPremiumLc )));
-				findData.setOverAllPremiumFc(overAllPremiumFc ==null ? null :Double.valueOf(df.format(overAllPremiumFc )));
+				findData.setOverallPremiumLc(overAllPremiumLc ==null ? null :Double.valueOf(df.format(overAllPremiumLc )));
+				findData.setOverallPremiumFc(overAllPremiumFc ==null ? null :Double.valueOf(df.format(overAllPremiumFc )));
 				eserMotorRepo.save(findData);
 				
 			}

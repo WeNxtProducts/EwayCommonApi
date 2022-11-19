@@ -234,8 +234,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			// Update Eservice Motor
 			eserMotors.setActualPremiumFc(premiumFc);
 			eserMotors.setActualPremiumLc(premiumLc);
-			eserMotors.setOverAllPremiumFc(overAllPremiumFc);
-			eserMotors.setOverAllPremiumLc(overAllPremiumLc);
+			eserMotors.setOverallPremiumFc(overAllPremiumFc);
+			eserMotors.setOverallPremiumLc(overAllPremiumLc);
 			eserMotors.setQuoteNo(request.getQuoteNo());
 			eserMotors.setCustomerId(request.getCustomerId());
 			eserMotRepo.saveAndFlush(eserMotors);
@@ -419,9 +419,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 			Double vatPercent =  (vatPremiumFc*100) / premiumFc ;
 			Double vatPremiumLc = overAllPremiumLc - premiumLc ;  
 			
-			Double tax1 =  premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTax1()!=null && o.getTax1().doubleValue() > 0D ).mapToDouble( o ->   o.getTax1()  ).sum();
-			Double tax2 =  premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTax2()!=null && o.getTax2().doubleValue() > 0D ).mapToDouble( o ->   o.getTax2()  ).sum();
-			Double tax3 =  premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTax3()!=null && o.getTax3().doubleValue() > 0D ).mapToDouble( o ->   o.getTax3()  ).sum();
+			Double tax1 = 0D;// premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTax1()!=null && o.getTax1().doubleValue() > 0D ).mapToDouble( o ->   o.getTax1()  ).sum();
+			Double tax2 = 0D;// premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTax2()!=null && o.getTax2().doubleValue() > 0D ).mapToDouble( o ->   o.getTax2()  ).sum();
+			Double tax3 = 0D;// premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTax3()!=null && o.getTax3().doubleValue() > 0D ).mapToDouble( o ->   o.getTax3()  ).sum();
 			
 			
 			

@@ -47,5 +47,9 @@ public class FactorRateRequestDetailsId implements Serializable {
     
     private Integer    vehicleId ;
     
+    private Integer taxId;
+ 
+   
+    
      
 }

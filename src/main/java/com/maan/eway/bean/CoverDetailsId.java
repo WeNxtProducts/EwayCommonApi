@@ -49,5 +49,9 @@ public class CoverDetailsId implements Serializable {
     
     private Integer    discLoadId ;
     
+    private Integer taxId;
+   
+   
+    
      
 }
