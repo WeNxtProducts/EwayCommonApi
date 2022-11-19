@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.res.calc.Cover;
+import com.maan.eway.res.calc.UWReferrals;
 
 import lombok.Data;
 
@@ -46,4 +47,9 @@ public class EserviceMotorDetailsSaveRes {
 	
 	@JsonProperty("SectionId")
 	private String sectionId;
+	
+	@JsonProperty("UWReferral")
+	private List<UWReferrals> uwList;
+	
+	
 }

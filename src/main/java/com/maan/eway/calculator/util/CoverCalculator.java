@@ -34,6 +34,12 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 String currecy=vehicles.get(0).get("currency")==null?"N/A":vehicles.get(0).get("currency").toString();
 				 t.setCurrency(currecy);
 				 
+				 t.setProRata(new BigDecimal("1"));
+				 if(prorata!=null) {
+					 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
+					 t.setProRata(percenat.divide(new BigDecimal("100")));
+				 }
+				 
 				 BigDecimal si=vehicles.get(0).get("sumInsured")==null?BigDecimal.ZERO:new BigDecimal(vehicles.get(0).get("sumInsured").toString());
 				 if("Y".equals(t.getDependentCoveryn())) {
 					 if(calculatedcover!=null) {
@@ -95,12 +101,11 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 
 				 
 				 
-				 t.setPremiumAfterDiscount( t.getPremiumBeforeDiscount().subtract(new BigDecimal(totaldiscount,round)).add(new BigDecimal(totalloading,round)));
-				 t.setPremiumAfterDiscountLC(t.getPremiumAfterDiscount().multiply(t.getExchangeRate()).round(round));
+				 t.setPremiumAfterDiscount( t.getPremiumBeforeDiscount().subtract(new BigDecimal(totaldiscount,round)).add(new BigDecimal(totalloading,round)).multiply(t.getProRata()).round(round));
+				 t.setPremiumAfterDiscountLC(t.getPremiumAfterDiscount().multiply(t.getExchangeRate()).multiply(t.getProRata()).round(round));
 				 
 				 t.setPremiumExcluedTax(t.getPremiumAfterDiscount());
 				 t.setPremiumExcluedTaxLC(t.getPremiumExcluedTax().multiply(t.getExchangeRate()).round(round));
-				 
 				 
 				 // Minimium Premium setup.
 				 if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0) {

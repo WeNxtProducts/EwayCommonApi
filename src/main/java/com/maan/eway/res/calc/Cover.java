@@ -99,5 +99,9 @@ public class Cover implements Serializable{
 	    
 	    @JsonProperty("ReferalDescription")
 	    private String referalDescription;
+	    @JsonProperty("ProRata")
+	    private BigDecimal proRata;
+	    
+	    
 
 }

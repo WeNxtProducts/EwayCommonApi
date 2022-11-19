@@ -10,29 +10,36 @@ import java.util.stream.Collectors;
 import javax.persistence.Tuple;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.maan.eway.bean.CompanyProrataMaster;
 import com.maan.eway.bean.CompanyTaxSetup;
 import com.maan.eway.bean.MsCommonDetails;
 import com.maan.eway.bean.MsCustomerDetails;
 import com.maan.eway.bean.MsVehicleDetails;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionCoverMaster;
+import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.calculator.util.CoverCalculator;
 import com.maan.eway.calculator.util.SplitDiscountUtils;
 import com.maan.eway.calculator.util.SplitLoadingUtils;
 import com.maan.eway.calculator.util.SplitSubCoverUtil;
 import com.maan.eway.calculator.util.SubCoverCreationUtil;
 import com.maan.eway.calculator.util.TaxUtils;
+import com.maan.eway.calculator.util.UwQuestionUtils;
+import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.repository.MsVehicleDetailsRepository;
+import com.maan.eway.repository.UwQuestionsDetailsRepository;
 import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.res.calc.Cover;
-import com.maan.eway.res.calc.CoverException;
 import com.maan.eway.res.calc.Discount;
 import com.maan.eway.res.calc.Loading;
 import com.maan.eway.res.calc.Tax;
+import com.maan.eway.res.calc.UWReferrals;
 import com.maan.eway.service.CalculatorEngine;
+import com.maan.eway.service.FactorRateRequestDetailsService;
 import com.maan.eway.upgrade.criteria.CriteriaService;
 import com.maan.eway.upgrade.criteria.SpecCriteria;
 
@@ -51,10 +58,17 @@ public class CalculatorEngineService implements CalculatorEngine{
 	protected List<Tuple> vehicles=null;
 	protected List<Tuple> customers =null;
 	protected List<Cover> calculatedcover=null;
+	protected List<Tuple> prorata=null;
 	
+	@Autowired
+	private FactorRateRequestDetailsService fservice;
 	
 	@Autowired
 	private MsVehicleDetailsRepository msvech;
+	
+	@Autowired
+	private UwQuestionsDetailsRepository uwrepo;
+	
 	private SimpleDateFormat DD_MM_YYYY = new SimpleDateFormat("dd/MM/yyyy")  ;
 	public void LoadSection(CalcEngine engine) {
 	
@@ -104,7 +118,22 @@ public class CalculatorEngineService implements CalculatorEngine{
 		return null;
 	}
 	
-	public List<Cover>  calculator(CalcEngine engine) {
+	public EserviceMotorDetailsSaveRes  calculator(CalcEngine engine) {
+		// Referal Checking.
+		
+		List<UWReferrals> referr=null;
+		if(StringUtils.isNotBlank(engine.getRequestReferenceNo()) && StringUtils.isNotBlank(engine.getVehicleId())) {
+	 
+			List<UwQuestionsDetails> uwqs = uwrepo.findByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleId(engine.getInsuranceId(),engine.getProductId(),engine.getRequestReferenceNo(),engine.getVehicleId());
+			if(!uwqs.isEmpty()) {
+				List<UwQuestionsDetails> isreferral=uwqs.stream().filter(f-> "Y".equals(f.getIsReferral())).collect(Collectors.toList());
+				UwQuestionUtils uts=new UwQuestionUtils();
+				referr = isreferral.stream().map(uts).filter(d->d!=null).collect(Collectors.toList());
+			}
+			
+		}
+		
+		
 		List<Cover> retc=new ArrayList<Cover>();
 		try {
 			
@@ -241,7 +270,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 				 } */
 				 
 				 
-				 calc.setEngine(engine,retc,commontbl,vehicles,customers);
+				 calc.setEngine(engine,retc,commontbl,vehicles,customers,prorata);
 				 
 				 totalcovers.stream().forEach(calc);
 				 //remove error records
@@ -257,7 +286,29 @@ public class CalculatorEngineService implements CalculatorEngine{
 		}*/catch (Exception e) {
 			e.printStackTrace();
 		}
-		return retc;
+		
+		try {
+			EserviceMotorDetailsSaveRes response=new EserviceMotorDetailsSaveRes();
+			response.setCoverList(retc);
+			response.setResponse("Saved Successfully");
+			response.setRequestReferenceNo(engine.getRequestReferenceNo());
+			//response.setCustomerReferenceNo(req.getCustomerReferenceNo());
+			response.setVehicleId(engine.getVehicleId()) ;	
+			response.setVdRefNo(engine.getVdRefNo());
+			response.setCdRefNo(engine.getCdRefNo());
+			response.setInsuranceId(engine.getInsuranceId());
+			response.setSectionId(engine.getSectionId());
+			response.setCreatedBy(engine.getCreatedBy());
+			response.setProductId(engine.getProductId()); 
+			response.setMsrefno(engine.getMsrefno());
+			response.setUwList(referr);
+			
+			fservice.saveFactorRateRequestDetails(response);
+			return  response ;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public void loadOnetimetable(CalcEngine engine) {
@@ -302,12 +353,22 @@ public class CalculatorEngineService implements CalculatorEngine{
 				}
 			
 		//	if(customers==null) {
-			search="cdRefno:"+cdRefno+";";
+			 search="cdRefno:"+cdRefno+";";
 			 criteria = crservice.createCriteria(MsCustomerDetails.class, search, "cdRefno");
-			  customers = crservice.getResult(criteria, 0, 50);
+			 customers = crservice.getResult(criteria, 0, 50);
 		//	}
 			
+			 
+			 if(vehicles!=null) {
+				 String periodOfInsurance=(vehicles.get(0).get("periodOfInsurance")==null?"365":vehicles.get(0).get("periodOfInsurance").toString());
+				  search="insuranceid:"+engine.getInsuranceId()+";productid:"+engine.getProductId()+";status:Y;"+periodOfInsurance+"~startfrom&endto";
+				  criteria = crservice.createCriteria(CompanyProrataMaster.class, search, "sno");
+				  prorata = crservice.getResult(criteria, 0, 50);
+			  }
 		}
+		
+		
+		 
 		
 		}catch(Exception e) {e.printStackTrace();}
 		
