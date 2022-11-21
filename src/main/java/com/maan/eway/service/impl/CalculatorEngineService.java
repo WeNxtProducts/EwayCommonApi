@@ -203,7 +203,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 				 
 				 
 				 splitsub=new SplitSubCoverUtil("Y");
-				 Map<String, List<Cover>> subcovers = covers.stream().map(splitsub).filter(d->d!=null).collect(Collectors.groupingBy(Cover::getIsSubCover));
+				 Map<String, List<Cover>> subcovers = covers.stream().map(splitsub).filter(d->(d!=null && !"0".equals(d.getSubCoverId()))).collect(Collectors.groupingBy(Cover::getIsSubCover));
 				 if(!subcovers.isEmpty()) {
 					 List<Cover> noncovers = subcovers.get("Y");					 //noncovers
 					 if(!discounts.isEmpty() && !noncovers.isEmpty()) {
@@ -304,6 +304,9 @@ public class CalculatorEngineService implements CalculatorEngine{
 			response.setUwList(referr);
 			
 			fservice.saveFactorRateRequestDetails(response);
+			
+			//Update Premium,referral
+			
 			return  response ;
 		}catch (Exception e) {
 			e.printStackTrace();
