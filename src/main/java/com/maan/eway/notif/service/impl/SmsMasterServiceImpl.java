@@ -26,13 +26,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.SmsMaster;
+import com.maan.eway.bean.SmsConfigMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.notif.req.SmsGetReq;
 import com.maan.eway.notif.req.SmsInsertReq;
 import com.maan.eway.notif.res.SmsMasterGetRes;
 import com.maan.eway.notif.service.SmsMasterService;
-import com.maan.eway.repository.SmsMasterRepository;
+import com.maan.eway.repository.SmsConfigMasterRepository;
 import com.maan.eway.res.SuccessRes;
 
 @Service
@@ -40,7 +40,7 @@ import com.maan.eway.res.SuccessRes;
 public class SmsMasterServiceImpl implements SmsMasterService{
 
 	@Autowired
-	private SmsMasterRepository smsrepo; 
+	private SmsConfigMasterRepository smsrepo; 
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -48,6 +48,7 @@ public class SmsMasterServiceImpl implements SmsMasterService{
 	Gson json = new Gson();
 	
 	private Logger log = LogManager.getLogger(SmsMasterServiceImpl.class);
+	
 	
 	@Override
 	public List<Error> validatesmsmaster(SmsInsertReq req) {
@@ -60,12 +61,12 @@ public class SmsMasterServiceImpl implements SmsMasterService{
 			} else if (req.getCompanyId().length() > 20) {
 				errorList.add(new Error("01", "Company Id", "Please Enter Company Id within 20 Characters"));
 			} else if (StringUtils.isBlank(req.getSNo())) {
-				List<SmsMaster> smsList = getSnoDetails(req.getCompanyId());
+				List<SmsConfigMaster> smsList = getSnoDetails(req.getCompanyId());
 				if (smsList.size() > 0) {
 					errorList.add(new Error("01", "S No", "Please Enter Your Sno"));
 				}
 			} else {
-				List<SmsMaster> smsList = getCompanyIdExistDetails(req.getCompanyId());
+				List<SmsConfigMaster> smsList = getCompanyIdExistDetails(req.getCompanyId());
 				if (smsList.size() > 0 && (!req.getSNo().equalsIgnoreCase(smsList.get(0).getSNo().toString()))) {
 					errorList.add(new Error("01", "Company Id", "This Company Id Already Exist "));
 				}
@@ -158,8 +159,8 @@ public class SmsMasterServiceImpl implements SmsMasterService{
 	public SuccessRes insertsmsmaster(SmsInsertReq req) {
 		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
 		SuccessRes res = new SuccessRes();
-		SmsMaster saveData = new SmsMaster();
-		List<SmsMaster> list = new ArrayList<SmsMaster>();
+		SmsConfigMaster saveData = new SmsConfigMaster();
+		List<SmsConfigMaster> list = new ArrayList<SmsConfigMaster>();
 		DozerBeanMapper dozermapper = new DozerBeanMapper();
 		try {
 			Integer amendId=0;
@@ -191,14 +192,14 @@ public class SmsMasterServiceImpl implements SmsMasterService{
 				// Update
 				sno= req.getSNo();
 				CriteriaBuilder cb = em.getCriteriaBuilder();
-				CriteriaQuery<SmsMaster> query = cb.createQuery(SmsMaster.class);
+				CriteriaQuery<SmsConfigMaster> query = cb.createQuery(SmsConfigMaster.class);
 				// Find all
-				Root<SmsMaster> b = query.from(SmsMaster.class);
+				Root<SmsConfigMaster> b = query.from(SmsConfigMaster.class);
 				// Select
 				query.select(b);
 				// Effective Date Max Filter
 				Subquery<Long> effectiveDate = query.subquery(Long.class);
-				Root<SmsMaster> ocpm1= effectiveDate.from(SmsMaster.class);
+				Root<SmsConfigMaster> ocpm1= effectiveDate.from(SmsConfigMaster.class);
 				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
 				effectiveDate.where(a1);
@@ -208,7 +209,7 @@ public class SmsMasterServiceImpl implements SmsMasterService{
 				Predicate n3 = cb.equal(b.get("sNo"),req.getSNo());
 				query.where(n1,n2,n3);
 				// Get Result
-				TypedQuery<SmsMaster> result = em.createQuery(query);
+				TypedQuery<SmsConfigMaster> result = em.createQuery(query);
 				list = result.getResultList();
 				if(list.size()>0) {
 					smsrepo.delete(list.get(0));
@@ -237,7 +238,7 @@ public class SmsMasterServiceImpl implements SmsMasterService{
 
 			if (list.size() > 0) {
 				// Update Old Record
-				SmsMaster lastRecord = list.get(0);
+				SmsConfigMaster lastRecord = list.get(0);
 				lastRecord.setEffectiveDateEnd(oldEndDate);
 				String startDatewithoutTime = sdformat.format(startDate);
 				String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
@@ -266,12 +267,12 @@ public class SmsMasterServiceImpl implements SmsMasterService{
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Long> query = cb.createQuery(Long.class);
 			// Find All
-			Root<SmsMaster> b = query.from(SmsMaster.class);
+			Root<SmsConfigMaster> b = query.from(SmsConfigMaster.class);
 			// Select
 			query.multiselect(cb.count(b));
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<SmsMaster> ocpm1 = effectiveDate.from(SmsMaster.class);
+			Root<SmsConfigMaster> ocpm1 = effectiveDate.from(SmsConfigMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 
@@ -292,22 +293,22 @@ public class SmsMasterServiceImpl implements SmsMasterService{
 	}
 
 	// Company Id Exist Details validation
-	public List<SmsMaster> getSnoDetails(String companyId) {
-		List<SmsMaster> list = new ArrayList<SmsMaster>();
+	public List<SmsConfigMaster> getSnoDetails(String companyId) {
+		List<SmsConfigMaster> list = new ArrayList<SmsConfigMaster>();
 		try {
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<SmsMaster> query = cb.createQuery(SmsMaster.class);
+			CriteriaQuery<SmsConfigMaster> query = cb.createQuery(SmsConfigMaster.class);
 
 			// Find All
-			Root<SmsMaster> b = query.from(SmsMaster.class);
+			Root<SmsConfigMaster> b = query.from(SmsConfigMaster.class);
 
 			// Select
 			query.select(b);
 
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<SmsMaster> ocpm1 = effectiveDate.from(SmsMaster.class);
+			Root<SmsConfigMaster> ocpm1 = effectiveDate.from(SmsConfigMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			effectiveDate.where(a1);
@@ -316,7 +317,7 @@ public class SmsMasterServiceImpl implements SmsMasterService{
 			Predicate n2 = cb.equal(b.get("companyId"), companyId);
 			query.where(n1, n2);
 			// Get Result
-			TypedQuery<SmsMaster> result = em.createQuery(query);
+			TypedQuery<SmsConfigMaster> result = em.createQuery(query);
 			list = result.getResultList();
 
 		} catch (Exception e) {
@@ -338,17 +339,17 @@ public class SmsMasterServiceImpl implements SmsMasterService{
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();
-			List<SmsMaster> list = new ArrayList<SmsMaster>();
+			List<SmsConfigMaster> list = new ArrayList<SmsConfigMaster>();
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<SmsMaster> query = cb.createQuery(SmsMaster.class);
+			CriteriaQuery<SmsConfigMaster> query = cb.createQuery(SmsConfigMaster.class);
 			// Find all
-			Root<SmsMaster> b = query.from(SmsMaster.class);
+			Root<SmsConfigMaster> b = query.from(SmsConfigMaster.class);
 			// Select
 			query.select(b);
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<SmsMaster> ocpm1 = effectiveDate.from(SmsMaster.class);
+			Root<SmsConfigMaster> ocpm1 = effectiveDate.from(SmsConfigMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 
@@ -362,11 +363,11 @@ public class SmsMasterServiceImpl implements SmsMasterService{
 			query.where(n1, n2).orderBy(orderList);
 
 			// Get Result
-			TypedQuery<SmsMaster> result = em.createQuery(query);
+			TypedQuery<SmsConfigMaster> result = em.createQuery(query);
 			list = result.getResultList();
 
 			// Map
-			for (SmsMaster data : list) {
+			for (SmsConfigMaster data : list) {
 
 				res = mapper.map(data, SmsMasterGetRes.class);
 				res.setSNo(data.getSNo().toString());
@@ -383,22 +384,22 @@ public class SmsMasterServiceImpl implements SmsMasterService{
 
 	// Company Id Exist Details validation
 
-		private List<SmsMaster> getCompanyIdExistDetails(String companyId) {
-			List<SmsMaster> list = new ArrayList<SmsMaster>();
+		private List<SmsConfigMaster> getCompanyIdExistDetails(String companyId) {
+			List<SmsConfigMaster> list = new ArrayList<SmsConfigMaster>();
 			try {
 				// Find Latest Record
 				CriteriaBuilder cb = em.getCriteriaBuilder();
-				CriteriaQuery<SmsMaster> query = cb.createQuery(SmsMaster.class);
+				CriteriaQuery<SmsConfigMaster> query = cb.createQuery(SmsConfigMaster.class);
 
 				// Find All
-				Root<SmsMaster> b = query.from(SmsMaster.class);
+				Root<SmsConfigMaster> b = query.from(SmsConfigMaster.class);
 
 				// Select
 				query.select(b);
 
 				// Effective Date Max Filter
 				Subquery<Long> effectiveDate = query.subquery(Long.class);
-				Root<SmsMaster> ocpm1 = effectiveDate.from(SmsMaster.class);
+				Root<SmsConfigMaster> ocpm1 = effectiveDate.from(SmsConfigMaster.class);
 				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.equal(ocpm1.get("sNo"), b.get("sNo"));
 				Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
@@ -408,7 +409,7 @@ public class SmsMasterServiceImpl implements SmsMasterService{
 				Predicate n2 = cb.equal(b.get("companyId"), companyId);
 				query.where(n1, n2);
 				// Get Result
-				TypedQuery<SmsMaster> result = em.createQuery(query);
+				TypedQuery<SmsConfigMaster> result = em.createQuery(query);
 				list = result.getResultList();
 
 			} catch (Exception e) {
@@ -419,4 +420,5 @@ public class SmsMasterServiceImpl implements SmsMasterService{
 			return list;
 
 		}
+
 }

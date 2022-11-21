@@ -471,7 +471,7 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 				save.setUpdatedDate(new Date());
 			}
 			
-			save.setOaCode(loginData.getOaCode());
+			save.setOaCode(Integer.valueOf(loginData.getOaCode()));
 			save.setAgencyCode(Integer.valueOf(loginData.getAgencyCode()));	
 			save.setAttachedBranch(StringUtils.isBlank(req.getAttachedBranch())? req.getBranchCode() : req.getAttachedBranch() );
 			save.setAttachedCompany(StringUtils.isBlank(req.getAttachedCompany())? req.getCompanyId() : req.getAttachedCompany() );

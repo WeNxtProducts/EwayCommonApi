@@ -303,7 +303,7 @@ private static final long serialVersionUID = 1L;
     private Date       policyEndDate ;
 
     @Column(name="CURRENCY")
-    private Integer    currency ;
+    private String    currency ;
 
     @Column(name="DEFECTIVE_VISION_OR_HEARING", length=5)
     private String     defectiveVisionOrHearing ;

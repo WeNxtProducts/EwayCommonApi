@@ -129,7 +129,6 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			id.setRequestReferenceNo(data.getRequestReferenceNo());
 			id.setUwQuestionId(Integer.valueOf(data.getUwQuestionId()));
 			id.setVehicleId(Integer.valueOf(data.getVehicleId()));
-			id.setBranchCode(data.getBranchCode());
 			UwQuestionsDetails saveData = new UwQuestionsDetails();
 			UwQuestionsDetailsArch saveData1 = new UwQuestionsDetailsArch();
 			

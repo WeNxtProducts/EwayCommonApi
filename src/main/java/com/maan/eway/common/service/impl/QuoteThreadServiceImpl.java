@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.UwQuestionsDetails;
@@ -104,19 +105,25 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		//	CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<>();
 		//	Map<String, String> map = new ConcurrentHashMap()<>();
 			List<UwQuestionsDetails>  uwQuestions = uwRepo.findByRequestReferenceNo( req.getRequestReferenceNo());
+			List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdOrderByVehicleIdAsc(req.getRequestReferenceNo(),0); 
 			
-		boolean referal = false ;	
+		boolean referal = false ;
+		String referalRemarks = "" ;
+		
 			// Cover Referal Checking
 			for (VehicleIdsReq veh : req.getVehicleIdsList() ){
 				List<CoverIdsReq> coverList = veh.getCoverIdList();
 				List<CoverIdsReq> filterReferalCovers = coverList.stream().filter( o -> o.getIsReferal().equalsIgnoreCase("Y") ).collect(Collectors.toList());		
 				if(filterReferalCovers.size()>0 ) {
 					referal = true ;
+				//	List<FactorRateRequestDetails> covers  = 
+				//	referalRemarks = filterReferalCovers.get(0).getCoverName() ;					
 				}
 				
 				List<UwQuestionsDetails>  filterUwQuestions = uwQuestions.stream().filter( o -> o.getIsReferral().equalsIgnoreCase("Y") ).collect(Collectors.toList());
 				if(filterUwQuestions.size()>0 ) {
 					referal = true ;
+					referalRemarks = "" ;
 				}
 				
 			}

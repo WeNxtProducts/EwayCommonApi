@@ -59,7 +59,7 @@ private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name="QUOTE_NO", nullable=false)
-    private Integer    quoteNo ;
+    private String    quoteNo ;
 
     @Id
     @Column(name="NO_OF_VEHICLES", nullable=false)
@@ -71,7 +71,7 @@ private static final long serialVersionUID = 1L;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="CUSTOMER_ID", nullable=false)
-    private Integer    customerId ;
+    private String    customerId ;
 
     @Column(name="PRODUCT_ID", nullable=false)
     private Integer    productId ;

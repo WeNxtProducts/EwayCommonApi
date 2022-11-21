@@ -254,8 +254,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			motorData.setCdRefno(filterCover.get(0).getCdRefno());	
 			motorData.setActualPremiumFc(premiumFc);
 			motorData.setActualPremiumLc(premiumLc);
-			motorData.setOverAllPremiumFc(overAllPremiumFc);
-			motorData.setOverAllPremiumLc(overAllPremiumLc);
+			motorData.setOverallPremiumFc(overAllPremiumFc);
+			motorData.setOverallPremiumLc(overAllPremiumLc);
 			motorRepo.saveAndFlush(motorData);
 			log.error("Save Motor Info is ---> " + json.toJson(motorData));
 			

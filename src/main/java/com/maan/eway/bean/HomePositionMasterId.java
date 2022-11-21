@@ -31,7 +31,7 @@ public class HomePositionMasterId implements Serializable {
     //--- ENTITY KEY ATTRIBUTES 
     private String     requestReferenceNo ;
     
-    private Integer    quoteNo ;
+    private String    quoteNo ;
     
     private Integer    noOfVehicles ;
     
