@@ -817,7 +817,7 @@ this.repository = repo;
 						errors.add(new Error("01","MinimumPremium","Please Enter MimimumPremium")) ;				
 					} else if (! cov.getMinimumPremium().matches("[0-9.]+")   ) {
 						errors.add(new Error("01","MinimumPremium","Please Enter Valid MimimumPremium")) ;				
-					} else if (! cov.getMinimumPremium().equalsIgnoreCase("0")   ) {
+					} else if ( cov.getMinimumPremium().equalsIgnoreCase("0")   ) {
 						errors.add(new Error("01","MinimumPremium","Please Enter Valid Number In MimimumPremium")) ;				
 					}
 					
@@ -825,7 +825,7 @@ this.repository = repo;
 						errors.add(new Error("01","Rate","Please Enter Rate")) ;				
 					} else if (! cov.getRate().matches("[0-9.]+")   ) {
 						errors.add(new Error("01","Rate","Please Enter Valid Rate")) ;				
-					} else if (! cov.getRate().equalsIgnoreCase("0")   ) {
+					} else if ( cov.getRate().equalsIgnoreCase("0")   ) {
 						errors.add(new Error("01","Rate","Please Enter Valid Number In Rate")) ;				
 					}
 				}
