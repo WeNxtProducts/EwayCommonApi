@@ -215,7 +215,7 @@ this.repository = repo;
 					saveCover.setPremiumIncludedTaxLc(coverData.getPremiumIncludedTaxLC()==null ? null : Double.valueOf(df.format(coverData.getPremiumIncludedTaxLC())));
  					saveCover.setIsReferral(StringUtils.isBlank(coverData.getIsReferral())?"N":coverData.getIsReferral());
 					saveCover.setReferralDescription(StringUtils.isBlank(coverData.getReferalDescription())?"":coverData.getReferalDescription());
-					String userOpt="N";
+					String userOpt=!"D".equals(saveCover.getCoverageType())?"N":"Y";
 					if(coverIds!=null && !coverIds.isEmpty()) {
 						long count = coverIds.stream().filter(t-> (saveCover.getCoverId().equals(t.getCoverId()) && saveCover.getSubCoverId().equals(t.getSubCoverId()) )).count() ;
 						if(count>0) userOpt="Y";
@@ -261,7 +261,7 @@ this.repository = repo;
 					
 					// Loginds
 					if(coverData.getLoadings()!=null && coverData.getLoadings().size() > 0 ) {
-						successRes  =  saveLodings(primaryKeys ,coverData ,   coverData.getLoadings()  ) ;
+						successRes  =  saveLoadings(primaryKeys ,coverData ,   coverData.getLoadings()  ) ;
 					}
 					
 					
@@ -308,7 +308,7 @@ this.repository = repo;
 //							if(coverData.getTaxes().size() > 2  ) 
 //								saveSubCover.setTax3(subCoverData.getTaxes().get(2).getTaxAmount()==null ? null : Double.valueOf(df.format(subCoverData.getTaxes().get(2).getTaxAmount())) );
 //						}
-						String userOpt="N";
+						String userOpt=!"D".equals(saveSubCover.getCoverageType())?"N":"Y";
 						if(coverIds!=null && !coverIds.isEmpty()) {
 							long count = coverIds.stream().filter(t-> (saveSubCover.getCoverId().equals(t.getCoverId()) && saveSubCover.getSubCoverId().equals(t.getSubCoverId()) )).count() ;
 							if(count>0) userOpt="Y";
@@ -345,7 +345,7 @@ this.repository = repo;
 						
 						// Loginds
 						if(coverData.getLoadings()!=null && coverData.getLoadings().size() > 0 ) {
-							successRes  =  saveLodings(primaryKeys ,subCoverData ,   subCoverData.getLoadings()  ) ;
+							successRes  =  saveLoadings(primaryKeys ,subCoverData ,   subCoverData.getLoadings()  ) ;
 						}	
 					}
 				}
@@ -423,7 +423,7 @@ this.repository = repo;
 		}return res;
 	}
 	
-	public String saveLodings(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Loading> lodings  ) {
+	public String saveLoadings(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Loading> lodings  ) {
 		String res = "Saved Successfully";
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		String pattern = "#####0.00";
