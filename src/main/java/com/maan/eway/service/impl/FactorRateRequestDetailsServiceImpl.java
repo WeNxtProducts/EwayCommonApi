@@ -817,12 +817,16 @@ this.repository = repo;
 						errors.add(new Error("01","MinimumPremium","Please Enter MimimumPremium")) ;				
 					} else if (! cov.getMinimumPremium().matches("[0-9.]+")   ) {
 						errors.add(new Error("01","MinimumPremium","Please Enter Valid MimimumPremium")) ;				
+					} else if (! cov.getMinimumPremium().equalsIgnoreCase("0")   ) {
+						errors.add(new Error("01","MinimumPremium","Please Enter Valid Number In MimimumPremium")) ;				
 					}
 					
 					if (cov.getRate()==null   ) {
 						errors.add(new Error("01","Rate","Please Enter Rate")) ;				
 					} else if (! cov.getRate().matches("[0-9.]+")   ) {
 						errors.add(new Error("01","Rate","Please Enter Valid Rate")) ;				
+					} else if (! cov.getRate().equalsIgnoreCase("0")   ) {
+						errors.add(new Error("01","Rate","Please Enter Valid Number In Rate")) ;				
 					}
 				}
 			}
@@ -905,9 +909,9 @@ this.repository = repo;
 						errors.add(new Error("01","CoverIds","Please Enter Cover Id")) ;				
 					}
 					if (StringUtils.isBlank(cov.getUserOpt())  ) {
-						errors.add(new Error("01","UserOpt","Please Select UserOpt Yes/No")) ;				
-					} else if (! (cov.getUserOpt().equalsIgnoreCase("Y") || cov.getUserOpt().equalsIgnoreCase("N") ) ) {
-						errors.add(new Error("01","UserOpt","Please Select UserOpt Yes/No")) ;
+						errors.add(new Error("01","UserOpt","Please Select UserOpt Yes")) ;				
+					} else if (! cov.getUserOpt().equalsIgnoreCase("Y") ) {
+						errors.add(new Error("01","UserOpt","Please Select UserOpt Yes")) ;
 					}
 					if (StringUtils.isBlank(cov.getSubCoverYn())  ) {
 						errors.add(new Error("01","SubCoverYn","Please Select SubCover Yes/No")) ;				
@@ -938,20 +942,24 @@ this.repository = repo;
 			for (CoverIdsReq covReq :    req.getCoverIdList()  ) {
 				
 				if(covReq.getSubCoverYn()==null || covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
-					List<FactorRateRequestDetails> filterCover = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)  ).collect(Collectors.toList()); 
+					List<FactorRateRequestDetails> filterCover = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) ).collect(Collectors.toList()); 
 					
 					if(filterCover.size()>0 ) {
-						FactorRateRequestDetails  updateCover = filterCover.get(0);
-						updateCover.setUserOpt(covReq.getUserOpt());
-						repository.save(updateCover);
-						
+						for (FactorRateRequestDetails  updateCover : filterCover ) {
+					
+							updateCover.setUserOpt(covReq.getUserOpt());
+							repository.save(updateCover);
+						}
+	
 					}
 				} else {
-					List<FactorRateRequestDetails> filterSubCover = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(o.getSubCoverId())) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)    ).collect(Collectors.toList());
+					List<FactorRateRequestDetails> filterSubCover = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(o.getSubCoverId()))     ).collect(Collectors.toList());
 					if(filterSubCover.size()>0 ) {
-						FactorRateRequestDetails  updateSubCover = filterSubCover.get(0);
-						updateSubCover.setUserOpt(covReq.getUserOpt());
-						repository.save(updateSubCover);
+						for (FactorRateRequestDetails  updateSubCover : filterSubCover ) {
+							updateSubCover.setUserOpt(covReq.getUserOpt());
+							repository.save(updateSubCover);
+						}
+						
 					}
 					
 				}

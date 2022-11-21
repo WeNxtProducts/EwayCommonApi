@@ -25,7 +25,6 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.UpdateCoverRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.req.FactorRateDetailsGetReq;
-import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.FactorRateRequestDetailsService;
 import com.maan.eway.service.PrintReqService;
 
@@ -67,7 +66,7 @@ public class FactorRateRequestDetailsController {
 
 		} else { */
 			/////// save
-			SuccessRes res = entityService.saveFactorRateRequestDetails(req);
+			com.maan.eway.res.SuccessRes res = entityService.saveFactorRateRequestDetails(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -80,7 +79,7 @@ public class FactorRateRequestDetailsController {
 		//}
     }
 	
-	@PostMapping("/updatefactorpremium")
+	@PostMapping("/updatefactorrate")
 	public ResponseEntity<CommonRes> updateFactorRatePremiumDetails(@RequestBody  UpdateFactorRateReq req) {
 
 		reqPrinter.reqPrint(req);
@@ -109,7 +108,7 @@ public class FactorRateRequestDetailsController {
 		}
     }
 	
-	@PostMapping("/updatefactorisselected")
+	@PostMapping("/savefactors")
 	public ResponseEntity<CommonRes> updateFactorIsSelectedDetails(@RequestBody  UpdateFactorRateReq req) {
 
 		reqPrinter.reqPrint(req);
