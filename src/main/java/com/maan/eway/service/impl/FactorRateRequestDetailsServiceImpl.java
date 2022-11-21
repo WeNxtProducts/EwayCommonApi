@@ -177,7 +177,7 @@ this.repository = repo;
 					saveCover.setRequestReferenceNo(req.getRequestReferenceNo());
 					saveCover.setSubCoverId(Integer.valueOf(coverData.getCoverId()));
 					saveCover.setCurrency(coverData.getCurrency());
-					saveCover.setExchageRate(coverData.getExchangeRate()==null?null : Double.valueOf(coverData.getExchangeRate().toString()));
+					saveCover.setExchangeRate(coverData.getExchangeRate()==null?null : Double.valueOf(coverData.getExchangeRate().toString()));
 					saveCover.setCompanyId(req.getInsuranceId());
 					saveCover.setProductId(Integer.valueOf(req.getProductId()));
 					saveCover.setSectionId(Integer.valueOf(req.getSectionId()));
@@ -247,7 +247,7 @@ this.repository = repo;
 						saveSubCover.setSectionId(Integer.valueOf(req.getSectionId()));
 						saveSubCover.setSubCoverYn( coverData.getIsSubCover());
 						saveSubCover.setCurrency(subCoverData.getCurrency());
-						saveSubCover.setExchageRate(subCoverData.getExchangeRate()==null?null : Double.valueOf(subCoverData.getExchangeRate().toString()));
+						saveSubCover.setExchangeRate(subCoverData.getExchangeRate()==null?null : Double.valueOf(subCoverData.getExchangeRate().toString()));
 						saveSubCover.setCdRefno(req.getCdRefNo());
 						saveSubCover.setVdRefno(req.getVdRefNo());
 						saveSubCover.setMsRefno(req.getMsrefno());	
@@ -308,6 +308,7 @@ this.repository = repo;
 				findData.setActualPremiumFc(premiumFc ==null ? null :Double.valueOf(df.format(premiumFc )));
 				findData.setOverallPremiumLc(overAllPremiumLc ==null ? null :Double.valueOf(df.format(overAllPremiumLc)));
 				findData.setOverallPremiumFc(overAllPremiumFc ==null ? null :Double.valueOf(df.format(overAllPremiumFc)));
+				
 				eserMotorRepo.save(findData);
 				
 			}
@@ -335,7 +336,7 @@ this.repository = repo;
 				saveDiscounts.setCoverName(disc.getDiscountDesc());
 				saveDiscounts.setCoverDesc(disc.getDiscountDesc());
 				saveDiscounts.setCurrency(coverReq.getCurrency());
-				saveDiscounts.setExchageRate(coverReq.getExchangeRate()==null?null : Double.valueOf(coverReq.getExchangeRate().toString()));
+				saveDiscounts.setExchangeRate(coverReq.getExchangeRate()==null?null : Double.valueOf(coverReq.getExchangeRate().toString()));
 				saveDiscounts.setCompanyId(primaryKeys.get("InsuranceId").toString());
 				saveDiscounts.setProductId(Integer.valueOf(primaryKeys.get("ProductId").toString()));
 				saveDiscounts.setSectionId(Integer.valueOf(primaryKeys.get("SectionId").toString()));
@@ -357,7 +358,7 @@ this.repository = repo;
 				saveDiscounts.setPremiumIncludedTaxFc(disc.getDiscountAmount()==null ? null : Double.valueOf(df.format(disc.getDiscountAmount())));
 				saveDiscounts.setDependentCoverYn("Y");
 				saveDiscounts.setDependentCoverId(saveDiscounts.getCoverId());
-				saveDiscounts.setFactorTypeId(StringUtils.isBlank(disc.getFactorTypeId())?null :Integer.valueOf(disc.getFactorTypeId()) );
+				saveDiscounts.setFactorTypeId(StringUtils.isBlank(disc.getFactorTypeId())?null :Double.valueOf(disc.getFactorTypeId()) );
 				saveDiscounts.setIsSelected("D");
 				saveDiscounts.setCalcType(saveDiscounts.getCalcType());
 				
