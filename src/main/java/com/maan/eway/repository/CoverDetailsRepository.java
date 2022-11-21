@@ -12,15 +12,15 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
-import com.maan.eway.bean.CoverDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import com.maan.eway.bean.CoverDetailsId;
+
+import com.maan.eway.bean.MotorPolicyCoverData;
+import com.maan.eway.bean.MotorPolicyCoverDataId;
 /**
  * <h2>CoverDetailsRepository</h2>
  *
@@ -31,9 +31,9 @@ import com.maan.eway.bean.CoverDetailsId;
  
  
 @Transactional 
-public interface CoverDetailsRepository  extends JpaRepository<CoverDetails,CoverDetailsId > , JpaSpecificationExecutor<CoverDetails> {
+public interface CoverDetailsRepository  extends JpaRepository<MotorPolicyCoverData,MotorPolicyCoverDataId > , JpaSpecificationExecutor<MotorPolicyCoverData> {
 
-	List<CoverDetails> findByQuoteNoOrderByVehicleIdAsc(String quoteNo);
+	List<MotorPolicyCoverData> findByQuoteNoOrderByVehicleIdAsc(String quoteNo);
 
 	Long countByQuoteNo(String quoteNo);
 

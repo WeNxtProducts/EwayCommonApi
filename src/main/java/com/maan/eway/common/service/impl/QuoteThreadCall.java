@@ -12,25 +12,23 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
-import javax.transaction.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.CityMaster;
-import com.maan.eway.bean.CoverDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MotorDataDetails;
+import com.maan.eway.bean.MotorPolicyCoverData;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.QuoteThreadReq;
@@ -347,7 +345,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			try {
 				// Save Cover Details
 				for ( FactorRateRequestDetails cov : covers) {
-					CoverDetails coverData  = new CoverDetails();
+					MotorPolicyCoverData coverData  = new MotorPolicyCoverData();
 					dozerMapper.map(cov, coverData);
 					coverData.setEntryDate(new Date());	
 					coverData.setQuoteNo(request.getQuoteNo());
