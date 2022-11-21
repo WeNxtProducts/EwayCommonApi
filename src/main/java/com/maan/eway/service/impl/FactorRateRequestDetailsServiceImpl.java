@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +26,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
+import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
+import com.maan.eway.common.req.EservieMotorDetailsViewRes;
+import com.maan.eway.common.req.UpdateFactorRateReq;
+import com.maan.eway.common.res.UpdateCoverRes;
+import com.maan.eway.error.Error;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.req.FactorRateDetailsGetReq;
@@ -231,22 +237,23 @@ this.repository = repo;
 					overAllPremiumLc = overAllPremiumLc + (saveCover.getPremiumIncludedTaxLc()==null ? 0D :saveCover.getPremiumIncludedTaxLc() );
 					overAllPremiumFc = overAllPremiumFc + (saveCover.getPremiumIncludedTaxFc()==null ? 0D :saveCover.getPremiumIncludedTaxFc() );
 					
+					Map<String,Object>  primaryKeys = new HashMap<String,Object>();
+					primaryKeys.put("RefNo" , req.getRequestReferenceNo());
+					primaryKeys.put("CreatedBy" , req.getCreatedBy() );
+					primaryKeys.put("InsuranceId" ,req.getInsuranceId());
+					primaryKeys.put("ProductId" ,req.getProductId());
+					primaryKeys.put("SectionId" ,req.getSectionId());
+					primaryKeys.put("SubCoverYn" ,coverData.getIsSubCover());
+					primaryKeys.put("VehId" ,req.getVehicleId());
+					primaryKeys.put("CdRefNo" ,req.getCdRefNo());
+					primaryKeys.put("VdRefNo" ,req.getVdRefNo());
+					primaryKeys.put("MsRefNo" ,req.getMsrefno());	
+					
 					// Save Discount Cover
 					if( coverData.getDiscounts()!=null && coverData.getDiscounts().size() > 0 ) {
-						Map<String,Object>  primaryKeys = new HashMap<String,Object>();
-						primaryKeys.put("RefNo" , req.getRequestReferenceNo());
-						primaryKeys.put("CreatedBy" , req.getCreatedBy() );
-						primaryKeys.put("InsuranceId" ,req.getInsuranceId());
-						primaryKeys.put("ProductId" ,req.getProductId());
-						primaryKeys.put("SectionId" ,req.getSectionId());
-						primaryKeys.put("SubCoverYn" ,coverData.getIsSubCover());
-						primaryKeys.put("VehId" ,req.getVehicleId());
-						primaryKeys.put("CdRefNo" ,req.getCdRefNo());
-						primaryKeys.put("VdRefNo" ,req.getVdRefNo());
-						primaryKeys.put("MsRefNo" ,req.getMsrefno());	
-						successRes  = 	saveDiscountRates( primaryKeys ,coverData ,   coverData.getDiscounts()  ) ;
+						
+						successRes  = 	saveDiscountRates( primaryKeys ,coverData ,   coverData.getDiscounts()  ) ;	
 					}
-					
 					// Tax
 					if(coverData.getTaxes()!=null && coverData.getTaxes().size() > 0 ) {
 						successRes  =  saveTaxes(primaryKeys ,coverData ,   coverData.getTaxes()  ) ;
@@ -254,7 +261,7 @@ this.repository = repo;
 					
 					// Loginds
 					if(coverData.getLoadings()!=null && coverData.getLoadings().size() > 0 ) {
-						successRes  =  saveLoginds(primaryKeys ,coverData ,   coverData.getLoadings()  ) ;
+						successRes  =  saveLodings(primaryKeys ,coverData ,   coverData.getLoadings()  ) ;
 					}
 					
 					
@@ -338,7 +345,7 @@ this.repository = repo;
 						
 						// Loginds
 						if(coverData.getLoadings()!=null && coverData.getLoadings().size() > 0 ) {
-							successRes  =  saveLoginds(primaryKeys ,subCoverData ,   subCoverData.getLoadings()  ) ;
+							successRes  =  saveLodings(primaryKeys ,subCoverData ,   subCoverData.getLoadings()  ) ;
 						}	
 					}
 				}
@@ -362,197 +369,9 @@ this.repository = repo;
 		return successRes;
 	}
 	
-	
-	public String saveDiscountRates(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Discount> discounts  ) {
-		String res = "Saved Successfully";
-		DozerBeanMapper dozerMapper = new DozerBeanMapper();
-		String pattern = "#####0.00";
-		DecimalFormat df = new DecimalFormat(pattern);
-		try {
-			for (Discount disc :  discounts ) {
-				FactorRateRequestDetails saveDiscounts = new FactorRateRequestDetails();
-				dozerMapper.map(coverReq, saveDiscounts);
-				saveDiscounts.setRequestReferenceNo(primaryKeys.get("RefNo").toString() );
-				saveDiscounts.setDiscLoadId(Integer.valueOf(disc.getDiscountId()));
-				saveDiscounts.setCoverName(disc.getDiscountDesc());
-				saveDiscounts.setCoverDesc(disc.getDiscountDesc());
-				saveDiscounts.setCurrency(coverReq.getCurrency());
-				saveDiscounts.setExchangeRate(coverReq.getExchangeRate()==null?null : Double.valueOf(coverReq.getExchangeRate().toString()));
-				saveDiscounts.setCompanyId(primaryKeys.get("InsuranceId").toString());
-				saveDiscounts.setProductId(Integer.valueOf(primaryKeys.get("ProductId").toString()));
-				saveDiscounts.setSectionId(Integer.valueOf(primaryKeys.get("SectionId").toString()));
-				saveDiscounts.setSubCoverYn( primaryKeys.get("SubCoverYn").toString());
-				saveDiscounts.setVehicleId(Integer.valueOf(primaryKeys.get("VehId").toString()));	
-				saveDiscounts.setCdRefno( primaryKeys.get("CdRefNo").toString());
-				saveDiscounts.setVdRefno( primaryKeys.get("VdRefNo").toString());
-				saveDiscounts.setMsRefno( primaryKeys.get("MsRefNo").toString());	
-				saveDiscounts.setEntryDate(new Date());			
-				saveDiscounts.setCreatedBy(primaryKeys.get("CreatedBy").toString());
-				saveDiscounts.setSubCoverId(StringUtils.isBlank(coverReq.getSubCoverId()) ?Integer.valueOf(coverReq.getCoverId()) : Integer.valueOf(coverReq.getSubCoverId()) );
-				saveDiscounts.setStatus("Y");
-				saveDiscounts.setMinimumPremium(disc.getMaxAmount()==null ? null : Double.valueOf(disc.getMaxAmount().toString()));
-				saveDiscounts.setSumInsured(null);
-				saveDiscounts.setRate(Double.valueOf(disc.getDiscountRate()));
-				saveDiscounts.setPremiumAfterDiscountFc(disc.getDiscountAmount()==null ? null : Double.valueOf(df.format(disc.getDiscountAmount())));
-				saveDiscounts.setPremiumBeforeDiscountFc(disc.getDiscountAmount()==null ? null : Double.valueOf(df.format(disc.getDiscountAmount())));
-				saveDiscounts.setPremiumExcludedTaxFc(disc.getDiscountAmount()==null ? null : Double.valueOf(df.format(disc.getDiscountAmount())));
-				saveDiscounts.setPremiumIncludedTaxFc(disc.getDiscountAmount()==null ? null : Double.valueOf(df.format(disc.getDiscountAmount())));
-				saveDiscounts.setDependentCoverYn("Y");
-				saveDiscounts.setDependentCoverId(saveDiscounts.getCoverId());
-				saveDiscounts.setFactorTypeId(StringUtils.isBlank(disc.getFactorTypeId())?null :Double.valueOf(disc.getFactorTypeId()));
-				saveDiscounts.setIsSelected("D");
-				saveDiscounts.setCalcType(saveDiscounts.getCalcType());
-				
-				
-				repository.saveAndFlush(saveDiscounts);
-				
-			}
-			res = "Success" ;
-		} catch(Exception e){
-			e.printStackTrace();
-			log.info("Log Details" + e.getMessage());
-			res = "Failed";
-			return res;
-			
-		}return res;
-	}
-/*
-    @Override
-    public boolean delete(long id) {
-        try {
-            repository.deleteById(id);
-            return true;
-
-        } catch (Exception ex) {
-			log.error(ex);
-            return false;
-        }
-    }
-
- */
 
 
-	@Override
-	public EserviceMotorDetailsSaveRes getFactorRateRequestDetails(FactorRateDetailsGetReq req) {
-		EserviceMotorDetailsSaveRes res = new EserviceMotorDetailsSaveRes();
-		DozerBeanMapper dozerMapper = new DozerBeanMapper();
-		try {
-			// Find Datas
-			List<FactorRateRequestDetails> findAll = repository.findByRequestReferenceNoAndVehicleIdOrderByCoverIdAsc(req.getRequestReferenceNo(),Integer.valueOf(req.getVehicleId()));
-			
-			Map<Integer,List<FactorRateRequestDetails>> groupByCover = findAll.stream().collect(Collectors.groupingBy(FactorRateRequestDetails :: getCoverId));			
-			
-			List<Cover>  coverListRes = new ArrayList<Cover>();
-			
-			for ( Integer coverId : groupByCover.keySet() ) {
-				List<FactorRateRequestDetails>  covers  = groupByCover.get(coverId);
-				Cover coverRes = new Cover();
-				
-				if (covers.get(0).getSubCoverYn().equalsIgnoreCase("N") ) {
-					// Get Covers
-					List<FactorRateRequestDetails> filterCover = covers.stream().filter( o -> o.getDiscLoadId().equals(0)).collect(Collectors.toList());
-					coverRes = dozerMapper.map(filterCover.get(0), Cover.class);
-					coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
-					coverRes.setDependentCoveryn(filterCover.get(0).getDependentCoverYn());
-					coverRes.setDependentCoverId(filterCover.get(0).getDependentCoverId()==null?"":filterCover.get(0).getDependentCoverId().toString());
-					coverRes.setPremiumExcluedTax( filterCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal(filterCover.get(0).getPremiumExcludedTaxFc()) );	
-					coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumAfterDiscountFc().toString())));
-					coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumBeforeDiscountFc().toString())));
-					coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumExcludedTaxFc().toString())));
-					coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumIncludedTaxFc().toString())));
-					coverRes.setIsselected(filterCover.get(0).getIsSelected());
-					
-					List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> ! o.getDiscLoadId().equals(0)).collect(Collectors.toList());
-					
-					if ( filterDiscountCover.size() > 0 ) {
-						 List<Discount> discounts =  getDiscountRates(filterDiscountCover);
-						 coverRes.setDiscounts(discounts);	
-					}
-										
-				} else {
-					
-					// Get Sub Covers
-			
-					List<FactorRateRequestDetails> filterCover = covers.stream().filter( o -> o.getDiscLoadId().equals(0)).collect(Collectors.toList());
-					 coverRes.setCoverId(filterCover.get(0).getCoverId().toString());
-					 coverRes.setCalcType(filterCover.get(0).getCalcType());
-					 coverRes.setCoverName(filterCover.get(0).getCoverName());
-					 coverRes.setCoverDesc(filterCover.get(0).getCoverDesc());
-					 coverRes.setMinimumPremium(filterCover.get(0).getMinimumPremium()==null ? null : new BigDecimal(filterCover.get(0).getMinimumPremium().toString()));
-					 coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
-					 coverRes.setSumInsured(filterCover.get(0).getSumInsured()==null ? null : new BigDecimal(filterCover.get(0).getSumInsured().toString()));
-					 coverRes.setRate(filterCover.get(0).getRate());
-					
-					List<Cover>  subCoverListRes = new ArrayList<Cover>();
-					List<FactorRateRequestDetails> filterSubCover = covers.stream().filter( o -> o.getDiscLoadId().equals(0)).collect(Collectors.toList());
-					for ( FactorRateRequestDetails subCovers : filterSubCover) {
-						Cover subCoverRes = new Cover();
-						subCoverRes = dozerMapper.map(subCovers, Cover.class);
-						subCoverRes.setIsSubCover(filterSubCover.get(0).getSubCoverYn());
-						subCoverRes.setDependentCoveryn(filterSubCover.get(0).getDependentCoverYn());
-						subCoverRes.setDependentCoverId(filterSubCover.get(0).getDependentCoverId()==null?"":filterSubCover.get(0).getDependentCoverId().toString());
-						subCoverRes.setPremiumExcluedTax( filterSubCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal(filterSubCover.get(0).getPremiumExcludedTaxFc()) );	
-						subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal((filterSubCover.get(0).getPremiumAfterDiscountFc().toString())));
-						subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal((filterSubCover.get(0).getPremiumBeforeDiscountFc().toString())));
-						subCoverRes.setPremiumExcluedTax(filterSubCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal((filterSubCover.get(0).getPremiumExcludedTaxFc().toString())));
-						subCoverRes.setPremiumIncludedTax(filterSubCover.get(0).getPremiumIncludedTaxFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumIncludedTaxFc().toString())));
-						subCoverRes.setIsselected(filterSubCover.get(0).getIsSelected());
-						List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> o.getSubCoverId().equals(subCovers.getSubCoverId()) && ( ! o.getDiscLoadId().equals(0)) ).collect(Collectors.toList());
-						
-						if ( filterDiscountCover.size() > 0 ) {
-							 List<Discount> discounts =  getDiscountRates(filterDiscountCover);
-							 subCoverRes.setDiscounts(discounts);	
-						}
-						subCoverListRes.add(subCoverRes);
-					}
-					coverRes.setSubcovers(subCoverListRes);
-				}
-				coverListRes.add(coverRes);
-			}
-			// Response
-			res.setCoverList(coverListRes);	
-			res.setCreatedBy(findAll.get(0).getCreatedBy());
-			res.setInsuranceId(findAll.get(0).getCompanyId());
-			res.setProductId(findAll.get(0).getProductId().toString());	
-			res.setRequestReferenceNo(findAll.get(0).getRequestReferenceNo());
-			res.setSectionId(findAll.get(0).getSectionId().toString());		
-			
-		} catch(Exception e){
-			e.printStackTrace();
-			log.info("Log Details" + e.getMessage());
-			return null;
-			
-		}return res;
-	}
-	
-	
-	public List<Discount> getDiscountRates(List<FactorRateRequestDetails> filterDiscountCover) {
-		List<Discount> DiscountList = new  ArrayList<Discount>();
-		try {
-			for (FactorRateRequestDetails disc :  filterDiscountCover ) {
-				Discount discount = new Discount();
-				discount.setDiscountAmount(disc.getPremiumIncludedTaxFc()==null?null : new BigDecimal(disc.getPremiumIncludedTaxFc()));
-				discount.setDiscountCalcType(disc.getCalcType());
-				discount.setDiscountId(disc.getDiscLoadId().toString());
-				
-				discount.setDiscountRate(disc.getRate()==null?null :disc.getRate().toString());
-				discount.setFactorTypeId(disc.getFactorTypeId()==null?"" : disc.getFactorTypeId().toString());
-				discount.setMaxAmount(disc.getMinimumPremium()==null?null :new BigDecimal(disc.getMinimumPremium()));
-				discount.setSubCoverId(disc.getSubCoverId().toString());
-				discount.setDiscountforId(null);
-				discount.setDiscountDesc("");	
-				DiscountList.add(discount);
-				
-			}
-			
-		} catch(Exception e){
-			e.printStackTrace();
-			log.info("Log Details" + e.getMessage());
-			return null;
-			
-		}return DiscountList;
-	}
-	
+
 	public String saveTaxes(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Tax> taxes  ) {
 		String res = "Saved Successfully";
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -604,7 +423,7 @@ this.repository = repo;
 		}return res;
 	}
 	
-	public String saveLoginds(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Loading> lodings  ) {
+	public String saveLodings(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Loading> lodings  ) {
 		String res = "Saved Successfully";
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		String pattern = "#####0.00";
@@ -662,6 +481,500 @@ this.repository = repo;
 			log.info("Log Details" + e.getMessage());
 			res = "Failed";
 			return res;
+			
+		}return res;
+	}
+	
+	public String saveDiscountRates(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Discount> discounts  ) {
+		String res = "Saved Successfully";
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		String pattern = "#####0.00";
+		DecimalFormat df = new DecimalFormat(pattern);
+		try {
+			for (Discount disc :  discounts ) {
+				FactorRateRequestDetails saveDiscounts = new FactorRateRequestDetails();
+				dozerMapper.map(coverReq, saveDiscounts);
+				saveDiscounts.setRequestReferenceNo(primaryKeys.get("RefNo").toString() );
+				saveDiscounts.setDiscLoadId(Integer.valueOf(disc.getDiscountId()));
+				saveDiscounts.setCoverName(disc.getDiscountDesc());
+				saveDiscounts.setCoverDesc(disc.getDiscountDesc());
+				saveDiscounts.setCurrency(coverReq.getCurrency());
+				saveDiscounts.setExchangeRate(coverReq.getExchangeRate()==null?null : Double.valueOf(coverReq.getExchangeRate().toString()));
+				saveDiscounts.setCompanyId(primaryKeys.get("InsuranceId").toString());
+				saveDiscounts.setProductId(Integer.valueOf(primaryKeys.get("ProductId").toString()));
+				saveDiscounts.setSectionId(Integer.valueOf(primaryKeys.get("SectionId").toString()));
+				saveDiscounts.setSubCoverYn( primaryKeys.get("SubCoverYn").toString());
+				saveDiscounts.setVehicleId(Integer.valueOf(primaryKeys.get("VehId").toString()));	
+				saveDiscounts.setCdRefno( primaryKeys.get("CdRefNo").toString());
+				saveDiscounts.setVdRefno( primaryKeys.get("VdRefNo").toString());
+				saveDiscounts.setMsRefno( primaryKeys.get("MsRefNo").toString());	
+				saveDiscounts.setEntryDate(new Date());			
+				saveDiscounts.setCreatedBy(primaryKeys.get("CreatedBy").toString());
+				saveDiscounts.setSubCoverId(StringUtils.isBlank(coverReq.getSubCoverId()) ?Integer.valueOf(coverReq.getCoverId()) : Integer.valueOf(coverReq.getSubCoverId()) );
+				saveDiscounts.setStatus("Y");
+				saveDiscounts.setMinimumPremium(disc.getMaxAmount()==null ? null : Double.valueOf(disc.getMaxAmount().toString()));
+				saveDiscounts.setSumInsured(null);
+				saveDiscounts.setRate(Double.valueOf(disc.getDiscountRate()));
+				saveDiscounts.setPremiumAfterDiscountFc(disc.getDiscountAmount()==null ? null : Double.valueOf(df.format(disc.getDiscountAmount())));
+				saveDiscounts.setPremiumBeforeDiscountFc(disc.getDiscountAmount()==null ? null : Double.valueOf(df.format(disc.getDiscountAmount())));
+				saveDiscounts.setPremiumExcludedTaxFc(disc.getDiscountAmount()==null ? null : Double.valueOf(df.format(disc.getDiscountAmount())));
+				saveDiscounts.setPremiumIncludedTaxFc(disc.getDiscountAmount()==null ? null : Double.valueOf(df.format(disc.getDiscountAmount())));
+				saveDiscounts.setDependentCoverYn("Y");
+				saveDiscounts.setDependentCoverId(saveDiscounts.getCoverId());
+				saveDiscounts.setFactorTypeId(StringUtils.isBlank(disc.getFactorTypeId())?null :Double.valueOf(disc.getFactorTypeId()) );
+				saveDiscounts.setIsSelected("D");
+				saveDiscounts.setCalcType(saveDiscounts.getCalcType());
+				saveDiscounts.setTaxId(0);
+				
+				
+				repository.saveAndFlush(saveDiscounts);
+				
+			}
+			res = "Success" ;
+		} catch(Exception e){
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			res = "Failed";
+			return res;
+			
+		}return res;
+	}
+	
+	@Override
+	public List<EservieMotorDetailsViewRes>  getFactorRateRequestDetails(FactorRateDetailsGetReq req) {
+		List<EservieMotorDetailsViewRes>  resList = new ArrayList<EservieMotorDetailsViewRes>();
+		try {
+			// Find Datas
+			List<EserviceMotorDetails>    motorDatas = eserMotorRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
+			
+			for (EserviceMotorDetails mot :  motorDatas) {
+				List<FactorRateRequestDetails> filterVehicleCovers =  findCovers.stream().filter( o -> o.getVehicleId().equals(mot.getVehicleId())).collect(Collectors.toList());
+				Map<Integer,List<FactorRateRequestDetails>> groupByCover = filterVehicleCovers.stream().collect(Collectors.groupingBy(FactorRateRequestDetails :: getCoverId));			
+				
+				List<Cover> coverListRes = 	getCoversList(groupByCover);
+				
+				
+				// Response 
+				EservieMotorDetailsViewRes res = new EservieMotorDetailsViewRes();
+				res.setActualPremiumFc(mot.getActualPremiumFc()==null?"":mot.getActualPremiumFc().toString());
+				res.setActualPremiumLc(mot.getActualPremiumLc()==null?"":mot.getActualPremiumLc().toString());
+				res.setBranchCode(mot.getBranchCode());
+				res.setCdRefNo(filterVehicleCovers.get(0).getCdRefno());
+				res.setCreatedBy(mot.getCreatedBy());
+				res.setCurrency(mot.getCurrency());
+				res.setCustomerReferenceNo(mot.getCustomerReferenceNo());
+				res.setExchangeRate(mot.getExchangeRate()==null?"":mot.getExchangeRate().toString());
+				res.setInsuranceId(mot.getCompanyId());
+				res.setMsrefno(filterVehicleCovers.get(0).getMsRefno());
+				res.setOverallPremiumFc(mot.getOverallPremiumFc()==null?"":mot.getOverallPremiumFc().toString());
+				res.setOverallPremiumLc(mot.getOverallPremiumLc()==null?"":mot.getOverallPremiumLc().toString());
+				res.setPolicyStartDate(mot.getPolicyStartDate());
+				res.setPolicyEndDate(mot.getPolicyEndDate());
+				res.setProductId(mot.getProductId());
+				res.setRequestReferenceNo(mot.getRequestReferenceNo());
+				res.setSectionId(mot.getSectionId());
+				res.setVdRefNo(filterVehicleCovers.get(0).getVdRefno());
+				res.setVehicleId(mot.getVehicleId().toString());
+				res.setCoverList(coverListRes);
+				
+				resList.add(res);
+			}
+			
+		} catch(Exception e){
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+			
+		}return resList;
+	}
+	
+	
+
+	public synchronized List<Cover> getCoversList(Map<Integer,List<FactorRateRequestDetails>> groupByCover) {
+		List<Cover>  coverListRes = new ArrayList<Cover>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			for ( Integer coverId : groupByCover.keySet() ) {
+				List<FactorRateRequestDetails>  covers  = groupByCover.get(coverId);
+				Cover coverRes = new Cover();
+				
+				if (covers.get(0).getSubCoverYn().equalsIgnoreCase("N") ) {
+					// Get Covers
+					List<FactorRateRequestDetails> filterCover = covers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) ).collect(Collectors.toList());
+					coverRes = dozerMapper.map(filterCover.get(0), Cover.class);
+					coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
+					coverRes.setDependentCoveryn(filterCover.get(0).getDependentCoverYn());
+					coverRes.setDependentCoverId(filterCover.get(0).getDependentCoverId()==null?"":filterCover.get(0).getDependentCoverId().toString());
+					coverRes.setPremiumExcluedTax( filterCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal(filterCover.get(0).getPremiumExcludedTaxFc()) );	
+					coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumAfterDiscountFc().toString())));
+					coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumBeforeDiscountFc().toString())));
+					coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumExcludedTaxFc().toString())));
+					coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumIncludedTaxFc().toString())));
+					coverRes.setIsselected(filterCover.get(0).getIsSelected());
+					coverRes.setDependentCoveryn(filterCover.get(0).getDependentCoverYn());
+					coverRes.setDependentCoverId(filterCover.get(0).getDependentCoverId()==null?"": filterCover.get(0).getDependentCoverId().toString());
+					coverRes.setSubCoverId(null);
+					coverRes.setSubCoverDesc(null);
+					coverRes.setSubCoverName(null);
+					coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal (filterCover.get(0).getPremiumAfterDiscountFc()));
+					coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal (filterCover.get(0).getPremiumBeforeDiscountFc()));
+					coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal (filterCover.get(0).getPremiumExcludedTaxFc()));
+					coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc()==null ? null :new BigDecimal(filterCover.get(0).getPremiumIncludedTaxFc()));
+					coverRes.setPremiumAfterDiscountLC(filterCover.get(0).getPremiumAfterDiscountLc()==null ? null : new BigDecimal(filterCover.get(0).getPremiumAfterDiscountLc()));
+					coverRes.setPremiumBeforeDiscountLC(filterCover.get(0).getPremiumBeforeDiscountLc()==null ? null : new BigDecimal( filterCover.get(0).getPremiumBeforeDiscountLc()));
+					coverRes.setPremiumExcluedTaxLC(filterCover.get(0).getPremiumExcludedTaxLc()==null ? null : new BigDecimal(filterCover.get(0).getPremiumExcludedTaxLc()));
+					coverRes.setPremiumIncludedTaxLC(filterCover.get(0).getPremiumIncludedTaxLc()==null ? null :new BigDecimal (filterCover.get(0).getPremiumIncludedTaxLc()));
+					coverRes.setExchangeRate(filterCover.get(0).getExchangeRate()==null?null:new BigDecimal(filterCover.get(0).getExchangeRate()));	
+					
+					// Discount Covers
+					List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("D") ).collect(Collectors.toList());
+					
+					if ( filterDiscountCover.size() > 0 ) {
+						 List<Discount> discounts =  getDiscountRates(filterDiscountCover);
+						 coverRes.setDiscounts(discounts);	
+					}
+					
+					// Tax Covers
+					List<FactorRateRequestDetails> filterTaxCover = covers.stream().filter( o -> (! o.getTaxId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("T")).collect(Collectors.toList());
+					
+					if( filterTaxCover.size() > 0 ) {
+						 List<Tax> taxes = getTaxRates(filterTaxCover) ;
+						 coverRes.setTaxes(taxes);	
+					}
+					
+					// Loginds Covers
+					List<FactorRateRequestDetails> filterLodingCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("L") ).collect(Collectors.toList());
+					
+					if( filterLodingCover.size() > 0 ) {
+						 List<Loading> lodings =  getLodingCovers(filterLodingCover) ;
+						 coverRes.setLoadings(lodings);	
+					}
+										
+				} else {
+					
+					// Get Sub Covers
+			
+					List<FactorRateRequestDetails> filterCover = covers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) ).collect(Collectors.toList());
+					 coverRes.setCoverId(filterCover.get(0).getCoverId().toString());
+					 coverRes.setCalcType(filterCover.get(0).getCalcType());
+					 coverRes.setCoverName(filterCover.get(0).getCoverName());
+					 coverRes.setCoverDesc(filterCover.get(0).getCoverDesc());
+					 coverRes.setMinimumPremium(filterCover.get(0).getMinimumPremium()==null ? null : new BigDecimal(filterCover.get(0).getMinimumPremium().toString()));
+					 coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
+					 coverRes.setSumInsured(filterCover.get(0).getSumInsured()==null ? null : new BigDecimal(filterCover.get(0).getSumInsured().toString()));
+					 coverRes.setRate(filterCover.get(0).getRate());
+					
+					List<Cover>  subCoverListRes = new ArrayList<Cover>();
+					List<FactorRateRequestDetails> filterSubCover = covers.stream().filter( o -> o.getDiscLoadId().equals(0)).collect(Collectors.toList());
+					for ( FactorRateRequestDetails subCovers : filterSubCover) {
+						Cover subCoverRes = new Cover();
+						subCoverRes = dozerMapper.map(subCovers, Cover.class);
+						subCoverRes.setIsSubCover(filterSubCover.get(0).getSubCoverYn());
+						subCoverRes.setDependentCoveryn(filterSubCover.get(0).getDependentCoverYn());
+						subCoverRes.setDependentCoverId(filterSubCover.get(0).getDependentCoverId()==null?"":filterSubCover.get(0).getDependentCoverId().toString());
+						subCoverRes.setPremiumExcluedTax( filterSubCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal(filterSubCover.get(0).getPremiumExcludedTaxFc()) );	
+						subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal((filterSubCover.get(0).getPremiumAfterDiscountFc().toString())));
+						subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal((filterSubCover.get(0).getPremiumBeforeDiscountFc().toString())));
+						subCoverRes.setPremiumExcluedTax(filterSubCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal((filterSubCover.get(0).getPremiumExcludedTaxFc().toString())));
+						subCoverRes.setPremiumIncludedTax(filterSubCover.get(0).getPremiumIncludedTaxFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumIncludedTaxFc().toString())));
+						subCoverRes.setIsselected(filterSubCover.get(0).getIsSelected());
+						subCoverRes.setExchangeRate(filterSubCover.get(0).getExchangeRate()==null?null:new BigDecimal(filterSubCover.get(0).getExchangeRate()));	
+						
+
+						subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal (filterSubCover.get(0).getPremiumAfterDiscountFc()));
+						subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal (filterSubCover.get(0).getPremiumBeforeDiscountFc()));
+						subCoverRes.setPremiumExcluedTax(filterSubCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal (filterSubCover.get(0).getPremiumExcludedTaxFc()));
+						subCoverRes.setPremiumIncludedTax(filterSubCover.get(0).getPremiumIncludedTaxFc()==null ? null :new BigDecimal(filterSubCover.get(0).getPremiumIncludedTaxFc()));
+						subCoverRes.setPremiumAfterDiscountLC(filterSubCover.get(0).getPremiumAfterDiscountLc()==null ? null : new BigDecimal(filterSubCover.get(0).getPremiumAfterDiscountLc()));
+						subCoverRes.setPremiumBeforeDiscountLC(filterSubCover.get(0).getPremiumBeforeDiscountLc()==null ? null : new BigDecimal( filterSubCover.get(0).getPremiumBeforeDiscountLc()));
+						subCoverRes.setPremiumExcluedTaxLC(filterSubCover.get(0).getPremiumExcludedTaxLc()==null ? null : new BigDecimal(filterSubCover.get(0).getPremiumExcludedTaxLc()));
+						subCoverRes.setPremiumIncludedTaxLC(filterSubCover.get(0).getPremiumIncludedTaxLc()==null ? null :new BigDecimal (filterSubCover.get(0).getPremiumIncludedTaxLc()));
+						
+						
+						List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> o.getSubCoverId().equals(subCovers.getSubCoverId()) && ( ! o.getDiscLoadId().equals(0)) ).collect(Collectors.toList());
+						
+						if ( filterDiscountCover.size() > 0 ) {
+							 List<Discount> discounts =  getDiscountRates(filterDiscountCover);
+							 subCoverRes.setDiscounts(discounts);	
+						}
+						subCoverListRes.add(subCoverRes);
+					}
+					coverRes.setSubcovers(subCoverListRes);
+				}
+				coverListRes.add(coverRes);
+			}
+			
+			coverListRes.sort(Comparator.comparing(Cover ::    getSumInsured ).reversed() );
+			
+		} catch(Exception e){
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+			
+		}return coverListRes;
+	}
+	
+	public List<Discount> getDiscountRates(List<FactorRateRequestDetails> filterDiscountCover) {
+		List<Discount> DiscountList = new  ArrayList<Discount>();
+		try {
+			for (FactorRateRequestDetails disc :  filterDiscountCover ) {
+				Discount discount = new Discount();
+				discount.setDiscountAmount(disc.getPremiumIncludedTaxFc()==null?new BigDecimal(0): new BigDecimal(disc.getPremiumIncludedTaxFc()));
+				discount.setDiscountCalcType(disc.getCalcType());
+				discount.setDiscountId(disc.getDiscLoadId().toString());
+				discount.setDiscountDesc(disc.getCoverName());	
+				discount.setDiscountRate(disc.getRate()==null?"0.0" :disc.getRate().toString());
+				discount.setFactorTypeId(disc.getFactorTypeId()==null?"" : disc.getFactorTypeId().toString());
+				discount.setMaxAmount(disc.getMinimumPremium()==null?null :new BigDecimal(disc.getMinimumPremium()));
+				discount.setSubCoverId(disc.getSubCoverId().toString());
+				discount.setDiscountforId(disc.getDependentCoverId()==null?null:disc.getDependentCoverId().toString());
+				
+				DiscountList.add(discount);
+				
+			}
+			
+		} catch(Exception e){
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+			
+		}return DiscountList;
+	}
+	
+	
+	public List<Loading> getLodingCovers(List<FactorRateRequestDetails> filterLodingCover) {
+		List<Loading> LodingList = new  ArrayList<Loading>();
+		try {
+			for (FactorRateRequestDetails lod :  filterLodingCover ) {
+				Loading loding = new Loading();
+				loding.setFactorTypeId(lod.getFactorTypeId()==null?null:lod.getFactorTypeId().toString());
+				loding.setLoadingAmount(lod.getMinimumPremium()==null?null:new BigDecimal(lod.getMinimumPremium()));
+				loding.setLoadingCalcType(lod.getCalcType());
+				loding.setLoadingDesc(lod.getCoverName());
+				loding.setLoadingforId(lod.getDependentCoverId()==null?null:lod.getDependentCoverId().toString());
+				loding.setLoadingId(lod.getDiscLoadId()==null?null:lod.getDiscLoadId().toString());
+				loding.setLoadingRate(lod.getRate()==null?null:lod.getRate().toString());
+				loding.setMaxAmount(lod.getPremiumIncludedTaxFc()==null?null:new BigDecimal(lod.getPremiumIncludedTaxFc()));
+				//loding.setSubCoverId(lod.getLodingSubcoverId()==null?null:lod.getLodingSubcoverId().toString());	
+				LodingList.add(loding);
+			}
+			
+		} catch(Exception e){
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+			
+		}return LodingList;
+	}
+	
+	public List<Tax> getTaxRates(List<FactorRateRequestDetails> filterTaxCover) {
+		List<Tax> TaxList = new  ArrayList<Tax>();
+		try {
+			for (FactorRateRequestDetails tax :  filterTaxCover ) {
+				Tax taxes = new Tax();
+				taxes.setCalcType(tax.getCalcType());
+				taxes.setIsTaxExempted(tax.getIsTaxExtempted());
+				taxes.setTaxAmount(tax.getTaxAmount()==null?null:new BigDecimal(tax.getTaxAmount()));
+				taxes.setTaxDesc(tax.getTaxDesc());
+				taxes.setTaxExemptCode(tax.getTaxExemptCode());
+				taxes.setTaxExemptType(tax.getTaxExemptType());
+				taxes.setTaxId(tax.getTaxId()==null?null:tax.getTaxId().toString()) ;
+				taxes.setTaxRate(tax.getTaxRate());
+				TaxList.add(taxes);
+			}
+			
+		} catch(Exception e){
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+			
+		}return TaxList;
+	}
+
+
+	@Override
+	public List<Error> validateFoctorPremiumDetails(UpdateFactorRateReq req) {
+		List<Error> errors = new ArrayList<Error>();
+		try {
+			if ( req.getCoverIdList()==null  || req.getCoverIdList().size()<=0 ) {
+				errors.add(new Error("01","CoverList","Please Enter Cover List")) ;				
+			} else {
+				for (CoverIdsReq cov : req.getCoverIdList() ) {
+					
+					if (cov.getCoverId()==null   ) {
+						errors.add(new Error("01","CoverIds","Please Enter Cover Id")) ;				
+					}
+					if (StringUtils.isBlank(cov.getSubCoverYn())  ) {
+						errors.add(new Error("01","SubCoverYn","Please Select SubCover Yes/No")) ;				
+					} else if (! (cov.getSubCoverYn().equalsIgnoreCase("Y") || cov.getSubCoverYn().equalsIgnoreCase("N") ) ) {
+						errors.add(new Error("01","SubCoverYn","Please Select SubCover Yes/No")) ;
+					} else if( cov.getSubCoverYn().equalsIgnoreCase("Y") && cov.getSubCoverId() ==null ) {
+						errors.add(new Error("01","SubCoverYn","Please Enter SubCover Id")) ;
+					}
+					
+					if (cov.getMinimumPremium()==null   ) {
+						errors.add(new Error("01","MinimumPremium","Please Enter MimimumPremium")) ;				
+					} else if (! cov.getMinimumPremium().matches("[0-9.]+")   ) {
+						errors.add(new Error("01","MinimumPremium","Please Enter Valid MimimumPremium")) ;				
+					}
+					
+					if (cov.getRate()==null   ) {
+						errors.add(new Error("01","Rate","Please Enter Rate")) ;				
+					} else if (! cov.getRate().matches("[0-9.]+")   ) {
+						errors.add(new Error("01","Rate","Please Enter Valid Rate")) ;				
+					}
+				}
+			}
+			
+		} catch(Exception e){
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+			
+		}return errors;
+	}
+
+
+	@Override
+	public UpdateCoverRes updateFactorRatePremiumDetails(UpdateFactorRateReq req) {
+		UpdateCoverRes res = new UpdateCoverRes();
+		String pattern = "#####0.00";
+		DecimalFormat df = new DecimalFormat(pattern);
+		try {
+			EserviceMotorDetails  findMot = eserMotorRepo.findByRequestReferenceNoAndVehicleId(req.getRequestReferenceNo() , req.getVehicleId());
+			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoAndVehicleIdOrderByCoverIdAsc(req.getRequestReferenceNo() , req.getVehicleId());
+			
+			for (CoverIdsReq covReq :    req.getCoverIdList()  ) {
+				
+				if(StringUtils.isBlank(covReq.getSubCoverYn()) || covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
+					List<FactorRateRequestDetails> filterCover = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)  ).collect(Collectors.toList()); 
+					
+					if(filterCover.size()>0 ) {
+						FactorRateRequestDetails  updateCover = filterCover.get(0);
+						updateCover.setMinimumPremium(Double.valueOf(df.format(Double.valueOf(covReq.getMinimumPremium()))));
+						updateCover.setRate(Double.valueOf(df.format(Double.valueOf(covReq.getRate()))));
+						repository.save(updateCover);
+						
+					}
+				} else {
+					List<FactorRateRequestDetails> filterSubCover = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId())) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) ).collect(Collectors.toList());
+					if(filterSubCover.size()>0 ) {
+						FactorRateRequestDetails  updateSubCover = filterSubCover.get(0);
+						updateSubCover.setMinimumPremium(Double.valueOf(df.format(Double.valueOf(covReq.getMinimumPremium()))));
+						updateSubCover.setRate(Double.valueOf(df.format(Double.valueOf(covReq.getRate()))));
+						repository.save(updateSubCover);
+					}
+					
+				}
+				
+			}
+			
+			// Get Updated Covers
+			findCovers = repository.findByRequestReferenceNoAndVehicleIdOrderByCoverIdAsc(req.getRequestReferenceNo() , req.getVehicleId());
+			Map<Integer,List<FactorRateRequestDetails>> groupByCover = findCovers.stream().collect(Collectors.groupingBy(FactorRateRequestDetails :: getCoverId));			
+			
+			List<Cover> coverListRes = 	getCoversList(groupByCover);
+			coverListRes.sort(Comparator.comparing(Cover :: getCoverId).reversed() );
+			res.setCoverList(coverListRes);
+			res.setBranchCode(findMot.getBranchCode());
+			res.setInsuranceId(findMot.getCompanyId());
+			res.setProductId(findMot.getProductId());
+			res.setRequestReferenceNo(req.getRequestReferenceNo());	
+			res.setResponse("Cover Updated Successfully");			
+			
+		} catch(Exception e){
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+			
+		}return res;
+	}
+
+
+	@Override
+	public List<Error> validateFactorIsSelectedDetails(UpdateFactorRateReq req) {
+		List<Error> errors = new ArrayList<Error>();
+		try {
+			if ( req.getCoverIdList()==null  || req.getCoverIdList().size()<=0 ) {
+				errors.add(new Error("01","CoverList","Please Enter Cover List")) ;				
+			} else {
+				for (CoverIdsReq cov : req.getCoverIdList() ) {
+					
+					if (cov.getCoverId()==null   ) {
+						errors.add(new Error("01","CoverIds","Please Enter Cover Id")) ;				
+					}
+					if (StringUtils.isBlank(cov.getUserOpt())  ) {
+						errors.add(new Error("01","UserOpt","Please Select UserOpt Yes/No")) ;				
+					} else if (! (cov.getUserOpt().equalsIgnoreCase("Y") || cov.getUserOpt().equalsIgnoreCase("N") ) ) {
+						errors.add(new Error("01","UserOpt","Please Select UserOpt Yes/No")) ;
+					}
+					if (StringUtils.isBlank(cov.getSubCoverYn())  ) {
+						errors.add(new Error("01","SubCoverYn","Please Select SubCover Yes/No")) ;				
+					} else if (! (cov.getSubCoverYn().equalsIgnoreCase("Y") || cov.getSubCoverYn().equalsIgnoreCase("N") ) ) {
+						errors.add(new Error("01","SubCoverYn","Please Select SubCover Yes/No")) ;
+					} else if( cov.getSubCoverYn().equalsIgnoreCase("Y") && cov.getSubCoverId() ==null ) {
+						errors.add(new Error("01","SubCoverYn","Please Enter SubCover Id")) ;
+					}
+				}
+			}
+			
+		} catch(Exception e){
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+			
+		}return errors;
+	}
+
+
+	@Override
+	public UpdateCoverRes updateFactorIsSelectedDetails(UpdateFactorRateReq req) {
+		UpdateCoverRes res = new UpdateCoverRes();
+		try {
+			EserviceMotorDetails  findMot = eserMotorRepo.findByRequestReferenceNoAndVehicleId(req.getRequestReferenceNo() , req.getVehicleId());
+			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoAndVehicleIdOrderByCoverIdAsc(req.getRequestReferenceNo() , req.getVehicleId());
+			
+			for (CoverIdsReq covReq :    req.getCoverIdList()  ) {
+				
+				if(covReq.getSubCoverYn()==null || covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
+					List<FactorRateRequestDetails> filterCover = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)  ).collect(Collectors.toList()); 
+					
+					if(filterCover.size()>0 ) {
+						FactorRateRequestDetails  updateCover = filterCover.get(0);
+						updateCover.setUserOpt(covReq.getUserOpt());
+						repository.save(updateCover);
+						
+					}
+				} else {
+					List<FactorRateRequestDetails> filterSubCover = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(o.getSubCoverId())) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)    ).collect(Collectors.toList());
+					if(filterSubCover.size()>0 ) {
+						FactorRateRequestDetails  updateSubCover = filterSubCover.get(0);
+						updateSubCover.setUserOpt(covReq.getUserOpt());
+						repository.save(updateSubCover);
+					}
+					
+				}
+				
+			}
+			
+			// Get Updated Covers
+			findCovers = repository.findByRequestReferenceNoAndVehicleIdOrderByCoverIdAsc(req.getRequestReferenceNo() , req.getVehicleId());
+			Map<Integer,List<FactorRateRequestDetails>> groupByCover = findCovers.stream().collect(Collectors.groupingBy(FactorRateRequestDetails :: getCoverId));			
+			
+			List<Cover> coverListRes = 	getCoversList(groupByCover);
+			coverListRes.sort(Comparator.comparing(Cover :: getCoverId).reversed() );
+			res.setCoverList(coverListRes);
+			res.setBranchCode(findMot.getBranchCode());
+			res.setInsuranceId(findMot.getCompanyId());
+			res.setProductId(findMot.getProductId());
+			res.setRequestReferenceNo(req.getRequestReferenceNo());	
+			res.setResponse("Cover Updated Successfully");			
+			
+		} catch(Exception e){
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
 			
 		}return res;
 	}

@@ -21,4 +21,14 @@ public class CoverIdsReq {
 	
 	@JsonProperty("isReferal")
 	private String isReferal;
+	
+	
+	@JsonProperty("MinimumPremium")
+	private String minimumPremium;
+	
+	@JsonProperty("Rate")
+	private String rate;
+	
+	@JsonProperty("UserOpt")
+	private String userOpt;
 }
