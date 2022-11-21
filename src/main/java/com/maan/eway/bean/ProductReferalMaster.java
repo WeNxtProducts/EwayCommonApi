@@ -78,7 +78,7 @@ private static final long serialVersionUID = 1L;
     private String     referalDesc ;
 
     @Column(name="PRODUCT_ID", nullable=false, length=20)
-    private String     productId ;
+    private Integer     productId ;
 
     @Column(name="REMARKS", length=100)
     private String     remarks ;

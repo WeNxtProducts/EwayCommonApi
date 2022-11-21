@@ -55,7 +55,7 @@ private static final long serialVersionUID = 1L;
     //--- ENTITY PRIMARY KEY 
     @Id
     @Column(name="CURRENCY_ID", nullable=false)
-    private Integer    currencyId ;
+    private String    currencyId ;
 
     @Id
     @Column(name="CURRENCY_SHORT_CODE", nullable=false, length=20)
