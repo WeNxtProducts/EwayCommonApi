@@ -215,6 +215,7 @@ this.repository = repo;
 						if(count>0) userOpt="Y";
 					}
 					saveCover.setUserOpt(userOpt);
+					saveCover.setActualRate(coverData.getRate());
 //					if(coverData.getTaxes()!=null && coverData.getTaxes().size() > 0 ) {
 //						saveCover.setTax1(coverData.getTaxes().get(0).getTaxAmount()==null ? null : Double.valueOf(df.format(coverData.getTaxes().get(0).getTaxAmount())) );
 //						if(coverData.getTaxes().size() > 1  ) 
@@ -306,6 +307,7 @@ this.repository = repo;
 							if(count>0) userOpt="Y";
 						}
 						saveSubCover.setUserOpt(userOpt);
+						saveSubCover.setActualRate(coverData.getRate());
 						premiumLc = premiumLc + (saveSubCover.getPremiumExcludedTaxLc()==null ? 0D :saveSubCover.getPremiumExcludedTaxLc() );
 						premiumFc = premiumFc + (saveSubCover.getPremiumExcludedTaxFc()==null ? 0D :saveSubCover.getPremiumExcludedTaxFc() );
 						overAllPremiumLc = overAllPremiumLc + (saveSubCover.getPremiumIncludedTaxLc()==null ? 0D :saveSubCover.getPremiumIncludedTaxLc() );
