@@ -18,4 +18,7 @@ public class CoverIdsReq {
 
 	@JsonProperty("SubCoverId")
 	private String subCoverId;
+	
+	@JsonProperty("isReferal")
+	private String isReferal;
 }

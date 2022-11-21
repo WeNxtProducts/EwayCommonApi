@@ -12,7 +12,9 @@ public interface UwQuestionsDetailsRepository  extends JpaRepository<UwQuestions
 
 	
 	List<UwQuestionsDetails> findByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleId(String insuranceId,
-			String productId, String requestReferenceNo, String vehicleId);
+			Integer productId, String requestReferenceNo, Integer vehicleId);
+
+	List<UwQuestionsDetails> findByRequestReferenceNo(String requestReferenceNo);
 
 
 

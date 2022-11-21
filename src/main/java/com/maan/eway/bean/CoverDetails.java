@@ -94,10 +94,6 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="TAX_ID")
     private Integer taxId;
-   
-
-    @Column(name="LODING_ID")
-    private Integer lodingId;
     
     //--- ENTITY DATA FIELDS 
     @Column(name="CD_REFNO", nullable=false, length=20)

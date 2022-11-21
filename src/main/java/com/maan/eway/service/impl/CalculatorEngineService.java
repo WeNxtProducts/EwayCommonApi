@@ -124,7 +124,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 		List<UWReferrals> referr=null;
 		if(StringUtils.isNotBlank(engine.getRequestReferenceNo()) && StringUtils.isNotBlank(engine.getVehicleId())) {
 	 
-			List<UwQuestionsDetails> uwqs = uwrepo.findByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleId(engine.getInsuranceId(),engine.getProductId(),engine.getRequestReferenceNo(),engine.getVehicleId());
+			List<UwQuestionsDetails> uwqs = uwrepo.findByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleId(engine.getInsuranceId(),Integer.valueOf(engine.getProductId()),engine.getRequestReferenceNo(),Integer.valueOf(engine.getVehicleId()));
 			if(!uwqs.isEmpty()) {
 				List<UwQuestionsDetails> isreferral=uwqs.stream().filter(f-> "Y".equals(f.getIsReferral())).collect(Collectors.toList());
 				UwQuestionUtils uts=new UwQuestionUtils();

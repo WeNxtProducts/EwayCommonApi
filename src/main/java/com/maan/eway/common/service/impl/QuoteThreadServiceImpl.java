@@ -13,6 +13,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -27,6 +28,8 @@ import javax.transaction.Transactional;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.bean.UwQuestionsDetails;
+import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.QuoteThreadReq;
 import com.maan.eway.common.req.VehicleIdsReq;
@@ -42,7 +45,9 @@ import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
+import com.maan.eway.repository.UwQuestionsDetailsRepository;
 import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.thread.MyTaskList;
 
 import lombok.Synchronized;
@@ -83,6 +88,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	@Autowired
 	private LoginMasterRepository loginRepo ;
 	
+	@Autowired
+	private UwQuestionsDetailsRepository uwRepo ;
+	
 	@Override
 	@Transactional
 	public CommonRes call_OT_Insert(NewQuoteReq req) {
@@ -95,6 +103,41 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	     //   List<Integer> list = Collections.synchronizedList(new ArrayList<>());
 		//	CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<>();
 		//	Map<String, String> map = new ConcurrentHashMap()<>();
+			List<UwQuestionsDetails>  uwQuestions = uwRepo.findByRequestReferenceNo( req.getRequestReferenceNo());
+			
+		boolean referal = false ;	
+			// Cover Referal Checking
+			for (VehicleIdsReq veh : req.getVehicleIdsList() ){
+				List<CoverIdsReq> coverList = veh.getCoverIdList();
+				List<CoverIdsReq> filterReferalCovers = coverList.stream().filter( o -> o.getIsReferal().equalsIgnoreCase("Y") ).collect(Collectors.toList());		
+				if(filterReferalCovers.size()>0 ) {
+					referal = true ;
+				}
+				
+				List<UwQuestionsDetails>  filterUwQuestions = uwQuestions.stream().filter( o -> o.getIsReferral().equalsIgnoreCase("Y") ).collect(Collectors.toList());
+				if(filterUwQuestions.size()>0 ) {
+					referal = true ;
+				}
+				
+			}
+			
+			// Under Writter Refral Checking
+		
+		if (referal == true ) {
+			List<EserviceMotorDetails> motorDatas = eserMotRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+			for (EserviceMotorDetails mot : motorDatas ) {
+				mot.setStatus("RP");
+				eserMotRepo.save(mot);
+			}
+			
+			SuccessRes res = new SuccessRes();
+			res.setResponse("Moved To Referal Successfully");
+			commonRes.setCommonResponse(response);
+			commonRes.setIsError(false);
+			commonRes.setErrorMessage(Collections.emptyList());
+			commonRes.setMessage("Success");
+			
+		} else {
 			List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
 			
 			MyTaskList taskList = new MyTaskList(queue);
@@ -258,7 +301,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			}
 						
 			
-			
+		}	
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --> " +  e.getMessage());
