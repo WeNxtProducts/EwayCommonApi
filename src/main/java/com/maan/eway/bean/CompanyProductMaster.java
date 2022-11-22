@@ -60,12 +60,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="PRODUCT_ID", nullable=false)
     private Integer    productId ;
 
-    @Id
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_START", nullable=false)
     private Date       effectiveDateStart ;
 
-    @Id
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_END", nullable=false)
     private Date       effectiveDateEnd ;

@@ -34,9 +34,9 @@ public class CompanyProductMasterId implements Serializable {
     
     private Integer    productId ;
     
-    private Date       effectiveDateStart ;
+ //   private Date       effectiveDateStart ;
     
-    private Date       effectiveDateEnd ;
+ //   private Date       effectiveDateEnd ;
     
      
 }
