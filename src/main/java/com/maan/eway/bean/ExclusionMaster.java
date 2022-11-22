@@ -13,104 +13,87 @@
 package com.maan.eway.bean;
 
 
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
-import lombok.*;
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-import java.util.Date;
-import javax.persistence.*;
-
-
-
-
-/**
-* Domain class for entity "ExclusionMaster"
-*
-* @author Telosys Tools Generator
-*
-*/
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
 @Entity
-@DynamicInsert
-@DynamicUpdate
-@Builder
-@IdClass(ExclusionMasterId.class)
 @Table(name="exclusion_master")
+@IdClass(ExclusionMasterId.class)
+public class ExclusionMaster {
 
-
-public class ExclusionMaster implements Serializable {
- 
-private static final long serialVersionUID = 1L;
- 
-    //--- ENTITY PRIMARY KEY 
-    @Id
-    @Column(name="EXCLUSION_ID", nullable=false)
-    private Integer    exclusionId ;
-
-    @Id
-    @Column(name="BRANCH_CODE", nullable=false, length=20)
-    private String     branchCode ;
-
-    @Id
-    @Column(name="COMPANY_ID", nullable=false, length=20)
-    private String     companyId ;
-
-    @Id
-    @Column(name="AMEND_ID", nullable=false)
-    private Integer    amendId ;
-
-    //--- ENTITY DATA FIELDS 
-    @Column(name="EXCLUSION_DESCRIPTION", nullable=false, length=500)
-    private String     exclusionDescription ;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_START", nullable=false)
-    private Date       effectiveDateStart ;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_END", nullable=false)
-    private Date       effectiveDateEnd ;
-
-    @Temporal(TemporalType.DATE)
-    @Column(name="ENTRY_DATE")
-    private Date       entryDate ;
-
-    @Column(name="REMARKS", length=100)
-    private String     remarks ;
-
-    @Column(name="STATUS", length=1)
-    private String     status ;
-
-    @Column(name="CREATED_BY", length=100)
-    private String     createdBy ;
-
-    @Column(name="UPDATED_BY", length=100)
-    private String     updatedBy ;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="UPDATED_DATE")
-    private Date       updatedDate ;
-
-    @Column(name="CORE_APP_CODE", nullable=false, length=20)
-    private String     coreAppCode ;
-
-    @Column(name="REGULATORY_CODE", nullable=false, length=20)
-    private String     regulatoryCode ;
-
-
-    //--- ENTITY LINKS ( RELATIONSHIP )
-
-
+	@Id
+	@Column(name="EXCLUSION_ID",nullable=false)
+	private Integer exclusionId;
+	
+	@Id
+	@Column(name="BRANCH_CODE",length=20, nullable=false)
+	private String branchCode;
+	
+	@Id
+	@Column(name="COMPANY_ID",length=20, nullable=false)
+	private String companyId;
+	
+	@Id
+	@Column(name="AMEND_ID",nullable=false)
+	private Integer amendId;
+	
+	@Column(name="EXCLUSION_DESCRIPTION",length=500)
+	private String exclusionDescription;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="EFFECTIVE_DATE_START",nullable=false)
+	private Date effectiveDateStart;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="EFFECTIVE_DATE_END",nullable=false)
+	private Date effectiveDateEnd;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="UPDATED_DATE")
+	private Date updatedDate;
+	
+	@Temporal(TemporalType.DATE)
+	@Column(name="ENTRY_DATE")
+	private Date entryDate;
+	
+	@Column(name="REMARKS",length=100)
+	private String remarks;
+	
+	@Column(name="STATUS",length=1)
+	private String status;
+	
+	@Column(name="CREATED_BY",length=100)
+	private String createdBy;
+	
+	@Column(name="UPDATED_BY",length=100)
+	private String updatedBy;
+	
+	@Column(name="CORE_APP_CODE",length=20)
+	private String coreAppCode;
+	
+	@Column(name="REGULATORY_CODE",length=20)
+	private String regulatoryCode;
+	
 }
-
-
-

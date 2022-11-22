@@ -4,38 +4,25 @@
  */
 package com.maan.eway.bean;
 
-import lombok.*;
-import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-
-/**
- * Composite primary key for entity "ExclusionMaster" ( stored in table "exclusion_master" )
- *
- * @author Telosys
- *
- */
-
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
-@Builder
 public class ExclusionMasterId implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUId = 1L;
+	private Integer exclusionId;
+	private String branchCode;
+	private String companyId;
+	private Integer amendId;
 
-    //--- ENTITY KEY ATTRIBUTES 
-    private Integer    exclusionId ;
-    
-    private String     branchCode ;
-    
-    private String     companyId ;
-    
-    private Integer    amendId ;
-    
-     
 }

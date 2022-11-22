@@ -65,11 +65,18 @@ private static final long serialVersionUID = 1L;
     private Integer    taxId ;
 
     @Id
+    @Column(name="AMEND_ID", nullable=false)
+    private Integer amendId;
+
+    @Id
+    @Column(name="BRANCH_CODE", nullable=false, length=20)
+    private String     branchCode;
+
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_START", nullable=false)
     private Date       effectiveDateStart ;
 
-    @Id
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_END", nullable=false)
     private Date       effectiveDateEnd ;
@@ -100,16 +107,19 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATUS", length=1)
     private String     status ;
 
-    @Column(name="AMEND_ID")
-    private Integer    amendId ;
-
     @Column(name="REMARKS", length=100)
     private String     remarks ;
 
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
+   
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="UPDATED_DATE")
+    private Date       updatedDate ;
+    
 
-
+    @Column(name="UPDATED_BY", length=20)
+    private String   updatedBy ;
+   
 }
 
 

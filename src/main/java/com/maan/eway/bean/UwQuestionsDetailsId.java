@@ -4,12 +4,22 @@
  */
 package com.maan.eway.bean;
 
-import lombok.*;
-import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+ 
 
+/**
+ * Composite primary key for entity "UwQuestionsDetails" ( stored in table "uw_questions_details" )
+ *
+ * @author Telosys
+ *
+ */
 
 /**
  * Composite primary key for entity "UwQuestionsDetails" ( stored in table "uw_questions_details" )
@@ -27,7 +37,6 @@ import java.util.List;
 public class UwQuestionsDetailsId implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
     //--- ENTITY KEY ATTRIBUTES 
     private String     companyId ;
     
@@ -39,5 +48,7 @@ public class UwQuestionsDetailsId implements Serializable {
     
     private Integer    uwQuestionId ;
     
+    private String     branchCode ;
+
      
 }

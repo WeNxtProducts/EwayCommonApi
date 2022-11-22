@@ -29,16 +29,12 @@ public class CompanyTaxSetupId implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    //--- ENTITY KEY ATTRIBUTES 
-    private String     companyId ;
     
-    private Integer    productId ;
-    
-    private Integer    taxId ;
-    
-    private Date       effectiveDateStart ;
-    
-    private Date       effectiveDateEnd ;
-    
-     
+	
+	private Integer taxId;
+    private Integer productId ;
+	private String companyId;
+    private Integer amendId;
+    private String     branchCode;
+ 
 }
