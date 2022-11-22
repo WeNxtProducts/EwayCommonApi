@@ -34,9 +34,7 @@ public class CoverMasterId implements Serializable {
     
     private Integer    subCoverId ;
     
-    private Date       effectiveDateStart ;
-    
-    private Date       effectiveDateEnd ;
-    
+    private Integer    amendId ;
+
      
 }
