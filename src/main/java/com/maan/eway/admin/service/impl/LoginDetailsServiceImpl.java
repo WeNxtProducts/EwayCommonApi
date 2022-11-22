@@ -362,7 +362,7 @@ this.repository = repo;
 		try {
 			CommonLoginInformationReq loginReq = req.getLoginInformation() ;
 			
-			LoginMaster findBroker = loginRepo.findByAgencyCodeAndOaCode(loginReq.getOaCode() ,loginReq.getOaCode());
+			LoginMaster findBroker = loginRepo.findByAgencyCodeAndOaCode(loginReq.getOaCode() ,Integer.valueOf(loginReq.getOaCode()));
 			
 			// Branch Setup
 			String branches  = loginReq.getAttachedBranches()==null  || loginReq.getAttachedBranches().size()==0 ?"" : String.join(",", loginReq.getAttachedBranches());
@@ -384,11 +384,11 @@ this.repository = repo;
 			saveLogin.setPassword(newpass);
 			saveLogin.setLoginId(loginReq.getLoginId());
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("Issuer") ) {
-				saveLogin.setOaCode(countId.toString());
+				saveLogin.setOaCode(Integer.valueOf(countId.toString()));
 				saveLogin.setAgencyCode(countId.toString());
 				
 			} else if(req.getLoginInformation().getUserType().equalsIgnoreCase("User") ) {
-				saveLogin.setOaCode(loginReq.getOaCode());
+				saveLogin.setOaCode(Integer.valueOf(loginReq.getOaCode()));
 				saveLogin.setAgencyCode(countId.toString());
 			}
 			saveLogin.setEntryDate(new Date());
@@ -424,11 +424,11 @@ this.repository = repo;
 			userInfo.setWhatsappCodeDesc(mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getWhatsappCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
 			
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("Issuer") ) {
-				userInfo.setOaCode(saveLogin.getOaCode());
+				userInfo.setOaCode(saveLogin.getOaCode().toString());
 				userInfo.setAgencyCode(saveLogin.getAgencyCode());
 				
 			} else if(req.getLoginInformation().getUserType().equalsIgnoreCase("User") ) {
-				userInfo.setOaCode(saveLogin.getOaCode());
+				userInfo.setOaCode(saveLogin.getOaCode().toString());
 				userInfo.setAgencyCode(saveLogin.getAgencyCode());
 			}
 			
@@ -570,7 +570,7 @@ this.repository = repo;
 			
 			// Update Login Master
 			CommonLoginInformationReq loginReq = req.getLoginInformation() ;
-			LoginMaster findBroker = loginRepo.findByAgencyCodeAndOaCode(loginReq.getOaCode() ,loginReq.getOaCode());
+			LoginMaster findBroker = loginRepo.findByAgencyCodeAndOaCode(loginReq.getOaCode() ,Integer.valueOf(loginReq.getOaCode()));
 			
 			// Branch Setup
 			String branches  = loginReq.getAttachedBranches()==null  || loginReq.getAttachedBranches().size()==0 ?"" : String.join(",", loginReq.getAttachedBranches());
@@ -586,11 +586,11 @@ this.repository = repo;
 			}
 			updateLogin.setCreatedBy(findLogin.getCreatedBy() );
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("Issuer") ) {
-				updateLogin.setOaCode(loginReq.getOaCode());
+				updateLogin.setOaCode(Integer.valueOf(loginReq.getOaCode()));
 				updateLogin.setAgencyCode(loginReq.getOaCode());
 				
 			} else if(req.getLoginInformation().getUserType().equalsIgnoreCase("User") ) {
-				updateLogin.setOaCode(loginReq.getOaCode());
+				updateLogin.setOaCode(Integer.valueOf(loginReq.getOaCode()));
 				updateLogin.setAgencyCode(loginReq.getAgencyCode());
 			}
 			

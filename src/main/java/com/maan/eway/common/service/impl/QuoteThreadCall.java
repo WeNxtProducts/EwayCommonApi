@@ -417,9 +417,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 			Double vatPercent =  (vatPremiumFc*100) / premiumFc ;
 			Double vatPremiumLc = overAllPremiumLc - premiumLc ;  
 			
-			Double tax1 = 0D;// premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTax1()!=null && o.getTax1().doubleValue() > 0D ).mapToDouble( o ->   o.getTax1()  ).sum();
-			Double tax2 = 0D;// premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTax2()!=null && o.getTax2().doubleValue() > 0D ).mapToDouble( o ->   o.getTax2()  ).sum();
-			Double tax3 = 0D;// premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTax3()!=null && o.getTax3().doubleValue() > 0D ).mapToDouble( o ->   o.getTax3()  ).sum();
+			Double tax1 =  premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(1) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc()  ).sum();
+			Double tax2 = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(2) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc()  ).sum();
+			Double tax3 = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(3) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc()  ).sum();
+			
 			
 			
 			
@@ -446,7 +447,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setBrokerCode(motorData.getBrokerCode());
 			home.setEffectiveDate(motorData.getPolicyStartDate());
 			home.setExpiryDate(motorData.getPolicyEndDate());
-			home.setStatus("Y");
+			home.setAdminRemarks(motorData.getAdminRemarks());
+			home.setAdminReferralStatus(motorData.getStatus());			
+			home.setReferralDescription(motorData.getReferalRemarks());
+			home.setAdminLoginId(motorData.getAdminLoginId());
+			home.setStatus(motorData.getStatus());
 			home.setQuoteCreatedDate(new Date());
 			home.setEntryDate(new Date());
 			home.setInceptionDate(motorData.getPolicyStartDate());

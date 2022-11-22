@@ -28,6 +28,9 @@ public class QuoteThreadReq {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
+	@JsonProperty("AdminLoginId")
+	private String adminLoginId;
+
 	@JsonProperty("Vehicles")
 	private List<VehicleIdsReq> VehicleIdsList;
 

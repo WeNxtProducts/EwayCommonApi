@@ -9,9 +9,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -100,7 +103,7 @@ try {
 	query.select(c);
 	// Order By
 	List<Order> orderList = new ArrayList<Order>();
-	orderList.add(cb.asc(c.get("occupationName")));
+	orderList.add(cb.asc(c.get("branchCode")));
 	
 	// Effective Date Start Max Filter
 	Subquery<Long> effectiveDate = query.subquery(Long.class);
@@ -125,6 +128,10 @@ try {
 	Predicate n6 = cb.equal(c.get("branchCode"),"99999");
 	Predicate n7 = cb.or(n5,n6);
 	query.where(n1,n2,n3,n4,n7).orderBy(orderList);
+	
+	list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getOccupationId()))).collect(Collectors.toList());
+	list.sort(Comparator.comparing(OccupationMaster :: getOccupationName ));
+	
 	// Get Result
 	TypedQuery<OccupationMaster> result = em.createQuery(query);
 	list = result.getResultList();
@@ -145,6 +152,11 @@ try {
 	return resList;
 }
 	
+
+private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+}
 /*
 
 @Override

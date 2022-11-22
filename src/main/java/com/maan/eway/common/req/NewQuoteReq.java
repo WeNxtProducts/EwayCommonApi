@@ -20,4 +20,7 @@ public class NewQuoteReq {
 	
 	@JsonProperty("ProductId")
 	private String productId;
+	
+	@JsonProperty("AdminLoginId")
+	private String adminLoginId;
 }

@@ -170,7 +170,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			r.setUserMobile(StringUtils.isBlank(userInfo.getUserMobile())?"":userInfo.getUserMobile());
 			r.setUserType(login.getUserType());
 			r.setSubUserType(login.getSubUserType());
-			r.setOaCode(login.getOaCode());
+			r.setOaCode(login.getOaCode().toString());
 			r.setBankCode(login.getBankCode());
 			
 			// Branch Res	

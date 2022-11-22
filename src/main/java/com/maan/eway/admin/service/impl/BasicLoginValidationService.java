@@ -119,7 +119,7 @@ public class BasicLoginValidationService {
 				if(loginData!=null ) {
 					if (StringUtils.isBlank( loginReq.getOaCode()) ) {
 						errors.add(new Error("02", "Login Id", "Login Id Already Exist"));
-					} else if(! loginReq.getOaCode().equalsIgnoreCase(loginData.getOaCode() ) ) {
+					} else if(! loginReq.getOaCode().equalsIgnoreCase(loginData.getOaCode().toString() ) ) {
 						errors.add(new Error("02", "Login Id", "Login Id Already Exist"));
 					}
 				} 

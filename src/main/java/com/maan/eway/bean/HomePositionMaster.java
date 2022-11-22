@@ -68,6 +68,9 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="AGENCY_CODE", nullable=false)
     private Integer    agencyCode ;
+    
+    @Column(name="ADMIN_LOGIN_ID", nullable=false)
+    private String    adminLoginId ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="CUSTOMER_ID", nullable=false)

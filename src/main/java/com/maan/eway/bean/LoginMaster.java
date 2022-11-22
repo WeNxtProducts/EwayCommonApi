@@ -90,7 +90,7 @@ private static final long serialVersionUID = 1L;
     private String     brokerCompanyYn ;
 
     @Column(name="OA_CODE", length=10)
-    private String     oaCode ;
+    private Integer     oaCode ;
 
     @Column(name="LPASS1", length=50)
     private String     lpass1 ;
