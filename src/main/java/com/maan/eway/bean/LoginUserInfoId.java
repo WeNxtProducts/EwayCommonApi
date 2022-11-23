@@ -31,7 +31,7 @@ public class LoginUserInfoId implements Serializable {
     //--- ENTITY KEY ATTRIBUTES 
     private String     loginId ;
     
-    private Integer    oaCode ;
+    private String    oaCode ;
     
      
 }

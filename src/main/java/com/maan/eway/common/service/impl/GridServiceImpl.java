@@ -20,6 +20,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -29,14 +30,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.res.CriteriaCustomerRes;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
+import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.service.GridService;
+import com.maan.eway.common.service.MotorGridService;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
+import com.maan.eway.repository.LoginBranchMasterRepository;
 
 @Service
 @Transactional
@@ -47,6 +53,12 @@ public class GridServiceImpl implements GridService {
 	
 	@Autowired
 	private EserviceCustomerDetailsRepository custRepo ;
+	
+	@Autowired
+	private LoginBranchMasterRepository loginBranchRepo ;
+	
+	@Autowired
+	private MotorGridService motService ;
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -69,12 +81,35 @@ public class GridServiceImpl implements GridService {
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 
-			// Find Quote Customer Details
-			List<CriteriaCustomerRes> customerDetails = getallQuoteCustomerDetails(req , "Y" , before30 , today , limit , offset ) ;
+			List<QuoteCriteriaRes> extingQuoteList = new ArrayList<QuoteCriteriaRes>();
 			
-			for(CriteriaCustomerRes data : customerDetails  ) {
+			String loginId = "" ;
+			if (req.getApplicationId().equalsIgnoreCase("1") ) {
+				loginId = req.getLoginId();
+			} else {
+				loginId = req.getApplicationId();
+			}
+			// Branch Res
+			List<String> branches = new ArrayList<String>();
+			if (req.getBranchCode().equalsIgnoreCase("99999") ) {
+				
+				List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(loginId);
+				 branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
+					
+			} else {
+				branches.add(req.getBranchCode());
+			}
+			
+			// Product Wise Get			
+			if (req.getProductId().equalsIgnoreCase("5") ) {
+				extingQuoteList = motService.getMotorExistingQuoteDetails(req  , branches , before30 , today , limit , offset );
+			}
+			
+			
+			for(QuoteCriteriaRes data : extingQuoteList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
-				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	 
+				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+				 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
 				 custRes.add(res);	
 			}
 		
@@ -88,122 +123,330 @@ public class GridServiceImpl implements GridService {
 
 	
 
-	public List<CriteriaCustomerRes> getallQuoteCustomerDetails(ExistingQuoteReq req , String status , Date startDate ,Date  endDate , Integer limit , Integer offset ) {
-		List<CriteriaCustomerRes> customerDetails = new ArrayList<CriteriaCustomerRes>();
-		try {
-			// Get Request Ref No
-			List<String> reqRefNos = new ArrayList<String>(); 
-			{
-				CriteriaBuilder cb = em.getCriteriaBuilder();
-				CriteriaQuery<String> query = cb.createQuery(String.class);
-				Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
-				Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
+	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
 
-				query.select(m.get("requestReferenceNo")).distinct(true);
-				
-				// Order By
-				List<Order> orderList = new ArrayList<Order>();
-				orderList.add(cb.desc(m.get("updatedDate")));
-				
-				// Where
-				Predicate n1 = cb.equal(  c.get("customerReferenceNo"),  m.get("customerReferenceNo"));
-				Predicate n2 = cb.equal(  m.get("branchCode"), req.getBranchCode()) ;
-				Predicate n3 = cb.equal(  m.get("companyId"),  req.getInsuranceId()) ;
-				Predicate n4 = cb.equal(  m.get("productId"),  req.getProductId());
-				Predicate n5 = cb.equal(  m.get("createdBy"),  req.getCreatedBy());
-				Predicate n6 = cb.equal(m.get("status"),status );
-				Predicate n7 = cb.lessThanOrEqualTo(m.get("updatedDate"), endDate);
-				Predicate n8 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
-				query.where(n1,n2,n3,n4,n5,n6,n7,n8).orderBy(orderList);
-				
-				// Get Result
-				TypedQuery<String> result = em.createQuery(query);
-				result.setFirstResult(limit * offset);
-				result.setMaxResults(offset);
-				reqRefNos = result.getResultList();
+	@Override
+	public List<EserviceCustomerDetailsRes> getallLapsedQuoteDetails(ExistingQuoteReq req) {
+		List<EserviceCustomerDetailsRes> custRes = new ArrayList<EserviceCustomerDetailsRes>();
+		DozerBeanMapper dozerMapper  = new DozerBeanMapper(); 
+		try {
+			Date today = new Date() ;
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today); cal.set(Calendar.HOUR_OF_DAY, 1); cal.set(Calendar.MINUTE, 1); cal.add(Calendar.DAY_OF_MONTH, -30);
+			Date before30 = cal.getTime();
 			
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+	
+			String loginId = "" ;
+			if (req.getApplicationId().equalsIgnoreCase("1") ) {
+				loginId = req.getLoginId();
+			} else {
+				loginId = req.getApplicationId();
+			}
+			// Branch Res
+			List<String> branches = new ArrayList<String>();
+			if (req.getBranchCode().equalsIgnoreCase("99999") ) {
+				
+				List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(loginId);
+				 branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
+					
+			} else {
+				branches.add(req.getBranchCode());
 			}
 			
-			// Get Datas
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<CriteriaCustomerRes> query = cb.createQuery(CriteriaCustomerRes.class);
-
-			// Find All
-			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
-			Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
-
-			// Select
-			query.multiselect(
-					// Customer Info
-				    c.get("customerReferenceNo").alias("customerReferenceNo"),
-				    c.get("policyHolderTypeid").alias("policyHolderTypeid"),
-					c.get("idType").alias("idType"),
-					c.get("idNumber").alias("idNumber"),
-					c.get("age").alias("age"),
-					c.get("clientName").alias("clientName"),
-					c.get("titleDesc").alias("titleDesc"),
-					c.get("policyHolderType").alias("policyHolderType"),
-					c.get("idTypeDesc").alias("idTypeDesc"),
-					c.get("dobOrRegDate").alias("dobOrRegDate"),
-					c.get("genderDesc").alias("genderDesc"),
-					c.get("occupationDesc").alias("occupationDesc"),
-					c.get("businessTypeDesc").alias("businessTypeDesc"),
-					c.get("telephoneNo1").alias("telephoneNo1"),
-					c.get("telephoneNo2").alias("telephoneNo2"),
-					c.get("telephoneNo3").alias("telephoneNo3"),
-					c.get("mobileNo1").alias("mobileNo1"),
-					c.get("mobileNo2").alias("mobileNo2"),
-					c.get("mobileNo3").alias("mobileNo3"),
-					c.get("email1").alias("email1"),
-					c.get("email2").alias("email2"),
-					c.get("email3").alias("email3"),
-					
-					c.get("vrnGst").alias("vrnGst") ,
-				
-					// Vehicle Info
-					m.get("companyId").alias("companyId"),
-					m.get("productId").alias("productId"),
-					m.get("branchCode").alias("branchCode"),
-				 m.get("requestReferenceNo").alias("requestReferenceNo") , 
-					m.get("createdBy").alias("createdBy") , 
-					m.get("status").alias("status") ,
-					m.get("quoteNo").alias("quoteNo") ,
-					m.get("customerId").alias("customerId") ,
-					m.get("entryDate").alias("entryDate") ,
-					m.get("updatedDate").alias("updatedDate") ,
-					m.get("updatedBy").alias("updatedBy")
-					).distinct(true);
+			// Product Wise Get	
+			List<QuoteCriteriaRes> lapsedQuoteList = new ArrayList<QuoteCriteriaRes>();
+			if (req.getProductId().equalsIgnoreCase("5") ) {
+				lapsedQuoteList = motService.getMotorLapsedQuoteDetails(req  , branches, before30 , limit , offset );
+			}
 			
-			// Order By
-			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(m.get("quoteNo")));
-			
-			//In 
-			Expression<String>e0= m.get("requestReferenceNo");
-			
-			// Where
-			Predicate n1 = e0.in(reqRefNos);
-			Predicate n2 = cb.equal(  c.get("customerReferenceNo"),  m.get("customerReferenceNo"));
-			query.where(n1,n2).orderBy(orderList);
-			
-			// Get Result
-			TypedQuery<CriteriaCustomerRes> result = em.createQuery(query);
-			customerDetails = result.getResultList();
-			
-			customerDetails = customerDetails.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo()))).collect(Collectors.toList());	
-			customerDetails.sort(Comparator.comparing(CriteriaCustomerRes :: getUpdatedDate).reversed());	
-			
+			for(QuoteCriteriaRes data : lapsedQuoteList  ) {
+				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);
+				 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+				 custRes.add(res);	
+			}
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
 			return null;
 		}
-		return customerDetails;
+		return custRes;
+	}
+
+	@Override
+	public List<EserviceCustomerDetailsRes> getallRejectedQuoteDetails(ExistingQuoteReq req) {
+		List<EserviceCustomerDetailsRes> custRes = new ArrayList<EserviceCustomerDetailsRes>();
+		DozerBeanMapper dozerMapper  = new DozerBeanMapper(); 
+		try {
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+
+			String loginId = "" ;
+			if (req.getApplicationId().equalsIgnoreCase("1") ) {
+				loginId = req.getLoginId();
+			} else {
+				loginId = req.getApplicationId();
+			}
+			// Branch Res
+			List<String> branches = new ArrayList<String>();
+			if (req.getBranchCode().equalsIgnoreCase("99999") ) {
+				
+				List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(loginId);
+				 branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
+					
+			} else {
+				branches.add(req.getBranchCode());
+			}
+			
+			List<QuoteCriteriaRes> rejectedQuoteList = new ArrayList<QuoteCriteriaRes>();
+			if (req.getProductId().equalsIgnoreCase("5") ) {
+				rejectedQuoteList = motService.getMotorRejectedQuoteDetails(req  , branches, limit , offset );
+			}
+			for(QuoteCriteriaRes data : rejectedQuoteList  ) {
+				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+				 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+				 custRes.add(res);	
+			}
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return custRes;
 	}
 	
+	// Referral Grids
 
-	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
-	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
-	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	@Override
+	public List<EserviceCustomerDetailsRes> getallReferralPendingDetails(ExistingQuoteReq req) {
+		List<EserviceCustomerDetailsRes> custRes = new ArrayList<EserviceCustomerDetailsRes>();
+		DozerBeanMapper dozerMapper  = new DozerBeanMapper(); 
+		try {
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+
+			String loginId = "" ;
+			if (req.getApplicationId().equalsIgnoreCase("1") ) {
+				loginId = req.getLoginId();
+			} else {
+				loginId = req.getApplicationId();
+			}
+			// Branch Res
+			List<String> branches = new ArrayList<String>();
+			if (req.getBranchCode().equalsIgnoreCase("99999") ) {
+				
+				List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(loginId);
+				 branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
+					
+			} else {
+				branches.add(req.getBranchCode());
+			}
+			
+			List<QuoteCriteriaRes> referralPendingList = new ArrayList<QuoteCriteriaRes>();
+			if (req.getProductId().equalsIgnoreCase("5") ) {
+				referralPendingList = motService.getMotorReferalPendingDetails(req  , branches, limit , offset );
+			}
+			for(QuoteCriteriaRes data : referralPendingList  ) {
+				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+				 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+				 custRes.add(res);	
+			}
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return custRes;
+	}
+
+	@Override
+	public List<EserviceCustomerDetailsRes> getallReferralApprovedDetails(ExistingQuoteReq req) {
+		List<EserviceCustomerDetailsRes> custRes = new ArrayList<EserviceCustomerDetailsRes>();
+		DozerBeanMapper dozerMapper  = new DozerBeanMapper(); 
+		try {
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+
+			String loginId = "" ;
+			if (req.getApplicationId().equalsIgnoreCase("1") ) {
+				loginId = req.getLoginId();
+			} else {
+				loginId = req.getApplicationId();
+			}
+			// Branch Res
+			List<String> branches = new ArrayList<String>();
+			if (req.getBranchCode().equalsIgnoreCase("99999") ) {
+				
+				List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(loginId);
+				 branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
+					
+			} else {
+				branches.add(req.getBranchCode());
+			}
+			
+			List<QuoteCriteriaRes> referralApprovedList = new ArrayList<QuoteCriteriaRes>();
+			if (req.getProductId().equalsIgnoreCase("5") ) {
+				referralApprovedList = motService.getMotorReferalApprovedDetails(req  , branches, limit , offset );
+			}
+			for(QuoteCriteriaRes data : referralApprovedList  ) {
+				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+				 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+				 custRes.add(res);	
+			}
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return custRes;
+	}
+
+	@Override
+	public List<EserviceCustomerDetailsRes> getallReferralRejectedDetails(ExistingQuoteReq req) {
+		List<EserviceCustomerDetailsRes> custRes = new ArrayList<EserviceCustomerDetailsRes>();
+		DozerBeanMapper dozerMapper  = new DozerBeanMapper(); 
+		try {
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+
+			String loginId = "" ;
+			if (req.getApplicationId().equalsIgnoreCase("1") ) {
+				loginId = req.getLoginId();
+			} else {
+				loginId = req.getApplicationId();
+			}
+			// Branch Res
+			List<String> branches = new ArrayList<String>();
+			if (req.getBranchCode().equalsIgnoreCase("99999") ) {
+				
+				List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(loginId);
+				 branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
+					
+			} else {
+				branches.add(req.getBranchCode());
+			}
+			
+			List<QuoteCriteriaRes> referralRejectedList = new ArrayList<QuoteCriteriaRes>();
+			if (req.getProductId().equalsIgnoreCase("5") ) {
+				referralRejectedList = motService.getMotorReferalRejectedDetails(req  , branches, limit , offset );
+			}
+			for(QuoteCriteriaRes data : referralRejectedList  ) {
+				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+				 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+				 custRes.add(res);	
+			}
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return custRes;
+	}
+
+	@Override
+	public List<EserviceCustomerDetailsRes> getallAdminReferralPendings(ExistingQuoteReq req) {
+		List<EserviceCustomerDetailsRes> custRes = new ArrayList<EserviceCustomerDetailsRes>();
+		DozerBeanMapper dozerMapper  = new DozerBeanMapper(); 
+		try {
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+
+			List<String> branches = new ArrayList<String>();
+			List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(req.getLoginId());
+			branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
+			
+			List<QuoteCriteriaRes> adminReferralPendingList = new ArrayList<QuoteCriteriaRes>();
+			if (req.getProductId().equalsIgnoreCase("5") ) {
+				adminReferralPendingList = motService.getMotorAdminReferalPendings(req  , branches, limit , offset );
+			}
+			for(QuoteCriteriaRes data : adminReferralPendingList  ) {
+				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+				 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+				 custRes.add(res);	
+			}
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return custRes;
+	}
+
+	@Override
+	public List<EserviceCustomerDetailsRes> getallAdminReferralApproved(ExistingQuoteReq req) {
+		List<EserviceCustomerDetailsRes> custRes = new ArrayList<EserviceCustomerDetailsRes>();
+		DozerBeanMapper dozerMapper  = new DozerBeanMapper(); 
+		try {
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+
+			List<String> branches = new ArrayList<String>();
+			List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(req.getLoginId());
+			branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
+			
+			List<QuoteCriteriaRes> adminReferralApprovedList = new ArrayList<QuoteCriteriaRes>();
+			if (req.getProductId().equalsIgnoreCase("5") ) {
+				adminReferralApprovedList = motService.getMotorAdminReferalApproved(req  , branches, limit , offset );
+			}
+			for(QuoteCriteriaRes data : adminReferralApprovedList  ) {
+				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+				 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+				 custRes.add(res);	
+			}
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return custRes;
+	}
+
+	@Override
+	public List<EserviceCustomerDetailsRes> getallAdminReferralRejected(ExistingQuoteReq req) {
+		List<EserviceCustomerDetailsRes> custRes = new ArrayList<EserviceCustomerDetailsRes>();
+		DozerBeanMapper dozerMapper  = new DozerBeanMapper(); 
+		try {
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+
+			List<String> branches = new ArrayList<String>();
+			List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(req.getLoginId());
+			branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
+			
+			List<QuoteCriteriaRes> adminReferralRejectedList = new ArrayList<QuoteCriteriaRes>();
+			if (req.getProductId().equalsIgnoreCase("5") ) {
+				adminReferralRejectedList = motService.getMotorAdminReferalRejected(req  , branches, limit , offset );
+			}
+			for(QuoteCriteriaRes data : adminReferralRejectedList  ) {
+				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+				 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+				 custRes.add(res);	
+			}
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return custRes;
 	}
 }

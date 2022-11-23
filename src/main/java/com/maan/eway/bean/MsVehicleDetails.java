@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -50,123 +49,123 @@ import javax.persistence.*;
 public class MsVehicleDetails implements Serializable {
  
 private static final long serialVersionUID = 1L;
- 
-    //--- ENTITY PRIMARY KEY 
-    @Id
-    @Column(name="VEHICLE_ID", nullable=false, length=10)
-    private String     vehicleId ;
-
-    @Id
-    @Column(name="chassis_number", nullable=false, length=20)
-    private String     chassisNumber ;
-
-    @Id
-    @Column(name="VD_REFNO", nullable=false)
-    private Long       vdRefno ;
-
-    @Id
-    @Column(name="status", nullable=false, length=20)
-    private String     status ;
-
-    //--- ENTITY DATA FIELDS 
-    @Column(name="ACCIDENT_YN", nullable=false, length=20)
-    private String     accidentYn ;
-
-    @Column(name="Wind_Screen_Cover_Requeired", nullable=false, length=50)
-    private String     windScreenCoverRequeired ;
-
-    @Column(name="INSURANCE_TYPE", nullable=false, length=10)
-    private String     insuranceType ;
-
-    @Column(name="Insurance_Class", nullable=false, length=10)
-    private String     insuranceClass ;
-
-    @Column(name="Owner_Category", nullable=false, length=10)
-    private String     ownerCategory ;
-
-    @Column(name="Vehicle_Make", nullable=false, length=50)
-    private String     vehicleMake ;
-
-    @Column(name="Vehcile_Model", nullable=false, length=50)
-    private String     vehcileModel ;
-
-    @Column(name="Vehicle_Body_Type", nullable=false, length=50)
-    private String     vehicleBodyType ;
-
-    @Column(name="Fuel_Type", nullable=false, length=50)
-    private String     fuelType ;
-
-    @Temporal(TemporalType.DATE)
-    @Column(name="Manufacture_Year", nullable=false)
-    private Date       manufactureYear ;
-
-    @Column(name="Manufacture_age", nullable=false)
-    private Integer    manufactureAge ;
-
-    @Column(name="registration_age", nullable=false)
-    private Integer    registrationAge ;
-
-    @Temporal(TemporalType.DATE)
-    @Column(name="Registration_Year", nullable=false)
-    private Date       registrationYear ;
-
-    @Column(name="Seating_Capacity", nullable=false, length=20)
-    private String     seatingCapacity ;
-
-    @Column(name="Period_of_Insurance", nullable=false, length=10)
-    private String     periodOfInsurance ;
-
-    @Column(name="Wind_screen_sum_insured", nullable=false)
-    private Double     windScreenSumInsured ;
-
-    @Column(name="acccessories_sum_insured", nullable=false)
-    private Double     acccessoriesSumInsured ;
-
-    @Column(name="Sum_Insured", nullable=false)
-    private Double     sumInsured ;
-
-    @Column(name="ncdyears", nullable=false)
-    private Integer    ncdyears ;
-
-    @Column(name="NCD_YN", nullable=false, length=5)
-    private String     ncdYn ;
-
-    @Column(name="No_OF_Claims", nullable=false)
-    private Integer    noOfClaims ;
-
-    @Temporal(TemporalType.DATE)
-    @Column(name="entry_date", nullable=false)
-    private Date       entryDate ;
-
-    @Column(name="Vehicle_Weight", nullable=false)
-    private Long       vehicleWeight ;
-
-    @Column(name="CURRENCY", nullable=false)
-    private Integer    currency ;
-
-    @Column(name="EXCHANGE_RATE", nullable=false)
-    private Double     exchangeRate ;
-
-    @Column(name="FLEET_OWNER_YN", nullable=false, length=1)
-    private String     fleetOwnerYn ;
-
-    @Column(name="NO_OF_VEHICLES", nullable=false)
-    private Integer    noOfVehicles ;
-
-    @Column(name="NO_OF_COMPEHENSIVES", nullable=false)
-    private Integer    noOfCompehensives ;
-
-    @Column(name="CLAIM_RATIO", nullable=false)
-    private Double     claimRatio ;
-
-    @Column(name="TPD_INCREASE_LIMIT")
-    private Double     tpdIncreaseLimit ;
-
-    @Column(name="MOTOR_USAGE", length=100)
-    private String     motorUsage ;
-
-    @Column(name="GPS_YN", length=5)
-    private String     gpsYn ;
+		 
+		//--- ENTITY PRIMARY KEY 
+		@Id
+		@Column(name="VEHICLE_ID", nullable=false, length=10)
+		private String     vehicleId ;
+		
+		@Id
+		@Column(name="VD_REFNO", nullable=false)
+		private Long       vdRefno ;
+		
+		@Id
+		@Column(name="status", nullable=false, length=20)
+		private String     status ;
+		
+		//--- ENTITY DATA FIELDS 
+		@Column(name="ACCIDENT_YN", nullable=false, length=20)
+		private String     accidentYn ;
+		
+		@Column(name="Wind_Screen_Cover_Requeired", nullable=false, length=50)
+		private String     windScreenCoverRequeired ;
+		
+		@Column(name="INSURANCE_TYPE", nullable=false, length=10)
+		private String     insuranceType ;
+		
+		@Column(name="Insurance_Class", nullable=false, length=10)
+		private String     insuranceClass ;
+		
+		@Column(name="Owner_Category", nullable=false, length=10)
+		private String     ownerCategory ;
+		
+		@Column(name="chassis_number", nullable=false, length=20)
+		private String     chassisNumber ;
+		
+		@Column(name="Vehicle_Make", nullable=false, length=10)
+		private String     vehicleMake ;
+		
+		@Column(name="Vehcile_Model", nullable=false, length=10)
+		private String     vehcileModel ;
+		
+		@Column(name="Vehicle_Body_Type", nullable=false, length=20)
+		private String     vehicleBodyType ;
+		
+		@Column(name="Fuel_Type", nullable=false, length=10)
+		private String     fuelType ;
+		
+		@Column(name="MANUFACTURE_YEAR", length=10)
+		private Integer     manufactureYear ;
+		
+		@Column(name="Manufacture_age", nullable=false)
+		private Integer    manufactureAge ;
+		
+		@Column(name="registration_age", nullable=false)
+		private Integer    registrationAge ;
+		
+		@Temporal(TemporalType.DATE)
+		@Column(name="Registration_Year", nullable=false)
+		private Date       registrationYear ;
+		
+		@Column(name="Seating_Capacity", nullable=false, length=20)
+		private String     seatingCapacity ;
+		
+		@Column(name="Period_of_Insurance", nullable=false, length=10)
+		private String     periodOfInsurance ;
+		
+		@Column(name="Wind_screen_sum_insured")
+		private Double     windScreenSumInsured ;
+		
+		@Column(name="acccessories_sum_insured")
+		private Double     acccessoriesSumInsured ;
+		
+		@Column(name="Sum_Insured")
+		private Double     sumInsured ;
+		
+		@Column(name="ncdyears", nullable=false)
+		private Integer    ncdyears ;
+		
+		@Column(name="NCD_YN", nullable=false, length=5)
+		private String     ncdYn ;
+		
+		@Column(name="No_OF_Claims", nullable=false)
+		private Integer    noOfClaims ;
+		
+		@Temporal(TemporalType.DATE)
+		@Column(name="entry_date", nullable=false)
+		private Date       entryDate ;
+		
+		@Column(name="Vehicle_Weight", nullable=false)
+		private Double       vehicleWeight ;
+		
+		@Column(name="CURRENCY", nullable=false)
+		private String    currency ;
+		
+		@Column(name="EXCHANGE_RATE", nullable=false)
+		private Double     exchangeRate ;
+		
+		@Column(name="FLEET_OWNER_YN", nullable=false, length=1)
+		private String     fleetOwnerYn ;
+		
+		@Column(name="NO_OF_VEHICLES", nullable=false)
+		private Integer    noOfVehicles ;
+		
+		@Column(name="NO_OF_COMPEHENSIVES", nullable=false)
+		private Integer    noOfCompehensives ;
+		
+		@Column(name="CLAIM_RATIO", nullable=false)
+		private Double     claimRatio ;
+		
+		
+		@Column(name="TPD_INCREASE_LIMIT" )
+		private Double     tpdIncreaseLimit ;
+		
+		@Column(name="MOTOR_USAGE")
+		private String motorUsage;
+		//--- ENTITY LINKS ( RELATIONSHIP )
+		
+		@Column(name="GPS_YN")
+		private String gpsyn;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )

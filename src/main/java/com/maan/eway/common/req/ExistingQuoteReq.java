@@ -14,6 +14,20 @@ public class ExistingQuoteReq {
 	   private String     insuranceId     ;
 	   @JsonProperty("CreatedBy")
 	   private String     createdBy;
+	   @JsonProperty("LoginId")
+	   private String     loginId;
+	   @JsonProperty("ApplicationId")
+	   private String     applicationId;
+	   
+	   @JsonProperty("SourceType")
+	   private String     sourceType;
+	   
+	   @JsonProperty("BdmCode")
+	   private String     bdmCode;
+	   @JsonProperty("UserType")
+	   private String     userType;
+	   @JsonProperty("SubUserType")
+	   private String     subUserType;
 	   @JsonProperty("ProductId")
 	   private String     productId     ;
 	   @JsonProperty("Limit")

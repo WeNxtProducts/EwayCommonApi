@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -148,8 +147,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="OVERRIDE_PERCENTAGE")
     private Double     overridePercentage ;
 
+    @Temporal(TemporalType.DATE)
     @Column(name="REGISTRATION_YEAR")
-    private Integer    registrationYear ;
+    private Date    registrationYear ;
 
     @Column(name="SEATING_CAPACITY")
     private Integer    seatingCapacity ;
@@ -413,6 +413,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="REFERAL_REMARKS", length=100)
     private String     referalRemarks ;
 
+    @Column(name="BDM_CODE", length=100)
+    private String     bdmCode ;
+
+    @Column(name="SOURCE_TYPE", length=100)
+    private String     sourceType;
+
+    @Column(name="CUSTOMER_CODE", length=100)
+    private String     customerCode;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 

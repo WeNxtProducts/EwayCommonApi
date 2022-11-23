@@ -30,6 +30,7 @@ public class GridController {
 	@Autowired
 	private  GridService entityService;
 	
+	// Quote Grids
 	@PostMapping("/existingquotedetails")
 	public ResponseEntity<CommonRes> getallExistingQuoteDetails(@RequestBody  ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
@@ -44,5 +45,142 @@ public class GridController {
 			} else {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
+	}
+	
+	
+	@PostMapping("/lapsedquotedetails")
+	public ResponseEntity<CommonRes> getallLapsedQuoteDetails(@RequestBody  ExistingQuoteReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<EserviceCustomerDetailsRes> res = entityService.getallLapsedQuoteDetails(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
 		}
+	
+	@PostMapping("/rejectedquotedetails")
+	public ResponseEntity<CommonRes> getallRejectedQuoteDetails(@RequestBody  ExistingQuoteReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<EserviceCustomerDetailsRes> res = entityService.getallRejectedQuoteDetails(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+	
+	
+	// Referral Grids
+	@PostMapping("/referralpending")
+	public ResponseEntity<CommonRes> getallReferralPendingDetails(@RequestBody  ExistingQuoteReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<EserviceCustomerDetailsRes> res = entityService.getallReferralPendingDetails(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+	
+	
+	@PostMapping("/referralapproved")
+	public ResponseEntity<CommonRes> getallReferralApprovedDetails(@RequestBody  ExistingQuoteReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<EserviceCustomerDetailsRes> res = entityService.getallReferralApprovedDetails(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+	
+	
+	@PostMapping("/referralrejected")
+	public ResponseEntity<CommonRes> getallReferralRejectedDetails(@RequestBody  ExistingQuoteReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<EserviceCustomerDetailsRes> res = entityService.getallReferralRejectedDetails(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+	
+	// Admin Referrral Grids
+	@PostMapping("/adminreferralpending")
+	public ResponseEntity<CommonRes> getallAdminReferralPendings(@RequestBody  ExistingQuoteReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<EserviceCustomerDetailsRes> res = entityService.getallAdminReferralPendings(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+	
+	@PostMapping("/adminreferralapproved")
+	public ResponseEntity<CommonRes> getallAdminReferralApproved(@RequestBody  ExistingQuoteReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<EserviceCustomerDetailsRes> res = entityService.getallAdminReferralApproved(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+	
+	@PostMapping("/adminreferralrejected")
+	public ResponseEntity<CommonRes> getallAdminReferralRejecteds(@RequestBody  ExistingQuoteReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<EserviceCustomerDetailsRes> res = entityService.getallAdminReferralRejected(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+	
+	
+	
 }

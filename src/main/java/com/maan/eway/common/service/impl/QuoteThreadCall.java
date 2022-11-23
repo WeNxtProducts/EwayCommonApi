@@ -195,7 +195,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			// Cover Calc
 			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,request.getVehicleId());
-			List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o -> o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
+			List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
 			
 			// Insert Other Covers
 			List<VehicleIdsReq> VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getVehicleId())).collect(Collectors.toList());
@@ -206,7 +206,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			for ( CoverIdsReq covReq :  coverReqList) {
 				 
-				List<FactorRateRequestDetails> filterNonDefaultCovers = defaultCovers.stream().filter( o -> (! o.getIsSelected().equalsIgnoreCase("D")) && o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0)).collect(Collectors.toList());				
+				List<FactorRateRequestDetails> filterNonDefaultCovers = defaultCovers.stream().filter( o -> o.getIsSelected()!=null &&   (! o.getIsSelected().equalsIgnoreCase("D")) && o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0)).collect(Collectors.toList());				
 				
 				if(filterNonDefaultCovers != null && filterNonDefaultCovers.size()>0 ) {
 					if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
@@ -214,7 +214,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 						premiumCovers.addAll(filterNonDefaultCovers);
 						
 					}else {
-						List<FactorRateRequestDetails> filterNonDefaultSubCovers = filterNonDefaultCovers.stream().filter( o -> (! o.getIsSelected().equalsIgnoreCase("D")) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))&& o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
+						List<FactorRateRequestDetails> filterNonDefaultSubCovers = filterNonDefaultCovers.stream().filter( o ->o.getIsSelected()!=null &&  (! o.getIsSelected().equalsIgnoreCase("D")) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))&& o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
 						premiumCovers.addAll(filterNonDefaultSubCovers);
 					}
 				}
@@ -245,7 +245,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			motorData.setCreatedBy(request.getCreatedBy());
 			motorData.setQuoteNo(request.getQuoteNo());
 			motorData.setCustomerId(request.getCustomerId());
-			
+			motorData.setStatus("Y");
 			List<FactorRateRequestDetails>  filterCover = covers.stream().filter( o -> o.getVehicleId().equals( eserMotors.getVehicleId())).collect(Collectors.toList());
 			motorData.setVdRefno(filterCover.get(0).getVdRefno());	
 			motorData.setMsRefno(filterCover.get(0).getMsRefno());		
@@ -288,7 +288,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			// Find Motor
 			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,request.getVehicleId());
 	
-			List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o -> o.getIsSelected().equalsIgnoreCase("D") ).collect(Collectors.toList() );
+			List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o -> o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") ).collect(Collectors.toList() );
 			
 			// Insert Default Covers
 			res = InsertCoverDetails(defaultCovers);
@@ -300,26 +300,26 @@ public class QuoteThreadCall implements Callable<Object>  {
 			List<FactorRateRequestDetails> updateCovers = new ArrayList<FactorRateRequestDetails>(); 
 			for ( CoverIdsReq covReq :  coverReqList) {
 				 
-				List<FactorRateRequestDetails> filterNonDefaultCovers = covers.stream().filter( o ->! o.getIsSelected().equalsIgnoreCase("D") && o.getCoverId().equals(covReq.getCoverId())).collect(Collectors.toList());				
+				List<FactorRateRequestDetails> filterNonDefaultCovers = covers.stream().filter( o -> o.getIsSelected()!=null && (! o.getIsSelected().equalsIgnoreCase("D")) && o.getCoverId().equals(covReq.getCoverId())).collect(Collectors.toList());				
 				
 				if(filterNonDefaultCovers != null && filterNonDefaultCovers.size()>0 ) {
 					if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
 						res = InsertCoverDetails(filterNonDefaultCovers);
 						
-						List<FactorRateRequestDetails> 	updateCovers1 = filterNonDefaultCovers.stream().filter( o -> o.getIsSelected().equalsIgnoreCase("N") ).collect(Collectors.toList());
+						List<FactorRateRequestDetails> 	updateCovers1 = filterNonDefaultCovers.stream().filter( o ->o.getIsSelected()!=null &&  (o.getIsSelected().equalsIgnoreCase("N")) ).collect(Collectors.toList());
 						updateCovers.addAll(updateCovers1);
 						
 					}else {
 						List<FactorRateRequestDetails> filterNonDefaultSubCovers = filterNonDefaultCovers.stream().filter( o -> ! o.getIsSelected().equalsIgnoreCase("D") && o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId())) ).collect(Collectors.toList());
 						res = InsertCoverDetails(filterNonDefaultSubCovers);
-						List<FactorRateRequestDetails> 	updateCovers2 = filterNonDefaultSubCovers.stream().filter( o -> o.getIsSelected().equalsIgnoreCase("N") ).collect(Collectors.toList());
+						List<FactorRateRequestDetails> 	updateCovers2 = filterNonDefaultSubCovers.stream().filter( o -> o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("N") ).collect(Collectors.toList());
 						updateCovers.addAll(updateCovers2);
 					}
 				}
 				
 				// Update Factor Rate Details
 				for (FactorRateRequestDetails fac  : updateCovers) {
-					fac.setIsSelected("Y");
+					fac.setUserOpt("Y");
 					facRateRepo.saveAndFlush(fac);
 				}
 			}
@@ -383,7 +383,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			// Cover Calc
 			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0);
-			List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o -> o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
+			List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
 			
 			List<VehicleIdsReq> VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getVehicleId())).collect(Collectors.toList());
 			List<CoverIdsReq> coverReqList = VehicleList.get(0).getCoverIdList();
@@ -393,7 +393,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			for (VehicleIdsReq vehReq : request.getVehicleIdsList() ) {
 				for ( CoverIdsReq covReq :  coverReqList) { 
-					List<FactorRateRequestDetails> filterNonDefaultCovers = covers.stream().filter( o -> o.getVehicleId().equals(vehReq.getVehicleId()) &&  (! o.getIsSelected().equalsIgnoreCase("D")) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0)).collect(Collectors.toList());				
+					List<FactorRateRequestDetails> filterNonDefaultCovers = covers.stream().filter( o -> o.getVehicleId().equals(vehReq.getVehicleId()) &&  o.getIsSelected()!=null &&  (! o.getIsSelected().equalsIgnoreCase("D")) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0)).collect(Collectors.toList());				
 					
 					if(filterNonDefaultCovers != null && filterNonDefaultCovers.size()>0 ) {
 						if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
@@ -401,7 +401,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 							premiumCovers.addAll(filterNonDefaultCovers);
 							
 						}else {
-							List<FactorRateRequestDetails> filterNonDefaultSubCovers = filterNonDefaultCovers.stream().filter( o -> o.getVehicleId().equals(vehReq.getVehicleId()) && (! o.getIsSelected().equalsIgnoreCase("D")) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))&& o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
+							List<FactorRateRequestDetails> filterNonDefaultSubCovers = filterNonDefaultCovers.stream().filter( o -> o.getVehicleId().equals(vehReq.getVehicleId()) && o.getIsSelected()!=null &&  (! o.getIsSelected().equalsIgnoreCase("D")) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))&& o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
 							premiumCovers.addAll(filterNonDefaultSubCovers);
 						}
 					}
@@ -414,7 +414,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			Double premiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc()  ).sum();					
 			Double overAllPremiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxLc()  ).sum();
 			Double vatPremiumFc = overAllPremiumFc - premiumFc ;  
-			Double vatPercent =  (vatPremiumFc*100) / premiumFc ;
+			Double vatPercent = vatPremiumFc<=0D ?0 : (vatPremiumFc*100) / premiumFc ;
 			Double vatPremiumLc = overAllPremiumLc - premiumLc ;  
 			
 			Double tax1 =  premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(1) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc()  ).sum();
@@ -450,7 +450,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setAdminRemarks(motorData.getAdminRemarks());
 			home.setAdminReferralStatus(motorData.getStatus());			
 			home.setReferralDescription(motorData.getReferalRemarks());
-			home.setAdminLoginId(motorData.getAdminLoginId());
+			home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? motorData.getAdminLoginId() : request.getAdminLoginId() );
 			home.setStatus(motorData.getStatus());
 			home.setQuoteCreatedDate(new Date());
 			home.setEntryDate(new Date());

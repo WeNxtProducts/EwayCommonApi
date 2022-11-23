@@ -198,6 +198,7 @@ this.repository = repo;
 					saveCover.setVdRefno(req.getVdRefNo());
 					saveCover.setMsRefno(req.getMsrefno());	
 					saveCover.setDiscLoadId(0);
+					saveCover.setTaxId(0);
 					saveCover.setEntryDate(new Date());			
 					saveCover.setCreatedBy(req.getCreatedBy());
 					saveCover.setStatus("Y");
@@ -283,6 +284,7 @@ this.repository = repo;
 						saveSubCover.setVdRefno(req.getVdRefNo());
 						saveSubCover.setMsRefno(req.getMsrefno());	
 						saveSubCover.setDiscLoadId(0);
+						saveSubCover.setTaxId(0);
 						saveSubCover.setEntryDate(new Date());			
 						saveSubCover.setCreatedBy(req.getCreatedBy());
 						saveSubCover.setStatus("Y");
@@ -692,11 +694,28 @@ this.repository = repo;
 						subCoverRes.setPremiumIncludedTaxLC(filterSubCover.get(0).getPremiumIncludedTaxLc()==null ? null :new BigDecimal (filterSubCover.get(0).getPremiumIncludedTaxLc()));
 						
 						
-						List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> o.getSubCoverId().equals(subCovers.getSubCoverId()) && ( ! o.getDiscLoadId().equals(0)) ).collect(Collectors.toList());
+						// Discount Covers
+						List<FactorRateRequestDetails> filterDiscountCover = filterSubCover.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("D") ).collect(Collectors.toList());
 						
 						if ( filterDiscountCover.size() > 0 ) {
 							 List<Discount> discounts =  getDiscountRates(filterDiscountCover);
 							 subCoverRes.setDiscounts(discounts);	
+						}
+						
+						// Tax Covers
+						List<FactorRateRequestDetails> filterTaxCover = filterSubCover.stream().filter( o -> (! o.getTaxId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("T")).collect(Collectors.toList());
+						
+						if( filterTaxCover.size() > 0 ) {
+							 List<Tax> taxes = getTaxRates(filterTaxCover) ;
+							 subCoverRes.setTaxes(taxes);	
+						}
+						
+						// Loginds Covers
+						List<FactorRateRequestDetails> filterLodingCover = filterSubCover.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("L") ).collect(Collectors.toList());
+						
+						if( filterLodingCover.size() > 0 ) {
+							 List<Loading> lodings =  getLodingCovers(filterLodingCover) ;
+							 subCoverRes.setLoadings(lodings);	
 						}
 						subCoverListRes.add(subCoverRes);
 					}

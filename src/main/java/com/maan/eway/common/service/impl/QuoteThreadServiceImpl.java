@@ -101,47 +101,56 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		List<Error> errors = new ArrayList<Error>();
 		SimpleDateFormat idf = new SimpleDateFormat("yyMMddhhmmssSS");
 		try {
-		//	 Map<String, String> map = Collections.synchronizedMap(new HashMap<>());
-	     //   List<Integer> list = Collections.synchronizedList(new ArrayList<>());
-		//	CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<>();
-		//	Map<String, String> map = new ConcurrentHashMap()<>();
+		
 			List<UwQuestionsDetails>  uwQuestions = uwRepo.findByRequestReferenceNo( req.getRequestReferenceNo());
-			List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdOrderByVehicleIdAsc(req.getRequestReferenceNo(),0); 
+			List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo()); 
 			
 		boolean referal = false ;
 		String referalRemarks = "" ;
+		List<FactorRateRequestDetails> userOptCovers = new ArrayList<FactorRateRequestDetails>();
 		
 		if( StringUtils.isBlank(req.getAdminLoginId())) {
 			for (VehicleIdsReq veh : req.getVehicleIdsList() ){
 						
 				// Cover Referal Checking
 				List<CoverIdsReq> coverList = veh.getCoverIdList();
-				List<CoverIdsReq> filterReferalCovers = coverList.stream().filter( o -> o.getIsReferal().equalsIgnoreCase("Y") ).collect(Collectors.toList());		
-				if(filterReferalCovers.size()>0 ) {
-					referal = true ;
-					if(StringUtils.isBlank(referalRemarks)) {
-						for (CoverIdsReq cov : filterReferalCovers  ) {
-							if(StringUtils.isBlank(cov.getSubCoverYn()) || cov.getSubCoverYn().equalsIgnoreCase("N") ) {
-								List<FactorRateRequestDetails> filterCovers  = covers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) && o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
-								referalRemarks = filterCovers.get(0).getCoverName() ;
-								
-							} else {
-								List<FactorRateRequestDetails> filterSubCovers  = covers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) && o.getSubCoverId().equals(cov.getSubCoverId()) && o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
-								referalRemarks = filterSubCovers.get(0).getCoverName() ;
-								
-							}
+				for (CoverIdsReq cov : coverList  ) {
+					if(StringUtils.isBlank(cov.getSubCoverYn()) || cov.getSubCoverYn().equalsIgnoreCase("N") ) {
+						List<FactorRateRequestDetails> filterCovers = covers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) ).collect(Collectors.toList());		
+						userOptCovers.addAll(filterCovers);
+						
+						List<FactorRateRequestDetails> filterReferalCovers = filterCovers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&  o.getIsReferral()!=null && o.getIsReferral().equalsIgnoreCase("Y") ).collect(Collectors.toList());
+						if(filterReferalCovers.size()>0 && StringUtils.isBlank(referalRemarks) && referal==false ) { 
+							referalRemarks = filterReferalCovers.get(0).getCoverName() ;
+							referal = true ;
+						}
+					
+					} else {
+						List<FactorRateRequestDetails> filterSubCovers  = covers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(cov.getSubCoverId()))  ).collect(Collectors.toList());
+						userOptCovers.addAll(filterSubCovers);
+						List<FactorRateRequestDetails> filterReferalSubCovers = filterSubCovers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&  o.getIsReferral()!=null && o.getIsReferral().equalsIgnoreCase("Y") ).collect(Collectors.toList());
+						if(filterReferalSubCovers.size()>0 && StringUtils.isBlank(referalRemarks) && referal==false) { 
+							referalRemarks = filterReferalSubCovers.get(0).getCoverName() ;
+							referal = true ;
 						}
 					}
 				}
+		}
+		
+			// Update User Opted Covers 
+			for (FactorRateRequestDetails uptCover : userOptCovers ) {
 				
-				// Under Writter Refral Checking
-				List<UwQuestionsDetails>  filterUwQuestions = uwQuestions.stream().filter( o -> o.getIsReferral().equalsIgnoreCase("Y") ).collect(Collectors.toList());
-				if(filterUwQuestions.size()>0 ) {
-					referal = true ;
-					if(StringUtils.isBlank(referalRemarks)) {
-						referalRemarks =  filterUwQuestions.get(0).getUwQuestionDesc();
-						
-					}
+				uptCover.setUserOpt("Y");
+				facRateRepo.save(uptCover);
+			}
+			
+			// Under Writter Refral Checking
+			List<UwQuestionsDetails>  filterUwQuestions = uwQuestions.stream().filter( o -> o.getIsReferral()!=null && o.getIsReferral().equalsIgnoreCase("Y") ).collect(Collectors.toList());
+			if(filterUwQuestions.size()>0 ) {
+				referal = true ;
+				if(StringUtils.isBlank(referalRemarks)) {
+					referalRemarks =  filterUwQuestions.get(0).getUwQuestionDesc();
+					
 				}
 			}
 		}
@@ -151,6 +160,10 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				List<EserviceMotorDetails> motorDatas = eserMotRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
 				for (EserviceMotorDetails mot : motorDatas ) {
 					mot.setStatus("RP");
+					mot.setReferalRemarks(referalRemarks);
+					mot.setUpdatedDate(new Date());
+					mot.setQuoteNo("");
+					mot.setCustomerId("");
 					eserMotRepo.save(mot);
 				}
 			}
@@ -158,8 +171,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			ReferalResponse res = new ReferalResponse();
 			res.setReferalRemarks(referalRemarks);
 			res.setRequestReferenceNo(req.getRequestReferenceNo());
-			res.setResponse("Moved To Referal Successfully");
-			commonRes.setCommonResponse(response);
+			res.setResponse("Referral Pending");
+			commonRes.setCommonResponse(res);
 			commonRes.setIsError(false);
 			commonRes.setErrorMessage(Collections.emptyList());
 			commonRes.setMessage("Success");
@@ -309,9 +322,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				}
 			//	HomePositionMaster homeData = homeRepo.findByQuoteNo(request.getQuoteNo());
 				
-				response.setQuoteNo(request.getQuoteNo());
-				response.setRequestReferenceNo(request.getRequestReferenceNo());
-				response.setCustomerId(request.getCustomerId());
+				response.setQuoteNo(quoteRes.getQuoteNo());
+				response.setRequestReferenceNo(quoteRes.getRequestReferenceNo());
+				response.setCustomerId(quoteRes.getCustomerId());
 				response.setResponse("Saved SuccessFully");
 				 
 				// Response 

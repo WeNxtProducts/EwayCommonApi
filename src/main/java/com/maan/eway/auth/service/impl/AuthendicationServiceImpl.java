@@ -41,7 +41,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.admin.res.LoginProductCriteriaRes;
-import com.maan.eway.admin.service.LoginProductService;
 import com.maan.eway.auth.dto.BrokerProductCompaniesRes;
 import com.maan.eway.auth.dto.BrokerProductsGetRes;
 import com.maan.eway.auth.dto.ChangePasswordReq;
@@ -95,9 +94,6 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 	
 	@Autowired
 	private LoginUserInfoRepository loginUserRepo ;
-	
-	@Autowired
-	private LoginProductService loginProductsService ;
 
 	@Autowired
 	private InsuranceCompanyMasterRepository companyRepo;
@@ -371,7 +367,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			cal.setTime(today); cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime() ;
 			
-			List<LoginProductCriteriaRes> loginProducts = loginProductsService.getBrokerProductDetails(loginId , companyIds , today ) ;
+			List<LoginProductCriteriaRes> loginProducts = null ;// loginProductsService.getBrokerProductDetails(loginId , companyIds , today ) ;
 				
 			// Grouping
 			Map<String ,List<LoginProductCriteriaRes>> groupByCompany = loginProducts.stream().collect(Collectors.groupingBy(LoginProductCriteriaRes :: getCompanyId )) ;

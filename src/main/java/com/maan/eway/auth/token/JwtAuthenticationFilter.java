@@ -40,7 +40,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
-
+	
+	private String userType ;
+	private String subUserType ;
+	
 	@Override
 	protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)	throws IOException, ServletException {
 
@@ -56,6 +59,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			
 			loginId = table.getLoginId();
 			authToken = table.getTokenId();
+			userType = table.getUserType() ;
+			subUserType = table.getSubUserType() ;
 	        requestWrapper.addHeader(HEADER_STRING, authToken);
 			try {
 				username = jwtTokenUtil.getUsernameFromToken(authToken);
@@ -106,12 +111,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			}
 			
 			if (validtoken) {
-								
-				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-						userDetails, null, Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
-				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(requestWrapper));
-				logger.info("authenticated user " + username + ", setting security context");
-				SecurityContextHolder.getContext().setAuthentication(authentication);
+							
+				if(userType.equalsIgnoreCase("Issuer") ) {
+					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+							userDetails, null, Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
+					authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(requestWrapper));
+					logger.info("authenticated user " + username + ", setting security context");
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+					
+				} else if (userType.equalsIgnoreCase("Broker") || userType.equalsIgnoreCase("User")  ) {
+					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+							userDetails, null, Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
+					authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(requestWrapper));
+					logger.info("authenticated user " + username + ", setting security context");
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				}
+				
+				
 			} else if (validtoken) {
 				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 						userDetails, null, Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
