@@ -12,4 +12,5 @@ public interface CalculatorEngine {
 	List<Tuple> LoadCover(CalcEngine engine) ;
 	 
 	EserviceMotorDetailsSaveRes  calculator(CalcEngine engine);
+	EserviceMotorDetailsSaveRes referalCalculator(CalcEngine request);
 }

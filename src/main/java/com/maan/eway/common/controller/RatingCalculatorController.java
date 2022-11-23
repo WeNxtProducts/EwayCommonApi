@@ -42,6 +42,11 @@ public class RatingCalculatorController {
 		return response;
 	}
 	
-	
+	@PostMapping("/referalcalc")
+	@ApiOperation("This Method is to get by id")
+	public EserviceMotorDetailsSaveRes referalcalc(@RequestBody CalcEngine request) {
+		EserviceMotorDetailsSaveRes response = service.referalCalculator(request); 
+		return response;
+	}
 	
 }
