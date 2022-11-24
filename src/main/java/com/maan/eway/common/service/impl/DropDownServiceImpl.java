@@ -10,12 +10,10 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
@@ -24,28 +22,24 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CompanyCityMaster;
 import com.maan.eway.bean.CompanyRegionMaster;
 import com.maan.eway.bean.CompanyStateMaster;
 import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.EserviceCustomerDetails;
-import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.controller.CompanyDropDownReq;
 import com.maan.eway.common.req.NcdDetailsGetReq;
 import com.maan.eway.common.service.DropDownService;
-import com.maan.eway.master.dropdown.req.CityDropDownReq;
-import com.maan.eway.master.dropdown.req.CountryChangeStatusReq;
-import com.maan.eway.master.dropdown.req.RegionDropDownReq;
-import com.maan.eway.master.dropdown.req.StateDropDownReq;
-import com.maan.eway.master.dropdown.service.impl.PolicyTypeMasterServiceImpl;
+import com.maan.eway.master.req.CityDropDownReq;
+import com.maan.eway.master.req.RegionDropDownReq;
+import com.maan.eway.master.req.StateDropDownReq;
+import com.maan.eway.master.service.impl.PolicyTypeMasterServiceImpl;
 import com.maan.eway.repository.CompanyCityMasterRepository;
 import com.maan.eway.repository.CompanyRegionMasterRepository;
 import com.maan.eway.repository.CompanyStateMasterRepository;
 import com.maan.eway.repository.CountryMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
-import com.maan.eway.req.SubUserTypeReq;
 import com.maan.eway.res.ColummnDropRes;
 import com.maan.eway.res.DropDownRes;
 

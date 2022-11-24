@@ -15,19 +15,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.error.Error;
-import com.maan.eway.master.dropdown.req.CustomerSaveReq;
-import com.maan.eway.master.dropdown.req.ProductSectionsSaveReq;
-import com.maan.eway.master.dropdown.req.ProductsRiskSaveReq;
-import com.maan.eway.master.dropdown.req.RiskListSaveReq;
-import com.maan.eway.master.dropdown.req.SectionListReq;
+import com.maan.eway.master.req.CustomerSaveReq;
+import com.maan.eway.master.req.ProductSectionsSaveReq;
+import com.maan.eway.master.req.ProductsRiskSaveReq;
+import com.maan.eway.master.req.SectionListReq;
 import com.maan.eway.repository.CustomerDetailsRepository;
 import com.maan.eway.req.AccidentDetailsReq;
 import com.maan.eway.req.EserviceAllRisksListReq;
-import com.maan.eway.req.EservicePersonalAccidentSaveReq;
 import com.maan.eway.req.EserviceAllRisksSaveReq;
 import com.maan.eway.req.EserviceBuildingsDetailsSaveReq;
 import com.maan.eway.req.EserviceContentsDetailsSaveReq;
 import com.maan.eway.req.EserviceContentsItemListReq;
+import com.maan.eway.req.EservicePersonalAccidentSaveReq;
 import com.maan.eway.service.ValidationService;
 
 @Service

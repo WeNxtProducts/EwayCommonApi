@@ -3,13 +3,12 @@ package com.maan.eway.service;
 import java.util.List;
 
 import com.maan.eway.error.Error;
-import com.maan.eway.master.dropdown.req.CustomerSaveReq;
-import com.maan.eway.master.dropdown.req.ProductsRiskSaveReq;
-import com.maan.eway.req.EservicePersonalAccidentSaveReq;
-
+import com.maan.eway.master.req.CustomerSaveReq;
+import com.maan.eway.master.req.ProductsRiskSaveReq;
 import com.maan.eway.req.EserviceAllRisksSaveReq;
 import com.maan.eway.req.EserviceBuildingsDetailsSaveReq;
 import com.maan.eway.req.EserviceContentsDetailsSaveReq;
+import com.maan.eway.req.EservicePersonalAccidentSaveReq;
 
 
 public interface ValidationService {

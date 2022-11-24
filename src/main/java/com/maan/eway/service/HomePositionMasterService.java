@@ -2,9 +2,9 @@ package com.maan.eway.service;
 
 import java.util.List;
 
-import com.maan.eway.master.dropdown.req.GetPolicyDetailsReq;
-import com.maan.eway.master.dropdown.req.GetQuoteCountReq;
-import com.maan.eway.master.dropdown.req.GetQuoteDetailsReq;
+import com.maan.eway.master.req.GetPolicyDetailsReq;
+import com.maan.eway.master.req.GetQuoteCountReq;
+import com.maan.eway.master.req.GetQuoteDetailsReq;
 import com.maan.eway.res.GetPolicyDetailsRes;
 import com.maan.eway.res.GetQuoteCountRes;
 import com.maan.eway.res.GetQuoteDetailsRes;

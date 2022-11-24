@@ -45,6 +45,13 @@ public class MotorMakeModelMaster implements Serializable {
 	private Integer bodyId;
 	
 	@Id
+	@Column(name = "COMPANY_ID", nullable = false)
+	private String companyId;
+	
+	@Id
+	@Column(name = "BRANCH_CODE", nullable = false)
+	private String branchCode;
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "EFFECTIVE_DATE_START", nullable = false)
 	private Date effectiveDateStart;
@@ -53,7 +60,8 @@ public class MotorMakeModelMaster implements Serializable {
 	@Column(name = "AMEND_ID", nullable = false)
 	private Integer amendId;
 
-	@Id
+	
+	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "EFFECTIVE_DATE_END", nullable = false)
 	private Date effectiveDateEnd;
@@ -91,7 +99,7 @@ public class MotorMakeModelMaster implements Serializable {
 	
 	
 	@Column(name = "VEH_MANF_COUNTRY")
-	private Integer vehManfCountry;
+	private String vehManfCountry;
 	
 	@Column(name = "VEH_MANF_COUNTRY_EN", length=1000)
 	private String vehManfCountryEn;
@@ -174,9 +182,12 @@ public class MotorMakeModelMaster implements Serializable {
 	@Column(name="MODEL_ID_OLD")
 	private Integer modelIdOld;
 
-	@Column(name = "CORE_APPCODE", length = 100)
-	private String coreAppcode;
+	@Column(name = "CORE_APP_CODE", length = 100)
+	private String coreAppCode;
 
+	@Column(name = "REGULATORY_CODE", length = 100)
+	private String regulatoryCode;
+	
 	@Column(name="TPLRATE")
 	private Integer tplrate;
 
@@ -191,5 +202,16 @@ public class MotorMakeModelMaster implements Serializable {
 
 	@Column(name="ROP_BODYID")
 	private Integer ropBodyid;
+	
+	@Column(name = "CREATED_BY", length = 100)
+	private String createdBy;
+	
+	@Column(name = "UPDATED_BY", length = 100)
+	private String updatedBy;
+	
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "UPDATED_DATE")
+	private Date updatedDate;
 
 }

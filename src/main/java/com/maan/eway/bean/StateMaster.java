@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -62,18 +61,22 @@ private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name="COUNTRY_ID", nullable=false)
-    private Integer    countryId ;
+    private String    countryId ;
 
+    @Id
+    @Column(name="AMEND_ID", nullable=false)
+    private Integer amendId ;
+    
     @Id
     @Column(name="REGION_CODE", nullable=false, length=20)
     private String     regionCode ;
 
-    @Id
+ 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_START", nullable=false)
     private Date       effectiveDateStart ;
 
-    @Id
+ 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_END", nullable=false)
     private Date       effectiveDateEnd ;
@@ -92,9 +95,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="CORE_APP_CODE", length=20)
     private String     coreAppCode ;
 
-    @Column(name="AMEND_ID", nullable=false)
-    private Integer    amendId ;
-
+ 
     @Column(name="REMARKS", length=100)
     private String     remarks ;
 
@@ -107,6 +108,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="REGULATORY_CODE", nullable=false, length=20)
     private String     regulatoryCode ;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="UPDATED_DATE")
+    private Date       updatedDate ;
+
+    @Column(name="UPDATED_BY", length=20)
+    private String     updatedBy ;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 

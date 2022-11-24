@@ -4,10 +4,9 @@ import java.util.List;
 
 import com.maan.eway.common.controller.CompanyDropDownReq;
 import com.maan.eway.common.req.NcdDetailsGetReq;
-import com.maan.eway.master.dropdown.req.CityDropDownReq;
-import com.maan.eway.master.dropdown.req.RegionDropDownReq;
-import com.maan.eway.master.dropdown.req.StateDropDownReq;
-import com.maan.eway.req.SubUserTypeReq;
+import com.maan.eway.master.req.CityDropDownReq;
+import com.maan.eway.master.req.RegionDropDownReq;
+import com.maan.eway.master.req.StateDropDownReq;
 import com.maan.eway.res.ColummnDropRes;
 import com.maan.eway.res.DropDownRes;
 

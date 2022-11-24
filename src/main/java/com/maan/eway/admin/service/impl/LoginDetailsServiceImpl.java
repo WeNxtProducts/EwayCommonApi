@@ -5,6 +5,9 @@
 */
 package com.maan.eway.admin.service.impl;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toCollection;
+
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -20,8 +23,6 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -95,7 +96,7 @@ import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.LoginUserInfoArch;
 import com.maan.eway.bean.MenuMaster;
 import com.maan.eway.bean.StateMaster;
-import com.maan.eway.master.dropdown.req.BrokerProductReq;
+import com.maan.eway.master.req.BrokerProductReq;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterArchRepository;
@@ -105,8 +106,6 @@ import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.res.BrokerDropDownRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toCollection;
 
 /**
 * <h2>LoginMasterServiceimpl</h2>

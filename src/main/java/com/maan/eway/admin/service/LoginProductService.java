@@ -10,12 +10,11 @@ import com.maan.eway.admin.req.BrokerProductGetReq;
 import com.maan.eway.admin.res.BrokerProductGetRes;
 import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.res.LoginProductCriteriaRes;
-import com.maan.eway.auth.dto.BrokerProductCompaniesRes;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.dropdown.req.BrokerCompanyProductReq;
-import com.maan.eway.master.dropdown.req.BrokerProductChangeReq;
-import com.maan.eway.master.dropdown.req.BrokerProductReq;
-import com.maan.eway.master.dropdown.res.CompanyProductMasterRes;
+import com.maan.eway.master.req.BrokerCompanyProductReq;
+import com.maan.eway.master.req.BrokerProductChangeReq;
+import com.maan.eway.master.req.BrokerProductReq;
+import com.maan.eway.master.res.CompanyProductMasterRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
