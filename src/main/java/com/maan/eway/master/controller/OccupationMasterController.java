@@ -16,9 +16,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.OccupationChangeStatusReq;
+import com.maan.eway.master.req.OccupationMasterGetAllReq;
+import com.maan.eway.master.req.OccupationMasterGetReq;
+import com.maan.eway.master.req.OccupationMasterSaveReq;
+import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.master.service.OccupationMasterService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
@@ -38,31 +45,7 @@ public class OccupationMasterController {
 	
 	@Autowired
 	private  PrintReqService reqPrinter;
-
-	// Occupation Master Drop Down Type
-	@PostMapping("/dropdown/occupation")
-	@ApiOperation(value = "This method is get Occupation Master Drop Down")
-
-	public ResponseEntity<CommonRes> getOccupationMasterDropdown(@RequestBody OccupationDropDownReq req) {
-
-		CommonRes data = new CommonRes();
-
-		// Save
-		List<DropDownRes> res = service.getOccupationMasterDropdown(req);
-		data.setCommonResponse(res);
-		data.setIsError(false);
-		data.setErrorMessage(Collections.emptyList());
-		data.setMessage("Success");
-
-		if (res != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-		}
-
-	}
-
-	/*
+	
 	// save
 		@PostMapping("/insertoccupation")
 		@ApiOperation(value = "This method is Occupation Master")
@@ -165,7 +148,78 @@ public class OccupationMasterController {
 		}
 	}
 		
+		// Occupation Master Drop Down Type
+		@PostMapping("/dropdown/occupation")
+		@ApiOperation(value = "This method is get Occupation Master Drop Down")
+
+		public ResponseEntity<CommonRes> getOccupationMasterDropdown(@RequestBody OccupationDropDownReq req) {
+
+			CommonRes data = new CommonRes();
+
+			// Save
+			List<DropDownRes> res = service.getOccupationMasterDropdown(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}	
+	/*	
+		// Occupation Master Drop Down Type
+		@GetMapping("/dropdown/occupation")
+		@ApiOperation(value = "This method is get Occupation Master Drop Down")
+
+		public ResponseEntity<CommonRes> getOccupationMasterDropdown() {
+
+			CommonRes data = new CommonRes();
+
+			// Save
+			List<DropDownRes> res = service.getOccupationMasterDropdown();
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
+
 		
+		// Occupation Master Drop Down Type
+		@PostMapping("/dropdown/acexecutives")
+		@ApiOperation(value = "This method is get Occupation Master Drop Down")
+
+		public ResponseEntity<CommonRes> getAcExecutivesDropdown(@RequestBody AcExecutiveDropDownReq req) {
+
+			CommonRes data = new CommonRes();
+
+			// Save
+			List<DropDownRes> res = service.getAcExecutivesDropdown(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
+
+		*/
+
 
 		@PostMapping("/occupation/changestatus")
 		@ApiOperation(value = "This method is get Occupation Change Status")
@@ -188,5 +242,5 @@ public class OccupationMasterController {
 		}
 	
 		
-*/
+
 }

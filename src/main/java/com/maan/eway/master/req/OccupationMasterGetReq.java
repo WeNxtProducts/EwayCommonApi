@@ -16,4 +16,10 @@ public class OccupationMasterGetReq implements Serializable {
 	@JsonProperty("OccupationId")
     private String    occupationId     ;
     
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
 }

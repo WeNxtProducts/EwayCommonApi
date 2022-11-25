@@ -7,14 +7,21 @@ package com.maan.eway.master.service;
 
 import java.util.List;
 
+import com.maan.eway.error.Error;
 import com.maan.eway.master.controller.OccupationDropDownReq;
+import com.maan.eway.master.req.AcExecutiveDropDownReq;
+import com.maan.eway.master.req.OccupationChangeStatusReq;
+import com.maan.eway.master.req.OccupationMasterGetAllReq;
+import com.maan.eway.master.req.OccupationMasterGetReq;
+import com.maan.eway.master.req.OccupationMasterSaveReq;
+import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
 /**
 * <h2>BankMasterServiceimpl</h2>
 */
 public interface OccupationMasterService  {
 
-	/*
 	List<Error> validateOccupation(OccupationMasterSaveReq req);
 
 	SuccessRes insertOccupation(OccupationMasterSaveReq req);
@@ -24,8 +31,12 @@ public interface OccupationMasterService  {
 	OccupationMasterRes getByOccupationId(OccupationMasterGetReq req);
 
 	List<OccupationMasterRes> getActiveOccupation(OccupationMasterGetAllReq req);
-	SuccessRes changeStatusOfOccupation(OccupationChangeStatusReq req);
-*/
 
+	//List<DropDownRes> getOccupationMasterDropdown();
 	List<DropDownRes> getOccupationMasterDropdown(OccupationDropDownReq req);
+
+	SuccessRes changeStatusOfOccupation(OccupationChangeStatusReq req);
+
+	List<DropDownRes> getAcExecutivesDropdown(AcExecutiveDropDownReq req);
+
 }

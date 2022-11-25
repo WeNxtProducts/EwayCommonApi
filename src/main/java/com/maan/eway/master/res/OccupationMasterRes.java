@@ -14,6 +14,12 @@ public class OccupationMasterRes implements Serializable {
     private static final long serialVersionUID = 1L;
 	@JsonProperty("OccupationId")
 	private String occupationId;
+	
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 
 	@JsonProperty("OccupationName")
 	private String occupationName;
@@ -50,6 +56,13 @@ public class OccupationMasterRes implements Serializable {
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("UpdatedDate")
+	private Date updatedDate;
+	
+	@JsonProperty("UpdatedBy")
+	private String updatedBy;
 
 	
 

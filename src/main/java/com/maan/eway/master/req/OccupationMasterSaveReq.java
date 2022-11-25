@@ -16,6 +16,12 @@ public class OccupationMasterSaveReq implements Serializable {
 	@JsonProperty("OccupationId")
 	private String occupationId;
 
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
 	@JsonProperty("OccupationName")
 	private String occupationName;
 
@@ -32,9 +38,9 @@ public class OccupationMasterSaveReq implements Serializable {
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;	
 	
-	@JsonFormat(pattern = "dd/MM/yyyy")
+/*	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
+	private Date effectiveDateEnd; */
 	
 	@JsonProperty("Status")
 	private String status;

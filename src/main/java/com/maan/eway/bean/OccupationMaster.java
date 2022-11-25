@@ -54,7 +54,7 @@ private static final long serialVersionUID = 1L;
     //--- ENTITY PRIMARY KEY 
     @Id
     @Column(name="OCCUPATION_ID", nullable=false, length=10)
-    private String     occupationId ;
+    private Integer     occupationId ;
 
     @Id
     @Column(name="AMEND_ID", nullable=false)

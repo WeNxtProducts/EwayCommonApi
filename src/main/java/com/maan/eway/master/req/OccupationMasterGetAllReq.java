@@ -13,12 +13,18 @@ public class OccupationMasterGetAllReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("Limit")
+/*    @JsonProperty("Limit")
     private String limit;
     
     @JsonProperty("Offset")
-    private String offset;
+    private String offset; */
    
+    
+    @JsonProperty("InsuranceId")
+	private String insuranceId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 
 
 }
