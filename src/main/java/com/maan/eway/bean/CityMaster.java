@@ -66,7 +66,7 @@ private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name="COUNTRY_ID", nullable=false)
-    private Integer    countryId ;
+    private String    countryId ;
 
     @Id
     @Column(name="AMEND_ID", nullable=false)
@@ -97,7 +97,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="REMARKS", length=100)
     private String     remarks ;
 
-    @Column(name="TIRA_CODE", nullable=false, length=20)
+    @Column(name="TIRA_CODE",  length=20)
     private String     tiraCode ;
 
     @Column(name="CREATED_BY", nullable=false, length=100)
@@ -106,9 +106,13 @@ private static final long serialVersionUID = 1L;
     @Column(name="REGULATORY_CODE", nullable=false, length=20)
     private String     regulatoryCode ;
 
+    @Column(name="UPDATED_BY", length=100)
+    private String     updatedBy ;
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="UPDATED_DATE")
+    private Date  updatedDate ;
 
 }
 
