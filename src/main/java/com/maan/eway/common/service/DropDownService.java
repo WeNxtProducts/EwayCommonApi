@@ -2,9 +2,9 @@ package com.maan.eway.common.service;
 
 import java.util.List;
 
-import com.maan.eway.common.controller.CompanyDropDownReq;
 import com.maan.eway.common.req.NcdDetailsGetReq;
 import com.maan.eway.master.req.CityDropDownReq;
+import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.RegionDropDownReq;
 import com.maan.eway.master.req.StateDropDownReq;
 import com.maan.eway.res.ColummnDropRes;
@@ -14,98 +14,90 @@ public interface DropDownService {
 
 	
 	
-	List<DropDownRes> coverNoteType();
+	List<DropDownRes> coverNoteType(LovDropDownReq req);
 
-	List<DropDownRes> paymentmode();
+	List<DropDownRes> paymentmode(LovDropDownReq req);
 
-	List<DropDownRes> endorsementtype();
+	List<DropDownRes> endorsementtype(LovDropDownReq req);
 
-	List<DropDownRes> discounttypeoffered();
+	List<DropDownRes> discounttypeoffered(LovDropDownReq req);
 
-	List<DropDownRes> taxexcempted();
+	List<DropDownRes> taxexcempted(LovDropDownReq req);
 
-	List<DropDownRes> taxexcemptiontype();
+	List<DropDownRes> taxexcemptiontype(LovDropDownReq req);
 
-	List<DropDownRes> policyholdertype();
+	List<DropDownRes> policyholdertype(LovDropDownReq req);
 
-	List<DropDownRes> policyholderidtype();
+	List<DropDownRes> policyholderidtype(LovDropDownReq req);
 
-	List<DropDownRes> policyholdergender();
+	List<DropDownRes> policyholdergender(LovDropDownReq req);
 
-	List<DropDownRes> nametitle();
+	List<DropDownRes> nametitle(LovDropDownReq req);
 
-	List<DropDownRes> notificationtype();
+	List<DropDownRes> notificationtype(LovDropDownReq req);
 
-	List<DropDownRes> getCountryDropdown();
+	List<DropDownRes> getMotorCategory(LovDropDownReq req);
 
-	List<DropDownRes> getRegionDropdown(RegionDropDownReq req);
+	List<DropDownRes> getMotorType(LovDropDownReq req);
 
-	List<DropDownRes> getStateDropdown(StateDropDownReq req);
+	List<DropDownRes> getMotorUsage(LovDropDownReq req);
 
-	List<DropDownRes> getCityDropdown(CityDropDownReq req);
+	List<DropDownRes> ownerCategory(LovDropDownReq req);
 
-	List<DropDownRes> getMotorCategory();
+	List<DropDownRes> fleetType(LovDropDownReq req);
 
-	List<DropDownRes> getMotorType();
+	List<DropDownRes> reinsuranceCategory(LovDropDownReq req);
 
-	List<DropDownRes> getMotorUsage();
+	List<DropDownRes> participantType(LovDropDownReq req);
 
-	List<DropDownRes> ownerCategory();
+	List<DropDownRes> reinsuranceForm(LovDropDownReq req);
 
-	List<DropDownRes> fleetType();
+	List<DropDownRes> reinsuranceType(LovDropDownReq req);
 
-	List<DropDownRes> reinsuranceCategory();
+	List<DropDownRes> claimformdullyfilled(LovDropDownReq req);
 
-	List<DropDownRes> participantType();
+	List<DropDownRes> lostassessmentoption(LovDropDownReq req);
 
-	List<DropDownRes> reinsuranceForm();
+	List<DropDownRes> assessoridtype(LovDropDownReq req);
 
-	List<DropDownRes> reinsuranceType();
+	List<DropDownRes> claimantCategory(LovDropDownReq req);
 
-	List<DropDownRes> claimformdullyfilled();
+	List<DropDownRes> claimantType(LovDropDownReq req);
 
-	List<DropDownRes> lostassessmentoption();
+	List<DropDownRes> claimantIdType(LovDropDownReq req);
 
-	List<DropDownRes> assessoridtype();
+	List<DropDownRes> isreassessment(LovDropDownReq req);
 
-	List<DropDownRes> claimantCategory();
+	List<DropDownRes> offerAccepted(LovDropDownReq req);
 
-	List<DropDownRes> claimantType();
+	List<DropDownRes> partiesNotified(LovDropDownReq req);
 
-	List<DropDownRes> claimantIdType();
+	List<DropDownRes> claimResultedLitigation(LovDropDownReq req);
 
-	List<DropDownRes> isreassessment();
-
-	List<DropDownRes> offerAccepted();
-
-	List<DropDownRes> partiesNotified();
-
-	List<DropDownRes> claimResultedLitigation();
-
-	List<DropDownRes> tonnage();
+	List<DropDownRes> tonnage(LovDropDownReq req);
 
 	List<DropDownRes> getNcdDetails(NcdDetailsGetReq req);
 
-	List<DropDownRes> insuranceType();
+	List<DropDownRes> insuranceType(LovDropDownReq req);
 
-	List<DropDownRes> insuranceClass();
+	List<DropDownRes> insuranceClass(LovDropDownReq req);
 
-	List<DropDownRes> title();
+	List<DropDownRes> title(LovDropDownReq req);
 
-	List<DropDownRes> borrowerType();
+	List<DropDownRes> borrowerType(LovDropDownReq req);
 
-	List<DropDownRes> cityLimit();
+	List<DropDownRes> cityLimit(LovDropDownReq req);
 
-	List<DropDownRes> getLanguage();
+	List<DropDownRes> getLanguage(LovDropDownReq req);
 
-	List<DropDownRes> getFuelType();
+	List<DropDownRes> getFuelType(LovDropDownReq req);
 
-	List<ColummnDropRes> getTableDetails();
+	List<ColummnDropRes> getTableDetails(LovDropDownReq req);
 
-	List<DropDownRes> constructType(CompanyDropDownReq req);
+	List<DropDownRes> constructType(LovDropDownReq req);
 
-	List<DropDownRes> consecutiveDays(CompanyDropDownReq req);
+	List<DropDownRes> consecutiveDays(LovDropDownReq req);
 
-	List<DropDownRes> buildingType(CompanyDropDownReq req);
+	List<DropDownRes> buildingType(LovDropDownReq req);
 
 }

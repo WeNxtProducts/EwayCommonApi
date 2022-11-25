@@ -14,9 +14,6 @@ public class CityDropDownReq {
 	@JsonProperty("InsuranceId")
 	private String companyId;
 
-	@JsonProperty("RegionId")
-	private String regionId;
-
 	@JsonProperty("StateId")
 	private String stateId;
 }

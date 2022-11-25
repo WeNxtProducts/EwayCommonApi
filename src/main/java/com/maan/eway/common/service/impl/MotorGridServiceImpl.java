@@ -1,4 +1,4 @@
-package com.maan.eway.common.service;
+package com.maan.eway.common.service.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,6 +24,7 @@ import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.res.QuoteCriteriaRes;
+import com.maan.eway.common.service.MotorGridService;
 
 @Service
 @Transactional

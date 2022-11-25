@@ -9,4 +9,10 @@ public class NcdDetailsGetReq {
 
 	@JsonProperty("ManufactureYear")
 	private String manufactureYear;
+	
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 }

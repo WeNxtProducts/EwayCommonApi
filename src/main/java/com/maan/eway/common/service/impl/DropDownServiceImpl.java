@@ -4,9 +4,13 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -14,6 +18,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
@@ -28,10 +33,10 @@ import com.maan.eway.bean.CompanyStateMaster;
 import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.common.controller.CompanyDropDownReq;
 import com.maan.eway.common.req.NcdDetailsGetReq;
 import com.maan.eway.common.service.DropDownService;
 import com.maan.eway.master.req.CityDropDownReq;
+import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.RegionDropDownReq;
 import com.maan.eway.master.req.StateDropDownReq;
 import com.maan.eway.master.service.impl.PolicyTypeMasterServiceImpl;
@@ -73,11 +78,12 @@ public class DropDownServiceImpl  implements DropDownService{
 	// Cover Note Type Drop Down
 
 	@Override
-	public List<DropDownRes> coverNoteType() {
+	public List<DropDownRes> coverNoteType(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
+			String itemType = "COVER_NOTE_TYPE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -95,11 +101,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> paymentmode() {
+	public List<DropDownRes> paymentmode(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("PAYMENT_MODE", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("PAYMENT_MODE", "Y");
+			String itemType = "PAYMENT_MODE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -116,33 +123,12 @@ public class DropDownServiceImpl  implements DropDownService{
 	}
 
 	@Override
-	public List<DropDownRes> endorsementtype() {
+	public List<DropDownRes> endorsementtype(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("ENDROSEMENT_TYPE", "Y");
-
-			for (ListItemValue data : getList) {
-				DropDownRes res = new DropDownRes();
-				res.setCode(data.getItemCode());
-				res.setCodeDesc(data.getItemValue());
-				res.setStatus(data.getStatus());
-				resList.add(res);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.info("Exception is ---> " + e.getMessage());
-			return null;
-		}
-		return resList;
-	}
-
-
-	@Override
-	public List<DropDownRes> discounttypeoffered() {
-		List<DropDownRes> resList = new ArrayList<DropDownRes>();
-		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("DISCOUNT_TYPE_OFFERED", "Y");
-
+	//		List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("ENDROSEMENT_TYPE", "Y");
+			String itemType = "ENDROSEMENT_TYPE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -160,95 +146,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> taxexcempted() {
+	public List<DropDownRes> discounttypeoffered(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("IS_TAX_EXEMPTED", "Y");
-
-			for (ListItemValue data : getList) {
-				DropDownRes res = new DropDownRes();
-				res.setCode(data.getItemCode());
-				res.setCodeDesc(data.getItemValue());
-				res.setStatus(data.getStatus());
-				resList.add(res);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.info("Exception is ---> " + e.getMessage());
-			return null;
-		}
-		return resList;
-	}
-
-	@Override
-	public List<DropDownRes> taxexcemptiontype() {
-		List<DropDownRes> resList = new ArrayList<DropDownRes>();
-		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("TAX_EXEMPTION_TYPE", "Y");
-
-			for (ListItemValue data : getList) {
-				DropDownRes res = new DropDownRes();
-				res.setCode(data.getItemCode());
-				res.setCodeDesc(data.getItemValue());
-				res.setStatus(data.getStatus());
-				resList.add(res);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.info("Exception is ---> " + e.getMessage());
-			return null;
-		}
-		return resList;
-	}
-
-	@Override
-	public List<DropDownRes> policyholdertype() {
-		List<DropDownRes> resList = new ArrayList<DropDownRes>();
-		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("POLICY_HOLDER_TYPE", "Y");
-
-			for (ListItemValue data : getList) {
-				DropDownRes res = new DropDownRes();
-				res.setCode(data.getItemCode());
-				res.setCodeDesc(data.getItemValue());
-				res.setStatus(data.getStatus());
-				resList.add(res);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.info("Exception is ---> " + e.getMessage());
-			return null;
-		}
-		return resList;
-	}
-
-	@Override
-	public List<DropDownRes> policyholderidtype() {
-		List<DropDownRes> resList = new ArrayList<DropDownRes>();
-		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("POLICY_HOLDER_ID_TYPE", "Y");
-
-			for (ListItemValue data : getList) {
-				DropDownRes res = new DropDownRes();
-				res.setCode(data.getItemCode());
-				res.setCodeDesc(data.getItemValue());
-				res.setStatus(data.getStatus());
-				resList.add(res);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.info("Exception is ---> " + e.getMessage());
-			return null;
-		}
-		return resList;
-	}
-
-	@Override
-	public List<DropDownRes> policyholdergender() {
-		List<DropDownRes> resList = new ArrayList<DropDownRes>();
-		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("POLICY_HOLDER_GENDER", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("DISCOUNT_TYPE_OFFERED", "Y");
+			String itemType = "DISCOUNT_TYPE_OFFERED" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -266,11 +169,100 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> nametitle() {
+	public List<DropDownRes> taxexcempted(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("NAME_TITLE", "Y");
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("IS_TAX_EXEMPTED", "Y");
+			String itemType = "IS_TAX_EXEMPTED" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
 
+	@Override
+	public List<DropDownRes> taxexcemptiontype(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("TAX_EXEMPTION_TYPE", "Y");
+			String itemType = "TAX_EXEMPTION_TYPE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public List<DropDownRes> policyholdertype(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("POLICY_HOLDER_TYPE", "Y");
+			String itemType = "POLICY_HOLDER_TYPE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public List<DropDownRes> policyholderidtype(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+	//		List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("POLICY_HOLDER_ID_TYPE", "Y");
+			String itemType = "POLICY_HOLDER_ID_TYPE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public List<DropDownRes> policyholdergender(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("POLICY_HOLDER_GENDER", "Y");
+			String itemType = "POLICY_HOLDER_GENDER" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -288,11 +280,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> notificationtype() {
+	public List<DropDownRes> nametitle(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("NOTIFICATION_TYPE", "Y");
-
+	//		List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("NAME_TITLE", "Y");
+			String itemType = "NAME_TITLE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -310,58 +303,19 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> getCountryDropdown() {
+	public List<DropDownRes> notificationtype(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			Date today  = new Date();
-			Calendar cal = new GregorianCalendar(); 
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
-			
-			// Criteria
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<CountryMaster> query = cb.createQuery(CountryMaster.class);
-			List<CountryMaster> list = new ArrayList<CountryMaster>();
-			
-			// Find All
-			Root<CountryMaster>    c = query.from(CountryMaster.class);		
-			
-			// Select
-			query.select(c );
-			
-		
-			// Order By
-			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("countryName")));
-			
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<CountryMaster> ocpm1 = effectiveDate.from(CountryMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("countryId"),ocpm1.get("countryId") );
-			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1,a2);
-			
-		    // Where	
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-			
-			query.where(n1,n2).orderBy(orderList);
-			
-			// Get Result
-			TypedQuery<CountryMaster> result = em.createQuery(query);			
-			list =  result.getResultList();  
-			
-			for(CountryMaster data : list ) {
-				// Response
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("NOTIFICATION_TYPE", "Y");
+			String itemType = "NOTIFICATION_TYPE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
+			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
-				res.setCode(data.getCountryId().toString());
-				res.setCodeDesc(data.getCountryName());
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
 				resList.add(res);
-			}		
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -370,214 +324,13 @@ public class DropDownServiceImpl  implements DropDownService{
 		return resList;
 	}
 
-
 	@Override
-	public List<DropDownRes> getRegionDropdown(RegionDropDownReq req) {
+	public List<DropDownRes> getMotorCategory(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			Date today  = new Date();
-			Calendar cal = new GregorianCalendar(); 
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
-			
-			// Criteria
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<CompanyRegionMaster> query = cb.createQuery(CompanyRegionMaster.class);
-			List<CompanyRegionMaster> list = new ArrayList<CompanyRegionMaster>();
-			
-			// Find All
-			Root<CompanyRegionMaster>    c = query.from(CompanyRegionMaster.class);		
-			
-			// Select
-			query.select(c );
-			
-		
-			// Order By
-			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("regionName")));
-			
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<CompanyRegionMaster> ocpm1 = effectiveDate.from(CompanyRegionMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("countryId"),ocpm1.get("countryId") );
-			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("regionCode"),ocpm1.get("regionCode"));
-			javax.persistence.criteria.Predicate a4 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
-			effectiveDate.where(a1,a2,a3,a4);
-			
-		    // Where	
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("countryId"),req.getCountryId());
-			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"),req.getCompanyId());
-			query.where(n1,n2,n3,n4).orderBy(orderList);
-			
-			// Get Result
-			TypedQuery<CompanyRegionMaster> result = em.createQuery(query);			
-			list =  result.getResultList();  
-			
-			for(CompanyRegionMaster data : list ) {
-				// Response
-				DropDownRes res = new DropDownRes();
-				res.setCode(data.getRegionCode().toString());
-				res.setCodeDesc(data.getRegionName());
-				res.setStatus(data.getStatus());
-				resList.add(res);
-			}		
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.info("Exception is ---> " + e.getMessage());
-			return null;
-		}
-		return resList;
-	}
-
-
-	@Override
-	public List<DropDownRes> getStateDropdown(StateDropDownReq req) {
-		List<DropDownRes> resList = new ArrayList<DropDownRes>();
-		try {
-			Date today  = new Date();
-			Calendar cal = new GregorianCalendar(); 
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
-			
-			// Criteria
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<CompanyStateMaster> query = cb.createQuery(CompanyStateMaster.class);
-			List<CompanyStateMaster> list = new ArrayList<CompanyStateMaster>();
-			
-			// Find All
-			Root<CompanyStateMaster>    c = query.from(CompanyStateMaster.class);		
-			
-			// Select
-			query.select(c );
-			
-		
-			// Order By
-			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("stateName")));
-			
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<CompanyStateMaster> ocpm1 = effectiveDate.from(CompanyStateMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("countryId"),ocpm1.get("countryId") );
-			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("regionCode"),ocpm1.get("regionCode"));
-			javax.persistence.criteria.Predicate a4 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
-			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("stateId"),ocpm1.get("stateId")); 
-			effectiveDate.where(a1,a2,a3,a4,a5);
-			
-		    // Where	
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("countryId"),req.getCountryId());
-			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"),req.getCompanyId());
-			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("regionCode"),req.getRegionCode());
-			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
-			
-			// Get Result
-			TypedQuery<CompanyStateMaster> result = em.createQuery(query);			
-			list =  result.getResultList();  
-			
-			for(CompanyStateMaster data : list ) {
-				// Response
-				DropDownRes res = new DropDownRes();
-				res.setCode(data.getStateId().toString());
-				res.setCodeDesc(data.getStateName());
-				res.setStatus(data.getStatus());
-				resList.add(res);
-			}		
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.info("Exception is ---> " + e.getMessage());
-			return null;
-		}
-		return resList;
-	}
-
-
-	@Override
-	public List<DropDownRes> getCityDropdown(CityDropDownReq req) {
-		List<DropDownRes> resList = new ArrayList<DropDownRes>();
-		try {
-			Date today  = new Date();
-			Calendar cal = new GregorianCalendar(); 
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
-			
-			// Criteria
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<CompanyCityMaster> query = cb.createQuery(CompanyCityMaster.class);
-			List<CompanyCityMaster> list = new ArrayList<CompanyCityMaster>();
-			
-			// Find All
-			Root<CompanyCityMaster>    c = query.from(CompanyCityMaster.class);		
-			
-			// Select
-			query.select(c );
-			
-		
-			// Order By
-			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("cityName")));
-			
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<CompanyCityMaster> ocpm1 = effectiveDate.from(CompanyCityMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("countryId"),ocpm1.get("countryId") );
-			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("regionId"),ocpm1.get("regionId"));
-			javax.persistence.criteria.Predicate a4 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
-			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("stateId"),ocpm1.get("stateId")); 
-			javax.persistence.criteria.Predicate a6 = cb.equal(c.get("cityId"),ocpm1.get("cityId"));
-			effectiveDate.where(a1,a2,a3,a4,a5,a6);
-			
-		    // Where	
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
-			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("countryId"),req.getCountryId());
-			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"),req.getCompanyId());
-			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("regionId"),req.getRegionId());
-			javax.persistence.criteria.Predicate n6 = cb.equal(c.get("stateId"),req.getStateId());
-			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
-			
-			// Get Result
-			TypedQuery<CompanyCityMaster> result = em.createQuery(query);			
-			list =  result.getResultList();  
-			
-			for(CompanyCityMaster data : list ) {
-				// Response
-				DropDownRes res = new DropDownRes();
-				res.setCode(data.getCityId().toString());
-				res.setCodeDesc(data.getCityName());
-				res.setStatus(data.getStatus());
-				resList.add(res);
-			}		
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.info("Exception is ---> " + e.getMessage());
-			return null;
-		}
-		return resList;
-	}
-
-
-	@Override
-	public List<DropDownRes> getMotorCategory() {
-		List<DropDownRes> resList = new ArrayList<DropDownRes>();
-		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("MOTOR_CATEGORY", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("MOTOR_CATEGORY", "Y");
+			String itemType = "MOTOR_CATEGORY" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -595,11 +348,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> getMotorType() {
+	public List<DropDownRes> getMotorType(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("MOTOR_TYPE", "Y");
-
+	//		List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("MOTOR_TYPE", "Y");
+			String itemType = "MOTOR_TYPE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -617,11 +371,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> getMotorUsage() {
+	public List<DropDownRes> getMotorUsage(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("MOTOR_USAGE", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("MOTOR_USAGE", "Y");
+			String itemType = "MOTOR_USAGE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -640,11 +395,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> ownerCategory() {
+	public List<DropDownRes> ownerCategory(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("OWNER_CATEGORY", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("OWNER_CATEGORY", "Y");
+			String itemType = "OWNER_CATEGORY" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -663,11 +419,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> fleetType() {
+	public List<DropDownRes> fleetType(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("FLEET_TYPE", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("FLEET_TYPE", "Y");
+			String itemType = "FLEET_TYPE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -686,11 +443,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> reinsuranceCategory() {
+	public List<DropDownRes> reinsuranceCategory(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("REINSURANCE_CATEGORY", "Y");
-
+	//		List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("REINSURANCE_CATEGORY", "Y");
+			String itemType = "REINSURANCE_CATEGORY" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -709,11 +467,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> participantType() {
+	public List<DropDownRes> participantType(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("PARTICIPANT_TYPE", "Y");
-
+	//		List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("PARTICIPANT_TYPE", "Y");
+			String itemType = "PARTICIPANT_TYPE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -732,11 +491,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> reinsuranceForm() {
+	public List<DropDownRes> reinsuranceForm(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("REINSURANCE_FORM", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("REINSURANCE_FORM", "Y");
+			String itemType = "REINSURANCE_FORM" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -755,11 +515,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> reinsuranceType() {
+	public List<DropDownRes> reinsuranceType(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("REINSURANCE_TYPE", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("REINSURANCE_TYPE", "Y");
+			String itemType = "REINSURANCE_TYPE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -778,11 +539,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> claimformdullyfilled() {
+	public List<DropDownRes> claimformdullyfilled(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("CLAIM_FORM_DULLY_FILLED", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("CLAIM_FORM_DULLY_FILLED", "Y");
+			String itemType = "CLAIM_FORM_DULLY_FILLED" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -801,11 +563,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> lostassessmentoption() {
+	public List<DropDownRes> lostassessmentoption(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("LOSS_ASSESSMENT_OPTION", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("LOSS_ASSESSMENT_OPTION", "Y");
+			String itemType = "LOSS_ASSESSMENT_OPTION" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -824,11 +587,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> assessoridtype() {
+	public List<DropDownRes> assessoridtype(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("ASSESSOR_ID_TYPE", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("ASSESSOR_ID_TYPE", "Y");
+			String itemType = "ASSESSOR_ID_TYPE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -847,11 +611,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> claimantCategory() {
+	public List<DropDownRes> claimantCategory(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("CLAIMANT_CATEGORY", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("CLAIMANT_CATEGORY", "Y");
+			String itemType = "CLAIMANT_CATEGORY" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -870,11 +635,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> claimantType() {
+	public List<DropDownRes> claimantType(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("CLAIMANT_TYPE", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("CLAIMANT_TYPE", "Y");
+			String itemType = "CLAIMANT_TYPE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -893,11 +659,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> claimantIdType() {
+	public List<DropDownRes> claimantIdType(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("CLAIMANT_ID_TYPE", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("CLAIMANT_ID_TYPE", "Y");
+			String itemType = "CLAIMANT_ID_TYPE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -916,11 +683,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> isreassessment() {
+	public List<DropDownRes> isreassessment(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("IS_REASSESSMENT", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("IS_REASSESSMENT", "Y");
+			String itemType = "IS_REASSESSMENT" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -939,11 +707,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> offerAccepted() {
+	public List<DropDownRes> offerAccepted(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("OFFER_ACCEPTED", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("OFFER_ACCEPTED", "Y");
+			String itemType = "OFFER_ACCEPTED" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -962,11 +731,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> partiesNotified() {
+	public List<DropDownRes> partiesNotified(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("PARTIES_NOTIFIED", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("PARTIES_NOTIFIED", "Y");
+			String itemType = "PARTIES_NOTIFIED" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -985,11 +755,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> claimResultedLitigation() {
+	public List<DropDownRes> claimResultedLitigation(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("CLAIM_RESULTED_LITIGATION", "Y");
-
+	//		List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("CLAIM_RESULTED_LITIGATION", "Y");
+			String itemType = "CLAIM_RESULTED_LITIGATION" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1007,11 +778,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> tonnage() {
+	public List<DropDownRes> tonnage(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("TONNAGE", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("TONNAGE", "Y");
+			String itemType = "TONNAGE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1035,8 +807,13 @@ public class DropDownServiceImpl  implements DropDownService{
 			Integer year = Calendar.getInstance().get(Calendar.YEAR);
 			Integer manuyear = Integer.valueOf(req.getManufactureYear());
 			Integer ncdyear = year-manuyear;
-				List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("NCD", "Y");
+			//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("NCD", "Y");
+				String itemType = "NCD" ;
+				LovDropDownReq req2 = new LovDropDownReq();
+				req2.setInsuranceId(req.getInsuranceId());
+				req2.setBranchCode(req.getBranchCode());
 				
+				List<ListItemValue> getList  = getListItem(req2 , itemType);
 				for(ListItemValue data : getList) {				
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1058,12 +835,13 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> insuranceType() {
+	public List<DropDownRes> insuranceType(LovDropDownReq req) {
 			List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("INSURANCE_TYPE", "Y");
-
+			//List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("INSURANCE_TYPE", "Y");
+			String itemType = "INSURANCE_TYPE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1084,7 +862,7 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> insuranceClass() {
+	public List<DropDownRes> insuranceClass(LovDropDownReq req) {
 /*		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("INSURANCE_CLASS", "Y");
@@ -1109,11 +887,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> title() {
+	public List<DropDownRes> title(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("TITLE", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("TITLE", "Y");
+			String itemType = "TITLE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1131,11 +910,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> borrowerType() {
+	public List<DropDownRes> borrowerType(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("BORROWER_TYPE", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("BORROWER_TYPE", "Y");
+			String itemType = "BORROWER_TYPE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1153,11 +933,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> cityLimit() {
+	public List<DropDownRes> cityLimit(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("CITY_LIMIT", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("CITY_LIMIT", "Y");
+			String itemType = "CITY_LIMIT" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1174,11 +955,12 @@ public class DropDownServiceImpl  implements DropDownService{
 	}
 
 	@Override
-	public List<DropDownRes> getLanguage() {
+	public List<DropDownRes> getLanguage(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("LANGUAGE", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("LANGUAGE", "Y");
+			String itemType = "LANGUAGE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1195,11 +977,12 @@ public class DropDownServiceImpl  implements DropDownService{
 	}
 
 	@Override
-	public List<DropDownRes> getFuelType() {
+	public List<DropDownRes> getFuelType(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("FUEL_TYPE", "Y");
-
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("FUEL_TYPE", "Y");
+			String itemType = "FUEL_TYPE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1217,7 +1000,7 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<ColummnDropRes> getTableDetails() {
+	public List<ColummnDropRes> getTableDetails(LovDropDownReq req) {
 		List<ColummnDropRes> resList = new ArrayList<ColummnDropRes>();
 		try {
 			String tableName = "Eservice_Customer_Details" ;
@@ -1283,11 +1066,13 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> constructType(CompanyDropDownReq req) {
+	public List<DropDownRes> constructType(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeAsc("CONST_MATERIAL", "Y" , req.getInsuranceId());
-			
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeAsc("CONST_MATERIAL", "Y" , req.getInsuranceId());
+			String itemType = "CONST_MATERIAL" ;
+			  
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1305,11 +1090,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> consecutiveDays(CompanyDropDownReq req) {
+	public List<DropDownRes> consecutiveDays(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeAsc("CONSECUTIVE_DAYS", "Y" , req.getInsuranceId());
-			
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeAsc("CONSECUTIVE_DAYS", "Y" , req.getInsuranceId());
+			String itemType = "CONSECUTIVE_DAYS" ;  
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1327,11 +1113,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> buildingType(CompanyDropDownReq req) {
+	public List<DropDownRes> buildingType(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> getList = listRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeAsc("BUILDING_TYPE", "Y" , req.getInsuranceId());
-			
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeAsc("BUILDING_TYPE", "Y" , req.getInsuranceId());
+			String itemType = "BUILDING_TYPE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1346,8 +1133,74 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
+	
+	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
 
-
+	public synchronized List<ListItemValue> getListItem(LovDropDownReq req , String itemType) {
+		List<ListItemValue> list = new ArrayList<ListItemValue>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			today = cal.getTime();
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ListItemValue> query=  cb.createQuery(ListItemValue.class);
+			// Find All
+			Root<ListItemValue> c = query.from(ListItemValue.class);
+			
+			//Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("branchCode")));
+			
+			
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a3,a4);
+						
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+			Predicate n4 = cb.equal(c.get("companyId"), req.getInsuranceId());
+			Predicate n5 = cb.equal(c.get("companyId"), "99999");
+			Predicate n6 = cb.equal(c.get("branchCode"), req.getBranchCode());
+			Predicate n7 = cb.equal(c.get("branchCode"), "99999");
+			Predicate n8 = cb.or(n4,n5);
+			Predicate n9 = cb.or(n6,n7);
+			Predicate n10 = cb.equal(c.get("itemType"),itemType);
+			query.where(n1,n2,n3,n8,n9,n10).orderBy(orderList);
+			// Get Result
+			TypedQuery<ListItemValue> result = em.createQuery(query);
+			list = result.getResultList();
+			
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getItemCode()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(ListItemValue :: getItemValue));
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return list ;
+	}
 
 	
 }
