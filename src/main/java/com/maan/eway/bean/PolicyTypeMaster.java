@@ -21,7 +21,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @IdClass(PolicyTypeMasterId.class)
-@Table(name="motor_policytype_master")
+@Table(name="policy_type_master")
 public class PolicyTypeMaster {
 
 	@Id
@@ -29,21 +29,28 @@ public class PolicyTypeMaster {
 	private Integer policyTypeId;
 	
 	@Id
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="EFFECTIVE_DATE_START",nullable=false)
-	private Date effectiveDateStart;
-	
-	@Id
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="EFFECTIVE_DATE_END",nullable=false)
-	private Date effectiveDateEnd;
-	
-	@Column(name="POLICY_TYPE_NAME",length=100,nullable=false)
-	private String policyTypeName;
-	
 	@Column(name="AMEND_ID")
 	private Integer amendId;
 	
+	@Id
+    @Column(name="COMPANY_ID", nullable=false, length=100)
+    private String     companyId ;
+
+    @Id
+    @Column(name="PRODUCT_ID", nullable=false, length=100)
+    private Integer     productId;
+    
+	@Column(name="POLICY_TYPE_NAME",length=100,nullable=false)
+	private String policyTypeName;
+	
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_START", nullable=false)
+    private Date       effectiveDateStart ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_END", nullable=false)
+    private Date       effectiveDateEnd ;
+
 	@Temporal(TemporalType.DATE)
 	@Column(name="ENTRY_DATE")
 	private Date entryDate;
@@ -54,6 +61,15 @@ public class PolicyTypeMaster {
 	@Column(name="STATUS",length=1)
 	private String status;
 	
+    @Column(name="CREATED_BY", length=100)
+    private String     createdBy ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="UPDATED_DATE")
+    private Date       updatedDate ;
+
+    @Column(name="UPDATED_BY", length=20)
+    private String     updatedBy ;
 	
 	
 }

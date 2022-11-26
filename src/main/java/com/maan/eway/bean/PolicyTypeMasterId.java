@@ -3,6 +3,9 @@ package com.maan.eway.bean;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +20,7 @@ public class PolicyTypeMasterId  implements Serializable{
 	private static final long serialVersionUID=1L;
 	
 	private Integer policyTypeId;
-	private Date effectiveDateStart;
-	private Date effectiveDateEnd;
+	private Integer     productId;
+   private String     companyId ;
+  
 }
