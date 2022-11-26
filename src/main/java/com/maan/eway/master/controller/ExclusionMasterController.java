@@ -7,6 +7,7 @@ package com.maan.eway.master.controller;
 
 import java.util.Collections;
 import java.util.List;
+import com.maan.eway.error.Error;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,9 +18,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.req.ExclusionMasterDropdownReq;
+import com.maan.eway.master.req.ExclusionChangeStatusReq;
+import com.maan.eway.master.req.ExclusionMasterGetReq;
+import com.maan.eway.master.req.ExclusionMasterGetallReq;
+import com.maan.eway.master.req.ExclusionMasterSaveReq;
+import com.maan.eway.master.res.ExclusionMasterRes;
 import com.maan.eway.master.service.ExclusionMasterService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
@@ -39,6 +46,125 @@ public class ExclusionMasterController {
 	
 	@Autowired
 	private  PrintReqService reqPrinter;
+	
+	@PostMapping("/insertexclusion")
+	@ApiOperation(value="This Method is to save Exclusion Master")
+	public ResponseEntity<CommonRes> saveExclusion(@RequestBody ExclusionMasterSaveReq req){
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		
+	List<Error> validation = service.validateExclusion(req);
+	//validation
+	if(validation !=null && validation.size()!=0) {
+		data.setCommonResponse(null);
+		data.setIsError(true);
+		data.setErrorMessage(validation);
+		data.setMessage("Failed");
+		return new ResponseEntity<CommonRes>(data,HttpStatus.OK);
+	} else {
+		//save
+		SuccessRes res = service.saveExclusion(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		
+		if(res!=null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	}
+
+	//  Get All Exclusion Master
+
+	@PostMapping("/getallexclusion")
+	@ApiOperation("This method is getall Exclusion")
+	public ResponseEntity<CommonRes> getallExclusion(@RequestBody ExclusionMasterGetallReq req)
+	{
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		
+		List<ExclusionMasterRes> res =service.getallExclusion(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		
+		if(res!= null) {
+			return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	//  Get Active Exclusion Master
+
+		@PostMapping("/getactiveexclusion")
+		@ApiOperation("This method is get Active Exclusion")
+		public ResponseEntity<CommonRes> getActiveExclusion(@RequestBody ExclusionMasterGetallReq req)
+		{
+			CommonRes data = new CommonRes();
+			reqPrinter.reqPrint(req);
+			
+			List<ExclusionMasterRes> res = service.getActiveExclusion(req);
+			data.setCommonResponse(res);
+			data.setErrorMessage(Collections.emptyList());
+			data.setIsError(false);
+			data.setMessage("Success");
+			
+			if(res!= null) {
+				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+			}
+			else {
+				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+	// Get By Exclusion Id
+
+	@PostMapping("/getbyexclusionid")
+	@ApiOperation("This Method is to get by Exclusion id")
+	public ResponseEntity<CommonRes> getByExclusionId(@RequestBody ExclusionMasterGetReq req)
+	{
+	CommonRes data = new CommonRes();
+	ExclusionMasterRes res = service.getByExclusionId(req);
+	data.setCommonResponse(res);
+	data.setErrorMessage(Collections.emptyList());
+	data.setIsError(false);
+	data.setMessage("Success");
+
+	if (res != null) {
+		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+
+	} else {
+		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+	}
+	}
+		
+
+	@PostMapping("/exclusion/changestatus")
+	@ApiOperation(value = "This method is get Exclusion Change Status")
+	public ResponseEntity<CommonRes> changeStatusOfExclusion(@RequestBody ExclusionChangeStatusReq req) {
+
+		CommonRes data = new CommonRes();
+		// Change Status
+		SuccessRes res = service.changeStatusOfExclusion(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
 
 	//Exclusion Master Drop Down Type
 	@PostMapping("/dropdown/exclusion")

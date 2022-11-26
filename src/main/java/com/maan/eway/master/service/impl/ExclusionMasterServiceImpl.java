@@ -644,7 +644,7 @@ try {
 	Predicate n7 = cb.or(n5,n6);
 	Predicate n8 = cb.equal(c.get("productId"),req.getProductId());
 
-	query.where(n1,n2,n3,n4,n7).orderBy(orderList);
+	query.where(n1,n2,n3,n4,n7,n8).orderBy(orderList);
 	// Get Result
 	TypedQuery<ExclusionMaster> result = em.createQuery(query);
 	list = result.getResultList();

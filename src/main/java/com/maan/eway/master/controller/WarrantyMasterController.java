@@ -11,14 +11,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.req.ExclusionMasterDropdownReq;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.WarrantyChangeStatusReq;
+import com.maan.eway.master.req.WarrantyMasterDropdownReq;
 import com.maan.eway.master.req.WarrantyMasterGetReq;
 import com.maan.eway.master.req.WarrantyMasterGetallReq;
 import com.maan.eway.master.req.WarrantyMasterSaveReq;
 import com.maan.eway.master.res.WarrantyMasterRes;
 import com.maan.eway.master.service.WarrantyMasterService;
 import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -155,6 +158,27 @@ public ResponseEntity<CommonRes> changeStatusOfWarranty(@RequestBody WarrantyCha
 	}
 
 }
+//Warranty Master Drop Down Type
+	@PostMapping("/dropdown/warranty")
+	@ApiOperation(value = "This method is get Warranty Master Drop Down")
 
+	public ResponseEntity<CommonRes> getWarrantyMasterDropdown(@RequestBody WarrantyMasterDropdownReq req) {
+
+		CommonRes data = new CommonRes();
+
+		// Save
+		List<DropDownRes> res = service.getWarrantyMasterDropdown(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
 	
 }

@@ -175,7 +175,7 @@ public SuccessRes insertCurrency(CurrencyMasterSaveReq req) {
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setAmendId(amendId);
 			saveData.setCoreAppCode(req.getCoreAppCode());
-			saveData.setCurrencyShortCode(req.getCurrencyShortCode());
+			saveData.setCurrencyShortCode(StringUtils.isBlank(req.getCurrencyShortCode())?"":req.getCurrencyShortCode());
 			repo.saveAndFlush(saveData);
 			
 			log.info("Saved Details is ---> " + json.toJson(saveData));

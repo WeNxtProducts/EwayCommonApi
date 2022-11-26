@@ -9,10 +9,12 @@ import java.util.List;
 
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.WarrantyChangeStatusReq;
+import com.maan.eway.master.req.WarrantyMasterDropdownReq;
 import com.maan.eway.master.req.WarrantyMasterGetReq;
 import com.maan.eway.master.req.WarrantyMasterGetallReq;
 import com.maan.eway.master.req.WarrantyMasterSaveReq;
 import com.maan.eway.master.res.WarrantyMasterRes;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 /**
@@ -31,6 +33,8 @@ public interface WarrantyMasterService  {
 	WarrantyMasterRes getByWarrantyId(WarrantyMasterGetReq req);
 
 	SuccessRes changeStatusOfWarranty(WarrantyChangeStatusReq req);
+
+	List<DropDownRes> getWarrantyMasterDropdown(WarrantyMasterDropdownReq req);
 
 	
 
