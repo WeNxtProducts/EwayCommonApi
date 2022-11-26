@@ -543,7 +543,7 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 		return resList;
 	}
 	@Override
-	public List<DropDownRes> getMotorMakeDropdown() {
+	public List<DropDownRes> getMotorMakeDropdown(MotorMakeGetAllReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			Date today = new Date();
@@ -564,9 +564,7 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			Root<MotorMakeMaster> c = query.from(MotorMakeMaster.class);
 			//Select
 			query.select(c);
-			// Order By
-			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("makeId")));
+			
 			
 			// Effective Date Start Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
@@ -582,11 +580,21 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			Predicate a3 = cb.equal(c.get("makeId"),ocpm2.get("makeId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			effectiveDate2.where(a3,a4);
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("branchCode")));
+			
 			// Where
 			Predicate n1 = cb.equal(c.get("status"),"Y");
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
-			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
-			query.where(n1,n2,n3).orderBy(orderList);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"), req.getInsuranceId());
+			Predicate n5 = cb.equal(c.get("branchCode"), req.getBranchCode());
+			Predicate n6 = cb.equal(c.get("branchCode"), "99999");
+			Predicate n7 = cb.or(n5,n6);
+			query.where(n1,n2,n3,n4,n7).orderBy(orderList);
+			
 			// Get Result
 			TypedQuery<MotorMakeMaster> result = em.createQuery(query);
 			list = result.getResultList();

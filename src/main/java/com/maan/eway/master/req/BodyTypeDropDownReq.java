@@ -9,4 +9,10 @@ public class BodyTypeDropDownReq {
 
 	@JsonProperty("SectionId")
 	private String sectionId ;
+	
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 }

@@ -2,6 +2,8 @@ package com.maan.eway.master.service;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.RequestBody;
+
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ColorChangeStatusReq;
 import com.maan.eway.master.req.MotorColorGetAllReq;
@@ -23,7 +25,7 @@ public interface MotorColorMasterService {
 
 	List<MotorColorGetRes> getactiveMotorColor(MotorColorGetAllReq req);
 
-	List<DropDownRes> getColorMasterDropdown();
+	List<DropDownRes> getColorMasterDropdown(MotorColorGetAllReq req);
 
 	SuccessRes changeStatusOfColor(ColorChangeStatusReq req);
 

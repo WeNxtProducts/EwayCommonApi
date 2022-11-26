@@ -12,12 +12,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.master.req.BodyTypeChangeStatusReq;
 import com.maan.eway.master.req.BodyTypeDropDownReq;
+import com.maan.eway.master.req.MotorBodySaveReq;
+import com.maan.eway.master.req.MotorBodyTypeGetAllReq;
+import com.maan.eway.master.req.MotorBodyTypeGetReq;
+import com.maan.eway.master.res.MotorBodyTypeGetRes;
 import com.maan.eway.master.service.MotorBodyTypeMasterService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
-
+import com.maan.eway.error.Error;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -30,54 +36,7 @@ public class MotorBodyTypeMasterController {
 	private MotorBodyTypeMasterService service;
 	@Autowired
 	private PrintReqService reqPrinter;
-
-	// Body Type Master Drop Down Type
-	@PostMapping("/dropdown/bodytype")
-	@ApiOperation(value = "This method is get Body Type Drop Down")
-
-	public ResponseEntity<CommonRes> getBodyTypeMasterDropdown(@RequestBody BodyTypeDropDownReq req) {
-
-		CommonRes data = new CommonRes();
-
-		// Save
-		List<DropDownRes> res = service.getBodyTypeMasterDropdown(req);
-		data.setCommonResponse(res);
-		data.setIsError(false);
-		data.setErrorMessage(Collections.emptyList());
-		data.setMessage("Success");
-
-		if (res != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-		}
-
-	}
 	
-	// Body Type Master Drop Down Type
-	@GetMapping("/dropdown/induvidual/bodytype")
-	@ApiOperation(value = "This method is get Body Type Drop Down")
-
-	public ResponseEntity<CommonRes> getInduvidualBodyTypeMasterDropdown() {
-
-		CommonRes data = new CommonRes();
-
-		// Save
-		List<DropDownRes> res = service.getInduvidualBodyTypeMasterDropdown();
-		data.setCommonResponse(res);
-		data.setIsError(false);
-		data.setErrorMessage(Collections.emptyList());
-		data.setMessage("Success");
-
-		if (res != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-		}
-
-	}
-	
-	/*
 	// Insert
 
 	@PostMapping("/savemotorbodytype")
@@ -203,6 +162,52 @@ public class MotorBodyTypeMasterController {
 
 		}
 	
+
+		// Body Type Master Drop Down Type
+		@PostMapping("/dropdown/bodytype")
+		@ApiOperation(value = "This method is get Body Type Drop Down")
+
+		public ResponseEntity<CommonRes> getBodyTypeMasterDropdown(@RequestBody BodyTypeDropDownReq req) {
+
+			CommonRes data = new CommonRes();
+
+			// Save
+			List<DropDownRes> res = service.getBodyTypeMasterDropdown(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
 		
-*/
+		// Body Type Master Drop Down Type
+		@PostMapping("/dropdown/induvidual/bodytype")
+		@ApiOperation(value = "This method is get Body Type Drop Down")
+
+		public ResponseEntity<CommonRes> getInduvidualBodyTypeMasterDropdown(@RequestBody BodyTypeDropDownReq req) {
+
+			CommonRes data = new CommonRes();
+
+			// Save
+			List<DropDownRes> res = service.getInduvidualBodyTypeMasterDropdown(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
+		
+
 }

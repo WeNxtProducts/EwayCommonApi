@@ -453,7 +453,7 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			Predicate a2 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a4 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-			amendId.where(a1,a2);
+			amendId.where(a1,a2,a3,a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -466,7 +466,7 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
 			Predicate n5 = cb.or(n3,n4);
 			Predicate n6 = cb.equal(b.get("sectionId"), req.getSectionId());
-			query.where(n1,n2,n5).orderBy(orderList);
+			query.where(n1,n2,n5,n6).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<MotorBodyTypeMaster> result = em.createQuery(query);
@@ -658,7 +658,7 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			query.select(c);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("bodyNameEn")));
+			orderList.add(cb.asc(c.get("branchCode")));
 
 			// Effective Date Start Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
@@ -679,7 +679,11 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 			Predicate n4 = cb.equal(c.get("sectionId"), req.getSectionId());
-			query.where(n1, n2, n3, n4).orderBy(orderList);
+			Predicate n8 = cb.equal(c.get("companyId"), req.getInsuranceId());
+			Predicate n5 = cb.equal(c.get("branchCode"), req.getBranchCode());
+			Predicate n6 = cb.equal(c.get("branchCode"), "99999");
+			Predicate n7 = cb.or(n5,n6);
+			query.where(n1,n2,n3,n4,n7,n8).orderBy(orderList);
 			// Get Result
 			TypedQuery<MotorBodyTypeMaster> result = em.createQuery(query);
 			list = result.getResultList();
@@ -700,7 +704,7 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 	}
 
 	@Override
-	public List<DropDownRes> getInduvidualBodyTypeMasterDropdown() {
+	public List<DropDownRes> getInduvidualBodyTypeMasterDropdown(BodyTypeDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			Date today = new Date();
@@ -724,7 +728,7 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			query.select(c);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("bodyNameEn")));
+			orderList.add(cb.asc(c.get("branchCode")));
 
 			// Effective Date Start Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
@@ -744,7 +748,11 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			Predicate n1 = cb.equal(c.get("status"), "Y");
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			query.where(n1, n2, n3).orderBy(orderList);
+			Predicate n4 = cb.equal(c.get("companyId"), req.getInsuranceId());
+			Predicate n5 = cb.equal(c.get("branchCode"), req.getBranchCode());
+			Predicate n6 = cb.equal(c.get("branchCode"), "99999");
+			Predicate n7 = cb.or(n5,n6);
+			query.where(n1,n2,n3,n4,n7).orderBy(orderList);
 			// Get Result
 			TypedQuery<MotorBodyTypeMaster> result = em.createQuery(query);
 			list = result.getResultList();

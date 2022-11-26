@@ -7,6 +7,7 @@ package com.maan.eway.master.service;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.maan.eway.common.res.MotorVehicleUsageMasterGetRes;
 import com.maan.eway.error.Error;
@@ -38,7 +39,7 @@ public interface MotorVeicleUsageMasterService  {
 
 
 
-	List<DropDownRes> getInduvidualVehicleUsageDropdown();
+	List<DropDownRes> getInduvidualVehicleUsageDropdown( UsageDropDownReq req);
 
 	List<DropDownRes> getVehicleUsageDropdown(UsageDropDownReq req);
 

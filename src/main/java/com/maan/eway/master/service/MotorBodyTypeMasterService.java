@@ -2,6 +2,8 @@ package com.maan.eway.master.service;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.RequestBody;
+
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.BodyTypeChangeStatusReq;
 import com.maan.eway.master.req.BodyTypeDropDownReq;
@@ -16,7 +18,7 @@ import com.maan.eway.res.SuccessRes;
 
 public interface MotorBodyTypeMasterService {
 
-	List<Error> validateMakeMotor(MotorBodySaveReq req);
+	
 
 	SuccessRes saveMakeMotor(MotorBodySaveReq req);
 
@@ -30,7 +32,9 @@ public interface MotorBodyTypeMasterService {
 
 	List<DropDownRes> getBodyTypeMasterDropdown(BodyTypeDropDownReq req);
 
-	List<DropDownRes> getInduvidualBodyTypeMasterDropdown();
+	List<DropDownRes> getInduvidualBodyTypeMasterDropdown(BodyTypeDropDownReq req);
+
+	List<Error> validateMakeMotor(MotorBodySaveReq req);
 
 
 }

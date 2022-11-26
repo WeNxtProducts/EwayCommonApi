@@ -154,15 +154,15 @@ public class MotorVehicleUsageMasterController {
 				
 
 				// Motor Vehicle Usage Master Drop Down Type
-				@GetMapping("/dropdown/induvidual/vehicleusage")
+				@PostMapping("/dropdown/induvidual/vehicleusage")
 				@ApiOperation(value = "This method is get Motor Vehicle Usage Master Drop Down")
 
-				public ResponseEntity<CommonRes> getInduvidualVehicleUsageDropdown() {
+				public ResponseEntity<CommonRes> getInduvidualVehicleUsageDropdown(@RequestBody UsageDropDownReq req) {
 
 					CommonRes data = new CommonRes();
 
 					// Save
-					List<DropDownRes> res = entityService.getInduvidualVehicleUsageDropdown();
+					List<DropDownRes> res = entityService.getInduvidualVehicleUsageDropdown(req);
 					data.setCommonResponse(res);
 					data.setIsError(false);
 					data.setErrorMessage(Collections.emptyList());

@@ -36,6 +36,7 @@ import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.google.gson.Gson;
 
@@ -559,7 +560,11 @@ public List<DropDownRes> getVehicleUsageDropdown(UsageDropDownReq req) {
 		Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 		Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
 		Predicate n4 = cb.like(c.get("sectionId"), "%" +req.getSectionId() + "%");
-		query.where(n1,n2,n3,n4).orderBy(orderList);
+		Predicate n5 = cb.equal(c.get("companyId"), req.getInsuranceId());
+		Predicate n6 = cb.equal(c.get("branchCode"), req.getBranchCode());
+		Predicate n7 = cb.equal(c.get("branchCode"), "99999");
+		Predicate n8 = cb.or(n6,n7);
+		query.where(n1,n2,n3,n4,n5,n8).orderBy(orderList);
 		// Get Result
 		TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
 		list = result.getResultList();
@@ -652,7 +657,7 @@ public SuccessRes changeStatusOfVehicleUsage(MotorVehicleUsageChangeStatusReq re
 
 
 @Override
-public List<DropDownRes> getInduvidualVehicleUsageDropdown() {
+public List<DropDownRes> getInduvidualVehicleUsageDropdown( UsageDropDownReq req) {
 	List<DropDownRes> resList = new ArrayList<DropDownRes>();
 	try {
 		Date today = new Date();
@@ -675,7 +680,7 @@ public List<DropDownRes> getInduvidualVehicleUsageDropdown() {
 		query.select(c);
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(c.get("vehicleUsageDesc")));
+		orderList.add(cb.asc(c.get("branchCode")));
 		
 		// Effective Date Start Max Filter
 		Subquery<Long> effectiveDate = query.subquery(Long.class);
@@ -697,7 +702,11 @@ public List<DropDownRes> getInduvidualVehicleUsageDropdown() {
 		Predicate n1 = cb.equal(c.get("status"),"Y");
 		Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 		Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
-		query.where(n1,n2,n3).orderBy(orderList);
+		Predicate n4 = cb.equal(c.get("companyId"), req.getInsuranceId());
+		Predicate n5 = cb.equal(c.get("branchCode"), req.getBranchCode());
+		Predicate n6 = cb.equal(c.get("branchCode"), "99999");
+		Predicate n7 = cb.or(n5,n6);
+		query.where(n1,n2,n3,n4,n7).orderBy(orderList);
 		// Get Result
 		TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
 		list = result.getResultList();

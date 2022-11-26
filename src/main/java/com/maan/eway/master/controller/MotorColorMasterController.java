@@ -3,21 +3,30 @@ package com.maan.eway.master.controller;
 
 import java.util.Collections;
 import java.util.List;
-
+import com.maan.eway.error.Error;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.master.req.ColorChangeStatusReq;
+import com.maan.eway.master.req.MotorColorGetAllReq;
+import com.maan.eway.master.req.MotorColorGetReq;
+import com.maan.eway.master.req.MotorColorSaveReq;
+import com.maan.eway.master.res.MotorColorGetRes;
 import com.maan.eway.master.service.MotorColorMasterService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 
 @RestController
 @Api(tags = "MASTER :Motor Color Master ", description = "API's")
@@ -28,30 +37,6 @@ public class MotorColorMasterController {
 	private MotorColorMasterService service;
 	@Autowired
 	private PrintReqService reqPrinter;
-
-	// Color Master Drop Down Type
-	@GetMapping("/dropdown/color")
-	@ApiOperation(value = "This method is get Color Master Drop Down")
-
-	public ResponseEntity<CommonRes> getColorMasterDropdown() {
-
-		CommonRes data = new CommonRes();
-
-		// Save
-		List<DropDownRes> res = service.getColorMasterDropdown();
-		data.setCommonResponse(res);
-		data.setIsError(false);
-		data.setErrorMessage(Collections.emptyList());
-		data.setMessage("Success");
-
-		if (res != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-		}
-
-	}
-/*
 	// Insert
 
 	@PostMapping("/savemotorcolor")
@@ -176,6 +161,30 @@ public class MotorColorMasterController {
 
 		}
 	
-		
-*/
+
+		// Color Master Drop Down Type
+		@PostMapping("/dropdown/color")
+		@ApiOperation(value = "This method is get Color Master Drop Down")
+
+		public ResponseEntity<CommonRes> getColorMasterDropdown(@RequestBody MotorColorGetAllReq req) {
+
+			CommonRes data = new CommonRes();
+
+			// Save
+			List<DropDownRes> res = service.getColorMasterDropdown(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
+
+
+
 	 }

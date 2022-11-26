@@ -6,7 +6,7 @@
 package com.maan.eway.master.controller;
 import java.util.Collections;
 import java.util.List;
-
+import com.maan.eway.error.Error;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +15,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.master.req.RegionChangeStatusReq;
 import com.maan.eway.master.req.RegionMasterDropDownReq;
+import com.maan.eway.master.req.RegionMasterGetAllReq;
+import com.maan.eway.master.req.RegionMasterGetReq;
+import com.maan.eway.master.req.RegionMasterSaveReq;
+import com.maan.eway.master.res.RegionMasterRes;
 import com.maan.eway.master.service.RegionMasterService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
@@ -61,7 +67,7 @@ public class RegionMasterController {
 				}
 
 			}
-	/*	// save
+	// save
 		@PostMapping("/insertregion")
 		@ApiOperation(value = "This method is Insert Region Details")
 		public ResponseEntity<CommonRes> insertRegion(@RequestBody RegionMasterSaveReq req) {
@@ -184,5 +190,5 @@ public class RegionMasterController {
 			}
 
 		}
-*/
+
 }
