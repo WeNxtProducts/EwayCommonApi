@@ -97,10 +97,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="RFACTOR")
     private Byte       rfactor ;
 
-    @Column(name="SUB_CURRENCY", nullable=false, length=10)
+    @Column(name="SUB_CURRENCY", length=10)
     private String     subCurrency ;
 
-    @Column(name="EX_MINLMT", nullable=false)
+    @Column(name="EX_MINLMT")
     private BigDecimal exMinlmt ;
 
     @Column(name="EX_MAXLMT")
