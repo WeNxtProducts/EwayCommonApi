@@ -251,7 +251,7 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 			}
 		}
 		
-		if (req.getSubCurrency().length() > 10) {
+		if (StringUtils.isNotBlank(req.getSubCurrency())&& req.getSubCurrency().length() > 10) {
 			errorList.add(new Error("09", "SubCurrency", "Please Enter SubCurrency within 10 Characters"));
 		}
 		
