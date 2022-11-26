@@ -5,9 +5,17 @@
 */
 package com.maan.eway.master.service;
 
-import java.util.List;
-
+import com.maan.eway.master.req.BankChangeStatusReq;
+import com.maan.eway.master.req.BankMasterGetAllReq;
+import com.maan.eway.master.req.BankMasterGetReq;
+import com.maan.eway.master.req.BankMasterSaveReq;
+import com.maan.eway.master.req.CustomerSaveReq;
+import com.maan.eway.master.res.BankMasterRes;
+import com.maan.eway.error.Error;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
+
+import java.util.List;
 /**
 * <h2>BankMasterServiceimpl</h2>
 */
@@ -20,8 +28,8 @@ BankMaster update(BankMaster d);
 long getTotal();
 //boolean delete(long id);*/
 
-List<DropDownRes> getBankMasterDropdown();
-/*SuccessRes insertBank(BankMasterSaveReq req);
+
+SuccessRes insertBank(BankMasterSaveReq req);
 
 List<Error> validateBankDetails(BankMasterSaveReq req);
 
@@ -29,11 +37,13 @@ List<BankMasterRes> getallBankDetails(BankMasterGetAllReq req);
 
 BankMasterRes getByBankCode(BankMasterGetReq req);
 
-
+List<DropDownRes> getBankMasterDropdown();
 
 List<BankMasterRes> getActiveBankDetails(BankMasterGetAllReq req);
 
+SuccessRes changeStatusOfBank(BankChangeStatusReq req);
 
 
-*/
+
+
 }

@@ -13,11 +13,11 @@ public class BankMasterGetAllReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("Limit")
-    private String limit;
-    
-    @JsonProperty("Offset")
-    private String offset;
+    @JsonProperty("InsuranceId")
+	private String companyId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
     
 
 }

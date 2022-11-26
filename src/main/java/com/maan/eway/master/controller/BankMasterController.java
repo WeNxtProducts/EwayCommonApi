@@ -15,12 +15,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.BankChangeStatusReq;
+import com.maan.eway.master.req.BankMasterGetAllReq;
+import com.maan.eway.master.req.BankMasterGetReq;
+import com.maan.eway.master.req.BankMasterSaveReq;
+import com.maan.eway.master.req.ExclusionChangeStatusReq;
+import com.maan.eway.master.res.BankMasterRes;
 import com.maan.eway.master.service.BankMasterService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
@@ -41,31 +51,8 @@ public class BankMasterController {
 	@Autowired
 	private  PrintReqService reqPrinter;
 	
-	// Bank Master Drop Down Type
-			@GetMapping("/dropdown/bankmaster")
-			@ApiOperation(value = "This method is get Bank Master Drop Down")
-
-			public ResponseEntity<CommonRes> getBankMasterDropdown() {
-
-				CommonRes data = new CommonRes();
-
-				// Save
-				List<DropDownRes> res = bankService.getBankMasterDropdown();
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-
-			}
-
 	
-/*	// save
+	// save
 		@PostMapping("/insertbank")
 		@ApiOperation(value = "This method is Insert Bank Details")
 		public ResponseEntity<CommonRes> insertBank(@RequestBody BankMasterSaveReq req) {
@@ -166,45 +153,51 @@ public class BankMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	*/	
 		
-/*
-	private static final String ENTITY_TITLE = "BankMaster";
+		// Change Status
+		@PostMapping("/bank/changestatus")
+		@ApiOperation(value = "This method is Bank Change Status")
+		public ResponseEntity<CommonRes> changeStatusOfBank(@RequestBody BankChangeStatusReq req) {
 
+			CommonRes data = new CommonRes();
+			// Change Status
+			SuccessRes res = bankService.changeStatusOfBank(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
 
- 	public BankMasterController (BankMasterService entityService) {
-		this.entityService = entityService;
-	}
-*/
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
 
-/*	@PostMapping(value = "/bankmaster")
-	public ResponseEntity<BankMaster> createBankMaster(@RequestBody  BankMaster model) {
+		}
+		
+		
+		
+		// Bank Master Drop Down Type
+					@GetMapping("/dropdown/bankmaster")
+					@ApiOperation(value = "This method is get Bank Master Drop Down")
 
-   		 BankMaster data = entityService.create(model);
-    		if (data != null) {
-    			return new ResponseEntity<>(data,HttpStatus.CREATED);
-  			  } else {
-    			return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
-   			 }
-    }
+					public ResponseEntity<CommonRes> getBankMasterDropdown() {
 
-    @GetMapping(value = "/bankmaster")
-    public ResponseEntity<List<BankMaster>> getAllBankMaster() {
-        List<BankMaster> lst = entityService.getAll();
+						CommonRes data = new CommonRes();
 
-        return new ResponseEntity<>(lst,HttpStatus.OK);
-    }
-/*
-        @GetMapping(value = "/bankmaster/{id}")
-    public ResponseEntity<BankMaster> getOneBankMaster(@PathVariable("id") long id) {
+						// Save
+						List<DropDownRes> res = bankService.getBankMasterDropdown();
+						data.setCommonResponse(res);
+						data.setIsError(false);
+						data.setErrorMessage(Collections.emptyList());
+						data.setMessage("Success");
 
-            BankMaster e = entityService.getOne(id);
-            if (e == null) {
-            	return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>(e, HttpStatus.OK);
-    }
+						if (res != null) {
+							return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+						} else {
+							return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+						}
 
-*/
-				
+					}
+	
 }
