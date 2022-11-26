@@ -16,10 +16,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CurrencyDropDownReq;
+import com.maan.eway.master.req.CurrencyMasterChangeStatusReq;
+import com.maan.eway.master.req.CurrencyMasterGetAllReq;
+import com.maan.eway.master.req.CurrencyMasterGetReq;
+import com.maan.eway.master.req.CurrencyMasterSaveReq;
+import com.maan.eway.master.res.CurrencyMasterRes;
 import com.maan.eway.master.service.CurrencyMasterService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.CuurencyDropDownRes;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
@@ -38,35 +45,7 @@ public class CurrencyMasterController {
 
 	@Autowired
 	private PrintReqService reqPrinter;
-	// Currency Master Drop Down Type
-			@PostMapping("/dropdown/currency")
-			@ApiOperation(value = "This method is get Currency Master Drop Down")
 
-			public ResponseEntity<CommonRes> getCurrencyMasterDropdown(@RequestBody CurrencyDropDownReq req  ) {
-
-			CommonRes data = new CommonRes();
-
-				// dropdown
-				List<CuurencyDropDownRes> res = currencyService.getCurrencyMasterDropdown(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-
-			// dropdown
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-
-		}
-/*
 	// save
 	@PostMapping("/insertcurrency")
 	@ApiOperation(value = "This method is Insert Currency Details")
@@ -164,6 +143,53 @@ public class CurrencyMasterController {
 		}
 	}
 		
-		
-*/
+	@PostMapping("/changestatuscurrencydetails")
+	@ApiOperation("This method is change Status Currency Details")
+	public ResponseEntity<CommonRes>changeStatusCurrencyDetails(@RequestBody CurrencyMasterChangeStatusReq req) {
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+
+		SuccessRes res = currencyService.changeStatusCurrencyDetails(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	
+	
+	// Currency Master Drop Down Type
+				@PostMapping("/dropdown/currency")
+				@ApiOperation(value = "This method is get Currency Master Drop Down")
+
+				public ResponseEntity<CommonRes> getCurrencyMasterDropdown(@RequestBody CurrencyDropDownReq req  ) {
+
+				CommonRes data = new CommonRes();
+
+					// dropdown
+					List<CuurencyDropDownRes> res = currencyService.getCurrencyMasterDropdown(req);
+					data.setCommonResponse(res);
+					data.setIsError(false);
+					data.setErrorMessage(Collections.emptyList());
+					data.setMessage("Success");
+
+				// dropdown
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+
+			}
 }

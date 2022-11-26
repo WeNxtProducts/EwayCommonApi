@@ -16,8 +16,6 @@ public class CurrencyMasterRes implements Serializable {
 	@JsonProperty("CurrencyId")
 	private String currencyId;
 
-	@JsonProperty("CountryId")
-	private String countryId;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
@@ -66,4 +64,17 @@ public class CurrencyMasterRes implements Serializable {
 
 	@JsonProperty("Remarks")
 	private String remarks;
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	@JsonProperty("UpdatedBy")
+	private String updatedBy;
+	
+
+	@JsonProperty("InsuranceId")
+	private String companyId;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("UpdatedDate")
+	private Date updatedDate;
+	
 }

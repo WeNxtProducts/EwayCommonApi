@@ -31,10 +31,7 @@ public class BranchMasterId implements Serializable {
 
     //--- ENTITY KEY ATTRIBUTES 
     private String     branchCode ;
-    
-    private Date       effectiveDateStart ;
-    
-    private Date       effectiveDateEnd ;
-    
+    private Integer    amendId ;
+
      
 }

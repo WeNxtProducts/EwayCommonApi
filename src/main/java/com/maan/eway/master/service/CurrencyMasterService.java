@@ -7,8 +7,15 @@ package com.maan.eway.master.service;
 
 import java.util.List;
 
+import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CurrencyDropDownReq;
+import com.maan.eway.master.req.CurrencyMasterChangeStatusReq;
+import com.maan.eway.master.req.CurrencyMasterGetAllReq;
+import com.maan.eway.master.req.CurrencyMasterGetReq;
+import com.maan.eway.master.req.CurrencyMasterSaveReq;
+import com.maan.eway.master.res.CurrencyMasterRes;
 import com.maan.eway.res.CuurencyDropDownRes;
+import com.maan.eway.res.SuccessRes;
 /**
 * <h2>BankMasterServiceimpl</h2>
 */
@@ -16,7 +23,7 @@ public interface CurrencyMasterService  {
 
 	List<CuurencyDropDownRes> getCurrencyMasterDropdown( CurrencyDropDownReq req );
 
-	/* getByCurrencyId(CurrencyMasterGetReq req);
+	CurrencyMasterRes getByCurrencyId(CurrencyMasterGetReq req);
 
 	List<CurrencyMasterRes> getActiveCurrencyDetails(CurrencyMasterGetAllReq req);
 
@@ -25,5 +32,7 @@ public interface CurrencyMasterService  {
 	SuccessRes insertCurrency(CurrencyMasterSaveReq req);
 
 	List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req);
-*/
+
+	SuccessRes changeStatusCurrencyDetails(CurrencyMasterChangeStatusReq req);
+
 }

@@ -33,10 +33,8 @@ public class CountryMasterId implements Serializable {
     private String    countryId ;
     
     private String     countryShortCode ;
-    
-    private Date       effectiveDateStart ;
-    
-    private Date       effectiveDateEnd ;
+    private Integer    amendId ;
+
     
      
 }

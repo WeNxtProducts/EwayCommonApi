@@ -59,4 +59,10 @@ public class CompanyCityMasterRes implements Serializable {
 	@JsonProperty("InsuranceId")
 	private String companyId;
 
+	@JsonProperty("UpdatedBy")
+	private String updatedBy;
+
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("UpdatedDate")
+	private Date updatedDate;
 }

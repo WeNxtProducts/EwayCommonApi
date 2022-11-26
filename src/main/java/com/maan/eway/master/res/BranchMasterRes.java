@@ -78,6 +78,12 @@ public class BranchMasterRes implements Serializable {
     private String    branchType  ;
 	@JsonProperty("AmendId")
     private String    amendId;
+	@JsonProperty("UpdatedBy")
+	private String updatedBy;
+
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("UpdatedDate")
+	private Date updatedDate;
 	
 	
 

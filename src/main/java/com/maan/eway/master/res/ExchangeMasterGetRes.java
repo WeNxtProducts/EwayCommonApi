@@ -43,4 +43,21 @@ public class ExchangeMasterGetRes {
 	
 	@JsonProperty("InsuranceId")
 	private String companyId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
+	@JsonProperty("CoreAppCode")
+	private String coreAppCode;
+	
+	@JsonProperty("UpdatedBy")
+	private String updatedBy;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("UpdatedDate")
+	private Date updatedDate;
+	
 }

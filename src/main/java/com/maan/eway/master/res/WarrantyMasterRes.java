@@ -1,6 +1,5 @@
 package com.maan.eway.master.res;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -9,45 +8,34 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class BankMasterRes implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+public class WarrantyMasterRes {
 
-
-	@JsonProperty("BankCode")
-    private String     bankCode     ;
+	@JsonProperty("WarrantyId")
+	private String warrantyId;
+	
+	@JsonProperty("WarrantyDescription")
+	private String warrantyDescription;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 	
 	@JsonProperty("InsuranceId")
-    private String     companyId;
-
-	@JsonProperty("BranchCode")
-    private String     branchCode;
-		
-	@JsonFormat(pattern = "dd/MM/yyyy")
+	private String companyId;
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
-
+	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
-
-	@JsonProperty("BankShortName")
-    private String     bankShortName ;
 	
-	@JsonProperty("BankFullName")
-    private String     bankFullName ;	
-	
-	@JsonProperty("Status")
-    private String     status ;
-
-	@JsonProperty("CoreAppCode")
-	private String coreAppCode;
-
-	@JsonProperty("RegulatoryCode")
-	private String regulatoryCode;
-		
 	@JsonProperty("Remarks")
 	private String remarks;
+	
+	@JsonProperty("Status")
+	private String status;
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
@@ -59,6 +47,12 @@ public class BankMasterRes implements Serializable {
 	@JsonProperty("UpdatedDate")
 	private Date updatedDate;
 
+	@JsonProperty("CoreAppCode")
+	private String coreAppCode;
+	
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
+	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EntryDate")
 	private Date entryDate;

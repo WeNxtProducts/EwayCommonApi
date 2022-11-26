@@ -9,18 +9,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class BranchMasterGetReq implements Serializable {
+public class WarrantyMasterGetReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-	@JsonProperty("BranchCode")
-    private String     branchCode     ;
-	
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateStart")
-	private Date effectiveDateStart ;
+	@JsonProperty("WarrantyId")
+    private String    warrantyId     ;
     
-	@JsonProperty("CountryId")
-    private String     countryId     ;
-		
-	}
+	@JsonProperty("InsuranceId")
+	private String companyId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
+}

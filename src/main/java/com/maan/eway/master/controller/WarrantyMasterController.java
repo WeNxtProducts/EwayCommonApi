@@ -1,0 +1,160 @@
+package com.maan.eway.master.controller;
+
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.WarrantyChangeStatusReq;
+import com.maan.eway.master.req.WarrantyMasterGetReq;
+import com.maan.eway.master.req.WarrantyMasterGetallReq;
+import com.maan.eway.master.req.WarrantyMasterSaveReq;
+import com.maan.eway.master.res.WarrantyMasterRes;
+import com.maan.eway.master.service.WarrantyMasterService;
+import com.maan.eway.res.CommonRes;
+import com.maan.eway.res.SuccessRes;
+import com.maan.eway.service.PrintReqService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+@RestController
+@Api(tags="MASTER : Waranty MASTER", description="API's")
+@RequestMapping("/master")
+public class WarrantyMasterController {
+
+@Autowired
+private WarrantyMasterService service;
+
+@Autowired
+private PrintReqService reqPrinter;
+
+//Save
+
+@PostMapping("/insertwarranty")
+@ApiOperation(value="This Method is to save Waranty Master")
+public ResponseEntity<CommonRes> saveWarranty(@RequestBody WarrantyMasterSaveReq req){
+	CommonRes data = new CommonRes();
+	reqPrinter.reqPrint(req);
+	
+List<Error> validation = service.validateWarranty(req);
+//validation
+if(validation !=null && validation.size()!=0) {
+	data.setCommonResponse(null);
+	data.setIsError(true);
+	data.setErrorMessage(validation);
+	data.setMessage("Failed");
+	return new ResponseEntity<CommonRes>(data,HttpStatus.OK);
+} else {
+	//save
+	SuccessRes res = service.saveWarranty(req);
+	data.setCommonResponse(res);
+	data.setIsError(false);
+	data.setErrorMessage(Collections.emptyList());
+	data.setMessage("Success");
+	
+	if(res!=null) {
+		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+	}
+	else {
+		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+	}
+}
+}
+
+//  Get All Warranty Master
+
+@PostMapping("/getallwarranty")
+@ApiOperation("This method is getall Warranty")
+public ResponseEntity<CommonRes> getallWarranty(@RequestBody WarrantyMasterGetallReq req)
+{
+	CommonRes data = new CommonRes();
+	reqPrinter.reqPrint(req);
+	
+	List<WarrantyMasterRes> res =service.getallWarranty(req);
+	data.setCommonResponse(res);
+	data.setErrorMessage(Collections.emptyList());
+	data.setIsError(false);
+	data.setMessage("Success");
+	
+	if(res!= null) {
+		return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+	}
+	else {
+		return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+	}
+}
+
+//  Get Active Warranty Master
+
+	@PostMapping("/getactivewarranty")
+	@ApiOperation("This method is get Active Warranty")
+	public ResponseEntity<CommonRes> getActiveWarranty(@RequestBody WarrantyMasterGetallReq req)
+	{
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		
+		List<WarrantyMasterRes> res = service.getActiveWarranty(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		
+		if(res!= null) {
+			return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+// Get By Warranty Id
+
+@PostMapping("/getbywarrantyid")
+@ApiOperation("This Method is to get by Warranty id")
+public ResponseEntity<CommonRes> getByWarrantyId(@RequestBody WarrantyMasterGetReq req)
+{
+CommonRes data = new CommonRes();
+WarrantyMasterRes res = service.getByWarrantyId(req);
+data.setCommonResponse(res);
+data.setErrorMessage(Collections.emptyList());
+data.setIsError(false);
+data.setMessage("Success");
+
+if (res != null) {
+	return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+
+} else {
+	return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+}
+}
+	
+
+@PostMapping("/warranty/changestatus")
+@ApiOperation(value = "This method is get Warranty Change Status")
+public ResponseEntity<CommonRes> changeStatusOfWarranty(@RequestBody WarrantyChangeStatusReq req) {
+
+	CommonRes data = new CommonRes();
+	// Change Status
+	SuccessRes res = service.changeStatusOfWarranty(req);
+	data.setCommonResponse(res);
+	data.setIsError(false);
+	data.setErrorMessage(Collections.emptyList());
+	data.setMessage("Success");
+
+	if (res != null) {
+		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+	} else {
+		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+	}
+
+}
+
+	
+}

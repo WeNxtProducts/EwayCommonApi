@@ -15,16 +15,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ExchangeMasterGetallReq {
 
-	@JsonProperty("Limit")
-	private String limit;
-	
-	@JsonProperty("Offset")
-	private String offset;
 	
 	@JsonProperty("CountryId")
 	private String countryId;
 	
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateStart")
-	private Date effectiveDateStart;
+	@JsonProperty("InsuranceId")
+	private String companyId;
+	
 }
