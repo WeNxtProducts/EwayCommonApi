@@ -8,12 +8,36 @@ package com.maan.eway.master.service;
 import java.util.List;
 
 import com.maan.eway.common.req.UwMasterDropdownReq;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.UwQuestionChangeStatusReq;
+import com.maan.eway.master.req.UwQuestionMasterGetReq;
+import com.maan.eway.master.req.UwQuestionMasterSaveReq;
+import com.maan.eway.master.req.UwQuestionsMasterGetAllReq;
+import com.maan.eway.master.res.UwQuestionMasterRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
+
 /**
 * <h2>BankMasterServiceimpl</h2>
 */
 public interface UwQuestionMasterService  {
 
+	List<Error> validateUwQuestions(UwQuestionMasterSaveReq req);
+
+	SuccessRes insertUwQuestions(UwQuestionMasterSaveReq req);
+
+	List<UwQuestionMasterRes> getallUwQuestions(UwQuestionsMasterGetAllReq req);
+
+	List<UwQuestionMasterRes> getActiveUwQuestions(UwQuestionsMasterGetAllReq req);
+
+	UwQuestionMasterRes getByUwQuestionId(UwQuestionMasterGetReq req);
+
+	SuccessRes changeStatusOfUwQuestion(UwQuestionChangeStatusReq req);
+
+	List<DropDownRes> getUwQuestionMasterDropdown(UwQuestionMasterGetReq req);
 
 	List<DropDownRes> getUwQuestionMasterDropdown(UwMasterDropdownReq req);
+
+
+
 }
