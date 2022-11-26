@@ -57,14 +57,6 @@ private static final long serialVersionUID = 1L;
     private Integer    ratingId ;
 
     @Id
-    @Column(name="COMPANY_ID", nullable=false, length=20)
-    private String     companyId ;
-
-    @Id
-    @Column(name="BRANCH_CODE", nullable=false, length=20)
-    private String     branchCode ;
-
-    @Id
     @Column(name="AMEND_ID", nullable=false)
     private Integer    amendId ;
 

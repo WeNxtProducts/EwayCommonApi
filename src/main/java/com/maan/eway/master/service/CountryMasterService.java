@@ -11,6 +11,7 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CountryChangeStatusReq;
 import com.maan.eway.master.req.CountryMasterGetReq;
 import com.maan.eway.master.req.CountryMasterSaveReq;
+import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.res.CountryMasterRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -29,7 +30,7 @@ public interface CountryMasterService  {
 
 	CountryMasterRes getByCountryId(CountryMasterGetReq req);
 
-	List<DropDownRes> getCountryMasterDropdown();
+	List<DropDownRes> getCountryMasterDropdown(LovDropDownReq req);
 
 	SuccessRes changeStatusOfCountry(CountryChangeStatusReq req);
 

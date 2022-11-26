@@ -31,10 +31,6 @@ public class RatingFieldMasterId implements Serializable {
     //--- ENTITY KEY ATTRIBUTES 
     private Integer    ratingId ;
     
-    private String     companyId ;
-    
-    private String     branchCode ;
-    
     private Integer    amendId ;
     
     private Integer    productId ;

@@ -54,11 +54,11 @@ private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
     @Id
-    @Column(name="InsuranceId", nullable=false, length=10)
+    @Column(name="Insuranceid", nullable=false, length=10)
     private String     insuranceid ;
 
     @Id
-    @Column(name="ProductId", nullable=false)
+    @Column(name="Productid", nullable=false)
     private Integer    productid ;
 
     @Id
@@ -66,10 +66,10 @@ private static final long serialVersionUID = 1L;
     private Integer    sno ;
 
     //--- ENTITY DATA FIELDS 
-    @Column(name="StartFrom")
+    @Column(name="Startfrom")
     private BigDecimal startfrom ;
 
-    @Column(name="EndTo")
+    @Column(name="Endto")
     private BigDecimal endto ;
 
     @Column(name="Percent")

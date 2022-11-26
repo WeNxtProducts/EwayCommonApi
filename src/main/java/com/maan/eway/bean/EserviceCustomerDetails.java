@@ -161,7 +161,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="OCCUPATION_DESC", length=20)
     private String     occupationDesc ;
 
-    @Column(name="BUSINESS_TYPE", nullable=false, length=1)
+    @Column(name="BUSINESS_TYPE", length=1)
     private String     businessType ;
 
     @Column(name="BUSINESS_TYPE_DESC", length=20)

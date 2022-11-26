@@ -2,13 +2,16 @@ package com.maan.eway.common.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -16,6 +19,7 @@ import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -47,6 +51,8 @@ import com.maan.eway.common.res.CustomerDetailsGetRes;
 import com.maan.eway.common.res.MsPersonalInfoGetRes;
 import com.maan.eway.common.service.EserviceCustomerDetailsService;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.OccupationMasterGetReq;
+import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.OccupationMasterRepository;
@@ -469,11 +475,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				saveData.setBusinessTypeDesc(businessType.getItemValue());
 			}
 			
-			OccupationMaster occupation =occupationRepo.findByOccupationId(saveData.getOccupation());
+			String occupationDesc = getByOccupationId(req.getOccupation() , req.getCompanyId() , req.getBranchCode());
 			saveData.setGenderDesc(gender.getItemValue());
 			saveData.setTitleDesc(title.getItemValue());
 			saveData.setLanguageDesc(language.getItemValue());
-			saveData.setOccupationDesc(occupation.getOccupationName());
+			saveData.setOccupationDesc(occupationDesc);
 			saveData.setPolicyHolderTypeDesc(policyHolderType.getItemValue());
 			saveData.setPolicyHolderTypeIdDesc(policyHolderTypeId.getItemValue());
 			saveData.setIdType(req.getPolicyHolderTypeid());
@@ -496,6 +502,66 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		}
 		return res;
 
+	}
+	
+	public String getByOccupationId(String occupationId , String insuranceId , String branchCode ) {
+		String occupationDesc = "";
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+
+			List<OccupationMaster> list = new ArrayList<OccupationMaster>();
+		
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<OccupationMaster> query = cb.createQuery(OccupationMaster.class);
+
+			// Find All
+			Root<OccupationMaster> b = query.from(OccupationMaster.class);
+
+			// Select
+			query.select(b);
+
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<OccupationMaster> ocpm1 = amendId.from(OccupationMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("occupationId"), b.get("occupationId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+
+			amendId.where(a1, a2,a3);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("branchCode")));
+
+			// Where
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("companyId"), insuranceId);
+			Predicate n3 = cb.equal(b.get("branchCode"), branchCode);
+			Predicate n4 = cb.equal(b.get("occupationId"), occupationId);
+			Predicate n6 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n7 = cb.or(n3,n6);
+			query.where(n1,n2,n4,n7).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<OccupationMaster> result = em.createQuery(query);
+
+			list = result.getResultList();
+			list.sort(Comparator.comparing(OccupationMaster :: getOccupationName ));
+			occupationDesc =list.size() > 0 ? list.get(0).getOccupationName() : "" ;
+			
+			} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return occupationDesc;
 	}
 	
 	public List<Tuple> getStateAndCityName(String countryId , String cityId  ) {

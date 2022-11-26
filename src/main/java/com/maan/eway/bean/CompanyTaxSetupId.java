@@ -27,14 +27,10 @@ import java.util.Date;
 @Builder
 public class CompanyTaxSetupId implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
-    
 	
 	private Integer taxId;
     private Integer productId ;
 	private String companyId;
     private Integer amendId;
-    private String     branchCode;
- 
+     
 }

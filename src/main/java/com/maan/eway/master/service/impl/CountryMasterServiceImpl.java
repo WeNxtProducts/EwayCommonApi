@@ -41,6 +41,7 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CountryChangeStatusReq;
 import com.maan.eway.master.req.CountryMasterGetReq;
 import com.maan.eway.master.req.CountryMasterSaveReq;
+import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.res.CountryMasterRes;
 import com.maan.eway.master.service.CountryMasterService;
 import com.maan.eway.repository.CountryMasterRepository;
@@ -663,7 +664,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 		return res;
 	}
 	@Override
-	public List<DropDownRes> getCountryMasterDropdown() {
+	public List<DropDownRes> getCountryMasterDropdown(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			Date today = new Date();
