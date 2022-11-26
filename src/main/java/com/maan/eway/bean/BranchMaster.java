@@ -57,11 +57,14 @@ private static final long serialVersionUID = 1L;
     private String     branchCode ;
 
     @Id
+    @Column(name="AMEND_ID",nullable=false)
+    private Integer    amendId ;
+
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_START", nullable=false)
     private Date       effectiveDateStart ;
 
-    @Id
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_END", nullable=false)
     private Date       effectiveDateEnd ;
@@ -86,9 +89,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="CORE_APP_CODE", length=20)
     private String     coreAppCode ;
 
-    @Column(name="AMEND_ID")
-    private Integer    amendId ;
-
+    
     @Column(name="REMARKS", length=100)
     private String     remarks ;
 
@@ -128,9 +129,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="REGULATORY_CODE", nullable=false, length=20)
     private String     regulatoryCode ;
 
+    @Column(name="UPDATED_BY", length=100)
+    private String    updatedBy ;
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
-
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="UPDATED_DATE")
+    private Date       updatedDate ;
 
 }
 

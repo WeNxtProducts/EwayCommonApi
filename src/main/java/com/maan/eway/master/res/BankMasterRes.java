@@ -13,45 +13,54 @@ public class BankMasterRes implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    //----------------------------------------------------------------------
-    // ENTITY PRIMARY KEY 
-    //----------------------------------------------------------------------
+
 	@JsonProperty("BankCode")
     private String     bankCode     ;
 	
+	@JsonProperty("InsuranceId")
+    private String     companyId;
+
+	@JsonProperty("BranchCode")
+    private String     branchCode;
+		
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
-    private Date       effectiveDateStart ;
-	
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-    private Date       effectiveDateEnd ;
+	private Date effectiveDateStart;
 
-    //----------------------------------------------------------------------
-    // ENTITY DATA FIELDS 
-    //----------------------------------------------------------------------   
-	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date effectiveDateEnd;
+
 	@JsonProperty("BankShortName")
     private String     bankShortName ;
 	
 	@JsonProperty("BankFullName")
-    private String     bankFullName ;
-	
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EntryDate")
-    private Date       entryDate    ;
+    private String     bankFullName ;	
 	
 	@JsonProperty("Status")
-    private String     status       ;
+    private String     status ;
 
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
 
-	@JsonProperty("AmendId")
-	private Integer amendId;
-
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
+		
 	@JsonProperty("Remarks")
 	private String remarks;
-
 	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
+	@JsonProperty("UpdatedBy")
+	private String updatedBy;
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("UpdatedDate")
+	private Date updatedDate;
+
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EntryDate")
+	private Date entryDate;
+
 }

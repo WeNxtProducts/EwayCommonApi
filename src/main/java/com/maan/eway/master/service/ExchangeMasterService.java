@@ -2,14 +2,18 @@ package com.maan.eway.master.service;
 
 import java.util.List;
 
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.ExchangeChangeStatusReq;
+import com.maan.eway.master.req.ExchangeMasterGetReq;
+import com.maan.eway.master.req.ExchangeMasterGetallReq;
+import com.maan.eway.master.req.ExchangeMasterSaveReq;
+import com.maan.eway.master.res.ExchangeMasterGetRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
 
 public interface ExchangeMasterService {
-	
 
-	List<DropDownRes> getExchangeMasterDropdown();
-
-	/*List<Error> validateInsertExchangeMaster(ExchangeMasterSaveReq req);
+	List<Error> validateInsertExchangeMaster(ExchangeMasterSaveReq req);
 
 	SuccessRes insertExchangeMaster(ExchangeMasterSaveReq req);
 
@@ -19,7 +23,8 @@ public interface ExchangeMasterService {
 
 	List<ExchangeMasterGetRes> getActiveExchange(ExchangeMasterGetallReq req);
 
+	List<DropDownRes> getExchangeMasterDropdown();
 
 	SuccessRes changeStatusOfExchange(ExchangeChangeStatusReq req);
-*/
+
 }

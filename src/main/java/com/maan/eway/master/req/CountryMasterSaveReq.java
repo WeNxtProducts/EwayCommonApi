@@ -45,4 +45,7 @@ public class CountryMasterSaveReq implements Serializable {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 
+	@JsonProperty("CoreAppCode")
+	private String coreAppCode;
+	
 }

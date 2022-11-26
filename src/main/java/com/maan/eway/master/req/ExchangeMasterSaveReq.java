@@ -46,4 +46,10 @@ public class ExchangeMasterSaveReq {
 	@JsonProperty("InsuranceId")
 	private String companyId;
 	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
+	@JsonProperty("CoreAppCode")
+	private String coreAppCode;
+	
 }

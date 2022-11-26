@@ -7,24 +7,33 @@ package com.maan.eway.master.service;
 
 import java.util.List;
 
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CountryChangeStatusReq;
+import com.maan.eway.master.req.CountryMasterGetReq;
+import com.maan.eway.master.req.CountryMasterSaveReq;
+import com.maan.eway.master.res.CountryMasterRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
 /**
 * <h2>BankMasterServiceimpl</h2>
 */
 public interface CountryMasterService  {
-	
-	List<DropDownRes> getCountryMasterDropdown();
-	/*
+
 	List<Error> validateCountryDetails(CountryMasterSaveReq req);
 
 	SuccessRes insertCountry(CountryMasterSaveReq req);
 
-	List<CountryMasterRes> getallCountryDetails(CountryMasterGetAllReq req);
+	List<CountryMasterRes> getallCountryDetails();
 
-	List<CountryMasterRes> getActiveCountryDetails(CountryMasterGetAllReq req);
+	List<CountryMasterRes> getActiveCountryDetails();
 
 	CountryMasterRes getByCountryId(CountryMasterGetReq req);
 
+	List<DropDownRes> getCountryMasterDropdown();
+
 	SuccessRes changeStatusOfCountry(CountryChangeStatusReq req);
-*/
+
+	
+	
+
 }

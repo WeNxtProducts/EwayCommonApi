@@ -19,6 +19,8 @@ public class CurrencyMasterGetAllReq implements Serializable {
     @JsonProperty("Offset")
     private String offset;
    
-
+    @JsonProperty("InsuranceId")
+    private String companyId;
+   
 
 }

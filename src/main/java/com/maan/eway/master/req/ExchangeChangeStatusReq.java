@@ -19,4 +19,7 @@ public class ExchangeChangeStatusReq {
 	 @JsonFormat(pattern ="dd/MM/yyyy")
 	 @JsonProperty("EffectiveDateStart")
 	 private Date effectiveDateStart;
+	 @JsonProperty("InsuranceId")
+	 private String companyId;
+	 
 }

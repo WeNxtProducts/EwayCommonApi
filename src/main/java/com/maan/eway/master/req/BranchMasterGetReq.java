@@ -20,4 +20,7 @@ public class BranchMasterGetReq implements Serializable {
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart ;
     
-}
+	@JsonProperty("CountryId")
+    private String     countryId     ;
+		
+	}

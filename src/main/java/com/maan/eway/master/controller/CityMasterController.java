@@ -153,40 +153,40 @@ public class CityMasterController {
 		}
 	}
 
-	// City Master Drop Down Type
-	@PostMapping("/dropdown/city")
-	@ApiOperation(value = "This method is get City Master Drop Down")
+		// City Master Drop Down Type
+					@PostMapping("/dropdown/city")
+					@ApiOperation(value = "This method is get City Master Drop Down")
 
-	public ResponseEntity<CommonRes> getCityMasterDropdown(@RequestBody CityMasterDropDownReq req) {
+					public ResponseEntity<CommonRes> getCityMasterDropdown(@RequestBody CityMasterDropDownReq req) {
 
-		CommonRes data = new CommonRes();
+						CommonRes data = new CommonRes();
 
-		List<Error> validation = cityService.validateDropdownGet(req);
-		// validation
-		if (validation != null && validation.size() != 0) {
-			data.setCommonResponse(null);
-			data.setIsError(true);
-			data.setErrorMessage(validation);
-			data.setMessage("Failed");
-			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+						List<Error> validation = cityService.validateDropdownGet(req);
+						// validation
+						if (validation != null && validation.size() != 0) {
+							data.setCommonResponse(null);
+							data.setIsError(true);
+							data.setErrorMessage(validation);
+							data.setMessage("Failed");
+							return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 
-		} else {
+						} else {
 
-			List<DropDownRes> res = cityService.getCityMasterDropdown(req);
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
+							
+							List<DropDownRes> res = cityService.getCityMasterDropdown(req);
+							data.setCommonResponse(res);
+							data.setIsError(false);
+							data.setErrorMessage(Collections.emptyList());
+							data.setMessage("Success");
 
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
+							if (res != null) {
+								return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+							} else {
+								return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+							}
 
-		}
-	}
-
+						}
+					}
 		@PostMapping("/city/changestatus")
 		@ApiOperation(value = "This method is get City Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfCity(@RequestBody CityChangeStatusReq req) {

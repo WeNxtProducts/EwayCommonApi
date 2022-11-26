@@ -87,6 +87,7 @@ public class CityMasterServiceImpl implements CityMasterService {
 
 		try {
 			Integer amendId = 0 ;
+			String branchCode = "";
 			Date startDate = req.getEffectiveDateStart() ;
 			String end = "31/12/2050";
 			Date endDate = sdformat.parse(end);
@@ -531,7 +532,6 @@ public class CityMasterServiceImpl implements CityMasterService {
 		}
 		return resList;
 	}
-
 //************************************************GET ACTIVE CITY******************************************\\
 	@Override
 	public List<CityMasterRes> getActiveCityDetails(CityMasterGetAllReq req) {
