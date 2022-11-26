@@ -36,7 +36,6 @@ public interface UwQuestionMasterService  {
 
 	List<DropDownRes> getUwQuestionMasterDropdown(UwQuestionMasterGetReq req);
 
-	List<DropDownRes> getUwQuestionMasterDropdown(UwMasterDropdownReq req);
 
 
 
