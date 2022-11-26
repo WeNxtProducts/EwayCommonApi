@@ -621,7 +621,7 @@ public SuccessRes changeStatusOfVehicleUsage(MotorVehicleUsageChangeStatusReq re
 		Predicate n3 = cb.equal(b.get("companyId"), req.getInsuranceId());
 		Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
 		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
-		Predicate n6 = cb.or(n3,n4);
+		Predicate n6 = cb.or(n5,n4);
 		
 		query.where(n1,n2,n3,n6).orderBy(orderList);
 		// Get Result 
