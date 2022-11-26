@@ -40,7 +40,7 @@ public interface DropDownService {
 
 	List<DropDownRes> getMotorType(LovDropDownReq req);
 
-	List<DropDownRes> getMotorUsage(LovDropDownReq req);
+	//List<DropDownRes> getMotorUsage(LovDropDownReq req);
 
 	List<DropDownRes> ownerCategory(LovDropDownReq req);
 

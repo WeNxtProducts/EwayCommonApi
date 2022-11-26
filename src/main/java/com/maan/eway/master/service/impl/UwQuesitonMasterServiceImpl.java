@@ -32,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.UWQuestionsMaster;
-import com.maan.eway.common.req.UwMasterDropdownReq;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.UwQuestionChangeStatusReq;
 import com.maan.eway.master.req.UwQuestionMasterGetReq;

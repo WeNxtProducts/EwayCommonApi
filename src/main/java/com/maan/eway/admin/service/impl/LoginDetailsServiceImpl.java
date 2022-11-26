@@ -241,14 +241,27 @@ this.repository = repo;
 			if (loginData ==null) {
 				// Save
 				saveRes =   newLoginInsert(commonReq) ;
-				res.setAgencyCode(saveRes);
-				res.setResponse("Saved Successfully");
+				if( StringUtils.isNotBlank(saveRes)) {
+					res.setAgencyCode(saveRes);
+					res.setResponse("Saved Successfully");
+						
+				} else {
+					res.setAgencyCode("");
+					res.setResponse("Error In Save");
+				}
 				
 			} else {
 				// Update
 				saveRes = updateLoginDetails(commonReq);
-				res.setAgencyCode(saveRes);
-				res.setResponse("Updated Successfully");
+				if( StringUtils.isNotBlank(saveRes)) {
+					res.setAgencyCode(saveRes);
+					res.setResponse("Updated Successfully");
+						
+				} else {
+					res.setAgencyCode("");
+					res.setResponse("Error In Update");
+				}
+				
 			}
 			
 		} catch (Exception e) {
@@ -275,14 +288,27 @@ this.repository = repo;
 			if (loginData ==null) {
 				// Save
 				saveRes =   newLoginInsert(commonReq) ;
-				res.setAgencyCode(saveRes);
-				res.setResponse("Saved Successfully");
+				if( StringUtils.isNotBlank(saveRes)) {
+					res.setAgencyCode(saveRes);
+					res.setResponse("Saved Successfully");
+						
+				} else {
+					res.setAgencyCode("");
+					res.setResponse("Error In Save");
+				}
 				
 			} else {
 				// Update
 				saveRes = updateLoginDetails(commonReq);
-				res.setAgencyCode(saveRes);
-				res.setResponse("Updated Successfully");
+				if( StringUtils.isNotBlank(saveRes)) {
+					res.setAgencyCode(saveRes);
+					res.setResponse("Updated Successfully");
+						
+				} else {
+					res.setAgencyCode("");
+					res.setResponse("Error In Update");
+				}
+				
 			}
 			
 			// Product Insert 
@@ -335,14 +361,27 @@ this.repository = repo;
 			if (loginData ==null) {
 				// Save
 				saveRes =   newLoginInsert(commonReq) ;
-				res.setAgencyCode(saveRes);
-				res.setResponse("Saved Successfully");
+				if( StringUtils.isNotBlank(saveRes)) {
+					res.setAgencyCode(saveRes);
+					res.setResponse("Saved Successfully");
+						
+				} else {
+					res.setAgencyCode("");
+					res.setResponse("Error In Save");
+				}
 				
 			} else {
 				// Update
 				saveRes = updateLoginDetails(commonReq);
-				res.setAgencyCode(saveRes);
-				res.setResponse("Updated Successfully");
+				if( StringUtils.isNotBlank(saveRes)) {
+					res.setAgencyCode(saveRes);
+					res.setResponse("Updated Successfully");
+						
+				} else {
+					res.setAgencyCode("");
+					res.setResponse("Error In Update");
+				}
+				
 			}
 					
 		} catch (Exception e) {
@@ -361,7 +400,8 @@ this.repository = repo;
 		try {
 			CommonLoginInformationReq loginReq = req.getLoginInformation() ;
 			
-			LoginMaster findBroker = loginRepo.findByAgencyCodeAndOaCode(loginReq.getOaCode() ,Integer.valueOf(loginReq.getOaCode()));
+			Integer oaCode = StringUtils.isBlank(loginReq.getOaCode()) ? 0 : Integer.valueOf(loginReq.getOaCode());
+			LoginMaster findBroker = loginRepo.findByAgencyCodeAndOaCode(loginReq.getOaCode() ,oaCode);
 			
 			// Branch Setup
 			String branches  = loginReq.getAttachedBranches()==null  || loginReq.getAttachedBranches().size()==0 ?"" : String.join(",", loginReq.getAttachedBranches());
