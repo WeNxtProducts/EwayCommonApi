@@ -1,4 +1,4 @@
-package com.maan.eway.common.req;
+package com.maan.eway.master.req;
 
 import java.util.Date;
 
@@ -13,4 +13,9 @@ public class MotorVehicleUsageMasterGetReq {
 	@JsonProperty("VehicleUsageId")
     private String vehicleUsageId   ;
 	
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 }

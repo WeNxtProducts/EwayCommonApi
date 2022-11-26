@@ -19,6 +19,12 @@ public class MotorColorGetReq {
 	@JsonProperty("ColorId")
 	private String colorId;
 	
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
 }                                      
   
    

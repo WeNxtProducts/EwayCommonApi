@@ -15,6 +15,11 @@ public class ColorChangeStatusReq {
 
 	@JsonProperty("Status")
 	private String status;
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")

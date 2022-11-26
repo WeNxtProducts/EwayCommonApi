@@ -7,15 +7,23 @@ package com.maan.eway.master.service;
 
 import java.util.List;
 
+
+import com.maan.eway.common.res.MotorVehicleUsageMasterGetRes;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.MotorVehicleUsageChangeStatusReq;
+import com.maan.eway.master.req.MotorVehicleUsageMasterGetReq;
+import com.maan.eway.master.req.MotorVehicleUsageMasterGetallReq;
+import com.maan.eway.master.req.MotorVehicleUsageMasterSaveReq;
 import com.maan.eway.master.req.UsageDropDownReq;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
 
 /**
 * <h2>PersonalInfoServiceimpl</h2>
 */
 public interface MotorVeicleUsageMasterService  {
 
-	/*List<Error> validateMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveReq req);
+	List<Error> validateMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveReq req);
 
 	SuccessRes saveMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveReq req);
 
@@ -26,9 +34,14 @@ public interface MotorVeicleUsageMasterService  {
 	List<MotorVehicleUsageMasterGetRes> getactiveMotorVehicleDetails(MotorVehicleUsageMasterGetallReq req);
 
 	
-	SuccessRes changeStatusOfVehicleUsage(MotorVehicleUsageChangeStatusReq req);*/
+	SuccessRes changeStatusOfVehicleUsage(MotorVehicleUsageChangeStatusReq req);
+
+
+
+	List<DropDownRes> getInduvidualVehicleUsageDropdown();
 
 	List<DropDownRes> getVehicleUsageDropdown(UsageDropDownReq req);
 
+	
 	
 }

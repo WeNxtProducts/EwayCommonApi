@@ -22,13 +22,13 @@ public class MotorBodySaveReq {
 	private String sectionId;
 	@JsonProperty("BodyNameEn")
 	private String bodyNameEn;
+	@JsonProperty("InsuranceId")
+	private String companyId;
+	@JsonProperty("BranchCode")
+	private String branchCode;
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
-	
 	@JsonProperty("Remarks")
 	private String remarks;
 	@JsonProperty("SeatingCapacity")
@@ -39,7 +39,11 @@ public class MotorBodySaveReq {
 	private Integer cylinders	;
 	@JsonProperty("Status")
 	private String status;
-	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
 }                                      
   
    

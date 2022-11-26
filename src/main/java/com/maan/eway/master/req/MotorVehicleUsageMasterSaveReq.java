@@ -1,4 +1,4 @@
-package com.maan.eway.common.req;
+package com.maan.eway.master.req;
 
 import java.util.Date;
 
@@ -16,19 +16,23 @@ public class MotorVehicleUsageMasterSaveReq {
     private String sectionId   ;
 	@JsonProperty("VehicleUsageDesc")
     private String  vehicleUsageDesc;
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+	@JsonProperty("BranchCode")
+	private String branchCode;
 	@JsonProperty("Status")
     private String  status;
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
 	@JsonProperty("Remarks")
     private String remarks;
 	@JsonProperty("ClaimStatus")
     private String claimStatus;
 	@JsonProperty("B2CStatus")
     private String b2cStatus;
-	
+	@JsonProperty("CreatedBy")
+    private String createdBy;
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
 }

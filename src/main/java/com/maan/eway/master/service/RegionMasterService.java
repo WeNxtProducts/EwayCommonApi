@@ -5,16 +5,26 @@
 */
 package com.maan.eway.master.service;
 
-import java.util.List;
-
+import com.maan.eway.master.req.BankMasterGetAllReq;
+import com.maan.eway.master.req.BankMasterGetReq;
+import com.maan.eway.master.req.BankMasterSaveReq;
+import com.maan.eway.master.req.RegionChangeStatusReq;
 import com.maan.eway.master.req.RegionMasterDropDownReq;
+import com.maan.eway.master.req.RegionMasterGetAllReq;
+import com.maan.eway.master.req.RegionMasterGetReq;
+import com.maan.eway.master.req.RegionMasterSaveReq;
+import com.maan.eway.master.res.BankMasterRes;
+import com.maan.eway.master.res.RegionMasterRes;
+import com.maan.eway.error.Error;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
+
+import java.util.List;
 /**
 * <h2>BankMasterServiceimpl</h2>
 */
 public interface RegionMasterService  {
-	List<DropDownRes> getRegionMasterDropdown(RegionMasterDropDownReq req);
-/*
+
 	List<Error> validateRegionDetails(RegionMasterSaveReq req);
 
 	SuccessRes insertRegion(RegionMasterSaveReq req);
@@ -25,8 +35,11 @@ public interface RegionMasterService  {
 
 	RegionMasterRes getByRegionCode(RegionMasterGetReq req);
 
+	//List<DropDownRes> getRegionMasterDropdown(RegionMasterDropDownReq req);
+
+	List<DropDownRes> getRegionMasterDropdown(RegionMasterDropDownReq req);
 	SuccessRes changeStatusOfRegion(RegionChangeStatusReq req);
 
-*/
+
 
 }

@@ -19,11 +19,7 @@ public class RegionMasterSaveReq implements Serializable {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
-	
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
-	
+
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	

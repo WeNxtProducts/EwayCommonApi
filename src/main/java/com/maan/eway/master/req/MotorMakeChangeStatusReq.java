@@ -19,4 +19,10 @@ public class MotorMakeChangeStatusReq {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
+	
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 }

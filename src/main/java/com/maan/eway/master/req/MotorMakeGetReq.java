@@ -16,5 +16,10 @@ public class MotorMakeGetReq {
 	@JsonProperty("MakeId")
 	private String makeId;
 	
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 	
 }

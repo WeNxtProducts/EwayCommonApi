@@ -1,4 +1,4 @@
-package com.maan.eway.common.req;
+package com.maan.eway.master.req;
 
 import java.util.Date;
 
@@ -10,13 +10,15 @@ import lombok.Data;
 @Data
 public class MotorVehicleUsageMasterGetallReq {
 	
-	@JsonProperty("Limit")
-    private String limit  ;
-	@JsonProperty("Offset")
-    private String  offset;
+
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
 	@JsonProperty("SectionId")
     private String sectionId  ;
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 }

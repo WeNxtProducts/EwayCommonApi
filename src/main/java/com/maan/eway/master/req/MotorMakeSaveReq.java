@@ -23,6 +23,12 @@ public class MotorMakeSaveReq {
 	
 	@JsonProperty("MakeNameEn")
 	private String makeNameEn;
+	
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 		
 	@JsonProperty("Remarks")
 	private String remarks;
@@ -33,13 +39,17 @@ public class MotorMakeSaveReq {
 	@JsonProperty("Status")
 	private String status;
 	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
 	
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
+
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
+
 
 
 	

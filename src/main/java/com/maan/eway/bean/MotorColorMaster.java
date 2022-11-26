@@ -104,6 +104,8 @@ private static final long serialVersionUID = 1L;
     private Date       updatedDate ;
 
 
+    @Column(name="REGULATORY_CODE",  length=20)
+    private String     regulatoryCode ;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

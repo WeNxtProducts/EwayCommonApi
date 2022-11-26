@@ -21,8 +21,9 @@ public class MotorBodyTypeMasterId implements Serializable {
 
 	private Integer bodyId;
 	private Integer sectionId;
-	private Date effectiveDateStart;
 	private Integer amendId;
-	private Date effectiveDateEnd;
+	private String companyId;
+	private String branchCode;
+
 
 }

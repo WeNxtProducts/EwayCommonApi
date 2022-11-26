@@ -13,13 +13,19 @@ import lombok.Setter;
 @AllArgsConstructor
 public class MotorBodyTypeGetAllReq {
 	
-	@JsonProperty("Limit")
+	/*@JsonProperty("Limit")
 	private String limit;
 	
 	@JsonProperty("Offset")
 	private String offset;
 	
-
+*/
+    @JsonProperty("InsuranceId")
+	private String insuranceId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
 	@JsonProperty("SectionId")
 	private String sectionId;
 	

@@ -13,10 +13,15 @@ import lombok.Setter;
 @AllArgsConstructor
 public class MotorColorGetAllReq {
 	
-	@JsonProperty("Limit")
-	private String limit;
+	/*
+	 * @JsonProperty("Limit") private String limit;
+	 * 
+	 * @JsonProperty("Offset") private String offset;
+	 */
+    @JsonProperty("InsuranceId")
+	private String insuranceId;
 	
-	@JsonProperty("Offset")
-	private String offset;
+	@JsonProperty("BranchCode")
+	private String branchCode;
 	
 }

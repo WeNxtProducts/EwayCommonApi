@@ -41,28 +41,33 @@ public class MotorBodyTypeMaster implements Serializable {
 	private Integer sectionId;
 
 	@Id
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "EFFECTIVE_DATE_START", nullable = false)
-	private Date effectiveDateStart;
-
-	@Id
 	@Column(name = "AMEND_ID", nullable = false)
 	private Integer amendId;
 
 	@Id
+	@Column(name = "COMPANY_ID", nullable = false, length = 20)
+	private String companyId;
+
+	@Id
+	@Column(name = "BRANCH_CODE", nullable = false, length = 20)
+	private String branchCode;
+	
+	// --- ENTITY DATA FIELDS
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "EFFECTIVE_DATE_START", nullable = false)
+	private Date effectiveDateStart;
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "EFFECTIVE_DATE_END", nullable = false)
 	private Date effectiveDateEnd;
 
-	
-	// --- ENTITY DATA FIELDS
 	@Column(name = "BODY_NAME_EN", length = 100)
 	private String bodyNameEn;
 
 	@Column(name = "STATUS", length = 10)
 	private String status;
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", locale = "en-IN", timezone = "Asia/Calcutta")
 	@Column(name = "ENTRY_DATE")
 	private Date entryDate;
@@ -78,6 +83,19 @@ public class MotorBodyTypeMaster implements Serializable {
 	
 	@Column(name = "CYCLINDERS")
 	private Integer cyclinders;
+
+	@Column(name = "UPDATED_BY", length = 100)
+	private String updatedBy;
+	
+	@Column(name = "CREATED_BY", length = 100)
+	private String createdBy;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "UPDATED_DATE")
+	private Date updatedDate;
+
+    @Column(name="REGULATORY_CODE",  length=20)
+    private String     regulatoryCode ;
 	
 	
 }

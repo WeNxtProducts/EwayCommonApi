@@ -5,35 +5,55 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dozer.DozerBeanMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+
 import com.maan.eway.bean.MotorVehicleUsageMaster;
+
+
+import com.maan.eway.common.res.MotorVehicleUsageMasterGetRes;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.MotorVehicleUsageChangeStatusReq;
+import com.maan.eway.master.req.MotorVehicleUsageMasterGetReq;
+import com.maan.eway.master.req.MotorVehicleUsageMasterGetallReq;
+import com.maan.eway.master.req.MotorVehicleUsageMasterSaveReq;
 import com.maan.eway.master.req.UsageDropDownReq;
 import com.maan.eway.master.service.MotorVeicleUsageMasterService;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.MotorVehicleUsageMasterRepository;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
 /**
 * <h2>EserviceCustomerDetailsServiceimpl</h2>
 */
@@ -55,6 +75,442 @@ private Logger log=LogManager.getLogger(MotorVehicleUsageMasterServiceImpl.class
 
 Gson json = new Gson();
 
+@Override
+public List<Error> validateMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveReq req) {
+	List<Error> errorList = new ArrayList<Error>();
+
+	try {
+
+//		if (StringUtils.isBlank(req.getVehicleUsageId())) {
+//			errorList.add(new Error("01", "VehicleUsageId", "Please Enter VehicleUsageId "));
+//		}
+		if (StringUtils.isBlank(req.getSectionId())) {
+			errorList.add(new Error("01", "SectionId", "Please Enter SectionId "));
+		}
+		if (StringUtils.isBlank(req.getVehicleUsageDesc())) {
+			errorList.add(new Error("02", "VehicleUsageDesc", "Please Enter VehicleUsageDesc"));
+		}
+		else if (req.getVehicleUsageDesc().length()>100) {
+			errorList.add(new Error("02", "VehicleUsageDesc", "Please Enter VehicleUsageDesc within 100 Characters"));
+		}
+		// Date Validation
+		Calendar cal = new GregorianCalendar();
+		Date today = new Date();
+		cal.setTime(today);
+		cal.add(Calendar.DAY_OF_MONTH, -1);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 50);
+		today = cal.getTime();
+		if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
+			errorList.add(new Error("03", "EffectiveDateStart", "Please Enter Effective Date Start"));
+
+		} else if (req.getEffectiveDateStart().before(today)) {
+			errorList.add(new Error("03", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+		}
+		// Status Validation
+		if (req.getStatus().length() > 1) {
+			errorList.add(new Error("04", "Status", "Status 1 Character Only"));
+		} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
+			errorList.add(new Error("04", "Status", "Enter Status Y or N Only"));
+		}
+		// Claim Status Validation
+		if (req.getClaimStatus().length() > 1) {
+			errorList.add(new Error("05", "Claim Status", "Claim Status 1 Character Only"));
+		} else if (!("Y".equals(req.getClaimStatus()) || "N".equals(req.getClaimStatus()))) {
+			errorList.add(new Error("05", "Claim Status", "Enter Claim Status Y or N Only"));
+		}
+		if (req.getB2cStatus().length() > 1) {
+			errorList.add(new Error("06", "B2C Status", "B2C Status 1 Character Only"));
+		} else if (!("Y".equals(req.getB2cStatus()) || "N".equals(req.getB2cStatus()))) {
+			errorList.add(new Error("06", "B2C Status", "Enter B2C Status Y or N Only"));
+		}
+		if (StringUtils.isBlank(req.getInsuranceId())) {
+			errorList.add(new Error("07", "InsuranceId", "Please Enter InsuranceId"));
+		}
+		
+		if (StringUtils.isBlank(req.getBranchCode())) {
+			errorList.add(new Error("07", "BranchCode", "Please Select BranchCode"));
+		}
+	} catch (Exception e) {
+		log.error(e);
+		e.printStackTrace();
+	}
+	return errorList;
+}
+
+
+@Override
+public SuccessRes saveMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveReq req) {
+	SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
+	SuccessRes res = new SuccessRes();
+	MotorVehicleUsageMaster saveData = new MotorVehicleUsageMaster();
+	List<MotorVehicleUsageMaster> list = new ArrayList<MotorVehicleUsageMaster>();
+	DozerBeanMapper dozerMapper = new DozerBeanMapper();
+	try {
+		Integer amendId=0;
+		Date startDate = req.getEffectiveDateStart() ;
+		String end = "31/12/2050";
+		Date endDate = sdformat.parse(end);
+		long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+		Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+		Date entryDate = null ;
+		String createdBy = "" ;
+
+		String vehicleUsageId = "";
+		if (StringUtils.isBlank(req.getVehicleUsageId().toString())) {
+			// Save
+			Integer totalCount = getMasterTableCount( req.getInsuranceId() , req.getBranchCode());
+			vehicleUsageId = Integer.valueOf(totalCount + 1).toString();
+			entryDate = new Date();
+			createdBy = req.getCreatedBy();
+			res.setResponse("Saved Successfully");
+			res.setSuccessId(vehicleUsageId);
+		} else {
+			// Update
+			vehicleUsageId = req.getVehicleUsageId();
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<MotorVehicleUsageMaster> query = cb.createQuery(MotorVehicleUsageMaster.class);
+			// Find all
+			Root<MotorVehicleUsageMaster> b = query.from(MotorVehicleUsageMaster.class);
+			// Select
+			query.select(b);
+//			// Amend ID Max Filter
+//			Subquery<Long> effectiveDate = query.subquery(Long.class);
+//			Root<MotorVehicleUsageMaster> ocpm1 = effectiveDate.from(MotorVehicleUsageMaster.class);
+//			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+//			Predicate a1 = cb.equal(ocpm1.get("vehicleUsageId"), b.get("vehicleUsageId"));
+//			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
+//			Predicate a3 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+//			effectiveDate.where(a1, a2,a3);
+
+			// Where
+			Predicate n1 = cb.equal(b.get("status"), "Y");
+			Predicate n3 = cb.equal(b.get("vehicleUsageId"), req.getVehicleUsageId());
+			Predicate n4 = cb.equal(b.get("sectionId"), req.getSectionId());
+			
+			query.where(n1, n3,n4);
+
+			// Get Result
+			TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
+			int limit = 0 , offset = 2 ;
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+			
+			if(list.size()>0) {
+				Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+			
+				if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+					amendId = list.get(0).getAmendId() + 1 ;
+					entryDate = new Date() ;
+					createdBy = req.getCreatedBy();
+					MotorVehicleUsageMaster lastRecord = list.get(0);
+						lastRecord.setEffectiveDateEnd(oldEndDate);
+						repo.saveAndFlush(lastRecord);
+					
+				} else {
+					amendId = list.get(0).getAmendId() ;
+					entryDate = list.get(0).getEntryDate() ;
+					createdBy = list.get(0).getCreatedBy();
+					saveData = list.get(0) ;
+					if (list.size()>1 ) {
+						MotorVehicleUsageMaster lastRecord = list.get(1);
+						lastRecord.setEffectiveDateEnd(oldEndDate);
+						repo.saveAndFlush(lastRecord);
+					}
+				
+			    }
+			}
+			res.setResponse("Updated Successfully");
+			res.setSuccessId(vehicleUsageId);
+		}
+		dozerMapper.map(req, saveData);
+		saveData.setVehicleUsageId(Integer.valueOf(vehicleUsageId));
+		saveData.setEffectiveDateStart(startDate);
+		saveData.setEffectiveDateEnd(endDate);
+		saveData.setCreatedBy(createdBy);
+		saveData.setStatus(req.getStatus());
+		saveData.setCompanyId(req.getInsuranceId());
+		saveData.setEntryDate(entryDate);
+		saveData.setUpdatedDate(new Date());
+		saveData.setUpdatedBy(req.getCreatedBy());
+		saveData.setAmendId(amendId);
+		repo.saveAndFlush(saveData);
+		if (list.size() > 0) {
+			// Update Old Record
+			MotorVehicleUsageMaster lastRecord = list.get(0);
+			lastRecord.setEffectiveDateEnd(oldEndDate);
+			String startDatewithoutTime = sdformat.format(startDate);
+			String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
+
+			if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
+				lastRecord.setStatus("N");
+			}
+			repo.saveAndFlush(lastRecord);
+
+		}
+
+		log.info("Saved Details is --> " + json.toJson(saveData));
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is --> " + e.getMessage());
+		return null;
+	}
+	return res;
+}
+
+public Integer getMasterTableCount(String companyId , String branchCode) {
+	Integer data = 0;
+	try {
+		List<MotorVehicleUsageMaster> list = new ArrayList<MotorVehicleUsageMaster>();
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<MotorVehicleUsageMaster> query = cb.createQuery(MotorVehicleUsageMaster.class);
+		// Find all
+		Root<MotorVehicleUsageMaster> b = query.from(MotorVehicleUsageMaster.class);
+		// Select
+		query.select(b);
+		
+		// Amend ID Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<MotorVehicleUsageMaster> ocpm1 = effectiveDate.from(MotorVehicleUsageMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(ocpm1.get("vehicleUsageId"), b.get("vehicleUsageId"));
+		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+		Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+		effectiveDate.where(a1,a2,a3);
+		
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.desc(b.get("vehicleUsageId")));
+		
+		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+		Predicate n2 = cb.equal(b.get("companyId"), companyId);
+		Predicate n3 = cb.equal(b.get("branchCode"), branchCode);
+		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+		Predicate n5 = cb.or(n3,n4);
+		query.where(n1,n2,n5).orderBy(orderList);
+	
+		// Get Result
+		TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
+		int limit = 0 , offset = 1 ;
+		result.setFirstResult(limit * offset);
+		result.setMaxResults(offset);
+		list = result.getResultList();
+		data = list.size() > 0 ? list.get(0).getVehicleUsageId() : 0 ;
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info(e.getMessage());
+	}
+	return data;
+}
+private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+}
+
+@Override
+public MotorVehicleUsageMasterGetRes getMotorVehicleDetails(MotorVehicleUsageMasterGetReq req) {
+	MotorVehicleUsageMasterGetRes res = new MotorVehicleUsageMasterGetRes();
+	DozerBeanMapper dozerMapper = new DozerBeanMapper();
+	try {
+		// Criteria
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<MotorVehicleUsageMaster> query = cb.createQuery(MotorVehicleUsageMaster.class);
+		List<MotorVehicleUsageMaster> list = new ArrayList<MotorVehicleUsageMaster>();
+
+		// Find All
+		Root<MotorVehicleUsageMaster> c = query.from(MotorVehicleUsageMaster.class);
+
+		// Select
+		query.select(c);
+
+		// Amend ID Max Filter
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<MotorVehicleUsageMaster> ocpm1 = amendId.from(MotorVehicleUsageMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
+		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("vehicleUsageId"), ocpm1.get("vehicleUsageId"));
+		Predicate a2 = cb.equal(ocpm1.get("companyId"), c.get("companyId"));
+		Predicate a3 = cb.equal(ocpm1.get("branchCode"),c.get("branchCode"));
+		amendId.where(a1, a2,a3);
+
+
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.asc(c.get("branchCode")));
+
+		// Where
+
+		Predicate n1 = cb.equal(c.get("amendId"), amendId);
+		Predicate n2 = cb.equal(c.get("companyId"), req.getInsuranceId());
+		Predicate n3 = cb.equal(c.get("branchCode"), req.getBranchCode());
+		Predicate n4 = cb.equal(c.get("vehicleUsageId"), req.getVehicleUsageId());
+		Predicate n5 = cb.equal(c.get("branchCode"), "99999");
+		Predicate n6 = cb.or(n3,n5);
+		query.where(n1,n2,n4,n6).orderBy(orderList);
+
+
+		// Get Result
+		TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
+		list = result.getResultList();
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getVehicleUsageId()))).collect(Collectors.toList());
+		list.sort(Comparator.comparing(MotorVehicleUsageMaster :: getVehicleUsageDesc ));
+		
+		res = dozerMapper.map(list.get(0), MotorVehicleUsageMasterGetRes.class);
+		res.setVehicleUsageId(list.get(0).getVehicleUsageId().toString());
+		res.setEntryDate(list.get(0).getEntryDate());
+		res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
+		res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return res;
+}
+
+@Override
+public List<MotorVehicleUsageMasterGetRes> getallMotorVehicleDetails(MotorVehicleUsageMasterGetallReq req) {
+	List<MotorVehicleUsageMasterGetRes> resList = new ArrayList<MotorVehicleUsageMasterGetRes>();
+	DozerBeanMapper mapper = new DozerBeanMapper();
+	try {
+		Date today = req.getEffectiveDateStart() != null ? req.getEffectiveDateStart() : new Date();
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 1);
+		today = cal.getTime();
+
+		List<MotorVehicleUsageMaster> list = new ArrayList<MotorVehicleUsageMaster>();
+		
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<MotorVehicleUsageMaster> query = cb.createQuery(MotorVehicleUsageMaster.class);
+
+		// Find All
+		Root<MotorVehicleUsageMaster> c = query.from(MotorVehicleUsageMaster.class);
+
+		// Select
+		query.select(c);
+
+		// Amend ID Max Filter
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<MotorVehicleUsageMaster> ocpm1 = amendId.from(MotorVehicleUsageMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
+		Predicate a1 = cb.equal(c.get("vehicleUsageId"), ocpm1.get("vehicleUsageId"));
+		Predicate a2 = cb.equal(ocpm1.get("companyId"), c.get("companyId"));
+		Predicate a3 = cb.equal(ocpm1.get("branchCode"), c.get("branchCode"));
+		Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		amendId.where(a1, a2, a3, a4);
+
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.asc(c.get("branchCode")));
+
+		// Where
+		Predicate n1 = cb.equal(c.get("amendId"), amendId);
+		Predicate n2 = cb.equal(c.get("companyId"), req.getInsuranceId());
+		Predicate n3 = cb.equal(c.get("branchCode"), req.getBranchCode());
+		Predicate n5 = cb.equal(c.get("branchCode"), "99999");
+		Predicate n6 = cb.or(n3, n5);
+		query.where(n1, n2, n6).orderBy(orderList);
+
+		// Get Result
+		TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
+		list = result.getResultList();
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getVehicleUsageId())))
+				.collect(Collectors.toList());
+		list.sort(Comparator.comparing(MotorVehicleUsageMaster::getVehicleUsageDesc));
+
+		// Map
+		for (MotorVehicleUsageMaster data : list) {
+			MotorVehicleUsageMasterGetRes res = new MotorVehicleUsageMasterGetRes();
+
+			res = mapper.map(data, MotorVehicleUsageMasterGetRes.class);
+		
+			resList.add(res);
+		}
+
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info(e.getMessage());
+		return null;
+
+	}
+	return resList;
+}
+
+@Override
+public List<MotorVehicleUsageMasterGetRes> getactiveMotorVehicleDetails(MotorVehicleUsageMasterGetallReq req) {
+	List<MotorVehicleUsageMasterGetRes> resList = new ArrayList<MotorVehicleUsageMasterGetRes>();
+	DozerBeanMapper mapper = new DozerBeanMapper();
+	try {
+		Date today = req.getEffectiveDateStart() != null ? req.getEffectiveDateStart() : new Date();
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 1);
+		today = cal.getTime();
+
+		List<MotorVehicleUsageMaster> list = new ArrayList<MotorVehicleUsageMaster>();
+	
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<MotorVehicleUsageMaster> query = cb.createQuery(MotorVehicleUsageMaster.class);
+
+		// Find All
+		Root<MotorVehicleUsageMaster> c = query.from(MotorVehicleUsageMaster.class);
+
+		// Select
+		query.select(c);
+
+		// Amend ID Max Filter
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<MotorVehicleUsageMaster> ocpm1 = amendId.from(MotorVehicleUsageMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
+		Predicate a1 = cb.equal(c.get("vehicleUsageId"), ocpm1.get("vehicleUsageId"));
+		Predicate a2 = cb.equal(ocpm1.get("companyId"), c.get("companyId"));
+		Predicate a3 = cb.equal(ocpm1.get("branchCode"), c.get("branchCode"));
+		Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		amendId.where(a1, a2, a3, a4);
+
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.asc(c.get("branchCode")));
+
+		// Where
+		Predicate n1 = cb.equal(c.get("amendId"), amendId);
+
+		Predicate n2 = cb.equal(c.get("companyId"), req.getInsuranceId());
+		Predicate n3 = cb.equal(c.get("branchCode"), req.getBranchCode());
+		Predicate n5 = cb.equal(c.get("branchCode"), "99999");
+		Predicate n6 = cb.or(n3, n5);
+		Predicate n7 = cb.equal(c.get("status"), "Y");
+		Predicate n4 = cb.equal(c.get("sectionId"), req.getSectionId());
+		query.where(n1, n2, n4, n6, n7).orderBy(orderList);
+		
+		// Get Result
+		TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
+		list = result.getResultList();
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getVehicleUsageId()))).collect(Collectors.toList());
+		list.sort(Comparator.comparing(MotorVehicleUsageMaster::getVehicleUsageDesc));
+		// Map
+		for (MotorVehicleUsageMaster data : list) {
+			MotorVehicleUsageMasterGetRes res = new MotorVehicleUsageMasterGetRes();
+
+			res = mapper.map(data, MotorVehicleUsageMasterGetRes.class);
+		
+			resList.add(res);
+		}
+
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info(e.getMessage());
+		return null;
+
+	}
+	return resList;
+}
 
 @Override
 public List<DropDownRes> getVehicleUsageDropdown(UsageDropDownReq req) {
@@ -124,402 +580,12 @@ public List<DropDownRes> getVehicleUsageDropdown(UsageDropDownReq req) {
 		return resList;
 	}
 
-/*
-@Override
-public List<Error> validateMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveReq req) {
-	List<Error> errorList = new ArrayList<Error>();
-
-	try {
-
-		if (StringUtils.isBlank(req.getVehicleUsageId())) {
-			errorList.add(new Error("01", "VehicleUsageId", "Please Enter VehicleUsageId "));
-		}
-		if (StringUtils.isBlank(req.getSectionId())) {
-			errorList.add(new Error("01", "SectionId", "Please Enter SectionId "));
-		}
-		if (StringUtils.isBlank(req.getVehicleUsageDesc())) {
-			errorList.add(new Error("02", "VehicleUsageDesc", "Please Enter VehicleUsageDesc"));
-		}
-		else if (req.getVehicleUsageDesc().length()>100) {
-			errorList.add(new Error("02", "VehicleUsageDesc", "Please Enter VehicleUsageDesc within 100 Characters"));
-		}
-		// Date Validation
-					Calendar cal = new GregorianCalendar();
-					Date today = new Date();
-					cal.setTime(today);
-					cal.add(Calendar.DAY_OF_MONTH, -1);
-					cal.set(Calendar.HOUR_OF_DAY, 23);
-					cal.set(Calendar.MINUTE, 50);
-					today = cal.getTime();
-					if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-						errorList.add(new Error("03", "EffectiveDateStart", "Please Enter Effective Date Start"));
-
-					} else if (req.getEffectiveDateStart().before(today)) {
-						errorList
-								.add(new Error("03", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-					}
-					// Status Validation
-					 if (req.getStatus().length() > 1) {
-						errorList.add(new Error("04", "Status", "Status 1 Character Only"));
-					} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
-						errorList.add(new Error("04", "Status", "Enter Status Y or N Only"));
-					}
-					//Claim Status Validation
-					 if (req.getClaimStatus().length() > 1) {
-						errorList.add(new Error("05", "Claim Status", "Claim Status 1 Character Only"));
-					} else if (!("Y".equals(req.getClaimStatus()) || "N".equals(req.getClaimStatus()))) {
-						errorList.add(new Error("05", "Claim Status", "Enter Claim Status Y or N Only"));
-					}
-					 if (req.getB2cStatus().length() > 1) {
-							errorList.add(new Error("06", "B2C Status", "B2C Status 1 Character Only"));
-						} else if (!("Y".equals(req.getB2cStatus()) || "N".equals(req.getB2cStatus()))) {
-							errorList.add(new Error("06", "B2C Status", "Enter B2C Status Y or N Only"));
-						}
-				} catch (Exception e) {
-					log.error(e);
-					e.printStackTrace();
-				}
-				return errorList;
-			}
-
-
-@Override
-public SuccessRes saveMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveReq req) {
-	SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
-	SuccessRes res = new SuccessRes();
-	MotorVehicleUsageMaster saveData = new MotorVehicleUsageMaster();
-	List<MotorVehicleUsageMaster> list = new ArrayList<MotorVehicleUsageMaster>();
-	DozerBeanMapper dozerMapper = new DozerBeanMapper();
-	try {
-		Integer amendId = 0;
-		Calendar cal = new GregorianCalendar();
-		cal.setTime(req.getEffectiveDateStart());
-		cal.set(Calendar.HOUR_OF_DAY, 23);
-		cal.set(Calendar.MINUTE, 59);
-		Date startDate = cal.getTime();
-		Date today = new Date();
-		cal.setTime(req.getEffectiveDateStart());
-		cal.set(Calendar.HOUR_OF_DAY, today.getHours());
-		cal.set(Calendar.MINUTE, today.getMinutes());
-		Date oldEndDate = cal.getTime();
-		cal.setTime(req.getEffectiveDateStart());
-		cal.set(Calendar.HOUR_OF_DAY, today.getHours());
-		cal.set(Calendar.MINUTE, today.getMinutes());
-		Date effDate = cal.getTime();
-		Date endDate = req.getEffectiveDateEnd();
-
-		String vehicleUsageId = "";
-		if (StringUtils.isBlank(req.getVehicleUsageId().toString())) {
-			// Save
-			Long totalCount = getMasterTableCount();
-			vehicleUsageId = Long.valueOf(totalCount + 1).toString();
-			res.setResponse("Saved Successfully");
-			res.setSuccessId(vehicleUsageId);
-		} else {
-			// Update
-			vehicleUsageId = req.getVehicleUsageId();
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<MotorVehicleUsageMaster> query = cb.createQuery(MotorVehicleUsageMaster.class);
-			// Find all
-			Root<MotorVehicleUsageMaster> b = query.from(MotorVehicleUsageMaster.class);
-			// Select
-			query.select(b);
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<MotorVehicleUsageMaster> ocpm1 = effectiveDate.from(MotorVehicleUsageMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate a1 = cb.equal(ocpm1.get("vehicleUsageId"), b.get("vehicleUsageId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
-			Predicate a3 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			effectiveDate.where(a1, a2,a3);
-
-			// Where
-			Predicate n1 = cb.equal(b.get("status"), "Y");
-			Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n3 = cb.equal(b.get("vehicleUsageId"), req.getVehicleUsageId());
-			Predicate n4 = cb.equal(b.get("sectionId"), req.getSectionId());
-			
-			query.where(n1, n2, n3,n4);
-
-			// Get Result
-			TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
-			list = result.getResultList();
-			if (list.size() > 0) {
-				repo.delete(list.get(0));
-				// Amend Id
-
-				if (list.get(0).getEffectiveDateStart().before(startDate)) {
-					String startDatewithoutTime = sdformat.format(startDate);
-					String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-
-					if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime))
-						;
-					{
-						amendId = list.get(0).getAmendId() + 1;
-					}
-				}
-			}
-			res.setResponse("Updated Successfully");
-			res.setSuccessId(vehicleUsageId);
-		}
-		dozerMapper.map(req, saveData);
-		saveData.setVehicleUsageId(Integer.valueOf(vehicleUsageId));
-		saveData.setEffectiveDateStart(effDate);
-		saveData.setEffectiveDateEnd(endDate);
-		saveData.setStatus(req.getStatus());
-		saveData.setEntryDate(new Date());
-		saveData.setAmendId(amendId);
-		repo.saveAndFlush(saveData);
-		if (list.size() > 0) {
-			// Update Old Record
-			MotorVehicleUsageMaster lastRecord = list.get(0);
-			lastRecord.setEffectiveDateEnd(oldEndDate);
-			String startDatewithoutTime = sdformat.format(startDate);
-			String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-
-			if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-				lastRecord.setStatus("N");
-			}
-			repo.saveAndFlush(lastRecord);
-
-		}
-
-		log.info("Saved Details is --> " + json.toJson(saveData));
-	} catch (Exception e) {
-		e.printStackTrace();
-		log.info("Exception is --> " + e.getMessage());
-		return null;
-	}
-	return res;
-}
-
-public Long getMasterTableCount() {
-	Long data = 0L;
-	try {
-		List<Long> list = new ArrayList<Long>();
-		// Find Latest Record
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> query = cb.createQuery(Long.class);
-		// Find all
-		Root<MotorVehicleUsageMaster> b = query.from(MotorVehicleUsageMaster.class);
-		// Select
-		query.multiselect(cb.count(b));
-		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<MotorVehicleUsageMaster> ocpm1 = effectiveDate.from(MotorVehicleUsageMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-		Predicate a1 = cb.equal(ocpm1.get("vehicleUsageId"), b.get("vehicleUsageId"));
-		effectiveDate.where(a1);
-		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-		query.where(n1);
-		// Get Result
-		TypedQuery<Long> result = em.createQuery(query);
-		list = result.getResultList();
-		data = list.get(0);
-	} catch (Exception e) {
-		e.printStackTrace();
-		log.info(e.getMessage());
-	}
-	return data;
-}
-
-@Override
-public MotorVehicleUsageMasterGetRes getMotorVehicleDetails(MotorVehicleUsageMasterGetReq req) {
-	MotorVehicleUsageMasterGetRes res = new MotorVehicleUsageMasterGetRes();
-	ModelMapper mapper = new ModelMapper();
-	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
-	try {
-		// Criteria
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<MotorVehicleUsageMaster> query = cb.createQuery(MotorVehicleUsageMaster.class);
-		List<MotorVehicleUsageMaster> list = new ArrayList<MotorVehicleUsageMaster>();
-
-		// Find All
-		Root<MotorVehicleUsageMaster> c = query.from(MotorVehicleUsageMaster.class);
-
-		// Select
-		query.select(c);
-
-		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<MotorVehicleUsageMaster> ocpm1 = effectiveDate.from(MotorVehicleUsageMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("vehicleUsageId"), ocpm1.get("vehicleUsageId"));
-
-		effectiveDate.where(a1);
-
-		// Order By
-		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(c.get("effectiveDateStart")));
-
-		// Where
-
-		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("vehicleUsageId"), req.getVehicleUsageId());
-
-		query.where(n1, n2).orderBy(orderList);
-
-		// Get Result
-		TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
-		list = result.getResultList();
-		res = mapper.map(list.get(0), MotorVehicleUsageMasterGetRes.class);
-		res.setVehicleUsageId(list.get(0).getVehicleUsageId().toString());
-		res.setEntryDate(list.get(0).getEntryDate());
-		res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
-		res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
-	} catch (Exception e) {
-		e.printStackTrace();
-		log.info("Exception is ---> " + e.getMessage());
-		return null;
-	}
-	return res;
-}
-
-@Override
-public List<MotorVehicleUsageMasterGetRes> getallMotorVehicleDetails(MotorVehicleUsageMasterGetallReq req) {
-	List<MotorVehicleUsageMasterGetRes> resList = new ArrayList<MotorVehicleUsageMasterGetRes>();
-	DozerBeanMapper mapper = new DozerBeanMapper();
-	try {
-		Date today = req.getEffectiveDateStart() != null ? req.getEffectiveDateStart() : new Date();
-		Calendar cal = new GregorianCalendar();
-		cal.setTime(today);
-		cal.set(Calendar.HOUR_OF_DAY, 23);
-		cal.set(Calendar.MINUTE, 1);
-		today = cal.getTime();
-
-		List<MotorVehicleUsageMaster> list = new ArrayList<MotorVehicleUsageMaster>();
-		// Pagination
-		int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-		int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
-
-		// Find Latest Record
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<MotorVehicleUsageMaster> query = cb.createQuery(MotorVehicleUsageMaster.class);
-
-		// Find All
-		Root<MotorVehicleUsageMaster> b = query.from(MotorVehicleUsageMaster.class);
-
-		// Select
-		query.select(b);
-
-		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<MotorVehicleUsageMaster> ocpm1 = effectiveDate.from(MotorVehicleUsageMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-		Predicate a1 = cb.equal(ocpm1.get("vehicleUsageId"), b.get("vehicleUsageId"));
-		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-
-		effectiveDate.where(a1, a2);
-
-		// Order By
-		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("vehicleUsageId")));
-
-		// Where
-		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-
-		query.where(n1).orderBy(orderList);
-
-		// Get Result
-		TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
-		result.setFirstResult(limit * offset);
-		result.setMaxResults(offset);
-		list = result.getResultList();
-
-		// Map
-		for (MotorVehicleUsageMaster data : list) {
-			MotorVehicleUsageMasterGetRes res = new MotorVehicleUsageMasterGetRes();
-
-			res = mapper.map(data, MotorVehicleUsageMasterGetRes.class);
-		
-			resList.add(res);
-		}
-
-	} catch (Exception e) {
-		e.printStackTrace();
-		log.info(e.getMessage());
-		return null;
-
-	}
-	return resList;
-}
-
-@Override
-public List<MotorVehicleUsageMasterGetRes> getactiveMotorVehicleDetails(MotorVehicleUsageMasterGetallReq req) {
-	List<MotorVehicleUsageMasterGetRes> resList = new ArrayList<MotorVehicleUsageMasterGetRes>();
-	DozerBeanMapper mapper = new DozerBeanMapper();
-	try {
-		Date today = req.getEffectiveDateStart() != null ? req.getEffectiveDateStart() : new Date();
-		Calendar cal = new GregorianCalendar();
-		cal.setTime(today);
-		cal.set(Calendar.HOUR_OF_DAY, 23);
-		cal.set(Calendar.MINUTE, 1);
-		today = cal.getTime();
-
-		List<MotorVehicleUsageMaster> list = new ArrayList<MotorVehicleUsageMaster>();
-		// Pagination
-		int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-		int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
-
-		// Find Latest Record
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<MotorVehicleUsageMaster> query = cb.createQuery(MotorVehicleUsageMaster.class);
-
-		// Find All
-		Root<MotorVehicleUsageMaster> b = query.from(MotorVehicleUsageMaster.class);
-
-		// Select
-		query.select(b);
-
-		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<MotorVehicleUsageMaster> ocpm1 = effectiveDate.from(MotorVehicleUsageMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-		Predicate a1 = cb.equal(ocpm1.get("vehicleUsageId"), b.get("vehicleUsageId"));
-		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		Predicate a3 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-		effectiveDate.where(a1, a2,a3);
-
-		// Order By
-		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("vehicleUsageId")));
-
-		// Where
-		Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-		Predicate n2 = cb.equal(b.get("status"),"Y");
-		Predicate n3 = cb.equal(b.get("sectionId"), req.getSectionId());
-		
-		query.where(n1,n2,n3).orderBy(orderList);
-
-		// Get Result
-		TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
-		result.setFirstResult(limit * offset);
-		result.setMaxResults(offset);
-		list = result.getResultList();
-
-		// Map
-		for (MotorVehicleUsageMaster data : list) {
-			MotorVehicleUsageMasterGetRes res = new MotorVehicleUsageMasterGetRes();
-
-			res = mapper.map(data, MotorVehicleUsageMasterGetRes.class);
-		
-			resList.add(res);
-		}
-
-	} catch (Exception e) {
-		e.printStackTrace();
-		log.info(e.getMessage());
-		return null;
-
-	}
-	return resList;
-}
 @Override
 public SuccessRes changeStatusOfVehicleUsage(MotorVehicleUsageChangeStatusReq req) {
 	SuccessRes res = new SuccessRes();
+	DozerBeanMapper dozerMapper = new DozerBeanMapper();
 	try {
-		Date today = req.getEffectiveDateStart()!=null ? req.getEffectiveDateStart(): new Date();
+		Date today =new Date();
 		Calendar cal = new GregorianCalendar();
 		MotorVehicleUsageMaster updateRecord = new MotorVehicleUsageMaster();
 		cal.setTime(today);
@@ -534,50 +600,45 @@ public SuccessRes changeStatusOfVehicleUsage(MotorVehicleUsageChangeStatusReq re
 		Root<MotorVehicleUsageMaster> b = query.from(MotorVehicleUsageMaster.class);
 		//Select
 		query.select(b);
-		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<MotorVehicleUsageMaster> ocpm1 = effectiveDate.from(MotorVehicleUsageMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-		Predicate a1 = cb.equal(ocpm1.get("vehicleUsageId"),b.get("vehicleUsageId"));
-		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"),today);
-		effectiveDate.where(a1,a2);
-		//Order By
+
+		// Amend ID Max Filter
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<MotorVehicleUsageMaster> ocpm1 = amendId.from(MotorVehicleUsageMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
+		Predicate a1 = cb.equal(b.get("vehicleUsageId"), ocpm1.get("vehicleUsageId"));
+		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+		Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+		Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		amendId.where(a1, a2, a3, a4);
+
+		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.desc(b.get("effectiveDateStart")));
-		//where 
-		Predicate n1 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
+		orderList.add(cb.asc(b.get("branchCode")));
+
+		// Where
+		Predicate n1 = cb.equal(b.get("amendId"), amendId);
 		Predicate n2 = cb.equal(b.get("vehicleUsageId"),req.getVehicleUsageId());
-		query.where(n1,n2).orderBy(orderList);
+		Predicate n3 = cb.equal(b.get("companyId"), req.getInsuranceId());
+		Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
+		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
+		Predicate n6 = cb.or(n3,n4);
+		
+		query.where(n1,n2,n3,n6).orderBy(orderList);
 		// Get Result 
 		TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
 		list = result.getResultList();
 		updateRecord = list.get(0);
 		
-		if(req.getStatus().equalsIgnoreCase("N")) {
-			// Delete Old Records
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 30);
-			today = cal.getTime();
-			// Create Update
-			CriteriaDelete<MotorVehicleUsageMaster> delete = cb.createCriteriaDelete(MotorVehicleUsageMaster.class);
-			Root<MotorVehicleUsageMaster> pm = delete.from(MotorVehicleUsageMaster.class);
-			// Where
-			
-			Predicate n3 = cb.equal(pm.get("vehicleUsageId"), req.getVehicleUsageId());
-			Predicate n4 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"),today);
-			delete.where(n3,n4);
-			em.createQuery(delete).executeUpdate();
-			// Insert Update Record
+		if(  req.getBranchCode().equalsIgnoreCase(updateRecord.getBranchCode())) {
 			updateRecord.setStatus(req.getStatus());
 			repo.save(updateRecord);
-		}
-		else if(req.getStatus().equalsIgnoreCase("Y")) {
-			// Insert Update Record
-			updateRecord.setStatus(req.getStatus());
-			repo.save(updateRecord);
-			}
-		// Perform Update
+		} else {
+			MotorVehicleUsageMaster saveNew = new MotorVehicleUsageMaster();
+			dozerMapper.map(updateRecord,saveNew);
+			saveNew.setBranchCode(req.getBranchCode());
+			saveNew.setStatus(req.getStatus());
+			repo.save(saveNew);
+		}	// Perform Update
 		res.setResponse("Status Changed");
 		res.setSuccessId(req.getVehicleUsageId());
 	}
@@ -590,7 +651,75 @@ public SuccessRes changeStatusOfVehicleUsage(MotorVehicleUsageChangeStatusReq re
 }
 
 
-*/
+@Override
+public List<DropDownRes> getInduvidualVehicleUsageDropdown() {
+	List<DropDownRes> resList = new ArrayList<DropDownRes>();
+	try {
+		Date today = new Date();
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 23);;
+		cal.set(Calendar.MINUTE, 1);
+		today = cal.getTime();
+		cal.set(Calendar.HOUR_OF_DAY, 1);
+		cal.set(Calendar.MINUTE, 1);
+		Date todayEnd = cal.getTime();
+		
+		// Criteria
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<MotorVehicleUsageMaster> query=  cb.createQuery(MotorVehicleUsageMaster.class);
+		List<MotorVehicleUsageMaster> list = new ArrayList<MotorVehicleUsageMaster>();
+		// Find All
+		Root<MotorVehicleUsageMaster> c = query.from(MotorVehicleUsageMaster.class);
+		//Select
+		query.select(c);
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.asc(c.get("vehicleUsageDesc")));
+		
+		// Effective Date Start Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<MotorVehicleUsageMaster> ocpm1 = effectiveDate.from(MotorVehicleUsageMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(c.get("vehicleUsageId"),ocpm1.get("vehicleUsageId"));
+		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		Predicate a5 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId"));
+		effectiveDate.where(a1,a2,a5);
+		// Effective Date End Max Filter
+		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Root<MotorVehicleUsageMaster> ocpm2 = effectiveDate2.from(MotorVehicleUsageMaster.class);
+		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		Predicate a3 = cb.equal(c.get("vehicleUsageId"),ocpm2.get("vehicleUsageId"));
+		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+		Predicate a6 = cb.equal(c.get("sectionId"),ocpm2.get("sectionId"));
+		effectiveDate2.where(a3,a4,a6);
+		// Where
+		Predicate n1 = cb.equal(c.get("status"),"Y");
+		Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+		Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+		query.where(n1,n2,n3).orderBy(orderList);
+		// Get Result
+		TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
+		list = result.getResultList();
+		for (MotorVehicleUsageMaster data : list) {
+			// Response 
+			DropDownRes res = new DropDownRes();
+			res.setCode(data.getVehicleUsageId().toString());
+			res.setCodeDesc(data.getVehicleUsageDesc());
+			res.setStatus(data.getStatus());
+			resList.add(res);
+		}
+	}
+		catch(Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->"+e.getMessage());
+			return null;
+			}
+		return resList;
+	}
+
+
+
 
 
 }

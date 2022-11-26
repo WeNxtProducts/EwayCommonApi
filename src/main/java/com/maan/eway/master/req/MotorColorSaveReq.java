@@ -2,6 +2,8 @@ package com.maan.eway.master.req;
 
 import java.util.Date;
 
+import javax.persistence.Column;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -22,6 +24,11 @@ public class MotorColorSaveReq {
 	private String colorCode;
 	@JsonProperty("ColorDesc")
 	private String colorDesc;
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
@@ -29,9 +36,15 @@ public class MotorColorSaveReq {
 	private String remarks;
 	@JsonProperty("Status")
 	private String status;
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
+	
+
+
 	
 }                                      
   

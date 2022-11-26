@@ -11,15 +11,25 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
+import com.maan.eway.common.res.MotorVehicleUsageMasterGetRes;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.ColorChangeStatusReq;
+import com.maan.eway.master.req.MotorVehicleUsageChangeStatusReq;
+import com.maan.eway.master.req.MotorVehicleUsageMasterGetReq;
+import com.maan.eway.master.req.MotorVehicleUsageMasterGetallReq;
+import com.maan.eway.master.req.MotorVehicleUsageMasterSaveReq;
 import com.maan.eway.master.req.UsageDropDownReq;
 import com.maan.eway.master.service.MotorVeicleUsageMasterService;
 import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
@@ -39,7 +49,7 @@ public class MotorVehicleUsageMasterController {
 	
 	@Autowired
 	private PrintReqService reqPrinter;
-	/*@PostMapping("/savemotorvehicleusagedetails")
+	@PostMapping("/savemotorvehicleusagedetails")
 	public ResponseEntity<CommonRes> saveMotorVehicleUsageDetails(@RequestBody  MotorVehicleUsageMasterSaveReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
@@ -118,7 +128,7 @@ public class MotorVehicleUsageMasterController {
 						return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 					}
 				}
-		*/		
+				
 				// Motor Vehicle Usage Master Drop Down Type
 				@PostMapping("/dropdown/vehicleusage")
 				@ApiOperation(value = "This method is get Motor Vehicle Usage Master Drop Down")
@@ -143,7 +153,31 @@ public class MotorVehicleUsageMasterController {
 				}
 				
 
-			/*	@PostMapping("/vehicleusage/changestatus")
+				// Motor Vehicle Usage Master Drop Down Type
+				@GetMapping("/dropdown/induvidual/vehicleusage")
+				@ApiOperation(value = "This method is get Motor Vehicle Usage Master Drop Down")
+
+				public ResponseEntity<CommonRes> getInduvidualVehicleUsageDropdown() {
+
+					CommonRes data = new CommonRes();
+
+					// Save
+					List<DropDownRes> res = entityService.getInduvidualVehicleUsageDropdown();
+					data.setCommonResponse(res);
+					data.setIsError(false);
+					data.setErrorMessage(Collections.emptyList());
+					data.setMessage("Success");
+
+					if (res != null) {
+						return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+					} else {
+						return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+					}
+
+				}
+				
+
+				@PostMapping("/vehicleusage/changestatus")
 				@ApiOperation(value = "This method is get Vehicle Usage Change Status")
 				public ResponseEntity<CommonRes> changeStatusOfVehicleUsage(@RequestBody MotorVehicleUsageChangeStatusReq req) {
 
@@ -165,6 +199,6 @@ public class MotorVehicleUsageMasterController {
 			
 				
 				
-				*/
+				
 
 }

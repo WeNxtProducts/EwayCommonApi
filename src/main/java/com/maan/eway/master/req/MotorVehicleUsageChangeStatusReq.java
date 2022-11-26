@@ -1,4 +1,4 @@
-package com.maan.eway.common.req;
+package com.maan.eway.master.req;
 
 import java.util.Date;
 
@@ -15,8 +15,10 @@ public class MotorVehicleUsageChangeStatusReq {
 
 	@JsonProperty("Status")
 	private String status;
-
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateStart")
-	private Date effectiveDateStart;
+	
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 }
