@@ -34,9 +34,7 @@ public class CurrencyMasterId implements Serializable {
     
     private String     currencyShortCode ;
     
-    private Date       effectiveDateStart ;
-    
-    private Date       effectiveDateEnd ;
+    private Integer    amendId ;
     
      
 }

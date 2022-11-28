@@ -123,11 +123,11 @@ public SuccessRes insertCurrency(CurrencyMasterSaveReq req) {
 				
 				
 				// Where
-				Predicate n1 = cb.equal(b.get("status"), "Y");
+			//	Predicate n1 = cb.equal(b.get("status"), "Y");
 				Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 				Predicate n3 =  cb.equal(b.get("currencyId"), req.getCurrencyId() );
 
-				query.where(n1, n2, n3).orderBy(orderList);
+				query.where( n2, n3).orderBy(orderList);
 
 				// Get Result
 				TypedQuery<CurrencyMaster> result = em.createQuery(query);
@@ -226,11 +226,11 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 		} else if (req.getCurrencyShortCode().length() > 5) {
 			errorList.add(new Error("08", "Currency", "Please Enter CurrencyShortCode within 5 Characters"));	
 		} else {
-			CurrencyMaster currencyShortCode =   getCurrencyShortCodeRes(req.getCurrencyShortCode());
+			CurrencyMaster currencyShortCode =   getCurrencyShortCodeRes(req.getCurrencyShortCode(),req.getCompanyId());
 			if(StringUtils.isBlank(req.getCurrencyId()) &&  currencyShortCode !=null ) {
 				errorList.add(new Error("08", "Currency", "This CurrencyShortCode Already Exist"));
-			} else if( currencyShortCode !=null  && StringUtils.isNotBlank(req.getCurrencyShortCode()) ) {
-				if(! currencyShortCode.getCurrencyId().equalsIgnoreCase(req.getCurrencyShortCode()) ) {
+			} else if( currencyShortCode !=null  && StringUtils.isNotBlank(req.getCurrencyId()) ) {
+				if(! currencyShortCode.getCurrencyId().equalsIgnoreCase(req.getCurrencyId()) ) {
 					errorList.add(new Error("08", "Currency", "This CurrencyShortCode Already Exist"));	
 				}			
 			}
@@ -239,9 +239,9 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 		if (StringUtils.isBlank(req.getCurrencyName())) {
 			errorList.add(new Error("05", "CurrencyName", "Please Enter CurrencyName"));
 		} else if (req.getCurrencyName().length() > 25) {
-			errorList.add(new Error("08", "Currency", "Please Enter Currency Name within 25 Characters"));
+			errorList.add(new Error("08", "Currency Name", "Please Enter Currency Name within 25 Characters"));
 		} else {
-			CurrencyMaster currencyName =   getCurrencyNameRes(req.getCurrencyName());
+			CurrencyMaster currencyName =   getCurrencyNameRes(req.getCurrencyName(),req.getCompanyId());
 			if(StringUtils.isBlank(req.getCurrencyId()) &&  currencyName !=null ) {
 				errorList.add(new Error("08", "Currency", "This Currency Name Already Exist"));
 			} else if( currencyName !=null  && StringUtils.isNotBlank(req.getCurrencyId()) ) {
@@ -263,7 +263,7 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 	return errorList;
 }
 
-public CurrencyMaster getCurrencyShortCodeRes(String currencyShortCode) {
+public CurrencyMaster getCurrencyShortCodeRes(String currencyShortCode, String companyId) {
 	CurrencyMaster currencyRes =null ;
 	try {
 		Date today = new Date();
@@ -282,16 +282,18 @@ public CurrencyMaster getCurrencyShortCodeRes(String currencyShortCode) {
 		Predicate c2 = cb.equal(ocpm1.get("status"),s.get("status"));
 		Predicate c3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		Predicate c4 = cb.equal(ocpm1.get("currencyShortCode"), s.get("currencyShortCode"));
-		effectiveDate.where(c1,c2,c3,c4);
+		Predicate c5 = cb.equal(ocpm1.get("companyId"),s.get("companyId"));
+
+		effectiveDate.where(c1,c2,c3,c4,c5);
 		
 		Predicate n1 = cb.equal(s.get("effectiveDateStart"), effectiveDate);
 		Predicate n2 = cb.equal(s.get("currencyShortCode"), currencyShortCode);
 		Predicate n3 = cb.equal(s.get("status"), "Y");
-		
+		Predicate n4 = cb.equal(s.get("companyId"), companyId);
 		// Select
 		query.select( s );
 		
-		query.where(n1,n2,n3);
+		query.where(n1,n2,n3,n4);
 		// Get Result
 		TypedQuery<CurrencyMaster> result = em.createQuery(query);
 		List<CurrencyMaster> list = result.getResultList();
@@ -308,7 +310,7 @@ public CurrencyMaster getCurrencyShortCodeRes(String currencyShortCode) {
 }
 
 
-public CurrencyMaster getCurrencyNameRes(String currencyName) {
+public CurrencyMaster getCurrencyNameRes(String currencyName, String companyId) {
 	CurrencyMaster currencyRes =null;
 	try {
 		Date today = new Date();
@@ -327,16 +329,19 @@ public CurrencyMaster getCurrencyNameRes(String currencyName) {
 		Predicate c2 = cb.equal(ocpm1.get("status"),s.get("status"));
 		Predicate c3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		Predicate c4 = cb.equal(ocpm1.get("currencyShortCode"), s.get("currencyShortCode"));
-		effectiveDate.where(c1,c2,c3,c4);
+		Predicate c5 = cb.equal(ocpm1.get("companyId"),s.get("companyId"));
+		
+		effectiveDate.where(c1,c2,c3,c4,c5);
 		
 		Predicate n1 = cb.equal(s.get("effectiveDateStart"), effectiveDate);
 		Predicate n2 = cb.equal(s.get("currencyName"), currencyName);
 		Predicate n3 = cb.equal(s.get("status"), "Y");
+		Predicate n4 = cb.equal(s.get("companyId"), companyId);
 		
 		// Select
 		query.select( s );
 		
-		query.where(n1,n2,n3);
+		query.where(n1,n2,n3,n4);
 		// Get Result
 		TypedQuery<CurrencyMaster> result = em.createQuery(query);
 		List<CurrencyMaster> list = result.getResultList();
