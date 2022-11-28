@@ -119,27 +119,27 @@ public class PolicyTypeMasterController {
 	
 	*/
 	// Policy Type Master Drop Down Type
-	@GetMapping("/dropdown/policytype")
-	@ApiOperation(value = "This method is get Policy Type Master Drop Down")
-
-	public ResponseEntity<CommonRes> getPolicyTypeMasterDropdown() {
-
-		CommonRes data = new CommonRes();
-
-		// Save
-		List<DropDownRes> res = service.getPolicyTypeMasterDropdown();
-		data.setCommonResponse(res);
-		data.setIsError(false);
-		data.setErrorMessage(Collections.emptyList());
-		data.setMessage("Success");
-
-		if (res != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-		}
-
-	}
+//	@GetMapping("/dropdown/policytype")
+//	@ApiOperation(value = "This method is get Policy Type Master Drop Down")
+//
+//	public ResponseEntity<CommonRes> getPolicyTypeMasterDropdown() {
+//
+//		CommonRes data = new CommonRes();
+//
+//		// Save
+//		List<DropDownRes> res = service.getPolicyTypeMasterDropdown();
+//		data.setCommonResponse(res);
+//		data.setIsError(false);
+//		data.setErrorMessage(Collections.emptyList());
+//		data.setMessage("Success");
+//
+//		if (res != null) {
+//			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+//		} else {
+//			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+//		}
+//
+//	}
 
 
 }
