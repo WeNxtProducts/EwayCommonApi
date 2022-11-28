@@ -85,6 +85,8 @@ public class BranchMasterRes implements Serializable {
 	@JsonProperty("UpdatedDate")
 	private Date updatedDate;
 	
+	@JsonProperty("CountryId")
+    private String    countryId ;
 	
 
 }
