@@ -37,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.BankMaster;
+import com.maan.eway.bean.MotorMakeMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.BankChangeStatusReq;
 import com.maan.eway.master.req.BankMasterGetAllReq;
@@ -687,49 +688,63 @@ public SuccessRes changeStatusOfBank(BankChangeStatusReq req) {
 }
 
 @Override
-public List<DropDownRes> getBankMasterDropdown() {
+public List<DropDownRes> getBankMasterDropdown( BankChangeStatusReq req) {
 	List<DropDownRes> resList = new ArrayList<DropDownRes>();
 	try {
-		Date today  = new Date();
-		Calendar cal = new GregorianCalendar(); 
+		Date today = new Date();
+		Calendar cal = new GregorianCalendar();
 		cal.setTime(today);
-		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.HOUR_OF_DAY, 23);;
 		cal.set(Calendar.MINUTE, 1);
-		today   = cal.getTime();
+		today = cal.getTime();
+		cal.set(Calendar.HOUR_OF_DAY, 1);
+		cal.set(Calendar.MINUTE, 1);
+		Date todayEnd = cal.getTime();
 		
 		// Criteria
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<BankMaster> query = cb.createQuery(BankMaster.class);
+		CriteriaQuery<BankMaster> query=  cb.createQuery(BankMaster.class);
 		List<BankMaster> list = new ArrayList<BankMaster>();
-		
 		// Find All
-		Root<BankMaster>    c = query.from(BankMaster.class);		
+		Root<BankMaster> c = query.from(BankMaster.class);
+		//Select
+		query.select(c);
 		
-		// Select
-		query.select(c );
 		
-	
-		// Order By
-		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(c.get("bankFullName")));
-		
-		// Effective Date Max Filter
+		// Effective Date Start Max Filter
 		Subquery<Long> effectiveDate = query.subquery(Long.class);
 		Root<BankMaster> ocpm1 = effectiveDate.from(BankMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-		javax.persistence.criteria.Predicate a1 = cb.equal(c.get("bankCode"),ocpm1.get("bankCode") );
-		javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		Predicate a1 = cb.equal(c.get("bankCode"),ocpm1.get("bankCode"));
+		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		effectiveDate.where(a1,a2);
+		// Effective Date End Max Filter
+		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Root<BankMaster> ocpm2 = effectiveDate2.from(BankMaster.class);
+		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		Predicate a3 = cb.equal(c.get("bankCode"),ocpm2.get("bankCode"));
+		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+		effectiveDate2.where(a3,a4);
 		
-	    // Where	
-		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
-		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.asc(c.get("branchCode")));
 		
-		query.where(n1,n2).orderBy(orderList);
+		// Where
+		Predicate n1 = cb.equal(c.get("status"),"Y");
+		Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+		Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);
+		Predicate n4 = cb.equal(c.get("companyId"), req.getCompanyId());
+		Predicate n5 = cb.equal(c.get("branchCode"), req.getBranchCode());
+		Predicate n6 = cb.equal(c.get("branchCode"), "99999");
+		Predicate n7 = cb.or(n5,n6);
+		query.where(n1,n2,n3,n4,n7).orderBy(orderList);
 		
 		// Get Result
-		TypedQuery<BankMaster> result = em.createQuery(query);			
-		list =  result.getResultList();  
+		TypedQuery<BankMaster> result = em.createQuery(query);
+		list = result.getResultList(); 
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getBankCode()))).collect(Collectors.toList());
+		list.sort(Comparator.comparing(BankMaster :: getBankFullName ));
 		
 		for(BankMaster data : list ) {
 			// Response

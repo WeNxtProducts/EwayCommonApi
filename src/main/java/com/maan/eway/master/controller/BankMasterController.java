@@ -177,15 +177,15 @@ public class BankMasterController {
 		
 		
 		// Bank Master Drop Down Type
-					@GetMapping("/dropdown/bankmaster")
+					@PostMapping("/dropdown/bankmaster")
 					@ApiOperation(value = "This method is get Bank Master Drop Down")
 
-					public ResponseEntity<CommonRes> getBankMasterDropdown() {
+					public ResponseEntity<CommonRes> getBankMasterDropdown(@RequestBody BankChangeStatusReq req) {
 
 						CommonRes data = new CommonRes();
 
 						// Save
-						List<DropDownRes> res = bankService.getBankMasterDropdown();
+						List<DropDownRes> res = bankService.getBankMasterDropdown(req);
 						data.setCommonResponse(res);
 						data.setIsError(false);
 						data.setErrorMessage(Collections.emptyList());

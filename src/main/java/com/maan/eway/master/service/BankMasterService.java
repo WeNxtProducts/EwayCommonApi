@@ -37,7 +37,7 @@ List<BankMasterRes> getallBankDetails(BankMasterGetAllReq req);
 
 BankMasterRes getByBankCode(BankMasterGetReq req);
 
-List<DropDownRes> getBankMasterDropdown();
+List<DropDownRes> getBankMasterDropdown( BankChangeStatusReq req);
 
 List<BankMasterRes> getActiveBankDetails(BankMasterGetAllReq req);
 
