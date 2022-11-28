@@ -86,17 +86,17 @@ public SuccessRes insertBank(BankMasterSaveReq req) {
 		Date oldEndDate = new Date(req.getEffectiveDateStart().getTime()- MILLS_IN_A_DAY);
 		Date entryDate = null;
 		String createdBy ="";
-		Integer bankCode = 0;
+		String bankCode = "";
 		if(StringUtils.isBlank(req.getBankCode())) {
 			Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getBranchCode());
-			bankCode = totalCount+1;
+			bankCode = req.getBankShortName().toString();
 			entryDate = new Date();
 			createdBy = req.getCreatedBy();
 			res.setResponse("Saved Successfully");
 			res.setSuccessId(bankCode.toString());
 		}
 		else {
-			bankCode = Integer.valueOf(req.getBankCode());
+			bankCode = req.getBankCode();
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<BankMaster> query = cb.createQuery(BankMaster.class);
 			//Findall
@@ -322,7 +322,7 @@ public List<BankMaster> getBankFullNameExistDetails(String BankFullName , String
 		Subquery<Long> amendId = query.subquery(Long.class);
 		Root<BankMaster> ocpm1 = amendId.from(BankMaster.class);
 		amendId.select(cb.max(ocpm1.get("amendId")));
-		Predicate a1 = cb.equal(ocpm1.get("bankCode"), b.get("bankCOde"));
+		Predicate a1 = cb.equal(ocpm1.get("bankCode"), b.get("bankCode"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 		Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
