@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.ExchangeMaster;
+import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ExchangeChangeStatusReq;
@@ -108,13 +109,84 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			if (StringUtils.isBlank(req.getCompanyId())) {
 				errorList.add(new Error("08", "CompanyId", "Please Enter CompanyId"));
 			}
+			else if (StringUtils.isBlank(req.getCoreAppCode())) {
+				errorList.add(new Error("02", "CoreAppCode", "Please Enter getCoreAppCode"));
+			} else if (req.getCoreAppCode().length() > 20) {
+				errorList.add(new Error("02", "CoreAppCode", "getCoreAppCode under 20 Characters only allowed"));
+			}else if (StringUtils.isBlank(req.getExchangeId())) {
+				List<ExchangeMaster> CompanyList = getCoreAppCodeExistDetails(req.getCoreAppCode() , req.getEffectiveDateStart() , req.getEffectiveDateEnd()  );
+				if (CompanyList.size()>0 ) {
+					errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+				}
+			}else  {
+				List<ExchangeMaster> CompanyList =  getCoreAppCodeExistDetails(req.getCoreAppCode()  , req.getEffectiveDateStart() , req.getEffectiveDateEnd() );
+				if (CompanyList.size()>0 &&  (! req.getExchangeId().equalsIgnoreCase(CompanyList.get(0).getCompanyId().toString())) ) {
+					errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+				}
+				
+			}
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
 		}
 		return errorList;
 	}
+	private List<ExchangeMaster> getCoreAppCodeExistDetails(String coreAppCode , Date effStartDate , Date effEndDate ) {
+		List<ExchangeMaster> list = new ArrayList<ExchangeMaster>();
+		try {
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(effStartDate);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			effStartDate   = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			effEndDate = cal.getTime() ;
+			
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ExchangeMaster> query = cb.createQuery(ExchangeMaster.class);
+	
+			// Find All
+			Root<ExchangeMaster> b = query.from(ExchangeMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ExchangeMaster> ocpm1 = effectiveDate.from(ExchangeMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("exchangeId"), b.get("exchangeId"));
+			Predicate a2 = cb.equal(ocpm1.get("coreAppCode"), b.get("coreAppCode"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), effStartDate );
+			effectiveDate.where(a1,a2,a3);
+			
 
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<ExchangeMaster> ocpm2 = effectiveDate2.from(ExchangeMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(ocpm2.get("exchangeId"), b.get("exchangeId"));
+			Predicate a5 = cb.equal(ocpm2.get("coreAppCode"), b.get("coreAppCode"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), effEndDate );
+			effectiveDate2.where(a4,a5,a6);
+	
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n3 = cb.equal(b.get("coreAppCode"), coreAppCode );	
+			query.where(n1,n2,n3);
+			// Get Result
+			TypedQuery<ExchangeMaster> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+	
+		}
+		return list;
+	}
 	@Transactional
 	@Override
 	public SuccessRes insertExchangeMaster(ExchangeMasterSaveReq req) {
