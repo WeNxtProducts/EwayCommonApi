@@ -213,7 +213,7 @@ private Logger log=LogManager.getLogger(RegionMasterServiceImpl.class);
 			} else if (StringUtils.isBlank(req.getCountryId()) ) {
 				errorList.add(new Error("06", "Country Id", "Please Select Country Id  "));
 				
-			} else if (StringUtils.isBlank(req.getRegionCode())) {
+			} /*else if (StringUtils.isBlank(req.getRegionCode())) {
 				List<RegionMaster> RegionList = getRegionNameExistDetails(req.getRegionName() , req.getCountryId());
 				if (RegionList.size()>0 ) {
 					errorList.add(new Error("01", "RegionName", "This Region Name Already Exist "));
@@ -224,7 +224,7 @@ private Logger log=LogManager.getLogger(RegionMasterServiceImpl.class);
 					errorList.add(new Error("01", "RegionName", "This Region Name Already Exist "));
 				}
 				
-			}
+			}*/
 			
 			// Region Short Code
 			if (StringUtils.isBlank(req.getRegionShortCode())) {
