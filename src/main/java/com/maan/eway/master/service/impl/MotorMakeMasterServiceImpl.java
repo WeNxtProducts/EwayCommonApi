@@ -103,7 +103,7 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			// Status Validation
 			 if (req.getStatus().length() > 1) {
 				errorList.add(new Error("03", "Status", "Status 1 Character Only"));
-			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
+			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()) || "P".equals(req.getStatus()) || "R".equals(req.getStatus()))) {
 				errorList.add(new Error("03", "Status", "Enter Status Y or N Only"));
 			}
 			if (req.getColorDesc().length() > 100) {

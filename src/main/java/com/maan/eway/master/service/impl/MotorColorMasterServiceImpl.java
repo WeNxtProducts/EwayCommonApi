@@ -111,7 +111,7 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 			// Status Validation
 			 if (req.getStatus().length() > 1) {
 				errorList.add(new Error("04", "Status", "Status 1 Character Only"));
-			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
+			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()) || "P".equals(req.getStatus()) || "R".equals(req.getStatus()))) {
 				errorList.add(new Error("04", "Status", "Enter Status Y or N Only"));
 			}
 			if (StringUtils.isBlank(req.getInsuranceId())) {
