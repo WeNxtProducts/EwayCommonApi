@@ -229,8 +229,8 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 			CurrencyMaster currencyShortCode =   getCurrencyShortCodeRes(req.getCurrencyShortCode());
 			if(StringUtils.isBlank(req.getCurrencyId()) &&  currencyShortCode !=null ) {
 				errorList.add(new Error("08", "Currency", "This CurrencyShortCode Already Exist"));
-			} else if( currencyShortCode !=null  && StringUtils.isNotBlank(req.getCurrencyId()) ) {
-				if(! currencyShortCode.getCurrencyId().equalsIgnoreCase(req.getCurrencyId()) ) {
+			} else if( currencyShortCode !=null  && StringUtils.isNotBlank(req.getCurrencyShortCode()) ) {
+				if(! currencyShortCode.getCurrencyId().equalsIgnoreCase(req.getCurrencyShortCode()) ) {
 					errorList.add(new Error("08", "Currency", "This CurrencyShortCode Already Exist"));	
 				}			
 			}
