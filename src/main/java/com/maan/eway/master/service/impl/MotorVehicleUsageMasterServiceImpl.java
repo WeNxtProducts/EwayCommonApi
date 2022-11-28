@@ -39,7 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.google.gson.Gson;
-
+import com.maan.eway.bean.MotorVehicleUsageMaster;
 import com.maan.eway.bean.MotorVehicleUsageMaster;
 
 
@@ -93,6 +93,18 @@ public List<Error> validateMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveR
 		}
 		else if (req.getVehicleUsageDesc().length()>100) {
 			errorList.add(new Error("02", "VehicleUsageDesc", "Please Enter VehicleUsageDesc within 100 Characters"));
+		}else if (StringUtils.isBlank(req.getVehicleUsageId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
+			List<MotorVehicleUsageMaster> vehList = getVehicleUsageDescExistDetails(req.getVehicleUsageDesc() , req.getInsuranceId() , req.getBranchCode());
+			if (vehList.size()>0 ) {
+				errorList.add(new Error("02", "VehicleUsageDesc", "This VehicleUsageDesc Already Exist "));
+			}
+		}else if (StringUtils.isNotBlank(req.getVehicleUsageId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
+			List<MotorVehicleUsageMaster> vehList = getVehicleUsageDescExistDetails(req.getVehicleUsageDesc() , req.getInsuranceId() , req.getBranchCode());
+			
+			if (vehList.size()>0 &&  (! req.getVehicleUsageId().equalsIgnoreCase(vehList.get(0).getVehicleUsageId().toString())) ) {
+				errorList.add(new Error("02", "VehicleUsageDesc", "This VehicleUsageDesc Already Exist "));
+			}
+			
 		}
 		// Date Validation
 		Calendar cal = new GregorianCalendar();
@@ -111,7 +123,7 @@ public List<Error> validateMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveR
 		// Status Validation
 		if (req.getStatus().length() > 1) {
 			errorList.add(new Error("04", "Status", "Status 1 Character Only"));
-		} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()) || "P".equals(req.getStatus()) || "R".equals(req.getStatus()))) {
+		} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
 			errorList.add(new Error("04", "Status", "Enter Status Y or N Only"));
 		}
 		// Claim Status Validation
@@ -139,6 +151,50 @@ public List<Error> validateMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveR
 	return errorList;
 }
 
+public List<MotorVehicleUsageMaster> getVehicleUsageDescExistDetails(String VehicleUsageDesc , String InsuranceId , String branchCode) {
+	List<MotorVehicleUsageMaster> list = new ArrayList<MotorVehicleUsageMaster>();
+	try {
+		Date today = new Date();
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<MotorVehicleUsageMaster> query = cb.createQuery(MotorVehicleUsageMaster.class);
+
+		// Find All
+		Root<MotorVehicleUsageMaster> b = query.from(MotorVehicleUsageMaster.class);
+
+		// Select
+		query.select(b);
+
+		// Effective Date Max Filter
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<MotorVehicleUsageMaster> ocpm1 = amendId.from(MotorVehicleUsageMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
+		Predicate a1 = cb.equal(ocpm1.get("vehicleUsageId"), b.get("vehicleUsageId"));
+		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+		Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+		Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		Predicate a5 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"), today);
+		amendId.where(a1,a2,a3,a4,a5);
+
+		Predicate n1 = cb.equal(b.get("amendId"), amendId);
+		Predicate n2 = cb.equal(cb.lower( b.get("vehicleUsageDesc")), VehicleUsageDesc.toLowerCase());
+		Predicate n3 = cb.equal(b.get("companyId"),InsuranceId);
+		Predicate n4 = cb.equal(b.get("branchCode"), branchCode);
+		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
+		Predicate n6 = cb.or(n4,n5);
+		query.where(n1,n2,n3,n6);
+		
+		// Get Result
+		TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
+		list = result.getResultList();		
+	
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info(e.getMessage());
+
+	}
+	return list;
+}
 
 @Override
 public SuccessRes saveMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveReq req) {
@@ -184,12 +240,16 @@ public SuccessRes saveMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveReq re
 //			Predicate a3 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 //			effectiveDate.where(a1, a2,a3);
 
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			
 			// Where
 			Predicate n1 = cb.equal(b.get("status"), "Y");
 			Predicate n3 = cb.equal(b.get("vehicleUsageId"), req.getVehicleUsageId());
 			Predicate n4 = cb.equal(b.get("sectionId"), req.getSectionId());
 			
-			query.where(n1, n3,n4);
+			query.where(n1, n3,n4).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
@@ -237,19 +297,7 @@ public SuccessRes saveMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveReq re
 		saveData.setUpdatedBy(req.getCreatedBy());
 		saveData.setAmendId(amendId);
 		repo.saveAndFlush(saveData);
-		if (list.size() > 0) {
-			// Update Old Record
-			MotorVehicleUsageMaster lastRecord = list.get(0);
-			lastRecord.setEffectiveDateEnd(oldEndDate);
-			String startDatewithoutTime = sdformat.format(startDate);
-			String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-
-			if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-				lastRecord.setStatus("N");
-			}
-			repo.saveAndFlush(lastRecord);
-
-		}
+	
 
 		log.info("Saved Details is --> " + json.toJson(saveData));
 	} catch (Exception e) {

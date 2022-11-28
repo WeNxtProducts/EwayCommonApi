@@ -1,5 +1,7 @@
 package com.maan.eway.master.res;
 
+
+
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -142,12 +144,12 @@ public class MotorMakeModelGetRes {
 
 	@JsonProperty("NetRate")
 	private String netRate;
-
-	@JsonFormat(pattern = "dd/MM/yyyy")
+	
+	@JsonFormat(pattern="dd/MM/YYYY")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
 	
-	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonFormat(pattern="dd/MM/YYYY")
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
 	
@@ -162,7 +164,7 @@ public class MotorMakeModelGetRes {
 	@JsonProperty("RopBodyId")
 	private String ropBodyid;
 
-	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonFormat(pattern="dd/MM/YYYY")
 	@JsonProperty("EntryDate")
 	private Date entryDate;
 		
