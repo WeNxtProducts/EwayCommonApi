@@ -114,10 +114,10 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 
 				
 				// Where
-				Predicate n1 = cb.equal(b.get("status"), "Y");
+				//Predicate n1 = cb.equal(b.get("status"), "Y");
 				Predicate n3 = cb.equal(b.get("countryId"), req.getCountryId());
 
-				query.where(n1, n3);// .orderBy(orderList);
+				query.where( n3);// .orderBy(orderList);
 
 				// Get Result
 				TypedQuery<CountryMaster> result = em.createQuery(query);
