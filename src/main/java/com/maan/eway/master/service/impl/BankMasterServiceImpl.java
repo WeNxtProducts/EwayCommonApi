@@ -717,14 +717,18 @@ public List<DropDownRes> getBankMasterDropdown( BankChangeStatusReq req) {
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(c.get("bankCode"),ocpm1.get("bankCode"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		effectiveDate.where(a1,a2);
+		Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+		Predicate a6 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
+		effectiveDate.where(a1,a2,a5,a6);
 		// Effective Date End Max Filter
 		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 		Root<BankMaster> ocpm2 = effectiveDate2.from(BankMaster.class);
 		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
 		Predicate a3 = cb.equal(c.get("bankCode"),ocpm2.get("bankCode"));
 		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-		effectiveDate2.where(a3,a4);
+		Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+		Predicate a8 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
+		effectiveDate2.where(a3,a4,a7,a8);
 		
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();

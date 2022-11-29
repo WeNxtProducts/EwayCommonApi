@@ -267,7 +267,9 @@ this.repository = repo;
 				Root<ListItemValue> ocpm1 = amendId.from(ListItemValue.class);
 				amendId.select(cb.max(ocpm1.get("amendId")));
 				Predicate a1 = cb.equal(ocpm1.get("itemType"), b.get("itemType"));
-				amendId.where(a1);
+				Predicate a2 = cb.equal(b.get("companyId"),ocpm1.get("companyId"));
+				Predicate a3 = cb.equal(b.get("branchCode"), ocpm1.get("branchCode"));
+				amendId.where(a1,a2,a3);
 
 				Predicate n1 = cb.equal(b.get("amendId"), amendId);
 				Predicate n2 = cb.equal( b.get("itemType"),itemType );
@@ -312,7 +314,9 @@ this.repository = repo;
 				Root<ListItemValue> ocpm1 = amendId.from(ListItemValue.class);
 				amendId.select(cb.max(ocpm1.get("amendId")));
 				Predicate a1 = cb.equal(ocpm1.get("itemType"), b.get("itemType"));
-				amendId.where(a1);
+				Predicate a2 = cb.equal(b.get("companyId"),ocpm1.get("companyId"));
+				Predicate a3 = cb.equal(b.get("branchCode"), ocpm1.get("branchCode"));
+				amendId.where(a1,a2,a3);
 
 				Predicate n1 = cb.equal(b.get("amendId"), amendId);
 				Predicate n2 = cb.equal( b.get("itemType"),itemType );
@@ -518,9 +522,10 @@ this.repository = repo;
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("itemId"), b.get("itemId"));
 			Predicate a2 = cb.equal(ocpm1.get("itemCode"), b.get("itemCode"));
+			Predicate a3 = cb.equal(b.get("companyId"),ocpm1.get("companyId"));
+			Predicate a4 = cb.equal(b.get("branchCode"), ocpm1.get("branchCode"));
+			amendId.where(a1,a2,a3,a4);
 			
-			amendId.where(a1, a2);
-
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("branchCode")));
@@ -588,8 +593,9 @@ this.repository = repo;
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("itemId"), b.get("itemId"));
 			Predicate a2 = cb.equal(ocpm1.get("itemCode"), b.get("itemCode"));
-			
-			amendId.where(a1, a2);
+			Predicate a3 = cb.equal(b.get("companyId"),ocpm1.get("companyId"));
+			Predicate a4 = cb.equal(b.get("branchCode"), ocpm1.get("branchCode"));
+			amendId.where(a1,a2,a3,a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -655,8 +661,9 @@ this.repository = repo;
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("itemId"), b.get("itemId"));
 			Predicate a2 = cb.equal(ocpm1.get("itemCode"), b.get("itemCode"));
-			
-			amendId.where(a1, a2);
+			Predicate a3 = cb.equal(b.get("companyId"),ocpm1.get("companyId"));
+			Predicate a4 = cb.equal(b.get("branchCode"), ocpm1.get("branchCode"));
+			amendId.where(a1,a2,a3,a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -721,21 +728,27 @@ this.repository = repo;
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1,a2);
+			Predicate a6 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+			Predicate a7 = cb.equal(c.get("branchCode"), ocpm1.get("branchCode"));
+			effectiveDate.where(a1,a2,a6,a7);
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
 			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-			effectiveDate2.where(a3,a4);
+			Predicate a8 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+			Predicate a9 = cb.equal(c.get("branchCode"), ocpm2.get("branchCode"));
+			effectiveDate2.where(a3,a4,a8,a9);
 			
 			// Item Type Filter
 			Subquery<Long> itemType = query.subquery(Long.class);
 			Root<ListItemValue> ocpm3 = itemType.from(ListItemValue.class);
 			itemType.select(cb.max(ocpm3.get("itemType")));
 			Predicate a5 = cb.equal(c.get("itemType"),ocpm3.get("itemType"));
-			itemType.where(a5);
+			Predicate a10 = cb.equal(c.get("companyId"),ocpm3.get("companyId"));
+			Predicate a11 = cb.equal(c.get("branchCode"), ocpm3.get("branchCode"));
+			itemType.where(a5,a10,a11);
 			
 						
 			// Where
@@ -799,8 +812,9 @@ this.repository = repo;
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("itemId"), b.get("itemId"));
 			Predicate a2 = cb.equal(ocpm1.get("itemCode"), b.get("itemCode"));
-			
-			amendId.where(a1, a2);
+			Predicate a3 = cb.equal(b.get("companyId"),ocpm1.get("companyId"));
+			Predicate a4 = cb.equal(b.get("branchCode"), ocpm1.get("branchCode"));
+			amendId.where(a1, a2,a3,a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();

@@ -641,8 +641,10 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			Predicate a1 = cb.equal(c.get("uwQuestionId"), ocpm1.get("uwQuestionId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(c.get("productId"), ocpm1.get("productId"));
-
-			effectiveDate.where(a1, a2, a3);
+			Predicate a9 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a10 = cb.equal(c.get("branchCode"), ocpm1.get("branchCode"));
+			
+			effectiveDate.where(a1, a2, a3,a9,a10);
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<UWQuestionsMaster> ocpm2 = effectiveDate2.from(UWQuestionsMaster.class);
@@ -650,8 +652,10 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			Predicate a6 = cb.equal(c.get("uwQuestionId"), ocpm2.get("uwQuestionId"));
 			Predicate a7 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a8 = cb.equal(c.get("productId"), ocpm2.get("productId"));
-
-			effectiveDate2.where(a6, a7, a8);
+			Predicate a11 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a12 = cb.equal(c.get("branchCode"), ocpm2.get("branchCode"));
+			
+			effectiveDate2.where(a6, a7, a8,a11,a12);
 			// Where
 			// Where
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");

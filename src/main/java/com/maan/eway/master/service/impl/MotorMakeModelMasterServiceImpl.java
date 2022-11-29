@@ -587,7 +587,9 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 			Predicate a1 = cb.equal(c.get("modelId"),ocpm1.get("modelId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a3 = cb.equal(c.get("makeId"),ocpm1.get("makeId"));
-			effectiveDate.where(a1,a2,a3);
+			Predicate a7 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+			Predicate a8 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
+			effectiveDate.where(a1,a2,a3,a7,a8);
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<MotorMakeModelMaster> ocpm2 = effectiveDate2.from(MotorMakeModelMaster.class);
@@ -595,7 +597,10 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 			Predicate a4 = cb.equal(c.get("modelId"),ocpm2.get("modelId"));
 			Predicate a5 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a6 = cb.equal(c.get("makeId"),ocpm2.get("makeId"));
-			effectiveDate2.where(a4,a5,a6);
+			Predicate a9 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+			Predicate a10 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
+			
+			effectiveDate2.where(a4,a5,a6,a9,a10);
 			// Where
 			Predicate n1 = cb.equal(c.get("status"),"Y");
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);

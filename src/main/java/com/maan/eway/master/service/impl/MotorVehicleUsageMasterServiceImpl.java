@@ -248,8 +248,10 @@ public SuccessRes saveMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveReq re
 			Predicate n1 = cb.equal(b.get("status"), "Y");
 			Predicate n3 = cb.equal(b.get("vehicleUsageId"), req.getVehicleUsageId());
 			Predicate n4 = cb.equal(b.get("sectionId"), req.getSectionId());
+			Predicate n2 = cb.equal(b.get("companyId"),req.getInsuranceId());
+			Predicate n5 = cb.equal(b.get("branchCode"),req.getBranchCode());
 			
-			query.where(n1, n3,n4).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
@@ -593,16 +595,21 @@ public List<DropDownRes> getVehicleUsageDropdown(UsageDropDownReq req) {
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(c.get("vehicleUsageId"),ocpm1.get("vehicleUsageId"));
 		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		Predicate a5 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId"));
-		effectiveDate.where(a1,a2,a5);
+		Predicate a3 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+		Predicate a4 = cb.equal(c.get("branchCode"), ocpm1.get("branchCode"));
+		Predicate a5 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
+		effectiveDate.where(a1, a2,a3,a4,a5);
 		// Effective Date End Max Filter
 		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 		Root<MotorVehicleUsageMaster> ocpm2 = effectiveDate2.from(MotorVehicleUsageMaster.class);
 		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-		Predicate a3 = cb.equal(c.get("vehicleUsageId"),ocpm2.get("vehicleUsageId"));
-		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-		Predicate a6 = cb.equal(c.get("sectionId"),ocpm2.get("sectionId"));
-		effectiveDate2.where(a3,a4,a6);
+		Predicate a6 = cb.equal(c.get("vehicleUsageId"),ocpm2.get("vehicleUsageId"));
+		Predicate a7 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+		Predicate a8 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+		Predicate a9 = cb.equal(c.get("branchCode"), ocpm2.get("branchCode"));
+		Predicate a10 = cb.equal(c.get("sectionId"),  ocpm2.get("sectionId"));
+		
+		effectiveDate2.where(a6,a7,a8,a9,a10);
 		// Where
 		Predicate n1 = cb.equal(c.get("status"),"Y");
 		Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
