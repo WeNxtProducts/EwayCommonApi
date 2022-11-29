@@ -113,14 +113,14 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 				errorList.add(new Error("02", "CoreAppCode", "Please Enter getCoreAppCode"));
 			} else if (req.getCoreAppCode().length() > 20) {
 				errorList.add(new Error("02", "CoreAppCode", "getCoreAppCode under 20 Characters only allowed"));
-			}else if (StringUtils.isBlank(req.getExchangeId())) {
+			}else if (req.getCoreAppCode().equalsIgnoreCase("99999")&&   StringUtils.isBlank(req.getExchangeId())) {
 				List<ExchangeMaster> CompanyList = getCoreAppCodeExistDetails(req.getCoreAppCode() , req.getEffectiveDateStart() , req.getEffectiveDateEnd()  );
 				if (CompanyList.size()>0 ) {
 					errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
 				}
 			}else  {
 				List<ExchangeMaster> CompanyList =  getCoreAppCodeExistDetails(req.getCoreAppCode()  , req.getEffectiveDateStart() , req.getEffectiveDateEnd() );
-				if (CompanyList.size()>0 &&  (! req.getExchangeId().equalsIgnoreCase(CompanyList.get(0).getCompanyId().toString())) ) {
+				if (CompanyList.size()>0 &&  (! req.getExchangeId().equalsIgnoreCase(CompanyList.get(0).getExchangeId().toString())) ) {
 					errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
 				}
 				
