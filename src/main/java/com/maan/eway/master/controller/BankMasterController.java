@@ -5,15 +5,13 @@
 */
 package com.maan.eway.master.controller;
 
-
-
-
 import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,109 +33,103 @@ import com.maan.eway.service.PrintReqService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-
 /**
-* <h2>BankMasterController</h2>
-*/
+ * <h2>BankMasterController</h2>
+ */
 @RestController
 @Api(tags = "MASTER : Bank Master ", description = "API's")
 @RequestMapping("/master")
 public class BankMasterController {
 
 	@Autowired
-	private  BankMasterService bankService;
-	
+	private BankMasterService bankService;
+
 	@Autowired
-	private  PrintReqService reqPrinter;
-	
-	
+	private PrintReqService reqPrinter;
+
 	// save
-		@PostMapping("/insertbank")
-		@ApiOperation(value = "This method is Insert Bank Details")
-		public ResponseEntity<CommonRes> insertBank(@RequestBody BankMasterSaveReq req) {
+	@PreAuthorize("hasAnyRole('ADMIN','DB-ADMIN')")
+	@PostMapping("/insertbank")
+	@ApiOperation(value = "This method is Insert Bank Details")
+	public ResponseEntity<CommonRes> insertBank(@RequestBody BankMasterSaveReq req) {
 
-			reqPrinter.reqPrint(req);
-			CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
 
-			List<Error> validation = bankService.validateBankDetails(req);
-			// validation
-			if (validation != null && validation.size() != 0) {
-				data.setCommonResponse(null);
-				data.setIsError(true);
-				data.setErrorMessage(validation);
-				data.setMessage("Failed");
-				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+		List<Error> validation = bankService.validateBankDetails(req);
+		// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 
-			} else {
+		} else {
 
-				// Get All
-				SuccessRes res = bankService.insertBank(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
-
-		}
-		
-		//  Get All Bank Master
-		
-		@PostMapping("/getallbankdetails")
-		@ApiOperation("This method is getall Bank Details")
-		public ResponseEntity<CommonRes> getallBankDetails(@RequestBody BankMasterGetAllReq req)
-		{
-			CommonRes data = new CommonRes();
-			reqPrinter.reqPrint(req);
-			
-			List<BankMasterRes> res = bankService.getallBankDetails(req);
+			// Get All
+			SuccessRes res = bankService.insertBank(req);
 			data.setCommonResponse(res);
-			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
 			data.setMessage("Success");
-			
-			if(res!= null) {
-				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
-			}
-			else {
-				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 		}
-		
-	//  Get Active Bank Master
-		
-			@PostMapping("/getactivebank")
-			@ApiOperation("This method is get Active Bank Details")
-			public ResponseEntity<CommonRes> getActiveBankDetails(@RequestBody BankMasterGetAllReq req)
-			{
-				CommonRes data = new CommonRes();
-				reqPrinter.reqPrint(req);
-				
-				List<BankMasterRes> res = bankService.getActiveBankDetails(req);
-				data.setCommonResponse(res);
-				data.setErrorMessage(Collections.emptyList());
-				data.setIsError(false);
-				data.setMessage("Success");
-				
-				if(res!= null) {
-					return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
-				}
-				else {
-					return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
-				}
-			}
-		
-		// Get By Bank Id
-		
-		@PostMapping("/getbybankid")
-		@ApiOperation("This Method is to get by Bank id")
-		public ResponseEntity<CommonRes> getByBankCode(@RequestBody BankMasterGetReq req)
-		{
+
+	}
+
+	// Get All Bank Master
+	@PreAuthorize("hasAnyRole('ADMIN','DB-ADMIN')")
+	@PostMapping("/getallbankdetails")
+	@ApiOperation("This method is getall Bank Details")
+	public ResponseEntity<CommonRes> getallBankDetails(@RequestBody BankMasterGetAllReq req) {
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+
+		List<BankMasterRes> res = bankService.getallBankDetails(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	// Get Active Bank Master
+	@PreAuthorize("hasAnyRole('ADMIN','DB-ADMIN')")
+	@PostMapping("/getactivebank")
+	@ApiOperation("This method is get Active Bank Details")
+	public ResponseEntity<CommonRes> getActiveBankDetails(@RequestBody BankMasterGetAllReq req) {
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+
+		List<BankMasterRes> res = bankService.getActiveBankDetails(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	// Get By Bank Id
+	@PreAuthorize("hasAnyRole('ADMIN','DB-ADMIN')")
+	@PostMapping("/getbybankid")
+	@ApiOperation("This Method is to get by Bank id")
+	public ResponseEntity<CommonRes> getByBankCode(@RequestBody BankMasterGetReq req) {
 		CommonRes data = new CommonRes();
 		BankMasterRes res = bankService.getByBankCode(req);
 		data.setCommonResponse(res);
@@ -152,51 +144,51 @@ public class BankMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-		
+
+	// Change Status
+	@PreAuthorize("hasAnyRole('ADMIN','DB-ADMIN')")
+	@PostMapping("/bank/changestatus")
+	@ApiOperation(value = "This method is Bank Change Status")
+	public ResponseEntity<CommonRes> changeStatusOfBank(@RequestBody BankChangeStatusReq req) {
+
+		CommonRes data = new CommonRes();
 		// Change Status
-		@PostMapping("/bank/changestatus")
-		@ApiOperation(value = "This method is Bank Change Status")
-		public ResponseEntity<CommonRes> changeStatusOfBank(@RequestBody BankChangeStatusReq req) {
+		SuccessRes res = bankService.changeStatusOfBank(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
 
-			CommonRes data = new CommonRes();
-			// Change Status
-			SuccessRes res = bankService.changeStatusOfBank(req);
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
-
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-		
-		
-		
-		// Bank Master Drop Down Type
-					@PostMapping("/dropdown/bankmaster")
-					@ApiOperation(value = "This method is get Bank Master Drop Down")
 
-					public ResponseEntity<CommonRes> getBankMasterDropdown(@RequestBody BankChangeStatusReq req) {
+	}
 
-						CommonRes data = new CommonRes();
+	// Bank Master Drop Down Type
+	@PreAuthorize("hasAnyRole('ADMIN','DB-ADMIN')")
+	@PostMapping("/dropdown/bankmaster")
+	@ApiOperation(value = "This method is get Bank Master Drop Down")
 
-						// Save
-						List<DropDownRes> res = bankService.getBankMasterDropdown(req);
-						data.setCommonResponse(res);
-						data.setIsError(false);
-						data.setErrorMessage(Collections.emptyList());
-						data.setMessage("Success");
+	public ResponseEntity<CommonRes> getBankMasterDropdown(@RequestBody BankChangeStatusReq req) {
 
-						if (res != null) {
-							return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-						} else {
-							return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-						}
+		CommonRes data = new CommonRes();
 
-					}
-	
+		// Save
+		List<DropDownRes> res = bankService.getBankMasterDropdown(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+
 }
