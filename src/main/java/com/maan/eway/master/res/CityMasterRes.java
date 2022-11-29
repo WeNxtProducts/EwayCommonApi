@@ -60,4 +60,8 @@ public class CityMasterRes implements Serializable {
 	@JsonProperty("UpdatedDate")
 	private Date updatedDate;
 
+
+	@JsonProperty("CoreAppCode")
+	private String coreAppCode;
+
 }
