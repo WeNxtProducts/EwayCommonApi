@@ -32,9 +32,8 @@ public class DocumentMasterId implements Serializable {
     //--- ENTITY KEY ATTRIBUTES 
     private Integer    documentId ;
     
-    private Date       effectiveDateStart ;
-    
-    private Date       effectiveDateEnd ;
+    private Integer    amendId ;
+
     
      
 }
