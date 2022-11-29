@@ -154,6 +154,7 @@ public SuccessRes insertBank(BankMasterSaveReq req) {
 		saveData.setUpdatedBy(req.getCreatedBy());
 		saveData.setUpdatedDate(new Date());
 		saveData.setAmendId(amendId);
+		saveData.setBranchCode(req.getBranchCode());
 		repo.saveAndFlush(saveData);	
 		log.info("Saved Details is --> " + json.toJson(saveData));	
 		}
