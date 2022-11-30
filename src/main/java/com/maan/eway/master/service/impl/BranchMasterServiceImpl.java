@@ -198,8 +198,8 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 			
 			String countryCode = req.getCountryId();
 			List<Tuple> stateCity =   getStateAndCityName(countryCode ,  req.getStateCode() , req.getCityCode() ) ;
-			String stateName      =  stateCity.size()>0 ? stateCity.get(0).get("cityName").toString() : "";
-			String cityName       =   stateCity.size()>0 ? stateCity.get(0).get("stateName").toString() :  "" ;
+			String stateName      =  stateCity.size()>0 ? stateCity.get(0).get("stateName").toString() : "";
+			String cityName       =   stateCity.size()>0 ? stateCity.get(0).get("cityName").toString() :  "" ;
 			saveData.setStateName(stateName);
 			saveData.setCityName(cityName);
 			
