@@ -633,6 +633,13 @@ this.repository = repo;
 				updateLogin.setAgencyCode(loginReq.getAgencyCode());
 			}
 			
+			updateLogin.setPassword(findLogin.getPassword() );
+			updateLogin.setPwdCount(findLogin.getPwdCount() );	
+			updateLogin.setLpass1(findLogin.getLpass1());
+			updateLogin.setLpass2(findLogin.getLpass2());
+			updateLogin.setLpass3(findLogin.getLpass3());
+			updateLogin.setLpass4(findLogin.getLpass4());
+			updateLogin.setLpass5(findLogin.getLpass5());
 			updateLogin.setUpdatedDate(new Date());
 			updateLogin.setUpdatedBy(loginReq.getCreatedBy());
 			updateLogin.setLoginId(loginReq.getLoginId());
@@ -641,6 +648,7 @@ this.repository = repo;
 			updateLogin.setAttachedCompanies(companies);
 			updateLogin.setMenuIds(findLogin.getMenuIds());
 			updateLogin.setBrokerCompanyYn(findBroker !=null ? findBroker.getBrokerCompanyYn() : loginReq.getBrokerCompanyYn());
+			updateLogin.setPassword(menuId);
 			if( ! loginReq.getSubUserType().equalsIgnoreCase("bank") ) {
 				updateLogin.setBankCode("");
 			}
