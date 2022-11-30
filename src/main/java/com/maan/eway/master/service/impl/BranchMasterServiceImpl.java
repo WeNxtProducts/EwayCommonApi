@@ -196,7 +196,7 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 			saveData.setUpdatedDate(new Date());
 			saveData.setAmendId(amendId);
 			
-			String countryCode = getCountryCode(req.getRegionCode());
+			String countryCode = req.getCountryId();
 			List<Tuple> stateCity =   getStateAndCityName(countryCode ,  req.getStateCode() , req.getCityCode() ) ;
 			String stateName      =  stateCity.size()>0 ? stateCity.get(0).get("cityName").toString() : "";
 			String cityName       =   stateCity.size()>0 ? stateCity.get(0).get("stateName").toString() :  "" ;
@@ -280,7 +280,7 @@ public List<Tuple> getStateAndCityName(String countryId , String stateId , Strin
 		CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
 
 		// Find All
-		Root<CompanyCityMaster> c = query.from(CompanyCityMaster.class);
+		Root<CityMaster> c = query.from(CityMaster.class);
 		
 		// City Effective Date Max Filter
 		Subquery<Long> effectiveDate1 = query.subquery(Long.class);
