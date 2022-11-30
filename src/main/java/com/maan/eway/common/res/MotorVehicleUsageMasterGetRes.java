@@ -35,5 +35,6 @@ public class MotorVehicleUsageMasterGetRes {
     private String claimStatus;
 	@JsonProperty("B2CStatus")
     private String b2cStatus;
-	
+	@JsonProperty("RegulatoryCode")
+    private String regulatoryCode;
 }
