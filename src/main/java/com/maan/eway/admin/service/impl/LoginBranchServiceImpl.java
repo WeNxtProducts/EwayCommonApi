@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -518,6 +519,11 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			List<LoginBranchMaster> findBranches = loginBrokerRepo.findByLoginIdOrderByUpdatedDateDesc(req.getLoginId() );
 			Type listType = new TypeToken<List<GetBrokerBranchRes>>(){}.getType();
 			resList = mapper.map(findBranches ,listType);
+			
+			if(resList.size() <= 0 ) {
+				resList = 	Collections.emptyList();
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
