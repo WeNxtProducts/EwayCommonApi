@@ -26,6 +26,12 @@ public class RegionMasterSaveReq implements Serializable {
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
 
+	@JsonProperty("CoreAppCode")
+	private String coreAppCode;
+	
+	@JsonProperty("TiraCode")
+	private String tiraCode;
+	
 	@JsonProperty("RegionShortCode")
 	private String regionShortCode;
 

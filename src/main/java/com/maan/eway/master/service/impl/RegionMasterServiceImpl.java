@@ -174,18 +174,18 @@ private Logger log=LogManager.getLogger(RegionMasterServiceImpl.class);
 				saveData.setAmendId(amendId);
 				repo.saveAndFlush(saveData);
 				
-				if(list.size() > 0 ) {
-					// Update Old Record
-					RegionMaster lastRecord = list.get(0) ;
-					lastRecord.setEffectiveDateEnd(oldEndDate);
-					String startDatewithoutTime = sdformat.format(startDate);
-					String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-
-					if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-						lastRecord.setStatus("N");	
-					}
-					repo.saveAndFlush(lastRecord);
-				}
+//				if(list.size() > 0 ) {
+//					// Update Old Record
+//					RegionMaster lastRecord = list.get(0) ;
+//					lastRecord.setEffectiveDateEnd(oldEndDate);
+//					String startDatewithoutTime = sdformat.format(startDate);
+//					String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
+//
+//					if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
+//						lastRecord.setStatus("N");	
+//					}
+//					repo.saveAndFlush(lastRecord);
+//				}
 				
 				log.info("Saved Details is ---> " + json.toJson(saveData));
 				
