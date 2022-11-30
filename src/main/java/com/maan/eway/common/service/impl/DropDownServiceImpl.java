@@ -1014,7 +1014,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				
 			}
 			  
-			entityName = entityName + ".class" ;
+			entityName = "EserviceCustomerDetails.class";//entityName + ".class" ;
 
 		//	Class table = (Class) entityName ;
 			EserviceCustomerDetails eserCust = new EserviceCustomerDetails();
