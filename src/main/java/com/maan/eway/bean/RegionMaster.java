@@ -95,7 +95,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="CREATED_BY", nullable=false, length=50)
     private String     createdBy ;
 
-    @Column(name="TIRA_CODE", nullable=false, length=20)
+    @Column(name="TIRA_CODE", length=20)
     private String     tiraCode ;
 
     @Column(name="REGULATORY_CODE", nullable=false, length=20)
