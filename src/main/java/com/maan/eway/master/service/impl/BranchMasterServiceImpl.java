@@ -184,6 +184,7 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 			}
 				
 			mapper.map(req, saveData);
+			saveData.setBranchCode(branchCode);
 			saveData.setRegionCode(req.getRegionCode());
 			saveData.setCompanyId(req.getCompanyId());
 			saveData.setEffectiveDateStart(req.getEffectiveDateStart());
@@ -197,8 +198,8 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 			
 			String countryCode = getCountryCode(req.getRegionCode());
 			List<Tuple> stateCity =   getStateAndCityName(countryCode ,  req.getStateCode() , req.getCityCode() ) ;
-			String stateName      =   stateCity.get(0).get("cityName") == null ? "" :  stateCity.get(0).get("cityName").toString()  ;
-			String cityName       =   stateCity.get(0).get("stateName") == null ? "" :  stateCity.get(0).get("stateName").toString() ;
+			String stateName      =  stateCity.size()>0 ? stateCity.get(0).get("cityName").toString() : "";
+			String cityName       =   stateCity.size()>0 ? stateCity.get(0).get("stateName").toString() :  "" ;
 			saveData.setStateName(stateName);
 			saveData.setCityName(cityName);
 			
@@ -283,7 +284,7 @@ public List<Tuple> getStateAndCityName(String countryId , String stateId , Strin
 		
 		// City Effective Date Max Filter
 		Subquery<Long> effectiveDate1 = query.subquery(Long.class);
-		Root<CompanyCityMaster> ocpm1 = effectiveDate1.from(CompanyCityMaster.class);
+		Root<CityMaster> ocpm1 = effectiveDate1.from(CityMaster.class);
 		effectiveDate1.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate c1 = cb.equal(ocpm1.get("cityId"), c.get("cityId"));
 		Predicate c2 = cb.equal(ocpm1.get("stateId"), c.get("stateId"));
@@ -300,10 +301,10 @@ public List<Tuple> getStateAndCityName(String countryId , String stateId , Strin
 		
 		// State Effective Date Max Filter
 		Subquery<Long> state = query.subquery(Long.class);
-		Root<CompanyStateMaster> s = state.from(CompanyStateMaster.class);
+		Root<StateMaster> s = state.from(StateMaster.class);
 		
 		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
-		Root<CompanyStateMaster> ocpm2 = effectiveDate2.from(CompanyStateMaster.class);
+		Root<StateMaster> ocpm2 = effectiveDate2.from(StateMaster.class);
 		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateStart")));
 		Predicate seff1 = cb.equal(ocpm2.get("stateId"), s.get("stateId"));
 		Predicate seff2 = cb.equal(ocpm2.get("countryId"), s.get("countryId"));
@@ -365,25 +366,26 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 			errorList.add(new Error("02", "BranchName", "Please Select Branch Name "));
 		}else if (req.getBranchName().length() > 100){
 			errorList.add(new Error("02","BranchName", "Please Enter Branch  Name within 100 Characters")); 
-		}else if (StringUtils.isBlank(req.getBranchCode())) {
-			Long BranchCount = branchRepo.countByBranchNameOrderByEntryDateDesc(req.getBranchName());
-			if (BranchCount > 0 ) {
-				errorList.add(new Error("01", "BranchName", "This Branch Name Alrady Exist "));
-			}
 		}
+//			else if (StringUtils.isBlank(req.getBranchCode())) {
+//			Long BranchCount = branchRepo.countByBranchNameOrderByEntryDateDesc(req.getBranchName());
+//			if (BranchCount > 0 ) {
+//				errorList.add(new Error("01", "BranchName", "This Branch Name Alrady Exist "));
+//			}
+//		}
 
 		if(StringUtils.isBlank(req.getCityCode())) {
-			errorList.add(new Error("03","CityCode","Please Select CityCode"));
+			errorList.add(new Error("03","City","Please Select City"));
 		}
 		if(StringUtils.isBlank(req.getStateCode())) {
-			errorList.add(new Error("04","StateCode","Please Select StateCode"));
+			errorList.add(new Error("04","State","Please Select State"));
 		}
 		
-		if (StringUtils.isBlank(req.getRegionCode())) {
-			errorList.add(new Error("03", "RegionCode", "Please Select Region Code "));
-		}else if (req.getRegionCode().length() > 20){
-			errorList.add(new Error("03","RegionCode", "Please Enter Region Code within 20 Characters")); 
-		}
+//		if (StringUtils.isBlank(req.getRegionCode())) {
+//			errorList.add(new Error("03", "RegionCode", "Please Select Region Code "));
+//		}else if (req.getRegionCode().length() > 20){
+//			errorList.add(new Error("03","RegionCode", "Please Enter Region Code within 20 Characters")); 
+//		}
 		
 		if (StringUtils.isBlank(req.getCreatedBy())) {
 			errorList.add(new Error("03", "CreatedBy", "Please Enter CreatedBy"));

@@ -594,7 +594,7 @@ this.repository = repo;
 			
 			// Delete Old Records
 			LoginMaster  updateLogin = new  LoginMaster ();
-			updateLogin = findLogin;
+			dozerMapper.map(findLogin, updateLogin);
 			loginRepo.delete(findLogin);
 			LoginUserInfo updateUser = findUserInfo;
 			loginUserRepo.delete(findUserInfo);

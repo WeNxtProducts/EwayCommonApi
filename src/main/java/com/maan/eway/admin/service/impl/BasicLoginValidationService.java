@@ -394,8 +394,14 @@ public class BasicLoginValidationService {
 			
 			if (StringUtils.isBlank(brokerReq.getCommissionVatYn())) {
 				errors.add(new Error("25", "CommissionVat", "Please Select CommissionVat Y or N"));
-			} else if (!("Y".equals(brokerReq.getMakerYn()) || "N".equals(brokerReq.getMakerYn()))) {
+			} else if (!("Y".equals(brokerReq.getCommissionVatYn()) || "N".equals(brokerReq.getCommissionVatYn()))) {
 				errors.add(new Error("25", "CommissionVat", "Please Select CommissionVat Y or N"));
+			} else if ("Y".equals(brokerReq.getCommissionVatYn())) {
+				if(StringUtils.isBlank(brokerReq.getVatRegNo())  ) {
+					errors.add(new Error("29", "VatRegNo", "Plese Select VatRegNo" ));
+				} else if(brokerReq.getVatRegNo().length()>100  ) {
+					errors.add(new Error("29", "VatRegNo", "VatRegNo Must Be Under 100 Characters Only Allowed" ));
+				}
 			}
 			
 			if (StringUtils.isBlank(brokerReq.getCustConfirmYn())) {
@@ -448,6 +454,20 @@ public class BasicLoginValidationService {
 				}
 			} */
 			
+//			if(StringUtils.isBlank(brokerReq.getUserName())  ) {
+//				errors.add(new Error("29", "UserName", "Plese Enter UserName" ));
+//			} else if(brokerReq.getUserName().length()>100  ) {
+//				errors.add(new Error("29", "UserName", "UserName Must Be Under 100 Characters Only Allowed" ));
+//			}
+//			
+//			if(StringUtils.isBlank(brokerReq.getUserMail())  ) {
+//				errors.add(new Error("29", "UserMail", "Plese Enter UserName" ));
+//			} else if(brokerReq.getUserMail().length()>100  ) {
+//				errors.add(new Error("29", "UserMail", "UserMail Must Be Under 100 Characters Only Allowed" ));
+//			} else if( isNotValidMail(brokerReq.getUserMail()) == true ) {
+//				errors.add(new Error("29", "UserMail", "UserMail Is Not Valid Mail" ));
+//			}
+			
 			if(StringUtils.isBlank(brokerReq.getCityCode())  ) {
 				errors.add(new Error("15", "City", "Plese Select City" ));
 			} else if(! brokerReq.getCityCode().matches("[0-9]+")  ) {
@@ -460,11 +480,7 @@ public class BasicLoginValidationService {
 				}
 			} 
 			
-			if(StringUtils.isBlank(brokerReq.getVatRegNo())  ) {
-				errors.add(new Error("29", "VatRegNo", "Plese Select VatRegNo" ));
-			} else if(brokerReq.getVatRegNo().length()>100  ) {
-				errors.add(new Error("29", "VatRegNo", "VatRegNo Must Be Under 100 Characters Only Allowed" ));
-			}
+			
 			
 			
 						

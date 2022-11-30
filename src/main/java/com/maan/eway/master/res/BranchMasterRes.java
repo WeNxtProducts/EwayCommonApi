@@ -19,7 +19,7 @@ public class BranchMasterRes implements Serializable {
 	private String branchCode;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDate")
+	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
