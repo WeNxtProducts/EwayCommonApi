@@ -58,6 +58,8 @@ public class CurrencyMasterRes implements Serializable {
 
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
+	@JsonProperty("CurrencyShortCode")
+	private String currencyShortCode;
 
 	@JsonProperty("AmendId")
 	private Integer amendId;
