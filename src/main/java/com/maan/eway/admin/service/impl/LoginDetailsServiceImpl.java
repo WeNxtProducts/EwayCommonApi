@@ -593,7 +593,8 @@ this.repository = repo;
 			LoginUserInfo findUserInfo = loginUserRepo.findByLoginId(loginId);
 			
 			// Delete Old Records
-			LoginMaster  updateLogin = findLogin;
+			LoginMaster  updateLogin = new  LoginMaster ();
+			updateLogin = findLogin;
 			loginRepo.delete(findLogin);
 			LoginUserInfo updateUser = findUserInfo;
 			loginUserRepo.delete(findUserInfo);
@@ -618,11 +619,7 @@ this.repository = repo;
 			String menuId = loginReq.getMenuId()==null || loginReq.getMenuId().size()==0 ?"" : String.join(",", loginReq.getMenuId());
 			dozerMapper.map(loginReq, updateLogin);
 			
-			if (StringUtils.isNotBlank(loginReq.getPassword())) {
-				passwordEnc passEnc = new passwordEnc();
-				String newpass =  passEnc.crypt(loginReq.getPassword().trim());
-				updateLogin.setPassword(newpass);
-			}
+			
 			updateLogin.setCreatedBy(findLogin.getCreatedBy() );
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("Issuer") ) {
 				updateLogin.setOaCode(Integer.valueOf(loginReq.getOaCode()));
@@ -648,7 +645,7 @@ this.repository = repo;
 			updateLogin.setAttachedCompanies(companies);
 			updateLogin.setMenuIds(findLogin.getMenuIds());
 			updateLogin.setBrokerCompanyYn(findBroker !=null ? findBroker.getBrokerCompanyYn() : loginReq.getBrokerCompanyYn());
-			updateLogin.setPassword(menuId);
+			
 			if( ! loginReq.getSubUserType().equalsIgnoreCase("bank") ) {
 				updateLogin.setBankCode("");
 			}
