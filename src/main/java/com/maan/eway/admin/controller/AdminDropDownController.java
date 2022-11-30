@@ -218,4 +218,24 @@ public class AdminDropDownController {
 
 	}
 	
+	@PostMapping("/sourcetype")
+	@ApiOperation(value = "This method is to Business Type  Drop Down")
+	public ResponseEntity<CommonRes> getSourceType(@RequestBody LovDropDownReq req) {
+		CommonRes data = new CommonRes();
+
+		// Save
+		List<DropDownRes> res = dropDownService.getSourceType(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	
 }

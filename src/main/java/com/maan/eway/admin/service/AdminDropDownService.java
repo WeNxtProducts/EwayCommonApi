@@ -30,6 +30,9 @@ public interface AdminDropDownService {
 	List<DropDownRes> getBusinessType(LovDropDownReq req);
 
 
+	List<DropDownRes> getSourceType(LovDropDownReq req);
+
+
 	
 
 

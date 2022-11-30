@@ -194,7 +194,11 @@ private String     regulatoryCode ;
 @Column(name="CORE_APP_CODE", length=20)
 private String     coreAppCode ;
 
+@Column(name="MASTER_YN", length=20)
+private String     masterYn;
 
+@Column(name="API_URL", length=20)
+private String     apiUrl;
 
 
 }

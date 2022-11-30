@@ -14,10 +14,10 @@ public class BrokerActiveGridReq {
 	private String subUserType ;
 	
 	
-	@JsonProperty("Limit")
-	private String limit;
-	
-	@JsonProperty("Offset")
-	private String offset ;
+//	@JsonProperty("Limit")
+//	private String limit;
+//	
+//	@JsonProperty("Offset")
+//	private String offset ;
 
 }

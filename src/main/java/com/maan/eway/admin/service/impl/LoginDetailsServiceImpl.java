@@ -717,8 +717,8 @@ this.repository = repo;
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
 		try { 
 			// Limit Offset
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+			//int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			//int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 			
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
@@ -753,8 +753,8 @@ this.repository = repo;
 			
 			// Get Result
 			TypedQuery<Tuple> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
+			//result.setFirstResult(limit * offset);
+			//result.setMaxResults(offset);
 			list = result.getResultList();
 			
 			for (Tuple data :  list) {
@@ -781,8 +781,8 @@ this.repository = repo;
 		ModelMapper mapper = new ModelMapper(); 
 		try { 
 			// Limit Offset
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+			//int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			//int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 			
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<LoginDetailsCriteriaRes> query = cb.createQuery(LoginDetailsCriteriaRes.class);
@@ -820,8 +820,8 @@ this.repository = repo;
 			
 			// Get Result
 			TypedQuery<LoginDetailsCriteriaRes> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
+			//result.setFirstResult(limit * offset);
+			//result.setMaxResults(offset);
 			list = result.getResultList();
 			
 			Type listType = new TypeToken<List<LoginBrokerDetailsGridRes>>(){}.getType();
@@ -842,8 +842,8 @@ this.repository = repo;
 		ModelMapper mapper = new ModelMapper(); 
 		try { 
 			// Limit Offset
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+			//int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			//int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 			
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<LoginDetailsCriteriaRes> query = cb.createQuery(LoginDetailsCriteriaRes.class);
@@ -881,8 +881,8 @@ this.repository = repo;
 			
 			// Get Result
 			TypedQuery<LoginDetailsCriteriaRes> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
+			//result.setFirstResult(limit * offset);
+			//result.setMaxResults(offset);
 			list = result.getResultList();
 			
 
@@ -905,8 +905,8 @@ this.repository = repo;
 		ModelMapper mapper = new ModelMapper(); 
 		try { 
 			// Limit Offset
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+			//int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			//int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 			
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<LoginDetailsCriteriaRes> query = cb.createQuery(LoginDetailsCriteriaRes.class);
@@ -945,8 +945,8 @@ this.repository = repo;
 			
 			// Get Result
 			TypedQuery<LoginDetailsCriteriaRes> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
+			//result.setFirstResult(limit * offset);
+			//result.setMaxResults(offset);
 			list = result.getResultList();
 			
 			Type listType = new TypeToken<List<LoginIssuerGridRes>>(){}.getType();
@@ -968,8 +968,8 @@ this.repository = repo;
 		ModelMapper mapper = new ModelMapper(); 
 		try { 
 			// Limit Offset
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+			//int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			//int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 			
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<LoginDetailsCriteriaRes> query = cb.createQuery(LoginDetailsCriteriaRes.class);
@@ -1009,8 +1009,8 @@ this.repository = repo;
 			
 			// Get Result
 			TypedQuery<LoginDetailsCriteriaRes> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
+			//result.setFirstResult(limit * offset);
+			//result.setMaxResults(offset);
 			list = result.getResultList();
 			
 			Type listType = new TypeToken<List<LoginBrokerDetailsGridRes>>(){}.getType();
@@ -1032,8 +1032,8 @@ this.repository = repo;
 		ModelMapper mapper = new ModelMapper(); 
 		try { 
 			// Limit Offset
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+			//	int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			//int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 			
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<LoginDetailsCriteriaRes> query = cb.createQuery(LoginDetailsCriteriaRes.class);
@@ -1073,8 +1073,8 @@ this.repository = repo;
 			
 			// Get Result
 			TypedQuery<LoginDetailsCriteriaRes> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
+			//result.setFirstResult(limit * offset);
+			//result.setMaxResults(offset);
 			list = result.getResultList();
 			
 			Type listType = new TypeToken<List<LoginUserGridRes>>(){}.getType();
@@ -1096,8 +1096,8 @@ this.repository = repo;
 		ModelMapper mapper = new ModelMapper(); 
 		try { 
 			// Limit Offset
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+			//	int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			//int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 			
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<LoginDetailsCriteriaRes> query = cb.createQuery(LoginDetailsCriteriaRes.class);
@@ -1137,8 +1137,8 @@ this.repository = repo;
 			
 			// Get Result
 			TypedQuery<LoginDetailsCriteriaRes> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
+			//	result.setFirstResult(limit * offset);
+			//	result.setMaxResults(offset);
 			list = result.getResultList();
 			
 			Type listType = new TypeToken<List<LoginIssuerGridRes>>(){}.getType();
