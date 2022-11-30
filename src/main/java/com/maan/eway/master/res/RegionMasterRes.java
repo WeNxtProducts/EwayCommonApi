@@ -52,5 +52,8 @@ public class RegionMasterRes implements Serializable {
 	
 	@JsonProperty("CountryId")
 	private String countryId;
+	
+	@JsonProperty("CoreAppCode")
+	private String coreAppCode;
 
 }
