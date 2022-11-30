@@ -34,8 +34,8 @@ public class CityMasterRes implements Serializable {
 	@JsonProperty("CountryId")
 	private String countryId;
 	
-	@JsonProperty("RegionCode")
-	private String regionCode;
+	@JsonProperty("RegionId")
+	private String regionId;
 	
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
