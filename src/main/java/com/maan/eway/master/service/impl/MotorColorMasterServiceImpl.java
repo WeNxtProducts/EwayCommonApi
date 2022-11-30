@@ -280,6 +280,7 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 			saveData.setColorDesc(req.getColorDesc());
 			saveData.setEffectiveDateStart(startDate);
 			saveData.setEffectiveDateEnd(endDate);
+			saveData.setCompanyId(req.getInsuranceId());
 			saveData.setCreatedBy(createdBy);
 			saveData.setStatus(req.getStatus());
 			saveData.setEntryDate(entryDate);
@@ -312,8 +313,8 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 			Root<MotorColorMaster> b = query.from(MotorColorMaster.class);
 
 			// Select
-			query.multiselect(cb.count(b));
-
+			//query.multiselect(cb.count(b));
+			query.select(b);
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<MotorColorMaster> ocpm1 = effectiveDate.from(MotorColorMaster.class);
