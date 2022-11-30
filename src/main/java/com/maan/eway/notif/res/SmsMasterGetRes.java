@@ -13,8 +13,11 @@ public class SmsMasterGetRes {
 	@JsonProperty("SNo")
 	private String sNo;
 	
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
 	private String companyId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 	
 	@JsonProperty("Status")
 	private String status;
@@ -54,6 +57,13 @@ public class SmsMasterGetRes {
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
+	
+	@JsonProperty("UpdatedBy")
+	private String updatedBy;
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("UpdatedDate")
+	private Date updatedDate;
 	
 	@JsonProperty("AmendId")
 	private String amendId;

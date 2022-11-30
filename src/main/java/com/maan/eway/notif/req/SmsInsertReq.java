@@ -20,8 +20,11 @@ public class SmsInsertReq {
 	@JsonProperty("SNo")
 	private String sNo;
 	
-	@JsonProperty("CompanyId")
+	@JsonProperty("InsuranceId")
 	private String companyId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 	
 	@JsonProperty("Status")
 	private String status;
@@ -47,11 +50,6 @@ public class SmsInsertReq {
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
-
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
-
 
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;

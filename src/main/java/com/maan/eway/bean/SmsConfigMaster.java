@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -59,16 +58,14 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="COMPANY_ID", nullable=false, length=20)
     private String     companyId ;
-
+    
     @Id
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_START", nullable=false)
-    private Date       effectiveDateStart ;
-
+    @Column(name="BRANCH_CODE", nullable=false, length=20)
+    private String     branchCode ;
+    
     @Id
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_END", nullable=false)
-    private Date       effectiveDateEnd ;
+    @Column(name="AMEND_ID")
+    private Integer    amendId ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="STATUS", length=6)
@@ -99,16 +96,26 @@ private static final long serialVersionUID = 1L;
     @Column(name="CORE_APP_CODE", length=20)
     private String     coreAppCode ;
 
-    @Column(name="AMEND_ID")
-    private Integer    amendId ;
-
     @Column(name="REGULATORY_CODE", nullable=false, length=20)
     private String     regulatoryCode ;
 
     @Column(name="CREATED_BY", length=100)
     private String     createdBy ;
 
+    @Column(name="UPDATED_BY", nullable=false, length=100)
+    private String     updatedBy ;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="UPDATED_DATE")
+    private Date       updatedDate ;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_START", nullable=false)
+    private Date       effectiveDateStart ;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_END", nullable=false)
+    private Date       effectiveDateEnd ;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

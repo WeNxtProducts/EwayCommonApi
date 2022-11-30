@@ -18,17 +18,16 @@ import lombok.Data;
 public class NotifTemplateMasterReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+	
 	@JsonProperty("InsuranceId")
 	private String insId;
 
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
-	
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
 
 	@JsonProperty("QueryKey")
 	private String queryKey;

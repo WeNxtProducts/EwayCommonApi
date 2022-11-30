@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -57,18 +56,12 @@ private static final long serialVersionUID = 1L;
     private Integer    sno ;
 
     @Id
-    @Column(name="INS_ID", nullable=false, length=100)
-    private String     insId ;
+    @Column(name="COMPANY_ID", nullable=false, length=100)
+    private String     companyId ;
 
     @Id
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_START", nullable=false)
-    private Date       effectiveDateStart ;
-
-    @Id
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_END", nullable=false)
-    private Date       effectiveDateEnd ;
+    @Column(name="BRANCH_CODE", nullable=false, length=20)
+    private String     branchCode ;
 
     @Id
     @Column(name="AMEND_ID", nullable=false)
@@ -139,6 +132,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="NOTIFICATION_APPLICABLE", length=500)
     private String     notificationApplicable ;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_START", nullable=false)
+    private Date       effectiveDateStart ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_END", nullable=false)
+    private Date       effectiveDateEnd ;
+    
     @Temporal(TemporalType.DATE)
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;
@@ -152,6 +153,13 @@ private static final long serialVersionUID = 1L;
     @Column(name="CREATED_BY", nullable=false, length=100)
     private String     createdBy ;
 
+    @Column(name="UPDATED_BY", nullable=false, length=100)
+    private String     updatedBy ;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="UPDATED_DATE")
+    private Date       updatedDate ;
+    
     @Column(name="CORE_APP_CODE", nullable=false, length=20)
     private String     coreAppCode ;
 

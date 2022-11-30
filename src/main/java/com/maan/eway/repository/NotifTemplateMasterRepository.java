@@ -34,12 +34,12 @@ public interface NotifTemplateMasterRepository  extends JpaRepository<NotifTempl
 
 
 
-	List<NotifTemplateMaster> findByInsIdAndNotificationApplicableOrderByEntryDateDesc(String string,
+	List<NotifTemplateMaster> findByCompanyIdAndNotificationApplicableOrderByEntryDateDesc(String string,
 			String notificationApplicable);
 
-	List<NotifTemplateMaster> findByInsIdOrderByEntryDateDesc(String companyId);
+	List<NotifTemplateMaster> findByCompanyIdOrderByEntryDateDesc(String companyId);
 
-	List<NotifTemplateMaster> findBySnoAndStatusAndNotificationApplicableAndInsIdAndEffectiveDateStartLessThanEqualOrderByEntryDateDesc(
+	List<NotifTemplateMaster> findBySnoAndStatusAndNotificationApplicableAndCompanyIdAndEffectiveDateStartLessThanEqualOrderByEntryDateDesc(
 			Integer sno, String string, String notificationApplicable, String insuranceId, Date date);
 
 	List<NotifTemplateMaster> findByStatusAndNotificationApplicableAndEffectiveDateStartLessThanEqualOrderByEntryDateDesc(

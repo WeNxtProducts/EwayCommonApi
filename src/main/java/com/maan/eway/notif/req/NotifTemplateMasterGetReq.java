@@ -17,6 +17,9 @@ public class NotifTemplateMasterGetReq implements Serializable {
     @JsonProperty("InsuranceId")
     private String companyId;
    
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
 	@JsonProperty("NotificationApplicable")
 	private String notificationApplicable;
 	

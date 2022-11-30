@@ -32,11 +32,9 @@ public class NotifTemplateMasterId implements Serializable {
     //--- ENTITY KEY ATTRIBUTES 
     private Integer    sno ;
     
-    private String     insId ;
+    private String     branchCode ;
     
-    private Date       effectiveDateStart ;
-    
-    private Date       effectiveDateEnd ;
+    private String     companyId ;
     
     private Integer    amendId ;
     

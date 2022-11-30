@@ -17,7 +17,10 @@ public class SmsGetReq {
 	@JsonProperty("InsuranceId")
 	private String companyId;
 	
-
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
 	@JsonProperty("MobileNo")
 	private String mobileNo;
 	

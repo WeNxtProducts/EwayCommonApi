@@ -4,11 +4,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -33,7 +36,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.NotifTemplateMaster;
-
+import com.maan.eway.bean.OccupationMaster;
+import com.maan.eway.bean.SmsConfigMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.notif.req.NotifTemplateMasterGetReq;
 
@@ -87,11 +91,6 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 
 			} else if (req.getEffectiveDateStart().before(today)) {
 				errorList.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-			} else if (req.getEffectiveDateEnd() == null) {
-				errorList.add(new Error("03", "EffectiveDateEnd", "Please Enter Effective Date End "));
-
-			} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart())|| req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
-				errorList.add(new Error("03", "EffectiveDateEnd","Please Enter Effective Date End  is After Effective Date Start"));
 			}
 
 			// SMS
@@ -193,6 +192,12 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 			} else if (req.getQueryKey().length() > 100) {
 				errorList.add(new Error("12", "QueryKey", "Please Enter RegulatoryCode within 100 Characters"));
 			}
+			
+			if (StringUtils.isBlank(req.getBranchCode().toString())) {
+				errorList.add(new Error("13", "Branch Code", "Please Enter BranchCode"));
+			}else if (req.getBranchCode().length() > 20) {
+				errorList.add(new Error("13", "Branch Code", "Please Enter Branch Code within 20 Characters"));
+			}
 		
 	} catch (Exception e) {
 		e.printStackTrace();
@@ -209,26 +214,25 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 		List<NotifTemplateMaster> list = new ArrayList<NotifTemplateMaster>();
 		DozerBeanMapper dozermapper = new DozerBeanMapper();
 		try {
-			Integer amendId = 0;
-			Calendar cal = new GregorianCalendar();
-			cal.setTime(req.getEffectiveDateStart());cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
-			
-			Date startDate = cal.getTime();
-			Date today = new Date();
-			
-			cal.setTime(req.getEffectiveDateStart());cal.set(Calendar.HOUR_OF_DAY, today.getHours());cal.set(Calendar.MINUTE, today.getMinutes());
-			
-			Date oldEndDate = cal.getTime();
-			cal.setTime(req.getEffectiveDateStart());cal.set(Calendar.HOUR_OF_DAY, today.getHours());cal.set(Calendar.MINUTE, today.getMinutes());
-			Date effDate = cal.getTime();
-			Date endDate = req.getEffectiveDateEnd();
+			Integer amendId=0;
+			Date startDate = req.getEffectiveDateStart() ;
+			String end = "31/12/2050";
+			Date endDate = sdformat.parse(end);
+			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+			Date entryDate = null ;
+			String createdBy = "" ;
 
 			String companyId = "";
+			String sno = "";
 
-			List<NotifTemplateMaster> checkCompanyId=notifRepo.findByInsIdOrderByEntryDateDesc(req.getInsId());
+			List<NotifTemplateMaster> checkCompanyId=notifRepo.findByCompanyIdOrderByEntryDateDesc(req.getInsId());
 			if (checkCompanyId.size()==0) {
 				// Save
-				
+				Integer totalcount =getMasterTableCount ( );
+				sno = Integer.valueOf(totalcount+1).toString();
+				entryDate = new Date();
+				createdBy = req.getCreatedBy();
 				companyId =req.getInsId();
 				res.setResponse("Saved Successfully");
 				res.setSuccessId(companyId);
@@ -241,56 +245,74 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 				Root<NotifTemplateMaster> b = query.from(NotifTemplateMaster.class);
 				// Select
 				query.select(b);
-				// Effective Date Max Filter
-				Subquery<Long> effectiveDate = query.subquery(Long.class);
-				Root<NotifTemplateMaster> ocpm1 = effectiveDate.from(NotifTemplateMaster.class);
-				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-				Predicate a1 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
-				effectiveDate.where(a1);
+//				// Effective Date Max Filter
+//				Subquery<Long> effectiveDate = query.subquery(Long.class);
+//				Root<NotifTemplateMaster> ocpm1 = effectiveDate.from(NotifTemplateMaster.class);
+//				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+//				Predicate a1 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), startDate);
+//				effectiveDate.where(a1);
 
+				
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(b.get("effectiveDateStart")));
+				
 				// Where
 				Predicate n1 = cb.equal(b.get("status"), "Y");
-				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+//				Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 				Predicate n3 = cb.equal(b.get("insId"), req.getInsId());
 
-				query.where(n1, n2, n3);
+				query.where(n1, n3).orderBy(orderList);
 				// Get Result
 				TypedQuery<NotifTemplateMaster> result = em.createQuery(query);
+				int limit = 0 , offset = 2 ;
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
 				list = result.getResultList();
-				if (list.size() > 0) {
-					notifRepo.delete(list.get(0));
-					// Amend Id
-					if (list.get(0).getEffectiveDateStart().before(startDate)) {
-						String startDatewithoutTime = sdformat.format(startDate);
-						String oldDateWithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-						if (startDatewithoutTime.equalsIgnoreCase(oldDateWithoutTime)) {
-							amendId = list.get(0).getAmendId() + 1;
+				if(list.size()>0) {
+					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+				
+					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+						amendId = list.get(0).getAmendId() + 1 ;
+						entryDate = new Date() ;
+						createdBy = req.getCreatedBy();
+						sno = list.get(0).getSno().toString() ;
+						NotifTemplateMaster lastRecord = list.get(0);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							notifRepo.saveAndFlush(lastRecord);
+						
+					} else {
+						amendId = list.get(0).getAmendId() ;
+						entryDate = list.get(0).getEntryDate() ;
+						sno = list.get(0).getSno().toString() ;
+						createdBy = list.get(0).getCreatedBy();
+						saveData = list.get(0) ;
+						if (list.size()>1 ) {
+							NotifTemplateMaster lastRecord = list.get(1);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							notifRepo.saveAndFlush(lastRecord);
 						}
-					}
+					
+				    }
 				}
+			
 				res.setResponse("Updated Successfully");
 				res.setSuccessId(companyId);
 			}
 			dozermapper.map(req, saveData);
-			saveData.setInsId(companyId);
-			saveData.setEffectiveDateStart(effDate);
+			saveData.setSno(Integer.valueOf(sno));
+			saveData.setCompanyId(companyId);
+			saveData.setEffectiveDateStart(startDate);
 			saveData.setEffectiveDateEnd(endDate);
-			saveData.setEntryDate(new Date());
+			saveData.setCreatedBy(createdBy);
+			saveData.setStatus(req.getStatus());
+			saveData.setCompanyId(req.getInsId());
+			saveData.setBranchCode(req.getBranchCode());
+			saveData.setEntryDate(entryDate);
+			saveData.setUpdatedDate(new Date());
+			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setAmendId(amendId);
 			notifRepo.saveAndFlush(saveData);
-
-			if (list.size() > 0) {
-				// Update Old Record
-				NotifTemplateMaster lastRecord = list.get(0);
-				lastRecord.setEffectiveDateEnd(oldEndDate);
-				String startDatewithoutTime = sdformat.format(startDate);
-				String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-
-				if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-					lastRecord.setStatus("N");	
-				}
-				notifRepo.saveAndFlush(lastRecord);
-			}
 			log.info("Saved Details is --> " + json.toJson(saveData));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -298,6 +320,53 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 			return null;
 		}
 		return res;
+	}
+	public Integer getMasterTableCount() {
+		Integer data = 0;
+		try {
+			List<NotifTemplateMaster> list = new ArrayList<NotifTemplateMaster>();
+			// Find Latest Record
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<NotifTemplateMaster> query = cb.createQuery(NotifTemplateMaster.class);
+			// Find All
+			Root<NotifTemplateMaster> b = query.from(NotifTemplateMaster.class);
+			// Select
+			//query.multiselect(cb.count(b));
+			
+			query.select(b);
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<NotifTemplateMaster> ocpm1 = effectiveDate.from(NotifTemplateMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("sno"), b.get("sno"));
+			//Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			effectiveDate.where(a1);
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("sno")));
+			effectiveDate.where(a1);
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+//			Predicate n2 = cb.equal(b.get("companyId"), companyId);
+//			Predicate n3 = cb.equal(b.get("branchCode"), branchCode);
+//			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+//			Predicate n5 = cb.or(n3,n4);
+			query.where(n1).orderBy(orderList);
+		
+			// Get Result
+			TypedQuery<NotifTemplateMaster> result = em.createQuery(query);
+			int limit = 0 , offset = 1 ;
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+			data = list.size() > 0 ? list.get(0).getSno() : 0 ;
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+		}
+		return data;
+
 	}
 
 
@@ -313,7 +382,7 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 			cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();
 			
-			List<NotifTemplateMaster> notifList = notifRepo.findByInsIdOrderByEntryDateDesc( req.getCompanyId());
+			List<NotifTemplateMaster> notifList = notifRepo.findByCompanyIdOrderByEntryDateDesc( req.getCompanyId());
 			if (notifList.size() > 0) {
 		
 			// Find Latest Record
@@ -326,32 +395,39 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 			// Select
 			query.select(b);
 			
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<NotifTemplateMaster> ocpm1 = effectiveDate.from(NotifTemplateMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate a1 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<NotifTemplateMaster> ocpm1 = amendId.from(NotifTemplateMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+		//	Predicate a1 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a2 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 
-			effectiveDate.where(a1);
+			amendId.where(a1,a2);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("sno")));
+			orderList.add(cb.asc(b.get("branchCode")));
 			
 			Predicate n1 = cb.equal(b.get("insId"), req.getCompanyId());
 			Predicate n2 = cb.equal(b.get("notificationApplicable"), req.getNotificationApplicable());
-
-			query.where(n1, n2).orderBy(orderList);
+			Predicate n3 = cb.equal(b.get("amendId"), amendId);
+			Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n6 = cb.or(n4,n5);
+			query.where(n1, n2,n3,n6).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<NotifTemplateMaster> result = em.createQuery(query);
 			list = result.getResultList();
-
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getSno()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(NotifTemplateMaster :: getNotificationApplicable ));
+			
 			// Map
 			for (NotifTemplateMaster data : list) {
 				res = mapper.map(data, NotifTemplateMasterRes.class);
 			}
 		}else {
-			 notifList = notifRepo.findByInsIdAndNotificationApplicableOrderByEntryDateDesc( "Default_Template",req.getNotificationApplicable());
+			 notifList = notifRepo.findByCompanyIdAndNotificationApplicableOrderByEntryDateDesc( "Default_Template",req.getNotificationApplicable());
 			// Map
 			for (NotifTemplateMaster data : notifList) {
 				res = mapper.map(data, NotifTemplateMasterRes.class);
@@ -367,4 +443,11 @@ public class NotifTemplateMasterServiceImpl implements NotifTemplateMasterServic
 		return res;
 	}
 
+
+
+	private static <T> java.util.function.Predicate<T> distinctByKey(
+			java.util.function.Function<? super T, ?> keyExtractor) {
+		Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+		return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
 }

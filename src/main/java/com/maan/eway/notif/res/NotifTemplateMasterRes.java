@@ -24,6 +24,9 @@ public class NotifTemplateMasterRes implements Serializable {
 
 	@JsonProperty("InsuranceId")
 	private String insId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 
 	@JsonProperty("MailRequired")
 	private String mailRequired;
@@ -63,7 +66,7 @@ public class NotifTemplateMasterRes implements Serializable {
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")
-	private String entryDate;
+	private Date entryDate;
 
 	@JsonProperty("Remarks")
 	private String remarks;
@@ -79,5 +82,13 @@ public class NotifTemplateMasterRes implements Serializable {
 	
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date effectiveDateEnd;
     
 }

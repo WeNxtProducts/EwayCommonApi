@@ -34,9 +34,9 @@ public class SmsConfigMasterId implements Serializable {
     
     private String     companyId ;
     
-    private Date       effectiveDateStart ;
+    private String     branchCode ;
     
-    private Date       effectiveDateEnd ;
+    private Integer    amendId ;
     
      
 }
