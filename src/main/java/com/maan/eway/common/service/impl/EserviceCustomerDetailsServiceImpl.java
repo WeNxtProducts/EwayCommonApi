@@ -304,6 +304,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				errorList.add(new Error("42", "VrTinNo", "Please Enter VrTinNo within 20 Characters"));
 			}
 			
+			if (StringUtils.isBlank(req.getStateName())) {
+				errorList.add(new Error("43", "StateName", "Please Select StateName"));
+			}
+			if (StringUtils.isBlank(req.getCityName())) {
+				errorList.add(new Error("43", "CityName", "Please Select CityName "));
+			}
 			
 			
 			List<EserviceCustomerDetails> list = new ArrayList<EserviceCustomerDetails>();
