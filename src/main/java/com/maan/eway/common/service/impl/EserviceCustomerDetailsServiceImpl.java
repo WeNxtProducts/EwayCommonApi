@@ -279,6 +279,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate "));
 
 			}
+			else if (req.getDobOrRegDate().after(today)) {
+				errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate as Past Date"));
+
+			}
 			if (StringUtils.isBlank(req.getBranchCode())) {
 				errorList.add(new Error("39", "BranchCode", "Please Enter BranchCode "));
 			} else if (req.getBranchCode().length() > 20) {
