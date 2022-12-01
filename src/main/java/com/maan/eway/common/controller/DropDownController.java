@@ -17,6 +17,7 @@ import com.maan.eway.common.req.NcdDetailsGetReq;
 import com.maan.eway.common.service.DropDownService;
 import com.maan.eway.master.req.CityDropDownReq;
 import com.maan.eway.master.req.LovDropDownReq;
+import com.maan.eway.master.req.LovPolicyDropDownReq;
 import com.maan.eway.master.req.RegionDropDownReq;
 import com.maan.eway.master.req.StateDropDownReq;
 import com.maan.eway.res.ColummnDropRes;
@@ -335,7 +336,7 @@ public class DropDownController {
 
 	@PostMapping("/policyholderidtype")
 	@ApiOperation(value = "This method is to Policy Holder ID Type Drop Down")
-	public ResponseEntity<CommonRes> policyholderidtype(@RequestBody LovDropDownReq req) {
+	public ResponseEntity<CommonRes> policyholderidtype(@RequestBody LovPolicyDropDownReq req) {
 		CommonRes data = new CommonRes();
 
 		List<DropDownRes> res = dropDownService.policyholderidtype(req);
