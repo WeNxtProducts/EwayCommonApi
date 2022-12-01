@@ -65,6 +65,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="AMEND_ID")
     private Integer    amendId ;
 
+    @Id
+    @Column(name="COMPANY_ID", length=20)
+    private String     companyId;
+
     
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_START", nullable=false)
@@ -119,9 +123,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_BY", length=100)
     private String    updatedBy;
 
-    @Column(name="COMPANY_ID", length=20)
-    private String     companyId;
-
+   
 }
 
 

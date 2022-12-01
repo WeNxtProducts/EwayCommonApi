@@ -36,5 +36,6 @@ public class CurrencyMasterId implements Serializable {
     
     private Integer    amendId ;
     
-     
+    private String     companyId;
+
 }
