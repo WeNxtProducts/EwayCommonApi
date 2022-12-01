@@ -1003,22 +1003,24 @@ public class DropDownServiceImpl  implements DropDownService{
 	public List<ColummnDropRes> getTableDetails(LovDropDownReq req) {
 		List<ColummnDropRes> resList = new ArrayList<ColummnDropRes>();
 		try {
-			String tableName = "Eservice_Customer_Details" ;
-			List<String> removerUnderScore = new ArrayList<>(Arrays.asList(tableName.split("_")) ) ;
+			//String tableName = "Eservice_Customer_Details" ;
+			//List<String> removerUnderScore = new ArrayList<>(Arrays.asList(tableName.split("_")) ) ;
 			
-			Object entityName =null;
+			/*Object entityName =null;
 			for (String ent : removerUnderScore) {
 				String lowerCase = ent.toLowerCase() ;
 				String firstLetterCaps =  lowerCase.substring(0, 1).toUpperCase() + lowerCase.substring(1) ;
 				entityName = entityName==null ? firstLetterCaps  :entityName +  firstLetterCaps ; 
 				
-			}
+			}*/
 			  
-			entityName = "EserviceCustomerDetails.class";//entityName + ".class" ;
+		String entityName = "com.maan.eway.bean."+req.getTableName();//entityName + ".class" ;
+			 Class<?> forName = Class.forName(entityName);//forName(entityName);
+			
 
 		//	Class table = (Class) entityName ;
-			EserviceCustomerDetails eserCust = new EserviceCustomerDetails();
-			Field[] members = eserCust.getClass().getDeclaredFields();
+			
+			Field[] members = forName.getDeclaredFields();
 			
 			        for(Field member:members){
 			        	if(! member.getName().equalsIgnoreCase("serialVersionUID") ) {
