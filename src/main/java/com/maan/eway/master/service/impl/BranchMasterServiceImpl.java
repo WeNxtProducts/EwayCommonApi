@@ -24,7 +24,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
+
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
@@ -36,7 +36,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,20 +47,16 @@ import com.maan.eway.master.req.BranchMasterGetReq;
 import com.maan.eway.master.req.BranchMasterSaveReq;
 import com.maan.eway.master.req.CompanyBranchGetReq;
 import com.maan.eway.master.req.CompanyBranchReq;
-import com.maan.eway.master.req.RegionMasterGetReq;
+
 import com.maan.eway.master.res.BranchMasterRes;
-import com.maan.eway.master.res.OccupationMasterRes;
-import com.maan.eway.master.res.RegionMasterRes;
 import com.maan.eway.master.service.BranchMasterService;
 import com.maan.eway.auth.dto.LoginBranchDetailsRes;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CityMaster;
-import com.maan.eway.bean.CompanyCityMaster;
+
 import com.maan.eway.bean.CompanyRegionMaster;
-import com.maan.eway.bean.CompanyStateMaster;
+
 import com.maan.eway.bean.CountryMaster;
-import com.maan.eway.bean.OccupationMaster;
-import com.maan.eway.bean.RegionMaster;
 import com.maan.eway.bean.StateMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.BranchMasterRepository;
@@ -187,7 +182,7 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 			saveData.setBranchCode(branchCode);
 			saveData.setRegionCode(req.getRegionCode());
 			saveData.setCompanyId(req.getCompanyId());
-			saveData.setEffectiveDateStart(req.getEffectiveDateStart());
+			saveData.setEffectiveDateStart(startDate);
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setStatus(req.getStatus());
 			saveData.setCreatedBy(createdBy);
@@ -217,7 +212,6 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 
 public String getCountryCode(String regionCode  ) {
 	String countryId = "" ; 
-	ModelMapper mapper = new ModelMapper();
 	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	try {
@@ -366,6 +360,18 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 			errorList.add(new Error("02", "BranchName", "Please Select Branch Name "));
 		}else if (req.getBranchName().length() > 100){
 			errorList.add(new Error("02","BranchName", "Please Enter Branch  Name within 100 Characters")); 
+		}else if (StringUtils.isBlank(req.getBranchCode()) ) {
+			List<BranchMaster> list = getBranchNameExistDetails(req.getBranchName());
+			if (list.size()>0 ) {
+				errorList.add(new Error("01", "BranchName", "This Branch Name Already Exist "));
+			}
+		}else if (StringUtils.isNotBlank(req.getBranchCode()) ) {
+			List<BranchMaster> list = getBranchNameExistDetails(req.getBranchName() );
+			
+			if (list.size()>0 &&  (! req.getBranchCode().equalsIgnoreCase(list.get(0).getBranchCode().toString())) ) {
+				errorList.add(new Error("01", "BranchName", "This Branch Name Already Exist "));
+			}
+			
 		}
 //			else if (StringUtils.isBlank(req.getBranchCode())) {
 //			Long BranchCount = branchRepo.countByBranchNameOrderByEntryDateDesc(req.getBranchName());
@@ -471,6 +477,45 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 		e.printStackTrace();
 	}
 	return errorList;
+}
+public List<BranchMaster> getBranchNameExistDetails(String branchName ) {
+	List<BranchMaster> list = new ArrayList<BranchMaster>();
+	try {
+		Date today = new Date();
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<BranchMaster> query = cb.createQuery(BranchMaster.class);
+
+		// Find All
+		Root<BranchMaster> b = query.from(BranchMaster.class);
+
+		// Select
+		query.select(b);
+
+		// Effective Date Max Filter
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<BranchMaster> ocpm1 = amendId.from(BranchMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
+		Predicate a1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		Predicate a3 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"), today);
+		amendId.where(a1,a2,a3);
+
+		Predicate n1 = cb.equal(b.get("amendId"), amendId);
+		Predicate n2 = cb.equal(cb.lower( b.get("branchName")), branchName.toLowerCase());
+
+		query.where(n1,n2);
+		
+		// Get Result
+		TypedQuery<BranchMaster> result = em.createQuery(query);
+		list = result.getResultList();		
+	
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info(e.getMessage());
+
+	}
+	return list;
 }
 
 

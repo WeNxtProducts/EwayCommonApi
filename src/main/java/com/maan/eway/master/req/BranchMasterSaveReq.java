@@ -20,11 +20,6 @@ public class BranchMasterSaveReq implements Serializable {
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
 
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
-
-	
 	@JsonProperty("BranchName")
 	private String branchName;
 	
