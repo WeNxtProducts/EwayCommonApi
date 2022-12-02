@@ -10,10 +10,10 @@ import lombok.Data;
 @Data
 public class MotorVehicleUsageMasterGetallReq {
 	
-
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDateStart")
-	private Date effectiveDateStart;
+//
+//	@JsonFormat(pattern = "dd/MM/yyyy")
+//	@JsonProperty("EffectiveDateStart")
+//	private Date effectiveDateStart;
 	@JsonProperty("SectionId")
     private String sectionId  ;
 	@JsonProperty("InsuranceId")

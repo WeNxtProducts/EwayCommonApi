@@ -210,8 +210,8 @@ public SuccessRes saveMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveReq re
 		Date endDate = sdformat.parse(end);
 		long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
 		Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
-		Date entryDate = null ;
-		String createdBy = "" ;
+		Date entryDate = new Date() ;
+		String createdBy = req.getCreatedBy();
 
 		String vehicleUsageId = "";
 		if (StringUtils.isBlank(req.getVehicleUsageId().toString())) {
@@ -425,12 +425,12 @@ public List<MotorVehicleUsageMasterGetRes> getallMotorVehicleDetails(MotorVehicl
 	List<MotorVehicleUsageMasterGetRes> resList = new ArrayList<MotorVehicleUsageMasterGetRes>();
 	DozerBeanMapper mapper = new DozerBeanMapper();
 	try {
-		Date today = req.getEffectiveDateStart() != null ? req.getEffectiveDateStart() : new Date();
-		Calendar cal = new GregorianCalendar();
-		cal.setTime(today);
-		cal.set(Calendar.HOUR_OF_DAY, 23);
-		cal.set(Calendar.MINUTE, 1);
-		today = cal.getTime();
+	//	Date today = req.getEffectiveDateStart() != null ? req.getEffectiveDateStart() : new Date();
+//		Calendar cal = new GregorianCalendar();
+//		cal.setTime(today);
+//		cal.set(Calendar.HOUR_OF_DAY, 23);
+//		cal.set(Calendar.MINUTE, 1);
+//		today = cal.getTime();
 
 		List<MotorVehicleUsageMaster> list = new ArrayList<MotorVehicleUsageMaster>();
 		
@@ -451,8 +451,8 @@ public List<MotorVehicleUsageMasterGetRes> getallMotorVehicleDetails(MotorVehicl
 		Predicate a1 = cb.equal(c.get("vehicleUsageId"), ocpm1.get("vehicleUsageId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), c.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"), c.get("branchCode"));
-		Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		amendId.where(a1, a2, a3, a4);
+		//Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		amendId.where(a1, a2, a3);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -496,12 +496,12 @@ public List<MotorVehicleUsageMasterGetRes> getactiveMotorVehicleDetails(MotorVeh
 	List<MotorVehicleUsageMasterGetRes> resList = new ArrayList<MotorVehicleUsageMasterGetRes>();
 	DozerBeanMapper mapper = new DozerBeanMapper();
 	try {
-		Date today = req.getEffectiveDateStart() != null ? req.getEffectiveDateStart() : new Date();
-		Calendar cal = new GregorianCalendar();
-		cal.setTime(today);
-		cal.set(Calendar.HOUR_OF_DAY, 23);
-		cal.set(Calendar.MINUTE, 1);
-		today = cal.getTime();
+//		Date today = req.getEffectiveDateStart() != null ? req.getEffectiveDateStart() : new Date();
+//		Calendar cal = new GregorianCalendar();
+//		cal.setTime(today);
+//		cal.set(Calendar.HOUR_OF_DAY, 23);
+//		cal.set(Calendar.MINUTE, 1);
+//		today = cal.getTime();
 
 		List<MotorVehicleUsageMaster> list = new ArrayList<MotorVehicleUsageMaster>();
 	
@@ -522,8 +522,8 @@ public List<MotorVehicleUsageMasterGetRes> getactiveMotorVehicleDetails(MotorVeh
 		Predicate a1 = cb.equal(c.get("vehicleUsageId"), ocpm1.get("vehicleUsageId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), c.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"), c.get("branchCode"));
-		Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		amendId.where(a1, a2, a3, a4);
+	//	Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		amendId.where(a1, a2, a3);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
