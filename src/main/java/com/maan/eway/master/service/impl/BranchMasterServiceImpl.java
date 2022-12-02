@@ -463,7 +463,7 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 		if (StringUtils.isBlank(req.getMobileNumber())) {
 			errorList.add(new Error("12", "Mobile Number", "Please Enter Mobile Number"));
 		}
-		else if (!req.getMobileNumber().matches("([0-9]{10})")) {
+		else if (!req.getMobileNumber().matches("[0-9]+")) {
 			errorList.add(new Error("12", "Mobile Number","Mobile Number format should be Only Numbers"));
 		}
 		if (StringUtils.isBlank(req.getBranchType())) {

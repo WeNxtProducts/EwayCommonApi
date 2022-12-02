@@ -11,7 +11,10 @@ import lombok.Setter;
 @Data
 public class EserviceCustomerSearchVrtinReq {
 	
-	@JsonProperty("VrTinNo")
-	private String vrTinNo;
+	@JsonProperty("SearchValue")
+	private String searchValue;
+	
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
 	
 }

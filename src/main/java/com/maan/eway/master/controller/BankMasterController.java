@@ -168,7 +168,7 @@ public class BankMasterController {
 	}
 
 	// Bank Master Drop Down Type
-	@PreAuthorize("hasAnyRole('ADMIN','DB-ADMIN')")
+	//@PreAuthorize("hasAnyRole('ADMIN','DB-ADMIN')")
 	@PostMapping("/dropdown/bankmaster")
 	@ApiOperation(value = "This method is get Bank Master Drop Down")
 

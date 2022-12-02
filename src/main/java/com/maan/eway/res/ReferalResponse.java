@@ -16,4 +16,10 @@ public class ReferalResponse {
 	
 	@JsonProperty("ReferalRemarks")
 	private String referalRemarks;
+	
+	@JsonProperty("QuoteNo")
+	private String quoteNo;
+	
+	@JsonProperty("Status")
+	private String status;
 }

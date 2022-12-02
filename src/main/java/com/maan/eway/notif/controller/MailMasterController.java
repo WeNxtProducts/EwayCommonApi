@@ -41,7 +41,7 @@ public class MailMasterController {
 	
 	@Autowired
 	private  PrintReqService reqPrinter;
-	
+	/*
 	// save
 		@PostMapping("/insertmailmaster")
 		@ApiOperation(value = "This method is to Insert Mail Master ")
@@ -97,6 +97,6 @@ public class MailMasterController {
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-	}
+	}*/
 				
-	}
+	} 

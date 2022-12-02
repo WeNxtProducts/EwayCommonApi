@@ -189,16 +189,16 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				
 				List<LoginBranchCriteriaRes>  filterBranchCriteria = loginCriteriaRes.stream().filter( o ->  o.getBranchCode().equalsIgnoreCase(data.getBranchCode()) ).collect(Collectors.toList());
 				branchRes.setBranchCode(data.getBranchCode());
-				
+				branchRes.setBranchName(data.getBranchName());
 				// Normal Branch
 				if(filterBranchCriteria.size()>0 ) {
 					LoginBranchCriteriaRes getBranch = filterBranchCriteria.get(0);
 					branchRes.setBranchName(getBranch.getBranchName()  );
 					branchRes.setRegionCode(getBranch.getRegionCode() );
-					branchRes.setRegionName(getBranch.getRegionName() );
+				//	branchRes.setRegionName(getBranch.getRegionName() );
 					branchRes.setInsuranceId(getBranch.getCompanyId() );
 					branchRes.setCompanyName(getBranch.getCompanyName() );
-					branchRes.setCompanyLogo(getBranch.getCompanyLogo() );
+			//		branchRes.setCompanyLogo(getBranch.getCompanyLogo() );
 					branchRes.setCurrencyId(getBranch.getCurrencyId() );;
 				}
 				
@@ -210,10 +210,10 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 						LoginBranchCriteriaRes getAttachedBranch = filterAttachedBranch.get(0);
 						branchRes.setAttachedBranchName(getAttachedBranch.getBranchName()  );
 						branchRes.setAttachedRegionCode(getAttachedBranch.getRegionCode() );
-						branchRes.setAttachedRegionName(getAttachedBranch.getRegionName() );
+				//		branchRes.setAttachedRegionName(getAttachedBranch.getRegionName() );
 						branchRes.setAttachedCompanyId(getAttachedBranch.getCompanyId() );
 						branchRes.setAttachedCompanyName(getAttachedBranch.getCompanyName() );
-						branchRes.setAttachedCompanyLogo(getAttachedBranch.getCompanyLogo() );
+				//		branchRes.setAttachedCompanyLogo(getAttachedBranch.getCompanyLogo() );
 						branchRes.setCurrencyId(getAttachedBranch.getCurrencyId() );
 					}
 				}
@@ -444,22 +444,22 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			Predicate ins1 = cb.equal(ins.get("companyId"), b.get("companyId"));
 			Predicate ins2 = cb.equal(ins.get("effectiveDateStart"), effectiveDate2);
 			company.where(ins1,ins2);
-			
-			// Company Logo Effective Date Max Filter
-			Subquery<Long> companyLogo = query.subquery(Long.class);
-			Root<InsuranceCompanyMaster> logo = companyLogo.from(InsuranceCompanyMaster.class);
-			Subquery<Long> effectiveDate5 = query.subquery(Long.class);
-			Root<InsuranceCompanyMaster> ocpm5 = effectiveDate5.from(InsuranceCompanyMaster.class);
-			effectiveDate5.select(cb.max(ocpm5.get("effectiveDateStart")));
-			Predicate iceff1 = cb.equal(ocpm5.get("companyId"), logo.get("companyId"));
-			Predicate iceff2 = cb.lessThanOrEqualTo(ocpm5.get("effectiveDateStart"), today);
-			effectiveDate5.where(iceff1,iceff2);
-			
-			// Company Logo
-			companyLogo.select(logo.get("companyLogo"));
-			Predicate in1 = cb.equal(logo.get("companyId"), b.get("companyId"));
-			Predicate in2 = cb.equal(logo.get("effectiveDateStart"), effectiveDate5);
-			companyLogo.where(in1,in2);
+//			
+//			// Company Logo Effective Date Max Filter
+//			Subquery<Long> companyLogo = query.subquery(Long.class);
+//			Root<InsuranceCompanyMaster> logo = companyLogo.from(InsuranceCompanyMaster.class);
+//			Subquery<Long> effectiveDate5 = query.subquery(Long.class);
+//			Root<InsuranceCompanyMaster> ocpm5 = effectiveDate5.from(InsuranceCompanyMaster.class);
+//			effectiveDate5.select(cb.max(ocpm5.get("effectiveDateStart")));
+//			Predicate iceff1 = cb.equal(ocpm5.get("companyId"), logo.get("companyId"));
+//			Predicate iceff2 = cb.lessThanOrEqualTo(ocpm5.get("effectiveDateStart"), today);
+//			effectiveDate5.where(iceff1,iceff2);
+////			
+//			// Company Logo
+//			companyLogo.select(logo.get("companyLogo"));
+//			Predicate in1 = cb.equal(logo.get("companyId"), b.get("companyId"));
+//			Predicate in2 = cb.equal(logo.get("effectiveDateStart"), effectiveDate5);
+//			companyLogo.where(in1,in2);
 			
 			// Company Currency Effective Date Max Filter
 			Subquery<Long> currency = query.subquery(Long.class);
@@ -479,26 +479,29 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			
 						
 			
-			// Region Effective Date Filter
-			Subquery<Long> region = query.subquery(Long.class);
-			Root<RegionMaster> rm = region.from(RegionMaster.class);
-			Subquery<Long> effectiveDate3 = query.subquery(Long.class);
-			Root<RegionMaster> ocpm3 = effectiveDate3.from(RegionMaster.class);
-			effectiveDate3.select(cb.max(ocpm3.get("effectiveDateStart")));
-			Predicate reff2 = cb.equal(ocpm3.get("regionCode"), rm.get("regionCode"));
-			Predicate reff3 = cb.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
-			effectiveDate3.where(reff2,reff3);
-			
-			//Region Name
-			region.select(rm.get("regionName"));
-			Predicate rm2 = cb.equal(rm.get("regionCode"),  b.get("regionCode") );
-			Predicate rm3 = cb.equal(rm.get("effectiveDateStart"), effectiveDate3);
-			region.where(rm2,rm3);
-			
+//			// Region Effective Date Filter
+//			Subquery<Long> region = query.subquery(Long.class);
+//			Root<RegionMaster> rm = region.from(RegionMaster.class);
+//			Subquery<Long> effectiveDate3 = query.subquery(Long.class);
+//			Root<RegionMaster> ocpm3 = effectiveDate3.from(RegionMaster.class);
+//			effectiveDate3.select(cb.max(ocpm3.get("effectiveDateStart")));
+//			Predicate reff2 = cb.equal(ocpm3.get("regionCode"), rm.get("regionCode"));
+//			Predicate reff3 = cb.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
+//			effectiveDate3.where(reff2,reff3);
+//			
+//			//Region Name
+//			region.select(rm.get("regionName"));
+//			Predicate rm2 = cb.equal(rm.get("regionCode"),  b.get("regionCode") );
+//			Predicate rm3 = cb.equal(rm.get("effectiveDateStart"), effectiveDate3);
+//			region.where(rm2,rm3);
+//			
 			// Select
 			query.multiselect(b.get("branchCode").alias("branchCode") , b.get("regionCode").alias("regionCode") ,
 					b.get("companyId").alias("companyId") , b.get("branchName").alias("branchName") ,
-					company.alias("companyName") , region.alias("regionName") , companyLogo.alias("companyLogo") , currency.alias("currencyId") );
+					company.alias("companyName") ,
+					//region.alias("regionName") , 
+				//	companyLogo.alias("companyLogo") ,
+					currency.alias("currencyId") );
 
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);

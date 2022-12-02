@@ -20,6 +20,6 @@ public interface EserviceCustomerDetailsService {
 
 	List<CustomerDetailsGetRes> getallCustomerDetails(GetAllCustomerDetailsReq req);
 
-	CustomerDetailsGetRes getbyvrtinno(EserviceCustomerSearchVrtinReq req);
+	List<CustomerDetailsGetRes>  getbyvrtinno(EserviceCustomerSearchVrtinReq req);
 
 }

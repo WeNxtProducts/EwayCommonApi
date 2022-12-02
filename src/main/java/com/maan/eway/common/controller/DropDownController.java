@@ -55,25 +55,25 @@ public class DropDownController {
 //		}
 //
 //	}
-
-	@PostMapping("/gettabledetails")
-	@ApiOperation(value = "This method is to Table Details Drop Down")
-	public ResponseEntity<CommonRes> getTableDetails(@RequestBody LovDropDownReq req) {
-		CommonRes data = new CommonRes();
-
-		List<ColummnDropRes> res = dropDownService.getTableDetails(req);
-		data.setCommonResponse(res);
-		data.setIsError(false);
-		data.setErrorMessage(Collections.emptyList());
-		data.setMessage("Success");
-
-		if (res != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-		}
-
-	}
+//
+//	@PostMapping("/gettabledetails")
+//	@ApiOperation(value = "This method is to Table Details Drop Down")
+//	public ResponseEntity<CommonRes> getTableDetails(@RequestBody LovDropDownReq req) {
+//		CommonRes data = new CommonRes();
+//
+//		List<ColummnDropRes> res = dropDownService.getTableDetails(req);
+//		data.setCommonResponse(res);
+//		data.setIsError(false);
+//		data.setErrorMessage(Collections.emptyList());
+//		data.setMessage("Success");
+//
+//		if (res != null) {
+//			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+//		} else {
+//			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+//		}
+//
+//	}
 	
 	@PostMapping("/citylimit")
 	@ApiOperation(value = "This method is to Cover Note Drop Down")

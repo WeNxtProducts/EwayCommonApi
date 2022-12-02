@@ -704,19 +704,80 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 	}
 
 	@Override
-	public CustomerDetailsGetRes getbyvrtinno(EserviceCustomerSearchVrtinReq req) {
-		CustomerDetailsGetRes res = new CustomerDetailsGetRes();
+	public List<CustomerDetailsGetRes>  getbyvrtinno(EserviceCustomerSearchVrtinReq req) {
+		List<CustomerDetailsGetRes>  reslist = new ArrayList<CustomerDetailsGetRes>();
 		DozerBeanMapper dozermapper = new DozerBeanMapper();
 		try {
-			EserviceCustomerDetails data = repository.findByVrTinNo(req.getVrTinNo());
-			dozermapper.map(data,res);
+			String searchValue = req.getSearchValue();
+			String companyId = req.getInsuranceId();
+			
+			// Search By Tin No
+			String searchKey = "TinNumber";
+			List<EserviceCustomerDetails> list  = searchCustomerData(searchKey,searchValue ,companyId ) ; 
+			if( list.size()<=0 ) {
+				searchKey = "IdNumber";
+				list  = searchCustomerData(searchKey,searchValue ,companyId ) ;
+			}
+			if( list.size()<=0 ) {
+				searchKey = "ClientName";
+				list  = searchCustomerData(searchKey,searchValue ,companyId ) ;
+			}
+			
+			for( EserviceCustomerDetails data : list) {
+				CustomerDetailsGetRes res = new CustomerDetailsGetRes();
+				dozermapper.map(data,res);
+				reslist.add(res);
+			}
+			
 		}
 		catch(Exception e) {
 			e.printStackTrace();
 			log.info("Log Details"+e.getMessage());;
 			return null;
 		}
-		return res;
+		return reslist;
 	}
+	
+	
+	public List<EserviceCustomerDetails> searchCustomerData(String searchKey ,String searchValue , String companyId) {
+		List<EserviceCustomerDetails> list = new ArrayList<EserviceCustomerDetails>();
+		try {
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<EserviceCustomerDetails> query=  cb.createQuery(EserviceCustomerDetails.class);
+			// Find All
+			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+			
+			//Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(c.get("updatedDate")));
+						
+			Predicate n1 = null ;
+			// Where
+			if ( searchKey.equalsIgnoreCase("TinNumber")   ) {
+				n1 = cb.like(cb.lower(c.get("vrTinNo")) ,"%" + searchValue + "%");	
+			} else if ( searchKey.equalsIgnoreCase("IdNumber")   ) {
+				n1 = cb.like(cb.lower(c.get("idNumber")) ,"%" + searchValue + "%");	
+			} else if ( searchKey.equalsIgnoreCase("ClientName")   ) {
+				n1 = cb.like(cb.lower(c.get("clientName")) ,"%" + searchValue + "%");	
+			}  
+			Predicate n2 = cb.equal(c.get("companyId"), companyId);
+			
+			query.where(n1,n2).orderBy(orderList);
+			// Get Result
+			TypedQuery<EserviceCustomerDetails> result = em.createQuery(query);
+			list = result.getResultList();
+		
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			log.info("Log Details"+e.getMessage());;
+			return null;
+		}
+		return list;
+	}
+	
 
 }

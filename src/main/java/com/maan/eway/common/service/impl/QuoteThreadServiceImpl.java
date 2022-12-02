@@ -119,7 +119,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						List<FactorRateRequestDetails> filterCovers = covers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) ).collect(Collectors.toList());		
 						userOptCovers.addAll(filterCovers);
 						
-						List<FactorRateRequestDetails> filterReferalCovers = filterCovers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&  o.getIsReferral()!=null && o.getIsReferral().equalsIgnoreCase("Y") ).collect(Collectors.toList());
+						List<FactorRateRequestDetails> filterReferalCovers = filterCovers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&  cov.getIsReferal()!=null && cov.getIsReferal().equalsIgnoreCase("Y") ).collect(Collectors.toList());
 						if(filterReferalCovers.size()>0 && StringUtils.isBlank(referalRemarks) && referal==false ) { 
 							referalRemarks = filterReferalCovers.get(0).getCoverName() ;
 							referal = true ;
@@ -128,7 +128,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					} else {
 						List<FactorRateRequestDetails> filterSubCovers  = covers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(cov.getSubCoverId()))  ).collect(Collectors.toList());
 						userOptCovers.addAll(filterSubCovers);
-						List<FactorRateRequestDetails> filterReferalSubCovers = filterSubCovers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&  o.getIsReferral()!=null && o.getIsReferral().equalsIgnoreCase("Y") ).collect(Collectors.toList());
+						List<FactorRateRequestDetails> filterReferalSubCovers = filterSubCovers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&  cov.getIsReferal()!=null && cov.getIsReferal().equalsIgnoreCase("Y")  ).collect(Collectors.toList());
 						if(filterReferalSubCovers.size()>0 && StringUtils.isBlank(referalRemarks) && referal==false) { 
 							referalRemarks = filterReferalSubCovers.get(0).getCoverName() ;
 							referal = true ;
@@ -172,6 +172,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			res.setReferalRemarks(referalRemarks);
 			res.setRequestReferenceNo(req.getRequestReferenceNo());
 			res.setResponse("Referral Pending");
+			res.setStatus("RP");
+			res.setQuoteNo(null);
 			commonRes.setCommonResponse(res);
 			commonRes.setIsError(false);
 			commonRes.setErrorMessage(Collections.emptyList());

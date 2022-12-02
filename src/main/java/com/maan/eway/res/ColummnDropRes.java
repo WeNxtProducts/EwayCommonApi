@@ -7,11 +7,11 @@ import lombok.Data;
 @Data
 public class ColummnDropRes {
 
-	@JsonProperty("DisplayName")
+	@JsonProperty("CodeDesc")
 	private String dispalyName;
 	@JsonProperty("ColumnName")
 	private String columnName;
-	@JsonProperty("FieldName")
+	@JsonProperty("Code")
 	private String fieldName;
 	
 }

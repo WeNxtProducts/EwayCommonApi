@@ -109,11 +109,11 @@ public class EserviceCustomerDetailsController {
 
 	// Search by Vr Tin No
 	
-	@PostMapping("/searchbyvrtinno")
+	@PostMapping("/searchcustomerdata")
 	public ResponseEntity<CommonRes> getbyvrtinno(@RequestBody EserviceCustomerSearchVrtinReq req){
 		CommonRes data = new CommonRes();
 		reqPrinter.reqPrint(req);
-		CustomerDetailsGetRes res = entityService.getbyvrtinno(req);
+		List<CustomerDetailsGetRes> res = entityService.getbyvrtinno(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);
