@@ -61,8 +61,46 @@ public List<DropDownRes> tableName() {
 	}
 	return resList;
 }
+@Override
+public List<DropDownRes> masterTable() {
+	List<DropDownRes> resList = new ArrayList<DropDownRes>();
+	try {
+		List<OneTimeTableDetails> getList = repo.findByItemTypeAndStatusOrderByItemCodeAsc("MASTER_TABLE", "Y");
 
+		for (OneTimeTableDetails data : getList) {
+			DropDownRes res = new DropDownRes();
+			res.setCode(data.getItemCode());
+			res.setCodeDesc(data.getItemValue());
+			res.setStatus(data.getStatus());
+			resList.add(res);
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return resList;
+}
+@Override
+public List<DropDownRes> eserviceTable() {
+	List<DropDownRes> resList = new ArrayList<DropDownRes>();
+	try {
+		List<OneTimeTableDetails> getList = repo.findByItemTypeAndStatusOrderByItemCodeAsc("ESERVICE_TABLE", "Y");
 
+		for (OneTimeTableDetails data : getList) {
+			DropDownRes res = new DropDownRes();
+			res.setCode(data.getItemCode());
+			res.setCodeDesc(data.getItemValue());
+			res.setStatus(data.getStatus());
+			resList.add(res);
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return resList;
+}
 @Override
 public List<DropDownRes> columnName(ColumnNameDropDownlReq req) {
 	List<DropDownRes> resList = new ArrayList<DropDownRes>();

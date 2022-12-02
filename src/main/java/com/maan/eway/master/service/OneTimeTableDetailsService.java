@@ -16,4 +16,8 @@ public interface OneTimeTableDetailsService  {
 
 	List<DropDownRes> columnName(ColumnNameDropDownlReq req);
 
+	List<DropDownRes> masterTable();
+
+	List<DropDownRes> eserviceTable();
+
 }

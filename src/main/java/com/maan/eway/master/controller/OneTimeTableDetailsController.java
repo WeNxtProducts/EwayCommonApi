@@ -48,7 +48,43 @@ public class OneTimeTableDetailsController {
 
 	}
 	
+	@GetMapping("/mastertable")
+	@ApiOperation(value = "This method is to masterTable Drop Down")
+	public ResponseEntity<CommonRes> masterTable() {
+		CommonRes data = new CommonRes();
+
+		List<DropDownRes> res = service.masterTable();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
 	
+	@GetMapping("/eservicetable")
+	@ApiOperation(value = "This method is to masterTable Drop Down")
+	public ResponseEntity<CommonRes> eserviceTable() {
+		CommonRes data = new CommonRes();
+
+		List<DropDownRes> res = service.eserviceTable();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
 	@PostMapping("/columnname")
 	@ApiOperation(value = "This method is to Column Name Drop Down")
 	public ResponseEntity<CommonRes> columnName(@RequestBody ColumnNameDropDownlReq req) {
