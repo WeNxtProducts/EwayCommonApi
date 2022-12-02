@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.EserviceMotorDetails;
@@ -56,7 +57,12 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	
 	private Logger log = LogManager.getLogger(QuoteThreadServiceImpl.class);
 	
+
+	@Value(value = "${motor.productId}")
+	private String motorProductId;
 	
+	@Value(value = "${travel.productId}")
+	private String travelProductId;
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -151,7 +157,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		}
 			
 		if (  referal == true ) {
-			if ( req.getProductId().equalsIgnoreCase("5")) {
+			if ( req.getProductId().equalsIgnoreCase(motorProductId)) {
 				List<EserviceMotorDetails> motorDatas = eserMotRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
 				for (EserviceMotorDetails mot : motorDatas ) {
 					mot.setStatus("RP");
@@ -199,7 +205,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			List<Map<String,Object>> covRes =  new ArrayList<Map<String,Object>>() ;
 			
 			// Multiple Vehicle Thread Call
-			if (req.getProductId().equalsIgnoreCase("5") ) {
+			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				 for (Integer vehId :  vehicleIds ) {
 		            	threadCount = threadCount +  2 ;
 		            	QuoteThreadReq request2 = new QuoteThreadReq();

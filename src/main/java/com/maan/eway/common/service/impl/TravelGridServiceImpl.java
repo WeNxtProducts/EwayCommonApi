@@ -31,49 +31,49 @@ public class TravelGridServiceImpl implements  TravelGridService {
 	}
 
 	@Override
-	public List<QuoteCriteriaRes> getMotorRejectedQuoteDetails(ExistingQuoteReq req, List<String> branches, int limit,
+	public List<QuoteCriteriaRes> getTravelRejectedQuoteDetails(ExistingQuoteReq req, List<String> branches, int limit,
 			int offset) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<QuoteCriteriaRes> getMotorReferalPendingDetails(ExistingQuoteReq req, List<String> branches, int limit,
+	public List<QuoteCriteriaRes> getTravelReferalPendingDetails(ExistingQuoteReq req, List<String> branches, int limit,
 			int offset) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<QuoteCriteriaRes> getMotorReferalApprovedDetails(ExistingQuoteReq req, List<String> branches, int limit,
+	public List<QuoteCriteriaRes> getTravelReferalApprovedDetails(ExistingQuoteReq req, List<String> branches, int limit,
 			int offset) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<QuoteCriteriaRes> getMotorReferalRejectedDetails(ExistingQuoteReq req, List<String> branches, int limit,
+	public List<QuoteCriteriaRes> getTravelReferalRejectedDetails(ExistingQuoteReq req, List<String> branches, int limit,
 			int offset) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<QuoteCriteriaRes> getMotorAdminReferalPendings(ExistingQuoteReq req, List<String> branches, int limit,
+	public List<QuoteCriteriaRes> getTravelAdminReferalPendings(ExistingQuoteReq req, List<String> branches, int limit,
 			int offset) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<QuoteCriteriaRes> getMotorAdminReferalApproved(ExistingQuoteReq req, List<String> branches, int limit,
+	public List<QuoteCriteriaRes> getTravelAdminReferalApproved(ExistingQuoteReq req, List<String> branches, int limit,
 			int offset) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<QuoteCriteriaRes> getMotorAdminReferalRejected(ExistingQuoteReq req, List<String> branches, int limit,
+	public List<QuoteCriteriaRes> getTravelAdminReferalRejected(ExistingQuoteReq req, List<String> branches, int limit,
 			int offset) {
 		// TODO Auto-generated method stub
 		return null;

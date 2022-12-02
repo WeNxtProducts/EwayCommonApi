@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.EserviceMotorDetails;
@@ -52,6 +53,11 @@ import com.maan.eway.res.calc.Tax;
 @Service
 public class QuoteServiceImpl implements QuoteService {
 
+	@Value(value = "${motor.productId}")
+	private String motorProductId;
+	
+	@Value(value = "${travel.productId}")
+	private String travelProductId;
 
 	@Autowired
 	private QuoteThreadService otSer ;
@@ -99,7 +105,7 @@ public class QuoteServiceImpl implements QuoteService {
 			custRes  = dozerMappper.map(custData, CustomerDetailsRes.class);
 			
 			// Motor Product Details
-			if( homeData.getProductId().equals(5)) {
+			if( homeData.getProductId().equals(Integer.valueOf(motorProductId))) {
 				viewRes =  getMotorProductDetails( req);
 				viewRes.setCustomerDetails(custRes);
 				viewRes.setQuoteDetails(quoteRes);

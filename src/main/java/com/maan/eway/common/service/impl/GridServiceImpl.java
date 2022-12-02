@@ -27,6 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +41,7 @@ import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.service.GridService;
 import com.maan.eway.common.service.MotorGridService;
+import com.maan.eway.common.service.TravelGridService;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
@@ -48,6 +50,12 @@ import com.maan.eway.repository.LoginBranchMasterRepository;
 @Transactional
 public class GridServiceImpl implements GridService {
 
+	@Value(value = "${motor.productId}")
+	private String motorProductId;
+	
+	@Value(value = "${travel.productId}")
+	private String travelProductId;
+	
 	@Autowired
 	private EServiceMotorDetailsRepository repo;
 	
@@ -59,6 +67,9 @@ public class GridServiceImpl implements GridService {
 	
 	@Autowired
 	private MotorGridService motService ;
+	
+	@Autowired
+	private TravelGridService traService ;
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -101,11 +112,11 @@ public class GridServiceImpl implements GridService {
 			}
 			
 			// Product Wise Get			
-			if (req.getProductId().equalsIgnoreCase("5") ) {
+			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				extingQuoteList = motService.getMotorExistingQuoteDetails(req  , branches , before30 , today , limit , offset );
 			}
 			
-			
+			 
 			for(QuoteCriteriaRes data : extingQuoteList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
@@ -160,7 +171,7 @@ public class GridServiceImpl implements GridService {
 			
 			// Product Wise Get	
 			List<QuoteCriteriaRes> lapsedQuoteList = new ArrayList<QuoteCriteriaRes>();
-			if (req.getProductId().equalsIgnoreCase("5") ) {
+			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				lapsedQuoteList = motService.getMotorLapsedQuoteDetails(req  , branches, before30 , limit , offset );
 			}
 			
@@ -205,7 +216,7 @@ public class GridServiceImpl implements GridService {
 			}
 			
 			List<QuoteCriteriaRes> rejectedQuoteList = new ArrayList<QuoteCriteriaRes>();
-			if (req.getProductId().equalsIgnoreCase("5") ) {
+			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				rejectedQuoteList = motService.getMotorRejectedQuoteDetails(req  , branches, limit , offset );
 			}
 			for(QuoteCriteriaRes data : rejectedQuoteList  ) {
@@ -251,7 +262,7 @@ public class GridServiceImpl implements GridService {
 			}
 			
 			List<QuoteCriteriaRes> referralPendingList = new ArrayList<QuoteCriteriaRes>();
-			if (req.getProductId().equalsIgnoreCase("5") ) {
+			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				referralPendingList = motService.getMotorReferalPendingDetails(req  , branches, limit , offset );
 			}
 			for(QuoteCriteriaRes data : referralPendingList  ) {
@@ -295,7 +306,7 @@ public class GridServiceImpl implements GridService {
 			}
 			
 			List<QuoteCriteriaRes> referralApprovedList = new ArrayList<QuoteCriteriaRes>();
-			if (req.getProductId().equalsIgnoreCase("5") ) {
+			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				referralApprovedList = motService.getMotorReferalApprovedDetails(req  , branches, limit , offset );
 			}
 			for(QuoteCriteriaRes data : referralApprovedList  ) {
@@ -339,7 +350,7 @@ public class GridServiceImpl implements GridService {
 			}
 			
 			List<QuoteCriteriaRes> referralRejectedList = new ArrayList<QuoteCriteriaRes>();
-			if (req.getProductId().equalsIgnoreCase("5") ) {
+			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				referralRejectedList = motService.getMotorReferalRejectedDetails(req  , branches, limit , offset );
 			}
 			for(QuoteCriteriaRes data : referralRejectedList  ) {
@@ -401,7 +412,7 @@ public class GridServiceImpl implements GridService {
 			branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
 			
 			List<QuoteCriteriaRes> adminReferralApprovedList = new ArrayList<QuoteCriteriaRes>();
-			if (req.getProductId().equalsIgnoreCase("5") ) {
+			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				adminReferralApprovedList = motService.getMotorAdminReferalApproved(req  , branches, limit , offset );
 			}
 			for(QuoteCriteriaRes data : adminReferralApprovedList  ) {
@@ -432,7 +443,7 @@ public class GridServiceImpl implements GridService {
 			branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
 			
 			List<QuoteCriteriaRes> adminReferralRejectedList = new ArrayList<QuoteCriteriaRes>();
-			if (req.getProductId().equalsIgnoreCase("5") ) {
+			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				adminReferralRejectedList = motService.getMotorAdminReferalRejected(req  , branches, limit , offset );
 			}
 			for(QuoteCriteriaRes data : adminReferralRejectedList  ) {
