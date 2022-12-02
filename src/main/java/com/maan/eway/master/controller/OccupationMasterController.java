@@ -23,7 +23,7 @@ import com.maan.eway.master.req.OccupationMasterGetReq;
 import com.maan.eway.master.req.OccupationMasterSaveReq;
 import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.master.service.OccupationMasterService;
-import com.maan.eway.res.CommonRes;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;

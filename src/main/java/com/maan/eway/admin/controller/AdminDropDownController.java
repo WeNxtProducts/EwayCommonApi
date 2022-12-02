@@ -17,7 +17,7 @@ import com.maan.eway.admin.service.AdminDropDownService;
 import com.maan.eway.common.service.DropDownService;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.req.SubUserTypeReq;
-import com.maan.eway.res.CommonRes;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SubUserTypeDropDownRes;
 

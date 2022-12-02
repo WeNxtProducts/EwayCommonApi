@@ -25,7 +25,7 @@ import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.service.LoginBranchService;
 import com.maan.eway.admin.service.LoginValidationService;
 import com.maan.eway.error.Error;
-import com.maan.eway.res.CommonRes;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;

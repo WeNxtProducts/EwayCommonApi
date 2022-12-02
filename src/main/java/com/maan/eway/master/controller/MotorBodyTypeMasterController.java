@@ -19,7 +19,7 @@ import com.maan.eway.master.req.MotorBodyTypeGetAllReq;
 import com.maan.eway.master.req.MotorBodyTypeGetReq;
 import com.maan.eway.master.res.MotorBodyTypeGetRes;
 import com.maan.eway.master.service.MotorBodyTypeMasterService;
-import com.maan.eway.res.CommonRes;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;

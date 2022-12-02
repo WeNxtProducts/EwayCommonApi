@@ -24,7 +24,7 @@ import com.maan.eway.master.req.CountryMasterSaveReq;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.res.CountryMasterRes;
 import com.maan.eway.master.service.CountryMasterService;
-import com.maan.eway.res.CommonRes;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;

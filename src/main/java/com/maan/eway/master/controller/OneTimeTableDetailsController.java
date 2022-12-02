@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.master.req.ColumnNameDropDownlReq;
 import com.maan.eway.master.service.OneTimeTableDetailsService;
-import com.maan.eway.res.CommonRes;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 
 import io.swagger.annotations.Api;

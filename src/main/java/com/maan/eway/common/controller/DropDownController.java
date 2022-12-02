@@ -21,7 +21,7 @@ import com.maan.eway.master.req.LovPolicyDropDownReq;
 import com.maan.eway.master.req.RegionDropDownReq;
 import com.maan.eway.master.req.StateDropDownReq;
 import com.maan.eway.res.ColummnDropRes;
-import com.maan.eway.res.CommonRes;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 
 import io.swagger.annotations.Api;

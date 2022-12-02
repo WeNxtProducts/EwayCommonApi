@@ -15,14 +15,10 @@ import com.maan.eway.common.req.EserviceCustomerSaveReq;
 import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
 import com.maan.eway.common.req.GetAllCustomerDetailsReq;
 import com.maan.eway.common.req.GetCustomerDetailsReq;
-import com.maan.eway.common.req.MsPersonalInfoGetReq;
-import com.maan.eway.common.req.MsPersonalInfoGetallReq;
-import com.maan.eway.common.req.MsPersonalInfoSaveReq;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.CustomerDetailsGetRes;
-import com.maan.eway.common.res.MsPersonalInfoGetRes;
 import com.maan.eway.common.service.EserviceCustomerDetailsService;
 import com.maan.eway.error.Error;
-import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 

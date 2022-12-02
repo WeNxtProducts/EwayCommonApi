@@ -23,7 +23,7 @@ import com.maan.eway.master.req.UwQuestionMasterSaveReq;
 import com.maan.eway.master.req.UwQuestionsMasterGetAllReq;
 import com.maan.eway.master.res.UwQuestionMasterRes;
 import com.maan.eway.master.service.UwQuestionMasterService;
-import com.maan.eway.res.CommonRes;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;

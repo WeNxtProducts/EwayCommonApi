@@ -15,7 +15,7 @@ import com.maan.eway.master.req.StateMasterSaveReq;
 import com.maan.eway.master.res.StateMasterRes;
 import com.maan.eway.master.service.StateMasterService;
 import com.maan.eway.bean.StateMaster;
-import com.maan.eway.res.CommonRes;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;

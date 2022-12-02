@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.req.UwQuestionsDetailsGetReq;
 import com.maan.eway.common.req.UwQuestionsDetailsSaveReq;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.UwQuestionsDetailsRes;
 import com.maan.eway.common.service.UwQuestionsDetailsService;
 import com.maan.eway.error.Error;
-import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 

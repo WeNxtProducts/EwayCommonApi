@@ -22,7 +22,7 @@ import com.maan.eway.notif.req.NotifTemplateMasterReq;
 import com.maan.eway.notif.res.NotifTemplateMasterRes;
 //import com.maan.eway.service.NotifTemplateMasterService;
 import com.maan.eway.notif.service.NotifTemplateMasterService;
-import com.maan.eway.res.CommonRes;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 

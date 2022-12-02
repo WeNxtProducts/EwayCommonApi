@@ -25,7 +25,7 @@ import com.maan.eway.master.req.LovGetAllReq;
 import com.maan.eway.master.req.LovGetReq;
 import com.maan.eway.master.res.LovDetailsGetRes;
 import com.maan.eway.master.service.ListItemValueService;
-import com.maan.eway.res.CommonRes;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;

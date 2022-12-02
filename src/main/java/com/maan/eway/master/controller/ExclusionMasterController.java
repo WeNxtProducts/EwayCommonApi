@@ -24,7 +24,7 @@ import com.maan.eway.master.req.ExclusionMasterGetallReq;
 import com.maan.eway.master.req.ExclusionMasterSaveReq;
 import com.maan.eway.master.res.ExclusionMasterRes;
 import com.maan.eway.master.service.ExclusionMasterService;
-import com.maan.eway.res.CommonRes;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;

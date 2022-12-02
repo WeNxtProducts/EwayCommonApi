@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.maan.eway.admin.req.MenuServiceReq;
 import com.maan.eway.admin.res.MenuServiceRes;
 import com.maan.eway.admin.service.MenuMasterService;
-import com.maan.eway.res.CommonRes;
+import com.maan.eway.common.res.CommonRes;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.notif.req.MailMasterGetReq;
 import com.maan.eway.notif.req.MailMasterSaveReq;
 import com.maan.eway.notif.res.MailMasterGetRes;
 import com.maan.eway.notif.service.MailMasterService;
-import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 

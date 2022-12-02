@@ -19,7 +19,7 @@ import com.maan.eway.master.req.ExchangeMasterSaveReq;
 import com.maan.eway.master.req.OccupationChangeStatusReq;
 import com.maan.eway.master.res.ExchangeMasterGetRes;
 import com.maan.eway.master.service.ExchangeMasterService;
-import com.maan.eway.res.CommonRes;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;

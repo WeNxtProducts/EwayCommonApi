@@ -16,7 +16,7 @@ import com.maan.eway.notif.req.SmsGetReq;
 import com.maan.eway.notif.req.SmsInsertReq;
 import com.maan.eway.notif.res.SmsMasterGetRes;
 import com.maan.eway.notif.service.SmsMasterService;
-import com.maan.eway.res.CommonRes;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 

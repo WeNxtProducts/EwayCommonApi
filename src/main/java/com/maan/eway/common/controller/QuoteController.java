@@ -12,15 +12,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.req.AdminReferalStatusReq;
-import com.maan.eway.common.req.EserviceCustomerSaveReq;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.ViewQuoteReq;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.error.Error;
-import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.QuoteUpdateRes;
-import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.ApiOperation;

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.notif.req.MailTriggerReq;
 import com.maan.eway.notif.req.ReadMailReq;
 import com.maan.eway.notif.req.ReplayMailTriggerReq;
@@ -19,7 +20,6 @@ import com.maan.eway.notif.req.SmsReq;
 import com.maan.eway.notif.res.ReadMailRes;
 import com.maan.eway.notif.res.SmsGetRes;
 import com.maan.eway.notif.service.NotificationService;
-import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 

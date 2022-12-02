@@ -17,23 +17,22 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import javax.transaction.Transactional;
 
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
-import com.maan.eway.bean.HomePositionMaster;
-import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.QuoteThreadReq;
 import com.maan.eway.common.req.VehicleIdsReq;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.NewQuoteRes;
 import com.maan.eway.common.res.QuoteThreadRes;
 import com.maan.eway.common.service.QuoteThreadService;
@@ -47,12 +46,8 @@ import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
-import com.maan.eway.res.CommonRes;
 import com.maan.eway.res.ReferalResponse;
-import com.maan.eway.res.SuccessRes;
 import com.maan.eway.thread.MyTaskList;
-
-import lombok.Synchronized;
 
 @Service
 @Transactional
