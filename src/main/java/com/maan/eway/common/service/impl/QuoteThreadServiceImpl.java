@@ -295,8 +295,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				queue2.add(quoteSave);
 				
 				 ForkJoinPool forkjoin2 = new ForkJoinPool(threadCount);
-				ConcurrentLinkedQueue<Future<Object>> invoke2 = (ConcurrentLinkedQueue<Future<Object>>) forkjoin2
-						.invoke(taskList2);
+				ConcurrentLinkedQueue<Future<Object>> invoke2 = (ConcurrentLinkedQueue<Future<Object>>) forkjoin2.invoke(taskList2);
 				
 				QuoteThreadRes quoteRes = new QuoteThreadRes(); 
 				
