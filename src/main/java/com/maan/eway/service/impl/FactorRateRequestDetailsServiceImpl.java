@@ -633,7 +633,7 @@ this.repository = repo;
 					coverRes.setExchangeRate(filterCover.get(0).getExchangeRate()==null?null:new BigDecimal(filterCover.get(0).getExchangeRate()));	
 					
 					// Discount Covers
-					List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("D") ).collect(Collectors.toList());
+					List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("d") ).collect(Collectors.toList());
 					
 					if ( filterDiscountCover.size() > 0 ) {
 						 List<Discount> discounts =  getDiscountRates(filterDiscountCover);
@@ -641,7 +641,7 @@ this.repository = repo;
 					}
 					
 					// Tax Covers
-					List<FactorRateRequestDetails> filterTaxCover = covers.stream().filter( o -> (! o.getTaxId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("T")).collect(Collectors.toList());
+					List<FactorRateRequestDetails> filterTaxCover = covers.stream().filter( o -> (! o.getTaxId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("t")).collect(Collectors.toList());
 					
 					if( filterTaxCover.size() > 0 ) {
 						 List<Tax> taxes = getTaxRates(filterTaxCover) ;
@@ -649,7 +649,7 @@ this.repository = repo;
 					}
 					
 					// Loginds Covers
-					List<FactorRateRequestDetails> filterLodingCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("L") ).collect(Collectors.toList());
+					List<FactorRateRequestDetails> filterLodingCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("l") ).collect(Collectors.toList());
 					
 					if( filterLodingCover.size() > 0 ) {
 						 List<Loading> lodings =  getLodingCovers(filterLodingCover) ;
@@ -671,7 +671,7 @@ this.repository = repo;
 					 coverRes.setRate(filterCover.get(0).getRate());
 					
 					List<Cover>  subCoverListRes = new ArrayList<Cover>();
-					List<FactorRateRequestDetails> filterSubCover = covers.stream().filter( o -> o.getDiscLoadId().equals(0)).collect(Collectors.toList());
+					List<FactorRateRequestDetails> filterSubCover = covers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());
 					for ( FactorRateRequestDetails subCovers : filterSubCover) {
 						Cover subCoverRes = new Cover();
 						subCoverRes = dozerMapper.map(subCovers, Cover.class);
@@ -698,7 +698,7 @@ this.repository = repo;
 						
 						
 						// Discount Covers
-						List<FactorRateRequestDetails> filterDiscountCover = filterSubCover.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("D") ).collect(Collectors.toList());
+						List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) && ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("d") ).collect(Collectors.toList());
 						
 						if ( filterDiscountCover.size() > 0 ) {
 							 List<Discount> discounts =  getDiscountRates(filterDiscountCover);
@@ -706,7 +706,7 @@ this.repository = repo;
 						}
 						
 						// Tax Covers
-						List<FactorRateRequestDetails> filterTaxCover = filterSubCover.stream().filter( o -> (! o.getTaxId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("T")).collect(Collectors.toList());
+						List<FactorRateRequestDetails> filterTaxCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) && (! o.getTaxId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("t")).collect(Collectors.toList());
 						
 						if( filterTaxCover.size() > 0 ) {
 							 List<Tax> taxes = getTaxRates(filterTaxCover) ;
@@ -714,7 +714,7 @@ this.repository = repo;
 						}
 						
 						// Loginds Covers
-						List<FactorRateRequestDetails> filterLodingCover = filterSubCover.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("L") ).collect(Collectors.toList());
+						List<FactorRateRequestDetails> filterLodingCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) &&  ( ! o.getDiscLoadId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("l") ).collect(Collectors.toList());
 						
 						if( filterLodingCover.size() > 0 ) {
 							 List<Loading> lodings =  getLodingCovers(filterLodingCover) ;

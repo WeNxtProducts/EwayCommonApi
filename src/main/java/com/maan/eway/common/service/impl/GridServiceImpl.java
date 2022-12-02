@@ -366,7 +366,7 @@ public class GridServiceImpl implements GridService {
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 
 			List<String> branches = new ArrayList<String>();
-			List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(req.getLoginId());
+			List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(req.getApplicationId());
 			branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
 			
 			List<QuoteCriteriaRes> adminReferralPendingList = new ArrayList<QuoteCriteriaRes>();
@@ -397,7 +397,7 @@ public class GridServiceImpl implements GridService {
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 
 			List<String> branches = new ArrayList<String>();
-			List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(req.getLoginId());
+			List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(req.getApplicationId());
 			branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
 			
 			List<QuoteCriteriaRes> adminReferralApprovedList = new ArrayList<QuoteCriteriaRes>();
@@ -428,7 +428,7 @@ public class GridServiceImpl implements GridService {
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 
 			List<String> branches = new ArrayList<String>();
-			List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(req.getLoginId());
+			List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(req.getApplicationId());
 			branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
 			
 			List<QuoteCriteriaRes> adminReferralRejectedList = new ArrayList<QuoteCriteriaRes>();

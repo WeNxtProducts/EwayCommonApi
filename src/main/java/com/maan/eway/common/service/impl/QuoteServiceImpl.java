@@ -172,7 +172,7 @@ public class QuoteServiceImpl implements QuoteService {
 						coverRes.setExchangeRate(filterCover.get(0).getExchangeRate()==null?null:new BigDecimal(filterCover.get(0).getExchangeRate()));	
 						
 						// Discount Covers
-						List<MotorPolicyCoverData> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("D") ).collect(Collectors.toList());
+						List<MotorPolicyCoverData> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("d") ).collect(Collectors.toList());
 						
 						if ( filterDiscountCover.size() > 0 ) {
 							 List<Discount> discounts =  getDiscountRates(filterDiscountCover);
@@ -180,7 +180,7 @@ public class QuoteServiceImpl implements QuoteService {
 						}
 						
 						// Tax Covers
-						List<MotorPolicyCoverData> filterTaxCover = covers.stream().filter( o -> (! o.getTaxId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("T")).collect(Collectors.toList());
+						List<MotorPolicyCoverData> filterTaxCover = covers.stream().filter( o -> (! o.getTaxId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("t")).collect(Collectors.toList());
 						
 						if( filterTaxCover.size() > 0 ) {
 							 List<Tax> taxes = getTaxRates(filterTaxCover) ;
@@ -188,7 +188,7 @@ public class QuoteServiceImpl implements QuoteService {
 						}
 						
 						// Loginds Covers
-						List<MotorPolicyCoverData> filterLodingCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("L") ).collect(Collectors.toList());
+						List<MotorPolicyCoverData> filterLodingCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("l") ).collect(Collectors.toList());
 						
 						if( filterLodingCover.size() > 0 ) {
 							 List<Loading> lodings =  getLodingCovers(filterLodingCover) ;
@@ -237,7 +237,7 @@ public class QuoteServiceImpl implements QuoteService {
 							
 							
 							// Discount Covers
-							List<MotorPolicyCoverData> filterDiscountCover = filterSubCover.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("D") ).collect(Collectors.toList());
+							List<MotorPolicyCoverData> filterDiscountCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) &&  ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("d") ).collect(Collectors.toList());
 							
 							if ( filterDiscountCover.size() > 0 ) {
 								 List<Discount> discounts =  getDiscountRates(filterDiscountCover);
@@ -245,7 +245,7 @@ public class QuoteServiceImpl implements QuoteService {
 							}
 							
 							// Tax Covers
-							List<MotorPolicyCoverData> filterTaxCover = filterSubCover.stream().filter( o -> (! o.getTaxId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("T")).collect(Collectors.toList());
+							List<MotorPolicyCoverData> filterTaxCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) &&  (! o.getTaxId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("t")).collect(Collectors.toList());
 							
 							if( filterTaxCover.size() > 0 ) {
 								 List<Tax> taxes = getTaxRates(filterTaxCover) ;
@@ -253,7 +253,7 @@ public class QuoteServiceImpl implements QuoteService {
 							}
 							
 							// Loginds Covers
-							List<MotorPolicyCoverData> filterLodingCover = filterSubCover.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("L") ).collect(Collectors.toList());
+							List<MotorPolicyCoverData> filterLodingCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) &&  ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("l") ).collect(Collectors.toList());
 							
 							if( filterLodingCover.size() > 0 ) {
 								 List<Loading> lodings =  getLodingCovers(filterLodingCover) ;

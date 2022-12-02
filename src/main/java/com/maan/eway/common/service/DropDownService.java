@@ -101,4 +101,6 @@ public interface DropDownService {
 
 	List<DropDownRes> buildingType(LovDropDownReq req);
 
+	List<DropDownRes> getPlanType(LovDropDownReq req);
+
 }

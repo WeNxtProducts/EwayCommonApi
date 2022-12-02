@@ -1269,4 +1269,28 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return list ;
 	}
+
+
+	@Override
+	public List<DropDownRes> getPlanType(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeAsc("CONST_MATERIAL", "Y" , req.getInsuranceId());
+			String itemType = "PLAN_TYPE" ;
+			  
+			List<ListItemValue> getList  = getListItem(req , itemType);
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
 }
