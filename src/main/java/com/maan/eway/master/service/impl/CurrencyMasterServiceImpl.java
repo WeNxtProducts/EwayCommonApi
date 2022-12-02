@@ -431,7 +431,7 @@ public List<CurrencyMasterRes> getallCurrencyDetails(CurrencyMasterGetAllReq req
 		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 		Predicate n3 = cb.equal(b.get("companyId"), "99999");
 		Predicate n4 = cb.or(n2,n3);
-		query.where(n1,n2,n4).orderBy(orderList);
+		query.where(n1,n4).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<CurrencyMaster> result = em.createQuery(query);
