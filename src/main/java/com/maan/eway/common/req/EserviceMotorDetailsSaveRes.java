@@ -51,5 +51,9 @@ public class EserviceMotorDetailsSaveRes {
 	@JsonProperty("UWReferral")
 	private List<UWReferrals> uwList;
 	
+	@JsonProperty("updateas")
+	private String updateas;
+	
+	
 	
 }

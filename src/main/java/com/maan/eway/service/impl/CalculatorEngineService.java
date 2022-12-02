@@ -311,6 +311,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 			response.setCreatedBy(engine.getCreatedBy());
 			response.setProductId(engine.getProductId()); 
 			response.setMsrefno(engine.getMsrefno());
+			response.setUpdateas(null);
 			response.setUwList(referr);
 			
 			fservice.saveFactorRateRequestDetails(response);
@@ -532,6 +533,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 					response.setCreatedBy(request.getCreatedBy());
 					response.setProductId(request.getProductId()); 
 					response.setMsrefno(request.getMsrefno());
+					response.setUpdateas("admin");
 					//response.setUwList(referr);
 					
 					fservice.saveFactorRateRequestDetails(response);

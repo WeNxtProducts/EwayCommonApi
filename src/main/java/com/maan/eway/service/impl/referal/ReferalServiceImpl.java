@@ -37,7 +37,7 @@ public class ReferalServiceImpl {
 	public List<ReferralRequest> LoadConstant(CalcEngine engine) {
 		try {
 			String todayInString = DD_MM_YYYY.format(new Date());
-			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:{Y,R};"+todayInString+"~effectiveDateStart&effectiveDateEnd;branchCode:"+engine.getBranchCode()+";";
+			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:{Y,R};"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
 			List<Tuple> result=null;
 			SpecCriteria criteria = crservice.createCriteria(ConstantTableDetails.class, search, "itemId"); 
 			result=crservice.getResult(criteria, 0, 50);
@@ -85,7 +85,7 @@ public class ReferalServiceImpl {
 	public List<Tuple> loadDropdown(CalcEngine engine,String itemId){
 		try {
 			String todayInString = DD_MM_YYYY.format(new Date());
-			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:{Y,R};"+todayInString+"~effectiveDateStart&effectiveDateEnd;branchCode:"+engine.getBranchCode()+";";
+			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:{Y,R};"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
 			List<Tuple> result=null;
 			SpecCriteria criteria = crservice.createCriteria(DropdownTableDetails.class, search, "requestId"); 
 			result=crservice.getResult(criteria, 0, 50);

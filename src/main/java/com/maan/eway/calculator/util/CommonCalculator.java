@@ -273,4 +273,17 @@ public class CommonCalculator {
 		 }
 		return d;
 	}
+	
+	protected BigDecimal domathTira(String calctype, Double rate,BigDecimal premium) {
+		BigDecimal d=BigDecimal.ZERO;
+		//(3500/4)*100
+		if("P".equals(calctype)) {
+			d = premium.divide(new BigDecimal(rate) , round).multiply(new BigDecimal(100), round); ///multiply(new BigDecimal(rate/100), round);			
+		 }else if("A".equals(calctype)) {
+			d=(new BigDecimal(rate));			
+		 }else if("M".equals(calctype)) {
+			 d = premium.divide(new BigDecimal(rate), round).multiply(new BigDecimal(1000), round);			
+		 }
+		return d;
+	}
 }

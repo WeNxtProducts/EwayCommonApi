@@ -218,6 +218,8 @@ private static final long serialVersionUID = 1L;
     private Double     actualRate ;
 
 
+    @Column(name="REGUL_SUM_INSURED")
+    private Double     regulSumInsured ;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 
