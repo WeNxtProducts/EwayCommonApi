@@ -15,7 +15,7 @@ import com.maan.eway.req.referal.ReferralRequest;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.referal.MasterReferal;
 
-public class ThreadReferralCall implements Callable<MasterReferal> {
+public class ThreadReferralCall implements Callable<Object> {
 	
 	private ReferralRequest request;
 	

@@ -84,6 +84,11 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					 t.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate()).round(round)) ;
 				 }
 				 
+				 
+				 BigDecimal domathTira = domathTira(t.getCalcType(),t.getRate(),t.getPremiumBeforeDiscountLC());
+				 t.setTiraSumInsured(domathTira);
+				 
+				 
 				Double totaldiscount=0D;
 				 if(t.getDiscounts()!=null && t.getDiscounts().size()>0) {
 					 DiscountCalculator dcal=new DiscountCalculator(t.getPremiumBeforeDiscount(),this);					 

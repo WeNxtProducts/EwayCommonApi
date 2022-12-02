@@ -103,5 +103,9 @@ public class Cover implements Serializable{
 	    private BigDecimal proRata;
 	    
 	    
+	    @JsonProperty("RegulatorSumInsured") 
+	    public BigDecimal tiraSumInsured;
+	    @JsonProperty("RegulatorRate") 
+	    public Double tiraRate;
 
 }

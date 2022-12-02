@@ -8,12 +8,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.req.calcengine.CalcEngine;
-import com.maan.eway.res.calc.Cover;
+import com.maan.eway.res.referal.MasterReferal;
 import com.maan.eway.service.CalculatorEngine;
-import com.maan.eway.service.FactorRateRequestDetailsService;
+import com.maan.eway.service.impl.referal.ReferalServiceImpl;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -22,6 +21,9 @@ import io.swagger.annotations.ApiOperation;
 public class RatingCalculatorController {
 	@Autowired
 	private CalculatorEngine service;
+	
+	@Autowired
+	private ReferalServiceImpl rservice;
 	
 	@PostMapping("/loadsection")
 	@ApiOperation("This Method is to get by id")
@@ -46,6 +48,18 @@ public class RatingCalculatorController {
 	@ApiOperation("This Method is to get by id")
 	public EserviceMotorDetailsSaveRes referalcalc(@RequestBody CalcEngine request) {
 		EserviceMotorDetailsSaveRes response = service.referalCalculator(request); 
+		return response;
+	}
+	
+	@PostMapping("/masterreferral")
+	@ApiOperation("This Method is to get by id")
+	public List<MasterReferal> masterreferral(@RequestBody CalcEngine request) {
+		List<MasterReferal> response=null;
+		try {
+			response = rservice.masterreferral(request);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} 
 		return response;
 	}
 	
