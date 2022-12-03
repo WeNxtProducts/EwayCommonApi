@@ -219,7 +219,9 @@ private static final long serialVersionUID = 1L;
     private Integer    age81To110 ;
 
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
+
+    @Column(name="BROKER_BRANCH_CODE", length=20)
+    private String     brokerBranchCode ;
 
 
 }

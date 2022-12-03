@@ -422,7 +422,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="CUSTOMER_CODE", length=100)
     private String     customerCode;
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
+
+    @Column(name="BROKER_BRANCH_CODE", length=20)
+    private String     brokerBranchCode ;
 
 
 }

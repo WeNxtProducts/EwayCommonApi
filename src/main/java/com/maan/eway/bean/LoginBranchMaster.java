@@ -123,9 +123,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="REMARKS", length=100)
     private String     remarks ;
 
+    @Column(name="BROKER_BRANCH_CODE", length=20)
+    private String     brokerBranchCode ;
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
 
+    @Column(name="BROKER_BRANCH_NAME", length=100)
+    private String     brokerBranchName;
 
 }
 
