@@ -169,13 +169,15 @@ public class CalculatorEngineService implements CalculatorEngine{
 		 	for (String dependcover : dependedcovers) {
 		 		List<Cover> totalcovers=new ArrayList<Cover>();
 		 		List<Tuple> covers = totalcoverstuple.stream().filter(t-> dependcover.equals(t.get("dependentCoverYn").toString())).collect(Collectors.toList());
-		 			 
-				SplitDiscountUtils discountUtil=new  SplitDiscountUtils();				
-				List<Discount> discounts = covers.stream().map(discountUtil).filter(d->d!=null).collect(Collectors.toList());
-				
-				SplitLoadingUtils loadingtuils=new SplitLoadingUtils();
-				List<Loading> loadings = covers.stream().map(loadingtuils).filter(d->d!=null).collect(Collectors.toList());
-				
+		 		List<Discount> discounts=null;
+		 		List<Loading> loadings =null;
+		 		if(covers!=null && covers.size()>0) {
+		 			SplitDiscountUtils discountUtil=new  SplitDiscountUtils();				
+		 			discounts = covers.stream().map(discountUtil).filter(d->d!=null).collect(Collectors.toList());
+
+		 			SplitLoadingUtils loadingtuils=new SplitLoadingUtils();
+		 			loadings = covers.stream().map(loadingtuils).filter(d->d!=null).collect(Collectors.toList());
+		 		}
 				
 				 SplitSubCoverUtil splitsub=new SplitSubCoverUtil("N");
 				 Map<String, List<Cover>> nonSubcovers = covers.stream().map(splitsub).filter(d->d!=null).collect(Collectors.groupingBy(Cover::getIsSubCover));

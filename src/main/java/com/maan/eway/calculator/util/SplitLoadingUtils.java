@@ -13,7 +13,7 @@ public class SplitLoadingUtils  implements Function<Tuple,Loading>{
 	@Override
 	public Loading apply(Tuple t) {
 		try {
-			 if("L".equalsIgnoreCase(t.get("coverageType").toString())) {
+			 if(t.get("coverageType")!=null && "L".equalsIgnoreCase(t.get("coverageType").toString())) {
 				 String calctype=t.get("calcType")==null?"":t.get("calcType").toString();
 				 Loading d=Loading.builder()
 						 	.loadingDesc(t.get("coverName")==null?"":t.get("coverName").toString())
