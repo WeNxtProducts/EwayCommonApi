@@ -33,9 +33,9 @@ public class TravelPassDetailsId implements Serializable {
     
     private Integer    travelId ;
     
-    private Long       serialNo ;
+    private String  serialNo ;
     
-    private String     gender ;
+    private Integer     genderId ;
     
      
 }
