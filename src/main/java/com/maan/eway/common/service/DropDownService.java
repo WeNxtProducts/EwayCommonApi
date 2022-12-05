@@ -103,4 +103,6 @@ public interface DropDownService {
 
 	List<DropDownRes> getPlanType(LovDropDownReq req);
 
+	List<DropDownRes> getSourceType(LovDropDownReq req);
+
 }

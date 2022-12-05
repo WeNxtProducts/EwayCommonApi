@@ -42,7 +42,7 @@ public class DropDownController {
 //	public ResponseEntity<CommonRes> insuranceType(@RequestBody LovDropDownReq req) {
 //		CommonRes data = new CommonRes();
 //
-//		List<DropDownRes> res = dropDownService.insuranceType();
+//		List<DropDownRes> res = dropDownService.insuranceType(req);
 //		data.setCommonResponse(res);
 //		data.setIsError(false);
 //		data.setErrorMessage(Collections.emptyList());
@@ -877,4 +877,5 @@ public class DropDownController {
 		}
 	}
 
+	
 }

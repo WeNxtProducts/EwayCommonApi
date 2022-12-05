@@ -76,6 +76,38 @@ public class EservieMotorDetailsViewRes {
 	@JsonProperty("CoverList")
 	private List<Cover> coverList ;
 	
+	@JsonProperty("Insurancetype")
+    private String     insuranceType ;
+	@JsonProperty("InsuranceTypeDesc")
+    private String     insuranceTypeDesc;
+	@JsonProperty("Registrationnumber")
+    private String     registrationNumber ;
+	@JsonProperty("Chassisnumber")
+    private String     chassisNumber ;
+	@JsonProperty("Vehiclemake")
+    private String     vehicleMake  ;
+	@JsonProperty("VehiclemakeDesc")
+    private String     vehicleMakeDesc  ;
+	@JsonProperty("Vehcilemodel")
+    private String     vehcileModel ;
+	@JsonProperty("VehcilemodelDesc")
+    private String     vehcileModelDesc ;
+	@JsonProperty("VehicleType")
+    private String     vehicleType  ;
+	@JsonProperty("VehicleTypeDesc")
+    private String     vehicleTypeDesc  ;
+	@JsonProperty("ModelNumber")
+    private String     modelNumber  ;
+	@JsonProperty("SumInsured")
+    private Double     sumInsured   ;
+	@JsonProperty("InsuranceClass")
+    private String  insuranceClass ;
+	
+
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("ManufactureYear")
+    private Date manufactureYear;
+	
 /*	@JsonProperty("VehicleDetails")
 	private EserviceMotorDetailsRes vehicleDetails ; */
 	

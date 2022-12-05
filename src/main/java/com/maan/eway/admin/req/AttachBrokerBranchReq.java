@@ -25,6 +25,13 @@ public class AttachBrokerBranchReq {
 	@JsonProperty("InsuranceId")
 	private String companyId;
 	
+	@JsonProperty("BrokerBranchCode")
+	private String brokerBranchCode;
+	
+	@JsonProperty("BrokerBranchName")
+	private String brokerBranchName;
+	
+	
 	@JsonProperty("AttachedBranchCode")
 	private String attachedBranch;
 

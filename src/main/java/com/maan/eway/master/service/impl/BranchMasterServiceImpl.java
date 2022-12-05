@@ -360,19 +360,21 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 			errorList.add(new Error("02", "BranchName", "Please Select Branch Name "));
 		}else if (req.getBranchName().length() > 100){
 			errorList.add(new Error("02","BranchName", "Please Enter Branch  Name within 100 Characters")); 
-		}else if (StringUtils.isBlank(req.getBranchCode()) ) {
-			List<BranchMaster> list = getBranchNameExistDetails(req.getBranchName());
-			if (list.size()>0 ) {
-				errorList.add(new Error("01", "BranchName", "This Branch Name Already Exist "));
-			}
-		}else if (StringUtils.isNotBlank(req.getBranchCode()) ) {
-			List<BranchMaster> list = getBranchNameExistDetails(req.getBranchName() );
-			
-			if (list.size()>0 &&  (! req.getBranchCode().equalsIgnoreCase(list.get(0).getBranchCode().toString())) ) {
-				errorList.add(new Error("01", "BranchName", "This Branch Name Already Exist "));
-			}
-			
 		}
+//		else if (StringUtils.isBlank(req.getBranchCode()) ) {
+//			List<BranchMaster> list = getBranchNameExistDetails(req.getBranchName());
+//			if (list.size()>0 ) {
+//				errorList.add(new Error("01", "BranchName", "This Branch Name Already Exist "));
+//			}
+//		}
+//		else if (StringUtils.isNotBlank(req.getBranchCode()) ) {
+//			List<BranchMaster> list = getBranchNameExistDetails(req.getBranchName() );
+//			
+//			if (list.size()>0 &&  (! req.getBranchCode().equalsIgnoreCase(list.get(0).getBranchCode().toString())) ) {
+//				errorList.add(new Error("01", "BranchName", "This Branch Name Already Exist "));
+//			}
+//			
+//		}
 //			else if (StringUtils.isBlank(req.getBranchCode())) {
 //			Long BranchCount = branchRepo.countByBranchNameOrderByEntryDateDesc(req.getBranchName());
 //			if (BranchCount > 0 ) {

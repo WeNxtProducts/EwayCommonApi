@@ -88,8 +88,15 @@ public class MotorGridServiceImpl implements MotorGridService {
 			} else {
 				n7 = cb.equal(  m.get("applicationId"),  req.getApplicationId());
 			}
-			Expression<String>e0=c.get("branchCode");
-			Predicate n8 = e0.in(branches ) ;
+			
+			Predicate n8 = null;
+			if(  req.getUserType().equalsIgnoreCase("Broker") ||   req.getUserType().equalsIgnoreCase("User") ) {
+				Expression<String>e0=m.get("brokerBranchCode");
+				 n8 = e0.in(branches ) ;
+			} else {
+				Expression<String>e0=m.get("branchCode");
+				n8 = e0.in(branches ) ;
+			}
 			
 			query.where(n1,n2,n3,n4,n5,n6,n7,n8)
 			.groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
@@ -161,8 +168,14 @@ public class MotorGridServiceImpl implements MotorGridService {
 			} else {
 				n6 = cb.equal(  m.get("applicationId"),  req.getApplicationId());
 			}
-			Expression<String>e0=c.get("branchCode");
-			Predicate n7 = e0.in(branches ) ;
+			Predicate n7 = null;
+			if(  req.getUserType().equalsIgnoreCase("Broker") ||   req.getUserType().equalsIgnoreCase("User") ) {
+				Expression<String>e0=m.get("brokerBranchCode");
+				 n7 = e0.in(branches ) ;
+			} else {
+				Expression<String>e0=m.get("branchCode");
+				n7 = e0.in(branches ) ;
+			}
 			
 			query.where(n1,n2,n3,n4,n5,n6,n7).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
 					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
@@ -230,8 +243,14 @@ public class MotorGridServiceImpl implements MotorGridService {
 			} else {
 				n5 = cb.equal(  m.get("applicationId"),  req.getApplicationId());
 			}
-			Expression<String>e0=c.get("branchCode");
-			Predicate n6 = e0.in(branches ) ;
+			Predicate n6 = null;
+			if(  req.getUserType().equalsIgnoreCase("Broker") ||   req.getUserType().equalsIgnoreCase("User") ) {
+				Expression<String>e0=m.get("brokerBranchCode");
+				 n6 = e0.in(branches ) ;
+			} else {
+				Expression<String>e0=m.get("branchCode");
+				n6 = e0.in(branches ) ;
+			}
 			
 			query.where(n1,n2,n3,n4,n5,n6).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
 					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
@@ -299,8 +318,14 @@ public class MotorGridServiceImpl implements MotorGridService {
 			} else {
 				n5 = cb.equal(  m.get("applicationId"),  req.getApplicationId());
 			}
-			Expression<String>e0=c.get("branchCode");
-			Predicate n6 = e0.in(branches ) ;
+			Predicate n6 = null;
+			if(  req.getUserType().equalsIgnoreCase("Broker") ||   req.getUserType().equalsIgnoreCase("User") ) {
+				Expression<String>e0=m.get("brokerBranchCode");
+				 n6 = e0.in(branches ) ;
+			} else {
+				Expression<String>e0=m.get("branchCode");
+				n6 = e0.in(branches ) ;
+			}
 			
 			query.where(n1,n2,n3,n4,n5,n6).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
 					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
@@ -368,8 +393,14 @@ public class MotorGridServiceImpl implements MotorGridService {
 			} else {
 				n5 = cb.equal(  m.get("applicationId"),  req.getApplicationId());
 			}
-			Expression<String>e0=c.get("branchCode");
-			Predicate n6 = e0.in(branches ) ;
+			Predicate n6 = null;
+			if(  req.getUserType().equalsIgnoreCase("Broker") ||   req.getUserType().equalsIgnoreCase("User") ) {
+				Expression<String>e0=m.get("brokerBranchCode");
+				 n6 = e0.in(branches ) ;
+			} else {
+				Expression<String>e0=m.get("branchCode");
+				n6 = e0.in(branches ) ;
+			}
 			
 			query.where(n1,n2,n3,n4,n5,n6).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
 					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
@@ -437,8 +468,14 @@ public class MotorGridServiceImpl implements MotorGridService {
 			} else {
 				n5 = cb.equal(  m.get("applicationId"),  req.getApplicationId());
 			}
-			Expression<String>e0=c.get("branchCode");
-			Predicate n6 = e0.in(branches ) ;
+			Predicate n6 = null;
+			if(  req.getUserType().equalsIgnoreCase("Broker") ||   req.getUserType().equalsIgnoreCase("User") ) {
+				Expression<String>e0=m.get("brokerBranchCode");
+				 n6 = e0.in(branches ) ;
+			} else {
+				Expression<String>e0=m.get("branchCode");
+				n6 = e0.in(branches ) ;
+			}
 			
 			query.where(n1,n2,n3,n4,n5,n6).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
 					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 

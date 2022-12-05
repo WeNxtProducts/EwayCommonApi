@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.persistence.Column;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -108,4 +110,6 @@ public class Cover implements Serializable{
 	    @JsonProperty("RegulatorRate") 
 	    public Double tiraRate;
 
+	    @JsonProperty("UserOpt")
+	    private String     userOpt ;
 }

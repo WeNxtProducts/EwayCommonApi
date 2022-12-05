@@ -21,4 +21,7 @@ public class UwQuestionsMasterGetAllReq implements Serializable {
    	
 	@JsonProperty("ProductId")
    	private String productId;
+	
+	  @JsonProperty("LoginId")
+	   	private String loginId;
 }

@@ -105,8 +105,13 @@ public class GridServiceImpl implements GridService {
 			if (req.getBranchCode().equalsIgnoreCase("99999") ) {
 				
 				List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(loginId);
-				 branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
-					
+				
+				 branches =loginBranch.stream().filter( o -> ! o.getBrokerBranchCode().equalsIgnoreCase("None") ) .map(LoginBranchMaster ::getBrokerBranchCode ).collect(Collectors.toList()) ;
+				if(branches.size()<=0 ) {
+					 branches =loginBranch.stream() .map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
+							
+				}
+				 
 			} else {
 				branches.add(req.getBranchCode());
 			}
@@ -114,6 +119,8 @@ public class GridServiceImpl implements GridService {
 			// Product Wise Get			
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				extingQuoteList = motService.getMotorExistingQuoteDetails(req  , branches , before30 , today , limit , offset );
+			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+				extingQuoteList = traService.getTravelExistingQuoteDetails(req  , branches , before30 , today , limit , offset );
 			}
 			
 			 
@@ -163,8 +170,11 @@ public class GridServiceImpl implements GridService {
 			if (req.getBranchCode().equalsIgnoreCase("99999") ) {
 				
 				List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(loginId);
-				 branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
-					
+				 branches =loginBranch.stream().filter( o -> ! o.getBrokerBranchCode().equalsIgnoreCase("None") ) .map(LoginBranchMaster ::getBrokerBranchCode ).collect(Collectors.toList()) ;
+				if(branches.size()<=0 ) {
+					 branches =loginBranch.stream() .map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
+							
+				}	
 			} else {
 				branches.add(req.getBranchCode());
 			}
@@ -173,6 +183,8 @@ public class GridServiceImpl implements GridService {
 			List<QuoteCriteriaRes> lapsedQuoteList = new ArrayList<QuoteCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				lapsedQuoteList = motService.getMotorLapsedQuoteDetails(req  , branches, before30 , limit , offset );
+			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+				lapsedQuoteList = traService.getTravelLapsedQuoteDetails(req  , branches, before30 , limit , offset );
 			}
 			
 			for(QuoteCriteriaRes data : lapsedQuoteList  ) {
@@ -209,7 +221,11 @@ public class GridServiceImpl implements GridService {
 			if (req.getBranchCode().equalsIgnoreCase("99999") ) {
 				
 				List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(loginId);
-				 branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
+				 branches =loginBranch.stream().filter( o -> ! o.getBrokerBranchCode().equalsIgnoreCase("None") ) .map(LoginBranchMaster ::getBrokerBranchCode ).collect(Collectors.toList()) ;
+				if(branches.size()<=0 ) {
+					 branches =loginBranch.stream() .map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
+							
+				}
 					
 			} else {
 				branches.add(req.getBranchCode());
@@ -218,7 +234,10 @@ public class GridServiceImpl implements GridService {
 			List<QuoteCriteriaRes> rejectedQuoteList = new ArrayList<QuoteCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				rejectedQuoteList = motService.getMotorRejectedQuoteDetails(req  , branches, limit , offset );
+			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+				rejectedQuoteList = traService.getTravelRejectedQuoteDetails(req  , branches, limit , offset );
 			}
+			
 			for(QuoteCriteriaRes data : rejectedQuoteList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
@@ -255,7 +274,11 @@ public class GridServiceImpl implements GridService {
 			if (req.getBranchCode().equalsIgnoreCase("99999") ) {
 				
 				List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(loginId);
-				 branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
+				 branches =loginBranch.stream().filter( o -> ! o.getBrokerBranchCode().equalsIgnoreCase("None") ) .map(LoginBranchMaster ::getBrokerBranchCode ).collect(Collectors.toList()) ;
+				if(branches.size()<=0 ) {
+					 branches =loginBranch.stream() .map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
+							
+				}
 					
 			} else {
 				branches.add(req.getBranchCode());
@@ -264,7 +287,10 @@ public class GridServiceImpl implements GridService {
 			List<QuoteCriteriaRes> referralPendingList = new ArrayList<QuoteCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				referralPendingList = motService.getMotorReferalPendingDetails(req  , branches, limit , offset );
+			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+				referralPendingList = traService.getTravelReferalPendingDetails(req  , branches, limit , offset );
 			}
+			
 			for(QuoteCriteriaRes data : referralPendingList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
@@ -299,7 +325,11 @@ public class GridServiceImpl implements GridService {
 			if (req.getBranchCode().equalsIgnoreCase("99999") ) {
 				
 				List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(loginId);
-				 branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
+				 branches =loginBranch.stream().filter( o -> ! o.getBrokerBranchCode().equalsIgnoreCase("None") ) .map(LoginBranchMaster ::getBrokerBranchCode ).collect(Collectors.toList()) ;
+					if(branches.size()<=0 ) {
+						 branches =loginBranch.stream() .map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
+								
+					}
 					
 			} else {
 				branches.add(req.getBranchCode());
@@ -308,7 +338,10 @@ public class GridServiceImpl implements GridService {
 			List<QuoteCriteriaRes> referralApprovedList = new ArrayList<QuoteCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				referralApprovedList = motService.getMotorReferalApprovedDetails(req  , branches, limit , offset );
+			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+				referralApprovedList = traService.getTravelReferalApprovedDetails(req  , branches, limit , offset );
 			}
+			
 			for(QuoteCriteriaRes data : referralApprovedList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
@@ -343,7 +376,11 @@ public class GridServiceImpl implements GridService {
 			if (req.getBranchCode().equalsIgnoreCase("99999") ) {
 				
 				List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(loginId);
-				 branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
+				 branches =loginBranch.stream().filter( o -> ! o.getBrokerBranchCode().equalsIgnoreCase("None") ) .map(LoginBranchMaster ::getBrokerBranchCode ).collect(Collectors.toList()) ;
+					if(branches.size()<=0 ) {
+						 branches =loginBranch.stream() .map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
+								
+					}
 					
 			} else {
 				branches.add(req.getBranchCode());
@@ -352,6 +389,8 @@ public class GridServiceImpl implements GridService {
 			List<QuoteCriteriaRes> referralRejectedList = new ArrayList<QuoteCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				referralRejectedList = motService.getMotorReferalRejectedDetails(req  , branches, limit , offset );
+			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+				referralRejectedList = traService.getTravelReferalRejectedDetails(req  , branches, limit , offset );
 			}
 			for(QuoteCriteriaRes data : referralRejectedList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
@@ -381,8 +420,10 @@ public class GridServiceImpl implements GridService {
 			branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
 			
 			List<QuoteCriteriaRes> adminReferralPendingList = new ArrayList<QuoteCriteriaRes>();
-			if (req.getProductId().equalsIgnoreCase("5") ) {
+			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				adminReferralPendingList = motService.getMotorAdminReferalPendings(req  , branches, limit , offset );
+			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+				adminReferralPendingList = traService.getTravelReferalRejectedDetails(req  , branches, limit , offset );
 			}
 			for(QuoteCriteriaRes data : adminReferralPendingList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
@@ -414,6 +455,8 @@ public class GridServiceImpl implements GridService {
 			List<QuoteCriteriaRes> adminReferralApprovedList = new ArrayList<QuoteCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				adminReferralApprovedList = motService.getMotorAdminReferalApproved(req  , branches, limit , offset );
+			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+				adminReferralApprovedList = traService.getTravelAdminReferalApproved(req  , branches, limit , offset );
 			}
 			for(QuoteCriteriaRes data : adminReferralApprovedList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();

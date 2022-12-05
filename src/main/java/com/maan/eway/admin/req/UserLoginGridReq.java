@@ -17,6 +17,9 @@ public class UserLoginGridReq {
 	@JsonProperty("SubUserType")
 	private String subUserType ;
 	
+	@JsonProperty("InsuranceId")
+	private String companyId ;
+	
 	
 //	@JsonProperty("Limit")
 //	private String limit;

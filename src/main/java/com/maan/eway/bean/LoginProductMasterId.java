@@ -36,9 +36,7 @@ public class LoginProductMasterId implements Serializable {
     
     private String     companyId ;
     
-    private Date       effectiveDateStart ;
-    
-    private Date       effectiveDateEnd ;
+    private Integer    amendId ;
     
      
 }

@@ -449,7 +449,16 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());
 			
 			// Find Data 
-			LoginBranchMaster findBranch = loginBrokerRepo.findByLoginIdAndBranchCodeAndCompanyId(req.getLoginId() , req.getBranchCode() , req.getCompanyId());
+			String brokerBranchCode = "None";
+			
+			if(StringUtils.isBlank( req.getBrokerBranchCode())  && (loginData.getUserType().equalsIgnoreCase("Broker") || loginData.getUserType().equalsIgnoreCase("User") )) {
+				long count = loginBrokerRepo.countByLoginId(req.getLoginId());
+				brokerBranchCode =String.valueOf(count+1) ;
+			} else if( loginData.getUserType().equalsIgnoreCase("Broker") || loginData.getUserType().equalsIgnoreCase("User")) {
+				brokerBranchCode  = req.getBrokerBranchCode();
+			}
+			
+			LoginBranchMaster findBranch = loginBrokerRepo.findByBrokerBranchCodeAndLoginIdAndBranchCodeAndCompanyId(brokerBranchCode ,req.getLoginId() , req.getBranchCode() , req.getCompanyId());
 			
 			LoginBranchMaster save = dozerMapper.map(req, LoginBranchMaster.class )  ;
 			if(findBranch !=null  ) {
@@ -472,11 +481,14 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 				save.setUpdatedDate(new Date());
 			}
 			
+			
 			save.setOaCode(Integer.valueOf(loginData.getOaCode()));
 			save.setAgencyCode(Integer.valueOf(loginData.getAgencyCode()));	
 			save.setAttachedBranch(StringUtils.isBlank(req.getAttachedBranch())? req.getBranchCode() : req.getAttachedBranch() );
 			save.setAttachedCompany(StringUtils.isBlank(req.getAttachedCompany())? req.getCompanyId() : req.getAttachedCompany() );
-			
+			save.setBrokerBranchCode(brokerBranchCode);;
+			save.setUserType(loginData.getUserType());
+			save.setSubUserType(loginData.getSubUserType());
 			loginBrokerRepo.save(save);
 			
 			
@@ -498,7 +510,7 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 		SimpleDateFormat idf = new SimpleDateFormat("yyMMddhhssmmss"); 
 		try {
 			// Find Data 
-			LoginBranchMaster findBranch = loginBrokerRepo.findByLoginIdAndBranchCodeAndCompanyId(req.getLoginId() , req.getBranchCode() , req.getInsuranceId());
+			LoginBranchMaster findBranch = loginBrokerRepo.findByBrokerBranchCodeAndLoginIdAndCompanyId(req.getBrokerBranchCode() ,req.getLoginId() , req.getInsuranceId());
 			res = dozerMapper.map(findBranch, GetBrokerBranchRes.class);
 			
 		} catch (Exception e) {

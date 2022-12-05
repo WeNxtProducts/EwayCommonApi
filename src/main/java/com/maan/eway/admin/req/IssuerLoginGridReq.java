@@ -13,6 +13,8 @@ public class IssuerLoginGridReq {
 	@JsonProperty("SubUserType")
 	private String subUserType ;
 	
+	@JsonProperty("InsuranceId")
+	private String companyId ;
 //	
 //	@JsonProperty("Limit")
 //	private String limit;

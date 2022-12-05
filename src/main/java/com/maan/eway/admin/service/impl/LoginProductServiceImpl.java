@@ -184,12 +184,7 @@ public class LoginProductServiceImpl  implements LoginProductService {
 		try {
 			LoginProductMaster saveData = new LoginProductMaster();
 			List<LoginProductMaster> list = new ArrayList<LoginProductMaster>();
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar(); 
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
+			
 			
 			String productId="";
 			
@@ -213,8 +208,7 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("loginId"), b.get("loginId"));
-			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , today);
-			effectiveDate.where(a1,a2,a3,a4);
+			effectiveDate.where(a1,a2,a3);
 
 			// Order By
 		//	List<Order> orderList = new ArrayList<Order>();
@@ -365,8 +359,7 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			Predicate a1 = cb.equal(ocpm1.get("loginId"), lm.get("loginId"));
 			Predicate a2 = cb.equal(ocpm1.get("productId"), lm.get("productId"));
 			Predicate a3 = cb.equal(ocpm1.get("companyId"), lm.get("companyId"));
-			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , today);
-			effectiveDate.where(a1,a2,a3,a4); 
+			effectiveDate.where(a1,a2,a3); 
 					
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -443,22 +436,17 @@ public class LoginProductServiceImpl  implements LoginProductService {
 		try {
 			LoginProductMaster saveData = new LoginProductMaster();
 			List<LoginProductMaster> list = new ArrayList<LoginProductMaster>();
-			Integer amendId = 0 ;
-			Calendar cal = new GregorianCalendar();
-			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59);
-			Date startDate = cal.getTime() ;
-			Date today = new Date();
-			cal.setTime(req.getEffectiveDateStart());   cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes());
-			cal.set(Calendar.SECOND, today.getSeconds());
-			Date oldEndDate = cal.getTime() ;
-			cal.setTime(req.getEffectiveDateStart());  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
-			cal.set(Calendar.SECOND, today.getSeconds());
-			Date effDate = cal.getTime();
-			Date endDate = req.getEffectiveDateEnd();
-			cal.setTime(req.getEffectiveDateEnd());  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
-			endDate = cal.getTime() ;
+			Integer amendId=0;
+			Date startDate = req.getEffectiveDateStart() ;
+			String end = "31/12/2050";
+			Date endDate = sdformat.parse(end);
+			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+			
 			
 			String productId="";
+			Date entryDate = null ;
+			String createdBy = "" ;
 			
 			// Update
 			// Get Less than Equal Today Record 
@@ -473,15 +461,10 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			// Select
 			query.select(b);
 
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<LoginProductMaster> ocpm1 = effectiveDate.from(LoginProductMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a3 = cb.equal(ocpm1.get("loginId"), b.get("loginId"));
-			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart") , startDate);
-			effectiveDate.where(a1,a2,a3,a4);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			
 
 			// Order By
 		//	List<Order> orderList = new ArrayList<Order>();
@@ -489,29 +472,44 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			
 			// Where
 			Predicate n1 = cb.equal(b.get("status"), "Y");
-			Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n3 =  cb.equal(b.get("productId"), req.getProductId() );
 			Predicate n4 =  cb.equal(b.get("companyId"), req.getCompanyId() );
 			Predicate n5 =  cb.equal(b.get("loginId"), req.getLoginId() );
 
-			query.where(n1, n2, n3,n4,n5);//.orderBy(orderList);
+			query.where(n1, n3,n4,n5);//.orderBy(orderList);
 
 			// Get Result
 			TypedQuery<LoginProductMaster> result = em.createQuery(query);
+			int limit = 0 , offset = 2 ;
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
 			list = result.getResultList();
 			
-			if( list.size() > 0) {
-				loginProductRepo.delete(list.get(0));
-				// Amend ID
-				if( list.get(0).getEffectiveDateStart().before(startDate)   ) {
-					String startDatewithoutTime = sdformat.format(startDate) ;
-					String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart()) ;
+			if(list.size()>0) {
+				Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+			
+				if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+					amendId = list.get(0).getAmendId() + 1 ;
+					entryDate = new Date() ;
+					createdBy = req.getCreatedBy();
+					LoginProductMaster lastRecord = list.get(0);
+						lastRecord.setEffectiveDateEnd(oldEndDate);
+						loginProductRepo.saveAndFlush(lastRecord);
 					
-					if(startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime) ) {
-						amendId = list.get(0).getAmendId() + 1 ;
+				} else {
+					amendId = list.get(0).getAmendId() ;
+					entryDate = list.get(0).getEntryDate() ;
+					createdBy = list.get(0).getCreatedBy();
+					saveData = list.get(0) ;
+					if (list.size()>1 ) {
+						LoginProductMaster lastRecord = list.get(1);
+						lastRecord.setEffectiveDateEnd(oldEndDate);
+						loginProductRepo.saveAndFlush(lastRecord);
 					}
-				}
-			} 
+				
+			    }
+			}
+		
 			res.setResponse("Updated Successfully ");
 			res.setSuccessId(productId);
 				
@@ -519,25 +517,17 @@ public class LoginProductServiceImpl  implements LoginProductService {
 		    dozerMapper.map(req, saveData );
 			saveData.setProductId(Integer.valueOf(productId));
 			saveData.setProductName(req.getProductName());
-			saveData.setEffectiveDateStart(effDate);
+			saveData.setEffectiveDateStart(startDate);
 			saveData.setEffectiveDateEnd(endDate);
+			saveData.setCreatedBy(createdBy);
 			saveData.setStatus(req.getStatus());
 			saveData.setEntryDate(new Date());
+			saveData.setCompanyId(req.getCompanyId());
+			saveData.setEntryDate(entryDate);
 			saveData.setAmendId(amendId);
+			saveData.setCoreAppCode(req.getCoreAppCode());
 			loginProductRepo.saveAndFlush(saveData);
 			
-			if(list.size() > 0 ) {
-				// Update Old Record
-				LoginProductMaster lastRecord = list.get(0) ;
-				lastRecord.setEffectiveDateEnd(oldEndDate);
-				String startDatewithoutTime = sdformat.format(startDate);
-				String oldDatewithoutTime = sdformat.format(list.get(0).getEffectiveDateStart());
-
-				if (startDatewithoutTime.equalsIgnoreCase(oldDatewithoutTime)) {
-					lastRecord.setStatus("N");	
-				}
-				loginProductRepo.saveAndFlush(lastRecord);
-			}
 				
 			log.info("Saved Details is ---> " + json.toJson(saveData));
 				
@@ -603,12 +593,14 @@ List<Error> errorList = new ArrayList<Error>();
 
 			} else if (req.getEffectiveDateStart().before(today)) {
 				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date  "));
-			} else if (req.getEffectiveDateEnd() == null ) {
-				errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End  in Row No :"));
-
-			} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date End  is After Effective Date Start  "));
-			} else if (StringUtils.isBlank(req.getCompanyId())) {
+			}
+			//	else if (req.getEffectiveDateEnd() == null ) {
+//				errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End  in Row No :"));
+//
+//			} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
+//				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date End  is After Effective Date Start  "));
+		//	}
+		else if (StringUtils.isBlank(req.getCompanyId())) {
 				errorList.add(new Error("08", "InsuranceId", "Please Enter InsuranceId  "));
 			} else if (req.getCompanyId().length() > 20) {
 				errorList.add(new Error("11", "InsuranceId", "Please Enter InsuranceId within 20 Characters  "));
@@ -637,9 +629,9 @@ List<Error> errorList = new ArrayList<Error>();
 				errorList.add(new Error("06", "Payment", "Enter Payment Type 1 Character Only  "));
 			}else if(!("Y".equals(req.getPaymentYn())||"N".equals(req.getPaymentYn()))) {
 				errorList.add(new Error("06", "Payment", "Enter Payment Type Y or N Only  "));
-			} else if (StringUtils.isBlank(req.getPaymentRedirUrl())) {
+			} else if ( "Y".equals(req.getPaymentYn()) && StringUtils.isBlank(req.getPaymentRedirUrl())) {
 				errorList.add(new Error("08", "PaymentRedirUrl", "Please Select PaymentRedirUrl  Category  "));
-			}else if (req.getPaymentRedirUrl().length() > 500) {
+			}else if ("Y".equals(req.getPaymentYn()) && req.getPaymentRedirUrl().length() > 500) {
 				errorList.add(new Error("10", "PaymentRedirUrl", "Please Enter PaymentRedirUrl within 500 Characters  "));
 			}
 			

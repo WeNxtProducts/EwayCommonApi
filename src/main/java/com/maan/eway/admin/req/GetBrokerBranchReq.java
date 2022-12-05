@@ -15,4 +15,7 @@ public class GetBrokerBranchReq {
 	
 	@JsonProperty("BranchCode")
 	private String branchCode ;
+	
+	@JsonProperty("BrokerBranchCode")
+	private String brokerBranchCode ;
 }

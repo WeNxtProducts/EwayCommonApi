@@ -38,8 +38,16 @@ public class GetBrokerBranchRes {
 	@JsonProperty("InsuranceId")
 	private String companyId;
 	
+	
+	
 	@JsonProperty("AttachedBranchCode")
 	private String attachedBranch;
+	
+	@JsonProperty("BrokerBranchCode")
+	private String brokerBranchCode;
+	
+	@JsonProperty("BrokerBranchName")
+	private String brokerBranchName;
 
 	@JsonProperty("AttachedCompany")
 	private String brokerAttachedCompany;

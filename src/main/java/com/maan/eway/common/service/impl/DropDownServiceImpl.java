@@ -14,9 +14,11 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -32,6 +34,7 @@ import com.maan.eway.bean.CompanyRegionMaster;
 import com.maan.eway.bean.CompanyStateMaster;
 import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.req.NcdDetailsGetReq;
 import com.maan.eway.common.service.DropDownService;
@@ -841,6 +844,45 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 
 			//List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("INSURANCE_TYPE", "Y");
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query=  cb.createQuery(Tuple.class);
+			// Find All
+			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+			
+			
+			
+			// Join Two Field in Same Alias
+			Expression<String> productId = cb.concat(c.get("productId"), "~");
+			Expression<String> clientName = cb.concat(c.get("clientName"), "~");
+			Expression<String> joinProducIdAndClientName = cb.concat(productId, clientName);
+			
+			// Ref No Sub Query
+			Subquery<String> refNo = query.subquery(String.class);
+			Root<EserviceMotorDetails> ocpm1 = refNo.from(EserviceMotorDetails.class);
+			refNo.select(ocpm1.get("requestReferenceNo"));
+			Predicate a1 = cb.equal(c.get("customerReferenceNo"),ocpm1.get("customerReferenceNo"));
+			refNo.where(a1);
+			
+			// Join Sub Query Name In Same Column
+			Expression<String> referenceNo = cb.concat(refNo, "~");
+			Expression<String> joinProductAmdClientAndRefNo = cb.concat(joinProducIdAndClientName, referenceNo);			
+			
+			query.multiselect( cb.concat(joinProductAmdClientAndRefNo , c.get("customerReferenceNo")  ).alias("MenuKey")  );
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("branchCode")));		
+		
+			// Where
+			Predicate n1 = cb.equal(c.get("customerReferenceNo"),req.getBranchCode());
+			
+			query.where(n1).orderBy(orderList);
+			// Get Result
+			TypedQuery<Tuple> result = em.createQuery(query);
+			List<Tuple> list = result.getResultList();
+			
+			
 			String itemType = "INSURANCE_TYPE" ;
 			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
@@ -1278,6 +1320,29 @@ public class DropDownServiceImpl  implements DropDownService{
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeAsc("CONST_MATERIAL", "Y" , req.getInsuranceId());
 			String itemType = "PLAN_TYPE" ;
 			  
+			List<ListItemValue> getList  = getListItem(req , itemType);
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+	@Override
+	public List<DropDownRes> getSourceType(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
+			String itemType = "SOURCE_TYPE" ;
 			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();

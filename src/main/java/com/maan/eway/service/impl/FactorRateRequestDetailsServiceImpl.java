@@ -559,6 +559,7 @@ this.repository = repo;
 	@Override
 	public List<EservieMotorDetailsViewRes>  getFactorRateRequestDetails(FactorRateDetailsGetReq req) {
 		List<EservieMotorDetailsViewRes>  resList = new ArrayList<EservieMotorDetailsViewRes>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
 		try {
 			// Find Datas
 			List<EserviceMotorDetails>    motorDatas = eserMotorRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
@@ -573,16 +574,17 @@ this.repository = repo;
 				
 				// Response 
 				EservieMotorDetailsViewRes res = new EservieMotorDetailsViewRes();
+				dozerMapper.map(mot,res);
 				res.setActualPremiumFc(mot.getActualPremiumFc()==null?"":mot.getActualPremiumFc().toString());
 				res.setActualPremiumLc(mot.getActualPremiumLc()==null?"":mot.getActualPremiumLc().toString());
 				res.setBranchCode(mot.getBranchCode());
-				res.setCdRefNo(filterVehicleCovers.get(0).getCdRefno());
+				res.setCdRefNo(filterVehicleCovers.size() > 0 ? filterVehicleCovers.get(0).getCdRefno() : "");
 				res.setCreatedBy(mot.getCreatedBy());
 				res.setCurrency(mot.getCurrency());
 				res.setCustomerReferenceNo(mot.getCustomerReferenceNo());
 				res.setExchangeRate(mot.getExchangeRate()==null?"":mot.getExchangeRate().toString());
 				res.setInsuranceId(mot.getCompanyId());
-				res.setMsrefno(filterVehicleCovers.get(0).getMsRefno());
+				res.setMsrefno(filterVehicleCovers.size() > 0 ?filterVehicleCovers.get(0).getMsRefno(): "");
 				res.setOverallPremiumFc(mot.getOverallPremiumFc()==null?"":mot.getOverallPremiumFc().toString());
 				res.setOverallPremiumLc(mot.getOverallPremiumLc()==null?"":mot.getOverallPremiumLc().toString());
 				res.setPolicyStartDate(mot.getPolicyStartDate());
@@ -590,7 +592,7 @@ this.repository = repo;
 				res.setProductId(mot.getProductId());
 				res.setRequestReferenceNo(mot.getRequestReferenceNo());
 				res.setSectionId(mot.getSectionId());
-				res.setVdRefNo(filterVehicleCovers.get(0).getVdRefno());
+				res.setVdRefNo(filterVehicleCovers.size() > 0 ?filterVehicleCovers.get(0).getVdRefno(): "");
 				res.setVehicleId(mot.getVehicleId().toString());
 				res.setCoverList(coverListRes);
 				

@@ -35,7 +35,7 @@ public class LoginBranchMasterId implements Serializable {
     
     private String     companyId ;
     
-    private String     attachedBranch ;
+    private String     brokerBranchCode ;
     
      
 }

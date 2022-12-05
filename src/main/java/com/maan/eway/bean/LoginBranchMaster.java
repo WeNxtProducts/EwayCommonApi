@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -65,6 +64,10 @@ private static final long serialVersionUID = 1L;
     private String     companyId ;
 
     @Id
+    @Column(name="BROKER_BRANCH_CODE", length=20)
+    private String     brokerBranchCode ;
+
+    
     @Column(name="ATTACHED_BRANCH", nullable=false, length=200)
     private String     attachedBranch ;
 
@@ -123,13 +126,15 @@ private static final long serialVersionUID = 1L;
     @Column(name="REMARKS", length=100)
     private String     remarks ;
 
-    @Column(name="BROKER_BRANCH_CODE", length=20)
-    private String     brokerBranchCode ;
-
-
+  
     @Column(name="BROKER_BRANCH_NAME", length=100)
     private String     brokerBranchName;
+    
+    @Column(name="USER_TYPE", nullable=false, length=20)
+    private String     userType ;
 
+    @Column(name="SUB_USER_TYPE", nullable=false, length=20)
+    private String     subUserType ;
 }
 
 

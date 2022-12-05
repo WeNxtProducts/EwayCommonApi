@@ -188,12 +188,12 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				LoginBranchDetailsRes branchRes = new LoginBranchDetailsRes();
 				
 				List<LoginBranchCriteriaRes>  filterBranchCriteria = loginCriteriaRes.stream().filter( o ->  o.getBranchCode().equalsIgnoreCase(data.getBranchCode()) ).collect(Collectors.toList());
-				branchRes.setBranchCode(data.getBranchCode());
+				branchRes.setBranchCode(data.getBrokerBranchCode().equalsIgnoreCase("None") ? data.getBranchCode() : data.getBrokerBranchCode());
 				branchRes.setBranchName(data.getBranchName());
 				// Normal Branch
 				if(filterBranchCriteria.size()>0 ) {
 					LoginBranchCriteriaRes getBranch = filterBranchCriteria.get(0);
-					branchRes.setBranchName(getBranch.getBranchName()  );
+					branchRes.setBranchName(data.getBrokerBranchCode().equalsIgnoreCase("None") ?  getBranch.getBranchName(): data.getBrokerBranchName()  );
 					branchRes.setRegionCode(getBranch.getRegionCode() );
 				//	branchRes.setRegionName(getBranch.getRegionName() );
 					branchRes.setInsuranceId(getBranch.getCompanyId() );
@@ -204,7 +204,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				
 				// Attached Branch
 				if(! data.getBranchCode().equalsIgnoreCase(data.getAttachedBranch())  ) {
-					List<LoginBranchCriteriaRes>  filterAttachedBranch = loginCriteriaRes.stream().filter( o ->  o.getBranchCode().equalsIgnoreCase(data.getAttachedBranch()) ).collect(Collectors.toList());
+					List<LoginBranchCriteriaRes>  filterAttachedBranch = loginCriteriaRes.stream().filter( o ->  o.getBranchCode().equalsIgnoreCase(data.getBranchCode()) ).collect(Collectors.toList());
 					branchRes.setAttachedBranchCode(data.getAttachedBranch());
 					if(filterAttachedBranch.size()>0 ) {
 						LoginBranchCriteriaRes getAttachedBranch = filterAttachedBranch.get(0);

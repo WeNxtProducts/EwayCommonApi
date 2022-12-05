@@ -31,6 +31,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.LoginBranchMaster;
+import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.UWQuestionsMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.UwQuestionChangeStatusReq;
@@ -39,6 +41,8 @@ import com.maan.eway.master.req.UwQuestionMasterSaveReq;
 import com.maan.eway.master.req.UwQuestionsMasterGetAllReq;
 import com.maan.eway.master.res.UwQuestionMasterRes;
 import com.maan.eway.master.service.UwQuestionMasterService;
+import com.maan.eway.repository.LoginBranchMasterRepository;
+import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.UwQuestionMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -54,6 +58,12 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 	private EntityManager em;
 
 	Gson json = new Gson();
+	
+	@Autowired
+	private LoginBranchMasterRepository loginBranchRepo ;
+	
+	@Autowired
+	private LoginMasterRepository loginRepo ;
 
 	private Logger log = LogManager.getLogger(UwQuesitonMasterServiceImpl.class);
 
@@ -405,6 +415,11 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 		List<UwQuestionMasterRes> resList = new ArrayList<UwQuestionMasterRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
+			
+			 LoginMaster loginData =  loginRepo.findByLoginId(req.getLoginId());
+			 
+			LoginBranchMaster loginBranchData = loginBranchRepo.findByBrokerBranchCodeAndLoginIdAndCompanyId(req.getBranchCode(), req.getLoginId(), req.getCompanyId());
+			
 			List<UWQuestionsMaster> list = new ArrayList<UWQuestionsMaster>();
 		
 			// Find Latest Record
@@ -435,7 +450,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
-			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n3 = cb.equal(b.get("branchCode"), loginData.getUserType().equalsIgnoreCase("Issuer") ? req.getBranchCode() : loginBranchData.getBranchCode());
 			Predicate n4 = cb.equal(b.get("status"), "Y");
 			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
 			Predicate n6 = cb.or(n3,n5);
