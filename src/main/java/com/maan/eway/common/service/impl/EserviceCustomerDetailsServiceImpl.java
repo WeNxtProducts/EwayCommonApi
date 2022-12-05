@@ -257,7 +257,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				errorList.add(new Error("34", "Status", "Please Enter Status"));
 			} else if (req.getStatus().length() > 1) {
 				errorList.add(new Error("34", "Status", "Enter Status in 1 Character Only"));
-			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()))) {
+			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()) ||  "P".equals(req.getStatus()) )) {
 				errorList.add(new Error("34", "Status", "Enter Status Y or N Only"));
 			}
 			if (StringUtils.isBlank(req.getCreatedBy())) {
@@ -777,6 +777,33 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			return null;
 		}
 		return list;
+	}
+
+	@Override
+	public List<CustomerDetailsGetRes> getActiveCustomerDetails(GetAllCustomerDetailsReq req) {
+		List<CustomerDetailsGetRes> resList = new ArrayList<CustomerDetailsGetRes>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+
+		try {
+			// Limit , Offset
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 10 : Integer.valueOf(req.getOffset());
+			Pageable paging = PageRequest.of(limit, offset, Sort.by("updatedDate").descending());
+
+			Page<EserviceCustomerDetails> datas = repository.findByCompanyIdAndProductIdAndCreatedByAndStatus
+					(paging, req.getComapanyId(), Integer.valueOf(req.getProductId()) , req.getCreatedBy(), "Y");
+			for (EserviceCustomerDetails data : datas) {
+				CustomerDetailsGetRes res = new CustomerDetailsGetRes();
+				res = dozerMapper.map(data, CustomerDetailsGetRes.class);
+				resList.add(res);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
 	}
 	
 

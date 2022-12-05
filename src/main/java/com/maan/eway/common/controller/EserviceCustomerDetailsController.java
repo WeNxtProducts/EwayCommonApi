@@ -102,6 +102,23 @@ public class EserviceCustomerDetailsController {
 	return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);	
 	}
 	}
+	
+	@PostMapping("/getactivecustomerdetails")
+	public ResponseEntity<CommonRes> getActiveCustomerDetails(@RequestBody GetAllCustomerDetailsReq req){
+	CommonRes data = new CommonRes();
+	reqPrinter.reqPrint(req);
+	List<CustomerDetailsGetRes> res = entityService.getActiveCustomerDetails(req);
+	data.setCommonResponse(res);
+	data.setErrorMessage(Collections.emptyList());
+	data.setIsError(false);
+	data.setMessage("Success");
+	if(res!=null) {
+		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+	}
+	else {
+	return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);	
+	}
+	}
 
 	// Search by Vr Tin No
 	
