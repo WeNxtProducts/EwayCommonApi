@@ -191,17 +191,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="REJECT_REASON", length=100)
     private String     rejectReason ;
 
-    @Column(name="AGE_3_TO_18")
-    private Integer    age3To18 ;
-
-    @Column(name="AGE_19_TO_65")
-    private Integer    age19To65 ;
-
     @Column(name="REFERAL_REMARKS", length=100)
     private String     referalRemarks ;
-
-    @Column(name="AGE_66_TO_75")
-    private Integer    age66To75 ;
 
     @Column(name="BDM_CODE", length=20)
     private String     bdmCode ;
@@ -209,14 +200,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="SOURCE_TYPE", length=20)
     private String     sourceType ;
 
-    @Column(name="AGE_76_TO_80")
-    private Integer    age76To80 ;
-
     @Column(name="CUSTOMER_CODE", length=100)
     private String     customerCode ;
-
-    @Column(name="AGE_81_TO_110")
-    private Integer    age81To110 ;
 
 
 
