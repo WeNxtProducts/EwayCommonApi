@@ -81,13 +81,7 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="PLAN_TYPE_ID")
     private Integer    planTypeId ;
-    
-    @Column(name="CURRENCY")
-    private String    currency ;
 
-    @Column(name="EXCHANGE_RATE")
-    private Double     exchangeRate ;
-    
     @Column(name="TRAVEL_COVER_DURATION")
     private Integer    travelCoverDuration ;
 
@@ -112,25 +106,21 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="PROMOCODE", length=100)
     private String     promocode ;
+    
+    @Column(name="CURRENCY")
+    private String    currency ;
 
+    @Column(name="EXCHANGE_RATE")
+    private Double     exchangeRate ;
+    
     @Column(name="COVID_COVER_YN", length=20)
     private String     covidCoverYn ;
 
-    @Column(name="AGE_3_TO_18")
-    private Integer    age3To18 ;
-
-    @Column(name="AGE_19_TO_65")
-    private Integer    age19To65 ;
-
-    @Column(name="AGE_66_TO_75")
-    private Integer    age66To75 ;
-
-    @Column(name="AGE_76_TO_80")
-    private Integer    age76To80 ;
-
-    @Column(name="AGE_81_TO_110")
-    private Integer    age81To110 ;
-
+    @Column(name="AGE_GROUP_ID")
+    private Integer    ageGroupId ;
+    
+    @Column(name="GROUP_COUNT")
+    private Integer    groupCount ;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 
