@@ -258,7 +258,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			} else if (req.getStatus().length() > 1) {
 				errorList.add(new Error("34", "Status", "Enter Status in 1 Character Only"));
 			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()) ||  "P".equals(req.getStatus()) )) {
-				errorList.add(new Error("34", "Status", "Enter Status Y or N Only"));
+				errorList.add(new Error("34", "Status", "Plese Enter Status"));
 			}
 			if (StringUtils.isBlank(req.getCreatedBy())) {
 				errorList.add(new Error("35", "CreatedBy", "Please Enter CreatedBy "));

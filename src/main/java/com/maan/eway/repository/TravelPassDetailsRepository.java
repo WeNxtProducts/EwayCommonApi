@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.maan.eway.bean.TravelPassDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,5 +30,11 @@ import com.maan.eway.bean.TravelPassDetailsId;
  
  
 public interface TravelPassDetailsRepository  extends JpaRepository<TravelPassDetails,TravelPassDetailsId > , JpaSpecificationExecutor<TravelPassDetails> {
+
+	
+	List<TravelPassDetails> findByStatusOrderBySerialNoAsc(String string);
+
+	TravelPassDetails findByRequestReferenceNoAndTravelIdAndSerialNoAndGenderId(String requestReferenceNo,
+			Integer valueOf, String serialNo, Integer valueOf2);
 
 }

@@ -61,12 +61,12 @@ private static final long serialVersionUID = 1L;
     private Integer    travelId ;
 
     @Id
-    @Column(name="SERIAL_NO", nullable=false)
-    private Long       serialNo ;
+    @Column(name="SERIAL_NO", nullable=false,length=20)
+    private String  serialNo ;
 
     @Id
-    @Column(name="GENDER", nullable=false, length=10)
-    private String     gender ;
+    @Column(name="GENDER_ID", nullable=false)
+    private Integer     genderId ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="PASSENGER_NAME", length=120)
@@ -75,16 +75,30 @@ private static final long serialVersionUID = 1L;
     @Column(name="PASSENGER_LAST_NAME", length=120)
     private String     passengerLastName ;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     @Column(name="DOB")
     private Date       dob ;
 
+    @Column(name="GENDER_DESC", length=120)
+    private String     genderDesc;
+
+    
+    @Column(name="NAME_TITLE_ID")
+    private Integer  nameTitleId;
+
+    @Column(name="NAME_TITLE_DESC",length=10)
+    private String  nameTitleDesc;
+    
     @Column(name="AGE")
     private Integer    age ;
 
-    @Column(name="RELATION", length=30)
-    private String     relation ;
+    @Column(name="RELATION_ID")
+    private Integer     relationId ;
 
+    @Column(name="RELATION_DESC", length=30)
+    private String     relationDesc;
+
+    
     @Column(name="NATIONALITY", length=50)
     private String     nationality ;
 
