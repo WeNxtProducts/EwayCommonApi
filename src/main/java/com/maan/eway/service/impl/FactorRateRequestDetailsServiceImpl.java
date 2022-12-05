@@ -35,11 +35,13 @@ import com.maan.eway.error.Error;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.req.FactorRateDetailsGetReq;
+import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.res.calc.Cover;
 import com.maan.eway.res.calc.Discount;
 import com.maan.eway.res.calc.Loading;
 import com.maan.eway.res.calc.Tax;
+import com.maan.eway.service.CalculatorEngine;
 import com.maan.eway.service.FactorRateRequestDetailsService;
 /**
 * <h2>FactorRateRequestDetailsServiceimpl</h2>
@@ -53,6 +55,10 @@ private FactorRateRequestDetailsRepository repository;
 
 @Autowired
 private EServiceMotorDetailsRepository eserMotorRepo;
+
+
+@Autowired
+private CalculatorEngine calcEngine;
 
 private Logger log=LogManager.getLogger(FactorRateRequestDetailsServiceImpl.class);
 /*
@@ -409,7 +415,7 @@ this.repository = repo;
 				saveTax.setVdRefno( primaryKeys.get("VdRefNo").toString());
 				saveTax.setMsRefno( primaryKeys.get("MsRefNo").toString());	
 				saveTax.setEntryDate(new Date());			
-				saveTax.setCreatedBy(primaryKeys.get("CreatedBy").toString());
+				saveTax.setCreatedBy(primaryKeys.get("CreatedBy")==null?"":primaryKeys.get("CreatedBy").toString());
 				saveTax.setSubCoverId(StringUtils.isBlank(coverReq.getSubCoverId()) ?Integer.valueOf(coverReq.getCoverId()) : Integer.valueOf(coverReq.getSubCoverId()) );
 				saveTax.setCoverId(Integer.valueOf(coverReq.getCoverId()));
 				saveTax.setStatus("Y");
@@ -908,6 +914,24 @@ this.repository = repo;
 				}
 				
 			}
+			
+			
+			CalcEngine engine= new CalcEngine();
+			engine.setAgencyCode(findMot.getAgencyCode());
+			engine.setBranchCode(findMot.getBranchCode());
+			engine.setCdRefNo(findCovers.get(0).getCdRefno());
+			engine.setVdRefNo(findCovers.get(0).getVdRefno());
+			engine.setInsuranceId(findMot.getCompanyId());
+			engine.setMsrefno(findCovers.get(0).getMsRefno());
+			engine.setProductId(findMot.getProductId());
+			engine.setRequestReferenceNo(findMot.getRequestReferenceNo());
+			engine.setSectionId(findMot.getSectionId());
+			engine.setVehicleId(findMot.getVehicleId()+"");
+			engine.setCreatedBy(req.getCreatedBy());
+			engine.setMsVehicleDetails(null);
+			
+			calcEngine.referalCalculator(engine);
+			
 			
 			// Get Updated Covers
 			findCovers = repository.findByRequestReferenceNoAndVehicleIdOrderByCoverIdAsc(req.getRequestReferenceNo() , req.getVehicleId());

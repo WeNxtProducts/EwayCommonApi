@@ -508,7 +508,14 @@ public class CalculatorEngineService implements CalculatorEngine{
 							subcovers.put("Y", subcov);						
 					 }
 					 
-					 
+					 if(!nonSubcovers.isEmpty() && !subcovers.isEmpty() ) {
+						 totalcovers=subcovers.get("Y");
+						 totalcovers.addAll(nonSubcovers.get("N"));
+					 }else if(!nonSubcovers.isEmpty() && subcovers.isEmpty()  ) {
+						 totalcovers=nonSubcovers.get("N");
+					 }else if( nonSubcovers.isEmpty() && !subcovers.isEmpty()  ) {
+						 totalcovers=subcovers.get("Y");
+					 }
 					 
 					 calc.setEngine(request,retc,commontbl,vehicles,customers,prorata);
 					 
