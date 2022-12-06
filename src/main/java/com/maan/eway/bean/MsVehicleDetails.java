@@ -171,10 +171,12 @@ private static final long serialVersionUID = 1L;
 		private String gpsyn;
 
 
+		@Column(name="GROUP_COUNT")
+	    private Integer groupCount;
+	    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 
 }
-
 
 

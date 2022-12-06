@@ -92,6 +92,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="TOTAL_PASSENGERS")
     private Integer    totalPassengers ;
 
+	@Column(name="Period_of_Insurance", nullable=false, length=10)
+	private String     periodOfInsurance ;
+	
     @Column(name="AGE")
     private Integer    age ;
 
