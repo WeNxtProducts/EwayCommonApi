@@ -97,6 +97,7 @@ import com.maan.eway.bean.LoginUserInfoArch;
 import com.maan.eway.bean.MenuMaster;
 import com.maan.eway.bean.StateMaster;
 import com.maan.eway.master.req.BrokerProductReq;
+import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterArchRepository;
@@ -1534,6 +1535,66 @@ this.repository = repo;
 			}
 			return res;
 		}
+
+
+	@Override
+	public List<BrokerDropDownRes> getBrokerIdsByCompany(LovDropDownReq req) {
+		List<BrokerDropDownRes> resList = new ArrayList<BrokerDropDownRes>();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
+		ModelMapper mapper = new ModelMapper(); 
+		try { 
+			// Limit Offset
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<LoginDetailsCriteriaRes> query = cb.createQuery(LoginDetailsCriteriaRes.class);
+			List<LoginDetailsCriteriaRes> list = new ArrayList<LoginDetailsCriteriaRes>();
+			
+			// Find All
+			Root<LoginMaster> l = query.from(LoginMaster.class);
+			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
+			
+
+			// Select
+			query.multiselect( l.get("loginId").alias("loginId") , l.get("createdBy").alias("createdBy") , 
+					l.get("entryDate").alias("entryDate") , l.get("updatedDate").alias("updatedDate") ,
+					l.get("updatedBy").alias("updatedBy") , l.get("attachedBranches").alias("attachedBranches") ,
+					l.get("status").alias("status") ,  l.get("oaCode").alias("oaCode"),l.get("agencyCode").alias("agencyCode") ,l.get("subUserType").alias("subUserType"), 
+					 l.get("bankCode").alias("bankCode") ,
+					//cb.selectCase().when(l.get("bankCode").isNotNull(), l.get("bankCode") ).otherwise("No Bank").alias("BankCode") ,
+					u.get("userName").alias("userName")  ,
+					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail") ,  l.get("companyId").alias("companyId")   );
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(u.get("userName")));
+			
+			// Where
+			Predicate n1 = cb.equal(l.get("userType"), "Broker");
+			Predicate n2 = cb.equal(l.get("status"), "Y");
+			Predicate n3 = cb.equal(l.get("loginId"), u.get("loginId"));
+			Predicate n4 = cb.equal(l.get("companyId"),req.getInsuranceId());
+
+			query.where(n1,n2,n3,n4).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<LoginDetailsCriteriaRes> result = em.createQuery(query);
+			list = result.getResultList();
+			
+
+			for( LoginDetailsCriteriaRes data :list ) {
+				BrokerDropDownRes res = new BrokerDropDownRes();
+				res.setBrokerId(data.getAgencyCode());
+				res.setBrokerName(data.getUserName());
+				res.setCompanyId(data.getCompanyId());
+				resList.add(res);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
 
 }
 

@@ -38,6 +38,7 @@ import com.maan.eway.admin.res.MenuIdGetRes;
 import com.maan.eway.admin.res.UserDetailsGetRes;
 import com.maan.eway.auth.dto.Menu;
 import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.res.BrokerDropDownRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -76,6 +77,7 @@ SuccessRes savemenuids(MenuIdSaveReq req);
 MenuIdGetRes getmenuids(MenuIdGetReq req);
 
 List<BrokerDropDownRes> getBrokerIds();
+List<BrokerDropDownRes> getBrokerIdsByCompany(LovDropDownReq req);
 
 
 

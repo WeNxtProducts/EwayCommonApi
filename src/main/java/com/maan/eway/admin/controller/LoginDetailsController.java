@@ -46,6 +46,7 @@ import com.maan.eway.admin.service.LoginDetailsService;
 import com.maan.eway.admin.service.LoginValidationService;
 import com.maan.eway.auth.dto.Menu;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.res.BrokerDropDownRes;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.res.DropDownRes;
@@ -428,6 +429,25 @@ public class LoginDetailsController {
 
 	}
 	
+	@PostMapping("/dropdown/brokerids")
+	@ApiOperation(value = "This method is to BrokerIds  Drop Down")
+	public ResponseEntity<CommonRes> getBrokerIdsByCompany(@RequestBody  LovDropDownReq req) {
+		CommonRes data = new CommonRes();
+
+		// Save
+		List<BrokerDropDownRes> res = entityService.getBrokerIdsByCompany(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
 	
 	@PostMapping("/savemenuids")
 	@ApiOperation(value="This method is to save menu ids")

@@ -33,6 +33,9 @@ public interface AdminDropDownService {
 	List<DropDownRes> getSourceType(LovDropDownReq req);
 
 
+	List<DropDownRes> getCommissionType(LovDropDownReq req);
+
+
 	
 
 
