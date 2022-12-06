@@ -62,6 +62,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="VD_REFNO", nullable=false)
     private Long       vdRefno ;
+    
+    @Id
+    @Column(name="GROUP_ID")
+    private Integer    groupId ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="TRAVEL_COVER_ID")
@@ -116,8 +120,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="COVID_COVER_YN", length=20)
     private String     covidCoverYn ;
 
-    @Column(name="AGE_GROUP_ID")
-    private Integer    ageGroupId ;
+  
     
     @Column(name="GROUP_COUNT")
     private Integer    groupCount ;

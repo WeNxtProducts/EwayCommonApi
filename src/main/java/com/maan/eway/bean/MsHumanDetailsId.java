@@ -31,9 +31,10 @@ public class MsHumanDetailsId implements Serializable {
     //--- ENTITY KEY ATTRIBUTES 
     private String     requestReferenceNo ;
     
-    private Integer    travelId ;
+    private Integer    humanId ;
     
     private Long       vdRefno ;
     
+    private Integer    groupId ;
      
 }
