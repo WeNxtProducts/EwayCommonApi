@@ -56,8 +56,8 @@ private static final long serialVersionUID = 1L;
     private String     requestReferenceNo ;
 
     @Id
-    @Column(name="TRAVEL_ID", nullable=false)
-    private Integer    travelId ;
+    @Column(name="HUMAN_ID", nullable=false)
+    private Integer    humanId ;
 
     @Id
     @Column(name="VD_REFNO", nullable=false)
