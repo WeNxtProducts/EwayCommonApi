@@ -21,9 +21,11 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.AcExecutiveGetReq;
 import com.maan.eway.master.req.AcExecutiveGetallReq;
 import com.maan.eway.master.req.AcExecutiveNonSelectedReq;
+import com.maan.eway.master.req.AcExecutiveProductDropDownReq;
 import com.maan.eway.master.req.AcExecutiveSaveReq;
 import com.maan.eway.master.req.AcExecutiveUpdateReq;
 import com.maan.eway.master.res.AcExecutiveGetRes;
+import com.maan.eway.master.res.AcExecutiveProductDropdownRes;
 import com.maan.eway.master.res.CompanyProductMasterRes;
 import com.maan.eway.master.service.AcExecutiveProductMasterService;
 import com.maan.eway.res.SuccessRes;
@@ -158,7 +160,24 @@ public class AcExecutiveProductMasterController {
 		}
 	}
 
-	
-	
+
+	// Dropdown
+	@PostMapping("/dropdownacexecutive")
+	public ResponseEntity<CommonRes> dropdownacexecutive(@RequestBody AcExecutiveProductDropDownReq req){
+		CommonRes data = new CommonRes();
+			reqPrinter.reqPrint(req);
+			List<AcExecutiveProductDropdownRes> res = service.dropdownacexecutive(req);
+			data.setCommonResponse(res);
+			data.setErrorMessage(Collections.emptyList());
+			data.setIsError(false);
+			data.setMessage("Success");
+			if(res!=null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			}
+			else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
 	
 }
