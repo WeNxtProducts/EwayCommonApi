@@ -596,7 +596,10 @@ public List<CuurencyDropDownRes> getCurrencyMasterDropdown( CurrencyDropDownReq 
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		javax.persistence.criteria.Predicate a11 = cb.equal(c.get("currencyId"),ocpm1.get("currencyId") );
 		javax.persistence.criteria.Predicate a12 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		effectiveDate.where(a11,a12);
+		javax.persistence.criteria.Predicate a18 = cb.equal(c.get("status"),ocpm1.get("status") );
+		Predicate a22 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+		
+		effectiveDate.where(a11,a12,a18,a22);
 		
 		// Effective Date Max Filter
 		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
@@ -604,14 +607,18 @@ public List<CuurencyDropDownRes> getCurrencyMasterDropdown( CurrencyDropDownReq 
 		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
 		javax.persistence.criteria.Predicate a13 = cb.equal(c.get("currencyId"),ocpm2.get("currencyId") );
 		javax.persistence.criteria.Predicate a14 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-		effectiveDate2.where(a13,a14);
+		javax.persistence.criteria.Predicate a19 = cb.equal(c.get("status"),ocpm2.get("status") );
+		Predicate a23 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+		
+		effectiveDate2.where(a13,a14,a19,a23);
 		
 	    // Where	
 		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
 		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 		javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-		
-		query.where(n1,n2,n3).orderBy(orderList);
+		javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"),req.getInsuranceId());
+
+		query.where(n1,n2,n3,n4).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<Tuple> result = em.createQuery(query);			
