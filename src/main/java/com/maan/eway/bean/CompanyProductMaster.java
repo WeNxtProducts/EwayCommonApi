@@ -144,8 +144,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="CREATED_BY", nullable=false, length=50)
     private String     createdBy ;
 
-
-    //--- ENTITY LINKS ( RELATIONSHIP )
+    @Column(name="MOTOR_YN", nullable=false, length=1)
+    private String     motorYn ;
 
 
 }
