@@ -18,6 +18,9 @@ public class GetAllCustomerDetailsReq {
     @JsonProperty("BranchCode")
     private String   branchCode;
     
+    @JsonProperty("BrokerBranchCode")
+    private String   brokerBranchCode;
+    
     @JsonProperty("CreatedBy")
     private String   createdBy;
     

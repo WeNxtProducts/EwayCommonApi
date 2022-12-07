@@ -40,6 +40,7 @@ import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.MsCustomerDetails;
 import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.StateMaster;
@@ -55,6 +56,7 @@ import com.maan.eway.master.req.OccupationMasterGetReq;
 import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.ListItemValueRepository;
+import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.OccupationMasterRepository;
 import com.maan.eway.res.SuccessRes;
 
@@ -72,6 +74,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 
 	@Autowired
 	private OccupationMasterRepository occupationRepo;
+	
+	@Autowired
+	private LoginMasterRepository loginRepo;
 
 	
 	@PersistenceContext
@@ -687,8 +692,16 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			int offset = StringUtils.isBlank(req.getOffset()) ? 10 : Integer.valueOf(req.getOffset());
 			Pageable paging = PageRequest.of(limit, offset, Sort.by("updatedDate").descending());
 
-			Page<EserviceCustomerDetails> datas = repository.findByCompanyIdAndProductIdAndCreatedBy
-					(paging, req.getComapanyId(), Integer.valueOf(req.getProductId()) , req.getCreatedBy());
+			LoginMaster  loginData = loginRepo.findByLoginId(req.getCreatedBy());
+			Page<EserviceCustomerDetails> datas = null ;
+			if(loginData.getUserType().equalsIgnoreCase("Broker") ||  loginData.getUserType().equalsIgnoreCase("User") ) {
+				datas = repository.findByCompanyIdAndBrokerBranchCodeAndProductIdAndCreatedBy
+						(paging, req.getComapanyId(), req.getBrokerBranchCode() , Integer.valueOf(req.getProductId()) , req.getCreatedBy());
+			} else {
+				datas = repository.findByCompanyIdAndBranchCodeAndProductIdAndCreatedBy
+						(paging, req.getComapanyId(), req.getBranchCode() ,  Integer.valueOf(req.getProductId()) , req.getCreatedBy());	
+			}
+			
 			for (EserviceCustomerDetails data : datas) {
 				CustomerDetailsGetRes res = new CustomerDetailsGetRes();
 				res = dozerMapper.map(data, CustomerDetailsGetRes.class);
@@ -789,9 +802,16 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 10 : Integer.valueOf(req.getOffset());
 			Pageable paging = PageRequest.of(limit, offset, Sort.by("updatedDate").descending());
-
-			Page<EserviceCustomerDetails> datas = repository.findByCompanyIdAndProductIdAndCreatedByAndStatus
-					(paging, req.getComapanyId(), Integer.valueOf(req.getProductId()) , req.getCreatedBy(), "Y");
+			LoginMaster  loginData = loginRepo.findByLoginId(req.getCreatedBy());
+			Page<EserviceCustomerDetails> datas = null ;
+			if(loginData.getUserType().equalsIgnoreCase("Broker") ||  loginData.getUserType().equalsIgnoreCase("User") ) {
+				datas = repository.findByCompanyIdAndBrokerBranchCodeAndProductIdAndCreatedByAndStatus
+						(paging, req.getComapanyId(), req.getBrokerBranchCode() , Integer.valueOf(req.getProductId()) , req.getCreatedBy(), "Y");
+			} else {
+				datas = repository.findByCompanyIdAndBranchCodeAndProductIdAndCreatedByAndStatus
+						(paging, req.getComapanyId(), req.getBranchCode() ,  Integer.valueOf(req.getProductId()) , req.getCreatedBy(), "Y");	
+			}
+			
 			for (EserviceCustomerDetails data : datas) {
 				CustomerDetailsGetRes res = new CustomerDetailsGetRes();
 				res = dozerMapper.map(data, CustomerDetailsGetRes.class);

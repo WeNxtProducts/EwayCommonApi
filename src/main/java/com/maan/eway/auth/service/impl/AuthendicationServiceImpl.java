@@ -188,12 +188,14 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				LoginBranchDetailsRes branchRes = new LoginBranchDetailsRes();
 				
 				List<LoginBranchCriteriaRes>  filterBranchCriteria = loginCriteriaRes.stream().filter( o ->  o.getBranchCode().equalsIgnoreCase(data.getBranchCode()) ).collect(Collectors.toList());
-				branchRes.setBranchCode(data.getBrokerBranchCode().equalsIgnoreCase("None") ? data.getBranchCode() : data.getBrokerBranchCode());
+				branchRes.setBranchCode( data.getBranchCode() );
 				branchRes.setBranchName(data.getBranchName());
 				// Normal Branch
 				if(filterBranchCriteria.size()>0 ) {
 					LoginBranchCriteriaRes getBranch = filterBranchCriteria.get(0);
-					branchRes.setBranchName(data.getBrokerBranchCode().equalsIgnoreCase("None") ?  getBranch.getBranchName(): data.getBrokerBranchName()  );
+					branchRes.setBranchName(getBranch.getBranchName());
+					branchRes.setBrokerBranchCode(data.getBrokerBranchCode());
+					branchRes.setBrokerBranchName(data.getBrokerBranchName());
 					branchRes.setRegionCode(getBranch.getRegionCode() );
 				//	branchRes.setRegionName(getBranch.getRegionName() );
 					branchRes.setInsuranceId(getBranch.getCompanyId() );

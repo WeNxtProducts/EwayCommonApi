@@ -417,9 +417,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 		try {
 			
 			 LoginMaster loginData =  loginRepo.findByLoginId(req.getLoginId());
-			 
-			LoginBranchMaster loginBranchData = loginBranchRepo.findByBrokerBranchCodeAndLoginIdAndCompanyId(req.getBranchCode(), req.getLoginId(), req.getCompanyId());
-			
+		
 			List<UWQuestionsMaster> list = new ArrayList<UWQuestionsMaster>();
 		
 			// Find Latest Record
@@ -450,7 +448,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
-			Predicate n3 = cb.equal(b.get("branchCode"), loginData.getUserType().equalsIgnoreCase("Issuer") ? req.getBranchCode() : loginBranchData.getBranchCode());
+			Predicate n3 = cb.equal(b.get("branchCode"),  req.getBranchCode() );
 			Predicate n4 = cb.equal(b.get("status"), "Y");
 			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
 			Predicate n6 = cb.or(n3,n5);

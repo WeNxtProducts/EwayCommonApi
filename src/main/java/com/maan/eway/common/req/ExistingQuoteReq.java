@@ -10,6 +10,8 @@ public class ExistingQuoteReq {
 
 	   @JsonProperty("BranchCode")
 	   private String     branchCode ;
+	   @JsonProperty("BrokerBranchCode")
+	   private String     brokerBranchCode ;
 	   @JsonProperty("InsuranceId")
 	   private String     insuranceId     ;
 	   @JsonProperty("CreatedBy")

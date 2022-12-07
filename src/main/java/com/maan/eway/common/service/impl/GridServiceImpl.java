@@ -102,6 +102,8 @@ public class GridServiceImpl implements GridService {
 			}
 			// Branch Res
 			List<String> branches = new ArrayList<String>();
+			
+			
 			if (req.getBranchCode().equalsIgnoreCase("99999") ) {
 				
 				List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(loginId);
@@ -112,8 +114,10 @@ public class GridServiceImpl implements GridService {
 							
 				}
 				 
+			} else if( req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User") ) {
+				branches.add( req.getBrokerBranchCode()) ;
 			} else {
-				branches.add(req.getBranchCode());
+				branches.add(req.getBranchCode()) ;
 			}
 			
 			// Product Wise Get			
@@ -170,13 +174,17 @@ public class GridServiceImpl implements GridService {
 			if (req.getBranchCode().equalsIgnoreCase("99999") ) {
 				
 				List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(loginId);
+				
 				 branches =loginBranch.stream().filter( o -> ! o.getBrokerBranchCode().equalsIgnoreCase("None") ) .map(LoginBranchMaster ::getBrokerBranchCode ).collect(Collectors.toList()) ;
 				if(branches.size()<=0 ) {
 					 branches =loginBranch.stream() .map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
 							
-				}	
+				}
+				 
+			} else if( req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User") ) {
+				branches.add(req.getBrokerBranchCode()) ;
 			} else {
-				branches.add(req.getBranchCode());
+				branches.add(req.getBranchCode()) ;
 			}
 			
 			// Product Wise Get	
@@ -221,14 +229,17 @@ public class GridServiceImpl implements GridService {
 			if (req.getBranchCode().equalsIgnoreCase("99999") ) {
 				
 				List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(loginId);
+				
 				 branches =loginBranch.stream().filter( o -> ! o.getBrokerBranchCode().equalsIgnoreCase("None") ) .map(LoginBranchMaster ::getBrokerBranchCode ).collect(Collectors.toList()) ;
 				if(branches.size()<=0 ) {
 					 branches =loginBranch.stream() .map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
 							
 				}
-					
+				 
+			} else if( req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User") ) {
+				branches.add(req.getBrokerBranchCode()) ;
 			} else {
-				branches.add(req.getBranchCode());
+				branches.add(req.getBranchCode()) ;
 			}
 			
 			List<QuoteCriteriaRes> rejectedQuoteList = new ArrayList<QuoteCriteriaRes>();
@@ -274,14 +285,17 @@ public class GridServiceImpl implements GridService {
 			if (req.getBranchCode().equalsIgnoreCase("99999") ) {
 				
 				List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(loginId);
+				
 				 branches =loginBranch.stream().filter( o -> ! o.getBrokerBranchCode().equalsIgnoreCase("None") ) .map(LoginBranchMaster ::getBrokerBranchCode ).collect(Collectors.toList()) ;
 				if(branches.size()<=0 ) {
 					 branches =loginBranch.stream() .map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
 							
 				}
-					
+				 
+			} else if( req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User") ) {
+				branches.add(req.getBrokerBranchCode()) ;
 			} else {
-				branches.add(req.getBranchCode());
+				branches.add(req.getBranchCode()) ;
 			}
 			
 			List<QuoteCriteriaRes> referralPendingList = new ArrayList<QuoteCriteriaRes>();
@@ -325,14 +339,17 @@ public class GridServiceImpl implements GridService {
 			if (req.getBranchCode().equalsIgnoreCase("99999") ) {
 				
 				List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(loginId);
+				
 				 branches =loginBranch.stream().filter( o -> ! o.getBrokerBranchCode().equalsIgnoreCase("None") ) .map(LoginBranchMaster ::getBrokerBranchCode ).collect(Collectors.toList()) ;
-					if(branches.size()<=0 ) {
-						 branches =loginBranch.stream() .map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
-								
-					}
-					
+				if(branches.size()<=0 ) {
+					 branches =loginBranch.stream() .map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
+							
+				}
+				 
+			} else if( req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User") ) {
+				branches.add(req.getBrokerBranchCode()) ;
 			} else {
-				branches.add(req.getBranchCode());
+				branches.add(req.getBranchCode()) ;
 			}
 			
 			List<QuoteCriteriaRes> referralApprovedList = new ArrayList<QuoteCriteriaRes>();
@@ -376,14 +393,17 @@ public class GridServiceImpl implements GridService {
 			if (req.getBranchCode().equalsIgnoreCase("99999") ) {
 				
 				List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(loginId);
+				
 				 branches =loginBranch.stream().filter( o -> ! o.getBrokerBranchCode().equalsIgnoreCase("None") ) .map(LoginBranchMaster ::getBrokerBranchCode ).collect(Collectors.toList()) ;
-					if(branches.size()<=0 ) {
-						 branches =loginBranch.stream() .map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
-								
-					}
-					
+				if(branches.size()<=0 ) {
+					 branches =loginBranch.stream() .map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
+							
+				}
+				 
+			} else if( req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User") ) {
+				branches.add(req.getBrokerBranchCode()) ;
 			} else {
-				branches.add(req.getBranchCode());
+				branches.add(req.getBranchCode()) ;
 			}
 			
 			List<QuoteCriteriaRes> referralRejectedList = new ArrayList<QuoteCriteriaRes>();
