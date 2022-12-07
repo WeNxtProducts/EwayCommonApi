@@ -1,5 +1,6 @@
 package com.maan.eway.admin.controller;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,9 +18,11 @@ import com.maan.eway.admin.req.AttachIssuerBrannchReq;
 import com.maan.eway.admin.req.BrokerBranchGetReq;
 import com.maan.eway.admin.req.GetAllBrokerBranchReq;
 import com.maan.eway.admin.req.GetBrokerBranchReq;
+import com.maan.eway.admin.req.GetallBrokerBranchesReq;
 import com.maan.eway.admin.req.IssuerBranchGetReq;
 import com.maan.eway.admin.res.BrokerCompanyGetRes;
 import com.maan.eway.admin.res.GetBrokerBranchRes;
+import com.maan.eway.admin.res.GetallBrokerBranchesRes;
 import com.maan.eway.admin.res.IssuerCompanyGetRes;
 import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.service.LoginBranchService;
@@ -216,5 +219,23 @@ public class LoginBranchController {
 		}
 	}
 
+
+	@PostMapping("/getallbrokerbranches")
+	@ApiOperation(value="This method is to Get all Broker Company Branches")
+	public ResponseEntity<CommonRes> getallbrokerbranches(@RequestBody GetallBrokerBranchesReq req){
+			reqPrinter.reqPrint(req);
+			CommonRes data = new CommonRes();
+	List<GetallBrokerBranchesRes> res = entityService.getallBrokerBranches(req);
+	data.setCommonResponse(res);
+	data.setErrorMessage(Collections.emptyList());
+	data.setIsError(false);
+	data.setMessage("Success");
+	if(res!=null) {
+		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+	} else {
+		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+	}
+	}
 	
-}
+	
+	}

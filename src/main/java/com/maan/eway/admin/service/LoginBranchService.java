@@ -8,9 +8,11 @@ import com.maan.eway.admin.req.AttachIssuerBrannchReq;
 import com.maan.eway.admin.req.BrokerBranchGetReq;
 import com.maan.eway.admin.req.GetAllBrokerBranchReq;
 import com.maan.eway.admin.req.GetBrokerBranchReq;
+import com.maan.eway.admin.req.GetallBrokerBranchesReq;
 import com.maan.eway.admin.req.IssuerBranchGetReq;
 import com.maan.eway.admin.res.BrokerCompanyGetRes;
 import com.maan.eway.admin.res.GetBrokerBranchRes;
+import com.maan.eway.admin.res.GetallBrokerBranchesRes;
 import com.maan.eway.admin.res.IssuerCompanyGetRes;
 import com.maan.eway.admin.res.LoginCreationRes;
 
@@ -24,5 +26,6 @@ public interface LoginBranchService {
 	LoginCreationRes attachBrokerCompanyBranch(AttachBrokerBranchReq req);
 	GetBrokerBranchRes getBrokerCompanyBranch(GetBrokerBranchReq req);
 	List<GetBrokerBranchRes> getallBrokerCompanyBranch(GetAllBrokerBranchReq req);
+	List<GetallBrokerBranchesRes> getallBrokerBranches(GetallBrokerBranchesReq req);
 
 }
