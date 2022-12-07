@@ -117,6 +117,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="EXCHANGE_RATE")
     private Double     exchangeRate ;
     
+    @Column(name="SUM_INSURED")
+    private Double     sumInsured;
+    
     @Column(name="COVID_COVER_YN", length=20)
     private String     covidCoverYn ;
 

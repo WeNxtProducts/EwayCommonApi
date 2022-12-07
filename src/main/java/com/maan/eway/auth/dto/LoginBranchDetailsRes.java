@@ -9,6 +9,13 @@ public class LoginBranchDetailsRes {
 	@JsonProperty("BranchCode")
 	private String branchCode ;
 	
+	@JsonProperty("BrokerBranchCode")
+	private String brokerBranchCode ;
+	
+	@JsonProperty("BrokerBranchName")
+	private String brokerBranchName ;
+	
+	
 	@JsonProperty("BranchName")
 	private String branchName ;
 	

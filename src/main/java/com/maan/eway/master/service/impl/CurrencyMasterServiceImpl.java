@@ -617,8 +617,9 @@ public List<CuurencyDropDownRes> getCurrencyMasterDropdown( CurrencyDropDownReq 
 		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 		javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 		javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"),req.getInsuranceId());
-
-		query.where(n1,n2,n3,n4).orderBy(orderList);
+		Predicate n5 = cb.equal(c.get("companyId"),"99999");
+		Predicate n6 = cb.or(n4,n5);
+		query.where(n1,n2,n3,n6).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<Tuple> result = em.createQuery(query);			
