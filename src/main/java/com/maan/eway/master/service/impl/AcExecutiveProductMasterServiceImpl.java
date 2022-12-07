@@ -610,18 +610,21 @@ public class AcExecutiveProductMasterServiceImpl implements AcExecutiveProductMa
 			Predicate n1 = cb.equal(c.get("status"),"Y");
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
-			Predicate n4 = cb.equal(c.get("bankCode"),req.getBankCode());
+			Predicate n4 = cb.equal(c.get("oaCode"),req.getOaCode());
 			Predicate n5 = cb.equal(c.get("companyId"),req.getCompanyId());
+			Predicate n6 = cb.equal(c.get("productId"),req.getProductId());
 			
-			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
 			// Get Result
 			TypedQuery<AcExecutiveProductMaster> result = em.createQuery(query);
 			list = result.getResultList();
 			for (AcExecutiveProductMaster data : list) {
 				// Response 
 				AcExecutiveProductDropdownRes res = new AcExecutiveProductDropdownRes();
-				res.setCode(data.getAcExecutiveId().toString());
-				res.setCodeDesc(data.getAcExecutiveName());
+				res.setAcExecutiveId(data.getAcExecutiveId().toString());
+				res.setAcExecutiveName(data.getAcExecutiveName());
+				res.setBankCode(data.getBankCode());
+				res.setBankName(data.getBankName());
 				resList.add(res);
 			}
 		}

@@ -11,9 +11,17 @@ import lombok.Data;
 @Data
 public class AcExecutiveProductDropdownRes {
 
-	@JsonProperty("Code")
-	private String code;
+	@JsonProperty("AcExecutiveId")
+	private String acExecutiveId;
 	
-	@JsonProperty("CodeDesc")
-	private String codeDesc;
+	@JsonProperty("AcExecutiveName")
+	private String acExecutiveName;
+	
+	@JsonProperty("BankCode")
+	private String bankCode;
+	
+	@JsonProperty("BankName")
+	private String bankName;
+	
+	
 	}

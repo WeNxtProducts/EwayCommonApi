@@ -62,6 +62,8 @@ public class AcExecutiveGetRes {
 	
 	@JsonProperty("BankCode")
 	private String bankCode;
+	@JsonProperty("BankName")
+	private String bankName;
 	
 
 	@JsonProperty("OaCode")
