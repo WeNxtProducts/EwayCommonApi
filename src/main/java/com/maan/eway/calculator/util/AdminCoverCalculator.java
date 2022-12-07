@@ -51,14 +51,14 @@ public class AdminCoverCalculator  extends CommonCalculator implements Consumer<
 			
 				 
 				 
-				 BigDecimal domath = domath(t.getCalcType(), t.getRate(), si);
+				 BigDecimal domath = domath(t.getCalcType(), t.getRate(), si,t.getExchangeRate());
 				 t.setPremiumBeforeDiscount(domath);
 				 t.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate()).round(round)) ;
 			 
 				 
 				 Double totaldiscount=0D;
 				 if(t.getDiscounts()!=null && t.getDiscounts().size()>0) {
-					 AdminDiscountCalculator dcal=new AdminDiscountCalculator(t.getPremiumBeforeDiscount(),this);					 
+					 AdminDiscountCalculator dcal=new AdminDiscountCalculator(t.getPremiumBeforeDiscount(),t.getExchangeRate(),this);					 
 					 t.getDiscounts().stream().forEach(dcal);
 					 totaldiscount= t.getDiscounts().stream().mapToDouble(i->i.getDiscountAmount().doubleValue()).sum();
 				 }
@@ -66,7 +66,7 @@ public class AdminCoverCalculator  extends CommonCalculator implements Consumer<
 				 
 				 Double totalloading=0D;
 				 if(t.getLoadings()!=null && t.getLoadings().size()>0) {
-					 AdminLoadingCalculator dcal=new AdminLoadingCalculator(t.getPremiumBeforeDiscount(),this);					 
+					 AdminLoadingCalculator dcal=new AdminLoadingCalculator(t.getPremiumBeforeDiscount(),t.getExchangeRate(),this);					 
 					 t.getLoadings().stream().forEach(dcal);
 					 totalloading= t.getLoadings().stream().mapToDouble(i->i.getLoadingAmount().doubleValue()).sum();
 				 }
@@ -87,7 +87,7 @@ public class AdminCoverCalculator  extends CommonCalculator implements Consumer<
 				 
 				 Double totaltax=0D;
 				 if(t.getTaxes()!=null && t.getTaxes().size()>0) {
-					 TaxCalculator tcal=new TaxCalculator(t.getPremiumExcluedTax(),this);
+					 TaxCalculator tcal=new TaxCalculator(t.getPremiumExcluedTax(),t.getExchangeRate(),this);
 					 t.getTaxes().stream().forEach(tcal);
 					 totaltax = t.getTaxes().stream().mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
 				 }

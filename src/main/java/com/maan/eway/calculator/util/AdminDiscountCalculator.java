@@ -13,12 +13,18 @@ import com.maan.eway.res.calc.Discount;
 public class AdminDiscountCalculator   implements Consumer<Discount> {
 
 	private BigDecimal premium;
-	private CommonCalculator calc;
-	public AdminDiscountCalculator(BigDecimal premium, CommonCalculator calc) {
+	private BigDecimal exchangeRate;
+	public AdminDiscountCalculator(BigDecimal premium, BigDecimal exchangeRate, CommonCalculator calc) {
 		super();
 		this.premium = premium;
+		this.exchangeRate = exchangeRate;
 		this.calc = calc;
 	}
+
+
+
+	private CommonCalculator calc;
+	 
 
  
 	
@@ -35,7 +41,7 @@ public class AdminDiscountCalculator   implements Consumer<Discount> {
 			 t.setDiscountRate(rate);
 			 t.setMaxAmount(new BigDecimal(minPremium));
 		 }*/
-		 BigDecimal domath = calc.domath(calctype, Double.parseDouble(t.getDiscountRate()), premium);
+		 BigDecimal domath = calc.domath(calctype, Double.parseDouble(t.getDiscountRate()), premium,exchangeRate);
 		 t.setDiscountAmount(domath);
 		 if(t.getDiscountAmount().compareTo(t.getMaxAmount())==1) {
 			 t.setDiscountAmount(t.getMaxAmount());

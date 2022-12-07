@@ -11,15 +11,22 @@ import com.maan.eway.res.calc.Loading;
 public class AdminLoadingCalculator   implements Consumer<Loading> {
 
 	private BigDecimal premium;
+	private BigDecimal exchangeRate;
 	private CommonCalculator calc;
-	public AdminLoadingCalculator(BigDecimal premium, CommonCalculator calc) {
-		super();
-		this.premium = premium;
-		this.calc = calc;
-	}
+ 
 
  
 	
+	public AdminLoadingCalculator(BigDecimal premium, BigDecimal exchangeRate, CommonCalculator calc) {
+		super();
+		this.premium = premium;
+		this.exchangeRate = exchangeRate;
+		this.calc = calc;
+	}
+
+
+
+
 	@Override
 	public void accept(Loading t) {
 	 try {
@@ -33,7 +40,7 @@ public class AdminLoadingCalculator   implements Consumer<Loading> {
 			 * minPremium=tuple.get("minPremium")==null?"0":tuple.get("minPremium").toString
 			 * (); t.setLoadingRate(rate); t.setMaxAmount(new BigDecimal(minPremium)); }
 			 */
-		 BigDecimal domath = calc.domath(calctype, Double.parseDouble(t.getLoadingRate()), premium);
+		 BigDecimal domath = calc.domath(calctype, Double.parseDouble(t.getLoadingRate()), premium,exchangeRate);
 		 t.setLoadingAmount(domath);
 		/* if(t.getLoadingAmount().compareTo(t.getMaxAmount())==1) {
 			 t.setLoadingAmount(t.getMaxAmount());
