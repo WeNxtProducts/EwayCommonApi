@@ -86,9 +86,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="PLAN_TYPE_ID")
     private Integer    planTypeId ;
 
-    @Column(name="TRAVEL_COVER_DURATION")
-    private Integer    travelCoverDuration ;
-
     @Column(name="TOTAL_PASSENGERS")
     private Integer    totalPassengers ;
 
