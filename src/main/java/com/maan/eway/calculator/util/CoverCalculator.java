@@ -40,6 +40,13 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					 t.setProRata(percenat.divide(new BigDecimal("100")));
 				 }
 				 
+				 /// this particular variable is for is rate defined for Single
+				 String rateFor=vehicles.get(0).get("groupCount")==null?"1":vehicles.get(0).get("groupCount").toString();
+				 
+				 
+				 
+				 
+				 
 				 BigDecimal si=vehicles.get(0).get("sumInsured")==null?BigDecimal.ZERO:new BigDecimal(vehicles.get(0).get("sumInsured").toString());
 				 if("Y".equals(t.getDependentCoveryn())) {
 					 if(calculatedcover!=null) {
@@ -70,28 +77,32 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					 
 					 String calctype=tuple.get("calcType").toString();
 					 String rate=tuple.get("rate")==null?"0":tuple.get("rate").toString();
-					 t.setRate(Double.parseDouble(rate));
+					 
+					 t.setRate((Double) ((Double.parseDouble(rate)*Double.parseDouble(rateFor))));
+					 
 					 t.setMinimumPremium(tuple.get("minPremium")==null?BigDecimal.ZERO:new BigDecimal(tuple.get("minPremium").toString()));
-					 BigDecimal domath = domath(calctype, Double.parseDouble(rate), si);
+					 BigDecimal domath = domath(calctype, Double.parseDouble(rate), si,t.getExchangeRate());
 					 t.setPremiumBeforeDiscount(domath);
 					 t.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate()).round(round)) ;
 					 t.setCalcType(calctype);
 					 /// Referal
 					 t.setIsReferral((tuple.get("status")==null?"N":tuple.get("status").toString()).equals("R")?"Y":"N");
 				 }else {
-					 BigDecimal domath = domath(t.getCalcType(), t.getRate(), si);
+					 t.setRate((t.getRate()*Double.parseDouble(rateFor)));
+					 
+					 BigDecimal domath = domath(t.getCalcType(), t.getRate(), si,t.getExchangeRate());
 					 t.setPremiumBeforeDiscount(domath);
 					 t.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate()).round(round)) ;
 				 }
 				 
 				 
-				 BigDecimal domathTira = domathTira(t.getCalcType(),t.getRate(),t.getPremiumBeforeDiscountLC());
+				 BigDecimal domathTira = domathTira(t.getCalcType(),t.getRate(),t.getPremiumBeforeDiscountLC(),t.getExchangeRate());
 				 t.setTiraSumInsured(domathTira);
 				 
 				 
 				Double totaldiscount=0D;
 				 if(t.getDiscounts()!=null && t.getDiscounts().size()>0) {
-					 DiscountCalculator dcal=new DiscountCalculator(t.getPremiumBeforeDiscount(),this);					 
+					 DiscountCalculator dcal=new DiscountCalculator(t.getPremiumBeforeDiscount(),t.getExchangeRate(),this);					 
 					 t.getDiscounts().stream().forEach(dcal);
 					 totaldiscount= t.getDiscounts().stream().mapToDouble(i->i.getDiscountAmount().doubleValue()).sum();
 				 }
@@ -99,7 +110,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 
 				 Double totalloading=0D;
 				 if(t.getLoadings()!=null && t.getLoadings().size()>0) {
-					 LoadingCalculator dcal=new LoadingCalculator(t.getPremiumBeforeDiscount(),this);					 
+					 LoadingCalculator dcal=new LoadingCalculator(t.getPremiumBeforeDiscount(),t.getExchangeRate(),this);					 
 					 t.getLoadings().stream().forEach(dcal);
 					 totalloading= t.getLoadings().stream().mapToDouble(i->i.getLoadingAmount().doubleValue()).sum();
 				 }
@@ -120,7 +131,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 
 				 Double totaltax=0D;
 				 if(t.getTaxes()!=null && t.getTaxes().size()>0) {
-					 TaxCalculator tcal=new TaxCalculator(t.getPremiumExcluedTax(),this);
+					 TaxCalculator tcal=new TaxCalculator(t.getPremiumExcluedTax(),t.getExchangeRate(),this);
 					 t.getTaxes().stream().forEach(tcal);
 					 totaltax = t.getTaxes().stream().mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
 				 }

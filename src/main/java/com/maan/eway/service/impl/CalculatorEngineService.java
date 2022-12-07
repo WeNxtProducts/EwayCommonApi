@@ -14,11 +14,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CompanyProrataMaster;
 import com.maan.eway.bean.CompanyTaxSetup;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.MsCommonDetails;
 import com.maan.eway.bean.MsCustomerDetails;
+import com.maan.eway.bean.MsHumanDetails;
 import com.maan.eway.bean.MsVehicleDetails;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionCoverMaster;
@@ -31,7 +33,6 @@ import com.maan.eway.calculator.util.SplitDiscountUtils;
 import com.maan.eway.calculator.util.SplitLoadingUtils;
 import com.maan.eway.calculator.util.SplitSubCoverUtil;
 import com.maan.eway.calculator.util.SubCoverCreationUtil;
-import com.maan.eway.calculator.util.TaxFromFactor;
 import com.maan.eway.calculator.util.TaxUtils;
 import com.maan.eway.calculator.util.UwQuestionUtils;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
@@ -57,9 +58,9 @@ public class CalculatorEngineService implements CalculatorEngine{
 	
 	@Autowired
 	private CriteriaService crservice;
-	@Autowired
+	/*@Autowired
 	private CoverCalculator calc;
-	
+	*/
 	protected List<Tuple> commontbl=null;	
 	protected List<Tuple> vehicles=null;
 	protected List<Tuple> customers =null;
@@ -128,7 +129,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 		return null;
 	}
 	
-	public EserviceMotorDetailsSaveRes  calculator(CalcEngine engine) {
+	public synchronized EserviceMotorDetailsSaveRes  calculator(CalcEngine engine) {
 		// Referal Checking.
 		
 		List<UWReferrals> referr=null;
@@ -281,8 +282,8 @@ public class CalculatorEngineService implements CalculatorEngine{
 					 
 				 } */
 				 
-				 
-				 calc.setEngine(engine,retc,commontbl,vehicles,customers,prorata);
+				 CoverCalculator calc=new CoverCalculator();
+				 calc.setEngine(engine,retc,commontbl,vehicles,customers,prorata,crservice);
 				 
 				 totalcovers.stream().forEach(calc);
 				 //remove error records
@@ -333,12 +334,27 @@ public class CalculatorEngineService implements CalculatorEngine{
 			SpecCriteria criteria =null;
 			MsVehicleDetails findByVdRefno = msvech.findByVdRefno(Long.parseLong(engine.getVdRefNo()));
 			System.out.println("findByVdRefno"+findByVdRefno.getChassisNumber());
+			
+			String todayInString = DD_MM_YYYY.format(new Date());
+			String prodSearch="companyId:"+engine.getInsuranceId()+";productId:"+engine.getProductId()+"status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;";				
+			criteria = crservice.createCriteria(CompanyProductMaster.class, prodSearch, "companyId");			  
+			List<Tuple> product = crservice.getResult(criteria, 0, 1);
+			String oneProduct=product.get(0).get("motorYn")==null?"M":product.get(0).get("motorYn").toString();
+			 
+			 
 			vehicles=null;
 			while(vehicles==null) {
-			String search="vdRefno:"+engine.getVdRefNo()+";vehicleId:"+engine.getVehicleId();
-			  criteria = crservice.createCriteria(MsVehicleDetails.class, search, "vdRefno");
-			  
-			  vehicles = crservice.getResult(criteria, 0, 50);
+				
+				
+				 if(oneProduct.equals("M")){
+					 String search="vdRefno:"+engine.getVdRefNo()+";vehicleId:"+engine.getVehicleId();
+					 criteria = crservice.createCriteria(MsVehicleDetails.class, search, "vdRefno");			  
+					 vehicles = crservice.getResult(criteria, 0, 50);
+				 }else if(oneProduct.equals("T")){
+					 String search="vdRefno:"+engine.getVdRefNo()+";humanId:"+engine.getVehicleId();
+					 criteria = crservice.createCriteria(MsHumanDetails.class, search, "vdRefno");			  
+					 vehicles = crservice.getResult(criteria, 0, 50);
+				 }
 			 
 			  System.out.println("Vehicle record "+engine.getVdRefNo()+", vehicles is "+((vehicles==null || vehicles.isEmpty())?"empty":"Not an empty"));
 			}
@@ -360,10 +376,18 @@ public class CalculatorEngineService implements CalculatorEngine{
 			String cdRefno=tuple.get("cdRefno").toString();
 			  vehicles=null;
 				while(vehicles==null) {
-				 search="vdRefno:"+vdRefno+";vehicleId:"+engine.getVehicleId();
-				  criteria = crservice.createCriteria(MsVehicleDetails.class, search, "vdRefno");
-				  
-				  vehicles = crservice.getResult(criteria, 0, 50);
+					
+					 if(oneProduct.equals("M")){
+						   search="vdRefno:"+engine.getVdRefNo()+";vehicleId:"+engine.getVehicleId();
+						 criteria = crservice.createCriteria(MsVehicleDetails.class, search, "vdRefno");			  
+						 vehicles = crservice.getResult(criteria, 0, 50);
+					 }else if(oneProduct.equals("T")){
+						   search="vdRefno:"+engine.getVdRefNo()+";humanId:"+engine.getVehicleId();
+						 criteria = crservice.createCriteria(MsHumanDetails.class, search, "vdRefno");			  
+						 vehicles = crservice.getResult(criteria, 0, 50);
+					 }
+				 
+				 
 				 
 				  System.out.println("Vehicle record "+vdRefno+", vehicles is "+((vehicles==null || vehicles.isEmpty())?"empty":"Not an empty"));
 				}
@@ -392,7 +416,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 
 
 	@Override
-	public EserviceMotorDetailsSaveRes referalCalculator(CalcEngine request) {
+	public synchronized EserviceMotorDetailsSaveRes referalCalculator(CalcEngine request) {
 		 try {
 			   List<Cover> retc=new ArrayList<Cover>();
 			   
@@ -519,7 +543,8 @@ public class CalculatorEngineService implements CalculatorEngine{
 						 totalcovers=subcovers.get("Y");
 					 }
 					 
-					 calc.setEngine(request,retc,commontbl,vehicles,customers,prorata);
+					 CoverCalculator calc=new CoverCalculator();
+					 calc.setEngine(request,retc,commontbl,vehicles,customers,prorata,crservice);
 					 
 					 totalcovers.stream().forEach(calc);
 					 //remove error records

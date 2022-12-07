@@ -12,13 +12,9 @@ public class LoadingCalculator   implements Consumer<Loading> {
 
 	private BigDecimal premium;
 	private CommonCalculator calc;
-	public LoadingCalculator(BigDecimal premium, CommonCalculator calc) {
-		super();
-		this.premium = premium;
-		this.calc = calc;
-	}
+	 
 
- 
+	private BigDecimal exchangeRate;
 	
 	@Override
 	public void accept(Loading t) {
@@ -33,7 +29,7 @@ public class LoadingCalculator   implements Consumer<Loading> {
 			 t.setLoadingRate(rate);
 			 t.setMaxAmount(new BigDecimal(minPremium));
 		 }
-		 BigDecimal domath = calc.domath(calctype, Double.parseDouble(t.getLoadingRate()), premium);
+		 BigDecimal domath = calc.domath(calctype, Double.parseDouble(t.getLoadingRate()), premium,exchangeRate);
 		 t.setLoadingAmount(domath);
 		/* if(t.getLoadingAmount().compareTo(t.getMaxAmount())==1) {
 			 t.setLoadingAmount(t.getMaxAmount());
@@ -43,6 +39,13 @@ public class LoadingCalculator   implements Consumer<Loading> {
 		 e.printStackTrace();
 	 }
 		
+	}
+
+	public LoadingCalculator(BigDecimal premium,  BigDecimal exchangeRate,CommonCalculator calc) {
+		super();
+		this.premium = premium;
+		this.calc = calc;
+		this.exchangeRate = exchangeRate;
 	}
 
 }

@@ -8,12 +8,20 @@ import com.maan.eway.res.calc.Tax;
 public class TaxCalculator   implements Consumer<Tax> {
 
 	private BigDecimal premium;
-	private CommonCalculator calc;
-	public TaxCalculator(BigDecimal premium, CommonCalculator calc) {
+	private BigDecimal exchangeRate;
+	
+	public TaxCalculator(BigDecimal premium, BigDecimal exchangeRate, CommonCalculator calc) {
 		super();
 		this.premium = premium;
+		this.exchangeRate = exchangeRate;
 		this.calc = calc;
 	}
+
+
+
+
+	private CommonCalculator calc;
+	
 
  
 	
@@ -22,7 +30,7 @@ public class TaxCalculator   implements Consumer<Tax> {
 	 try {
 		 String calctype= t.getCalcType();
 		 
-		 BigDecimal domath = calc.domath(calctype, t.getTaxRate(), premium);
+		 BigDecimal domath = calc.domath(calctype, t.getTaxRate(), premium,exchangeRate);
 		 t.setTaxAmount(domath);
 		  
 	 }catch (Exception e) {

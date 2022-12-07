@@ -30,9 +30,9 @@ import com.maan.eway.res.calc.Cover;
 import com.maan.eway.res.calc.RatingInfo;
 import com.maan.eway.upgrade.criteria.CriteriaService;
 import com.maan.eway.upgrade.criteria.SpecCriteria;
-@Component
+//@Component
 public class CommonCalculator {
-	@Autowired
+	//@Autowired
 	protected CriteriaService crservice;
 	
 	protected SimpleDateFormat DD_MM_YYYY = new SimpleDateFormat("dd/MM/yyyy")  ;
@@ -55,13 +55,14 @@ public class CommonCalculator {
 		this.calculatedcover=c;
 	}
 	*/
-	public void setEngine(CalcEngine engine,List<Cover> c,List<Tuple> result,List<Tuple> vehicles,List<Tuple> customers,List<Tuple> prorata) {
+	public void setEngine(CalcEngine engine,List<Cover> c,List<Tuple> result,List<Tuple> vehicles,List<Tuple> customers,List<Tuple> prorata, CriteriaService crservice) {
 		this.engine = engine;
 		this.calculatedcover=c;
 		this.result=result;
 		this.vehicles=vehicles;
 		this.customers=customers;
 		this.prorata=prorata;
+		this.crservice=crservice;
 	}
 	
 	
@@ -86,11 +87,12 @@ public class CommonCalculator {
 				for (RatingInfo r : rateInfos) {
 					if("MS_CUSTOMER_DETAILS".equalsIgnoreCase(r.getInputTableName())) {
 						r.setInputColumValue(customers.get(0).get(r.getInputColumName()).toString());
-					}else if("MS_Vehicle_DETAILS".equalsIgnoreCase(r.getInputTableName())) {
+					}else if("MS_Vehicle_DETAILS".equalsIgnoreCase(r.getInputTableName()) || "MS_HUMAN_DETAILS".equalsIgnoreCase(r.getInputTableName()) ) {
 						r.setInputColumValue(tuple.get(r.getInputColumName()).toString());
 					}else if("MS_Common_DETAILS".equalsIgnoreCase(r.getInputTableName())) {
 						r.setInputColumValue(result.get(0).get(r.getInputColumName()).toString());
 					}
+					
 					String condtion=r.getDiscretCol()+":"+r.getInputColumValue()+"";
 					if("Y".equals(r.getFactorRangeYn())) {
 						condtion=""+r.getInputColumValue()+"~"+r.getRangeFromCol()+"&"+r.getRangeToCol();  
@@ -262,19 +264,19 @@ public class CommonCalculator {
 		}
 		return null;
 	}
-	protected BigDecimal domath(String calctype, Double rate,BigDecimal si) {
+	protected BigDecimal domath(String calctype, Double rate,BigDecimal si,BigDecimal exchangeRate) {
 		BigDecimal d=BigDecimal.ZERO;
 		if("P".equals(calctype)) {
 			d = si.multiply(new BigDecimal(rate/100), round);			
 		 }else if("A".equals(calctype)) {
-			d=(new BigDecimal(rate));			
+			d=(new BigDecimal(rate).divide(exchangeRate));// for foreign currency calculation we have to divide by exchange rate			
 		 }else if("M".equals(calctype)) {
 			 d = si.multiply(new BigDecimal(rate/1000), round);			
 		 }
 		return d;
 	}
 	
-	protected BigDecimal domathTira(String calctype, Double rate,BigDecimal premium) {
+	protected BigDecimal domathTira(String calctype, Double rate,BigDecimal premium,BigDecimal exchangeRate) {
 		BigDecimal d=BigDecimal.ZERO;
 		//(3500/4)*100
 		if("P".equals(calctype)) {

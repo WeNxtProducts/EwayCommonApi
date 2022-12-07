@@ -74,27 +74,27 @@ public class Cover implements Serializable{
 	    
 	    
 	    @JsonProperty("PremiumBeforeDiscountLC") 
-	    public BigDecimal premiumBeforeDiscountLC;
+	    private BigDecimal premiumBeforeDiscountLC;
 	    @JsonProperty("PremiumAfterDiscountLC") 
-	    public BigDecimal premiumAfterDiscountLC;
+	    private BigDecimal premiumAfterDiscountLC;
 	    @JsonProperty("PremiumExcluedTaxLC") 
-	    public BigDecimal premiumExcluedTaxLC;
+	    private BigDecimal premiumExcluedTaxLC;
 	    @JsonProperty("PremiumIncludedTaxLC") 
-	    public BigDecimal premiumIncludedTaxLC;
+	    private BigDecimal premiumIncludedTaxLC;
 	    
 	    @JsonProperty("PremiumBeforeDiscount") 
-	    public BigDecimal premiumBeforeDiscount;
+	    private BigDecimal premiumBeforeDiscount;
 	    @JsonProperty("PremiumAfterDiscount") 
-	    public BigDecimal premiumAfterDiscount;
+	    private BigDecimal premiumAfterDiscount;
 	    @JsonProperty("PremiumExcluedTax") 
-	    public BigDecimal premiumExcluedTax;
+	    private BigDecimal premiumExcluedTax;
 	    @JsonProperty("PremiumIncludedTax") 
-	    public BigDecimal premiumIncludedTax;
+	    private BigDecimal premiumIncludedTax;
 	    
 	    @JsonProperty("ExchangeRate")
-	    public BigDecimal exchangeRate;
+	    private BigDecimal exchangeRate;
 	    @JsonProperty("Currency")
-	    public String currency;
+	    private String currency;
 	    
 	    @JsonProperty("isReferal")
 	    private String isReferral;
@@ -106,9 +106,9 @@ public class Cover implements Serializable{
 	    
 	    
 	    @JsonProperty("RegulatorSumInsured") 
-	    public BigDecimal tiraSumInsured;
+	    private BigDecimal tiraSumInsured;
 	    @JsonProperty("RegulatorRate") 
-	    public Double tiraRate;
+	    private Double tiraRate;
 
 	    @JsonProperty("UserOpt")
 	    private String     userOpt ;
