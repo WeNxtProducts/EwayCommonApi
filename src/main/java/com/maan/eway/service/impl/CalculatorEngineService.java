@@ -336,7 +336,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 			System.out.println("findByVdRefno"+findByVdRefno.getChassisNumber());
 			
 			String todayInString = DD_MM_YYYY.format(new Date());
-			String prodSearch="companyId:"+engine.getInsuranceId()+";productId:"+engine.getProductId()+"status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;";				
+			String prodSearch="companyId:"+engine.getInsuranceId()+";productId:"+engine.getProductId()+";status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;";				
 			criteria = crservice.createCriteria(CompanyProductMaster.class, prodSearch, "companyId");			  
 			List<Tuple> product = crservice.getResult(criteria, 0, 1);
 			String oneProduct=product.get(0).get("motorYn")==null?"M":product.get(0).get("motorYn").toString();
