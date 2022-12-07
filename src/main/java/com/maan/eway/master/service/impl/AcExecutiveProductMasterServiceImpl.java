@@ -37,9 +37,11 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.AcExecutiveGetReq;
 import com.maan.eway.master.req.AcExecutiveGetallReq;
 import com.maan.eway.master.req.AcExecutiveNonSelectedReq;
+import com.maan.eway.master.req.AcExecutiveProductDropDownReq;
 import com.maan.eway.master.req.AcExecutiveSaveReq;
 import com.maan.eway.master.req.AcExecutiveUpdateReq;
 import com.maan.eway.master.res.AcExecutiveGetRes;
+import com.maan.eway.master.res.AcExecutiveProductDropdownRes;
 import com.maan.eway.master.res.CompanyProductMasterRes;
 import com.maan.eway.master.service.AcExecutiveProductMasterService;
 import com.maan.eway.repository.AcExecutiveProductMasterRepository;
@@ -563,4 +565,73 @@ public class AcExecutiveProductMasterServiceImpl implements AcExecutiveProductMa
 		}
 		return errorList;
 	}
+
+	@Override
+	public List<AcExecutiveProductDropdownRes> dropdownacexecutive(AcExecutiveProductDropDownReq req) {
+		List<AcExecutiveProductDropdownRes> resList = new ArrayList<AcExecutiveProductDropdownRes>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<AcExecutiveProductMaster> query=  cb.createQuery(AcExecutiveProductMaster.class);
+			List<AcExecutiveProductMaster> list = new ArrayList<AcExecutiveProductMaster>();
+			// Find All
+			Root<AcExecutiveProductMaster> c = query.from(AcExecutiveProductMaster.class);
+			//Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(c.get("effectiveDateStart")));
+			
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<AcExecutiveProductMaster> ocpm1 = effectiveDate.from(AcExecutiveProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("acExecutiveId"),ocpm1.get("acExecutiveId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<AcExecutiveProductMaster> ocpm2 = effectiveDate2.from(AcExecutiveProductMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a3 = cb.equal(c.get("acExecutiveId"),ocpm2.get("acExecutiveId"));
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a3,a4);
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+			Predicate n4 = cb.equal(c.get("bankCode"),req.getBankCode());
+			Predicate n5 = cb.equal(c.get("companyId"),req.getCompanyId());
+			
+			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			// Get Result
+			TypedQuery<AcExecutiveProductMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			for (AcExecutiveProductMaster data : list) {
+				// Response 
+				AcExecutiveProductDropdownRes res = new AcExecutiveProductDropdownRes();
+				res.setCode(data.getAcExecutiveId().toString());
+				res.setCodeDesc(data.getAcExecutiveName());
+				resList.add(res);
+			}
+		}
+			catch(Exception e) {
+				e.printStackTrace();
+				log.info("Exception is --->"+e.getMessage());
+				return null;
+				}
+			return resList;
+		}
+
+	
 }
