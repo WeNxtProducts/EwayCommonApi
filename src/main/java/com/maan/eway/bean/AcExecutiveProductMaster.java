@@ -123,7 +123,10 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="BANK_CODE", length=20)
     private String  bankCode;
-    
+   
+    @Column(name="BANK_NAME", length=100)
+    private String  bankName;
+   
     @Column(name="AGENCY_CODE", length=20)
     private String  agencyCode;
     

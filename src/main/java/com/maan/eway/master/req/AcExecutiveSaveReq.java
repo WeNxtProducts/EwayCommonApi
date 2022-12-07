@@ -46,7 +46,9 @@ public class AcExecutiveSaveReq {
 	@JsonProperty("BankCode")
 	private String bankCode;
 	
-
+	@JsonProperty("BankName")
+	private String bankName;
+	
 	@JsonProperty("OaCode")
 	private String oaCode;
 	

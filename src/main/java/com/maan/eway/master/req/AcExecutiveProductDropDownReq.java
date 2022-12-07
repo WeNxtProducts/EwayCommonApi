@@ -7,10 +7,13 @@ import lombok.Data;
 @Data
 public class AcExecutiveProductDropDownReq {
 
-	@JsonProperty("BankCode")
-	private String bankCode;
+	@JsonProperty("OaCode")
+	private String oaCode;
 
 	@JsonProperty("CompanyId")
 	private String companyId;
+
+	@JsonProperty("ProductId")
+	private String productId;
 
 }
