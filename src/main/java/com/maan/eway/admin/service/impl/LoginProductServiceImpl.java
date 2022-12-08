@@ -40,6 +40,7 @@ import com.maan.eway.admin.res.ProductCriteriaRes;
 import com.maan.eway.admin.service.LoginProductService;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
+import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.error.Error;
@@ -150,7 +151,7 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			
 			for ( CompanyProductMaster data : list  ) {
 				
-				
+			
 				LoginProductMaster save = new LoginProductMaster();
 				dozerMapper.map(data, save);
 				save.setCompanyId(req.getInsuranceId());
@@ -434,6 +435,8 @@ public class LoginProductServiceImpl  implements LoginProductService {
 		SuccessRes res = new SuccessRes();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
+		
+			LoginMaster login =loginRepo.findByLoginId(req.getLoginId());
 			LoginProductMaster saveData = new LoginProductMaster();
 			List<LoginProductMaster> list = new ArrayList<LoginProductMaster>();
 			Integer amendId=0;
@@ -526,6 +529,10 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			saveData.setEntryDate(entryDate);
 			saveData.setAmendId(amendId);
 			saveData.setCoreAppCode(req.getCoreAppCode());
+			saveData.setAgencyCode(Integer.valueOf(login.getAgencyCode()));
+			saveData.setOaCode(login.getOaCode());
+			saveData.setUserType(login.getUserType());
+			saveData.setSubUserType(login.getSubUserType());
 			loginProductRepo.saveAndFlush(saveData);
 			
 				
