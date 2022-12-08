@@ -191,7 +191,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             	return commonRes ; 
             }
             
-            List<Integer> vehicleIds = req.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId  ).toList();
+            List<Integer> vehicleIds = req.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
             QuoteThreadReq request = (QuoteThreadReq) frameQuoteReq.getCommonResponse() ;
             
             // Customer Save
