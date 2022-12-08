@@ -105,6 +105,15 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			if (StringUtils.isBlank(req.getCurrencyId())) {
 				errorList.add(new Error("07", "CurrencyId", "Please Enter CurrencyId"));
 			}
+			else if (req.getCurrencyId().length() > 20) {
+				errorList.add(new Error("07", "CurrencyId", "Please Enter CurrencyId within 20 Characters"));
+			}
+			if (StringUtils.isBlank(req.getCurrencyName())) {
+				errorList.add(new Error("09", "CurrencyName", "Please Enter CurrencyName"));
+			}
+			else if (req.getCurrencyName().length() > 100) {
+				errorList.add(new Error("09", "CurrencyName", "Please Enter CurrencyName within 100 Characters"));
+			}
 			
 			if (StringUtils.isBlank(req.getCompanyId())) {
 				errorList.add(new Error("08", "CompanyId", "Please Enter CompanyId"));

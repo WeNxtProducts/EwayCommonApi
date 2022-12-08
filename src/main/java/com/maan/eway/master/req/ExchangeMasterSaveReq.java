@@ -29,6 +29,10 @@ public class ExchangeMasterSaveReq {
 	@JsonProperty("CurrencyId")
 	private String currencyId;
 	
+	@JsonProperty("CurrencyName")
+	private String currencyName;
+	
+	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
