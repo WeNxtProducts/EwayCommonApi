@@ -19,8 +19,8 @@ import javax.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import com.maan.eway.bean.MotorPolicyCoverData;
-import com.maan.eway.bean.MotorPolicyCoverDataId;
+import com.maan.eway.bean.PolicyCoverData;
+import com.maan.eway.bean.PolicyCoverDataId;
 /**
  * <h2>CoverDetailsRepository</h2>
  *
@@ -31,9 +31,9 @@ import com.maan.eway.bean.MotorPolicyCoverDataId;
  
  
 @Transactional 
-public interface CoverDetailsRepository  extends JpaRepository<MotorPolicyCoverData,MotorPolicyCoverDataId > , JpaSpecificationExecutor<MotorPolicyCoverData> {
+public interface CoverDetailsRepository  extends JpaRepository<PolicyCoverData,PolicyCoverDataId > , JpaSpecificationExecutor<PolicyCoverData> {
 
-	List<MotorPolicyCoverData> findByQuoteNoOrderByVehicleIdAsc(String quoteNo);
+	List<PolicyCoverData> findByQuoteNoOrderByVehicleIdAsc(String quoteNo);
 
 	Long countByQuoteNo(String quoteNo);
 
