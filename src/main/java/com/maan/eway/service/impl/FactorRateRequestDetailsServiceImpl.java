@@ -223,10 +223,10 @@ this.repository = repo;
  					saveCover.setIsReferral(StringUtils.isBlank(coverData.getIsReferral())?"N":coverData.getIsReferral());
 					saveCover.setReferralDescription(StringUtils.isBlank(coverData.getReferalDescription())?"":coverData.getReferalDescription());
 					String userOpt=!"D".equals(saveCover.getIsSelected())?"N":"Y";
-					if(coverIds!=null && !coverIds.isEmpty()) {
+				/*	if(coverIds!=null && !coverIds.isEmpty()) {
 						long count = coverIds.stream().filter(t-> (saveCover.getCoverId().equals(t.getCoverId()) && saveCover.getSubCoverId().equals(t.getSubCoverId()) )).count() ;
 						if(count>0) userOpt="Y";
-					}
+					}*/
 					saveCover.setUserOpt(userOpt);
 					if(req.getUpdateas()==null)
 						saveCover.setActualRate(coverData.getRate());
@@ -322,10 +322,10 @@ this.repository = repo;
 //								saveSubCover.setTax3(subCoverData.getTaxes().get(2).getTaxAmount()==null ? null : Double.valueOf(df.format(subCoverData.getTaxes().get(2).getTaxAmount())) );
 //						}
 						String userOpt=!"D".equals(saveSubCover.getIsSelected())?"N":"Y";
-						if(coverIds!=null && !coverIds.isEmpty()) {
+						/*if(coverIds!=null && !coverIds.isEmpty()) {
 							long count = coverIds.stream().filter(t-> (saveSubCover.getCoverId().equals(t.getCoverId()) && saveSubCover.getSubCoverId().equals(t.getSubCoverId()) )).count() ;
 							if(count>0) userOpt="Y";
-						}
+						}*/
 						saveSubCover.setUserOpt(userOpt);
 						if(req.getUpdateas()==null)
 							saveSubCover.setActualRate(coverData.getRate());
