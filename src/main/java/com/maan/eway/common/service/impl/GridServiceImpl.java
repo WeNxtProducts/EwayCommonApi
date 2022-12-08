@@ -282,7 +282,7 @@ public class GridServiceImpl implements GridService {
 			}
 			// Branch Res
 			List<String> branches = new ArrayList<String>();
-			if (req.getBranchCode().equalsIgnoreCase("99999") ) {
+			if (StringUtils.isNotBlank(req.getBranchCode())  && req.getBranchCode().equalsIgnoreCase("99999") ) {
 				
 				List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(loginId);
 				
@@ -336,7 +336,7 @@ public class GridServiceImpl implements GridService {
 			}
 			// Branch Res
 			List<String> branches = new ArrayList<String>();
-			if (req.getBranchCode().equalsIgnoreCase("99999") ) {
+			if (StringUtils.isNotBlank(req.getBranchCode())  && req.getBranchCode().equalsIgnoreCase("99999") ) {
 				
 				List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(loginId);
 				
@@ -390,7 +390,7 @@ public class GridServiceImpl implements GridService {
 			}
 			// Branch Res
 			List<String> branches = new ArrayList<String>();
-			if (req.getBranchCode().equalsIgnoreCase("99999") ) {
+			if (StringUtils.isNotBlank(req.getBranchCode())  && req.getBranchCode().equalsIgnoreCase("99999") ) {
 				
 				List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(loginId);
 				

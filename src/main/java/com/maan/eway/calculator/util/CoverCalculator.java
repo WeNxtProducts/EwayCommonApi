@@ -37,7 +37,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 t.setProRata(new BigDecimal("1"));
 				 if(prorata!=null) {
 					 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
-					 t.setProRata(percenat.divide(new BigDecimal("100")));
+					 t.setProRata(percenat.divide(new BigDecimal("100"),round));
 				 }
 				 
 				 /// this particular variable is for is rate defined for Single
@@ -80,7 +80,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					 
 					 t.setRate((Double) ((Double.parseDouble(rate)*Double.parseDouble(rateFor))));
 					 
-					 t.setMinimumPremium(tuple.get("minPremium")==null?BigDecimal.ZERO:new BigDecimal(tuple.get("minPremium").toString()));
+					 t.setMinimumPremium(tuple.get("minPremium")==null?BigDecimal.ZERO:new BigDecimal(tuple.get("minPremium").toString())/*.divide(t.getExchangeRate(),round)*/);
 					 BigDecimal domath = domath(calctype, Double.parseDouble(rate), si,t.getExchangeRate());
 					 t.setPremiumBeforeDiscount(domath);
 					 t.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate()).round(round)) ;
@@ -125,7 +125,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 
 				 // Minimium Premium setup.
 				 if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0) {
-					 t.setPremiumExcluedTax(t.getMinimumPremium().divide(t.getExchangeRate()).round(round)); 
+					 t.setPremiumExcluedTax(t.getMinimumPremium().divide(t.getExchangeRate(),round)); 
 					 t.setPremiumExcluedTaxLC(t.getMinimumPremium());
 				 }
 				 
