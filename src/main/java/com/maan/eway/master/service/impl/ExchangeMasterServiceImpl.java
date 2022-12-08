@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.CityMaster;
+import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.ExchangeMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.OccupationMaster;
@@ -46,6 +47,7 @@ import com.maan.eway.master.res.CityMasterRes;
 import com.maan.eway.master.res.ExchangeMasterGetRes;
 import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.master.service.ExchangeMasterService;
+import com.maan.eway.repository.CurrencyMasterRepository;
 import com.maan.eway.repository.ExchangeMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -60,6 +62,9 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 	@Autowired
 	private ExchangeMasterRepository repo;
 
+	@Autowired
+	private CurrencyMasterRepository currencyrepo;
+	
 	Gson json = new Gson();
 
 	private Logger log = LogManager.getLogger(ExchangeMasterServiceImpl.class);
@@ -108,12 +113,7 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			else if (req.getCurrencyId().length() > 20) {
 				errorList.add(new Error("07", "CurrencyId", "Please Enter CurrencyId within 20 Characters"));
 			}
-			if (StringUtils.isBlank(req.getCurrencyName())) {
-				errorList.add(new Error("09", "CurrencyName", "Please Enter CurrencyName"));
-			}
-			else if (req.getCurrencyName().length() > 100) {
-				errorList.add(new Error("09", "CurrencyName", "Please Enter CurrencyName within 100 Characters"));
-			}
+		
 			
 			if (StringUtils.isBlank(req.getCompanyId())) {
 				errorList.add(new Error("08", "CompanyId", "Please Enter CompanyId"));
@@ -205,6 +205,7 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 		List<ExchangeMaster> list = new ArrayList<ExchangeMaster>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
+			CurrencyMaster currencyname = currencyrepo.findByCurrencyId(req.getCurrencyId());
 			Integer amendId=0;
 			Date startDate = req.getEffectiveDateStart() ;
 			String end = "31/12/2050";
@@ -286,7 +287,7 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			saveData.setUpdatedDate(new Date());
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setCreatedBy(createdBy);
-
+			saveData.setCurrencyName(currencyname.getCurrencyName());
 			repo.saveAndFlush(saveData);
 			log.info("Saved Details is --> " + json.toJson(saveData));
 		} catch (Exception e) {

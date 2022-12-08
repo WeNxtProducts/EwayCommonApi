@@ -36,6 +36,8 @@ public interface CurrencyMasterRepository  extends JpaRepository<CurrencyMaster,
 
 	CurrencyMaster findByCurrencyName(String currencyName);
 
+	CurrencyMaster findByCurrencyId(String currencyId);
+
 	
 
 }
