@@ -28,7 +28,7 @@ import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MotorDataDetails;
-import com.maan.eway.bean.MotorPolicyCoverData;
+import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.QuoteThreadReq;
@@ -345,7 +345,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			try {
 				// Save Cover Details
 				for ( FactorRateRequestDetails cov : covers) {
-					MotorPolicyCoverData coverData  = new MotorPolicyCoverData();
+					PolicyCoverData coverData  = new PolicyCoverData();
 					dozerMapper.map(cov, coverData);
 					coverData.setEntryDate(new Date());	
 					coverData.setQuoteNo(request.getQuoteNo());

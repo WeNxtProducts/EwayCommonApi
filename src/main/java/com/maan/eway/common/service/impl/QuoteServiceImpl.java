@@ -20,7 +20,7 @@ import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MotorDataDetails;
-import com.maan.eway.bean.MotorPolicyCoverData;
+import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.common.req.AdminReferalStatusReq;
 import com.maan.eway.common.req.CoverIdsReq;
@@ -129,7 +129,7 @@ public class QuoteServiceImpl implements QuoteService {
 		try {
 			// Find Motor Data
 			List<MotorDataDetails> motorDatas =  motorRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
-			List<MotorPolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
+			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 			
 			List<MotorProductDetailsRes>   motorResList = new ArrayList<MotorProductDetailsRes>();
 			for (MotorDataDetails mot :  motorDatas) {
@@ -139,19 +139,19 @@ public class QuoteServiceImpl implements QuoteService {
 				dozerMapper.map(mot, vehicleDetails);
 				
 				// Cover Details
-				List<MotorPolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(mot.getVehicleId()))).collect(Collectors.toList());
+				List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(mot.getVehicleId()))).collect(Collectors.toList());
 				
-				Map<Integer,List<MotorPolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(MotorPolicyCoverData :: getCoverId));			
+				Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
 				
 				List<Cover>  coverListRes = new ArrayList<Cover>();
 				
 				for ( Integer coverId : groupByCover.keySet() ) {
-					List<MotorPolicyCoverData>  coverGroups  = groupByCover.get(coverId);
+					List<PolicyCoverData>  coverGroups  = groupByCover.get(coverId);
 					Cover coverRes = new Cover();
 					
 					if (coverGroups.get(0).getSubCoverYn().equalsIgnoreCase("N") ) {
 						// Get Covers
-						List<MotorPolicyCoverData> filterCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0)).collect(Collectors.toList());
+						List<PolicyCoverData> filterCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0)).collect(Collectors.toList());
 						coverRes = dozerMapper.map(filterCover.get(0), Cover.class);
 						coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
 						coverRes.setDependentCoveryn(filterCover.get(0).getDependentCoverYn());
@@ -178,7 +178,7 @@ public class QuoteServiceImpl implements QuoteService {
 						coverRes.setExchangeRate(filterCover.get(0).getExchangeRate()==null?null:new BigDecimal(filterCover.get(0).getExchangeRate()));	
 						
 						// Discount Covers
-						List<MotorPolicyCoverData> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("d") ).collect(Collectors.toList());
+						List<PolicyCoverData> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("d") ).collect(Collectors.toList());
 						
 						if ( filterDiscountCover.size() > 0 ) {
 							 List<Discount> discounts =  getDiscountRates(filterDiscountCover);
@@ -186,7 +186,7 @@ public class QuoteServiceImpl implements QuoteService {
 						}
 						
 						// Tax Covers
-						List<MotorPolicyCoverData> filterTaxCover = covers.stream().filter( o -> (! o.getTaxId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("t")).collect(Collectors.toList());
+						List<PolicyCoverData> filterTaxCover = covers.stream().filter( o -> (! o.getTaxId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("t")).collect(Collectors.toList());
 						
 						if( filterTaxCover.size() > 0 ) {
 							 List<Tax> taxes = getTaxRates(filterTaxCover) ;
@@ -194,7 +194,7 @@ public class QuoteServiceImpl implements QuoteService {
 						}
 						
 						// Loginds Covers
-						List<MotorPolicyCoverData> filterLodingCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("l") ).collect(Collectors.toList());
+						List<PolicyCoverData> filterLodingCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("l") ).collect(Collectors.toList());
 						
 						if( filterLodingCover.size() > 0 ) {
 							 List<Loading> lodings =  getLodingCovers(filterLodingCover) ;
@@ -205,7 +205,7 @@ public class QuoteServiceImpl implements QuoteService {
 						
 						// Get Sub Covers
 				
-						List<MotorPolicyCoverData> filterCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0)).collect(Collectors.toList());
+						List<PolicyCoverData> filterCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0)).collect(Collectors.toList());
 						coverRes.setCoverId(filterCover.get(0).getCoverId().toString());
 						 coverRes.setCalcType(filterCover.get(0).getCalcType());
 						 coverRes.setCoverName(filterCover.get(0).getCoverName());
@@ -216,8 +216,8 @@ public class QuoteServiceImpl implements QuoteService {
 						 coverRes.setRate(filterCover.get(0).getRate());
 						
 						List<Cover>  subCoverListRes = new ArrayList<Cover>();
-						List<MotorPolicyCoverData> filterSubCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0)).collect(Collectors.toList());
-						for ( MotorPolicyCoverData subCovers : filterSubCover) {
+						List<PolicyCoverData> filterSubCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0)).collect(Collectors.toList());
+						for ( PolicyCoverData subCovers : filterSubCover) {
 							Cover subCoverRes = new Cover();
 							subCoverRes = dozerMapper.map(subCovers, Cover.class);
 							subCoverRes.setIsSubCover(filterSubCover.get(0).getSubCoverYn());
@@ -243,7 +243,7 @@ public class QuoteServiceImpl implements QuoteService {
 							
 							
 							// Discount Covers
-							List<MotorPolicyCoverData> filterDiscountCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) &&  ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("d") ).collect(Collectors.toList());
+							List<PolicyCoverData> filterDiscountCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) &&  ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("d") ).collect(Collectors.toList());
 							
 							if ( filterDiscountCover.size() > 0 ) {
 								 List<Discount> discounts =  getDiscountRates(filterDiscountCover);
@@ -251,7 +251,7 @@ public class QuoteServiceImpl implements QuoteService {
 							}
 							
 							// Tax Covers
-							List<MotorPolicyCoverData> filterTaxCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) &&  (! o.getTaxId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("t")).collect(Collectors.toList());
+							List<PolicyCoverData> filterTaxCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) &&  (! o.getTaxId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("t")).collect(Collectors.toList());
 							
 							if( filterTaxCover.size() > 0 ) {
 								 List<Tax> taxes = getTaxRates(filterTaxCover) ;
@@ -259,7 +259,7 @@ public class QuoteServiceImpl implements QuoteService {
 							}
 							
 							// Loginds Covers
-							List<MotorPolicyCoverData> filterLodingCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) &&  ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("l") ).collect(Collectors.toList());
+							List<PolicyCoverData> filterLodingCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) &&  ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("l") ).collect(Collectors.toList());
 							
 							if( filterLodingCover.size() > 0 ) {
 								 List<Loading> lodings =  getLodingCovers(filterLodingCover) ;
@@ -289,10 +289,10 @@ public class QuoteServiceImpl implements QuoteService {
 	}
 	
 	
-	public List<Discount> getDiscountRates(List<MotorPolicyCoverData> filterDiscountCover) {
+	public List<Discount> getDiscountRates(List<PolicyCoverData> filterDiscountCover) {
 		List<Discount> DiscountList = new  ArrayList<Discount>();
 		try {
-			for (MotorPolicyCoverData disc :  filterDiscountCover ) {
+			for (PolicyCoverData disc :  filterDiscountCover ) {
 				Discount discount = new Discount();
 				discount.setDiscountAmount(disc.getPremiumIncludedTaxFc()==null?new BigDecimal(0): new BigDecimal(disc.getPremiumIncludedTaxFc()));
 				discount.setDiscountCalcType(disc.getCalcType());
@@ -317,10 +317,10 @@ public class QuoteServiceImpl implements QuoteService {
 	}
 	
 	
-	public List<Loading> getLodingCovers(List<MotorPolicyCoverData> filterLodingCover) {
+	public List<Loading> getLodingCovers(List<PolicyCoverData> filterLodingCover) {
 		List<Loading> LodingList = new  ArrayList<Loading>();
 		try {
-			for (MotorPolicyCoverData lod :  filterLodingCover ) {
+			for (PolicyCoverData lod :  filterLodingCover ) {
 				Loading loding = new Loading();
 				loding.setFactorTypeId(lod.getFactorTypeId()==null?null:lod.getFactorTypeId().toString());
 				loding.setLoadingAmount(lod.getMinimumPremium()==null?null:new BigDecimal(lod.getMinimumPremium()));
@@ -342,10 +342,10 @@ public class QuoteServiceImpl implements QuoteService {
 		}return LodingList;
 	}
 	
-	public List<Tax> getTaxRates(List<MotorPolicyCoverData> filterTaxCover) {
+	public List<Tax> getTaxRates(List<PolicyCoverData> filterTaxCover) {
 		List<Tax> TaxList = new  ArrayList<Tax>();
 		try {
-			for (MotorPolicyCoverData tax :  filterTaxCover ) {
+			for (PolicyCoverData tax :  filterTaxCover ) {
 				Tax taxes = new Tax();
 				taxes.setCalcType(tax.getCalcType());
 				taxes.setIsTaxExempted(tax.getIsTaxExtempted());

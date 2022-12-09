@@ -12,7 +12,7 @@ import java.util.List;
 
 
 /**
- * Composite primary key for entity "MotorPolicyCoverData" ( stored in table "motor_policy_cover_data" )
+ * Composite primary key for entity "PolicyCoverData" ( stored in table "motor_policy_cover_data" )
  *
  * @author Telosys
  *
@@ -24,7 +24,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 @Builder
-public class MotorPolicyCoverDataId implements Serializable {
+public class PolicyCoverDataId implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

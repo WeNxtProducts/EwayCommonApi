@@ -122,7 +122,17 @@ private static final long serialVersionUID = 1L;
     @Column(name="REGULATORY_CODE", length=20)
     private String     regulatoryCode ;
 
-
+    @Column(name="USER_TYPE", length=20)
+    private String     userType ;
+    
+    @Column(name="SUB_USER_TYPE", length=20)
+    private String     subUserType ;
+    
+    @Column(name="OA_CODE")
+    private Integer     oaCode ;
+    
+    @Column(name="AGENCY_CODE")
+    private Integer     agencyCode ;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 
