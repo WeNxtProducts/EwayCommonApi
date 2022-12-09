@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -31,8 +32,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.AcExecutiveMaster;
 import com.maan.eway.bean.AcExecutiveProductMaster;
 import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.ExchangeMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.AcExecutiveGetReq;
 import com.maan.eway.master.req.AcExecutiveGetallReq;
@@ -579,33 +582,71 @@ public class AcExecutiveProductMasterServiceImpl implements AcExecutiveProductMa
 			cal.set(Calendar.HOUR_OF_DAY, 1);
 			cal.set(Calendar.MINUTE, 1);
 			Date todayEnd = cal.getTime();
-			
+			List<Tuple> list = new ArrayList<Tuple>();
 			// Criteria
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<AcExecutiveProductMaster> query=  cb.createQuery(AcExecutiveProductMaster.class);
-			List<AcExecutiveProductMaster> list = new ArrayList<AcExecutiveProductMaster>();
+	/*		CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query=  cb.createQuery(Tuple.class);
+			
+			
+		
 			// Find All
 			Root<AcExecutiveProductMaster> c = query.from(AcExecutiveProductMaster.class);
-			//Select
-			query.select(c);
+			
+			Subquery<Long> acExecutive = query.subquery(Long.class);
+			Root<AcExecutiveMaster> ac = acExecutive.from(AcExecutiveMaster.class);
+			//  Effective Date Start Max Filter
+			Subquery<Long> effectiveDate3 = query.subquery(Long.class);
+			Root<AcExecutiveMaster> ocpm3 = effectiveDate3.from(AcExecutiveMaster.class);
+			effectiveDate3.select(cb.max(ocpm3.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ac.get("acExecutiveId"),ocpm3.get("acExecutiveId"));
+			Predicate a2 = cb.equal(ac.get("branchCode"),ocpm3.get("branchCode"));
+			Predicate a3 = cb.equal(ac.get("companyId"),ocpm3.get("companyId"));
+			Predicate a4 = cb.equal(ac.get("bankCode"),ocpm3.get("bankCode"));
+			Predicate a5 = cb.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
+			effectiveDate3.where(a1,a2,a3,a4,a5);
+			
+			//  Effective Date End Max Filter
+			Subquery<Long> effectiveDate4 = query.subquery(Long.class);
+			Root<AcExecutiveMaster> ocpm4 = effectiveDate4.from(AcExecutiveMaster.class);
+			effectiveDate4.select(cb.max(ocpm4.get("effectiveDateEnd")));
+			Predicate a6 = cb.equal(ac.get("acExecutiveId"),ocpm4.get("acExecutiveId"));
+			Predicate a7 = cb.equal(ac.get("branchCode"),ocpm4.get("branchCode"));
+			Predicate a8 = cb.equal(ac.get("companyId"),ocpm4.get("companyId"));
+			Predicate a9 = cb.equal(ac.get("bankCode"),ocpm3.get("bankCode"));
+			Predicate a10 = cb.greaterThanOrEqualTo(ocpm4.get("effectiveDateEnd"), todayEnd);
+			effectiveDate4.where(a6,a7,a8,a9,a10);
+			
+			//  Sub Query
+			acExecutive.select(ac.get("bankCode"));
+			Predicate a11 = cb.equal(ac.get("bankCode"),c.get("bankCode"));
+			Predicate a12 = cb.equal(ac.get("status"),"Y");
+			Predicate a13 = cb.equal(ac.get("effectiveDateStart"), effectiveDate3);
+			Predicate a14 = cb.equal(ac.get("effectiveDateEnd"), effectiveDate4);
+			Predicate a15 = cb.equal(ac.get("companyId"),req.getCompanyId());
+			acExecutive.where(a11,a12,a13,a14,a15);
+
+			// Select
+			query.multiselect(acExecutive.alias("bankCode") ,  c.get("acExecutiveId").alias("acExecutiveId") ,c.get("companyId").alias("companyId"),acExecutive.alias("acExecutiveName"));
+			
+		
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(c.get("effectiveDateStart")));
-			
+			orderList.add(cb.asc(c.get("acExecutiveId")));
+
 			// Effective Date Start Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<AcExecutiveProductMaster> ocpm1 = effectiveDate.from(AcExecutiveProductMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate a1 = cb.equal(c.get("acExecutiveId"),ocpm1.get("acExecutiveId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1,a2);
+			Predicate a16 = cb.equal(c.get("acExecutiveId"),ocpm1.get("acExecutiveId"));
+			Predicate a17 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a16,a17);
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<AcExecutiveProductMaster> ocpm2 = effectiveDate2.from(AcExecutiveProductMaster.class);
 			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-			Predicate a3 = cb.equal(c.get("acExecutiveId"),ocpm2.get("acExecutiveId"));
-			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-			effectiveDate2.where(a3,a4);
+			Predicate a18 = cb.equal(c.get("acExecutiveId"),ocpm2.get("acExecutiveId"));
+			Predicate a19 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a18,a19);
 			// Where
 			Predicate n1 = cb.equal(c.get("status"),"Y");
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
@@ -616,15 +657,23 @@ public class AcExecutiveProductMasterServiceImpl implements AcExecutiveProductMa
 			
 			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
 			// Get Result
-			TypedQuery<AcExecutiveProductMaster> result = em.createQuery(query);
-			list = result.getResultList();
-			for (AcExecutiveProductMaster data : list) {
+			TypedQuery<Tuple> result = em.createQuery(query);
+			list = result.getResultList(); */
+			// Default
+			AcExecutiveProductDropdownRes res2 = new AcExecutiveProductDropdownRes();
+			res2.setAcExecutiveId("1");
+			res2.setAcExecutiveName("None");
+			res2.setBankCode("None");
+			res2.setBankName("None");
+			resList.add(res2);
+			
+			for (Tuple data : list) {
 				// Response 
 				AcExecutiveProductDropdownRes res = new AcExecutiveProductDropdownRes();
-				res.setAcExecutiveId(data.getAcExecutiveId().toString());
-				res.setAcExecutiveName(data.getAcExecutiveName());
-				res.setBankCode(data.getBankCode());
-				res.setBankName(data.getBankName());
+				res.setAcExecutiveId(data.get("acExecutiveId").toString());
+				res.setAcExecutiveName(data.get("acExecutiveName")==null?"":data.get("acExecutiveName").toString());
+				res.setBankCode(data.get("bankCode")==null?"":data.get("bankCode").toString());
+				res.setBankName("");
 				resList.add(res);
 			}
 		}
