@@ -209,6 +209,16 @@ private static final long serialVersionUID = 1L;
     private String     brokerBranchCode ;
 
 
+    @Column(name="COMPANY_NAME", length=100)
+    private String     companyName ;
+
+    @Column(name="PRODUCT_NAME", length=100)
+    private String     productName ;
+    
+    @Column(name="SECTION_NAME", length=100)
+    private String     sectionName ;
+    
+    
 }
 
 
