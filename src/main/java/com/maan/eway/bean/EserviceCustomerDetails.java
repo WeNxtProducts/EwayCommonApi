@@ -234,7 +234,6 @@ private static final long serialVersionUID = 1L;
     private String     email3 ;
 
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
 
 
 }

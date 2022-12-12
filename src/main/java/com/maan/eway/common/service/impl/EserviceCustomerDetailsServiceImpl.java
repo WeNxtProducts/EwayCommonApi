@@ -1,6 +1,9 @@
 package com.maan.eway.common.service.impl;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -159,25 +162,49 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			if (StringUtils.isNotBlank(req.getFax()) &&  req.getFax().length() > 20) {
 				errorList.add(new Error("20", "Fax", "Please Enter Fax within 20 Characters"));
 			}
-		/*	if (StringUtils.isBlank(req.getTelephoneNo1())) {
-				errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo1"));
-			} else if (req.getTelephoneNo1().length() > 20) {
+			if (StringUtils.isNotBlank(req.getTelephoneNo1()) && req.getTelephoneNo1().length() > 20) {
 				errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo1 within 20 Characters"));
-			} else if (!req.getTelephoneNo1().matches("\\d+")) {
+			}
+			else if (!req.getTelephoneNo1().matches("\\d+")) {
 				errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo1 only in numbers"));
-			} */
+				}
+			if (StringUtils.isNotBlank(req.getTelephoneNo2()) && req.getTelephoneNo2().length() > 20) {
+				
+				errorList.add(new Error("22", "TelephoneNo2", "Please Enter TelephoneNo2 within 20 Characters"));
+			}
+			else if (StringUtils.isNotBlank(req.getTelephoneNo2())&&!req.getTelephoneNo2().matches("\\d+")) {
+				errorList.add(new Error("22", "TelephoneNo2", "Please Enter TelephoneNo2 only in numbers"));
+				}	
+			
+			if (StringUtils.isNotBlank(req.getTelephoneNo3()) && req.getTelephoneNo3().length() > 20) {
+				errorList.add(new Error("23", "TelephoneNo3", "Please Enter TelephoneNo3 within 20 Characters"));
+			}
+			else if (StringUtils.isNotBlank(req.getTelephoneNo3())&&!req.getTelephoneNo3().matches("\\d+")) {
+				errorList.add(new Error("23", "TelephoneNo3", "Please Enter TelephoneNo3 only in numbers"));
+				}
 
+			
 			if (StringUtils.isBlank(req.getMobileNo1())) {
 				errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo1"));
 			} else if (req.getMobileNo1().length() > 20) {
 				errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo1 within 20 Characters"));
 			}
+			 else if (!req.getMobileNo1().matches("\\d+")) {
+			errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo1 only in numbers"));
+			}
+			
 			if (StringUtils.isNotBlank(req.getMobileNo2()) && req.getMobileNo2().length() > 20) {
 				errorList.add(new Error("25", "MobileNo2", "Please Enter MobileNo2 within 20 Characters"));
 			}
+			else if (StringUtils.isNotBlank(req.getMobileNo2()) &&!req.getMobileNo2().matches("\\d+")) {
+				errorList.add(new Error("25", "MobileNo2", "Please Enter MobileNo2 only in numbers"));
+				}
 			if (StringUtils.isNotBlank(req.getMobileNo3()) && req.getMobileNo3().length() > 20) {
 				errorList.add(new Error("26", "MobileNo3", "Please Enter MobileNo3 within 20 Characters"));
 			} 
+			else if (StringUtils.isNotBlank(req.getMobileNo2()) &&!req.getMobileNo3().matches("\\d+")) {
+				errorList.add(new Error("26", "MobileNo3", "Please Enter MobileNo3 only in numbers"));
+				}
 			if (StringUtils.isBlank(req.getEmail1())) {
 				errorList.add(new Error("27", "Email1", "Please Enter Email1"));
 			} else if (req.getEmail1().length() > 20) {
@@ -279,7 +306,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
-
+			if(req.getPolicyHolderType().equalsIgnoreCase("1")){
+				
 			if (req.getDobOrRegDate() == null) {
 				errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate "));
 
@@ -288,6 +316,38 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate as Past Date"));
 
 			}
+			
+		 LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		 LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			
+		Integer years=	Period.between(localDate1,localDate2).getYears();
+			if(years>100) {
+			errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Accepted More than 100 Years"));
+
+			}
+			}
+			
+			if(req.getPolicyHolderType().equalsIgnoreCase("2")){
+				
+			if (req.getDobOrRegDate() == null) {
+				errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate "));
+
+			}
+			else if (req.getDobOrRegDate().after(today)) {
+				errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate as Past Date"));
+
+			}
+			
+		 LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		 LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			
+		Integer years=	Period.between(localDate1,localDate2).getYears();
+			if(years>100) {
+			errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Accepted More than 100 Years"));
+
+			}
+			}
+			
 			if (StringUtils.isBlank(req.getBranchCode())) {
 				errorList.add(new Error("39", "BranchCode", "Please Enter BranchCode "));
 			} else if (req.getBranchCode().length() > 20) {
@@ -312,10 +372,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 //			if (StringUtils.isBlank(req.getStateName())) {
 //				errorList.add(new Error("43", "StateName", "Please Select StateName"));
 //			}
-//			if (StringUtils.isBlank(req.getCityName())) {
-//				errorList.add(new Error("43", "CityName", "Please Select CityName "));
-//			}
-//			
+			if (StringUtils.isBlank(req.getCityName())) {
+				errorList.add(new Error("43", "CityName", "Please Select CityName "));							
+			}
+			else if (req.getCityName().length() > 100) {
+				errorList.add(new Error("43", "CityName", "Please Enter CityName within 100 Characters"));
+			}
 			
 			List<EserviceCustomerDetails> list = new ArrayList<EserviceCustomerDetails>();
 			if ((StringUtils.isNotBlank(req.getAddress1())) && (StringUtils.isNotBlank(req.getAddress2()))
@@ -501,10 +563,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setIdTypeDesc(policyHolderTypeId.getItemValue());
 			saveData.setAge(age);
 			
-			List<Tuple> stateCityNames = 	getStateAndCityName(req.getNationality(),  req.getCityCode());
-			
-			saveData.setCityName(stateCityNames.get(0).get("cityName") == null ? "" :  stateCityNames.get(0).get("cityName").toString());
-			saveData.setStateName(stateCityNames.get(0).get("stateName") == null ? "" :  stateCityNames.get(0).get("stateName").toString());
+			List<StateMaster> stateCityNames = 	getStateAndCityName(req.getNationality(),  req.getStateCode());
+			saveData.setStateName(stateCityNames.get(0).getStateName() == null ? "" :stateCityNames.get(0).getStateName().toString());
+			saveData.setCityName(req.getCityName());
 			
 			repository.save(saveData);
 
@@ -579,53 +640,34 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		return occupationDesc;
 	}
 	
-	public List<Tuple> getStateAndCityName(String countryId , String cityId  ) {
-		List<Tuple> list = new ArrayList<Tuple>();
+	public List<StateMaster> getStateAndCityName(String countryId, String stateCode  ) {
+		List<StateMaster> list = new ArrayList<StateMaster>();
 		try {
 			Date today = new Date();
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
-
-			// Find All
-			Root<CityMaster> c = query.from(CityMaster.class);
-			
-			// City Effective Date Max Filter
-			Subquery<Long> effectiveDate1 = query.subquery(Long.class);
-			Root<CityMaster> ocpm1 = effectiveDate1.from(CityMaster.class);
-			effectiveDate1.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate c1 = cb.equal(ocpm1.get("cityId"), c.get("cityId"));
-			Predicate c2 = cb.equal(ocpm1.get("stateId"), c.get("stateId"));
-			Predicate c3 = cb.equal(ocpm1.get("countryId"), c.get("countryId"));
-			Predicate c4 = cb.equal(ocpm1.get("status"),c.get("status"));
-			Predicate c5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate1.where(c1,c2,c3,c4,c5);
-			
-			Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate1);
-			Predicate n2 = cb.equal(c.get("cityId"), cityId);
-			Predicate n4 = cb.equal(c.get("countryId"), countryId);
-			Predicate n5 = cb.equal(c.get("status"), "Y");
+			CriteriaQuery<StateMaster> query = cb.createQuery(StateMaster.class);
+		
 			
 			// State Effective Date Max Filter
-			Subquery<Long> state = query.subquery(Long.class);
-			Root<StateMaster> s = state.from(StateMaster.class);
+			Root<StateMaster> s = query.from(StateMaster.class);
 			
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<StateMaster> ocpm2 = effectiveDate2.from(StateMaster.class);
 			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateStart")));
-			Predicate seff1 = cb.equal(ocpm2.get("stateId"), s.get("stateId"));
-			Predicate seff2 = cb.equal(ocpm2.get("countryId"), s.get("countryId"));
+			Predicate seff1 = cb.equal(ocpm2.get("stateId"),stateCode);
+			Predicate seff2 = cb.equal(ocpm2.get("countryId"),countryId);
 			Predicate seff3 = cb.equal(ocpm2.get("status"),s.get("status"));
 			Predicate seff4 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
 			effectiveDate2.where(seff1,seff2,seff3,seff4);
 			
 			// State Name Max Filter
-			state .select(s.get("stateName"));
-			Predicate s1 = cb.equal(s.get("stateId"), c.get("stateId"));
-			Predicate s2 = cb.equal(s.get("countryId"), c.get("countryId"));
-			Predicate s3 = cb.equal(s.get("status"), c.get("status"));
+			query.select(s.get("stateName"));
+			Predicate s1 = cb.equal(s.get("stateId"),stateCode);
+			Predicate s2 = cb.equal(s.get("countryId"),countryId);
+			Predicate s3 = cb.equal(s.get("status"), s.get("status"));
 			Predicate s4 = cb.equal(s.get("effectiveDateStart"), effectiveDate2);
-			state.where(s1,s2,s3,s4);
+			query.where(s1,s2,s3,s4);
 			
 			// Country Effective Date Max Filter
 			Subquery<Long> country = query.subquery(Long.class);
@@ -641,17 +683,17 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			
 			// Country Name Max Filter
 			country .select(cm.get("countryName"));
-			Predicate cm2 = cb.equal(cm.get("countryId"), c.get("countryId"));
-			Predicate cm3 = cb.equal(cm.get("status"), c.get("status"));
+			Predicate cm2 = cb.equal(cm.get("countryId"), s.get("countryId"));
+			Predicate cm3 = cb.equal(cm.get("status"), s.get("status"));
 			Predicate cm4 = cb.equal(cm.get("effectiveDateStart"), effectiveDate3);
 			country.where(cm2,cm3,cm4);
 			
 			// Select
-			query.multiselect( c.get("cityId").alias("cityId") ,c.get("cityName").alias("cityName") , state.alias("stateName") ,country.alias("countryName") );
+			query.select( s.alias("stateName") );
 			
-			query.where(n1,n2,n4,n5);
+			query.where(s1,s2,s3,s4);
 			// Get Result
-			TypedQuery<Tuple> result = em.createQuery(query);
+			TypedQuery<StateMaster> result = em.createQuery(query);
 			list = result.getResultList();
 			
 		} catch (Exception e) {
