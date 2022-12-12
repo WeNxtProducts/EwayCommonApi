@@ -434,6 +434,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="BROKER_BRANCH_CODE", length=20)
     private String     brokerBranchCode ;
 
+    @Column(name="COMMISSION_TYPE", length=20)
+    private String     commissionType ;
+    
+    @Column(name="COMMISSION_TYPE_DESC", length=20)
+    private String     commissionTypeDesc ;
 
 }
 

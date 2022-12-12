@@ -204,6 +204,8 @@ private static final long serialVersionUID = 1L;
     private String     customerCode ;
 
 
+    @Column(name="BROKER_BRANCH_NAME", length=20)
+    private String     brokerBranchName ;
 
     @Column(name="BROKER_BRANCH_CODE", length=20)
     private String     brokerBranchCode ;
@@ -218,7 +220,18 @@ private static final long serialVersionUID = 1L;
     @Column(name="SECTION_NAME", length=100)
     private String     sectionName ;
     
+    @Column(name="COMMISSION_TYPE", length=20)
+    private String     commissionType ;
     
+    @Column(name="COMMISSION_TYPE_DESC", length=20)
+    private String     commissionTypeDesc ;
+    
+    
+    @Column(name="SOURCE_COUNTRY_DESC", length=20)
+    private String     sourceCountryDesc ;
+    
+    @Column(name="DESTINATION_COUNTRY_DESC", length=20)
+    private String     destinationCountryDesc ;
 }
 
 
