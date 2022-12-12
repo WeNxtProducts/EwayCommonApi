@@ -100,7 +100,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			query.where(n1,n2,n3,n4,n5,n6,n7,n8)
 			.groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
 					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
-					m.get("quoteNo"), m.get("customerId"),m.get("policyStartDate"),	m.get("policyEndDate")
+					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate")
 					)
 			.orderBy(orderList) ;
 			
@@ -176,7 +176,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			
 			query.where(n1,n2,n3,n4,n5,n6,n7).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
 					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
-					m.get("quoteNo"), m.get("customerId"),m.get("policyStartDate"),	m.get("policyEndDate")
+					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate")
 					).orderBy(orderList);
 			
 			// Get Result
@@ -249,7 +249,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			
 			query.where(n1,n2,n3,n4,n5,n6).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
 					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
-					m.get("quoteNo"), m.get("customerId"),m.get("policyStartDate"),	m.get("policyEndDate")
+					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate")
 					).orderBy(orderList);
 			
 			// Get Result
@@ -322,7 +322,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			
 			query.where(n1,n2,n3,n4,n5,n6).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
 					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
-					m.get("quoteNo"), m.get("customerId"),m.get("policyStartDate"),	m.get("policyEndDate")
+					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate")
 					).orderBy(orderList);
 			
 			// Get Result
@@ -395,7 +395,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			
 			query.where(n1,n2,n3,n4,n5,n6).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
 					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
-					m.get("quoteNo"), m.get("customerId"),m.get("policyStartDate"),	m.get("policyEndDate")
+					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate")
 					).orderBy(orderList);
 			
 			// Get Result
@@ -468,7 +468,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			
 			query.where(n1,n2,n3,n4,n5,n6).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
 					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
-					m.get("quoteNo"), m.get("customerId"),m.get("policyStartDate"),	m.get("policyEndDate")
+					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate")
 					).orderBy(orderList);
 			
 			// Get Result
@@ -529,7 +529,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			
 			query.where(n1,n2,n3,n4,n6).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
 					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
-					m.get("quoteNo"), m.get("customerId"),m.get("policyStartDate"),	m.get("policyEndDate")
+					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate")
 					).orderBy(orderList);
 			
 			// Get Result
@@ -591,7 +591,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			
 			query.where(n1,n2,n3,n4,n6).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
 					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
-					m.get("quoteNo"), m.get("customerId"),m.get("policyStartDate"),	m.get("policyEndDate")
+					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate")
 					).orderBy(orderList);
 			
 			// Get Result
@@ -653,7 +653,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			
 			query.where(n1,n2,n3,n4,n6).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
 					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
-					m.get("quoteNo"), m.get("customerId"),m.get("policyStartDate"),	m.get("policyEndDate")
+					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate")
 					).orderBy(orderList);
 			
 			// Get Result
