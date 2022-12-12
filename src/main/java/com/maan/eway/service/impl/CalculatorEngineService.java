@@ -332,9 +332,9 @@ public class CalculatorEngineService implements CalculatorEngine{
 		///One time table record
 		try {
 			SpecCriteria criteria =null;
-			MsVehicleDetails findByVdRefno = msvech.findByVdRefno(Long.parseLong(engine.getVdRefNo()));
+			/*MsVehicleDetails findByVdRefno = msvech.findByVdRefno(Long.parseLong(engine.getVdRefNo()));
 			System.out.println("findByVdRefno"+findByVdRefno.getChassisNumber());
-			
+			*/
 			String todayInString = DD_MM_YYYY.format(new Date());
 			String prodSearch="companyId:"+engine.getInsuranceId()+";productId:"+engine.getProductId()+";status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;";				
 			criteria = crservice.createCriteria(CompanyProductMaster.class, prodSearch, "companyId");			  
@@ -350,7 +350,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 					 String search="vdRefno:"+engine.getVdRefNo()+";vehicleId:"+engine.getVehicleId();
 					 criteria = crservice.createCriteria(MsVehicleDetails.class, search, "vdRefno");			  
 					 vehicles = crservice.getResult(criteria, 0, 50);
-				 }else if(oneProduct.equals("T")){
+				 }else if(oneProduct.equals("H")){
 					 String search="vdRefno:"+engine.getVdRefNo()+";humanId:"+engine.getVehicleId();
 					 criteria = crservice.createCriteria(MsHumanDetails.class, search, "vdRefno");			  
 					 vehicles = crservice.getResult(criteria, 0, 50);
@@ -381,7 +381,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 						   search="vdRefno:"+engine.getVdRefNo()+";vehicleId:"+engine.getVehicleId();
 						 criteria = crservice.createCriteria(MsVehicleDetails.class, search, "vdRefno");			  
 						 vehicles = crservice.getResult(criteria, 0, 50);
-					 }else if(oneProduct.equals("T")){
+					 }else if(oneProduct.equals("H")){
 						   search="vdRefno:"+engine.getVdRefNo()+";humanId:"+engine.getVehicleId();
 						 criteria = crservice.createCriteria(MsHumanDetails.class, search, "vdRefno");			  
 						 vehicles = crservice.getResult(criteria, 0, 50);

@@ -87,7 +87,7 @@ public class CommonCalculator {
 				for (RatingInfo r : rateInfos) {
 					if("MS_CUSTOMER_DETAILS".equalsIgnoreCase(r.getInputTableName())) {
 						r.setInputColumValue(customers.get(0).get(r.getInputColumName()).toString());
-					}else if("MS_Vehicle_DETAILS".equalsIgnoreCase(r.getInputTableName()) || "MS_HUMAN_DETAILS".equalsIgnoreCase(r.getInputTableName()) ) {
+					}else if("MS_Vehicle_DETAILS".equalsIgnoreCase(r.getInputTableName()) || "MSVehicleDETAILS".equalsIgnoreCase(r.getInputTableName()) || "MsHumanDetails".equalsIgnoreCase(r.getInputTableName()) ) {
 						r.setInputColumValue(tuple.get(r.getInputColumName()).toString());
 					}else if("MS_Common_DETAILS".equalsIgnoreCase(r.getInputTableName())) {
 						r.setInputColumValue(result.get(0).get(r.getInputColumName()).toString());
@@ -232,7 +232,7 @@ public class CommonCalculator {
 					Tuple t = result.get(0);
 					info.setRatingFieldId(t.get("ratingId")==null?"":t.get("ratingId").toString());
 					info.setRatingField(t.get("ratingField")==null?"":t.get("ratingField").toString());
-					info.setInputTableName(t.get("inputTableName")==null?"":t.get("inputTableName").toString());
+					info.setInputTableName(t.get("inputTable")==null?"":t.get("inputTable").toString());
 					info.setInputColumName(t.get("inputColumnName")==null?"":t.get("inputColumnName").toString());
 					 
 				}			
