@@ -12,6 +12,13 @@ import lombok.Setter;
 @Setter
 public class EserviceCustomerSaveReq {
 
+	
+	@JsonProperty("SaveOrSubmit")
+	private String saveOrSubmit;
+
+	@JsonProperty("SlideNo")
+	private String slideNo;
+	
 	@JsonProperty("CustomerReferenceNo")
 	private String customerReferenceNo;
 

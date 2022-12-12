@@ -90,6 +90,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		List<Error> errorList = new ArrayList<Error>();
 		try {
 
+			if(req.getSaveOrSubmit().equalsIgnoreCase("Submit")) {
 			if (StringUtils.isBlank(req.getClientName())) {
 				errorList.add(new Error("01", "ClientName", "Please Enter ClientName "));
 			} else if (req.getClientName().length() > 100) {
@@ -467,7 +468,107 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 
 				}
 			}
+			}
 
+			else if(req.getSaveOrSubmit().equalsIgnoreCase("Save")) {
+				if(req.getSlideNo().equalsIgnoreCase("1"))
+				{
+					if (StringUtils.isBlank(req.getClientName())) {
+						errorList.add(new Error("01", "ClientName", "Please Enter ClientName "));
+					} else if (req.getClientName().length() > 100) {
+						errorList.add(new Error("01", "ClientName", "Please Enter ClientName within 100 Characters"));
+					}
+					if (StringUtils.isBlank(req.getPolicyHolderType())) {
+						errorList.add(new Error("02", "PolicyHolderType", "Please Select PolicyHolderType "));
+					}
+					if (StringUtils.isNotBlank(req.getPolicyHolderType())) {
+						
+						if(req.getPolicyHolderType().equalsIgnoreCase("2")){
+							if (StringUtils.isBlank(req.getBusinessType())) {
+							errorList.add(new Error("16", "BusinessType", "Please Select BusinessType"));
+							}
+						}
+					}
+				}
+				else if(req.getSlideNo().equalsIgnoreCase("2"))
+				{
+					// Date Validation
+					Calendar cal = new GregorianCalendar();
+					Date today = new Date();
+					cal.setTime(today);
+					cal.add(Calendar.DAY_OF_MONTH, -1);
+					cal.set(Calendar.HOUR_OF_DAY, 23);
+					cal.set(Calendar.MINUTE, 50);
+					today = cal.getTime();
+					if(req.getPolicyHolderType().equalsIgnoreCase("1")){
+						
+					if (req.getDobOrRegDate() == null) {
+						errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate "));
+
+					}
+					else if (req.getDobOrRegDate().after(today)) {
+						errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate as Past Date"));
+
+					}
+					
+				 LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				 LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+					
+				Integer years=	Period.between(localDate1,localDate2).getYears();
+					if(years>100) {
+					errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Accepted More than 100 Years"));
+
+					}
+					}
+					
+					if(req.getPolicyHolderType().equalsIgnoreCase("2")){
+						
+					if (req.getDobOrRegDate() == null) {
+						errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate "));
+
+					}
+					else if (req.getDobOrRegDate().after(today)) {
+						errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate as Past Date"));
+
+					}
+					
+				 LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				 LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+					
+				Integer years=	Period.between(localDate1,localDate2).getYears();
+					if(years>100) {
+					errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Accepted More than 100 Years"));
+
+					}
+					}
+				}
+	
+				}
+				else if(req.getSlideNo().equalsIgnoreCase("3"))
+				{
+					if (StringUtils.isBlank(req.getMobileNo1())) {
+						errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo1"));
+					} else if (req.getMobileNo1().length() > 20) {
+						errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo1 within 20 Characters"));
+					}
+					 else if (!req.getMobileNo1().matches("\\d+")) {
+					errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo1 only in numbers"));
+					}
+					if (StringUtils.isBlank(req.getEmail1())) {
+						errorList.add(new Error("27", "Email1", "Please Enter Email1"));
+					} else if (req.getEmail1().length() > 20) {
+						errorList.add(new Error("27", "Email1", "Please Enter Email1 within 20 Characters"));
+					} else {
+						boolean b = isValidMail(req.getEmail1());
+						if (b == false) {
+							errorList.add(new Error("37", "Email", "Please Enter Email in correct format"));
+						}
+					}
+					
+				}
+				
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
