@@ -81,7 +81,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					 t.setRate((Double) ((Double.parseDouble(rate)*Double.parseDouble(rateFor))));
 					 
 					 t.setMinimumPremium(tuple.get("minPremium")==null?BigDecimal.ZERO:new BigDecimal(tuple.get("minPremium").toString())/*.divide(t.getExchangeRate(),round)*/);
-					 BigDecimal domath = domath(calctype, Double.parseDouble(rate), si,t.getExchangeRate());
+					 BigDecimal domath = domath(calctype, t.getRate(), si,t.getExchangeRate());
 					 t.setPremiumBeforeDiscount(domath);
 					 t.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate()).round(round)) ;
 					 t.setCalcType(calctype);
