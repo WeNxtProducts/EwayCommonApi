@@ -173,6 +173,9 @@ private static final long serialVersionUID = 1L;
 
 		@Column(name="GROUP_COUNT")
 	    private Integer groupCount;
+		
+	   @Column(name="CITY_LIMIT", length=20)
+	    private String     cityLimit ;
 	    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
