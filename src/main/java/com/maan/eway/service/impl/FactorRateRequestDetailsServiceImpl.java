@@ -407,7 +407,7 @@ this.repository = repo;
 				saveTax.setExchangeRate(coverReq.getExchangeRate()==null?null : Double.valueOf(coverReq.getExchangeRate().toString()));
 				saveTax.setCompanyId(primaryKeys.get("InsuranceId").toString());
 				saveTax.setProductId(Integer.valueOf(primaryKeys.get("ProductId").toString()));
-				saveTax.setCoverageType("t");
+				saveTax.setCoverageType("T");
 				saveTax.setSectionId(Integer.valueOf(primaryKeys.get("SectionId").toString()));
 				saveTax.setSubCoverYn( primaryKeys.get("SubCoverYn").toString());
 				saveTax.setVehicleId(Integer.valueOf(primaryKeys.get("VehId").toString()));	
@@ -471,7 +471,7 @@ this.repository = repo;
 				saveLod.setCoverId(Integer.valueOf(coverReq.getCoverId()));
 				saveLod.setStatus("Y");
 				saveLod.setIsSelected(coverReq.getIsselected());
-				saveLod.setCoverageType("l");
+				saveLod.setCoverageType("L");
 				
 				// Factor
 				saveLod.setFactorTypeId(lod.getFactorTypeId()==null?null:Double.valueOf(lod.getFactorTypeId()));
@@ -533,7 +533,7 @@ this.repository = repo;
 				saveDiscounts.setCreatedBy(primaryKeys.get("CreatedBy").toString());
 				saveDiscounts.setSubCoverId(StringUtils.isBlank(coverReq.getSubCoverId()) ?Integer.valueOf(coverReq.getCoverId()) : Integer.valueOf(coverReq.getSubCoverId()) );
 				saveDiscounts.setStatus("Y");
-				saveDiscounts.setCoverageType("d");
+				saveDiscounts.setCoverageType("D");
 				saveDiscounts.setMinimumPremium(disc.getMaxAmount()==null ? null : Double.valueOf(disc.getMaxAmount().toString()));
 				saveDiscounts.setSumInsured(null);
 				saveDiscounts.setRate(Double.valueOf(disc.getDiscountRate()));
@@ -652,7 +652,7 @@ this.repository = repo;
 					coverRes.setExchangeRate(filterCover.get(0).getExchangeRate()==null?null:new BigDecimal(filterCover.get(0).getExchangeRate()));	
 					
 					// Discount Covers
-					List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("d") ).collect(Collectors.toList());
+					List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("D") ).collect(Collectors.toList());
 					
 					if ( filterDiscountCover.size() > 0 ) {
 						 List<Discount> discounts =  getDiscountRates(filterDiscountCover);
@@ -660,7 +660,7 @@ this.repository = repo;
 					}
 					
 					// Tax Covers
-					List<FactorRateRequestDetails> filterTaxCover = covers.stream().filter( o -> (! o.getTaxId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("t")).collect(Collectors.toList());
+					List<FactorRateRequestDetails> filterTaxCover = covers.stream().filter( o -> (! o.getTaxId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("T")).collect(Collectors.toList());
 					
 					if( filterTaxCover.size() > 0 ) {
 						 List<Tax> taxes = getTaxRates(filterTaxCover) ;
@@ -668,7 +668,7 @@ this.repository = repo;
 					}
 					
 					// Loginds Covers
-					List<FactorRateRequestDetails> filterLodingCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("l") ).collect(Collectors.toList());
+					List<FactorRateRequestDetails> filterLodingCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("L") ).collect(Collectors.toList());
 					
 					if( filterLodingCover.size() > 0 ) {
 						 List<Loading> lodings =  getLodingCovers(filterLodingCover) ;
@@ -717,7 +717,7 @@ this.repository = repo;
 						
 						
 						// Discount Covers
-						List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) && ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("d") ).collect(Collectors.toList());
+						List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) && ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("D") ).collect(Collectors.toList());
 						
 						if ( filterDiscountCover.size() > 0 ) {
 							 List<Discount> discounts =  getDiscountRates(filterDiscountCover);
@@ -725,7 +725,7 @@ this.repository = repo;
 						}
 						
 						// Tax Covers
-						List<FactorRateRequestDetails> filterTaxCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) && (! o.getTaxId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("t")).collect(Collectors.toList());
+						List<FactorRateRequestDetails> filterTaxCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) && (! o.getTaxId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("T")).collect(Collectors.toList());
 						
 						if( filterTaxCover.size() > 0 ) {
 							 List<Tax> taxes = getTaxRates(filterTaxCover) ;
@@ -733,7 +733,7 @@ this.repository = repo;
 						}
 						
 						// Loginds Covers
-						List<FactorRateRequestDetails> filterLodingCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) &&  ( ! o.getDiscLoadId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("l") ).collect(Collectors.toList());
+						List<FactorRateRequestDetails> filterLodingCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) &&  ( ! o.getDiscLoadId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("L") ).collect(Collectors.toList());
 						
 						if( filterLodingCover.size() > 0 ) {
 							 List<Loading> lodings =  getLodingCovers(filterLodingCover) ;
