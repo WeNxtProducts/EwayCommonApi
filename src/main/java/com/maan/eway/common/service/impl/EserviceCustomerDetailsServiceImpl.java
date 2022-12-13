@@ -546,7 +546,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					}
 				}
 			}
-
+			/*
 			if (StringUtils.isBlank(req.getMobileNo1())) {
 				errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo1"));
 			} else if (req.getMobileNo1().length() > 20) {
@@ -564,7 +564,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					errorList.add(new Error("37", "Email1", "Please Enter Email in correct format"));
 				}
 			}
-
+			*/
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
