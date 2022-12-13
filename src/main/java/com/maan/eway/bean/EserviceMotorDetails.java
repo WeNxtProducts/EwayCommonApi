@@ -368,8 +368,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="OTHER_INSURANCE", length=5)
     private String     otherInsurance ;
 
-    @Column(name="FIRST_LOSS_PAYEE")
-    private Double     firstLossPayee ;
+    @Column(name="FIRST_LOSS_PAYEE", length=100)
+    private String     firstLossPayee ;
 
     @Column(name="OTHER_INSURANCE_DETAILS", length=200)
     private String     otherInsuranceDetails ;
