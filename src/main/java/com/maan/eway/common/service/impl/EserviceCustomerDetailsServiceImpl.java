@@ -487,7 +487,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				if (StringUtils.isBlank(req.getPolicyHolderType())) {
 					errorList.add(new Error("02", "PolicyHolderType", "Please Select PolicyHolderType "));
 				}
-				if (StringUtils.isNotBlank(req.getPolicyHolderType())) {
+/*				if (StringUtils.isNotBlank(req.getPolicyHolderType())) {
 
 					if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
 						if (StringUtils.isBlank(req.getBusinessType())) {
@@ -495,7 +495,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 						}
 					}
 				}
-
+*/
 				// Date Validation
 				Calendar cal = new GregorianCalendar();
 				Date today = new Date();
@@ -662,11 +662,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setIdTypeDesc(policyHolderTypeId.getItemValue());
 			saveData.setAge(age);
 
+			if((StringUtils.isNotBlank(req.getNationality()))&&(StringUtils.isNotBlank(req.getStateCode()))){
 			List<StateMaster> stateCityNames = getStateAndCityName(req.getNationality(), req.getStateCode());
 			saveData.setStateName(stateCityNames.get(0).getStateName() == null ? ""
 					: stateCityNames.get(0).getStateName().toString());
 			saveData.setCityName(req.getCityName());
-
+			}
 			repository.save(saveData);
 
 			// Response
