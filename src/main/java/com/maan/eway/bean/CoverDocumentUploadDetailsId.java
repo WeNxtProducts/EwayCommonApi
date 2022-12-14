@@ -29,7 +29,11 @@ public class CoverDocumentUploadDetailsId implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //--- ENTITY KEY ATTRIBUTES 
-    private String     requestRefNo ;
+    private String     quoteNo ;
+
+    private Integer id ;
+	
+    private String     requestReferenceNo ;
     
     private Integer    documentId ;
     
@@ -41,12 +45,8 @@ public class CoverDocumentUploadDetailsId implements Serializable {
     
     private String     coverId ;
     
-    private Integer    documentRef ;
-    
-    private String     docTypeDescription ;
-    
-    private String     docApplicable ;
-    
+    private Integer    documentReferenceNo ;
+  
     private String     docApplicableId ;
     
      

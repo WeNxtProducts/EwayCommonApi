@@ -52,9 +52,17 @@ public class CoverDocumentUploadDetails implements Serializable {
 private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
+	@Id
+	@Column(name="QUOTE_NO", nullable=false, length=100)
+	private String     quoteNo ;
+
+	@Id
+	@Column(name="ID", nullable=false, length=100)
+	private Integer id ;
+
     @Id
-    @Column(name="REQUEST_REF_NO", nullable=false, length=100)
-    private String     requestRefNo ;
+    @Column(name="REQUEST_REFERENCE_NO", nullable=false, length=100)
+    private String     requestReferenceNo ;
 
     @Id
     @Column(name="DOCUMENT_ID", nullable=false)
@@ -77,18 +85,21 @@ private static final long serialVersionUID = 1L;
     private String     coverId ;
 
     @Id
-    @Column(name="DOCUMENT_REF", nullable=false)
-    private Integer    documentRef ;
+    @Column(name="DOCUMENT_REFERENCE_NO", nullable=false)
+    private Integer    documentReferenceNo ;
 
-    @Id
-    @Column(name="DOC_TYPE_DESCRIPTION", nullable=false, length=100)
-    private String     docTypeDescription ;
+    @Column(name="DOCUMENT_TYPE", nullable=false, length=100)
+    private String     documentType;
+    
+    @Column(name="DOCUMENT_TYPE_DESC", nullable=false, length=100)
+    private String     documentTypeDesc;
+    
+    @Column(name="DOCUMENT_DESC", nullable=false, length=100)
+    private String     documentDesc;
 
-    @Id
     @Column(name="DOC_APPLICABLE", nullable=false, length=100)
     private String     docApplicable ;
 
-    @Id
     @Column(name="DOC_APPLICABLE_ID", nullable=false, length=100)
     private String     docApplicableId ;
 
@@ -109,8 +120,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="ORGINAL_FILE_NAME", length=100)
     private String     orginalFileName ;
 
-    @Column(name="CREATEDBY", length=100)
-    private String     createdby ;
+    @Column(name="CREATED_BY", length=100)
+    private String     createdBy ;
 
     @Column(name="STATUS", length=10)
     private String     status ;
