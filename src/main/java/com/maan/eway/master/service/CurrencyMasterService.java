@@ -11,6 +11,7 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CurrencyDropDownReq;
 import com.maan.eway.master.req.CurrencyMasterChangeStatusReq;
 import com.maan.eway.master.req.CurrencyMasterGetAllReq;
+import com.maan.eway.master.req.CurrencyMasterGetExchangeRateReq;
 import com.maan.eway.master.req.CurrencyMasterGetReq;
 import com.maan.eway.master.req.CurrencyMasterSaveReq;
 import com.maan.eway.master.res.CurrencyMasterRes;

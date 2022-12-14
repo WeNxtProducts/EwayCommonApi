@@ -20,6 +20,7 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CurrencyDropDownReq;
 import com.maan.eway.master.req.CurrencyMasterChangeStatusReq;
 import com.maan.eway.master.req.CurrencyMasterGetAllReq;
+import com.maan.eway.master.req.CurrencyMasterGetExchangeRateReq;
 import com.maan.eway.master.req.CurrencyMasterGetReq;
 import com.maan.eway.master.req.CurrencyMasterSaveReq;
 import com.maan.eway.master.res.CurrencyMasterRes;
@@ -165,31 +166,34 @@ public class CurrencyMasterController {
 	
 	
 	// Currency Master Drop Down Type
-				@PostMapping("/dropdown/currency")
-				@ApiOperation(value = "This method is get Currency Master Drop Down")
+	@PostMapping("/dropdown/currency")
+	@ApiOperation(value = "This method is get Currency Master Drop Down")
 
-				public ResponseEntity<CommonRes> getCurrencyMasterDropdown(@RequestBody CurrencyDropDownReq req  ) {
+	public ResponseEntity<CommonRes> getCurrencyMasterDropdown(@RequestBody CurrencyDropDownReq req) {
 
-				CommonRes data = new CommonRes();
+		CommonRes data = new CommonRes();
 
-					// dropdown
-					List<CuurencyDropDownRes> res = currencyService.getCurrencyMasterDropdown(req);
-					data.setCommonResponse(res);
-					data.setIsError(false);
-					data.setErrorMessage(Collections.emptyList());
-					data.setMessage("Success");
+		// dropdown
+		List<CuurencyDropDownRes> res = currencyService.getCurrencyMasterDropdown(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
 
-				// dropdown
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
+		// dropdown
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
 
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
 
-			}
+	}
+	
+	
+	
 }

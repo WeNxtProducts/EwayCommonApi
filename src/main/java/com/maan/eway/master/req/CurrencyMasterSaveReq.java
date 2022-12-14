@@ -50,8 +50,8 @@ public class CurrencyMasterSaveReq implements Serializable {
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
 
-	@JsonProperty("AmendId")
-	private Integer amendId;
+//	@JsonProperty("AmendId")
+//	private Integer amendId;
 
 	@JsonProperty("Remarks")
 	private String remarks;
@@ -63,4 +63,10 @@ public class CurrencyMasterSaveReq implements Serializable {
 
 	@JsonProperty("InsuranceId")
 	private String companyId;
+	
+	@JsonProperty("MinDiscount")
+	private String minDiscount;
+	
+	@JsonProperty("MaxLoading")
+	private String maxLoading;
 }

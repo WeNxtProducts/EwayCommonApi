@@ -79,4 +79,10 @@ public class CurrencyMasterRes implements Serializable {
 	@JsonProperty("UpdatedDate")
 	private Date updatedDate;
 	
+	@JsonProperty("MinDiscount")
+	private String minDiscount;
+	
+	@JsonProperty("MaxLoading")
+	private String maxLoading;
+	
 }

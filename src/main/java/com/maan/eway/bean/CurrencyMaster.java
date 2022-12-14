@@ -123,7 +123,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_BY", length=100)
     private String    updatedBy;
 
-   
+
+    @Column(name="MIN_DISCOUNT", length=20)
+    private String    minDiscount;
+
+    @Column(name="MAX_LOADING", length=20)
+    private String    maxLoading;
 }
 
 

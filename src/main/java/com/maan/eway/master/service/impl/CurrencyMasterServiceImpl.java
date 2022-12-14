@@ -41,6 +41,7 @@ import com.google.gson.Gson;
 import com.maan.eway.master.req.CurrencyDropDownReq;
 import com.maan.eway.master.req.CurrencyMasterChangeStatusReq;
 import com.maan.eway.master.req.CurrencyMasterGetAllReq;
+import com.maan.eway.master.req.CurrencyMasterGetExchangeRateReq;
 import com.maan.eway.master.req.CurrencyMasterGetReq;
 import com.maan.eway.master.req.CurrencyMasterSaveReq;
 import com.maan.eway.master.res.CurrencyMasterRes;
@@ -255,6 +256,12 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 			errorList.add(new Error("09", "SubCurrency", "Please Enter SubCurrency within 10 Characters"));
 		}
 		
+		if (StringUtils.isBlank(req.getMinDiscount())) {
+			errorList.add(new Error("10", "MinDiscount", "Please Enter MinDiscount "));
+		}
+		if (StringUtils.isBlank(req.getMaxLoading())) {
+			errorList.add(new Error("11", "MaxLoading", "Please Enter MaxLoading "));
+		}
 		
 	} catch (Exception e) {
 		log.error(e);
@@ -583,7 +590,12 @@ public List<CuurencyDropDownRes> getCurrencyMasterDropdown( CurrencyDropDownReq 
 		exchangeRate.where(a7,a8,a9,a10,a17);
 
 		// Select
-		query.multiselect(c.get("currencyId").alias("currencyId") ,c.get("currencyName").alias("currencyName"),c.get("status").alias("status") , exchangeRate.alias("exchangeRate"));
+		query.multiselect(c.get("currencyId").alias("currencyId") ,
+				c.get("currencyName").alias("currencyName"),
+				c.get("status").alias("status") , 
+				c.get("minDiscount").alias("minDiscount") , 
+				c.get("maxLoading").alias("maxLoading") ,
+				exchangeRate.alias("exchangeRate"));
 		
 	
 		// Order By
@@ -628,9 +640,17 @@ public List<CuurencyDropDownRes> getCurrencyMasterDropdown( CurrencyDropDownReq 
 		for(Tuple data : list ) {
 			// Response
 			CuurencyDropDownRes res = new CuurencyDropDownRes();
+			Double exRate=Double.valueOf(data.get("exchangeRate").toString());
+			Double minRate=Double.valueOf(data.get("minDiscount")==null?"0" : data.get("minDiscount").toString());
+			Double maxRate=Double.valueOf(data.get("maxLoading")==null?"0" :data.get("maxLoading").toString());
+			minRate=exRate-(exRate*minRate/100);
+			maxRate=exRate+(exRate*maxRate/100);
+			
 			res.setCode(data.get("currencyId")==null?"" :data.get("currencyId").toString()  );
 			res.setCodeDesc(data.get("currencyName")==null?"" :data.get("currencyName").toString()  );
 			res.setExchangeRate(data.get("exchangeRate")==null?"0" : data.get("exchangeRate").toString() );
+			res.setMinRate(minRate.toString() );
+			res.setMaxRate(maxRate.toString());
 			res.setStatus(data.get("status")==null?"":data.get("status").toString());
 			resList.add(res);
 		}		
@@ -774,5 +794,9 @@ public SuccessRes changeStatusCurrencyDetails(CurrencyMasterChangeStatusReq req)
 	return res;
 
 }
+
+
+
+
 
 }
