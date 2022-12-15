@@ -2,8 +2,12 @@ package com.maan.eway.common.res;
 
 import java.util.Date;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 public class RejectCriteriaRes {
 
@@ -23,6 +27,5 @@ public class RejectCriteriaRes {
 		private String customerId;
 		private Date policyStartDate;
 		private Date policyEndDate;
-		
 		private String rejectReason;
 }
