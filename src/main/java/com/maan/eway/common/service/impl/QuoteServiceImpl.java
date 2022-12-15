@@ -383,11 +383,12 @@ public class QuoteServiceImpl implements QuoteService {
 				if(StringUtils.isBlank(req.getRejectReason())) {
 					errors.add(new Error("03","Reject Reason","Please Enter Reject Reason"));
 				}
+				
 			} 
 			
-//			if(StringUtils.isBlank(req.getAdminRemarks())) {
-//				errors.add(new Error("03","Admin Remarks","Please Enter Admin Remarks"));
-//			}
+			if(StringUtils.isBlank(req.getAdminRemarks())) {
+				errors.add(new Error("03","Admin Remarks","Please Enter Admin Remarks"));
+			}
 			
 			
 		} catch ( Exception e) {
