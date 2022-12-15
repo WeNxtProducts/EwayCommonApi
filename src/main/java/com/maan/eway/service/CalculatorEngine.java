@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.Tuple;
 
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
+import com.maan.eway.common.req.UpdateFactorRateReq;
 import com.maan.eway.req.calcengine.CalcEngine;
 
 public interface CalculatorEngine {

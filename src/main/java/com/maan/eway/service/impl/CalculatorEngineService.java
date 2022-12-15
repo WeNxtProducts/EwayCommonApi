@@ -36,6 +36,7 @@ import com.maan.eway.calculator.util.SubCoverCreationUtil;
 import com.maan.eway.calculator.util.TaxUtils;
 import com.maan.eway.calculator.util.UwQuestionUtils;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
+import com.maan.eway.common.req.UpdateFactorRateReq;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.MsVehicleDetailsRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
