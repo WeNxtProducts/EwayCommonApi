@@ -103,6 +103,14 @@ public class EservieMotorDetailsViewRes {
 	@JsonProperty("InsuranceClass")
     private String  insuranceClass ;
 	
+	@JsonProperty("Status")
+	private String status;
+	
+	@JsonProperty("AdminRemarks")
+	private String adminRemarks;
+	
+	@JsonProperty("RejectReason")
+	private String rejectReason;
 
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("ManufactureYear")
