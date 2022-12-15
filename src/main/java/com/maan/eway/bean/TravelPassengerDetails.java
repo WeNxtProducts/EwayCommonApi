@@ -314,9 +314,27 @@ private static final long serialVersionUID = 1L;
     @Column(name="COMMISSION_TYPE_DESC", length=100)
     private String     commissionTypeDesc ;
 
+    @Column(name="ACTUAL_PREMIUM_LC")
+    private Double     actualPremiumLc ;
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
+    @Column(name="ACTUAL_PREMIUM_FC")
+    private Double     actualPremiumFc ;
+    
+    @Column(name="OVERALL_PREMIUM_LC")
+    private Double     overallPremiumLc ;
 
+    @Column(name="OVERALL_PREMIUM_FC")
+    private Double     overallPremiumFc ;
+
+
+    @Column(name="VD_REFNO", length=20)
+    private String     vdRefno ;
+
+    @Column(name="CD_REFNO", length=20)
+    private String     cdRefno ;
+
+    @Column(name="MS_REFNO", length=20)
+    private String     msRefno ;
 
 }
 

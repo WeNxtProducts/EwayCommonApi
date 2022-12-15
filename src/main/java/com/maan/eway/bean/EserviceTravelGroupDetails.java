@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -95,10 +94,23 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATUS", length=2)
     private String     status ;
 
-  
+    @Column(name="ACTUAL_PREMIUM_LC")
+    private Double     actualPremiumLc ;
 
+    @Column(name="ACTUAL_PREMIUM_FC")
+    private Double     actualPremiumFc ;
+    
+    @Column(name="OVERALL_PREMIUM_LC")
+    private Double     overallPremiumLc ;
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
+    @Column(name="OVERALL_PREMIUM_FC")
+    private Double     overallPremiumFc ;
+
+    @Column(name="CUSTOMER_ID", length=20)
+    private String     customerId ;
+
+    @Column(name="QUOTE_NO", length=20)
+    private String     quoteNo ;
 
 
 }
