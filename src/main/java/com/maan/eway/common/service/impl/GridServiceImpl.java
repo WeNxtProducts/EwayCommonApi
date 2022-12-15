@@ -444,7 +444,7 @@ public class GridServiceImpl implements GridService {
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				adminReferralPendingList = motService.getMotorAdminReferalPendings(req  , branches, limit , offset );
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
-				adminReferralPendingList = traService.getTravelReferalRejectedDetails(req  , branches, limit , offset );
+				adminReferralPendingList = traService.getTravelAdminReferalPendings(req  , branches, limit , offset );
 			}
 			for(QuoteCriteriaRes data : adminReferralPendingList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
@@ -510,7 +510,7 @@ public class GridServiceImpl implements GridService {
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				adminReferralRejectedList = motService.getMotorAdminReferalRejected(req  , branches, limit , offset );
 			}
-			for(QuoteCriteriaRes data : adminReferralRejectedList  ) {
+			for(RejectCriteriaRes data : adminReferralRejectedList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
 				 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
