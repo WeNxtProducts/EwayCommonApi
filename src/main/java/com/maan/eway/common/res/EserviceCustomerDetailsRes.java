@@ -43,6 +43,9 @@ public class EserviceCustomerDetailsRes {
 	@JsonProperty("CustomerId")
 	private String customerId;
 	
+	@JsonProperty("RejectReason")
+	private String rejectReason;
+	
 	@JsonProperty("Count")
 	private String   count ;
 	
