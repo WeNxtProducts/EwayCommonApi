@@ -232,6 +232,19 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="DESTINATION_COUNTRY_DESC", length=20)
     private String     destinationCountryDesc ;
+    
+    @Column(name="ACTUAL_PREMIUM_LC")
+    private Double     actualPremiumLc ;
+
+    @Column(name="ACTUAL_PREMIUM_FC")
+    private Double     actualPremiumFc ;
+    
+    @Column(name="OVERALL_PREMIUM_LC")
+    private Double     overallPremiumLc ;
+
+    @Column(name="OVERALL_PREMIUM_FC")
+    private Double     overallPremiumFc ;
+
 }
 
 
