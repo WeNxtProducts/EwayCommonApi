@@ -37,4 +37,8 @@ public interface TravelPassengerDetailsRepository  extends JpaRepository<TravelP
 	TravelPassengerDetails findByRequestReferenceNoAndTravelIdAndSerialNoAndGenderId(String requestReferenceNo,
 			Integer valueOf, String serialNo, Integer valueOf2);
 
+	Long countByQuoteNo(String quoteNo);
+
+	void deleteByQuoteNo(String quoteNo);
+
 }

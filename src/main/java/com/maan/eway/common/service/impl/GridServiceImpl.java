@@ -39,6 +39,7 @@ import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.res.CriteriaCustomerRes;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
+import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.service.GridService;
 import com.maan.eway.common.service.MotorGridService;
 import com.maan.eway.common.service.TravelGridService;
@@ -242,14 +243,14 @@ public class GridServiceImpl implements GridService {
 				branches.add(req.getBranchCode()) ;
 			}
 			
-			List<QuoteCriteriaRes> rejectedQuoteList = new ArrayList<QuoteCriteriaRes>();
+			List<RejectCriteriaRes> rejectedQuoteList = new ArrayList<RejectCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				rejectedQuoteList = motService.getMotorRejectedQuoteDetails(req  , branches, limit , offset );
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				rejectedQuoteList = traService.getTravelRejectedQuoteDetails(req  , branches, limit , offset );
 			}
 			
-			for(QuoteCriteriaRes data : rejectedQuoteList  ) {
+			for(RejectCriteriaRes data : rejectedQuoteList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
 				 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
@@ -406,13 +407,13 @@ public class GridServiceImpl implements GridService {
 				branches.add(req.getBranchCode()) ;
 			}
 			
-			List<QuoteCriteriaRes> referralRejectedList = new ArrayList<QuoteCriteriaRes>();
+			List<RejectCriteriaRes> referralRejectedList = new ArrayList<RejectCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				referralRejectedList = motService.getMotorReferalRejectedDetails(req  , branches, limit , offset );
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				referralRejectedList = traService.getTravelReferalRejectedDetails(req  , branches, limit , offset );
 			}
-			for(QuoteCriteriaRes data : referralRejectedList  ) {
+			for(RejectCriteriaRes data : referralRejectedList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
 				 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
@@ -505,7 +506,7 @@ public class GridServiceImpl implements GridService {
 			List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(req.getApplicationId());
 			branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
 			
-			List<QuoteCriteriaRes> adminReferralRejectedList = new ArrayList<QuoteCriteriaRes>();
+			List<RejectCriteriaRes> adminReferralRejectedList = new ArrayList<RejectCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				adminReferralRejectedList = motService.getMotorAdminReferalRejected(req  , branches, limit , offset );
 			}

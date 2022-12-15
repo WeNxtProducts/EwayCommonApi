@@ -25,6 +25,7 @@ import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.res.QuoteCriteriaRes;
+import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.service.TravelGridService;
 
 import io.swagger.v3.oas.annotations.servers.Server;
@@ -194,11 +195,11 @@ public class TravelGridServiceImpl implements  TravelGridService {
 	}
 
 	@Override
-	public List<QuoteCriteriaRes> getTravelRejectedQuoteDetails(ExistingQuoteReq req, List<String> branches, int limit,	int offset) {
-		List<QuoteCriteriaRes> rejectedQuotes = new ArrayList<QuoteCriteriaRes>();
+	public List<RejectCriteriaRes> getTravelRejectedQuoteDetails(ExistingQuoteReq req, List<String> branches, int limit,	int offset) {
+		List<RejectCriteriaRes> rejectedQuotes = new ArrayList<RejectCriteriaRes>();
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<QuoteCriteriaRes> query = cb.createQuery(QuoteCriteriaRes.class);
+			CriteriaQuery<RejectCriteriaRes> query = cb.createQuery(RejectCriteriaRes.class);
 
 			// Find All
 			Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
@@ -218,7 +219,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					cb.selectCase().when(m.get("quoteNo").isNotNull(), m.get("quoteNo")).otherwise( m.get("quoteNo")).alias("quoteNo") ,
 					cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId")).otherwise( m.get("customerId")).alias("customerId") ,
 					m.get("travelStartDate").alias("policyStartDate"),
-					m.get("travelEndDate").alias("policyEndDate")
+					m.get("travelEndDate").alias("policyEndDate"), m.get("rejectReason").alias("rejectReason")
 					);
 			
 			// Order By
@@ -249,11 +250,11 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			
 			query.where(n1,n2,n3,n4,n5,n6).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
 					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
-					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate")
+					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate") , m.get("rejectReason")
 					).orderBy(orderList);
 			
 			// Get Result
-			TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);
+			TypedQuery<RejectCriteriaRes> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			rejectedQuotes = result.getResultList();
@@ -413,11 +414,11 @@ public class TravelGridServiceImpl implements  TravelGridService {
 	}
 
 	@Override
-	public List<QuoteCriteriaRes> getTravelReferalRejectedDetails(ExistingQuoteReq req, List<String> branches, int limit,	int offset) {
-		List<QuoteCriteriaRes> referralApproved = new ArrayList<QuoteCriteriaRes>();
+	public List<RejectCriteriaRes> getTravelReferalRejectedDetails(ExistingQuoteReq req, List<String> branches, int limit,	int offset) {
+		List<RejectCriteriaRes> referralApproved = new ArrayList<RejectCriteriaRes>();
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<QuoteCriteriaRes> query = cb.createQuery(QuoteCriteriaRes.class);
+			CriteriaQuery<RejectCriteriaRes> query = cb.createQuery(RejectCriteriaRes.class);
 
 			// Find All
 			Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
@@ -437,7 +438,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					cb.selectCase().when(m.get("quoteNo").isNotNull(), m.get("quoteNo")).otherwise( m.get("quoteNo")).alias("quoteNo") ,
 					cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId")).otherwise( m.get("customerId")).alias("customerId") ,
 					m.get("travelStartDate").alias("policyStartDate"),
-					m.get("travelEndDate").alias("policyEndDate")
+					m.get("travelEndDate").alias("policyEndDate") , m.get("rejectReason").alias("rejectReason") 
 					);
 			
 			// Order By
@@ -468,11 +469,11 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			
 			query.where(n1,n2,n3,n4,n5,n6).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
 					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
-					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate")
+					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate"), m.get("rejectReason")
 					).orderBy(orderList);
 			
 			// Get Result
-			TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);
+			TypedQuery<RejectCriteriaRes> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			referralApproved = result.getResultList();
@@ -609,12 +610,12 @@ public class TravelGridServiceImpl implements  TravelGridService {
 	}
 
 	@Override
-	public List<QuoteCriteriaRes> getTravelAdminReferalRejected(ExistingQuoteReq req, List<String> branches, int limit,
+	public List<RejectCriteriaRes> getTravelAdminReferalRejected(ExistingQuoteReq req, List<String> branches, int limit,
 			int offset) {
-		List<QuoteCriteriaRes> referralApproved = new ArrayList<QuoteCriteriaRes>();
+		List<RejectCriteriaRes> referralApproved = new ArrayList<RejectCriteriaRes>();
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<QuoteCriteriaRes> query = cb.createQuery(QuoteCriteriaRes.class);
+			CriteriaQuery<RejectCriteriaRes> query = cb.createQuery(RejectCriteriaRes.class);
 
 			// Find All
 			Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
@@ -634,7 +635,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					cb.selectCase().when(m.get("quoteNo").isNotNull(), m.get("quoteNo")).otherwise( m.get("quoteNo")).alias("quoteNo") ,
 					cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId")).otherwise( m.get("customerId")).alias("customerId") ,
 					m.get("travelStartDate").alias("policyStartDate"),
-					m.get("travelEndDate").alias("policyEndDate")
+					m.get("travelEndDate").alias("policyEndDate") , m.get("rejectReason").alias("rejectReason")
 					);
 			
 			// Order By
@@ -653,11 +654,11 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			
 			query.where(n1,n2,n3,n4,n6).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
 					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
-					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate")
+					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate") , m.get("rejectReason")
 					).orderBy(orderList);
 			
 			// Get Result
-			TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);
+			TypedQuery<RejectCriteriaRes> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			referralApproved = result.getResultList();

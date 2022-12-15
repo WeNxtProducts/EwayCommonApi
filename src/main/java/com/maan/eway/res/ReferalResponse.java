@@ -22,4 +22,8 @@ public class ReferalResponse {
 	
 	@JsonProperty("Status")
 	private String status;
+	
+	@JsonProperty("Referral")
+	private String referral;
+
 }
