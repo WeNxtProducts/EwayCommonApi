@@ -386,7 +386,7 @@ public class QuoteServiceImpl implements QuoteService {
 				
 			} 
 			
-			if(StringUtils.isBlank(req.getAdminRemarks())) {
+			if(StringUtils.isBlank(req.getStatus()) && (req.getStatus().equalsIgnoreCase("RA") || req.getStatus().equalsIgnoreCase("RR") ) &&  StringUtils.isBlank(req.getAdminRemarks())) {
 				errors.add(new Error("03","Admin Remarks","Please Enter Admin Remarks"));
 			}
 			
