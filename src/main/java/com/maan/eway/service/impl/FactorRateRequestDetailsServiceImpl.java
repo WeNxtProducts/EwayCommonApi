@@ -227,9 +227,12 @@ this.repository = repo;
 						long count = coverIds.stream().filter(t-> (saveCover.getCoverId().equals(t.getCoverId()) && saveCover.getSubCoverId().equals(t.getSubCoverId()) )).count() ;
 						if(count>0) userOpt="Y";
 					}*/
-					saveCover.setUserOpt(userOpt);
-					if(req.getUpdateas()==null)
+					
+					if(req.getUpdateas()==null) {
+						saveCover.setUserOpt(userOpt);
 						saveCover.setActualRate(coverData.getRate());
+					}
+						
 					
 					//Double b=coverData.getPremiumBeforeDiscountLC()==null ? 0D : Double.valueOf(df.format(coverData.getPremiumBeforeDiscountLC()));
 					saveCover.setRegulSumInsured(coverData.getTiraSumInsured().doubleValue());
@@ -327,9 +330,10 @@ this.repository = repo;
 							if(count>0) userOpt="Y";
 						}*/
 						saveSubCover.setUserOpt(userOpt);
-						if(req.getUpdateas()==null)
+						if(req.getUpdateas()==null) {
+							saveSubCover.setUserOpt(userOpt);
 							saveSubCover.setActualRate(coverData.getRate());
-						
+						}
 						///Double b=subCoverData.getPremiumBeforeDiscountLC()==null ? 0D : Double.valueOf(df.format(subCoverData.getPremiumBeforeDiscountLC()));
 						saveSubCover.setRegulSumInsured(subCoverData.getTiraSumInsured().doubleValue());
 						

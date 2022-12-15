@@ -46,6 +46,7 @@ public class CoverFromFactor implements Function<FactorRateRequestDetails,Cover>
 					.isselected(t.getIsSelected()==null?"N":t.getIsSelected().toString())
 					.isReferral(referal)
 					.referalDescription("Y".equals(referal)?(t.getCoverDesc()==null?"":t.getCoverDesc().toString()+" Referral"):"")
+					.userOpt(t.getUserOpt())
 					//.exchangeRate(t.get("isSelectedYn")==null?0D:t.get("isSelectedYn").toString())
 					/*	.premiumBeforeDiscount(new BigDecimal(t.get("coverId").toString()))
 					.premiumAfterDiscount(new BigDecimal(t.get("coverId").toString()))
