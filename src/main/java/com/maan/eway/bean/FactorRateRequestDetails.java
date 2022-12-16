@@ -223,6 +223,8 @@ private static final long serialVersionUID = 1L;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 
+    @Column(name="cover_based_on", length=100)
+    private String     coverBasedOn ;
 }
 
 

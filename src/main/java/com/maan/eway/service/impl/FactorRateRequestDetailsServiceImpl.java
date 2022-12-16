@@ -249,7 +249,7 @@ this.repository = repo;
 						saveCover.setActualRate(coverData.getRate());
 					}
 						
-					
+					saveCover.setCoverBasedOn(StringUtils.isBlank(coverData.getCoverBasedOn())?"sumInsured":coverData.getCoverBasedOn());
 					//Double b=coverData.getPremiumBeforeDiscountLC()==null ? 0D : Double.valueOf(df.format(coverData.getPremiumBeforeDiscountLC()));
 					saveCover.setRegulSumInsured(coverData.getTiraSumInsured().doubleValue());
 					
@@ -352,7 +352,8 @@ this.repository = repo;
 						}
 						///Double b=subCoverData.getPremiumBeforeDiscountLC()==null ? 0D : Double.valueOf(df.format(subCoverData.getPremiumBeforeDiscountLC()));
 						saveSubCover.setRegulSumInsured(subCoverData.getTiraSumInsured().doubleValue());
-						
+
+						saveSubCover.setCoverBasedOn(StringUtils.isBlank(coverData.getCoverBasedOn())?"sumInsured":coverData.getCoverBasedOn());
 						
 						premiumLc = premiumLc + (saveSubCover.getPremiumExcludedTaxLc()==null ? 0D :saveSubCover.getPremiumExcludedTaxLc() );
 						premiumFc = premiumFc + (saveSubCover.getPremiumExcludedTaxFc()==null ? 0D :saveSubCover.getPremiumExcludedTaxFc() );

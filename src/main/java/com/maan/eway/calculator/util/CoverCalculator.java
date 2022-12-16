@@ -48,7 +48,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 
 				 
 				 
-				 BigDecimal si=vehicles.get(0).get("sumInsured")==null?BigDecimal.ZERO:new BigDecimal(vehicles.get(0).get("sumInsured").toString());
+				 BigDecimal si=vehicles.get(0).get(t.getCoverBasedOn())==null?BigDecimal.ZERO:new BigDecimal(vehicles.get(0).get(t.getCoverBasedOn()).toString());
 				 if("Y".equals(t.getDependentCoveryn())) {
 					 if(calculatedcover!=null) {
 						Cover ct = calculatedcover.stream().filter(c->c.getCoverId().equals(t.getDependentCoverId())).findAny().orElse(null);

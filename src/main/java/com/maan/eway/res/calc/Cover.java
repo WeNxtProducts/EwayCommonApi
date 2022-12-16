@@ -112,4 +112,7 @@ public class Cover implements Serializable{
 
 	    @JsonProperty("UserOpt")
 	    private String     userOpt ;
+	    
+	    @JsonProperty("CoverBasedOn")
+	    private String coverBasedOn;
 }
