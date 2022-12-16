@@ -83,7 +83,7 @@ private static final long serialVersionUID = 1L;
 
 
     @Column(name="GENDER_ID")
-    private Integer    genderId ;
+    private String    genderId ;
 
     @Id
     @Column(name="CUSTOMER_REFERENCE_NO", nullable=false, length=20)
@@ -122,7 +122,10 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="PASSENGER_NAME", length=120)
     private String     passengerName ;
-
+    
+    @Column(name="PASSENGER_FIRST_NAME", length=120)
+    private String     passengerFirstName ;
+    
     @Column(name="PASSENGER_LAST_NAME", length=120)
     private String     passengerLastName ;
 
@@ -144,6 +147,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="NATIONALITY", length=50)
     private String     nationality ;
+    
+    @Column(name="NATIONALITY_DESC", length=50)
+    private String     nationalityDesc ;
 
     @Column(name="COVER_TYPE", length=10)
     private String     coverType ;
@@ -336,7 +342,13 @@ private static final long serialVersionUID = 1L;
     @Column(name="OVERALL_PREMIUM_FC")
     private Double     overallPremiumFc ;
 
+    @Column(name="STATE_CODE", length=20)
+    private String     stateCode ;
+    
+    @Column(name="STATE_NAME", length=20)
+    private String     stateName ;
 
+    
     @Column(name="VD_REFNO", length=20)
     private String     vdRefno ;
 

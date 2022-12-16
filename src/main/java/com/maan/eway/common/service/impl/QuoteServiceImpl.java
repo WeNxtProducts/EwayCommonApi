@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.EserviceTravelDetails;
+import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MotorDataDetails;
@@ -482,4 +484,75 @@ public class QuoteServiceImpl implements QuoteService {
 		}
 		return updateRes;
 	}
+	
+	
+//	public synchronized  List<VehicleIdsReq> ProductWiseReferralApproveCall(AdminReferalStatusReq req) {
+//		List<VehicleIdsReq> vehicleIdsList = new ArrayList<VehicleIdsReq>();
+//		try {
+//			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
+//				List<EserviceMotorDetails> motorDatas = eserMotRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
+//				List<FactorRateRequestDetails> coverDatas = eserCovRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndUserOptOrderByVehicleIdAsc(req.getRequestReferenceNo(), 0 ,0,"Y");
+//				
+//				NewQuoteReq req2 = new NewQuoteReq();
+//				
+//				for(EserviceMotorDetails mot : motorDatas ) {
+//					VehicleIdsReq vehDeh = new VehicleIdsReq();
+//					List<CoverIdsReq>  coverList = new ArrayList<CoverIdsReq>();
+//					
+//					for (FactorRateRequestDetails cov :  coverDatas ) {
+//						CoverIdsReq coverReq = new CoverIdsReq();
+//						if (cov.getCoverId().equals(cov.getSubCoverId())) {
+//							coverReq.setSubCoverId(null);
+//						} else {
+//							coverReq.setSubCoverId(cov.getSubCoverId().toString());
+//						}
+//						coverReq.setIsReferal(cov.getIsReferral());
+//						coverReq.setCoverId(cov.getCoverId());
+//						coverReq.setSubCoverYn(cov.getSubCoverYn());
+//						coverList.add(coverReq);
+//						
+//					}
+//					vehDeh.setCoverIdList(coverList);
+//					vehDeh.setVehicleId(mot.getVehicleId());
+//					vehicleIdsList.add(vehDeh);
+//				} 
+//			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+//				List<EserviceTravelGroupDetails> travelGroupDatas = eserMotRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
+//				List<FactorRateRequestDetails> coverDatas = eserCovRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndUserOptOrderByVehicleIdAsc(req.getRequestReferenceNo(), 0 ,0,"Y");
+//				
+//				NewQuoteReq req2 = new NewQuoteReq();
+//				
+//				for(EserviceMotorDetails mot : motorDatas ) {
+//					VehicleIdsReq vehDeh = new VehicleIdsReq();
+//					List<CoverIdsReq>  coverList = new ArrayList<CoverIdsReq>();
+//					
+//					for (FactorRateRequestDetails cov :  coverDatas ) {
+//						CoverIdsReq coverReq = new CoverIdsReq();
+//						if (cov.getCoverId().equals(cov.getSubCoverId())) {
+//							coverReq.setSubCoverId(null);
+//						} else {
+//							coverReq.setSubCoverId(cov.getSubCoverId().toString());
+//						}
+//						coverReq.setIsReferal(cov.getIsReferral());
+//						coverReq.setCoverId(cov.getCoverId());
+//						coverReq.setSubCoverYn(cov.getSubCoverYn());
+//						coverList.add(coverReq);
+//						
+//					}
+//					vehDeh.setCoverIdList(coverList);
+//					vehDeh.setVehicleId(mot.getVehicleId());
+//					vehicleIdsList.add(vehDeh);
+//			}
+//			
+//			// Referal Approve & Create New Quote
+//			if (req.getStatus().equalsIgnoreCase("RA") ) {
+//				
+//				}
+//		} catch ( Exception e) {
+//			e.printStackTrace();
+//			log.info("Exception is ---> " + e.getMessage());
+//			return null;
+//		}
+//		return updateRes;
+//	}
 }

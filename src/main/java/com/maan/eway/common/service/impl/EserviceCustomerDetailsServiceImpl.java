@@ -664,8 +664,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 
 			if((StringUtils.isNotBlank(req.getNationality()))&&(StringUtils.isNotBlank(req.getStateCode()))){
 			List<StateMaster> stateCityNames = getStateAndCityName(req.getNationality(), req.getStateCode());
-			saveData.setStateName(stateCityNames.get(0).getStateName() == null ? ""
-					: stateCityNames.get(0).getStateName().toString());
+			saveData.setStateName(stateCityNames.get(0).getStateName() == null ? "" : stateCityNames.get(0).getStateName().toString());
 			saveData.setCityName(req.getCityName());
 			}
 			repository.save(saveData);

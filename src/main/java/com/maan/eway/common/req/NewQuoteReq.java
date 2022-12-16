@@ -23,4 +23,11 @@ public class NewQuoteReq {
 	
 	@JsonProperty("AdminLoginId")
 	private String adminLoginId;
+	
+	@JsonProperty("ManualReferralYn")
+	private String manualReferralYn ;
+	
+	@JsonProperty("ReferralRemarks")
+	private String referralRemarks;
+	
 }
