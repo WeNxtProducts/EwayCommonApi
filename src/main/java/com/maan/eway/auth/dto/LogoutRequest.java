@@ -7,13 +7,10 @@ import lombok.Data;
 @Data
 public class LogoutRequest {
 
-	@JsonProperty("UserId")
+	@JsonProperty("LoginId")
 	private String userId;
 	
 	@JsonProperty("Token")
 	private String token;
-	
-	@JsonProperty("CompanyId")
-	private String companyId;
 
 }

@@ -45,10 +45,12 @@ import com.maan.eway.auth.dto.BrokerProductCompaniesRes;
 import com.maan.eway.auth.dto.BrokerProductsGetRes;
 import com.maan.eway.auth.dto.ChangePasswordReq;
 import com.maan.eway.auth.dto.ClaimLoginResponse;
+import com.maan.eway.auth.dto.ClaimLogoutResponse;
 import com.maan.eway.auth.dto.CommonLoginRes;
 import com.maan.eway.auth.dto.LoginBranchCriteriaRes;
 import com.maan.eway.auth.dto.LoginBranchDetailsRes;
 import com.maan.eway.auth.dto.LoginRequest;
+import com.maan.eway.auth.dto.LogoutRequest;
 import com.maan.eway.auth.dto.ProductDropDownRes;
 import com.maan.eway.auth.service.AuthendicationService;
 import com.maan.eway.auth.token.EncryDecryService;
@@ -63,7 +65,6 @@ import com.maan.eway.bean.LoginMasterId;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.ProductMaster;
-import com.maan.eway.bean.RegionMaster;
 import com.maan.eway.bean.SessionMaster;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
@@ -626,6 +627,34 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 		}
 		return res;
 
+	}
+
+	@Override
+	public CommonLoginRes logout(LogoutRequest mslogin) {
+		CommonLoginRes res = new CommonLoginRes();
+		ClaimLogoutResponse r = new ClaimLogoutResponse();
+		try {
+		
+			LoginMaster login = loginRepo.findByLoginId(mslogin.getUserId());
+			if (login!=null) {
+
+				SessionMaster session = sessionRep.findByTempTokenid(mslogin.getToken());
+				session.setLogoutDate(new Date());
+				session.setStatus("DE-ACTIVE");
+				session = sessionRep.save(session);
+				r.setStatus("Log Out Sucessfully");
+			}else {
+				r.setStatus("Log Out Failed");
+			}
+		} catch (Exception e) {
+			r.setStatus("Log Out Failed");
+			e.printStackTrace();
+		}
+		res.setCommonResponse(r);
+		res.setErrorMessage(Collections.emptyList());
+		res.setIsError(false);
+		res.setMessage("Success");
+		return res;
 	}
 
 	

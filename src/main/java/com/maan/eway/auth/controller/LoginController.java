@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.auth.dto.CommonLoginRes;
 import com.maan.eway.auth.dto.LoginRequest;
+import com.maan.eway.auth.dto.LogoutRequest;
 import com.maan.eway.auth.service.AuthendicationService;
 import com.maan.eway.auth.service.LoginValidatedService;
 import com.maan.eway.service.PrintReqService;
@@ -51,6 +52,11 @@ public class LoginController {
 		
 	}
 	
+	@PostMapping("/logout")
+	@ApiOperation(value="This method is used to Logout From Screen")
+	public CommonLoginRes logout(@RequestBody LogoutRequest mslogin)  {		
+		return authservice.logout(mslogin);
+	}
 
 	
 }
