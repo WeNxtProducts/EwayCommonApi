@@ -1,6 +1,7 @@
 package com.maan.eway.calculator.util;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -83,7 +84,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					 t.setMinimumPremium(tuple.get("minPremium")==null?BigDecimal.ZERO:new BigDecimal(tuple.get("minPremium").toString())/*.divide(t.getExchangeRate(),round)*/);
 					 BigDecimal domath = domath(calctype, t.getRate(), si,t.getExchangeRate());
 					 t.setPremiumBeforeDiscount(domath);
-					 t.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())) ;
+					 t.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP)) ;
 					 t.setCalcType(calctype);
 					 /// Referal
 					 t.setIsReferral((tuple.get("status")==null?"N":tuple.get("status").toString()).equals("R")?"Y":"N");
@@ -92,7 +93,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					 
 					 BigDecimal domath = domath(t.getCalcType(), t.getRate(), si,t.getExchangeRate());
 					 t.setPremiumBeforeDiscount(domath);
-					 t.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())) ;
+					 t.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP)) ;
 				 }
 				 
 				 
@@ -117,11 +118,11 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 
 				 
 				 
-				 t.setPremiumAfterDiscount( t.getPremiumBeforeDiscount().subtract(new BigDecimal(totaldiscount,round)).add(new BigDecimal(totalloading,round)).multiply(t.getProRata()));
-				 t.setPremiumAfterDiscountLC(t.getPremiumAfterDiscount().multiply(t.getExchangeRate()).multiply(t.getProRata()));
+				 t.setPremiumAfterDiscount( t.getPremiumBeforeDiscount().subtract(new BigDecimal(totaldiscount,round)).add(new BigDecimal(totalloading,round)).multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
+				 t.setPremiumAfterDiscountLC(t.getPremiumAfterDiscount().multiply(t.getExchangeRate()).multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
 				 
 				 t.setPremiumExcluedTax(t.getPremiumAfterDiscount());
-				 t.setPremiumExcluedTaxLC(t.getPremiumExcluedTax().multiply(t.getExchangeRate()));
+				 t.setPremiumExcluedTaxLC(t.getPremiumExcluedTax().multiply(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
 				 
 				 // Minimium Premium setup.
 				 if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0) {
@@ -137,7 +138,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 }
 				 
 				 t.setPremiumIncludedTax(t.getPremiumExcluedTax().add(new BigDecimal(totaltax,round)));				 
-				 t.setPremiumIncludedTaxLC(t.getPremiumIncludedTax().multiply(t.getExchangeRate()));
+				 t.setPremiumIncludedTaxLC(t.getPremiumIncludedTax().multiply(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
 			 }
 			 
 			
