@@ -106,7 +106,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="SUB_COVER_DESC", length=300)
     private String     subCoverDesc ;
 
-    @Column(name="CORE_APP_CODE", nullable=false, length=20)
+    @Column(name="CORE_APP_CODE",  length=20)
     private String     coreAppCode ;
 
     @Column(name="RATING_ID")
@@ -194,9 +194,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_DATE")
     private Date       updatedDate ;
 
-
-    //--- ENTITY LINKS ( RELATIONSHIP )
-
+    @Column(name="COVER_BASED_ON")
+    private String       coverBasedOn;
 
 }
 
