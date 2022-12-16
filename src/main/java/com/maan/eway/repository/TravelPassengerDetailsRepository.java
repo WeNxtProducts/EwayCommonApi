@@ -14,6 +14,8 @@ package com.maan.eway.repository;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -29,16 +31,21 @@ import com.maan.eway.bean.TravelPassengerDetailsId;
  
  
  
+@Transactional
 public interface TravelPassengerDetailsRepository  extends JpaRepository<TravelPassengerDetails,TravelPassengerDetailsId > , JpaSpecificationExecutor<TravelPassengerDetails> {
 
-	
-	List<TravelPassengerDetails> findByStatusOrderBySerialNoAsc(String string);
 
-	TravelPassengerDetails findByRequestReferenceNoAndTravelIdAndSerialNoAndGenderId(String requestReferenceNo,
-			Integer valueOf, String serialNo, Integer valueOf2);
+
+	Long countByQuoteNoAndPassengerId(String quoteNo, Integer vehicleId);
+
+	@Transactional
+	void deleteByQuoteNoAndPassengerId(String quoteNo, Integer vehicleId);
+
+	void findByQuoteNoAndPassengerId(String quoteNo, Integer vehicleId);
 
 	Long countByQuoteNo(String quoteNo);
 
 	void deleteByQuoteNo(String quoteNo);
+
 
 }

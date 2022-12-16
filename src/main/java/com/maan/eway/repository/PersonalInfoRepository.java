@@ -42,11 +42,12 @@ public interface PersonalInfoRepository  extends JpaRepository<PersonalInfo,Pers
 	PersonalInfo findByPolicyHolderTypeidAndPolicyHolderTypeAndIdNumber(String policyHolderTypeid,
 			String policyHolderType, String idNumber);
 
-	PersonalInfo findByCustomerId(String customerId);
-
 	Long countByCustomerId(String customerId);
 
+	@Transactional
 	void deleteByCustomerId(String customerId);
+
+	PersonalInfo findByCustomerId(String customerId);
 
 
 

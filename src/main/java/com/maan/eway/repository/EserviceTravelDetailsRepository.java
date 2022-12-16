@@ -30,4 +30,6 @@ import com.maan.eway.bean.EserviceTravelDetailsId;
  
 public interface EserviceTravelDetailsRepository  extends JpaRepository<EserviceTravelDetails,EserviceTravelDetailsId > , JpaSpecificationExecutor<EserviceTravelDetails> {
 
+	EserviceTravelDetails findByRequestReferenceNo(String requestReferenceNo);
+
 }

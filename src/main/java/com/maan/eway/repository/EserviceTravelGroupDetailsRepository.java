@@ -39,5 +39,9 @@ import org.springframework.data.domain.Pageable;
  
 public interface EserviceTravelGroupDetailsRepository  extends JpaRepository<EserviceTravelGroupDetails,EserviceTravelGroupDetailsId > , JpaSpecificationExecutor<EserviceTravelGroupDetails> {
 
+	List<EserviceTravelGroupDetails> findByRequestReferenceNoOrderByGroupIdAsc(String requestReferenceNo);
+
+	EserviceTravelGroupDetails findByRequestReferenceNoAndGroupId(String requestReferenceNo, Integer groupId);
+
 
 }

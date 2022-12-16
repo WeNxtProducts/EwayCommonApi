@@ -70,11 +70,19 @@ private static final long serialVersionUID = 1L;
     private Integer    travelId ;
 
     @Id
-    @Column(name="SERIAL_NO", nullable=false, length=20)
-    private String     serialNo ;
-
+    @Column(name="PASSENGER_ID", nullable=false, length=20)
+    private Integer     passengerId ;
+    
     @Id
-    @Column(name="GENDER_ID", nullable=false)
+    @Column(name="GROUP_ID", nullable=false, length=20)
+    private Integer     groupId ;
+    
+    @Id
+    @Column(name="GROUP_COUNT", nullable=false, length=20)
+    private Integer     groupCount ;
+
+
+    @Column(name="GENDER_ID")
     private Integer    genderId ;
 
     @Id
@@ -96,6 +104,14 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="SECTION_ID", nullable=false)
     private Integer    sectionId ;
+    
+    @Id
+    @Column(name="CUSTOMER_ID", length=20)
+    private String     customerId ;
+
+    @Id
+    @Column(name="QUOTE_NO", length=20)
+    private String     quoteNo ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="NAME_TITLE_DESC", length=10)
@@ -274,12 +290,6 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="SUB_USER_TYPE", length=20)
     private String     subUserType ;
-
-    @Column(name="CUSTOMER_ID", length=20)
-    private String     customerId ;
-
-    @Column(name="QUOTE_NO", length=20)
-    private String     quoteNo ;
 
     @Column(name="ADMIN_LOGIN_ID", length=100)
     private String     adminLoginId ;

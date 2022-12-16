@@ -32,11 +32,7 @@ public class TravelPassengerDetailsId implements Serializable {
     private String     requestReferenceNo ;
     
     private Integer    travelId ;
-    
-    private String     serialNo ;
-    
-    private Integer    genderId ;
-    
+   
     private String     customerReferenceNo ;
     
     private String     companyId ;
@@ -46,6 +42,16 @@ public class TravelPassengerDetailsId implements Serializable {
     private Integer    productId ;
     
     private Integer    sectionId ;
+    
+    private Integer     passengerId ;
+
+    private Integer     groupId ;
+   
+    private Integer     groupCount ;
+    
+    private String     customerId ;
+
+    private String     quoteNo ;
     
      
 }

@@ -30,7 +30,13 @@ public class QuoteThreadReq {
 	
 	@JsonProperty("AdminLoginId")
 	private String adminLoginId;
+	
+	@JsonProperty("GroupId")
+	private Integer groupId;
 
+	@JsonProperty("GroupCount")
+	private Integer groupCount;
+	
 	@JsonProperty("Vehicles")
 	private List<VehicleIdsReq> VehicleIdsList;
 

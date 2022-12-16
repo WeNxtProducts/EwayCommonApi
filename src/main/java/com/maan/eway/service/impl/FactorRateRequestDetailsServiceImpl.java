@@ -21,10 +21,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.EserviceTravelDetails;
+import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
@@ -33,6 +36,8 @@ import com.maan.eway.common.req.UpdateFactorRateReq;
 import com.maan.eway.common.res.UpdateCoverRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
+import com.maan.eway.repository.EserviceTravelDetailsRepository;
+import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.req.FactorRateDetailsGetReq;
 import com.maan.eway.req.calcengine.CalcEngine;
@@ -56,6 +61,17 @@ private FactorRateRequestDetailsRepository repository;
 @Autowired
 private EServiceMotorDetailsRepository eserMotorRepo;
 
+@Autowired
+private EserviceTravelDetailsRepository eserTraRepo;
+
+@Autowired
+private EserviceTravelGroupDetailsRepository eserGroupRepo;
+
+@Value(value = "${motor.productId}")
+private String motorProductId;
+
+@Value(value = "${travel.productId}")
+private String travelProductId;
 
 @Autowired
 private CalculatorEngine calcEngine;
@@ -192,7 +208,7 @@ this.repository = repo;
 					
 					dozerMapper.map(coverData, saveCover);
 					saveCover.setRequestReferenceNo(req.getRequestReferenceNo());
-					saveCover.setSubCoverId(Integer.valueOf(coverData.getCoverId()));
+					saveCover.setSubCoverId(0);
 					//saveCover.setCoverId(Integer.valueOf(coverData.getCoverId()));
 					saveCover.setCurrency(coverData.getCurrency());
 					saveCover.setExchangeRate(coverData.getExchangeRate()==null?null : Double.valueOf(coverData.getExchangeRate().toString()));
@@ -373,14 +389,46 @@ this.repository = repo;
 					}
 				}
 				
-				// Update Motor Data Details
-				EserviceMotorDetails findData =   eserMotorRepo.findByRequestReferenceNoAndVehicleId(req.getRequestReferenceNo()  ,Integer.valueOf(req.getVehicleId()));
-				findData.setActualPremiumLc(premiumLc ==null ? null :Double.valueOf(df.format(premiumLc )));
-				findData.setActualPremiumFc(premiumFc ==null ? null :Double.valueOf(df.format(premiumFc )));
-				findData.setOverallPremiumLc(overAllPremiumLc ==null ? null :Double.valueOf(df.format(overAllPremiumLc)));
-				findData.setOverallPremiumFc(overAllPremiumFc ==null ? null :Double.valueOf(df.format(overAllPremiumFc)));
+				// Update Motor Premium
+				if(   req.getProductId().equalsIgnoreCase(motorProductId)) {
+					EserviceMotorDetails findData =   eserMotorRepo.findByRequestReferenceNoAndVehicleId(req.getRequestReferenceNo()  ,Integer.valueOf(req.getVehicleId()));
+					findData.setActualPremiumLc(premiumLc ==null ? null :Double.valueOf(df.format(premiumLc )));
+					findData.setActualPremiumFc(premiumFc ==null ? null :Double.valueOf(df.format(premiumFc )));
+					findData.setOverallPremiumLc(overAllPremiumLc ==null ? null :Double.valueOf(df.format(overAllPremiumLc)));
+					findData.setOverallPremiumFc(overAllPremiumFc ==null ? null :Double.valueOf(df.format(overAllPremiumFc)));
+					
+					eserMotorRepo.save(findData);
+					
+				// Update  Travle PRemium
+				} else if(   req.getProductId().equalsIgnoreCase(travelProductId)) {
+					
+					// Update Group Premium
+					EserviceTravelGroupDetails findData =eserGroupRepo.findByRequestReferenceNoAndGroupId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()) ); 
+					findData.setActualPremiumLc(premiumLc ==null ? null :Double.valueOf(df.format(premiumLc )));
+					findData.setActualPremiumFc(premiumFc ==null ? null :Double.valueOf(df.format(premiumFc )));
+					findData.setOverallPremiumLc(overAllPremiumLc ==null ? null :Double.valueOf(df.format(overAllPremiumLc)));
+					findData.setOverallPremiumFc(overAllPremiumFc ==null ? null :Double.valueOf(df.format(overAllPremiumFc)));
+					eserGroupRepo.save(findData);
+					
+					List<EserviceTravelGroupDetails> findAll = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(req.getRequestReferenceNo() );
+					
+					
+					// Update OverAll Premium
+					premiumFc = findAll.stream().filter( o -> o.getActualPremiumFc()!=null && o.getActualPremiumFc().doubleValue() > 0D ).mapToDouble( o ->   o.getActualPremiumFc()  ).sum();
+					premiumLc = findAll.stream().filter( o -> o.getActualPremiumLc()!=null && o.getActualPremiumLc().doubleValue() > 0D ).mapToDouble( o ->   o.getActualPremiumLc()  ).sum();
+					overAllPremiumFc = findAll.stream().filter( o -> o.getOverallPremiumFc()!=null && o.getOverallPremiumFc().doubleValue() > 0D ).mapToDouble( o ->   o.getOverallPremiumFc()  ).sum();
+					overAllPremiumLc = findAll.stream().filter( o -> o.getOverallPremiumLc()!=null && o.getOverallPremiumLc().doubleValue() > 0D ).mapToDouble( o ->   o.getOverallPremiumLc()  ).sum();
+					
+					//Update TRavel Premium
+					EserviceTravelDetails traData = eserTraRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+					traData.setActualPremiumLc(premiumLc ==null ? null :Double.valueOf(df.format(premiumLc )));
+					traData.setActualPremiumFc(premiumFc ==null ? null :Double.valueOf(df.format(premiumFc )));
+					traData.setOverallPremiumLc(overAllPremiumLc ==null ? null :Double.valueOf(df.format(overAllPremiumLc)));
+					traData.setOverallPremiumFc(overAllPremiumFc ==null ? null :Double.valueOf(df.format(overAllPremiumFc)));
+					eserTraRepo.save(traData);
+					
+				}
 				
-				eserMotorRepo.save(findData);
 				
 			}
 		} catch(Exception e){
@@ -420,7 +468,7 @@ this.repository = repo;
 				saveTax.setMsRefno( primaryKeys.get("MsRefNo").toString());	
 				saveTax.setEntryDate(new Date());			
 				saveTax.setCreatedBy(primaryKeys.get("CreatedBy")==null?"":primaryKeys.get("CreatedBy").toString());
-				saveTax.setSubCoverId(StringUtils.isBlank(coverReq.getSubCoverId()) ?Integer.valueOf(coverReq.getCoverId()) : Integer.valueOf(coverReq.getSubCoverId()) );
+				saveTax.setSubCoverId(StringUtils.isBlank(coverReq.getSubCoverId()) ?0 : Integer.valueOf(coverReq.getSubCoverId()) );
 				saveTax.setCoverId(Integer.valueOf(coverReq.getCoverId()));
 				saveTax.setStatus("Y");
 				saveTax.setIsSelected(coverReq.getIsselected());
@@ -471,7 +519,7 @@ this.repository = repo;
 				saveLod.setMsRefno( primaryKeys.get("MsRefNo").toString());	
 				saveLod.setEntryDate(new Date());			
 				saveLod.setCreatedBy(primaryKeys.get("CreatedBy").toString());
-				saveLod.setSubCoverId(StringUtils.isBlank(coverReq.getSubCoverId()) ?Integer.valueOf(coverReq.getCoverId()) : Integer.valueOf(coverReq.getSubCoverId()) );
+				saveLod.setSubCoverId(StringUtils.isBlank(coverReq.getSubCoverId()) ?0 : Integer.valueOf(coverReq.getSubCoverId()) );
 				saveLod.setCoverId(Integer.valueOf(coverReq.getCoverId()));
 				saveLod.setStatus("Y");
 				saveLod.setIsSelected(coverReq.getIsselected());
@@ -535,7 +583,7 @@ this.repository = repo;
 				saveDiscounts.setMsRefno( primaryKeys.get("MsRefNo").toString());	
 				saveDiscounts.setEntryDate(new Date());			
 				saveDiscounts.setCreatedBy(primaryKeys.get("CreatedBy").toString());
-				saveDiscounts.setSubCoverId(StringUtils.isBlank(coverReq.getSubCoverId()) ?Integer.valueOf(coverReq.getCoverId()) : Integer.valueOf(coverReq.getSubCoverId()) );
+				saveDiscounts.setSubCoverId(StringUtils.isBlank(coverReq.getSubCoverId()) ?0 : Integer.valueOf(coverReq.getSubCoverId()) );
 				saveDiscounts.setStatus("Y");
 				saveDiscounts.setCoverageType("D");
 				saveDiscounts.setMinimumPremium(disc.getMaxAmount()==null ? null : Double.valueOf(disc.getMaxAmount().toString()));

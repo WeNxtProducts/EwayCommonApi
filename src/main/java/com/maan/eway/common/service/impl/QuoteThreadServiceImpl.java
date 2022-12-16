@@ -1,5 +1,6 @@
 package com.maan.eway.common.service.impl;
 
+import java.awt.image.RescaleOp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,7 +28,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.EserviceTravelDetails;
+import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
+import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.NewQuoteReq;
@@ -35,17 +39,22 @@ import com.maan.eway.common.req.QuoteThreadReq;
 import com.maan.eway.common.req.VehicleIdsReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.NewQuoteRes;
+import com.maan.eway.common.res.ProductThreadRes;
 import com.maan.eway.common.res.QuoteThreadRes;
+import com.maan.eway.common.res.ThreadCountRes;
 import com.maan.eway.common.service.QuoteThreadService;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.CoverDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
+import com.maan.eway.repository.EserviceTravelDetailsRepository;
+import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
+import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
 import com.maan.eway.res.ReferalResponse;
 import com.maan.eway.thread.MyTaskList;
@@ -74,6 +83,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	private EServiceMotorDetailsRepository eserMotRepo ;
 	
 	@Autowired
+	private EserviceTravelDetailsRepository eserTraRepo ;
+	
+	@Autowired
 	private FactorRateRequestDetailsRepository facRateRepo ;
 	
 	@Autowired
@@ -94,6 +106,17 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	@Autowired
 	private UwQuestionsDetailsRepository uwRepo ;
 	
+	@Autowired
+	private EserviceTravelDetailsRepository eserRepo ;
+	
+	@Autowired
+	private EserviceTravelGroupDetailsRepository eserGroupRepo ;
+	
+	@Autowired
+	private TravelPassengerDetailsRepository traPassRepo  ;
+	
+	
+	
 	@Override
 	@Transactional
 	public CommonRes call_OT_Insert(NewQuoteReq req) {
@@ -102,85 +125,23 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		List<Error> errors = new ArrayList<Error>();
 		SimpleDateFormat idf = new SimpleDateFormat("yyMMddhhmmssSS");
 		try {
-		
-			List<UwQuestionsDetails>  uwQuestions = uwRepo.findByRequestReferenceNo( req.getRequestReferenceNo());
-			List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo()); 
-			
 		boolean referal = false ;
-		String referalRemarks = "" ;
-		List<FactorRateRequestDetails> userOptCovers = new ArrayList<FactorRateRequestDetails>();
-		
 		if( StringUtils.isBlank(req.getAdminLoginId())) {
-			for (VehicleIdsReq veh : req.getVehicleIdsList() ){
-						
-				// Cover Referal Checking
-				List<CoverIdsReq> coverList = veh.getCoverIdList();
-				for (CoverIdsReq cov : coverList  ) {
-					if(StringUtils.isBlank(cov.getSubCoverYn()) || cov.getSubCoverYn().equalsIgnoreCase("N") ) {
-						List<FactorRateRequestDetails> filterCovers = covers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) ).collect(Collectors.toList());		
-						userOptCovers.addAll(filterCovers);
-						
-						List<FactorRateRequestDetails> filterReferalCovers = filterCovers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&  cov.getIsReferal()!=null && cov.getIsReferal().equalsIgnoreCase("Y") ).collect(Collectors.toList());
-						if(filterReferalCovers.size()>0 && StringUtils.isBlank(referalRemarks) && referal==false ) { 
-							referalRemarks = filterReferalCovers.get(0).getCoverName() ;
-							referal = true ;
-						}
-					
-					} else {
-						List<FactorRateRequestDetails> filterSubCovers  = covers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(cov.getSubCoverId()))  ).collect(Collectors.toList());
-						userOptCovers.addAll(filterSubCovers);
-						List<FactorRateRequestDetails> filterReferalSubCovers = filterSubCovers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&  cov.getIsReferal()!=null && cov.getIsReferal().equalsIgnoreCase("Y")  ).collect(Collectors.toList());
-						if(filterReferalSubCovers.size()>0 && StringUtils.isBlank(referalRemarks) && referal==false) { 
-							referalRemarks = filterReferalSubCovers.get(0).getCoverName() ;
-							referal = true ;
-						}
-					}
-				}
+			
+			// Refral Checking Method
+			commonRes = RefferalChecking(req);
+			ReferalResponse res = (ReferalResponse) commonRes.getCommonResponse();
+			if(res!=null && StringUtils.isNotBlank( res.getReferral())  && res.getReferral().equalsIgnoreCase("true") ) {
+				referal = true ;	
+			}	
 		}
 		
-			// Update User Opted Covers 
-			for (FactorRateRequestDetails uptCover : userOptCovers ) {
-				
-				uptCover.setUserOpt("Y");
-				facRateRepo.save(uptCover);
-			}
-			
-			// Under Writter Refral Checking
-			List<UwQuestionsDetails>  filterUwQuestions = uwQuestions.stream().filter( o -> o.getIsReferral()!=null && o.getIsReferral().equalsIgnoreCase("Y") ).collect(Collectors.toList());
-			if(filterUwQuestions.size()>0 ) {
-				referal = true ;
-				if(StringUtils.isBlank(referalRemarks)) {
-					referalRemarks =  filterUwQuestions.get(0).getUwQuestionDesc();
-					
-				}
-			}
-		}
-			
-		if (  referal == true ) {
-			if ( req.getProductId().equalsIgnoreCase(motorProductId)) {
-				List<EserviceMotorDetails> motorDatas = eserMotRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
-				for (EserviceMotorDetails mot : motorDatas ) {
-					mot.setStatus("RP");
-					mot.setReferalRemarks(referalRemarks);
-					mot.setUpdatedDate(new Date());
-					mot.setQuoteNo("");
-					mot.setCustomerId("");
-					eserMotRepo.save(mot);
-				}
-			}
-			
-			ReferalResponse res = new ReferalResponse();
-			res.setReferalRemarks(referalRemarks);
-			res.setRequestReferenceNo(req.getRequestReferenceNo());
-			res.setResponse("Referral Pending");
-			res.setStatus("RP");
-			res.setQuoteNo(null);
-			commonRes.setCommonResponse(res);
-			commonRes.setIsError(false);
-			commonRes.setErrorMessage(Collections.emptyList());
-			commonRes.setMessage("Success");
-			
+		// Referal Returnin Block
+		if( referal == true || (commonRes.getIsError()!=null && commonRes.getIsError()==true) ) {
+			return  commonRes ;
+	
 		} else {
+			
 			List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
 			
 			MyTaskList taskList = new MyTaskList(queue);
@@ -191,42 +152,34 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             	return commonRes ; 
             }
             
-            List<Integer> vehicleIds = req.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
+            // Frame Request 
             QuoteThreadReq request = (QuoteThreadReq) frameQuoteReq.getCommonResponse() ;
-            
-            // Customer Save
-            QuoteThreadCall customerSave = new QuoteThreadCall("CustomerSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo  , homeRepo);
+           
+            // Customer Save Thread Call
+            QuoteThreadCall customerSave = new QuoteThreadCall("CustomerSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
+            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,motorProductId , travelProductId);
             queue.add(customerSave);
             
             int threadCount = 1 ;
             int success = 0;
-			Map<String,Object> custRes = new HashMap<String,Object>() ;
+            
+            commonRes = productWiseThreadCall( req , request ) ;
+        	 if( frameQuoteReq.getErrorMessage() !=null && frameQuoteReq.getErrorMessage().size()>0 ) {
+             	commonRes = frameQuoteReq ;
+             	return commonRes ; 
+             }
+            
+        	 ProductThreadRes productThreads = (ProductThreadRes) commonRes.getCommonResponse();
+        	 threadCount = threadCount + productThreads.getThreadCount();
+        	 queue.addAll(productThreads.getQueue());
+        	 ForkJoinPool forkjoin = new ForkJoinPool(threadCount); 
+             ConcurrentLinkedQueue<Future<Object>> invoke  = (ConcurrentLinkedQueue<Future<Object>>) forkjoin.invoke(taskList) ;
+             
+        	 Map<String,Object> custRes = new HashMap<String,Object>() ;
 			List<Map<String,Object>> motRes =  new ArrayList<Map<String,Object>>();
 			List<Map<String,Object>> covRes =  new ArrayList<Map<String,Object>>() ;
+			List<Map<String,Object>> traRes =  new ArrayList<Map<String,Object>>();
 			
-			// Multiple Vehicle Thread Call
-			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
-				 for (Integer vehId :  vehicleIds ) {
-		            	threadCount = threadCount +  2 ;
-		            	QuoteThreadReq request2 = new QuoteThreadReq();
-		            	request2.setCustomerId(request.getCustomerId());
-		            	request2.setProductId(request.getProductId());
-		            	request2.setQuoteNo(request.getQuoteNo());
-		            	request2.setRequestReferenceNo(request.getRequestReferenceNo());
-		            	request2.setVehicleIdsList(request.getVehicleIdsList());
-		            	request2.setCreatedBy(request.getCreatedBy());
-		            	request2.setVehicleId(vehId); 
-		            	QuoteThreadCall motorSave = new QuoteThreadCall("MotorSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo  , homeRepo);
-			            queue.add(motorSave);
-						QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo  , homeRepo);
-						queue.add(coverSave);	
-		            } 
-			}
-           
-            
-            ForkJoinPool forkjoin = new ForkJoinPool(threadCount); 
-            ConcurrentLinkedQueue<Future<Object>> invoke  = (ConcurrentLinkedQueue<Future<Object>>) forkjoin.invoke(taskList) ;
-            
 			for (Future<Object> callable : invoke) {
 
 				log.info(callable.getClass() + "," + callable.isDone());
@@ -242,6 +195,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							motRes.add((Map<String,Object>) future.getValue());
 						} else if ("CoverSave".equalsIgnoreCase(future.getKey())) {
 							covRes.add((Map<String,Object>) future.getValue());
+						} else if ("TravelSave".equalsIgnoreCase(future.getKey())) {
+							traRes.add((Map<String,Object>) future.getValue());
 						}
 					}
 
@@ -259,10 +214,23 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				return commonRes ; 
 				
 			} else {
+				
 				// Motor Res
 				for (Map<String,Object> mot : motRes) {
 					if( mot.get("Response")!=null && mot.get("Response").toString().equals("Failed") ) {
 						errors.add(new Error("01","Motor Save",mot.get("Errors").toString()));
+						commonRes.setCommonResponse(null);
+						commonRes.setIsError(true);
+						commonRes.setErrorMessage(errors);
+						commonRes.setMessage("Failed");
+						return commonRes ; 
+					}
+				}
+				
+				// Travel Res
+				for (Map<String,Object> tra : traRes) {
+					if( tra.get("Response")!=null && tra.get("Response").toString().equals("Failed") ) {
+						errors.add(new Error("01","Travel Save",tra.get("Errors").toString()));
 						commonRes.setCommonResponse(null);
 						commonRes.setIsError(true);
 						commonRes.setErrorMessage(errors);
@@ -296,7 +264,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				List<Callable<Object>> queue2 = new ArrayList<Callable<Object>>();
 				MyTaskList taskList2 = new MyTaskList(queue2);
 				request.setVehicleId(req.getVehicleIdsList().get(0).getVehicleId());
-				QuoteThreadCall quoteSave = new QuoteThreadCall("QuoteSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo  , homeRepo );
+				QuoteThreadCall quoteSave = new QuoteThreadCall("QuoteSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo  
+	            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,motorProductId , travelProductId);
 	            
 				queue2.add(quoteSave);
 				
@@ -357,32 +326,337 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		}
 		return commonRes ;
 	}
+	
+	//-------------------------------------------------------------Refrral Checking Block ---------------------------------------------------------------------//
+	
+	public CommonRes RefferalChecking(NewQuoteReq req ) {
+		CommonRes commonRes = new CommonRes();
+		List<Error> errors = new ArrayList<Error>();
+		try {
+				
+			boolean referral = false ;
+			String referralRemarks = "" ;
+			List<FactorRateRequestDetails> userOptCovers = new ArrayList<FactorRateRequestDetails>();
+	
+			// Covers Referrral Checking
+			List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo()); 
+			for (VehicleIdsReq veh : req.getVehicleIdsList()) {
 
+				// Cover Referal Checking
+				List<CoverIdsReq> coverList = veh.getCoverIdList();
+				for (CoverIdsReq cov : coverList) {
+					if(StringUtils.isBlank(cov.getSubCoverYn()) || cov.getSubCoverYn().equalsIgnoreCase("N") ) {
+						List<FactorRateRequestDetails> filterCovers = covers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) ).collect(Collectors.toList());		
+						userOptCovers.addAll(filterCovers);
+						
+						List<FactorRateRequestDetails> filterReferalCovers = filterCovers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&  cov.getIsReferal()!=null && cov.getIsReferal().equalsIgnoreCase("Y") ).collect(Collectors.toList());
+						if(filterReferalCovers.size()>0 && StringUtils.isBlank(referralRemarks) && referral==false ) { 
+							referralRemarks = filterReferalCovers.get(0).getCoverName() ;
+							referral = true ;
+						}
+					
+					} else {
+						List<FactorRateRequestDetails> filterSubCovers  = covers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(cov.getSubCoverId()))  ).collect(Collectors.toList());
+						userOptCovers.addAll(filterSubCovers);
+						List<FactorRateRequestDetails> filterReferalSubCovers = filterSubCovers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&  cov.getIsReferal()!=null && cov.getIsReferal().equalsIgnoreCase("Y")  ).collect(Collectors.toList());
+						if(filterReferalSubCovers.size()>0 && StringUtils.isBlank(referralRemarks) && referral==false) { 
+							referralRemarks = filterReferalSubCovers.get(0).getCoverName() ;
+							referral = true ;
+						}
+					}
+				}
+			}
+		
+			// Update User Opted Covers 
+			for (FactorRateRequestDetails uptCover : userOptCovers ) {
+				
+				uptCover.setUserOpt("Y");
+				facRateRepo.save(uptCover);
+			}
+			
+			// Under Writter Refral Checking
+			List<UwQuestionsDetails>  uwQuestions = uwRepo.findByRequestReferenceNo( req.getRequestReferenceNo());
+			List<UwQuestionsDetails>  filterUwQuestions = uwQuestions.stream().filter( o -> o.getIsReferral()!=null && o.getIsReferral().equalsIgnoreCase("Y") ).collect(Collectors.toList());
+			if(filterUwQuestions.size()>0 ) {
+				referral = true ;
+				if(StringUtils.isBlank(referralRemarks)) {
+					referralRemarks =  filterUwQuestions.get(0).getUwQuestionDesc();
+					
+				}
+			}
+				
+			if (  referral == true ) {
+					if ( req.getProductId().equalsIgnoreCase(motorProductId)) {
+						List<EserviceMotorDetails> motorDatas = eserMotRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+						for (EserviceMotorDetails mot : motorDatas ) {
+							mot.setStatus("RP");
+							mot.setReferalRemarks(referralRemarks);
+							mot.setUpdatedDate(new Date());
+							mot.setQuoteNo("");
+							mot.setCustomerId("");
+							eserMotRepo.save(mot);
+						}
+					} else if ( req.getProductId().equalsIgnoreCase(travelProductId)) {
+						EserviceTravelDetails travelData = eserTraRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+						
+						travelData.setStatus("RP");
+						travelData.setReferalRemarks(referralRemarks);
+						travelData.setUpdatedDate(new Date());
+						travelData.setQuoteNo("");
+						travelData.setCustomerId("");
+						eserTraRepo.save(travelData);
+						
+					}
+					
+					ReferalResponse res = new ReferalResponse();
+					res.setReferalRemarks(referralRemarks);
+					res.setRequestReferenceNo(req.getRequestReferenceNo());
+					res.setResponse("Referral Pending");
+					res.setStatus("RP");
+					res.setQuoteNo(null);
+					res.setReferral("true");
+					
+					commonRes.setCommonResponse(res);
+					commonRes.setIsError(false);
+					commonRes.setErrorMessage(Collections.emptyList());
+				 	commonRes.setMessage("Success");
+				 	
+			} else {
+				
+				ReferalResponse res = new ReferalResponse();
+				res.setReferalRemarks("");
+				res.setRequestReferenceNo(req.getRequestReferenceNo());
+				res.setResponse("");
+				res.setStatus("");
+				res.setQuoteNo(null);
+				res.setReferral("false");
+				commonRes.setCommonResponse(null);
+				commonRes.setIsError(false);
+				commonRes.setErrorMessage(Collections.emptyList());
+			 	commonRes.setMessage("Success");	
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --> " +  e.getMessage());
+			errors.add(new Error("01","Common Error",e.getMessage()));
+			commonRes.setCommonResponse(null);
+			commonRes.setIsError(true);
+			commonRes.setErrorMessage(errors);
+			commonRes.setMessage("Failed");	
+		}
+		return commonRes ;
+	}
+
+
+	//-------------------------------------------------------------Product Wise Multi Thread Call---------------------------------------------------------------------//
+	@Transactional
+	public CommonRes productWiseThreadCall(NewQuoteReq req , QuoteThreadReq request ) {
+		CommonRes commonRes = new CommonRes();
+		List<Error> errors = new ArrayList<Error>();
+		ProductThreadRes ProductThreadRes = new ProductThreadRes();
+		
+		try {
+			int threadCount = 0 ;
+			List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
+			 //  // Delete Old Record
+ 			List<PolicyCoverData> coverInfo =  coverRepo.findByQuoteNoOrderByVehicleIdAsc(request.getQuoteNo());
+ 			if (coverInfo.size()>0 ) {
+ 				coverRepo.deleteAll(coverInfo);
+ 				
+ 			}
+			// Multiple Vehicle Thread Call
+			List<Integer> vehicleIds = req.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
+	        if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
+				 for (Integer vehId :  vehicleIds ) {
+		            	threadCount = threadCount +  2 ;
+		            	QuoteThreadReq request2 = new QuoteThreadReq();
+		            	request2.setCustomerId(request.getCustomerId());
+		            	request2.setProductId(request.getProductId());
+		            	request2.setQuoteNo(request.getQuoteNo());
+		            	request2.setRequestReferenceNo(request.getRequestReferenceNo());
+		            	request2.setVehicleIdsList(request.getVehicleIdsList());
+		            	request2.setCreatedBy(request.getCreatedBy());
+		            	request2.setVehicleId(vehId); 
+		            	QuoteThreadCall motorSave = new QuoteThreadCall("MotorSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo  
+		                		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,motorProductId , travelProductId);
+			            queue.add(motorSave);
+						QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
+			            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,motorProductId , travelProductId);
+						queue.add(coverSave);	
+		            }
+				 
+				 // Delete Old Record
+				// // Delete Old Record
+				Long motorInfo =  motorRepo.countByQuoteNo(request.getQuoteNo());
+				if (motorInfo > 0 ) {
+					motorRepo.deleteByQuoteNo(request.getQuoteNo());
+					
+				}
+				
+					
+			}else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+	        	
+	        	List<EserviceTravelGroupDetails> groupData = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(request.getRequestReferenceNo() );
+	        	
+	        	Integer passCount = 0;
+	        	// Filte Count
+	        	 for (Integer vehId :  vehicleIds ) {
+					 List<EserviceTravelGroupDetails> filterGroup = groupData.stream().filter( o -> o.getGroupId().equals(vehId) ).collect(Collectors.toList());				 
+					
+					 for (int i=0 ; i <= filterGroup.get(0).getGrouppMembers() ; i++) {
+						 passCount = passCount + 1 ;
+						 threadCount = threadCount +  2 ;
+						 
+		            	 QuoteThreadReq request2 = new QuoteThreadReq();
+		            	 request2.setVehicleId(passCount);
+		            	 request2.setCustomerId(request.getCustomerId());
+		            	 request2.setProductId(request.getProductId());
+		            	 request2.setQuoteNo(request.getQuoteNo());
+		            	 request2.setRequestReferenceNo(request.getRequestReferenceNo());
+		            	 request2.setVehicleIdsList(request.getVehicleIdsList());
+		            	 request2.setCreatedBy(request.getCreatedBy());
+		            	 request2.setGroupId(filterGroup.get(0).getGroupId());
+		            	 request2.setGroupCount(filterGroup.get(0).getGrouppMembers());
+		            	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
+		            			 , homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,motorProductId , travelProductId);
+			             queue.add(travelSave);
+						 QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
+								 , homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,motorProductId , travelProductId);
+						 queue.add(coverSave);
+					 }					 
+		         } 
+	        	//  // Delete Old Record
+				Long travelInfo =  traPassRepo.countByQuoteNo(request.getQuoteNo() );
+				if (travelInfo > 0 ) {
+					traPassRepo.deleteByQuoteNo(request.getQuoteNo());
+				}
+			}
+	        
+	    
+	        
+	        // Response 
+	        ProductThreadRes.setQueue(queue);
+	        ProductThreadRes.setThreadCount(threadCount);	
+	        commonRes.setCommonResponse(ProductThreadRes);
+			commonRes.setIsError(false);
+			commonRes.setErrorMessage(Collections.emptyList());
+		 	commonRes.setMessage("Success");
+		 	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --> " +  e.getMessage());
+			errors.add(new Error("01","Common Error",e.getMessage()));
+			commonRes.setCommonResponse(null);
+			commonRes.setIsError(true);
+			commonRes.setErrorMessage(errors);
+			commonRes.setMessage("Failed");	
+		}
+		return commonRes ;
+	}
+	
+	
 	public CommonRes setQuoteThreadReq(NewQuoteReq req ) {
 		CommonRes commonRes = new CommonRes();
 		List<Error> errors = new ArrayList<Error>();
 		SimpleDateFormat idf = new SimpleDateFormat("yyMMddhhmmssSS");
 		try {
 			// Id Generate
-			EserviceMotorDetails findMotor =  eserMotRepo.findByRequestReferenceNoAndVehicleId(req.getRequestReferenceNo() , req.getVehicleIdsList().get(0).getVehicleId());
-			
 			String customerId = "" ;
 			String quoteNo  = "" ;
+			String subUserType  = "" ;
 			
-			if(StringUtils.isNotBlank( findMotor.getQuoteNo()) && (findMotor.getSubUserType().equalsIgnoreCase("b2c")) ) {
+			// Find Old QuoteNo
+			if(req.getProductId().equalsIgnoreCase(motorProductId)) {
+				EserviceMotorDetails findMotor =  eserMotRepo.findByRequestReferenceNoAndVehicleId(req.getRequestReferenceNo() , req.getVehicleIdsList().get(0).getVehicleId());
+				customerId = findMotor.getCustomerId()==null?"":findMotor.getCustomerId();
+				quoteNo    = findMotor.getQuoteNo()==null?"":findMotor.getQuoteNo();
+				subUserType = findMotor.getSubUserType()==null?"":findMotor.getSubUserType() ;
+			
+			} else if(req.getProductId().equalsIgnoreCase(travelProductId)) {
+				EserviceTravelDetails findTravel =  eserTraRepo.findByRequestReferenceNo(req.getRequestReferenceNo() );
+				customerId = findTravel.getCustomerId()==null?"":findTravel.getCustomerId();
+				quoteNo    = findTravel.getQuoteNo()==null?"":findTravel.getQuoteNo();
+				subUserType = findTravel.getSubUserType()==null?"":findTravel.getSubUserType() ;
+			
+			}
+			
+			
+			// Quote No Generate
+			if(StringUtils.isNotBlank( quoteNo) && (subUserType.equalsIgnoreCase("b2c")) ) {
 				Random rand = new Random();
 	            int random=rand.nextInt(90)+10; 
 	        	customerId = "C-" + idf.format(new Date()) + random ;
 	            quoteNo  = "Q"+ idf.format(new Date()) + random ;
-	        } else if (StringUtils.isNotBlank( findMotor.getQuoteNo())  ) {
-	        	customerId = findMotor.getCustomerId() ;
-	            quoteNo  = findMotor.getQuoteNo() ;
-	        } else {
+	        } else if (StringUtils.isBlank( quoteNo)  ) {
 	        	Random rand = new Random();
 	            int random=rand.nextInt(90)+10; 
 	        	customerId = "C-" + idf.format(new Date()) + random ;
 	            quoteNo  = "Q"+ idf.format(new Date()) + random ;
-	        }
+	        } 
+
+			QuoteThreadReq request = new QuoteThreadReq();
+            request.setCustomerId(customerId);
+            request.setQuoteNo(quoteNo);
+            request.setRequestReferenceNo(req.getRequestReferenceNo());
+            request.setVehicleIdsList(req.getVehicleIdsList());
+            request.setProductId(req.getProductId());
+            request.setCreatedBy(req.getCreatedBy());
+            
+			commonRes.setCommonResponse(request);
+			commonRes.setIsError(false);
+			commonRes.setErrorMessage(null);
+			commonRes.setMessage("Success");
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --> "   );
+			errors.add(new Error("01", "Common Error", e.getMessage()));
+			commonRes.setCommonResponse(null);
+			commonRes.setIsError(true);
+			commonRes.setErrorMessage(errors);
+			commonRes.setMessage("Failed");
+		}
+		return commonRes ;
+}
+	
+	public CommonRes vehicleMultiThreadCall(NewQuoteReq req ) {
+		CommonRes commonRes = new CommonRes();
+		List<Error> errors = new ArrayList<Error>();
+		SimpleDateFormat idf = new SimpleDateFormat("yyMMddhhmmssSS");
+		try {
+			// Id Generate
+			String customerId = "" ;
+			String quoteNo  = "" ;
+			String subUserType  = "" ;
+			
+			// Find Old QuoteNo
+			if(req.getProductId().equalsIgnoreCase(motorProductId)) {
+				EserviceMotorDetails findMotor =  eserMotRepo.findByRequestReferenceNoAndVehicleId(req.getRequestReferenceNo() , req.getVehicleIdsList().get(0).getVehicleId());
+				customerId = findMotor.getCustomerId()==null?"":findMotor.getCustomerId();
+				quoteNo    = findMotor.getQuoteNo()==null?"":findMotor.getQuoteNo();
+				subUserType = findMotor.getSubUserType()==null?"":findMotor.getSubUserType() ;
+			
+			} else if(req.getProductId().equalsIgnoreCase(travelProductId)) {
+				EserviceTravelDetails findTravel =  eserTraRepo.findByRequestReferenceNo(req.getRequestReferenceNo() );
+				customerId = findTravel.getCustomerId()==null?"":findTravel.getCustomerId();
+				quoteNo    = findTravel.getQuoteNo()==null?"":findTravel.getQuoteNo();
+				subUserType = findTravel.getSubUserType()==null?"":findTravel.getSubUserType() ;
+			
+			}
+			
+			
+			// Quote No Generate
+			if(StringUtils.isNotBlank( quoteNo) && (subUserType.equalsIgnoreCase("b2c")) ) {
+				Random rand = new Random();
+	            int random=rand.nextInt(90)+10; 
+	        	customerId = "C-" + idf.format(new Date()) + random ;
+	            quoteNo  = "Q"+ idf.format(new Date()) + random ;
+	        } else if (StringUtils.isBlank( quoteNo)  ) {
+	        	Random rand = new Random();
+	            int random=rand.nextInt(90)+10; 
+	        	customerId = "C-" + idf.format(new Date()) + random ;
+	            quoteNo  = "Q"+ idf.format(new Date()) + random ;
+	        } 
 
 			QuoteThreadReq request = new QuoteThreadReq();
             request.setCustomerId(customerId);
