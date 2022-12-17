@@ -7,6 +7,7 @@ import com.maan.eway.master.req.CityDropDownReq;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.LovPolicyDropDownReq;
 import com.maan.eway.master.req.RegionDropDownReq;
+import com.maan.eway.master.req.RelationDropDownReq;
 import com.maan.eway.master.req.StateDropDownReq;
 import com.maan.eway.res.ColummnDropRes;
 import com.maan.eway.res.DropDownRes;
@@ -93,7 +94,7 @@ public interface DropDownService {
 
 	List<DropDownRes> getFuelType(LovDropDownReq req);
 
-	List<ColummnDropRes> getTableDetails(LovDropDownReq req);
+//	List<ColummnDropRes> getTableDetails(LovDropDownReq req);
 
 	List<DropDownRes> constructType(LovDropDownReq req);
 
@@ -104,5 +105,7 @@ public interface DropDownService {
 	List<DropDownRes> getPlanType(LovDropDownReq req);
 
 	List<DropDownRes> getSourceType(LovDropDownReq req);
+
+	List<DropDownRes> getRelationType(RelationDropDownReq req);
 
 }

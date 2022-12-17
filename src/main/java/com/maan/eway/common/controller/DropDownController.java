@@ -19,6 +19,7 @@ import com.maan.eway.master.req.CityDropDownReq;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.LovPolicyDropDownReq;
 import com.maan.eway.master.req.RegionDropDownReq;
+import com.maan.eway.master.req.RelationDropDownReq;
 import com.maan.eway.master.req.StateDropDownReq;
 import com.maan.eway.res.ColummnDropRes;
 import com.maan.eway.common.res.CommonRes;
@@ -877,5 +878,18 @@ public class DropDownController {
 		}
 	}
 
-	
+	@PostMapping("/relationtype")
+	public ResponseEntity<CommonRes> getRelationType(@RequestBody RelationDropDownReq req) {
+		CommonRes data = new CommonRes();
+		List<DropDownRes> res = dropDownService.getRelationType(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 }

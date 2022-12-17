@@ -42,6 +42,7 @@ import com.maan.eway.master.req.CityDropDownReq;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.LovPolicyDropDownReq;
 import com.maan.eway.master.req.RegionDropDownReq;
+import com.maan.eway.master.req.RelationDropDownReq;
 import com.maan.eway.master.req.StateDropDownReq;
 import com.maan.eway.master.service.impl.PolicyTypeMasterServiceImpl;
 import com.maan.eway.repository.CompanyCityMasterRepository;
@@ -244,7 +245,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 	//		List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("POLICY_HOLDER_ID_TYPE", "Y");
 			String itemType = "POLICY_HOLDER_ID_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItemPolicy(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1042,72 +1043,72 @@ public class DropDownServiceImpl  implements DropDownService{
 	}
 
 
-	@Override
-	public List<ColummnDropRes> getTableDetails(LovDropDownReq req) {
-		List<ColummnDropRes> resList = new ArrayList<ColummnDropRes>();
-		try {
-			//String tableName = "Eservice_Customer_Details" ;
-			//List<String> removerUnderScore = new ArrayList<>(Arrays.asList(tableName.split("_")) ) ;
-			
-			/*Object entityName =null;
-			for (String ent : removerUnderScore) {
-				String lowerCase = ent.toLowerCase() ;
-				String firstLetterCaps =  lowerCase.substring(0, 1).toUpperCase() + lowerCase.substring(1) ;
-				entityName = entityName==null ? firstLetterCaps  :entityName +  firstLetterCaps ; 
-				
-			}*/
-			  
-		String entityName = "com.maan.eway.bean."+req.getTableName();//entityName + ".class" ;
-			 Class<?> forName = Class.forName(entityName);//forName(entityName);
-			
-
-		//	Class table = (Class) entityName ;
-			
-			Field[] members = forName.getDeclaredFields();
-			
-			        for(Field member:members){
-			        	if(! member.getName().equalsIgnoreCase("serialVersionUID") ) {
-			        		System.out.println(member.getName());
-			        		String output = member.getName().substring(0, 1).toUpperCase() + member.getName().substring(1);
-		        			String field =output.replaceAll("(.)([A-Z])", "$1_$2");
-		        			System.out.println(field);
-		        			String display =output.replaceAll("(.)([A-Z])", "$1 $2");
-			        			System.out.println(display);
-			        			ColummnDropRes res = new ColummnDropRes();
-			    				res.setColumnName(field);
-			    				res.setDispalyName(display);
-			    				res.setFieldName( member.getName());
-			    				resList.add(res);
-			        			    
-			        	//	customerReferenceNo
-			        	//	Customer Reference No
-			        	//	Customer_Reference_No
-			        	}
-//			            System.out.println(member.getClass().getSimpleName());
-//			            System.out.println(member.getClass().getCanonicalName());
-//			            System.out.println(member.getClass().getTypeName());
-//			            System.out.println(member.getClass().getComponentType());
-//			            System.out.println(member.getClass().getModifiers());
-//			            System.out.println(member.getClass().getAnnotations());
-			        }			
-			
-			
-		/*	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("FUEL_TYPE", "Y");
-
-			for (ListItemValue data : getList) {
-				DropDownRes res = new DropDownRes();
-				res.setCode(data.getItemCode());
-				res.setCodeDesc(data.getItemValue());
-				res.setStatus(data.getStatus());
-				resList.add(res);
-			} */
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.info("Exception is ---> " + e.getMessage());
-			return null;
-		}
-		return resList;
-	}
+//	@Override
+//	public List<ColummnDropRes> getTableDetails(LovDropDownReq req) {
+//		List<ColummnDropRes> resList = new ArrayList<ColummnDropRes>();
+//		try {
+//			//String tableName = "Eservice_Customer_Details" ;
+//			//List<String> removerUnderScore = new ArrayList<>(Arrays.asList(tableName.split("_")) ) ;
+//			
+//			/*Object entityName =null;
+//			for (String ent : removerUnderScore) {
+//				String lowerCase = ent.toLowerCase() ;
+//				String firstLetterCaps =  lowerCase.substring(0, 1).toUpperCase() + lowerCase.substring(1) ;
+//				entityName = entityName==null ? firstLetterCaps  :entityName +  firstLetterCaps ; 
+//				
+//			}*/
+//			  
+//		String entityName = "com.maan.eway.bean."+req.getTableName();//entityName + ".class" ;
+//			 Class<?> forName = Class.forName(entityName);//forName(entityName);
+//			
+//
+//		//	Class table = (Class) entityName ;
+//			
+//			Field[] members = forName.getDeclaredFields();
+//			
+//			        for(Field member:members){
+//			        	if(! member.getName().equalsIgnoreCase("serialVersionUID") ) {
+//			        		System.out.println(member.getName());
+//			        		String output = member.getName().substring(0, 1).toUpperCase() + member.getName().substring(1);
+//		        			String field =output.replaceAll("(.)([A-Z])", "$1_$2");
+//		        			System.out.println(field);
+//		        			String display =output.replaceAll("(.)([A-Z])", "$1 $2");
+//			        			System.out.println(display);
+//			        			ColummnDropRes res = new ColummnDropRes();
+//			    				res.setColumnName(field);
+//			    				res.setDispalyName(display);
+//			    				res.setFieldName( member.getName());
+//			    				resList.add(res);
+//			        			    
+//			        	//	customerReferenceNo
+//			        	//	Customer Reference No
+//			        	//	Customer_Reference_No
+//			        	}
+////			            System.out.println(member.getClass().getSimpleName());
+////			            System.out.println(member.getClass().getCanonicalName());
+////			            System.out.println(member.getClass().getTypeName());
+////			            System.out.println(member.getClass().getComponentType());
+////			            System.out.println(member.getClass().getModifiers());
+////			            System.out.println(member.getClass().getAnnotations());
+//			        }			
+//			
+//			
+//		/*	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("FUEL_TYPE", "Y");
+//
+//			for (ListItemValue data : getList) {
+//				DropDownRes res = new DropDownRes();
+//				res.setCode(data.getItemCode());
+//				res.setCodeDesc(data.getItemValue());
+//				res.setStatus(data.getStatus());
+//				resList.add(res);
+//			} */
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			log.info("Exception is ---> " + e.getMessage());
+//			return null;
+//		}
+//		return resList;
+//	}
 
 
 	@Override
@@ -1247,7 +1248,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		return list ;
 	}
 
-	public synchronized List<ListItemValue> getListItem(LovPolicyDropDownReq req , String itemType) {
+	public synchronized List<ListItemValue> getListItemPolicy(LovPolicyDropDownReq req , String itemType) {
 		List<ListItemValue> list = new ArrayList<ListItemValue>();
 		try {
 			Date today = new Date();
@@ -1344,6 +1345,36 @@ public class DropDownServiceImpl  implements DropDownService{
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "SOURCE_TYPE" ;
 			List<ListItemValue> getList  = getListItem(req , itemType);
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+	@Override
+	public List<DropDownRes> getRelationType(RelationDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
+			String itemType = "RELATION_TYPE" ;
+			LovDropDownReq req2 = new LovDropDownReq();
+			req2.setInsuranceId(req.getInsuranceId());
+			req2.setBranchCode(req.getBranchCode());			
+			List<ListItemValue> getList  = getListItem(req2 , itemType);
+			
+			getList = getList.stream().filter( o -> o.getParam1()!=null && o.getParam1().equalsIgnoreCase(req.getGender()) ).collect(Collectors.toList());
+					
+					
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
