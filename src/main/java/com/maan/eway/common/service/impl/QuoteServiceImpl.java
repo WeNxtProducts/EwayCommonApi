@@ -41,6 +41,8 @@ import com.maan.eway.common.service.QuoteThreadService;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.CoverDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
+import com.maan.eway.repository.EserviceTravelDetailsRepository;
+import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
@@ -81,6 +83,12 @@ public class QuoteServiceImpl implements QuoteService {
 	
 	@Autowired
 	private CoverDetailsRepository coverRepo;
+	
+	@Autowired
+	private EserviceTravelDetailsRepository eserTraRepo;
+	
+	@Autowired
+	private EserviceTravelGroupDetailsRepository eserGroupRepo;
 	
 	private Logger log = LogManager.getLogger(QuoteServiceImpl.class);
 	
@@ -405,6 +413,28 @@ public class QuoteServiceImpl implements QuoteService {
 	public QuoteUpdateRes updateReferralStatus(AdminReferalStatusReq req) {
 		QuoteUpdateRes updateRes = new QuoteUpdateRes();
 		try {
+			
+			if( req.getProductId().equalsIgnoreCase(motorProductId)) {
+				updateRes = motorReferalUpdate(req);
+				
+			} else if( req.getProductId().equalsIgnoreCase(travelProductId)) {
+				updateRes = travelReferalUpdate(req);
+			}
+			
+		
+		} catch ( Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return updateRes;
+	}
+	
+	
+//----------------------------------------MOTOR REFFERAL UPDATE ------------------------------------------------------------------//	
+	public QuoteUpdateRes motorReferalUpdate(AdminReferalStatusReq req) {
+		QuoteUpdateRes  updateRes = new QuoteUpdateRes(); 
+		try {
 			List<EserviceMotorDetails> motorDatas = eserMotRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
 			
 			// Referal Approve & Create New Quote
@@ -418,8 +448,9 @@ public class QuoteServiceImpl implements QuoteService {
 				for(EserviceMotorDetails mot : motorDatas ) {
 					VehicleIdsReq vehDeh = new VehicleIdsReq();
 					List<CoverIdsReq>  coverList = new ArrayList<CoverIdsReq>();
+					List<FactorRateRequestDetails> filterCover = coverDatas.stream().filter( o -> o.getVehicleId().equals(mot.getVehicleId()) ).collect(Collectors.toList());
 					
-					for (FactorRateRequestDetails cov :  coverDatas ) {
+					for (FactorRateRequestDetails cov :  filterCover ) {
 						CoverIdsReq coverReq = new CoverIdsReq();
 						if (cov.getCoverId().equals(cov.getSubCoverId())) {
 							coverReq.setSubCoverId(null);
@@ -437,13 +468,13 @@ public class QuoteServiceImpl implements QuoteService {
 					vehicleIdsList.add(vehDeh);
 				}
 				
-				
-				
 				req2.setAdminLoginId(req.getAdminLoginId());
 				req2.setCreatedBy(req.getAdminLoginId());	
 				req2.setProductId(req.getProductId());
 				req2.setRequestReferenceNo(req.getRequestReferenceNo());
 				req2.setVehicleIdsList(vehicleIdsList);
+				req2.setManualReferralYn("N");
+				req2.setReferralRemarks("");
 				CommonRes	res = otSer.call_OT_Insert(req2);
 				NewQuoteRes response = (NewQuoteRes) res.getCommonResponse();
 				updateRes.setResponse("Referal Approved");
@@ -452,13 +483,13 @@ public class QuoteServiceImpl implements QuoteService {
 				updateRes.setRequestReferenceNo(req.getRequestReferenceNo());
 				
 				
-				// Referal Pending
+			// Referal Pending
 			} else if (req.getStatus().equalsIgnoreCase("RP")  ) {
 				updateRes.setResponse("Referal Pending");
 				updateRes.setQuoteNo("");
 				updateRes.setCustomerId("");
 				updateRes.setRequestReferenceNo(req.getRequestReferenceNo());
-				// Referal Reject
+			// Referal Reject
 			} else if (req.getStatus().equalsIgnoreCase("RR") ) {
 				updateRes.setResponse("Referal Rejected");
 				updateRes.setQuoteNo("");
@@ -476,7 +507,90 @@ public class QuoteServiceImpl implements QuoteService {
 				eserMotRepo.saveAndFlush(mot);
 				
 			}
-		
+		} catch ( Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return updateRes;
+	}
+
+	
+//----------------------------------------- TRAVEL REFERRAL FLOW ------------------------------------------------------------------//
+	public QuoteUpdateRes travelReferalUpdate(AdminReferalStatusReq req) {
+		QuoteUpdateRes  updateRes = new QuoteUpdateRes(); 
+		try {
+			EserviceTravelDetails travelData  = eserTraRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+			
+			// Referal Approve & Create New Quote
+			if (req.getStatus().equalsIgnoreCase("RA") ) {
+				List<EserviceTravelGroupDetails> groupDatas = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(req.getRequestReferenceNo());
+				List<FactorRateRequestDetails> coverDatas = eserCovRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndUserOptOrderByVehicleIdAsc(req.getRequestReferenceNo(), 0 ,0,"Y");
+				
+				
+				NewQuoteReq req2 = new NewQuoteReq();
+				List<VehicleIdsReq> vehicleIdsList = new ArrayList<VehicleIdsReq>();
+				
+				for(EserviceTravelGroupDetails tra : groupDatas ) {
+					VehicleIdsReq vehDeh = new VehicleIdsReq();
+					List<CoverIdsReq>  coverList = new ArrayList<CoverIdsReq>();
+					List<FactorRateRequestDetails> filterCover = coverDatas.stream().filter( o -> o.getVehicleId().equals(tra.getGroupId())).collect(Collectors.toList());
+					for (FactorRateRequestDetails cov :  filterCover ) {
+						CoverIdsReq coverReq = new CoverIdsReq();
+						if (cov.getCoverId().equals(cov.getSubCoverId())) {
+							coverReq.setSubCoverId(null);
+						} else {
+							coverReq.setSubCoverId(cov.getSubCoverId().toString());
+						}
+						coverReq.setIsReferal(cov.getIsReferral());
+						coverReq.setCoverId(cov.getCoverId());
+						coverReq.setSubCoverYn(cov.getSubCoverYn());
+						coverList.add(coverReq);
+						
+					}
+					vehDeh.setCoverIdList(coverList);
+					vehDeh.setVehicleId(tra.getGroupId());
+					vehicleIdsList.add(vehDeh);
+				}
+				
+				req2.setAdminLoginId(req.getAdminLoginId());
+				req2.setCreatedBy(req.getAdminLoginId());	
+				req2.setProductId(req.getProductId());
+				req2.setRequestReferenceNo(req.getRequestReferenceNo());
+				req2.setVehicleIdsList(vehicleIdsList);
+				req2.setManualReferralYn("N");
+				req2.setReferralRemarks("");
+				CommonRes	res = otSer.call_OT_Insert(req2);
+				NewQuoteRes response = (NewQuoteRes) res.getCommonResponse();
+				updateRes.setResponse("Referal Approved");
+				updateRes.setQuoteNo(response.getQuoteNo());
+				updateRes.setCustomerId(response.getCustomerId());
+				updateRes.setRequestReferenceNo(req.getRequestReferenceNo());
+				
+				
+			// Referal Pending
+			} else if (req.getStatus().equalsIgnoreCase("RP")  ) {
+				updateRes.setResponse("Referal Pending");
+				updateRes.setQuoteNo("");
+				updateRes.setCustomerId("");
+				updateRes.setRequestReferenceNo(req.getRequestReferenceNo());
+			// Referal Reject
+			} else if (req.getStatus().equalsIgnoreCase("RR") ) {
+				updateRes.setResponse("Referal Rejected");
+				updateRes.setQuoteNo("");
+				updateRes.setCustomerId("");
+				updateRes.setRequestReferenceNo(req.getRequestReferenceNo());
+			} 
+			
+			// Update Travel Status 
+			
+			travelData.setStatus(req.getStatus());
+			travelData.setAdminLoginId(req.getAdminLoginId());
+			travelData.setAdminRemarks(req.getAdminRemarks());
+			travelData.setRejectReason(req.getRejectReason());
+			travelData.setUpdatedDate(new Date());
+			eserTraRepo.saveAndFlush(travelData);
+			
 		} catch ( Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -485,74 +599,4 @@ public class QuoteServiceImpl implements QuoteService {
 		return updateRes;
 	}
 	
-	
-//	public synchronized  List<VehicleIdsReq> ProductWiseReferralApproveCall(AdminReferalStatusReq req) {
-//		List<VehicleIdsReq> vehicleIdsList = new ArrayList<VehicleIdsReq>();
-//		try {
-//			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
-//				List<EserviceMotorDetails> motorDatas = eserMotRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
-//				List<FactorRateRequestDetails> coverDatas = eserCovRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndUserOptOrderByVehicleIdAsc(req.getRequestReferenceNo(), 0 ,0,"Y");
-//				
-//				NewQuoteReq req2 = new NewQuoteReq();
-//				
-//				for(EserviceMotorDetails mot : motorDatas ) {
-//					VehicleIdsReq vehDeh = new VehicleIdsReq();
-//					List<CoverIdsReq>  coverList = new ArrayList<CoverIdsReq>();
-//					
-//					for (FactorRateRequestDetails cov :  coverDatas ) {
-//						CoverIdsReq coverReq = new CoverIdsReq();
-//						if (cov.getCoverId().equals(cov.getSubCoverId())) {
-//							coverReq.setSubCoverId(null);
-//						} else {
-//							coverReq.setSubCoverId(cov.getSubCoverId().toString());
-//						}
-//						coverReq.setIsReferal(cov.getIsReferral());
-//						coverReq.setCoverId(cov.getCoverId());
-//						coverReq.setSubCoverYn(cov.getSubCoverYn());
-//						coverList.add(coverReq);
-//						
-//					}
-//					vehDeh.setCoverIdList(coverList);
-//					vehDeh.setVehicleId(mot.getVehicleId());
-//					vehicleIdsList.add(vehDeh);
-//				} 
-//			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
-//				List<EserviceTravelGroupDetails> travelGroupDatas = eserMotRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
-//				List<FactorRateRequestDetails> coverDatas = eserCovRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndUserOptOrderByVehicleIdAsc(req.getRequestReferenceNo(), 0 ,0,"Y");
-//				
-//				NewQuoteReq req2 = new NewQuoteReq();
-//				
-//				for(EserviceMotorDetails mot : motorDatas ) {
-//					VehicleIdsReq vehDeh = new VehicleIdsReq();
-//					List<CoverIdsReq>  coverList = new ArrayList<CoverIdsReq>();
-//					
-//					for (FactorRateRequestDetails cov :  coverDatas ) {
-//						CoverIdsReq coverReq = new CoverIdsReq();
-//						if (cov.getCoverId().equals(cov.getSubCoverId())) {
-//							coverReq.setSubCoverId(null);
-//						} else {
-//							coverReq.setSubCoverId(cov.getSubCoverId().toString());
-//						}
-//						coverReq.setIsReferal(cov.getIsReferral());
-//						coverReq.setCoverId(cov.getCoverId());
-//						coverReq.setSubCoverYn(cov.getSubCoverYn());
-//						coverList.add(coverReq);
-//						
-//					}
-//					vehDeh.setCoverIdList(coverList);
-//					vehDeh.setVehicleId(mot.getVehicleId());
-//					vehicleIdsList.add(vehDeh);
-//			}
-//			
-//			// Referal Approve & Create New Quote
-//			if (req.getStatus().equalsIgnoreCase("RA") ) {
-//				
-//				}
-//		} catch ( Exception e) {
-//			e.printStackTrace();
-//			log.info("Exception is ---> " + e.getMessage());
-//			return null;
-//		}
-//		return updateRes;
-//	}
 }
