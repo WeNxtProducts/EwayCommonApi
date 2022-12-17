@@ -19,6 +19,13 @@ public class CustomerDetailsRes {
 	@JsonProperty("PolicyHolderTypeid")
 	private String policyHolderTypeid;
 
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("AppointmentDate")
+	private Date appointmentDate;
+	
+	@JsonProperty("PreferredNotification")
+	private String preferredNotification;
+	
 	
 	@JsonProperty("IdType")
 	private String idType;

@@ -233,8 +233,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="EMAIL_3", length=20)
     private String     email3 ;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="APPOINTMENT_DATE")
+    private Date       appointmentDate ;
 
-
+    @Column(name="PREFERRED_NOTIFICATION", length=20)
+    private String     preferredNotification ;
 
 }
 

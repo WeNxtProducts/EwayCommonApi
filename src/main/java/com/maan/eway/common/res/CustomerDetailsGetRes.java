@@ -20,6 +20,13 @@ public class CustomerDetailsGetRes {
 	@JsonProperty("IdType")
 	private String idType;
 
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("AppointmentDate")
+	private Date appointmentDate;
+	
+	@JsonProperty("PreferredNotification")
+	private String preferredNotification;
+	
 	@JsonProperty("IdNumber")
 	private String idNumber;
 

@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -230,6 +229,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="POLICY_HOLDER_TYPE_ID_DESC", length=100)
     private String     policyHolderTypeIdDesc ;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="APPOINTMENT_DATE")
+    private Date       appointmentDate ;
+
+    @Column(name="PREFERRED_NOTIFICATION", length=20)
+    private String     preferredNotification ;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 
