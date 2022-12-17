@@ -10,18 +10,16 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
-import org.springframework.beans.factory.annotation.Value;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.EserviceCustomerDetails;
@@ -31,9 +29,9 @@ import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MotorDataDetails;
+import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.TravelPassengerDetails;
-import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.QuoteThreadReq;
 import com.maan.eway.common.req.VehicleIdsReq;
@@ -49,18 +47,7 @@ import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-@Builder
-@Transactional
 public class QuoteThreadCall implements Callable<Object>  {
 	
 	private Logger log = LogManager.getLogger(getClass());
@@ -155,18 +142,16 @@ public class QuoteThreadCall implements Callable<Object>  {
 		return map;
 	}
 	
-	@Transactional
 	private synchronized Map<String,Object> call_CustomerSave(QuoteThreadReq request) {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			// FindData 
 			Long findInfo =  perInfoRepo.countByCustomerId(request.getCustomerId());
-			if (findInfo > 0 ) {
-			perInfoRepo.deleteByCustomerId(request.getCustomerId());
-		
+			if (findInfo > 0 && request.getRowCount().equals(1) ) {
+				perInfoRepo.deleteByCustomerId(request.getCustomerId());
+
 			}
-			
+			// FindData 
 			String customerRefNo = "" ;
 			if(request.getProductId().equalsIgnoreCase(motorProductId) ) {
 				EserviceMotorDetails motorData = eserMotRepo.findByRequestReferenceNoAndVehicleId(request.getRequestReferenceNo(),request.getVehicleIdsList().get(0).getVehicleId());
@@ -185,7 +170,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			personalInfo.setCustomerId(request.getCustomerId());
 			personalInfo.setEntryDate(new Date());
 			personalInfo.setCreatedBy(request.getCreatedBy());
-			perInfoRepo.saveAndFlush(personalInfo);
+			perInfoRepo.save(personalInfo);
 			
 			log.error("Save Personal Info is ---> " + json.toJson(personalInfo));
 			
@@ -202,13 +187,19 @@ public class QuoteThreadCall implements Callable<Object>  {
 		return res;
 	}
 	
-
-	@Transactional
+	
 	private synchronized  Map<String,Object>  call_MotorSave(QuoteThreadReq  request  ) {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		 DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			
+			 // Delete Old Record
+			// // Delete Old Record
+			Long motorInfo =  motorRepo.countByQuoteNo(request.getQuoteNo());
+			if (motorInfo > 0 && request.getRowCount().equals(1) ) {
+				//Delete data
+				motorRepo.deleteByQuoteNo(request.getQuoteNo());
+				
+			}
 			
 			// Cover Calc
 			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,request.getVehicleId());
@@ -292,12 +283,18 @@ public class QuoteThreadCall implements Callable<Object>  {
 		return res;
 	}
 	
-	@Transactional
+
 	private synchronized  Map<String,Object>  call_TravelSave(QuoteThreadReq  request  ) {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		 DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			
+			//  // Delete Old Record
+			Long travelInfo =  traPassRepo.countByQuoteNo(request.getQuoteNo() );
+			if (travelInfo > 0 && request.getRowCount().equals(1) ) {
+				//Delete data
+				traPassRepo.deleteByQuoteNo(request.getQuoteNo() );
+				
+			}
 			// Cover Calc
 			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,request.getGroupId());
 			List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
@@ -394,11 +391,17 @@ public class QuoteThreadCall implements Callable<Object>  {
 	
 	
 	
-	@Transactional
+	
 	private synchronized  Map<String,Object>  call_CoverSave(QuoteThreadReq  request) {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		try {
-			
+			 //  // Delete Old Record
+			Long coverInfo =  coverRepo.countByQuoteNo(request.getQuoteNo());
+ 			if (coverInfo >0 &&  request.getRowCount().equals(1) ) {
+ 				//Delete data
+ 				coverRepo.deleteByQuoteNo(request.getQuoteNo());
+ 				
+ 			}
 						
 			// Find Motor
 			
@@ -446,7 +449,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		return res;
 	}
 		
-	@Transactional
+	
 	private synchronized Map<String,Object>  CoverSavePoint(List<FactorRateRequestDetails>  covers) {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		try {
@@ -502,7 +505,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 	
 	
 	
-	@Transactional
+	
 	private synchronized Double getDevidedValue(Double inputValue ,Integer groupCount ) {
 		Double devidedValue = 0D ;
 		try {
@@ -517,7 +520,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		return devidedValue;
 	}
 
-		@Transactional
+	
 		private synchronized Map<String,Object>  InsertCoverDetails(List<FactorRateRequestDetails> covers) {
 			Map<String,Object> res= new HashMap<String,Object>() ;
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -549,16 +552,18 @@ public class QuoteThreadCall implements Callable<Object>  {
 		}
 		
 	
-	@Transactional
+	
 	private synchronized QuoteThreadRes call_QuoteSave(QuoteThreadReq  request) {
 		QuoteThreadRes res= new QuoteThreadRes() ;
 		String pattern = "#####0.00";
 		DecimalFormat df = new DecimalFormat(pattern);
 		try {
-			// FindData 
+			// Home Positiom Master Thread Call
 			Long homeInfo =  homeRepo.countByQuoteNo(request.getQuoteNo());
 			if (homeInfo > 0 ) {
+				//Delete data
 				homeRepo.deleteByQuoteNo(request.getQuoteNo());
+ 				
 			}
 			
 			// Cover Calc

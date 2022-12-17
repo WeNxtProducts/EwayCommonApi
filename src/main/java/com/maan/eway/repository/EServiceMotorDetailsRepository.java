@@ -16,6 +16,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import com.maan.eway.bean.CustomerDetails;
 import com.maan.eway.bean.CustomerDetailsId;
 import com.maan.eway.bean.EserviceCustomerDetails;
@@ -31,7 +33,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  * <p>
  * Description: "CustomerDetails" Repository
  */
- 
  
  
 public interface EServiceMotorDetailsRepository  extends JpaRepository<EserviceMotorDetails,EserviceMotorDetailsId > , JpaSpecificationExecutor<EserviceMotorDetails> {

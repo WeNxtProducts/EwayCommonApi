@@ -31,20 +31,18 @@ import com.maan.eway.bean.TravelPassengerDetailsId;
  
  
  
-@Transactional
 public interface TravelPassengerDetailsRepository  extends JpaRepository<TravelPassengerDetails,TravelPassengerDetailsId > , JpaSpecificationExecutor<TravelPassengerDetails> {
 
 
 
 	Long countByQuoteNoAndPassengerId(String quoteNo, Integer vehicleId);
 
-	@Transactional
-	void deleteByQuoteNoAndPassengerId(String quoteNo, Integer vehicleId);
-
+	
 	void findByQuoteNoAndPassengerId(String quoteNo, Integer vehicleId);
 
 	Long countByQuoteNo(String quoteNo);
 
+	@Transactional
 	void deleteByQuoteNo(String quoteNo);
 
 

@@ -32,8 +32,7 @@ import com.maan.eway.bean.PersonalInfoId;
  * Description: "PersonalInfo" Repository
  */
  
- 
-@Transactional
+
 public interface PersonalInfoRepository  extends JpaRepository<PersonalInfo,PersonalInfoId > , JpaSpecificationExecutor<PersonalInfo> {
 
 

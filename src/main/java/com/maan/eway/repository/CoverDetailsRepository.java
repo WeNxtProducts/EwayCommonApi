@@ -30,7 +30,7 @@ import com.maan.eway.bean.PolicyCoverDataId;
  */
  
  
-@Transactional 
+
 public interface CoverDetailsRepository  extends JpaRepository<PolicyCoverData,PolicyCoverDataId > , JpaSpecificationExecutor<PolicyCoverData> {
 
 	List<PolicyCoverData> findByQuoteNoOrderByVehicleIdAsc(String quoteNo);

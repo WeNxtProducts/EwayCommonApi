@@ -31,7 +31,7 @@ import com.maan.eway.bean.MotorDataDetailsId;
  
  
 
-@Transactional
+
 public interface MotorDataDetailsRepository  extends JpaRepository<MotorDataDetails,MotorDataDetailsId > , JpaSpecificationExecutor<MotorDataDetails> {
 
 	List<MotorDataDetails> findByQuoteNoOrderByVehicleIdAsc(String quoteNo);

@@ -22,7 +22,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -35,7 +35,9 @@ import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
+import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MotorDataDetails;
+import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.bean.UwQuestionsDetails;
@@ -124,7 +126,6 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	
 	
 	@Override
-	@Transactional
 	public CommonRes call_OT_Insert(NewQuoteReq req) {
 		CommonRes commonRes = new CommonRes();
 		NewQuoteRes response = new NewQuoteRes();
@@ -162,6 +163,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             QuoteThreadReq request = (QuoteThreadReq) frameQuoteReq.getCommonResponse() ;
            
             // Customer Save Thread Call
+            request.setRowCount(1);
             QuoteThreadCall customerSave = new QuoteThreadCall("CustomerSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
             		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,motorProductId , travelProductId);
             queue.add(customerSave);
@@ -266,7 +268,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				commonRes.setMessage("Failed");
 				
 			} else {
-				// Home Positiom Master Thread Call
+				
 				List<Callable<Object>> queue2 = new ArrayList<Callable<Object>>();
 				MyTaskList taskList2 = new MyTaskList(queue2);
 				request.setVehicleId(req.getVehicleIdsList().get(0).getVehicleId());
@@ -463,7 +465,6 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 
 
 	//-------------------------------------------------------------Product Wise Multi Thread Call---------------------------------------------------------------------//
-	@Transactional
 	public CommonRes productWiseThreadCall(NewQuoteReq req , QuoteThreadReq request ) {
 		CommonRes commonRes = new CommonRes();
 		List<Error> errors = new ArrayList<Error>();
@@ -472,26 +473,14 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		try {
 			int threadCount = 0 ;
 			List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
-			 //  // Delete Old Record
-			Long coverInfo =  coverRepo.countByQuoteNo(request.getQuoteNo());
- 			if (coverInfo >0 ) {
- 				//Delete data
- 				CriteriaBuilder cb = em.getCriteriaBuilder();
- 				CriteriaDelete<PolicyCoverData> delete = cb.createCriteriaDelete(PolicyCoverData.class);
-
- 				Root<PolicyCoverData> pc = delete.from(PolicyCoverData.class);
-
- 				//Where
- 				Predicate n1 = cb.equal(pc.get("quoteNo"), request.getQuoteNo());
- 				delete.where(n1);
- 				em.createQuery(delete).executeUpdate();
- 				
- 			}
+			
 			// Multiple Vehicle Thread Call
 			List<Integer> vehicleIds = req.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
 	        if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
+	        	int row = 0 ;
 				 for (Integer vehId :  vehicleIds ) {
 		            	threadCount = threadCount +  2 ;
+		            	row = row + 1 ;
 		            	QuoteThreadReq request2 = new QuoteThreadReq();
 		            	request2.setCustomerId(request.getCustomerId());
 		            	request2.setProductId(request.getProductId());
@@ -499,7 +488,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		            	request2.setRequestReferenceNo(request.getRequestReferenceNo());
 		            	request2.setVehicleIdsList(request.getVehicleIdsList());
 		            	request2.setCreatedBy(request.getCreatedBy());
-		            	request2.setVehicleId(vehId); 
+		            	request2.setVehicleId(vehId);
+		            	request2.setRowCount(row);
 		            	QuoteThreadCall motorSave = new QuoteThreadCall("MotorSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo  
 		                		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,motorProductId , travelProductId);
 			            queue.add(motorSave);
@@ -507,24 +497,6 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,motorProductId , travelProductId);
 						queue.add(coverSave);	
 		            }
-				 
-				 // Delete Old Record
-				// // Delete Old Record
-				Long motorInfo =  motorRepo.countByQuoteNo(request.getQuoteNo());
-				if (motorInfo > 0 ) {
-					//Delete data
-	 				CriteriaBuilder cb = em.getCriteriaBuilder();
-	 				CriteriaDelete<MotorDataDetails> delete = cb.createCriteriaDelete(MotorDataDetails.class);
-
-	 				Root<MotorDataDetails> m = delete.from(MotorDataDetails.class);
-
-	 				//Where
-	 				Predicate n1 = cb.equal(m.get("quoteNo"), request.getQuoteNo());
-	 				delete.where(n1);
-	 				em.createQuery(delete).executeUpdate();
-					
-				}
-				
 					
 			}else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 	        	
@@ -534,11 +506,11 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	        	// Filte Count
 	        	 for (Integer vehId :  vehicleIds ) {
 					 List<EserviceTravelGroupDetails> filterGroup = groupData.stream().filter( o -> o.getGroupId().equals(vehId) ).collect(Collectors.toList());				 
-					
+						int row = 0 ;
 					 for (int i=0 ; i <= filterGroup.get(0).getGrouppMembers() ; i++) {
 						 passCount = passCount + 1 ;
 						 threadCount = threadCount +  2 ;
-						 
+						 row = row + 1 ;
 		            	 QuoteThreadReq request2 = new QuoteThreadReq();
 		            	 request2.setVehicleId(passCount);
 		            	 request2.setCustomerId(request.getCustomerId());
@@ -549,6 +521,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		            	 request2.setCreatedBy(request.getCreatedBy());
 		            	 request2.setGroupId(filterGroup.get(0).getGroupId());
 		            	 request2.setGroupCount(filterGroup.get(0).getGrouppMembers());
+		            	 request2.setRowCount(row);
 		            	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
 		            			 , homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,motorProductId , travelProductId);
 			             queue.add(travelSave);
@@ -557,20 +530,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						 queue.add(coverSave);
 					 }					 
 		         } 
-	        	//  // Delete Old Record
-				Long travelInfo =  traPassRepo.countByQuoteNo(request.getQuoteNo() );
-				if (travelInfo > 0 ) {
-					//Delete data
-	 				CriteriaBuilder cb = em.getCriteriaBuilder();
-	 				CriteriaDelete<TravelPassengerDetails> delete = cb.createCriteriaDelete(TravelPassengerDetails.class);
-
-	 				Root<TravelPassengerDetails> m = delete.from(TravelPassengerDetails.class);
-
-	 				//Where
-	 				Predicate n1 = cb.equal(m.get("quoteNo"), request.getQuoteNo());
-	 				delete.where(n1);
-	 				em.createQuery(delete).executeUpdate();
-				}
+	        	
 			}
 	        
 	    

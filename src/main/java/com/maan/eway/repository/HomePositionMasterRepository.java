@@ -30,13 +30,14 @@ import com.maan.eway.bean.HomePositionMasterId;
  */
  
  
-@Transactional 
+
 public interface HomePositionMasterRepository  extends JpaRepository<HomePositionMaster,HomePositionMasterId > , JpaSpecificationExecutor<HomePositionMaster> {
 
 	HomePositionMaster findByQuoteNo(String quoteNo);
 
 	Long countByQuoteNo(String quoteNo);
 
+	@Transactional
 	void deleteByQuoteNo(String quoteNo);
 
 }
