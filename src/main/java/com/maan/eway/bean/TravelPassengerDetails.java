@@ -188,9 +188,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="ADDRESS2", length=500)
     private String     address2 ;
 
-    @Column(name="CITY", length=200)
-    private String     city ;
-
     @Column(name="POBOX", length=100)
     private String     pobox ;
 
@@ -341,13 +338,6 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="OVERALL_PREMIUM_FC")
     private Double     overallPremiumFc ;
-
-    @Column(name="STATE_CODE", length=20)
-    private String     stateCode ;
-    
-    @Column(name="STATE_NAME", length=20)
-    private String     stateName ;
-
     
     @Column(name="VD_REFNO", length=20)
     private String     vdRefno ;
