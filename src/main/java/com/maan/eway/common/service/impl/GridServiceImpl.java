@@ -1,5 +1,6 @@
 package com.maan.eway.common.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -8,11 +9,13 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -31,21 +34,33 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginBranchMaster;
+import com.maan.eway.bean.LoginMaster;
+
+import com.maan.eway.common.req.CopyQuoteReq;
+import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.res.CriteriaCustomerRes;
+import com.maan.eway.common.res.CustomerDetailsGetRes;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
+import com.maan.eway.common.res.GetAllMotorDetailsRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.service.GridService;
 import com.maan.eway.common.service.MotorGridService;
 import com.maan.eway.common.service.TravelGridService;
+import com.maan.eway.master.req.CopyQuoteDropDownReq;
+import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
+import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
 
 @Service
 @Transactional
@@ -509,6 +524,8 @@ public class GridServiceImpl implements GridService {
 			List<RejectCriteriaRes> adminReferralRejectedList = new ArrayList<RejectCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				adminReferralRejectedList = motService.getMotorAdminReferalRejected(req  , branches, limit , offset );
+			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+				adminReferralRejectedList = traService.getTravelAdminReferalRejected(req  , branches, limit , offset );
 			}
 			for(RejectCriteriaRes data : adminReferralRejectedList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
@@ -524,4 +541,135 @@ public class GridServiceImpl implements GridService {
 		}
 		return custRes;
 	}
+
+
+	@Override
+	public SuccessRes copyQuote(CopyQuoteReq req) {
+		SuccessRes res = new SuccessRes();
+		try {
+
+			String loginId = req.getLoginId();
+
+			// Branch Res
+			List<String> branches = new ArrayList<String>();
+
+			if (req.getBranchCode().equalsIgnoreCase("99999")) {
+
+				List<LoginBranchMaster> loginBranch = loginBranchRepo.findByLoginId(loginId);
+
+				branches = loginBranch.stream().filter(o -> !o.getBrokerBranchCode().equalsIgnoreCase("None"))
+						.map(LoginBranchMaster::getBrokerBranchCode).collect(Collectors.toList());
+				if (branches.size() <= 0) {
+					branches = loginBranch.stream().map(LoginBranchMaster::getBranchCode).collect(Collectors.toList());
+
+				}
+
+			} else if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
+				branches.add(req.getBrokerBranchCode());
+			} else {
+				branches.add(req.getBranchCode());
+			}
+
+			// Product Wise Get
+			if (req.getProductId().equalsIgnoreCase(motorProductId)) {
+				res = motService.motorCopyQuote(req, branches);
+
+			}else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+				res = traService.travelCopyQuote(req, branches);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+	
+	@Override
+	public List<GetAllMotorDetailsRes> getbyReqRefNo(CopyQuoteReq req) {
+
+		List<GetAllMotorDetailsRes> reslist = new ArrayList<GetAllMotorDetailsRes>();
+		DozerBeanMapper dozermapper = new DozerBeanMapper();
+		try {
+			String loginId = req.getLoginId();
+
+			// Branch Res
+			List<String> branches = new ArrayList<String>();
+
+			if (req.getBranchCode().equalsIgnoreCase("99999")) {
+
+				List<LoginBranchMaster> loginBranch = loginBranchRepo.findByLoginId(loginId);
+
+				branches = loginBranch.stream().filter(o -> !o.getBrokerBranchCode().equalsIgnoreCase("None"))
+						.map(LoginBranchMaster::getBrokerBranchCode).collect(Collectors.toList());
+				if (branches.size() <= 0) {
+					branches = loginBranch.stream().map(LoginBranchMaster::getBranchCode).collect(Collectors.toList());
+
+				}
+
+			} else if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
+				branches.add(req.getBrokerBranchCode());
+			} else {
+				branches.add(req.getBranchCode());
+			}
+			List<Tuple> list = null;
+
+			// Product Wise Get
+			if (req.getProductId().equalsIgnoreCase(motorProductId)) {
+				list = motService.searchMotorQuote(req, branches);
+
+			}
+			else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+				list = traService.searchTravelQuote(req, branches);
+		}
+			for (Tuple data : list) {
+				GetAllMotorDetailsRes res = new GetAllMotorDetailsRes();
+				dozermapper.map(data.get(0), res);
+				res.setClientName((data.get("clientName").toString()));
+				reslist.add(res);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return reslist;
+	}
+	
+
+	@Override
+	public List<DropDownRes> copyQuoteByDropdown(CopyQuoteDropDownReq req) {
+
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			
+			List<ListItemValue> getList = new ArrayList<ListItemValue>();
+			String itemType ="";
+			
+			if (req.getProductId().equalsIgnoreCase(motorProductId)) {
+				 itemType = "COPY_QUOTE_BY_MOTOR";
+				 getList = motService.geMotorCoptyQuotetListItem(req, itemType);
+			}
+			else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+				itemType = "COPY_QUOTE_BY_TRAVEL";
+				getList = traService.getTravelCoptyQuotetListItem( req,itemType);
+			}
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	
 }

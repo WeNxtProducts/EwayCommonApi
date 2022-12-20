@@ -439,6 +439,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="COMMISSION_TYPE_DESC", length=20)
     private String     commissionTypeDesc ;
+    
+    @Column(name="OLD_REQ_REF_NO", length=100)
+    private String     oldReqRefNo ;
 
 }
 
