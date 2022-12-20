@@ -627,6 +627,7 @@ public class GridServiceImpl implements GridService {
 				GetAllMotorDetailsRes res = new GetAllMotorDetailsRes();
 				dozermapper.map(data.get(0), res);
 				res.setClientName((data.get("clientName").toString()));
+				 res.setIdsCount(data.get("idsCount")==null?"":data.get("idsCount").toString() );
 				reslist.add(res);
 			}
 

@@ -730,7 +730,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 			Root<EserviceMotorDetails> c = query.from(EserviceMotorDetails.class);
 			Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
 			
-			query.multiselect(c,cus.get("clientName").alias("clientName"));//,cb.count(c).alias("idsCount"));
+			query.multiselect(c,
+					cus.get("clientName").alias("clientName"),cb.count(c).alias("idsCount"));
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -790,8 +791,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 			// Get Result
 			TypedQuery<Tuple> result = em.createQuery(query);
 			customerDetailsList = result.getResultList();
-//			customerDetailsList = customerDetailsList.stream().filter(o -> !o.get("idsCount").equals(0L))
-//					.collect(Collectors.toList());
+			customerDetailsList = customerDetailsList.stream().filter(o -> !o.get("idsCount").equals(0L))
+					.collect(Collectors.toList());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
