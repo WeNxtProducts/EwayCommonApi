@@ -185,8 +185,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="CURRENCY", length=20)
     private String     currency ;
 
-    @Column(name="POLICY_PERIOD")
-    private Integer    policyPeriod ;
+    @Column(name="POLICY_PERIORD")
+    private Integer    policyPeriord ;
 
     @Column(name="EXCHANGE_RATE")
     private Double     exchangeRate ;

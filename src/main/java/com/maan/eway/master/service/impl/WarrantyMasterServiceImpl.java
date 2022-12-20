@@ -66,12 +66,12 @@ public class WarrantyMasterServiceImpl implements WarrantyMasterService {
 				errorList.add(new Error("02", "WarrantyDescription", "Please Select WarrantyDescription"));
 			}else if (req.getWarrantyDescription().length() > 100){
 				errorList.add(new Error("02","WarrantyDescription", "Please Enter WarrantyDescription 100 Characters")); 
-			}else if (StringUtils.isBlank(req.getWarrantyId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())) {
+			}else if (StringUtils.isBlank(req.getWarrantyId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId())&& StringUtils.isNotBlank(req.getPolicyType())) {
 				List<WarrantyMaster> WarrantyList = getWarrantyDescriptionExistDetails(req.getWarrantyDescription() , req.getCompanyId() , req.getBranchCode(),req.getProductId(),req.getSectionId(),req.getPolicyType());
 				if (WarrantyList.size()>0 ) {
 					errorList.add(new Error("01", "WarrantyDescription", "This WarrantyDescription Already Exist "));
 				}
-			}else if (StringUtils.isNotBlank(req.getWarrantyId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())) {
+			}else if (StringUtils.isNotBlank(req.getWarrantyId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId())&& StringUtils.isNotBlank(req.getPolicyType())) {
 				List<WarrantyMaster> WarrantyList = getWarrantyDescriptionExistDetails(req.getWarrantyDescription() , req.getCompanyId() , req.getBranchCode(),req.getProductId(),req.getSectionId(),req.getPolicyType());
 				
 				if (WarrantyList.size()>0 &&  (! req.getWarrantyId().equalsIgnoreCase(WarrantyList.get(0).getWarrantyId().toString())) ) {
@@ -135,6 +135,15 @@ public class WarrantyMasterServiceImpl implements WarrantyMasterService {
 			}else if (req.getCreatedBy().length() > 100){
 				errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
 			}		
+			if (StringUtils.isBlank(req.getProductId())) {
+				errorList.add(new Error("10", "ProductId", "Please Enter ProductId"));
+			}
+			if (StringUtils.isBlank(req.getSectionId())) {
+				errorList.add(new Error("11", "SectionId", "Please Enter SectionId"));
+			}
+			if (StringUtils.isBlank(req.getPolicyType())) {
+				errorList.add(new Error("12", "PolicyType", "Please Enter PolicyType"));
+			}
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
@@ -285,6 +294,10 @@ public class WarrantyMasterServiceImpl implements WarrantyMasterService {
 		saveData.setUpdatedBy(req.getCreatedBy());
 		saveData.setUpdatedDate(new Date());
 		saveData.setAmendId(amendId);
+		saveData.setProductId(req.getProductId()==null?"" : "99999");
+		saveData.setSectionId(req.getSectionId()==null?"" : "99999");
+		saveData.setPolicyType(req.getPolicyType()==null?"" : "99999");
+		
 		repo.saveAndFlush(saveData);	
 		log.info("Saved Details is --> " + json.toJson(saveData));	
 		}

@@ -35,6 +35,19 @@ public class ClausesMaster {
 	@Id
 	@Column(name="COMPANY_ID",length=20, nullable=false)
 	private String companyId;
+
+	@Id
+	@Column(name="PRODUCT_ID",length=20, nullable=false)
+	private String productId;
+
+	@Id
+	@Column(name="SECTION_ID",length=20, nullable=false)
+	private String sectionId;
+	
+	@Id
+	@Column(name="POLICY_TYPE",length=20, nullable=false)
+	private String policyType;
+
 	
 	@Id
 	@Column(name="AMEND_ID",nullable=false)

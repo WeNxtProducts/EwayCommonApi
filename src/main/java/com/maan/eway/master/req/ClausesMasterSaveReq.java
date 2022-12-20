@@ -61,4 +61,13 @@ public class ClausesMasterSaveReq {
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
 	
+	@JsonProperty("ProductId")
+	private String productId;
+	
+	@JsonProperty("SectionId")
+	private String sectionId;
+	
+	@JsonProperty("PolicyType")
+	private String policyType;
+	
 }
