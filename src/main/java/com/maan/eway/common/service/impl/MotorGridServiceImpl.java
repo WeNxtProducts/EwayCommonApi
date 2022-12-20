@@ -807,7 +807,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 		SimpleDateFormat idf = new SimpleDateFormat("yyMMddmmssSSS");
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		EserviceMotorDetails savedata = new EserviceMotorDetails();
-		List<Tuple> copyQuote = new ArrayList<Tuple>();
+		
 		try {
 			String searchValue = req.getRequestReferenceNo();
 			String searchKey = "RequestReferenceNo";
@@ -815,7 +815,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			String loginId = req.getLoginId();
 			String userType = req.getUserType();
 			String branchCode = "";
-			List<Tuple> list = searchDetails(searchKey, searchValue, companyId, loginId, userType, branches);
+			List<Tuple> list = copyQuoteSearchDetails(searchKey, searchValue, companyId, loginId, userType, branches);
 
 			String refNo = req.getRequestReferenceNo();
 
@@ -863,7 +863,61 @@ public class MotorGridServiceImpl implements MotorGridService {
 		}
 		return res;
 	}
+	public List<Tuple> copyQuoteSearchDetails(String searchKey, String searchValue, String companyId, String loginId,
+			String userType, List<String> branches) {
+		List<Tuple> customerDetailsList = new ArrayList<Tuple>();
+		try {
 
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+			Root<EserviceMotorDetails> c = query.from(EserviceMotorDetails.class);
+			Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
+			
+			query.multiselect(c,
+					cus.get("clientName").alias("clientName"));
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("customerReferenceNo")));
+
+			Predicate n1 = null;
+			Predicate n3 = null;
+			Predicate n4 = null;
+			Predicate n5 = null;
+
+			// Where
+			if (searchKey.equalsIgnoreCase("RequestReferenceNo")) {
+				n1 = cb.equal(cb.lower(c.get("requestReferenceNo")), searchValue);
+			}
+
+			Predicate n2 = cb.equal(c.get("companyId"), companyId);
+
+			if ("issuer".equalsIgnoreCase(userType)) {
+				n3 = cb.equal(c.get("applicatioId"), loginId);
+				Expression<String> e0 = c.get("branchCode");
+				n4 = e0.in(branches);
+			} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
+				n3 = cb.equal(c.get("loginId"), loginId);
+				Expression<String> e0 = c.get("brokerBranchCode");
+				n4 = e0.in(branches);
+			}
+			
+			n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
+			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+	
+
+			// Get Result
+			TypedQuery<Tuple> result = em.createQuery(query);
+			customerDetailsList = result.getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return customerDetailsList;
+	}
 	@Override
 	public List<ListItemValue> geMotorCoptyQuotetListItem(CopyQuoteDropDownReq req, String itemType) {
 		List<ListItemValue> list = new ArrayList<ListItemValue>();
