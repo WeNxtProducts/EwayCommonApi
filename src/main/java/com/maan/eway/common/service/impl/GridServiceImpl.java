@@ -51,6 +51,7 @@ import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
+import com.maan.eway.common.service.BuildingGridService;
 import com.maan.eway.common.service.GridService;
 import com.maan.eway.common.service.MotorGridService;
 import com.maan.eway.common.service.TravelGridService;
@@ -72,6 +73,10 @@ public class GridServiceImpl implements GridService {
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
 	
+	@Value(value = "${building.productId}")
+	private String buildingProductId;
+	
+	
 	@Autowired
 	private EServiceMotorDetailsRepository repo;
 	
@@ -86,6 +91,10 @@ public class GridServiceImpl implements GridService {
 	
 	@Autowired
 	private TravelGridService traService ;
+	
+	@Autowired
+	private BuildingGridService buiService ;
+	
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -142,7 +151,9 @@ public class GridServiceImpl implements GridService {
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				extingQuoteList = traService.getTravelExistingQuoteDetails(req  , branches , before30 , today , limit , offset );
 			}
-			
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
+				extingQuoteList = buiService.getBuildingExistingQuoteDetails(req  , branches , before30 , today , limit , offset );
+			}
 			 
 			for(QuoteCriteriaRes data : extingQuoteList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
@@ -210,6 +221,9 @@ public class GridServiceImpl implements GridService {
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				lapsedQuoteList = traService.getTravelLapsedQuoteDetails(req  , branches, before30 , limit , offset );
 			}
+			else if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
+				lapsedQuoteList = buiService.getBuildingLapsedQuoteDetails(req  , branches, before30 , limit , offset );
+			}
 			
 			for(QuoteCriteriaRes data : lapsedQuoteList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
@@ -264,7 +278,9 @@ public class GridServiceImpl implements GridService {
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				rejectedQuoteList = traService.getTravelRejectedQuoteDetails(req  , branches, limit , offset );
 			}
-			
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
+				rejectedQuoteList = buiService.getBuildingRejectedQuoteDetails(req  , branches, limit , offset );
+			}
 			for(RejectCriteriaRes data : rejectedQuoteList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
@@ -320,7 +336,9 @@ public class GridServiceImpl implements GridService {
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				referralPendingList = traService.getTravelReferalPendingDetails(req  , branches, limit , offset );
 			}
-			
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
+				referralPendingList = buiService.getBuildingReferalPendingDetails(req  , branches, limit , offset );
+			}
 			for(QuoteCriteriaRes data : referralPendingList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
@@ -374,7 +392,9 @@ public class GridServiceImpl implements GridService {
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				referralApprovedList = traService.getTravelReferalApprovedDetails(req  , branches, limit , offset );
 			}
-			
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
+				referralApprovedList = buiService.getBuildingReferalApprovedDetails(req  , branches, limit , offset );
+			}
 			for(QuoteCriteriaRes data : referralApprovedList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
@@ -428,6 +448,9 @@ public class GridServiceImpl implements GridService {
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				referralRejectedList = traService.getTravelReferalRejectedDetails(req  , branches, limit , offset );
 			}
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
+				referralRejectedList = buiService.getBuildingReferalRejectedDetails(req  , branches, limit , offset );
+			}
 			for(RejectCriteriaRes data : referralRejectedList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
@@ -460,6 +483,9 @@ public class GridServiceImpl implements GridService {
 				adminReferralPendingList = motService.getMotorAdminReferalPendings(req  , branches, limit , offset );
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				adminReferralPendingList = traService.getTravelAdminReferalPendings(req  , branches, limit , offset );
+			}
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
+				adminReferralPendingList = buiService.getBuildingAdminReferalPendings(req  , branches, limit , offset );
 			}
 			for(QuoteCriteriaRes data : adminReferralPendingList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
@@ -494,6 +520,9 @@ public class GridServiceImpl implements GridService {
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				adminReferralApprovedList = traService.getTravelAdminReferalApproved(req  , branches, limit , offset );
 			}
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
+				adminReferralApprovedList = buiService.getBuildingAdminReferalApproved(req  , branches, limit , offset );
+			}
 			for(QuoteCriteriaRes data : adminReferralApprovedList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
@@ -526,6 +555,9 @@ public class GridServiceImpl implements GridService {
 				adminReferralRejectedList = motService.getMotorAdminReferalRejected(req  , branches, limit , offset );
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				adminReferralRejectedList = traService.getTravelAdminReferalRejected(req  , branches, limit , offset );
+			}
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
+				adminReferralRejectedList = buiService.getBuildingAdminReferalRejected(req  , branches, limit , offset );
 			}
 			for(RejectCriteriaRes data : adminReferralRejectedList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
@@ -577,6 +609,10 @@ public class GridServiceImpl implements GridService {
 			}else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				res = traService.travelCopyQuote(req, branches);
 			}
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId)) {
+				res = buiService.buildingCopyQuote(req, branches);
+
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -623,6 +659,11 @@ public class GridServiceImpl implements GridService {
 			else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				list = traService.searchTravelQuote(req, branches);
 		}
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId)) {
+				list = buiService.searchBuildingQuote(req, branches);
+
+			}
+
 			for (Tuple data : list) {
 				GetAllMotorDetailsRes res = new GetAllMotorDetailsRes();
 				dozermapper.map(data.get(0), res);
@@ -656,6 +697,10 @@ public class GridServiceImpl implements GridService {
 			else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				itemType = "COPY_QUOTE_BY_TRAVEL";
 				getList = traService.getTravelCoptyQuotetListItem( req,itemType);
+			}
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId)) {
+				 itemType = "COPY_QUOTE_BY_BUILDING";
+				 getList = buiService.geBuildingCoptyQuotetListItem(req, itemType);
 			}
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();

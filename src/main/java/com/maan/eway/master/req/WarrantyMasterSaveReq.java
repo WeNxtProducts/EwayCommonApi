@@ -22,6 +22,15 @@ public class WarrantyMasterSaveReq {
 	@JsonProperty("InsuranceId")
 	private String companyId;
 	
+	@JsonProperty("ProductId")
+	private String productId;
+	
+	@JsonProperty("SectionId")
+	private String sectionId;
+	
+	@JsonProperty("PolicyType")
+	private String policyType;
+	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
