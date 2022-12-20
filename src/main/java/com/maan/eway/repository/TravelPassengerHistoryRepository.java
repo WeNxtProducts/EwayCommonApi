@@ -21,6 +21,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.bean.TravelPassengerDetailsId;
+import com.maan.eway.bean.TravelPassengerHistory;
+import com.maan.eway.bean.TravelPassengerHistoryId;
 /**
  * <h2>TravelPassDetailsRepository</h2>
  *
@@ -31,14 +33,14 @@ import com.maan.eway.bean.TravelPassengerDetailsId;
  
  
  
-public interface TravelPassengerDetailsRepository  extends JpaRepository<TravelPassengerDetails,TravelPassengerDetailsId > , JpaSpecificationExecutor<TravelPassengerDetails> {
+public interface TravelPassengerHistoryRepository  extends JpaRepository<TravelPassengerHistory,TravelPassengerHistoryId > , JpaSpecificationExecutor<TravelPassengerHistory> {
 
 
 
 	Long countByQuoteNoAndPassengerId(String quoteNo, Integer vehicleId);
 
 	
-	TravelPassengerDetails findByQuoteNoAndPassengerId(String quoteNo, Integer vehicleId);
+	void findByQuoteNoAndPassengerId(String quoteNo, Integer vehicleId);
 
 	Long countByQuoteNo(String quoteNo);
 

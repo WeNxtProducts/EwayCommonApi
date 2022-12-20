@@ -32,6 +32,7 @@ import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.TravelPassengerDetails;
+import com.maan.eway.bean.TravelPassengerHistory;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.QuoteThreadReq;
 import com.maan.eway.common.req.VehicleIdsReq;
@@ -46,6 +47,7 @@ import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
+import com.maan.eway.repository.TravelPassengerHistoryRepository;
 
 
 public class QuoteThreadCall implements Callable<Object>  {
@@ -77,7 +79,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 	private EserviceTravelDetailsRepository eserTraRepo ;
 	private EserviceTravelGroupDetailsRepository eserGroupRepo ;
 	private TravelPassengerDetailsRepository traPassRepo  ;
-
+	private TravelPassengerHistoryRepository traPassHisRepo  ;
+	
 	// productId
 	private String motorProductId;
 	private String travelProductId;
@@ -86,7 +89,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 	public QuoteThreadCall(String type , QuoteThreadReq request , EntityManager em ,EserviceCustomerDetailsRepository eserCustRepo ,
 			EServiceMotorDetailsRepository eserMotRepo  ,FactorRateRequestDetailsRepository facRateRepo  ,PersonalInfoRepository perInfoRepo  , MotorDataDetailsRepository motorRepo , 
 			 CoverDetailsRepository coverRepo  , HomePositionMasterRepository homeRepo  ,EserviceTravelDetailsRepository eserTraRepo ,EserviceTravelGroupDetailsRepository eserGroupRepo ,
-			 TravelPassengerDetailsRepository    traPassRepo ,String motorProductId ,String travelProductId) {
+			 TravelPassengerDetailsRepository    traPassRepo ,TravelPassengerHistoryRepository traPassHisRepo  , String motorProductId ,String travelProductId) {
 		this.type = type;
 		this.request = request;
 		this.em=em;
@@ -102,7 +105,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		this.traPassRepo = traPassRepo ;
 		this.motorProductId = motorProductId ;
 		this.travelProductId = travelProductId ;
-		
+		this.traPassHisRepo = traPassHisRepo ;
 	} 
 	
 	@Override
@@ -292,9 +295,24 @@ public class QuoteThreadCall implements Callable<Object>  {
 			Long travelInfo =  traPassRepo.countByQuoteNoAndPassengerId(request.getQuoteNo() ,request.getVehicleId());
 			if (travelInfo > 0 /*&& request.getRowCount().equals(1) */) {
 				//Delete data
+				TravelPassengerDetails oldPassData = 	traPassRepo.findByQuoteNoAndPassengerId(request.getQuoteNo() ,request.getVehicleId());
 				traPassRepo.deleteByQuoteNoAndPassengerId(request.getQuoteNo(),request.getVehicleId());
 				
+				// Find History
+				Long travelHisInfo =  traPassHisRepo.countByQuoteNoAndPassengerId(request.getQuoteNo() ,request.getVehicleId());
+				if (travelHisInfo > 0 ) {
+					//Delete data
+					traPassHisRepo.deleteByQuoteNoAndPassengerId(request.getQuoteNo(),request.getVehicleId());
+					
+				}
+				// Save New 
+				TravelPassengerHistory traHistorySave = new TravelPassengerHistory(); 
+				dozerMapper.map(oldPassData, traHistorySave);
+				traHistorySave.setEntryDate(new Date());
+				traPassHisRepo.saveAndFlush(traHistorySave);
+				
 			}
+				
 			// Cover Calc
 			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,request.getGroupId());
 			List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
@@ -330,6 +348,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			// Update Eservice Travel
 			EserviceTravelDetails eserTravel = eserTraRepo.findByRequestReferenceNo(request.getRequestReferenceNo() );
 						
+			
+			
 			eserTravel.setActualPremiumFc(premiumFc);
 			eserTravel.setActualPremiumLc(premiumLc);
 			eserTravel.setOverallPremiumFc(overAllPremiumFc);

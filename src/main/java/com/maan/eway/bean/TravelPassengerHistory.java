@@ -56,7 +56,7 @@ import lombok.ToString;
 @Table(name="travel_passenger_details")
 
 
-public class TravelPassengerDetails implements Serializable {
+public class TravelPassengerHistory implements Serializable {
  
 private static final long serialVersionUID = 1L;
  
@@ -160,18 +160,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="CIVIL_ID", length=15)
     private String     civilId ;
 
-    @Column(name="BASE_PREMIUM")
-    private Double     basePremium ;
-
-    @Column(name="SPORTS_PREMIUM")
-    private Double     sportsPremium ;
-
-    @Column(name="TERRORISM_PREMIUM")
-    private Double     terrorismPremium ;
-
-    @Column(name="TOTAL_PREMIUM")
-    private Double     totalPremium ;
-
     @Column(name="LOGIN_ID", length=100)
     private String     loginId ;
 
@@ -191,12 +179,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="POBOX", length=100)
     private String     pobox ;
 
-    @Column(name="PROMO_PREMIUM")
-    private Double     promoPremium ;
-
-    @Column(name="COVID_PREMIUM")
-    private Double     covidPremium ;
-
+   
     @Column(name="TRAVEL_COVER_ID", nullable=false)
     private Integer    travelCoverId ;
 
@@ -327,18 +310,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="COMMISSION_TYPE_DESC", length=100)
     private String     commissionTypeDesc ;
 
-    @Column(name="ACTUAL_PREMIUM_LC")
-    private Double     actualPremiumLc ;
-
-    @Column(name="ACTUAL_PREMIUM_FC")
-    private Double     actualPremiumFc ;
-    
-    @Column(name="OVERALL_PREMIUM_LC")
-    private Double     overallPremiumLc ;
-
-    @Column(name="OVERALL_PREMIUM_FC")
-    private Double     overallPremiumFc ;
-    
+  
     @Column(name="VD_REFNO", length=20)
     private String     vdRefno ;
 

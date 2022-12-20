@@ -214,7 +214,7 @@ try {
 		// Response 
 		ProductGroupMasterDropDownRes res = new ProductGroupMasterDropDownRes();
 		res.setCode(data.getGroupId().toString());
-		res.setCodeDesc(data.getGroupDesc());
+		res.setCodeDesc(data.getBandDesc());
 		res.setStart(data.getGroupFrom().toString());
 		res.setEnd(data.getGroupTo().toString());
 		res.setStatus(data.getStatus());

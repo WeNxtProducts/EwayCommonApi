@@ -63,6 +63,7 @@ import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
+import com.maan.eway.repository.TravelPassengerHistoryRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
 import com.maan.eway.res.ReferalResponse;
 import com.maan.eway.thread.MyTaskList;
@@ -123,6 +124,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	@Autowired
 	private TravelPassengerDetailsRepository traPassRepo  ;
 	
+	@Autowired
+	private TravelPassengerHistoryRepository traPassHisRepo  ;
+	
 	
 	
 	@Override
@@ -165,7 +169,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             // Customer Save Thread Call
             request.setRowCount(1);
             QuoteThreadCall customerSave = new QuoteThreadCall("CustomerSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
-            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,motorProductId , travelProductId);
+            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,motorProductId , travelProductId);
             queue.add(customerSave);
             
             int threadCount = 1 ;
@@ -274,7 +278,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				MyTaskList taskList2 = new MyTaskList(queue2);
 				request.setVehicleId(req.getVehicleIdsList().get(0).getVehicleId());
 				QuoteThreadCall quoteSave = new QuoteThreadCall("QuoteSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo  
-	            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,motorProductId , travelProductId);
+	            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId);
 	            
 				queue2.add(quoteSave);
 				
@@ -492,10 +496,10 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		            	request2.setVehicleId(vehId);
 		            	request2.setRowCount(row);
 		            	QuoteThreadCall motorSave = new QuoteThreadCall("MotorSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo  
-		                		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,motorProductId , travelProductId);
+		                		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId);
 			            queue.add(motorSave);
 						QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
-			            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,motorProductId , travelProductId);
+			            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId);
 						queue.add(coverSave);	
 		            }
 					
@@ -525,10 +529,10 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		            	 request2.setGroupCount(filterGroup.get(0).getGrouppMembers());
 		            	 request2.setRowCount(row);
 		            	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
-		            			 , homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,motorProductId , travelProductId);
+		            			 , homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId);
 			             queue.add(travelSave);
 						 QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
-								 , homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,motorProductId , travelProductId);
+								 , homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId);
 						 queue.add(coverSave);
 					 }					 
 		         } 
