@@ -13,4 +13,13 @@ public class WarrantyMasterDropdownReq {
 	@JsonProperty("BranchCode")
 	private String branchCode;
 	
+	@JsonProperty("ProductId")
+	private String productId;
+	
+	@JsonProperty("SectionId")
+	private String sectionId;
+	
+	@JsonProperty("PolicyType")
+	private String policyType;
+	
 }
