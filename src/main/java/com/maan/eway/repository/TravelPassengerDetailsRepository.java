@@ -45,5 +45,8 @@ public interface TravelPassengerDetailsRepository  extends JpaRepository<TravelP
 	@Transactional
 	void deleteByQuoteNo(String quoteNo);
 
+	@Transactional
+	void deleteByQuoteNoAndPassengerId(String quoteNo, Integer vehicleId);
+
 
 }

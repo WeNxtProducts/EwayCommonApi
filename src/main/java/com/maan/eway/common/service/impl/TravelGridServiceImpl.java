@@ -14,6 +14,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
+import com.maan.eway.bean.LoginProductMaster;
+import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
@@ -51,9 +54,17 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			// Find All
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
-
+			
+			
+			// Total Count Filter
+			Subquery<Long> totalCount = query.subquery(Long.class);
+			Root<TravelPassengerDetails> t = totalCount.from(TravelPassengerDetails.class);
+			totalCount.select(cb.count(t.get("quoteNo")));
+			Predicate a1 = cb.equal(t.get("quoteNo"),m.get("quoteNo") );
+			totalCount.where(a1);
+			
 			// Select
-			query.multiselect( cb.count(m).alias("idsCount"),
+			query.multiselect(  totalCount.alias("idsCount"),
 					// Customer Info
 				    c.get("customerReferenceNo").alias("customerReferenceNo"),
 				    c.get("idNumber").alias("idNumber"),
@@ -97,12 +108,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				Expression<String>e0=m.get("branchCode");
 				n8 = e0.in(branches ) ;
 			}
-			
 			query.where(n1,n2,n3,n4,n5,n6,n7,n8)
-			.groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
-					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
-					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate")
-					)
 			.orderBy(orderList) ;
 			
 			// Get Result
@@ -131,8 +137,15 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			
+			// Total Count Filter
+			Subquery<Long> totalCount = query.subquery(Long.class);
+			Root<TravelPassengerDetails> t = totalCount.from(TravelPassengerDetails.class);
+			totalCount.select(cb.count(t.get("quoteNo")));
+			Predicate a1 = cb.equal(t.get("quoteNo"),m.get("quoteNo") );
+			totalCount.where(a1);
+					
 			// Select
-			query.multiselect( cb.count(m).alias("idsCount"),
+			query.multiselect(  totalCount.alias("idsCount"),
 					// Customer Info
 				    c.get("customerReferenceNo").alias("customerReferenceNo"),
 				    c.get("idNumber").alias("idNumber"),
@@ -175,10 +188,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				n7 = e0.in(branches ) ;
 			}
 			
-			query.where(n1,n2,n3,n4,n5,n6,n7).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
-					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
-					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate")
-					).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n5,n6,n7).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);
@@ -205,8 +215,15 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			
+			// Total Count Filter
+			Subquery<Long> totalCount = query.subquery(Long.class);
+			Root<TravelPassengerDetails> t = totalCount.from(TravelPassengerDetails.class);
+			totalCount.select(cb.count(t.get("quoteNo")));
+			Predicate a1 = cb.equal(t.get("quoteNo"),m.get("quoteNo") );
+			totalCount.where(a1);
+					
 			// Select
-			query.multiselect( cb.count(m).alias("idsCount"),
+			query.multiselect(  totalCount.alias("idsCount"),
 					// Customer Info
 				    c.get("customerReferenceNo").alias("customerReferenceNo"),
 				    c.get("idNumber").alias("idNumber"),
@@ -248,10 +265,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				n6 = e0.in(branches ) ;
 			}
 			
-			query.where(n1,n2,n3,n4,n5,n6).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
-					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
-					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate") , m.get("rejectReason")
-					).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<RejectCriteriaRes> result = em.createQuery(query);
@@ -278,8 +292,15 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			
+			// Total Count Filter
+			Subquery<Long> totalCount = query.subquery(Long.class);
+			Root<TravelPassengerDetails> t = totalCount.from(TravelPassengerDetails.class);
+			totalCount.select(cb.count(t.get("quoteNo")));
+			Predicate a1 = cb.equal(t.get("quoteNo"),m.get("quoteNo") );
+			totalCount.where(a1);
+					
 			// Select
-			query.multiselect( cb.count(m).alias("idsCount"),
+			query.multiselect(  totalCount.alias("idsCount"),
 					// Customer Info
 				    c.get("customerReferenceNo").alias("customerReferenceNo"),
 				    c.get("idNumber").alias("idNumber"),
@@ -321,10 +342,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				n6 = e0.in(branches ) ;
 			}
 			
-			query.where(n1,n2,n3,n4,n5,n6).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
-					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
-					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate")
-					).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);
@@ -351,8 +369,15 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			
+			// Total Count Filter
+			Subquery<Long> totalCount = query.subquery(Long.class);
+			Root<TravelPassengerDetails> t = totalCount.from(TravelPassengerDetails.class);
+			totalCount.select(cb.count(t.get("quoteNo")));
+			Predicate a1 = cb.equal(t.get("quoteNo"),m.get("quoteNo") );
+			totalCount.where(a1);
+					
 			// Select
-			query.multiselect( cb.count(m).alias("idsCount"),
+			query.multiselect(  totalCount.alias("idsCount"),
 					// Customer Info
 				    c.get("customerReferenceNo").alias("customerReferenceNo"),
 				    c.get("idNumber").alias("idNumber"),
@@ -394,10 +419,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				n6 = e0.in(branches ) ;
 			}
 			
-			query.where(n1,n2,n3,n4,n5,n6).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
-					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
-					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate")
-					).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);
@@ -424,8 +446,15 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			
+			// Total Count Filter
+			Subquery<Long> totalCount = query.subquery(Long.class);
+			Root<TravelPassengerDetails> t = totalCount.from(TravelPassengerDetails.class);
+			totalCount.select(cb.count(t.get("quoteNo")));
+			Predicate a1 = cb.equal(t.get("quoteNo"),m.get("quoteNo") );
+			totalCount.where(a1);
+					
 			// Select
-			query.multiselect( cb.count(m).alias("idsCount"),
+			query.multiselect(  totalCount.alias("idsCount"),
 					// Customer Info
 				    c.get("customerReferenceNo").alias("customerReferenceNo"),
 				    c.get("idNumber").alias("idNumber"),
@@ -467,10 +496,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				n6 = e0.in(branches ) ;
 			}
 			
-			query.where(n1,n2,n3,n4,n5,n6).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
-					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
-					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate"), m.get("rejectReason")
-					).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<RejectCriteriaRes> result = em.createQuery(query);
@@ -497,8 +523,15 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			
+			// Total Count Filter
+			Subquery<Long> totalCount = query.subquery(Long.class);
+			Root<TravelPassengerDetails> t = totalCount.from(TravelPassengerDetails.class);
+			totalCount.select(cb.count(t.get("quoteNo")));
+			Predicate a1 = cb.equal(t.get("quoteNo"),m.get("quoteNo") );
+			totalCount.where(a1);
+					
 			// Select
-			query.multiselect( cb.count(m).alias("idsCount"),
+			query.multiselect(  totalCount.alias("idsCount"),
 					// Customer Info
 				    c.get("customerReferenceNo").alias("customerReferenceNo"),
 				    c.get("idNumber").alias("idNumber"),
@@ -528,10 +561,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Expression<String>e0=c.get("branchCode");
 			Predicate n6 = e0.in(branches ) ;
 			
-			query.where(n1,n2,n3,n4,n6).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
-					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
-					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate")
-					).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n6).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);
@@ -559,8 +589,15 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			
+			// Total Count Filter
+			Subquery<Long> totalCount = query.subquery(Long.class);
+			Root<TravelPassengerDetails> t = totalCount.from(TravelPassengerDetails.class);
+			totalCount.select(cb.count(t.get("quoteNo")));
+			Predicate a1 = cb.equal(t.get("quoteNo"),m.get("quoteNo") );
+			totalCount.where(a1);
+					
 			// Select
-			query.multiselect( cb.count(m).alias("idsCount"),
+			query.multiselect(  totalCount.alias("idsCount"),
 					// Customer Info
 				    c.get("customerReferenceNo").alias("customerReferenceNo"),
 				    c.get("idNumber").alias("idNumber"),
@@ -590,10 +627,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Expression<String>e0=c.get("branchCode");
 			Predicate n6 = e0.in(branches ) ;
 			
-			query.where(n1,n2,n3,n4,n6).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
-					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
-					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate")
-					).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n6).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);
@@ -621,8 +655,15 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			
+			// Total Count Filter
+			Subquery<Long> totalCount = query.subquery(Long.class);
+			Root<TravelPassengerDetails> t = totalCount.from(TravelPassengerDetails.class);
+			totalCount.select(cb.count(t.get("quoteNo")));
+			Predicate a1 = cb.equal(t.get("quoteNo"),m.get("quoteNo") );
+			totalCount.where(a1);
+					
 			// Select
-			query.multiselect( cb.count(m).alias("idsCount"),
+			query.multiselect(  totalCount.alias("idsCount"),
 					// Customer Info
 				    c.get("customerReferenceNo").alias("customerReferenceNo"),
 				    c.get("idNumber").alias("idNumber"),
@@ -652,10 +693,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Expression<String>e0=c.get("branchCode");
 			Predicate n6 = e0.in(branches ) ;
 			
-			query.where(n1,n2,n3,n4,n6).groupBy( c.get("customerReferenceNo"), c.get("idNumber"),	c.get("clientName"),
-					m.get("companyId"),m.get("productId"),	m.get("branchCode"),  m.get("requestReferenceNo"), 
-					m.get("quoteNo"), m.get("customerId"),m.get("travelStartDate"),	m.get("travelEndDate") , m.get("rejectReason")
-					).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n6).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<RejectCriteriaRes> result = em.createQuery(query);

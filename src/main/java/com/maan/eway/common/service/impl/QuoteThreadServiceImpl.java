@@ -143,12 +143,12 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			}	
 		}
 		
-		// Referal Returnin Block
+		// Referal Returning Block
 		if( referal == true || (commonRes.getIsError()!=null && commonRes.getIsError()==true) ) {
 			return  commonRes ;
 	
 		} else {
-			
+			// Thread Call Setup
 			List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
 			
 			MyTaskList taskList = new MyTaskList(queue);
@@ -171,6 +171,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             int threadCount = 1 ;
             int success = 0;
             
+         // Product Wise Thread Call
             commonRes = productWiseThreadCall( req , request ) ;
         	 if( frameQuoteReq.getErrorMessage() !=null && frameQuoteReq.getErrorMessage().size()>0 ) {
              	commonRes = frameQuoteReq ;
@@ -498,6 +499,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						queue.add(coverSave);	
 		            }
 					
+			// Multiple Travel Thread Call	 
 			}else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 	        	
 	        	List<EserviceTravelGroupDetails> groupData = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(request.getRequestReferenceNo() );
@@ -507,7 +509,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	        	 for (Integer vehId :  vehicleIds ) {
 					 List<EserviceTravelGroupDetails> filterGroup = groupData.stream().filter( o -> o.getGroupId().equals(vehId) ).collect(Collectors.toList());				 
 						int row = 0 ;
-					 for (int i=0 ; i <= filterGroup.get(0).getGrouppMembers() ; i++) {
+					 for (int i=0 ; i < filterGroup.get(0).getGrouppMembers() ; i++) {
 						 passCount = passCount + 1 ;
 						 threadCount = threadCount +  2 ;
 						 row = row + 1 ;

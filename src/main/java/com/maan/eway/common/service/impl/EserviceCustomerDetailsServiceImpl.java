@@ -132,6 +132,28 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				if (StringUtils.isBlank(req.getNationality())) {
 					errorList.add(new Error("12", "Nationality", "Please select Natinality"));
 				}
+				
+//				if (StringUtils.isBlank(req.getPreferredNotification())) {
+//					errorList.add(new Error("12", "PreferredNotification", "Please select Preferred Notification"));
+//				}
+				
+				Calendar cal = new GregorianCalendar();
+//				Date today2 = new Date();
+//				cal.setTime(today2);
+//				cal.set(Calendar.HOUR_OF_DAY, 1);
+//				cal.set(Calendar.MINUTE, 1);
+//				today2 =  cal.getTime()	;
+//				if (req.getAppointmentDate() == null ) {
+//					errorList.add(new Error("12", "AppointmentDate", "Please select AppointmentDate"));
+//				} else {
+//					cal.setTime(req.getAppointmentDate());
+//					cal.set(Calendar.HOUR_OF_DAY, 5);
+//					cal.set(Calendar.MINUTE, 5);
+//					Date appDate =  cal.getTime()	;
+//					if (appDate.before(today2) ) {
+//						errorList.add(new Error("12", "AppointmentDate", "Please Enter AppointmentDate As FuturDate"));
+//					} 
+//				}
 				/*
 				 * if (StringUtils.isBlank(req.getPlaceOfBirth())) { errorList.add(new
 				 * Error("13", "PlaceOfBirth", "Please Enter PlaceOfBirth ")); } else if
@@ -301,7 +323,6 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				}
 
 				// Date Validation
-				Calendar cal = new GregorianCalendar();
 				Date today = new Date();
 				cal.setTime(today);
 				cal.add(Calendar.DAY_OF_MONTH, -1);
@@ -409,7 +430,13 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 						&& (StringUtils.isNotBlank(req.getTelephoneNo1()))
 						&& (StringUtils.isNotBlank(req.getTelephoneNo2()))
 						&& (StringUtils.isNotBlank(req.getTelephoneNo3())) && (StringUtils.isNotBlank(req.getTitle()))
-						&& (StringUtils.isNotBlank(req.getDobOrRegDate().toString()))) {
+						&& (req.getDobOrRegDate()!=null)
+						&& (StringUtils.isNotBlank(req.getIsTaxExempted()))
+						&& (StringUtils.isNotBlank(req.getTaxExemptedId()))
+						&& (StringUtils.isNotBlank(req.getPreferredNotification()))
+						&& (req.getAppointmentDate()!=null)
+						
+						){
 
 					CriteriaBuilder cb = em.getCriteriaBuilder();
 					CriteriaQuery<EserviceCustomerDetails> query = cb.createQuery(EserviceCustomerDetails.class);
@@ -462,11 +489,13 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					Predicate n38 = (cb.equal(b.get("telephoneNo2"), req.getTelephoneNo2()));
 					Predicate n39 = (cb.equal(b.get("telephoneNo3"), req.getTelephoneNo3()));
 					Predicate n40 = (cb.like(cb.lower(b.get("title")), req.getTitle().toLowerCase()));
+					Predicate n41 = (cb.equal(b.get("appointmentDate"), req.getAppointmentDate()));
+					Predicate n42 = (cb.like(cb.lower(b.get("preferredNotification")), req.getPreferredNotification().toLowerCase()));
 
 					query.where(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10,
 							// n11,
 							n12, n13, n14, n15, n16, n17, n18, n19, n20, n21, n22, n23, n24, n25, n26, n27, n28, n29,
-							n30, n31, n32, n33, n34, n35, n36, n37, n38, n39, n40);
+							n30, n31, n32, n33, n34, n35, n36, n37, n38, n39, n40,n41,n42);
 					// Get Result
 					TypedQuery<EserviceCustomerDetails> result = em.createQuery(query);
 					list = result.getResultList();

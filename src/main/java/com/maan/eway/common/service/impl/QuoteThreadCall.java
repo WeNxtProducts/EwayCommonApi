@@ -289,10 +289,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 		 DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			//  // Delete Old Record
-			Long travelInfo =  traPassRepo.countByQuoteNo(request.getQuoteNo() );
-			if (travelInfo > 0 && request.getRowCount().equals(1) ) {
+			Long travelInfo =  traPassRepo.countByQuoteNoAndPassengerId(request.getQuoteNo() ,request.getVehicleId());
+			if (travelInfo > 0 /*&& request.getRowCount().equals(1) */) {
 				//Delete data
-				traPassRepo.deleteByQuoteNo(request.getQuoteNo() );
+				traPassRepo.deleteByQuoteNoAndPassengerId(request.getQuoteNo(),request.getVehicleId());
 				
 			}
 			// Cover Calc
@@ -396,10 +396,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		try {
 			 //  // Delete Old Record
-			Long coverInfo =  coverRepo.countByQuoteNo(request.getQuoteNo());
+			Long coverInfo =  coverRepo.countByQuoteNoAndVehicleId(request.getQuoteNo(),request.getVehicleId() );
  			if (coverInfo >0 &&  request.getRowCount().equals(1) ) {
  				//Delete data
- 				coverRepo.deleteByQuoteNo(request.getQuoteNo());
+ 				coverRepo.deleteByQuoteNoAndVehicleId(request.getQuoteNo(),request.getVehicleId() );
  				
  			}
 						

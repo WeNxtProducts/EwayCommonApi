@@ -36,9 +36,12 @@ public interface CoverDetailsRepository  extends JpaRepository<PolicyCoverData,P
 	List<PolicyCoverData> findByQuoteNoOrderByVehicleIdAsc(String quoteNo);
 
 	Long countByQuoteNo(String quoteNo);
+	Long countByQuoteNoAndVehicleId(String quoteNo, Integer vehicleId);
 
 	@Transactional
 	void deleteByQuoteNo(String quoteNo);
+	@Transactional
+	void deleteByQuoteNoAndVehicleId(String quoteNo, Integer vehicleId);
 
 
 	void findByQuoteNoAndVehicleId(String quoteNo, Integer vehicleId);
