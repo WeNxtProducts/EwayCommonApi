@@ -292,24 +292,28 @@ public class QuoteThreadCall implements Callable<Object>  {
 		 DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			//  // Delete Old Record
-			Long travelInfo =  traPassRepo.countByQuoteNoAndPassengerId(request.getQuoteNo() ,request.getVehicleId());
-			if (travelInfo > 0 /*&& request.getRowCount().equals(1) */) {
+			Long travelInfo =  traPassRepo.countByQuoteNo(request.getQuoteNo());
+			if (travelInfo > 0 && request.getRowCount().equals(1) ) {
 				//Delete data
-				TravelPassengerDetails oldPassData = 	traPassRepo.findByQuoteNoAndPassengerId(request.getQuoteNo() ,request.getVehicleId());
-				traPassRepo.deleteByQuoteNoAndPassengerId(request.getQuoteNo(),request.getVehicleId());
+				List<TravelPassengerDetails> oldPassDatas = 	traPassRepo.findByQuoteNo(request.getQuoteNo());
+				traPassRepo.deleteByQuoteNo(request.getQuoteNo());
 				
 				// Find History
-				Long travelHisInfo =  traPassHisRepo.countByQuoteNoAndPassengerId(request.getQuoteNo() ,request.getVehicleId());
-				if (travelHisInfo > 0 ) {
-					//Delete data
-					traPassHisRepo.deleteByQuoteNoAndPassengerId(request.getQuoteNo(),request.getVehicleId());
-					
+				for (TravelPassengerDetails passData :  oldPassDatas) {
+					Long travelHisInfo =  traPassHisRepo.countByQuoteNoAndPassengerId(request.getQuoteNo() ,passData.getPassengerId());
+					if (travelHisInfo > 0 ) {
+						//Delete data
+						traPassHisRepo.deleteByQuoteNoAndPassengerId(request.getQuoteNo(),request.getVehicleId());
+						
+					}
+					// Save New 
+					TravelPassengerHistory traHistorySave = new TravelPassengerHistory(); 
+					dozerMapper.map(passData, traHistorySave);
+					traHistorySave.setEntryDate(new Date());
+					traPassHisRepo.saveAndFlush(traHistorySave);
 				}
-				// Save New 
-				TravelPassengerHistory traHistorySave = new TravelPassengerHistory(); 
-				dozerMapper.map(oldPassData, traHistorySave);
-				traHistorySave.setEntryDate(new Date());
-				traPassHisRepo.saveAndFlush(traHistorySave);
+				
+				
 				
 			}
 				
@@ -416,10 +420,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		try {
 			 //  // Delete Old Record
-			Long coverInfo =  coverRepo.countByQuoteNoAndVehicleId(request.getQuoteNo(),request.getVehicleId() );
+			Long coverInfo =  coverRepo.countByQuoteNo(request.getQuoteNo());
  			if (coverInfo >0 &&  request.getRowCount().equals(1) ) {
  				//Delete data
- 				coverRepo.deleteByQuoteNoAndVehicleId(request.getQuoteNo(),request.getVehicleId() );
+ 				coverRepo.deleteByQuoteNo(request.getQuoteNo() );
  				
  			}
 						
