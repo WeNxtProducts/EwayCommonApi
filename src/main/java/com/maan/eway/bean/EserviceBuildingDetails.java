@@ -64,11 +64,11 @@ private static final long serialVersionUID = 1L;
     private String     customerReferenceNo ;
 
     //--- ENTITY DATA FIELDS 
-    @Column(name="PRODUCT_ID")
-    private Integer    productId ;
+    @Column(name="PRODUCT_ID", length=20)
+    private String  productId ;
 
-    @Column(name="SECTION_ID")
-    private Integer    sectionId ;
+    @Column(name="SECTION_ID", length=20)
+    private String   sectionId ;
 
     @Column(name="COMPANY_ID", length=20)
     private String     companyId ;
@@ -216,6 +216,36 @@ private static final long serialVersionUID = 1L;
     @Column(name="COMPANY_NAME", length=100)
     private String companyName;
 
+    @Column(name="OLD_REQ_REF_NO", length=100)
+    private String     oldReqRefNo ;
+    
+    
+    @Column(name="ACTUAL_PREMIUM_FC")
+    private Double     actualPremiumFc ;
+
+    
+    @Column(name="ACTUAL_PREMIUM_LC")
+    private Double     actualPremiumLc ;
+
+    @Column(name="OVERALL_PREMIUM_LC")
+    private Double     overallPremiumLc ;
+
+    @Column(name="OVERALL_PREMIUM_FC")
+    private Double     overallPremiumFc ;
+
+
+    @Column(name="BROKER_BRANCH_CODE", length=20)
+    private String     brokerBranchCode ;
+
+    @Column(name="BROKER_BRANCH_NAME", length=100)
+    private String     brokerBranchName ;
+
+    
+    @Column(name="COMMISSION_TYPE", length=20)
+    private String     commissionType ;
+    
+    @Column(name="COMMISSION_TYPE_DESC", length=100)
+    private String     commissionTypeDesc ;
 
 }
 
