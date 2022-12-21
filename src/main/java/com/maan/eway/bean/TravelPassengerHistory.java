@@ -52,8 +52,8 @@ import lombok.ToString;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@IdClass(TravelPassengerDetailsId.class)
-@Table(name="travel_passenger_details")
+@IdClass(TravelPassengerHistoryId.class)
+@Table(name="travel_passenger_history")
 
 
 public class TravelPassengerHistory implements Serializable {

@@ -36,10 +36,7 @@ public class QuoteThreadReq {
 
 	@JsonProperty("GroupCount")
 	private Integer groupCount;
-	
-	@JsonProperty("RowCount")
-	private Integer rowCount;
-	
+
 	@JsonProperty("Vehicles")
 	private List<VehicleIdsReq> VehicleIdsList;
 
