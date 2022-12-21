@@ -197,7 +197,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		 DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			
+			Long motorInfo =  motorRepo.countByQuoteNoAndVehicleId(request.getQuoteNo(), request.getVehicleId());
+			if (motorInfo > 0  ) {
+				motorRepo.deleteByQuoteNoAndVehicleId(request.getQuoteNo(), request.getVehicleId());
+			}
 			// Cover Calc
 			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,request.getVehicleId());
 			List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
