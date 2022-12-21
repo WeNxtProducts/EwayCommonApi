@@ -94,7 +94,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					errorList.add(new Error("01", "ClientName", "Please Enter ClientName "));
 				} else if (req.getClientName().length() > 100) {
 					errorList.add(new Error("01", "ClientName", "Please Enter ClientName within 100 Characters"));
+				} 
+				else if (StringUtils.isNotBlank(req.getClientName())&& req.getClientName().matches("^[a-zA-Z]*$")) {
+					errorList.add(new Error("01", "ClientName", "Please Enter Proper ClientName"));						
 				}
+				
+				
 				if (StringUtils.isBlank(req.getAddress1())) {
 					errorList.add(new Error("02", "Address1", "Please Enter Address1 "));
 				} else if (req.getAddress1().length() > 100) {
@@ -180,6 +185,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				}
 				if (StringUtils.isNotBlank(req.getFax()) && req.getFax().length() > 20) {
 					errorList.add(new Error("20", "Fax", "Please Enter Fax within 20 Characters"));
+				}
+				if (StringUtils.isBlank(req.getTelephoneNo1())) {
+					errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo1"));
 				}
 				if (StringUtils.isNotBlank(req.getTelephoneNo1()) && req.getTelephoneNo1().length() > 20) {
 					errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo1 within 20 Characters"));
@@ -401,6 +409,16 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					errorList.add(new Error("43", "CityName", "Please Enter CityName within 100 Characters"));
 				}
 
+				if (StringUtils.isBlank(req.getStreet())) {
+					errorList.add(new Error("44", "Street", "Please Enter Street "));
+				} else if (req.getStreet().length() > 100) {
+					errorList.add(new Error("44", "Street", "Please Enter Street within 100 Characters"));
+				}
+				
+				if (StringUtils.isBlank(req.getStateCode())) {
+					errorList.add(new Error("45", "StateCode", "Please Enter StateCode "));
+				}
+				
 				List<EserviceCustomerDetails> list = new ArrayList<EserviceCustomerDetails>();
 				if ((StringUtils.isNotBlank(req.getAddress1())) && (StringUtils.isNotBlank(req.getAddress2()))
 						&& (StringUtils.isNotBlank(req.getBranchCode()))
