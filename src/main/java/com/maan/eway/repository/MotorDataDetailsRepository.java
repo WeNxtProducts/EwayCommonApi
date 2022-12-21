@@ -41,6 +41,10 @@ public interface MotorDataDetailsRepository  extends JpaRepository<MotorDataDeta
 	@Transactional
 	void deleteByQuoteNo(String quoteNo);
 
-	void findByQuoteNoAndVehicleId(String quoteNo, Integer vehicleId);
+	void findByQuoteNoAndVehicleId(String quoteNo, String vehicleId);
+
+	Long countByQuoteNoAndVehicleId(String quoteNo, String vehicleId);
+
+	void deleteByQuoteNoAndVehicleId(String quoteNo, String vehicleId);
 
 }

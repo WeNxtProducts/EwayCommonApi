@@ -3,12 +3,14 @@ package com.maan.eway.common.service;
 import java.util.List;
 
 import com.maan.eway.common.req.AdminReferalStatusReq;
+import com.maan.eway.common.req.DeleteOldQuoteReq;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.QuoteUpdateRes;
+import com.maan.eway.res.SuccessRes;
 
 
 public interface QuoteService {
@@ -20,5 +22,7 @@ public interface QuoteService {
 	List<Error> validateReferralStatus(AdminReferalStatusReq req);
 
 	QuoteUpdateRes updateReferralStatus(AdminReferalStatusReq req);
+
+	SuccessRes deleteOldQuoteRecord(DeleteOldQuoteReq req);
 
 }

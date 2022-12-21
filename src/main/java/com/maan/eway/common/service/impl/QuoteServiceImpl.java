@@ -23,9 +23,12 @@ import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.PolicyCoverData;
+import com.maan.eway.bean.TravelPassengerDetails;
+import com.maan.eway.bean.TravelPassengerHistory;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.common.req.AdminReferalStatusReq;
 import com.maan.eway.common.req.CoverIdsReq;
+import com.maan.eway.common.req.DeleteOldQuoteReq;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.VehicleIdsReq;
 import com.maan.eway.common.req.ViewQuoteReq;
@@ -47,7 +50,10 @@ import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
+import com.maan.eway.repository.TravelPassengerDetailsRepository;
+import com.maan.eway.repository.TravelPassengerHistoryRepository;
 import com.maan.eway.res.QuoteUpdateRes;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.res.calc.Cover;
 import com.maan.eway.res.calc.Discount;
 import com.maan.eway.res.calc.Loading;
@@ -89,6 +95,13 @@ public class QuoteServiceImpl implements QuoteService {
 	
 	@Autowired
 	private EserviceTravelGroupDetailsRepository eserGroupRepo;
+	
+	@Autowired
+	private TravelPassengerDetailsRepository traPassRepo  ;
+	
+	@Autowired
+	private TravelPassengerHistoryRepository traPassHisRepo  ;
+	
 	
 	private Logger log = LogManager.getLogger(QuoteServiceImpl.class);
 	
@@ -597,6 +610,63 @@ public class QuoteServiceImpl implements QuoteService {
 			return null;
 		}
 		return updateRes;
+	}
+
+	@Override
+	public SuccessRes deleteOldQuoteRecord(DeleteOldQuoteReq req) {
+		SuccessRes res = new SuccessRes();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			if( req.getProductId().equalsIgnoreCase(motorProductId) ) {
+				
+				Long motorInfo =  motorRepo.countByQuoteNo(req.getQuoteNo());
+				if (motorInfo > 0  ) {
+					motorRepo.deleteByQuoteNo(req.getQuoteNo());
+				}
+				
+			} else if( req.getProductId().equalsIgnoreCase(travelProductId) ) {
+			//  // Delete Old Record
+				Long travelInfo =  traPassRepo.countByQuoteNo(req.getQuoteNo());
+				if (travelInfo > 0  ) {
+					//Delete data
+					List<TravelPassengerDetails> oldPassDatas = 	traPassRepo.findByQuoteNo(req.getQuoteNo());
+					traPassRepo.deleteByQuoteNo(req.getQuoteNo());
+					
+					// Find History
+					for (TravelPassengerDetails passData :  oldPassDatas) {
+						Long travelHisInfo =  traPassHisRepo.countByQuoteNoAndPassengerId(req.getQuoteNo() ,passData.getPassengerId());
+						if (travelHisInfo > 0 ) {
+							//Delete data
+							traPassHisRepo.deleteByQuoteNoAndPassengerId(req.getQuoteNo(),passData.getPassengerId());
+							
+						}
+						// Save New 
+						TravelPassengerHistory traHistorySave = new TravelPassengerHistory(); 
+						dozerMapper.map(passData, traHistorySave);
+						traHistorySave.setEntryDate(new Date());
+						traPassHisRepo.saveAndFlush(traHistorySave);
+					}
+				}	
+			}
+			
+			// Remove Covers
+			 
+			Long coverInfo =  coverRepo.countByQuoteNo(req.getQuoteNo());
+ 			if (coverInfo >0 ) {
+ 				//Delete data
+ 				coverRepo.deleteByQuoteNo(req.getQuoteNo() );
+ 				
+ 			}
+ 			
+			res.setResponse("Old Record Removed ");
+			res.setSuccessId(req.getQuoteNo());
+			
+		} catch ( Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
 	}
 	
 }

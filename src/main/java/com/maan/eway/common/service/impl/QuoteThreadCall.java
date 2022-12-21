@@ -150,10 +150,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			Long findInfo =  perInfoRepo.countByCustomerId(request.getCustomerId());
-			if (findInfo > 0 && request.getRowCount().equals(1) ) {
-				perInfoRepo.deleteByCustomerId(request.getCustomerId());
-
+	
+			if(findInfo > 0 ) {
+				perInfoRepo.deleteByCustomerId(request.getCustomerId());	
 			}
+			
+
 			// FindData 
 			String customerRefNo = "" ;
 			if(request.getProductId().equalsIgnoreCase(motorProductId) ) {
@@ -195,15 +197,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		 DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			 // Delete Old Record
-			// // Delete Old Record
-			Long motorInfo =  motorRepo.countByQuoteNo(request.getQuoteNo());
-			if (motorInfo > 0 && request.getRowCount().equals(1) ) {
-				//Delete data
-				motorRepo.deleteByQuoteNo(request.getQuoteNo());
-				
+			Long motorInfo =  motorRepo.countByQuoteNoAndVehicleId(request.getQuoteNo(),String.valueOf(request.getVehicleId()));
+			if (motorInfo > 0  ) {
+				motorRepo.deleteByQuoteNoAndVehicleId(request.getQuoteNo(), String.valueOf(request.getVehicleId()));
 			}
-			
 			// Cover Calc
 			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,request.getVehicleId());
 			List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
@@ -291,31 +288,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		 DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			//  // Delete Old Record
-			Long travelInfo =  traPassRepo.countByQuoteNo(request.getQuoteNo());
-			if (travelInfo > 0 && request.getRowCount().equals(1) ) {
-				//Delete data
-				List<TravelPassengerDetails> oldPassDatas = 	traPassRepo.findByQuoteNo(request.getQuoteNo());
-				traPassRepo.deleteByQuoteNo(request.getQuoteNo());
-				
-				// Find History
-				for (TravelPassengerDetails passData :  oldPassDatas) {
-					Long travelHisInfo =  traPassHisRepo.countByQuoteNoAndPassengerId(request.getQuoteNo() ,passData.getPassengerId());
-					if (travelHisInfo > 0 ) {
-						//Delete data
-						traPassHisRepo.deleteByQuoteNoAndPassengerId(request.getQuoteNo(),request.getVehicleId());
-						
-					}
-					// Save New 
-					TravelPassengerHistory traHistorySave = new TravelPassengerHistory(); 
-					dozerMapper.map(passData, traHistorySave);
-					traHistorySave.setEntryDate(new Date());
-					traPassHisRepo.saveAndFlush(traHistorySave);
-				}
-				
-				
-				
-			}
+			
 				
 			// Cover Calc
 			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,request.getGroupId());
@@ -419,16 +392,13 @@ public class QuoteThreadCall implements Callable<Object>  {
 	private synchronized  Map<String,Object>  call_CoverSave(QuoteThreadReq  request) {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		try {
-			 //  // Delete Old Record
-			Long coverInfo =  coverRepo.countByQuoteNo(request.getQuoteNo());
- 			if (coverInfo >0 &&  request.getRowCount().equals(1) ) {
+			// Find Motor
+			Long coverInfo =  coverRepo.countByQuoteNoAndVehicleId(request.getQuoteNo(), request.getVehicleId());
+		if (coverInfo >0 ) {
  				//Delete data
- 				coverRepo.deleteByQuoteNo(request.getQuoteNo() );
+ 				coverRepo.deleteByQuoteNoAndVehicleId(request.getQuoteNo(), request.getVehicleId());
  				
  			}
-						
-			// Find Motor
-			
 			if( request.getProductId().equalsIgnoreCase(motorProductId)) {
 				List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,request.getVehicleId());
 				

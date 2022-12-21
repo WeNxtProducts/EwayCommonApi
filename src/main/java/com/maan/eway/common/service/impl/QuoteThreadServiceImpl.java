@@ -167,7 +167,6 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             QuoteThreadReq request = (QuoteThreadReq) frameQuoteReq.getCommonResponse() ;
            
             // Customer Save Thread Call
-            request.setRowCount(1);
             QuoteThreadCall customerSave = new QuoteThreadCall("CustomerSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
             		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,motorProductId , travelProductId);
             queue.add(customerSave);
@@ -482,10 +481,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			// Multiple Vehicle Thread Call
 			List<Integer> vehicleIds = req.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
 	        if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
-	        	int row = 0 ;
 				 for (Integer vehId :  vehicleIds ) {
 		            	threadCount = threadCount +  2 ;
-		            	row = row + 1 ;
+		            	
 		            	QuoteThreadReq request2 = new QuoteThreadReq();
 		            	request2.setCustomerId(request.getCustomerId());
 		            	request2.setProductId(request.getProductId());
@@ -494,7 +492,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		            	request2.setVehicleIdsList(request.getVehicleIdsList());
 		            	request2.setCreatedBy(request.getCreatedBy());
 		            	request2.setVehicleId(vehId);
-		            	request2.setRowCount(row);
+		            	
 		            	QuoteThreadCall motorSave = new QuoteThreadCall("MotorSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo  
 		                		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId);
 			            queue.add(motorSave);
@@ -512,11 +510,11 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	        	// Filte Count
 	        	 for (Integer vehId :  vehicleIds ) {
 					 List<EserviceTravelGroupDetails> filterGroup = groupData.stream().filter( o -> o.getGroupId().equals(vehId) ).collect(Collectors.toList());				 
-						int row = 0 ;
+						
 					 for (int i=0 ; i < filterGroup.get(0).getGrouppMembers() ; i++) {
 						 passCount = passCount + 1 ;
 						 threadCount = threadCount +  2 ;
-						 row = row + 1 ;
+						
 		            	 QuoteThreadReq request2 = new QuoteThreadReq();
 		            	 request2.setVehicleId(passCount);
 		            	 request2.setCustomerId(request.getCustomerId());
@@ -527,7 +525,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		            	 request2.setCreatedBy(request.getCreatedBy());
 		            	 request2.setGroupId(filterGroup.get(0).getGroupId());
 		            	 request2.setGroupCount(filterGroup.get(0).getGrouppMembers());
-		            	 request2.setRowCount(row);
+		            	
 		            	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
 		            			 , homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId);
 			             queue.add(travelSave);
