@@ -640,7 +640,7 @@ public List<CuurencyDropDownRes> getCurrencyMasterDropdown( CurrencyDropDownReq 
 		for(Tuple data : list ) {
 			// Response
 			CuurencyDropDownRes res = new CuurencyDropDownRes();
-			Double exRate=Double.valueOf(data.get("exchangeRate").toString());
+			Double exRate=Double.valueOf(data.get("exchangeRate")==null?"0" : data.get("exchangeRate").toString());
 			Double minRate=Double.valueOf(data.get("minDiscount")==null?"0" : data.get("minDiscount").toString());
 			Double maxRate=Double.valueOf(data.get("maxLoading")==null?"0" :data.get("maxLoading").toString());
 			minRate=exRate-(exRate*minRate/100);
