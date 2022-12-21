@@ -393,7 +393,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		try {
 			// Find Motor
-			
+			Long coverInfo =  coverRepo.countByQuoteNoAndVehicleId(request.getQuoteNo(), request.getVehicleId());
+		if (coverInfo >0 ) {
+ 				//Delete data
+ 				coverRepo.deleteByQuoteNoAndVehicleId(request.getQuoteNo(), request.getVehicleId());
+ 				
+ 			}
 			if( request.getProductId().equalsIgnoreCase(motorProductId)) {
 				List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,request.getVehicleId());
 				
