@@ -507,8 +507,14 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	        	List<EserviceTravelGroupDetails> groupData = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(request.getRequestReferenceNo() );
 	        	
 	        	Integer passCount = 0;
+	        	List<VehicleIdsReq>  filterAdult  = req.getVehicleIdsList().stream().filter( o ->  o.getVehicleId().equals(2) ).collect(Collectors.toList());
+	        	List<VehicleIdsReq>  filterOthers =req.getVehicleIdsList().stream().filter( o -> ! o.getVehicleId().equals(2) ).collect(Collectors.toList());
+	        	List<VehicleIdsReq>  totalGroup  = new ArrayList<VehicleIdsReq>();
+	        	totalGroup.addAll(filterAdult)	;
+	        	totalGroup.addAll(filterOthers);
+	        	List<Integer> groupIds = totalGroup.stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
 	        	// Filte Count
-	        	 for (Integer vehId :  vehicleIds ) {
+	        	 for (Integer vehId :  groupIds ) {
 					 List<EserviceTravelGroupDetails> filterGroup = groupData.stream().filter( o -> o.getGroupId().equals(vehId) ).collect(Collectors.toList());				 
 						
 					 for (int i=0 ; i < filterGroup.get(0).getGrouppMembers() ; i++) {
