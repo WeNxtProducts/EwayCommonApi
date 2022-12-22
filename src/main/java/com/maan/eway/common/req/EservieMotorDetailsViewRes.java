@@ -46,7 +46,12 @@ public class EservieMotorDetailsViewRes {
 	@JsonProperty("BranchCode")
 	private String branchCode;
 	
+
+	@JsonProperty("HavePromoCode")
+    private String     havepromocode ;
 	
+	@JsonProperty("PromoCode")
+    private String     promocode    ;
 	@JsonProperty("Currency")
     private String  currency;
 	

@@ -653,6 +653,8 @@ this.repository = repo;
 				res.setSectionId(mot.getSectionId());
 				res.setVdRefNo(filterVehicleCovers.size() > 0 ?filterVehicleCovers.get(0).getVdRefno(): "");
 				res.setVehicleId(mot.getVehicleId().toString());
+				res.setHavepromocode(mot.getHavepromocode());
+				res.setPromocode(mot.getPromocode());
 				res.setCoverList(coverListRes);
 				
 				resList.add(res);
