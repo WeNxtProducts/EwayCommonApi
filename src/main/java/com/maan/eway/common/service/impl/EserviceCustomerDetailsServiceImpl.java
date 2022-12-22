@@ -406,9 +406,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 //			if (StringUtils.isBlank(req.getStateName())) {
 //				errorList.add(new Error("43", "StateName", "Please Select StateName"));
 //			}
-				if (StringUtils.isBlank(req.getCityCode())) {
-					errorList.add(new Error("43", "CityCode", "Please Select CityCode "));
-				}
+				
 				if (StringUtils.isBlank(req.getCityName())) {
 					errorList.add(new Error("43", "CityName", "Please Select CityName "));
 				} else if (req.getCityName().length() > 100) {
@@ -424,9 +422,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				if (StringUtils.isBlank(req.getStateCode())) {
 					errorList.add(new Error("45", "StateCode", "Please Enter StateCode "));
 				}
-				if (StringUtils.isBlank(req.getStateName())) {
-					errorList.add(new Error("46", "StateName", "Please Enter StateName "));
-				}
+				
 				List<EserviceCustomerDetails> list = new ArrayList<EserviceCustomerDetails>();
 				if ((StringUtils.isNotBlank(req.getAddress1())) && (StringUtils.isNotBlank(req.getAddress2()))
 						&& (StringUtils.isNotBlank(req.getBranchCode()))

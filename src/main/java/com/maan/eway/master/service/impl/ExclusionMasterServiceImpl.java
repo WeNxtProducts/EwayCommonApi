@@ -67,13 +67,13 @@ public class ExclusionMasterServiceImpl implements ExclusionMasterService {
 				errorList.add(new Error("02", "ExclusionDescription", "Please Select ExclusionDescription"));
 			}else if (req.getExclusionDescription().length() > 100){
 				errorList.add(new Error("02","ExclusionDescription", "Please Enter ExclusionDescription 100 Characters")); 
-			}else if (StringUtils.isBlank(req.getExclusionId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())) {
-				List<ExclusionMaster> ExclusionList = getExclusionDescriptionExistDetails(req.getExclusionDescription() , req.getCompanyId() , req.getBranchCode());
+			}else if (StringUtils.isBlank(req.getExclusionId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId())&& StringUtils.isNotBlank(req.getPolicyType())) {
+				List<ExclusionMaster> ExclusionList = getExclusionDescriptionExistDetails(req.getExclusionDescription() , req.getCompanyId() , req.getBranchCode(),req.getProductId(),req.getSectionId(),req.getPolicyType());
 				if (ExclusionList.size()>0 ) {
 					errorList.add(new Error("01", "ExclusionDescription", "This ExclusionDescription Already Exist "));
 				}
-			}else if (StringUtils.isNotBlank(req.getExclusionId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())) {
-				List<ExclusionMaster> ExclusionList = getExclusionDescriptionExistDetails(req.getExclusionDescription() , req.getCompanyId() , req.getBranchCode());
+			}else if (StringUtils.isNotBlank(req.getExclusionId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId())&& StringUtils.isNotBlank(req.getPolicyType())) {
+				List<ExclusionMaster> ExclusionList = getExclusionDescriptionExistDetails(req.getExclusionDescription() , req.getCompanyId() , req.getBranchCode(),req.getProductId(),req.getSectionId(),req.getPolicyType());
 				
 				if (ExclusionList.size()>0 &&  (! req.getExclusionId().equalsIgnoreCase(ExclusionList.get(0).getExclusionId().toString())) ) {
 					errorList.add(new Error("01", "ExclusionDescription", "This ExclusionDescription Already Exist "));
@@ -135,14 +135,24 @@ public class ExclusionMasterServiceImpl implements ExclusionMasterService {
 				errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
 			}else if (req.getCreatedBy().length() > 100){
 				errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
-			}		
+			}	
+			
+			if (StringUtils.isBlank(req.getProductId())) {
+				errorList.add(new Error("10", "ProductId", "Please Select ProductId"));
+			}
+			if (StringUtils.isBlank(req.getSectionId())) {
+				errorList.add(new Error("11", "SectionId", "Please Select SectionId"));
+			}
+			if (StringUtils.isBlank(req.getPolicyType())) {
+				errorList.add(new Error("12", "PolicyType", "Please Select PolicyType"));
+			}
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
 		}
 		return errorList;
 	}
-	public List<ExclusionMaster> getExclusionDescriptionExistDetails(String ExclusionDescription , String InsuranceId , String branchCode) {
+	public List<ExclusionMaster> getExclusionDescriptionExistDetails(String ExclusionDescription , String InsuranceId , String branchCode, String productId, String sectionId, String policyType) {
 		List<ExclusionMaster> list = new ArrayList<ExclusionMaster>();
 		try {
 			Date today = new Date();
@@ -165,7 +175,11 @@ public class ExclusionMasterServiceImpl implements ExclusionMasterService {
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a5 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"), today);
-			amendId.where(a1,a2,a3,a4,a5);
+			Predicate a6 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a7 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+			Predicate a8 = cb.equal(ocpm1.get("policyType"), b.get("policyType"));
+			
+			amendId.where(a1,a2,a3,a4,a5,a6,a7,a8);
 
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(cb.lower( b.get("exclusionDescription")), ExclusionDescription.toLowerCase());
@@ -173,6 +187,16 @@ public class ExclusionMasterServiceImpl implements ExclusionMasterService {
 			Predicate n4 = cb.equal(b.get("branchCode"), branchCode);
 			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
 			Predicate n6 = cb.or(n4,n5);
+			Predicate n7 = cb.equal(b.get("productId"),productId);
+			Predicate n8 = cb.equal(b.get("productId"), "99999");
+			Predicate n9 = cb.or(n6,n7);
+			Predicate n10 = cb.equal(b.get("sectionId"),sectionId);
+			Predicate n11 = cb.equal(b.get("sectionId"), "99999");
+			Predicate n12 = cb.or(n9,n10);
+			Predicate n13 = cb.equal(b.get("policyType"),policyType);
+			Predicate n14 = cb.equal(b.get("policyType"), "99999");
+			Predicate n15 = cb.or(n12,n13);
+		
 			query.where(n1,n2,n3,n6);
 			
 			// Get Result

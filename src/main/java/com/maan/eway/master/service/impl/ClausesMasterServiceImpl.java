@@ -439,7 +439,7 @@ public List<ClausesMasterRes> getallClauses(ClausesMasterGetallReq req) {
 		Predicate n14 = cb.or(n12,n13);
 
 		
-		query.where(n1,n2,n5).orderBy(orderList);
+		query.where(n1,n2,n5,n8,n11,n14).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<ClausesMaster> result = em.createQuery(query);
