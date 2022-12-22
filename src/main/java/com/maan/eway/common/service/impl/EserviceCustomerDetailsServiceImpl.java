@@ -180,7 +180,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				} else if (req.getRegionCode().length() > 20) {
 					errorList.add(new Error("18", "RegionCode", "Please Enter RegionCode within 20 Characters"));
 				}
-				if (StringUtils.isNotBlank(req.getStreet()) && req.getStreet().length() > 100) {
+				if (StringUtils.isBlank(req.getStreet())) {
+					errorList.add(new Error("19", "Street", "Please Enter Street"));
+				}
+				else if (StringUtils.isNotBlank(req.getStreet()) && req.getStreet().length() > 100) {
 					errorList.add(new Error("19", "Street", "Please Enter Street within 100 Characters"));
 				}
 				if (StringUtils.isNotBlank(req.getFax()) && req.getFax().length() > 20) {
@@ -189,7 +192,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				if (StringUtils.isBlank(req.getTelephoneNo1())) {
 					errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo1"));
 				}
-				if (StringUtils.isNotBlank(req.getTelephoneNo1()) && req.getTelephoneNo1().length() > 20) {
+				else if (StringUtils.isNotBlank(req.getTelephoneNo1()) && req.getTelephoneNo1().length() > 20) {
 					errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo1 within 20 Characters"));
 				} else if (!req.getTelephoneNo1().matches("\\d+")) {
 					errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo1 only in numbers"));
@@ -403,6 +406,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 //			if (StringUtils.isBlank(req.getStateName())) {
 //				errorList.add(new Error("43", "StateName", "Please Select StateName"));
 //			}
+				if (StringUtils.isBlank(req.getCityCode())) {
+					errorList.add(new Error("43", "CityCode", "Please Select CityCode "));
+				}
 				if (StringUtils.isBlank(req.getCityName())) {
 					errorList.add(new Error("43", "CityName", "Please Select CityName "));
 				} else if (req.getCityName().length() > 100) {
@@ -418,7 +424,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				if (StringUtils.isBlank(req.getStateCode())) {
 					errorList.add(new Error("45", "StateCode", "Please Enter StateCode "));
 				}
-				
+				if (StringUtils.isBlank(req.getStateName())) {
+					errorList.add(new Error("46", "StateName", "Please Enter StateName "));
+				}
 				List<EserviceCustomerDetails> list = new ArrayList<EserviceCustomerDetails>();
 				if ((StringUtils.isNotBlank(req.getAddress1())) && (StringUtils.isNotBlank(req.getAddress2()))
 						&& (StringUtils.isNotBlank(req.getBranchCode()))
