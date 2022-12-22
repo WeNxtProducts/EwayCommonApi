@@ -71,6 +71,9 @@ public class CustomerDetailsGetRes {
 
 	@JsonProperty("PolicyHolderType")
 	private String policyHolderType;
+	
+	@JsonProperty("PolicyHolderTypeDesc")
+	private String policyHolderTypeDesc;
 
 	@JsonProperty("IdTypeDesc")
 	private String idTypeDesc;
