@@ -117,7 +117,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 	public List<Tuple> LoadTax(CalcEngine engine) {
 		try {
 			String todayInString = DD_MM_YYYY.format(new Date());
-			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
+			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:Y;branchCode:{99999,"+engine.getBranchCode()+"}"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
 			List<Tuple> result=null;
 			SpecCriteria criteria = crservice.createCriteria(CompanyTaxSetup.class, search, "taxId"); 
 			

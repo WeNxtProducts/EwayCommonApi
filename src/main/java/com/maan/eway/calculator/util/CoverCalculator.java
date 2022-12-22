@@ -131,8 +131,8 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 }
 				 
 				 Double totaltax=0D;
-				 if(t.getTaxes()!=null && t.getTaxes().size()>0) {
-					 TaxCalculator tcal=new TaxCalculator(t.getPremiumExcluedTax(),t.getExchangeRate(),this);
+				 if(t.getTaxes()!=null && t.getTaxes().size()>0 && customers!=null && customers.get(0)!=null ) {
+					 TaxCalculator tcal=new TaxCalculator(t.getPremiumExcluedTax(),t.getExchangeRate(),this,customers.get(0));
 					 t.getTaxes().stream().forEach(tcal);
 					 totaltax = t.getTaxes().stream().mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
 				 }
