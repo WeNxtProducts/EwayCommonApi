@@ -32,5 +32,6 @@ public class CompanyTaxSetupId implements Serializable {
     private Integer productId ;
 	private String companyId;
     private Integer amendId;
+    private String branchCode ;
      
 }
