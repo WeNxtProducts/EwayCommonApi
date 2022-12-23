@@ -948,12 +948,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			Page<EserviceCustomerDetails> datas = null;
 			if (loginData.getUserType().equalsIgnoreCase("Broker")
 					|| loginData.getUserType().equalsIgnoreCase("User")) {
-				datas = repository.findByCompanyIdAndBrokerBranchCodeAndProductIdAndCreatedBy(paging,
-						req.getComapanyId(), req.getBrokerBranchCode(), Integer.valueOf(req.getProductId()),
+				datas = repository.findByCompanyIdAndBrokerBranchCodeAndCreatedBy(paging,
+						req.getComapanyId(), req.getBrokerBranchCode(),
 						req.getCreatedBy());
 			} else {
-				datas = repository.findByCompanyIdAndBranchCodeAndProductIdAndCreatedBy(paging, req.getComapanyId(),
-						req.getBranchCode(), Integer.valueOf(req.getProductId()), req.getCreatedBy());
+				datas = repository.findByCompanyIdAndBranchCodeAndCreatedBy(paging, req.getComapanyId(),
+						req.getBranchCode(), req.getCreatedBy());
 			}
 
 			for (EserviceCustomerDetails data : datas) {
@@ -1059,12 +1059,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			Page<EserviceCustomerDetails> datas = null;
 			if (loginData.getUserType().equalsIgnoreCase("Broker")
 					|| loginData.getUserType().equalsIgnoreCase("User")) {
-				datas = repository.findByCompanyIdAndBrokerBranchCodeAndProductIdAndCreatedByAndStatus(paging,
-						req.getComapanyId(), req.getBrokerBranchCode(), Integer.valueOf(req.getProductId()),
+				datas = repository.findByCompanyIdAndBrokerBranchCodeAndCreatedByAndStatus(paging,
+						req.getComapanyId(), req.getBrokerBranchCode(),
 						req.getCreatedBy(), "Y");
 			} else {
-				datas = repository.findByCompanyIdAndBranchCodeAndProductIdAndCreatedByAndStatus(paging,
-						req.getComapanyId(), req.getBranchCode(), Integer.valueOf(req.getProductId()),
+				datas = repository.findByCompanyIdAndBranchCodeAndCreatedByAndStatus(paging,
+						req.getComapanyId(), req.getBranchCode(),
 						req.getCreatedBy(), "Y");
 			}
 

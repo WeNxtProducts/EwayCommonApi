@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -56,20 +55,23 @@ private static final long serialVersionUID = 1L;
     @Column(name="PRODUCT_ID", nullable=false)
     private Integer    productId ;
 
-    @Id
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_START", nullable=false)
-    private Date       effectiveDateStart ;
+    @Column(name="AMEND_ID", nullable=false)
+    private Integer    amendId ;
 
-    @Id
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_END", nullable=false)
-    private Date       effectiveDateEnd ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="PRODUCT_NAME", length=100)
     private String     productName ;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_START", nullable=false)
+    private Date       effectiveDateStart ;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_END", nullable=false)
+    private Date       effectiveDateEnd ;
+
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="INCEPTION_DATE")
     private Date       inceptionDate ;
@@ -112,9 +114,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="REMARKS", length=100)
     private String     remarks ;
 
-    @Column(name="AMEND_ID", nullable=false)
-    private Integer    amendId ;
-
     @Column(name="REGULATORY_CODE", nullable=false, length=20)
     private String     regulatoryCode ;
 
@@ -136,8 +135,18 @@ private static final long serialVersionUID = 1L;
     @Column(name="CUST_CONFIRM_YN", length=1)
     private String     custConfirmYn ;
 
-    @Column(name="CREATED_BY", nullable=false, length=50)
+    @Column(name="CREATED_BY", length=100)
     private String     createdBy ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="UPDATED_DATE")
+    private Date       updatedDate ;
+
+    @Column(name="UPDATED_BY", length=20)
+    private String     updatedBy ;
+    
+    @Column(name="CURRENCY_IDS", length=20)
+    private String     currencyIds;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )

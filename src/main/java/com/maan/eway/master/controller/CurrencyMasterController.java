@@ -23,6 +23,7 @@ import com.maan.eway.master.req.CurrencyMasterGetAllReq;
 
 import com.maan.eway.master.req.CurrencyMasterGetReq;
 import com.maan.eway.master.req.CurrencyMasterSaveReq;
+import com.maan.eway.master.req.ProductCurrDropDownReq;
 import com.maan.eway.master.res.CurrencyMasterRes;
 import com.maan.eway.master.service.CurrencyMasterService;
 import com.maan.eway.common.res.CommonRes;
@@ -194,6 +195,33 @@ public class CurrencyMasterController {
 
 	}
 	
-	
+	// Currency Master Drop Down Type
+	@PostMapping("/dropdown/productcurrency")
+	@ApiOperation(value = "This method is get Currency Master Drop Down")
+
+	public ResponseEntity<CommonRes> getProductCurrencyMasterDropdown(@RequestBody ProductCurrDropDownReq req) {
+
+		CommonRes data = new CommonRes();
+
+		// dropdown
+		List<CuurencyDropDownRes> res = currencyService.getProductCurrencyMasterDropdown(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		// dropdown
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
 	
 }

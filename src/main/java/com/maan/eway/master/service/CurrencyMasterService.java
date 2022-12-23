@@ -14,6 +14,7 @@ import com.maan.eway.master.req.CurrencyMasterGetAllReq;
 
 import com.maan.eway.master.req.CurrencyMasterGetReq;
 import com.maan.eway.master.req.CurrencyMasterSaveReq;
+import com.maan.eway.master.req.ProductCurrDropDownReq;
 import com.maan.eway.master.res.CurrencyMasterRes;
 import com.maan.eway.res.CuurencyDropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -35,5 +36,7 @@ public interface CurrencyMasterService  {
 	List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req);
 
 	SuccessRes changeStatusCurrencyDetails(CurrencyMasterChangeStatusReq req);
+
+	List<CuurencyDropDownRes> getProductCurrencyMasterDropdown(ProductCurrDropDownReq req);
 
 }

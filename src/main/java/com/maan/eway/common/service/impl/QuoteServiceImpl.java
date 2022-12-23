@@ -617,6 +617,7 @@ public class QuoteServiceImpl implements QuoteService {
 		SuccessRes res = new SuccessRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
+			String subUserType = "" ;
 			if( req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				
 				Long motorInfo =  motorRepo.countByQuoteNo(req.getQuoteNo());
@@ -630,33 +631,38 @@ public class QuoteServiceImpl implements QuoteService {
 				if (travelInfo > 0  ) {
 					//Delete data
 					List<TravelPassengerDetails> oldPassDatas = 	traPassRepo.findByQuoteNo(req.getQuoteNo());
-					traPassRepo.deleteByQuoteNo(req.getQuoteNo());
-					
-					// Find History
-					for (TravelPassengerDetails passData :  oldPassDatas) {
-						Long travelHisInfo =  traPassHisRepo.countByQuoteNoAndPassengerId(req.getQuoteNo() ,passData.getPassengerId());
-						if (travelHisInfo > 0 ) {
-							//Delete data
-							traPassHisRepo.deleteByQuoteNoAndPassengerId(req.getQuoteNo(),passData.getPassengerId());
-							
+					subUserType = oldPassDatas.get(0).getSubUserType();
+					if (! subUserType.equalsIgnoreCase("b2c") ) {
+						traPassRepo.deleteByQuoteNo(req.getQuoteNo());
+						
+						// Find History
+						for (TravelPassengerDetails passData :  oldPassDatas) {
+							Long travelHisInfo =  traPassHisRepo.countByQuoteNoAndPassengerId(req.getQuoteNo() ,passData.getPassengerId());
+							if (travelHisInfo > 0 ) {
+								//Delete data
+								traPassHisRepo.deleteByQuoteNoAndPassengerId(req.getQuoteNo(),passData.getPassengerId());
+								
+							}
+							// Save New 
+							TravelPassengerHistory traHistorySave = new TravelPassengerHistory(); 
+							dozerMapper.map(passData, traHistorySave);
+							traHistorySave.setEntryDate(new Date());
+							traPassHisRepo.saveAndFlush(traHistorySave);
 						}
-						// Save New 
-						TravelPassengerHistory traHistorySave = new TravelPassengerHistory(); 
-						dozerMapper.map(passData, traHistorySave);
-						traHistorySave.setEntryDate(new Date());
-						traPassHisRepo.saveAndFlush(traHistorySave);
 					}
+				
 				}	
 			}
 			
 			// Remove Covers
-			 
-			Long coverInfo =  coverRepo.countByQuoteNo(req.getQuoteNo());
- 			if (coverInfo >0 ) {
- 				//Delete data
- 				coverRepo.deleteByQuoteNo(req.getQuoteNo() );
- 				
- 			}
+			if (! subUserType.equalsIgnoreCase("b2c") ) { 
+				Long coverInfo =  coverRepo.countByQuoteNo(req.getQuoteNo());
+	 			if (coverInfo >0 ) {
+	 				//Delete data
+	 				coverRepo.deleteByQuoteNo(req.getQuoteNo() );
+	 				
+	 			}
+			}
  			
 			res.setResponse("Old Record Removed ");
 			res.setSuccessId(req.getQuoteNo());

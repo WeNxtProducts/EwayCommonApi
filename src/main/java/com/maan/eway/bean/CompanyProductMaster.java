@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -60,10 +59,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="PRODUCT_ID", nullable=false)
     private Integer    productId ;
 
+
     @Id
     @Column(name="AMEND_ID", nullable=false)
     private Integer    amendId ;
 
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="EFFECTIVE_DATE_START", nullable=false)
     private Date       effectiveDateStart ;
@@ -118,8 +119,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="CORE_APP_CODE", nullable=false, length=20)
     private String     coreAppCode ;
 
-   
-
     @Column(name="REGULATORY_CODE", nullable=false, length=20)
     private String     regulatoryCode ;
 
@@ -144,10 +143,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="CREATED_BY", nullable=false, length=50)
     private String     createdBy ;
 
+
     @Column(name="MOTOR_YN", nullable=false, length=1)
     private String     motorYn ;
 
-
+    @Column(name="CURRENCY_IDS", length=20)
+    private String     currencyIds;
 }
 
 
