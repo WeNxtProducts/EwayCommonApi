@@ -91,6 +91,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="BUILDING_PURPOSE", length=100)
     private String     buildingPurpose ;
 
+
+    @Column(name="BUILDING_PURPOSE_ID", length=100)
+    private String     buildingPurposeId;
+
+    @Column(name="BUILDING_USAGE_ID", length=100)
+    private String     buildingUsageId;
+
+    
     @Column(name="BUILDING_USAGE_DESC", length=100)
     private String     buildingUsageDesc;
 

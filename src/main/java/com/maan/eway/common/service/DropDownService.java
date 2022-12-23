@@ -3,6 +3,7 @@ package com.maan.eway.common.service;
 import java.util.List;
 
 import com.maan.eway.common.req.NcdDetailsGetReq;
+import com.maan.eway.master.req.BuildingUsageDropDownReq;
 import com.maan.eway.master.req.CityDropDownReq;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.LovPolicyDropDownReq;
@@ -107,5 +108,9 @@ public interface DropDownService {
 	List<DropDownRes> getSourceType(LovDropDownReq req);
 
 	List<DropDownRes> getRelationType(RelationDropDownReq req);
+
+	List<DropDownRes> getBuildingPurpose(LovDropDownReq req);
+
+	List<DropDownRes> getBuildingUsage(BuildingUsageDropDownReq req);
 
 }
