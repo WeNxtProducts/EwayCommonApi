@@ -29,6 +29,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.bean.CompanyCityMaster;
 import com.maan.eway.bean.CompanyRegionMaster;
 import com.maan.eway.bean.CompanyStateMaster;
@@ -38,6 +39,7 @@ import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.req.NcdDetailsGetReq;
 import com.maan.eway.common.service.DropDownService;
+import com.maan.eway.master.req.BuildingUsageDropDownReq;
 import com.maan.eway.master.req.CityDropDownReq;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.LovPolicyDropDownReq;
@@ -1389,4 +1391,58 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
+
+
+	@Override
+	public List<DropDownRes> getBuildingPurpose(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
+			String itemType = "BUILDING_PURPOSE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+	@Override
+	public List<DropDownRes> getBuildingUsage(BuildingUsageDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
+			String itemType = "BUILDING_USAGE" ;
+			LovDropDownReq req2 = new LovDropDownReq();
+			req2.setInsuranceId(req.getInsuranceId());
+			req2.setBranchCode(req.getBranchCode());			
+			List<ListItemValue> getList  = getListItem(req2 , itemType);
+			getList = getList.stream().filter( o -> o.getParam1()!=null && o.getParam1().equalsIgnoreCase(req.getParam1()) ).collect(Collectors.toList());
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}		
+
+
+	
 }
