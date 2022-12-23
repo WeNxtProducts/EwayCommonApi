@@ -79,15 +79,9 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
 			
 			
-			// Total Count Filter
-			Subquery<Long> totalCount = query.subquery(Long.class);
-			Root<TravelPassengerDetails> t = totalCount.from(TravelPassengerDetails.class);
-			totalCount.select(cb.count(t.get("quoteNo")));
-			Predicate a1 = cb.equal(t.get("quoteNo"),m.get("quoteNo") );
-			totalCount.where(a1);
-			
+		
 			// Select
-			query.multiselect(  totalCount.alias("idsCount"),
+			query.multiselect( m.get("totalPassengers").as(Long.class).alias("idsCount"),
 					// Customer Info
 				    c.get("customerReferenceNo").alias("customerReferenceNo"),
 				    c.get("idNumber").alias("idNumber"),
@@ -160,15 +154,9 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			
-			// Total Count Filter
-			Subquery<Long> totalCount = query.subquery(Long.class);
-			Root<TravelPassengerDetails> t = totalCount.from(TravelPassengerDetails.class);
-			totalCount.select(cb.count(t.get("quoteNo")));
-			Predicate a1 = cb.equal(t.get("quoteNo"),m.get("quoteNo") );
-			totalCount.where(a1);
-					
+			
 			// Select
-			query.multiselect(  totalCount.alias("idsCount"),
+			query.multiselect(  m.get("totalPassengers").as(Long.class).as(Long.class).alias("idsCount"),
 					// Customer Info
 				    c.get("customerReferenceNo").alias("customerReferenceNo"),
 				    c.get("idNumber").alias("idNumber"),
@@ -238,15 +226,9 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			
-			// Total Count Filter
-			Subquery<Long> totalCount = query.subquery(Long.class);
-			Root<TravelPassengerDetails> t = totalCount.from(TravelPassengerDetails.class);
-			totalCount.select(cb.count(t.get("quoteNo")));
-			Predicate a1 = cb.equal(t.get("quoteNo"),m.get("quoteNo") );
-			totalCount.where(a1);
-					
+		
 			// Select
-			query.multiselect(  totalCount.alias("idsCount"),
+			query.multiselect(  m.get("totalPassengers").as(Long.class).alias("idsCount"),
 					// Customer Info
 				    c.get("customerReferenceNo").alias("customerReferenceNo"),
 				    c.get("idNumber").alias("idNumber"),
@@ -315,15 +297,10 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			
-			// Total Count Filter
-			Subquery<Long> totalCount = query.subquery(Long.class);
-			Root<TravelPassengerDetails> t = totalCount.from(TravelPassengerDetails.class);
-			totalCount.select(cb.count(t.get("quoteNo")));
-			Predicate a1 = cb.equal(t.get("quoteNo"),m.get("quoteNo") );
-			totalCount.where(a1);
+			
 					
 			// Select
-			query.multiselect(  totalCount.alias("idsCount"),
+			query.multiselect(  m.get("totalPassengers").as(Long.class).alias("idsCount"),
 					// Customer Info
 				    c.get("customerReferenceNo").alias("customerReferenceNo"),
 				    c.get("idNumber").alias("idNumber"),
@@ -392,15 +369,10 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			
-			// Total Count Filter
-			Subquery<Long> totalCount = query.subquery(Long.class);
-			Root<TravelPassengerDetails> t = totalCount.from(TravelPassengerDetails.class);
-			totalCount.select(cb.count(t.get("quoteNo")));
-			Predicate a1 = cb.equal(t.get("quoteNo"),m.get("quoteNo") );
-			totalCount.where(a1);
+			
 					
 			// Select
-			query.multiselect(  totalCount.alias("idsCount"),
+			query.multiselect(  m.get("totalPassengers").as(Long.class).alias("idsCount"),
 					// Customer Info
 				    c.get("customerReferenceNo").alias("customerReferenceNo"),
 				    c.get("idNumber").alias("idNumber"),
@@ -469,15 +441,9 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			
-			// Total Count Filter
-			Subquery<Long> totalCount = query.subquery(Long.class);
-			Root<TravelPassengerDetails> t = totalCount.from(TravelPassengerDetails.class);
-			totalCount.select(cb.count(t.get("quoteNo")));
-			Predicate a1 = cb.equal(t.get("quoteNo"),m.get("quoteNo") );
-			totalCount.where(a1);
-					
+			
 			// Select
-			query.multiselect(  totalCount.alias("idsCount"),
+			query.multiselect(  m.get("totalPassengers").as(Long.class).alias("idsCount"),
 					// Customer Info
 				    c.get("customerReferenceNo").alias("customerReferenceNo"),
 				    c.get("idNumber").alias("idNumber"),
@@ -546,15 +512,9 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			
-			// Total Count Filter
-			Subquery<Long> totalCount = query.subquery(Long.class);
-			Root<TravelPassengerDetails> t = totalCount.from(TravelPassengerDetails.class);
-			totalCount.select(cb.count(t.get("quoteNo")));
-			Predicate a1 = cb.equal(t.get("quoteNo"),m.get("quoteNo") );
-			totalCount.where(a1);
 					
 			// Select
-			query.multiselect(  totalCount.alias("idsCount"),
+			query.multiselect(  m.get("totalPassengers").as(Long.class).alias("idsCount"),
 					// Customer Info
 				    c.get("customerReferenceNo").alias("customerReferenceNo"),
 				    c.get("idNumber").alias("idNumber"),
@@ -612,15 +572,9 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			
-			// Total Count Filter
-			Subquery<Long> totalCount = query.subquery(Long.class);
-			Root<TravelPassengerDetails> t = totalCount.from(TravelPassengerDetails.class);
-			totalCount.select(cb.count(t.get("quoteNo")));
-			Predicate a1 = cb.equal(t.get("quoteNo"),m.get("quoteNo") );
-			totalCount.where(a1);
-					
+		
 			// Select
-			query.multiselect(  totalCount.alias("idsCount"),
+			query.multiselect(  m.get("totalPassengers").as(Long.class).alias("idsCount"),
 					// Customer Info
 				    c.get("customerReferenceNo").alias("customerReferenceNo"),
 				    c.get("idNumber").alias("idNumber"),
@@ -678,15 +632,9 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			
-			// Total Count Filter
-			Subquery<Long> totalCount = query.subquery(Long.class);
-			Root<TravelPassengerDetails> t = totalCount.from(TravelPassengerDetails.class);
-			totalCount.select(cb.count(t.get("quoteNo")));
-			Predicate a1 = cb.equal(t.get("quoteNo"),m.get("quoteNo") );
-			totalCount.where(a1);
-					
+			
 			// Select
-			query.multiselect(  totalCount.alias("idsCount"),
+			query.multiselect(  m.get("totalPassengers").as(Long.class).alias("idsCount"),
 					// Customer Info
 				    c.get("customerReferenceNo").alias("customerReferenceNo"),
 				    c.get("idNumber").alias("idNumber"),
