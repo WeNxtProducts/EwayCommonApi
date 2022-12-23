@@ -600,9 +600,6 @@ public class QuoteThreadCall implements Callable<Object>  {
 			Double tax2 = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(2) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc()  ).sum();
 			Double tax3 = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(3) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc()  ).sum();
 			
-			
-			
-			
 			List<Integer> vehicleIds = request.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId ).collect(Collectors.toList());
 			HomePositionMaster home = new HomePositionMaster();
 			
@@ -633,6 +630,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 				home.setCurrency(motorData.getCurrency());
 				home.setExchangeRate(motorData.getExchangeRate());
 				home.setNoOfVehicles( request.getVehicleIdsList().size());
+				home.setHavepromoYn(motorData.getHavepromocode());
+				home.setPromocode(motorData.getPromocode());
 				
 			} else if(request.getProductId().equalsIgnoreCase(travelProductId) ) {
 				
@@ -661,6 +660,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 				home.setCurrency(travelData.getCurrency());
 				home.setExchangeRate(travelData.getExchangeRate());
 				home.setNoOfVehicles( travelData.getTotalPassengers());
+				home.setHavepromoYn(travelData.getHavepromocode());
+				home.setPromocode(travelData.getPromocode());
 			}
 			
 			// Save Home Position Master
