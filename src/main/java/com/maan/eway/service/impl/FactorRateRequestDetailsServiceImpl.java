@@ -280,10 +280,11 @@ this.repository = repo;
 					primaryKeys.put("VdRefNo" ,req.getVdRefNo());
 					primaryKeys.put("MsRefNo" ,req.getMsrefno());	
 					
-					// Save Discount Cover
+					
+					// Save Discount Or Promo Cover
 					if( coverData.getDiscounts()!=null && coverData.getDiscounts().size() > 0 ) {
 						
-						successRes  = 	saveDiscountRates( primaryKeys ,coverData ,   coverData.getDiscounts()  ) ;	
+						successRes  = 	saveDiscountOrPromoRates( primaryKeys ,coverData ,   coverData.getDiscounts()  ) ;	
 					}
 					// Tax
 					if(coverData.getTaxes()!=null && coverData.getTaxes().size() > 0 ) {
@@ -372,9 +373,9 @@ this.repository = repo;
 						primaryKeys.put("CdRefNo" ,req.getCdRefNo());
 						primaryKeys.put("VdRefNo" ,req.getVdRefNo());
 						primaryKeys.put("MsRefNo" ,req.getMsrefno());	
-						// Save Discount Cover
+						// Save Discount Cover Or Promo Cover
 						if( subCoverData.getDiscounts()!=null && subCoverData.getDiscounts().size() > 0 ) {
-							successRes  = 	saveDiscountRates( primaryKeys ,subCoverData ,   subCoverData.getDiscounts()  ) ;
+							successRes  = 	saveDiscountOrPromoRates( primaryKeys ,subCoverData ,   subCoverData.getDiscounts()  ) ;
 						}
 						
 						 
@@ -559,7 +560,7 @@ this.repository = repo;
 		}return res;
 	}
 	
-	public String saveDiscountRates(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Discount> discounts  ) {
+	public String saveDiscountOrPromoRates(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Discount> discounts ) {
 		String res = "Saved Successfully";
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		String pattern = "#####0.00";
@@ -586,7 +587,7 @@ this.repository = repo;
 				saveDiscounts.setCreatedBy(primaryKeys.get("CreatedBy").toString());
 				saveDiscounts.setSubCoverId(StringUtils.isBlank(coverReq.getSubCoverId()) ?0 : Integer.valueOf(coverReq.getSubCoverId()) );
 				saveDiscounts.setStatus("Y");
-				saveDiscounts.setCoverageType("D");
+				saveDiscounts.setCoverageType(disc.getCoverAgeType() );
 				saveDiscounts.setMinimumPremium(disc.getMaxAmount()==null ? null : Double.valueOf(disc.getMaxAmount().toString()));
 				saveDiscounts.setSumInsured(null);
 				saveDiscounts.setRate(Double.valueOf(disc.getDiscountRate()));
@@ -706,8 +707,8 @@ this.repository = repo;
 					coverRes.setPremiumIncludedTaxLC(filterCover.get(0).getPremiumIncludedTaxLc()==null ? null :new BigDecimal (filterCover.get(0).getPremiumIncludedTaxLc()));
 					coverRes.setExchangeRate(filterCover.get(0).getExchangeRate()==null?null:new BigDecimal(filterCover.get(0).getExchangeRate()));	
 					
-					// Discount Covers
-					List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("D") ).collect(Collectors.toList());
+					// Discount Covers Or Promo Covers
+					List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) && (   o.getCoverageType().equalsIgnoreCase("D") || o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
 					
 					if ( filterDiscountCover.size() > 0 ) {
 						 List<Discount> discounts =  getDiscountRates(filterDiscountCover);
@@ -771,8 +772,8 @@ this.repository = repo;
 						subCoverRes.setPremiumIncludedTaxLC(filterSubCover.get(0).getPremiumIncludedTaxLc()==null ? null :new BigDecimal (filterSubCover.get(0).getPremiumIncludedTaxLc()));
 						
 						
-						// Discount Covers
-						List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) && ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("D") ).collect(Collectors.toList());
+						// Discount Covers Or Promo Covers
+						List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) && ( ! o.getDiscLoadId().equals(0)) && (   o.getCoverageType().equalsIgnoreCase("D") || o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
 						
 						if ( filterDiscountCover.size() > 0 ) {
 							 List<Discount> discounts =  getDiscountRates(filterDiscountCover);
