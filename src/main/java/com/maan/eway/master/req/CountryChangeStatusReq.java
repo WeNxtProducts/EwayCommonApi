@@ -13,6 +13,9 @@ public class CountryChangeStatusReq {
 	 @JsonProperty("CountryId")
 	 private String countryId;
 	 
+	 @JsonProperty("InsuranceId")
+	 private String companyId;
+	 
 	 @JsonProperty("Status")
 	 private String status;
 	 
