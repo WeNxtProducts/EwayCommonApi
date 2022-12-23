@@ -15,6 +15,10 @@ public class CountryMasterGetReq implements Serializable {
 
 	@JsonProperty("CountryId")
     private String     countryId     ;
+	
+
+	@JsonProperty("InsuranceId")
+    private String     companyId     ;
     
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")

@@ -15,6 +15,9 @@ public class CountryMasterSaveReq implements Serializable {
 
 	@JsonProperty("CountryId")
 	private String countryId;
+	
+	@JsonProperty("InsuranceId")
+	private String companyId;
 
 	@JsonProperty("CountryName")
 	private String countryName;
