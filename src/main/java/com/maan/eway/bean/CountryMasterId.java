@@ -30,6 +30,7 @@ public class CountryMasterId implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //--- ENTITY KEY ATTRIBUTES 
+    private String    companyId ;
     private String    countryId ;
     
     private String     countryShortCode ;

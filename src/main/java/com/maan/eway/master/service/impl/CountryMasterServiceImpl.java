@@ -39,6 +39,7 @@ import com.google.gson.Gson;
 import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CountryChangeStatusReq;
+import com.maan.eway.master.req.CountryGetAllReq;
 import com.maan.eway.master.req.CountryMasterGetReq;
 import com.maan.eway.master.req.CountryMasterSaveReq;
 import com.maan.eway.master.req.LovDropDownReq;
@@ -112,12 +113,15 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 				// Select
 				query.select(b);
 
-				
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+			    orderList.add(cb.desc(b.get("amendId")));
 				// Where
 				//Predicate n1 = cb.equal(b.get("status"), "Y");
 				Predicate n3 = cb.equal(b.get("countryId"), req.getCountryId());
-
-				query.where( n3);// .orderBy(orderList);
+				Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId() );
+				query.where(n2,n3).orderBy(orderList);
+				
 
 				// Get Result
 				TypedQuery<CountryMaster> result = em.createQuery(query);
@@ -185,24 +189,28 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 		List<Error> errorList = new ArrayList<Error>();
 
 		try {
-
+			String companyId = StringUtils.isBlank(req.getCompanyId()) ? "99999" :req.getCompanyId() ; 
 			// Coutnry Name
 			if (StringUtils.isBlank(req.getCountryName())) {
 				errorList.add(new Error("01", "CountryName", "Please Select Country Name"));
 			}else if (req.getCountryName().length() > 100){
 				errorList.add(new Error("01","CountryName", "Please Enter Country Name within 100 Characters")); 
-			}else if (StringUtils.isBlank(req.getCountryId())) {
-				List<CountryMaster> CountryList = getCountryNameExistDetails(req.getCountryName());
+			}else if (StringUtils.isBlank(req.getCountryId()) && StringUtils.isNotBlank(req.getCompanyId())) {
+				
+				List<CountryMaster> CountryList = getCountryNameExistDetails(req.getCountryName(),companyId);
 				if (CountryList.size()>0 ) {
 					errorList.add(new Error("01", "CountryName", "This Country Name Already Exist "));
 				}
-			}else  {
-				List<CountryMaster> CountryList =  getCountryNameExistDetails(req.getCountryName() );
+			}else {
+				
+				List<CountryMaster> CountryList =  getCountryNameExistDetails(req.getCountryName() ,companyId);
 				if (CountryList.size()>0 &&  (! req.getCountryId().equalsIgnoreCase(CountryList.get(0).getCountryId().toString())) ) {
 					errorList.add(new Error("01", "CountryName", "This Country Name Already Exist "));
 				}
 				
 			}
+			
+		
 			
 			// Country Short Code
 			if (StringUtils.isBlank(req.getCountryShortCode())) {
@@ -210,12 +218,12 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			}else if (req.getCountryShortCode().length() > 20){
 				errorList.add(new Error("01","CountryShortCode", "Please Enter CountryShortCode within 20 Characters")); 
 			}else if (StringUtils.isBlank(req.getCountryId())) {
-				List<CountryMaster> CountryList = getCountryShortCodeExistDetails(req.getCountryShortCode());
+				List<CountryMaster> CountryList = getCountryShortCodeExistDetails(req.getCountryShortCode(),companyId);
 				if (CountryList.size()>0 ) {
 					errorList.add(new Error("01", "CountryShortCode", "This CountryShortCode Already Exist "));
 				}
 			}else  {
-				List<CountryMaster> CountryList =  getCountryShortCodeExistDetails(req.getCountryShortCode() );
+				List<CountryMaster> CountryList =  getCountryShortCodeExistDetails(req.getCountryShortCode(),companyId );
 				if (CountryList.size()>0 &&  (! req.getCountryId().equalsIgnoreCase(CountryList.get(0).getCountryId().toString())) ) {
 					errorList.add(new Error("01", "CountryShortCode", "This CountryShortCode Already Exist "));
 				}
@@ -254,6 +262,10 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 				errorList.add(new Error("11", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
 			}
 			
+			if (StringUtils.isBlank(req.getCompanyId())) {
+				errorList.add(new Error("08", "InsuranceId", "Please Select InsuranceId"));
+			}
+			
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
 				errorList.add(new Error("12", "RegulatoryCode", "Please Enter RegulatoryCode"));
 			}else if (req.getRegulatoryCode().length() > 20) {
@@ -273,7 +285,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 		return errorList;
 	}
 
-	public List<CountryMaster> getCountryNameExistDetails(String countryName) {
+	public List<CountryMaster> getCountryNameExistDetails(String countryName , String companyId ) {
 		List<CountryMaster> list = new ArrayList<CountryMaster>();
 		try {
 			// Find Latest Record
@@ -291,11 +303,13 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			Root<CountryMaster> ocpm1 = amendId.from(CountryMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
-			amendId.where(a1);
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			amendId.where(a1,a2);
 	
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
-			Predicate n2 = cb.equal(b.get("countryName"), countryName );	
-			query.where(n1,n2);
+			Predicate n2 = cb.equal(b.get("countryName"), countryName );
+			Predicate n3 = cb.equal(b.get("companyId"), companyId );
+			query.where(n1,n2,n3);
 			// Get Result
 			TypedQuery<CountryMaster> result = em.createQuery(query);
 			list = result.getResultList();		
@@ -309,7 +323,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 	}
 	
 	
-	public List<CountryMaster> getCountryShortCodeExistDetails(String countryShortCode) {
+	public List<CountryMaster> getCountryShortCodeExistDetails(String countryShortCode , String companyId) {
 		List<CountryMaster> list = new ArrayList<CountryMaster>();
 		try {
 			// Find Latest Record
@@ -327,11 +341,14 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			Root<CountryMaster> ocpm1 = amendId.from(CountryMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
-			amendId.where(a1);
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			amendId.where(a1,a2);
 	
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("countryShortCode"), countryShortCode );	
-			query.where(n1,n2);
+			Predicate n3 = cb.equal(b.get("companyId"), companyId );
+			query.where(n1,n2,n3);
+			
 			// Get Result
 			TypedQuery<CountryMaster> result = em.createQuery(query);
 			list = result.getResultList();		
@@ -347,7 +364,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 
 ///*********************************************************************GET ALL******************************************************\\
 	@Override
-	public List<CountryMasterRes> getallCountryDetails() {
+	public List<CountryMasterRes> getallCountryDetails(CountryGetAllReq req) {
 		List<CountryMasterRes> resList = new ArrayList<CountryMasterRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
@@ -369,7 +386,8 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			Root<CountryMaster> ocpm1 = amendId.from(CountryMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
-			amendId.where(a1);
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			amendId.where(a1,a2);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -377,8 +395,8 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
-
-			query.where(n1).orderBy(orderList);
+			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId() );
+			query.where(n1,n2).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CountryMaster> result = em.createQuery(query);
@@ -438,7 +456,8 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			Root<CountryMaster> ocpm1 = amendId.from(CountryMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
-			amendId.where(a1);
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), c.get("companyId"));
+			amendId.where(a1,a2);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -448,8 +467,8 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("amendId"), amendId);
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("countryId"), req.getCountryId());
-
-			query.where(n1, n2).orderBy(orderList);
+			Predicate n3 = cb.equal(c.get("companyId"), req.getCompanyId() );
+			query.where(n1, n2,n3).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CountryMaster> result = em.createQuery(query);
@@ -543,7 +562,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 */
 //************************************************GET ACTIVE COUNTRY******************************************\\
 	@Override
-	public List<CountryMasterRes> getActiveCountryDetails() {
+	public List<CountryMasterRes> getActiveCountryDetails(CountryGetAllReq req) {
 		List<CountryMasterRes> resList = new ArrayList<CountryMasterRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
@@ -565,7 +584,8 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			Root<CountryMaster> ocpm1 = amendId.from(CountryMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
-			amendId.where(a1);
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			amendId.where(a1,a2);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -574,8 +594,8 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("status"), "Y");
-
-			query.where(n1,n2).orderBy(orderList);
+			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId() );
+			query.where(n1,n2,n3).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CountryMaster> result = em.createQuery(query);
@@ -625,7 +645,8 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			Root<CountryMaster> ocpm1 = amendId.from(CountryMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
-			amendId.where(a1);
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			amendId.where(a1,a2);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -634,8 +655,8 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("countryId"), req.getCountryId() );
-	
-			query.where(n1,n2).orderBy(orderList);
+			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId() );
+			query.where(n1,n2,n3).orderBy(orderList);
 	
 			// Get Result
 						TypedQuery<CountryMaster> result = em.createQuery(query);
@@ -698,7 +719,8 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
 			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1, a2);
+			Predicate a5 = cb.equal(ocpm1.get("companyId"), c.get("companyId"));
+			effectiveDate.where(a1, a2,a5);
 			
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
@@ -706,14 +728,91 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
 			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
 			javax.persistence.criteria.Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-			effectiveDate2.where(a3,a4);
+			Predicate a6 = cb.equal(ocpm2.get("companyId"), c.get("companyId"));
+			effectiveDate2.where(a3,a4,a6);
 
 			// Where
 			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"), req.getInsuranceId() );
 			
-			query.where(n1, n2,n3).orderBy(orderList);
+			query.where(n1, n2,n3,n4).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<CountryMaster> result = em.createQuery(query);
+			list = result.getResultList();
+
+			for (CountryMaster data : list) {
+				// Response
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getCountryId().toString());
+				res.setCodeDesc(data.getCountryName());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public List<DropDownRes> getNationalityMasterDropdown(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CountryMaster> query = cb.createQuery(CountryMaster.class);
+			List<CountryMaster> list = new ArrayList<CountryMaster>();
+
+			// Find All
+			Root<CountryMaster> c = query.from(CountryMaster.class);
+
+			// Select
+			query.select(c);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("countryName")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CountryMaster> ocpm1 = effectiveDate.from(CountryMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
+			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			effectiveDate.where(a1, a2,a5);
+			
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CountryMaster> ocpm2 = effectiveDate2.from(CountryMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
+			javax.persistence.criteria.Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			javax.persistence.criteria.Predicate a6 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			effectiveDate2.where(a3,a4,a6);
+
+			// Where
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.greaterThanOrEqualTo(c.get("companyId"), "99999");
+			
+			query.where(n1, n2,n3,n4).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CountryMaster> result = em.createQuery(query);

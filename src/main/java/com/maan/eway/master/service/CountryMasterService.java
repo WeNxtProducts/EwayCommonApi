@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CountryChangeStatusReq;
+import com.maan.eway.master.req.CountryGetAllReq;
 import com.maan.eway.master.req.CountryMasterGetReq;
 import com.maan.eway.master.req.CountryMasterSaveReq;
 import com.maan.eway.master.req.LovDropDownReq;
@@ -24,15 +25,17 @@ public interface CountryMasterService  {
 
 	SuccessRes insertCountry(CountryMasterSaveReq req);
 
-	List<CountryMasterRes> getallCountryDetails();
+	List<CountryMasterRes> getallCountryDetails(CountryGetAllReq req);
 
-	List<CountryMasterRes> getActiveCountryDetails();
+	List<CountryMasterRes> getActiveCountryDetails(CountryGetAllReq req);
 
 	CountryMasterRes getByCountryId(CountryMasterGetReq req);
 
 	List<DropDownRes> getCountryMasterDropdown(LovDropDownReq req);
 
 	SuccessRes changeStatusOfCountry(CountryChangeStatusReq req);
+
+	List<DropDownRes> getNationalityMasterDropdown(LovDropDownReq req);
 
 	
 	

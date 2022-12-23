@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CountryChangeStatusReq;
+import com.maan.eway.master.req.CountryGetAllReq;
 import com.maan.eway.master.req.CountryMasterGetReq;
 import com.maan.eway.master.req.CountryMasterSaveReq;
 import com.maan.eway.master.req.LovDropDownReq;
@@ -84,12 +85,12 @@ public class CountryMasterController {
 		
 		//  Get All Country Master
 		
-		@GetMapping("/getallcountrydetails")
+		@PostMapping("/getallcountrydetails")
 		@ApiOperation("This method is getall Country Details")
-		public ResponseEntity<CommonRes> getallCountryDetails()
+		public ResponseEntity<CommonRes> getallCountryDetails(@RequestBody CountryGetAllReq req )
 		{
 			CommonRes data = new CommonRes();	
-			List<CountryMasterRes> res = countryService.getallCountryDetails();
+			List<CountryMasterRes> res = countryService.getallCountryDetails(req);
 			data.setCommonResponse(res);
 			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
@@ -105,13 +106,13 @@ public class CountryMasterController {
 		
 	//  Get Active Country Master
 		
-			@GetMapping("/getactivecountry")
+		@PostMapping("/getactivecountry")
 			@ApiOperation("This method is get Active Country Details")
-			public ResponseEntity<CommonRes> getActiveCountryDetails()
+			public ResponseEntity<CommonRes> getActiveCountryDetails(@RequestBody CountryGetAllReq req )
 			{
 				CommonRes data = new CommonRes();
 				
-				List<CountryMasterRes> res = countryService.getActiveCountryDetails();
+				List<CountryMasterRes> res = countryService.getActiveCountryDetails(req);
 				data.setCommonResponse(res);
 				data.setErrorMessage(Collections.emptyList());
 				data.setIsError(false);
@@ -146,27 +147,49 @@ public class CountryMasterController {
 		}
 	}
 		// Country Master Drop Down Type
-					@PostMapping("/dropdown/country")
-					@ApiOperation(value = "This method is get Country Master Drop Down")
+		@PostMapping("/dropdown/country")
+		@ApiOperation(value = "This method is get Country Master Drop Down")
 
-					public ResponseEntity<CommonRes> getCountryMasterDropdown(@RequestBody LovDropDownReq req) {
+		public ResponseEntity<CommonRes> getCountryMasterDropdown(@RequestBody LovDropDownReq req) {
 
-						CommonRes data = new CommonRes();
+			CommonRes data = new CommonRes();
 
-						// Save
-						List<DropDownRes> res = countryService.getCountryMasterDropdown(req);
-						data.setCommonResponse(res);
-						data.setIsError(false);
-						data.setErrorMessage(Collections.emptyList());
-						data.setMessage("Success");
+			// Save
+			List<DropDownRes> res = countryService.getCountryMasterDropdown(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
 
-						if (res != null) {
-							return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-						} else {
-							return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-						}
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
 
-					}
+		}
+					
+			@PostMapping("/dropdown/nationality")
+			@ApiOperation(value = "This method is get Country Master Drop Down")
+
+			public ResponseEntity<CommonRes> getNationalityMasterDropdown(@RequestBody LovDropDownReq req) {
+
+				CommonRes data = new CommonRes();
+
+				// Save
+				List<DropDownRes> res = countryService.getNationalityMasterDropdown(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+
+			}
 
 		@PostMapping("/country/changestatus")
 		@ApiOperation(value = "This method is get Country Change Status")
