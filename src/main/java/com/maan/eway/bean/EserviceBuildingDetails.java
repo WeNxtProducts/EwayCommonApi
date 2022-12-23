@@ -88,9 +88,15 @@ private static final long serialVersionUID = 1L;
     @Column(name="BUILDING_USAGE_YN", length=2)
     private String     buildingUsageYn ;
 
-    @Column(name="BUILDING_USAGE", length=100)
-    private String     buildingUsage ;
+    @Column(name="BUILDING_PURPOSE", length=100)
+    private String     buildingPurpose ;
 
+    @Column(name="BUILDING_USAGE_DESC", length=100)
+    private String     buildingUsageDesc;
+
+    @Column(name="BUILDING_TYPE", length=100)
+    private String     buildingType;
+    
     @Column(name="BUILDING_OWNER_YN", length=20)
     private String     buildingOwnerYn;
 
@@ -100,11 +106,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="APARTMENT_OR_BORDER", length=200)
     private String     apartmentOrBorder ;
 
-    @Column(name="CONSECUTIVE_DAYS")
-    private Integer    consecutiveDays ;
-
-    @Column(name="STATE_EXTENT", length=200)
-    private String     stateExtent ;
+    @Column(name="WITHOUT_INHABITANT_DAYS")
+    private Integer    withoutInhabitantDays ;
 
     @Column(name="BUILDING_CONDITION", length=100)
     private String     buildingCondition ;
@@ -123,9 +126,6 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="ALLRISK_SUMINSURED")
     private Double     allriskSuminsured ;
-
-    @Column(name="LIMIT_OF_INDEMINITY_SUMINSURED")
-    private Double     limitOfIndeminitySuminsured ;
 
     @Column(name="CONTENT_SUMINSURED")
     private Double     contentSuminsured ;
@@ -178,6 +178,9 @@ private static final long serialVersionUID = 1L;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="POLICY_END_DATE")
     private Date       policyEndDate ;
+
+    @Column(name="INSURANCE_TYPE", length=100)
+    private String insuranceType     ;
 
     @Column(name="CURRENCY", length=20)
     private String     currency ;
@@ -244,6 +247,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="COMMISSION_TYPE_DESC", length=100)
     private String     commissionTypeDesc ;
 
+    @Column(name="HAVEPROMOCODE", length=20)
+    private String     havepromocode;
+
+    @Column(name="PROMOCODE", length=100)
+    private String     promocode;
+    
 }
 
 

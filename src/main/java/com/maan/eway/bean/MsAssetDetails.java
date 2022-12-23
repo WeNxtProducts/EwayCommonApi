@@ -86,10 +86,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="BUILDING_FLOORS")
     private Integer    buildingFloors ;
-
-    @Column(name="BUILDING_USAGE", length=20)
-    private String     buildingUsage;
-    
+    @Column(name="BUILDING_USAGE_YN", length=20)
+    private String     buildingUsageYn;
+     
     @Column(name="SUMINSURED")
     private Double suminsured ;
     
@@ -117,6 +116,12 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="GROUP_COUNT")
     private Integer groupCount;
+    
+    @Column(name="HAVEPROMOCODE", length=20)
+    private String     havepromocode;
+
+    @Column(name="PROMOCODE", length=100)
+    private String     promocode;
     
 }
 
