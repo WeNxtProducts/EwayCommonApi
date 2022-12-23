@@ -87,7 +87,7 @@ public class AdminCoverCalculator  extends CommonCalculator implements Consumer<
 				 
 				 Double totaltax=0D;
 				 if(t.getTaxes()!=null && t.getTaxes().size()>0) {
-					 TaxCalculator tcal=new TaxCalculator(t.getPremiumExcluedTax(),t.getExchangeRate(),this);
+					 TaxCalculator tcal=new TaxCalculator(t.getPremiumExcluedTax(),t.getExchangeRate(),this,customers.get(0));
 					 t.getTaxes().stream().forEach(tcal);
 					 totaltax = t.getTaxes().stream().mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
 				 }
