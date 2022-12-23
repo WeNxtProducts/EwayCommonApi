@@ -859,7 +859,7 @@ public List<CuurencyDropDownRes> getProductCurrencyMasterDropdown(ProductCurrDro
 		Predicate a8 = cb.equal(ex.get("status"),"Y");
 		Predicate a9 = cb.equal(ex.get("effectiveDateStart"), effectiveDate3);
 		Predicate a10 = cb.equal(ex.get("effectiveDateEnd"), effectiveDate4);
-		Predicate a17 = cb.equal(ex.get("companyId"),c.get("companyId"));
+		Predicate a17 = cb.equal(ex.get("companyId"),req.getInsuranceId());
 		exchangeRate.where(a7,a8,a9,a10,a17);
 
 		// Select
