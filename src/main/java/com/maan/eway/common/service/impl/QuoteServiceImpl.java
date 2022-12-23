@@ -37,6 +37,8 @@ import com.maan.eway.common.res.CustomerDetailsRes;
 import com.maan.eway.common.res.MotorProductDetailsRes;
 import com.maan.eway.common.res.NewQuoteRes;
 import com.maan.eway.common.res.QuoteDetailsRes;
+import com.maan.eway.common.res.TravelPassDetailsRes;
+import com.maan.eway.common.res.TravelProductDetailsRes;
 import com.maan.eway.common.res.VehicleDetailsRes;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.QuoteService;
@@ -132,8 +134,12 @@ public class QuoteServiceImpl implements QuoteService {
 				viewRes =  getMotorProductDetails( req);
 				viewRes.setCustomerDetails(custRes);
 				viewRes.setQuoteDetails(quoteRes);
+			} else if( homeData.getProductId().equals(Integer.valueOf(travelProductId))) {
+				// Travel Product Details
+				viewRes =	getTravelProductDetails( req);
+				viewRes.setCustomerDetails(custRes);
+				viewRes.setQuoteDetails(quoteRes);
 			}
-			
 			
 			
 		} catch ( Exception e) {
@@ -302,6 +308,178 @@ public class QuoteServiceImpl implements QuoteService {
 				motorResList.add(motorRes);				
 			}
 			viewRes.setProductDetails(motorResList);	
+			
+		} catch ( Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return viewRes;
+	}
+	
+	
+	public ViewQuoteRes getTravelProductDetails(ViewQuoteReq req) {
+		ViewQuoteRes viewRes = new ViewQuoteRes();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			// Find Travel Data
+			List<TravelPassengerDetails> travelDatas =  traPassRepo.findByQuoteNo(req.getQuoteNo());
+			List<TravelPassengerDetails> adultDatas  = travelDatas.stream().filter( o -> o.getGroupId().equals(2)  ).collect(Collectors.toList());
+			List<TravelPassengerDetails> otherDatas  =  travelDatas.stream().filter( o -> ! o.getGroupId().equals(2)  ).collect(Collectors.toList());
+			List<TravelPassengerDetails> totalDatas  = new ArrayList<TravelPassengerDetails>();	
+			totalDatas.addAll(adultDatas);
+			totalDatas.addAll(otherDatas);
+			
+			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
+			
+			List<TravelProductDetailsRes>   travelResList = new ArrayList<TravelProductDetailsRes>();
+			for (TravelPassengerDetails tra :  totalDatas) {
+				
+				// Mot
+				TravelPassDetailsRes travelDetails = new  TravelPassDetailsRes()  ;
+				dozerMapper.map(tra, travelDetails);
+				
+				// Cover Details
+				List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(tra.getPassengerId()))).collect(Collectors.toList());
+				
+				Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
+				
+				List<Cover>  coverListRes = new ArrayList<Cover>();
+				
+				for ( Integer coverId : groupByCover.keySet() ) {
+					List<PolicyCoverData>  coverGroups  = groupByCover.get(coverId);
+					Cover coverRes = new Cover();
+					
+					if (coverGroups.get(0).getSubCoverYn().equalsIgnoreCase("N") ) {
+						// Get Covers
+						List<PolicyCoverData> filterCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0)).collect(Collectors.toList());
+						coverRes = dozerMapper.map(filterCover.get(0), Cover.class);
+						coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
+						coverRes.setDependentCoveryn(filterCover.get(0).getDependentCoverYn());
+						coverRes.setDependentCoverId(filterCover.get(0).getDependentCoverId()==null?"":filterCover.get(0).getDependentCoverId().toString());
+						coverRes.setPremiumExcluedTax( filterCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal(filterCover.get(0).getPremiumExcludedTaxFc()) );	
+						coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumAfterDiscountFc().toString())));
+						coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumBeforeDiscountFc().toString())));
+						coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumExcludedTaxFc().toString())));
+						coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumIncludedTaxFc().toString())));
+						coverRes.setIsselected(filterCover.get(0).getIsSelected());
+						coverRes.setDependentCoveryn(filterCover.get(0).getDependentCoverYn());
+						coverRes.setDependentCoverId(filterCover.get(0).getDependentCoverId()==null?"": filterCover.get(0).getDependentCoverId().toString());
+						coverRes.setSubCoverId(null);
+						coverRes.setSubCoverDesc(null);
+						coverRes.setSubCoverName(null);
+						coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal (filterCover.get(0).getPremiumAfterDiscountFc()));
+						coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal (filterCover.get(0).getPremiumBeforeDiscountFc()));
+						coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal (filterCover.get(0).getPremiumExcludedTaxFc()));
+						coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc()==null ? null :new BigDecimal(filterCover.get(0).getPremiumIncludedTaxFc()));
+						coverRes.setPremiumAfterDiscountLC(filterCover.get(0).getPremiumAfterDiscountLc()==null ? null : new BigDecimal(filterCover.get(0).getPremiumAfterDiscountLc()));
+						coverRes.setPremiumBeforeDiscountLC(filterCover.get(0).getPremiumBeforeDiscountLc()==null ? null : new BigDecimal( filterCover.get(0).getPremiumBeforeDiscountLc()));
+						coverRes.setPremiumExcluedTaxLC(filterCover.get(0).getPremiumExcludedTaxLc()==null ? null : new BigDecimal(filterCover.get(0).getPremiumExcludedTaxLc()));
+						coverRes.setPremiumIncludedTaxLC(filterCover.get(0).getPremiumIncludedTaxLc()==null ? null :new BigDecimal (filterCover.get(0).getPremiumIncludedTaxLc()));
+						coverRes.setExchangeRate(filterCover.get(0).getExchangeRate()==null?null:new BigDecimal(filterCover.get(0).getExchangeRate()));	
+						
+						// Discount Covers Or Promo Covers
+						List<PolicyCoverData> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) && ( o.getCoverageType().equalsIgnoreCase("D") ||  o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
+						
+						if ( filterDiscountCover.size() > 0 ) {
+							 List<Discount> discounts =  getDiscountRates(filterDiscountCover);
+							 coverRes.setDiscounts(discounts);	
+						}
+						
+						// Tax Covers
+						List<PolicyCoverData> filterTaxCover = covers.stream().filter( o -> (! o.getTaxId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("T")).collect(Collectors.toList());
+						
+						if( filterTaxCover.size() > 0 ) {
+							 List<Tax> taxes = getTaxRates(filterTaxCover) ;
+							 coverRes.setTaxes(taxes);	
+						}
+						
+						// Loginds Covers
+						List<PolicyCoverData> filterLodingCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("L") ).collect(Collectors.toList());
+						
+						if( filterLodingCover.size() > 0 ) {
+							 List<Loading> lodings =  getLodingCovers(filterLodingCover) ;
+							 coverRes.setLoadings(lodings);	
+						}
+											
+					} else {
+						
+						// Get Sub Covers
+				
+						List<PolicyCoverData> filterCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0)).collect(Collectors.toList());
+						coverRes.setCoverId(filterCover.get(0).getCoverId().toString());
+						 coverRes.setCalcType(filterCover.get(0).getCalcType());
+						 coverRes.setCoverName(filterCover.get(0).getCoverName());
+						 coverRes.setCoverDesc(filterCover.get(0).getCoverDesc());
+						 coverRes.setMinimumPremium(filterCover.get(0).getMinimumPremium()==null ? null : new BigDecimal(filterCover.get(0).getMinimumPremium().toString()));
+						 coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
+						 coverRes.setSumInsured(filterCover.get(0).getSumInsured()==null ? null : new BigDecimal(filterCover.get(0).getSumInsured().toString()));
+						 coverRes.setRate(filterCover.get(0).getRate());
+						
+						List<Cover>  subCoverListRes = new ArrayList<Cover>();
+						List<PolicyCoverData> filterSubCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0)).collect(Collectors.toList());
+						for ( PolicyCoverData subCovers : filterSubCover) {
+							Cover subCoverRes = new Cover();
+							subCoverRes = dozerMapper.map(subCovers, Cover.class);
+							subCoverRes.setIsSubCover(filterSubCover.get(0).getSubCoverYn());
+							subCoverRes.setDependentCoveryn(filterSubCover.get(0).getDependentCoverYn());
+							subCoverRes.setDependentCoverId(filterSubCover.get(0).getDependentCoverId()==null?"":filterSubCover.get(0).getDependentCoverId().toString());
+							subCoverRes.setPremiumExcluedTax( filterSubCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal(filterSubCover.get(0).getPremiumExcludedTaxFc()) );	
+							subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal((filterSubCover.get(0).getPremiumAfterDiscountFc().toString())));
+							subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal((filterSubCover.get(0).getPremiumBeforeDiscountFc().toString())));
+							subCoverRes.setPremiumExcluedTax(filterSubCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal((filterSubCover.get(0).getPremiumExcludedTaxFc().toString())));
+							subCoverRes.setPremiumIncludedTax(filterSubCover.get(0).getPremiumIncludedTaxFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumIncludedTaxFc().toString())));
+							subCoverRes.setIsselected(filterSubCover.get(0).getIsSelected());
+							subCoverRes.setExchangeRate(filterSubCover.get(0).getExchangeRate()==null?null:new BigDecimal(filterSubCover.get(0).getExchangeRate()));	
+							
+
+							subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal (filterSubCover.get(0).getPremiumAfterDiscountFc()));
+							subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal (filterSubCover.get(0).getPremiumBeforeDiscountFc()));
+							subCoverRes.setPremiumExcluedTax(filterSubCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal (filterSubCover.get(0).getPremiumExcludedTaxFc()));
+							subCoverRes.setPremiumIncludedTax(filterSubCover.get(0).getPremiumIncludedTaxFc()==null ? null :new BigDecimal(filterSubCover.get(0).getPremiumIncludedTaxFc()));
+							subCoverRes.setPremiumAfterDiscountLC(filterSubCover.get(0).getPremiumAfterDiscountLc()==null ? null : new BigDecimal(filterSubCover.get(0).getPremiumAfterDiscountLc()));
+							subCoverRes.setPremiumBeforeDiscountLC(filterSubCover.get(0).getPremiumBeforeDiscountLc()==null ? null : new BigDecimal( filterSubCover.get(0).getPremiumBeforeDiscountLc()));
+							subCoverRes.setPremiumExcluedTaxLC(filterSubCover.get(0).getPremiumExcludedTaxLc()==null ? null : new BigDecimal(filterSubCover.get(0).getPremiumExcludedTaxLc()));
+							subCoverRes.setPremiumIncludedTaxLC(filterSubCover.get(0).getPremiumIncludedTaxLc()==null ? null :new BigDecimal (filterSubCover.get(0).getPremiumIncludedTaxLc()));
+							
+							
+							// Discount Covers Or Promo Covers
+							List<PolicyCoverData> filterDiscountCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) &&  ( ! o.getDiscLoadId().equals(0)) && ( o.getCoverageType().equalsIgnoreCase("D") ||  o.getCoverageType().equalsIgnoreCase("P") )  ).collect(Collectors.toList());
+							
+							if ( filterDiscountCover.size() > 0 ) {
+								 List<Discount> discounts =  getDiscountRates(filterDiscountCover);
+								 subCoverRes.setDiscounts(discounts);	
+							}
+							
+							// Tax Covers
+							List<PolicyCoverData> filterTaxCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) &&  (! o.getTaxId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("T")).collect(Collectors.toList());
+							
+							if( filterTaxCover.size() > 0 ) {
+								 List<Tax> taxes = getTaxRates(filterTaxCover) ;
+								 subCoverRes.setTaxes(taxes);	
+							}
+							
+							// Loginds Covers
+							List<PolicyCoverData> filterLodingCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) &&  ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("L") ).collect(Collectors.toList());
+							
+							if( filterLodingCover.size() > 0 ) {
+								 List<Loading> lodings =  getLodingCovers(filterLodingCover) ;
+								 subCoverRes.setLoadings(lodings);	
+							}
+							subCoverListRes.add(subCoverRes);
+						}
+						coverRes.setSubcovers(subCoverListRes);
+					}
+					coverListRes.add(coverRes);
+				}
+				coverListRes.sort(Comparator.comparing(Cover :: getCoverId));;
+				// Response
+				TravelProductDetailsRes traRes = new TravelProductDetailsRes();
+				traRes.setTravelPassengerDetails(travelDetails);		
+				traRes.setCovers(coverListRes);
+				travelResList.add(traRes);				
+			}
+			viewRes.setProductDetails(travelResList);	
 			
 		} catch ( Exception e) {
 			e.printStackTrace();
