@@ -12,7 +12,7 @@ public class SplitDiscountUtils  implements Function<Tuple,Discount>{
 	@Override
 	public Discount apply(Tuple t) {
 		try {
-			 if(t.get("coverageType")!=null && "D".equalsIgnoreCase(t.get("coverageType").toString())) {
+			 if(t.get("coverageType")!=null && ("D".equalsIgnoreCase(t.get("coverageType").toString()) || "P".equalsIgnoreCase(t.get("coverageType").toString())  )) {
 				 String calctype=t.get("calcType")==null?"":t.get("calcType").toString();
 				 Discount d=Discount.builder()
 						 	.discountDesc(t.get("coverName")==null?"":t.get("coverName").toString())
