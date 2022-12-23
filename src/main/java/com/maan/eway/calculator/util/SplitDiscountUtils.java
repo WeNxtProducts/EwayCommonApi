@@ -22,6 +22,7 @@ public class SplitDiscountUtils  implements Function<Tuple,Discount>{
 						 	.discountforId(t.get("discountCoverId")==null?"":t.get("discountCoverId").toString())
 						 	.maxAmount(t.get("minPremium")==null?BigDecimal.ZERO:new BigDecimal(t.get("minPremium").toString()))
 						 	.factorTypeId(t.get("factorTypeId")==null?"":t.get("factorTypeId").toString())
+						 	.coverAgeType(t.get("coverageType").toString())
 						 	.build();
 				 return d;
 			 }

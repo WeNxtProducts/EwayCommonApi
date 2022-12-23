@@ -32,6 +32,8 @@ public class Discount implements Serializable {
     public BigDecimal maxAmount;
     @JsonProperty("FactorTypeId")
     private String factorTypeId;
+    @JsonProperty("CoverAgeType")
+    private String coverAgeType;
     
     
 }
