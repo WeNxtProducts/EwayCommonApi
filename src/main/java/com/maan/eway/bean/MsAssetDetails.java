@@ -90,9 +90,21 @@ private static final long serialVersionUID = 1L;
     @Column(name="BUILDING_USAGE_ID", length=100)
     private String     buildingUsageId;
  
-    @Column(name="SUMINSURED")
-    private Double suminsured ;
+    @Column(name="BUILDING_SUMINSURED")
+    private Double buildingSuminsured ;
     
+    @Column(name="ALLRISK_SUMINSURED")
+    private Double     allriskSuminsured ;
+    
+    @Column(name="PERSONAL_ACC_SUMINSURED")
+    private Double    personalAccSuminsured ;
+
+    @Column(name="PERSONAL_INT_SUMINSURED")
+    private Double    personalIntSuminsured ;
+    
+    @Column(name="CONTENT_SUMINSURED")
+    private Double     contentSuminsured ;
+
     @Column(name="PERIORD_OF_INSURANCE")
     private Integer   periordOfInsurance;
     
