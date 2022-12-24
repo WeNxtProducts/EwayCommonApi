@@ -1417,17 +1417,12 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> getBuildingUsage(BuildingUsageDropDownReq req) {
+	public List<DropDownRes> getBuildingUsage(LovDropDownReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "BUILDING_USAGE" ;
-			LovDropDownReq req2 = new LovDropDownReq();
-			req2.setInsuranceId(req.getInsuranceId());
-			req2.setBranchCode(req.getBranchCode());			
-			List<ListItemValue> getList  = getListItem(req2 , itemType);
-			getList = getList.stream().filter( o -> o.getParam1()!=null && o.getParam1().equalsIgnoreCase(req.getParam1()) ).collect(Collectors.toList());
-
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1441,7 +1436,7 @@ public class DropDownServiceImpl  implements DropDownService{
 			return null;
 		}
 		return resList;
-	}		
+	}
 
 
 	

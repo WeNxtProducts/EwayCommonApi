@@ -111,6 +111,6 @@ public interface DropDownService {
 
 	List<DropDownRes> getBuildingPurpose(LovDropDownReq req);
 
-	List<DropDownRes> getBuildingUsage(BuildingUsageDropDownReq req);
+	List<DropDownRes> getBuildingUsage(LovDropDownReq req);
 
 }

@@ -911,7 +911,7 @@ public class DropDownController {
 	}
 	
 	@PostMapping("/buildingusage")
-	public ResponseEntity<CommonRes> getBuildingUsage(@RequestBody BuildingUsageDropDownReq req) {
+	public ResponseEntity<CommonRes> getBuildingUsage(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
 		List<DropDownRes> res = dropDownService.getBuildingUsage(req);
 		data.setCommonResponse(res);
