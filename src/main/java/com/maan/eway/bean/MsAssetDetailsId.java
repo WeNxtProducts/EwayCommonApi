@@ -29,7 +29,7 @@ public class MsAssetDetailsId implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //--- ENTITY KEY ATTRIBUTES 
-    private String     vdrefNo ;
+    private Long       vdRefno ;
     
     private Integer    locationId ;
     

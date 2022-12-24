@@ -52,8 +52,8 @@ private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
     @Id
-    @Column(name="VDREF_NO", nullable=false, length=20)
-    private String     vdrefNo ;
+    @Column(name="VD_REFNO", nullable=false)
+    private Long       vdRefno ;
 
     @Id
     @Column(name="REQUEST_REFERENCE_NO", nullable=false, length=20)

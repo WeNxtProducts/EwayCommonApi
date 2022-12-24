@@ -18,6 +18,7 @@ import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CompanyProrataMaster;
 import com.maan.eway.bean.CompanyTaxSetup;
 import com.maan.eway.bean.FactorRateRequestDetails;
+import com.maan.eway.bean.MsAssetDetails;
 import com.maan.eway.bean.MsCommonDetails;
 import com.maan.eway.bean.MsCustomerDetails;
 import com.maan.eway.bean.MsHumanDetails;
@@ -347,13 +348,17 @@ public class CalculatorEngineService implements CalculatorEngine{
 			while(vehicles==null) {
 				
 				
-				 if(oneProduct.equals("M")){
+				 if(oneProduct.equalsIgnoreCase("M")){
 					 String search="vdRefno:"+engine.getVdRefNo()+";vehicleId:"+engine.getVehicleId();
 					 criteria = crservice.createCriteria(MsVehicleDetails.class, search, "vdRefno");			  
 					 vehicles = crservice.getResult(criteria, 0, 50);
-				 }else if(oneProduct.equals("H")){
+				 }else if(oneProduct.equalsIgnoreCase("H")){
 					 String search="vdRefno:"+engine.getVdRefNo()+";humanId:"+engine.getVehicleId();
 					 criteria = crservice.createCriteria(MsHumanDetails.class, search, "vdRefno");			  
+					 vehicles = crservice.getResult(criteria, 0, 50);
+				 }else if(oneProduct.equalsIgnoreCase("A")){
+					 String search="vdRefno:"+engine.getVdRefNo()+";locationId:"+engine.getVehicleId();
+					 criteria = crservice.createCriteria(MsAssetDetails.class, search, "vdRefno");			  
 					 vehicles = crservice.getResult(criteria, 0, 50);
 				 }
 			 
@@ -385,6 +390,10 @@ public class CalculatorEngineService implements CalculatorEngine{
 					 }else if(oneProduct.equals("H")){
 						   search="vdRefno:"+engine.getVdRefNo()+";humanId:"+engine.getVehicleId();
 						 criteria = crservice.createCriteria(MsHumanDetails.class, search, "vdRefno");			  
+						 vehicles = crservice.getResult(criteria, 0, 50);
+					 }else if(oneProduct.equalsIgnoreCase("A")){
+						 search="vdRefno:"+engine.getVdRefNo()+";locationId:"+engine.getVehicleId();
+						 criteria = crservice.createCriteria(MsAssetDetails.class, search, "vdRefno");			  
 						 vehicles = crservice.getResult(criteria, 0, 50);
 					 }
 				 
