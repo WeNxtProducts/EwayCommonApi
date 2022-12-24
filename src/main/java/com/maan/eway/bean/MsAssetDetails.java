@@ -128,6 +128,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="PROMOCODE", length=100)
     private String     promocode;
     
+    @Column(name="INBUILD_CONSTRUCT_TYPE", length=20)
+    private String     inbuildConstructType;
+
 }
 
 
