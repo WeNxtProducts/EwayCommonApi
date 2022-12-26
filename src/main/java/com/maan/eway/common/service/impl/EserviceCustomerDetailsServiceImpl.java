@@ -95,7 +95,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				} else if (req.getClientName().length() > 100) {
 					errorList.add(new Error("01", "ClientName", "Please Enter ClientName within 100 Characters"));
 				} 
-				else if (StringUtils.isNotBlank(req.getClientName())&& !req.getClientName().matches("^[A-Za-z]")) {
+				else if (StringUtils.isNotBlank(req.getClientName())&& !req.getClientName().matches("(?i)[a-z]([- ',.a-z]{0,23}[a-z])?")) {
 					errorList.add(new Error("01", "ClientName", "Please Enter Proper ClientName"));						
 				}
 				
