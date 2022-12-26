@@ -251,7 +251,7 @@ this.repository = repo;
 						
 					saveCover.setCoverBasedOn(StringUtils.isBlank(coverData.getCoverBasedOn())?"sumInsured":coverData.getCoverBasedOn());
 					//Double b=coverData.getPremiumBeforeDiscountLC()==null ? 0D : Double.valueOf(df.format(coverData.getPremiumBeforeDiscountLC()));
-					saveCover.setRegulSumInsured(coverData.getTiraSumInsured().doubleValue());
+					saveCover.setRegulSumInsured(coverData.getTiraSumInsured()==null?null:coverData.getTiraSumInsured().doubleValue());
 					
 //					if(coverData.getTaxes()!=null && coverData.getTaxes().size() > 0 ) {
 //						saveCover.setTax1(coverData.getTaxes().get(0).getTaxAmount()==null ? null : Double.valueOf(df.format(coverData.getTaxes().get(0).getTaxAmount())) );
@@ -331,8 +331,9 @@ this.repository = repo;
 						saveSubCover.setPremiumBeforeDiscountLc(subCoverData.getPremiumBeforeDiscountLC()==null ? null : Double.valueOf(df.format(subCoverData.getPremiumBeforeDiscountLC())));
 						saveSubCover.setPremiumExcludedTaxLc(subCoverData.getPremiumExcluedTaxLC()==null ? null : Double.valueOf(df.format(subCoverData.getPremiumExcluedTaxLC())));
 						saveSubCover.setPremiumIncludedTaxLc(subCoverData.getPremiumIncludedTaxLC()==null ? null : Double.valueOf(df.format(subCoverData.getPremiumIncludedTaxLC())));
-						saveSubCover.setIsReferral(StringUtils.isBlank(coverData.getIsReferral())?"N":coverData.getIsReferral());
+						saveSubCover.setIsReferral(StringUtils.isBlank(subCoverData.getIsReferral())?"N":subCoverData.getIsReferral());
 						saveSubCover.setReferralDescription(StringUtils.isBlank(coverData.getReferalDescription())?"":coverData.getReferalDescription());
+						saveSubCover.setRegulSumInsured(subCoverData.getTiraSumInsured()==null?null:subCoverData.getTiraSumInsured().doubleValue());
 						
 //						if(subCoverData.getTaxes()!=null && subCoverData.getTaxes().size() > 0 ) {
 //							saveSubCover.setTax1(subCoverData.getTaxes().get(0).getTaxAmount()==null ? null : Double.valueOf(df.format(subCoverData.getTaxes().get(0).getTaxAmount())) );
@@ -352,7 +353,7 @@ this.repository = repo;
 							saveSubCover.setActualRate(coverData.getRate());
 						}
 						///Double b=subCoverData.getPremiumBeforeDiscountLC()==null ? 0D : Double.valueOf(df.format(subCoverData.getPremiumBeforeDiscountLC()));
-						saveSubCover.setRegulSumInsured(subCoverData.getTiraSumInsured().doubleValue());
+						saveSubCover.setRegulSumInsured(subCoverData.getTiraSumInsured()==null?null:subCoverData.getTiraSumInsured().doubleValue());
 
 						saveSubCover.setCoverBasedOn(StringUtils.isBlank(coverData.getCoverBasedOn())?"sumInsured":coverData.getCoverBasedOn());
 						

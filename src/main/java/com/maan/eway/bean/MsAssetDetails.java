@@ -105,8 +105,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="CONTENT_SUMINSURED")
     private Double     contentSuminsured ;
 
-    @Column(name="PERIORD_OF_INSURANCE")
-    private Integer   periordOfInsurance;
+    @Column(name="Period_of_Insurance", nullable=false, length=10)
+    private String     periodOfInsurance ;
     
     
     @Column(name="CURRENCY", length=20)
