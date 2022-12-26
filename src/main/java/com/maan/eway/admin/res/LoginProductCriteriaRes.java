@@ -1,5 +1,6 @@
 package com.maan.eway.admin.res;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -28,10 +29,10 @@ public class LoginProductCriteriaRes {
 	private String oldProductName ;
 	
 	@JsonProperty("SumInsuredStart")
-	private Double sumInsuredStart;
+	private BigDecimal sumInsuredStart;
 	
 	@JsonProperty("SumInsuredEnd")
-	private Double sumInsuredEnd;
+	private BigDecimal sumInsuredEnd;
 	
 	@JsonProperty("Status")
 	private String status;
