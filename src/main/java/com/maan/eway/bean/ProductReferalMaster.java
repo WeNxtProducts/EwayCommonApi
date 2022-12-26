@@ -56,18 +56,25 @@ private static final long serialVersionUID = 1L;
     private Integer    referalId ;
 
     @Id
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_START", nullable=false)
-    private Date       effectiveDateStart ;
-
-    @Id
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_END", nullable=false)
-    private Date       effectiveDateEnd ;
+    @Column(name="AMEND_ID", nullable=false)
+    private Integer    amendId ;
 
     @Id
     @Column(name="COMPANY_ID", nullable=false, length=20)
     private String     companyId ;
+
+    @Id
+    @Column(name="PRODUCT_ID", nullable=false, length=20)
+    private Integer     productId ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_END", nullable=false)
+    private Date       effectiveDateEnd ;
+
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_START", nullable=false)
+    private Date       effectiveDateStart ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="REFERAL_NAME", length=100)
@@ -83,9 +90,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="REFERAL_TYPE_DESC", length=300)
     private String     referalTypeDesc ;
 
-    @Column(name="PRODUCT_ID", nullable=false, length=20)
-    private Integer     productId ;
-
+   
     @Column(name="REMARKS", length=100)
     private String     remarks ;
 
@@ -99,9 +104,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="CORE_APP_CODE", nullable=false, length=20)
     private String     coreAppCode ;
 
-    @Column(name="AMEND_ID", nullable=false)
-    private Integer    amendId ;
-
+    
     @Column(name="CREATED_BY", nullable=false, length=100)
     private String     createdBy ;
 

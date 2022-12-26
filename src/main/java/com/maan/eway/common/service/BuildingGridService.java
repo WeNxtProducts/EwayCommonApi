@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.persistence.Tuple;
 
+import com.maan.eway.admin.res.ReferalCriteriaRes;
+import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
@@ -21,17 +23,9 @@ public interface BuildingGridService {
 
 	List<RejectCriteriaRes> getBuildingRejectedQuoteDetails(ExistingQuoteReq req, List<String> branches ,int limit, int offset);
 
-	List<QuoteCriteriaRes> getBuildingReferalPendingDetails(ExistingQuoteReq req, List<String> branches, int limit,int offset);
+	List<ReferalGridCriteriaRes> getBuildingReferalDetails(ExistingQuoteReq req, List<String> branches, int limit,int offset , String Status);
 
-	List<QuoteCriteriaRes> getBuildingReferalApprovedDetails(ExistingQuoteReq req, List<String> branches, int limit,int offset);
-
-	List<RejectCriteriaRes> getBuildingReferalRejectedDetails(ExistingQuoteReq req, List<String> branches, int limit,int offset);
-
-	List<QuoteCriteriaRes> getBuildingAdminReferalPendings(ExistingQuoteReq req, List<String> branches, int limit,int offset);
-
-	List<QuoteCriteriaRes> getBuildingAdminReferalApproved(ExistingQuoteReq req, List<String> branches, int limit,int offset);
-
-	List<RejectCriteriaRes> getBuildingAdminReferalRejected(ExistingQuoteReq req, List<String> branches, int limit,int offset);
+	List<ReferalGridCriteriaRes> getBuildingAdminReferalDetails(ExistingQuoteReq req, List<String> branches, int limit,int offset , String Status);
 	
 	List<Tuple> searchBuildingQuote(CopyQuoteReq req, List<String> branches);
 

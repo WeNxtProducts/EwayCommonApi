@@ -98,7 +98,7 @@ public class CityMasterServiceImpl implements CityMasterService {
 			
 			String cityId = "";
 
-			if (StringUtils.isBlank(req.getCityId().toString())) {
+			if (StringUtils.isBlank(req.getCityId())) {
 				// Save
 				// Long totalCount = repo.count();
 				Long totalCount = getMasterTableCount();

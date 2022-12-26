@@ -34,6 +34,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.maan.eway.admin.res.ReferalCriteriaRes;
+import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.EserviceCustomerDetails;
@@ -330,16 +332,16 @@ public class GridServiceImpl implements GridService {
 				branches.add(req.getBranchCode()) ;
 			}
 			
-			List<QuoteCriteriaRes> referralPendingList = new ArrayList<QuoteCriteriaRes>();
+			List<ReferalGridCriteriaRes> referralPendingList = new ArrayList<ReferalGridCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
-				referralPendingList = motService.getMotorReferalPendingDetails(req  , branches, limit , offset );
+				referralPendingList = motService.getMotorReferalDetails(req  , branches, limit , offset , "RP" );
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
-				referralPendingList = traService.getTravelReferalPendingDetails(req  , branches, limit , offset );
+				referralPendingList = traService.getTravelReferalDetails(req  , branches, limit , offset, "RP" );
 			}
 			else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
-				referralPendingList = buiService.getBuildingReferalPendingDetails(req  , branches, limit , offset );
+				referralPendingList = buiService.getBuildingReferalDetails(req  , branches, limit , offset, "RP" );
 			}
-			for(QuoteCriteriaRes data : referralPendingList  ) {
+			for(ReferalGridCriteriaRes data : referralPendingList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
 				 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
@@ -386,16 +388,16 @@ public class GridServiceImpl implements GridService {
 				branches.add(req.getBranchCode()) ;
 			}
 			
-			List<QuoteCriteriaRes> referralApprovedList = new ArrayList<QuoteCriteriaRes>();
+			List<ReferalGridCriteriaRes> referralApprovedList = new ArrayList<ReferalGridCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
-				referralApprovedList = motService.getMotorReferalApprovedDetails(req  , branches, limit , offset );
+				referralApprovedList = motService.getMotorReferalDetails(req  , branches, limit , offset, "RA" );
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
-				referralApprovedList = traService.getTravelReferalApprovedDetails(req  , branches, limit , offset );
+				referralApprovedList = traService.getTravelReferalDetails(req  , branches, limit , offset, "RA" );
 			}
 			else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
-				referralApprovedList = buiService.getBuildingReferalApprovedDetails(req  , branches, limit , offset );
+				referralApprovedList = buiService.getBuildingReferalDetails(req  , branches, limit , offset, "RA" );
 			}
-			for(QuoteCriteriaRes data : referralApprovedList  ) {
+			for(ReferalGridCriteriaRes data : referralApprovedList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
 				 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
@@ -442,16 +444,16 @@ public class GridServiceImpl implements GridService {
 				branches.add(req.getBranchCode()) ;
 			}
 			
-			List<RejectCriteriaRes> referralRejectedList = new ArrayList<RejectCriteriaRes>();
+			List<ReferalGridCriteriaRes> referralRejectedList = new ArrayList<ReferalGridCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
-				referralRejectedList = motService.getMotorReferalRejectedDetails(req  , branches, limit , offset );
+				referralRejectedList = motService.getMotorReferalDetails(req  , branches, limit , offset, "RR" );
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
-				referralRejectedList = traService.getTravelReferalRejectedDetails(req  , branches, limit , offset );
+				referralRejectedList = traService.getTravelReferalDetails(req  , branches, limit , offset, "RR" );
 			}
 			else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
-				referralRejectedList = buiService.getBuildingReferalRejectedDetails(req  , branches, limit , offset );
+				referralRejectedList = buiService.getBuildingReferalDetails(req  , branches, limit , offset, "RR" );
 			}
-			for(RejectCriteriaRes data : referralRejectedList  ) {
+			for(ReferalGridCriteriaRes data : referralRejectedList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
 				 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
@@ -478,16 +480,16 @@ public class GridServiceImpl implements GridService {
 			List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(req.getApplicationId());
 			branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
 			
-			List<QuoteCriteriaRes> adminReferralPendingList = new ArrayList<QuoteCriteriaRes>();
+			List<ReferalGridCriteriaRes> adminReferralPendingList = new ArrayList<ReferalGridCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
-				adminReferralPendingList = motService.getMotorAdminReferalPendings(req  , branches, limit , offset );
+				adminReferralPendingList = motService.getMotorAdminReferalDetails(req  , branches, limit , offset ,"RP" );
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
-				adminReferralPendingList = traService.getTravelAdminReferalPendings(req  , branches, limit , offset );
+				adminReferralPendingList = traService.getTravelAdminReferalDetails(req  , branches, limit , offset,"RP" );
 			}
 			else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
-				adminReferralPendingList = buiService.getBuildingAdminReferalPendings(req  , branches, limit , offset );
+				adminReferralPendingList = buiService.getBuildingAdminReferalDetails(req  , branches, limit , offset,"RP" );
 			}
-			for(QuoteCriteriaRes data : adminReferralPendingList  ) {
+			for(ReferalGridCriteriaRes data : adminReferralPendingList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
 				 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
@@ -514,16 +516,16 @@ public class GridServiceImpl implements GridService {
 			List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(req.getApplicationId());
 			branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
 			
-			List<QuoteCriteriaRes> adminReferralApprovedList = new ArrayList<QuoteCriteriaRes>();
+			List<ReferalGridCriteriaRes> adminReferralApprovedList = new ArrayList<ReferalGridCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
-				adminReferralApprovedList = motService.getMotorAdminReferalApproved(req  , branches, limit , offset );
+				adminReferralApprovedList = motService.getMotorAdminReferalDetails(req  , branches, limit , offset,"RA" );
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
-				adminReferralApprovedList = traService.getTravelAdminReferalApproved(req  , branches, limit , offset );
+				adminReferralApprovedList = traService.getTravelAdminReferalDetails(req  , branches, limit , offset,"RA" );
 			}
 			else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
-				adminReferralApprovedList = buiService.getBuildingAdminReferalApproved(req  , branches, limit , offset );
+				adminReferralApprovedList = buiService.getBuildingAdminReferalDetails(req  , branches, limit , offset,"RA" );
 			}
-			for(QuoteCriteriaRes data : adminReferralApprovedList  ) {
+			for(ReferalGridCriteriaRes data : adminReferralApprovedList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
 				 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
@@ -550,16 +552,16 @@ public class GridServiceImpl implements GridService {
 			List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(req.getApplicationId());
 			branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
 			
-			List<RejectCriteriaRes> adminReferralRejectedList = new ArrayList<RejectCriteriaRes>();
+			List<ReferalGridCriteriaRes> adminReferralRejectedList = new ArrayList<ReferalGridCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
-				adminReferralRejectedList = motService.getMotorAdminReferalRejected(req  , branches, limit , offset );
+				adminReferralRejectedList = motService.getMotorAdminReferalDetails(req  , branches, limit , offset ,"RR" );
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
-				adminReferralRejectedList = traService.getTravelAdminReferalRejected(req  , branches, limit , offset );
+				adminReferralRejectedList = traService.getTravelAdminReferalDetails(req  , branches, limit , offset,"RR" );
 			}
 			else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
-				adminReferralRejectedList = buiService.getBuildingAdminReferalRejected(req  , branches, limit , offset );
+				adminReferralRejectedList = buiService.getBuildingAdminReferalDetails(req  , branches, limit , offset,"RR" );
 			}
-			for(RejectCriteriaRes data : adminReferralRejectedList  ) {
+			for(ReferalGridCriteriaRes data : adminReferralRejectedList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
 				 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
