@@ -81,6 +81,9 @@ private static final long serialVersionUID = 1L;
     //--- ENTITY DATA FIELDS 
     @Column(name="PRODUCT_NAME", length=100)
     private String     productName ;
+    
+    @Column(name="PRODUCT_DESC", length=100)
+    private String     productDesc;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")
