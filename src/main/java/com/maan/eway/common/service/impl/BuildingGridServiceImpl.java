@@ -298,7 +298,7 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 
 			// Select
-			query.multiselect(cb.count(m).alias("idsCount"),
+			query.multiselect(cb.count(m).as(Long.class).alias("idsCount"),
 					// Customer Info
 					c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
 					c.get("clientName").alias("clientName"),
@@ -373,7 +373,7 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 
 			// Select
-			query.multiselect(cb.count(m).alias("idsCount"),
+			query.multiselect(cb.count(m).as(Long.class).alias("idsCount"),
 					// Customer Info
 					c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
 					c.get("clientName").alias("clientName"),
