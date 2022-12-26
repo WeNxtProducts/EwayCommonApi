@@ -467,11 +467,11 @@ public class BasicLoginValidationService {
 //			} else if( isNotValidMail(brokerReq.getUserMail()) == true ) {
 //				errors.add(new Error("29", "UserMail", "UserMail Is Not Valid Mail" ));
 //			}
-			
+			/*
 			if(StringUtils.isBlank(brokerReq.getCityCode())  ) {
 				errors.add(new Error("15", "City", "Plese Select City" ));
 			} else if(! brokerReq.getCityCode().matches("[0-9]+")  ) {
-
+			
 			}else if(StringUtils.isNotBlank(brokerReq.getCountryCode()) &&   brokerReq.getCountryCode().matches("[0-9]+")  ){
 	
 				Long cityCount  = getCityCount(brokerReq.getCountryCode() , brokerReq.getCityCode());//cityRepo.countByCityIdAndStateIdAndCountryIdAndStatusAndEffectiveDateStartLessThanEqual(Integer.valueOf(brokerReq.getCityCode()) , Integer.valueOf(brokerReq.getStateCode()) , Integer.valueOf(brokerReq.getCountryCode()),"Y", today );
@@ -479,7 +479,7 @@ public class BasicLoginValidationService {
 					errors.add(new Error("18", "City", "Please Select Valid City" ));
 				}
 			} 
-			
+			*/
 			
 			
 			

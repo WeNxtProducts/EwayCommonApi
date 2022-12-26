@@ -460,6 +460,8 @@ this.repository = repo;
 			userInfo.setUpdatedBy(loginReq.getCreatedBy());
 			userInfo.setStatus(saveLogin.getStatus());
 			userInfo.setCountryCode(personalReq.getCountryCode());
+			//userInfo.setCityCode(Integer.valueOf(personalReq.getCityCode()));
+			userInfo.setCityName(personalReq.getCityName());
 			userInfo.setMobileCodeDesc(mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getMobileCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
 			userInfo.setWhatsappCodeDesc(mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getWhatsappCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
 			
@@ -473,9 +475,9 @@ this.repository = repo;
 			}
 			
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("User")  ) {
-				List<Tuple> stateCityNames = 	getStateAndCityName(personalReq.getCountryCode() ,  personalReq.getCityCode());
+				List<Tuple> stateCityNames = 	getStateAndCityName(personalReq.getCountryCode());
 				
-				userInfo.setCityName(stateCityNames.get(0).get("cityName") == null ? "" :  stateCityNames.get(0).get("cityName").toString());
+			//	userInfo.setCityName(stateCityNames.get(0).get("cityName") == null ? "" :  stateCityNames.get(0).get("cityName").toString());
 				userInfo.setStateName(stateCityNames.get(0).get("stateName") == null ? "" :  stateCityNames.get(0).get("stateName").toString());
 				userInfo.setCountryName(stateCityNames.get(0).get("countryName") == null ? "" :  stateCityNames.get(0).get("countryName").toString());
 			}
@@ -497,7 +499,7 @@ this.repository = repo;
 	}
 	
 	
-	public List<Tuple> getStateAndCityName(String countryId , String cityId  ) {
+	public List<Tuple> getStateAndCityName(String countryId ) {
 		List<Tuple> list = new ArrayList<Tuple>();
 		try {
 			Date today = new Date();
@@ -512,15 +514,15 @@ this.repository = repo;
 			Subquery<Long> effectiveDate1 = query.subquery(Long.class);
 			Root<CityMaster> ocpm1 = effectiveDate1.from(CityMaster.class);
 			effectiveDate1.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate c1 = cb.equal(ocpm1.get("cityId"), c.get("cityId"));
+			//Predicate c1 = cb.equal(ocpm1.get("cityId"), c.get("cityId"));
 			Predicate c2 = cb.equal(ocpm1.get("stateId"), c.get("stateId"));
 			Predicate c3 = cb.equal(ocpm1.get("countryId"), c.get("countryId"));
 			Predicate c4 = cb.equal(ocpm1.get("status"),c.get("status"));
 			Predicate c5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate1.where(c1,c2,c3,c4,c5);
+			effectiveDate1.where(c2,c3,c4,c5);
 			
 			Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate1);
-			Predicate n2 = cb.equal(c.get("cityId"), cityId);
+			//Predicate n2 = cb.equal(c.get("cityId"), cityId);
 			Predicate n4 = cb.equal(c.get("countryId"), countryId);
 			Predicate n5 = cb.equal(c.get("status"), "Y");
 			
@@ -565,9 +567,9 @@ this.repository = repo;
 			country.where(cm2,cm3,cm4);
 			
 			// Select
-			query.multiselect( c.get("cityId").alias("cityId") ,c.get("cityName").alias("cityName") , state.alias("stateName") ,country.alias("countryName") );
+			query.multiselect( state.alias("stateName") ,country.alias("countryName") );
 			
-			query.where(n1,n2,n4,n5);
+			query.where(n1,n4,n5);
 			// Get Result
 			TypedQuery<Tuple> result = em.createQuery(query);
 			list = result.getResultList();
@@ -674,9 +676,9 @@ this.repository = repo;
 			}
 			
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("User")  ) {
-				List<Tuple> stateCityNames = 	getStateAndCityName(personalReq.getCountryCode() ,  personalReq.getCityCode());
+				List<Tuple> stateCityNames = 	getStateAndCityName(personalReq.getCountryCode());
 				
-				updateUser.setCityName(stateCityNames.get(0).get("cityName") == null ? "" :  stateCityNames.get(0).get("cityName").toString());
+			//	updateUser.setCityName(stateCityNames.get(0).get("cityName") == null ? "" :  stateCityNames.get(0).get("cityName").toString());
 				updateUser.setStateName(stateCityNames.get(0).get("stateName") == null ? "" :  stateCityNames.get(0).get("stateName").toString());
 				updateUser.setCountryName(stateCityNames.get(0).get("countryName") == null ? "" :  stateCityNames.get(0).get("countryName").toString());;
 			}

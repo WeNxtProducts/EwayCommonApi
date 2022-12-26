@@ -135,13 +135,13 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 			if(StringUtils.isBlank(personalReq.getCountryCode())  ) {
 				errors.add(new Error("18", "Country", "Plese Select Country" ));
 			}
-				
+		/*		
 			if(StringUtils.isBlank(personalReq.getCityCode())  ) {
 				errors.add(new Error("15", "City", "Plese Select City" ));
 			} else if(! personalReq.getCityCode().matches("[0-9]+")  ) {
 
 			}
-			
+			*/
 			if(StringUtils.isBlank(personalReq.getMobileCode())  ) {
 				errors.add(new Error("29", "MobileCode", "Plese Select MobileCode" ));
 			} 
