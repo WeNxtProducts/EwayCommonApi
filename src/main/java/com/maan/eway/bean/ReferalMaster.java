@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -57,22 +56,30 @@ private static final long serialVersionUID = 1L;
     private Integer    referalId ;
 
     @Id
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_START", nullable=false)
-    private Date       effectiveDateStart ;
-
-    @Id
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_END", nullable=false)
-    private Date       effectiveDateEnd ;
-
+    @Column(name="AMEND_ID", nullable=false)
+    private Integer    amendId ;
+    
     //--- ENTITY DATA FIELDS 
     @Column(name="REFERAL_NAME", length=100)
     private String     referalName ;
 
     @Column(name="REFERAL_DESC", length=300)
     private String     referalDesc ;
+    
+    @Column(name="REFERAL_TYPE", length=300)
+    private String     referalType;
+    
+    @Column(name="REFERAL_TYPE_DESC", length=300)
+    private String     referalTypeDesc ;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_START", nullable=false)
+    private Date       effectiveDateStart ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_END", nullable=false)
+    private Date       effectiveDateEnd ;
+    
     @Column(name="REMARKS", length=100)
     private String     remarks ;
 
@@ -83,9 +90,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATUS", length=1)
     private String     status ;
 
-    @Column(name="AMEND_ID", nullable=false)
-    private Integer    amendId ;
-
     @Column(name="CREATED_BY", length=20)
     private String     createdBy ;
 
@@ -94,6 +98,13 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="REGULATORY_CODE", nullable=false, length=20)
     private String     regulatoryCode ;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="UPDATED_DATE")
+    private Date       updatedDate ;
+
+    @Column(name="UPDATED_BY", length=20)
+    private String     updatedBy ;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )
