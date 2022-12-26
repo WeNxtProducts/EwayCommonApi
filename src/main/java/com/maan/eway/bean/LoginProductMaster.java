@@ -20,6 +20,7 @@ import javax.persistence.Table;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -92,10 +93,10 @@ private static final long serialVersionUID = 1L;
     private String     remarks ;
 
     @Column(name="SUM_INSURED_START")
-    private Double     sumInsuredStart ;
+    private BigDecimal     sumInsuredStart ;
 
     @Column(name="SUM_INSURED_END")
-    private Double     sumInsuredEnd ;
+    private BigDecimal     sumInsuredEnd ;
 
     @Column(name="COMMISSION_VAT_YN", length=1)
     private String     commissionVatYn ;
