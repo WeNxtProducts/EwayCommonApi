@@ -30,6 +30,7 @@ import com.maan.eway.calculator.util.CoverCalculator;
 import com.maan.eway.calculator.util.CoverFromFactor;
 import com.maan.eway.calculator.util.DiscountFromFactor;
 import com.maan.eway.calculator.util.LoadingFromFactor;
+import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.calculator.util.SplitDiscountUtils;
 import com.maan.eway.calculator.util.SplitLoadingUtils;
 import com.maan.eway.calculator.util.SplitSubCoverUtil;
@@ -60,6 +61,9 @@ public class CalculatorEngineService implements CalculatorEngine{
 	
 	@Autowired
 	private CriteriaService crservice;
+	
+	@Autowired 
+	private RatingFactorsUtil ratingutil;
 	/*@Autowired
 	private CoverCalculator calc;
 	*/
@@ -285,7 +289,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 				 } */
 				 
 				 CoverCalculator calc=new CoverCalculator();
-				 calc.setEngine(engine,retc,commontbl,vehicles,customers,prorata,crservice);
+				 calc.setEngine(engine,retc,commontbl,vehicles,customers,prorata,ratingutil);
 				 
 				 totalcovers.stream().forEach(calc);
 				 //remove error records
@@ -337,12 +341,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 			/*MsVehicleDetails findByVdRefno = msvech.findByVdRefno(Long.parseLong(engine.getVdRefNo()));
 			System.out.println("findByVdRefno"+findByVdRefno.getChassisNumber());
 			*/
-			String todayInString = DD_MM_YYYY.format(new Date());
-			String prodSearch="companyId:"+engine.getInsuranceId()+";productId:"+engine.getProductId()+";status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;";				
-			criteria = crservice.createCriteria(CompanyProductMaster.class, prodSearch, "companyId");			  
-			List<Tuple> product = crservice.getResult(criteria, 0, 1);
-			String oneProduct=product.get(0).get("motorYn")==null?"M":product.get(0).get("motorYn").toString();
-			 
+			String oneProduct= ratingutil.collectProductType(engine);
 			 
 			vehicles=null;
 			while(vehicles==null) {
@@ -554,7 +553,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 					 }
 					 
 					 CoverCalculator calc=new CoverCalculator();
-					 calc.setEngine(request,retc,commontbl,vehicles,customers,prorata,crservice);
+					 calc.setEngine(request,retc,commontbl,vehicles,customers,prorata,ratingutil);
 					 
 					 totalcovers.stream().forEach(calc);
 					 //remove error records

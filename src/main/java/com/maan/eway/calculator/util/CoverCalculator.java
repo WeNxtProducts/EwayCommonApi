@@ -58,6 +58,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 t.setSumInsured(si);
 				 
 				 if("F".equals(t.getCalcType())) {
+					 // Tuple vehicle,Tuple customer,Tuple common
 					 List<Tuple> factors = LoadFactorRates(engine, t.getCoverId(),t.getFactorTypeId(),engine.getVehicleId());
 					 
 					 /*if(factors==null || factors.size()==0) 

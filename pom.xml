@@ -16,6 +16,7 @@
 	<description>CRM project for Spring Boot</description>
 	<properties>
 		<java.version>1.8</java.version>
+		<cache2k-version>2.6.1.Final</cache2k-version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -30,7 +31,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web-services</artifactId>
 		</dependency>
-
+	<dependency>  
+		<groupId>org.springframework.boot</groupId>  
+		<artifactId>spring-boot-starter-cache</artifactId>  
+	</dependency>  
 	<!-- Security
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -170,6 +174,24 @@
 	    <artifactId>jackson-dataformat-xml</artifactId>
 	    <version>2.13.4</version>
 	</dependency>
+	
+	<!-- Cache 2k -->
+	<dependency>
+      <groupId>org.cache2k</groupId>
+      <artifactId>cache2k-api</artifactId>
+      <version>${cache2k-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.cache2k</groupId>
+      <artifactId>cache2k-core</artifactId>
+      <version>${cache2k-version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.cache2k</groupId>
+      <artifactId>cache2k-spring</artifactId>
+      <version>${cache2k-version}</version>
+    </dependency>
 	</dependencies>
 
 	<build>
