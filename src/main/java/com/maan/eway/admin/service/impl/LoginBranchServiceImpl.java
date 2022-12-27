@@ -8,8 +8,10 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -53,6 +55,7 @@ import com.maan.eway.admin.res.IssuerBranchGetRes;
 import com.maan.eway.admin.res.IssuerCompanyGetRes;
 import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.service.LoginBranchService;
+import com.maan.eway.auth.dto.LoginBranchCriteriaRes;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginBranchMaster;
@@ -537,19 +540,32 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 	@Override
 	public List<GetBrokerBranchRes> getallBrokerCompanyBranch(GetAllBrokerBranchReq req) {
 		List<GetBrokerBranchRes> resList = new ArrayList<GetBrokerBranchRes>();
-		ModelMapper mapper = new ModelMapper();
+		DozerBeanMapper mapper = new DozerBeanMapper();
 		SimpleDateFormat idf = new SimpleDateFormat("yyMMddhhssmmss");
 		try {
 			// Find Data
-			List<LoginBranchMaster> findBranches = loginBrokerRepo
-					.findByLoginIdOrderByUpdatedDateDesc(req.getLoginId());
-			Type listType = new TypeToken<List<GetBrokerBranchRes>>() {
-			}.getType();
-			resList = mapper.map(findBranches, listType);
-
-			if (resList.size() <= 0) {
-				resList = Collections.emptyList();
+			List<LoginBranchMaster> findBranches = loginBrokerRepo.findByLoginIdOrderByUpdatedDateDesc(req.getLoginId());
+			List<String> branchCode =findBranches.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
+			List<String> attachedBranchCode = findBranches.stream().map(LoginBranchMaster ::getAttachedBranch ).collect(Collectors.toList()) ;
+			List<String> totalList = new ArrayList<>();
+			totalList.addAll(branchCode);
+			totalList.addAll(attachedBranchCode);
+			Set<String> removeDuplicateBranch = new HashSet<>(totalList);
+			
+			List<LoginBranchCriteriaRes> loginCriteriaRes = getBranchDetails(removeDuplicateBranch);
+			
+			for (LoginBranchMaster brokerBranch : findBranches) {
+				List<LoginBranchCriteriaRes>  filterBranch = loginCriteriaRes.stream().filter( o -> o.getBranchCode().equalsIgnoreCase(brokerBranch.getBranchCode()) ).collect(Collectors.toList());
+				
+				// Get Active Branches
+				if( filterBranch.size()>0 ) {
+					GetBrokerBranchRes res = new GetBrokerBranchRes();
+					mapper.map(brokerBranch, res);
+					resList.add(res);
+				}
+				
 			}
+			
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -557,6 +573,104 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			return null;
 		}
 		return resList;
+	}
+	
+	
+	private List<LoginBranchCriteriaRes> getBranchDetails(Set<String> removeDuplicateBranch) {
+		List<LoginBranchCriteriaRes> list = new ArrayList<LoginBranchCriteriaRes>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 59);
+			today = cal.getTime();
+
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<LoginBranchCriteriaRes> query = cb.createQuery(LoginBranchCriteriaRes.class);
+			
+
+
+			// Find All
+			Root<BranchMaster> b = query.from(BranchMaster.class);
+
+			// Company Effective Date Max Filter
+			Subquery<Long> company = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ins = company.from(InsuranceCompanyMaster.class);
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm2 = effectiveDate2.from(InsuranceCompanyMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateStart")));
+			Predicate ceff1 = cb.equal(ocpm2.get("companyId"), ins.get("companyId"));
+			Predicate ceff2 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
+			effectiveDate2.where(ceff1,ceff2);
+			
+			// Company Name
+			company.select(ins.get("companyName"));
+			Predicate ins1 = cb.equal(ins.get("companyId"), b.get("companyId"));
+			Predicate ins2 = cb.equal(ins.get("effectiveDateStart"), effectiveDate2);
+			company.where(ins1,ins2);
+			
+			// Company Currency Effective Date Max Filter
+			Subquery<Long> currency = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> currencyId = currency.from(InsuranceCompanyMaster.class);
+			Subquery<Long> effectiveDate6 = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm6 = effectiveDate6.from(InsuranceCompanyMaster.class);
+			effectiveDate6.select(cb.max(ocpm6.get("effectiveDateStart")));
+			Predicate iceff3 = cb.equal(ocpm6.get("companyId"), currencyId.get("companyId"));
+			Predicate iceff4 = cb.lessThanOrEqualTo(ocpm6.get("effectiveDateStart"), today);
+			effectiveDate6.where(iceff3,iceff4);
+			
+			// Currency Id
+			currency.select(currencyId.get("currencyId"));
+			Predicate in3 = cb.equal(currencyId.get("companyId"), b.get("companyId"));
+			Predicate in4 = cb.equal(currencyId.get("effectiveDateStart"), effectiveDate6);
+			currency.where(in3,in4);
+			
+		
+			// Select
+			query.multiselect(b.get("branchCode").alias("branchCode") , b.get("regionCode").alias("regionCode") ,
+					b.get("companyId").alias("companyId") , b.get("branchName").alias("branchName") ,
+					company.alias("companyName") ,
+					//region.alias("regionName") , 
+				//	companyLogo.alias("companyLogo") ,
+					currency.alias("currencyId") );
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<BranchMaster> ocpm1 = effectiveDate.from(BranchMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate eff1 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			Predicate eff2 = cb.equal(ocpm1.get("regionCode"), b.get("regionCode"));
+			Predicate eff3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate eff4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(eff1, eff2, eff3, eff4 );
+		
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("branchCode")));
+
+			//In 
+			Expression<String>e0=b.get("branchCode");
+			
+			// Where
+			Predicate n1 = cb.equal(b.get("status"), "Y");
+			Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = e0.in(removeDuplicateBranch) ;
+
+			query.where(n1, n2, n3).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<LoginBranchCriteriaRes> result = em.createQuery(query);
+			list = result.getResultList();
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+		}
+		return list;
+		
 	}
 
 	@Override
