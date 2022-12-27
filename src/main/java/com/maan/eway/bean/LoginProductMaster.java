@@ -137,6 +137,10 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="AGENCY_CODE")
     private Integer     agencyCode ;
+    
+    @Column(name="BACK_DAYS")
+    private Integer     backDays;
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 
