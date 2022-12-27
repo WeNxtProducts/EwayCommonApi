@@ -79,4 +79,9 @@ public class BrokerProductGetRes {
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
+	
+	@JsonProperty("BackDays")
+	private String backDays;
+
+	
 }

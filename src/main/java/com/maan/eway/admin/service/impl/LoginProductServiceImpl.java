@@ -229,7 +229,7 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			list = result.getResultList();
 			
 			dozerMapper.map(list.get(0), res);
-			
+			res.setBackDays(list.get(0).getBackDays().toString());;
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
