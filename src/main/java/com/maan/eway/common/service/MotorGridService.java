@@ -32,4 +32,8 @@ public interface MotorGridService {
 	SuccessRes motorCopyQuote(CopyQuoteReq req, List<String> branches);
 
 	List<ListItemValue> geMotorCoptyQuotetListItem(CopyQuoteDropDownReq req,String itemType);
+
+	SuccessRes motorEndt(CopyQuoteReq req, List<String> branches);
+
+	List<Tuple> validateMotorEndt(String quoteNo);
 }

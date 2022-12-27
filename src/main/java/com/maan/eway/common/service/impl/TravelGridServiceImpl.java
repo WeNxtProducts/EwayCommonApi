@@ -457,21 +457,25 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				if (req.getUserType().equalsIgnoreCase("Broker") || ( req.getUserType().equalsIgnoreCase("User"))) {  
 					branchCode=req.getBrokerBranchCode();
 					savedata.setApplicationId("1");
+					savedata.setBrokerBranchCode(branchCode);
 					
 				}else if ("issuer".equalsIgnoreCase(userType)) {
 					savedata.setApplicationId(req.getLoginId());
 					 branchCode=req.getBranchCode();
+					 savedata.setBranchCode(branchCode);
 				}
-				savedata.setBranchCode(branchCode);
+				
 				savedata.setActualPremiumFc(0d);
 				savedata.setActualPremiumLc(0d);
 				savedata.setOverallPremiumFc(0d);
 				savedata.setOverallPremiumLc(0d);
-				}			
+				repo.saveAndFlush(savedata);
+				}	
+				res.setResponse("Successfully Updated");
+				res.setSuccessId(refNo);
 			}
-			repo.saveAndFlush(savedata);
-			res.setResponse("Successfully Updated");
-			res.setSuccessId(refNo);
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());

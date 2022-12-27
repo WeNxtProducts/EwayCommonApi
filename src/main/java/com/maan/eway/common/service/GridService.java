@@ -1,9 +1,9 @@
 package com.maan.eway.common.service;
 
 import java.util.List;
-
+import com.maan.eway.error.Error;
 import com.maan.eway.common.req.CopyQuoteReq;
-import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
+
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
@@ -38,5 +38,12 @@ public interface GridService {
 	SuccessRes copyQuote(CopyQuoteReq req);
 
 	List<DropDownRes> copyQuoteByDropdown(CopyQuoteDropDownReq req);
+
+	List<EserviceCustomerDetailsRes> getallReferralRequoteDetails(ExistingQuoteReq req);
+
+	List<EserviceCustomerDetailsRes> getallAdminReferralRequote(ExistingQuoteReq req);
+
+	List<Error> validateQuotoNo(CopyQuoteReq req);
+
 
 }

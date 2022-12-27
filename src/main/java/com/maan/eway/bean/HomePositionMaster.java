@@ -569,7 +569,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="NO_CLAIM_DISCOUNT", length=10)
     private String     noClaimDiscount ;
 
-
+    @Column(name="IS_FINACIAL_ENDT", length=20)
+    private String     isFinacialEndt ;
 
     @Column(name="BROKER_BRANCH_CODE", length=20)
     private String     brokerBranchCode ;

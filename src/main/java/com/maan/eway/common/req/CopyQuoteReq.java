@@ -10,6 +10,15 @@ public class CopyQuoteReq {
 	@JsonProperty("RequestReferenceNo")
 	private String requestReferenceNo;
 	
+	@JsonProperty("QuoteNo")
+	private String quoteNo;
+	
+	@JsonProperty("TypeId")
+	private String typeId;
+	
+	@JsonProperty("EndtTypeId")
+	private String endtTypeId;
+	
 	@JsonProperty("SearchKey")
 	private String searchKey;
 	

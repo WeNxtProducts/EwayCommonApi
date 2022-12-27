@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.maan.eway.error.Error;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
@@ -141,7 +141,21 @@ public class GridController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 		}
-	
+	@PostMapping("/referralrequote")
+	public ResponseEntity<CommonRes> getallReferralRequoteDetails(@RequestBody  ExistingQuoteReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<EserviceCustomerDetailsRes> res = entityService.getallReferralRequoteDetails(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
 	// Admin Referrral Grids
 	@PostMapping("/adminreferralpending")
 	public ResponseEntity<CommonRes> getallAdminReferralPendings(@RequestBody  ExistingQuoteReq req) {
@@ -191,11 +205,13 @@ public class GridController {
 			}
 		}
 	
-		@PostMapping("/copyquote")
-		public ResponseEntity<CommonRes> copyQuote(@RequestBody CopyQuoteReq req) {
-			reqPrinter.reqPrint(req);
-			CommonRes data = new CommonRes();
-			SuccessRes res = entityService.copyQuote(req);
+
+	@PostMapping("/adminreferralrequote")
+	public ResponseEntity<CommonRes> getallAdminReferralRequote(@RequestBody  ExistingQuoteReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+
+		List<EserviceCustomerDetailsRes> res = entityService.getallAdminReferralRequote(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -204,6 +220,33 @@ public class GridController {
 				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 			} else {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		
+		}
+		@PostMapping("/copyquote")
+		public ResponseEntity<CommonRes> copyQuote(@RequestBody CopyQuoteReq req) {
+			reqPrinter.reqPrint(req);
+			CommonRes data = new CommonRes();
+			List<Error> validation = entityService.validateQuotoNo(req);
+			// validation
+			if (validation != null && validation.size() != 0) {
+				data.setCommonResponse(null);
+				data.setIsError(true);
+				data.setErrorMessage(validation);
+				data.setMessage("Failed");
+				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+			} else {
+				SuccessRes res = entityService.copyQuote(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
 			}
 		}
 
