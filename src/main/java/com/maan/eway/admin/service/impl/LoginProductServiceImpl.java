@@ -33,6 +33,7 @@ import com.maan.eway.admin.req.AttachCompnayProductRequest;
 import com.maan.eway.admin.req.BrokerCompanyProductGetReq;
 import com.maan.eway.admin.req.BrokerCompanyProductsGetRes;
 import com.maan.eway.admin.req.BrokerProductGetReq;
+import com.maan.eway.admin.req.UserCompanyProductGetReq;
 import com.maan.eway.admin.res.BrokerProductGetRes;
 import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.res.LoginProductCriteriaRes;
@@ -548,7 +549,7 @@ public class LoginProductServiceImpl  implements LoginProductService {
 		List<BrokerCompanyProductsGetRes> productList = new ArrayList<BrokerCompanyProductsGetRes>();
 		try {
 			Calendar cal = new GregorianCalendar();
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
+			Date today  =  new Date();
 			cal.setTime(today); cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime() ;
 			
@@ -885,7 +886,7 @@ List<Error> errorList = new ArrayList<Error>();
 		List<CompanyProductMasterRes> resList = new ArrayList<CompanyProductMasterRes>();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
+			Date today  = new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -896,10 +897,7 @@ List<Error> errorList = new ArrayList<Error>();
 			Date todayEnd = cal.getTime();
 			
 			List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
-			//Pagination
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
-	
+		
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<CompanyProductMaster> query = cb.createQuery(CompanyProductMaster.class);
@@ -964,8 +962,6 @@ List<Error> errorList = new ArrayList<Error>();
 	
 			// Get Result
 			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
 			list = result.getResultList();
 			
 			// Map
@@ -1186,6 +1182,112 @@ List<Error> errorList = new ArrayList<Error>();
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
 			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public List<CompanyProductMasterRes> getallNonSelectedUserCompanyProducts(UserCompanyProductGetReq req) {
+		List<CompanyProductMasterRes> resList = new ArrayList<CompanyProductMasterRes>();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		try {
+			Date today  =  new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			LoginMaster brokerData = loginRepo.findByAgencyCodeAndOaCode(req.getOaCode(),Integer.valueOf(req.getOaCode()));
+			
+			List<LoginProductMaster> list = new ArrayList<LoginProductMaster>();
+			
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<LoginProductMaster> query = cb.createQuery(LoginProductMaster.class);
+	
+			// Find All
+			Root<LoginProductMaster> b = query.from(LoginProductMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<LoginProductMaster> ocpm1 = effectiveDate.from(LoginProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"),today);
+			Predicate a7 = cb.equal(ocpm1.get("loginId"),b.get("loginId"));
+			effectiveDate.where(a1,a2,a3,a7);
+	
+			// Effective Date End
+			Subquery<Long> effectiveDate5 = query.subquery(Long.class);
+			Root<LoginProductMaster> ocpm5 = effectiveDate5.from(LoginProductMaster.class);
+			effectiveDate5.select(cb.max(ocpm5.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(b.get("productId"),ocpm5.get("productId") );
+			Predicate a5 = cb.equal(ocpm5.get("companyId"), b.get("companyId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);
+			Predicate a8 = cb.equal(ocpm5.get("loginId"),b.get("loginId"));
+			effectiveDate5.where(a4,a5,a6,a8);
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("productName")));
+			
+			// Company Product Effective Date Max Filter
+			Subquery<Long> product = query.subquery(Long.class);
+			Root<LoginProductMaster> ps = product.from(LoginProductMaster.class);
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<LoginProductMaster> ocpm2 = effectiveDate2.from(LoginProductMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateStart")));
+			Predicate eff1 = cb.equal(ocpm2.get("productId"), ps.get("productId"));
+			Predicate eff2 = cb.equal(ocpm2.get("companyId"), ps.get("companyId"));
+			Predicate eff3 = cb.equal(ocpm2.get("loginId"), ps.get("loginId"));
+			Predicate eff4 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"),today);
+			effectiveDate2.where(eff1,eff2,eff3,eff4);
+			
+			// Product Section Filter
+			product.select(ps.get("productId"));
+			Predicate ps1 = cb.equal(ps.get("companyId"), req.getInsuranceId());
+			Predicate ps3 = cb.equal(ps.get("loginId"), req.getLoginId());
+			Predicate ps4 = cb.equal(ps.get("effectiveDateStart"),effectiveDate2);
+			Predicate ps5 = cb.equal(ps.get("status"),"Y");
+			product.where(ps1,ps3,ps4,ps5);
+			
+			// Where
+			Expression<String>e0= b.get("productId");
+			
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n4 = e0.in(product).not();
+			Predicate n5 = cb.equal(b.get("effectiveDateEnd"), effectiveDate5);
+			Predicate n6 = cb.equal(b.get("status"), "Y");
+			Predicate n7 = cb.equal(b.get("companyId"), req.getInsuranceId());
+			Predicate n8 = cb.equal(b.get("loginId"), brokerData.getLoginId());
+			query.where(n1,n4,n5,n6,n7,n8).orderBy(orderList);
+	
+			// Get Result
+			TypedQuery<LoginProductMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			
+			// Map
+			for (LoginProductMaster data : list ) {
+				CompanyProductMasterRes res = new CompanyProductMasterRes();
+	
+				res = dozerMapper.map(data, CompanyProductMasterRes.class);
+				res.setProductId(data.getProductId().toString());
+				resList.add(res);
+			}
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+	
 		}
 		return resList;
 	}

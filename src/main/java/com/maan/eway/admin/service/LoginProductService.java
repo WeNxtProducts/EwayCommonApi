@@ -7,6 +7,7 @@ import com.maan.eway.admin.req.AttachCompnayProductRequest;
 import com.maan.eway.admin.req.BrokerCompanyProductGetReq;
 import com.maan.eway.admin.req.BrokerCompanyProductsGetRes;
 import com.maan.eway.admin.req.BrokerProductGetReq;
+import com.maan.eway.admin.req.UserCompanyProductGetReq;
 import com.maan.eway.admin.res.BrokerProductGetRes;
 import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.res.LoginProductCriteriaRes;
@@ -37,6 +38,8 @@ public interface LoginProductService {
 	SuccessRes changeStatusOfCompanyProduct(BrokerProductChangeReq req);
 
 	List<DropDownRes> getBrokerProductDropdown(BrokerProductReq req);
+
+	List<CompanyProductMasterRes> getallNonSelectedUserCompanyProducts(UserCompanyProductGetReq req);
 
 	
 }

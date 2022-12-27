@@ -107,7 +107,18 @@ public class EservieMotorDetailsViewRes {
     private Double     sumInsured   ;
 	@JsonProperty("InsuranceClass")
     private String  insuranceClass ;
+	@JsonProperty("InbuildConstructType")
+    private String     inbuildConstructType ;
+	@JsonProperty("BuildingFloors")
+    private String buildingFloors ;
+	@JsonProperty("BuildingUsageDesc")
+    private String     buildingUsageDesc ;
 	
+	@JsonProperty("BuildingOwnerYn")
+	private String     buildingOwnerYn;	
+	
+	@JsonProperty("BuildingBuildYear")
+    private String    buildingBuildYear ;
 	@JsonProperty("Status")
 	private String status;
 	

@@ -15,6 +15,7 @@ import com.maan.eway.admin.req.AttachCompnayProductRequest;
 import com.maan.eway.admin.req.BrokerCompanyProductGetReq;
 import com.maan.eway.admin.req.BrokerCompanyProductsGetRes;
 import com.maan.eway.admin.req.BrokerProductGetReq;
+import com.maan.eway.admin.req.UserCompanyProductGetReq;
 import com.maan.eway.admin.res.BrokerProductGetRes;
 import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.service.LoginProductService;
@@ -171,6 +172,28 @@ public class LoginProductController {
 		reqPrinter.reqPrint(req);
 		
 		List<CompanyProductMasterRes> res = entityService.getallNonSelectedBrokerCompanyProducts(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		
+		if(res!= null) {
+			return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	
+	@PostMapping("/getallnonselecteduserproducts")
+	@ApiOperation("This method is getall User Company Product Master")
+	public ResponseEntity<CommonRes> getallNonSelectedUserCompanyProducts(@RequestBody UserCompanyProductGetReq req)
+	{
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		
+		List<CompanyProductMasterRes> res = entityService.getallNonSelectedUserCompanyProducts(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);

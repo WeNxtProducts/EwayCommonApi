@@ -46,6 +46,7 @@ import com.maan.eway.admin.req.GetAllBrokerBranchReq;
 import com.maan.eway.admin.req.GetBrokerBranchReq;
 import com.maan.eway.admin.req.GetallBrokerBranchesReq;
 import com.maan.eway.admin.req.IssuerBranchGetReq;
+import com.maan.eway.admin.req.UserCompanyProductGetReq;
 import com.maan.eway.admin.res.BranchCriteriaRes;
 import com.maan.eway.admin.res.BrokerBranchGetRes;
 import com.maan.eway.admin.res.BrokerCompanyGetRes;
@@ -62,7 +63,9 @@ import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginBranchMasterArch;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginMasterArch;
+import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.RegionMaster;
+import com.maan.eway.master.res.CompanyProductMasterRes;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterArchRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
@@ -673,6 +676,7 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 		
 	}
 
+	
 	@Override
 	public List<GetallBrokerBranchesRes> getallBrokerBranches(GetallBrokerBranchesReq req) {
 	List<GetallBrokerBranchesRes> resList = new ArrayList<GetallBrokerBranchesRes>();
@@ -694,5 +698,32 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 	}
 	return resList;
 }
+
+	@Override
+	public List<GetBrokerBranchRes> getallNonSelectedUserCompanyBranches(UserCompanyProductGetReq req) {
+		List<GetBrokerBranchRes> resList = new ArrayList<GetBrokerBranchRes>();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		try {
+			
+			LoginMaster brokerData = loginRepo.findByAgencyCodeAndOaCode(req.getOaCode(),Integer.valueOf(req.getOaCode()));
+			
+			List<LoginBranchMaster> branchList = loginBrokerRepo.findByLoginIdAndStatus(brokerData.getLoginId(),"Y");
+			
+			// Map
+			for (LoginBranchMaster data : branchList ) {
+				GetBrokerBranchRes res = new GetBrokerBranchRes();
+	
+				res = dozerMapper.map(data, GetBrokerBranchRes.class);
+				resList.add(res);
+			}
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+	
+		}
+		return resList;
+	}
 
 }
