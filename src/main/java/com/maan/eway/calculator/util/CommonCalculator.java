@@ -86,13 +86,13 @@ public class CommonCalculator {
 
 				List<String> condtions=new ArrayList<String>();
 				for (RatingInfo r : rateInfos) {
-					if("MS_CUSTOMER_DETAILS".equalsIgnoreCase(r.getInputTableName())) {
+					if("MsCustomerDetails".equalsIgnoreCase(r.getInputTableName())) {
 						r.setInputColumValue(customer.get(r.getInputColumName()).toString());
-					}else if("MS_Vehicle_DETAILS".equalsIgnoreCase(r.getInputTableName()) || "MSVehicleDETAILS".equalsIgnoreCase(r.getInputTableName()) 
-							|| "MsHumanDetails".equalsIgnoreCase(r.getInputTableName()) || "MsAssetDetails".equalsIgnoreCase(r.getInputTableName()) ) {
-						r.setInputColumValue(vehicle.get(r.getInputColumName()).toString());
-					}else if("MS_Common_DETAILS".equalsIgnoreCase(r.getInputTableName())) {
+					}else if("MsCommonDetails".equalsIgnoreCase(r.getInputTableName())) {
 						r.setInputColumValue(common.get(r.getInputColumName()).toString());
+					}else /*if("MS_Vehicle_DETAILS".equalsIgnoreCase(r.getInputTableName()) || "MSVehicleDETAILS".equalsIgnoreCase(r.getInputTableName()) 
+							|| "MsHumanDetails".equalsIgnoreCase(r.getInputTableName()) || "MsAssetDetails".equalsIgnoreCase(r.getInputTableName()) )*/ {
+						r.setInputColumValue(vehicle.get(r.getInputColumName()).toString());
 					}
 					
 					String condtion=r.getDiscretCol()+":"+r.getInputColumValue()+"";
