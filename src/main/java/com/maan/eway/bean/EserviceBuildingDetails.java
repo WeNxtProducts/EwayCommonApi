@@ -19,6 +19,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -130,19 +131,19 @@ private static final long serialVersionUID = 1L;
     private Double     buildingAreaSqm ;
 
     @Column(name="BUILDING_SUMINSURED")
-    private Double     buildingSuminsured ;
+    private BigDecimal     buildingSuminsured ;
 
     @Column(name="ALLRISK_SUMINSURED")
-    private Double     allriskSuminsured ;
+    private BigDecimal     allriskSuminsured ;
     
     @Column(name="PERSONAL_ACC_SUMINSURED")
-    private Double    personalAccSuminsured ;
+    private BigDecimal    personalAccSuminsured ;
 
     @Column(name="PERSONAL_INT_SUMINSURED")
-    private Double    personalIntSuminsured ;
+    private BigDecimal    personalIntSuminsured ;
     
     @Column(name="CONTENT_SUMINSURED")
-    private Double     contentSuminsured ;
+    private BigDecimal     contentSuminsured ;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")
