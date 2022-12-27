@@ -306,6 +306,16 @@ public class LoginProductServiceImpl  implements LoginProductService {
 	public List<LoginProductCriteriaRes> getBrokerProductDetails(String loginId , List<String> companyIds , Date today ) {
 		List<LoginProductCriteriaRes> list = new ArrayList<LoginProductCriteriaRes>(); 
 		try {
+			
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
 			// Login Product Query	
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<LoginProductCriteriaRes> query = cb.createQuery(LoginProductCriteriaRes.class);
@@ -361,7 +371,43 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			Predicate a2 = cb.equal(ocpm1.get("productId"), lm.get("productId"));
 			Predicate a3 = cb.equal(ocpm1.get("companyId"), lm.get("companyId"));
 			effectiveDate.where(a1,a2,a3); 
-					
+			
+			/*
+
+			// Company Products
+
+			Subquery<Long> productids = query.subquery(Long.class);
+			Root<CompanyProductMaster> pids = productids.from(CompanyProductMaster.class);
+
+			Subquery<Long> effectiveDate3 = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm3 = effectiveDate3.from(CompanyProductMaster.class);
+			effectiveDate3.select(cb.max(ocpm3.get("effectiveDateStart")));
+			Predicate ceff5 = cb.equal(ocpm3.get("companyId"), pids.get("companyId"));
+			Predicate ceff6 = cb.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
+			Predicate ceff7 = cb.equal(ocpm3.get("status"),"Y");			
+			Predicate ceff8 = cb.equal(ocpm3.get("productId"),pids.get("productId"));			
+			effectiveDate3.where(ceff5,ceff6,ceff7,ceff8);
+			
+			Subquery<Long> effectiveDate4 = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm4 = effectiveDate4.from(CompanyProductMaster.class);
+			effectiveDate4.select(cb.max(ocpm4.get("effectiveDateEnd")));
+			Predicate ceff9 = cb.equal(ocpm4.get("companyId"), pids.get("companyId"));
+			Predicate ceff10 = cb.greaterThanOrEqualTo(ocpm4.get("effectiveDateEnd"), todayEnd);
+			Predicate ceff11 = cb.equal(ocpm4.get("status"),"Y");			
+			Predicate ceff12 = cb.equal(ocpm4.get("productId"),pids.get("productId"));			
+			effectiveDate4.where(ceff9,ceff10,ceff11,ceff12);
+			
+			productids.select(pids.get("productId"));
+			Predicate ceff13 = cb.equal(pids.get("companyId"), lm.get("companyId"));
+			Predicate ceff14 = cb.equal(pids.get("effectiveDateEnd"),effectiveDate4);
+			Predicate ceff15 = cb.equal(pids.get("status"),"Y");			
+			Predicate ceff16 = cb.equal(pids.get("productId"),lm.get("productId"));			
+			Predicate ceff17 = cb.equal(pids.get("effectiveDateStart"),effectiveDate3);
+
+			productids.where(ceff13,ceff14,ceff15,ceff16,ceff17);
+			
+			*/
+			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(lm.get("entryDate")));
@@ -373,9 +419,11 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			Predicate n1 = cb.equal(lm.get("loginId"), loginId );
 			Predicate n2 = cb.equal(lm.get("effectiveDateStart"), effectiveDate);
 			Predicate n3 = e0.in(companyIds);
-			
 			query.where(n1, n2, n3).orderBy(orderList);
-		
+			
+			//Predicate n4 = e0.in(productids);
+			//query.where(n1, n2, n3,n4).orderBy(orderList);
+			
 			// Get Result
 			TypedQuery<LoginProductCriteriaRes> result = em.createQuery(query);
 			list = result.getResultList();
