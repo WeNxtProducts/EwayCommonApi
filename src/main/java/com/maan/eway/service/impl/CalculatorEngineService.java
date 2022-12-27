@@ -119,21 +119,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 		return null;
 	}	
 	
-	public List<Tuple> LoadTax(CalcEngine engine) {
-		try {
-			String todayInString = DD_MM_YYYY.format(new Date());
-			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:Y;branchCode:{99999,"+engine.getBranchCode()+"};"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
-			List<Tuple> result=null;
-			SpecCriteria criteria = crservice.createCriteria(CompanyTaxSetup.class, search, "taxId"); 
-			
-			result=crservice.getResult(criteria, 0, 50);
-
-			return result;
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+	
 	
 	public synchronized EserviceMotorDetailsSaveRes  calculator(CalcEngine engine) {
 		// Referal Checking.
@@ -163,7 +149,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 				 .isError(true).build();*/
 			}
 			
-			List<Tuple> taxes = LoadTax(engine);
+			List<Tuple> taxes = ratingutil.LoadTax(engine);
 			TaxUtils tzx=new TaxUtils(); 
 			
 			List<String> dependedcovers=new ArrayList<String>();
@@ -410,9 +396,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 			 
 			 if(vehicles!=null) {
 				 String periodOfInsurance=(vehicles.get(0).get("periodOfInsurance")==null?"365":vehicles.get(0).get("periodOfInsurance").toString());
-				  search="insuranceid:"+engine.getInsuranceId()+";productid:"+engine.getProductId()+";status:Y;"+periodOfInsurance+"~startfrom&endto";
-				  criteria = crservice.createCriteria(CompanyProrataMaster.class, search, "sno");
-				  prorata = crservice.getResult(criteria, 0, 50);
+				  prorata = ratingutil.loadProRataData(engine, periodOfInsurance);
 			  }
 		}
 		
@@ -447,7 +431,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 				List<FactorRateRequestDetails> factors = repository.findByRequestReferenceNoAndVehicleIdOrderByCoverIdAsc(request.getRequestReferenceNo(), Integer.valueOf(request.getVehicleId()));
 				
 				//TaxFromFactor tzx=new TaxFromFactor(); 
-				List<Tuple> taxes = LoadTax(request);
+				List<Tuple> taxes = ratingutil.LoadTax(request);
 				TaxUtils tzx=new TaxUtils(); 
 				
 				for (String dependcover : dependedcovers) {

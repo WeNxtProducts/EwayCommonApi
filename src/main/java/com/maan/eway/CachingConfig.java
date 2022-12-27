@@ -20,7 +20,10 @@ public class CachingConfig   {
 	    return new SpringCache2kCacheManager()
 	      .defaultSetup(b->b.entryCapacity(2000))
 	      .addCaches(
-	        b->b.name("RatingType").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false)	        
+	        b->b.name("RatingType").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
+	        b->b.name("ProductType").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
+	        b->b.name("loadTax").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
+	        b->b.name("loadProRata").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false)
 	        );
 		
 	  }
@@ -33,9 +36,7 @@ public class CachingConfig   {
 			@Override
 			public Object generate(Object target, Method method, Object... params) {
 				CalcEngine e=(CalcEngine)params[0];
-				String s=(String) params[1];
-			//	String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;factorTypeId:"+factorTypeId+";";
-
+				String s=(String) params[1]; 
 				String string = new StringBuilder().append(e.getInsuranceId())
 				.append(e.getProductId())
 				.append(s)
@@ -52,20 +53,49 @@ public class CachingConfig   {
 		return new KeyGenerator() {
 			@Override
 			public Object generate(Object target, Method method, Object... params) {
-				CalcEngine e=(CalcEngine)params[0];
-				//String s=(String) params[1];
-			//	String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;factorTypeId:"+factorTypeId+";";
-
+				CalcEngine e=(CalcEngine)params[0]; 
 				String string = new StringBuilder().append(e.getInsuranceId())
 				.append(e.getProductId())
-				//.append(s)
-				//.append(e.getBranchCode())
 				.toString();
 				return string;
 			}
 			
 		};
 	}
+	    
+	    
+	    	@Bean
+	    	public KeyGenerator loadTaxKeyGen() {
+	    		return new KeyGenerator() {
+	    			@Override
+	    			public Object generate(Object target, Method method, Object... params) {
+	    				CalcEngine e=(CalcEngine)params[0];	    				
+	    				String string = new StringBuilder().append(e.getInsuranceId())
+	    						.append(e.getProductId())
+	    						.append("99999")
+	    						.toString();
+	    				return string;
+	    			}
+
+	    		};
+	    	}
+	    	
+	    	@Bean
+	    	public KeyGenerator loadProRataKeyGen() {
+	    		return new KeyGenerator() {
+	    			@Override
+	    			public Object generate(Object target, Method method, Object... params) {
+	    				CalcEngine e=(CalcEngine)params[0];
+	    				String string = new StringBuilder().append(e.getInsuranceId())
+	    						.append(e.getProductId())	    						
+	    						.toString();
+	    				return string;
+	    			}
+
+	    		};
+	    	}
+	    	
+	    	
 	    
 	
 	

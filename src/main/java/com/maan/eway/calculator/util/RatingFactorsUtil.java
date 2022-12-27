@@ -19,6 +19,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.CompanyProrataMaster;
+import com.maan.eway.bean.CompanyTaxSetup;
 import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.RatingFieldMaster;
@@ -172,6 +174,37 @@ public class RatingFactorsUtil {
 			String oneProduct=product.get(0).get("motorYn")==null?"M":product.get(0).get("motorYn").toString();
 			return oneProduct;
 
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@Cacheable(cacheNames = {"loadTax"},keyGenerator  = "loadTaxKeyGen",value = "loadTax" )
+	public List<Tuple> LoadTax(CalcEngine engine) {
+		try {
+			String todayInString = DD_MM_YYYY.format(new Date());
+			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:Y;branchCode:{99999,"+engine.getBranchCode()+"};"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
+			List<Tuple> result=null;
+			SpecCriteria criteria = crservice.createCriteria(CompanyTaxSetup.class, search, "taxId"); 
+			
+			result=crservice.getResult(criteria, 0, 50);
+
+			return result;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@Cacheable(cacheNames = {"loadProRata"},keyGenerator  = "loadProRataKeyGen",value = "loadProRata" )
+	public List<Tuple> loadProRataData(CalcEngine engine,String periodOfInsurance){
+		try {
+			String search="insuranceid:"+engine.getInsuranceId()+";productid:"+engine.getProductId()+";status:Y;"+periodOfInsurance+"~startfrom&endto";
+			SpecCriteria criteria = crservice.createCriteria(CompanyProrataMaster.class, search, "sno");
+			List<Tuple> prorata = crservice.getResult(criteria, 0, 50);
+			return prorata;
 		}catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
