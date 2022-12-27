@@ -161,6 +161,7 @@ public class LoginProductServiceImpl  implements LoginProductService {
 				save.setEntryDate(new Date());
 				save.setAmendId(0);
 				save.setLoginId(req.getLoginId());
+				save.setBackDays(0);
 				loginProductRepo.saveAndFlush(save);
 				log.info("Saved Details is ---> " + json.toJson(save));
 				
@@ -581,6 +582,7 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			saveData.setOaCode(login.getOaCode());
 			saveData.setUserType(login.getUserType());
 			saveData.setSubUserType(login.getSubUserType());
+			saveData.setBackDays(Integer.valueOf(req.getBackDays()));
 			loginProductRepo.saveAndFlush(saveData);
 			
 				
@@ -761,7 +763,16 @@ List<Error> errorList = new ArrayList<Error>();
 				errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode  "));
 			}else if (req.getRegulatoryCode().length() > 20) {
 				errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters  "));
-			}	
+			}
+			if (StringUtils.isBlank(req.getBackDays())) {
+				errorList.add(new Error("10", "BackDays", "Please Enter BackDays"));
+			}
+			else if (StringUtils.isNotBlank(req.getBackDays())&& (req.getBackDays().equalsIgnoreCase("0"))) {
+				errorList.add(new Error("10", "BackDays", "Please Enter BackDays above 0 "));
+			}
+			else if (! req.getBackDays().matches("[1-9]") ) {
+				errorList.add(new Error("10", "BackDays", "Plese Enter Valid Number BackDays"  ));
+			}
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();

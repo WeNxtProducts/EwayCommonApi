@@ -81,4 +81,7 @@ public class BrokerCompanyProductReq {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
+	@JsonProperty("BackDays")
+	private String backDays;
+	
 }
