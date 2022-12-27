@@ -766,11 +766,8 @@ List<Error> errorList = new ArrayList<Error>();
 			}
 			if (StringUtils.isBlank(req.getBackDays())) {
 				errorList.add(new Error("10", "BackDays", "Please Enter BackDays"));
-			}
-			else if (StringUtils.isNotBlank(req.getBackDays())&& (req.getBackDays().equalsIgnoreCase("0"))) {
-				errorList.add(new Error("10", "BackDays", "Please Enter BackDays above 0 "));
-			}
-			else if (! req.getBackDays().matches("[1-9]") ) {
+			}	
+			else if (StringUtils.isNotBlank(req.getBackDays())&&! req.getBackDays().matches("[0-9]") ) {
 				errorList.add(new Error("10", "BackDays", "Plese Enter Valid Number BackDays"  ));
 			}
 		} catch (Exception e) {
