@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.persistence.Tuple;
 
+import com.maan.eway.admin.res.ReferalCriteriaRes;
+import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
@@ -21,17 +23,9 @@ public interface TravelGridService {
 
 	List<RejectCriteriaRes> getTravelRejectedQuoteDetails(ExistingQuoteReq req, List<String> branches ,int limit, int offset);
 
-	List<QuoteCriteriaRes> getTravelReferalPendingDetails(ExistingQuoteReq req, List<String> branches, int limit,int offset);
+	List<ReferalGridCriteriaRes> getTravelReferalDetails(ExistingQuoteReq req, List<String> branches, int limit,int offset , String Status);
 
-	List<QuoteCriteriaRes> getTravelReferalApprovedDetails(ExistingQuoteReq req, List<String> branches, int limit,int offset);
-
-	List<RejectCriteriaRes> getTravelReferalRejectedDetails(ExistingQuoteReq req, List<String> branches, int limit,int offset);
-
-	List<QuoteCriteriaRes> getTravelAdminReferalPendings(ExistingQuoteReq req, List<String> branches, int limit,int offset);
-
-	List<QuoteCriteriaRes> getTravelAdminReferalApproved(ExistingQuoteReq req, List<String> branches, int limit,int offset);
-
-	List<RejectCriteriaRes> getTravelAdminReferalRejected(ExistingQuoteReq req, List<String> branches, int limit,int offset);
+	List<ReferalGridCriteriaRes> getTravelAdminReferalDetails(ExistingQuoteReq req, List<String> branches, int limit,int offset , String Status);
 
 	List<ListItemValue> getTravelCoptyQuotetListItem(CopyQuoteDropDownReq req, String itemType);
 

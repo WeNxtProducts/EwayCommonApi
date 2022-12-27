@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.persistence.Tuple;
 
+import com.maan.eway.admin.res.ReferalCriteriaRes;
+import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
@@ -21,17 +23,9 @@ public interface MotorGridService {
 
 	List<RejectCriteriaRes> getMotorRejectedQuoteDetails(ExistingQuoteReq req, List<String> branches ,int limit, int offset);
 
-	List<QuoteCriteriaRes> getMotorReferalPendingDetails(ExistingQuoteReq req, List<String> branches, int limit,int offset);
+	List<ReferalGridCriteriaRes> getMotorReferalDetails(ExistingQuoteReq req, List<String> branches, int limit,int offset , String Status);
 
-	List<QuoteCriteriaRes> getMotorReferalApprovedDetails(ExistingQuoteReq req, List<String> branches, int limit,int offset);
-
-	List<RejectCriteriaRes> getMotorReferalRejectedDetails(ExistingQuoteReq req, List<String> branches, int limit,int offset);
-
-	List<QuoteCriteriaRes> getMotorAdminReferalPendings(ExistingQuoteReq req, List<String> branches, int limit,int offset);
-
-	List<QuoteCriteriaRes> getMotorAdminReferalApproved(ExistingQuoteReq req, List<String> branches, int limit,int offset);
-
-	List<RejectCriteriaRes> getMotorAdminReferalRejected(ExistingQuoteReq req, List<String> branches, int limit,int offset);
+	List<ReferalGridCriteriaRes> getMotorAdminReferalDetails(ExistingQuoteReq req, List<String> branches, int limit,int offset , String Status);
 	
 	List<Tuple> searchMotorQuote(CopyQuoteReq req, List<String> branches);
 
