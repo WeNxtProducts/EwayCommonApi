@@ -267,7 +267,13 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="PROMOCODE", length=100)
     private String     promocode;
+
+    @Column(name="OCCUPATION_TYPE", length=20)
+    private String     occupationType;
     
+    @Column(name="OCCUPATION_TYPE_DESC", length=100)
+    private String     occupationTypeDesc;
+
 }
 
 
