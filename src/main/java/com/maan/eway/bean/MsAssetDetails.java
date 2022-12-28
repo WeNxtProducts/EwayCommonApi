@@ -145,6 +145,8 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="OCCUPATION_TYPE", length=20)
     private String     occupationType;
+    @Column(name="CATEGORY_ID", length=20)
+    private String     categoryId;
 
 }
 

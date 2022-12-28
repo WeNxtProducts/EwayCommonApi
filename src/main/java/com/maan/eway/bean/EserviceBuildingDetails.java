@@ -274,6 +274,16 @@ private static final long serialVersionUID = 1L;
     @Column(name="OCCUPATION_TYPE_DESC", length=100)
     private String     occupationTypeDesc;
 
+    @Column(name="DOMESTIC_PACKAGE_YN", length=20)
+    private String     domesticPackageYn;
+
+    @Column(name="CATEGORY_ID", length=20)
+    private String     categoryId;
+
+    @Column(name="CATEGORY_DESC", length=100)
+    private String     categoryDesc;
+
+    
 }
 
 
