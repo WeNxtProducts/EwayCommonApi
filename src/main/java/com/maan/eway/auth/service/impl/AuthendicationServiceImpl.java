@@ -338,7 +338,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				res.setProductIconId(product.get(0).getProductIconId().toString());
 				res.setProductIconName(product.get(0).getProductIconName());
 				res.setProductId(productId.toString());
-				
+				res.setPackageYn(product.get(0).getPackageYn());
 				resList.add(res);
 			}
 
