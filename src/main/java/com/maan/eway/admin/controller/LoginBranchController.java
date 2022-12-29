@@ -20,6 +20,7 @@ import com.maan.eway.admin.req.GetAllBrokerBranchReq;
 import com.maan.eway.admin.req.GetBrokerBranchReq;
 import com.maan.eway.admin.req.GetallBrokerBranchesReq;
 import com.maan.eway.admin.req.IssuerBranchGetReq;
+import com.maan.eway.admin.req.LoginBranchesSaveReq;
 import com.maan.eway.admin.req.UserCompanyProductGetReq;
 import com.maan.eway.admin.res.BrokerCompanyGetRes;
 import com.maan.eway.admin.res.GetBrokerBranchRes;
@@ -30,6 +31,7 @@ import com.maan.eway.admin.service.LoginBranchService;
 import com.maan.eway.admin.service.LoginValidationService;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.res.CompanyProductMasterRes;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -262,4 +264,38 @@ public class LoginBranchController {
 	}
 	
 	
+	@PostMapping("/attachuserbranches")
+	@ApiOperation("This method is to save branches as multi insert")
+	public ResponseEntity<CommonRes> saveLoginBranches(@RequestBody LoginBranchesSaveReq req){
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		List<Error> validation = validationService.validateLoginBranches(req);
+		if(validation!=null && validation.size() !=0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+		}
+		else {
+			/////// save
+			LoginCreationRes res = entityService.saveLoginBranches(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
 	}
+	
+
+	}
+	
+	
+	
+

@@ -46,6 +46,7 @@ import com.maan.eway.admin.req.GetAllBrokerBranchReq;
 import com.maan.eway.admin.req.GetBrokerBranchReq;
 import com.maan.eway.admin.req.GetallBrokerBranchesReq;
 import com.maan.eway.admin.req.IssuerBranchGetReq;
+import com.maan.eway.admin.req.LoginBranchesSaveReq;
 import com.maan.eway.admin.req.UserCompanyProductGetReq;
 import com.maan.eway.admin.res.BranchCriteriaRes;
 import com.maan.eway.admin.res.BrokerBranchGetRes;
@@ -58,6 +59,7 @@ import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.service.LoginBranchService;
 import com.maan.eway.auth.dto.LoginBranchCriteriaRes;
 import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginBranchMasterArch;
@@ -726,4 +728,108 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 		return resList;
 	}
 
+	@Override
+	public LoginCreationRes saveLoginBranches(LoginBranchesSaveReq req) {
+		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
+		LoginCreationRes res = new LoginCreationRes();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
+		try { 
+			Calendar cal = new GregorianCalendar();
+			Date today = new Date();
+			cal.setTime(new Date() );  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
+			cal.set(Calendar.SECOND, today.getSeconds());
+			Date effDate = cal.getTime();
+			Date endDate = sdformat.parse("12/12/2050") ;
+			cal.setTime(sdformat.parse("12/12/2050"));  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
+			endDate = cal.getTime() ;
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd   = cal.getTime();
+			LoginMaster agencyCode = loginRepo.findByLoginId(req.getLoginId());
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<LoginBranchMaster> query = cb.createQuery(LoginBranchMaster.class);
+			List<LoginBranchMaster> list = new ArrayList<LoginBranchMaster>();
+			
+			// Find All
+			Root<LoginBranchMaster>    c = query.from(LoginBranchMaster.class);		
+			
+			// Select
+			query.select(c );
+			
+		
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("branchName")));
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<LoginBranchMaster> ocpm1 = effectiveDate.from(LoginBranchMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode") );
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a3 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
+			effectiveDate.where(a1,a2,a3);
+			/*
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<LoginBranchMaster> ocpm2 = effectiveDate2.from(LoginBranchMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode") );
+			Predicate a5 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a6 = cb.equal(c.get("companyId"),ocpm2.get("companyId") );
+			effectiveDate2.where(a4,a5,a6);
+			*/
+			//In 
+			Expression<String>e0=c.get("branchCode");
+			
+		    // Where	
+			Predicate n1 = cb.equal(c.get("status"), "Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+		//	Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 =e0.in( req.getBranchIds());
+			Predicate n5 =cb.equal(c.get("companyId"), req.getInsuranceId());
+			Predicate n6 =cb.equal(c.get("oaCode"), req.getOaCode());
+			query.where(n1,n2,n4,n5,n6).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<LoginBranchMaster> result = em.createQuery(query);			
+			list =  result.getResultList();  
+			
+			for (LoginBranchMaster data : list  ) {
+				
+			
+				LoginBranchMaster save = new LoginBranchMaster();
+				dozerMapper.map(data, save);
+				save.setCompanyId(req.getInsuranceId());
+				save.setCreatedBy(req.getCreatedBy());
+				save.setEffectiveDateStart(effDate);
+				//save.setEffectiveDateEnd(endDate);
+				save.setEntryDate(new Date());
+				//save.setAmendId(0);
+				save.setLoginId(req.getLoginId());
+				save.setOaCode(Integer.valueOf(req.getOaCode()));
+				save.setAgencyCode(Integer.valueOf(agencyCode.getAgencyCode()));
+				
+				//save.setBackDays(0);
+				loginBrokerRepo.saveAndFlush(save);
+				log.info("Saved Details is ---> " + json.toJson(save));
+				
+			}		
+			
+			res.setResponse("Branches Added Successfully");
+			res.setAgencyCode(agencyCode.getAgencyCode());
+			} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
 }

@@ -15,6 +15,7 @@ import com.maan.eway.admin.req.IssuerActiveGridReq;
 import com.maan.eway.admin.req.IssuerCraeationReq;
 import com.maan.eway.admin.req.IssuerDetailsGetReq;
 import com.maan.eway.admin.req.IssuerLoginGridReq;
+import com.maan.eway.admin.req.LoginBranchesSaveReq;
 import com.maan.eway.admin.req.UserActiveGridReq;
 import com.maan.eway.admin.req.UserCreationReq;
 import com.maan.eway.admin.req.UserDetailsGetReq;
@@ -31,6 +32,7 @@ List<Error> validateBrokerProductReq(AttachCompnayProductRequest req);
 List<Error> validateIssuerBranchReq(AttachIssuerBrannchReq req);
 List<Error> validateIssuerReferalReq(AttachIssuerReferalReq req);
 List<Error> validateBrokerCompanyBranchReq(AttachBrokerBranchReq req);
+List<Error> validateLoginBranches(LoginBranchesSaveReq req);
 
 
 }

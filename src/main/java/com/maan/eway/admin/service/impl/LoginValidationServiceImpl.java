@@ -31,6 +31,7 @@ import com.maan.eway.admin.req.CommonPersonalInforReq;
 import com.maan.eway.admin.req.IssuerCraeationReq;
 import com.maan.eway.admin.req.IssuerLoginReq;
 import com.maan.eway.admin.req.IssuerPersonalInfoReq;
+import com.maan.eway.admin.req.LoginBranchesSaveReq;
 import com.maan.eway.admin.req.UserCreationReq;
 import com.maan.eway.admin.service.LoginValidationService;
 import com.maan.eway.bean.LoginBranchMaster;
@@ -468,6 +469,34 @@ public List<Error> validateBrokerCompanyBranchReq(AttachBrokerBranchReq req) {
 	}
 	return errors;
 }
+
+
+@Override
+public List<Error> validateLoginBranches(LoginBranchesSaveReq req) {
+	List<Error> errors = new ArrayList<Error>();
+	try {
+		//Product Validation
+		if(StringUtils.isBlank(req.getLoginId()) ) {
+			errors.add(new Error("01", "LoginId", "Plese Enter LoginId" ));
+		}
+		
+		if(StringUtils.isBlank(req.getInsuranceId()) ) {
+			errors.add(new Error("02", "InsuranceId", "Plese Select InsuranceId" ));
+		}
+		
+		if(req.getBranchIds()==null || req.getBranchIds().size()== 0 ) {
+			errors.add(new Error("03", "Branch Ids", "Plese select Atleast One  Branch " ));
+		} 
+		
+		
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is --->" + e.getMessage());
+		errors.add(new Error("09", "Common Error", e.getMessage() ));
+	}
+	return errors;
+}
+
 	
 
 
