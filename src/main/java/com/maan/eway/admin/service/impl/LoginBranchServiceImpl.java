@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -67,6 +68,7 @@ import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginMasterArch;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.RegionMaster;
+import com.maan.eway.bean.TravelPassengerHistory;
 import com.maan.eway.master.res.CompanyProductMasterRes;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterArchRepository;
@@ -706,19 +708,25 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 		List<GetBrokerBranchRes> resList = new ArrayList<GetBrokerBranchRes>();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
-			
 			LoginMaster brokerData = loginRepo.findByAgencyCodeAndOaCode(req.getOaCode(),Integer.valueOf(req.getOaCode()));
 			
 			List<LoginBranchMaster> branchList = loginBrokerRepo.findByLoginIdAndStatus(brokerData.getLoginId(),"Y");
+			List<LoginBranchMaster> userbranchList = loginBrokerRepo.findByLoginIdAndStatus(req.getLoginId(),"Y");
 			
 			// Map
 			for (LoginBranchMaster data : branchList ) {
-				GetBrokerBranchRes res = new GetBrokerBranchRes();
-	
-				res = dozerMapper.map(data, GetBrokerBranchRes.class);
-				resList.add(res);
-			}
-	
+				
+				List<LoginBranchMaster> filterUser = userbranchList.stream().filter( o ->  o.getBrokerBranchCode().equalsIgnoreCase(data.getBranchCode())).collect(Collectors.toList());				
+				
+				if( filterUser.size()<=0	) {
+					GetBrokerBranchRes res = new GetBrokerBranchRes();
+					
+					res = dozerMapper.map(data, GetBrokerBranchRes.class);
+					resList.add(res);
+			
+				}
+		}
+				
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info(e.getMessage());
