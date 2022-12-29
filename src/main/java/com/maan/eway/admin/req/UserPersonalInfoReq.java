@@ -89,4 +89,8 @@ public class UserPersonalInfoReq {
     
     @JsonProperty("WhatsappNo")
     private String    whatsappNo ;
+    
+    @JsonProperty("CityName")
+    private String    cityName;
+    
 }
