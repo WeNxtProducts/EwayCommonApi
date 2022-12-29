@@ -534,8 +534,12 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			// Find Data
 			LoginBranchMaster findBranch = loginBrokerRepo.findByBrokerBranchCodeAndLoginIdAndCompanyId(
 					req.getBrokerBranchCode(), req.getLoginId(), req.getInsuranceId());
+			if(findBranch!=null) {
 			res = dozerMapper.map(findBranch, GetBrokerBranchRes.class);
-
+			}
+			else {
+				return res;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
