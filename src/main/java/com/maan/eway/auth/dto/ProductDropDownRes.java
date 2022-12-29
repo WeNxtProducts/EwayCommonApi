@@ -25,4 +25,7 @@ public class ProductDropDownRes {
 	@JsonProperty("ProductIconName")
 	private String productIconName;
 	
+	@JsonProperty("PackageYn")
+	private String packageYn;
+	
 }

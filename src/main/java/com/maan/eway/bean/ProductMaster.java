@@ -148,6 +148,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="CURRENCY_IDS", length=20)
     private String     currencyIds;
 
+    @Column(name="PACKAGE_YN", length=20)
+    private String     packageYn;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 
