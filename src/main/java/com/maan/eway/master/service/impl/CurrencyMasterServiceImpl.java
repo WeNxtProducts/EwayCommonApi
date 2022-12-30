@@ -873,7 +873,7 @@ public List<CuurencyDropDownRes> getProductCurrencyMasterDropdown(ProductCurrDro
 	
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.desc(c.get("companyId")));
+		orderList.add(cb.asc(c.get("companyId")));
 		
 		// Effective Date Max Filter
 		Subquery<Long> effectiveDate = query.subquery(Long.class);
@@ -913,6 +913,7 @@ public List<CuurencyDropDownRes> getProductCurrencyMasterDropdown(ProductCurrDro
 		// Get Result
 		TypedQuery<Tuple> result = em.createQuery(query);			
 		list =  result.getResultList();  
+		//list.sort(Comparator.comparing(t -> <<get sort key from t>>) ;
 		list = list.stream().filter(o -> o.get("currencyId") !=null).filter( distinctByKey(o -> Arrays.asList(o.get("currencyId").toString()) )).collect(Collectors.toList());
 		
 		for(Tuple data : list ) {
