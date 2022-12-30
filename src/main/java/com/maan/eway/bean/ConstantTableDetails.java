@@ -73,8 +73,6 @@ private static final long serialVersionUID = 1L;
     private Integer    amendId ;
 
     //--- ENTITY DATA FIELDS 
-    @Column(name="TABLE_NAME", length=100)
-    private String     tableName ;
 
     @Column(name="TABLE_TYPE", length=100)
     private String     tableType ;
