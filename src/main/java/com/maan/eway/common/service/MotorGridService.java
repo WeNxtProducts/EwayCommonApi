@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.Tuple;
 
+import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
 import com.maan.eway.admin.res.ReferalCriteriaRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.ListItemValue;
@@ -36,4 +37,13 @@ public interface MotorGridService {
 	SuccessRes motorEndt(CopyQuoteReq req, List<String> branches);
 
 	List<Tuple> validateMotorEndt(String quoteNo);
+
+	List<PortfolioGridCriteriaRes> getMotorProtfolioActive(ExistingQuoteReq req, List<String> branches, Date startDate,int limit,
+			int offset, String string);
+
+	List<PortfolioGridCriteriaRes> getMotorProtfolioPending(ExistingQuoteReq req, List<String> branches,Date startDate,  int limit,
+			int offset, String string);
+
+	List<PortfolioGridCriteriaRes> getMotorPortfolioCancelled(ExistingQuoteReq req, List<String> branches,Date startDate,  int limit,
+			int offset, String string);
 }

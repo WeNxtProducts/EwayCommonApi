@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
 import com.maan.eway.admin.res.ReferalCriteriaRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.BranchMaster;
@@ -54,6 +55,7 @@ import com.maan.eway.common.res.CriteriaCustomerRes;
 import com.maan.eway.common.res.CustomerDetailsGetRes;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
+import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
@@ -944,4 +946,206 @@ public class GridServiceImpl implements GridService {
 		return res;
 	}
 
+	//Portfolio
+
+		@Override
+		public List<PortfolioCustomerDetailsRes> getallPortfolioActive(ExistingQuoteReq req) {
+			List<PortfolioCustomerDetailsRes> custRes = new ArrayList<PortfolioCustomerDetailsRes>();
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			try {
+				Date today = new Date();
+				Calendar cal = new GregorianCalendar();
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 1);
+				today = cal.getTime();
+
+				int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+				int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+
+				String loginId = "";
+				if (req.getApplicationId().equalsIgnoreCase("1")) {
+					loginId = req.getLoginId();
+				} else {
+					loginId = req.getApplicationId();
+				}
+				// Branch Res
+				List<String> branches = new ArrayList<String>();
+				if (StringUtils.isNotBlank(req.getBranchCode()) && req.getBranchCode().equalsIgnoreCase("99999")) {
+
+					List<LoginBranchMaster> loginBranch = loginBranchRepo.findByLoginId(loginId);
+
+					branches = loginBranch.stream().filter(o -> !o.getBrokerBranchCode().equalsIgnoreCase("None"))
+							.map(LoginBranchMaster::getBrokerBranchCode).collect(Collectors.toList());
+					if (branches.size() <= 0) {
+						branches = loginBranch.stream().map(LoginBranchMaster::getBranchCode).collect(Collectors.toList());
+
+					}
+
+				} else if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
+					branches.add(req.getBrokerBranchCode());
+				} else {
+					branches.add(req.getBranchCode());
+				}
+
+				List<PortfolioGridCriteriaRes> portfolioActiveList = new ArrayList<PortfolioGridCriteriaRes>();
+				if (req.getProductId().equalsIgnoreCase(motorProductId)) {
+					portfolioActiveList = motService.getMotorProtfolioActive(req, branches, today, limit, offset, "P");
+				}
+//				else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+//					referralApprovedList = traService.getTravelProtfolioActive(req  , branches, limit , offset, "P" );
+//				}
+//				else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
+//					referralApprovedList = buiService.getBuildingProtfolioActive(req  , branches, limit , offset, "P" );
+//				}
+				for (PortfolioGridCriteriaRes data : portfolioActiveList) {
+					PortfolioCustomerDetailsRes res = new PortfolioCustomerDetailsRes();
+					res = dozerMapper.map(data, PortfolioCustomerDetailsRes.class);
+					res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
+					custRes.add(res);
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return custRes;
+		}
+
+		@Override
+		public List<PortfolioCustomerDetailsRes> getallPortfolioPending(ExistingQuoteReq req) {
+			List<PortfolioCustomerDetailsRes> custRes = new ArrayList<PortfolioCustomerDetailsRes>();
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			try {
+				Date today = new Date();
+				Calendar cal = new GregorianCalendar();
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 1);
+				today = cal.getTime();
+				cal.set(Calendar.HOUR_OF_DAY, 1);
+				cal.set(Calendar.MINUTE, 1);
+				cal.add(Calendar.DAY_OF_MONTH, +365);
+				Date before365 = cal.getTime();
+				int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+				int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+
+				String loginId = "";
+				if (req.getApplicationId().equalsIgnoreCase("1")) {
+					loginId = req.getLoginId();
+				} else {
+					loginId = req.getApplicationId();
+				}
+				// Branch Res
+				List<String> branches = new ArrayList<String>();
+				if (StringUtils.isNotBlank(req.getBranchCode()) && req.getBranchCode().equalsIgnoreCase("99999")) {
+
+					List<LoginBranchMaster> loginBranch = loginBranchRepo.findByLoginId(loginId);
+
+					branches = loginBranch.stream().filter(o -> !o.getBrokerBranchCode().equalsIgnoreCase("None"))
+							.map(LoginBranchMaster::getBrokerBranchCode).collect(Collectors.toList());
+					if (branches.size() <= 0) {
+						branches = loginBranch.stream().map(LoginBranchMaster::getBranchCode).collect(Collectors.toList());
+
+					}
+
+				} else if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
+					branches.add(req.getBrokerBranchCode());
+				} else {
+					branches.add(req.getBranchCode());
+				}
+
+				List<PortfolioGridCriteriaRes> list = new ArrayList<PortfolioGridCriteriaRes>();
+				if (req.getProductId().equalsIgnoreCase(motorProductId)) {
+					list = motService.getMotorProtfolioPending(req, branches, today, limit, offset, "P");
+				}
+//				else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+//					referralApprovedList = traService.getTravelProtfolioPending(req  , branches, limit , offset, "P" );
+//				}
+//				else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
+//					referralApprovedList = buiService.getBuildingProtfolioPending(req  , branches, limit , offset, "P" );
+//				}
+				for (PortfolioGridCriteriaRes data : list) {
+					PortfolioCustomerDetailsRes res = new PortfolioCustomerDetailsRes();
+					res = dozerMapper.map(data, PortfolioCustomerDetailsRes.class);
+					// res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+					custRes.add(res);
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return custRes;
+		}
+
+		@Override
+		public List<PortfolioCustomerDetailsRes> getallPortfolioCancelled(ExistingQuoteReq req) {
+			List<PortfolioCustomerDetailsRes> custRes = new ArrayList<PortfolioCustomerDetailsRes>();
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			try {
+				Date today = new Date();
+				Calendar cal = new GregorianCalendar();
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 1);
+				today = cal.getTime();
+				cal.set(Calendar.HOUR_OF_DAY, 1);
+				cal.set(Calendar.MINUTE, 1);
+				cal.add(Calendar.DAY_OF_MONTH, -30);
+				Date before365 = cal.getTime();
+				int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+				int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+
+				String loginId = "";
+				if (req.getApplicationId().equalsIgnoreCase("1")) {
+					loginId = req.getLoginId();
+				} else {
+					loginId = req.getApplicationId();
+				}
+				// Branch Res
+				List<String> branches = new ArrayList<String>();
+				if (StringUtils.isNotBlank(req.getBranchCode()) && req.getBranchCode().equalsIgnoreCase("99999")) {
+
+					List<LoginBranchMaster> loginBranch = loginBranchRepo.findByLoginId(loginId);
+
+					branches = loginBranch.stream().filter(o -> !o.getBrokerBranchCode().equalsIgnoreCase("None"))
+							.map(LoginBranchMaster::getBrokerBranchCode).collect(Collectors.toList());
+					if (branches.size() <= 0) {
+						branches = loginBranch.stream().map(LoginBranchMaster::getBranchCode).collect(Collectors.toList());
+
+					}
+
+				} else if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
+					branches.add(req.getBrokerBranchCode());
+				} else {
+					branches.add(req.getBranchCode());
+				}
+
+				List<PortfolioGridCriteriaRes> list = new ArrayList<PortfolioGridCriteriaRes>();
+				if (req.getProductId().equalsIgnoreCase(motorProductId)) {
+					list = motService.getMotorPortfolioCancelled(req, branches, today, limit, offset, "D");
+				}
+//				else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+//					referralApprovedList = traService.getTravelPortfolioCancelled(req  , branches, limit , offset, "D" );
+//				}
+//				else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
+//					referralApprovedList = buiService.getBuildingPortfolioCancelled(req  , branches, limit , offset, "D" );
+//				}
+				for (PortfolioGridCriteriaRes data : list) {
+					PortfolioCustomerDetailsRes res = new PortfolioCustomerDetailsRes();
+					res = dozerMapper.map(data, PortfolioCustomerDetailsRes.class);
+					// res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+					custRes.add(res);
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return custRes;
+		}
 }

@@ -8,7 +8,11 @@ import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.UpdateLapsedQuoteReq;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
+
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
+
+import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
+
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -47,7 +51,15 @@ public interface GridService {
 
 	List<Error> validateQuotoNo(CopyQuoteReq req);
 
+
 	UpdateLapsedQuoteRes updateLapsedQuoteDetails(UpdateLapsedQuoteReq req);
+
+	List<PortfolioCustomerDetailsRes> getallPortfolioActive(ExistingQuoteReq req);
+
+	List<PortfolioCustomerDetailsRes> getallPortfolioPending(ExistingQuoteReq req);
+
+	List<PortfolioCustomerDetailsRes> getallPortfolioCancelled(ExistingQuoteReq req);
+
 
 
 }

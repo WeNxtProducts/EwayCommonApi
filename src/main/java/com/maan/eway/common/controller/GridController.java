@@ -17,6 +17,7 @@ import com.maan.eway.common.req.UpdateLapsedQuoteReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
+import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
 import com.maan.eway.common.service.GridService;
 import com.maan.eway.error.Error;
@@ -297,5 +298,53 @@ public class GridController {
 				}
 			}
 		
-		
-}
+			// Portfolio
+			@PostMapping("/portfolio/active")
+			public ResponseEntity<CommonRes> getallPortfolioActive(@RequestBody ExistingQuoteReq req) {
+				reqPrinter.reqPrint(req);
+				CommonRes data = new CommonRes();
+				List<PortfolioCustomerDetailsRes> res = entityService.getallPortfolioActive(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}
+
+			@PostMapping("/portfolio/pending")
+			public ResponseEntity<CommonRes> getallPortfolioPending(@RequestBody ExistingQuoteReq req) {
+				reqPrinter.reqPrint(req);
+				CommonRes data = new CommonRes();
+				List<PortfolioCustomerDetailsRes> res = entityService.getallPortfolioPending(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}
+
+			@PostMapping("/portfolio/cancelled")
+			public ResponseEntity<CommonRes> getallPortfolioCancelled(@RequestBody ExistingQuoteReq req) {
+				reqPrinter.reqPrint(req);
+				CommonRes data = new CommonRes();
+				List<PortfolioCustomerDetailsRes> res = entityService.getallPortfolioCancelled(req);
+
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}
+		}
