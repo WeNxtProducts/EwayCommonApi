@@ -35,5 +35,7 @@ public interface EserviceBuildingDetailsRepository  extends JpaRepository<Eservi
 			Integer vehicleId, String companyId, Integer valueOf);
 
 	List<EserviceBuildingDetails> findByRequestReferenceNoOrderByLocationIdAsc(String requestReferenceNo);
+	EserviceBuildingDetails findByRequestReferenceNoAndQuoteNoAndProductIdAndCompanyId(String requestReferenceNo,
+			String quoteNo, String productId, String companyId);
 
 }

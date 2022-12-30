@@ -5,8 +5,10 @@ import com.maan.eway.error.Error;
 import com.maan.eway.common.req.CopyQuoteReq;
 
 import com.maan.eway.common.req.ExistingQuoteReq;
+import com.maan.eway.common.req.UpdateLapsedQuoteReq;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
+import com.maan.eway.common.res.UpdateLapsedQuoteRes;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -44,6 +46,8 @@ public interface GridService {
 	List<EserviceCustomerDetailsRes> getallAdminReferralRequote(ExistingQuoteReq req);
 
 	List<Error> validateQuotoNo(CopyQuoteReq req);
+
+	UpdateLapsedQuoteRes updateLapsedQuoteDetails(UpdateLapsedQuoteReq req);
 
 
 }

@@ -38,8 +38,10 @@ import com.maan.eway.admin.res.ReferalCriteriaRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CityMaster;
+import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
@@ -47,12 +49,14 @@ import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
+import com.maan.eway.common.req.UpdateLapsedQuoteReq;
 import com.maan.eway.common.res.CriteriaCustomerRes;
 import com.maan.eway.common.res.CustomerDetailsGetRes;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
+import com.maan.eway.common.res.UpdateLapsedQuoteRes;
 import com.maan.eway.common.service.BuildingGridService;
 import com.maan.eway.common.service.GridService;
 import com.maan.eway.common.service.MotorGridService;
@@ -61,7 +65,9 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
+import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
+import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -97,6 +103,15 @@ public class GridServiceImpl implements GridService {
 	
 	@Autowired
 	private BuildingGridService buiService ;
+	
+	
+	@Autowired
+	private EserviceTravelDetailsRepository travelRepo;
+	
+	
+	@Autowired
+	private EserviceBuildingDetailsRepository buildingRepo;
+	
 	
 	
 	@PersistenceContext
@@ -874,4 +889,59 @@ public class GridServiceImpl implements GridService {
 			return null;
 		}
 		return custRes;
-	}}
+	}
+
+
+
+	@Override
+	public UpdateLapsedQuoteRes updateLapsedQuoteDetails(UpdateLapsedQuoteReq req) {
+		UpdateLapsedQuoteRes res = new UpdateLapsedQuoteRes();
+		DozerBeanMapper dozerMapper  = new DozerBeanMapper(); 
+
+		try {
+			EserviceMotorDetails motordata = new EserviceMotorDetails();
+			EserviceTravelDetails traveldata = new EserviceTravelDetails();
+			EserviceBuildingDetails buildingdata = new EserviceBuildingDetails();
+			
+			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {			
+				 motordata = repo.findByRequestReferenceNoAndQuoteNoAndProductIdAndCompanyId(req.getRequestReferenceNo(),req.getQuoteNo(),req.getProductId(),req.getCompanyId());			
+					dozerMapper.map(motordata, EserviceMotorDetails.class);
+					motordata.setUpdatedDate(new Date());
+					res.setRequestReferenceNo(motordata.getRequestReferenceNo());
+					res.setQuoteNo(motordata.getQuoteNo());
+					res.setMessage("Lapsed Quote Updated Successful");
+
+			}
+			
+			else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {			
+				traveldata = travelRepo.findByRequestReferenceNoAndQuoteNoAndProductIdAndCompanyId(req.getRequestReferenceNo(),req.getQuoteNo(),req.getProductId(),req.getCompanyId());			
+					dozerMapper.map(traveldata, EserviceTravelDetails.class);
+					traveldata.setUpdatedDate(new Date());
+					res.setRequestReferenceNo(traveldata.getRequestReferenceNo());
+					res.setQuoteNo(traveldata.getQuoteNo());
+					res.setMessage("Lapsed Quote Updated Successful");
+
+			}
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {			
+				buildingdata = buildingRepo.findByRequestReferenceNoAndQuoteNoAndProductIdAndCompanyId(req.getRequestReferenceNo(),req.getQuoteNo(),req.getProductId(),req.getCompanyId());			
+					dozerMapper.map(buildingdata, EserviceBuildingDetails.class);
+					buildingdata.setUpdatedDate(new Date());
+					res.setRequestReferenceNo(buildingdata.getRequestReferenceNo());
+					res.setQuoteNo(buildingdata.getQuoteNo());
+					res.setMessage("Lapsed Quote Updated Successful");
+
+			}			
+			
+			
+			
+			
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
+}
