@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.maan.eway.bean.EserviceBuildingDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,5 +30,10 @@ import com.maan.eway.bean.EserviceBuildingDetailsId;
  
  
 public interface EserviceBuildingDetailsRepository  extends JpaRepository<EserviceBuildingDetails,EserviceBuildingDetailsId > , JpaSpecificationExecutor<EserviceBuildingDetails> {
+
+	EserviceBuildingDetails findByRequestReferenceNoAndLocationIdAndCompanyIdAndProductId(String requestReferenceNo,
+			Integer vehicleId, String companyId, Integer valueOf);
+
+	List<EserviceBuildingDetails> findByRequestReferenceNoOrderByLocationIdAsc(String requestReferenceNo);
 
 }

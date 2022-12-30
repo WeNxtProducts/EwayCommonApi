@@ -43,5 +43,8 @@ public interface EserviceTravelGroupDetailsRepository  extends JpaRepository<Ese
 
 	EserviceTravelGroupDetails findByRequestReferenceNoAndGroupId(String requestReferenceNo, Integer groupId);
 
+	EserviceTravelGroupDetails findByRequestReferenceNoAndTravelIdAndGroupIdAndCompanyIdAndProductId(
+			String requestReferenceNo, Integer vehicleId, Integer valueOf, String companyId, Integer valueOf2);
+
 
 }

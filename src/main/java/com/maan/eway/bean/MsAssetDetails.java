@@ -19,6 +19,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -91,19 +92,29 @@ private static final long serialVersionUID = 1L;
     private String     buildingUsageId;
  
     @Column(name="BUILDING_SUMINSURED")
-    private Double buildingSuminsured ;
+    private BigDecimal buildingSuminsured ;
     
     @Column(name="ALLRISK_SUMINSURED")
-    private Double     allriskSuminsured ;
+    private BigDecimal     allriskSuminsured ;
     
-    @Column(name="PERSONAL_ACC_SUMINSURED")
-    private Double    personalAccSuminsured ;
+    @Column(name="PA_DEATH_SUMINSURED")
+    private BigDecimal    paDeathSuminsured ;
+    
+
+    @Column(name="PA_PERMANENTDISABLEMENT_SUMINSURED")
+    private BigDecimal    paPermanentdisablementSuminsured ;
+    
+    @Column(name="PA_TOTALDISABILITY_SUMINSURED")
+    private BigDecimal    paTotaldisabilitySumInsured ;
+    
+    @Column(name="PA_MEDICAL_SUMINSURED")
+    private BigDecimal    PaMedicalSuminsured ;
 
     @Column(name="PERSONAL_INT_SUMINSURED")
-    private Double    personalIntSuminsured ;
+    private BigDecimal    personalIntSuminsured ;
     
     @Column(name="CONTENT_SUMINSURED")
-    private Double     contentSuminsured ;
+    private BigDecimal     contentSuminsured ;
 
     @Column(name="Period_of_Insurance", nullable=false, length=10)
     private String     periodOfInsurance ;
@@ -145,6 +156,7 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="OCCUPATION_TYPE", length=20)
     private String     occupationType;
+
     @Column(name="CATEGORY_ID", length=20)
     private String     categoryId;
 

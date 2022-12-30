@@ -60,7 +60,7 @@ private static final long serialVersionUID = 1L;
     private String     customerReferenceNo ;
 
     @Id
-    @Column(name="TRAVEL_ID", nullable=false)
+    @Column(name="RISK_ID", nullable=false)
     private Integer    travelId ;
 
     @Id

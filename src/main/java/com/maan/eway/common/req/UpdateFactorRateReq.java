@@ -26,4 +26,13 @@ public class UpdateFactorRateReq {
 	@JsonProperty("ProductId")
 	private String productId;
 	
+	@JsonProperty("SectionId")
+	private String sectionId;
+	
+	@JsonProperty("InsuranceId")
+	private String companyId;
+	
+	@JsonProperty("GroupId")
+	private Integer groupId;
+	
 }

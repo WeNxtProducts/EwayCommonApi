@@ -28,4 +28,7 @@ public class UpdateCoverRes {
 	@JsonProperty("InsuranceId")
 	private String insuranceId ;
 	
+	@JsonProperty("SectionId")
+	private String sectionId ;
+	
 }

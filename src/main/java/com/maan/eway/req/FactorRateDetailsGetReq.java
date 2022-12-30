@@ -11,6 +11,7 @@ public class FactorRateDetailsGetReq {
 	@JsonProperty("RequestReferenceNo")
 	private String requestReferenceNo;
 	
-	@JsonProperty("VehicleId")
-	private String vehicleId;
+	
+	@JsonProperty("ProductId")
+	private String productId;
 }

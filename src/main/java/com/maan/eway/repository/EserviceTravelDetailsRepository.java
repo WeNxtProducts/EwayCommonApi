@@ -18,6 +18,7 @@ import com.maan.eway.bean.EserviceTravelDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import com.maan.eway.bean.EserviceTravelDetailsId;
+import com.maan.eway.bean.EserviceTravelGroupDetails;
 /**
  * <h2>EserviceTravelDetailsRepository</h2>
  *
@@ -31,5 +32,12 @@ import com.maan.eway.bean.EserviceTravelDetailsId;
 public interface EserviceTravelDetailsRepository  extends JpaRepository<EserviceTravelDetails,EserviceTravelDetailsId > , JpaSpecificationExecutor<EserviceTravelDetails> {
 
 	EserviceTravelDetails findByRequestReferenceNo(String requestReferenceNo);
+
+	EserviceTravelDetails findByRequestReferenceNoAndTravelIdAndCompanyIdAndProductIdAndSectionId(
+			String requestReferenceNo, Integer vehicleId,  String companyId, Integer valueOf2,
+			Integer valueOf3);
+
+	EserviceTravelDetails findByRequestReferenceNoAndCompanyIdAndProductIdAndSectionId(String requestReferenceNo,
+			String companyId, String productId, String sectionId);
 
 }

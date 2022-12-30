@@ -20,6 +20,8 @@ public class LoginBranchesSaveReq {
 
 	@JsonProperty("OaCode")
 	private String  oaCode; 
-	@JsonProperty("BranchIds")
-	private List<String> branchIds ;
+	@JsonProperty("BrokerBranchIds")
+	private List<String> brokerBranchIds ;
+	
+	
 }

@@ -1242,22 +1242,20 @@ List<Error> errorList = new ArrayList<Error>();
 			// Company Product Effective Date Max Filter
 			Subquery<Long> product = query.subquery(Long.class);
 			Root<LoginProductMaster> ps = product.from(LoginProductMaster.class);
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
-			Root<LoginProductMaster> ocpm2 = effectiveDate2.from(LoginProductMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateStart")));
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<LoginProductMaster> ocpm2 = amendId.from(LoginProductMaster.class);
+			amendId.select(cb.max(ocpm2.get("amendId")));
 			Predicate eff1 = cb.equal(ocpm2.get("productId"), ps.get("productId"));
 			Predicate eff2 = cb.equal(ocpm2.get("companyId"), ps.get("companyId"));
 			Predicate eff3 = cb.equal(ocpm2.get("loginId"), ps.get("loginId"));
-			Predicate eff4 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"),today);
-			effectiveDate2.where(eff1,eff2,eff3,eff4);
+			amendId.where(eff1,eff2,eff3);
 			
 			// Product Section Filter
 			product.select(ps.get("productId"));
 			Predicate ps1 = cb.equal(ps.get("companyId"), req.getInsuranceId());
 			Predicate ps3 = cb.equal(ps.get("loginId"), req.getLoginId());
-			Predicate ps4 = cb.equal(ps.get("effectiveDateStart"),effectiveDate2);
-			Predicate ps5 = cb.equal(ps.get("status"),"Y");
-			product.where(ps1,ps3,ps4,ps5);
+			Predicate ps4 = cb.equal(ps.get("amendId"),amendId);
+			product.where(ps1,ps3,ps4);
 			
 			// Where
 			Expression<String>e0= b.get("productId");

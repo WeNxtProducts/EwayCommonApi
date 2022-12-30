@@ -484,7 +484,7 @@ public List<Error> validateLoginBranches(LoginBranchesSaveReq req) {
 			errors.add(new Error("02", "InsuranceId", "Plese Select InsuranceId" ));
 		}
 		
-		if(req.getBranchIds()==null || req.getBranchIds().size()== 0 ) {
+		if(req.getBrokerBranchIds()==null || req.getBrokerBranchIds().size()== 0 ) {
 			errors.add(new Error("03", "Branch Ids", "Plese select Atleast One  Branch " ));
 		} 
 		

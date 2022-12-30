@@ -64,7 +64,7 @@ private static final long serialVersionUID = 1L;
     private String     idNumber ;
 
     @Id
-    @Column(name="VEHICLE_ID", nullable=false)
+    @Column(name="RISK_ID", nullable=false)
     private Integer    vehicleId ;
 
     @Id
