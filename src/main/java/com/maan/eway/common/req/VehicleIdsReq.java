@@ -12,6 +12,10 @@ public class VehicleIdsReq {
 	@JsonProperty("Id")
 	private Integer vehicleId;
 	
+	 
+	 @JsonProperty("SectionId")
+	 private String    sectionId ;
+	
 	@JsonProperty("Covers")
 	private List<CoverIdsReq> coverIdList;
 }

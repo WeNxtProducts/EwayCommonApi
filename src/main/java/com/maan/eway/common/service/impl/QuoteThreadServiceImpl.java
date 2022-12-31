@@ -1,6 +1,7 @@
 package com.maan.eway.common.service.impl;
 
 import java.awt.image.RescaleOp;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,6 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
+import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
@@ -54,6 +57,8 @@ import com.maan.eway.common.service.QuoteThreadService;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.CoverDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
+import com.maan.eway.repository.EServiceSectionDetailsRepository;
+import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
@@ -81,6 +86,12 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
+	
+	@Value(value = "${building.productId}")
+	private String buildingProductId;
+	
+	
+	Gson json = new Gson();
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -127,6 +138,12 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	@Autowired
 	private TravelPassengerHistoryRepository traPassHisRepo  ;
 	
+	@Autowired
+	private EserviceBuildingDetailsRepository eserBuildRepo  ;
+	
+	@Autowired
+	private EServiceSectionDetailsRepository eserSecRepo  ;
+	
 	
 	
 	@Override
@@ -166,9 +183,15 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             // Frame Request 
             QuoteThreadReq request = (QuoteThreadReq) frameQuoteReq.getCommonResponse() ;
            
+            // Delete Same Quote Old Records
+            commonRes =  oldQuoteRecordsDeleteThreadCall(request);
+            if( commonRes.getErrorMessage() !=null && commonRes.getErrorMessage().size()>0 ) {
+             	return commonRes ; 
+             }
+            
             // Customer Save Thread Call
             QuoteThreadCall customerSave = new QuoteThreadCall("CustomerSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
-            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,motorProductId , travelProductId);
+            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
             queue.add(customerSave);
             
             int threadCount = 1 ;
@@ -176,7 +199,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             
          // Product Wise Thread Call
             commonRes = productWiseThreadCall( req , request ) ;
-        	 if( frameQuoteReq.getErrorMessage() !=null && frameQuoteReq.getErrorMessage().size()>0 ) {
+        	 if( commonRes.getErrorMessage() !=null && commonRes.getErrorMessage().size()>0 ) {
              	commonRes = frameQuoteReq ;
              	return commonRes ; 
              }
@@ -273,11 +296,12 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				
 			} else {
 				
+				//Quote Save Thread Call
 				List<Callable<Object>> queue2 = new ArrayList<Callable<Object>>();
 				MyTaskList taskList2 = new MyTaskList(queue2);
 				request.setVehicleId(req.getVehicleIdsList().get(0).getVehicleId());
 				QuoteThreadCall quoteSave = new QuoteThreadCall("QuoteSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo  
-	            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId);
+	            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
 	            
 				queue2.add(quoteSave);
 				
@@ -287,23 +311,27 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				QuoteThreadRes quoteRes = new QuoteThreadRes(); 
 				
 				for (Future<Object> callable : invoke2) {
-
+	
 					log.info(callable.getClass() + "," + callable.isDone());
-
+	
 					if (callable.isDone()) {
 						Map<String, Object> map = (Map<String, Object>) callable.get();
-
+	
 						for (Entry<String, Object> future : map.entrySet()) {
 							if ("QuoteSave".equalsIgnoreCase(future.getKey())) {
-
+	
 								quoteRes = (QuoteThreadRes) future.getValue();
-
+	
 							} 
 						}
 						success++;
 					}
 				}
-			//	HomePositionMaster homeData = homeRepo.findByQuoteNo(request.getQuoteNo());
+
+//				
+//				
+//				QuoteThreadRes quoteRes = call_QuoteSave(request);
+
 				
 				response.setQuoteNo(quoteRes.getQuoteNo());
 				response.setRequestReferenceNo(quoteRes.getRequestReferenceNo());
@@ -324,7 +352,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					commonRes.setMessage("Success");
 				}
 			}
-						
+
 			
 		}	
 		} catch (Exception e) {
@@ -425,6 +453,16 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						travelData.setCustomerId("");
 						eserTraRepo.save(travelData);
 						
+					} else if ( req.getProductId().equalsIgnoreCase(buildingProductId)) {
+						List<EserviceBuildingDetails> buildingDatas = eserBuildRepo.findByRequestReferenceNoOrderByLocationIdAsc(req.getRequestReferenceNo());
+						for (EserviceBuildingDetails build : buildingDatas ) {
+							build.setStatus("RP");
+							build.setReferalRemarks(referralRemarks);
+							build.setUpdatedDate(new Date());
+							build.setQuoteNo("");
+							build.setCustomerId("");
+							eserBuildRepo.save(build);
+						}
 					}
 					
 					ReferalResponse res = new ReferalResponse();
@@ -468,6 +506,73 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	}
 
 
+	public CommonRes oldQuoteRecordsDeleteThreadCall( QuoteThreadReq request ) {
+		CommonRes commonRes = new CommonRes();
+		List<Error> errors = new ArrayList<Error>();
+		String res = "" ;
+		try {
+			int threadCount = 1 ;
+			List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
+			
+			MyTaskList taskList = new MyTaskList(queue);
+			
+        	QuoteThreadCall deleteOldRecords = new QuoteThreadCall("DeleteOldRecords" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo  
+            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
+          
+        	queue.add(deleteOldRecords);
+        	res = "Success";
+        	int success = 0;
+        	 
+        	 Map<String,Object> deleteRes = new HashMap<String,Object>() ;
+ 			
+ 			 ForkJoinPool forkjoin = new ForkJoinPool(threadCount); 
+             ConcurrentLinkedQueue<Future<Object>> invoke  = (ConcurrentLinkedQueue<Future<Object>>) forkjoin.invoke(taskList) ;
+             
+ 			for (Future<Object> callable : invoke) {
+
+ 				log.info(callable.getClass() + "," + callable.isDone());
+
+ 				if (callable.isDone()) {
+ 					Map<String, Object> map = (Map<String, Object>) callable.get();
+
+ 					for (Entry<String, Object> future : map.entrySet()) {
+ 						
+ 						if ("DeleteOldQuote".equalsIgnoreCase(future.getKey())) {
+ 							deleteRes = (Map<String,Object>) future.getValue();
+ 						}
+ 					}
+
+ 					success++;
+ 				}
+ 			}
+ 	
+ 			// Cust Res
+ 			if( deleteRes.get("Response")!=null && deleteRes.get("Response").toString().equals("Failed") ) {
+ 				errors.add(new Error("01","Customer Save",deleteRes.get("Errors").toString()));
+ 				commonRes.setCommonResponse(null);
+ 				commonRes.setIsError(true);
+ 				commonRes.setErrorMessage(errors);
+ 				commonRes.setMessage("Failed");
+ 				return commonRes ; 
+ 				
+ 			} 
+ 			
+	        commonRes.setCommonResponse(res);
+			commonRes.setIsError(false);
+			commonRes.setErrorMessage(Collections.emptyList());
+		 	commonRes.setMessage("Success");
+		 	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --> " +  e.getMessage());
+			errors.add(new Error("01","Common Error",e.getMessage()));
+			commonRes.setCommonResponse(null);
+			commonRes.setIsError(true);
+			commonRes.setErrorMessage(errors);
+			commonRes.setMessage("Failed");	
+		}
+		return commonRes ;
+	}
 	//-------------------------------------------------------------Product Wise Multi Thread Call---------------------------------------------------------------------//
 	public CommonRes productWiseThreadCall(NewQuoteReq req , QuoteThreadReq request ) {
 		CommonRes commonRes = new CommonRes();
@@ -494,10 +599,32 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		            	request2.setVehicleId(vehId);
 		            	
 		            	QuoteThreadCall motorSave = new QuoteThreadCall("MotorSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo  
-		                		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId);
+		                		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
 			            queue.add(motorSave);
 						QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
-			            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId);
+			            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
+						queue.add(coverSave);	
+		            }
+					
+			// Multiple Travel Thread Call	 
+			} else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
+				 for (Integer vehId :  vehicleIds ) {
+		            	threadCount = threadCount +  2 ;
+		            	
+		            	QuoteThreadReq request2 = new QuoteThreadReq();
+		            	request2.setCustomerId(request.getCustomerId());
+		            	request2.setProductId(request.getProductId());
+		            	request2.setQuoteNo(request.getQuoteNo());
+		            	request2.setRequestReferenceNo(request.getRequestReferenceNo());
+		            	request2.setVehicleIdsList(request.getVehicleIdsList());
+		            	request2.setCreatedBy(request.getCreatedBy());
+		            	request2.setVehicleId(vehId);
+		            	
+		            	QuoteThreadCall buildingSave = new QuoteThreadCall("BuildingSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo  
+		                		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
+			            queue.add(buildingSave);
+						QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
+			            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
 						queue.add(coverSave);	
 		            }
 					
@@ -533,10 +660,10 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		            	 request2.setGroupCount(filterGroup.get(0).getGrouppMembers());
 		            	
 		            	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
-		            			 , homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId);
+		            			 , homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
 			             queue.add(travelSave);
 						 QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
-								 , homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId);
+								 , homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
 						 queue.add(coverSave);
 					 }					 
 		         } 
@@ -691,4 +818,230 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		}
 		return commonRes ;
 }
+	
+	
+	private synchronized QuoteThreadRes call_QuoteSave(QuoteThreadReq  request) {
+		QuoteThreadRes res= new QuoteThreadRes() ;
+		String pattern = "#####0.00";
+		DecimalFormat df = new DecimalFormat(pattern);
+		try {
+			// Home Positiom Master Thread Call
+			Long homeInfo =  homeRepo.countByQuoteNo(request.getQuoteNo());
+			if (homeInfo > 0 ) {
+				//Delete data
+				homeRepo.deleteByQuoteNo(request.getQuoteNo());
+ 				
+			}
+			
+			// Cover Calc
+			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0);
+			
+			List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList() );
+		
+			List<VehicleIdsReq> VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals( request.getGroupId()==null?request.getVehicleId() : request.getGroupId() ) ).collect(Collectors.toList());
+			List<CoverIdsReq> coverReqList = VehicleList.get(0).getCoverIdList();
+			
+			List<FactorRateRequestDetails>  premiumCovers = new  ArrayList<FactorRateRequestDetails>();
+			premiumCovers.addAll(defaultCovers);
+			
+			for (VehicleIdsReq vehReq : request.getVehicleIdsList() ) {
+				for ( CoverIdsReq covReq :  coverReqList) { 
+					List<FactorRateRequestDetails> filterNonDefaultCovers  = new ArrayList<FactorRateRequestDetails>();
+					
+					 if( request.getProductId().equalsIgnoreCase(buildingProductId)    ) {
+						 
+						 filterNonDefaultCovers = covers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(vehReq.getSectionId())) && o.getVehicleId().equals(request.getGroupId()==null? vehReq.getVehicleId() : request.getGroupId()) &&  o.getIsSelected()!=null &&  (! o.getIsSelected().equalsIgnoreCase("D")) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0)).collect(Collectors.toList());				
+					
+					} else  {
+						
+						 filterNonDefaultCovers = covers.stream().filter( o ->  o.getVehicleId().equals(request.getGroupId()==null? vehReq.getVehicleId() : request.getGroupId()) &&  o.getIsSelected()!=null &&  (! o.getIsSelected().equalsIgnoreCase("D")) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0)).collect(Collectors.toList());				
+						
+					}
+					
+					if(filterNonDefaultCovers != null && filterNonDefaultCovers.size()>0 ) {
+						if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
+							
+							premiumCovers.addAll(filterNonDefaultCovers);
+							
+						}else {
+							List<FactorRateRequestDetails> filterNonDefaultSubCovers = filterNonDefaultCovers.stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null? vehReq.getVehicleId() : request.getGroupId()) && o.getIsSelected()!=null &&  (! o.getIsSelected().equalsIgnoreCase("D")) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))&& o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
+							premiumCovers.addAll(filterNonDefaultSubCovers);
+						}
+					}
+				}
+			}
+			
+			Double premiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc()  ).sum();					
+			Double overAllPremiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxFc()  ).sum();
+			
+			Double premiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc()  ).sum();					
+			Double overAllPremiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxLc()  ).sum();
+			Double vatPremiumFc = overAllPremiumFc - premiumFc ;  
+			Double vatPercent = vatPremiumFc<=0D ?0 : (vatPremiumFc*100) / premiumFc ;
+			Double vatPremiumLc = overAllPremiumLc - premiumLc ;  
+			
+			Double tax1 =  premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(1) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc()  ).sum();
+			Double tax2 = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(2) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc()  ).sum();
+			Double tax3 = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(3) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc()  ).sum();
+			
+			List<Integer> vehicleIds = request.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId ).collect(Collectors.toList());
+			HomePositionMaster home = new HomePositionMaster();
+			
+			if( request.getProductId().equalsIgnoreCase(motorProductId) ) {
+				
+				EserviceMotorDetails motorData = eserMotRepo.findByRequestReferenceNoAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,request.getVehicleId());
+				home.setCompanyId(motorData.getCompanyId());
+				home.setBranchCode(motorData.getBranchCode());
+				home.setProductId(Integer.valueOf(motorData.getProductId()));
+				home.setSectionId(Integer.valueOf(motorData.getSectionId()));
+				home.setBrokerBranchCode(motorData.getBrokerBranchCode());	
+				home.setLoginId(motorData.getLoginId());
+				home.setApplicationId(motorData.getApplicationId());
+				home.setAgencyCode(Integer.valueOf(motorData.getAgencyCode()));
+				home.setAcExecutiveId(motorData.getAcExecutiveId()==null?null : Long.valueOf(motorData.getAcExecutiveId()));
+				home.setBrokerCode(motorData.getBrokerCode());
+				home.setEffectiveDate(motorData.getPolicyStartDate());
+				home.setExpiryDate(motorData.getPolicyEndDate());
+				home.setAdminRemarks(motorData.getAdminRemarks());
+				home.setAdminReferralStatus(motorData.getStatus());			
+				home.setReferralDescription(motorData.getReferalRemarks());
+				home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? motorData.getAdminLoginId() : request.getAdminLoginId() );
+				home.setStatus(motorData.getStatus());
+				home.setQuoteCreatedDate(new Date());
+				home.setEntryDate(new Date());
+				home.setInceptionDate(motorData.getPolicyStartDate());
+				home.setExpiryDate(motorData.getPolicyEndDate());
+				home.setCurrency(motorData.getCurrency());
+				home.setExchangeRate(motorData.getExchangeRate());
+				home.setNoOfVehicles( request.getVehicleIdsList().size());
+				home.setHavepromoYn(motorData.getHavepromocode());
+				home.setPromocode(motorData.getPromocode());
+				
+			} else if(request.getProductId().equalsIgnoreCase(travelProductId) ) {
+				
+				EserviceTravelDetails  travelData = eserTraRepo.findByRequestReferenceNo(request.getRequestReferenceNo()) ;
+				home.setCompanyId(travelData.getCompanyId());
+				home.setBranchCode(travelData.getBranchCode());
+				home.setProductId(Integer.valueOf(travelData.getProductId()));
+				home.setSectionId(Integer.valueOf(travelData.getSectionId()));
+				home.setBrokerBranchCode(travelData.getBrokerBranchCode());	
+				home.setLoginId(travelData.getLoginId());
+				home.setApplicationId(travelData.getApplicationId());
+				home.setAgencyCode(Integer.valueOf(travelData.getBrokerCode()));
+				home.setAcExecutiveId(travelData.getAcExecutiveId()==null?null : Long.valueOf(travelData.getAcExecutiveId()));
+				home.setBrokerCode(travelData.getBrokerCode());
+				home.setEffectiveDate(travelData.getTravelStartDate());
+				home.setExpiryDate(travelData.getTravelEndDate());
+				home.setAdminRemarks(travelData.getAdminRemarks());
+				home.setAdminReferralStatus(travelData.getStatus());			
+				home.setReferralDescription(travelData.getReferalRemarks());
+				home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? travelData.getAdminLoginId() : request.getAdminLoginId() );
+				home.setStatus(travelData.getStatus());
+				home.setQuoteCreatedDate(new Date());
+				home.setEntryDate(new Date());
+				home.setInceptionDate(travelData.getTravelStartDate());
+				home.setExpiryDate(travelData.getTravelEndDate());
+				home.setCurrency(travelData.getCurrency());
+				home.setExchangeRate(travelData.getExchangeRate());
+				home.setNoOfVehicles( travelData.getTotalPassengers());
+				home.setHavepromoYn(travelData.getHavepromocode());
+				home.setPromocode(travelData.getPromocode());
+				
+			}  else if(request.getProductId().equalsIgnoreCase(buildingProductId) ) {
+				
+				EserviceBuildingDetails  buildingData = eserBuildRepo.findByRequestReferenceNoAndLocationId(request.getRequestReferenceNo() , request.getVehicleId()) ;
+				Long builCount =  eserBuildRepo.countByRequestReferenceNo(request.getRequestReferenceNo() ) ;
+				//List<EserviceSectionDetails> sections = eserSecRepo.findByRequestReferenceNoAndRiskIdAndProductIdOrderBySectionIdAsc(request.getRequestReferenceNo() , request.getVehicleId(),request.getProductId() );
+				home.setCompanyId(buildingData.getCompanyId());
+				home.setBranchCode(buildingData.getBranchCode());
+				home.setProductId(Integer.valueOf(buildingData.getProductId()));
+			//	home.setSectionId(Integer.valueOf(buildingData.getSectionId()));
+				home.setBrokerBranchCode(buildingData.getBrokerBranchCode());	
+				home.setLoginId(buildingData.getLoginId());
+				home.setApplicationId(buildingData.getApplicationId());
+				home.setAgencyCode(Integer.valueOf(buildingData.getBrokerCode()));
+				home.setAcExecutiveId(buildingData.getAcExecutiveId()==null?null : Long.valueOf(buildingData.getAcExecutiveId()));
+				home.setBrokerCode(buildingData.getBrokerCode());
+				home.setEffectiveDate(buildingData.getPolicyStartDate());
+				home.setExpiryDate(buildingData.getPolicyEndDate());
+				home.setAdminRemarks(buildingData.getAdminRemarks());
+				home.setAdminReferralStatus(buildingData.getStatus());			
+				home.setReferralDescription(buildingData.getReferalRemarks());
+				home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? buildingData.getAdminLoginId() : request.getAdminLoginId() );
+				home.setStatus(buildingData.getStatus());
+				home.setQuoteCreatedDate(new Date());
+				home.setEntryDate(new Date());
+				home.setInceptionDate(buildingData.getPolicyStartDate());
+				home.setExpiryDate(buildingData.getPolicyEndDate());
+				home.setCurrency(buildingData.getCurrency());
+				home.setExchangeRate(buildingData.getExchangeRate());
+				home.setNoOfVehicles(Integer.valueOf(builCount.toString()));
+				home.setHavepromoYn(buildingData.getHavepromocode());
+				home.setPromocode(buildingData.getPromocode());
+			}
+			
+			// Save Home Position Master
+			
+			home.setQuoteNo(request.getQuoteNo());
+			home.setRequestReferenceNo(request.getRequestReferenceNo());
+			home.setCustomerId(request.getCustomerId());
+			//	home.setProposalNo("");
+			home.setAmendId(0);
+			home.setApplicationNo(0L);
+			
+			//home.setLapsedDate(null);
+			//home.setLapsedRemarks(null);
+			//home.setLapsedUpdatedBy(null);
+			
+	//		home.setRemarks("");
+			home.setVehicleNo(vehicleIds.size());
+			
+			
+			// No OF Vehicles
+			
+			home.setPremiumFc(Double.valueOf(df.format(premiumFc)) );
+			home.setOverallPremiumFc(Double.valueOf(df.format(overAllPremiumFc)));
+			home.setVatPremiumFc(Double.valueOf(df.format(vatPremiumFc)));
+			home.setVatPercent(Double.valueOf(df.format(vatPercent)));
+			home.setPremiumLc(Double.valueOf(df.format(premiumLc)) );
+			home.setOverallPremiumLc(Double.valueOf(df.format(overAllPremiumLc)));
+			home.setVatPremiumLc(Double.valueOf(df.format(vatPremiumLc)));
+			home.setFinalizeYn("N");
+			home.setTax1(tax1);
+			home.setTax2(tax2);
+			home.setTax3(tax3);
+			
+			homeRepo.saveAndFlush(home);
+			
+	/*		home.setExcessSign(null);
+			home.setExcessPremium(null);
+			home.setDiscountPremium(null);
+			home.setPolicyFee(null);
+			home.setOtherFee(null);
+			home.setCommission(null);
+			home.setCommissionPercentage(null);
+			home.setVatCommission(nll);
+			home.setCalcPremium(null);
+			home.setAdminReferralStatus(null);
+			home.setAdminReferralStatus(null);
+			home.setReferralDescription(null);
+			home.setApprovedBy(null);
+			home.setApprCanBy(null); */
+			
+			
+			log.error("Save Motor Info is ---> " + json.toJson(home));
+			
+			// Response 
+			res.setCustomerId(request.getCustomerId());
+			res.setQuoteNo(request.getQuoteNo());
+			res.setRequestReferenceNo(request.getRequestReferenceNo());
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.error("Exception is ---> " + e.getMessage());
+			return null ;
+		}
+	
+		return res;
+	}
 }

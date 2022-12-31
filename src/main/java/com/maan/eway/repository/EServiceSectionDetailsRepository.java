@@ -34,6 +34,8 @@ public interface EServiceSectionDetailsRepository  extends JpaRepository<Eservic
 
 	List<EserviceSectionDetails> findByRequestReferenceNoOrderByRiskIdAsc(String requestReferenceNo);
 
+	List<EserviceSectionDetails> findByQuoteNoOrderByRiskIdAsc(String quoteNo);
+
 	
 
 }
