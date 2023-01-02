@@ -1023,7 +1023,7 @@ public class QuoteServiceImpl implements QuoteService {
 				for(EserviceSectionDetails sec : secDatas ) {
 					VehicleIdsReq vehDeh = new VehicleIdsReq();
 					List<CoverIdsReq>  coverList = new ArrayList<CoverIdsReq>();
-					List<FactorRateRequestDetails> filterCover = coverDatas.stream().filter( o -> o.getSectionId().equals(sec.getSectionId()) && o.getVehicleId().equals(sec.getRiskId()) ).collect(Collectors.toList());
+					List<FactorRateRequestDetails> filterCover = coverDatas.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(sec.getSectionId())) && o.getVehicleId().equals(sec.getRiskId()) ).collect(Collectors.toList());
 					
 					for (FactorRateRequestDetails cov :  filterCover ) {
 						CoverIdsReq coverReq = new CoverIdsReq();
