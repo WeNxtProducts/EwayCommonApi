@@ -21,6 +21,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.springframework.transaction.annotation.Transactional;
@@ -368,7 +369,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	}
 	
 	//-------------------------------------------------------------Refrral Checking Block ---------------------------------------------------------------------//
-	
+	@Transactional
 	public CommonRes RefferalChecking(NewQuoteReq req ) {
 		CommonRes commonRes = new CommonRes();
 		List<Error> errors = new ArrayList<Error>();
@@ -382,27 +383,42 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				referralRemarks = req.getReferralRemarks();
 				
 			} else {
+				//UPDATE
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				// create update
+				CriteriaUpdate<FactorRateRequestDetails> update = cb.createCriteriaUpdate(FactorRateRequestDetails.class);
+				// set the root class
+				Root<FactorRateRequestDetails> m = update.from(FactorRateRequestDetails.class);
+				// set update and where clause
+				update.set("userOpt", "N");
+				
+				Predicate n3 = cb.equal(m.get("requestReferenceNo"), req.getRequestReferenceNo() );
+				Predicate n4 = cb.equal(m.get("productId"),req.getProductId());
+				update.where(n3,n4);
+				// perform update
+				em.createQuery(update).executeUpdate();
 				List<FactorRateRequestDetails> userOptCovers = new ArrayList<FactorRateRequestDetails>();
-		
 				// Covers Referrral Checking
 				List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo()); 
 				for (VehicleIdsReq veh : req.getVehicleIdsList()) {
-	
+					
+					
+					
 					// Cover Referal Checking
 					List<CoverIdsReq> coverList = veh.getCoverIdList();
 					for (CoverIdsReq cov : coverList) {
 						if(StringUtils.isBlank(cov.getSubCoverYn()) || cov.getSubCoverYn().equalsIgnoreCase("N") ) {
-							List<FactorRateRequestDetails> filterCovers = covers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) ).collect(Collectors.toList());		
+							List<FactorRateRequestDetails> filterCovers = covers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) &&  o.getCoverId().equals(cov.getCoverId()) ).collect(Collectors.toList());	
 							userOptCovers.addAll(filterCovers);
 							
-							List<FactorRateRequestDetails> filterReferalCovers = filterCovers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&  cov.getIsReferal()!=null && cov.getIsReferal().equalsIgnoreCase("Y") ).collect(Collectors.toList());
+							List<FactorRateRequestDetails> filterReferalCovers = filterCovers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&  cov.getIsReferal()!=null && cov.getIsReferal().equalsIgnoreCase("Y") ).collect(Collectors.toList());
 							if(filterReferalCovers.size()>0 && StringUtils.isBlank(referralRemarks) && referral==false ) { 
 								referralRemarks = filterReferalCovers.get(0).getCoverName() ;
 								referral = true ;
 							}
 						
 						} else {
-							List<FactorRateRequestDetails> filterSubCovers  = covers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(cov.getSubCoverId()))  ).collect(Collectors.toList());
+							List<FactorRateRequestDetails> filterSubCovers  = covers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(cov.getSubCoverId()))  ).collect(Collectors.toList());
 							userOptCovers.addAll(filterSubCovers);
 							List<FactorRateRequestDetails> filterReferalSubCovers = filterSubCovers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&  cov.getIsReferal()!=null && cov.getIsReferal().equalsIgnoreCase("Y")  ).collect(Collectors.toList());
 							if(filterReferalSubCovers.size()>0 && StringUtils.isBlank(referralRemarks) && referral==false) { 
@@ -610,22 +626,27 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			} else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
 				 for (Integer vehId :  vehicleIds ) {
 		            	threadCount = threadCount +  2 ;
+		            	List<String> sectionId = req.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());
 		            	
-		            	QuoteThreadReq request2 = new QuoteThreadReq();
-		            	request2.setCustomerId(request.getCustomerId());
-		            	request2.setProductId(request.getProductId());
-		            	request2.setQuoteNo(request.getQuoteNo());
-		            	request2.setRequestReferenceNo(request.getRequestReferenceNo());
-		            	request2.setVehicleIdsList(request.getVehicleIdsList());
-		            	request2.setCreatedBy(request.getCreatedBy());
-		            	request2.setVehicleId(vehId);
+		            	for ( String sec : sectionId) {
+		            		QuoteThreadReq request2 = new QuoteThreadReq();
+			            	request2.setCustomerId(request.getCustomerId());
+			            	request2.setProductId(request.getProductId());
+			            	request2.setQuoteNo(request.getQuoteNo());
+			            	request2.setRequestReferenceNo(request.getRequestReferenceNo());
+			            	request2.setVehicleIdsList(request.getVehicleIdsList());
+			            	request2.setCreatedBy(request.getCreatedBy());
+			            	request2.setVehicleId(vehId);
+			            	request2.setSectionId(sec);	 
+			            	QuoteThreadCall buildingSave = new QuoteThreadCall("BuildingSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo  
+			                		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
+				            queue.add(buildingSave);
+							QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
+				            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
+							queue.add(coverSave);	
+		            	}
 		            	
-		            	QuoteThreadCall buildingSave = new QuoteThreadCall("BuildingSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo  
-		                		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
-			            queue.add(buildingSave);
-						QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
-			            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
-						queue.add(coverSave);	
+		            	
 		            }
 					
 			// Multiple Travel Thread Call	 

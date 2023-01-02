@@ -489,22 +489,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 	private synchronized  Map<String,Object>  call_CoverSave(QuoteThreadReq  request) {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		try {
-			// Find Motor
-			Long coverInfo =  coverRepo.countByQuoteNoAndVehicleId(request.getQuoteNo(), request.getVehicleId());
-		if (coverInfo >0 ) {
- 				//Delete data
- 				coverRepo.deleteByQuoteNoAndVehicleId(request.getQuoteNo(), request.getVehicleId());
- 				
- 			}
 		
 			if ( request.getProductId().equalsIgnoreCase(motorProductId)) {
 				List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,request.getVehicleId());
 				res = CoverSavePoint(covers);
 				
 			} else if( request.getProductId().equalsIgnoreCase(buildingProductId)    ) {
-				String SectionId = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getVehicleId() ) ).collect(Collectors.toList()).get(0).getSectionId();
 				
-				List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoAndProductIdAndSectionIdAndDiscLoadIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(SectionId) , 0,request.getGroupId());
+				List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoAndProductIdAndSectionIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()) , request.getVehicleId());
 				res = CoverSavePoint(covers);
 			
 			} else if( request.getProductId().equalsIgnoreCase(travelProductId)) {
@@ -555,9 +547,23 @@ public class QuoteThreadCall implements Callable<Object>  {
 			// Insert Default Covers
 			res = InsertCoverDetails(defaultCovers);
 			
+			List<VehicleIdsReq> VehicleList = new ArrayList<VehicleIdsReq>();
+			List<CoverIdsReq> coverReqList =new ArrayList<CoverIdsReq>();
+			
 			// Insert Other Covers
-			List<VehicleIdsReq> VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())). collect(Collectors.toList());
-			List<CoverIdsReq> coverReqList = VehicleList.get(0).getCoverIdList();
+			if ( request.getProductId().equalsIgnoreCase(motorProductId)) {
+				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())). collect(Collectors.toList());
+				coverReqList = VehicleList.get(0).getCoverIdList();
+				
+			} else if( request.getProductId().equalsIgnoreCase(buildingProductId)    ) {
+				
+				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())   &&  o.getSectionId().equalsIgnoreCase(request.getSectionId())). collect(Collectors.toList());
+				coverReqList = VehicleList.get(0).getCoverIdList();
+			
+			} else if( request.getProductId().equalsIgnoreCase(travelProductId)) {
+				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())). collect(Collectors.toList());
+				coverReqList = VehicleList.get(0).getCoverIdList();
+			}
 			
 			List<FactorRateRequestDetails> updateCovers = new ArrayList<FactorRateRequestDetails>(); 
 			for ( CoverIdsReq covReq :  coverReqList) {

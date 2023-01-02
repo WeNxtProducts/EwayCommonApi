@@ -16,6 +16,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,10 +38,12 @@ import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
+import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.EservieMotorDetailsViewRes;
 import com.maan.eway.common.req.UpdateFactorRateReq;
+import com.maan.eway.common.req.VehicleIdsReq;
 import com.maan.eway.common.res.EserviceMotorDetailsRes;
 import com.maan.eway.common.res.EserviceTravelGetRes;
 import com.maan.eway.common.res.UpdateCoverRes;
@@ -93,8 +102,11 @@ private String buildingProductId;
 @Autowired
 private CalculatorEngine calcEngine;
 
+@Autowired
+private FactorRateRequestDetailsRepository facRateRepo ;
 
-
+@PersistenceContext
+private EntityManager em;
 
 
 private Logger log=LogManager.getLogger(FactorRateRequestDetailsServiceImpl.class);
@@ -833,6 +845,7 @@ this.repository = repo;
 					coverRes.setSubCoverId(null);
 					coverRes.setSubCoverDesc(null);
 					coverRes.setSubCoverName(null);
+					coverRes.setSectionId(filterCover.get(0).getSectionId()==null?"":filterCover.get(0).getSectionId().toString());
 					coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal (filterCover.get(0).getPremiumAfterDiscountFc()));
 					coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal (filterCover.get(0).getPremiumBeforeDiscountFc()));
 					coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal (filterCover.get(0).getPremiumExcludedTaxFc()));
@@ -896,7 +909,7 @@ this.repository = repo;
 						subCoverRes.setPremiumIncludedTax(filterSubCover.get(0).getPremiumIncludedTaxFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumIncludedTaxFc().toString())));
 						subCoverRes.setIsselected(filterSubCover.get(0).getIsSelected());
 						subCoverRes.setExchangeRate(filterSubCover.get(0).getExchangeRate()==null?null:new BigDecimal(filterSubCover.get(0).getExchangeRate()));	
-						
+						subCoverRes.setSectionId(filterSubCover.get(0).getSectionId()==null?"":filterSubCover.get(0).getSectionId().toString());
 
 						subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal (filterSubCover.get(0).getPremiumAfterDiscountFc()));
 						subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal (filterSubCover.get(0).getPremiumBeforeDiscountFc()));
@@ -1155,6 +1168,53 @@ this.repository = repo;
 			findCovers = repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(req.getRequestReferenceNo() , req.getVehicleId() ,
 					req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
 			Map<Integer,List<FactorRateRequestDetails>> groupByCover = findCovers.stream().collect(Collectors.groupingBy(FactorRateRequestDetails :: getCoverId));			
+			
+			
+			// Update Admin Opted COvers
+			List<FactorRateRequestDetails> userOptCovers = new ArrayList<FactorRateRequestDetails>();
+			
+			//UPDATE
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			// create update
+			CriteriaUpdate<FactorRateRequestDetails> update = cb.createCriteriaUpdate(FactorRateRequestDetails.class);
+			// set the root class
+			Root<FactorRateRequestDetails> m = update.from(FactorRateRequestDetails.class);
+			// set update and where clause
+			update.set("userOpt", "N");
+			
+			Predicate n1 = cb.equal(m.get("vehicleId"), req.getVehicleId());
+			Predicate n2 = cb.equal(m.get("sectionId"), req.getSectionId());
+			Predicate n3 = cb.equal(m.get("requestReferenceNo"), req.getRequestReferenceNo() );
+			Predicate n4 = cb.equal(m.get("productId"),req.getProductId());
+			update.where(n1,n2,n3,n4);
+			// perform update
+			em.createQuery(update).executeUpdate();
+			
+			// Covers Admin Opt
+			List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoAndVehicleIdAndSectionIdOrderByVehicleIdAsc(req.getRequestReferenceNo(), req.getVehicleId(),Integer.valueOf(req.getSectionId()));			
+			
+			// Cover Referal Checking
+			List<CoverIdsReq> coverList = req.getCoverIdList();
+			for (CoverIdsReq cov : coverList) {
+				if(StringUtils.isBlank(cov.getSubCoverYn()) || cov.getSubCoverYn().equalsIgnoreCase("N") ) {
+					List<FactorRateRequestDetails> filterCovers = covers.stream().filter( o ->o.getSectionId().equals(Integer.valueOf(req.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) ).collect(Collectors.toList());		
+					userOptCovers.addAll(filterCovers);
+					
+				
+				} else {
+					List<FactorRateRequestDetails> filterSubCovers  = covers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(req.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(cov.getSubCoverId()))  ).collect(Collectors.toList());
+					userOptCovers.addAll(filterSubCovers);
+					
+				}
+			}
+			
+		
+			// Update Admin Opted Covers 
+			for (FactorRateRequestDetails uptCover : userOptCovers ) {
+				
+				uptCover.setUserOpt("Y");
+				facRateRepo.save(uptCover);
+			}
 			
 			List<Cover> coverListRes = 	getCoversList(groupByCover);
 			coverListRes.sort(Comparator.comparing(Cover :: getCoverId).reversed() );

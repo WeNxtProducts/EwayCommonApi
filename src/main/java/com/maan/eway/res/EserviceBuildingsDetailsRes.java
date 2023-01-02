@@ -9,8 +9,7 @@ import java.io.Serializable;
 
 import lombok.*;
 import java.util.Date;
-
-
+import java.util.List;
 import java.util.Date;
 import javax.persistence.*;
 
@@ -36,75 +35,128 @@ public class EserviceBuildingsDetailsRes implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    //----------------------------------------------------------------------
-    // ENTITY PRIMARY KEY 
-    //----------------------------------------------------------------------
-	@JsonProperty("CustomerRequestReferenceNo")
+	@JsonProperty("RequestReferenceNo")
     private String     requestReferenceNo ;
-	@JsonProperty("CustomerId")
-    private String    customerId   ;
-	@JsonProperty("SectionId")
-    private String    sectionId    ;
 	@JsonProperty("LocationId")
-    private String    locationId       ;
+    private String    locationId   ;
+	@JsonProperty("CustomerReferenceNo")
+    private String     customerReferenceNo ;
+	@JsonProperty("ProductId")
+    private String    productId    ;
 	@JsonProperty("InsuranceId")
     private String     companyId    ;
 	@JsonProperty("BranchCode")
     private String     branchCode   ;
+	@JsonProperty("InbuildConstructType")
+    private String     inbuildConstructType ;
+	@JsonProperty("BuildingFloors")
+    private String buildingFloors ;
+	@JsonProperty("OutbuildConstructType")
+    private String     outbuildConstructType ;
+	@JsonProperty("BuildingUsageYn")
+    private String     buildingUsageYn ;
+	@JsonProperty("BuildingPurpose")
+    private String     buildingPurpose;
+	@JsonProperty("BuildingUsageDesc")
+    private String     buildingUsageDesc ;
+	@JsonProperty("BuildingPurposeId")
+    private String     buildingPurposeId;
+	@JsonProperty("BuildingUsageId")
+    private String     buildingUsageId;
 
-    //----------------------------------------------------------------------
-    // ENTITY DATA FIELDS 
-    //----------------------------------------------------------------------    
-	@JsonProperty("BuildingAddress")
-    private String     buildingAddress ;
-	@JsonProperty("ConstMaterialId")
-    private String    constMaterialId ;
-	@JsonProperty("ConstMaterialDesc")
-    private String     constMaterialDesc ;
-	@JsonProperty("StoreysHeight")
-    private String    storeysHeight ;
-	@JsonProperty("OutbuildingConstId")
-    private String    outbuildingConstId ;
-	@JsonProperty("OutbuildingConstDesc")
-    private String     outbuildingConstDesc ;
-	@JsonProperty("BusinessPortionDetails")
-    private String     businessPortionDetails ;
-	@JsonProperty("AboutBuildingId")
-    private String    aboutBuildingId ;
-	@JsonProperty("AboutBuildingDesc")
-    private String     aboutBuildingDesc ;
-	@JsonProperty("YouOccupyTheBuilding")
-    private String     youOccupyTheBuilding ;
-	@JsonProperty("StateExtentId")
-    private String    stateExtentId ;
-	@JsonProperty("StateExtentDesc")
-    private String     stateExtentDesc ;
-	@JsonProperty("MaintanenceDesc")
-    private String     maintanenceDesc ;
-	@JsonProperty("StartDate")
-    private Date       startDate    ;
-	@JsonProperty("EndDate")
-    private Date       endDate      ;
-	@JsonProperty("Status")
-    private String     status       ;
+	@JsonProperty("PaDeathSuminsured")
+    private String     paDeathSuminsured ;
+	
+
+	@JsonProperty("PaPermanentdisablementSuminsured")
+    private String     paPermanentdisablementSuminsured ;
+	
+	@JsonProperty("PaTotaldisabilitySumInsured")
+    private String     paTotaldisabilitySumInsured ;
+	
+	@JsonProperty("PaMedicalSuminsured")
+    private String     paMedicalSuminsured ;
+	
+	@JsonProperty("BuildingType")
+	private String     buildingType;
+
+	@JsonProperty("BuildingOwnerYn")
+	private String     buildingOwnerYn;
+	@JsonProperty("PersonalIntermediarySuminsured")
+    private String     personalIntermediarySuminsured ;
+	
+	
+	@JsonProperty("BuildingOccupationType")
+    private String     buildingOccupationType ;
+	@JsonProperty("WithoutInhabitantDays")
+    private String    withoutInhabitantDays ;
+
+	@JsonProperty("BuildingCondition")
+    private String     buildingCondition ;
+	@JsonProperty("BuildingBuildYear")
+    private String    buildingBuildYear ;
+	
+	@JsonProperty("BuidingAreaSqm")
+    private String     buidingAreaSqm ;
+	@JsonProperty("BuildingSuminsured")
+    private String     buildingSuminsured ;
+	@JsonProperty("AllriskSumInsured")
+    private String     allriskSuminsured ;
+	@JsonProperty("ContentSuminsured")
+    private String     contentSuminsured ;
+	
+	@JsonProperty("Createdby")
+    private String     createdBy    ;
+	
+	@JsonProperty("AcexecutiveId")
+    private String    acExecutiveId ;
+	@JsonProperty("ApplicationId")
+    private String     applicationId ;
+	@JsonProperty("BrokerCode")
+    private String     brokerCode   ;
+	@JsonProperty("SubUsertype")
+    private String     subUserType  ;
+	@JsonProperty("LoginId")
+    private String     loginId      ;
+	@JsonProperty("AgencyCode")
+    private String     agencyCode   ;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EntryDate")
-	private Date entryDate;
-
+	@JsonProperty("PolicyStartDate")
+    private Date       policyStartDate ;
+	
 	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("UpdatedDate")
-	private Date updatedDate;
+	@JsonProperty("PolicyEndDate")
+    private Date       policyEndDate ;
+	
+	@JsonProperty("Currency")
+    private String     currency     ;
+	@JsonProperty("ExchangeRate")
+    private String     exchangeRate ;
+	@JsonProperty("BrokerBranchCode")
+    private String     brokerBranchCode  ;
+	
+	@JsonProperty("Havepromocode")
+    private String     havepromocode;
+	
+	@JsonProperty("Promocode")
+    private String     promocode;
+	
+	@JsonProperty("InsuranceType")
+    private String    insuranceType;
+	
+	@JsonProperty("OccupationType")
+    private String    occupationType;
 
-	@JsonProperty("CreatedBy")
-	private String createdBy;
+	@JsonProperty("OccupationTypeDesc")
+    private String    occupationTypeDesc;
 
-	@JsonProperty("UpdatedBy")
-	private String updatedBy;
+	@JsonProperty("DomesticPackageYn")
+    private String    domesticPackageYn;
 
-    //----------------------------------------------------------------------
-    // ENTITY LINKS ( RELATIONSHIP )
-    //----------------------------------------------------------------------
+	@JsonProperty("CategoryId")
+    private String    categoryId;
+
 
       
 	  

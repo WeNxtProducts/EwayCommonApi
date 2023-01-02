@@ -366,8 +366,8 @@ public SuccessRes insertOccupation(OccupationMasterSaveReq req) {
 		saveData.setStatus(req.getStatus());
 		saveData.setCompanyId(req.getInsuranceId());
 		saveData.setEntryDate(entryDate);
-		saveData.setUpdatedDate(new Date());
-		saveData.setUpdatedBy(req.getCreatedBy());
+		//saveData.setUpdatedDate(new Date());
+		//saveData.setUpdatedBy(req.getCreatedBy());
 		saveData.setAmendId(amendId);
 		saveData.setCoreAppcode(req.getCoreAppCode());
 		repo.saveAndFlush(saveData);

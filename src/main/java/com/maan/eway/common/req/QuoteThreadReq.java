@@ -21,6 +21,9 @@ public class QuoteThreadReq {
 	 
 	 @JsonProperty("ProductId")
 	 private String    productId ;
+	 
+	 @JsonProperty("SectionId")
+	 private String    sectionId ;
 
 		
 	@JsonProperty("VehicleId")

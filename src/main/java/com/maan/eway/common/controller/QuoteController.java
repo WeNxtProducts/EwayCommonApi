@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.maan.eway.common.req.AdminReferalStatusReq;
 import com.maan.eway.common.req.DeleteOldQuoteReq;
 import com.maan.eway.common.req.NewQuoteReq;
+import com.maan.eway.common.req.SectionSumInsuredGetReq;
 import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.QuoteUpdateRes;
+import com.maan.eway.res.SectionWiseSumInsuredRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -59,6 +61,27 @@ public class QuoteController {
 		reqPrinter.reqPrint(req);
 		// Save
 		SuccessRes res = entityService.deleteOldQuoteRecord(req);
+		commonRes.setCommonResponse(res);
+		commonRes.setIsError(false);
+		commonRes.setErrorMessage(null);
+		commonRes.setMessage("Success");
+		
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(commonRes, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+		
+
+	}
+	
+	@PostMapping("/productsuminsureddetails")
+	@ApiOperation(value = "This method is New Quote ")
+	public ResponseEntity<CommonRes> sectionWiseSuminsuredDetails(@RequestBody SectionSumInsuredGetReq req) {
+		CommonRes commonRes = new  CommonRes() ;
+		reqPrinter.reqPrint(req);
+		// Save
+		SectionWiseSumInsuredRes res = entityService.sectionWiseSuminsuredDetails(req);
 		commonRes.setCommonResponse(res);
 		commonRes.setIsError(false);
 		commonRes.setErrorMessage(null);

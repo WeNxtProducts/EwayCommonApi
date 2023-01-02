@@ -2,11 +2,25 @@ package com.maan.eway.common.service.impl;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import javax.persistence.Column;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -25,6 +39,7 @@ import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.PolicyCoverData;
+import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.bean.TravelPassengerHistory;
 import com.maan.eway.bean.PersonalInfo;
@@ -32,6 +47,7 @@ import com.maan.eway.common.req.AdminReferalStatusReq;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.DeleteOldQuoteReq;
 import com.maan.eway.common.req.NewQuoteReq;
+import com.maan.eway.common.req.SectionSumInsuredGetReq;
 import com.maan.eway.common.req.VehicleIdsReq;
 import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.BuildingProductDetailsRes;
@@ -47,6 +63,7 @@ import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.common.service.QuoteThreadService;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.SectionCoverMasterGetReq;
 import com.maan.eway.repository.CoverDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
@@ -57,10 +74,14 @@ import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
+import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerHistoryRepository;
+import com.maan.eway.res.BuildingSumInsuredDetails;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.EserviceBuildingsDetailsRes;
 import com.maan.eway.res.QuoteUpdateRes;
+import com.maan.eway.res.SectionWiseSumInsuredRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.res.calc.Cover;
 import com.maan.eway.res.calc.Discount;
@@ -79,6 +100,9 @@ public class QuoteServiceImpl implements QuoteService {
 	
 	@Value(value = "${building.productId}")
 	private String buildingProductId;
+	
+	@PersistenceContext
+	private EntityManager em;
 
 	@Autowired
 	private QuoteThreadService otSer ;
@@ -119,6 +143,8 @@ public class QuoteServiceImpl implements QuoteService {
 	@Autowired
 	private EServiceSectionDetailsRepository eserSecRepo  ;
 
+	@Autowired
+	private PolicyCoverDataRepository polCoverRepo  ;
 	
 	private Logger log = LogManager.getLogger(QuoteServiceImpl.class);
 	
@@ -1127,6 +1153,182 @@ public class QuoteServiceImpl implements QuoteService {
 			return null;
 		}
 		return res;
+	}
+
+	@Override
+	public SectionWiseSumInsuredRes sectionWiseSuminsuredDetails(SectionSumInsuredGetReq req) {
+		SectionWiseSumInsuredRes res = new SectionWiseSumInsuredRes();
+		try {
+			 if(req.getProductId().equalsIgnoreCase(buildingProductId )) {
+				 List<BuildingSumInsuredDetails> builSum  = buildingSuminsuredDetails(req);
+				 res.setProductSuminsuredDetails(builSum);	
+			}
+			res.setQuoteNo(req.getQuoteNo());
+			
+			res.setRequestReferenceNo(req.getRequestReferenceNo());
+			res.setProductId(req.getProductId());
+			
+		} catch ( Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+	
+	
+	public List<BuildingSumInsuredDetails> buildingSuminsuredDetails(SectionSumInsuredGetReq req) {
+		List<BuildingSumInsuredDetails> resList = new ArrayList<BuildingSumInsuredDetails>();
+		try {
+			List<EserviceBuildingDetails> builldings  = eserBuildRepo.findByQuoteNoOrderByLocationIdAsc(req.getQuoteNo());
+			List<EserviceSectionDetails>   buildSections = eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(builldings.get(0).getRequestReferenceNo());	
+			
+			List<String> sectionIds = buildSections.stream().filter( o -> o.getRiskId().equals(builldings.get(0).getLocationId() )).map(EserviceSectionDetails :: getSectionId ).collect(Collectors.toList());
+			
+					
+			List<SectionCoverMaster> sectionCovers  = getSectionCovers(builldings.get(0).getCompanyId() ,builldings.get(0).getProductId() , sectionIds );
+			List<PolicyCoverData>   covers = polCoverRepo.findByQuoteNo(req.getQuoteNo())	;
+			
+			for (EserviceBuildingDetails build :   builldings) {
+				BuildingSumInsuredDetails res = new BuildingSumInsuredDetails();
+				List<EserviceSectionDetails>   filterSections = buildSections.stream().filter( o -> o.getRiskId().equals(build.getLocationId()) ).collect(Collectors.toList());
+				BigDecimal buildingSuminsured = null;
+				BigDecimal allriskSuminsured = null;
+				BigDecimal paDeathSuminsured = null;
+				BigDecimal paPermanentdisablementSuminsured = null;
+				BigDecimal paTotaldisabilitySumInsured = null;
+				BigDecimal PaMedicalSuminsured = null;
+				BigDecimal personalIntSuminsured = null;
+				BigDecimal contentSuminsured = null;
+				
+				for (EserviceSectionDetails sec : filterSections) {
+					List<SectionCoverMaster> filterCovers =  sectionCovers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(sec.getSectionId()))  
+								&& o.getProductId().equals(Integer.valueOf(sec.getProductId()))	).collect(Collectors.toList());
+					
+					List<PolicyCoverData>   filterPolCovers = covers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(sec.getSectionId()))  
+							&& o.getProductId().equals(Integer.valueOf(sec.getProductId())) &&  o.getTaxId().equals(0) &&  o.getDiscLoadId().equals(0)  ).collect(Collectors.toList());
+					
+					for(PolicyCoverData cover :  filterPolCovers) {
+						String sumInsuredColumn = filterCovers.stream().filter( o -> o.getCoverId().equals(cover.getCoverId() )
+								&& o.getSubCoverId().equals(cover.getSubCoverId() )).collect(Collectors.toList()).get(0).getCoverBasedOn();
+						if(sumInsuredColumn.equalsIgnoreCase("buildingSuminsured")) {
+							buildingSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
+							
+						} else if(sumInsuredColumn.equalsIgnoreCase("allriskSuminsured")) {
+							allriskSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
+							
+						}  else if(sumInsuredColumn.equalsIgnoreCase("paDeathSuminsured")) {
+							paDeathSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
+							
+						}  else if(sumInsuredColumn.equalsIgnoreCase("paPermanentdisablementSuminsured")) {
+							paPermanentdisablementSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
+							
+						}  else if(sumInsuredColumn.equalsIgnoreCase("paTotaldisabilitySumInsured")) {
+							paTotaldisabilitySumInsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
+							
+						}  else if(sumInsuredColumn.equalsIgnoreCase("PaMedicalSuminsured")) {
+							PaMedicalSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
+							
+						}  else if(sumInsuredColumn.equalsIgnoreCase("personalIntSuminsured")) {
+							personalIntSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
+							
+						}  else if(sumInsuredColumn.equalsIgnoreCase("contentSuminsured")) {
+							contentSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
+						} 
+					}
+					
+				}
+				res.setBuildingSuminsured(buildingSuminsured == null?"" :buildingSuminsured.toString());
+				res.setAllriskSuminsured(allriskSuminsured == null?"" :allriskSuminsured.toString());
+				res.setPaDeathSuminsured(paDeathSuminsured == null?"" :paDeathSuminsured.toString());
+				res.setPaPermanentdisablementSuminsured(paPermanentdisablementSuminsured == null?"" :paPermanentdisablementSuminsured.toString());
+				res.setPaTotaldisabilitySumInsured(paTotaldisabilitySumInsured == null?"" :paTotaldisabilitySumInsured.toString());
+				res.setPaMedicalSuminsured(PaMedicalSuminsured == null?"" :PaMedicalSuminsured.toString());
+				res.setPersonalIntermediarySuminsured(personalIntSuminsured == null?"" :personalIntSuminsured.toString());
+				res.setContentSuminsured(contentSuminsured == null?"" :contentSuminsured.toString());
+				res.setRiskId(build.getLocationId().toString());
+				res.setSectionId(sectionIds);		
+				resList.add(res);
+			}
+				
+			
+		} catch ( Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+	
+	
+	public List<SectionCoverMaster>  getSectionCovers(String companyId , String productId ,List<String> sectionIds) {
+		List<SectionCoverMaster> list = new ArrayList<SectionCoverMaster>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<SectionCoverMaster> query = cb.createQuery(SectionCoverMaster.class);
+			
+			// Find All
+			Root<SectionCoverMaster> c = query.from(SectionCoverMaster.class);
+
+			// Select
+			query.select(c);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("coverName")));
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<SectionCoverMaster> ocpm1 = effectiveDate.from(SectionCoverMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			javax.persistence.criteria.Predicate a2 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
+			javax.persistence.criteria.Predicate a4 = cb.equal(c.get("coverId"), ocpm1.get("coverId"));
+			javax.persistence.criteria.Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3, a4, a5);
+			// Effective Date End
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<SectionCoverMaster> ocpm2 = effectiveDate2.from(SectionCoverMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a6 = cb.equal(c.get("sectionId"), ocpm2.get("sectionId"));
+			Predicate a7 = cb.equal(c.get("coverId"), ocpm2.get("coverId"));
+			Predicate a8 = cb.equal(c.get("companyId"), ocpm2.get("companyId") );
+			Predicate a9 = cb.equal(c.get("productId"), ocpm2.get("productId") );
+			Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a6,a7,a8,a9,a10);
+					
+			//In 
+			Expression<String>e0=c.get("sectionId");
+			// Where
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"), companyId);
+			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), productId);
+			javax.persistence.criteria.Predicate n5 =e0.in(sectionIds)	;
+			javax.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			query.where(n1, n2, n3, n4, n5,n6).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<SectionCoverMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return list;
 	}
 	
 }

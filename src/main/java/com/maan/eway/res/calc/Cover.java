@@ -41,7 +41,8 @@ public class Cover implements Serializable{
 	    public String subCoverDesc;
 	    @JsonProperty("SubCoverName") 
 	    public String subCoverName;
-	    
+	    @JsonProperty("SectionId")
+		private String sectionId;
 	    @JsonProperty("Discounts") 
 	    public List<Discount> discounts;
 	    @JsonProperty("Taxes") 
