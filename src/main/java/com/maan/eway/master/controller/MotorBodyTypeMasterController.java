@@ -20,6 +20,7 @@ import com.maan.eway.master.req.MotorBodyTypeGetReq;
 import com.maan.eway.master.res.MotorBodyTypeGetRes;
 import com.maan.eway.master.service.MotorBodyTypeMasterService;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -167,9 +168,9 @@ public class MotorBodyTypeMasterController {
 		@PostMapping("/dropdown/bodytype")
 		@ApiOperation(value = "This method is get Body Type Drop Down")
 
-		public ResponseEntity<CommonRes> getBodyTypeMasterDropdown(@RequestBody BodyTypeDropDownReq req) {
+		public ResponseEntity<DropdownCommonRes> getBodyTypeMasterDropdown(@RequestBody BodyTypeDropDownReq req) {
 
-			CommonRes data = new CommonRes();
+			DropdownCommonRes data = new DropdownCommonRes();
 
 			// Save
 			List<DropDownRes> res = service.getBodyTypeMasterDropdown(req);
@@ -179,7 +180,7 @@ public class MotorBodyTypeMasterController {
 			data.setMessage("Success");
 
 			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 			} else {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
@@ -190,9 +191,9 @@ public class MotorBodyTypeMasterController {
 		@PostMapping("/dropdown/induvidual/bodytype")
 		@ApiOperation(value = "This method is get Body Type Drop Down")
 
-		public ResponseEntity<CommonRes> getInduvidualBodyTypeMasterDropdown(@RequestBody BodyTypeDropDownReq req) {
+		public ResponseEntity<DropdownCommonRes> getInduvidualBodyTypeMasterDropdown(@RequestBody BodyTypeDropDownReq req) {
 
-			CommonRes data = new CommonRes();
+			DropdownCommonRes data = new DropdownCommonRes();
 
 			// Save
 			List<DropDownRes> res = service.getInduvidualBodyTypeMasterDropdown(req);
@@ -202,7 +203,7 @@ public class MotorBodyTypeMasterController {
 			data.setMessage("Success");
 
 			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 			} else {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
