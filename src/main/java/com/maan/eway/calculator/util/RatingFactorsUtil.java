@@ -252,12 +252,17 @@ public class RatingFactorsUtil {
 	public List<Tuple> LoadTax(CalcEngine engine) {
 		try {
 			String todayInString = DD_MM_YYYY.format(new Date());
-			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:Y;branchCode:{99999,"+engine.getBranchCode()+"};"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
+			//String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:Y;branchCode:{99999,"+engine.getBranchCode()+"};"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
+			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:Y;branchCode:"+engine.getBranchCode()+";"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
 			List<Tuple> result=null;
 			SpecCriteria criteria = crservice.createCriteria(CompanyTaxSetup.class, search, "taxId"); 
 			
 			result=crservice.getResult(criteria, 0, 50);
-
+			if(result.isEmpty()) {
+				search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:Y;branchCode:99999;"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
+				criteria = crservice.createCriteria(CompanyTaxSetup.class, search, "taxId"); 
+				result=crservice.getResult(criteria, 0, 50);
+			}
 			return result;
 		}catch (Exception e) {
 			e.printStackTrace();
