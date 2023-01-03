@@ -21,6 +21,7 @@ import com.maan.eway.master.req.WarrantyMasterSaveReq;
 import com.maan.eway.master.res.WarrantyMasterRes;
 import com.maan.eway.master.service.WarrantyMasterService;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -159,12 +160,12 @@ public ResponseEntity<CommonRes> changeStatusOfWarranty(@RequestBody WarrantyCha
 
 }
 //Warranty Master Drop Down Type
-	@PostMapping("/dropdown/warranty")
+	@PostMapping(value="/dropdown/warranty",produces = "application/json")
 	@ApiOperation(value = "This method is get Warranty Master Drop Down")
 
-	public ResponseEntity<CommonRes> getWarrantyMasterDropdown(@RequestBody WarrantyMasterDropdownReq req) {
+	public ResponseEntity<DropdownCommonRes> getWarrantyMasterDropdown(@RequestBody WarrantyMasterDropdownReq req) {
 
-		CommonRes data = new CommonRes();
+		DropdownCommonRes data = new DropdownCommonRes();
 
 		// Save
 		List<DropDownRes> res = service.getWarrantyMasterDropdown(req);
@@ -174,7 +175,7 @@ public ResponseEntity<CommonRes> changeStatusOfWarranty(@RequestBody WarrantyCha
 		data.setMessage("Success");
 
 		if (res != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}

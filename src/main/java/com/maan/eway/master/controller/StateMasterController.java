@@ -16,6 +16,7 @@ import com.maan.eway.master.res.StateMasterRes;
 import com.maan.eway.master.service.StateMasterService;
 import com.maan.eway.bean.StateMaster;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -154,12 +155,12 @@ public class StateMasterController {
 	}
 		
 		// State Master Drop Down Type
-		@PostMapping("/dropdown/state")
+		@PostMapping(value="/dropdown/state",produces = "application/json")
 		@ApiOperation(value = "This method is get State Master Drop Down")
 
-		public ResponseEntity<CommonRes> getStateMasterDropdown(@RequestBody StateMasterDropDownReq req) {
+		public ResponseEntity<DropdownCommonRes> getStateMasterDropdown(@RequestBody StateMasterDropDownReq req) {
 
-			CommonRes data = new CommonRes();
+			DropdownCommonRes data = new DropdownCommonRes();
 
 			// Save
 			List<DropDownRes> res = stateService.getStateMasterDropdown(req);
@@ -169,7 +170,7 @@ public class StateMasterController {
 			data.setMessage("Success");
 
 			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 			} else {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}

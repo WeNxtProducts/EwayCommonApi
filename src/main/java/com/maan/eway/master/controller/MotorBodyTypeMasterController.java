@@ -165,7 +165,7 @@ public class MotorBodyTypeMasterController {
 	
 
 		// Body Type Master Drop Down Type
-		@PostMapping("/dropdown/bodytype")
+		@PostMapping(value="/dropdown/bodytype",produces = "application/json")
 		@ApiOperation(value = "This method is get Body Type Drop Down")
 
 		public ResponseEntity<DropdownCommonRes> getBodyTypeMasterDropdown(@RequestBody BodyTypeDropDownReq req) {

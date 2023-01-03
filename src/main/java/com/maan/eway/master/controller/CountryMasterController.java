@@ -26,6 +26,7 @@ import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.res.CountryMasterRes;
 import com.maan.eway.master.service.CountryMasterService;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -147,12 +148,12 @@ public class CountryMasterController {
 		}
 	}
 		// Country Master Drop Down Type
-		@PostMapping("/dropdown/country")
+		@PostMapping(value="/dropdown/country",produces = "application/json")
 		@ApiOperation(value = "This method is get Country Master Drop Down")
 
-		public ResponseEntity<CommonRes> getCountryMasterDropdown(@RequestBody LovDropDownReq req) {
+		public ResponseEntity<DropdownCommonRes> getCountryMasterDropdown(@RequestBody LovDropDownReq req) {
 
-			CommonRes data = new CommonRes();
+			DropdownCommonRes data = new DropdownCommonRes();
 
 			// Save
 			List<DropDownRes> res = countryService.getCountryMasterDropdown(req);
@@ -162,19 +163,19 @@ public class CountryMasterController {
 			data.setMessage("Success");
 
 			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 			} else {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 
 		}
 					
-			@PostMapping("/dropdown/nationality")
+			@PostMapping(value="/dropdown/nationality",produces = "application/json")
 			@ApiOperation(value = "This method is get Country Master Drop Down")
 
-			public ResponseEntity<CommonRes> getNationalityMasterDropdown(@RequestBody LovDropDownReq req) {
+			public ResponseEntity<DropdownCommonRes> getNationalityMasterDropdown(@RequestBody LovDropDownReq req) {
 
-				CommonRes data = new CommonRes();
+				DropdownCommonRes data = new DropdownCommonRes();
 
 				// Save
 				List<DropDownRes> res = countryService.getNationalityMasterDropdown(req);
@@ -184,7 +185,7 @@ public class CountryMasterController {
 				data.setMessage("Success");
 
 				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+					return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 				} else {
 					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 				}

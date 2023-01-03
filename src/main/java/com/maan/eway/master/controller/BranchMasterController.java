@@ -20,6 +20,7 @@ import com.maan.eway.master.res.BranchMasterRes;
 import com.maan.eway.master.service.BranchMasterService;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -158,12 +159,12 @@ public class BranchMasterController {
 	}
 		
 	// Branch Master Drop Down Type
-		@PostMapping("/dropdown/branchmaster")
+		@PostMapping(value="/dropdown/branchmaster",produces = "application/json")
 		@ApiOperation(value = "This method is get Branch Master Drop Down")
 
-		public ResponseEntity<CommonRes> getCompanyBranchMasterDropdown(@RequestBody CompanyBranchReq req ) {
+		public ResponseEntity<DropdownCommonRes> getCompanyBranchMasterDropdown(@RequestBody CompanyBranchReq req ) {
 
-			CommonRes data = new CommonRes();
+			DropdownCommonRes data = new DropdownCommonRes();
 
 			// Save
 			List<DropDownRes> res = branchService.getCompanyBranchMasterDropdown(req);
@@ -173,7 +174,7 @@ public class BranchMasterController {
 			data.setMessage("Success");
 
 			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 			} else {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}

@@ -167,7 +167,7 @@ public class CurrencyMasterController {
 	
 	
 	// Currency Master Drop Down Type
-	@PostMapping("/dropdown/currency")
+	@PostMapping(value="/dropdown/currency",produces = "application/json")
 	@ApiOperation(value = "This method is get Currency Master Drop Down")
 
 	public ResponseEntity<CommonRes> getCurrencyMasterDropdown(@RequestBody CurrencyDropDownReq req) {
@@ -196,7 +196,7 @@ public class CurrencyMasterController {
 	}
 	
 	// Currency Master Drop Down Type
-	@PostMapping("/dropdown/productcurrency")
+	@PostMapping(value="/dropdown/productcurrency")
 	@ApiOperation(value = "This method is get Currency Master Drop Down")
 
 	public ResponseEntity<CommonRes> getProductCurrencyMasterDropdown(@RequestBody ProductCurrDropDownReq req) {

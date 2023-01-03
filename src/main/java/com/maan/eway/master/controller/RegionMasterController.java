@@ -23,6 +23,7 @@ import com.maan.eway.master.req.RegionMasterSaveReq;
 import com.maan.eway.master.res.RegionMasterRes;
 import com.maan.eway.master.service.RegionMasterService;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -46,12 +47,12 @@ public class RegionMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// Region Master Drop Down Type
-			@PostMapping("/dropdown/region")
+			@PostMapping(value="/dropdown/region",produces = "application/json")
 			@ApiOperation(value = "This method is get Region Master Drop Down")
 
-			public ResponseEntity<CommonRes> getRegionMasterDropdown(@RequestBody RegionMasterDropDownReq req) {
+			public ResponseEntity<DropdownCommonRes> getRegionMasterDropdown(@RequestBody RegionMasterDropDownReq req) {
 
-				CommonRes data = new CommonRes();
+				DropdownCommonRes data = new DropdownCommonRes();
 
 				// Save
 				List<DropDownRes> res = regionService.getRegionMasterDropdown(req);
@@ -61,7 +62,7 @@ public class RegionMasterController {
 				data.setMessage("Success");
 
 				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+					return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 				} else {
 					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 				}

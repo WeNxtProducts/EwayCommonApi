@@ -28,6 +28,7 @@ import com.maan.eway.master.req.MotorVehicleUsageMasterSaveReq;
 import com.maan.eway.master.req.UsageDropDownReq;
 import com.maan.eway.master.service.MotorVeicleUsageMasterService;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -130,12 +131,12 @@ public class MotorVehicleUsageMasterController {
 				}
 				
 				// Motor Vehicle Usage Master Drop Down Type
-				@PostMapping("/dropdown/vehicleusage")
+				@PostMapping(value="/dropdown/vehicleusage",produces = "application/json")
 				@ApiOperation(value = "This method is get Motor Vehicle Usage Master Drop Down")
 
-				public ResponseEntity<CommonRes> getVehicleUsageDropdown(@RequestBody UsageDropDownReq req ) {
+				public ResponseEntity<DropdownCommonRes> getVehicleUsageDropdown(@RequestBody UsageDropDownReq req ) {
 
-					CommonRes data = new CommonRes();
+					DropdownCommonRes data = new DropdownCommonRes();
 
 					// Save
 					List<DropDownRes> res = entityService.getVehicleUsageDropdown(req);
@@ -145,7 +146,7 @@ public class MotorVehicleUsageMasterController {
 					data.setMessage("Success");
 
 					if (res != null) {
-						return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+						return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 					} else {
 						return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 					}
@@ -154,12 +155,12 @@ public class MotorVehicleUsageMasterController {
 				
 
 				// Motor Vehicle Usage Master Drop Down Type
-				@PostMapping("/dropdown/induvidual/vehicleusage")
+				@PostMapping(value="/dropdown/induvidual/vehicleusage",produces = "application/json")
 				@ApiOperation(value = "This method is get Motor Vehicle Usage Master Drop Down")
 
-				public ResponseEntity<CommonRes> getInduvidualVehicleUsageDropdown(@RequestBody UsageDropDownReq req) {
+				public ResponseEntity<DropdownCommonRes> getInduvidualVehicleUsageDropdown(@RequestBody UsageDropDownReq req) {
 
-					CommonRes data = new CommonRes();
+					DropdownCommonRes data = new DropdownCommonRes();
 
 					// Save
 					List<DropDownRes> res = entityService.getInduvidualVehicleUsageDropdown(req);
@@ -169,7 +170,7 @@ public class MotorVehicleUsageMasterController {
 					data.setMessage("Success");
 
 					if (res != null) {
-						return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+						return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 					} else {
 						return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 					}

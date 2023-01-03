@@ -16,6 +16,7 @@ import com.maan.eway.master.res.CityMasterRes;
 import com.maan.eway.master.service.CityMasterService;
 import com.maan.eway.bean.CityMaster;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -153,57 +154,57 @@ public class CityMasterController {
 		}
 	}
 
-		// City Master Drop Down Type
-					@PostMapping("/dropdown/city")
-					@ApiOperation(value = "This method is get City Master Drop Down")
+	// City Master Drop Down Type
+	@PostMapping(value="/dropdown/city",produces = "application/json")
+	@ApiOperation(value = "This method is get City Master Drop Down")
 
-					public ResponseEntity<CommonRes> getCityMasterDropdown(@RequestBody CityMasterDropDownReq req) {
+	public ResponseEntity<DropdownCommonRes> getCityMasterDropdown(@RequestBody CityMasterDropDownReq req) {
 
-						CommonRes data = new CommonRes();
+		DropdownCommonRes data = new DropdownCommonRes();
 
-						List<Error> validation = cityService.validateDropdownGet(req);
-						// validation
-						if (validation != null && validation.size() != 0) {
-							data.setCommonResponse(null);
-							data.setIsError(true);
-							data.setErrorMessage(validation);
-							data.setMessage("Failed");
-							return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+		List<Error> validation = cityService.validateDropdownGet(req);
+		// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.OK);
 
-						} else {
+		} else {
 
-							
-							List<DropDownRes> res = cityService.getCityMasterDropdown(req);
-							data.setCommonResponse(res);
-							data.setIsError(false);
-							data.setErrorMessage(Collections.emptyList());
-							data.setMessage("Success");
-
-							if (res != null) {
-								return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-							} else {
-								return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-							}
-
-						}
-					}
-		@PostMapping("/city/changestatus")
-		@ApiOperation(value = "This method is get City Change Status")
-		public ResponseEntity<CommonRes> changeStatusOfCity(@RequestBody CityChangeStatusReq req) {
-
-			CommonRes data = new CommonRes();
-			// Change Status
-			SuccessRes res = cityService.changeStatusOfCity(req);
+			List<DropDownRes> res = cityService.getCityMasterDropdown(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
 			data.setMessage("Success");
 
 			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 			} else {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
+
+		}
+	}
+
+	@PostMapping("/city/changestatus")
+	@ApiOperation(value = "This method is get City Change Status")
+	public ResponseEntity<CommonRes> changeStatusOfCity(@RequestBody CityChangeStatusReq req) {
+
+		CommonRes data = new CommonRes();
+		// Change Status
+		SuccessRes res = cityService.changeStatusOfCity(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
 
 		}
 }

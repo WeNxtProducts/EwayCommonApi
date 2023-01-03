@@ -25,6 +25,7 @@ import com.maan.eway.master.req.ExclusionMasterSaveReq;
 import com.maan.eway.master.res.ExclusionMasterRes;
 import com.maan.eway.master.service.ExclusionMasterService;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -167,12 +168,12 @@ public class ExclusionMasterController {
 	}
 
 	//Exclusion Master Drop Down Type
-	@PostMapping("/dropdown/exclusion")
+	@PostMapping(value="/dropdown/exclusion",produces = "application/json")
 	@ApiOperation(value = "This method is get Exclusion Master Drop Down")
 
-	public ResponseEntity<CommonRes> getExclusionMasterDropdown(@RequestBody ExclusionMasterDropdownReq req) {
+	public ResponseEntity<DropdownCommonRes> getExclusionMasterDropdown(@RequestBody ExclusionMasterDropdownReq req) {
 
-		CommonRes data = new CommonRes();
+		DropdownCommonRes data = new DropdownCommonRes();
 
 		// Save
 		List<DropDownRes> res = service.getExclusionMasterDropdown(req);
@@ -182,7 +183,7 @@ public class ExclusionMasterController {
 		data.setMessage("Success");
 
 		if (res != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}

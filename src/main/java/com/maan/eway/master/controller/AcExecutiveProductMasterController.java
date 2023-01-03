@@ -162,7 +162,7 @@ public class AcExecutiveProductMasterController {
 
 
 	// Dropdown
-	@PostMapping("/dropdown/acexecutive")
+	@PostMapping(value="/dropdown/acexecutive",produces = "application/json")
 	public ResponseEntity<CommonRes> dropdownacexecutive(@RequestBody AcExecutiveProductDropDownReq req){
 		CommonRes data = new CommonRes();
 			reqPrinter.reqPrint(req);

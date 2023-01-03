@@ -26,6 +26,7 @@ import com.maan.eway.master.req.BankMasterSaveReq;
 import com.maan.eway.master.res.BankMasterRes;
 import com.maan.eway.master.service.BankMasterService;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -169,12 +170,12 @@ public class BankMasterController {
 
 	// Bank Master Drop Down Type
 	//@PreAuthorize("hasAnyRole('ADMIN','DB-ADMIN')")
-	@PostMapping("/dropdown/bankmaster")
+	@PostMapping(value="/dropdown/bankmaster",produces = "application/json")
 	@ApiOperation(value = "This method is get Bank Master Drop Down")
 
-	public ResponseEntity<CommonRes> getBankMasterDropdown(@RequestBody BankChangeStatusReq req) {
+	public ResponseEntity<DropdownCommonRes> getBankMasterDropdown(@RequestBody BankChangeStatusReq req) {
 
-		CommonRes data = new CommonRes();
+		DropdownCommonRes data = new DropdownCommonRes();
 
 		// Save
 		List<DropDownRes> res = bankService.getBankMasterDropdown(req);
@@ -184,7 +185,7 @@ public class BankMasterController {
 		data.setMessage("Success");
 
 		if (res != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}

@@ -19,6 +19,7 @@ import com.maan.eway.master.req.MotorMakeModelSaveReq;
 import com.maan.eway.master.res.MotorMakeModelGetRes;
 import com.maan.eway.master.service.MotorMakeModelMasterService;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -136,12 +137,12 @@ public class MotorMakeModelMasterController {
 		}
 	}
 	
-	@PostMapping("/dropdown/motormakemodel")
+	@PostMapping(value="/dropdown/motormakemodel",produces = "application/json")
 	@ApiOperation(value = "This method is get Motor Make Master Drop Down")
 
-	public ResponseEntity<CommonRes> getMotorMakeModelDropdown(@RequestBody MotorMakeModelGetAllReq req) {
+	public ResponseEntity<DropdownCommonRes> getMotorMakeModelDropdown(@RequestBody MotorMakeModelGetAllReq req) {
 
-		CommonRes data = new CommonRes();
+		DropdownCommonRes data = new DropdownCommonRes();
 
 		// Save
 		List<DropDownRes> res = service.getMotorMakeModelDropdown(req);
@@ -151,7 +152,7 @@ public class MotorMakeModelMasterController {
 		data.setMessage("Success");
 
 		if (res != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}

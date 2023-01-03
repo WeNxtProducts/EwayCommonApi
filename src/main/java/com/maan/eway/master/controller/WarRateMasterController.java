@@ -28,6 +28,7 @@ import com.maan.eway.master.res.WarrantyMasterRes;
 import com.maan.eway.master.service.WarRateMasterService;
 import com.maan.eway.master.service.WarrantyMasterService;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -166,12 +167,12 @@ public ResponseEntity<CommonRes> changeStatusOfWarrate(@RequestBody WarrateChang
 
 }
 //War Rate Master Drop Down Type
-	@PostMapping("/dropdown/warrate")
+	@PostMapping(value="/dropdown/warrate",produces = "application/json")
 	@ApiOperation(value = "This method is get War Rate Master Drop Down")
 
-	public ResponseEntity<CommonRes> getWarrateMasterDropdown(@RequestBody WarrateMasterDropdownReq req) {
+	public ResponseEntity<DropdownCommonRes> getWarrateMasterDropdown(@RequestBody WarrateMasterDropdownReq req) {
 
-		CommonRes data = new CommonRes();
+		DropdownCommonRes data = new DropdownCommonRes();
 
 		// Save
 		List<DropDownRes> res = service.getWarrateMasterDropdown(req);
@@ -181,7 +182,7 @@ public ResponseEntity<CommonRes> changeStatusOfWarrate(@RequestBody WarrateChang
 		data.setMessage("Success");
 
 		if (res != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}

@@ -21,6 +21,7 @@ import com.maan.eway.master.req.ClausesMasterSaveReq;
 import com.maan.eway.master.res.ClausesMasterRes;
 import com.maan.eway.master.service.ClausesMasterService;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -153,12 +154,12 @@ public ResponseEntity<CommonRes> changeStatusOfClauses(@RequestBody ClausesChang
 }
 
 //Clauses Master Drop Down Type
-@PostMapping("/dropdown/clauses")
+@PostMapping(value="/dropdown/clauses",produces = "application/json")
 @ApiOperation(value = "This method is get Clauses Master Drop Down")
 
-public ResponseEntity<CommonRes> getClausesMasterDropdown(@RequestBody ClausesMasterDropdownReq req) {
+public ResponseEntity<DropdownCommonRes> getClausesMasterDropdown(@RequestBody ClausesMasterDropdownReq req) {
 
-	CommonRes data = new CommonRes();
+	DropdownCommonRes data = new DropdownCommonRes();
 
 	// Save
 	List<DropDownRes> res = service.getClausesMasterDropdown(req);
@@ -168,7 +169,7 @@ public ResponseEntity<CommonRes> getClausesMasterDropdown(@RequestBody ClausesMa
 	data.setMessage("Success");
 
 	if (res != null) {
-		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 	} else {
 		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	}

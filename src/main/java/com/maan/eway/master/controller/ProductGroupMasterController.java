@@ -65,7 +65,7 @@ public class ProductGroupMasterController {
 
 */
 	// Product Group Master Drop Down Type
-	@PostMapping("/dropdown/productgroup")
+	@PostMapping(value="/dropdown/productgroup",produces = "application/json")
 	@ApiOperation(value = "This method is get Product Group Master Drop Down")
 
 	public ResponseEntity<CommonRes> getProductGroupMasterDropdown(@RequestBody ProductGroupDropDownReq req) {

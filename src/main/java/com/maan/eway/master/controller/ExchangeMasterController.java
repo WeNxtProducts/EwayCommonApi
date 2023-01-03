@@ -20,6 +20,7 @@ import com.maan.eway.master.req.OccupationChangeStatusReq;
 import com.maan.eway.master.res.ExchangeMasterGetRes;
 import com.maan.eway.master.service.ExchangeMasterService;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -125,12 +126,12 @@ public class ExchangeMasterController {
 	}
 
 	// Exchange Master Drop Down Type
-		@GetMapping("/dropdown/exchange")
+		@GetMapping(value="/dropdown/exchange",produces = "application/json")
 		@ApiOperation(value = "This method is get Exchange Master Drop Down")
 
-		public ResponseEntity<CommonRes> getExchangeMasterDropdown() {
+		public ResponseEntity<DropdownCommonRes> getExchangeMasterDropdown() {
 
-			CommonRes data = new CommonRes();
+			DropdownCommonRes data = new DropdownCommonRes();
 
 			// Save
 			List<DropDownRes> res = service.getExchangeMasterDropdown();
@@ -140,7 +141,7 @@ public class ExchangeMasterController {
 			data.setMessage("Success");
 
 			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
 			} else {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
