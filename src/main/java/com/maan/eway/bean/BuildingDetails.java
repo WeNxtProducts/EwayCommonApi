@@ -78,12 +78,6 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="BUILDING_FLOORS")
     private Integer    buildingFloors ;
-
-    @Column(name="OUTBUILD_CONSTRUCT_TYPE", length=20)
-    private String     outbuildConstructType ;
-    
-    @Column(name="OUTBUILD_CONSTRUCT_TYPE_DESC", length=100)
-    private String     outbuildConstructTypeDesc ;
     
     @Column(name="BUILDING_USAGE_ID", length=100)
     private String     buildingUsageId;
@@ -91,14 +85,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="BUILDING_USAGE_DESC", length=100)
     private String     buildingUsageDesc;
     
-    @Column(name="BUILDING_PURPOSE_ID", length=100)
-    private String     buildingPurposeId;
-
     @Column(name="BUILDING_USAGE_YN", length=2)
     private String     buildingUsageYn ;
-
-    @Column(name="BUILDING_PURPOSE", length=100)
-    private String     buildingPurpose;
 
     @Column(name="BUILDING_TYPE", length=100)
     private String     buildingType;
@@ -150,17 +138,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="CUSTOMER_ID", length=20)
     private String     customerId ;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="POLICY_START_DATE")
-    private Date       policyStartDate ;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="POLICY_END_DATE")
-    private Date       policyEndDate ;
-
-    @Column(name="POLICY_PERIORD")
-    private Integer policyPeriord;
-    
     
 }
 
