@@ -48,6 +48,7 @@ public class SplitSubCoverUtil implements Function<Tuple,Cover> {
 					.isReferral(referal)
 					.referalDescription("Y".equals(referal)?(t.get("coverDesc")==null?"":t.get("coverDesc").toString()+" Referral"):"")
 					.coverBasedOn(t.get("coverBasedOn")==null?"sumInsured":t.get("coverBasedOn").toString())
+					.sectionId(t.get("sectionId")==null?"":t.get("sectionId").toString())
 					//.exchangeRate(t.get("isSelectedYn")==null?0D:t.get("isSelectedYn").toString())
 					/*	.premiumBeforeDiscount(new BigDecimal(t.get("coverId").toString()))
 					.premiumAfterDiscount(new BigDecimal(t.get("coverId").toString()))

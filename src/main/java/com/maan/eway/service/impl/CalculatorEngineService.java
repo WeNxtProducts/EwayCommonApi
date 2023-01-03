@@ -14,9 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.maan.eway.bean.CompanyProductMaster;
-import com.maan.eway.bean.CompanyProrataMaster;
-import com.maan.eway.bean.CompanyTaxSetup;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.MsAssetDetails;
 import com.maan.eway.bean.MsCommonDetails;
@@ -38,7 +35,6 @@ import com.maan.eway.calculator.util.SubCoverCreationUtil;
 import com.maan.eway.calculator.util.TaxUtils;
 import com.maan.eway.calculator.util.UwQuestionUtils;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
-import com.maan.eway.common.req.UpdateFactorRateReq;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.MsVehicleDetailsRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
@@ -48,8 +44,10 @@ import com.maan.eway.res.calc.Discount;
 import com.maan.eway.res.calc.Loading;
 import com.maan.eway.res.calc.Tax;
 import com.maan.eway.res.calc.UWReferrals;
+import com.maan.eway.res.referal.MasterReferal;
 import com.maan.eway.service.CalculatorEngine;
 import com.maan.eway.service.FactorRateRequestDetailsService;
+import com.maan.eway.service.impl.referal.ReferalServiceImpl;
 import com.maan.eway.upgrade.criteria.CriteriaService;
 import com.maan.eway.upgrade.criteria.SpecCriteria;
 
@@ -86,6 +84,10 @@ public class CalculatorEngineService implements CalculatorEngine{
 	@Autowired
 	private FactorRateRequestDetailsRepository repository;
 	
+	
+	@Autowired
+	private ReferalServiceImpl referal;
+	
 	private SimpleDateFormat DD_MM_YYYY = new SimpleDateFormat("dd/MM/yyyy")  ;
 	public void LoadSection(CalcEngine engine) {
 	
@@ -121,7 +123,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 	
 	
 	
-	public synchronized EserviceMotorDetailsSaveRes  calculator(CalcEngine engine) {
+	public synchronized EserviceMotorDetailsSaveRes  calculator(CalcEngine engine,String token) {
 		// Referal Checking.
 		
 		List<UWReferrals> referr=null;
@@ -135,6 +137,14 @@ public class CalculatorEngineService implements CalculatorEngine{
 			}
 			
 		}
+		List<MasterReferal> masterreferral=null;
+		try {
+			masterreferral = referal.masterreferral(engine, token);
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		
 		
 		List<Cover> retc=new ArrayList<Cover>();
@@ -308,7 +318,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 			response.setMsrefno(engine.getMsrefno());
 			response.setUpdateas(null);
 			response.setUwList(referr);
-			
+			response.setReferals(masterreferral);
 			fservice.saveFactorRateRequestDetails(response);
 			
 			//Update Premium,referral

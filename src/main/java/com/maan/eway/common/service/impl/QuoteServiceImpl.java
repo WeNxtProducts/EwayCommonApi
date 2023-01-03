@@ -370,13 +370,13 @@ public class QuoteServiceImpl implements QuoteService {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			// Find Motor Data
-			List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByQuoteNoOrderByLocationIdAsc(req.getQuoteNo());
+			List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
 			List<EserviceSectionDetails> secDatas =  eserSecRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 			
 			List<BuildingProductDetailsRes>   motorResList = new ArrayList<BuildingProductDetailsRes>();
 			for (EserviceSectionDetails sec :  secDatas) {
-				EserviceBuildingDetails buildData = buildDatas.stream().filter( o -> o.getLocationId().equals(sec.getRiskId()) ).collect(Collectors.toList()).get(0);
+				EserviceBuildingDetails buildData = buildDatas.stream().filter( o -> o.getRiskId().equals(sec.getRiskId()) ).collect(Collectors.toList()).get(0);
 				// Build
 				EserviceBuildingsDetailsRes buildingRes = new  EserviceBuildingsDetailsRes()  ;
 				dozerMapper.map(buildData, buildingRes);
@@ -843,7 +843,7 @@ public class QuoteServiceImpl implements QuoteService {
 	public QuoteUpdateRes motorReferalUpdate(AdminReferalStatusReq req) {
 		QuoteUpdateRes  updateRes = new QuoteUpdateRes(); 
 		try {
-			List<EserviceMotorDetails> motorDatas = eserMotRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
+			List<EserviceMotorDetails> motorDatas = eserMotRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 			
 			// Referal Approve & Create New Quote
 			if (req.getStatus().equalsIgnoreCase("RA") ) {
@@ -856,7 +856,7 @@ public class QuoteServiceImpl implements QuoteService {
 				for(EserviceMotorDetails mot : motorDatas ) {
 					VehicleIdsReq vehDeh = new VehicleIdsReq();
 					List<CoverIdsReq>  coverList = new ArrayList<CoverIdsReq>();
-					List<FactorRateRequestDetails> filterCover = coverDatas.stream().filter( o -> o.getVehicleId().equals(mot.getVehicleId()) ).collect(Collectors.toList());
+					List<FactorRateRequestDetails> filterCover = coverDatas.stream().filter( o -> o.getVehicleId().equals(mot.getRiskId()) ).collect(Collectors.toList());
 					
 					for (FactorRateRequestDetails cov :  filterCover ) {
 						CoverIdsReq coverReq = new CoverIdsReq();
@@ -872,7 +872,7 @@ public class QuoteServiceImpl implements QuoteService {
 						
 					}
 					vehDeh.setCoverIdList(coverList);
-					vehDeh.setVehicleId(mot.getVehicleId());
+					vehDeh.setVehicleId(mot.getRiskId());
 					vehicleIdsList.add(vehDeh);
 				}
 				
@@ -1010,7 +1010,7 @@ public class QuoteServiceImpl implements QuoteService {
 	public QuoteUpdateRes buildingReferalUpdate(AdminReferalStatusReq req) {
 		QuoteUpdateRes  updateRes = new QuoteUpdateRes(); 
 		try {
-			List<EserviceBuildingDetails> buildingDatas = eserBuildRepo.findByRequestReferenceNoOrderByLocationIdAsc(req.getRequestReferenceNo());
+			List<EserviceBuildingDetails> buildingDatas = eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 			List<EserviceSectionDetails>  secDatas = eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo()); 
 		// Referal Approve & Create New Quote
 			if (req.getStatus().equalsIgnoreCase("RA") ) {
@@ -1180,10 +1180,10 @@ public class QuoteServiceImpl implements QuoteService {
 	public List<BuildingSumInsuredDetails> buildingSuminsuredDetails(SectionSumInsuredGetReq req) {
 		List<BuildingSumInsuredDetails> resList = new ArrayList<BuildingSumInsuredDetails>();
 		try {
-			List<EserviceBuildingDetails> builldings  = eserBuildRepo.findByQuoteNoOrderByLocationIdAsc(req.getQuoteNo());
+			List<EserviceBuildingDetails> builldings  = eserBuildRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
 			List<EserviceSectionDetails>   buildSections = eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(builldings.get(0).getRequestReferenceNo());	
 			
-			List<String> sectionIds = buildSections.stream().filter( o -> o.getRiskId().equals(builldings.get(0).getLocationId() )).map(EserviceSectionDetails :: getSectionId ).collect(Collectors.toList());
+			List<String> sectionIds = buildSections.stream().filter( o -> o.getRiskId().equals(builldings.get(0).getRiskId() )).map(EserviceSectionDetails :: getSectionId ).collect(Collectors.toList());
 			
 					
 			List<SectionCoverMaster> sectionCovers  = getSectionCovers(builldings.get(0).getCompanyId() ,builldings.get(0).getProductId() , sectionIds );
@@ -1191,7 +1191,7 @@ public class QuoteServiceImpl implements QuoteService {
 			
 			for (EserviceBuildingDetails build :   builldings) {
 				BuildingSumInsuredDetails res = new BuildingSumInsuredDetails();
-				List<EserviceSectionDetails>   filterSections = buildSections.stream().filter( o -> o.getRiskId().equals(build.getLocationId()) ).collect(Collectors.toList());
+				List<EserviceSectionDetails>   filterSections = buildSections.stream().filter( o -> o.getRiskId().equals(build.getRiskId()) ).collect(Collectors.toList());
 				BigDecimal buildingSuminsured = null;
 				BigDecimal allriskSuminsured = null;
 				BigDecimal paDeathSuminsured = null;
@@ -1246,7 +1246,7 @@ public class QuoteServiceImpl implements QuoteService {
 				res.setPaMedicalSuminsured(PaMedicalSuminsured == null?"" :PaMedicalSuminsured.toString());
 				res.setPersonalIntermediarySuminsured(personalIntSuminsured == null?"" :personalIntSuminsured.toString());
 				res.setContentSuminsured(contentSuminsured == null?"" :contentSuminsured.toString());
-				res.setRiskId(build.getLocationId().toString());
+				res.setRiskId(build.getRiskId().toString());
 				res.setSectionId(sectionIds);		
 				resList.add(res);
 			}

@@ -184,13 +184,13 @@ public class QuoteThreadCall implements Callable<Object>  {
 			// FindData 
 			String customerRefNo = "" ;
 			if(request.getProductId().equalsIgnoreCase(motorProductId) ) {
-				EserviceMotorDetails motorData = eserMotRepo.findByRequestReferenceNoAndVehicleId(request.getRequestReferenceNo(),request.getVehicleIdsList().get(0).getVehicleId());
+				EserviceMotorDetails motorData = eserMotRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo(),request.getVehicleIdsList().get(0).getVehicleId());
 				customerRefNo = motorData.getCustomerReferenceNo();
 			} else if(request.getProductId().equalsIgnoreCase(travelProductId) ) {
 				EserviceTravelDetails travelData = eserTraRepo.findByRequestReferenceNo(request.getRequestReferenceNo());
 				customerRefNo = travelData.getCustomerReferenceNo();
 			}else if(request.getProductId().equalsIgnoreCase(buildingProductId) ) {
-				EserviceBuildingDetails buldingData = eserBuildRepo.findByRequestReferenceNoAndLocationId(request.getRequestReferenceNo(),request.getVehicleIdsList().get(0).getVehicleId());
+				EserviceBuildingDetails buldingData = eserBuildRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo(),request.getVehicleIdsList().get(0).getVehicleId());
 				customerRefNo = buldingData.getCustomerReferenceNo();
 			}
 			
@@ -263,7 +263,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			
 			// Find Motor
-			EserviceMotorDetails eserMotors = eserMotRepo.findByRequestReferenceNoAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,request.getVehicleId());
+			EserviceMotorDetails eserMotors = eserMotRepo.findByRequestReferenceNoAndRiskIdOrderByRiskIdAsc(request.getRequestReferenceNo() ,request.getVehicleId());
 			
 			// Update Eservice Motor
 			eserMotors.setActualPremiumFc(premiumFc);
@@ -282,7 +282,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			motorData.setQuoteNo(request.getQuoteNo());
 			motorData.setCustomerId(request.getCustomerId());
 			motorData.setStatus("Y");
-			List<FactorRateRequestDetails>  filterCover = covers.stream().filter( o -> o.getVehicleId().equals( eserMotors.getVehicleId())).collect(Collectors.toList());
+			List<FactorRateRequestDetails>  filterCover = covers.stream().filter( o -> o.getVehicleId().equals( eserMotors.getRiskId())).collect(Collectors.toList());
 			motorData.setVdRefno(filterCover.get(0).getVdRefno());	
 			motorData.setMsRefno(filterCover.get(0).getMsRefno());		
 			motorData.setCdRefno(filterCover.get(0).getCdRefno());	
@@ -352,7 +352,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			
 			// Find Building
-			EserviceBuildingDetails eserBuild = eserBuildRepo.findByRequestReferenceNoAndLocationId(request.getRequestReferenceNo() ,request.getVehicleId());
+			EserviceBuildingDetails eserBuild = eserBuildRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() ,request.getVehicleId());
 			
 			// Update Eservice Building
 			eserBuild.setActualPremiumFc(premiumFc);
@@ -780,7 +780,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			if( request.getProductId().equalsIgnoreCase(motorProductId) ) {
 				
-				EserviceMotorDetails motorData = eserMotRepo.findByRequestReferenceNoAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,request.getVehicleId());
+				EserviceMotorDetails motorData = eserMotRepo.findByRequestReferenceNoAndRiskIdOrderByRiskIdAsc(request.getRequestReferenceNo() ,request.getVehicleId());
 				home.setCompanyId(motorData.getCompanyId());
 				home.setBranchCode(motorData.getBranchCode());
 				home.setProductId(Integer.valueOf(motorData.getProductId()));
@@ -840,7 +840,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				
 			}  else if(request.getProductId().equalsIgnoreCase(buildingProductId) ) {
 				
-				EserviceBuildingDetails  buildingData = eserBuildRepo.findByRequestReferenceNoAndLocationId(request.getRequestReferenceNo() , request.getVehicleId()) ;
+				EserviceBuildingDetails  buildingData = eserBuildRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() , request.getVehicleId()) ;
 				Long builCount =  eserBuildRepo.countByRequestReferenceNo(request.getRequestReferenceNo() ) ;
 				//List<EserviceSectionDetails> sections = eserSecRepo.findByRequestReferenceNoAndRiskIdAndProductIdOrderBySectionIdAsc(request.getRequestReferenceNo() , request.getVehicleId(),request.getProductId() );
 				home.setCompanyId(buildingData.getCompanyId());

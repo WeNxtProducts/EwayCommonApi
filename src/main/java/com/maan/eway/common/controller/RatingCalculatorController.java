@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,8 +40,8 @@ public class RatingCalculatorController {
 	
 	@PostMapping("/calc")
 	@ApiOperation("This Method is to get by id")
-	public EserviceMotorDetailsSaveRes calc(@RequestBody CalcEngine request) {
-		EserviceMotorDetailsSaveRes response = service.calculator(request); 
+	public EserviceMotorDetailsSaveRes calc(@RequestBody CalcEngine request,@RequestHeader("Authorization") String tokens) {
+		EserviceMotorDetailsSaveRes response = service.calculator(request,tokens.replaceAll("Bearer ", "").split(",")[0]); 
 		return response;
 	}
 	
@@ -53,10 +54,11 @@ public class RatingCalculatorController {
 	
 	@PostMapping("/masterreferral")
 	@ApiOperation("This Method is to get by id")
-	public List<MasterReferal> masterreferral(@RequestBody CalcEngine request) {
+	public List<MasterReferal> masterreferral(@RequestBody CalcEngine request ,@RequestHeader("Authorization") String tokens ) {
 		List<MasterReferal> response=null;
 		try {
-			response = rservice.masterreferral(request);
+			System.out.println("T"+tokens);
+			response = rservice.masterreferral(request,tokens.replaceAll("Bearer ", "").split(",")[0]);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} 

@@ -41,22 +41,22 @@ public interface EServiceMotorDetailsRepository  extends JpaRepository<EserviceM
  
 	List<EserviceMotorDetails> findByRequestReferenceNoAndIdNumber(String requestReferenceNo, String idNumber);
 
-	List<EserviceMotorDetails> findByRequestReferenceNoAndIdNumberOrderByVehicleIdDesc(String requestReferenceNo,
+	List<EserviceMotorDetails> findByRequestReferenceNoAndIdNumberOrderByRiskIdDesc(String requestReferenceNo,
 			String idNumber);
 
 	List<EserviceMotorDetails> findByRequestReferenceNo(String requestReferenceNo);
 
-	List<EserviceMotorDetails> findByRequestReferenceNoAndIdNumberAndVehicleId(String requestReferenceNo,
+	List<EserviceMotorDetails> findByRequestReferenceNoAndIdNumberAndRiskId(String requestReferenceNo,
 			String idNumber, Integer valueOf);
 
-	EserviceMotorDetails findByRequestReferenceNoAndVehicleId(String requestReferenceNo, Integer vehId);
+	EserviceMotorDetails findByRequestReferenceNoAndRiskId(String requestReferenceNo, Integer vehId);
 
 	List<EserviceMotorDetails> findByRequestReferenceNoInOrderByUpdatedDateDesc(List<String> reqRefNos);
 
-	List<EserviceMotorDetails> findByRequestReferenceNoOrderByVehicleIdAsc(String requestReferenceNo);
+	List<EserviceMotorDetails> findByRequestReferenceNoOrderByRiskIdAsc(String requestReferenceNo);
 
-	EserviceMotorDetails findByRequestReferenceNoAndVehicleIdOrderByVehicleIdAsc(String requestReferenceNo,
-			Integer vehicleId);
+	EserviceMotorDetails findByRequestReferenceNoAndRiskIdOrderByRiskIdAsc(String requestReferenceNo,
+			Integer RiskId);
 	EserviceMotorDetails findByRequestReferenceNoAndQuoteNoAndProductIdAndCompanyId(String requestReferenceNo,
 			String quoteNo, String productId, String companyId);
 

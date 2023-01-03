@@ -5,6 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.res.calc.Cover;
 import com.maan.eway.res.calc.UWReferrals;
+import com.maan.eway.res.referal.MasterReferal;
 
 import lombok.Data;
 
@@ -54,6 +55,6 @@ public class EserviceMotorDetailsSaveRes {
 	@JsonProperty("updateas")
 	private String updateas;
 	
-	
-	
+	@JsonProperty("MasterReferral")
+	private List<MasterReferal> referals;
 }

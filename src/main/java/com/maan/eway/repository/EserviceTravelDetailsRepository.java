@@ -33,7 +33,7 @@ public interface EserviceTravelDetailsRepository  extends JpaRepository<Eservice
 
 	EserviceTravelDetails findByRequestReferenceNo(String requestReferenceNo);
 
-	EserviceTravelDetails findByRequestReferenceNoAndTravelIdAndCompanyIdAndProductIdAndSectionId(
+	EserviceTravelDetails findByRequestReferenceNoAndRiskIdAndCompanyIdAndProductIdAndSectionId(
 			String requestReferenceNo, Integer vehicleId,  String companyId, Integer valueOf2,
 			Integer valueOf3);
 

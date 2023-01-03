@@ -470,7 +470,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						eserTraRepo.save(travelData);
 						
 					} else if ( req.getProductId().equalsIgnoreCase(buildingProductId)) {
-						List<EserviceBuildingDetails> buildingDatas = eserBuildRepo.findByRequestReferenceNoOrderByLocationIdAsc(req.getRequestReferenceNo());
+						List<EserviceBuildingDetails> buildingDatas = eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 						for (EserviceBuildingDetails build : buildingDatas ) {
 							build.setStatus("RP");
 							build.setReferalRemarks(referralRemarks);
@@ -726,7 +726,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			
 			// Find Old QuoteNo
 			if(req.getProductId().equalsIgnoreCase(motorProductId)) {
-				EserviceMotorDetails findMotor =  eserMotRepo.findByRequestReferenceNoAndVehicleId(req.getRequestReferenceNo() , req.getVehicleIdsList().get(0).getVehicleId());
+				EserviceMotorDetails findMotor =  eserMotRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo() , req.getVehicleIdsList().get(0).getVehicleId());
 				customerId = findMotor.getCustomerId()==null?"":findMotor.getCustomerId();
 				quoteNo    = findMotor.getQuoteNo()==null?"":findMotor.getQuoteNo();
 				subUserType = findMotor.getSubUserType()==null?"":findMotor.getSubUserType() ;
@@ -789,7 +789,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			
 			// Find Old QuoteNo
 			if(req.getProductId().equalsIgnoreCase(motorProductId)) {
-				EserviceMotorDetails findMotor =  eserMotRepo.findByRequestReferenceNoAndVehicleId(req.getRequestReferenceNo() , req.getVehicleIdsList().get(0).getVehicleId());
+				EserviceMotorDetails findMotor =  eserMotRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo() , req.getVehicleIdsList().get(0).getVehicleId());
 				customerId = findMotor.getCustomerId()==null?"":findMotor.getCustomerId();
 				quoteNo    = findMotor.getQuoteNo()==null?"":findMotor.getQuoteNo();
 				subUserType = findMotor.getSubUserType()==null?"":findMotor.getSubUserType() ;
@@ -910,7 +910,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			
 			if( request.getProductId().equalsIgnoreCase(motorProductId) ) {
 				
-				EserviceMotorDetails motorData = eserMotRepo.findByRequestReferenceNoAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,request.getVehicleId());
+				EserviceMotorDetails motorData = eserMotRepo.findByRequestReferenceNoAndRiskIdOrderByRiskIdAsc(request.getRequestReferenceNo() ,request.getVehicleId());
 				home.setCompanyId(motorData.getCompanyId());
 				home.setBranchCode(motorData.getBranchCode());
 				home.setProductId(Integer.valueOf(motorData.getProductId()));
@@ -970,7 +970,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				
 			}  else if(request.getProductId().equalsIgnoreCase(buildingProductId) ) {
 				
-				EserviceBuildingDetails  buildingData = eserBuildRepo.findByRequestReferenceNoAndLocationId(request.getRequestReferenceNo() , request.getVehicleId()) ;
+				EserviceBuildingDetails  buildingData = eserBuildRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() , request.getVehicleId()) ;
 				Long builCount =  eserBuildRepo.countByRequestReferenceNo(request.getRequestReferenceNo() ) ;
 				//List<EserviceSectionDetails> sections = eserSecRepo.findByRequestReferenceNoAndRiskIdAndProductIdOrderBySectionIdAsc(request.getRequestReferenceNo() , request.getVehicleId(),request.getProductId() );
 				home.setCompanyId(buildingData.getCompanyId());

@@ -23,7 +23,8 @@ public class CachingConfig   {
 	        b->b.name("RatingType").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
 	        b->b.name("ProductType").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
 	        b->b.name("loadTax").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
-	        b->b.name("loadProRata").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false)
+	        b->b.name("loadProRata").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
+	        b->b.name("LoadConstant").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false)
 	        );
 		
 	  }
@@ -41,6 +42,7 @@ public class CachingConfig   {
 				.append(e.getProductId())
 				.append(s)
 				.append(e.getBranchCode())
+				.append("rating")
 				.toString();
 				return string;
 			}
@@ -56,6 +58,7 @@ public class CachingConfig   {
 				CalcEngine e=(CalcEngine)params[0]; 
 				String string = new StringBuilder().append(e.getInsuranceId())
 				.append(e.getProductId())
+				.append("producttype")
 				.toString();
 				return string;
 			}
@@ -73,6 +76,7 @@ public class CachingConfig   {
 	    				String string = new StringBuilder().append(e.getInsuranceId())
 	    						.append(e.getProductId())
 	    						.append("99999")
+	    						.append("loadtax")
 	    						.toString();
 	    				return string;
 	    			}
@@ -87,7 +91,8 @@ public class CachingConfig   {
 	    			public Object generate(Object target, Method method, Object... params) {
 	    				CalcEngine e=(CalcEngine)params[0];
 	    				String string = new StringBuilder().append(e.getInsuranceId())
-	    						.append(e.getProductId())	    						
+	    						.append(e.getProductId())	  
+	    						.append("prorata")
 	    						.toString();
 	    				return string;
 	    			}
@@ -95,6 +100,23 @@ public class CachingConfig   {
 	    		};
 	    	}
 	    	
+	    	@Bean
+	    	public KeyGenerator loadConstantKeyGen() {
+	    		return new KeyGenerator() {
+	    			@Override
+	    			public Object generate(Object target, Method method, Object... params) {
+	    				CalcEngine e=(CalcEngine)params[0];
+	    				String string = new StringBuilder().append(e.getInsuranceId())
+	    						.append(e.getProductId())
+	    						.append(e.getBranchCode())
+	    						.append("99999")
+	    						.append("constant")
+	    						.toString();
+	    				return string;
+	    			}
+
+	    		};
+	    	}
 	    	
 	    
 	

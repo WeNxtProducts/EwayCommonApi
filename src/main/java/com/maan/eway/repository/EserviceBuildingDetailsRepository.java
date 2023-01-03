@@ -31,17 +31,17 @@ import com.maan.eway.bean.EserviceBuildingDetailsId;
  
 public interface EserviceBuildingDetailsRepository  extends JpaRepository<EserviceBuildingDetails,EserviceBuildingDetailsId > , JpaSpecificationExecutor<EserviceBuildingDetails> {
 
-	EserviceBuildingDetails findByRequestReferenceNoAndLocationIdAndCompanyIdAndProductId(String requestReferenceNo,
+	EserviceBuildingDetails findByRequestReferenceNoAndRiskIdAndCompanyIdAndProductId(String requestReferenceNo,
 			Integer vehicleId, String companyId, Integer valueOf);
 
-	List<EserviceBuildingDetails> findByRequestReferenceNoOrderByLocationIdAsc(String requestReferenceNo);
+	List<EserviceBuildingDetails> findByRequestReferenceNoOrderByRiskIdAsc(String requestReferenceNo);
 	EserviceBuildingDetails findByRequestReferenceNoAndQuoteNoAndProductIdAndCompanyId(String requestReferenceNo,
 			String quoteNo, String productId, String companyId);
 
-	EserviceBuildingDetails findByRequestReferenceNoAndLocationId(String requestReferenceNo, Integer vehicleId);
+	EserviceBuildingDetails findByRequestReferenceNoAndRiskId(String requestReferenceNo, Integer vehicleId);
 
 	Long countByRequestReferenceNo(String requestReferenceNo);
 
-	List<EserviceBuildingDetails> findByQuoteNoOrderByLocationIdAsc(String quoteNo);
+	List<EserviceBuildingDetails> findByQuoteNoOrderByRiskIdAsc(String quoteNo);
 
 }

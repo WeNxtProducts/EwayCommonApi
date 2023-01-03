@@ -12,6 +12,6 @@ public interface CalculatorEngine {
 	void LoadSection(CalcEngine engine) ;
 	List<Tuple> LoadCover(CalcEngine engine) ;
 	 
-	EserviceMotorDetailsSaveRes  calculator(CalcEngine engine);
+	EserviceMotorDetailsSaveRes  calculator(CalcEngine engine,String token);
 	EserviceMotorDetailsSaveRes referalCalculator(CalcEngine request);
 }

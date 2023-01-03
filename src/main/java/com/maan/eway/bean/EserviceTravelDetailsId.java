@@ -33,7 +33,7 @@ public class EserviceTravelDetailsId implements Serializable {
     
     private String     customerReferenceNo ;
     
-    private Integer    travelId ;
+    private Integer    riskId ;
     
     private String     companyId ;
     

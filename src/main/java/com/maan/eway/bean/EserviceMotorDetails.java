@@ -65,7 +65,7 @@ private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name="RISK_ID", nullable=false)
-    private Integer    vehicleId ;
+    private Integer    riskId ;
 
     @Id
     @Column(name="INSURANCE_TYPE", nullable=false, length=10)

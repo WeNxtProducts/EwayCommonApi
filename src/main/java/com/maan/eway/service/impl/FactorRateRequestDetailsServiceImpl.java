@@ -428,7 +428,7 @@ this.repository = repo;
 				
 				// Update Motor Premium
 				if(   req.getProductId().equalsIgnoreCase(motorProductId)) {
-					EserviceMotorDetails findData =   eserMotorRepo.findByRequestReferenceNoAndVehicleId(req.getRequestReferenceNo()  ,Integer.valueOf(req.getVehicleId()));
+					EserviceMotorDetails findData =   eserMotorRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo()  ,Integer.valueOf(req.getVehicleId()));
 					findData.setActualPremiumLc(premiumLc ==null ? null :Double.valueOf(df.format(premiumLc )));
 					findData.setActualPremiumFc(premiumFc ==null ? null :Double.valueOf(df.format(premiumFc )));
 					findData.setOverallPremiumLc(overAllPremiumLc ==null ? null :Double.valueOf(df.format(overAllPremiumLc)));
@@ -666,7 +666,7 @@ this.repository = repo;
 				List<EserviceMotorDetails>    motorDatas = eserMotorRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
 						
 				for (EserviceMotorDetails mot :  motorDatas) {
-					List<FactorRateRequestDetails> filterVehicleCovers =  findCovers.stream().filter( o -> o.getVehicleId().equals(mot.getVehicleId())).collect(Collectors.toList());
+					List<FactorRateRequestDetails> filterVehicleCovers =  findCovers.stream().filter( o -> o.getVehicleId().equals(mot.getRiskId())).collect(Collectors.toList());
 					Map<Integer,List<FactorRateRequestDetails>> groupByCover = filterVehicleCovers.stream().collect(Collectors.groupingBy(FactorRateRequestDetails :: getCoverId));			
 					
 					List<Cover> coverListRes = 	getCoversList(groupByCover);
@@ -693,7 +693,7 @@ this.repository = repo;
 					res.setRequestReferenceNo(mot.getRequestReferenceNo());
 					res.setSectionId(mot.getSectionId());
 					res.setVdRefNo(filterVehicleCovers.size() > 0 ?filterVehicleCovers.get(0).getVdRefno(): "");
-					res.setVehicleId(mot.getVehicleId().toString());
+					res.setVehicleId(mot.getRiskId().toString());
 					res.setHavepromocode(mot.getHavepromocode());
 					res.setPromocode(mot.getPromocode());
 					res.setGroupId(1);
@@ -761,14 +761,14 @@ this.repository = repo;
 			}   else if( req.getProductId().equalsIgnoreCase(buildingProductId) ) {
 				// Building Product Details
 				List<EserviceSectionDetails>    sectionDatas = eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
-				List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByRequestReferenceNoOrderByLocationIdAsc(req.getRequestReferenceNo());
+				List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 				
 				for (EserviceSectionDetails sec :  sectionDatas) {
 					List<FactorRateRequestDetails> filterVehicleCovers =  findCovers.stream().filter( o -> o.getVehicleId().equals(sec.getRiskId()) &&  o.getSectionId().equals(Integer.valueOf(sec.getSectionId())) ).collect(Collectors.toList());
 					Map<Integer,List<FactorRateRequestDetails>> groupByCover = filterVehicleCovers.stream().collect(Collectors.groupingBy(FactorRateRequestDetails :: getCoverId));			
 					
 					List<Cover> coverListRes = 	getCoversList(groupByCover);
-					EserviceBuildingDetails buildData = buildDatas.stream().filter( o -> o.getLocationId().equals(sec.getRiskId())  ).collect(Collectors.toList()).get(0);
+					EserviceBuildingDetails buildData = buildDatas.stream().filter( o -> o.getRiskId().equals(sec.getRiskId())  ).collect(Collectors.toList()).get(0);
 					
 					// Response 
 					EservieMotorDetailsViewRes res = new EservieMotorDetailsViewRes();
@@ -794,7 +794,7 @@ this.repository = repo;
 					res.setVehicleId(sec.getRiskId().toString());
 					res.setHavepromocode(buildData.getHavepromocode());
 					res.setPromocode(buildData.getPromocode());
-					res.setGroupId(buildData.getLocationId()==null?null:buildData.getLocationId());
+					res.setGroupId(buildData.getRiskId()==null?null:buildData.getRiskId());
 				//	res.setGroupMember(sec.getGrouppMembers()==null?null:tra.getGrouppMembers() );
 					res.setCoverList(coverListRes);
 					Object riskDetails = new Object();
@@ -1098,7 +1098,7 @@ this.repository = repo;
 			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(req.getRequestReferenceNo() , req.getVehicleId() ,
 					req.getCompanyId() , Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;	
 			if(   req.getProductId().equalsIgnoreCase(motorProductId)) {
-				EserviceMotorDetails  findMot = eserMotorRepo.findByRequestReferenceNoAndVehicleId(req.getRequestReferenceNo() , req.getVehicleId() 
+				EserviceMotorDetails  findMot = eserMotorRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo() , req.getVehicleId() 
 						) ;
 				agencyCode = findMot.getAgencyCode();
 				branchCode = findMot.getBranchCode();
@@ -1112,7 +1112,7 @@ this.repository = repo;
 			//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
 				
 			} else if(   req.getProductId().equalsIgnoreCase(buildingProductId)) {
-				EserviceBuildingDetails    findBuild = eserBuildRepo.findByRequestReferenceNoAndLocationIdAndCompanyIdAndProductId(req.getRequestReferenceNo() , req.getVehicleId() ,
+				EserviceBuildingDetails    findBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndCompanyIdAndProductId(req.getRequestReferenceNo() , req.getVehicleId() ,
 						req.getCompanyId() , 	 Integer.valueOf(req.getProductId())  ) ;
 				agencyCode = findBuild.getBrokerCode();
 				branchCode = findBuild.getBranchCode();

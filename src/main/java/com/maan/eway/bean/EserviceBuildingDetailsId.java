@@ -31,7 +31,7 @@ public class EserviceBuildingDetailsId implements Serializable {
     //--- ENTITY KEY ATTRIBUTES 
     private String     requestReferenceNo ;
     
-    private Integer    locationId ;
+    private Integer    riskId ;
     
     private String     customerReferenceNo ;
     

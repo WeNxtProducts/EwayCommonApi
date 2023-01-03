@@ -22,6 +22,7 @@ public class ReferralRequest {
 	
 	private List<Map<String,String>> mp;
 	
+	private String tokenl;
 	
 	
 }
