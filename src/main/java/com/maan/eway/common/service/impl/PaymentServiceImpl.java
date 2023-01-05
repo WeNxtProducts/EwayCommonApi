@@ -150,7 +150,7 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			//Find data from home Position Master
 			List<PaymentDetail> data = paymentdetailrepo.findByQuoteNoOrderByEntryDateDesc(req.getQuoteNo());
-			
+
 			//For Status Expired
 			if(req.getStatus().equalsIgnoreCase("EXPIRED"))
 			{
@@ -208,6 +208,7 @@ public class PaymentServiceImpl implements PaymentService {
 			{
 			List<PaymentDetail> datas = paymentdetailrepo.findByQuoteNoAndPaymentStatusOrderByEntryDateDesc(req.getQuoteNo(),"PENDING");
 					
+			if(datas.size()>0) {
 			//Payment Detail Save
 			paymentdetail=dozermappper.map(datas.get(0), PaymentDetail.class);
 			paymentdetail.setPaymentStatus(req.getStatus());
@@ -229,8 +230,11 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			paymentinforepo.save(paymentinfo);
 			}
-
-
+			
+			}
+			else {
+				return res;
+			}
 			
 			res.setSuccessId(req.getQuoteNo());
 			res.setResponse("Updated Successful");
