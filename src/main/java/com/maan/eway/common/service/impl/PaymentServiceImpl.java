@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
@@ -55,10 +56,25 @@ public class PaymentServiceImpl implements PaymentService {
 	
 	@Override
 	public List<Error> validatemakepayment(MakePaymentSaveReq req) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		List<Error> error = new ArrayList<Error>();
 
+		try {
+			
+			if(StringUtils.isBlank(req.getQuoteNo())){
+				error.add(new Error("01","Quote No","Plaese Enter Quote No"));
+				}
+			if(StringUtils.isBlank(req.getPaymentTypeId())){
+				error.add(new Error("02","PaymentTypeId","Plaese Select PaymentTypeId"));
+				}
+			
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		return error;
+	}
+	
+	
 	@Override
 	public synchronized SuccessRes savemakepayment(MakePaymentSaveReq req) {
 		// TODO Auto-generated method stub
