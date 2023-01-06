@@ -8,16 +8,21 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import javax.persistence.Tuple;
 
-import org.apache.tomcat.util.buf.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
+import com.maan.eway.calculator.util.UwQuestionUtils;
+import com.maan.eway.repository.UwQuestionsDetailsRepository;
 import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.req.referal.ReferralRequest;
+import com.maan.eway.res.calc.UWReferrals;
 import com.maan.eway.res.referal.MasterReferal;
 import com.maan.eway.thread.MyTaskList;
 import com.maan.eway.upgrade.criteria.CriteriaService;
@@ -31,6 +36,10 @@ public class ReferalServiceImpl {
 	
 	@Autowired
 	private RatingFactorsUtil rating;
+	
+
+	@Autowired
+	private UwQuestionsDetailsRepository uwrepo;
 	
 	public List<MasterReferal> masterreferral(CalcEngine engine,String token) throws ClassNotFoundException {
 			
@@ -105,4 +114,21 @@ public class ReferalServiceImpl {
 			 
 			return null;
 		}
+	
+	
+		public List<UWReferrals> underwriterReferral(CalcEngine engine ) {
+			List<UWReferrals> referr=null;
+			if(StringUtils.isNotBlank(engine.getRequestReferenceNo()) && StringUtils.isNotBlank(engine.getVehicleId())) {
+		 
+				List<UwQuestionsDetails> uwqs = uwrepo.findByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleId(engine.getInsuranceId(),Integer.valueOf(engine.getProductId()),engine.getRequestReferenceNo(),Integer.valueOf(engine.getVehicleId()));
+				if(!uwqs.isEmpty()) {
+					List<UwQuestionsDetails> isreferral=uwqs.stream().filter(f-> "Y".equals(f.getIsReferral())).collect(Collectors.toList());
+					UwQuestionUtils uts=new UwQuestionUtils();
+					referr = isreferral.stream().map(uts).filter(d->d!=null).collect(Collectors.toList());
+				}
+				
+			}
+			return referr;
+		}
+		
 }

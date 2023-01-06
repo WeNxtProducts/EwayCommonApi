@@ -1,28 +1,32 @@
 package com.maan.eway.service.impl; 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import javax.persistence.Tuple;
 
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.FactorRateRequestDetails;
+import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.MsAssetDetails;
 import com.maan.eway.bean.MsCommonDetails;
 import com.maan.eway.bean.MsCustomerDetails;
 import com.maan.eway.bean.MsHumanDetails;
 import com.maan.eway.bean.MsVehicleDetails;
-import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionCoverMaster;
-import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.calculator.util.CoverCalculator;
 import com.maan.eway.calculator.util.CoverFromFactor;
 import com.maan.eway.calculator.util.DiscountFromFactor;
@@ -33,13 +37,16 @@ import com.maan.eway.calculator.util.SplitLoadingUtils;
 import com.maan.eway.calculator.util.SplitSubCoverUtil;
 import com.maan.eway.calculator.util.SubCoverCreationUtil;
 import com.maan.eway.calculator.util.TaxUtils;
-import com.maan.eway.calculator.util.UwQuestionUtils;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
+import com.maan.eway.common.req.ViewQuoteReq;
+import com.maan.eway.common.res.ViewQuoteRes;
+import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
-import com.maan.eway.repository.MsVehicleDetailsRepository;
-import com.maan.eway.repository.UwQuestionsDetailsRepository;
+import com.maan.eway.repository.LoginProductMasterRepository;
+import com.maan.eway.req.calcengine.CalcCommission;
 import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.res.calc.Cover;
+import com.maan.eway.res.calc.DebitAndCredit;
 import com.maan.eway.res.calc.Discount;
 import com.maan.eway.res.calc.Loading;
 import com.maan.eway.res.calc.Tax;
@@ -47,6 +54,7 @@ import com.maan.eway.res.calc.UWReferrals;
 import com.maan.eway.res.referal.MasterReferal;
 import com.maan.eway.service.CalculatorEngine;
 import com.maan.eway.service.FactorRateRequestDetailsService;
+import com.maan.eway.service.PolicyDrcrDetailService;
 import com.maan.eway.service.impl.referal.ReferalServiceImpl;
 import com.maan.eway.upgrade.criteria.CriteriaService;
 import com.maan.eway.upgrade.criteria.SpecCriteria;
@@ -74,11 +82,8 @@ public class CalculatorEngineService implements CalculatorEngine{
 	@Autowired
 	private FactorRateRequestDetailsService fservice;
 	
-	@Autowired
-	private MsVehicleDetailsRepository msvech;
+ 
 	
-	@Autowired
-	private UwQuestionsDetailsRepository uwrepo;
 	
 
 	@Autowired
@@ -88,8 +93,17 @@ public class CalculatorEngineService implements CalculatorEngine{
 	@Autowired
 	private ReferalServiceImpl referal;
 	
+	@Autowired
+	private QuoteService quoteservice;
+	
 	private SimpleDateFormat DD_MM_YYYY = new SimpleDateFormat("dd/MM/yyyy")  ;
-	public void LoadSection(CalcEngine engine) {
+	
+	@Autowired
+	private LoginProductMasterRepository loginProductrepo;
+	
+	@Autowired
+	private PolicyDrcrDetailService crdrservice;
+	/*public void LoadSection(CalcEngine engine) {
 	
 		try {
 			String todayInString = DD_MM_YYYY.format(new Date());
@@ -103,7 +117,7 @@ public class CalculatorEngineService implements CalculatorEngine{
  		}catch(Exception e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 	
 	
 	public List<Tuple> LoadCover(CalcEngine engine) {
@@ -126,17 +140,8 @@ public class CalculatorEngineService implements CalculatorEngine{
 	public synchronized EserviceMotorDetailsSaveRes  calculator(CalcEngine engine,String token) {
 		// Referal Checking.
 		
-		List<UWReferrals> referr=null;
-		if(StringUtils.isNotBlank(engine.getRequestReferenceNo()) && StringUtils.isNotBlank(engine.getVehicleId())) {
-	 
-			List<UwQuestionsDetails> uwqs = uwrepo.findByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleId(engine.getInsuranceId(),Integer.valueOf(engine.getProductId()),engine.getRequestReferenceNo(),Integer.valueOf(engine.getVehicleId()));
-			if(!uwqs.isEmpty()) {
-				List<UwQuestionsDetails> isreferral=uwqs.stream().filter(f-> "Y".equals(f.getIsReferral())).collect(Collectors.toList());
-				UwQuestionUtils uts=new UwQuestionUtils();
-				referr = isreferral.stream().map(uts).filter(d->d!=null).collect(Collectors.toList());
-			}
-			
-		}
+		List<UWReferrals> referr = referal.underwriterReferral(engine);
+		
 		List<MasterReferal> masterreferral=null;
 		try {
 			masterreferral = referal.masterreferral(engine, token);
@@ -584,6 +589,148 @@ public class CalculatorEngineService implements CalculatorEngine{
 		 }catch (Exception e) {
 			 e.printStackTrace();
 		}
+		return null;
+	}
+
+
+	@Override
+	public  List<DebitAndCredit> commissionCalc(CalcCommission request) {
+		 try {
+			
+			 ViewQuoteReq q=ViewQuoteReq.builder().quoteNo(request.getQuoteno()).build();
+			 ViewQuoteRes v = quoteservice.viewQuoteDetails(q);
+			
+			 
+			 List<LoginProductMaster> lp = loginProductrepo.findByLoginIdAndCompanyIdAndProductIdAndStatusOrderByEntryDateDesc(v.getQuoteDetails().getLoginId(),request.getInsuranceId() , request.getProductId(), "Y");
+			 
+			 
+			 Integer commissionPercent = lp.get(0).getCommissionPercent();
+			 String commissionVatYn = lp.get(0).getCommissionVatYn();
+			 String premiumFc = v.getQuoteDetails().getPremiumFc();
+			 String vatPremiumFc =	v.getQuoteDetails().getVatPremiumFc();
+			 BigDecimal commission=	new BigDecimal(premiumFc)
+					 				.multiply(new BigDecimal(commissionPercent))
+			 						.divide(BigDecimal.valueOf(100D))
+			 						.setScale(new MathContext(3, RoundingMode.HALF_UP)
+			 						.getPrecision(),RoundingMode.HALF_UP);
+			 v.getQuoteDetails().getVatPercent();
+			 BigDecimal commissionVat=BigDecimal.ZERO;
+			 List<Map<String,Object>> rules=new ArrayList<Map<String,Object>>();
+					 
+			 // Setup
+			 Map<String,Object> setup=new HashMap<String, Object>();
+				 
+			 List<Map<String,Object>> csubsets=new ArrayList<Map<String,Object>>();
+			 {
+				 Map<String,Object> subset=new HashMap<String, Object>();
+				 subset.put("CHARGE_CODE", "1001");
+				 subset.put("CHARGE_CODE_DESC", "Premium");
+				 subset.put("CHARGE_CODE_VALUE",premiumFc);
+				 csubsets.add(subset);
+			 }
+			 {
+				 Map<String,Object> subset=new HashMap<String, Object>();
+				 subset.put("CHARGE_CODE", "1012");
+				 subset.put("CHARGE_CODE_DESC", "VAT");
+				 subset.put("CHARGE_CODE_VALUE",vatPremiumFc);
+				 csubsets.add(subset);
+			 }
+			
+			 
+			 
+			 List<Map<String,Object>> bsubsets=new ArrayList<Map<String,Object>>();
+			 {
+				 Map<String,Object> subset=new HashMap<String, Object>();
+				 subset.put("CHARGE_CODE", "1005");
+				 subset.put("CHARGE_CODE_DESC", "Commission");
+				 subset.put("CHARGE_CODE_VALUE",commission);
+				 bsubsets.add(subset);
+			 }
+			  
+			 {
+				 Map<String,Object> subset=new HashMap<String, Object>();
+				 subset.put("CHARGE_CODE", "1007");
+				 subset.put("CHARGE_CODE_DESC", "Commission%");
+				 subset.put("CHARGE_CODE_VALUE",commissionPercent);
+				 bsubsets.add(subset);
+			 }
+			  
+			 if(commissionVatYn.equals("Y"))
+			 {
+				 commissionVat=commission
+			 				.multiply(new BigDecimal(v.getQuoteDetails().getVatPercent()))
+	 						.divide(BigDecimal.valueOf(100D))
+	 						.setScale(new MathContext(3, RoundingMode.HALF_UP)
+	 						.getPrecision(),RoundingMode.HALF_UP);
+	 
+				 
+				 Map<String,Object> subset=new HashMap<String, Object>();
+				 subset.put("CHARGE_CODE", "1012");
+				 subset.put("CHARGE_CODE_DESC", "COMMISSON_VAT");
+				 subset.put("CHARGE_CODE_VALUE",commissionVat);
+				 bsubsets.add(subset);
+			 }
+			  
+			 
+			 setup.put("<CUSTOMER>", csubsets);
+			 setup.put("<BROKER>", bsubsets);
+			 
+			 //-----------------------------
+			 
+			 
+			 //Rule 
+			 Map<String,Object> rule1=new HashMap<String, Object>();
+			 rule1.put("DEBIT", "<CUSTOMER>");
+			 rule1.put("CREDIT", "<BROKER>");			 	 
+			 rules.add(rule1);
+
+			 String crnumber="CN-"+ThreadLocalRandom.current().ints(1001, 4999).distinct().limit(5).findAny().toString();
+			 String drnumber="DN-"+ThreadLocalRandom.current().ints(4999, 9999).distinct().limit(5).findAny().toString();
+			 int rownum=1;
+			 
+			 List<DebitAndCredit> result=new ArrayList<DebitAndCredit>();
+			 
+			 
+			 for (Map<String, Object> map : rules) {
+				for (Entry<String, Object> m : map.entrySet()) {
+					
+					 List<Map<String,Object>> dd=( List<Map<String,Object>>) setup.get(m.getValue());
+					 
+					 for (Map<String, Object> s : dd) {
+						 			
+						 String doctype=m.getValue().equals("<CUSTOMER>")?"C":"B";
+						 
+						 		DebitAndCredit dc = DebitAndCredit.builder()
+						 			.amountFc(new BigDecimal(s.get("CHARGE_CODE_VALUE").toString()))
+						 			.amountLc(new BigDecimal(s.get("CHARGE_CODE_VALUE").toString()))
+						 			.branchCode(request.getBranchCode())
+									.chargeCode(new BigDecimal(s.get("CHARGE_CODE").toString()))
+									.chgId(new BigDecimal(rownum++))
+									.companyId(request.getInsuranceId())
+									.docId(doctype.equals("C")?v.getCustomerDetails().getCustomerId():v.getQuoteDetails().getLoginId())
+									.docNo(m.getKey().equals("DEBIT")?drnumber:crnumber)
+									.docType(doctype)
+									.drcrFlag(m.getKey().equals("DEBIT")?"DR":"CR")
+									.entryDate(new Date())
+									.policyNo(request.getPolicyNo())
+									.productId(request.getProductId())
+									.quoteNo(request.getQuoteno())
+									.status("Y")
+									.quoteInfo(v)
+									.build();
+						 		result.add(dc);
+					 }   	
+				}
+			 }
+			 crdrservice.insertDRCR(result, request.getQuoteno());
+			 return result;
+			 
+			 
+			 
+			 
+		 }catch (Exception e) {
+			 e.printStackTrace();
+		 }
 		return null;
 	}
 	

@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
+import com.maan.eway.common.service.SeqQuotenoService;
+import com.maan.eway.req.calcengine.CalcCommission;
 import com.maan.eway.req.calcengine.CalcEngine;
+import com.maan.eway.res.calc.DebitAndCredit;
 import com.maan.eway.res.referal.MasterReferal;
 import com.maan.eway.service.CalculatorEngine;
 import com.maan.eway.service.impl.referal.ReferalServiceImpl;
@@ -26,12 +29,14 @@ public class RatingCalculatorController {
 	@Autowired
 	private ReferalServiceImpl rservice;
 	
-	@PostMapping("/loadsection")
+	@Autowired
+	private SeqQuotenoService seq;
+	/*@PostMapping("/loadsection")
 	@ApiOperation("This Method is to get by id")
 	public void loadSection(@RequestBody CalcEngine request) {
 		service.LoadSection(request);
 	}
-	
+	*/
 	/*@PostMapping("/loadfactorrates")visionmotor@123#
 	@ApiOperation("This Method is to get by id")
 	public void LoadFactorRates(@RequestBody CalcEngine request) {
@@ -63,6 +68,25 @@ public class RatingCalculatorController {
 			e.printStackTrace();
 		} 
 		return response;
+	}
+	
+	@PostMapping("/commissionCalc")
+	@ApiOperation("This Method is to get by id")
+	public List<DebitAndCredit> commissionCalc(@RequestBody CalcCommission request ,@RequestHeader("Authorization") String tokens ) {
+		List<DebitAndCredit> response=null;
+		try {
+			
+			response = service.commissionCalc(request);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		return response;
+	} 
+	
+	@PostMapping("/sequence")
+	@ApiOperation("This Method is to get by id")
+	public String getsequence() {
+		return seq.create();
 	}
 	
 }
