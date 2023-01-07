@@ -281,6 +281,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			motorData.setCreatedBy(request.getCreatedBy());
 			motorData.setQuoteNo(request.getQuoteNo());
 			motorData.setCustomerId(request.getCustomerId());
+			motorData.setVehicleId(eserMotors.getRiskId().toString());
 			motorData.setStatus("Y");
 			List<FactorRateRequestDetails>  filterCover = covers.stream().filter( o -> o.getVehicleId().equals( eserMotors.getRiskId())).collect(Collectors.toList());
 			motorData.setVdRefno(filterCover.get(0).getVdRefno());	
@@ -449,6 +450,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			// Save Motro Details
 			TravelPassengerDetails travelData  = new TravelPassengerDetails();
 			dozerMapper.map(eserTravel, travelData);
+			travelData.setTravelId(eserTravel.getRiskId());
 			travelData.setEntryDate(new Date());	
 			travelData.setCreatedBy(request.getCreatedBy());
 			travelData.setQuoteNo(request.getQuoteNo());
