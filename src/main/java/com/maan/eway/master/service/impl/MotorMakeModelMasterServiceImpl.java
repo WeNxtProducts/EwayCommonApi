@@ -648,13 +648,14 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 
 			// Amend ID Max Filter
 			Subquery<Long> amendId = query.subquery(Long.class);
-			Root<OccupationMaster> ocpm1 = amendId.from(OccupationMaster.class);
+			Root<MotorMakeModelMaster> ocpm1 = amendId.from(MotorMakeModelMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
-			Predicate a1 = cb.equal(ocpm1.get("occupationId"), b.get("occupationId"));
-			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+			Predicate a1 = cb.equal(ocpm1.get("makeId"), b.get("makeId"));
+			Predicate a2 = cb.equal(ocpm1.get("makeId"), b.get("makeId"));
+			Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a4 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 
-			amendId.where(a1, a2,a3);
+			amendId.where(a1, a2,a3,a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
