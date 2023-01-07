@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.EservicePersonalAccidentDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
@@ -68,6 +69,7 @@ import com.maan.eway.repository.CoverDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
+import com.maan.eway.repository.EservicePersonalAccidentDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
@@ -80,6 +82,7 @@ import com.maan.eway.repository.TravelPassengerHistoryRepository;
 import com.maan.eway.res.BuildingSumInsuredDetails;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.EserviceBuildingsDetailsRes;
+import com.maan.eway.res.OccupationReqClass;
 import com.maan.eway.res.QuoteUpdateRes;
 import com.maan.eway.res.SectionWiseSumInsuredRes;
 import com.maan.eway.res.SuccessRes;
@@ -145,6 +148,9 @@ public class QuoteServiceImpl implements QuoteService {
 
 	@Autowired
 	private PolicyCoverDataRepository polCoverRepo  ;
+	
+	@Autowired
+	private EservicePersonalAccidentDetailsRepository eserPaccRepo  ;
 	
 	private Logger log = LogManager.getLogger(QuoteServiceImpl.class);
 	
@@ -1164,7 +1170,7 @@ public class QuoteServiceImpl implements QuoteService {
 		SectionWiseSumInsuredRes res = new SectionWiseSumInsuredRes();
 		try {
 			 if(req.getProductId().equalsIgnoreCase(buildingProductId )) {
-				 List<BuildingSumInsuredDetails> builSum  = buildingSuminsuredDetails(req);
+				 BuildingSumInsuredDetails builSum  = buildingSuminsuredDetails(req);
 				 res.setProductSuminsuredDetails(builSum);	
 			}
 			res.setQuoteNo(req.getQuoteNo());
@@ -1181,87 +1187,90 @@ public class QuoteServiceImpl implements QuoteService {
 	}
 	
 	
-	public List<BuildingSumInsuredDetails> buildingSuminsuredDetails(SectionSumInsuredGetReq req) {
-		List<BuildingSumInsuredDetails> resList = new ArrayList<BuildingSumInsuredDetails>();
+	public BuildingSumInsuredDetails buildingSuminsuredDetails(SectionSumInsuredGetReq req) {
+		BuildingSumInsuredDetails res = new BuildingSumInsuredDetails();
 		try {
-			List<EserviceBuildingDetails> builldings  = eserBuildRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
-			List<EserviceSectionDetails>   buildSections = eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(builldings.get(0).getRequestReferenceNo());	
-			
-			List<String> sectionIds = buildSections.stream().filter( o -> o.getRiskId().equals(builldings.get(0).getRiskId() )).map(EserviceSectionDetails :: getSectionId ).collect(Collectors.toList());
+			EserviceBuildingDetails build  = eserBuildRepo.findByQuoteNo(req.getQuoteNo());
+			List<EserviceSectionDetails>   buildSections = eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(build.getRequestReferenceNo());	
+			List<EservicePersonalAccidentDetails> paccDatas = eserPaccRepo.findByRequestReferenceNo(build.getRequestReferenceNo());
+
+			List<String> sectionIds = buildSections.stream().filter( o -> o.getRiskId().equals(build.getRiskId() )).map(EserviceSectionDetails :: getSectionId ).collect(Collectors.toList());
 			
 					
-			List<SectionCoverMaster> sectionCovers  = getSectionCovers(builldings.get(0).getCompanyId() ,builldings.get(0).getProductId() , sectionIds );
+			List<SectionCoverMaster> sectionCovers  = getSectionCovers(build.getCompanyId() ,build.getProductId() , sectionIds );
 			List<PolicyCoverData>   covers = polCoverRepo.findByQuoteNo(req.getQuoteNo())	;
 			
-			for (EserviceBuildingDetails build :   builldings) {
-				BuildingSumInsuredDetails res = new BuildingSumInsuredDetails();
-				List<EserviceSectionDetails>   filterSections = buildSections.stream().filter( o -> o.getRiskId().equals(build.getRiskId()) ).collect(Collectors.toList());
-				BigDecimal buildingSuminsured = null;
-				BigDecimal allriskSuminsured = null;
-				BigDecimal paDeathSuminsured = null;
-				BigDecimal paPermanentdisablementSuminsured = null;
-				BigDecimal paTotaldisabilitySumInsured = null;
-				BigDecimal PaMedicalSuminsured = null;
-				BigDecimal personalIntSuminsured = null;
-				BigDecimal contentSuminsured = null;
+			List<EserviceSectionDetails>   filterSections = buildSections.stream().filter( o -> o.getRiskId().equals(build.getRiskId()) ).collect(Collectors.toList());
+			BigDecimal buildingSuminsured = null;
+			BigDecimal allriskSuminsured = null;
+			 List<OccupationReqClass> occupation = new ArrayList<OccupationReqClass>(); 
+	//		BigDecimal paPermanentdisablementSuminsured = null;
+	//		BigDecimal paTotaldisabilitySumInsured = null;
+	//		BigDecimal PaMedicalSuminsured = null;
+			BigDecimal personalIntSuminsured = null;
+			BigDecimal contentSuminsured = null;
+			
+			for (EserviceSectionDetails sec : filterSections) {
+				List<SectionCoverMaster> filterCovers =  sectionCovers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(sec.getSectionId()))  
+							&& o.getProductId().equals(Integer.valueOf(sec.getProductId()))	).collect(Collectors.toList());
 				
-				for (EserviceSectionDetails sec : filterSections) {
-					List<SectionCoverMaster> filterCovers =  sectionCovers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(sec.getSectionId()))  
-								&& o.getProductId().equals(Integer.valueOf(sec.getProductId()))	).collect(Collectors.toList());
-					
-					List<PolicyCoverData>   filterPolCovers = covers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(sec.getSectionId()))  
-							&& o.getProductId().equals(Integer.valueOf(sec.getProductId())) &&  o.getTaxId().equals(0) &&  o.getDiscLoadId().equals(0)  ).collect(Collectors.toList());
-					
-					for(PolicyCoverData cover :  filterPolCovers) {
-						String sumInsuredColumn = filterCovers.stream().filter( o -> o.getCoverId().equals(cover.getCoverId() )
-								&& o.getSubCoverId().equals(cover.getSubCoverId() )).collect(Collectors.toList()).get(0).getCoverBasedOn();
-						if(sumInsuredColumn.equalsIgnoreCase("buildingSuminsured")) {
-							buildingSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
-							
-						} else if(sumInsuredColumn.equalsIgnoreCase("allriskSuminsured")) {
-							allriskSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
-							
-						}  else if(sumInsuredColumn.equalsIgnoreCase("paDeathSuminsured")) {
-							paDeathSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
-							
-						}  else if(sumInsuredColumn.equalsIgnoreCase("paPermanentdisablementSuminsured")) {
-							paPermanentdisablementSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
-							
-						}  else if(sumInsuredColumn.equalsIgnoreCase("paTotaldisabilitySumInsured")) {
-							paTotaldisabilitySumInsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
-							
-						}  else if(sumInsuredColumn.equalsIgnoreCase("PaMedicalSuminsured")) {
-							PaMedicalSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
-							
-						}  else if(sumInsuredColumn.equalsIgnoreCase("personalIntSuminsured")) {
-							personalIntSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
-							
-						}  else if(sumInsuredColumn.equalsIgnoreCase("contentSuminsured")) {
-							contentSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
-						} 
-					}
-					
+				List<PolicyCoverData>   filterPolCovers = covers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(sec.getSectionId()))  
+						&& o.getProductId().equals(Integer.valueOf(sec.getProductId())) &&  o.getTaxId().equals(0) &&  o.getDiscLoadId().equals(0)  ).collect(Collectors.toList());
+				
+				for(PolicyCoverData cover :  filterPolCovers) {
+					String sumInsuredColumn = filterCovers.stream().filter( o -> o.getCoverId().equals(cover.getCoverId() )
+							&& o.getSubCoverId().equals(cover.getSubCoverId() )).collect(Collectors.toList()).get(0).getCoverBasedOn();
+					if(sumInsuredColumn.equalsIgnoreCase("buildingSuminsured")) {
+						buildingSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
+						
+					} else if(sumInsuredColumn.equalsIgnoreCase("allriskSuminsured")) {
+						allriskSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
+						
+					}  else if(sumInsuredColumn.equalsIgnoreCase("paDeathSuminsured")) {
+						OccupationReqClass  occ = new OccupationReqClass(); 
+						List<EservicePersonalAccidentDetails> filterPacc = paccDatas.stream().filter( o -> o.getRiskId().equals(cover.getVehicleId())	).collect(Collectors.toList());				
+						occ.setOccupationType(cover.getVehicleId().toString());
+						occ.setSumInsuredTotal( cover.getSumInsured()==null?"" : cover.getSumInsured().toString());
+						occ.setCount(filterPacc.get(0).getCount().toString());
+						occupation.add(occ);
+						
+					} else if(sumInsuredColumn.equalsIgnoreCase("contentSuminsured")) {
+						contentSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
+					}  else if(sumInsuredColumn.equalsIgnoreCase("personalIntSuminsured")) {
+						personalIntSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
+						
+					} 
+//						else if(sumInsuredColumn.equalsIgnoreCase("paPermanentdisablementSuminsured")) {
+//							paPermanentdisablementSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
+//							
+//						}  else if(sumInsuredColumn.equalsIgnoreCase("paTotaldisabilitySumInsured")) {
+//							paTotaldisabilitySumInsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
+//							
+//						}  else if(sumInsuredColumn.equalsIgnoreCase("PaMedicalSuminsured")) {
+//							PaMedicalSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
+//							
+//						} 
 				}
-				res.setBuildingSuminsured(buildingSuminsured == null?"" :buildingSuminsured.toString());
-				res.setAllriskSuminsured(allriskSuminsured == null?"" :allriskSuminsured.toString());
-				res.setPaDeathSuminsured(paDeathSuminsured == null?"" :paDeathSuminsured.toString());
-				res.setPaPermanentdisablementSuminsured(paPermanentdisablementSuminsured == null?"" :paPermanentdisablementSuminsured.toString());
-				res.setPaTotaldisabilitySumInsured(paTotaldisabilitySumInsured == null?"" :paTotaldisabilitySumInsured.toString());
-				res.setPaMedicalSuminsured(PaMedicalSuminsured == null?"" :PaMedicalSuminsured.toString());
-				res.setPersonalIntermediarySuminsured(personalIntSuminsured == null?"" :personalIntSuminsured.toString());
-				res.setContentSuminsured(contentSuminsured == null?"" :contentSuminsured.toString());
-				res.setRiskId(build.getRiskId().toString());
-				res.setSectionId(sectionIds);		
-				resList.add(res);
-			}
 				
+			}
+			res.setBuildingSuminsured(buildingSuminsured == null?"" :buildingSuminsured.toString());
+			res.setAllriskSuminsured(allriskSuminsured == null?"" :allriskSuminsured.toString());
+		//	res.setPaDeathSuminsured(paDeathSuminsured == null?"" :paDeathSuminsured.toString());
+		//	res.setPaPermanentdisablementSuminsured(paPermanentdisablementSuminsured == null?"" :paPermanentdisablementSuminsured.toString());
+		//	res.setPaTotaldisabilitySumInsured(paTotaldisabilitySumInsured == null?"" :paTotaldisabilitySumInsured.toString());
+		//	res.setPaMedicalSuminsured(PaMedicalSuminsured == null?"" :PaMedicalSuminsured.toString());
+			res.setPersonalIntermediarySuminsured(personalIntSuminsured == null?"" :personalIntSuminsured.toString());
+			res.setContentSuminsured(contentSuminsured == null?"" :contentSuminsured.toString());
+			res.setOccupationDetails(occupation);
+			res.setRiskId(build.getRiskId().toString());
+			res.setSectionId(sectionIds);		
 			
 		} catch ( Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
 			return null;
 		}
-		return resList;
+		return res;
 	}
 	
 	

@@ -19,17 +19,17 @@ public class BuildingSumInsuredDetails {
 	@JsonProperty("AllriskSumInsured")
     private String     allriskSuminsured ;
 	
-	@JsonProperty("PaDeathSuminsured")
-    private String     paDeathSuminsured ;
+	@JsonProperty("OccupationDetails")
+    private List<OccupationReqClass>     occupationDetails ;
 	
-	@JsonProperty("PaTotaldisabilitySumInsured")
-    private String     paTotaldisabilitySumInsured ;
-	
-	@JsonProperty("PaPermanentdisablementSuminsured")
-    private String     paPermanentdisablementSuminsured ;
-	
-	@JsonProperty("PaMedicalSuminsured")
-    private String     paMedicalSuminsured ;
+//	@JsonProperty("PaTotaldisabilitySumInsured")
+//    private String     paTotaldisabilitySumInsured ;
+//	
+//	@JsonProperty("PaPermanentdisablementSuminsured")
+//    private String     paPermanentdisablementSuminsured ;
+//	
+//	@JsonProperty("PaMedicalSuminsured")
+//    private String     paMedicalSuminsured ;
 	@JsonProperty("ContentSuminsured")
     private String     contentSuminsured ;
 	@JsonProperty("PersonalIntermediarySuminsured")
