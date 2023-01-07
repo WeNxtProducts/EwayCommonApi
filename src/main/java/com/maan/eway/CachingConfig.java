@@ -24,7 +24,7 @@ public class CachingConfig   {
 	        b->b.name("ProductType").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
 	        b->b.name("loadTax").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
 	        b->b.name("loadProRata").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
-	        b->b.name("LoadConstant").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false)
+	        b->b.name("LoadConstant").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(true)
 	        );
 		
 	  }
