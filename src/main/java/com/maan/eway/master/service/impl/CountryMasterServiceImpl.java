@@ -646,7 +646,10 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			amendId.where(a1,a2);
+			Predicate a3 = cb.equal(b.get("companyId"), "99999");
+			Predicate a4 = cb.or(a2,a3);
+
+			amendId.where(a1,a4);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -656,7 +659,10 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("countryId"), req.getCountryId() );
 			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId() );
-			query.where(n1,n2,n3).orderBy(orderList);
+			Predicate n4 = cb.equal(b.get("companyId"), "99999");
+			Predicate n5 = cb.or(n3,n4);
+
+			query.where(n1,n2,n5).orderBy(orderList);
 	
 			// Get Result
 						TypedQuery<CountryMaster> result = em.createQuery(query);
