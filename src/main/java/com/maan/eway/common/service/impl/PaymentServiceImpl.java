@@ -19,6 +19,7 @@ import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PaymentInfo;
+import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.common.req.MakePaymentSaveReq;
 import com.maan.eway.common.req.MakePaymentUpdateReq;
 import com.maan.eway.common.req.PaymentDetailsGetReq;
@@ -31,6 +32,7 @@ import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.PaymentDetailRepository;
 import com.maan.eway.repository.PaymentInfoRepository;
+import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.res.SuccessRes;
 
 @Service
@@ -50,6 +52,8 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired
 	private ListItemValueRepository listrepo;
 	
+	@Autowired
+	private PersonalInfoRepository personalrepo;
 	
 	private Logger log = LogManager.getLogger(ClausesMasterServiceImpl.class);
 
@@ -101,10 +105,11 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			//Find data from home Position Master
 			HomePositionMaster data = homerepo.findByQuoteNo(req.getQuoteNo());
-			
+			PersonalInfo personaldata = personalrepo.findByCustomerId(data.getCustomerId());
 			
 			//Payment Detail Save
 			paymentdetail=dozermappper.map(data, PaymentDetail.class);
+			paymentdetail=dozermappper.map(personaldata, PaymentDetail.class);
 			paymentdetail.setPaymentStatus("PENDING");
 			paymentdetail.setPaymentId(Double.valueOf(paymentid));
 			paymentdetail.setPaymentReferenceNo(refNo);
@@ -115,11 +120,14 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentdetail.setCustomerid(data.getCustomerId());
 			paymentdetail.setOthProductId(data.getProductId().toString());
 			paymentdetail.setChequeNo(data.getChqInvNo());
+			paymentdetail.setQuoteNo(req.getQuoteNo());		
 
 			paymentdetailrepo.save(paymentdetail);
 
 			//Payment Info Save
 			paymentinfo = dozermappper.map(data, PaymentInfo.class);			
+			paymentinfo=dozermappper.map(personaldata, PaymentInfo.class);
+
 			paymentinfo.setPaymentStatus("PENDING");;
 			paymentinfo.setPaymentId(Double.valueOf(paymentid));
 			paymentinfo.setPaymentReferenceNo(refNo);
@@ -127,8 +135,7 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentinfo.setPremium(new BigDecimal(data.getPremiumLc()));
 			paymentinfo.setOthProductId(data.getProductId().toString());
 			paymentinfo.setOthPaymentMode(paymenttype.getItemValue());
-			
-			
+			paymentinfo.setQuoteNo(req.getQuoteNo());		
 			paymentinforepo.save(paymentinfo);
 			
 			res.setSuccessId(paymentid.toString());
