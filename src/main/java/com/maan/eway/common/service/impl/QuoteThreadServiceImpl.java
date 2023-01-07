@@ -70,6 +70,7 @@ import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerHistoryRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
 import com.maan.eway.res.ReferalResponse;
+import com.maan.eway.res.referal.MasterReferal;
 import com.maan.eway.thread.MyTaskList;
 
 @Service
@@ -386,7 +387,11 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				referral = true ;
 				referralRemarks = req.getReferralRemarks();
 				
-			} else {
+			}
+			
+			
+			// OTher Referals
+			{
 				//UPDATE
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				// create update
@@ -406,8 +411,6 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo()); 
 				for (VehicleIdsReq veh : req.getVehicleIdsList()) {
 					
-					
-					
 					// Cover Referal Checking
 					List<CoverIdsReq> coverList = veh.getCoverIdList();
 					for (CoverIdsReq cov : coverList) {
@@ -416,8 +419,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							userOptCovers.addAll(filterCovers);
 							
 							List<FactorRateRequestDetails> filterReferalCovers = filterCovers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&  cov.getIsReferal()!=null && cov.getIsReferal().equalsIgnoreCase("Y") ).collect(Collectors.toList());
-							if(filterReferalCovers.size()>0 && StringUtils.isBlank(referralRemarks) && referral==false ) { 
-								referralRemarks = filterReferalCovers.get(0).getCoverName() ;
+							if(filterReferalCovers.size()>0 ) { 
+								referralRemarks = StringUtils.isBlank(referralRemarks)? filterReferalCovers.get(0).getCoverName() : referralRemarks +"~" +filterReferalCovers.get(0).getCoverName() ;
 								referral = true ;
 							}
 						
@@ -425,10 +428,18 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							List<FactorRateRequestDetails> filterSubCovers  = covers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(cov.getSubCoverId()))  ).collect(Collectors.toList());
 							userOptCovers.addAll(filterSubCovers);
 							List<FactorRateRequestDetails> filterReferalSubCovers = filterSubCovers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&  cov.getIsReferal()!=null && cov.getIsReferal().equalsIgnoreCase("Y")  ).collect(Collectors.toList());
-							if(filterReferalSubCovers.size()>0 && StringUtils.isBlank(referralRemarks) && referral==false) { 
-								referralRemarks = filterReferalSubCovers.get(0).getCoverName() ;
+							if(filterReferalSubCovers.size()>0  ) { 
+								referralRemarks = StringUtils.isBlank(referralRemarks)? filterReferalSubCovers.get(0).getCoverName() : referralRemarks +"~" +filterReferalSubCovers.get(0).getCoverName() ;
 								referral = true ;
 							}
+						}
+					}
+					
+					// Master Referals 
+					if (  veh.getReferals()!=null && veh.getReferals().size()>0 ) {
+						for ( MasterReferal masRef : veh.getReferals()) {
+							referralRemarks = StringUtils.isBlank(referralRemarks)? masRef.getReferralDesc() : referralRemarks +"~" +masRef.getReferralDesc() ;
+							referral = true ;
 						}
 					}
 				}
@@ -445,12 +456,14 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				List<UwQuestionsDetails>  filterUwQuestions = uwQuestions.stream().filter( o -> o.getIsReferral()!=null && o.getIsReferral().equalsIgnoreCase("Y") ).collect(Collectors.toList());
 				if(filterUwQuestions.size()>0 ) {
 					referral = true ;
-					if(StringUtils.isBlank(referralRemarks)) {
-						referralRemarks =  filterUwQuestions.get(0).getUwQuestionDesc();
-						
-					}
+					
+					referralRemarks = StringUtils.isBlank(referralRemarks)?  filterUwQuestions.get(0).getUwQuestionDesc() : referralRemarks +"~" + filterUwQuestions.get(0).getUwQuestionDesc() ;
+					
 				}
 			}	
+			
+			
+			
 			
 			if (  referral == true ) {
 					if ( req.getProductId().equalsIgnoreCase(motorProductId)) {
