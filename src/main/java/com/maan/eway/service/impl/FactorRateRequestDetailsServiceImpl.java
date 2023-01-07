@@ -1072,13 +1072,13 @@ this.repository = repo;
 						errors.add(new Error("01","SubCoverYn","Please Enter SubCover Id")) ;
 					}
 					
-					if (cov.getMinimumPremium()==null   ) {
-						errors.add(new Error("01","MinimumPremium","Please Enter MimimumPremium")) ;				
-					} else if (! cov.getMinimumPremium().matches("[0-9.]+")   ) {
-						errors.add(new Error("01","MinimumPremium","Please Enter Valid MimimumPremium")) ;				
-					} else if ( cov.getMinimumPremium().equalsIgnoreCase("0")   ) {
-						errors.add(new Error("01","MinimumPremium","Please Enter Valid Number In MimimumPremium")) ;				
-					}
+//					if (cov.getRate()=null   ) {
+//						errors.add(new Error("01","MinimumPremium","Please Enter MimimumPremium")) ;				
+//					} else if (! cov.getRate().matches("[0-9.]+")   ) {
+//						errors.add(new Error("01","MinimumPremium","Please Enter Valid MimimumPremium")) ;				
+//					} else if ( getRate().equalsIgnoreCase("0")   ) {
+//						errors.add(new Error("01","MinimumPremium","Please Enter Valid Number In MimimumPremium")) ;				
+//					}
 					
 					if (cov.getRate()==null   ) {
 						errors.add(new Error("01","Rate","Please Enter Rate")) ;				

@@ -801,7 +801,7 @@ public class QuoteServiceImpl implements QuoteService {
 				
 			} 
 			
-			if(StringUtils.isBlank(req.getStatus()) && (req.getStatus().equalsIgnoreCase("RA") || req.getStatus().equalsIgnoreCase("RR") ) &&  StringUtils.isBlank(req.getAdminRemarks())) {
+			if(StringUtils.isNotBlank(req.getStatus()) && (req.getStatus().equalsIgnoreCase("RA") || req.getStatus().equalsIgnoreCase("RR") ) &&  StringUtils.isBlank(req.getAdminRemarks())) {
 				errors.add(new Error("03","Admin Remarks","Please Enter Admin Remarks"));
 			}
 			
@@ -873,6 +873,7 @@ public class QuoteServiceImpl implements QuoteService {
 					}
 					vehDeh.setCoverIdList(coverList);
 					vehDeh.setVehicleId(mot.getRiskId());
+					vehDeh.setSectionId(mot.getSectionId());
 					vehicleIdsList.add(vehDeh);
 				}
 				
@@ -942,7 +943,9 @@ public class QuoteServiceImpl implements QuoteService {
 				for(EserviceTravelGroupDetails tra : groupDatas ) {
 					VehicleIdsReq vehDeh = new VehicleIdsReq();
 					List<CoverIdsReq>  coverList = new ArrayList<CoverIdsReq>();
-					List<FactorRateRequestDetails> filterCover = coverDatas.stream().filter( o -> o.getVehicleId().equals(tra.getGroupId())).collect(Collectors.toList());
+					List<FactorRateRequestDetails> filterCover = coverDatas.stream().filter( o -> o.getVehicleId().equals(tra.getGroupId())
+							&& o.getProductId().toString().equals(travelData.getProductId())  && o.getSectionId().toString().equals(travelData.getSectionId())
+							).collect(Collectors.toList());
 					for (FactorRateRequestDetails cov :  filterCover ) {
 						CoverIdsReq coverReq = new CoverIdsReq();
 						if (cov.getCoverId().equals(cov.getSubCoverId())) {
@@ -958,6 +961,7 @@ public class QuoteServiceImpl implements QuoteService {
 					}
 					vehDeh.setCoverIdList(coverList);
 					vehDeh.setVehicleId(tra.getGroupId());
+					vehDeh.setSectionId(travelData.getSectionId() );
 					vehicleIdsList.add(vehDeh);
 				}
 				
