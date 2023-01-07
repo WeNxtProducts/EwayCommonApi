@@ -41,18 +41,18 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@Table(name="seq_quoteno")
+@Table(name="seq_custrefno")
 
 
-public class SeqQuoteno implements Serializable {
+public class SeqCustrefno implements Serializable {
  
 private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="QUOTE_NO", nullable=false)
-    private Long       quoteNo ;
+    @Column(name="CUST_REFERENCE_NO", nullable=false)
+    private Long       custReferenceNo ;
 
     //--- ENTITY DATA FIELDS 
 

@@ -1,6 +1,5 @@
 package com.maan.eway.common.service.impl;
 
-import java.awt.image.RescaleOp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,11 +19,9 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import org.springframework.transaction.annotation.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -32,6 +29,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.EserviceBuildingDetails;
@@ -40,10 +38,8 @@ import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
-import com.maan.eway.bean.MotorDataDetails;
-import com.maan.eway.bean.PersonalInfo;
-import com.maan.eway.bean.PolicyCoverData;
-import com.maan.eway.bean.TravelPassengerDetails;
+import com.maan.eway.bean.SeqCustid;
+import com.maan.eway.bean.SeqQuoteno;
 import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.NewQuoteReq;
@@ -53,7 +49,6 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.NewQuoteRes;
 import com.maan.eway.common.res.ProductThreadRes;
 import com.maan.eway.common.res.QuoteThreadRes;
-import com.maan.eway.common.res.ThreadCountRes;
 import com.maan.eway.common.service.QuoteThreadService;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.CoverDetailsRepository;
@@ -68,6 +63,9 @@ import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
+import com.maan.eway.repository.SeqCustidRepository;
+import com.maan.eway.repository.SeqCustrefnoRepository;
+import com.maan.eway.repository.SeqQuotenoRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerHistoryRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
@@ -108,6 +106,12 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	
 	@Autowired
 	private FactorRateRequestDetailsRepository facRateRepo ;
+	
+	@Autowired
+	private SeqCustidRepository custIdRepo ;
+	
+	@Autowired
+	private SeqQuotenoRepository quoteNoRepo ;
 	
 	@Autowired
 	private PersonalInfoRepository perInfoRepo ;
@@ -604,6 +608,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	        if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				 for (Integer vehId :  vehicleIds ) {
 		            	threadCount = threadCount +  2 ;
+		            	List<String> sectionId = req.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());
 		            	
 		            	QuoteThreadReq request2 = new QuoteThreadReq();
 		            	request2.setCustomerId(request.getCustomerId());
@@ -613,6 +618,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		            	request2.setVehicleIdsList(request.getVehicleIdsList());
 		            	request2.setCreatedBy(request.getCreatedBy());
 		            	request2.setVehicleId(vehId);
+		            	request2.setSectionId(sectionId.get(0));
 		            	
 		            	QuoteThreadCall motorSave = new QuoteThreadCall("MotorSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo  
 		                		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
@@ -664,7 +670,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	        	// Filte Count
 	        	 for (Integer vehId :  groupIds ) {
 					 List<EserviceTravelGroupDetails> filterGroup = groupData.stream().filter( o -> o.getGroupId().equals(vehId) ).collect(Collectors.toList());				 
-						
+					 List<String> sectionId = req.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());	
 					 for (int i=0 ; i < filterGroup.get(0).getGrouppMembers() ; i++) {
 						 passCount = passCount + 1 ;
 						 threadCount = threadCount +  2 ;
@@ -679,7 +685,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		            	 request2.setCreatedBy(request.getCreatedBy());
 		            	 request2.setGroupId(filterGroup.get(0).getGroupId());
 		            	 request2.setGroupCount(filterGroup.get(0).getGrouppMembers());
-		            	
+		            	 request2.setSectionId(sectionId.get(0));
+		            	 
 		            	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
 		            			 , homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
 			             queue.add(travelSave);
@@ -717,7 +724,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	public CommonRes setQuoteThreadReq(NewQuoteReq req ) {
 		CommonRes commonRes = new CommonRes();
 		List<Error> errors = new ArrayList<Error>();
-		SimpleDateFormat idf = new SimpleDateFormat("yyMMddhhmmssSS");
+	//	SimpleDateFormat idf = new SimpleDateFormat("yyMMddhhmmssSS");
 		try {
 			// Id Generate
 			String customerId = "" ;
@@ -742,15 +749,15 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			
 			// Quote No Generate
 			if(StringUtils.isNotBlank( quoteNo) && (subUserType.equalsIgnoreCase("b2c")) ) {
-				Random rand = new Random();
-	            int random=rand.nextInt(90)+10; 
-	        	customerId = "C-" + idf.format(new Date()) + random ;
-	            quoteNo  = "Q"+ idf.format(new Date()) + random ;
+			//	Random rand = new Random();
+	       //     int random=rand.nextInt(90)+10; 
+	        	customerId = "C-" + generateCustId();// idf.format(new Date()) + random ;
+	            quoteNo  = "Q"+ generateQuoteNo();// idf.format(new Date()) + random ;
 	        } else if (StringUtils.isBlank( quoteNo)  ) {
-	        	Random rand = new Random();
-	            int random=rand.nextInt(90)+10; 
-	        	customerId = "C-" + idf.format(new Date()) + random ;
-	            quoteNo  = "Q"+ idf.format(new Date()) + random ;
+	       // 	Random rand = new Random();
+	       //     int random=rand.nextInt(90)+10; 
+	        	customerId = "C-" + generateCustId();// idf.format(new Date()) + random ;
+	            quoteNo  = "Q"+ generateQuoteNo();// idf.format(new Date()) + random ;
 	        } 
 
 			QuoteThreadReq request = new QuoteThreadReq();
@@ -1065,4 +1072,30 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	
 		return res;
 	}
+	
+	public synchronized String generateQuoteNo() {
+	       try {
+	    	   SeqQuoteno entity;
+	            entity = quoteNoRepo.save(new SeqQuoteno());          
+	            return String.format("%05d",entity.getQuoteNo()) ;
+	        } catch (Exception e) {
+				e.printStackTrace();
+				log.info( "Exception is ---> " + e.getMessage());
+	            return null;
+	        }
+	       
+	 }
+	
+	 public synchronized String generateCustId() {
+	       try {
+	    	   SeqCustid entity;
+	            entity = custIdRepo.save(new SeqCustid());          
+	            return String.format("%05d",entity.getCustId()) ;
+	        } catch (Exception e) {
+				e.printStackTrace();
+				log.info( "Exception is ---> " + e.getMessage());
+	            return null;
+	        }
+	       
+	 }
 }

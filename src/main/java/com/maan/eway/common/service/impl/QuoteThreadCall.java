@@ -230,7 +230,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				motorRepo.deleteByQuoteNoAndVehicleId(request.getQuoteNo(), String.valueOf(request.getVehicleId()));
 			}
 			// Cover Calc
-			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,request.getVehicleId());
+			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndVehicleIdAndProductIdAndSectionIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,request.getVehicleId() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()));
 			List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
 			
 			// Insert Other Covers
@@ -387,8 +387,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			List<FactorRateRequestDetails>  covers = new ArrayList<FactorRateRequestDetails>();
 			
-			covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,request.getGroupId());
-				
+			covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndVehicleIdAndProductIdAndSectionIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,request.getGroupId() , Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()) );		
 			
 			List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
 			
@@ -493,7 +492,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		try {
 		
 			if ( request.getProductId().equalsIgnoreCase(motorProductId)) {
-				List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,request.getVehicleId());
+				List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndProductIdAndSectionIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()) , request.getVehicleId());
 				res = CoverSavePoint(covers);
 				
 			} else if( request.getProductId().equalsIgnoreCase(buildingProductId)    ) {
@@ -502,7 +501,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				res = CoverSavePoint(covers);
 			
 			} else if( request.getProductId().equalsIgnoreCase(travelProductId)) {
-				List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,request.getGroupId());
+				List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndProductIdAndSectionIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()) , request.getGroupId());
 				List<FactorRateRequestDetails>  devidedCovers = new ArrayList<FactorRateRequestDetails>();
 				
 				// Cover Amounts Devide By Group Count
