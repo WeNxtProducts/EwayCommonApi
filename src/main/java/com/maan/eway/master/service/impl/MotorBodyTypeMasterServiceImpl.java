@@ -600,11 +600,11 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
 			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-			Predicate n4 = cb.equal(b.get("status"), "Y");
+//			Predicate n4 = cb.equal(b.get("status"), "Y");
 			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
 			Predicate n6 = cb.or(n3,n5);
 			Predicate n7 = cb.equal(b.get("bodyId"),req.getBodyId());
-			query.where(n1,n2,n4,n6,n7).orderBy(orderList);
+			query.where(n1,n2,n6,n7).orderBy(orderList);
 			// Get Result 
 			TypedQuery<MotorBodyTypeMaster> result = em.createQuery(query);
 			list = result.getResultList();
