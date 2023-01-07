@@ -198,7 +198,7 @@ this.repository = repo;
 		String successRes = "" ;
 		try {
 			// Find Datas
-			Long factorCount = repository.countByRequestReferenceNoAndVehicleId(req.getRequestReferenceNo(),Integer.valueOf(req.getVehicleId()));
+			Long factorCount = repository.countByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo(),Integer.valueOf(req.getVehicleId()), req.getInsuranceId() ,Integer.valueOf(req.getProductId()) ,Integer.valueOf(req.getSectionId()));
 			List<FactorRateRequestDetails> coverIds =null;
 			// Delete Old Datas
 			if( factorCount > 0 ) {
@@ -666,7 +666,10 @@ this.repository = repo;
 				List<EserviceMotorDetails>    motorDatas = eserMotorRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
 						
 				for (EserviceMotorDetails mot :  motorDatas) {
-					List<FactorRateRequestDetails> filterVehicleCovers =  findCovers.stream().filter( o -> o.getVehicleId().equals(mot.getRiskId())).collect(Collectors.toList());
+					List<FactorRateRequestDetails> filterVehicleCovers =  findCovers.stream().filter( o -> o.getVehicleId().equals(mot.getRiskId()) &&
+							o.getCompanyId().equals(mot.getCompanyId()) 
+							&& o.getProductId().toString().equals(mot.getProductId())
+							&& o.getSectionId().toString().equals(mot.getSectionId()) ).collect(Collectors.toList());
 					Map<Integer,List<FactorRateRequestDetails>> groupByCover = filterVehicleCovers.stream().collect(Collectors.groupingBy(FactorRateRequestDetails :: getCoverId));			
 					
 					List<Cover> coverListRes = 	getCoversList(groupByCover);
@@ -713,7 +716,12 @@ this.repository = repo;
 				List<EserviceTravelGroupDetails>    travelDatas = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(req.getRequestReferenceNo());
 				EserviceTravelDetails travelData = eserTraRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
 				for (EserviceTravelGroupDetails tra :  travelDatas) {
-					List<FactorRateRequestDetails> filterVehicleCovers =  findCovers.stream().filter( o -> o.getVehicleId().equals(tra.getGroupId())).collect(Collectors.toList());
+					List<FactorRateRequestDetails> filterVehicleCovers =  findCovers.stream().filter( o -> o.getVehicleId().equals(tra.getGroupId()) &&
+							o.getCompanyId().equals(travelData.getCompanyId()) 
+							&& o.getProductId().toString().equals(travelData.getProductId())
+							&& o.getSectionId().toString().equals(travelData.getSectionId())
+							
+							).collect(Collectors.toList());
 					Map<Integer,List<FactorRateRequestDetails>> groupByCover = filterVehicleCovers.stream().collect(Collectors.groupingBy(FactorRateRequestDetails :: getCoverId));			
 					
 					List<Cover> coverListRes = 	getCoversList(groupByCover);
@@ -764,7 +772,12 @@ this.repository = repo;
 				List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 				
 				for (EserviceSectionDetails sec :  sectionDatas) {
-					List<FactorRateRequestDetails> filterVehicleCovers =  findCovers.stream().filter( o -> o.getVehicleId().equals(sec.getRiskId()) &&  o.getSectionId().equals(Integer.valueOf(sec.getSectionId())) ).collect(Collectors.toList());
+					List<FactorRateRequestDetails> filterVehicleCovers =  findCovers.stream().filter( o -> o.getVehicleId().equals(sec.getRiskId()) &&  
+							o.getCompanyId().equals(sec.getCompanyId()) 
+							&& o.getProductId().toString().equals(sec.getProductId()) &&
+							o.getSectionId().equals(Integer.valueOf(sec.getSectionId()))
+							
+							).collect(Collectors.toList());
 					Map<Integer,List<FactorRateRequestDetails>> groupByCover = filterVehicleCovers.stream().collect(Collectors.groupingBy(FactorRateRequestDetails :: getCoverId));			
 					
 					List<Cover> coverListRes = 	getCoversList(groupByCover);

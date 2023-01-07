@@ -1,24 +1,19 @@
 package com.maan.eway.common.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -39,28 +34,25 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginMaster;
-import com.maan.eway.bean.MsCustomerDetails;
 import com.maan.eway.bean.OccupationMaster;
+import com.maan.eway.bean.SeqCustrefno;
 import com.maan.eway.bean.StateMaster;
 import com.maan.eway.common.req.EserviceCustomerSaveReq;
 import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
 import com.maan.eway.common.req.GetAllCustomerDetailsReq;
 import com.maan.eway.common.req.GetCustomerDetailsReq;
 import com.maan.eway.common.res.CustomerDetailsGetRes;
-import com.maan.eway.common.res.MsPersonalInfoGetRes;
 import com.maan.eway.common.service.EserviceCustomerDetailsService;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.OccupationMasterGetReq;
-import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.OccupationMasterRepository;
+import com.maan.eway.repository.SeqCustrefnoRepository;
 import com.maan.eway.res.SuccessRes;
 
 @Service
@@ -80,6 +72,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 
 	@Autowired
 	private LoginMasterRepository loginRepo;
+	
+	@Autowired
+	private SeqCustrefnoRepository custRefRepo  ; 
+	
+	
 
 	@PersistenceContext
 	private EntityManager em;
@@ -646,7 +643,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 	public SuccessRes saveCustomerDetails(EserviceCustomerSaveReq req) {
 		SuccessRes res = new SuccessRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyMMddmmssSSS");
+	//	SimpleDateFormat sdf = new SimpleDateFormat("yyMMddmmssSSS");
 		try {
 			EserviceCustomerDetails saveData = new EserviceCustomerDetails();
 			Date entryDate = null;
@@ -657,10 +654,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				// Save
 				entryDate = new Date();
 				createdBy = req.getCreatedBy();
-				Random rand = new Random();
-				int random = rand.nextInt(90) + 10;
+			//	Random rand = new Random();
+			//	int random = rand.nextInt(90) + 10;
 
-				custRefNo = "Cust-" + sdf.format(new Date()) + random;
+				custRefNo = "Cust-" +   generateCustRefNo() ; // idf.format(new Date()) + random ;
 				res.setResponse("Saved Successfully");
 				res.setSuccessId(custRefNo);
 			} else {
@@ -728,6 +725,19 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		return res;
 
 	}
+	
+	 public synchronized String generateCustRefNo() {
+	       try {
+	    	   SeqCustrefno entity;
+	            entity = custRefRepo.save(new SeqCustrefno());          
+	            return String.format("%05d",entity.getCustReferenceNo()) ;
+	        } catch (Exception e) {
+				e.printStackTrace();
+				log.info( "Exception is ---> " + e.getMessage());
+	            return null;
+	        }
+	       
+	 }
 	
 	public synchronized String getListItem(String insuranceId , String branchCode, String itemType, String itemCode) {
 		String itemDesc = "" ;
