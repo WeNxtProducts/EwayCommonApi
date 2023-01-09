@@ -117,4 +117,10 @@ public interface DropDownService {
 
 	List<DropDownRes> getContent(LovDropDownReq req);
 
+	List<DropDownRes> getPersonal(LovDropDownReq req);
+
+	List<DropDownRes> getcontentrisk(LovDropDownReq req);
+
+	List<DropDownRes> getallrisk(LovDropDownReq req);
+
 }

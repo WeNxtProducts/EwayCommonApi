@@ -956,4 +956,53 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	
+	@PostMapping("/personal")
+	public ResponseEntity<CommonRes> personal(@RequestBody LovDropDownReq req) {
+		CommonRes data = new CommonRes();
+		List<DropDownRes> res = dropDownService.getPersonal(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	
+
+	@PostMapping("/contentrisk")
+	public ResponseEntity<CommonRes> contentrisk(@RequestBody LovDropDownReq req) {
+		CommonRes data = new CommonRes();
+		List<DropDownRes> res = dropDownService.getcontentrisk(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	
+	@PostMapping("/allrisk")
+	public ResponseEntity<CommonRes> allrisk(@RequestBody LovDropDownReq req) {
+		CommonRes data = new CommonRes();
+		List<DropDownRes> res = dropDownService.getallrisk(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 }
