@@ -115,4 +115,6 @@ public interface DropDownService {
 
 	List<DropDownRes> getPaymentType(LovDropDownReq req);
 
+	List<DropDownRes> getContent(LovDropDownReq req);
+
 }
