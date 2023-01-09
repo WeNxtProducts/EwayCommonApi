@@ -21,8 +21,8 @@ public class IssuerPersonalInfoGetRes {
     @JsonProperty("Address2")
     private String    address2 ;
     
-    @JsonProperty("CityCode")
-    private String    cityCode;
+    @JsonProperty("CityName")
+    private String    cityName;
     
     
     @JsonProperty("CountryCode")
