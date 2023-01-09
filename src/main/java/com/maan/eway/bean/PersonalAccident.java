@@ -120,9 +120,8 @@ public class PersonalAccident implements Serializable {
 
 	@Column(name = "SALARY")
 	private BigDecimal salary;
-	
 
-	
+
 	@Column(name = "TYPE", length = 20)
 	private String type;
 

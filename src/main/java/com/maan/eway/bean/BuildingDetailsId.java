@@ -10,6 +10,7 @@ public class BuildingDetailsId  implements Serializable{
     private String     requestReferenceNo ;
     private Integer    riskId ;
     private String    sectionId ;
+    private String     quoteNo ;
 
 	
 }

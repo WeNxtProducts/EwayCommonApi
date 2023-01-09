@@ -63,6 +63,11 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="SECTION_ID", nullable=false, length=20)
     private String    sectionId ;
+
+    @Id
+    @Column(name="QUOTE_NO", length=20)
+    private String     quoteNo ;
+
     
     @Column(name="BUILDING_ADDRESS", length=100)
     private String     buildingAddress;
@@ -132,8 +137,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_BY", length=100)
     private String     updatedBy ;
 
-    @Column(name="QUOTE_NO", length=20)
-    private String     quoteNo ;
 
     @Column(name="CUSTOMER_ID", length=20)
     private String     customerId ;
