@@ -3,6 +3,7 @@ package com.maan.eway.common.req;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maan.eway.res.referal.MasterReferal;
 
 import lombok.Data;
 
@@ -18,4 +19,8 @@ public class VehicleIdsReq {
 	
 	@JsonProperty("Covers")
 	private List<CoverIdsReq> coverIdList;
+	
+
+	@JsonProperty("MasterReferral")
+	private List<MasterReferal> referals;
 }

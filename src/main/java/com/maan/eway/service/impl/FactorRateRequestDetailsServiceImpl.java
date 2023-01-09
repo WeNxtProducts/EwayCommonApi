@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.EservicePersonalAccidentDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
@@ -51,9 +52,11 @@ import com.maan.eway.error.Error;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
+import com.maan.eway.repository.EservicePersonalAccidentDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
+import com.maan.eway.req.EservicePersonalAccidentSaveReq;
 import com.maan.eway.req.FactorRateDetailsGetReq;
 import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.res.EserviceBuildingsDetailsRes;
@@ -88,6 +91,9 @@ private EserviceBuildingDetailsRepository eserBuildRepo;
 
 @Autowired
 private EServiceSectionDetailsRepository eserSecRepo;
+
+@Autowired
+private EservicePersonalAccidentDetailsRepository eserPaccRepo;
 
 @Value(value = "${motor.productId}")
 private String motorProductId;
@@ -772,50 +778,110 @@ this.repository = repo;
 				List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 				
 				for (EserviceSectionDetails sec :  sectionDatas) {
-					List<FactorRateRequestDetails> filterVehicleCovers =  findCovers.stream().filter( o -> o.getVehicleId().equals(sec.getRiskId()) &&  
-							o.getCompanyId().equals(sec.getCompanyId()) 
-							&& o.getProductId().toString().equals(sec.getProductId()) &&
-							o.getSectionId().equals(Integer.valueOf(sec.getSectionId()))
+					
+					
+					
+					if ( sec.getSectionId().equalsIgnoreCase("35")) {
+						
+						List<EservicePersonalAccidentDetails> personalDatas = eserPaccRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
+						for (EservicePersonalAccidentDetails acc : personalDatas ) {
+							List<FactorRateRequestDetails> filterVehicleCovers =  findCovers.stream().filter( o -> o.getVehicleId().equals(acc.getRiskId()) &&  
+									o.getCompanyId().equals(sec.getCompanyId()) 
+									&& o.getProductId().toString().equals(sec.getProductId()) &&
+									o.getSectionId().equals(Integer.valueOf(sec.getSectionId()))
+									
+									).collect(Collectors.toList());
 							
-							).collect(Collectors.toList());
-					Map<Integer,List<FactorRateRequestDetails>> groupByCover = filterVehicleCovers.stream().collect(Collectors.groupingBy(FactorRateRequestDetails :: getCoverId));			
+							Map<Integer,List<FactorRateRequestDetails>> groupByCover = filterVehicleCovers.stream().collect(Collectors.groupingBy(FactorRateRequestDetails :: getCoverId));			
+							
+							List<Cover> coverListRes = 	getCoversList(groupByCover);
+							EserviceBuildingDetails buildData = buildDatas.stream().filter( o -> o.getRiskId().equals(sec.getRiskId())  ).collect(Collectors.toList()).get(0);
+							
+							// Response 
+							EservieMotorDetailsViewRes res = new EservieMotorDetailsViewRes();
+							dozerMapper.map(sec,res);
+							res.setActualPremiumFc(buildData.getActualPremiumFc()==null?"":buildData.getActualPremiumFc().toString());
+							res.setActualPremiumLc(buildData.getActualPremiumLc()==null?"":buildData.getActualPremiumLc().toString());
+							res.setBranchCode(buildData.getBranchCode());
+							res.setCdRefNo(filterVehicleCovers.size() > 0 ? filterVehicleCovers.get(0).getCdRefno() : "");
+							res.setCreatedBy(sec.getCreatedBy());
+							res.setCurrency(buildData.getCurrency());
+							res.setCustomerReferenceNo(buildData.getCustomerReferenceNo());
+							res.setExchangeRate(buildData.getExchangeRate()==null?"":buildData.getExchangeRate().toString());
+							res.setInsuranceId(sec.getCompanyId());
+							res.setMsrefno(filterVehicleCovers.size() > 0 ?filterVehicleCovers.get(0).getMsRefno(): "");
+							res.setOverallPremiumFc(buildData.getOverallPremiumFc()==null?"":buildData.getOverallPremiumFc().toString());
+							res.setOverallPremiumLc(buildData.getOverallPremiumLc()==null?"":buildData.getOverallPremiumLc().toString());
+							res.setPolicyStartDate(buildData.getPolicyStartDate());
+							res.setPolicyEndDate(buildData.getPolicyEndDate());
+							res.setProductId(sec.getProductId());
+							res.setRequestReferenceNo(sec.getRequestReferenceNo());
+							res.setSectionId(sec.getSectionId());
+							res.setVdRefNo(filterVehicleCovers.size() > 0 ?filterVehicleCovers.get(0).getVdRefno(): "");
+							res.setVehicleId(sec.getRiskId().toString());
+							res.setHavepromocode(buildData.getHavepromocode());
+							res.setPromocode(buildData.getPromocode());
+							res.setGroupId(acc.getRiskId()==null?null:acc.getRiskId());
+							res.setVehicleId(acc.getRiskId().toString());
+							//	res.setGroupMember(sec.getGrouppMembers()==null?null:tra.getGrouppMembers() );
+							res.setCoverList(coverListRes);
+							Object riskDetails = new Object();
+							EserviceBuildingsDetailsRes  buildRes = new EserviceBuildingsDetailsRes();
+							dozerMapper.map(buildData, buildRes);
+							riskDetails = buildRes ;
+							res.setRiskDetails(riskDetails); 
+							resList.add(res);
+						}
+						
+						
+					} else {
+						List<FactorRateRequestDetails> filterVehicleCovers =  findCovers.stream().filter( o -> o.getVehicleId().equals(sec.getRiskId()) &&  
+								o.getCompanyId().equals(sec.getCompanyId()) 
+								&& o.getProductId().toString().equals(sec.getProductId()) &&
+								o.getSectionId().equals(Integer.valueOf(sec.getSectionId()))
+								
+								).collect(Collectors.toList());
+						Map<Integer,List<FactorRateRequestDetails>> groupByCover = filterVehicleCovers.stream().collect(Collectors.groupingBy(FactorRateRequestDetails :: getCoverId));			
+						
+						List<Cover> coverListRes = 	getCoversList(groupByCover);
+						EserviceBuildingDetails buildData = buildDatas.stream().filter( o -> o.getRiskId().equals(sec.getRiskId())  ).collect(Collectors.toList()).get(0);
+						
+						// Response 
+						EservieMotorDetailsViewRes res = new EservieMotorDetailsViewRes();
+						dozerMapper.map(sec,res);
+						res.setActualPremiumFc(buildData.getActualPremiumFc()==null?"":buildData.getActualPremiumFc().toString());
+						res.setActualPremiumLc(buildData.getActualPremiumLc()==null?"":buildData.getActualPremiumLc().toString());
+						res.setBranchCode(buildData.getBranchCode());
+						res.setCdRefNo(filterVehicleCovers.size() > 0 ? filterVehicleCovers.get(0).getCdRefno() : "");
+						res.setCreatedBy(sec.getCreatedBy());
+						res.setCurrency(buildData.getCurrency());
+						res.setCustomerReferenceNo(buildData.getCustomerReferenceNo());
+						res.setExchangeRate(buildData.getExchangeRate()==null?"":buildData.getExchangeRate().toString());
+						res.setInsuranceId(sec.getCompanyId());
+						res.setMsrefno(filterVehicleCovers.size() > 0 ?filterVehicleCovers.get(0).getMsRefno(): "");
+						res.setOverallPremiumFc(buildData.getOverallPremiumFc()==null?"":buildData.getOverallPremiumFc().toString());
+						res.setOverallPremiumLc(buildData.getOverallPremiumLc()==null?"":buildData.getOverallPremiumLc().toString());
+						res.setPolicyStartDate(buildData.getPolicyStartDate());
+						res.setPolicyEndDate(buildData.getPolicyEndDate());
+						res.setProductId(sec.getProductId());
+						res.setRequestReferenceNo(sec.getRequestReferenceNo());
+						res.setSectionId(sec.getSectionId());
+						res.setVdRefNo(filterVehicleCovers.size() > 0 ?filterVehicleCovers.get(0).getVdRefno(): "");
+						res.setVehicleId(sec.getRiskId().toString());
+						res.setHavepromocode(buildData.getHavepromocode());
+						res.setPromocode(buildData.getPromocode());
+						res.setGroupId(buildData.getRiskId()==null?null:buildData.getRiskId());
+					//	res.setGroupMember(sec.getGrouppMembers()==null?null:tra.getGrouppMembers() );
+						res.setCoverList(coverListRes);
+						Object riskDetails = new Object();
+						EserviceBuildingsDetailsRes  buildRes = new EserviceBuildingsDetailsRes();
+						dozerMapper.map(buildData, buildRes);
+						riskDetails = buildRes ;
+						res.setRiskDetails(riskDetails); 
+						resList.add(res);
+					}
 					
-					List<Cover> coverListRes = 	getCoversList(groupByCover);
-					EserviceBuildingDetails buildData = buildDatas.stream().filter( o -> o.getRiskId().equals(sec.getRiskId())  ).collect(Collectors.toList()).get(0);
 					
-					// Response 
-					EservieMotorDetailsViewRes res = new EservieMotorDetailsViewRes();
-					dozerMapper.map(sec,res);
-					res.setActualPremiumFc(buildData.getActualPremiumFc()==null?"":buildData.getActualPremiumFc().toString());
-					res.setActualPremiumLc(buildData.getActualPremiumLc()==null?"":buildData.getActualPremiumLc().toString());
-					res.setBranchCode(buildData.getBranchCode());
-					res.setCdRefNo(filterVehicleCovers.size() > 0 ? filterVehicleCovers.get(0).getCdRefno() : "");
-					res.setCreatedBy(sec.getCreatedBy());
-					res.setCurrency(buildData.getCurrency());
-					res.setCustomerReferenceNo(buildData.getCustomerReferenceNo());
-					res.setExchangeRate(buildData.getExchangeRate()==null?"":buildData.getExchangeRate().toString());
-					res.setInsuranceId(sec.getCompanyId());
-					res.setMsrefno(filterVehicleCovers.size() > 0 ?filterVehicleCovers.get(0).getMsRefno(): "");
-					res.setOverallPremiumFc(buildData.getOverallPremiumFc()==null?"":buildData.getOverallPremiumFc().toString());
-					res.setOverallPremiumLc(buildData.getOverallPremiumLc()==null?"":buildData.getOverallPremiumLc().toString());
-					res.setPolicyStartDate(buildData.getPolicyStartDate());
-					res.setPolicyEndDate(buildData.getPolicyEndDate());
-					res.setProductId(sec.getProductId());
-					res.setRequestReferenceNo(sec.getRequestReferenceNo());
-					res.setSectionId(sec.getSectionId());
-					res.setVdRefNo(filterVehicleCovers.size() > 0 ?filterVehicleCovers.get(0).getVdRefno(): "");
-					res.setVehicleId(sec.getRiskId().toString());
-					res.setHavepromocode(buildData.getHavepromocode());
-					res.setPromocode(buildData.getPromocode());
-					res.setGroupId(buildData.getRiskId()==null?null:buildData.getRiskId());
-				//	res.setGroupMember(sec.getGrouppMembers()==null?null:tra.getGrouppMembers() );
-					res.setCoverList(coverListRes);
-					Object riskDetails = new Object();
-					EserviceBuildingsDetailsRes  buildRes = new EserviceBuildingsDetailsRes();
-					dozerMapper.map(buildData, buildRes);
-					riskDetails = buildRes ;
-					res.setRiskDetails(riskDetails); 
-					resList.add(res);
 					
 					
 				}
@@ -1072,13 +1138,13 @@ this.repository = repo;
 						errors.add(new Error("01","SubCoverYn","Please Enter SubCover Id")) ;
 					}
 					
-					if (cov.getMinimumPremium()==null   ) {
-						errors.add(new Error("01","MinimumPremium","Please Enter MimimumPremium")) ;				
-					} else if (! cov.getMinimumPremium().matches("[0-9.]+")   ) {
-						errors.add(new Error("01","MinimumPremium","Please Enter Valid MimimumPremium")) ;				
-					} else if ( cov.getMinimumPremium().equalsIgnoreCase("0")   ) {
-						errors.add(new Error("01","MinimumPremium","Please Enter Valid Number In MimimumPremium")) ;				
-					}
+//					if (cov.getRate()=null   ) {
+//						errors.add(new Error("01","MinimumPremium","Please Enter MimimumPremium")) ;				
+//					} else if (! cov.getRate().matches("[0-9.]+")   ) {
+//						errors.add(new Error("01","MinimumPremium","Please Enter Valid MimimumPremium")) ;				
+//					} else if ( getRate().equalsIgnoreCase("0")   ) {
+//						errors.add(new Error("01","MinimumPremium","Please Enter Valid Number In MimimumPremium")) ;				
+//					}
 					
 					if (cov.getRate()==null   ) {
 						errors.add(new Error("01","Rate","Please Enter Rate")) ;				
