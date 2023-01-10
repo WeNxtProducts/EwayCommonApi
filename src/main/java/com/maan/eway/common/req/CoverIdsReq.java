@@ -31,4 +31,9 @@ public class CoverIdsReq {
 	
 	@JsonProperty("UserOpt")
 	private String userOpt;
+	
+	@JsonProperty("CoverageType")
+	private String coverageType;
+	
+	
 }

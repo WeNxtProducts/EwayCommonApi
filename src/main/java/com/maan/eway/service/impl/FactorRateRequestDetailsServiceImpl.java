@@ -40,6 +40,7 @@ import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.FactorTypeDetails;
+import com.maan.eway.bean.MasterReferralDetails;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.EservieMotorDetailsViewRes;
@@ -56,6 +57,7 @@ import com.maan.eway.repository.EservicePersonalAccidentDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
+import com.maan.eway.repository.MasterReferralDetailsRepository;
 import com.maan.eway.req.EservicePersonalAccidentSaveReq;
 import com.maan.eway.req.FactorRateDetailsGetReq;
 import com.maan.eway.req.calcengine.CalcEngine;
@@ -65,6 +67,7 @@ import com.maan.eway.res.calc.Cover;
 import com.maan.eway.res.calc.Discount;
 import com.maan.eway.res.calc.Loading;
 import com.maan.eway.res.calc.Tax;
+import com.maan.eway.res.referal.MasterReferal;
 import com.maan.eway.service.CalculatorEngine;
 import com.maan.eway.service.FactorRateRequestDetailsService;
 /**
@@ -94,6 +97,9 @@ private EServiceSectionDetailsRepository eserSecRepo;
 
 @Autowired
 private EservicePersonalAccidentDetailsRepository eserPaccRepo;
+
+@Autowired
+private MasterReferralDetailsRepository masReferralRepo;
 
 @Value(value = "${motor.productId}")
 private String motorProductId;
@@ -474,6 +480,39 @@ this.repository = repo;
 				
 				
 			}
+			
+			// Save Master Referals
+			if(req.getReferals()!=null && req.getReferals().size()>0 ) {
+				Long refCount  = masReferralRepo.findByRequestReferenceNoAndRiskIdAndProductIdAndSectionIdAndCompanyId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()) ,
+						                      Integer.valueOf(req.getProductId()),Integer.valueOf(req.getSectionId()),req.getInsuranceId() );
+				if(refCount > 0 ) {
+					masReferralRepo.deleteByRequestReferenceNoAndRiskIdAndProductIdAndSectionIdAndCompanyId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()) ,
+		                      Integer.valueOf(req.getProductId()),Integer.valueOf(req.getSectionId()),req.getInsuranceId() );
+				}
+				Integer row = 0 ;		
+				for ( MasterReferal referal : req.getReferals() ){
+					MasterReferralDetails saveRef = new MasterReferralDetails();
+					
+					if (referal.getIsreferral()==true) {
+						row = row + 1 ;
+						saveRef.setApiInfo(referal.getApiInfo());
+						saveRef.setReferralDesc(referal.getReferralDesc());
+						saveRef.setSNo(row);
+						saveRef.setEntryDate(new Date());
+						saveRef.setCompanyId(req.getInsuranceId());
+						saveRef.setCreatedBy(req.getCreatedBy());
+						saveRef.setRiskId(Integer.valueOf(req.getVehicleId()));
+						saveRef.setSectionId(Integer.valueOf(req.getSectionId()));
+						saveRef.setStatus("Y");
+						saveRef.setProductId(Integer.valueOf(req.getProductId()));
+						masReferralRepo.save(saveRef);
+					}
+					
+				}
+					
+			}
+			
+			
 		} catch(Exception e){
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -666,6 +705,8 @@ this.repository = repo;
 			// Find Datas
 			
 			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
+			
+		//	List<MasterReferralDetails> findRefrals = masReferralRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 		
 			if( req.getProductId().equalsIgnoreCase(motorProductId) ) {
 				// Motor Product Details
@@ -1146,11 +1187,11 @@ this.repository = repo;
 //						errors.add(new Error("01","MinimumPremium","Please Enter Valid Number In MimimumPremium")) ;				
 //					}
 					
-					if (cov.getRate()==null   ) {
+					if (cov.getRate()==null  ) {
 						errors.add(new Error("01","Rate","Please Enter Rate")) ;				
 					} else if (! cov.getRate().matches("[0-9.]+")   ) {
 						errors.add(new Error("01","Rate","Please Enter Valid Rate")) ;				
-					} else if ( cov.getRate().equalsIgnoreCase("0")   ) {
+					} else if ( cov.getRate().equalsIgnoreCase("0") &&  cov.getCoverageType().equalsIgnoreCase("D")    ) {
 						errors.add(new Error("01","Rate","Please Enter Valid Number In Rate")) ;				
 					}
 				}

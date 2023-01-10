@@ -33,7 +33,6 @@ public class PaymentDetailId implements Serializable {
     
     private Double     paymentId ;
     
-    private String     paymentReferenceNo ;
-    
+    private String     merchantReference ;
      
 }

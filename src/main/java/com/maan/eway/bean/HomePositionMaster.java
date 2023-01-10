@@ -230,6 +230,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="BRANCH_CODE", length=8)
     private String     branchCode ;
+    
+    @Column(name="BRANCH_NAME", length=8)
+    private String     branchName ;
 
     @Column(name="FINALIZE_YN", length=10)
     private String     finalizeYn ;

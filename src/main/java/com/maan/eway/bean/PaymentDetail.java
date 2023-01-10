@@ -61,16 +61,13 @@ private static final long serialVersionUID = 1L;
     private Double     paymentId ;
 
     @Id
-    @Column(name="PAYMENT_REFERENCE_NO", nullable=false, length=100)
-    private String     paymentReferenceNo ;
+    @Column(name="MERCHANT_REFERENCE", length=100)
+    private String     merchantReference ;
 
     //--- ENTITY DATA FIELDS 
-    @Column(name="PAYMENT_TYPE_ID")
-    private Integer  paymentTypeId ;
+    @Column(name="PAYMENT_TYPE")
+    private Integer  paymentType ;
 
-    
-    @Column(name="PAYMENT_TYPE_DESC", length=100)
-    private String     paymentTypeDesc ;
 
     @Column(name="PAYMENT_STATUS", length=50)
     private String     paymentStatus;
@@ -93,9 +90,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="RESPONSE_STATUS", length=500)
     private String     responseStatus ;
 
-    @Column(name="MERCHANT_REFERENCE", length=100)
-    private String     merchantReference ;
-
+  
     @Column(name="CUSTOMER_EMAIL", length=500)
     private String     customerEmail ;
 
@@ -126,17 +121,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="REQ_BILL_TO_PHONE", length=500)
     private String     reqBillToPhone ;
 
-    @Column(name="REASON_CODE", length=500)
-    private String     reasonCode ;
-
     @Column(name="AUTH_AMOUNT", length=500)
     private String     authAmount ;
 
     @Column(name="AUTH_RESPONSE", length=500)
     private String     authResponse ;
-
-    @Column(name="BILL_TRANS_REF_NO", length=500)
-    private String     billTransRefNo ;
 
     @Column(name="REQ_BILL_TO_FORENAME", length=500)
     private String     reqBillToForename ;
@@ -168,74 +157,25 @@ private static final long serialVersionUID = 1L;
     @Column(name="REQ_BILL_TO_ADDRESS_LINE1", length=500)
     private String     reqBillToAddressLine1 ;
 
-    @Column(name="RESULT", length=500)
-    private String     result ;
-
-    @Column(name="TRANSID", length=500)
-    private String     transid ;
-
-    @Column(name="AMOUNT", length=100)
-    private String     amount;
-
-    @Column(name="TRACKID", length=100)
-    private String    trackid;
+   
+    @Column(name="REQUEST_REFERENCE_NO", length=100)
+    private String    requestReferenceNo;
     
-    @Column(name="REFERENCEID", length=100)
-    private String    referenceid;
-    
-    @Column(name="CUSTOMERID", length=500)
-    private String    customerid;
+    @Column(name="CUSTOMER_ID", length=500)
+    private String    customerId;
         
-    @Column(name="OTH_PRODUCT_ID", length=50)
-    private String     othProductId ;
-
-    @Column(name="POS_CARD_TYPE", length=200)
-    private String     posCardType ;
-
-    @Column(name="POS_APPROVED_ID", length=200)
-    private String     posApprovedId ;
-
-    @Column(name="REQ_PAYMENT_TYPE", length=100)
-    private String     reqPaymentType ;
-
-    @Column(name="POS_REF_NUMBER", length=50)
-    private String     posRefNumber ;
-
-    @Column(name="REASON_CODE_DESC", length=500)
-    private String     reasonCodeDesc ;
-
-    @Column(name="CURRENT_STAGE_CODE", length=20)
-    private String     currentStageCode ;
-
-    @Column(name="CURRENT_STATUS_CODE", length=20)
-    private String     currentStatusCode ;
-
+  
+    @Column(name="BANK_CODE", length=100)
+    private String     bankCode ;
+    
     @Column(name="BANK_NAME", length=100)
     private String     bankName ;
-
-    @Column(name="CHEQUE_NO", length=50)
-    private String     chequeNo ;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="CHEQUE_DATE")
-    private Date       chequeDate ;
 
     @Column(name="BRANCH_CODE", length=50)
     private String     branchCode;
 
     @Column(name="BRANCH_NAME", length=100)
     private String     branchName ;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="DATE_OF_COLLECTION")
-    private Date       dateOfCollection ;
-
-    @Column(name="TRANSACTION_ID", length=50)
-    private String     transactionId ;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="TRANSACTION_DATE")
-    private Date       transactionDate ;
 
     @Column(name="RES_SIGNATURE", length=100)
     private String     resSignature ;

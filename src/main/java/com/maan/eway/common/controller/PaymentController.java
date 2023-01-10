@@ -11,12 +11,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.req.MakePaymentRes;
 import com.maan.eway.common.req.MakePaymentSaveReq;
 import com.maan.eway.common.req.MakePaymentUpdateReq;
 import com.maan.eway.common.req.PaymentDetailsGetReq;
 import com.maan.eway.common.req.PaymentDetailsGetallReq;
+import com.maan.eway.common.req.PaymentDetailsSaveReq;
+import com.maan.eway.common.req.PaymentDetailsSaveRes;
+import com.maan.eway.common.req.PaymentInfoGetAllReq;
+import com.maan.eway.common.req.PaymentInfoGetReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.PaymentDetailGetRes;
+import com.maan.eway.common.res.PaymentInfoGetRes;
 import com.maan.eway.common.service.PaymentService;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.SuccessRes;
@@ -26,7 +32,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/payment")
 @Api(tags = "PAYMENT DETAILS", description = "API's")
 public class PaymentController {
 
@@ -52,7 +58,60 @@ public class PaymentController {
 			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 		}
 		else {
-			SuccessRes res = service.savemakepayment(req);
+			MakePaymentRes res = service.savemakepayment(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if(res !=null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			}
+			else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+	
+		}
+	
+	
+	@PostMapping("/insertpaymentdetails")
+	@ApiOperation(value="This method is to Save Make Payment")
+	public ResponseEntity<CommonRes> savePaymentDetails(@RequestBody  PaymentDetailsSaveReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<Error> validation =  service.validatePaymentInsert(req);
+		//Validation
+		if(validation!=null && validation.size()!=0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+		}
+		else {
+			PaymentDetailsSaveRes res = service.savePaymentDetails(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if(res !=null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			}
+			else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+	
+		}
+
+	
+	// Payment Details Get
+	@PostMapping("/getpaymentinfo")
+	@ApiOperation(value="This method is to Get Payment Details")
+	public ResponseEntity<CommonRes> getPaymentInfo(@RequestBody  PaymentInfoGetReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		PaymentInfoGetRes res = service.getPaymentInfo(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -65,9 +124,25 @@ public class PaymentController {
 			}
 		}
 	
+				
+	// Payment Details Getall
+	@PostMapping("/viewpaymentinfo")
+	@ApiOperation(value="This method is to Get all Payment Details")
+	public ResponseEntity<CommonRes> viewPaymentInfo(@RequestBody  PaymentInfoGetAllReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<PaymentInfoGetRes> res = service.viewPaymentInfo(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if(res !=null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.BAD_REQUEST);
+			}
+			else {
+				return new ResponseEntity<>(null, HttpStatus.CREATED);
+			}
 		}
-
-	
 		// Payment Details Update
 		@PostMapping("/updatepayment")
 		@ApiOperation(value="This method is to Update Make Payment")

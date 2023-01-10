@@ -58,11 +58,7 @@ private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name="PAYMENT_ID", nullable=false)
-    private Double     paymentId ;
-
-    @Id
-    @Column(name="PAYMENT_REFERENCE_NO", nullable=false, length=100)
-    private String     paymentReferenceNo ;
+    private String     paymentId ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="CUSTOMER_NAME", length=1000)
@@ -74,15 +70,25 @@ private static final long serialVersionUID = 1L;
     @Column(name="EMAIL_ID", length=100)
     private String     emailId ;
 
-    @Column(name="PRODUCT", length=100)
-    private String     product ;
+    @Column(name="PRODUCT_ID", length=100)
+    private Integer    productId ;
+    
+    @Column(name="PRODUCT_DESC", length=100)
+    private String    productDesc;
+    
+    @Column(name="COMPANY_ID", length=100)
+    private String    companyId ;
 
-    @Column(name="SUB_PRODUCT", length=100)
-    private String     subProduct ;
+    @Column(name="COMPANY_NAME", length=100)
+    private String    companyName ;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="POLICY_START_DATE")
     private Date       policyStartDate ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="POLICY_END_DATE")
+    private Date       policyEndDate ;
 
     @Column(name="PREMIUM")
     private BigDecimal premium ;
@@ -97,7 +103,7 @@ private static final long serialVersionUID = 1L;
     private String     paymentStatus ;
 
     @Column(name="AMENT_ID")
-    private Double     amentId ;
+    private Integer     amentId ;
 
     @Column(name="ADDRESS1", length=500)
     private String     address1 ;
@@ -111,54 +117,27 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="SHORTERN_URL", length=1000)
     private String     shorternUrl ;
-
-    @Column(name="VEH_REG_NO", length=100)
-    private String     vehRegNo ;
-
-    @Column(name="CIVIL_ID", length=50)
-    private String     civilId ;
-
+    
     @Column(name="LOGIN_ID", length=50)
     private String     loginId ;
-
-    @Column(name="CUSTOMER_LAST_NAME", length=100)
-    private String     customerLastName ;
 
     @Column(name="CUSTOMER_CITY", length=50)
     private String     customerCity ;
 
+    @Column(name="EMI_YN", length=50)
+    private String     emiYn ;
+    
     @Column(name="BRANCH_CODE", length=50)
     private String     branchCode ;
 
     @Column(name="BRANCH_NAME", length=50)
     private String     branchName ;
+    
+    @Column(name="USER_TYPE", length=50)
+    private String     userType;
 
-    @Column(name="DIVISION_CODE", length=50)
-    private String     divisionCode ;
-
-    @Column(name="DIVISION_NAME", length=50)
-    private String     divisionName ;
-
-    @Column(name="OTH_PRODUCT_ID", length=50)
-    private String     othProductId ;
-
-    @Column(name="OTH_PAYMENT_MODE", length=50)
-    private String     othPaymentMode ;
-
-    @Column(name="PAYMENT_REQ_TYPE", length=50)
-    private String     paymentReqType ;
-
-    @Column(name="POS_CARD_TYPE", length=200)
-    private String     posCardType ;
-
-    @Column(name="POS_APPROVED_ID", length=200)
-    private String     posApprovedId ;
-
-    @Column(name="REQ_PAYMENT_TYPE", length=100)
-    private String     reqPaymentType ;
-
-    @Column(name="POS_REF_NUMBER", length=50)
-    private String     posRefNumber ;
+    @Column(name="SUB_USER_TYPE", length=50)
+    private String     subUserType ;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")
@@ -173,6 +152,12 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="UPDATED_BY", length=100)
     private String     updatedBy;
+    
+    @Column(name="INSTALLMENT_MONTH", length=100)
+    private String     installmentMonth;
+    
+    @Column(name="INSTALLMENT_PERIOD", length=100)
+    private String     installmentPeriod;
 
 
 }

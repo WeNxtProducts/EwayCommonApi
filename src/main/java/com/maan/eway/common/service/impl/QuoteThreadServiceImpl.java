@@ -38,6 +38,7 @@ import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.MasterReferralDetails;
 import com.maan.eway.bean.SeqCustid;
 import com.maan.eway.bean.SeqQuoteno;
 import com.maan.eway.bean.UwQuestionsDetails;
@@ -61,6 +62,7 @@ import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
+import com.maan.eway.repository.MasterReferralDetailsRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.SeqCustidRepository;
@@ -150,6 +152,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	@Autowired
 	private EServiceSectionDetailsRepository eserSecRepo  ;
 	
+	@Autowired
+	private MasterReferralDetailsRepository masReferralRepo ;
 	
 	
 	@Override
@@ -379,6 +383,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		CommonRes commonRes = new CommonRes();
 		List<Error> errors = new ArrayList<Error>();
 		try {
+			List<MasterReferralDetails> findMasterRefrals = masReferralRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 				
 			boolean referral = false ;
 			String referralRemarks = "" ;
@@ -436,8 +441,12 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					}
 					
 					// Master Referals 
-					if (  veh.getReferals()!=null && veh.getReferals().size()>0 ) {
-						for ( MasterReferal masRef : veh.getReferals()) {
+					List<MasterReferralDetails> filterMasterReferals =  findMasterRefrals.stream().filter(o -> o.getRiskId().equals(veh.getVehicleId()) 
+							&& o.getProductId().equals(Integer.valueOf(req.getProductId())) 
+							&& o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) ).collect(Collectors.toList());
+							
+					if (  filterMasterReferals!=null && filterMasterReferals.size()>0 ) {
+						for ( MasterReferralDetails masRef : filterMasterReferals) {
 							referralRemarks = StringUtils.isBlank(referralRemarks)? masRef.getReferralDesc() : referralRemarks +"~" +masRef.getReferralDesc() ;
 							referral = true ;
 						}
@@ -756,6 +765,12 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				customerId = findTravel.getCustomerId()==null?"":findTravel.getCustomerId();
 				quoteNo    = findTravel.getQuoteNo()==null?"":findTravel.getQuoteNo();
 				subUserType = findTravel.getSubUserType()==null?"":findTravel.getSubUserType() ;
+			
+			}else if(req.getProductId().equalsIgnoreCase(buildingProductId)) {
+				List<EserviceBuildingDetails> findBuilds =  eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo() );
+				customerId = findBuilds.get(0).getCustomerId()==null?"": findBuilds.get(0).getCustomerId();
+				quoteNo    =  findBuilds.get(0).getQuoteNo()==null?"": findBuilds.get(0).getQuoteNo();
+				subUserType =  findBuilds.get(0).getSubUserType()==null?"": findBuilds.get(0).getSubUserType() ;
 			
 			}
 			
