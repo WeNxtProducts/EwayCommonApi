@@ -723,6 +723,9 @@ public class PaymentServiceImpl implements PaymentService {
 					
 				} else if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Accepted") ) {
 					error.add(new Error("01","Cancelled","This Payment Already Cancelled"));
+					
+				} else if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Pending") )  {
+					error.add(new Error("01","Cancelled","This Payment Already Cancelled"));
 				}
 				
 			}
