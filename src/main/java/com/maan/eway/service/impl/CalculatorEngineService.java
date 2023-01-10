@@ -443,8 +443,8 @@ public class CalculatorEngineService implements CalculatorEngine{
 				dependedcovers.add("N");
 				dependedcovers.add("Y");
 				
-				List<FactorRateRequestDetails> factors = repository.findByRequestReferenceNoAndVehicleIdOrderByCoverIdAsc(request.getRequestReferenceNo(), Integer.valueOf(request.getVehicleId()));
-				
+				List<FactorRateRequestDetails> factors = repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(request.getRequestReferenceNo(), Integer.valueOf(request.getVehicleId()),request.getInsuranceId(),Integer.valueOf(request.getProductId()),Integer.valueOf(request.getSectionId()));
+				//String insuranceId, Integer valueOf2, Integer valueOf3
 				//TaxFromFactor tzx=new TaxFromFactor(); 
 				List<Tuple> taxes = ratingutil.LoadTax(request);
 				TaxUtils tzx=new TaxUtils(); 
@@ -561,31 +561,32 @@ public class CalculatorEngineService implements CalculatorEngine{
 					 Comparator<Cover> comp=Comparator.comparing(Cover::getCoverageType); 
 					 retc.sort(comp); 
 				}
-				try {
-					EserviceMotorDetailsSaveRes response=new EserviceMotorDetailsSaveRes();
-					response.setCoverList(retc);
-					response.setResponse("Saved Successfully");
-					response.setRequestReferenceNo(request.getRequestReferenceNo());
-					//response.setCustomerReferenceNo(req.getCustomerReferenceNo());
-					response.setVehicleId(request.getVehicleId()) ;	
-					response.setVdRefNo(request.getVdRefNo());
-					response.setCdRefNo(request.getCdRefNo());
-					response.setInsuranceId(request.getInsuranceId());
-					response.setSectionId(request.getSectionId());
-					response.setCreatedBy(request.getCreatedBy());
-					response.setProductId(request.getProductId()); 
-					response.setMsrefno(request.getMsrefno());
-					response.setUpdateas("admin");
-					//response.setUwList(referr);
-					
-					fservice.saveFactorRateRequestDetails(response);
-					
-					//Update Premium,referral
-					
-					return  response ;
-				}catch (Exception e) {
-					e.printStackTrace();
-				}		 
+				
+					try {
+						EserviceMotorDetailsSaveRes response=new EserviceMotorDetailsSaveRes();
+						response.setCoverList(retc);
+						response.setResponse("Saved Successfully");
+						response.setRequestReferenceNo(request.getRequestReferenceNo());
+						//response.setCustomerReferenceNo(req.getCustomerReferenceNo());
+						response.setVehicleId(request.getVehicleId()) ;	
+						response.setVdRefNo(request.getVdRefNo());
+						response.setCdRefNo(request.getCdRefNo());
+						response.setInsuranceId(request.getInsuranceId());
+						response.setSectionId(request.getSectionId());
+						response.setCreatedBy(request.getCreatedBy());
+						response.setProductId(request.getProductId()); 
+						response.setMsrefno(request.getMsrefno());
+						response.setUpdateas("admin");
+						//response.setUwList(referr);
+						if(!retc.isEmpty()) {
+						fservice.saveFactorRateRequestDetails(response);
+						}
+						//Update Premium,referral
+
+						return  response ;
+					}catch (Exception e) {
+						e.printStackTrace();
+					}		 
 		 }catch (Exception e) {
 			 e.printStackTrace();
 		}

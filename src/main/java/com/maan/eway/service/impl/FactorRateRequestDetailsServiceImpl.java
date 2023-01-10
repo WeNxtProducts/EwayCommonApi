@@ -1281,64 +1281,15 @@ this.repository = repo;
 			engine.setCreatedBy(findCovers.get(0).getCreatedBy());
 			engine.setMsVehicleDetails(null);
 			
-			calcEngine.referalCalculator(engine);
+			EserviceMotorDetailsSaveRes resp=calcEngine.referalCalculator(engine);
 			
-			
-			// Get Updated Covers
-			findCovers = repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(req.getRequestReferenceNo() , req.getVehicleId() ,
-					req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
-			Map<Integer,List<FactorRateRequestDetails>> groupByCover = findCovers.stream().collect(Collectors.groupingBy(FactorRateRequestDetails :: getCoverId));			
-			
-			
-			// Update Admin Opted COvers
-			List<FactorRateRequestDetails> userOptCovers = new ArrayList<FactorRateRequestDetails>();
-			
-			//UPDATE
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			// create update
-			CriteriaUpdate<FactorRateRequestDetails> update = cb.createCriteriaUpdate(FactorRateRequestDetails.class);
-			// set the root class
-			Root<FactorRateRequestDetails> m = update.from(FactorRateRequestDetails.class);
-			// set update and where clause
-			update.set("userOpt", "N");
-			
-			Predicate n1 = cb.equal(m.get("vehicleId"), req.getVehicleId());
-			Predicate n2 = cb.equal(m.get("sectionId"), req.getSectionId());
-			Predicate n3 = cb.equal(m.get("requestReferenceNo"), req.getRequestReferenceNo() );
-			Predicate n4 = cb.equal(m.get("productId"),req.getProductId());
-			update.where(n1,n2,n3,n4);
-			// perform update
-			em.createQuery(update).executeUpdate();
-			
-			// Covers Admin Opt
-			List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoAndVehicleIdAndSectionIdOrderByVehicleIdAsc(req.getRequestReferenceNo(), req.getVehicleId(),Integer.valueOf(req.getSectionId()));			
-			
-			// Cover Referal Checking
-			List<CoverIdsReq> coverList = req.getCoverIdList();
-			for (CoverIdsReq cov : coverList) {
-				if(StringUtils.isBlank(cov.getSubCoverYn()) || cov.getSubCoverYn().equalsIgnoreCase("N") ) {
-					List<FactorRateRequestDetails> filterCovers = covers.stream().filter( o ->o.getSectionId().equals(Integer.valueOf(req.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) ).collect(Collectors.toList());		
-					userOptCovers.addAll(filterCovers);
-					
-				
-				} else {
-					List<FactorRateRequestDetails> filterSubCovers  = covers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(req.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(cov.getSubCoverId()))  ).collect(Collectors.toList());
-					userOptCovers.addAll(filterSubCovers);
-					
-				}
-			}
-			
+			 
 		
-			// Update Admin Opted Covers 
-			for (FactorRateRequestDetails uptCover : userOptCovers ) {
-				
-				uptCover.setUserOpt("Y");
-				facRateRepo.save(uptCover);
-			}
+			 
 			
-			List<Cover> coverListRes = 	getCoversList(groupByCover);
-			coverListRes.sort(Comparator.comparing(Cover :: getCoverId).reversed() );
-			res.setCoverList(coverListRes);
+			 
+			 
+			res.setCoverList(resp.getCoverList());
 			res.setBranchCode(branchCode);
 			res.setInsuranceId(findCovers.get(0).getCompanyId());
 			res.setProductId(findCovers.get(0).getProductId().toString());
