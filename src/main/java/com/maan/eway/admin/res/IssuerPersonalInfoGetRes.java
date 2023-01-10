@@ -24,6 +24,10 @@ public class IssuerPersonalInfoGetRes {
     @JsonProperty("CityName")
     private String    cityName;
     
+
+    @JsonProperty("StateCode")
+    private String    stateCode;
+    
     
     @JsonProperty("CountryCode")
     private String    countryCode;
