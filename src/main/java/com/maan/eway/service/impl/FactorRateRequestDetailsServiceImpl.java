@@ -1276,7 +1276,7 @@ this.repository = repo;
 			engine.setMsrefno(findCovers.get(0).getMsRefno());
 			engine.setProductId(findCovers.get(0).getProductId().toString());
 			engine.setRequestReferenceNo(findCovers.get(0).getRequestReferenceNo());
-			engine.setSectionId(findCovers.get(0).getProductId().toString());
+			engine.setSectionId(findCovers.get(0).getSectionId().toString());
 			engine.setVehicleId(findCovers.get(0).getVehicleId()+"");
 			engine.setCreatedBy(findCovers.get(0).getCreatedBy());
 			engine.setMsVehicleDetails(null);

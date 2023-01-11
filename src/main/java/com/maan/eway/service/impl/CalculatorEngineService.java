@@ -339,85 +339,54 @@ public class CalculatorEngineService implements CalculatorEngine{
 		///One time table record
 		try {
 			SpecCriteria criteria =null;
-			/*MsVehicleDetails findByVdRefno = msvech.findByVdRefno(Long.parseLong(engine.getVdRefNo()));
-			System.out.println("findByVdRefno"+findByVdRefno.getChassisNumber());
-			*/
-			String oneProduct= ratingutil.collectProductType(engine);
-			 
-			vehicles=null;
-			while(vehicles==null) {
-				
-				
-				 if(oneProduct.equalsIgnoreCase("M")){
-					 String search="vdRefno:"+engine.getVdRefNo()+";vehicleId:"+engine.getVehicleId();
-					 criteria = crservice.createCriteria(MsVehicleDetails.class, search, "vdRefno");			  
-					 vehicles = crservice.getResult(criteria, 0, 50);
-				 }else if(oneProduct.equalsIgnoreCase("H")){
-					 String search="vdRefno:"+engine.getVdRefNo()+";humanId:"+engine.getVehicleId();
-					 criteria = crservice.createCriteria(MsHumanDetails.class, search, "vdRefno");			  
-					 vehicles = crservice.getResult(criteria, 0, 50);
-				 }else if(oneProduct.equalsIgnoreCase("A")){
-					 String search="vdRefno:"+engine.getVdRefNo()+";locationId:"+engine.getVehicleId();
-					 criteria = crservice.createCriteria(MsAssetDetails.class, search, "vdRefno");			  
-					 vehicles = crservice.getResult(criteria, 0, 50);
-				 }
-			 
-			  System.out.println("Vehicle record "+engine.getVdRefNo()+", vehicles is "+((vehicles==null || vehicles.isEmpty())?"empty":"Not an empty"));
-			}
-		
-			
-			
-		String search="msRefno:"+engine.getMsrefno()+";";
-		
-		
-		
-		
-		//if(result==null) {
-			 criteria = crservice.createCriteria(MsCommonDetails.class, search, "msRefno"); 
+			String oneProduct= ratingutil.collectProductType(engine); 
+			String search="msRefno:"+engine.getMsrefno()+";"; 
+			//if(result==null) {
+			criteria = crservice.createCriteria(MsCommonDetails.class, search, "msRefno"); 
 			commontbl=crservice.getResult(criteria, 0, 50);
-		//}
-		if(commontbl!=null && commontbl.size()>0) {
-			Tuple tuple = commontbl.get(0);
-			String vdRefno=tuple.get("vdRefno").toString();
-			String cdRefno=tuple.get("cdRefno").toString();
-			  vehicles=null;
+			//}
+			if(commontbl!=null && commontbl.size()>0) {
+				Tuple tuple = commontbl.get(0);
+				String vdRefno=tuple.get("vdRefno").toString();
+				String cdRefno=tuple.get("cdRefno").toString();
+				vehicles=null;
 				while(vehicles==null) {
-					
-					 if(oneProduct.equals("M")){
-						   search="vdRefno:"+engine.getVdRefNo()+";vehicleId:"+engine.getVehicleId();
-						 criteria = crservice.createCriteria(MsVehicleDetails.class, search, "vdRefno");			  
-						 vehicles = crservice.getResult(criteria, 0, 50);
-					 }else if(oneProduct.equals("H")){
-						   search="vdRefno:"+engine.getVdRefNo()+";humanId:"+engine.getVehicleId();
-						 criteria = crservice.createCriteria(MsHumanDetails.class, search, "vdRefno");			  
-						 vehicles = crservice.getResult(criteria, 0, 50);
-					 }else if(oneProduct.equalsIgnoreCase("A")){
-						 search="vdRefno:"+engine.getVdRefNo()+";locationId:"+engine.getVehicleId();
-						 criteria = crservice.createCriteria(MsAssetDetails.class, search, "vdRefno");			  
-						 vehicles = crservice.getResult(criteria, 0, 50);
-					 }
-				 
-				 
-				 
-				  System.out.println("Vehicle record "+vdRefno+", vehicles is "+((vehicles==null || vehicles.isEmpty())?"empty":"Not an empty"));
+
+					if(oneProduct.equals("M")){
+						search="vdRefno:"+engine.getVdRefNo()+";vehicleId:"+engine.getVehicleId();
+						criteria = crservice.createCriteria(MsVehicleDetails.class, search, "vdRefno");			  
+						vehicles = crservice.getResult(criteria, 0, 50);
+					}else if(oneProduct.equals("H")){
+						search="vdRefno:"+engine.getVdRefNo()+";humanId:"+engine.getVehicleId();
+						criteria = crservice.createCriteria(MsHumanDetails.class, search, "vdRefno");			  
+						vehicles = crservice.getResult(criteria, 0, 50);
+					}else if(oneProduct.equalsIgnoreCase("A")){
+						search="vdRefno:"+engine.getVdRefNo()+";locationId:"+engine.getVehicleId();
+						criteria = crservice.createCriteria(MsAssetDetails.class, search, "vdRefno");			  
+						vehicles = crservice.getResult(criteria, 0, 50);
+					}
+
+
+
+					System.out.println("Vehicle record "+vdRefno+", vehicles is "+((vehicles==null || vehicles.isEmpty())?"empty":"Not an empty"));
 				}
-			
-		//	if(customers==null) {
-			 search="cdRefno:"+cdRefno+";";
-			 criteria = crservice.createCriteria(MsCustomerDetails.class, search, "cdRefno");
-			 customers = crservice.getResult(criteria, 0, 50);
-		//	}
-			
-			 
-			 if(vehicles!=null) {
-				 String periodOfInsurance=(vehicles.get(0).get("periodOfInsurance")==null?"365":vehicles.get(0).get("periodOfInsurance").toString());
-				  prorata = ratingutil.loadProRataData(engine, periodOfInsurance);
-			  }
-		}
-		
-		
-		 
-		
+
+				//	if(customers==null) {
+				search="cdRefno:"+cdRefno+";";
+				criteria = crservice.createCriteria(MsCustomerDetails.class, search, "cdRefno");
+				customers = crservice.getResult(criteria, 0, 50);
+				//	}
+
+
+				if(vehicles!=null) {
+					String periodOfInsurance=(vehicles.get(0).get("periodOfInsurance")==null?"365":vehicles.get(0).get("periodOfInsurance").toString());
+					prorata = ratingutil.loadProRataData(engine, periodOfInsurance);
+				}
+			}
+
+
+
+
 		}catch(Exception e) {e.printStackTrace();}
 		
 	}
