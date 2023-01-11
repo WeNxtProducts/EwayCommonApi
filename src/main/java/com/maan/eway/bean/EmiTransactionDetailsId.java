@@ -7,6 +7,7 @@ package com.maan.eway.bean;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.Date;
 
 
 
@@ -16,17 +17,13 @@ import java.io.Serializable;
 @AllArgsConstructor
 @ToString
 @Builder
-public class EmiMasterId implements Serializable {
+public class EmiTransactionDetailsId implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     //--- ENTITY KEY ATTRIBUTES 
-    private Integer emiId;
-    private Integer     amendId ;
-    private Integer    productId ;    
-    private String     companyId ;
-    
-   
-    
-     
+    private String     quoteNo ;
+    private String     productId ;   
+    private Date       dueDate ;
+    private String     instalment ;
 }

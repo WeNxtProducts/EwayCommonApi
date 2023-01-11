@@ -44,8 +44,8 @@ private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
     @Id
-    @Column(name="SNO", nullable=false)
-    private Integer    sno ;
+    @Column(name="EMI_ID", nullable=false)
+    private Integer    emiId ;
 
     @Id
     @Column(name="PRODUCT_ID", nullable=false)
@@ -77,15 +77,18 @@ private static final long serialVersionUID = 1L;
     @Column(name="INSTALLMENT_PERIOD", length=20)
     private String     installmentPeriod ;
 
-    @Column(name="POLICY_TYPE", length=20)
-    private String     policyType ;
-
     @Column(name="INTEREST_PERCENT", length=20)
     private String     interestPercent ;
 
     @Column(name="ADVANCE_PERCENT", length=20)
     private String     advancePercent ;
 
+    @Column(name="POLICY_TYPE", length=20)
+    private String     policyType ;
+    
+    @Column(name="POLICY_DESC", length=20)
+    private String     policyDesc ;
+    
     @Column(name="REMARKS", length=100)
     private String     remarks ;
 
