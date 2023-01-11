@@ -33,11 +33,12 @@ import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PaymentInfo;
+import com.maan.eway.bean.PaymentRefno;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.SeqPaymentid;
+import com.maan.eway.bean.SeqRefno;
 import com.maan.eway.common.req.MakePaymentRes;
 import com.maan.eway.common.req.MakePaymentSaveReq;
 import com.maan.eway.common.req.MakePaymentUpdateReq;
@@ -51,16 +52,15 @@ import com.maan.eway.common.res.PaymentDetailGetRes;
 import com.maan.eway.common.res.PaymentInfoGetRes;
 import com.maan.eway.common.service.PaymentService;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.CompanyBranchReq;
 import com.maan.eway.master.service.impl.ClausesMasterServiceImpl;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.PaymentDetailRepository;
 import com.maan.eway.repository.PaymentInfoRepository;
+import com.maan.eway.repository.PaymentRefnoRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.SeqPaymentidRepository;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 @Service
@@ -86,6 +86,8 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired
 	private SeqPaymentidRepository seqPayIdrepo;
 	
+	@Autowired
+	private PaymentRefnoRepository seqRefNorepo;
 	
 	
 	@PersistenceContext
@@ -139,6 +141,33 @@ public class PaymentServiceImpl implements PaymentService {
 				error.add(new Error("01","InsuranceId","Please Enter InsuranceId"));
 			}
 			
+			Integer count = 0;
+			List<PaymentInfo> datas = paymentinforepo.findByQuoteNoOrderByEntryDateDesc(req.getQuoteNo());
+			for (PaymentInfo data1 : datas) {
+
+				if (data1.getEmiYn().equalsIgnoreCase("N")) {
+					if ((data1.getPaymentStatus().equalsIgnoreCase("PENDING"))
+							|| (data1.getPaymentStatus().equalsIgnoreCase("ACCEPTED"))) {
+						count++;
+					}
+				}
+
+				else if (data1.getEmiYn().equalsIgnoreCase("Y")) {
+					if (data1.getPaymentStatus().equalsIgnoreCase("PENDING")) {
+						count++;
+					} else if (data1.getPaymentStatus().equalsIgnoreCase("ACCEPTED")) {
+						if ((data1.getInstallmentPeriod().equalsIgnoreCase(req.getInstallmentPeriod()))
+								&& (data1.getInstallmentMonth().equalsIgnoreCase(req.getInstallmentMonth()))) {
+							count++;
+						}
+					}
+				}
+
+			}
+			if (count > 0) {
+				error.add(new Error("03", "PaymentId", "Payment Status is Pending or Accepted for this quote No"));
+			}
+			
 			
 		} catch (Exception e) {
 			log.error(e);
@@ -159,6 +188,7 @@ public class PaymentServiceImpl implements PaymentService {
 			String productName =   getCompanyProductMasterDropdown(data.getCompanyId() , data.getProductId().toString()); //productRepo.findByProductIdOrderByAmendIdDesc(Integer.valueOf(req.getProductId()));
 			String companyName =  getInscompanyMasterDropdown(data.getCompanyId()) ; // companyRepo.findByCompanyIdOrderByAmendIdDesc(req.getCompanyId());
 			String branchName = getCompanyBranchMasterDropdown(data.getCompanyId() , data.getBranchCode());
+			
 			
 			String paymentId = generatePaymentid();
 			
@@ -633,7 +663,7 @@ public class PaymentServiceImpl implements PaymentService {
 			for(PaymentDetail data : datas) {
 				PaymentDetailGetRes res = new PaymentDetailGetRes();
 				res = dozermappper.map(data, PaymentDetailGetRes.class);
-				res.setPaymentId(String.valueOf(Math.round(data.getPaymentId())));				
+				res.setPaymentId(String.valueOf(data.getPaymentId()));				
 				resList.add(res);
 				}
 		}
@@ -730,6 +760,23 @@ public class PaymentServiceImpl implements PaymentService {
 				
 			}
 			
+			Integer count = 0;
+			List<PaymentDetail> datas = paymentdetailrepo.findByQuoteNoOrderByEntryDateDesc(req.getQuoteNo());
+			for (PaymentDetail data1 : datas) {
+
+					if ((data1.getPaymentStatus().equalsIgnoreCase("PENDING"))
+							|| (data1.getPaymentStatus().equalsIgnoreCase("ACCEPTED"))
+							|| (data1.getPaymentStatus().equalsIgnoreCase("REJECTED"))
+							) {
+						count++;
+					}
+			}
+			if (count > 0) {
+				error.add(new Error("03", "PaymentId", "Payment Status is Pending or Accepted or Rejected for this quote No"));
+			}
+
+			
+			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
@@ -741,9 +788,64 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	public PaymentDetailsSaveRes savePaymentDetails(PaymentDetailsSaveReq req) {
 		// TODO Auto-generated method stub
-		return null;
+		PaymentDetailsSaveRes res = new PaymentDetailsSaveRes();
+		DozerBeanMapper dozermapper = new DozerBeanMapper ();
+		try {
+			//Find data from home Position Master
+			HomePositionMaster data = homerepo.findByQuoteNo(req.getQuoteNo());
+			PersonalInfo personaldata = personalrepo.findByCustomerId(data.getCustomerId());
+			String productName =   getCompanyProductMasterDropdown(data.getCompanyId() , data.getProductId().toString()); //productRepo.findByProductIdOrderByAmendIdDesc(Integer.valueOf(req.getProductId()));
+			String companyName =  getInscompanyMasterDropdown(data.getCompanyId()) ; // companyRepo.findByCompanyIdOrderByAmendIdDesc(req.getCompanyId());
+			String branchName = getCompanyBranchMasterDropdown(data.getCompanyId() , data.getBranchCode());
+			
+			
+			String refno = generateMerchantReferenceNo();
+			
+			// Save Paymetn Info
+			PaymentDetail paymentDetail = new PaymentDetail();
+			dozermapper.map(data,PaymentDetail.class);
+			paymentDetail.setBranchCode(data.getBranchCode());
+			paymentDetail.setBranchName(branchName);
+			paymentDetail.setCreatedBy(req.getCreatedBy());
+			paymentDetail.setCustomerName(personaldata.getClientName() );
+			paymentDetail.setEntryDate(new Date());
+			paymentDetail.setMerchantReference(refno);
+			paymentDetail.setPaymentStatus("PENDING");			
+			paymentDetail.setQuoteNo(req.getQuoteNo());
+			paymentDetail.setUpdatedBy(req.getCreatedBy());
+			paymentDetail.setUpdatedDate(new Date());
+			paymentDetail.setPaymentId(req.getPaymentId());
+			
+			paymentdetailrepo.save(paymentDetail);
+			
+			log.info("Saved Details " + json.toJson(paymentDetail));
+			res.setPaymentId(paymentDetail.getPaymentId().toString());
+			res.setQuoteNo(req.getQuoteNo());
+			res.setResponse("Saved Successful");
+			res.setMerchantReference(refno);
+			}
+		catch(Exception e) {
+			e.printStackTrace();
+			log.info("Log Details"+e.getMessage());
+			return null;
+		}
+		return res;
 	}
 	
 	
 	
+	
+
+	 public synchronized String generateMerchantReferenceNo() {
+	       try {
+	    	   PaymentRefno entity;
+	            entity = seqRefNorepo.save(new PaymentRefno());          
+	            return String.format("%05d",entity.getPaymentReferenceNo()) ;
+	        } catch (Exception e) {
+				e.printStackTrace();
+				log.info( "Exception is ---> " + e.getMessage());
+	            return null;
+	        }
+	       
+	 }
 }
