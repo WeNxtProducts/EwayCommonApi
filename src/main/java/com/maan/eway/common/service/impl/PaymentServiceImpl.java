@@ -815,6 +815,20 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentDetail.setUpdatedBy(req.getCreatedBy());
 			paymentDetail.setUpdatedDate(new Date());
 			paymentDetail.setPaymentId(req.getPaymentId());
+			paymentDetail.setCustomerEmail(personaldata.getEmail1());
+			paymentDetail.setCustomerId(personaldata.getCustomerId());
+			paymentDetail.setPaymentType(null);
+			paymentDetail.setPremium(data.getPremiumLc());
+			paymentDetail.setReqBillToAddressCity(personaldata.getPlaceOfBirth());
+			paymentDetail.setReqBillToAddressCity(personaldata.getPlaceOfBirth());
+			paymentDetail.setReqBillToAddressLine1(personaldata.getAddress1());
+			paymentDetail.setReqBillToAddressLine2(personaldata.getAddress2());
+			paymentDetail.setReqBillToAddrPostalCode(null);
+			paymentDetail.setReqBillToEmail(personaldata.getEmail1());;
+			paymentDetail.setReqBillToForename(personaldata.getClientName());
+			paymentDetail.setReqBillToPhone(personaldata.getMobileNo1());
+			paymentDetail.setReqBillToSurname(personaldata.getClientName());
+			paymentDetail.setReqCardExpiryDate(null);
 			
 			paymentdetailrepo.save(paymentDetail);
 			
