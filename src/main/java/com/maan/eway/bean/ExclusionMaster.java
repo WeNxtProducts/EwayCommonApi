@@ -40,17 +40,17 @@ public class ExclusionMaster {
 	@Column(name="AMEND_ID",nullable=false)
 	private Integer amendId;
 	
-	@Id
-	@Column(name="PRODUCT_ID",length=20, nullable=false)
-	private String productId;
+//	@Id
+//	@Column(name="PRODUCT_ID",length=20, nullable=false)
+//	private String productId;
 
-	@Id
-	@Column(name="SECTION_ID",length=20, nullable=false)
-	private String sectionId;
+//	@Id
+//	@Column(name="SECTION_ID",length=20, nullable=false)
+//	private String sectionId;
 	
-	@Id
-	@Column(name="POLICY_TYPE",length=20, nullable=false)
-	private String policyType;
+//	@Id
+//	@Column(name="POLICY_TYPE",length=20, nullable=false)
+//	private String policyType;
 
 	
 	@Column(name="EXCLUSION_DESCRIPTION",length=500)

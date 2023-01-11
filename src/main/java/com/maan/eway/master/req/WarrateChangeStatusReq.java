@@ -21,4 +21,7 @@ public class WarrateChangeStatusReq {
 	
 	@JsonProperty("BranchCode")
 	private String branchCode;
+	
+	@JsonProperty("ProductId")
+	private String productId;
 }

@@ -33,6 +33,10 @@ public class WarRateMaster {
 	private String branchCode;
 	
 	@Id
+	@Column(name="PRODUCT_ID",length=20, nullable=false)
+	private String productId;
+	
+	@Id
 	@Column(name="COMPANY_ID",length=20, nullable=false)
 	private String companyId;
 	

@@ -66,13 +66,13 @@ public class WarrantyMasterServiceImpl implements WarrantyMasterService {
 				errorList.add(new Error("02", "WarrantyDescription", "Please Select WarrantyDescription"));
 			}else if (req.getWarrantyDescription().length() > 100){
 				errorList.add(new Error("02","WarrantyDescription", "Please Enter WarrantyDescription 100 Characters")); 
-			}else if (StringUtils.isBlank(req.getWarrantyId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId())&& StringUtils.isNotBlank(req.getPolicyType())) {
-				List<WarrantyMaster> WarrantyList = getWarrantyDescriptionExistDetails(req.getWarrantyDescription() , req.getCompanyId() , req.getBranchCode(),req.getProductId(),req.getSectionId(),req.getPolicyType());
+			}else if (StringUtils.isBlank(req.getWarrantyId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())) {
+				List<WarrantyMaster> WarrantyList = getWarrantyDescriptionExistDetails(req.getWarrantyDescription() , req.getCompanyId() , req.getBranchCode(),req.getProductId());
 				if (WarrantyList.size()>0 ) {
 					errorList.add(new Error("01", "WarrantyDescription", "This WarrantyDescription Already Exist "));
 				}
-			}else if (StringUtils.isNotBlank(req.getWarrantyId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId())&& StringUtils.isNotBlank(req.getPolicyType())) {
-				List<WarrantyMaster> WarrantyList = getWarrantyDescriptionExistDetails(req.getWarrantyDescription() , req.getCompanyId() , req.getBranchCode(),req.getProductId(),req.getSectionId(),req.getPolicyType());
+			}else if (StringUtils.isNotBlank(req.getWarrantyId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())) {
+				List<WarrantyMaster> WarrantyList = getWarrantyDescriptionExistDetails(req.getWarrantyDescription() , req.getCompanyId() , req.getBranchCode(),req.getProductId());
 				
 				if (WarrantyList.size()>0 &&  (! req.getWarrantyId().equalsIgnoreCase(WarrantyList.get(0).getWarrantyId().toString())) ) {
 					errorList.add(new Error("01", "WarrantyDescription", "This WarrantyDescription Already Exist "));
@@ -138,19 +138,19 @@ public class WarrantyMasterServiceImpl implements WarrantyMasterService {
 			if (StringUtils.isBlank(req.getProductId())) {
 				errorList.add(new Error("10", "ProductId", "Please Enter ProductId"));
 			}
-			if (StringUtils.isBlank(req.getSectionId())) {
-				errorList.add(new Error("11", "SectionId", "Please Enter SectionId"));
-			}
-			if (StringUtils.isBlank(req.getPolicyType())) {
-				errorList.add(new Error("12", "PolicyType", "Please Enter PolicyType"));
-			}
+//			if (StringUtils.isBlank(req.getSectionId())) {
+//				errorList.add(new Error("11", "SectionId", "Please Enter SectionId"));
+//			}
+//			if (StringUtils.isBlank(req.getPolicyType())) {
+//				errorList.add(new Error("12", "PolicyType", "Please Enter PolicyType"));
+//			}
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
 		}
 		return errorList;
 	}
-	public List<WarrantyMaster> getWarrantyDescriptionExistDetails(String WarrantyDescription , String InsuranceId , String branchCode, String productId, String sectionId, String policyType) {
+	public List<WarrantyMaster> getWarrantyDescriptionExistDetails(String WarrantyDescription , String InsuranceId , String branchCode, String productId) {
 		List<WarrantyMaster> list = new ArrayList<WarrantyMaster>();
 		try {
 			Date today = new Date();
@@ -174,10 +174,10 @@ public class WarrantyMasterServiceImpl implements WarrantyMasterService {
 			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a5 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"), today);
 			Predicate a6 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a7 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			Predicate a8 = cb.equal(ocpm1.get("policyType"), b.get("policyType"));
+//			Predicate a7 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+//			Predicate a8 = cb.equal(ocpm1.get("policyType"), b.get("policyType"));
 			
-			amendId.where(a1,a2,a3,a4,a5,a6,a7,a8);
+			amendId.where(a1,a2,a3,a4,a5,a6);
 
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(cb.lower( b.get("warrantyDescription")), WarrantyDescription.toLowerCase());
@@ -188,14 +188,14 @@ public class WarrantyMasterServiceImpl implements WarrantyMasterService {
 			Predicate n7 = cb.equal(b.get("productId"), branchCode);
 			Predicate n8 = cb.equal(b.get("productId"), "99999");
 			Predicate n9 = cb.or(n7,n8);
-			Predicate n10 = cb.equal(b.get("sectionId"),sectionId);
-			Predicate n11 = cb.equal(b.get("sectionId"), "99999");
-			Predicate n12 = cb.or(n10,n11);
-			Predicate n13 = cb.equal(b.get("policyType"),sectionId);
-			Predicate n14 = cb.equal(b.get("policyType"), "99999");
-			Predicate n15 = cb.or(n13,n14);
+//			Predicate n10 = cb.equal(b.get("sectionId"),sectionId);
+//			Predicate n11 = cb.equal(b.get("sectionId"), "99999");
+//			Predicate n12 = cb.or(n10,n11);
+//			Predicate n13 = cb.equal(b.get("policyType"),sectionId);
+//			Predicate n14 = cb.equal(b.get("policyType"), "99999");
+//			Predicate n15 = cb.or(n13,n14);
 			
-			query.where(n1,n2,n3,n6,n9,n12,n15);
+			query.where(n1,n2,n3,n6,n9);
 			
 			// Get Result
 			TypedQuery<WarrantyMaster> result = em.createQuery(query);
@@ -226,7 +226,7 @@ public class WarrantyMasterServiceImpl implements WarrantyMasterService {
 		String createdBy ="";
 		Integer warrantyId = 0;
 		if(StringUtils.isBlank(req.getWarrantyId())) {
-			Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getBranchCode(),req.getProductId(),req.getSectionId(),req.getPolicyType());
+			Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getBranchCode(),req.getProductId());
 			warrantyId = totalCount+1;
 			entryDate = new Date();
 			createdBy = req.getCreatedBy();
@@ -249,10 +249,10 @@ public class WarrantyMasterServiceImpl implements WarrantyMasterService {
 			Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId());
 			Predicate n3 = cb.equal(b.get("branchCode"),req.getBranchCode());
 			Predicate n4 = cb.equal(b.get("productId"),req.getProductId());
-			Predicate n5 = cb.equal(b.get("sectionId"),req.getSectionId());
-			Predicate n6 = cb.equal(b.get("policyType"),req.getPolicyType());
-				
-			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
+//			Predicate n5 = cb.equal(b.get("sectionId"),req.getSectionId());
+//			Predicate n6 = cb.equal(b.get("policyType"),req.getPolicyType());
+//				
+			query.where(n1,n2,n3,n4).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<WarrantyMaster> result = em.createQuery(query);
@@ -295,8 +295,8 @@ public class WarrantyMasterServiceImpl implements WarrantyMasterService {
 		saveData.setUpdatedDate(new Date());
 		saveData.setAmendId(amendId);
 		saveData.setProductId(req.getProductId()==null?"" : "99999");
-		saveData.setSectionId(req.getSectionId()==null?"" : "99999");
-		saveData.setPolicyType(req.getPolicyType()==null?"" : "99999");
+//		saveData.setSectionId(req.getSectionId()==null?"" : "99999");
+//		saveData.setPolicyType(req.getPolicyType()==null?"" : "99999");
 		
 		repo.saveAndFlush(saveData);	
 		log.info("Saved Details is --> " + json.toJson(saveData));	
@@ -310,7 +310,7 @@ public class WarrantyMasterServiceImpl implements WarrantyMasterService {
 	}
 	
 	
-public Integer getMasterTableCount(String companyId, String branchCode, String productId, String sectionId, String policyType)	{
+public Integer getMasterTableCount(String companyId, String branchCode, String productId)	{
 
 	Integer data =0;
 	try {
@@ -330,11 +330,11 @@ public Integer getMasterTableCount(String companyId, String branchCode, String p
 		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
-		Predicate a5 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
-		Predicate a6 = cb.equal(ocpm1.get("policyType"),b.get("policyType"));
+//		Predicate a5 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
+//		Predicate a6 = cb.equal(ocpm1.get("policyType"),b.get("policyType"));
+//		
 		
-		
-		effectiveDate.where(a1,a2,a3,a4,a5,a6);
+		effectiveDate.where(a1,a2,a3,a4);
 	
 		//OrderBy
 		List<Order> orderList = new ArrayList<Order>();
@@ -348,16 +348,16 @@ public Integer getMasterTableCount(String companyId, String branchCode, String p
 		Predicate n6 = cb.equal(b.get("productId"),productId);
 		Predicate n7 = cb.equal(b.get("productId"), "99999");
 		Predicate n8 = cb.or(n6,n7);
-		Predicate n9 = cb.equal(b.get("sectionId"),sectionId);
-		Predicate n10 = cb.equal(b.get("sectionId"), "99999");
-		Predicate n11 = cb.or(n9,n10);
-		Predicate n12 = cb.equal(b.get("policyType"),policyType);
-		Predicate n13 = cb.equal(b.get("policyType"), "99999");
-		Predicate n14 = cb.or(n12,n13);
+//		Predicate n9 = cb.equal(b.get("sectionId"),sectionId);
+//		Predicate n10 = cb.equal(b.get("sectionId"), "99999");
+//		Predicate n11 = cb.or(n9,n10);
+//		Predicate n12 = cb.equal(b.get("policyType"),policyType);
+//		Predicate n13 = cb.equal(b.get("policyType"), "99999");
+//		Predicate n14 = cb.or(n12,n13);
 		
 		
 		
-		query.where(n1,n2,n5,n8,n11,n14).orderBy(orderList);
+		query.where(n1,n2,n5,n8).orderBy(orderList);
 				
 		
 		// Get Result
@@ -400,10 +400,10 @@ public List<WarrantyMasterRes> getallWarranty(WarrantyMasterGetallReq req) {
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
-		Predicate a5 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
-		Predicate a6 = cb.equal(ocpm1.get("policyType"),b.get("policyType"));
+//		Predicate a5 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
+//		Predicate a6 = cb.equal(ocpm1.get("policyType"),b.get("policyType"));
 
-		amendId.where(a1, a2,a3,a4,a5,a6);
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -418,14 +418,14 @@ public List<WarrantyMasterRes> getallWarranty(WarrantyMasterGetallReq req) {
 		Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
 		Predicate n7 = cb.equal(b.get("productId"), "99999");
 		Predicate n8 = cb.or(n6,n7);
-		Predicate n9 = cb.equal(b.get("sectionId"), req.getSectionId());
-		Predicate n10 = cb.equal(b.get("sectionId"), "99999");
-		Predicate n11 = cb.or(n9,n10);
-		Predicate n12 = cb.equal(b.get("policyType"), req.getPolicyType());
-		Predicate n13 = cb.equal(b.get("policyType"), "99999");
-		Predicate n14 = cb.or(n12,n13);
+//		Predicate n9 = cb.equal(b.get("sectionId"), req.getSectionId());
+//		Predicate n10 = cb.equal(b.get("sectionId"), "99999");
+//		Predicate n11 = cb.or(n9,n10);
+//		Predicate n12 = cb.equal(b.get("policyType"), req.getPolicyType());
+//		Predicate n13 = cb.equal(b.get("policyType"), "99999");
+//		Predicate n14 = cb.or(n12,n13);
 
-		query.where(n1,n2,n5,n8,n11,n14).orderBy(orderList);
+		query.where(n1,n2,n5,n8).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<WarrantyMaster> result = em.createQuery(query);
@@ -480,12 +480,12 @@ public List<WarrantyMasterRes> getActiveWarranty(WarrantyMasterGetallReq req) {
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
-		Predicate a5 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
-		Predicate a6 = cb.equal(ocpm1.get("policyType"),b.get("policyType"));
+//		Predicate a5 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
+//		Predicate a6 = cb.equal(ocpm1.get("policyType"),b.get("policyType"));
 
 		
 		
-		amendId.where(a1, a2,a3,a4,a5,a6);
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -501,14 +501,14 @@ public List<WarrantyMasterRes> getActiveWarranty(WarrantyMasterGetallReq req) {
 		Predicate n7 = cb.equal(b.get("productId"), req.getProductId());
 		Predicate n8 = cb.equal(b.get("productId"), "99999");
 		Predicate n9 = cb.or(n7,n8);
-		Predicate n10 = cb.equal(b.get("sectionId"), req.getSectionId());
-		Predicate n11 = cb.equal(b.get("sectionId"), "99999");
-		Predicate n12 = cb.or(n10,n11);
-		Predicate n13 = cb.equal(b.get("policyType"), req.getPolicyType());
-		Predicate n14 = cb.equal(b.get("policyType"), "99999");
-		Predicate n15 = cb.or(n13,n14);
+//		Predicate n10 = cb.equal(b.get("sectionId"), req.getSectionId());
+//		Predicate n11 = cb.equal(b.get("sectionId"), "99999");
+//		Predicate n12 = cb.or(n10,n11);
+//		Predicate n13 = cb.equal(b.get("policyType"), req.getPolicyType());
+//		Predicate n14 = cb.equal(b.get("policyType"), "99999");
+//		Predicate n15 = cb.or(n13,n14);
 
-		query.where(n1,n2,n4,n6,n9,n12,n15).orderBy(orderList);
+		query.where(n1,n2,n4,n6,n9).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<WarrantyMaster> result = em.createQuery(query);
@@ -567,10 +567,10 @@ public WarrantyMasterRes getByWarrantyId(WarrantyMasterGetReq req) {
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
-		Predicate a5 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
-		Predicate a6 = cb.equal(ocpm1.get("policyType"),b.get("policyType"));
+//		Predicate a5 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
+//		Predicate a6 = cb.equal(ocpm1.get("policyType"),b.get("policyType"));
 
-		amendId.where(a1, a2,a3,a4,a5,a6);
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -586,14 +586,14 @@ public WarrantyMasterRes getByWarrantyId(WarrantyMasterGetReq req) {
 		Predicate n8 = cb.equal(b.get("productId"), req.getProductId());
 		Predicate n9 = cb.equal(b.get("productId"), "99999");
 		Predicate n10 = cb.or(n8,n9);
-		Predicate n11 = cb.equal(b.get("sectionId"), req.getSectionId());
-		Predicate n12 = cb.equal(b.get("sectionId"), "99999");
-		Predicate n13 = cb.or(n11,n12);
-		Predicate n14 = cb.equal(b.get("policyType"), req.getPolicyType());
-		Predicate n15 = cb.equal(b.get("policyType"), "99999");
-		Predicate n16 = cb.or(n14,n15);
+//		Predicate n11 = cb.equal(b.get("sectionId"), req.getSectionId());
+//		Predicate n12 = cb.equal(b.get("sectionId"), "99999");
+//		Predicate n13 = cb.or(n11,n12);
+//		Predicate n14 = cb.equal(b.get("policyType"), req.getPolicyType());
+//		Predicate n15 = cb.equal(b.get("policyType"), "99999");
+//		Predicate n16 = cb.or(n14,n15);
 
-		query.where(n1,n2,n4,n7,n10,n13,n16).orderBy(orderList);
+		query.where(n1,n2,n4,n7,n10).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<WarrantyMaster> result = em.createQuery(query);
@@ -639,10 +639,10 @@ public SuccessRes changeStatusOfWarranty(WarrantyChangeStatusReq req) {
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
-		Predicate a5 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
-		Predicate a6 = cb.equal(ocpm1.get("policyType"),b.get("policyType"));
+//		Predicate a5 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
+//		Predicate a6 = cb.equal(ocpm1.get("policyType"),b.get("policyType"));
 
-		amendId.where(a1, a2,a3,a4,a5,a6);
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -658,14 +658,14 @@ public SuccessRes changeStatusOfWarranty(WarrantyChangeStatusReq req) {
 		Predicate n7 = cb.equal(b.get("productId"), req.getProductId());
 		Predicate n8 = cb.equal(b.get("productId"), "99999");
 		Predicate n9 = cb.or(n7,n8);
-		Predicate n10 = cb.equal(b.get("sectionId"), req.getSectionId());
-		Predicate n11 = cb.equal(b.get("sectionId"), "99999");
-		Predicate n12 = cb.or(n10,n11);
-		Predicate n13 = cb.equal(b.get("policyType"), req.getPolicyType());
-		Predicate n14 = cb.equal(b.get("policyType"), "99999");
-		Predicate n15 = cb.or(n13,n14);
+//		Predicate n10 = cb.equal(b.get("sectionId"), req.getSectionId());
+//		Predicate n11 = cb.equal(b.get("sectionId"), "99999");
+//		Predicate n12 = cb.or(n10,n11);
+//		Predicate n13 = cb.equal(b.get("policyType"), req.getPolicyType());
+//		Predicate n14 = cb.equal(b.get("policyType"), "99999");
+//		Predicate n15 = cb.or(n13,n14);
 
-		query.where(n1,n2,n4,n6,n9,n12,n15).orderBy(orderList);
+		query.where(n1,n2,n4,n6,n9).orderBy(orderList);
 		
 		// Get Result 
 		TypedQuery<WarrantyMaster> result = em.createQuery(query);
@@ -724,10 +724,10 @@ public List<DropDownRes> getWarrantyMasterDropdown(WarrantyMasterDropdownReq req
 		Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 		Predicate a6 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
 		Predicate a7 = cb.equal(c.get("productId"),ocpm1.get("productId"));
-		Predicate a8 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId"));
-		Predicate a9 = cb.equal(c.get("policyType"),ocpm1.get("policyType"));
+//		Predicate a8 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId"));
+//		Predicate a9 = cb.equal(c.get("policyType"),ocpm1.get("policyType"));
 
-		effectiveDate.where(a1,a2,a5,a6,a7,a8,a9);
+		effectiveDate.where(a1,a2,a5,a6,a7);
 		// Effective Date End Max Filter
 		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 		Root<WarrantyMaster> ocpm2 = effectiveDate2.from(WarrantyMaster.class);
@@ -736,11 +736,11 @@ public List<DropDownRes> getWarrantyMasterDropdown(WarrantyMasterDropdownReq req
 		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 		Predicate a10 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
 		Predicate a11 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
-		Predicate a12 = cb.equal(c.get("productId"),ocpm1.get("productId"));
-		Predicate a13 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId"));
-		Predicate a14 = cb.equal(c.get("policyType"),ocpm1.get("policyType"));
+		Predicate a12 = cb.equal(c.get("productId"),ocpm2.get("productId"));
+//		Predicate a13 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId"));
+//		Predicate a14 = cb.equal(c.get("policyType"),ocpm1.get("policyType"));
 
-		effectiveDate2.where(a3,a4,a10,a11,a12,a13,a14);
+		effectiveDate2.where(a3,a4,a10,a11,a12);
 		// Where
 		Predicate n1 = cb.equal(c.get("status"),"Y");
 		Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
@@ -751,15 +751,15 @@ public List<DropDownRes> getWarrantyMasterDropdown(WarrantyMasterDropdownReq req
 		Predicate n7 = cb.or(n5,n6);
 		Predicate n8 = cb.equal(c.get("productId"), req.getProductId());
 		Predicate n9 = cb.equal(c.get("productId"), "99999");
-		Predicate n10 = cb.or(n7,n8);
-		Predicate n11 = cb.equal(c.get("sectionId"), req.getSectionId());
-		Predicate n12 = cb.equal(c.get("sectionId"), "99999");
-		Predicate n13 = cb.or(n10,n11);
-		Predicate n14 = cb.equal(c.get("policyType"), req.getPolicyType());
-		Predicate n15 = cb.equal(c.get("policyType"), "99999");
-		Predicate n16 = cb.or(n13,n14);
+		Predicate n10 = cb.or(n8,n9);
+//		Predicate n11 = cb.equal(c.get("sectionId"), req.getSectionId());
+//		Predicate n12 = cb.equal(c.get("sectionId"), "99999");
+//		Predicate n13 = cb.or(n10,n11);
+//		Predicate n14 = cb.equal(c.get("policyType"), req.getPolicyType());
+//		Predicate n15 = cb.equal(c.get("policyType"), "99999");
+//		Predicate n16 = cb.or(n13,n14);
 
-		query.where(n1,n2,n3,n4,n7,n10,n13,n16).orderBy(orderList);
+		query.where(n1,n2,n3,n4,n7,n10).orderBy(orderList);
 		// Get Result
 		TypedQuery<WarrantyMaster> result = em.createQuery(query);
 		list = result.getResultList();

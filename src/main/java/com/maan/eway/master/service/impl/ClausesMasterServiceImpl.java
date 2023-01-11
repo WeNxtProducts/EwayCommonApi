@@ -66,13 +66,13 @@ public class ClausesMasterServiceImpl implements ClausesMasterService {
 				errorList.add(new Error("02", "ClausesDescription", "Please Select ClausesDescription"));
 			}else if (req.getClausesDescription().length() > 100){
 				errorList.add(new Error("02","ClausesDescription", "Please Enter ClausesDescription 100 Characters")); 
-			}else if (StringUtils.isBlank(req.getClausesId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId())&& StringUtils.isNotBlank(req.getPolicyType())) {
-				List<ClausesMaster> ClausesList = getClausesDescriptionExistDetails(req.getClausesDescription() , req.getCompanyId() , req.getBranchCode(), req.getProductId(),req.getSectionId(), req.getPolicyType());
+			}else if (StringUtils.isBlank(req.getClausesId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())) {
+				List<ClausesMaster> ClausesList = getClausesDescriptionExistDetails(req.getClausesDescription() , req.getCompanyId() , req.getBranchCode(), req.getProductId());
 				if (ClausesList.size()>0 ) {
 					errorList.add(new Error("01", "ClausesDescription", "This ClausesDescription Already Exist "));
 				}
-			}else if (StringUtils.isNotBlank(req.getClausesId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId())&& StringUtils.isNotBlank(req.getPolicyType())) {
-				List<ClausesMaster> ClausesList = getClausesDescriptionExistDetails(req.getClausesDescription() , req.getCompanyId() , req.getBranchCode(), req.getProductId(),req.getSectionId(), req.getPolicyType());
+			}else if (StringUtils.isNotBlank(req.getClausesId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())) {
+				List<ClausesMaster> ClausesList = getClausesDescriptionExistDetails(req.getClausesDescription() , req.getCompanyId() , req.getBranchCode(), req.getProductId());
 				
 				if (ClausesList.size()>0 &&  (! req.getClausesId().equalsIgnoreCase(ClausesList.get(0).getClausesId().toString())) ) {
 					errorList.add(new Error("01", "ClausesDescription", "This ClausesDescription Already Exist "));
@@ -147,12 +147,12 @@ public class ClausesMasterServiceImpl implements ClausesMasterService {
 			if (StringUtils.isBlank(req.getProductId())) {
 				errorList.add(new Error("14", "ProductId", "Please Enter ProductId"));
 			}
-			if (StringUtils.isBlank(req.getSectionId())) {
-				errorList.add(new Error("15", "SectionId", "Please Enter SectionId"));
-			}
-			if (StringUtils.isBlank(req.getPolicyType())) {
-				errorList.add(new Error("16", "PolicyType", "Please Enter PolicyType"));
-			}
+//			if (StringUtils.isBlank(req.getSectionId())) {
+//				errorList.add(new Error("15", "SectionId", "Please Enter SectionId"));
+//			}
+//			if (StringUtils.isBlank(req.getPolicyType())) {
+//				errorList.add(new Error("16", "PolicyType", "Please Enter PolicyType"));
+//			}
 			
 		} catch (Exception e) {
 			log.error(e);
@@ -160,7 +160,7 @@ public class ClausesMasterServiceImpl implements ClausesMasterService {
 		}
 		return errorList;
 	}
-	public List<ClausesMaster> getClausesDescriptionExistDetails(String ClausesDescription , String InsuranceId , String branchCode, String  productId, String sectionId, String policyType) {
+	public List<ClausesMaster> getClausesDescriptionExistDetails(String ClausesDescription , String InsuranceId , String branchCode, String  productId) {
 		List<ClausesMaster> list = new ArrayList<ClausesMaster>();
 		try {
 			Date today = new Date();
@@ -184,11 +184,11 @@ public class ClausesMasterServiceImpl implements ClausesMasterService {
 			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a5 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"), today);
 			Predicate a6 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a7 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			Predicate a8 = cb.equal(ocpm1.get("policyType"), b.get("policyType"));
+//			Predicate a7 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+//			Predicate a8 = cb.equal(ocpm1.get("policyType"), b.get("policyType"));
 
 			
-			amendId.where(a1,a2,a3,a4,a5,a6,a7,a8);
+			amendId.where(a1,a2,a3,a4,a5,a6);
 
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(cb.lower( b.get("clausesDescription")), ClausesDescription.toLowerCase());
@@ -198,15 +198,15 @@ public class ClausesMasterServiceImpl implements ClausesMasterService {
 			Predicate n6 = cb.or(n4,n5);
 			Predicate n7 = cb.equal(b.get("productId"),productId);
 			Predicate n8 = cb.equal(b.get("productId"), "99999");
-			Predicate n9 = cb.or(n6,n7);
-			Predicate n10 = cb.equal(b.get("sectionId"),sectionId);
-			Predicate n11 = cb.equal(b.get("sectionId"), "99999");
-			Predicate n12 = cb.or(n9,n10);
-			Predicate n13 = cb.equal(b.get("policyType"),policyType);
-			Predicate n14 = cb.equal(b.get("policyType"), "99999");
-			Predicate n15 = cb.or(n12,n13);
+			Predicate n9 = cb.or(n7,n8);
+//			Predicate n10 = cb.equal(b.get("sectionId"),sectionId);
+//			Predicate n11 = cb.equal(b.get("sectionId"), "99999");
+//			Predicate n12 = cb.or(n9,n10);
+//			Predicate n13 = cb.equal(b.get("policyType"),policyType);
+//			Predicate n14 = cb.equal(b.get("policyType"), "99999");
+//			Predicate n15 = cb.or(n12,n13);
 			
-			query.where(n1,n2,n3,n6,n9,n12,n15);
+			query.where(n1,n2,n3,n6,n9);
 			
 			// Get Result
 			TypedQuery<ClausesMaster> result = em.createQuery(query);
@@ -237,7 +237,7 @@ public class ClausesMasterServiceImpl implements ClausesMasterService {
 		String createdBy ="";
 		Integer clausesId = 0;
 		if(StringUtils.isBlank(req.getClausesId())) {
-			Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getBranchCode(),req.getProductId(),req.getSectionId(),req.getPolicyType());
+			Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getBranchCode(),req.getProductId());
 			clausesId = totalCount+1;
 			entryDate = new Date();
 			createdBy = req.getCreatedBy();
@@ -260,10 +260,10 @@ public class ClausesMasterServiceImpl implements ClausesMasterService {
 			Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId());
 			Predicate n3 = cb.equal(b.get("branchCode"),req.getBranchCode());
 			Predicate n4 = cb.equal(b.get("productId"),req.getProductId());
-			Predicate n5 = cb.equal(b.get("sectionId"),req.getSectionId());
-			Predicate n6 = cb.equal(b.get("policyType"),req.getPolicyType());
+//			Predicate n5 = cb.equal(b.get("sectionId"),req.getSectionId());
+//			Predicate n6 = cb.equal(b.get("policyType"),req.getPolicyType());
 			
-			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
+			query.where(n1,n2,n3,n4).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<ClausesMaster> result = em.createQuery(query);
@@ -309,8 +309,8 @@ public class ClausesMasterServiceImpl implements ClausesMasterService {
 		saveData.setAmendId(amendId);
 		saveData.setBranchCode(req.getBranchCode()==null?"" : "99999");
 		saveData.setProductId(req.getProductId()==null?"" : "99999");
-		saveData.setSectionId(req.getSectionId()==null?"" : "99999");
-		saveData.setPolicyType(req.getPolicyType()==null?"" : "99999");
+//		saveData.setSectionId(req.getSectionId()==null?"" : "99999");
+//		saveData.setPolicyType(req.getPolicyType()==null?"" : "99999");
 		
 		repo.saveAndFlush(saveData);	
 		log.info("Saved Details is --> " + json.toJson(saveData));	
@@ -324,7 +324,7 @@ public class ClausesMasterServiceImpl implements ClausesMasterService {
 	}
 	
 	
-public Integer getMasterTableCount(String companyId, String branchCode, String productId, String sectionId, String policyType)	{
+public Integer getMasterTableCount(String companyId, String branchCode, String productId)	{
 
 	Integer data =0;
 	try {
@@ -344,11 +344,11 @@ public Integer getMasterTableCount(String companyId, String branchCode, String p
 		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
-		Predicate a5 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
-		Predicate a6 = cb.equal(ocpm1.get("policyType"),b.get("policyType"));
+//		Predicate a5 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
+//		Predicate a6 = cb.equal(ocpm1.get("policyType"),b.get("policyType"));
 		
 		
-		effectiveDate.where(a1,a2,a3,a4,a5,a6);
+		effectiveDate.where(a1,a2,a3,a4);
 	
 		//OrderBy
 		List<Order> orderList = new ArrayList<Order>();
@@ -362,15 +362,15 @@ public Integer getMasterTableCount(String companyId, String branchCode, String p
 		Predicate n6 = cb.equal(b.get("productId"),productId);
 		Predicate n7 = cb.equal(b.get("productId"), "99999");
 		Predicate n8 = cb.or(n6,n7);
-		Predicate n9 = cb.equal(b.get("sectionId"),sectionId);
-		Predicate n10 = cb.equal(b.get("sectionId"), "99999");
-		Predicate n11 = cb.or(n9,n10);
-		Predicate n12 = cb.equal(b.get("policyType"),policyType);
-		Predicate n13 = cb.equal(b.get("policyType"), "99999");
-		Predicate n14 = cb.or(n12,n13);
+//		Predicate n9 = cb.equal(b.get("sectionId"),sectionId);
+//		Predicate n10 = cb.equal(b.get("sectionId"), "99999");
+//		Predicate n11 = cb.or(n9,n10);
+//		Predicate n12 = cb.equal(b.get("policyType"),policyType);
+//		Predicate n13 = cb.equal(b.get("policyType"), "99999");
+//		Predicate n14 = cb.or(n12,n13);
 		
 		
-		query.where(n1,n2,n5,n8,n11,n14).orderBy(orderList);
+		query.where(n1,n2,n5,n8).orderBy(orderList);
 		
 		
 		
@@ -414,9 +414,9 @@ public List<ClausesMasterRes> getallClauses(ClausesMasterGetallReq req) {
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 		Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-		Predicate a5 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
-		Predicate a6 = cb.equal(ocpm1.get("policyType"),b.get("policyType"));
-		amendId.where(a1, a2,a3,a4,a5,a6);
+//		Predicate a5 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
+//		Predicate a6 = cb.equal(ocpm1.get("policyType"),b.get("policyType"));
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -431,15 +431,15 @@ public List<ClausesMasterRes> getallClauses(ClausesMasterGetallReq req) {
 		Predicate n6 = cb.equal(b.get("productId"),req.getProductId());
 		Predicate n7 = cb.equal(b.get("productId"), "99999");
 		Predicate n8 = cb.or(n6,n7);
-		Predicate n9 = cb.equal(b.get("sectionId"),req.getSectionId());
-		Predicate n10 = cb.equal(b.get("sectionId"), "99999");
-		Predicate n11 = cb.or(n9,n10);
-		Predicate n12 = cb.equal(b.get("policyType"),req.getPolicyType());
-		Predicate n13 = cb.equal(b.get("policyType"), "99999");
-		Predicate n14 = cb.or(n12,n13);
+//		Predicate n9 = cb.equal(b.get("sectionId"),req.getSectionId());
+//		Predicate n10 = cb.equal(b.get("sectionId"), "99999");
+//		Predicate n11 = cb.or(n9,n10);
+//		Predicate n12 = cb.equal(b.get("policyType"),req.getPolicyType());
+//		Predicate n13 = cb.equal(b.get("policyType"), "99999");
+//		Predicate n14 = cb.or(n12,n13);
 
 		
-		query.where(n1,n2,n5,n8,n11,n14).orderBy(orderList);
+		query.where(n1,n2,n5,n8).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<ClausesMaster> result = em.createQuery(query);
@@ -494,10 +494,10 @@ public List<ClausesMasterRes> getActiveClauses(ClausesMasterGetallReq req) {
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 		Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-		Predicate a5 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-		Predicate a6 = cb.equal(ocpm1.get("policyType"),b.get("policyType"));
+//		Predicate a5 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+//		Predicate a6 = cb.equal(ocpm1.get("policyType"),b.get("policyType"));
 
-		amendId.where(a1, a2,a3,a4,a5,a6);
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -513,15 +513,15 @@ public List<ClausesMasterRes> getActiveClauses(ClausesMasterGetallReq req) {
 		Predicate n7 = cb.equal(b.get("productId"),req.getProductId());
 		Predicate n8 = cb.equal(b.get("productId"), "99999");
 		Predicate n9 = cb.or(n7,n8);
-		Predicate n10 = cb.equal(b.get("sectionId"),req.getSectionId());
-		Predicate n11 = cb.equal(b.get("sectionId"), "99999");
-		Predicate n12 = cb.or(n10,n11);
-		Predicate n13 = cb.equal(b.get("policyType"),req.getPolicyType());
-		Predicate n14 = cb.equal(b.get("policyType"), "99999");
-		Predicate n15 = cb.or(n13,n14);
+//		Predicate n10 = cb.equal(b.get("sectionId"),req.getSectionId());
+//		Predicate n11 = cb.equal(b.get("sectionId"), "99999");
+//		Predicate n12 = cb.or(n10,n11);
+//		Predicate n13 = cb.equal(b.get("policyType"),req.getPolicyType());
+//		Predicate n14 = cb.equal(b.get("policyType"), "99999");
+//		Predicate n15 = cb.or(n13,n14);
 
 		
-		query.where(n1,n2,n4,n6,n9,n12,n15).orderBy(orderList);
+		query.where(n1,n2,n4,n6,n9).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<ClausesMaster> result = em.createQuery(query);
@@ -580,10 +580,10 @@ public ClausesMasterRes getByClausesId(ClausesMasterGetReq req) {
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 		Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-		Predicate a5 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-		Predicate a6 = cb.equal(ocpm1.get("policyType"),b.get("policyType"));
+//		Predicate a5 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+//		Predicate a6 = cb.equal(ocpm1.get("policyType"),b.get("policyType"));
 
-		amendId.where(a1, a2,a3,a4,a5,a6);
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -599,14 +599,14 @@ public ClausesMasterRes getByClausesId(ClausesMasterGetReq req) {
 		Predicate n8 = cb.equal(b.get("productId"),req.getProductId());
 		Predicate n9 = cb.equal(b.get("productId"), "99999");
 		Predicate n10 = cb.or(n8,n9);
-		Predicate n11 = cb.equal(b.get("sectionId"),req.getSectionId());
-		Predicate n12 = cb.equal(b.get("sectionId"), "99999");
-		Predicate n13 = cb.or(n11,n12);
-		Predicate n14 = cb.equal(b.get("policyType"),req.getPolicyType());
-		Predicate n15 = cb.equal(b.get("policyType"), "99999");
-		Predicate n16 = cb.or(n14,n15);
+//		Predicate n11 = cb.equal(b.get("sectionId"),req.getSectionId());
+//		Predicate n12 = cb.equal(b.get("sectionId"), "99999");
+//		Predicate n13 = cb.or(n11,n12);
+//		Predicate n14 = cb.equal(b.get("policyType"),req.getPolicyType());
+//		Predicate n15 = cb.equal(b.get("policyType"), "99999");
+//		Predicate n16 = cb.or(n14,n15);
 
-		query.where(n1,n2,n4,n7,n10,n13,n16).orderBy(orderList);
+		query.where(n1,n2,n4,n7,n10).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<ClausesMaster> result = em.createQuery(query);
@@ -652,10 +652,10 @@ public SuccessRes changeStatusOfClauses(ClausesChangeStatusReq req) {
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 		Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-		Predicate a5 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-		Predicate a6 = cb.equal(ocpm1.get("policyType"),b.get("policyType"));
+//		Predicate a5 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+//		Predicate a6 = cb.equal(ocpm1.get("policyType"),b.get("policyType"));
 
-		amendId.where(a1, a2,a3,a4,a5,a6);
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -671,15 +671,15 @@ public SuccessRes changeStatusOfClauses(ClausesChangeStatusReq req) {
 		Predicate n7 = cb.equal(b.get("productId"),req.getProductId());
 		Predicate n8 = cb.equal(b.get("productId"), "99999");
 		Predicate n9 = cb.or(n7,n8);
-		Predicate n10 = cb.equal(b.get("sectionId"),req.getSectionId());
-		Predicate n11 = cb.equal(b.get("sectionId"), "99999");
-		Predicate n12 = cb.or(n10,n11);
-		Predicate n13 = cb.equal(b.get("policyType"),req.getPolicyType());
-		Predicate n14 = cb.equal(b.get("policyType"), "99999");
-		Predicate n15 = cb.or(n13,n14);
+//		Predicate n10 = cb.equal(b.get("sectionId"),req.getSectionId());
+//		Predicate n11 = cb.equal(b.get("sectionId"), "99999");
+//		Predicate n12 = cb.or(n10,n11);
+//		Predicate n13 = cb.equal(b.get("policyType"),req.getPolicyType());
+//		Predicate n14 = cb.equal(b.get("policyType"), "99999");
+//		Predicate n15 = cb.or(n13,n14);
 
 		
-		query.where(n1,n2,n4,n6,n9,n12,n15).orderBy(orderList);
+		query.where(n1,n2,n4,n6,n9).orderBy(orderList);
 		
 		// Get Result 
 		TypedQuery<ClausesMaster> result = em.createQuery(query);
@@ -754,15 +754,15 @@ public List<DropDownRes> getClausesMasterDropdown(ClausesMasterDropdownReq req) 
 		Predicate n8 = cb.equal(c.get("productId"),req.getProductId());
 		Predicate n9 = cb.equal(c.get("productId"), "99999");
 		Predicate n10 = cb.or(n8,n9);
-		Predicate n11 = cb.equal(c.get("sectionId"),req.getSectionId());
-		Predicate n12 = cb.equal(c.get("sectionId"), "99999");
-		Predicate n13 = cb.or(n11,n12);
-		Predicate n14 = cb.equal(c.get("policyType"),req.getPolicyType());
-		Predicate n15 = cb.equal(c.get("policyType"), "99999");
-		Predicate n16 = cb.or(n14,n15);
+//		Predicate n11 = cb.equal(c.get("sectionId"),req.getSectionId());
+//		Predicate n12 = cb.equal(c.get("sectionId"), "99999");
+//		Predicate n13 = cb.or(n11,n12);
+//		Predicate n14 = cb.equal(c.get("policyType"),req.getPolicyType());
+//		Predicate n15 = cb.equal(c.get("policyType"), "99999");
+//		Predicate n16 = cb.or(n14,n15);
 
 
-		query.where(n1,n2,n3,n4,n7,n10,n13,n16).orderBy(orderList);
+		query.where(n1,n2,n3,n4,n7,n10).orderBy(orderList);
 		// Get Result
 		TypedQuery<ClausesMaster> result = em.createQuery(query);
 		list = result.getResultList();

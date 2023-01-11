@@ -16,10 +16,10 @@ public class WarrantyMasterGetallReq {
 	@JsonProperty("ProductId")
 	private String productId;
 
-	@JsonProperty("SectionId")
-	private String sectionId;
-
-	@JsonProperty("PolicyType")
-	private String policyType;
+//	@JsonProperty("SectionId")
+//	private String sectionId;
+//
+//	@JsonProperty("PolicyType")
+//	private String policyType;
 
 }

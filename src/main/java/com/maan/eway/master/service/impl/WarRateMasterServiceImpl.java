@@ -237,6 +237,9 @@ public List<Error> validateWarranty(WarRateMasterSaveReq req) {
 		if (StringUtils.isBlank(req.getWarRate())) {
 			errorList.add(new Error("10", "WarRate", "Please Enter Warrate"));
 		}
+		if (StringUtils.isBlank(req.getProductId())) {
+			errorList.add(new Error("11", "ProductId", "Please Enter ProductId"));
+		}
 		
 	} catch (Exception e) {
 		log.error(e);
@@ -284,8 +287,8 @@ public SuccessRes saveWarRate(WarRateMasterSaveReq req) {
 			Predicate n1 = cb.equal(b.get("warRateId"),req.getWarRateId());
 			Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId());
 			Predicate n3 = cb.equal(b.get("branchCode"),req.getBranchCode());
-			
-			query.where(n1,n2,n3).orderBy(orderList);
+			Predicate n4 = cb.equal(b.get("productId"),req.getProductId());
+			query.where(n1,n2,n3,n4).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<WarRateMaster> result = em.createQuery(query);
@@ -327,6 +330,7 @@ public SuccessRes saveWarRate(WarRateMasterSaveReq req) {
 		saveData.setUpdatedBy(req.getCreatedBy());
 		saveData.setUpdatedDate(new Date());
 		saveData.setAmendId(amendId);
+		saveData.setProductId(req.getProductId());
 		repo.saveAndFlush(saveData);	
 		log.info("Saved Details is --> " + json.toJson(saveData));	
 		}
@@ -361,8 +365,8 @@ public List<WarRateMasterRes> getallWarRate(WarRateMasterGetallReq req) {
 		Predicate a1 = cb.equal(ocpm1.get("warRateId"), b.get("warRateId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-
-		amendId.where(a1, a2,a3);
+		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -374,7 +378,8 @@ public List<WarRateMasterRes> getallWarRate(WarRateMasterGetallReq req) {
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
 		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n5 = cb.or(n3,n4);
-		query.where(n1,n2,n5).orderBy(orderList);
+		Predicate n6 = cb.equal(b.get("productId"),req.getProductId());
+		query.where(n1,n2,n5,n6).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<WarRateMaster> result = em.createQuery(query);
@@ -424,8 +429,8 @@ public List<WarRateMasterRes> getActiveWarrate(WarRateMasterGetallReq req) {
 		Predicate a1 = cb.equal(ocpm1.get("warRateId"), b.get("warRateId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-
-		amendId.where(a1, a2,a3);
+		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -438,7 +443,8 @@ public List<WarRateMasterRes> getActiveWarrate(WarRateMasterGetallReq req) {
 		Predicate n4 = cb.equal(b.get("status"), "Y");
 		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n6 = cb.or(n3,n5);
-		query.where(n1,n2,n4,n6).orderBy(orderList);
+		Predicate n7 = cb.equal(b.get("productId"),req.getProductId());
+		query.where(n1,n2,n4,n6,n7).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<WarRateMaster> result = em.createQuery(query);
@@ -495,8 +501,8 @@ public WarRateMasterRes getByWarrateId(WarRateMasterGetReq req) {
 		Predicate a1 = cb.equal(ocpm1.get("warRateId"), b.get("warRateId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-
-		amendId.where(a1, a2,a3);
+		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -509,7 +515,8 @@ public WarRateMasterRes getByWarrateId(WarRateMasterGetReq req) {
 		Predicate n4 = cb.equal(b.get("warRateId"), req.getWarRateId());
 		Predicate n6 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n7 = cb.or(n3,n6);
-		query.where(n1,n2,n4,n7).orderBy(orderList);
+		Predicate n8 = cb.equal(b.get("productId"),req.getProductId());
+		query.where(n1,n2,n4,n7,n8).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<WarRateMaster> result = em.createQuery(query);
@@ -553,8 +560,8 @@ public SuccessRes changeStatusOfWarrate(WarrateChangeStatusReq req) {
 		Predicate a1 = cb.equal(ocpm1.get("warRateId"), b.get("warRateId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-
-		amendId.where(a1, a2,a3);
+		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -567,8 +574,8 @@ public SuccessRes changeStatusOfWarrate(WarrateChangeStatusReq req) {
 		Predicate n4 = cb.equal(b.get("warRateId"), req.getWarRateId());
 		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n6 = cb.or(n3,n5);
-		
-		query.where(n1,n2,n4,n6).orderBy(orderList);
+		Predicate n7 = cb.equal(b.get("productId"),req.getProductId());
+		query.where(n1,n2,n4,n6,n7).orderBy(orderList);
 		
 		// Get Result 
 		TypedQuery<WarRateMaster> result = em.createQuery(query);
@@ -641,8 +648,8 @@ public List<DropDownRes> getWarrateMasterDropdown(WarrateMasterDropdownReq req) 
 		Predicate n5 = cb.equal(c.get("branchCode"),req.getBranchCode());
 		Predicate n6 = cb.equal(c.get("branchCode"),"99999");
 		Predicate n7 = cb.or(n5,n6);
-
-		query.where(n1,n2,n3,n4,n7).orderBy(orderList);
+		Predicate n8 = cb.equal(c.get("productId"),req.getProductId());
+		query.where(n1,n2,n3,n4,n7,n8).orderBy(orderList);
 		// Get Result
 		TypedQuery<WarRateMaster> result = em.createQuery(query);
 		list = result.getResultList();

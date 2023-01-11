@@ -26,10 +26,6 @@ public class ExclusionMasterSaveReq {
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
 	
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
-	
 	@JsonProperty("Remarks")
 	private String remarks;
 	
@@ -39,12 +35,12 @@ public class ExclusionMasterSaveReq {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
-	@JsonProperty("UpdatedBy")
-	private String updatedBy;
-	
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("UpdatedDate")
-	private Date updatedDate;
+//	@JsonProperty("UpdatedBy")
+//	private String updatedBy;
+//	
+//	@JsonFormat(pattern="dd/MM/yyyy")
+//	@JsonProperty("UpdatedDate")
+//	private Date updatedDate;
 
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
@@ -52,14 +48,14 @@ public class ExclusionMasterSaveReq {
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
 	
-	@JsonProperty("ProductId")
-	private String productId;
-	
-	@JsonProperty("SectionId")
-	private String sectionId;
-	
-	@JsonProperty("PolicyType")
-	private String policyType;
+//	@JsonProperty("ProductId")
+//	private String productId;
+//	
+//	@JsonProperty("SectionId")
+//	private String sectionId;
+//	
+//	@JsonProperty("PolicyType")
+//	private String policyType;
 	
 	
 }

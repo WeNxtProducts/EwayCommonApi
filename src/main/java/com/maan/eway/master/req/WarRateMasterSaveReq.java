@@ -28,13 +28,16 @@ public class WarRateMasterSaveReq {
 	@JsonProperty("InsuranceId")
 	private String companyId;
 	
+	@JsonProperty("ProductId")
+	private String productId;
+	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
 	
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
+//	@JsonFormat(pattern="dd/MM/yyyy")
+//	@JsonProperty("EffectiveDateEnd")
+//	private Date effectiveDateEnd;
 	
 	@JsonProperty("Remarks")
 	private String remarks;
@@ -44,13 +47,13 @@ public class WarRateMasterSaveReq {
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
-	
-	@JsonProperty("UpdatedBy")
-	private String updatedBy;
-	
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("UpdatedDate")
-	private Date updatedDate;
+//	
+//	@JsonProperty("UpdatedBy")
+//	private String updatedBy;
+//	
+//	@JsonFormat(pattern="dd/MM/yyyy")
+//	@JsonProperty("UpdatedDate")
+//	private Date updatedDate;
 
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;

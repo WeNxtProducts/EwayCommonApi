@@ -25,6 +25,9 @@ public class WarRateMasterRes {
 	@JsonProperty("BranchCode")
 	private String branchCode;
 	
+	@JsonProperty("ProductId")
+	private String productId;
+	
 	@JsonProperty("InsuranceId")
 	private String companyId;
 	

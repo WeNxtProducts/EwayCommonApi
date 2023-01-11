@@ -104,7 +104,7 @@ public ResponseEntity<CommonRes> getallWarRate(@RequestBody WarRateMasterGetallR
 
 //  Get Active War RAte Master
 
-	@PostMapping("/getactivewarrate")
+	@PostMapping("/getallwarrate")
 	@ApiOperation("This method is get Active War Rate")
 	public ResponseEntity<CommonRes> getActiveWarrate(@RequestBody WarRateMasterGetallReq req)
 	{
