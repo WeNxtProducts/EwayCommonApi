@@ -58,7 +58,7 @@ private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name="PAYMENT_ID", nullable=false)
-    private Double     paymentId ;
+    private String     paymentId ;
 
     @Id
     @Column(name="MERCHANT_REFERENCE", length=100)

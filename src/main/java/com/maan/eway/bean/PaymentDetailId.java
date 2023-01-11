@@ -31,7 +31,7 @@ public class PaymentDetailId implements Serializable {
     //--- ENTITY KEY ATTRIBUTES 
     private String     quoteNo ;
     
-    private Double     paymentId ;
+    private String     paymentId ;
     
     private String     merchantReference ;
      
