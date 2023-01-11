@@ -474,8 +474,8 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 				errorList.add(new Error("01", "PremiumWithTax", "Please Enter PremiumWithTax "));
 			}else if (!req.getPremiumWithTax().matches("[0-9.]+")) {
 				errorList.add(new Error("01", "PremiumWithTax", "Please Enter Valid Number In PremiumStart"));
-			}else if (!(Double.valueOf(req.getPremiumWithTax()) >= 200000)) {
-				errorList.add(new Error("02", "PremiumWithTax", "PremiumStart must be greater than 200000 "));
+			}else if (!(Double.valueOf(req.getPremiumWithTax()) >= 100000)) {
+				errorList.add(new Error("02", "PremiumWithTax", "PremiumStart must be greater than 100000 "));
 			}else if (StringUtils.isBlank(req.getCompanyId())) {
 				errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
 			}else if (StringUtils.isBlank(req.getProductId())) {
@@ -661,6 +661,7 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			List<EmiTransactionDetailsRes> resList = new ArrayList<EmiTransactionDetailsRes>();
 			DozerBeanMapper mapper = new DozerBeanMapper();
 			try {
+			//	Integer instalment=Integer.valueOf(req.getInstallment())+1;
 				String quoteNo = req.getQuoteNo();
 				String productId = req.getProductId();
 				List<EmiTransactionDetails> list = new ArrayList<EmiTransactionDetails>();
@@ -676,7 +677,8 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 				orderList.add(cb.asc(b.get("instalment")));
 
 				// Where
-				Predicate n1 = cb.equal(b.get("dueDate"), req.getPaymentDate());
+			//	Predicate n1 = cb.equal(b.get("instalment"), instalment.toString());
+				Predicate n1 = cb.greaterThanOrEqualTo(b.get("dueDate"), req.getPaymentDate());
 				Predicate n2 = cb.equal(b.get("productId"), productId);
 				Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 				Predicate n4 = cb.equal(b.get("quoteNo"), quoteNo);

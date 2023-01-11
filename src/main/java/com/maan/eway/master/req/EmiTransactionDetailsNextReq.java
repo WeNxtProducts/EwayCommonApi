@@ -24,9 +24,11 @@ public class EmiTransactionDetailsNextReq implements Serializable {
 	@JsonProperty("InsuranceId")
 	private String companyId;
 	
+	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("PaymentDate")
-	private String PaymentDate;
-
-
+	private Date PaymentDate;
+	
+//	@JsonProperty("EmiMonth")
+//	private String installment;
 	
 }
