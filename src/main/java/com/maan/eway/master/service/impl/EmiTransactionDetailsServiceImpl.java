@@ -474,8 +474,6 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 				errorList.add(new Error("01", "PremiumWithTax", "Please Enter PremiumWithTax "));
 			}else if (!req.getPremiumWithTax().matches("[0-9.]+")) {
 				errorList.add(new Error("01", "PremiumWithTax", "Please Enter Valid Number In PremiumStart"));
-			}else if (!(Double.valueOf(req.getPremiumWithTax()) >= 100000)) {
-				errorList.add(new Error("02", "PremiumWithTax", "PremiumStart must be greater than 100000 "));
 			}else if (StringUtils.isBlank(req.getCompanyId())) {
 				errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
 			}else if (StringUtils.isBlank(req.getProductId())) {
