@@ -18,17 +18,8 @@ public class EmiTransactionDetailsNextReq implements Serializable {
 	@JsonProperty("QuoteNo")
 	private String quoteNo;
 	
-	@JsonProperty("ProductId")
-	private String productId;
-	
 	@JsonProperty("InsuranceId")
 	private String companyId;
-	
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("PaymentDate")
-	private Date PaymentDate;
-	
-//	@JsonProperty("EmiMonth")
-//	private String installment;
+
 	
 }

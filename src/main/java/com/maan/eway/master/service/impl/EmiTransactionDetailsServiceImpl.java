@@ -103,9 +103,6 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 						req.getCompanyId(), req.getProductId());
 				quoteNo = quoteNo.stream().filter(o -> o.getQuoteNo() != null)
 						.filter(distinctByKey(o -> o.getQuoteNo())).collect(Collectors.toList());
-//				if(StringUtils.isBlank(req.getQuoteNo()) &&  quoteNo!=null ) {
-//					errorList.add(new Error("08", "QuoteNo", "This QuoteNo  Already Exist"));
-//				} else
 				if (quoteNo.size()>0 && StringUtils.isNotBlank(req.getQuoteNo())) {
 					if (quoteNo.get(0).getQuoteNo().equalsIgnoreCase(req.getQuoteNo())) {
 						errorList.add(new Error("08", "QuoteNo", "This QuoteNo  Already Exist"));
@@ -481,12 +478,13 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			}
 			if (StringUtils.isBlank(req.getPolicyType())) {
 				errorList.add(new Error("04", "PolicyType", "Please Enter PolicyType"));
-			}else {
-				List<EmiMaster> policyType =   getEmiMasterData(req.getCompanyId(), req.getProductId(),req.getPolicyType(),req.getPremiumWithTax());
-				if(policyType ==null ) {
-					errorList.add(new Error("05", "PolicyType", "No Data Exist"));
-				} 
 			}
+//			else {
+//				List<EmiMaster> policyType =   getEmiMasterData(req.getCompanyId(), req.getProductId(),req.getPolicyType(),req.getPremiumWithTax());
+//				if(policyType ==null ) {
+//					errorList.add(new Error("05", "PolicyType", "No Data Exist"));
+//				} 
+//			}
 		}catch (Exception e) {
 				e.printStackTrace();
 				log.info("Log Details" + e.getMessage());
@@ -506,9 +504,10 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 					advanceAmount, balanceAmount = null, installment = 0d;
 			List<EmiMaster> list = getEmiMasterData(req.getCompanyId(), req.getProductId(), req.getPolicyType(),
 					req.getPremiumWithTax());
-			if (list != null) {
+			EmiDisplayRes res=null;
+			if (list.size()>0) {
 				for (EmiMaster data : list) {
-					EmiDisplayRes res = new EmiDisplayRes();
+					 res = new EmiDisplayRes();
 					Integer noOfMonth = Integer.valueOf(data.getInstallmentPeriod().toString());
 					interestPercent = Double.valueOf(data.getInterestPercent().toString());
 					advancePercent = Double.valueOf(data.getAdvancePercent().toString());
@@ -548,28 +547,36 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 
 						List<EmiDisplayListRes> emiPremiumResList = new ArrayList<EmiDisplayListRes>();
 						for (i = 0; i <= noOfMonth; i++) {
+							EmiDisplayListRes emiPremiumRes = new EmiDisplayListRes();
 							Calendar cal = Calendar.getInstance();
 							cal.add(Calendar.MONTH, i);
 							Date dueDate = cal.getTime();
 							if (i == 0) {
 								insDesc="Advance Amount";
+								emiPremiumRes.setInstallment((df.format(advanceAmount)));
 							} else {
 								insDesc="Installment Amount";
+								emiPremiumRes.setInstallment((df.format(installment)));
 							}
-							EmiDisplayListRes emiPremiumRes = new EmiDisplayListRes();
 							emiPremiumRes.setNoOfInstallment(i.toString());
-							emiPremiumRes.setInstallment((df.format(installment)));
 							emiPremiumRes.setDueDate(dueDate);
 							emiPremiumRes.setInstallmentDesc(insDesc);
 							emiPremiumResList.add(emiPremiumRes);
 
 						}
 						res.setEmiPremium(emiPremiumResList);
+						res.setEmiYn("Y");
+						res.setEmiYnDesc("Emi Data");
 					}
 
 					resList.add(res);
 				}
 
+			}else if(list.size() == 0){
+				 res = new EmiDisplayRes();
+				res.setEmiYn("N");
+				res.setEmiYnDesc("Emi Option is not Available ");
+				resList.add(res);
 			}
 
 		} catch (Exception e) {
@@ -654,54 +661,31 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 	}
 	
 	// Get Next Emi Transaction Details
-		@Override
-		public List<EmiTransactionDetailsRes> getNextEmiDetails(EmiTransactionDetailsNextReq req) {
-			List<EmiTransactionDetailsRes> resList = new ArrayList<EmiTransactionDetailsRes>();
-			DozerBeanMapper mapper = new DozerBeanMapper();
-			try {
-			//	Integer instalment=Integer.valueOf(req.getInstallment())+1;
-				String quoteNo = req.getQuoteNo();
-				String productId = req.getProductId();
-				List<EmiTransactionDetails> list = new ArrayList<EmiTransactionDetails>();
-				CriteriaBuilder cb = em.getCriteriaBuilder();
-				CriteriaQuery<EmiTransactionDetails> query = cb.createQuery(EmiTransactionDetails.class);
-				// Find all
-				Root<EmiTransactionDetails> b = query.from(EmiTransactionDetails.class);
-				// Select
-				query.select(b);
+	@Override
+	public List<EmiTransactionDetailsRes> getNextEmiDetails(EmiTransactionDetailsNextReq req) {
+		List<EmiTransactionDetailsRes> resList = new ArrayList<EmiTransactionDetailsRes>();
+		DozerBeanMapper mapper = new DozerBeanMapper();
+		try {
+			String quoteNo = req.getQuoteNo();
+			List<EmiTransactionDetails> list = new ArrayList<EmiTransactionDetails>();
+			list = repo.findTop1ByQuoteNoAndPaymentStatusOrderByDueDateAsc(quoteNo, "Pending");
 
-				// Order By
-				List<Order> orderList = new ArrayList<Order>();
-				orderList.add(cb.asc(b.get("instalment")));
-
-				// Where
-			//	Predicate n1 = cb.equal(b.get("instalment"), instalment.toString());
-				Predicate n1 = cb.greaterThanOrEqualTo(b.get("dueDate"), req.getPaymentDate());
-				Predicate n2 = cb.equal(b.get("productId"), productId);
-				Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
-				Predicate n4 = cb.equal(b.get("quoteNo"), quoteNo);
-				Predicate n5 = cb.equal(b.get("paymentStatus"), "Pending");
-				query.where(n1,n2, n3, n4,n5).orderBy(orderList);
-
-				// Get Result
-				TypedQuery<EmiTransactionDetails> result = em.createQuery(query);
-				list = result.getResultList();
-				// Map
-				for (EmiTransactionDetails data : list) {
-					EmiTransactionDetailsRes res = new EmiTransactionDetailsRes();
-					res = mapper.map(data, EmiTransactionDetailsRes.class);
-					res.setInstallment(data.getInstalment());
-					resList.add(res);
-				}
-
-			}catch (Exception e) {
-				e.printStackTrace();
-				log.info("Log Details" + e.getMessage());
-				return null;
+			// Map
+			for (EmiTransactionDetails data : list) {
+				EmiTransactionDetailsRes res = new EmiTransactionDetailsRes();
+				res = mapper.map(data, EmiTransactionDetailsRes.class);
+				res.setInstallment(data.getInstalment());
+				resList.add(res);
 			}
 
-			return resList;
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
 		}
+
+		return resList;
+	}
 
 	private static <T> java.util.function.Predicate<T> distinctByKey(
 			java.util.function.Function<? super T, ?> keyExtractor) {

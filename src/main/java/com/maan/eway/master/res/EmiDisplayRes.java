@@ -23,5 +23,10 @@ public class EmiDisplayRes implements Serializable {
 	@JsonProperty("EmiPremium")
 	private List<EmiDisplayListRes> emiPremium;
 	
+	@JsonProperty("EmiYn")
+	private String emiYn;
+	
+	@JsonProperty("EmiYnDesc")
+	private String emiYnDesc;
 	
 }
