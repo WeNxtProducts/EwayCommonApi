@@ -17,6 +17,8 @@ public class PaymentMasterDropdownReq {
 	@JsonProperty("UserType")
 	private String userType;
 	
+	@JsonProperty("ProductId")
+	private String productId;
 
 	@JsonProperty("SubUserType")
 	private String subUserType;

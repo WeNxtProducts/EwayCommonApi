@@ -23,6 +23,9 @@ public class PaymentMasterSaveReq {
 	@JsonProperty("InsuranceId")
 	private String companyId;
 	
+	@JsonProperty("ProductId")
+	private String productId;
+	
 	@JsonProperty("UserType")
 	private String userType;
 	

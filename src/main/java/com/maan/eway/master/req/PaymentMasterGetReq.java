@@ -22,4 +22,7 @@ public class PaymentMasterGetReq implements Serializable {
 	@JsonProperty("BranchCode")
 	private String branchCode;
 	
+	@JsonProperty("ProductId")
+	private String productId;
+	
 }

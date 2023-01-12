@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.PaymentMaster;
 import com.maan.eway.error.Error;
@@ -73,7 +74,9 @@ public class PaymentMasterServiceImpl implements PaymentMasterService {
 			if (StringUtils.isBlank(req.getBranchCode())) {
 				errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
 			}
-			
+			if (StringUtils.isBlank(req.getProductId())) {
+				errorList.add(new Error("02", "ProductId", "Please Select ProductId"));
+			}
 			
 			// Date Validation 
 			Calendar cal = new GregorianCalendar();
@@ -164,13 +167,13 @@ public class PaymentMasterServiceImpl implements PaymentMasterService {
 			query.select(b);
 			//Orderby
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			orderList.add(cb.desc(b.get("amendId")));
 			//Where
 			Predicate n1 = cb.equal(b.get("paymentMasterId"),req.getPaymentMasterId());
 			Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId());
 			Predicate n3 = cb.equal(b.get("branchCode"),req.getBranchCode());
-			
-			query.where(n1,n2,n3).orderBy(orderList);
+			Predicate n4 = cb.equal(b.get("productId"),req.getProductId());
+			query.where(n1,n2,n3,n4).orderBy(orderList);
 			
 			// Get Result 
 			TypedQuery<PaymentMaster> result = em.createQuery(query);
@@ -310,7 +313,8 @@ public List<PaymentMasterRes> getallPayment(PaymentMasterGetallReq req) {
 		Predicate a1 = cb.equal(ocpm1.get("paymentMasterId"), b.get("paymentMasterId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-		amendId.where(a1, a2,a3);
+		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -322,11 +326,8 @@ public List<PaymentMasterRes> getallPayment(PaymentMasterGetallReq req) {
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
 		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n5 = cb.or(n3,n4);
-		Predicate n6 = cb.equal(b.get("companyId"),"99999");
-		Predicate n7 = cb.or(n2,n6);
-	
-		
-		query.where(n1,n5,n7).orderBy(orderList);
+		Predicate n6 =  cb.equal(b.get("productId"), req.getProductId());
+		query.where(n1,n2,n5,n6).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<PaymentMaster> result = em.createQuery(query);
@@ -379,8 +380,8 @@ public List<PaymentMasterRes> getActivePayment(PaymentMasterGetallReq req) {
 		Predicate a1 = cb.equal(ocpm1.get("paymentMasterId"), b.get("paymentMasterId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-
-		amendId.where(a1, a2,a3);
+		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -389,12 +390,12 @@ public List<PaymentMasterRes> getActivePayment(PaymentMasterGetallReq req) {
 		// Where
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
 		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
-		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
 		Predicate n4 = cb.equal(b.get("status"), "Y");
-		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
-		Predicate n6 = cb.or(n3,n5);
-		Predicate n7 = cb.equal(b.get("companyId"),"99999");
-		Predicate n8 = cb.or(n2,n7);
+		Predicate n5 = cb.equal(b.get("branchCode"), req.getBranchCode());
+		Predicate n6 = cb.equal(b.get("branchCode"), "99999");
+		Predicate n7 = cb.or(n5,n6);
+		Predicate n8 =  cb.equal(b.get("productId"), req.getProductId());
+		query.where(n1,n2,n4,n7,n8).orderBy(orderList);
 
 		
 		query.where(n1,n8,n4,n6).orderBy(orderList);
@@ -454,8 +455,8 @@ public PaymentMasterRes getByPaymentId(PaymentMasterGetReq req) {
 		Predicate a1 = cb.equal(ocpm1.get("paymentMasterId"), b.get("paymentMasterId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-
-		amendId.where(a1, a2,a3);
+		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -465,13 +466,12 @@ public PaymentMasterRes getByPaymentId(PaymentMasterGetReq req) {
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
 		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-		Predicate n4 = cb.equal(b.get("paymentMasterId"), req.getPaymentMasterId());
-		Predicate n6 = cb.equal(b.get("branchCode"), "99999");
-		Predicate n7 = cb.or(n3,n6);
-		Predicate n8 = cb.equal(b.get("companyId"),"99999");
-		Predicate n9 = cb.or(n2,n8);
-
-		query.where(n1,n9,n4,n7).orderBy(orderList);
+		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+		Predicate n5 = cb.or(n3,n4);
+		Predicate n6 =  cb.equal(b.get("productId"), req.getProductId());
+		Predicate n7 = cb.equal(b.get("paymentMasterId"), req.getPaymentMasterId());
+		query.where(n1,n2,n5,n6,n7).orderBy(orderList);
+		
 		
 		// Get Result
 		TypedQuery<PaymentMaster> result = em.createQuery(query);
@@ -588,15 +588,26 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 		Root<PaymentMaster> ocpm1 = effectiveDate.from(PaymentMaster.class);
 		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 		Predicate a1 = cb.equal(c.get("paymentMasterId"),ocpm1.get("paymentMasterId"));
-		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		effectiveDate.where(a1,a2);
+		Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+		Predicate a3 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
+		Predicate a4 = cb.equal(c.get("userType"),ocpm1.get("userType"));
+		Predicate a5 = cb.equal(c.get("subUserType"),ocpm1.get("subUserType"));
+		Predicate a6 = cb.equal(c.get("productId"),ocpm1.get("productId"));
+		Predicate a7 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		effectiveDate.where(a1,a2,a3,a4,a5,a6,a7);
+		
 		// Effective Date End Max Filter
 		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 		Root<PaymentMaster> ocpm2 = effectiveDate2.from(PaymentMaster.class);
 		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-		Predicate a3 = cb.equal(c.get("paymentMasterId"),ocpm2.get("paymentMasterId"));
-		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-		effectiveDate2.where(a3,a4);
+		Predicate a8 = cb.equal(c.get("paymentMasterId"),ocpm2.get("paymentMasterId"));
+		Predicate a9 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+		Predicate a10 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
+		Predicate a11 = cb.equal(c.get("userType"),ocpm2.get("userType"));
+		Predicate a12 = cb.equal(c.get("subUserType"),ocpm2.get("subUserType"));
+		Predicate a13 = cb.equal(c.get("productId"),ocpm2.get("productId"));
+		Predicate a14 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+		effectiveDate2.where(a8,a9,a10,a11,a12,a13,a14);
 		// Where
 		Predicate n1 = cb.equal(c.get("status"),"Y");
 		Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
@@ -605,35 +616,116 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 		Predicate n5 = cb.equal(c.get("branchCode"),req.getBranchCode());
 		Predicate n6 = cb.equal(c.get("branchCode"),"99999");
 		Predicate n7 = cb.or(n5,n6);
-		Predicate n8 = cb.equal(c.get("companyId"),"99999");
-		Predicate n9 = cb.or(n4,n8);
-		Predicate n10 = cb.equal(c.get("userType"),req.getUserType());
-		Predicate n11 = cb.equal(c.get("subUserType"),req.getSubUserType());
-		
+		Predicate n8 = cb.equal(c.get("userType"),req.getUserType());
+		Predicate n9 = cb.equal(c.get("subUserType"),req.getSubUserType());
+		Predicate n10 = cb.equal(c.get("productId"),req.getProductId());
 
-		query.where(n1,n2,n3,n9,n7,n10,n11).orderBy(orderList);
+		query.where(n1,n2,n3,n4,n7,n8,n9,n10).orderBy(orderList);
+		
 		// Get Result
 		TypedQuery<PaymentMaster> result = em.createQuery(query);
 		list = result.getResultList();
-		for (PaymentMaster data : list) {
+		
+		List<ListItemValue> paymentList = getPaymentItems(req.getCompanyId() , req.getBranchCode() ,  "PAYMENT_MODE");
+		
+		// Payment Types
+		ListItemValue cash = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("Cash") ).collect(Collectors.toList()).get(0) ; 
+		ListItemValue credit = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("Credit") ).collect(Collectors.toList()).get(0) ; 
+		ListItemValue cheque = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("Cash") ).collect(Collectors.toList()).get(0) ; 
+	
+		
+		if(list.size()>0 ) {
 			// Response 
-			PaymentMasterDropDownRes res = new PaymentMasterDropDownRes();
-			res.setCashYn(data.getCashYn());
-			res.setChequeYn(data.getChequeYn());
-			res.setCreditYn(data.getCreditYn());
-			resList.add(res);
+			PaymentMaster paymentData = list.get(0);
+			if(paymentData.getCashYn().equalsIgnoreCase("Y") ) {
+				PaymentMasterDropDownRes res = new PaymentMasterDropDownRes();
+				res.setCode(cash.getItemCode());
+				res.setCodeDesc(cash.getItemValue());
+				resList.add(res);
+			} 
+			if(paymentData.getCreditYn().equalsIgnoreCase("Y") ) {
+				PaymentMasterDropDownRes res = new PaymentMasterDropDownRes();
+				res.setCode(credit.getItemCode());
+				res.setCodeDesc(credit.getItemValue());
+				resList.add(res);
+			}
+			if(paymentData.getChequeYn().equalsIgnoreCase("Y") ) {
+				PaymentMasterDropDownRes res = new PaymentMasterDropDownRes();
+				res.setCode(cheque.getItemCode());
+				res.setCodeDesc(cheque.getItemValue());
+				resList.add(res);
+			}
 		}
-	}
-		catch(Exception e) {
+		
+	}	catch(Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->"+e.getMessage());
 			return null;
-			}
+	}
 		return resList;
 }
 
 
-
+public synchronized List<ListItemValue> getPaymentItems(String insuranceId , String branchCode, String itemType) {
+	List<ListItemValue> list = new ArrayList<ListItemValue>();
+	try {
+		Date today = new Date();
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(today);
+		today = cal.getTime();
+		Date todayEnd = cal.getTime();
+		
+		// Criteria
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ListItemValue> query=  cb.createQuery(ListItemValue.class);
+		// Find All
+		Root<ListItemValue> c = query.from(ListItemValue.class);
+		
+		//Select
+		query.select(c);
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.asc(c.get("branchCode")));
+		
+		
+		// Effective Date Start Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
+		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		effectiveDate.where(a1,a2);
+		// Effective Date End Max Filter
+		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
+		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
+		Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+		effectiveDate2.where(a3,a4);
+					
+		// Where
+		Predicate n1 = cb.equal(c.get("status"),"Y");
+		Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+		Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+		Predicate n4 = cb.equal(c.get("companyId"), insuranceId);
+		Predicate n5 = cb.equal(c.get("companyId"), "99999");
+		Predicate n6 = cb.equal(c.get("branchCode"), branchCode);
+		Predicate n7 = cb.equal(c.get("branchCode"), "99999");
+		Predicate n8 = cb.or(n4,n5);
+		Predicate n9 = cb.or(n6,n7);
+		Predicate n10 = cb.equal(c.get("itemType"),itemType );
+		query.where(n1,n2,n3,n8,n9,n10).orderBy(orderList);
+		// Get Result
+		TypedQuery<ListItemValue> result = em.createQuery(query);
+		list = result.getResultList();
+		 
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return list ;
+}
 		
 	
 

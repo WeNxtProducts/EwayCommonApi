@@ -17,6 +17,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -30,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.ExclusionMaster;
 import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ClausesChangeStatusReq;
@@ -38,6 +38,7 @@ import com.maan.eway.master.req.ClausesMasterDropdownReq;
 import com.maan.eway.master.req.ClausesMasterGetReq;
 import com.maan.eway.master.req.ClausesMasterGetallReq;
 import com.maan.eway.master.req.ClausesMasterSaveReq;
+import com.maan.eway.master.req.NonSelectedClausesGetAllReq;
 import com.maan.eway.master.res.ClausesMasterRes;
 import com.maan.eway.master.service.ClausesMasterService;
 import com.maan.eway.repository.ClausesMasterRepository;
@@ -782,6 +783,129 @@ public List<DropDownRes> getClausesMasterDropdown(ClausesMasterDropdownReq req) 
 			}
 		return resList;
 }
+	@Override
+	public List<ClausesMasterRes> getallNonSelectedWars(NonSelectedClausesGetAllReq req) {
+		List<ClausesMasterRes> resList = new ArrayList<ClausesMasterRes>();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			List<ClausesMaster> list = new ArrayList<ClausesMaster>();
+		
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ClausesMaster> query = cb.createQuery(ClausesMaster.class);
+	
+			// Find All
+			Root<ClausesMaster> b = query.from(ClausesMaster.class);
+	
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ClausesMaster> ocpm1 = effectiveDate.from(ClausesMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a3 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+			Predicate a4 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			Predicate a5 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"),today);
+			effectiveDate.where(a1,a2,a3,a4,a5);
+	
+			// Effective Date End
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<ClausesMaster> ocpm2 = effectiveDate2.from(ClausesMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a6 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
+			Predicate a7 = cb.equal(ocpm2.get("productId"), b.get("productId"));
+			Predicate a8 = cb.equal(ocpm2.get("sectionId"), b.get("sectionId"));
+			Predicate a9 = cb.equal(ocpm2.get("branchCode"), b.get("branchCode"));
+			Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a6,a7,a8,a9,a10);
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("clausesDescription")));
+			
+			// Company Product Effective Date Max Filter
+			Subquery<Long> clause = query.subquery(Long.class);
+			Root<ClausesMaster> cs = clause.from(ClausesMaster.class);
+			Subquery<Long> effectiveDate3 = query.subquery(Long.class);
+			Root<ClausesMaster> ocpm3 = effectiveDate3.from(ClausesMaster.class);
+			effectiveDate3.select(cb.max(ocpm3.get("effectiveDateStart")));
+			Predicate eff1 = cb.equal(ocpm3.get("companyId"), b.get("companyId"));
+			Predicate eff2 = cb.equal(ocpm3.get("productId"), b.get("productId"));
+			Predicate eff3 = cb.equal(ocpm3.get("sectionId"), b.get("sectionId"));
+			Predicate eff4 = cb.equal(ocpm3.get("branchCode"), b.get("branchCode"));
+			Predicate eff5 = cb.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"),today);
+			effectiveDate3.where(eff1,eff2,eff3,eff4,eff5);
+			
+			Subquery<Long> effectiveDate4 = query.subquery(Long.class);
+			Root<ClausesMaster> ocpm4 = effectiveDate4.from(ClausesMaster.class);
+			effectiveDate4.select(cb.max(ocpm4.get("effectiveDateEnd")));
+			Predicate eff6 = cb.equal(ocpm4.get("companyId"), b.get("companyId"));
+			Predicate eff7 = cb.equal(ocpm4.get("productId"), b.get("productId"));
+			Predicate eff8 = cb.equal(ocpm4.get("sectionId"), b.get("sectionId"));
+			Predicate eff9 = cb.equal(ocpm4.get("branchCode"), b.get("branchCode"));
+			Predicate eff10 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateEnd"),todayEnd);
+			effectiveDate4.where(eff1,eff2,eff3,eff4,eff5);
+			
+			// Product Section Filter
+			clause.select(cs.get("clausesId"));
+			Predicate cs1 = cb.equal(cs.get("companyId"), req.getCompanyId());
+			Predicate cs2 = cb.equal(cs.get("productId"), req.getProductId());
+			Predicate cs3 = cb.equal(cs.get("sectionId"),req.getSectionId());
+			Predicate cs4 = cb.equal(cs.get("effectiveDateStart"),effectiveDate3);
+			Predicate cs5 = cb.equal(cs.get("effectiveDateEnd"),effectiveDate4);
+			Predicate cs6 = cb.equal(cs.get("branchCode"), req.getBranchCode());
+			Predicate cs7 = cb.equal(cs.get("branchCode"), "99999");
+			Predicate cs8 = cb.or(cs6, cs7);
+			clause.where(cs1,cs2,cs3,cs4,cs5,cs8);
+			
+			// Where
+			Expression<String>e0= b.get("clausesId");
+			Predicate n1 = cb.equal(cs.get("companyId"), req.getCompanyId());
+			Predicate n2 = cb.equal(cs.get("productId"), req.getProductId());
+			Predicate n3 = cb.equal(cs.get("sectionId"),"0");
+			Predicate n4 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n5 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n6 = cb.equal(cs.get("branchCode"), req.getBranchCode());
+			Predicate n7 = cb.equal(cs.get("branchCode"), "99999");
+			Predicate n8 = cb.or(cs6, cs7);
+			Predicate n9 = e0.in(clause).not();
+			Predicate n10 = cb.equal(b.get("status"), "Y");
+			query.where(n1,n2,n4,n5,n6).orderBy(orderList);
+	
+			// Get Result
+			TypedQuery<ClausesMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			
+//			// Map
+//			for (ProductMaster data : list ) {
+//				ProductGetAllRes res = new ProductGetAllRes();
+//	
+//				res = dozerMapper.map(data, ProductGetAllRes.class);
+//				res.setProductId(data.getProductId().toString());
+//				resList.add(res);
+//			}
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+	
+		}
+		return resList;
+	}
 
 
 		

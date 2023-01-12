@@ -154,7 +154,7 @@ public ResponseEntity<CommonRes> changeStatusOfPayment(@RequestBody PaymentMaste
 }
 
 //Payment Master Drop Down Type
-@PostMapping(value="/dropdown/payment",produces = "application/json")
+@PostMapping(value="/dropdown/paymenttypes",produces = "application/json")
 @ApiOperation(value = "This method is get Payment Master Drop Down")
 
 public ResponseEntity<CommonRes> getPaymentMasterDropdown(@RequestBody PaymentMasterDropdownReq req) {

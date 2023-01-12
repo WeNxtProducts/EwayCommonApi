@@ -36,14 +36,19 @@ public class PaymentMaster {
 	@Column(name="COMPANY_ID",length=20, nullable=false)
 	private String companyId;
 
+	@Id
+	@Column(name="PRODUCT_ID",length=20, nullable=false)
+	private Integer productId;
 	
 	@Id
 	@Column(name="AMEND_ID",nullable=false)
 	private Integer amendId;
 
+	@Id
 	@Column(name="USER_TYPE",length=20)
 	private String userType;
 	
+	@Id
 	@Column(name="SUB_USER_TYPE",length=20)
 	private String subUserType;
 	

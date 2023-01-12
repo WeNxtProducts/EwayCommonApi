@@ -13,14 +13,11 @@ public class PaymentMasterDropDownRes {
 
 	
 	
-	@JsonProperty("CashYn")
-	private String cashYn;
+	@JsonProperty("Code")
+	private String code;
 
-	@JsonProperty("ChequeYn")
-	private String chequeYn;
-	
-	@JsonProperty("CreditYn")
-	private String creditYn;
-	
+	@JsonProperty("CodeDesc")
+	private String codeDesc;
+
 		
 }
