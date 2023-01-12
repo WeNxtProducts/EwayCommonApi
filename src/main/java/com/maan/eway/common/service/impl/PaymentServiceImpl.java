@@ -131,11 +131,23 @@ public class PaymentServiceImpl implements PaymentService {
 			// Premium Validation
 			if(StringUtils.isBlank(req.getPremium())) {
 				error.add(new Error("01","Premium","Please Enter Premium"));
+			} else if (! req.getPremium().matches("[0-9.]+") )  {
+				error.add(new Error("01","Premium","Please Enter Valid Premium"));
+				
 			} else if (StringUtils.isNotBlank(req.getEmiYn()) && req.getEmiYn().equalsIgnoreCase("Y") && StringUtils.isNotBlank(req.getInstallmentMonth()) 
 					&& StringUtils.isNotBlank(req.getInstallmentPeriod())  )  {
-				
+				EmiTransactionDetails  emiDetails = emiRepo.findByQuoteNoAndInstalmentAndInstallmentPeriod(req.getQuoteNo() ,req.getInstallmentMonth() , req.getInstallmentPeriod());
+				Double premium =  Double.valueOf (req.getPremium());
+				if(premium < emiDetails.getAdvanceAmount() ) {
+					error.add(new Error("01","Premium","Premium Mismatched. Given Premium : " + req.getPremium() + " Policy Premium :" + emiDetails.getAdvanceAmount()));
+				}
 			} else  {
-				HomePositionMaster  findQuote = 
+				HomePositionMaster  findQuote = homerepo.findByQuoteNo(req.getQuoteNo());
+				Double premium =  Double.valueOf (req.getPremium());
+				if(premium < findQuote.getOverallPremiumLc() ) {
+					error.add(new Error("01","Premium","Premium Mismatched. Given Premium : " + req.getPremium() + " Policy Premium :" +  findQuote.getOverallPremiumLc()));
+				}
+				
 			}
 			
 			
@@ -157,13 +169,9 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			List<PaymentInfo> datas = paymentinforepo.findByQuoteNoOrderByEntryDateDesc(req.getQuoteNo());
 		
-			List<PaymentInfo> filterPendings = datas.stream().filter( o -> o.getPaymentStatus().equalsIgnoreCase("Pending") ).collect(Collectors.toList());		
 			List<PaymentInfo> filterAccepted = datas.stream().filter( o -> o.getPaymentStatus().equalsIgnoreCase("Accepted") ).collect(Collectors.toList());		
 			
-			if(filterPendings.size()> 0) {
-				error.add(new Error("01","PaymentId","Already One Payment Id Pending Against This Quote No"));
-			}
-			
+		
 			if(filterAccepted.size()> 0) {
 				if ( req.getEmiYn().equalsIgnoreCase("Y" ) && StringUtils.isNotBlank(req.getInstallmentMonth()) && StringUtils.isNotBlank(req.getInstallmentPeriod()) )  {
 					
@@ -193,63 +201,73 @@ public class PaymentServiceImpl implements PaymentService {
 		// TODO Auto-generated method stub
 		MakePaymentRes res = new MakePaymentRes();
 		try {
-			//Find data from home Position Master
-			HomePositionMaster data = homerepo.findByQuoteNo(req.getQuoteNo());
-			PersonalInfo personaldata = personalrepo.findByCustomerId(data.getCustomerId());
-			String productName =   getCompanyProductMasterDropdown(data.getCompanyId() , data.getProductId().toString()); //productRepo.findByProductIdOrderByAmendIdDesc(Integer.valueOf(req.getProductId()));
-			String companyName =  getInscompanyMasterDropdown(data.getCompanyId()) ; // companyRepo.findByCompanyIdOrderByAmendIdDesc(req.getCompanyId());
-			String branchName = getCompanyBranchMasterDropdown(data.getCompanyId() , data.getBranchCode());
+			List<PaymentInfo> datas = paymentinforepo.findByQuoteNoOrderByEntryDateDesc(req.getQuoteNo());
+			List<PaymentInfo> filterPendings = datas.stream().filter( o -> o.getPaymentStatus().equalsIgnoreCase("Pending") ).collect(Collectors.toList());
 			
+			String paymentId = "";
 			
-			String paymentId = generatePaymentid();
+			if (filterPendings.size() <= 0 ) {
+				//Find data from home Position Master
+				HomePositionMaster data = homerepo.findByQuoteNo(req.getQuoteNo());
+				PersonalInfo personaldata = personalrepo.findByCustomerId(data.getCustomerId());
+				String productName =   getCompanyProductMasterDropdown(data.getCompanyId() , data.getProductId().toString()); //productRepo.findByProductIdOrderByAmendIdDesc(Integer.valueOf(req.getProductId()));
+				String companyName =  getInscompanyMasterDropdown(data.getCompanyId()) ; // companyRepo.findByCompanyIdOrderByAmendIdDesc(req.getCompanyId());
+				String branchName = getCompanyBranchMasterDropdown(data.getCompanyId() , data.getBranchCode());
+				
+				
+				paymentId = generatePaymentid();
+				
+				// Save Paymetn Info
+				PaymentInfo paymentinfo = new PaymentInfo();
+				paymentinfo.setAddress1(personaldata.getAddress1());
+				paymentinfo.setAmentId(0);
+				paymentinfo.setBranchCode(data.getBranchCode());
+				paymentinfo.setBranchName(branchName);
+				paymentinfo.setCompanyId(data.getCompanyId());
+				paymentinfo.setCompanyName(companyName);
+				paymentinfo.setCreatedBy(req.getCreatedBy());
+				paymentinfo.setCustomerCity(personaldata.getCityName());
+				paymentinfo.setCustomerName(personaldata.getClientName() );
+				paymentinfo.setEmailId(personaldata.getEmail1());
+				paymentinfo.setEmiYn(req.getEmiYn());
+				paymentinfo.setEntryDate(new Date());
+				paymentinfo.setLoginId(req.getCreatedBy()); 
+				paymentinfo.setMerchantReference("");
+				paymentinfo.setMobileNo(personaldata.getMobileNo1());
+				paymentinfo.setPaymentId(paymentId);
+				paymentinfo.setPaymentStatus("PENDING");			
+				paymentinfo.setPolicyEndDate(data.getExpiryDate());
+				paymentinfo.setPolicyStartDate(data.getInceptionDate() );
+				paymentinfo.setPremium(new BigDecimal(req.getPremium()));
+				paymentinfo.setProductId(data.getProductId());
+				paymentinfo.setProductDesc(productName);
+				paymentinfo.setQuoteNo(req.getQuoteNo());
+				paymentinfo.setRemarks(req.getRemarks());
+				paymentinfo.setShorternUrl("");
+				paymentinfo.setStatus("Y");			;
+				paymentinfo.setSubUserType(req.getSubUserType());
+				paymentinfo.setUpdatedBy(req.getCreatedBy());
+				paymentinfo.setUpdatedDate(new Date());
+				paymentinfo.setUserType(req.getUserType());
+	//			Integer validateHour = Integer.valueOf(getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_VALIDATE_HOUR"));
+	//			Integer validateMinutes = Integer.valueOf(getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_VALIDATE_MINUTES"));
+	//			Date today  = new Date();
+	//			Calendar cal = new GregorianCalendar(); 
+	//			cal.setTime(today);
+	//			cal.set(Calendar.HOUR_OF_DAY, +validateHour);
+	//			cal.set(Calendar.MINUTE, +validateMinutes);
+	//			Date validateDate = cal.getTime();
+	//			
+	//			paymentinfo.setValidityDate(validateDate);
+				
+				paymentinforepo.save(paymentinfo);
+				log.info("Saved Details " + json.toJson(paymentinfo));
+				
+			} else {
+				paymentId = filterPendings.get(0).getPaymentId() ;
+			}
 			
-			// Save Paymetn Info
-			PaymentInfo paymentinfo = new PaymentInfo();
-			paymentinfo.setAddress1(personaldata.getAddress1());
-			paymentinfo.setAmentId(0);
-			paymentinfo.setBranchCode(data.getBranchCode());
-			paymentinfo.setBranchName(branchName);
-			paymentinfo.setCompanyId(data.getCompanyId());
-			paymentinfo.setCompanyName(companyName);
-			paymentinfo.setCreatedBy(req.getCreatedBy());
-			paymentinfo.setCustomerCity(personaldata.getCityName());
-			paymentinfo.setCustomerName(personaldata.getClientName() );
-			paymentinfo.setEmailId(personaldata.getEmail1());
-			paymentinfo.setEmiYn(req.getEmiYn());
-			paymentinfo.setEntryDate(new Date());
-			paymentinfo.setLoginId(req.getCreatedBy()); 
-			paymentinfo.setMerchantReference("");
-			paymentinfo.setMobileNo(personaldata.getMobileNo1());
-			paymentinfo.setPaymentId(paymentId);
-			paymentinfo.setPaymentStatus("PENDING");			
-			paymentinfo.setPolicyEndDate(data.getExpiryDate());
-			paymentinfo.setPolicyStartDate(data.getInceptionDate() );
-			paymentinfo.setPremium(new BigDecimal(req.getPremium()));
-			paymentinfo.setProductId(data.getProductId());
-			paymentinfo.setProductDesc(productName);
-			paymentinfo.setQuoteNo(req.getQuoteNo());
-			paymentinfo.setRemarks(req.getRemarks());
-			paymentinfo.setShorternUrl("");
-			paymentinfo.setStatus("Y");			;
-			paymentinfo.setSubUserType(req.getSubUserType());
-			paymentinfo.setUpdatedBy(req.getCreatedBy());
-			paymentinfo.setUpdatedDate(new Date());
-			paymentinfo.setUserType(req.getUserType());
-//			Integer validateHour = Integer.valueOf(getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_VALIDATE_HOUR"));
-//			Integer validateMinutes = Integer.valueOf(getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_VALIDATE_MINUTES"));
-//			Date today  = new Date();
-//			Calendar cal = new GregorianCalendar(); 
-//			cal.setTime(today);
-//			cal.set(Calendar.HOUR_OF_DAY, +validateHour);
-//			cal.set(Calendar.MINUTE, +validateMinutes);
-//			Date validateDate = cal.getTime();
-//			
-//			paymentinfo.setValidityDate(validateDate);
-			
-			paymentinforepo.save(paymentinfo);
-			
-			log.info("Saved Details " + json.toJson(paymentinfo));
-			res.setPaymentId(paymentinfo.getPaymentId().toString());
+			res.setPaymentId(paymentId);
 			res.setQuoteNo(req.getQuoteNo());
 			res.setResponse("Saved Successful");
 		}
@@ -787,7 +805,7 @@ public class PaymentServiceImpl implements PaymentService {
 				
 				if(filterAccepted.size()> 0) {
 					PaymentInfo paymentInfo = paymentinforepo.findByQuoteNoAndPaymentId(req.getQuoteNo(), req.getPaymentId());
-					if ( req.getEmiYn().equalsIgnoreCase("Y" ) && StringUtils.isNotBlank(paymentInfo.getInstallmentMonth()) && StringUtils.isNotBlank(paymentInfo.getInstallmentPeriod()) )  {
+					if ( paymentInfo.getEmiYn().equalsIgnoreCase("Y" ) && StringUtils.isNotBlank(paymentInfo.getInstallmentMonth()) && StringUtils.isNotBlank(paymentInfo.getInstallmentPeriod()) )  {
 						
 						List<PaymentInfo> filterEmi = datas.stream().filter( o -> o.getPaymentStatus().equalsIgnoreCase("Accepted") && o.getInstallmentMonth().equalsIgnoreCase(paymentInfo.getInstallmentMonth()) && 
 								  						o.getInstallmentPeriod().equalsIgnoreCase(paymentInfo.getInstallmentPeriod()) ).collect(Collectors.toList());
