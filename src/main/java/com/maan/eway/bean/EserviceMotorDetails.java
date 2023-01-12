@@ -87,6 +87,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="INSURANCE_TYPE_DESC", length=100)
     private String     insuranceTypeDesc ;
 
+
+    @Column(name="POLICY_NO", length=100)
+    private String     policyNo;
+
+    
     @Column(name="MOTOR_CATEGORY", length=1)
     private String     motorCategory ;
 

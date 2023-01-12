@@ -25,9 +25,9 @@ public class WarrantyMasterSaveReq {
 	@JsonProperty("ProductId")
 	private String productId;
 	
-//	@JsonProperty("SectionId")
-//	private String sectionId;
-//	
+	@JsonProperty("SectionId")
+	private String sectionId;
+	
 //	@JsonProperty("PolicyType")
 //	private String policyType;
 	
@@ -60,5 +60,8 @@ public class WarrantyMasterSaveReq {
 	
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
+	
+	@JsonProperty("DocRefNo")
+	private String docRefNo;
 	
 }

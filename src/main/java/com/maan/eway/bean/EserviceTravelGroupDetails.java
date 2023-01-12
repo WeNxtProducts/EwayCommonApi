@@ -63,6 +63,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="GROUP_ID")
     private Integer    groupId ;
 
+    @Column(name="POLICY_NO", length=100)
+    private String     policyNo;
+
+    
     @Column(name="GROUP_MEMBERS")
     private Integer    grouppMembers ;
 

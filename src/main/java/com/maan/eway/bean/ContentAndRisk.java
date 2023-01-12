@@ -65,6 +65,9 @@ public class ContentAndRisk implements Serializable {
 	@Column(name = "QUOTE_NO", length = 20)
 	private String quoteNo;
 	
+	@Column(name="POLICY_NO", length=100)
+    private String     policyNo;
+
 	
 	@Column(name = "ITEM_DESC", length = 100)
 	private String itemDesc;

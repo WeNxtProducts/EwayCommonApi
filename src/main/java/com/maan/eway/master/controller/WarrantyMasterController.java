@@ -43,7 +43,7 @@ private PrintReqService reqPrinter;
 
 @PostMapping("/insertwarranty")
 @ApiOperation(value="This Method is to save Waranty Master")
-public ResponseEntity<CommonRes> saveWarranty(@RequestBody WarrantyMasterSaveReq req){
+public ResponseEntity<CommonRes> saveWarranty(@RequestBody List<WarrantyMasterSaveReq> req){
 	CommonRes data = new CommonRes();
 	reqPrinter.reqPrint(req);
 	

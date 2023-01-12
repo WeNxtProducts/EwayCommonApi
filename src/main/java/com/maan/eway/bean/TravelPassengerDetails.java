@@ -117,6 +117,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="NAME_TITLE_DESC", length=10)
     private String     nameTitleDesc ;
 
+    @Column(name="POLICY_NO", length=100)
+    private String     policyNo;
+
+    
     @Column(name="NAME_TITLE_ID")
     private Integer    nameTitleId ;
 

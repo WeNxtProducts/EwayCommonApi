@@ -128,4 +128,7 @@ public class PersonalAccident implements Serializable {
 	@Column(name = "TYPE_DESC", length = 100)
 	private String typeDesc;
 
+	@Column(name="POLICY_NO", length=100)
+    private String     policyNo;
+
 }

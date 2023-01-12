@@ -22,9 +22,9 @@ import com.maan.eway.res.SuccessRes;
 */
 public interface WarrantyMasterService  {
 
-	List<Error> validateWarranty(WarrantyMasterSaveReq req);
+	List<Error> validateWarranty(List<WarrantyMasterSaveReq> req);
 
-	SuccessRes saveWarranty(WarrantyMasterSaveReq req);
+	SuccessRes saveWarranty(List<WarrantyMasterSaveReq> req);
 
 	List<WarrantyMasterRes> getallWarranty(WarrantyMasterGetallReq req);
 

@@ -25,8 +25,8 @@ public class WarrantyChangeStatusReq {
 	@JsonProperty("ProductId")
 	private String productId;
 
-//	@JsonProperty("SectionId")
-//	private String sectionId;
+	@JsonProperty("SectionId")
+	private String sectionId;
 //
 //	@JsonProperty("PolicyType")
 //	private String policyType;
