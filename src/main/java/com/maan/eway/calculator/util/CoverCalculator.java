@@ -38,7 +38,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 t.setProRata(new BigDecimal("1"));
 				 if(prorata!=null) {
 					 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
-					 t.setProRata(percenat.divide(new BigDecimal("100"),round));
+					 t.setProRata(percenat.divide(new BigDecimal("100")).setScale(round.getPrecision(),RoundingMode.HALF_UP));
 				 }
 				 
 				 /// this particular variable is for is rate defined for Single
@@ -119,7 +119,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 
 				 
 				 
-				 t.setPremiumAfterDiscount( t.getPremiumBeforeDiscount().subtract(new BigDecimal(totaldiscount,round)).add(new BigDecimal(totalloading,round)).multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
+				 t.setPremiumAfterDiscount( t.getPremiumBeforeDiscount().subtract(new BigDecimal(totaldiscount)).add(new BigDecimal(totalloading)).multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
 				 t.setPremiumAfterDiscountLC(t.getPremiumAfterDiscount().multiply(t.getExchangeRate()).multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
 				 
 				 t.setPremiumExcluedTax(t.getPremiumAfterDiscount());
@@ -127,7 +127,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 
 				 // Minimium Premium setup.
 				 if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0) {
-					 t.setPremiumExcluedTax(t.getMinimumPremium().divide(t.getExchangeRate(),round)); 
+					 t.setPremiumExcluedTax(t.getMinimumPremium().divide(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP)); 
 					 t.setPremiumExcluedTaxLC(t.getMinimumPremium());
 				 }
 				 
@@ -138,7 +138,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					 totaltax = t.getTaxes().stream().mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
 				 }
 				 
-				 t.setPremiumIncludedTax(t.getPremiumExcluedTax().add(new BigDecimal(totaltax,round)));				 
+				 t.setPremiumIncludedTax(t.getPremiumExcluedTax().add(new BigDecimal(totaltax)));				 
 				 t.setPremiumIncludedTaxLC(t.getPremiumIncludedTax().multiply(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
 			 }
 			 
