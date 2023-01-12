@@ -13,6 +13,9 @@ public class PaymentDetailsSaveReq {
 	@JsonProperty("PaymentId")
 	private String paymentId;
 	
+	@JsonProperty("PaymentType")
+	private String paymentType;
+	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
@@ -28,7 +31,4 @@ public class PaymentDetailsSaveReq {
 	@JsonProperty("InsuranceId")
 	private String insuranceId;
 	
-	@JsonProperty("EmiYn")
-	private String emiYn;
-
 }

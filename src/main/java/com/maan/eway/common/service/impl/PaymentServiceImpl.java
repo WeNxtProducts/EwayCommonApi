@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -30,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
@@ -53,6 +55,7 @@ import com.maan.eway.common.res.PaymentInfoGetRes;
 import com.maan.eway.common.service.PaymentService;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.service.impl.ClausesMasterServiceImpl;
+import com.maan.eway.repository.EmiTransactionDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
@@ -76,6 +79,10 @@ public class PaymentServiceImpl implements PaymentService {
 	
 	@Autowired
 	private HomePositionMasterRepository homerepo;
+	
+	@Autowired
+	private EmiTransactionDetailsRepository emiRepo;
+	
 	
 	@Autowired
 	private ListItemValueRepository listrepo;
@@ -121,9 +128,16 @@ public class PaymentServiceImpl implements PaymentService {
 				}
 			}
 			
+			// Premium Validation
 			if(StringUtils.isBlank(req.getPremium())) {
 				error.add(new Error("01","Premium","Please Enter Premium"));
+			} else if (StringUtils.isNotBlank(req.getEmiYn()) && req.getEmiYn().equalsIgnoreCase("Y") && StringUtils.isNotBlank(req.getInstallmentMonth()) 
+					&& StringUtils.isNotBlank(req.getInstallmentPeriod())  )  {
+				
+			} else  {
+				HomePositionMaster  findQuote = 
 			}
+			
 			
 			if(StringUtils.isBlank(req.getCreatedBy())) {
 				error.add(new Error("01","CreatedBy","Please Enter CreatedBy"));
@@ -141,33 +155,30 @@ public class PaymentServiceImpl implements PaymentService {
 				error.add(new Error("01","InsuranceId","Please Enter InsuranceId"));
 			}
 			
-			Integer count = 0;
 			List<PaymentInfo> datas = paymentinforepo.findByQuoteNoOrderByEntryDateDesc(req.getQuoteNo());
-			for (PaymentInfo data1 : datas) {
-
-				if (data1.getEmiYn().equalsIgnoreCase("N")) {
-					if ((data1.getPaymentStatus().equalsIgnoreCase("PENDING"))
-							|| (data1.getPaymentStatus().equalsIgnoreCase("ACCEPTED"))) {
-						count++;
-					}
-				}
-
-				else if (data1.getEmiYn().equalsIgnoreCase("Y")) {
-					if (data1.getPaymentStatus().equalsIgnoreCase("PENDING")) {
-						count++;
-					} else if (data1.getPaymentStatus().equalsIgnoreCase("ACCEPTED")) {
-						if ((data1.getInstallmentPeriod().equalsIgnoreCase(req.getInstallmentPeriod()))
-								&& (data1.getInstallmentMonth().equalsIgnoreCase(req.getInstallmentMonth()))) {
-							count++;
-						}
-					}
-				}
-
-			}
-			if (count > 0) {
-				error.add(new Error("03", "PaymentId", "Payment Status is Pending or Accepted for this quote No"));
+		
+			List<PaymentInfo> filterPendings = datas.stream().filter( o -> o.getPaymentStatus().equalsIgnoreCase("Pending") ).collect(Collectors.toList());		
+			List<PaymentInfo> filterAccepted = datas.stream().filter( o -> o.getPaymentStatus().equalsIgnoreCase("Accepted") ).collect(Collectors.toList());		
+			
+			if(filterPendings.size()> 0) {
+				error.add(new Error("01","PaymentId","Already One Payment Id Pending Against This Quote No"));
 			}
 			
+			if(filterAccepted.size()> 0) {
+				if ( req.getEmiYn().equalsIgnoreCase("Y" ) && StringUtils.isNotBlank(req.getInstallmentMonth()) && StringUtils.isNotBlank(req.getInstallmentPeriod()) )  {
+					
+					List<PaymentInfo> filterEmi = datas.stream().filter( o -> o.getPaymentStatus().equalsIgnoreCase("Accepted") && o.getInstallmentMonth().equalsIgnoreCase(req.getInstallmentMonth()) && 
+							  						o.getInstallmentPeriod().equalsIgnoreCase(req.getInstallmentPeriod()) ).collect(Collectors.toList());
+					if(filterEmi.size()>0 ) {
+						error.add(new Error("01","PaymentId","Already One Payment Id Accepted Against This Quote No"));
+					}
+				
+				} else {
+					error.add(new Error("01","PaymentId","Already One Payment Id Accepted Against This Quote No"));
+				}
+				
+				
+			}
 			
 		} catch (Exception e) {
 			log.error(e);
@@ -742,39 +753,77 @@ public class PaymentServiceImpl implements PaymentService {
 				error.add(new Error("01","InsuranceId","Please Enter InsuranceId"));
 			}
 			
+			// Check Paymetn Info
 			if (StringUtils.isNotBlank(req.getQuoteNo()) && StringUtils.isNotBlank(req.getPaymentId()) ) {
 				PaymentInfo paymentInfo = paymentinforepo.findByQuoteNoAndPaymentId(req.getQuoteNo(), req.getPaymentId());
 				
 				if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Accepted") ) {
-					error.add(new Error("01","Accepted","This Payment Already Accepted From Bank Side"));
+					error.add(new Error("01","Accepted","This Payment Already Accepted "));
 					
 				} else if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Rejected") ) {
-					error.add(new Error("01","Rejected","This Payment Already Rejected From Bank Side"));
+					error.add(new Error("01","Rejected","This Payment Already Rejected "));
 					
-				} else if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Accepted") ) {
+				} else if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Cancelled") ) {
 					error.add(new Error("01","Cancelled","This Payment Already Cancelled"));
 					
-				} else if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Pending") )  {
-					error.add(new Error("01","Cancelled","This Payment Already Cancelled"));
+				} else if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Pending") && StringUtils.isNotBlank(paymentInfo.getMerchantReference())  )  {
+					error.add(new Error("01","Cancelled","This Payment Already Pending"));
 				}
 				
 			}
 			
-			Integer count = 0;
-			List<PaymentDetail> datas = paymentdetailrepo.findByQuoteNoOrderByEntryDateDesc(req.getQuoteNo());
-			for (PaymentDetail data1 : datas) {
-
-					if ((data1.getPaymentStatus().equalsIgnoreCase("PENDING"))
-							|| (data1.getPaymentStatus().equalsIgnoreCase("ACCEPTED"))
-							|| (data1.getPaymentStatus().equalsIgnoreCase("REJECTED"))
-							) {
-						count++;
+			
+			
+			// Other Payment Id Validation
+			List<PaymentInfo> datas = paymentinforepo.findByQuoteNoOrderByEntryDateDesc(req.getQuoteNo());
+			
+			if (datas.size() > 0 ) {
+				List<PaymentInfo> filterPendings = datas.stream().filter( o -> o.getPaymentStatus().equalsIgnoreCase("Pending") && ! o.getPaymentId().equalsIgnoreCase(req.getPaymentId()) ) .collect(Collectors.toList());		
+				List<PaymentInfo> filterAccepted = datas.stream().filter( o -> o.getPaymentStatus().equalsIgnoreCase("Accepted") && ! o.getPaymentId().equalsIgnoreCase(req.getPaymentId())  ).collect(Collectors.toList());		
+				
+				if(filterPendings.size()> 0) {
+					error.add(new Error("01","PaymentId","Already One Payment Id Pending Against This Quote No"));
+				}
+				
+				if(filterAccepted.size()> 0) {
+					PaymentInfo paymentInfo = paymentinforepo.findByQuoteNoAndPaymentId(req.getQuoteNo(), req.getPaymentId());
+					if ( req.getEmiYn().equalsIgnoreCase("Y" ) && StringUtils.isNotBlank(paymentInfo.getInstallmentMonth()) && StringUtils.isNotBlank(paymentInfo.getInstallmentPeriod()) )  {
+						
+						List<PaymentInfo> filterEmi = datas.stream().filter( o -> o.getPaymentStatus().equalsIgnoreCase("Accepted") && o.getInstallmentMonth().equalsIgnoreCase(paymentInfo.getInstallmentMonth()) && 
+								  						o.getInstallmentPeriod().equalsIgnoreCase(paymentInfo.getInstallmentPeriod()) ).collect(Collectors.toList());
+						if(filterEmi.size()>0 ) {
+							error.add(new Error("01","PaymentId","Already One Payment Id Accepted Against This Quote No"));
+						}
+					
+					} else {
+						error.add(new Error("01","PaymentId","Already One Payment Id Accepted Against This Quote No"));
 					}
+					
+					
+				}
 			}
-			if (count > 0) {
-				error.add(new Error("03", "PaymentId", "Payment Status is Pending or Accepted or Rejected for this quote No"));
+			
+			List<PaymentDetail> pays = paymentdetailrepo.findByQuoteNoOrderByEntryDateDesc(req.getQuoteNo());
+			if ( pays.size() > 0 ) {
+				List<PaymentDetail> filterAccepted = pays.stream().filter( o -> o.getPaymentStatus().equalsIgnoreCase("Accepted") &&  o.getPaymentId().equalsIgnoreCase(req.getPaymentId())  ).collect(Collectors.toList());		
+				
+				if(filterAccepted.size()> 0) {
+					PaymentInfo paymentInfo = paymentinforepo.findByQuoteNoAndPaymentId(req.getQuoteNo(), req.getPaymentId());
+					if ( paymentInfo.getEmiYn().equalsIgnoreCase("Y" ) && StringUtils.isNotBlank(paymentInfo.getInstallmentMonth()) && StringUtils.isNotBlank(paymentInfo.getInstallmentPeriod()) )  {
+						
+						List<PaymentDetail> filterEmi = pays.stream().filter( o -> o.getPaymentStatus().equalsIgnoreCase("Accepted") && o.getInstallmentMonth().equalsIgnoreCase(paymentInfo.getInstallmentMonth()) && 
+								  						o.getInstallmentPeriod().equalsIgnoreCase(paymentInfo.getInstallmentPeriod()) ).collect(Collectors.toList());
+						if(filterEmi.size()>0 ) {
+							error.add(new Error("01","PaymentId","Already One Payment Id Accepted Against This Quote No"));
+						}
+					
+					} else {
+						error.add(new Error("01","PaymentId","Already One Payment Id Accepted Against This Quote No"));
+					}
+				}
+				
+				
 			}
-
 			
 			
 		} catch (Exception e) {
@@ -798,7 +847,7 @@ public class PaymentServiceImpl implements PaymentService {
 			String companyName =  getInscompanyMasterDropdown(data.getCompanyId()) ; // companyRepo.findByCompanyIdOrderByAmendIdDesc(req.getCompanyId());
 			String branchName = getCompanyBranchMasterDropdown(data.getCompanyId() , data.getBranchCode());
 			
-			
+			PaymentInfo paymentInfo = paymentinforepo.findByQuoteNoAndPaymentId(req.getQuoteNo(), req.getPaymentId());
 			String refno = generateMerchantReferenceNo();
 			
 			// Save Paymetn Info
@@ -817,6 +866,9 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentDetail.setPaymentId(req.getPaymentId());
 			paymentDetail.setCustomerEmail(personaldata.getEmail1());
 			paymentDetail.setCustomerId(personaldata.getCustomerId());
+			paymentDetail.setEmiYn(refno);
+			paymentDetail.setInstallmentMonth(paymentInfo.getInstallmentMonth());
+			paymentDetail.setInstallmentPeriod(paymentInfo.getInstallmentPeriod());
 			paymentDetail.setPaymentType(null);
 			paymentDetail.setPremium(data.getPremiumLc());
 			paymentDetail.setReqBillToAddressCity(personaldata.getPlaceOfBirth());
