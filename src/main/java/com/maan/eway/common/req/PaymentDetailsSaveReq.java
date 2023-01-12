@@ -27,4 +27,8 @@ public class PaymentDetailsSaveReq {
 	
 	@JsonProperty("InsuranceId")
 	private String insuranceId;
+	
+	@JsonProperty("EmiYn")
+	private String emiYn;
+
 }

@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -197,6 +196,17 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_BY", length=100)
     private String     updatedBy;
 
+    @Column(name="EMI_YN", length=100)
+    private String     emiYn ;
+    
+    @Column(name="INSTALLMENT_MONTH", length=20)
+    private String     installmentMonth;
+    
+    @Column(name="INSTALLMENT_PERIOD", length=20)
+    private String     installmentPeriod;
+
+    
+    
 }
 
 
