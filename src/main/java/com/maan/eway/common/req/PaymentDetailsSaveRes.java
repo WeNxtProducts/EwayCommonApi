@@ -18,4 +18,13 @@ public class PaymentDetailsSaveRes {
 	
 	@JsonProperty("MerchantReference")
 	private String merchantReference;
+	
+	@JsonProperty("PolicyNo")
+	private String policyNo;
+	
+	@JsonProperty("DebitNoteNo")
+	private String debitNoteNo;
+	
+	@JsonProperty("CreditNoteNo")
+	private String creditNoteNo;
 }

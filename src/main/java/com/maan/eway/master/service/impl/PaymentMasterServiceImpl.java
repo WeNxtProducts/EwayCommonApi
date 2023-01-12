@@ -631,7 +631,7 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 		// Payment Types
 		ListItemValue cash = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("Cash") ).collect(Collectors.toList()).get(0) ; 
 		ListItemValue credit = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("Credit") ).collect(Collectors.toList()).get(0) ; 
-		ListItemValue cheque = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("Cash") ).collect(Collectors.toList()).get(0) ; 
+		ListItemValue cheque = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("Cheque") ).collect(Collectors.toList()).get(0) ; 
 	
 		
 		if(list.size()>0 ) {

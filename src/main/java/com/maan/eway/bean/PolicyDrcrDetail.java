@@ -73,8 +73,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="PRODUCT_ID", nullable=false, length=10)
     private String     productId ;
 
-    @Id
-    @Column(name="SECTION_ID", nullable=false, length=10)
+  //  @Id
+    @Column(name="SECTION_ID",  length=10)
     private String     sectionId ;
 
     @Id

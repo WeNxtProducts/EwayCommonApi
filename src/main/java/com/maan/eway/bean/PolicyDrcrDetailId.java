@@ -40,7 +40,7 @@ public class PolicyDrcrDetailId implements Serializable {
     
     private String     productId ;
     
-    private String     sectionId ;
+   // private String     sectionId ;
     
     private String     branchCode ;
     

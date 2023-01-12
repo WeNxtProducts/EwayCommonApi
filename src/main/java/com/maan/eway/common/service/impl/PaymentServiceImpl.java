@@ -3,11 +3,15 @@ package com.maan.eway.common.service.impl;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -15,6 +19,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -25,16 +31,22 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.CoverDocumentMaster;
+import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.EmiTransactionDetails;
+import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PaymentRefno;
@@ -54,6 +66,7 @@ import com.maan.eway.common.res.PaymentDetailGetRes;
 import com.maan.eway.common.res.PaymentInfoGetRes;
 import com.maan.eway.common.service.PaymentService;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CoverDocumentMasterGetReq;
 import com.maan.eway.master.service.impl.ClausesMasterServiceImpl;
 import com.maan.eway.repository.EmiTransactionDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
@@ -64,7 +77,11 @@ import com.maan.eway.repository.PaymentInfoRepository;
 import com.maan.eway.repository.PaymentRefnoRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.SeqPaymentidRepository;
+import com.maan.eway.req.calcengine.CalcCommission;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+import com.maan.eway.res.calc.DebitAndCredit;
+import com.maan.eway.service.CalculatorEngine;
 
 @Service
 @Transactional
@@ -96,11 +113,21 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired
 	private PaymentRefnoRepository seqRefNorepo;
 	
+	@Autowired
+	private CalculatorEngine calcService;
 	
 	@PersistenceContext
 	private EntityManager em;
 	
-
+	@Value(value = "${motor.productId}")
+	private String motorProductId;
+	
+	@Value(value = "${travel.productId}")
+	private String travelProductId;
+	
+	@Value(value = "${building.productId}")
+	private String buildingProductId;
+	
 	@Autowired
 	private LoginBranchMasterRepository lbranchRepo ;
 	
@@ -188,6 +215,9 @@ public class PaymentServiceImpl implements PaymentService {
 				
 			}
 			
+			// Doc Validation
+		//	List<CoverDocumentUploadDetails> uploaded Docs = 
+			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
@@ -195,6 +225,86 @@ public class PaymentServiceImpl implements PaymentService {
 		return error;
 	}
 	
+	
+	public List<CoverDocumentMaster> getCoverDocumentMasterMandatoryDocs(String companyId , String productId , List<String> sectionIds  ) {
+		List<CoverDocumentMaster> list = new ArrayList<CoverDocumentMaster>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CoverDocumentMaster> query = cb.createQuery(CoverDocumentMaster.class);
+			
+			// Find All
+			Root<CoverDocumentMaster> c = query.from(CoverDocumentMaster.class);
+
+			// Select
+			query.select(c);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("documentName")));
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CoverDocumentMaster> ocpm1 = effectiveDate.from(CoverDocumentMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			javax.persistence.criteria.Predicate a2 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
+			javax.persistence.criteria.Predicate a4 = cb.equal(c.get("coverId"), ocpm1.get("coverId"));
+			Predicate a11 = cb.equal(c.get("documentId"), ocpm1.get("documentId"));
+			javax.persistence.criteria.Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3, a4, a5,a11);
+			// Effective Date End
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CoverDocumentMaster> ocpm2 = effectiveDate2.from(CoverDocumentMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a6 = cb.equal(c.get("sectionId"), ocpm2.get("sectionId"));
+			Predicate a7 = cb.equal(c.get("coverId"), ocpm2.get("coverId"));
+			Predicate a8 = cb.equal(c.get("companyId"), ocpm2.get("companyId") );
+			Predicate a9 = cb.equal(c.get("productId"), ocpm2.get("productId") );
+			Predicate a12 = cb.equal(c.get("documentId"), ocpm2.get("documentId"));
+			Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a6,a7,a8,a9,a10,a12);
+					
+			//In 
+			Expression<String>e0=c.get("sectionId");
+			
+			// Where
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"),companyId);
+			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), productId);
+			javax.persistence.criteria.Predicate n5 = e0.in(sectionIds);
+			javax.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			query.where(n1, n2, n3, n4, n5,n6).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<CoverDocumentMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getDocumentId()))).collect(Collectors.toList());
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return list;
+	}
+	
+	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
 	
 	@Override
 	public synchronized MakePaymentRes savemakepayment(MakePaymentSaveReq req) {
@@ -770,6 +880,9 @@ public class PaymentServiceImpl implements PaymentService {
 			if(StringUtils.isBlank(req.getInsuranceId())) {
 				error.add(new Error("01","InsuranceId","Please Enter InsuranceId"));
 			}
+			if(StringUtils.isBlank(req.getPaymentType())) {
+				error.add(new Error("01","PaymentType","Please Select PaymentType"));
+			}
 			
 			// Check Paymetn Info
 			if (StringUtils.isNotBlank(req.getQuoteNo()) && StringUtils.isNotBlank(req.getPaymentId()) ) {
@@ -853,8 +966,8 @@ public class PaymentServiceImpl implements PaymentService {
 
 
 	@Override
+	@Transactional
 	public PaymentDetailsSaveRes savePaymentDetails(PaymentDetailsSaveReq req) {
-		// TODO Auto-generated method stub
 		PaymentDetailsSaveRes res = new PaymentDetailsSaveRes();
 		DozerBeanMapper dozermapper = new DozerBeanMapper ();
 		try {
@@ -868,6 +981,8 @@ public class PaymentServiceImpl implements PaymentService {
 			PaymentInfo paymentInfo = paymentinforepo.findByQuoteNoAndPaymentId(req.getQuoteNo(), req.getPaymentId());
 			String refno = generateMerchantReferenceNo();
 			
+			String paymentStatus = "";
+			
 			// Save Paymetn Info
 			PaymentDetail paymentDetail = new PaymentDetail();
 			dozermapper.map(data,PaymentDetail.class);
@@ -877,14 +992,14 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentDetail.setCustomerName(personaldata.getClientName() );
 			paymentDetail.setEntryDate(new Date());
 			paymentDetail.setMerchantReference(refno);
-			paymentDetail.setPaymentStatus("PENDING");			
+			paymentDetail.setPaymentStatus(paymentStatus);			
 			paymentDetail.setQuoteNo(req.getQuoteNo());
 			paymentDetail.setUpdatedBy(req.getCreatedBy());
 			paymentDetail.setUpdatedDate(new Date());
 			paymentDetail.setPaymentId(req.getPaymentId());
 			paymentDetail.setCustomerEmail(personaldata.getEmail1());
 			paymentDetail.setCustomerId(personaldata.getCustomerId());
-			paymentDetail.setEmiYn(refno);
+			paymentDetail.setEmiYn(paymentInfo.getEmiYn() );
 			paymentDetail.setInstallmentMonth(paymentInfo.getInstallmentMonth());
 			paymentDetail.setInstallmentPeriod(paymentInfo.getInstallmentPeriod());
 			paymentDetail.setPaymentType(null);
@@ -900,12 +1015,96 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentDetail.setReqBillToSurname(personaldata.getClientName());
 			paymentDetail.setReqCardExpiryDate(null);
 			paymentDetail.setReqBillToCompanyName(companyName);
-			paymentdetailrepo.save(paymentDetail);
 			
+			Integer validateHour = Integer.valueOf(getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_VALIDATE_HOUR"));
+			Integer validateMinutes = Integer.valueOf(getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_VALIDATE_MINUTES"));
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, +validateHour);
+			cal.set(Calendar.MINUTE, +validateMinutes);
+			Date validateDate = cal.getTime();
+			
+			paymentDetail.setValidityDate(validateDate);
+			paymentDetail.setShorternUrl(req.getShortenUrl());
+			
+			
+			if( req.getPaymentType().equalsIgnoreCase("Cash") ) {
+				paymentStatus = "ACCEPTED" ;
+				paymentDetail.setPaymentStatus(paymentStatus);
+			} else {
+				paymentStatus = "PENDING" ;
+				paymentDetail.setPaymentStatus(paymentStatus);
+			}
+			
+			
+			paymentdetailrepo.saveAndFlush(paymentDetail);
 			log.info("Saved Details " + json.toJson(paymentDetail));
+			
+			
+			// Update Payment Info
+			paymentInfo.setValidityDate(validateDate);
+			paymentInfo.setShorternUrl(req.getShortenUrl());
+			paymentInfo.setPaymentStatus(paymentStatus);
+			paymentinforepo.saveAndFlush(paymentInfo);
+			
+			// Update Emi 
+			if (  paymentInfo.getEmiYn().equalsIgnoreCase("Y" )) {
+				EmiTransactionDetails  emiDetails = emiRepo.findByQuoteNoAndInstalmentAndInstallmentPeriod(req.getQuoteNo() ,paymentInfo.getInstallmentMonth() , paymentInfo.getInstallmentPeriod());
+				emiDetails.setPaymentStatus(paymentStatus);
+				emiRepo.saveAndFlush(emiDetails);
+				
+			}
+			res.setResponse("Payment Success");
+			
+			// Policy Convertion
+			if(paymentStatus.equalsIgnoreCase("ACCEPTED") && ( paymentInfo.getEmiYn().equalsIgnoreCase("N") || paymentInfo.getInstallmentMonth().equalsIgnoreCase("0") )  ) {
+				List<DebitAndCredit> policyDetails = new ArrayList<DebitAndCredit>();
+				CalcCommission  policyReq = new CalcCommission();
+				policyReq.setAgencyCode("");
+				policyReq.setBranchCode(paymentInfo.getBranchCode());
+				policyReq.setCreatedBy(req.getCreatedBy());
+				policyReq.setInsuranceId(paymentInfo.getCompanyId());
+				policyReq.setPolicyNo("");
+				policyReq.setProductId(paymentInfo.getProductId().toString());
+				policyReq.setQuoteno(req.getQuoteNo());
+				policyReq.setSectionId("");
+				
+				policyDetails = calcService.commissionCalc(policyReq);
+				
+				List<DebitAndCredit> filterDebit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("DR")).collect(Collectors.toList());
+				List<DebitAndCredit> filterCredit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")).collect(Collectors.toList());
+				
+				String policyNo = policyDetails.get(0).getPolicyNo();
+				String debitNo = filterDebit.get(0).getDocNo() ;
+				Date debitDate = filterDebit.get(0).getEntryDate();
+				String creditNo =  filterCredit.get(0).getDocNo();
+				Date creditDate = filterCredit.get(0).getEntryDate();
+				
+				// Update Home Posion Master
+				data.setPolicyNo(policyNo);
+				data.setDebitNoteNo(debitNo);
+				data.setDebitNoteDate(debitDate);
+				data.setCreditNo(creditNo);
+				data.setCreditDate(creditDate);		
+				data.setStatus("P");
+				data.setIntegrationStatus("S");
+				homerepo.saveAndFlush(data);
+				
+				// Update ProductWise
+				String msg = updateProductWisePolicyNo(paymentInfo.getProductId().toString() ,policyNo ,req.getQuoteNo() ); 
+						
+				res.setPolicyNo(policyNo);
+				res.setDebitNoteNo(debitNo);
+				res.setCreditNoteNo(creditNo);
+				res.setResponse("Policy Converted");
+				
+				
+				
+			}
+			
 			res.setPaymentId(paymentDetail.getPaymentId().toString());
 			res.setQuoteNo(req.getQuoteNo());
-			res.setResponse("Saved Successful");
 			res.setMerchantReference(refno);
 			}
 		catch(Exception e) {
@@ -916,7 +1115,55 @@ public class PaymentServiceImpl implements PaymentService {
 		return res;
 	}
 	
-	
+	 public  String updateProductWisePolicyNo(String productId , String policyNo , String quoteNo ) {
+		 String res = "" ;
+	       try {
+	    	   if(productId.equalsIgnoreCase(motorProductId) ) {
+	    		   // Eservice Motor Update
+	    		   {
+	    		    CriteriaBuilder cb = em.getCriteriaBuilder();
+					// create update
+					CriteriaUpdate<EserviceMotorDetails> update = cb.createCriteriaUpdate(EserviceMotorDetails.class);
+					// set the root class
+					Root<EserviceMotorDetails> m = update.from(EserviceMotorDetails.class);
+					// set update and where clause
+					update.set("policyNo", policyNo);
+					update.set("status", "P");
+					
+					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
+					update.where(n1);
+					// perform update
+					em.createQuery(update).executeUpdate();
+					
+	    		   }
+	    		   // Motor Data Details Update
+	    		   {
+		    		    CriteriaBuilder cb = em.getCriteriaBuilder();
+						// create update
+						CriteriaUpdate<MotorDataDetails> update = cb.createCriteriaUpdate(MotorDataDetails.class);
+						// set the root class
+						Root<MotorDataDetails> m = update.from(MotorDataDetails.class);
+						// set update and where clause
+						update.set("policyNo", policyNo);
+						update.set("status", "P");
+						
+						Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
+						update.where(n1);
+						// perform update
+						em.createQuery(update).executeUpdate();
+						
+	    		   }
+	    	   }
+	    	   
+	    	   
+	    	   
+	        } catch (Exception e) {
+				e.printStackTrace();
+				log.info( "Exception is ---> " + e.getMessage());
+	            return null;
+	        }
+	       return res ;
+	 }
 	
 	
 

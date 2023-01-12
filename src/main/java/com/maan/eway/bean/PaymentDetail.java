@@ -89,6 +89,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="RESPONSE_STATUS", length=500)
     private String     responseStatus ;
 
+    @Column(name="VALIDITY_DATE")
+    private Date       validityDate ;
+
+    @Column(name="SHORTERN_URL", length=1000)
+    private String     shorternUrl ;
   
     @Column(name="CUSTOMER_EMAIL", length=500)
     private String     customerEmail ;

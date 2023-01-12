@@ -16,6 +16,9 @@ public class PaymentDetailsSaveReq {
 	@JsonProperty("PaymentType")
 	private String paymentType;
 	
+	@JsonProperty("ShortenUrl")
+	private String shortenUrl;
+	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	

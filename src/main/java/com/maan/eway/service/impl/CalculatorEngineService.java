@@ -604,11 +604,11 @@ public class CalculatorEngineService implements CalculatorEngine{
 			 ViewQuoteRes v = quoteservice.viewQuoteDetails(q);
 			
 			 
-			 List<LoginProductMaster> lp = loginProductrepo.findByLoginIdAndCompanyIdAndProductIdAndStatusOrderByEntryDateDesc(v.getQuoteDetails().getLoginId(),request.getInsuranceId() , request.getProductId(), "Y");
+			 List<LoginProductMaster> lp = loginProductrepo.findByLoginIdAndCompanyIdAndProductIdAndStatusOrderByEntryDateDesc(v.getQuoteDetails().getLoginId(),request.getInsuranceId() , Integer.parseInt(request.getProductId()), "Y");
 			 
 			 
-			 Integer commissionPercent = lp.get(0).getCommissionPercent();
-			 String commissionVatYn = lp.get(0).getCommissionVatYn();
+			 Integer commissionPercent = lp.get(0).getCommissionPercent()==null?0:lp.get(0).getCommissionPercent();
+			 String commissionVatYn = lp.get(0).getCommissionVatYn()==null?"N": lp.get(0).getCommissionVatYn();
 			 String premiumFc = v.getQuoteDetails().getPremiumFc();
 			 String vatPremiumFc =	v.getQuoteDetails().getVatPremiumFc();
 			 BigDecimal commission=	new BigDecimal(premiumFc)
