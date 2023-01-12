@@ -24,4 +24,8 @@ public class WarrateChangeStatusReq {
 	
 	@JsonProperty("ProductId")
 	private String productId;
+
+	@JsonProperty("SectionId")
+	private String sectionId;
+
 }

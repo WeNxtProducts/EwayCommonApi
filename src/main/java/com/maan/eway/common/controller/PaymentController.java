@@ -16,6 +16,7 @@ import com.maan.eway.common.req.MakePaymentSaveReq;
 import com.maan.eway.common.req.MakePaymentUpdateReq;
 import com.maan.eway.common.req.PaymentDetailsGetReq;
 import com.maan.eway.common.req.PaymentDetailsGetallReq;
+import com.maan.eway.common.req.PaymentDetailsHistoryReq;
 import com.maan.eway.common.req.PaymentDetailsSaveReq;
 import com.maan.eway.common.req.PaymentDetailsSaveRes;
 import com.maan.eway.common.req.PaymentInfoGetAllReq;
@@ -204,5 +205,25 @@ public class PaymentController {
 	
 
 
+		// Payment Details History
+		@PostMapping("/paymentdetailshistory")
+		@ApiOperation(value="This method is to Get Payment Details History")
+		public ResponseEntity<CommonRes> paymentdetailshistory(@RequestBody  PaymentDetailsHistoryReq req) {
+			reqPrinter.reqPrint(req);
+			CommonRes data = new CommonRes();
+			List<PaymentDetailGetRes> res = service.paymentdetailshistory(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+				if(res !=null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.BAD_REQUEST);
+				}
+				else {
+					return new ResponseEntity<>(null, HttpStatus.CREATED);
+				}
+			}
+
+		
 		
 }

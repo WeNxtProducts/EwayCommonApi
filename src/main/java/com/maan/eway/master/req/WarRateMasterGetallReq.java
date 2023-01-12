@@ -16,4 +16,7 @@ public class WarRateMasterGetallReq {
 	@JsonProperty("ProductId")
 	private String productId;
 
+	@JsonProperty("SectionId")
+	private String sectionId;
+
 }

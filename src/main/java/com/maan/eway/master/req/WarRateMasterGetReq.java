@@ -25,4 +25,7 @@ public class WarRateMasterGetReq implements Serializable {
 	@JsonProperty("ProductId")
 	private String productId;
 	
+	@JsonProperty("SectionId")
+	private String sectionId;
+	
 }

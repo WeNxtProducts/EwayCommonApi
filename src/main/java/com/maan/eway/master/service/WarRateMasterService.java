@@ -30,9 +30,9 @@ public interface WarRateMasterService  {
 
 	
 
-	List<Error> validateWarranty(WarRateMasterSaveReq req);
+	List<Error> validateWarranty(List<WarRateMasterSaveReq> req);
 
-	SuccessRes saveWarRate(WarRateMasterSaveReq req);
+	SuccessRes saveWarRate(List<WarRateMasterSaveReq> req);
 
 	List<WarRateMasterRes> getallWarRate(WarRateMasterGetallReq req);
 

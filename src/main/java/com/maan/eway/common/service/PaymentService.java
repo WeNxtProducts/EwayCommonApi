@@ -7,6 +7,7 @@ import com.maan.eway.common.req.MakePaymentSaveReq;
 import com.maan.eway.common.req.MakePaymentUpdateReq;
 import com.maan.eway.common.req.PaymentDetailsGetReq;
 import com.maan.eway.common.req.PaymentDetailsGetallReq;
+import com.maan.eway.common.req.PaymentDetailsHistoryReq;
 import com.maan.eway.common.req.PaymentDetailsSaveReq;
 import com.maan.eway.common.req.PaymentDetailsSaveRes;
 import com.maan.eway.common.req.PaymentInfoGetAllReq;
@@ -35,5 +36,7 @@ public interface PaymentService {
 	List<Error> validatePaymentInsert(PaymentDetailsSaveReq req);
 
 	PaymentDetailsSaveRes savePaymentDetails(PaymentDetailsSaveReq req);
+
+	List<PaymentDetailGetRes> paymentdetailshistory(PaymentDetailsHistoryReq req);
 
 }

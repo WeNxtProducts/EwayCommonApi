@@ -50,7 +50,7 @@ private PrintReqService reqPrinter;
 
 @PostMapping("/insertwarrate")
 @ApiOperation(value="This Method is to save War Rate Master")
-public ResponseEntity<CommonRes> saveWarRate(@RequestBody WarRateMasterSaveReq req){
+public ResponseEntity<CommonRes> saveWarRate(@RequestBody List<WarRateMasterSaveReq> req){
 	CommonRes data = new CommonRes();
 	reqPrinter.reqPrint(req);
 	

@@ -61,4 +61,10 @@ public class WarRateMasterSaveReq {
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
 	
+	@JsonProperty("SectionId")
+	private String sectionId;
+	
+	@JsonProperty("DocRefNo")
+	private String docRefNo;
+	
 }

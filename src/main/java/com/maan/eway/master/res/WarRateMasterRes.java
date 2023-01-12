@@ -28,6 +28,10 @@ public class WarRateMasterRes {
 	@JsonProperty("ProductId")
 	private String productId;
 	
+	@JsonProperty("SectionId")
+	private String sectionId;
+	
+	
 	@JsonProperty("InsuranceId")
 	private String companyId;
 	

@@ -16,4 +16,7 @@ public class WarrateMasterDropdownReq {
 	@JsonProperty("ProductId")
 	private String productId;
 	
+	@JsonProperty("SectionId")
+	private String sectionId;
+	
 }

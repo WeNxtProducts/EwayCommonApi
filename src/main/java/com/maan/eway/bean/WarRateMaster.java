@@ -44,6 +44,11 @@ public class WarRateMaster {
 	@Column(name="AMEND_ID",nullable=false)
 	private Integer amendId;
 	
+	@Id
+	@Column(name="SECTION_ID",length=20)
+	private String sectionId;
+	
+	
 	@Column(name="WAR_RATE_DESC",length=100)
 	private String warRateDesc;
 	
@@ -87,5 +92,9 @@ public class WarRateMaster {
 	
 	@Column(name="CORE_APP_CODE",length=20)
 	private String coreAppCode;
+	
+	
+	@Column(name="DOC_REF_NO",length=50)
+	private String docRefNo;
 	
 }

@@ -58,6 +58,7 @@ import com.maan.eway.common.req.MakePaymentSaveReq;
 import com.maan.eway.common.req.MakePaymentUpdateReq;
 import com.maan.eway.common.req.PaymentDetailsGetReq;
 import com.maan.eway.common.req.PaymentDetailsGetallReq;
+import com.maan.eway.common.req.PaymentDetailsHistoryReq;
 import com.maan.eway.common.req.PaymentDetailsSaveReq;
 import com.maan.eway.common.req.PaymentDetailsSaveRes;
 import com.maan.eway.common.req.PaymentInfoGetAllReq;
@@ -1179,4 +1180,29 @@ public class PaymentServiceImpl implements PaymentService {
 	        }
 	       
 	 }
+
+
+	@Override
+	public List<PaymentDetailGetRes> paymentdetailshistory(PaymentDetailsHistoryReq req) {
+		List<PaymentDetailGetRes> resList = new ArrayList<PaymentDetailGetRes>();
+		DozerBeanMapper dozermapper = new DozerBeanMapper ();
+		try {
+	
+			List<PaymentDetail> datas = paymentdetailrepo.findByQuoteNo(req.getQuoteNo());
+			for(PaymentDetail data : datas) {
+				PaymentDetailGetRes res = new PaymentDetailGetRes();
+				dozermapper.map(data, PaymentDetailGetRes.class);
+				resList.add(res);
+			}
+			
+		}
+	catch(Exception e) {
+		e.printStackTrace();
+		log.info("Log Details"+e.getMessage());
+		return null;
+	}
+	return resList;
+}
+
+	
 }
