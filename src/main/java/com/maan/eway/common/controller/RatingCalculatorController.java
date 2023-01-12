@@ -88,5 +88,7 @@ public class RatingCalculatorController {
 	public String getsequence() {
 		return seq.create();
 	}
+	 
+	
 	
 }

@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import javax.persistence.Tuple;
@@ -41,6 +40,7 @@ import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.QuoteService;
+import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.LoginProductMasterRepository;
 import com.maan.eway.req.calcengine.CalcCommission;
@@ -103,6 +103,9 @@ public class CalculatorEngineService implements CalculatorEngine{
 	
 	@Autowired
 	private PolicyDrcrDetailService crdrservice;
+	
+	@Autowired
+	private GenerateSeqNoServiceImpl genNo;
 	/*public void LoadSection(CalcEngine engine) {
 	
 		try {
@@ -339,54 +342,85 @@ public class CalculatorEngineService implements CalculatorEngine{
 		///One time table record
 		try {
 			SpecCriteria criteria =null;
-			String oneProduct= ratingutil.collectProductType(engine); 
-			String search="msRefno:"+engine.getMsrefno()+";"; 
-			//if(result==null) {
-			criteria = crservice.createCriteria(MsCommonDetails.class, search, "msRefno"); 
-			commontbl=crservice.getResult(criteria, 0, 50);
-			//}
-			if(commontbl!=null && commontbl.size()>0) {
-				Tuple tuple = commontbl.get(0);
-				String vdRefno=tuple.get("vdRefno").toString();
-				String cdRefno=tuple.get("cdRefno").toString();
-				vehicles=null;
-				while(vehicles==null) {
-
-					if(oneProduct.equals("M")){
-						search="vdRefno:"+engine.getVdRefNo()+";vehicleId:"+engine.getVehicleId();
-						criteria = crservice.createCriteria(MsVehicleDetails.class, search, "vdRefno");			  
-						vehicles = crservice.getResult(criteria, 0, 50);
-					}else if(oneProduct.equals("H")){
-						search="vdRefno:"+engine.getVdRefNo()+";humanId:"+engine.getVehicleId();
-						criteria = crservice.createCriteria(MsHumanDetails.class, search, "vdRefno");			  
-						vehicles = crservice.getResult(criteria, 0, 50);
-					}else if(oneProduct.equalsIgnoreCase("A")){
-						search="vdRefno:"+engine.getVdRefNo()+";locationId:"+engine.getVehicleId();
-						criteria = crservice.createCriteria(MsAssetDetails.class, search, "vdRefno");			  
-						vehicles = crservice.getResult(criteria, 0, 50);
-					}
-
-
-
-					System.out.println("Vehicle record "+vdRefno+", vehicles is "+((vehicles==null || vehicles.isEmpty())?"empty":"Not an empty"));
-				}
-
-				//	if(customers==null) {
-				search="cdRefno:"+cdRefno+";";
-				criteria = crservice.createCriteria(MsCustomerDetails.class, search, "cdRefno");
-				customers = crservice.getResult(criteria, 0, 50);
-				//	}
-
-
-				if(vehicles!=null) {
-					String periodOfInsurance=(vehicles.get(0).get("periodOfInsurance")==null?"365":vehicles.get(0).get("periodOfInsurance").toString());
-					prorata = ratingutil.loadProRataData(engine, periodOfInsurance);
-				}
+			/*MsVehicleDetails findByVdRefno = msvech.findByVdRefno(Long.parseLong(engine.getVdRefNo()));
+			System.out.println("findByVdRefno"+findByVdRefno.getChassisNumber());
+			*/
+			String oneProduct= ratingutil.collectProductType(engine);
+			 
+			vehicles=null;
+			while(vehicles==null) {
+				
+				
+				 if(oneProduct.equalsIgnoreCase("M")){
+					 String search="vdRefno:"+engine.getVdRefNo()+";vehicleId:"+engine.getVehicleId();
+					 criteria = crservice.createCriteria(MsVehicleDetails.class, search, "vdRefno");			  
+					 vehicles = crservice.getResult(criteria, 0, 50);
+				 }else if(oneProduct.equalsIgnoreCase("H")){
+					 String search="vdRefno:"+engine.getVdRefNo()+";humanId:"+engine.getVehicleId();
+					 criteria = crservice.createCriteria(MsHumanDetails.class, search, "vdRefno");			  
+					 vehicles = crservice.getResult(criteria, 0, 50);
+				 }else if(oneProduct.equalsIgnoreCase("A")){
+					 String search="vdRefno:"+engine.getVdRefNo()+";locationId:"+engine.getVehicleId();
+					 criteria = crservice.createCriteria(MsAssetDetails.class, search, "vdRefno");			  
+					 vehicles = crservice.getResult(criteria, 0, 50);
+				 }
+			 
+			  System.out.println("Vehicle record "+engine.getVdRefNo()+", vehicles is "+((vehicles==null || vehicles.isEmpty())?"empty":"Not an empty"));
 			}
-
-
-
-
+		
+			
+			
+		String search="msRefno:"+engine.getMsrefno()+";";
+		
+		
+		
+		
+		//if(result==null) {
+			 criteria = crservice.createCriteria(MsCommonDetails.class, search, "msRefno"); 
+			commontbl=crservice.getResult(criteria, 0, 50);
+		//}
+		if(commontbl!=null && commontbl.size()>0) {
+			Tuple tuple = commontbl.get(0);
+			String vdRefno=tuple.get("vdRefno").toString();
+			String cdRefno=tuple.get("cdRefno").toString();
+			  vehicles=null;
+				while(vehicles==null) {
+					
+					 if(oneProduct.equals("M")){
+						   search="vdRefno:"+engine.getVdRefNo()+";vehicleId:"+engine.getVehicleId();
+						 criteria = crservice.createCriteria(MsVehicleDetails.class, search, "vdRefno");			  
+						 vehicles = crservice.getResult(criteria, 0, 50);
+					 }else if(oneProduct.equals("H")){
+						   search="vdRefno:"+engine.getVdRefNo()+";humanId:"+engine.getVehicleId();
+						 criteria = crservice.createCriteria(MsHumanDetails.class, search, "vdRefno");			  
+						 vehicles = crservice.getResult(criteria, 0, 50);
+					 }else if(oneProduct.equalsIgnoreCase("A")){
+						 search="vdRefno:"+engine.getVdRefNo()+";locationId:"+engine.getVehicleId();
+						 criteria = crservice.createCriteria(MsAssetDetails.class, search, "vdRefno");			  
+						 vehicles = crservice.getResult(criteria, 0, 50);
+					 }
+				 
+				 
+				 
+				  System.out.println("Vehicle record "+vdRefno+", vehicles is "+((vehicles==null || vehicles.isEmpty())?"empty":"Not an empty"));
+				}
+			
+		//	if(customers==null) {
+			 search="cdRefno:"+cdRefno+";";
+			 criteria = crservice.createCriteria(MsCustomerDetails.class, search, "cdRefno");
+			 customers = crservice.getResult(criteria, 0, 50);
+		//	}
+			
+			 
+			 if(vehicles!=null) {
+				 String periodOfInsurance=(vehicles.get(0).get("periodOfInsurance")==null?"365":vehicles.get(0).get("periodOfInsurance").toString());
+				  prorata = ratingutil.loadProRataData(engine, periodOfInsurance);
+			  }
+		}
+		
+		
+		 
+		
 		}catch(Exception e) {e.printStackTrace();}
 		
 	}
@@ -412,8 +446,8 @@ public class CalculatorEngineService implements CalculatorEngine{
 				dependedcovers.add("N");
 				dependedcovers.add("Y");
 				
-				List<FactorRateRequestDetails> factors = repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(request.getRequestReferenceNo(), Integer.valueOf(request.getVehicleId()),request.getInsuranceId(),Integer.valueOf(request.getProductId()),Integer.valueOf(request.getSectionId()));
-				//String insuranceId, Integer valueOf2, Integer valueOf3
+				List<FactorRateRequestDetails> factors = repository.findByRequestReferenceNoAndVehicleIdOrderByCoverIdAsc(request.getRequestReferenceNo(), Integer.valueOf(request.getVehicleId()));
+				
 				//TaxFromFactor tzx=new TaxFromFactor(); 
 				List<Tuple> taxes = ratingutil.LoadTax(request);
 				TaxUtils tzx=new TaxUtils(); 
@@ -530,32 +564,31 @@ public class CalculatorEngineService implements CalculatorEngine{
 					 Comparator<Cover> comp=Comparator.comparing(Cover::getCoverageType); 
 					 retc.sort(comp); 
 				}
-				
-					try {
-						EserviceMotorDetailsSaveRes response=new EserviceMotorDetailsSaveRes();
-						response.setCoverList(retc);
-						response.setResponse("Saved Successfully");
-						response.setRequestReferenceNo(request.getRequestReferenceNo());
-						//response.setCustomerReferenceNo(req.getCustomerReferenceNo());
-						response.setVehicleId(request.getVehicleId()) ;	
-						response.setVdRefNo(request.getVdRefNo());
-						response.setCdRefNo(request.getCdRefNo());
-						response.setInsuranceId(request.getInsuranceId());
-						response.setSectionId(request.getSectionId());
-						response.setCreatedBy(request.getCreatedBy());
-						response.setProductId(request.getProductId()); 
-						response.setMsrefno(request.getMsrefno());
-						response.setUpdateas("admin");
-						//response.setUwList(referr);
-						if(!retc.isEmpty()) {
-						fservice.saveFactorRateRequestDetails(response);
-						}
-						//Update Premium,referral
-
-						return  response ;
-					}catch (Exception e) {
-						e.printStackTrace();
-					}		 
+				try {
+					EserviceMotorDetailsSaveRes response=new EserviceMotorDetailsSaveRes();
+					response.setCoverList(retc);
+					response.setResponse("Saved Successfully");
+					response.setRequestReferenceNo(request.getRequestReferenceNo());
+					//response.setCustomerReferenceNo(req.getCustomerReferenceNo());
+					response.setVehicleId(request.getVehicleId()) ;	
+					response.setVdRefNo(request.getVdRefNo());
+					response.setCdRefNo(request.getCdRefNo());
+					response.setInsuranceId(request.getInsuranceId());
+					response.setSectionId(request.getSectionId());
+					response.setCreatedBy(request.getCreatedBy());
+					response.setProductId(request.getProductId()); 
+					response.setMsrefno(request.getMsrefno());
+					response.setUpdateas("admin");
+					//response.setUwList(referr);
+					
+					fservice.saveFactorRateRequestDetails(response);
+					
+					//Update Premium,referral
+					
+					return  response ;
+				}catch (Exception e) {
+					e.printStackTrace();
+				}		 
 		 }catch (Exception e) {
 			 e.printStackTrace();
 		}
@@ -651,11 +684,13 @@ public class CalculatorEngineService implements CalculatorEngine{
 			 //Rule 
 			 Map<String,Object> rule1=new HashMap<String, Object>();
 			 rule1.put("DEBIT", "<CUSTOMER>");
-			 rule1.put("CREDIT", "<BROKER>");			 	 
+			 rule1.put("CREDIT","<BROKER>");			 	 
 			 rules.add(rule1);
 
-			 String crnumber="CN-"+ThreadLocalRandom.current().ints(1001, 4999).distinct().limit(5).findAny().toString();
-			 String drnumber="DN-"+ThreadLocalRandom.current().ints(4999, 9999).distinct().limit(5).findAny().toString();
+			 String crnumber= "CN-"+genNo.generateCreditNo(); //ThreadLocalRandom.current().ints(1001, 4999).distinct().limit(5).findAny().toString();
+			 String drnumber= "DN-"+genNo.generateDebitNo(); //ThreadLocalRandom.current().ints(4999, 9999).distinct().limit(5).findAny().toString();
+			 String policyNo= genNo.generatePolicyNo();
+			 request.setPolicyNo(policyNo);
 			 int rownum=1;
 			 
 			 List<DebitAndCredit> result=new ArrayList<DebitAndCredit>();
