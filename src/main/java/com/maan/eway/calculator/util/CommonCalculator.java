@@ -148,7 +148,7 @@ public class CommonCalculator {
 		if("P".equals(calctype)) {
 			d = si.multiply(new BigDecimal(rate/100)/*, round*/);			
 		 }else if("A".equals(calctype)) {
-			d=(new BigDecimal(rate).divide(exchangeRate/*,round*/));// for foreign currency calculation we have to divide by exchange rate			
+			d=(new BigDecimal(rate).divide(exchangeRate,round));// for foreign currency calculation we have to divide by exchange rate			
 		 }else if("M".equals(calctype)) {
 			 d = si.multiply(new BigDecimal(rate/1000)/*, round*/);			
 		 }
