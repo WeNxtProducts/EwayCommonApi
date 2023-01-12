@@ -829,7 +829,7 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentDetail.setReqBillToPhone(personaldata.getMobileNo1());
 			paymentDetail.setReqBillToSurname(personaldata.getClientName());
 			paymentDetail.setReqCardExpiryDate(null);
-			
+			paymentDetail.setReqBillToCompanyName(companyName);
 			paymentdetailrepo.save(paymentDetail);
 			
 			log.info("Saved Details " + json.toJson(paymentDetail));
