@@ -124,9 +124,10 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 			}
 			if (StringUtils.isBlank(req.getPaymentDetails())) {
 				errorList.add(new Error("08", "PaymentDetails", "Please Enter PaymentDetails "));
-			}else if ("Cash".equalsIgnoreCase(req.getPaymentDetails())) {
-				errorList.add(new Error("08", "PaymentDetails", "Installment is Not Available For Cash Option "));
 			}
+//			else if ("Cash".equalsIgnoreCase(req.getPaymentDetails())) {
+//				errorList.add(new Error("08", "PaymentDetails", "Installment is Not Available For Cash Option "));
+//			}
 			
 		} catch (Exception e) {
 			log.error(e);
