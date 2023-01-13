@@ -600,7 +600,8 @@ public class CalculatorEngineService implements CalculatorEngine{
 	public  List<DebitAndCredit> commissionCalc(CalcCommission request) {
 		 try {
 			
-			 ViewQuoteReq q=ViewQuoteReq.builder().quoteNo(request.getQuoteno()).build();
+			 ViewQuoteReq q=new ViewQuoteReq();
+			 q.setQuoteNo(request.getQuoteno());
 			 ViewQuoteRes v = quoteservice.viewQuoteDetails(q);
 			
 			 

@@ -170,6 +170,8 @@ public class QuoteServiceImpl implements QuoteService {
 			HomePositionMaster homeData  =  homeRepo.findByQuoteNo(req.getQuoteNo());
 			QuoteDetailsRes quoteRes = new QuoteDetailsRes();
 			quoteRes = dozerMappper.map(homeData, QuoteDetailsRes.class);
+			quoteRes.setOverAllPremiumFc(homeData.getOverallPremiumFc()==null?"":homeData.getOverallPremiumFc().toString() );
+			quoteRes.setOverAllPremiumLc(homeData.getOverallPremiumLc()==null?"":homeData.getOverallPremiumLc().toString());
 			
 			// Customer Details
 			PersonalInfo custData = custRepo.findByCustomerId(homeData.getCustomerId());
