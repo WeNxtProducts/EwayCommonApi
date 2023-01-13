@@ -15,5 +15,8 @@ public class ExclusionMasterDropdownReq {
 	
 	@JsonProperty("ProductId")
 	private String productId;
-	
+
+	@JsonProperty("SectionId")
+	private String sectionId;
+
 }

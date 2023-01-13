@@ -1,6 +1,7 @@
 package com.maan.eway.master.req;
 
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,19 +9,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class ExclusionMasterSaveReq {
+public class ClausesMasterListSaveReq {
 
-	@JsonProperty("ExclusionId")
-	private String exclusionId;
 	
-	@JsonProperty("ExclusionDescription")
-	private String exclusionDescription;
+	@JsonProperty("DisplayOrder")
+	private String displayOrder;
 	
-	@JsonProperty("BranchCode")
-	private String branchCode;
+	@JsonProperty("PdfLocation")
+	private String pdfLocation;
 	
-	@JsonProperty("InsuranceId")
-	private String companyId;
+	@JsonProperty("OptionalType")
+	private String optionalType;
+	
+	@JsonProperty("IntCode")
+	private String intCode;
+	
 	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
@@ -34,13 +37,6 @@ public class ExclusionMasterSaveReq {
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
-	
-//	@JsonProperty("UpdatedBy")
-//	private String updatedBy;
-//	
-//	@JsonFormat(pattern="dd/MM/yyyy")
-//	@JsonProperty("UpdatedDate")
-//	private Date updatedDate;
 
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
@@ -48,19 +44,16 @@ public class ExclusionMasterSaveReq {
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
 	
-	@JsonProperty("ProductId")
-	private String productId;
-	
-	@JsonProperty("SectionId")
-	private String sectionId;
+//	
+//	@JsonProperty("PolicyType")
+//	private String policyType;
 
 	@JsonProperty("DocRefNo")
 	private String docRefNo;
 
 	
-	//	
-//	@JsonProperty("PolicyType")
-//	private String policyType;
-	
+	@JsonProperty("ClausesMasterReq")
+	private List<ClausesMasterReq> clausesMasterReq;
+
 	
 }

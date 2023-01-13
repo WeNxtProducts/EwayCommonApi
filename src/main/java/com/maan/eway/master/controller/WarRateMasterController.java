@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.req.ExclusionMasterDropdownReq;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.NonSelectedClausesGetAllReq;
 import com.maan.eway.master.req.WarRateMasterGetReq;
 import com.maan.eway.master.req.WarRateMasterGetallReq;
+import com.maan.eway.master.req.WarRateMasterListSaveReq;
 import com.maan.eway.master.req.WarRateMasterSaveReq;
 import com.maan.eway.master.req.WarrantyChangeStatusReq;
 import com.maan.eway.master.req.WarrantyMasterDropdownReq;
@@ -50,7 +52,7 @@ private PrintReqService reqPrinter;
 
 @PostMapping("/insertwarrate")
 @ApiOperation(value="This Method is to save War Rate Master")
-public ResponseEntity<CommonRes> saveWarRate(@RequestBody List<WarRateMasterSaveReq> req){
+public ResponseEntity<CommonRes> saveWarRate(@RequestBody WarRateMasterSaveReq req){
 	CommonRes data = new CommonRes();
 	reqPrinter.reqPrint(req);
 	
@@ -188,5 +190,63 @@ public ResponseEntity<CommonRes> changeStatusOfWarrate(@RequestBody WarrateChang
 		}
 
 	}
+
+	
+	
+	//Save
+
+	@PostMapping("/insertwarratelist")
+	@ApiOperation(value="This Method is to save War Rate Master List")
+	public ResponseEntity<CommonRes> saveWarRate(@RequestBody WarRateMasterListSaveReq req){
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		
+	List<Error> validation = service.validateWarranty(req);
+	//validation
+	if(validation !=null && validation.size()!=0) {
+		data.setCommonResponse(null);
+		data.setIsError(true);
+		data.setErrorMessage(validation);
+		data.setMessage("Failed");
+		return new ResponseEntity<CommonRes>(data,HttpStatus.OK);
+	} else {
+		//save
+		SuccessRes res = service.saveWarRate(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		
+		if(res!=null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	}
+
+	@PostMapping("/getallnonselectedwarrate")
+	@ApiOperation("This method is getall Warrate Master")
+	public ResponseEntity<CommonRes> getallNonSelectedWarrate(@RequestBody NonSelectedClausesGetAllReq req)
+	{
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		
+		List<WarRateMasterRes> res = service.getallNonSelectedWarrate(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		
+		if(res!= null) {
+			return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+
 	
 }

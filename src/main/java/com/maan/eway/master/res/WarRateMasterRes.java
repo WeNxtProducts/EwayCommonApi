@@ -68,4 +68,8 @@ public class WarRateMasterRes {
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
 	
+	
+	@JsonProperty("DocRefNo")
+	private String docRefNo;
+	
 }

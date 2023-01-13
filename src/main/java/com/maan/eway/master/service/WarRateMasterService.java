@@ -8,8 +8,10 @@ package com.maan.eway.master.service;
 import java.util.List;
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.NonSelectedClausesGetAllReq;
 import com.maan.eway.master.req.WarRateMasterGetReq;
 import com.maan.eway.master.req.WarRateMasterGetallReq;
+import com.maan.eway.master.req.WarRateMasterListSaveReq;
 import com.maan.eway.master.req.WarRateMasterSaveReq;
 import com.maan.eway.master.req.WarrantyChangeStatusReq;
 import com.maan.eway.master.req.WarrantyMasterDropdownReq;
@@ -30,9 +32,9 @@ public interface WarRateMasterService  {
 
 	
 
-	List<Error> validateWarranty(List<WarRateMasterSaveReq> req);
+	List<Error> validateWarranty(WarRateMasterSaveReq req);
 
-	SuccessRes saveWarRate(List<WarRateMasterSaveReq> req);
+	SuccessRes saveWarRate(WarRateMasterSaveReq req);
 
 	List<WarRateMasterRes> getallWarRate(WarRateMasterGetallReq req);
 
@@ -43,6 +45,12 @@ public interface WarRateMasterService  {
 	SuccessRes changeStatusOfWarrate(WarrateChangeStatusReq req);
 
 	List<DropDownRes> getWarrateMasterDropdown(WarrateMasterDropdownReq req);
+
+	List<Error> validateWarranty(WarRateMasterListSaveReq req);
+
+	SuccessRes saveWarRate(WarRateMasterListSaveReq req);
+
+	List<WarRateMasterRes> getallNonSelectedWarrate(NonSelectedClausesGetAllReq req);
 
 	
 

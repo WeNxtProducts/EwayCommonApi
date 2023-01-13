@@ -8,26 +8,32 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class ClausesChangeStatusReq {
+public class WarRateMasterReq {
 
-	@JsonProperty("ClausesId")
-	private String clausesId;
-
-	@JsonProperty("Status")
-	private String status;
+	@JsonProperty("WarRateId")
+	private String warRateId;
 	
-	@JsonProperty("InsuranceId")
-	private String companyId;
+	@JsonProperty("WarRateDesc")
+	private String warRateDesc;
+	
+	@JsonProperty("WarRate")
+	private String warRate;
+	
+	@JsonProperty("ModeTransportId")
+	private String modeTransportId;
 	
 	@JsonProperty("BranchCode")
 	private String branchCode;
 	
+	@JsonProperty("InsuranceId")
+	private String companyId;
+	
 	@JsonProperty("ProductId")
 	private String productId;
-//	
+	
+	
 	@JsonProperty("SectionId")
 	private String sectionId;
-//	
-//	@JsonProperty("PolicyType")
-//	private String policyType;
+	
+	
 }

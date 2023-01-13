@@ -57,11 +57,16 @@ public class ExclusionMasterRes {
 	@JsonProperty("EntryDate")
 	private Date entryDate;
 
-//	@JsonProperty("ProductId")
-//	private String productId;
-//	
-//	@JsonProperty("SectionId")
-//	private String sectionId;
+	@JsonProperty("ProductId")
+	private String productId;
+	
+	@JsonProperty("SectionId")
+	private String sectionId;
+	
+	
+
+	@JsonProperty("DocRefNo")
+	private String docRefNo;
 	
 //	@JsonProperty("PolicyType")
 //	private String policyType;

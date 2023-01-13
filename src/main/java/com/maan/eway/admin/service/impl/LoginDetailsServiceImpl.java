@@ -460,6 +460,7 @@ this.repository = repo;
 			userInfo.setUpdatedBy(loginReq.getCreatedBy());
 			userInfo.setStatus(saveLogin.getStatus());
 			userInfo.setCountryCode(personalReq.getCountryCode());
+			userInfo.setStateCode(Integer.valueOf(personalReq.getStateCode()));
 			//userInfo.setCityCode(Integer.valueOf(personalReq.getCityCode()));
 			userInfo.setCityName(personalReq.getCityName());
 			userInfo.setMobileCodeDesc(mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getMobileCode()) ).collect(Collectors.toList()).get(0).getItemValue() );

@@ -18,6 +18,7 @@ import com.maan.eway.master.req.ClausesChangeStatusReq;
 import com.maan.eway.master.req.ClausesMasterDropdownReq;
 import com.maan.eway.master.req.ClausesMasterGetReq;
 import com.maan.eway.master.req.ClausesMasterGetallReq;
+import com.maan.eway.master.req.ClausesMasterListSaveReq;
 import com.maan.eway.master.req.ClausesMasterSaveReq;
 import com.maan.eway.master.req.NonSelectedClausesGetAllReq;
 import com.maan.eway.master.res.ClausesMasterRes;
@@ -196,5 +197,46 @@ public ResponseEntity<CommonRes> getallNonSelectedCompanyProducts(@RequestBody N
 		return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
 	}
 }
+
+
+//List Save
+
+@PostMapping("/insertclauseslist")
+@ApiOperation(value = "This Method is to save Waranty Master List")
+public ResponseEntity<CommonRes> saveClauses(@RequestBody ClausesMasterListSaveReq req) {
+	CommonRes data = new CommonRes();
+	reqPrinter.reqPrint(req);
+
+	List<Error> validation = service.validateClauses(req);
+//validation
+	if (validation != null && validation.size() != 0) {
+		data.setCommonResponse(null);
+		data.setIsError(true);
+		data.setErrorMessage(validation);
+		data.setMessage("Failed");
+		return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+	} else {
+		// save
+		SuccessRes res = service.saveClauses(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+}
+
+
+
+
+
+
+
+
 
 }

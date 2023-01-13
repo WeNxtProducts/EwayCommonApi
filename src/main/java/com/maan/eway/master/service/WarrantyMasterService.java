@@ -8,10 +8,12 @@ package com.maan.eway.master.service;
 import java.util.List;
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.NonSelectedClausesGetAllReq;
 import com.maan.eway.master.req.WarrantyChangeStatusReq;
 import com.maan.eway.master.req.WarrantyMasterDropdownReq;
 import com.maan.eway.master.req.WarrantyMasterGetReq;
 import com.maan.eway.master.req.WarrantyMasterGetallReq;
+import com.maan.eway.master.req.WarrantyMasterListSaveReq;
 import com.maan.eway.master.req.WarrantyMasterSaveReq;
 import com.maan.eway.master.res.WarrantyMasterRes;
 import com.maan.eway.res.DropDownRes;
@@ -22,9 +24,9 @@ import com.maan.eway.res.SuccessRes;
 */
 public interface WarrantyMasterService  {
 
-	List<Error> validateWarranty(List<WarrantyMasterSaveReq> req);
+	List<Error> validateWarranty(WarrantyMasterSaveReq req);
 
-	SuccessRes saveWarranty(List<WarrantyMasterSaveReq> req);
+	SuccessRes saveWarranty(WarrantyMasterSaveReq req);
 
 	List<WarrantyMasterRes> getallWarranty(WarrantyMasterGetallReq req);
 
@@ -35,6 +37,13 @@ public interface WarrantyMasterService  {
 	SuccessRes changeStatusOfWarranty(WarrantyChangeStatusReq req);
 
 	List<DropDownRes> getWarrantyMasterDropdown(WarrantyMasterDropdownReq req);
+
+	List<Error> validateWarranty(WarrantyMasterListSaveReq req);
+
+	SuccessRes saveWarranty(WarrantyMasterListSaveReq req);
+
+	List<WarrantyMasterRes> getallNonSelectedWarranty(NonSelectedClausesGetAllReq req);
+
 
 	
 

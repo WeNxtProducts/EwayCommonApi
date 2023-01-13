@@ -24,6 +24,9 @@ public class IssuerPersonalInfoReq {
     @JsonProperty("CityCode")
     private String    cityCode;
     
+    @JsonProperty("CityName")
+    private String    cityName;
+    
     
     @JsonProperty("CountryCode")
     private String    countryCode;
@@ -40,5 +43,13 @@ public class IssuerPersonalInfoReq {
     @JsonProperty("WhatsappNo")
     private String    whatsappNo ;
     
-   
+    @JsonProperty("StateCode")
+    private String    stateCode;
+    
+    @JsonProperty("StateName")
+    private String    stateName;
+    
+    @JsonProperty("CountryName")
+    private String    countryName;
+    
 }

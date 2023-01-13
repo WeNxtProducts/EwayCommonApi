@@ -21,8 +21,11 @@ import com.maan.eway.common.req.ExclusionMasterDropdownReq;
 import com.maan.eway.master.req.ExclusionChangeStatusReq;
 import com.maan.eway.master.req.ExclusionMasterGetReq;
 import com.maan.eway.master.req.ExclusionMasterGetallReq;
+import com.maan.eway.master.req.ExclusionMasterListSaveReq;
 import com.maan.eway.master.req.ExclusionMasterSaveReq;
+import com.maan.eway.master.req.NonSelectedClausesGetAllReq;
 import com.maan.eway.master.res.ExclusionMasterRes;
+import com.maan.eway.master.res.WarrantyMasterRes;
 import com.maan.eway.master.service.ExclusionMasterService;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.DropdownCommonRes;
@@ -191,4 +194,57 @@ public class ExclusionMasterController {
 	}
 
 
+	// List Save
+
+	@PostMapping("/insertexclusionlist")
+	@ApiOperation(value="This Method is to save Exclusion Master List")
+	public ResponseEntity<CommonRes> saveExclusion(@RequestBody ExclusionMasterListSaveReq req){
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		
+	List<Error> validation = service.validateExclusion(req);
+	//validation
+	if(validation !=null && validation.size()!=0) {
+		data.setCommonResponse(null);
+		data.setIsError(true);
+		data.setErrorMessage(validation);
+		data.setMessage("Failed");
+		return new ResponseEntity<CommonRes>(data,HttpStatus.OK);
+	} else {
+		//save
+		SuccessRes res = service.saveExclusion(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		
+		if(res!=null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	}
+
+	@PostMapping("/getallnonselectedexclusion")
+	@ApiOperation("This method is getall Exclusion Master")
+	public ResponseEntity<CommonRes> getallNonSelectedExclusion(@RequestBody NonSelectedClausesGetAllReq req)
+	{
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		
+		List<ExclusionMasterRes> res = service.getallNonSelectedExclusion(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		
+		if(res!= null) {
+			return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+		}
+	}
 }

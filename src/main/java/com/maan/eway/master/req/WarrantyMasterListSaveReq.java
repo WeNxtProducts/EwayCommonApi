@@ -1,6 +1,7 @@
 package com.maan.eway.master.req;
 
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,19 +9,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class ExclusionMasterSaveReq {
+public class WarrantyMasterListSaveReq {
 
-	@JsonProperty("ExclusionId")
-	private String exclusionId;
 	
-	@JsonProperty("ExclusionDescription")
-	private String exclusionDescription;
 	
-	@JsonProperty("BranchCode")
-	private String branchCode;
+	@JsonProperty("WarrantyMaster")
+	private List<WarrantyMasterReq> warrantyReq;
 	
-	@JsonProperty("InsuranceId")
-	private String companyId;
 	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
@@ -48,19 +43,7 @@ public class ExclusionMasterSaveReq {
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
 	
-	@JsonProperty("ProductId")
-	private String productId;
-	
-	@JsonProperty("SectionId")
-	private String sectionId;
-
 	@JsonProperty("DocRefNo")
 	private String docRefNo;
-
-	
-	//	
-//	@JsonProperty("PolicyType")
-//	private String policyType;
-	
 	
 }

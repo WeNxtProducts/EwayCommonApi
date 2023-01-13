@@ -40,9 +40,9 @@ public class ClausesMaster {
 	@Column(name="PRODUCT_ID",length=20, nullable=false)
 	private String productId;
 
-//	@Id
-//	@Column(name="SECTION_ID",length=20, nullable=false)
-//	private String sectionId;
+	@Id
+	@Column(name="SECTION_ID",length=20, nullable=false)
+	private String sectionId;
 //	
 //	@Id
 //	@Column(name="POLICY_TYPE",length=20, nullable=false)
@@ -107,5 +107,8 @@ public class ClausesMaster {
 	
 	@Column(name="CORE_APP_CODE",length=20)
 	private String coreAppCode;
+	
+	@Column(name="DOC_REF_NO",length=20)
+	private String docRefNo;
 	
 }

@@ -12,6 +12,7 @@ import com.maan.eway.master.req.ClausesChangeStatusReq;
 import com.maan.eway.master.req.ClausesMasterDropdownReq;
 import com.maan.eway.master.req.ClausesMasterGetReq;
 import com.maan.eway.master.req.ClausesMasterGetallReq;
+import com.maan.eway.master.req.ClausesMasterListSaveReq;
 import com.maan.eway.master.req.ClausesMasterSaveReq;
 import com.maan.eway.master.req.NonSelectedClausesGetAllReq;
 import com.maan.eway.master.res.ClausesMasterRes;
@@ -38,6 +39,10 @@ public interface ClausesMasterService  {
 	List<DropDownRes> getClausesMasterDropdown(ClausesMasterDropdownReq req);
 
 	List<ClausesMasterRes> getallNonSelectedWars(NonSelectedClausesGetAllReq req);
+
+	List<Error> validateClauses(ClausesMasterListSaveReq req);
+
+	SuccessRes saveClauses(ClausesMasterListSaveReq req);
 
 	
 
