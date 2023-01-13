@@ -629,9 +629,10 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 		List<ListItemValue> paymentList = getPaymentItems(req.getCompanyId() , req.getBranchCode() ,  "PAYMENT_MODE");
 		
 		// Payment Types
-		ListItemValue cash = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("Cash") ).collect(Collectors.toList()).get(0) ; 
-		ListItemValue credit = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("Credit") ).collect(Collectors.toList()).get(0) ; 
-		ListItemValue cheque = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("Cheque") ).collect(Collectors.toList()).get(0) ; 
+		ListItemValue cash = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("1") ).collect(Collectors.toList()).get(0) ;
+		ListItemValue cheque = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("2") ).collect(Collectors.toList()).get(0) ;
+		ListItemValue credit = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("3") ).collect(Collectors.toList()).get(0) ; 
+		 
 	
 		
 		if(list.size()>0 ) {

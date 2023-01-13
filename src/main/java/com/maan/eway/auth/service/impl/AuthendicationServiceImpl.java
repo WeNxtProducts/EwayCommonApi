@@ -117,10 +117,18 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 	public CommonLoginRes checkUserLogin(LoginRequest mslogin, HttpServletRequest http) {
 		CommonLoginRes res = new CommonLoginRes();
 		try {
-			passwordEnc passEnc = new passwordEnc();
-			String epass = passEnc.crypt(mslogin.getPassword().trim());
-			log.info("Encrpted password "+epass);
-			LoginMaster login =loginRepo.findByLoginIdAndPassword(mslogin.getLoginId(),epass);
+			LoginMaster login = new LoginMaster();
+			
+			if(mslogin.getLoginId().equalsIgnoreCase("guest") ) {
+				login =loginRepo.findByLoginId(mslogin.getLoginId());
+			} else {
+				passwordEnc passEnc = new passwordEnc();
+				String epass = passEnc.crypt(mslogin.getPassword().trim());
+				log.info("Encrpted password "+epass);
+				 login =loginRepo.findByLoginIdAndPassword(mslogin.getLoginId(),epass);
+					
+			}
+			
 			if (login != null ) {
 				http.getSession().removeAttribute(mslogin.getLoginId());
 				String token = jwtTokenUtil.doGenerateToken(mslogin.getLoginId());
@@ -141,7 +149,22 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				Date endTime = cal.getTime();
 				session.setEndTime(endTime );
 				session =sessionRep.save(session);
-				ClaimLoginResponse loginRes = setTokenResponse(session,login,mslogin);
+				ClaimLoginResponse loginRes = new ClaimLoginResponse(); 
+				
+				if (login.getLoginId().equalsIgnoreCase("guest") ) {
+					loginRes.setToken(session.getTempTokenid());
+					loginRes.setLoginId(login.getLoginId());
+					loginRes.setUserName("guest");
+					loginRes.setUserMail("");
+					loginRes.setUserMobile("");
+					loginRes.setUserType(login.getUserType());
+					loginRes.setSubUserType(login.getSubUserType());
+					loginRes.setOaCode(login.getOaCode().toString());
+					loginRes.setBankCode(login.getBankCode());
+				} else {
+					loginRes = setTokenResponse(session,login,mslogin);
+				}
+				
 				
 				//Response 
 				res.setCommonResponse(loginRes);

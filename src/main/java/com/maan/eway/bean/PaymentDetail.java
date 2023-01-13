@@ -65,8 +65,10 @@ private static final long serialVersionUID = 1L;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="PAYMENT_TYPE")
-    private Integer  paymentType ;
+    private String  paymentType ;
 
+    @Column(name="PAYMENT_TYPEDESC")
+    private String  paymentTypedesc ;
 
     @Column(name="PAYMENT_STATUS", length=50)
     private String     paymentStatus;

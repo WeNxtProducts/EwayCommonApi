@@ -2,10 +2,15 @@ package com.maan.eway.auth.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -50,10 +55,13 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 			List<SessionMaster> sessionlist = new ArrayList<SessionMaster>();
 			List<LoginMaster> data  = new ArrayList<LoginMaster>();
 			
-			
+			String loginId = "" ;
 			if (req.getLoginId() == null || StringUtils.isBlank(req.getLoginId())) {
-				list.add(new Error("", "UserId", "Please enter username"));				
-			} else {}
+				list.add(new Error("", "UserId", "Please enter Login Id"));	
+				
+			} else {
+				loginId = req.getLoginId() ;
+			}
 			
 			/*	else if (req.getCompanyId() == null || StringUtils.isBlank(req.getCompanyId())) {
 				list.add(new Error("", "CompanyId", "Please enter CompanyId"));
@@ -63,41 +71,44 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 			}
 			
 		 */
-			if (req.getPassword() == null || StringUtils.isBlank(req.getPassword())) {
-				list.add(new Error("", "Password", "Please enter password"));
-			}
-			
-			if (StringUtils.isNotBlank(req.getLoginId()) && StringUtils.isNotBlank(req.getPassword())) {
-				LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());
-				if (loginData ==null ) {
-					list.add(new Error("", "UserId", "Please enter Valid Login Id"));
-				} else {
-					sessionlist = sessionRep.findByLoginIdOrderByEntryDateDesc(req.getLoginId());
+			if(! loginId.equalsIgnoreCase("guest")  ) {
+				if (req.getPassword() == null || StringUtils.isBlank(req.getPassword())) {
+					list.add(new Error("", "Password", "Please enter password"));
+				}
+				
+				if (StringUtils.isNotBlank(req.getLoginId()) && StringUtils.isNotBlank(req.getPassword())) {
+					LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());
+					if (loginData ==null ) {
+						list.add(new Error("", "UserId", "Please enter Valid Login Id"));
+					} else {
+						sessionlist = sessionRep.findByLoginIdOrderByEntryDateDesc(req.getLoginId());
+					} 
+					
+					if (loginData != null  ) {
+						data = criteriaQuery.isvalidUser(req);
+						if (CollectionUtils.isEmpty(data)) {
+							list.add(new Error("", "User", "Please enter valid username/password"));
+						}else if(isExpired(data.get(0).getLpassDate())) {
+							list.add(new Error("", "User", "Password Expired Please Change Your Password"));
+							changePwd = "Y";
+						}
+					}
 				} 
 				
-				if (loginData != null  ) {
-					data = criteriaQuery.isvalidUser(req);
-					if (CollectionUtils.isEmpty(data)) {
-						list.add(new Error("", "User", "Please enter valid username/password"));
-					}else if(isExpired(data.get(0).getLpassDate())) {
-						list.add(new Error("", "User", "Password Expired Please Change Your Password"));
-						changePwd = "Y";
-					}
+				if(req.getReLoginKey()!=null && req.getReLoginKey().equalsIgnoreCase("Y") &&  sessionlist.size()>0 ) {
+					SessionMaster updatelogout = sessionlist.get(0);
+						updatelogout.setLogoutDate(new Date());
+						updatelogout.setStatus("DE-ACTIVE");
+						sessionRep.save(updatelogout);
+				}else if(sessionlist.size()!=0) {
+				
+						if(sessionlist.get(0).getLogoutDate()==null) {
+							list.add(new Error("", "SessionError", "You already have an active logged in session on another device or window Do you want to start new session and terminate that session?"));
+							list.add(new Error("", "SessionError", "User :" + sessionlist.get(0).getUserName() + " : logged in at " +sessionlist.get(0).getEntryDate().toString()));
+						}
 				}
-			} 
-			
-			if(req.getReLoginKey()!=null && req.getReLoginKey().equalsIgnoreCase("Y") &&  sessionlist.size()>0 ) {
-				SessionMaster updatelogout = sessionlist.get(0);
-					updatelogout.setLogoutDate(new Date());
-					updatelogout.setStatus("DE-ACTIVE");
-					sessionRep.save(updatelogout);
-			}else if(sessionlist.size()!=0) {
-			
-					if(sessionlist.get(0).getLogoutDate()==null) {
-						list.add(new Error("", "SessionError", "You already have an active logged in session on another device or window Do you want to start new session and terminate that session?"));
-						list.add(new Error("", "SessionError", "User :" + sessionlist.get(0).getUserName() + " : logged in at " +sessionlist.get(0).getEntryDate().toString()));
-					}
 			}
+			
 			
 			
 		} catch (Exception e) {
