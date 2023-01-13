@@ -53,7 +53,7 @@ public class GenerateSeqNoServiceImpl {
 	    	    SeqPolicyno entity;
 	            entity = polNoRepo.save(new SeqPolicyno());    
 	            Date currentDate = Calendar.getInstance().getTime();
-	            int year = currentDate.getYear()+1990;
+	            int year = currentDate.getYear();
 	            //P11/2021/100/1002/10/020459
 	            
 	            return "P11/"+year+"/100/1002/10/"+String.format("%05d",entity.getPolicyno()) ;

@@ -1,6 +1,7 @@
 package com.maan.eway.common.service.impl;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,6 +43,7 @@ import com.maan.eway.bean.CoverDocumentMaster;
 import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
@@ -69,10 +71,13 @@ import com.maan.eway.common.service.PaymentService;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CoverDocumentMasterGetReq;
 import com.maan.eway.master.service.impl.ClausesMasterServiceImpl;
+import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
+import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EmiTransactionDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
+import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.PaymentDetailRepository;
 import com.maan.eway.repository.PaymentInfoRepository;
 import com.maan.eway.repository.PaymentRefnoRepository;
@@ -117,6 +122,9 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired
 	private CalculatorEngine calcService;
 	
+	@Autowired
+	private EServiceSectionDetailsRepository eserSecRepo ;
+	
 	@PersistenceContext
 	private EntityManager em;
 	
@@ -131,6 +139,12 @@ public class PaymentServiceImpl implements PaymentService {
 	
 	@Autowired
 	private LoginBranchMasterRepository lbranchRepo ;
+	
+	@Autowired
+	private MotorDataDetailsRepository motorRepo ;
+	
+	@Autowired
+	private CoverDocumentUploadDetailsRepository docUploadRepo ;
 	
 	private Logger log = LogManager.getLogger(ClausesMasterServiceImpl.class);
 
@@ -165,15 +179,21 @@ public class PaymentServiceImpl implements PaymentService {
 			} else if (StringUtils.isNotBlank(req.getEmiYn()) && req.getEmiYn().equalsIgnoreCase("Y") && StringUtils.isNotBlank(req.getInstallmentMonth()) 
 					&& StringUtils.isNotBlank(req.getInstallmentPeriod())  )  {
 				EmiTransactionDetails  emiDetails = emiRepo.findByQuoteNoAndInstalmentAndInstallmentPeriod(req.getQuoteNo() ,req.getInstallmentMonth() , req.getInstallmentPeriod());
-				Double premium =  Double.valueOf (req.getPremium());
-				if(premium < emiDetails.getAdvanceAmount() ) {
-					error.add(new Error("01","Premium","Premium Mismatched. Given Premium : " + req.getPremium() + " Policy Premium :" + emiDetails.getAdvanceAmount()));
+				String pattern = "#####0";
+			 	DecimalFormat decimalFormat = new DecimalFormat(pattern);
+			 	Double premium =  Double.valueOf (decimalFormat.format(Double.valueOf (req.getPremium())));
+			 	Double overall =  Double.valueOf (decimalFormat.format(emiDetails.getAdvanceAmount()));
+				if(premium < overall ) {
+					error.add(new Error("01","Premium","Premium Mismatched. Given Premium : " + req.getPremium() + " Policy Premium :" + overall));
 				}
 			} else  {
 				HomePositionMaster  findQuote = homerepo.findByQuoteNo(req.getQuoteNo());
-				Double premium =  Double.valueOf (req.getPremium());
-				if(premium < findQuote.getOverallPremiumLc() ) {
-					error.add(new Error("01","Premium","Premium Mismatched. Given Premium : " + req.getPremium() + " Policy Premium :" +  findQuote.getOverallPremiumLc()));
+				String pattern = "#####0";
+			 	DecimalFormat decimalFormat = new DecimalFormat(pattern);
+			 	Double premium =  Double.valueOf (decimalFormat.format( Double.valueOf (req.getPremium())));
+			 	Double overall =  Double.valueOf (decimalFormat.format(findQuote.getOverallPremiumFc()));
+			 	if(premium <overall ) {
+					error.add(new Error("01","Premium","Premium Mismatched. Given Premium : " + premium + " Policy Premium :" +  overall));
 				}
 				
 			}
@@ -202,9 +222,9 @@ public class PaymentServiceImpl implements PaymentService {
 		
 			if(filterAccepted.size()> 0) {
 				if ( req.getEmiYn().equalsIgnoreCase("Y" ) && StringUtils.isNotBlank(req.getInstallmentMonth()) && StringUtils.isNotBlank(req.getInstallmentPeriod()) )  {
-					
 					List<PaymentInfo> filterEmi = datas.stream().filter( o -> o.getPaymentStatus().equalsIgnoreCase("Accepted") && o.getInstallmentMonth().equalsIgnoreCase(req.getInstallmentMonth()) && 
-							  						o.getInstallmentPeriod().equalsIgnoreCase(req.getInstallmentPeriod()) ).collect(Collectors.toList());
+	  						o.getInstallmentPeriod().equalsIgnoreCase(req.getInstallmentPeriod()) ).collect(Collectors.toList());
+					
 					if(filterEmi.size()>0 ) {
 						error.add(new Error("01","PaymentId","Already One Payment Id Accepted Against This Quote No"));
 					}
@@ -217,17 +237,49 @@ public class PaymentServiceImpl implements PaymentService {
 			}
 			
 			// Doc Validation
-		//	List<CoverDocumentUploadDetails> uploaded Docs = 
+			if ( StringUtils.isNotBlank( req.getQuoteNo())) {
+				HomePositionMaster homeData = homerepo.findByQuoteNo(req.getQuoteNo());
+				String companyId = homeData.getCompanyId() ;
+				Integer productId =  homeData.getProductId() ;
+				List<Integer> sectionIds = new ArrayList<Integer>();
+				
+				// Motor Product Specific Doc Valdiation
+				if(homeData.getProductId().equals(Integer.valueOf(motorProductId)) ) {
+					List<MotorDataDetails>  motorDatas = motorRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());	
+					sectionIds = motorDatas.stream().map(MotorDataDetails :: getSectionId ).collect(Collectors.toList());
+				}
+				
+				// Madatory Doc
+				List<CoverDocumentMaster> mandatoryDocs = getCoverDocumentMasterMandatoryDocs( companyId, productId , sectionIds);
+				
+				//Uploaded Docs
+				List<CoverDocumentUploadDetails> uploadedDocs = docUploadRepo.findByQuoteNo(req.getQuoteNo());
+				
+				for (CoverDocumentMaster mdoc :  mandatoryDocs) {
+					List<CoverDocumentUploadDetails>  filterDocs = uploadedDocs.stream().filter( o -> o.getDocumentId().equals(mdoc.getDocumentId()) && 
+							o.getDocApplicableId().equalsIgnoreCase(mdoc.getDocApplicableId().toString()) ).collect(Collectors.toList());
+					if(filterDocs.size()<=0 ) {
+						
+					}
+					
+				}
+				
+				
+				
+			}
+			
+			
 			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
+			error.add(new Error("01","Common Error",  e.getMessage()));
 		}
 		return error;
 	}
 	
 	
-	public List<CoverDocumentMaster> getCoverDocumentMasterMandatoryDocs(String companyId , String productId , List<String> sectionIds  ) {
+	public List<CoverDocumentMaster> getCoverDocumentMasterMandatoryDocs(String companyId , Integer productId , List<Integer> sectionIds  ) {
 		List<CoverDocumentMaster> list = new ArrayList<CoverDocumentMaster>();
 		try {
 			Date today = new Date();
@@ -286,7 +338,8 @@ public class PaymentServiceImpl implements PaymentService {
 			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), productId);
 			javax.persistence.criteria.Predicate n5 = e0.in(sectionIds);
 			javax.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			query.where(n1, n2, n3, n4, n5,n6).orderBy(orderList);
+			javax.persistence.criteria.Predicate n7 = cb.equal(c.get("mandatoryStatus"), "Y");
+			query.where(n1, n2, n3, n4, n5,n6,n7).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CoverDocumentMaster> result = em.createQuery(query);
@@ -778,10 +831,10 @@ public class PaymentServiceImpl implements PaymentService {
 		PaymentDetailGetRes res = new PaymentDetailGetRes();
 		try {
 		
-		//	PaymentDetail data = paymentdetailrepo.findByQuoteNoAndPaymentIdAndPaymentReferenceNo(req.getQuoteNo(),Double.valueOf(req.getPaymentId()),req.getPaymentReferenceNo());
+			PaymentDetail data = paymentdetailrepo.findByQuoteNoAndPaymentIdAndMerchantReference(req.getQuoteNo(),Double.valueOf(req.getPaymentId()),req.getMerchantReference());
 			
-		//	res = dozermappper.map(data, PaymentDetailGetRes.class);
-		//	res.setPaymentId(String.valueOf(Math.round(data.getPaymentId())));				
+			res = dozermappper.map(data, PaymentDetailGetRes.class);
+			res.setPaymentId(data.getPaymentId());				
 
 		}
 		catch(Exception e) {

@@ -40,6 +40,7 @@ import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.FactorTypeDetails;
+import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MasterReferralDetails;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
@@ -705,7 +706,7 @@ this.repository = repo;
 			// Find Datas
 			
 			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
-			
+		
 		//	List<MasterReferralDetails> findRefrals = masReferralRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 		
 			if( req.getProductId().equalsIgnoreCase(motorProductId) ) {

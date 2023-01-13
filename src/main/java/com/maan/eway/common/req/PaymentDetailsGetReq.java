@@ -13,7 +13,7 @@ public class PaymentDetailsGetReq {
 	@JsonProperty("PaymentId")
 	private String paymentId;
 	
-	@JsonProperty("PaymentReferenceNo")
-	private String paymentReferenceNo;
+	@JsonProperty("MerchantReference")
+	private String merchantReference;
 	
 }
