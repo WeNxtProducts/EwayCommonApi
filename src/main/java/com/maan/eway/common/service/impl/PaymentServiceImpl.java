@@ -241,14 +241,34 @@ public class PaymentServiceImpl implements PaymentService {
 				HomePositionMaster homeData = homerepo.findByQuoteNo(req.getQuoteNo());
 				String companyId = homeData.getCompanyId() ;
 				Integer productId =  homeData.getProductId() ;
-				List<Integer> sectionIds = new ArrayList<Integer>();
+				List<Integer> sectionIds = new ArrayList<Integer>(); 
+				
+				List<DocValidationReq> docValidateReqs = new ArrayList<DocValidationReq>() ;
 				
 				// Motor Product Specific Doc Valdiation
 				if(homeData.getProductId().equals(Integer.valueOf(motorProductId)) ) {
 					List<MotorDataDetails>  motorDatas = motorRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());	
-					sectionIds = motorDatas.stream().map(MotorDataDetails :: getSectionId ).collect(Collectors.toList());
+					sectionIds = motorDatas.stream().map(MotorDataDetails :: getSectionId ) .collect(Collectors.toList());
+					sectionIds.add(99999);
+					// Common Docs 
+					
+					
+					// Other Docs
+					for (MotorDataDetails mot : motorDatas) {
+						DocValidationReq doc = new DocValidationReq();
+						doc.setQuoteNo(mot.getQuoteNo() );
+						doc.setProductId(String.valueOf(mot.getProductId()));
+						doc.setProductDesc("Vehicle Id");
+						doc.setRiskId(mot.getVehicleId() );
+						doc.setSectionId(String.valueOf(mot.getSectionId()));
+						doc.setSectionDesc(mot.getSectionName());
+						docValidateReqs.add(doc);
+						
+					}
+					
 				}
-				DocValidationReq reqeds ;
+				
+				
 				// Madatory Doc
 				List<CoverDocumentMaster> mandatoryDocs = getCoverDocumentMasterMandatoryDocs( companyId, productId , sectionIds);
 				
@@ -256,12 +276,25 @@ public class PaymentServiceImpl implements PaymentService {
 				List<CoverDocumentUploadDetails> uploadedDocs = docUploadRepo.findByQuoteNo(req.getQuoteNo());
 				
 				for (CoverDocumentMaster mdoc :  mandatoryDocs) {
-					List<CoverDocumentUploadDetails>  filterDocs = uploadedDocs.stream().filter( o -> o.getDocumentId().equals(mdoc.getDocumentId()) && 
-							o.getDocApplicableId().equalsIgnoreCase(mdoc.getDocApplicableId().toString()) ).collect(Collectors.toList());
-					if(filterDocs.size()<=0 ) {
+					// Common Docs
+					if ( mdoc.getSectionId().equals(99999) ) {
+						
+						// Filter Common Docs 
+						List<CoverDocumentUploadDetails> filterDocs = uploadedDocs.stream().filter( o ->  o.getId().equals(0) && o.getSectionId().equals(99999) ).collect(Collectors.toList());
+						if(filterDocs.size()<=0 ) {
+							error.add(new Error("01","Common Doc", mdoc.getDocumentName() + " is Mandatory In Common Document"));
+						}
+					} else {
+						// Filter Other Docs 
+						for (DocValidationReq doc :  docValidateReqs) {
+							List<CoverDocumentUploadDetails> filterDocs = uploadedDocs.stream().filter( o ->  o.getId().equals(Integer.valueOf(doc.getRiskId())) && o.getSectionId().equals(Integer.valueOf(doc.getSectionId())) ).collect(Collectors.toList());
+							if(filterDocs.size()<=0 && doc.getSectionId().equals(mdoc.getSectionId().toString() ) ) {
+								error.add(new Error("01","Iniduvidual Doc", mdoc.getDocumentName() + " Document Mandatory In " + doc.getProductDesc() + " : " + doc.getRiskId() ));
+							}
+							
+						}
 						
 					}
-					
 				}
 				
 				
@@ -303,7 +336,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("documentName")));
+			orderList.add(cb.asc(c.get("sectionId")));
 
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
@@ -344,7 +377,7 @@ public class PaymentServiceImpl implements PaymentService {
 			// Get Result
 			TypedQuery<CoverDocumentMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getDocumentId()))).collect(Collectors.toList());
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getDocumentId() , o.getSectionId()))).collect(Collectors.toList());
 			
 			
 		} catch (Exception e) {
