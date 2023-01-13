@@ -127,7 +127,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 
 				 // Minimium Premium setup.
 				 if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0) {
-					 t.setPremiumExcluedTax(t.getMinimumPremium().divide(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP)); 
+					 t.setPremiumExcluedTax(t.getMinimumPremium().divide(t.getExchangeRate(),round)); 
 					 t.setPremiumExcluedTaxLC(t.getMinimumPremium());
 				 }
 				 
