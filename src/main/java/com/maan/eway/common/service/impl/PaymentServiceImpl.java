@@ -248,7 +248,7 @@ public class PaymentServiceImpl implements PaymentService {
 					List<MotorDataDetails>  motorDatas = motorRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());	
 					sectionIds = motorDatas.stream().map(MotorDataDetails :: getSectionId ).collect(Collectors.toList());
 				}
-				
+				DocValidationReq reqeds ;
 				// Madatory Doc
 				List<CoverDocumentMaster> mandatoryDocs = getCoverDocumentMasterMandatoryDocs( companyId, productId , sectionIds);
 				
@@ -1143,6 +1143,8 @@ public class PaymentServiceImpl implements PaymentService {
 				data.setCreditDate(creditDate);		
 				data.setStatus("P");
 				data.setIntegrationStatus("S");
+				data.setEmiYn(paymentInfo.getEmiYn());
+				data.setInstallmentPeriod(paymentInfo.getInstallmentPeriod());
 				homerepo.saveAndFlush(data);
 				
 				// Update ProductWise

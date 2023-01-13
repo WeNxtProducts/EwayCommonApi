@@ -113,6 +113,12 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="POLICY_TERM", length=20)
     private String     policyTerm ;
+    
+    @Column(name="EMI_YN", length=20)
+    private String     emiYn;
+    
+    @Column(name="INSTALLMENT_PERIOD", length=20)
+    private String     installmentPeriod ;
 
     @Column(name="AMEND_ID", nullable=false)
     private Integer    amendId ;
