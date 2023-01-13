@@ -1,5 +1,6 @@
 package com.maan.eway.common.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -49,11 +50,12 @@ public class GenerateSeqNoServiceImpl {
 	 
 
 	 public synchronized String generatePolicyNo() {
+		 SimpleDateFormat sdf = new SimpleDateFormat("yyyy"); 
 	       try {
 	    	    SeqPolicyno entity;
 	            entity = polNoRepo.save(new SeqPolicyno());    
 	            Date currentDate = Calendar.getInstance().getTime();
-	            int year = currentDate.getYear();
+	            String year =  sdf.format(new Date()) ;
 	            //P11/2021/100/1002/10/020459
 	            
 	            return "P11/"+year+"/100/1002/10/"+String.format("%05d",entity.getPolicyno()) ;
