@@ -23,6 +23,7 @@ public class SplitLoadingUtils  implements Function<Tuple,Loading>{
 						 	.loadingforId(t.get("discountCoverId")==null?"":t.get("discountCoverId").toString())
 						 	.maxAmount(t.get("minPremium")==null?BigDecimal.ZERO:new BigDecimal(t.get("minPremium").toString()))
 						 	.factorTypeId(t.get("factorTypeId")==null?"":t.get("factorTypeId").toString())
+							.regulatoryCode(t.get("regulatoryCode")==null?"N/A":t.get("regulatoryCode").toString())
 						 	.build();
 				 return d;
 			 }

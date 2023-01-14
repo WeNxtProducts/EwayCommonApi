@@ -225,6 +225,11 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="cover_based_on", length=100)
     private String     coverBasedOn ;
+
+    @Column(name="REGULATORY_CODE", length=50)
+    private String     regulatoryCode ;
+
+    
 }
 
 

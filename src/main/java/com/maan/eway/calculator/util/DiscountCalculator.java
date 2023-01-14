@@ -39,6 +39,8 @@ public class DiscountCalculator   implements Consumer<Discount> {
 			 String minPremium=tuple.get("minPremium")==null?"0":tuple.get("minPremium").toString();
 			 t.setDiscountRate(rate);
 			 t.setMaxAmount(new BigDecimal(minPremium));
+			 String regulatoryCode=tuple.get("regulatoryCode")==null?"N/A":tuple.get("regulatoryCode").toString();
+			 t.setRegulatoryCode(regulatoryCode);
 		 }
 		 BigDecimal domath = calc.domath(calctype, Double.parseDouble(t.getDiscountRate()), premium,exchangeRate);
 		 t.setDiscountAmount(domath);

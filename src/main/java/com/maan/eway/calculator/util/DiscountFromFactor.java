@@ -21,6 +21,7 @@ public class DiscountFromFactor  implements Function<FactorRateRequestDetails,Di
 						 	.discountforId(t.getDiscLoadId()==null?"":t.getDiscLoadId().toString())
 						 	.maxAmount(t.getMinimumPremium()==null?BigDecimal.ZERO:new BigDecimal(t.getMinimumPremium()))
 						 	.factorTypeId(t.getFactorTypeId()==null?"":t.getFactorTypeId().toString())
+						 	.regulatoryCode(t.getRegulatoryCode()==null?"N/A":t.getRegulatoryCode())
 						 	.build();
 				 return d;
 			 }

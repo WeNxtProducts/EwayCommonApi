@@ -79,6 +79,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					 
 					 String calctype=tuple.get("calcType").toString();
 					 String rate=tuple.get("rate")==null?"0":tuple.get("rate").toString();
+					 String regulatoryCode=tuple.get("regulatoryCode")==null?"N/A":tuple.get("regulatoryCode").toString();
 					 
 					 t.setRate((Double) ((Double.parseDouble(rate)*Double.parseDouble(rateFor))));
 					 
@@ -87,6 +88,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					 t.setPremiumBeforeDiscount(domath);
 					 t.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP)) ;
 					 t.setCalcType(calctype);
+					 t.setRegulatoryCode(regulatoryCode);
 					 /// Referal
 					 t.setIsReferral((tuple.get("status")==null?"N":tuple.get("status").toString()).equals("R")?"Y":"N");
 				 }else {

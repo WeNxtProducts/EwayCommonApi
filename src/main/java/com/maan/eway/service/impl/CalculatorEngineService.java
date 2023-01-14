@@ -26,6 +26,7 @@ import com.maan.eway.bean.MsCustomerDetails;
 import com.maan.eway.bean.MsHumanDetails;
 import com.maan.eway.bean.MsVehicleDetails;
 import com.maan.eway.bean.SectionCoverMaster;
+import com.maan.eway.calculator.util.AdminCoverCalculator;
 import com.maan.eway.calculator.util.CoverCalculator;
 import com.maan.eway.calculator.util.CoverFromFactor;
 import com.maan.eway.calculator.util.DiscountFromFactor;
@@ -554,7 +555,8 @@ public class CalculatorEngineService implements CalculatorEngine{
 						 totalcovers=subcovers.get("Y");
 					 }
 					 
-					 CoverCalculator calc=new CoverCalculator();
+					// CoverCalculator calc=new CoverCalculator();
+					 AdminCoverCalculator calc=new AdminCoverCalculator();
 					 calc.setEngine(request,retc,commontbl,vehicles,customers,prorata,ratingutil);
 					 
 					 totalcovers.stream().forEach(calc);

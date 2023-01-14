@@ -215,6 +215,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="referral_description", length=1000)
     private String     referralDescription ;
 
+    @Column(name="REGULATORY_CODE", length=50)
+    private String     regulatoryCode ;
+
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 

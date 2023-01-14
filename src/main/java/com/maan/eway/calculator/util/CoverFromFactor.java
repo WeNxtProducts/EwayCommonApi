@@ -53,6 +53,7 @@ public class CoverFromFactor implements Function<FactorRateRequestDetails,Cover>
 					.premiumAfterDiscount(new BigDecimal(t.get("coverId").toString()))
 					.premiumExcluedTax(new BigDecimal(t.get("coverId").toString()))
 					.premiumIncludedTax(new BigDecimal(t.get("coverId").toString()))*/
+					.regulatoryCode(t.getRegulatoryCode()==null?"N/A":t.getRegulatoryCode())
 					.build();
 				return c;
 			 }			

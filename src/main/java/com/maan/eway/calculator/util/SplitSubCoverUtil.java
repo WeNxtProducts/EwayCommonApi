@@ -54,6 +54,7 @@ public class SplitSubCoverUtil implements Function<Tuple,Cover> {
 					.premiumAfterDiscount(new BigDecimal(t.get("coverId").toString()))
 					.premiumExcluedTax(new BigDecimal(t.get("coverId").toString()))
 					.premiumIncludedTax(new BigDecimal(t.get("coverId").toString()))*/
+					.regulatoryCode(t.get("regulatoryCode")==null?"N/A":t.get("regulatoryCode").toString())
 					.build();
 				return c;
 			 }			

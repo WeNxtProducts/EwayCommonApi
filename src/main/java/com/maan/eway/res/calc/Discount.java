@@ -34,6 +34,9 @@ public class Discount implements Serializable {
     private String factorTypeId;
     @JsonProperty("CoverAgeType")
     private String coverAgeType;
-    
+
+    @JsonProperty("RegulatoryCode")
+    private String  regulatoryCode ;
+
     
 }

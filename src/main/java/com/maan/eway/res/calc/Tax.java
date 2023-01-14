@@ -30,5 +30,9 @@ public class Tax implements Serializable  {
     public String taxExemptCode;
     @JsonProperty("TaxCalcType") 
     public String calcType;
+
+    @JsonProperty("RegulatoryCode")
+    private String  regulatoryCode ;
+
     
 }

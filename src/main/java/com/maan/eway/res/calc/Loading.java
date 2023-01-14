@@ -32,4 +32,8 @@ public class Loading implements Serializable {
 	    public BigDecimal maxAmount;
 	    @JsonProperty("FactorTypeId")
 	    private String factorTypeId;
+
+	    @JsonProperty("RegulatoryCode")
+	    private String  regulatoryCode ;
+
 }

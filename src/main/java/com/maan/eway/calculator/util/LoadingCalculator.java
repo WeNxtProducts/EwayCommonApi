@@ -28,6 +28,8 @@ public class LoadingCalculator   implements Consumer<Loading> {
 			 String minPremium=tuple.get("minPremium")==null?"0":tuple.get("minPremium").toString();
 			 t.setLoadingRate(rate);
 			 t.setMaxAmount(new BigDecimal(minPremium));
+			 String regulatoryCode=tuple.get("regulatoryCode")==null?"N/A":tuple.get("regulatoryCode").toString();
+			 t.setRegulatoryCode(regulatoryCode);
 		 }
 		 BigDecimal domath = calc.domath(calctype, Double.parseDouble(t.getLoadingRate()), premium,exchangeRate);
 		 t.setLoadingAmount(domath);
