@@ -1065,8 +1065,9 @@ public class PaymentServiceImpl implements PaymentService {
 			String companyName =  getInscompanyMasterDropdown(data.getCompanyId()) ; // companyRepo.findByCompanyIdOrderByAmendIdDesc(req.getCompanyId());
 			String branchName = getCompanyBranchMasterDropdown(data.getCompanyId() , data.getBranchCode());
 			String paymentMode = getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_MODE",req.getPaymentType());
+			String refShortCode = getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_REF_SHORTCODE","1");
 			PaymentInfo paymentInfo = paymentinforepo.findByQuoteNoAndPaymentId(req.getQuoteNo(), req.getPaymentId());
-			String refno = generateMerchantReferenceNo();
+			String refno = refShortCode +"-"+ generateMerchantReferenceNo();
 			
 			String paymentStatus = "";
 			
@@ -1091,10 +1092,9 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentDetail.setEmiYn(paymentInfo.getEmiYn() );
 			paymentDetail.setInstallmentMonth(paymentInfo.getInstallmentMonth());
 			paymentDetail.setInstallmentPeriod(paymentInfo.getInstallmentPeriod());
-			paymentDetail.setPaymentType(null);
+			paymentDetail.setPaymentType(req.getPaymentType());
 			paymentDetail.setPremium(data.getPremiumLc());
-			paymentDetail.setReqBillToAddressCity(personaldata.getPlaceOfBirth());
-			paymentDetail.setReqBillToAddressCity(personaldata.getPlaceOfBirth());
+			paymentDetail.setReqBillToAddressCity(personaldata.getCityName());
 			paymentDetail.setReqBillToAddressLine1(personaldata.getAddress1());
 			paymentDetail.setReqBillToAddressLine2(personaldata.getAddress2());
 			paymentDetail.setReqBillToAddrPostalCode(null);
@@ -1118,7 +1118,7 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentDetail.setShorternUrl(req.getShortenUrl());
 			
 			
-			if( req.getPaymentType().equalsIgnoreCase("Cash") ) {
+			if( req.getPaymentType().equalsIgnoreCase("1") ) {
 				paymentStatus = "ACCEPTED" ;
 				paymentDetail.setPaymentStatus(paymentStatus);
 			} else {
@@ -1135,6 +1135,7 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentInfo.setValidityDate(validateDate);
 			paymentInfo.setShorternUrl(req.getShortenUrl());
 			paymentInfo.setPaymentStatus(paymentStatus);
+			paymentInfo.setMerchantReference(refno);
 			paymentinforepo.saveAndFlush(paymentInfo);
 			
 			// Update Emi 
