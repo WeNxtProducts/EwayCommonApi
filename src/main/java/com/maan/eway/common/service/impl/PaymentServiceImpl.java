@@ -149,6 +149,9 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired
 	private CoverDocumentUploadDetailsRepository docUploadRepo ;
 	
+	@Autowired
+	private PaymentService paymentService ;
+	
 	private Logger log = LogManager.getLogger(ClausesMasterServiceImpl.class);
 
 	Gson json = new Gson();
@@ -1072,6 +1075,22 @@ public class PaymentServiceImpl implements PaymentService {
 			PaymentInfo paymentInfo = paymentinforepo.findByQuoteNoAndPaymentId(req.getQuoteNo(), req.getPaymentId());
 			String refno = refShortCode +"-"+ generateMerchantReferenceNo();
 			
+			// Tiny Url
+			String tinyUrl = "" ; 
+			if(StringUtils.isBlank(req.getShortenUrl())) {
+				TinyUrlGetReq urlReq = new TinyUrlGetReq();
+				urlReq.setQuoteNo(req.getQuoteNo());
+				urlReq.setType("DO_NEW_QUOTE");
+				
+				CommonRes common =  paymentService.getTinyUrl(urlReq);
+				TinyUrlGetRes tinyRes = (TinyUrlGetRes) common.getCommonResponse();
+				tinyUrl = tinyRes.getTinyUrl();
+			} else {
+				tinyUrl = req.getShortenUrl();
+			}
+			
+				
+			
 			String paymentStatus = "";
 			
 			// Save Paymetn Info
@@ -1107,6 +1126,7 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentDetail.setReqBillToSurname(personaldata.getClientName());
 			paymentDetail.setReqCardExpiryDate(null);
 			paymentDetail.setReqBillToCompanyName(companyName);
+			paymentDetail.setShorternUrl(tinyUrl);
 			
 			Integer validateHour = Integer.valueOf(getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_VALIDATE_HOUR"));
 			Integer validateMinutes = Integer.valueOf(getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_VALIDATE_MINUTES"));
@@ -1136,7 +1156,7 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			// Update Payment Info
 			paymentInfo.setValidityDate(validateDate);
-			paymentInfo.setShorternUrl(req.getShortenUrl());
+			paymentInfo.setShorternUrl(tinyUrl);
 			paymentInfo.setPaymentStatus(paymentStatus);
 			paymentInfo.setMerchantReference(refno);
 			paymentinforepo.saveAndFlush(paymentInfo);

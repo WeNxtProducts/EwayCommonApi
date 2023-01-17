@@ -48,6 +48,7 @@ import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.DeleteOldQuoteReq;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.SectionSumInsuredGetReq;
+import com.maan.eway.common.req.TinyUrlGetReq;
 import com.maan.eway.common.req.VehicleIdsReq;
 import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.BuildingProductDetailsRes;
@@ -56,10 +57,12 @@ import com.maan.eway.common.res.CustomerDetailsRes;
 import com.maan.eway.common.res.MotorProductDetailsRes;
 import com.maan.eway.common.res.NewQuoteRes;
 import com.maan.eway.common.res.QuoteDetailsRes;
+import com.maan.eway.common.res.TinyUrlGetRes;
 import com.maan.eway.common.res.TravelPassDetailsRes;
 import com.maan.eway.common.res.TravelProductDetailsRes;
 import com.maan.eway.common.res.VehicleDetailsRes;
 import com.maan.eway.common.res.ViewQuoteRes;
+import com.maan.eway.common.service.PaymentService;
 import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.common.service.QuoteThreadService;
 import com.maan.eway.error.Error;
@@ -152,6 +155,8 @@ public class QuoteServiceImpl implements QuoteService {
 	@Autowired
 	private GenerateSeqNoServiceImpl generateSeqService ;
 	
+	@Autowired
+	private PaymentService paymentService ;
 	
 	private Logger log = LogManager.getLogger(QuoteServiceImpl.class);
 	
@@ -170,6 +175,7 @@ public class QuoteServiceImpl implements QuoteService {
 			// Quote Details
 			HomePositionMaster homeData  =  homeRepo.findByQuoteNo(req.getQuoteNo());
 			QuoteDetailsRes quoteRes = new QuoteDetailsRes();
+			
 			quoteRes = dozerMappper.map(homeData, QuoteDetailsRes.class);
 			quoteRes.setOverAllPremiumFc(homeData.getOverallPremiumFc()==null?"":homeData.getOverallPremiumFc().toString() );
 			quoteRes.setOverAllPremiumLc(homeData.getOverallPremiumLc()==null?"":homeData.getOverallPremiumLc().toString());

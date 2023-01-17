@@ -131,6 +131,9 @@ public class QuoteDetailsRes {
 	private String     emiYn;
 	@JsonProperty("InstallmentPeriod")
     private String     installmentPeriod ;
+	
+	@JsonProperty("TinyUrl")
+    private String     tinyUrl;
     
 	/*
 	@JsonProperty("ExcessSign(null);

@@ -13,4 +13,7 @@ public class ViewQuoteReq {
 
 	@JsonProperty("QuoteNo")
 	private String quoteNo ;
+	
+	@JsonProperty("Type")
+	private String type ;
 }
