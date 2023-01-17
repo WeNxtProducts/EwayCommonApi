@@ -1138,8 +1138,6 @@ public class PaymentServiceImpl implements PaymentService {
 			Date validateDate = cal.getTime();
 			
 			paymentDetail.setValidityDate(validateDate);
-			paymentDetail.setShorternUrl(req.getShortenUrl());
-			
 			
 			if( req.getPaymentType().equalsIgnoreCase("1") ) {
 				paymentStatus = "ACCEPTED" ;
@@ -1189,17 +1187,38 @@ public class PaymentServiceImpl implements PaymentService {
 				List<DebitAndCredit> filterCredit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")).collect(Collectors.toList());
 				
 				String policyNo = policyDetails.get(0).getPolicyNo();
+				// Debit
 				String debitNo = filterDebit.get(0).getDocNo() ;
 				Date debitDate = filterDebit.get(0).getEntryDate();
+				String debitToId = filterDebit.get(0).getDocType();
+				// Credit
 				String creditNo =  filterCredit.get(0).getDocNo();
 				Date creditDate = filterCredit.get(0).getEntryDate();
+				String creditToId = filterCredit.get(0).getDocType();
+				// Commision
+				BigDecimal commission =  policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") && o.getChargeCode().equals(new BigDecimal(1005)) ).collect(Collectors.toList()).get(0).getAmountFc();
+				BigDecimal commissionPercent = 		policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") && o.getChargeCode().equals(new BigDecimal(1007)) ).collect(Collectors.toList()).get(0).getAmountFc();
+				List<DebitAndCredit> filtercommissionVat = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")&& o.getChargeCode().equals(new BigDecimal(1012))).collect(Collectors.toList());
+				BigDecimal commissionVat = BigDecimal.ZERO;
+				if (filtercommissionVat.size()>0 ) {
+					commissionVat =  filtercommissionVat.get(0).getAmountFc();
+				}
+				
 				
 				// Update Home Posion Master
-				data.setPolicyNo(policyNo);
 				data.setDebitNoteNo(debitNo);
 				data.setDebitNoteDate(debitDate);
+				data.setDebitToId(debitToId);
+				
 				data.setCreditNo(creditNo);
-				data.setCreditDate(creditDate);		
+				data.setCreditDate(creditDate);	
+				data.setCreditToId(creditToId);
+				
+				data.setCommission(commission);
+				data.setCommissionPercentage(commissionPercent);
+				data.setVatCommission(commissionVat);
+				
+				data.setPolicyNo(policyNo);
 				data.setStatus("P");
 				data.setIntegrationStatus("S");
 				data.setEmiYn(paymentInfo.getEmiYn());
