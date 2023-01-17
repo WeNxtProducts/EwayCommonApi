@@ -86,8 +86,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="ADVANCE", length=20)
     private String     advance ;
     
-    @Column(name="ADVANCE_AMOUNT")
-    private Double     advanceAmount ;
+    @Column(name="DUE_AMOUNT")
+    private Double     dueAmount ;
     
     @Column(name="BALANCE_AMOUNT")
     private Double     balanceAmount ;

@@ -182,7 +182,7 @@ public class PaymentServiceImpl implements PaymentService {
 				String pattern = "#####0";
 			 	DecimalFormat decimalFormat = new DecimalFormat(pattern);
 			 	Double premium =  Double.valueOf (decimalFormat.format(Double.valueOf (req.getPremium())));
-			 	Double overall =  Double.valueOf (decimalFormat.format(emiDetails.getAdvanceAmount()));
+			 	Double overall =  Double.valueOf (decimalFormat.format(emiDetails.getDueAmount()));
 				if(premium < overall ) {
 					error.add(new Error("01","Premium","Premium Mismatched. Given Premium : " + req.getPremium() + " Policy Premium :" + overall));
 				}

@@ -182,13 +182,13 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 				saveData.setAdvance(advancePercent.toString());
 				saveData.setInterestAmount(interestAmount);
 				if (i == 0) {
-					saveData.setAdvanceAmount(advanceAmount);
+					saveData.setDueAmount(advanceAmount);
 					insDesc="Advance Amount";
 					//saveData.setPaymentDate(entryDate);
 					saveData.setStatus(req.getStatus());
 					saveData.setPaymentDetails(req.getPaymentDetails());
 				} else {
-					saveData.setAdvanceAmount((Double.valueOf(installment)));
+					saveData.setDueAmount((Double.valueOf(installment)));
 					insDesc="Installment Amount";
 					saveData.setStatus("Y");
 					saveData.setPaymentDetails(null);
