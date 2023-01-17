@@ -71,7 +71,7 @@ public class ReferalServiceImpl {
 					for(Map<String, String> map:mp){
 						String jsonKey = map.get("JsonKey");
 						String jsonColum = map.get("JsonColum");
-						String jsonValue = result.get(0).get(jsonColum)==null?"":result.get(0).get(jsonColum).toString();
+						String jsonValue = result!=null&&result.size()>0 ? (result.get(0).get(jsonColum)==null?"":result.get(0).get(jsonColum).toString()) :"";
 								
 						String value="\""+jsonKey+"\":\""+jsonValue+"\"";
 						list.add(value);		

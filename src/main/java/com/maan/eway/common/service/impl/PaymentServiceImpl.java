@@ -1190,11 +1190,11 @@ public class PaymentServiceImpl implements PaymentService {
 				// Debit
 				String debitNo = filterDebit.get(0).getDocNo() ;
 				Date debitDate = filterDebit.get(0).getEntryDate();
-				String debitToId = filterDebit.get(0).getDocType();
+				String debitTo = filterDebit.get(0).getDocType();
 				// Credit
 				String creditNo =  filterCredit.get(0).getDocNo();
 				Date creditDate = filterCredit.get(0).getEntryDate();
-				String creditToId = filterCredit.get(0).getDocType();
+				String creditTo = filterCredit.get(0).getDocType();
 				// Commision
 				BigDecimal commission =  policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") && o.getChargeCode().equals(new BigDecimal(1005)) ).collect(Collectors.toList()).get(0).getAmountFc();
 				BigDecimal commissionPercent = 		policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") && o.getChargeCode().equals(new BigDecimal(1007)) ).collect(Collectors.toList()).get(0).getAmountFc();
@@ -1208,16 +1208,18 @@ public class PaymentServiceImpl implements PaymentService {
 				// Update Home Posion Master
 				data.setDebitNoteNo(debitNo);
 				data.setDebitNoteDate(debitDate);
-				data.setDebitToId(debitToId);
+				data.setDebitTo(debitTo);
 				
 				data.setCreditNo(creditNo);
 				data.setCreditDate(creditDate);	
-				data.setCreditToId(creditToId);
+				data.setCreditTo(creditTo);
 				
 				data.setCommission(commission);
 				data.setCommissionPercentage(commissionPercent);
 				data.setVatCommission(commissionVat);
-				
+				data.setPaymentMode(req.getPaymentType());
+				data.setPaymentType(  paymentMode);
+				data.setPaymentStatus(paymentInfo.getEmiYn().equalsIgnoreCase("N") ? paymentStatus :"Pending");
 				data.setPolicyNo(policyNo);
 				data.setStatus("P");
 				data.setIntegrationStatus("S");
