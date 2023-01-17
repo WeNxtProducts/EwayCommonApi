@@ -64,7 +64,7 @@ public class ReferalServiceImpl {
 						e.printStackTrace();
 					}
 					
-					r.setPrimaryId(result.get(0).get(r.getPrimaryKey())==null?"":result.get(0).get(r.getPrimaryKey()).toString());
+					r.setPrimaryId(result.size()>0 ?  result.get(0).get(r.getPrimaryKey())==null?"":result.get(0).get(r.getPrimaryKey()).toString() : "");
 					
 					List<Map<String, String>> mp = r.getMp();
 					List<String> list=new ArrayList<String>();
