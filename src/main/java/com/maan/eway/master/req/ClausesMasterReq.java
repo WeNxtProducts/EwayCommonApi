@@ -14,16 +14,10 @@ public class ClausesMasterReq {
 
 	@JsonProperty("ClausesId")
 	private String clausesId;
-	
-	@JsonProperty("ClausesDescription")
-	private String clausesDescription;
-	
-	@JsonProperty("CoverId")
-	private String coverId;
-	
-	@JsonProperty("ExtraCoverId")
-	private String extraCoverId;
-	
+
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+
 	
 	@JsonProperty("BranchCode")
 	private String branchCode;
@@ -37,9 +31,6 @@ public class ClausesMasterReq {
 	
 	@JsonProperty("SectionId")
 	private String sectionId;
-//	
-//	@JsonProperty("PolicyType")
-//	private String policyType;
 
 
 }

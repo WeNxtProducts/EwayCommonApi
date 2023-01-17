@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -39,11 +38,11 @@ import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MotorDataDetails;
+import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.bean.TravelPassengerHistory;
-import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.common.req.AdminReferalStatusReq;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.DeleteOldQuoteReq;
@@ -64,7 +63,6 @@ import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.common.service.QuoteThreadService;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.SectionCoverMasterGetReq;
 import com.maan.eway.repository.CoverDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
@@ -80,7 +78,6 @@ import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerHistoryRepository;
 import com.maan.eway.res.BuildingSumInsuredDetails;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.EserviceBuildingsDetailsRes;
 import com.maan.eway.res.OccupationReqClass;
 import com.maan.eway.res.QuoteUpdateRes;
@@ -151,6 +148,10 @@ public class QuoteServiceImpl implements QuoteService {
 	
 	@Autowired
 	private EservicePersonalAccidentDetailsRepository eserPaccRepo  ;
+	
+	@Autowired
+	private GenerateSeqNoServiceImpl generateSeqService ;
+	
 	
 	private Logger log = LogManager.getLogger(QuoteServiceImpl.class);
 	
@@ -1345,5 +1346,6 @@ public class QuoteServiceImpl implements QuoteService {
 		}
 		return list;
 	}
+
 	
 }

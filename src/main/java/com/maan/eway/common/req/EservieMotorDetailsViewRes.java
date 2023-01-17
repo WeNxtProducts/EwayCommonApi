@@ -69,7 +69,7 @@ public class EservieMotorDetailsViewRes {
 	
 	@JsonProperty("OverallPremiumFc")
 	private String    overallPremiumFc ;
-	
+		
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("PolicyStartDate")
     private Date policyStartDate;

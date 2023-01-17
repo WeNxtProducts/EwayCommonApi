@@ -12,10 +12,11 @@ import lombok.Data;
 public class WarrantyMasterListSaveReq {
 
 	
+	@JsonProperty("WarrantyDescription")
+	private String warrantyDescription;
 	
-	@JsonProperty("WarrantyMaster")
-	private List<WarrantyMasterReq> warrantyReq;
-	
+	@JsonProperty("WarrantyId")
+	private String warrantyId;
 	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")

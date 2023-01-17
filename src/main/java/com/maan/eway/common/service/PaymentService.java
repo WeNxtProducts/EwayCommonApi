@@ -12,6 +12,8 @@ import com.maan.eway.common.req.PaymentDetailsSaveReq;
 import com.maan.eway.common.req.PaymentDetailsSaveRes;
 import com.maan.eway.common.req.PaymentInfoGetAllReq;
 import com.maan.eway.common.req.PaymentInfoGetReq;
+import com.maan.eway.common.req.TinyUrlGetReq;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.PaymentDetailGetRes;
 import com.maan.eway.common.res.PaymentInfoGetRes;
 import com.maan.eway.error.Error;
@@ -38,5 +40,7 @@ public interface PaymentService {
 	PaymentDetailsSaveRes savePaymentDetails(PaymentDetailsSaveReq req);
 
 	List<PaymentDetailGetRes> paymentdetailshistory(PaymentDetailsHistoryReq req);
+	
+	CommonRes getTinyUrl(TinyUrlGetReq req);
 
 }

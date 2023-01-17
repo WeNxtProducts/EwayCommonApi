@@ -13,15 +13,7 @@ public class WarRateMasterReq {
 	@JsonProperty("WarRateId")
 	private String warRateId;
 	
-	@JsonProperty("WarRateDesc")
-	private String warRateDesc;
-	
-	@JsonProperty("WarRate")
-	private String warRate;
-	
-	@JsonProperty("ModeTransportId")
-	private String modeTransportId;
-	
+
 	@JsonProperty("BranchCode")
 	private String branchCode;
 	
@@ -34,6 +26,9 @@ public class WarRateMasterReq {
 	
 	@JsonProperty("SectionId")
 	private String sectionId;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
 	
 	
 }

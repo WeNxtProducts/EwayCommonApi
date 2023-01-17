@@ -13,9 +13,6 @@ public class ExclusionMasterReq {
 	@JsonProperty("ExclusionId")
 	private String exclusionId;
 	
-	@JsonProperty("ExclusionDescription")
-	private String exclusionDescription;
-	
 	@JsonProperty("BranchCode")
 	private String branchCode;
 	
@@ -28,6 +25,9 @@ public class ExclusionMasterReq {
 	
 	@JsonProperty("SectionId")
 	private String sectionId;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
 
 		
 	

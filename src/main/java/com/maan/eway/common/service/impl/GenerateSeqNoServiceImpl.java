@@ -13,10 +13,12 @@ import com.maan.eway.bean.SeqCreditno;
 import com.maan.eway.bean.SeqDebitnote;
 import com.maan.eway.bean.SeqPolicyno;
 import com.maan.eway.bean.SeqRefno;
+import com.maan.eway.bean.SeqTinyrefno;
 import com.maan.eway.repository.SeqCreditnoRepository;
 import com.maan.eway.repository.SeqDebitnoteRepository;
 import com.maan.eway.repository.SeqPolicynoRepository;
 import com.maan.eway.repository.SeqRefnoRepository;
+import com.maan.eway.repository.SeqTinyrefnoRepository;
 
 @Service
 public class GenerateSeqNoServiceImpl {
@@ -34,6 +36,9 @@ public class GenerateSeqNoServiceImpl {
 	
 	@Autowired
 	private SeqCreditnoRepository creditRepo;
+	
+	@Autowired
+	private SeqTinyrefnoRepository tinyRefRepo;
 
 	 public synchronized String generateRefNo() {
 	       try {
@@ -87,6 +92,20 @@ public class GenerateSeqNoServiceImpl {
 	    	    SeqCreditno entity;
 	            entity = creditRepo.save(new SeqCreditno());          
 	            return String.format("%05d",entity.getCreditnote()) ;
+	        } catch (Exception e) {
+				e.printStackTrace();
+				log.info( "Exception is ---> " + e.getMessage());
+	            return null;
+	        }
+	       
+	 
+	 }
+	 
+	 public synchronized String generateTinyRefNo() {
+	       try {
+	    	    SeqTinyrefno entity;
+	            entity = tinyRefRepo.save(new SeqTinyrefno());          
+	            return String.format("%05d",entity.getTinyUrlRefNo()) ;
 	        } catch (Exception e) {
 				e.printStackTrace();
 				log.info( "Exception is ---> " + e.getMessage());

@@ -2,6 +2,8 @@ package com.maan.eway.common.res;
 
 import java.util.Date;
 
+import javax.persistence.Column;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -124,6 +126,12 @@ public class QuoteDetailsRes {
 	private String  tax2;
 	@JsonProperty("Tax3")
 	private String  tax3;
+	
+	@JsonProperty("EmiYn")
+	private String     emiYn;
+	@JsonProperty("InstallmentPeriod")
+    private String     installmentPeriod ;
+    
 	/*
 	@JsonProperty("ExcessSign(null);
 	@JsonProperty("ExcessPremium(null);

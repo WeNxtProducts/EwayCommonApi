@@ -13,8 +13,7 @@ public class WarrantyMasterReq {
 	@JsonProperty("WarrantyId")
 	private String warrantyId;
 	
-	@JsonProperty("WarrantyDescription")
-	private String warrantyDescription;
+
 	
 	@JsonProperty("BranchCode")
 	private String branchCode;
@@ -27,6 +26,9 @@ public class WarrantyMasterReq {
 	
 	@JsonProperty("SectionId")
 	private String sectionId;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
 	
 	
 }

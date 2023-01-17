@@ -16,6 +16,7 @@ public class WarrantyMasterSaveReq {
 	@JsonProperty("WarrantyDescription")
 	private String warrantyDescription;
 	
+	
 	@JsonProperty("BranchCode")
 	private String branchCode;
 	

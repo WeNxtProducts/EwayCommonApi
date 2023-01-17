@@ -36,6 +36,7 @@ import com.maan.eway.bean.ExclusionMaster;
 import com.maan.eway.bean.WarrantyMaster;
 import com.maan.eway.common.req.ExclusionMasterDropdownReq;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.ClausesMasterReq;
 import com.maan.eway.master.req.ExclusionChangeStatusReq;
 import com.maan.eway.master.req.ExclusionMasterGetReq;
 import com.maan.eway.master.req.ExclusionMasterGetallReq;
@@ -178,11 +179,8 @@ public class ExclusionMasterServiceImpl implements ExclusionMasterService {
 			Predicate a1 = cb.equal(ocpm1.get("exclusionId"), b.get("exclusionId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-//			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-//			Predicate a5 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"), today);
 			Predicate a6 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a7 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-//			Predicate a8 = cb.equal(ocpm1.get("policyType"), b.get("policyType"));
 			
 			amendId.where(a1,a2,a3,a6,a7);
 
@@ -190,19 +188,11 @@ public class ExclusionMasterServiceImpl implements ExclusionMasterService {
 			Predicate n2 = cb.equal(cb.lower( b.get("exclusionDescription")), ExclusionDescription.toLowerCase());
 			Predicate n3 = cb.equal(b.get("companyId"),InsuranceId);
 			Predicate n4 = cb.equal(b.get("branchCode"), branchCode);
-			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n6 = cb.or(n4,n5);
 			Predicate n7 = cb.equal(b.get("productId"),productId);
-			Predicate n8 = cb.equal(b.get("productId"), "99999");
-			Predicate n9 = cb.or(n6,n7);
 			Predicate n10 = cb.equal(b.get("sectionId"),sectionId);
-			Predicate n11 = cb.equal(b.get("sectionId"), "99999");
-			Predicate n12 = cb.or(n9,n10);
-//			Predicate n13 = cb.equal(b.get("policyType"),policyType);
-//			Predicate n14 = cb.equal(b.get("policyType"), "99999");
-//			Predicate n15 = cb.or(n12,n13);
+			
 		
-			query.where(n1,n2,n3,n6,n9,n12);
+			query.where(n1,n2,n3,n3,n4,n7,n10);
 			
 			// Get Result
 			TypedQuery<ExclusionMaster> result = em.createQuery(query);
@@ -233,7 +223,7 @@ public class ExclusionMasterServiceImpl implements ExclusionMasterService {
 		String createdBy ="";
 		Integer exclusionId = 0;
 		if(StringUtils.isBlank(req.getExclusionId())) {
-			Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getBranchCode(),req.getProductId(),req.getSectionId());
+			Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getProductId(),req.getSectionId());
 			exclusionId = totalCount+1;
 			entryDate = new Date();
 			createdBy = req.getCreatedBy();
@@ -313,7 +303,7 @@ public class ExclusionMasterServiceImpl implements ExclusionMasterService {
 	}
 	
 	
-public Integer getMasterTableCount(String companyId, String branchCode, String productId, String sectionId)	{
+public Integer getMasterTableCount(String companyId,  String productId, String sectionId)	{
 
 	Integer data =0;
 	try {
@@ -344,17 +334,9 @@ public Integer getMasterTableCount(String companyId, String branchCode, String p
 		
 		Predicate n1 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
 		Predicate n2 = cb.equal(b.get("companyId"),companyId);
-		Predicate n3 = cb.equal(b.get("branchCode"), branchCode);
-		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
-		Predicate n5 = cb.or(n3,n4);
 		Predicate n6 = cb.equal(b.get("productId"),productId);
-		Predicate n7 = cb.equal(b.get("productId"), "99999");
-		Predicate n8 = cb.or(n6,n7);
 		Predicate n9 = cb.equal(b.get("sectionId"),sectionId);
-		Predicate n10 = cb.equal(b.get("sectionId"), "99999");
-		Predicate n11 = cb.or(n9,n10);
-
-		query.where(n1,n2,n5,n8,n11).orderBy(orderList);
+		query.where(n1,n2,n6,n9).orderBy(orderList);
 		
 		
 		
@@ -410,16 +392,10 @@ public List<ExclusionMasterRes> getallExclusion(ExclusionMasterGetallReq req) {
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
 		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
-		Predicate n5 = cb.or(n3,n4);
 		Predicate n6 = cb.equal(b.get("productId"),req.getProductId());
-		Predicate n7 = cb.equal(b.get("productId"), "99999");
-		Predicate n8 = cb.or(n6,n7);
 		Predicate n9 = cb.equal(b.get("sectionId"),req.getSectionId());
-		Predicate n10 = cb.equal(b.get("sectionId"), "99999");
-		Predicate n11 = cb.or(n9,n10);
-
-		query.where(n1,n2,n5,n8,n11).orderBy(orderList);
+		
+		query.where(n1,n2,n3,n6,n9).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<ExclusionMaster> result = em.createQuery(query);
@@ -487,16 +463,10 @@ public List<ExclusionMasterRes> getActiveExclusion(ExclusionMasterGetallReq req)
 		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
 		Predicate n4 = cb.equal(b.get("status"), "Y");
-		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
-		Predicate n6 = cb.or(n3,n5);
 		Predicate n7 = cb.equal(b.get("productId"),req.getProductId());
-		Predicate n8 = cb.equal(b.get("productId"), "99999");
-		Predicate n9 = cb.or(n7,n8);
 		Predicate n10 = cb.equal(b.get("sectionId"),req.getSectionId());
-		Predicate n11 = cb.equal(b.get("sectionId"), "99999");
-		Predicate n12 = cb.or(n10,n11);
-
-		query.where(n1,n2,n4,n6,n9,n12).orderBy(orderList);
+		
+		query.where(n1,n2,n4,n3,n7,n10).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<ExclusionMaster> result = em.createQuery(query);
@@ -568,16 +538,9 @@ public ExclusionMasterRes getByExclusionId(ExclusionMasterGetReq req) {
 		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
 		Predicate n4 = cb.equal(b.get("exclusionId"), req.getExclusionId());
-		Predicate n6 = cb.equal(b.get("branchCode"), "99999");
-		Predicate n7 = cb.or(n3,n6);
 		Predicate n8 = cb.equal(b.get("productId"),req.getProductId());
-		Predicate n9 = cb.equal(b.get("productId"), "99999");
-		Predicate n10 = cb.or(n8,n9);
 		Predicate n11 = cb.equal(b.get("sectionId"),req.getSectionId());
-		Predicate n12 = cb.equal(b.get("sectionId"), "99999");
-		Predicate n13 = cb.or(n11,n12);
-
-		query.where(n1,n2,n4,n7,n10,n13).orderBy(orderList);
+		query.where(n1,n2,n4,n3,n8,n11).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<ExclusionMaster> result = em.createQuery(query);
@@ -636,16 +599,10 @@ public SuccessRes changeStatusOfExclusion(ExclusionChangeStatusReq req) {
 		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
 		Predicate n4 = cb.equal(b.get("exclusionId"), req.getExclusionId());
-		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
-		Predicate n6 = cb.or(n3,n5);
 		Predicate n7 = cb.equal(b.get("productId"),req.getProductId());
-		Predicate n8 = cb.equal(b.get("productId"), "99999");
-		Predicate n9 = cb.or(n7,n8);
 		Predicate n10 = cb.equal(b.get("sectionId"),req.getSectionId());
-		Predicate n11 = cb.equal(b.get("sectionId"), "99999");
-		Predicate n12 = cb.or(n10,n11);
-
-		query.where(n1,n2,n4,n6,n9,n12).orderBy(orderList);
+		
+		query.where(n1,n2,n4,n3,n7,n10).orderBy(orderList);
 		
 		// Get Result 
 		TypedQuery<ExclusionMaster> result = em.createQuery(query);
@@ -731,12 +688,8 @@ try {
 	Predicate n6 = cb.equal(c.get("branchCode"),"99999");
 	Predicate n7 = cb.or(n5,n6);
 	Predicate n8 = cb.equal(c.get("productId"), req.getProductId());
-	Predicate n9 = cb.equal(c.get("productId"), "99999");
-	Predicate n10 = cb.or(n8,n9);
 	Predicate n11 = cb.equal(c.get("sectionId"), req.getSectionId());
-	Predicate n12 = cb.equal(c.get("sectionId"), "99999");
-	Predicate n13 = cb.or(n11,n12);
-	query.where(n1,n2,n3,n4,n7,n10,n13).orderBy(orderList);
+	query.where(n1,n2,n3,n4,n7,n8,n11).orderBy(orderList);
 	// Get Result
 	TypedQuery<ExclusionMaster> result = em.createQuery(query);
 	list = result.getResultList();
@@ -756,207 +709,207 @@ try {
 		}
 	return resList;
 }
-@Override
-public List<Error> validateExclusion(ExclusionMasterListSaveReq reqList) {
-	List<Error> errorList = new ArrayList<Error>();
-
-	try {
-		
-		for(ExclusionMasterReq  req : reqList.getExclusionReq()) {
-		
-		if (StringUtils.isBlank(req.getExclusionDescription())) {
-			errorList.add(new Error("02", "ExclusionDescription", "Please Select ExclusionDescription"));
-		}else if (req.getExclusionDescription().length() > 100){
-			errorList.add(new Error("02","ExclusionDescription", "Please Enter ExclusionDescription 100 Characters")); 
-		}else if (StringUtils.isBlank(req.getExclusionId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId())) {
-			List<ExclusionMaster> ExclusionList = getExclusionDescriptionExistDetails(req.getExclusionDescription() , req.getCompanyId() , req.getBranchCode(),req.getProductId(),req.getSectionId());
-			if (ExclusionList.size()>0 ) {
-				errorList.add(new Error("01", "ExclusionDescription", "This ExclusionDescription Already Exist "));
-			}
-		}else if (StringUtils.isNotBlank(req.getExclusionId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId())) {
-			List<ExclusionMaster> ExclusionList = getExclusionDescriptionExistDetails(req.getExclusionDescription() , req.getCompanyId() , req.getBranchCode(),req.getProductId(), req.getSectionId());
-			
-			if (ExclusionList.size()>0 &&  (! req.getExclusionId().equalsIgnoreCase(ExclusionList.get(0).getExclusionId().toString())) ) {
-				errorList.add(new Error("01", "ExclusionDescription", "This ExclusionDescription Already Exist "));
-			}
-			
-		}
-		
-		
-		if (StringUtils.isBlank(req.getCompanyId())) {
-			errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
-		}
-		
-		if (StringUtils.isBlank(req.getBranchCode())) {
-			errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
-		}
-		if (StringUtils.isBlank(req.getProductId())) {
-			errorList.add(new Error("10", "ProductId", "Please Select ProductId"));
-		}
-		if (StringUtils.isBlank(req.getSectionId())) {
-			errorList.add(new Error("11", "SectionId", "Please Select SectionId"));
-		}
-/*		if (StringUtils.isBlank(req.getOccupationNameAr())) {
-			errorList.add(new Error("03", "OccupationNameAr", "Please Select OccupationNameAr"));
-		}else if (req.getOccupationNameAr().length() > 100){
-			errorList.add(new Error("03","OccupationNameAr", "Please Enter OccupationNameAr 100 Characters")); 
-		} */
-		
-		}
-		if (StringUtils.isBlank(reqList.getRemarks())) {
-			errorList.add(new Error("04", "Remarks", "Please Select Remarks "));
-		}else if (reqList.getRemarks().length() > 100){
-			errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
-		}
-		
-		// Date Validation 
-		Calendar cal = new GregorianCalendar();
-		Date today = new Date();
-		cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);;
-		today = cal.getTime();
-		if (reqList.getEffectiveDateStart() == null || StringUtils.isBlank(reqList.getEffectiveDateStart().toString())) {
-			errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
-
-		} else if (reqList.getEffectiveDateStart().before(today)) {
-			errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-		}
-		//Status Validation
-		if (StringUtils.isBlank(reqList.getStatus())) {
-			errorList.add(new Error("06", "Status", "Please Enter Status"));
-		} else if (reqList.getStatus().length() > 1) {
-			errorList.add(new Error("06", "Status", "Enter Status in 1 Character Only"));
-		}else if(!("Y".equals(reqList.getStatus())||"N".equals(reqList.getStatus()) || "R".equals(reqList.getStatus()))) {
-			errorList.add(new Error("06", "Status", "Enter Status in Y or N or R Only"));
-		}
-
-		if (StringUtils.isBlank(reqList.getCoreAppCode())) {
-			errorList.add(new Error("07", "CoreAppCode", "Please Select CoreAppCode"));
-		}else if (reqList.getCoreAppCode().length() > 20){
-			errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
-		}
-		if (StringUtils.isBlank(reqList.getRegulatoryCode())) {
-			errorList.add(new Error("08", "RegulatoryCode", "Please Select RegulatoryCode"));
-		}else if (reqList.getRegulatoryCode().length() > 20){
-			errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters")); 
-		}
-		if (StringUtils.isBlank(reqList.getCreatedBy())) {
-			errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
-		}else if (reqList.getCreatedBy().length() > 100){
-			errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
-		}	
-		
-		
-//		if (StringUtils.isBlank(req.getPolicyType())) {
-//			errorList.add(new Error("12", "PolicyType", "Please Select PolicyType"));
+//@Override
+//public List<Error> validateExclusion(ExclusionMasterListSaveReq reqList) {
+//	List<Error> errorList = new ArrayList<Error>();
+//
+//	try {
+//		
+//		for(ExclusionMasterReq  req : reqList.getExclusionReq()) {
+//		
+//		if (StringUtils.isBlank(req.getExclusionDescription())) {
+//			errorList.add(new Error("02", "ExclusionDescription", "Please Select ExclusionDescription"));
+//		}else if (req.getExclusionDescription().length() > 100){
+//			errorList.add(new Error("02","ExclusionDescription", "Please Enter ExclusionDescription 100 Characters")); 
+//		}else if (StringUtils.isBlank(req.getExclusionId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId())) {
+//			List<ExclusionMaster> ExclusionList = getExclusionDescriptionExistDetails(req.getExclusionDescription() , req.getCompanyId() , req.getBranchCode(),req.getProductId(),req.getSectionId());
+//			if (ExclusionList.size()>0 ) {
+//				errorList.add(new Error("01", "ExclusionDescription", "This ExclusionDescription Already Exist "));
+//			}
+//		}else if (StringUtils.isNotBlank(req.getExclusionId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId())) {
+//			List<ExclusionMaster> ExclusionList = getExclusionDescriptionExistDetails(req.getExclusionDescription() , req.getCompanyId() , req.getBranchCode(),req.getProductId(), req.getSectionId());
+//			
+//			if (ExclusionList.size()>0 &&  (! req.getExclusionId().equalsIgnoreCase(ExclusionList.get(0).getExclusionId().toString())) ) {
+//				errorList.add(new Error("01", "ExclusionDescription", "This ExclusionDescription Already Exist "));
+//			}
+//			
 //		}
-	} catch (Exception e) {
-		log.error(e);
-		e.printStackTrace();
-	}
-	return errorList;
-}
-
-
-@Override
-public SuccessRes saveExclusion(ExclusionMasterListSaveReq reqList) {
-	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-	SuccessRes res = new SuccessRes();
-	ExclusionMaster saveData = new ExclusionMaster();
-	List<ExclusionMaster> list  = new ArrayList<ExclusionMaster>();
-	DozerBeanMapper dozerMapper = new DozerBeanMapper();
-	try {
-		Integer amendId = 0;
-		Date StartDate = reqList.getEffectiveDateStart();
-		String end = "31/12/2050";
-		Date endDate = sdf.parse(end);
-		long MILLS_IN_A_DAY = 1000*60*60*24;
-		Date oldEndDate = new Date(reqList.getEffectiveDateStart().getTime()- MILLS_IN_A_DAY);
-		Date entryDate = null;
-		String createdBy ="";
-		
-		for(ExclusionMasterReq req : reqList.getExclusionReq()) {
-		Integer exclusionId = 0;
-		if(StringUtils.isBlank(req.getExclusionId())) {
-			Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getBranchCode(),req.getProductId(),req.getSectionId());
-			exclusionId = totalCount+1;
-			entryDate = new Date();
-			createdBy = reqList.getCreatedBy();
-			res.setResponse("Saved Successfully");
-			res.setSuccessId(exclusionId.toString());
-		}
-		else {
-			exclusionId = Integer.valueOf(req.getExclusionId());
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<ExclusionMaster> query = cb.createQuery(ExclusionMaster.class);
-			//Findall
-			Root<ExclusionMaster> b = query.from(ExclusionMaster.class);
-			//select
-			query.select(b);
-			//Orderby
-			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("effectiveDateStart")));
-			//Where
-			Predicate n1 = cb.equal(b.get("exclusionId"),req.getExclusionId());
-			Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId());
-			Predicate n3 = cb.equal(b.get("branchCode"),req.getBranchCode());
-			Predicate n4 = cb.equal(b.get("productId"),req.getProductId());
-			Predicate n5 = cb.equal(b.get("sectionId"),req.getSectionId());
-			
-			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
-			
-			// Get Result
-			TypedQuery<ExclusionMaster> result = em.createQuery(query);
-			int limit=0, offset=2;
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
-			list = result.getResultList();
-			if(list.size()>0) {
-				Date beforeOneDay = new Date(new Date().getTime()- MILLS_IN_A_DAY);
-				if(list.get(0).getEffectiveDateStart().before(beforeOneDay)) {
-					amendId = list.get(0).getAmendId()+1;
-					entryDate = new Date();
-					createdBy = reqList.getCreatedBy();
-					ExclusionMaster lastRecord = list.get(0);
-					lastRecord.setEffectiveDateEnd(oldEndDate);
-					repo.saveAndFlush(lastRecord);
-				}
-				else {
-					amendId = list.get(0).getAmendId();
-					entryDate = list.get(0).getEntryDate();
-					createdBy = list.get(0).getCreatedBy();
-					saveData = list.get(0);
-					if(list.size()>1) {
-						ExclusionMaster lastRecord = list.get(1);	
-						lastRecord.setEffectiveDateEnd(oldEndDate);
-						repo.saveAndFlush(lastRecord);
-					}
-				}
-			}
-			res.setResponse("Updated Successfully");
-			res.setSuccessId(exclusionId.toString());
-		}
-		dozerMapper.map(req, saveData);
-		saveData.setExclusionId(exclusionId);
-		saveData.setEffectiveDateStart(StartDate);
-		saveData.setEffectiveDateEnd(endDate);
-		saveData.setCreatedBy(createdBy);
-		saveData.setEntryDate(entryDate);
-		saveData.setUpdatedBy(reqList.getCreatedBy());
-		saveData.setUpdatedDate(new Date());
-		saveData.setAmendId(amendId);
-		saveData.setDocRefNo(reqList.getDocRefNo());
-
-		repo.saveAndFlush(saveData);	
-		log.info("Saved Details is --> " + json.toJson(saveData));	
-		}
-	}
-	catch(Exception e) {
-		e.printStackTrace();
-		log.info("Exception is --> " + e.getMessage());
-		return null;
-	}
-	return res;
-	}
+//		
+//		
+//		if (StringUtils.isBlank(req.getCompanyId())) {
+//			errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
+//		}
+//		
+//		if (StringUtils.isBlank(req.getBranchCode())) {
+//			errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
+//		}
+//		if (StringUtils.isBlank(req.getProductId())) {
+//			errorList.add(new Error("10", "ProductId", "Please Select ProductId"));
+//		}
+//		if (StringUtils.isBlank(req.getSectionId())) {
+//			errorList.add(new Error("11", "SectionId", "Please Select SectionId"));
+//		}
+///*		if (StringUtils.isBlank(req.getOccupationNameAr())) {
+//			errorList.add(new Error("03", "OccupationNameAr", "Please Select OccupationNameAr"));
+//		}else if (req.getOccupationNameAr().length() > 100){
+//			errorList.add(new Error("03","OccupationNameAr", "Please Enter OccupationNameAr 100 Characters")); 
+//		} */
+//		
+//		}
+//		if (StringUtils.isBlank(reqList.getRemarks())) {
+//			errorList.add(new Error("04", "Remarks", "Please Select Remarks "));
+//		}else if (reqList.getRemarks().length() > 100){
+//			errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
+//		}
+//		
+//		// Date Validation 
+//		Calendar cal = new GregorianCalendar();
+//		Date today = new Date();
+//		cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);;
+//		today = cal.getTime();
+//		if (reqList.getEffectiveDateStart() == null || StringUtils.isBlank(reqList.getEffectiveDateStart().toString())) {
+//			errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+//
+//		} else if (reqList.getEffectiveDateStart().before(today)) {
+//			errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+//		}
+//		//Status Validation
+//		if (StringUtils.isBlank(reqList.getStatus())) {
+//			errorList.add(new Error("06", "Status", "Please Enter Status"));
+//		} else if (reqList.getStatus().length() > 1) {
+//			errorList.add(new Error("06", "Status", "Enter Status in 1 Character Only"));
+//		}else if(!("Y".equals(reqList.getStatus())||"N".equals(reqList.getStatus()) || "R".equals(reqList.getStatus()))) {
+//			errorList.add(new Error("06", "Status", "Enter Status in Y or N or R Only"));
+//		}
+//
+//		if (StringUtils.isBlank(reqList.getCoreAppCode())) {
+//			errorList.add(new Error("07", "CoreAppCode", "Please Select CoreAppCode"));
+//		}else if (reqList.getCoreAppCode().length() > 20){
+//			errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
+//		}
+//		if (StringUtils.isBlank(reqList.getRegulatoryCode())) {
+//			errorList.add(new Error("08", "RegulatoryCode", "Please Select RegulatoryCode"));
+//		}else if (reqList.getRegulatoryCode().length() > 20){
+//			errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters")); 
+//		}
+//		if (StringUtils.isBlank(reqList.getCreatedBy())) {
+//			errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
+//		}else if (reqList.getCreatedBy().length() > 100){
+//			errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+//		}	
+//		
+//		
+////		if (StringUtils.isBlank(req.getPolicyType())) {
+////			errorList.add(new Error("12", "PolicyType", "Please Select PolicyType"));
+////		}
+//	} catch (Exception e) {
+//		log.error(e);
+//		e.printStackTrace();
+//	}
+//	return errorList;
+//}
+//
+//
+//@Override
+//public SuccessRes saveExclusion(ExclusionMasterListSaveReq reqList) {
+//	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+//	SuccessRes res = new SuccessRes();
+//	ExclusionMaster saveData = new ExclusionMaster();
+//	List<ExclusionMaster> list  = new ArrayList<ExclusionMaster>();
+//	DozerBeanMapper dozerMapper = new DozerBeanMapper();
+//	try {
+//		Integer amendId = 0;
+//		Date StartDate = reqList.getEffectiveDateStart();
+//		String end = "31/12/2050";
+//		Date endDate = sdf.parse(end);
+//		long MILLS_IN_A_DAY = 1000*60*60*24;
+//		Date oldEndDate = new Date(reqList.getEffectiveDateStart().getTime()- MILLS_IN_A_DAY);
+//		Date entryDate = null;
+//		String createdBy ="";
+//		
+//		for(ExclusionMasterReq req : reqList.getExclusionReq()) {
+//		Integer exclusionId = 0;
+//		if(StringUtils.isBlank(req.getExclusionId())) {
+//			Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getBranchCode(),req.getProductId(),req.getSectionId());
+//			exclusionId = totalCount+1;
+//			entryDate = new Date();
+//			createdBy = reqList.getCreatedBy();
+//			res.setResponse("Saved Successfully");
+//			res.setSuccessId(exclusionId.toString());
+//		}
+//		else {
+//			exclusionId = Integer.valueOf(req.getExclusionId());
+//			CriteriaBuilder cb = em.getCriteriaBuilder();
+//			CriteriaQuery<ExclusionMaster> query = cb.createQuery(ExclusionMaster.class);
+//			//Findall
+//			Root<ExclusionMaster> b = query.from(ExclusionMaster.class);
+//			//select
+//			query.select(b);
+//			//Orderby
+//			List<Order> orderList = new ArrayList<Order>();
+//			orderList.add(cb.desc(b.get("effectiveDateStart")));
+//			//Where
+//			Predicate n1 = cb.equal(b.get("exclusionId"),req.getExclusionId());
+//			Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId());
+//			Predicate n3 = cb.equal(b.get("branchCode"),req.getBranchCode());
+//			Predicate n4 = cb.equal(b.get("productId"),req.getProductId());
+//			Predicate n5 = cb.equal(b.get("sectionId"),req.getSectionId());
+//			
+//			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+//			
+//			// Get Result
+//			TypedQuery<ExclusionMaster> result = em.createQuery(query);
+//			int limit=0, offset=2;
+//			result.setFirstResult(limit * offset);
+//			result.setMaxResults(offset);
+//			list = result.getResultList();
+//			if(list.size()>0) {
+//				Date beforeOneDay = new Date(new Date().getTime()- MILLS_IN_A_DAY);
+//				if(list.get(0).getEffectiveDateStart().before(beforeOneDay)) {
+//					amendId = list.get(0).getAmendId()+1;
+//					entryDate = new Date();
+//					createdBy = reqList.getCreatedBy();
+//					ExclusionMaster lastRecord = list.get(0);
+//					lastRecord.setEffectiveDateEnd(oldEndDate);
+//					repo.saveAndFlush(lastRecord);
+//				}
+//				else {
+//					amendId = list.get(0).getAmendId();
+//					entryDate = list.get(0).getEntryDate();
+//					createdBy = list.get(0).getCreatedBy();
+//					saveData = list.get(0);
+//					if(list.size()>1) {
+//						ExclusionMaster lastRecord = list.get(1);	
+//						lastRecord.setEffectiveDateEnd(oldEndDate);
+//						repo.saveAndFlush(lastRecord);
+//					}
+//				}
+//			}
+//			res.setResponse("Updated Successfully");
+//			res.setSuccessId(exclusionId.toString());
+//		}
+//		dozerMapper.map(req, saveData);
+//		saveData.setExclusionId(exclusionId);
+//		saveData.setEffectiveDateStart(StartDate);
+//		saveData.setEffectiveDateEnd(endDate);
+//		saveData.setCreatedBy(createdBy);
+//		saveData.setEntryDate(entryDate);
+//		saveData.setUpdatedBy(reqList.getCreatedBy());
+//		saveData.setUpdatedDate(new Date());
+//		saveData.setAmendId(amendId);
+//		saveData.setDocRefNo(reqList.getDocRefNo());
+//
+//		repo.saveAndFlush(saveData);	
+//		log.info("Saved Details is --> " + json.toJson(saveData));	
+//		}
+//	}
+//	catch(Exception e) {
+//		e.printStackTrace();
+//		log.info("Exception is --> " + e.getMessage());
+//		return null;
+//	}
+//	return res;
+//	}
 @Override
 public List<ExclusionMasterRes> getallNonSelectedExclusion(NonSelectedClausesGetAllReq req) {
 	List<ExclusionMasterRes> resList = new ArrayList<ExclusionMasterRes>();
@@ -993,7 +946,8 @@ public List<ExclusionMasterRes> getallNonSelectedExclusion(NonSelectedClausesGet
 		Predicate a3 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 		Predicate a4 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 		Predicate a5 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"),today);
-		effectiveDate.where(a1,a2,a3,a4,a5);
+		Predicate a11 = cb.equal(ocpm1.get("exclusionId"), b.get("exclusionId"));
+		effectiveDate.where(a1,a2,a3,a4,a5,a11);
 
 		// Effective Date End
 		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
@@ -1004,7 +958,8 @@ public List<ExclusionMasterRes> getallNonSelectedExclusion(NonSelectedClausesGet
 		Predicate a8 = cb.equal(ocpm2.get("sectionId"), b.get("sectionId"));
 		Predicate a9 = cb.equal(ocpm2.get("branchCode"), b.get("branchCode"));
 		Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-		effectiveDate2.where(a6,a7,a8,a9,a10);
+		Predicate a12 = cb.equal(ocpm2.get("exclusionId"), b.get("exclusionId"));
+		effectiveDate2.where(a6,a7,a8,a9,a10,a12);
 		
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -1020,8 +975,8 @@ public List<ExclusionMasterRes> getallNonSelectedExclusion(NonSelectedClausesGet
 		Predicate eff2 = cb.equal(ocpm3.get("productId"), cs.get("productId"));
 		Predicate eff3 = cb.equal(ocpm3.get("sectionId"), cs.get("sectionId"));
 		Predicate eff4 = cb.equal(ocpm3.get("branchCode"), cs.get("branchCode"));
-		Predicate eff5 = cb.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"),today);
-		effectiveDate3.where(eff1,eff2,eff3,eff4,eff5);
+		Predicate eff5 = cb.equal(ocpm3.get("exclusionId"), cs.get("exclusionId"));
+		effectiveDate3.where(eff1,eff2,eff3,eff4);
 		
 		Subquery<Long> effectiveDate4 = query.subquery(Long.class);
 		Root<ExclusionMaster> ocpm4 = effectiveDate4.from(ExclusionMaster.class);
@@ -1030,7 +985,7 @@ public List<ExclusionMasterRes> getallNonSelectedExclusion(NonSelectedClausesGet
 		Predicate eff7 = cb.equal(ocpm4.get("productId"), cs.get("productId"));
 		Predicate eff8 = cb.equal(ocpm4.get("sectionId"), cs.get("sectionId"));
 		Predicate eff9 = cb.equal(ocpm4.get("branchCode"), cs.get("branchCode"));
-		Predicate eff10 = cb.lessThanOrEqualTo(ocpm4.get("effectiveDateEnd"),todayEnd);
+		Predicate eff10 = cb.equal(ocpm4.get("exclusionId"), cs.get("exclusionId"));
 		effectiveDate4.where(eff6,eff7,eff8,eff9,eff10);
 		
 		// Product Section Filter
@@ -1041,9 +996,7 @@ public List<ExclusionMasterRes> getallNonSelectedExclusion(NonSelectedClausesGet
 		Predicate cs4 = cb.equal(cs.get("effectiveDateStart"),effectiveDate3);
 		Predicate cs5 = cb.equal(cs.get("effectiveDateEnd"),effectiveDate4);
 		Predicate cs6 = cb.equal(cs.get("branchCode"), req.getBranchCode());
-		Predicate cs7 = cb.equal(cs.get("branchCode"), "99999");
-		Predicate cs8 = cb.or(cs6, cs7);
-		clause.where(cs1,cs2,cs3,cs4,cs5,cs8);
+		clause.where(cs1,cs2,cs3,cs4,cs5,cs6);
 		
 		// Where
 		Expression<String>e0= b.get("exclusionId");
@@ -1053,11 +1006,9 @@ public List<ExclusionMasterRes> getallNonSelectedExclusion(NonSelectedClausesGet
 		Predicate n4 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 		Predicate n5 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
 		Predicate n6 = cb.equal(b.get("branchCode"), req.getBranchCode());
-		Predicate n7 = cb.equal(b.get("branchCode"), "99999");
-		Predicate n8 = cb.or(n6, n7);
 		Predicate n9 = e0.in(clause).not();
 	//	Predicate n10 = cb.equal(cs.get("status"), "Y");
-		query.where(n1,n2,n4,n5,n8,n9).orderBy(orderList);
+		query.where(n1,n2,n4,n5,n3,n6,n9).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<ExclusionMaster> result = em.createQuery(query);
@@ -1080,6 +1031,118 @@ public List<ExclusionMasterRes> getallNonSelectedExclusion(NonSelectedClausesGet
 	}
 	return resList;
 }
+@Override
+public List<Error> validateExclusionList(List<ExclusionMasterReq> reqList) {
+	List<Error> errorList = new ArrayList<Error>();
+
+	try {
+		
+		for(ExclusionMasterReq  req : reqList) {
+		
+		if (StringUtils.isBlank(req.getCreatedBy())) {
+			errorList.add(new Error("02", "CreatedBy", "Please Enter CreatedBy"));
+		}
+		
+		if (StringUtils.isBlank(req.getExclusionId())) {
+			errorList.add(new Error("02", "ExclusionId", "Please Enter ExclusionId"));
+		}
+			
+		
+		
+		if (StringUtils.isBlank(req.getCompanyId())) {
+			errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
+		}
+		
+		if (StringUtils.isBlank(req.getBranchCode())) {
+			errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
+		}
+		if (StringUtils.isBlank(req.getProductId())) {
+			errorList.add(new Error("10", "ProductId", "Please Select ProductId"));
+		}
+		if (StringUtils.isBlank(req.getSectionId())) {
+			errorList.add(new Error("11", "SectionId", "Please Select SectionId"));
+		}
+
+		
+		}
+	
+		
+	} catch (Exception e) {
+		log.error(e);
+		e.printStackTrace();
+	}
+	return errorList;
+}
+@Override
+public SuccessRes saveExclusionList(List<ExclusionMasterReq> reqList) {
+	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+	SuccessRes res = new SuccessRes();
+	List<ExclusionMaster> list  = new ArrayList<ExclusionMaster>();
+	DozerBeanMapper dozerMapper = new DozerBeanMapper();
+	try {
+		String end = "31/12/2050";
+		List<String> exclusionIds = reqList.stream().map( ExclusionMasterReq :: getExclusionId ).collect(Collectors.toList()); 
+	
+			String createdBy ="";
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ExclusionMaster> query = cb.createQuery(ExclusionMaster.class);
+			//Findall
+			Root<ExclusionMaster> b = query.from(ExclusionMaster.class);
+			//select
+			query.select(b);
+			//Orderby
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("amendId")));
+			
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<ExclusionMaster> ocpm1 = amendId.from(ExclusionMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("exclusionId"), b.get("exclusionId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+			Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+			Predicate a5 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
+//			Predicate a6 = cb.equal(ocpm1.get("policyType"),b.get("policyType"));
+			amendId.where(a1,a2,a3,a4,a5);
+			// Where
+			Expression<String> e0 = b.get("exclusionId");
+			
+			
+			//Where
+			Predicate n1 = e0.in(exclusionIds);
+			Predicate n2 = cb.equal(b.get("companyId"),reqList.get(0).getCompanyId());
+			Predicate n3 = cb.equal(b.get("branchCode"),reqList.get(0).getBranchCode());
+			Predicate n4 = cb.equal(b.get("productId"),reqList.get(0).getProductId() );
+			Predicate n5 = cb.equal(b.get("sectionId"),"0");
+			Predicate n6 = cb.equal(b.get("amendId"),amendId);
+			query.where(n1,n2,n3,n4,n5,n5,n6).orderBy(orderList);
+			TypedQuery<ExclusionMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			
+			for (ExclusionMaster data :  list) {
+				ExclusionMaster save = new ExclusionMaster();
+				dozerMapper.map(data, save);
+				save.setCreatedBy(createdBy);
+				save.setEntryDate(new Date());
+				save.setUpdatedBy(createdBy);
+				save.setUpdatedDate(new Date());
+				save.setAmendId(0);
+				save.setProductId(reqList.get(0).getProductId());
+				save.setSectionId(reqList.get(0).getSectionId());
+				repo.saveAndFlush(save);	
+				log.info("Saved Details is --> " + json.toJson(save));	
+			}
+			res.setResponse("Added Succesfully");
+			res.setSuccessId("");
+	}
+	catch(Exception e) {
+		e.printStackTrace();
+		log.info("Exception is --> " + e.getMessage());
+		return null;
+	}
+	return res;
+	}
 	
 
 

@@ -1,12 +1,14 @@
 package com.maan.eway.common.service.impl;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -37,14 +39,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CoverDocumentMaster;
 import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
-import com.maan.eway.bean.EserviceSectionDetails;
-import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
@@ -54,7 +55,7 @@ import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PaymentRefno;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.SeqPaymentid;
-import com.maan.eway.bean.SeqRefno;
+import com.maan.eway.bean.TinyurlMaster;
 import com.maan.eway.common.req.MakePaymentRes;
 import com.maan.eway.common.req.MakePaymentSaveReq;
 import com.maan.eway.common.req.MakePaymentUpdateReq;
@@ -65,11 +66,14 @@ import com.maan.eway.common.req.PaymentDetailsSaveReq;
 import com.maan.eway.common.req.PaymentDetailsSaveRes;
 import com.maan.eway.common.req.PaymentInfoGetAllReq;
 import com.maan.eway.common.req.PaymentInfoGetReq;
+import com.maan.eway.common.req.TinyUrlGenerateReq;
+import com.maan.eway.common.req.TinyUrlGetReq;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.PaymentDetailGetRes;
 import com.maan.eway.common.res.PaymentInfoGetRes;
+import com.maan.eway.common.res.TinyUrlGetRes;
 import com.maan.eway.common.service.PaymentService;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.CoverDocumentMasterGetReq;
 import com.maan.eway.master.service.impl.ClausesMasterServiceImpl;
 import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
@@ -84,7 +88,6 @@ import com.maan.eway.repository.PaymentRefnoRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.SeqPaymentidRepository;
 import com.maan.eway.req.calcengine.CalcCommission;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.res.calc.DebitAndCredit;
 import com.maan.eway.service.CalculatorEngine;
@@ -1358,6 +1361,175 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 	return resList;
 }
+	
+	@Override
+	public CommonRes getTinyUrl(TinyUrlGetReq req) {
+		CommonRes commonRes = new CommonRes();
+		TinyUrlGetRes res = new TinyUrlGetRes();
+		List<Error> errors = new ArrayList<Error>();
+		try {
+	
+			// Quote No 
+			if( StringUtils.isBlank(req.getQuoteNo())) {
+				errors.add(new Error("01","Quote","We can not Get Tiny Url without QuoteNo"));
+				commonRes.setCommonResponse(null);
+				commonRes.setIsError(true);
+				commonRes.setErrorMessage(errors);
+				commonRes.setMessage("Failed");
+				return commonRes ; 
+			} 
+			
+			HomePositionMaster homeData = homerepo.findByQuoteNo(req.getQuoteNo())	;
+			
+			System.out .println("gettinyurl ---> QuoteNo: " + homeData.getQuoteNo());
+			System.out .println("gettinyurl ---> OverallPremium: " + homeData.getOverallPremiumFc());
+			
+			
+			String quoteNo = homeData.getQuoteNo() ;
+			String productId = homeData.getProductId().toString();
+			String overAllPremiumFc = homeData.getOverallPremiumFc().toString();
+			String companyId = homeData.getCompanyId();
+			String branchCode = homeData.getBranchCode();
+			String type = req.getType();			
+			TinyUrlGenerateReq urlReq = TinyUrlGenerateReq.builder()
+					.param("QuoteNo=" + quoteNo  )
+					.productId(productId)
+					.companyId(companyId)
+					.branchCode(branchCode)
+					.type(type).build();
+			
+			String tinyUrl = generateTinyUrl (urlReq ) ;
+			System.out .println("TinyUrl --> " + tinyUrl );
+			
+			// Response 
+			res.setTinyUrl(tinyUrl);
+			res.setOverAllPremiumFc(overAllPremiumFc);	
+			res.setProductId(productId);
+			res.setQuoteNo(quoteNo);
+			res.setCompanyId(companyId);	
+			res.setBranchCode(branchCode);
+			
+			commonRes.setCommonResponse(res);
+			commonRes.setIsError(false);
+			commonRes.setErrorMessage(null);
+			commonRes.setMessage("Success");
+			return commonRes ; 
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --> " +  e.getMessage());
+			errors.add(new Error("01","Common Error",e.getMessage()));
+			commonRes.setCommonResponse(null);
+			commonRes.setIsError(true);
+			commonRes.setErrorMessage(errors);
+			commonRes.setMessage("Failed");	
+		}
+		return commonRes ;
+	}
+	
+	public String generateTinyUrl(TinyUrlGenerateReq req) {
+		String encrData = "", tinyURL = "";
+		try {
+			String type = req.getType();
+			log.info("gettinyurl--> type: " + type);
+			passwordEnc passEnc = new passwordEnc();
+			encrData = passEnc.encrypt(req.getParam());
+			String url = getAppUrl(type,req.getCompanyId() , req.getProductId() , req.getBranchCode() );
+			url = url == null ? "" : url;
+			log.info("gettinyurl--> URL: " + url);
+			String encryptedURL = url + encrData;
+			log.info("gettinyurl--> EncryptedURL: " + encryptedURL);
+			tinyURL = getShorternURL(encryptedURL);
+		} catch (Exception e) {
+			log.error(e);
+		}
+		return tinyURL;
+	}
+
+	private String getShorternURL(String encryptedURL) {
+		try {
+			final String tinyUrl = "http://tinyurl.com/api-create.php?url=";
+			String tinyUrlLookup = tinyUrl + encryptedURL;
+			BufferedReader reader = new BufferedReader(new InputStreamReader(new URL(tinyUrlLookup).openStream()));
+			String result = reader.readLine();
+			log.info("Encrypted URL result: " + result + " Encrypted URL " + encryptedURL);
+			reader.close();
+			return result;
+		} catch (Exception e) {
+			log.error(e);
+		}
+		return "";
+	}
+	
+	
+	public synchronized String getAppUrl(String type , String companyId , String productId , String branchCode ) {
+		String url = "";
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			today = cal.getTime();
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<TinyurlMaster> query=  cb.createQuery(TinyurlMaster.class);
+			// Find All
+			Root<TinyurlMaster> c = query.from(TinyurlMaster.class);
+			
+			//Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("branchCode")));
+			
+			
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<TinyurlMaster> ocpm1 = effectiveDate.from(TinyurlMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("sno"),ocpm1.get("sno"));
+			Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+			Predicate a3 = cb.equal(c.get("productId"),ocpm1.get("productId"));
+			Predicate a4 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
+			Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2,a3,a4,a5);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<TinyurlMaster> ocpm2 = effectiveDate2.from(TinyurlMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a6 = cb.equal(c.get("sno"),ocpm2.get("sno"));
+			Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+			Predicate a8 = cb.equal(c.get("productId"),ocpm2.get("productId"));
+			Predicate a9 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
+			Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a6,a7,a8,a9,a10);
+						
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+			Predicate n4 = cb.equal(c.get("companyId"), companyId);
+			Predicate n5 = cb.equal(c.get("productId"), productId);
+			Predicate n6 = cb.equal(c.get("branchCode"), branchCode);
+			Predicate n7 = cb.equal(c.get("branchCode"), "99999");
+			Predicate n8 = cb.or(n6,n7);
+			Predicate n9 = cb.equal(c.get("type"), type);
+			query.where(n1,n2,n3,n4,n5,n8).orderBy(orderList);
+			// Get Result
+			TypedQuery<TinyurlMaster> result = em.createQuery(query);
+			List<TinyurlMaster> list = result.getResultList();
+			url = list.get(0).getAppUrl();
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return url ;
+	}
 
 	
 }

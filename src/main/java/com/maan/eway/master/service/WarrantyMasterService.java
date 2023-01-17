@@ -14,6 +14,7 @@ import com.maan.eway.master.req.WarrantyMasterDropdownReq;
 import com.maan.eway.master.req.WarrantyMasterGetReq;
 import com.maan.eway.master.req.WarrantyMasterGetallReq;
 import com.maan.eway.master.req.WarrantyMasterListSaveReq;
+import com.maan.eway.master.req.WarrantyMasterReq;
 import com.maan.eway.master.req.WarrantyMasterSaveReq;
 import com.maan.eway.master.res.WarrantyMasterRes;
 import com.maan.eway.res.DropDownRes;
@@ -38,11 +39,11 @@ public interface WarrantyMasterService  {
 
 	List<DropDownRes> getWarrantyMasterDropdown(WarrantyMasterDropdownReq req);
 
-	List<Error> validateWarranty(WarrantyMasterListSaveReq req);
-
-	SuccessRes saveWarranty(WarrantyMasterListSaveReq req);
-
 	List<WarrantyMasterRes> getallNonSelectedWarranty(NonSelectedClausesGetAllReq req);
+
+	List<Error> validateWarrantyMultiInsert(List<WarrantyMasterReq> req);
+
+	SuccessRes saveWarrantyMultiInsert(List<WarrantyMasterReq> req);
 
 
 	

@@ -22,6 +22,7 @@ import com.maan.eway.master.req.ExclusionChangeStatusReq;
 import com.maan.eway.master.req.ExclusionMasterGetReq;
 import com.maan.eway.master.req.ExclusionMasterGetallReq;
 import com.maan.eway.master.req.ExclusionMasterListSaveReq;
+import com.maan.eway.master.req.ExclusionMasterReq;
 import com.maan.eway.master.req.ExclusionMasterSaveReq;
 import com.maan.eway.master.req.NonSelectedClausesGetAllReq;
 import com.maan.eway.master.res.ExclusionMasterRes;
@@ -198,11 +199,11 @@ public class ExclusionMasterController {
 
 	@PostMapping("/insertexclusionlist")
 	@ApiOperation(value="This Method is to save Exclusion Master List")
-	public ResponseEntity<CommonRes> saveExclusion(@RequestBody ExclusionMasterListSaveReq req){
+	public ResponseEntity<CommonRes> saveExclusion(@RequestBody List<ExclusionMasterReq> req){
 		CommonRes data = new CommonRes();
 		reqPrinter.reqPrint(req);
 		
-	List<Error> validation = service.validateExclusion(req);
+	List<Error> validation = service.validateExclusionList(req);
 	//validation
 	if(validation !=null && validation.size()!=0) {
 		data.setCommonResponse(null);
@@ -212,7 +213,7 @@ public class ExclusionMasterController {
 		return new ResponseEntity<CommonRes>(data,HttpStatus.OK);
 	} else {
 		//save
-		SuccessRes res = service.saveExclusion(req);
+		SuccessRes res = service.saveExclusionList(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());

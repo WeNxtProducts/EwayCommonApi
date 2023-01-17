@@ -12,6 +12,7 @@ import com.maan.eway.master.req.NonSelectedClausesGetAllReq;
 import com.maan.eway.master.req.WarRateMasterGetReq;
 import com.maan.eway.master.req.WarRateMasterGetallReq;
 import com.maan.eway.master.req.WarRateMasterListSaveReq;
+import com.maan.eway.master.req.WarRateMasterReq;
 import com.maan.eway.master.req.WarRateMasterSaveReq;
 import com.maan.eway.master.req.WarrantyChangeStatusReq;
 import com.maan.eway.master.req.WarrantyMasterDropdownReq;
@@ -46,11 +47,12 @@ public interface WarRateMasterService  {
 
 	List<DropDownRes> getWarrateMasterDropdown(WarrateMasterDropdownReq req);
 
-	List<Error> validateWarranty(WarRateMasterListSaveReq req);
-
-	SuccessRes saveWarRate(WarRateMasterListSaveReq req);
 
 	List<WarRateMasterRes> getallNonSelectedWarrate(NonSelectedClausesGetAllReq req);
+
+	List<Error> validateWarrantyList(List<WarRateMasterReq> req);
+
+	SuccessRes saveWarRateList(List<WarRateMasterReq> req);
 
 	
 

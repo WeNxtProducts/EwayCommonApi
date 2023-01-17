@@ -26,6 +26,16 @@ public class WarRateMasterListSaveReq {
 	@JsonProperty("Status")
 	private String status;
 	
+	@JsonProperty("WarRateDesc")
+	private String warRateDesc;
+	
+	@JsonProperty("WarRate")
+	private String warRate;
+	
+	@JsonProperty("ModeTransportId")
+	private String modeTransportId;
+	
+	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 //	
@@ -46,7 +56,6 @@ public class WarRateMasterListSaveReq {
 	@JsonProperty("DocRefNo")
 	private String docRefNo;
 	
-	@JsonProperty("WarRateReq")
-	private List<WarRateMasterReq> warRateReq;
+	
 	
 }

@@ -41,6 +41,7 @@ import com.maan.eway.master.req.WarRateMasterGetallReq;
 import com.maan.eway.master.req.WarRateMasterListSaveReq;
 import com.maan.eway.master.req.WarRateMasterReq;
 import com.maan.eway.master.req.WarRateMasterSaveReq;
+import com.maan.eway.master.req.WarrantyMasterReq;
 import com.maan.eway.master.req.WarrateChangeStatusReq;
 import com.maan.eway.master.req.WarrateMasterDropdownReq;
 import com.maan.eway.master.res.WarRateMasterRes;
@@ -83,27 +84,18 @@ public class WarRateMasterServiceImpl implements WarRateMasterService {
 			Predicate a1 = cb.equal(ocpm1.get("warRateId"), b.get("warRateId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			Predicate a5 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"), today);
 			Predicate a6 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a7 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 
-			amendId.where(a1,a2,a3,a4,a5,a6,a7);
+			amendId.where(a1,a2,a3,a6,a7);
 
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(cb.lower( b.get("warRateDescription")), WarrateDescription.toLowerCase());
 			Predicate n3 = cb.equal(b.get("companyId"),InsuranceId);
 			Predicate n4 = cb.equal(b.get("branchCode"), branchCode);
-			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n6 = cb.or(n4,n5);
-			Predicate n7 = cb.equal(b.get("productId"), branchCode);
-			Predicate n8 = cb.equal(b.get("productId"), "99999");
-			Predicate n9 = cb.or(n7,n8);
+			Predicate n7 = cb.equal(b.get("productId"), productId);
 			Predicate n10 = cb.equal(b.get("sectionId"),sectionId);
-			Predicate n11 = cb.equal(b.get("sectionId"), "99999");
-			Predicate n12 = cb.or(n10,n11);
-//			
-			query.where(n1,n2,n3,n6,n9,n12);
+			query.where(n1,n2,n3,n4,n7,n10);
 			
 			// Get Result
 			TypedQuery<WarRateMaster> result = em.createQuery(query);
@@ -117,7 +109,7 @@ public class WarRateMasterServiceImpl implements WarRateMasterService {
 		return list;
 	}
 	
-public Integer getMasterTableCount(String companyId, String branchCode , String productId, String sectionId)	{
+public Integer getMasterTableCount(String companyId,  String productId, String sectionId)	{
 
 	Integer data =0;
 	try {
@@ -130,34 +122,27 @@ public Integer getMasterTableCount(String companyId, String branchCode , String 
 		// Select
 		query.select(b);
 		// Effective Date Max Filter
-		Subquery<Long> effectiveDate = query.subquery(Long.class);
-		Root<WarRateMaster> ocpm1 = effectiveDate.from(WarRateMaster.class);
-		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<WarRateMaster> ocpm1 = amendId.from(WarRateMaster.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
 		Predicate a1 = cb.equal(ocpm1.get("warRateId"),b.get("warRateId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 		Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 		Predicate a5 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
 
-		effectiveDate.where(a1,a2,a3,a4,a5);
+		amendId.where(a1,a2,a3,a4,a5);
 	
 		//OrderBy
 		List<Order> orderList = new ArrayList<Order>();
 		orderList.add(cb.desc(b.get("warRateId")));
 		
-		Predicate n1 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
+		Predicate n1 = cb.equal(b.get("amendId"),amendId);
 		Predicate n2 = cb.equal(b.get("companyId"),companyId);
-		Predicate n3 = cb.equal(b.get("branchCode"), branchCode);
-		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
-		Predicate n5 = cb.or(n3,n4);
-		Predicate n7 = cb.equal(b.get("productId"), branchCode);
-		Predicate n8 = cb.equal(b.get("productId"), "99999");
-		Predicate n9 = cb.or(n7,n8);
+		Predicate n7 = cb.equal(b.get("productId"), productId);
 		Predicate n10 = cb.equal(b.get("sectionId"),sectionId);
-		Predicate n11 = cb.equal(b.get("sectionId"), "99999");
-		Predicate n12 = cb.or(n10,n11);
-
-		query.where(n1,n2,n5,n9,n12).orderBy(orderList);
+		
+		query.where(n1,n2,n7,n10).orderBy(orderList);
 		
 		
 		
@@ -296,7 +281,7 @@ public SuccessRes saveWarRate(WarRateMasterSaveReq req) {
 		String createdBy ="";
 		Integer warrateId = 0;
 		if(StringUtils.isBlank(req.getWarRateId())) {
-			Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getBranchCode(),req.getProductId(),req.getSectionId());
+			Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getProductId(),req.getSectionId());
 			warrateId = totalCount+1;
 			entryDate = new Date();
 			createdBy = req.getCreatedBy();
@@ -319,7 +304,7 @@ public SuccessRes saveWarRate(WarRateMasterSaveReq req) {
 			Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId());
 			Predicate n3 = cb.equal(b.get("branchCode"),req.getBranchCode());
 			Predicate n4 = cb.equal(b.get("productId"),req.getProductId());
-			Predicate n5 = cb.equal(b.get("sectionId"),req.getProductId());
+			Predicate n5 = cb.equal(b.get("sectionId"),req.getSectionId());
 			
 			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
 			
@@ -416,15 +401,9 @@ public List<WarRateMasterRes> getallWarRate(WarRateMasterGetallReq req) {
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
 		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
-		Predicate n5 = cb.or(n3,n4);
 		Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
-		Predicate n7 = cb.equal(b.get("productId"), "99999");
-		Predicate n8 = cb.or(n6,n7);
 		Predicate n9 = cb.equal(b.get("sectionId"), req.getSectionId());
-		Predicate n10 = cb.equal(b.get("sectionId"), "99999");
-		Predicate n11 = cb.or(n9,n10);
-		query.where(n1,n2,n5,n8,n11).orderBy(orderList);
+		query.where(n1,n2,n3,n6,n9).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<WarRateMaster> result = em.createQuery(query);
@@ -489,16 +468,10 @@ public List<WarRateMasterRes> getActiveWarrate(WarRateMasterGetallReq req) {
 		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
 		Predicate n4 = cb.equal(b.get("status"), "Y");
-		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
-		Predicate n6 = cb.or(n3,n5);
 		Predicate n7 = cb.equal(b.get("productId"), req.getProductId());
-		Predicate n8 = cb.equal(b.get("productId"), "99999");
-		Predicate n9 = cb.or(n7,n8);
 		Predicate n10 = cb.equal(b.get("sectionId"), req.getSectionId());
-		Predicate n11 = cb.equal(b.get("sectionId"), "99999");
-		Predicate n12 = cb.or(n10,n11);
 		
-		query.where(n1,n2,n4,n6,n9,n12).orderBy(orderList);
+		query.where(n1,n2,n4,n3,n4,n7,n10).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<WarRateMaster> result = em.createQuery(query);
@@ -569,19 +542,10 @@ public WarRateMasterRes getByWarrateId(WarRateMasterGetReq req) {
 		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
 		Predicate n4 = cb.equal(b.get("warRateId"), req.getWarRateId());
-		Predicate n6 = cb.equal(b.get("branchCode"), "99999");
-		Predicate n7 = cb.or(n3,n6);
 		Predicate n8 = cb.equal(b.get("productId"), req.getProductId());
-		Predicate n9 = cb.equal(b.get("productId"), "99999");
-		Predicate n10 = cb.or(n8,n9);
 		Predicate n11 = cb.equal(b.get("sectionId"), req.getSectionId());
-		Predicate n12 = cb.equal(b.get("sectionId"), "99999");
-		Predicate n13 = cb.or(n11,n12);
-//		Predicate n14 = cb.equal(b.get("policyType"), req.getPolicyType());
-//		Predicate n15 = cb.equal(b.get("policyType"), "99999");
-//		Predicate n16 = cb.or(n14,n15);
-
-		query.where(n1,n2,n4,n7,n10,n13).orderBy(orderList);
+		
+		query.where(n1,n2,n4,n3,n8,n11).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<WarRateMaster> result = em.createQuery(query);
@@ -639,15 +603,9 @@ public SuccessRes changeStatusOfWarrate(WarrateChangeStatusReq req) {
 				Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 				Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
 				Predicate n4 = cb.equal(b.get("warRateId"), req.getWarRateId());
-				Predicate n5 = cb.equal(b.get("branchCode"), "99999");
-				Predicate n6 = cb.or(n3,n5);
 				Predicate n7 = cb.equal(b.get("productId"), req.getProductId());
-				Predicate n8 = cb.equal(b.get("productId"), "99999");
-				Predicate n9 = cb.or(n7,n8);
 				Predicate n10 = cb.equal(b.get("sectionId"), req.getSectionId());
-				Predicate n11 = cb.equal(b.get("sectionId"), "99999");
-				Predicate n12 = cb.or(n10,n11);
-				query.where(n1,n2,n4,n6,n9,n12).orderBy(orderList);
+				query.where(n1,n2,n4,n3,n7,n10).orderBy(orderList);
 		
 		// Get Result 
 		TypedQuery<WarRateMaster> result = em.createQuery(query);
@@ -730,13 +688,10 @@ public List<DropDownRes> getWarrateMasterDropdown(WarrateMasterDropdownReq req) 
 		Predicate n5 = cb.equal(c.get("branchCode"),req.getBranchCode());
 		Predicate n6 = cb.equal(c.get("branchCode"),"99999");
 		Predicate n7 = cb.or(n5,n6);
+		
 		Predicate n8 = cb.equal(c.get("productId"), req.getProductId());
-		Predicate n9 = cb.equal(c.get("productId"), "99999");
-		Predicate n10 = cb.or(n8,n9);
 		Predicate n11 = cb.equal(c.get("sectionId"), req.getSectionId());
-		Predicate n12 = cb.equal(c.get("sectionId"), "99999");
-		Predicate n13 = cb.or(n11,n12);
-		query.where(n1,n2,n3,n4,n7,n10,n13).orderBy(orderList);
+		query.where(n1,n2,n3,n4,n7,n8,n11).orderBy(orderList);
 		// Get Result
 		TypedQuery<WarRateMaster> result = em.createQuery(query);
 		list = result.getResultList();
@@ -757,215 +712,215 @@ public List<DropDownRes> getWarrateMasterDropdown(WarrateMasterDropdownReq req) 
 		return resList;
 }
 
-@Override
-public List<Error> validateWarranty(WarRateMasterListSaveReq reqList) {
-	List<Error> errorList = new ArrayList<Error>();
-
-	try {
-
-		for(WarRateMasterReq req : reqList.getWarRateReq()) {
-		
-		if (StringUtils.isBlank(req.getWarRateDesc())) {
-			errorList.add(new Error("02", "WarRateDesc", "Please Enter WarRateDesc"));
-		}else if (req.getWarRateDesc().length() > 100){
-			errorList.add(new Error("02","WarRateDesc", "Please Enter WarRateDesc 100 Characters")); 
-		}else if (StringUtils.isBlank(req.getWarRateId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId())) {
-			List<WarRateMaster> WarrateList = getWarRateDescriptionExistDetails(req.getWarRateDesc() , req.getCompanyId() , req.getBranchCode(),req.getProductId(), req.getSectionId());
-			if (WarrateList.size()>0 ) {
-				errorList.add(new Error("01", "WarRateDesc", "This WarRateDesc Already Exist "));
-			}
-		}else if (StringUtils.isNotBlank(req.getWarRateId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId())) {
-			List<WarRateMaster> WarrateList = getWarRateDescriptionExistDetails(req.getWarRateDesc() , req.getCompanyId() , req.getBranchCode(),req.getProductId(), req.getSectionId());
-			
-			if (WarrateList.size()>0 &&  (! req.getWarRateId().equalsIgnoreCase(WarrateList.get(0).getWarRateId().toString())) ) {
-				errorList.add(new Error("01", "WarRateDesc", "This WarRateDesc Already Exist "));
-			}
-			
-		}
-		
-		
-		if (StringUtils.isBlank(req.getCompanyId())) {
-			errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
-		}
-		
-		if (StringUtils.isBlank(req.getBranchCode())) {
-			errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
-		}
-		if (StringUtils.isBlank(req.getWarRate())) {
-			errorList.add(new Error("10", "WarRate", "Please Enter Warrate"));
-		}
-		if (StringUtils.isBlank(req.getProductId())) {
-			errorList.add(new Error("11", "ProductId", "Please Enter ProductId"));
-		}
-		if (StringUtils.isBlank(req.getSectionId())) {
-			errorList.add(new Error("12", "SectionId", "Please Enter SectionId"));
-		}
-				
-		}
-		if (StringUtils.isBlank(reqList.getRemarks())) {
-			errorList.add(new Error("04", "Remarks", "Please Select Remarks "));
-		}else if (reqList.getRemarks().length() > 100){
-			errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
-		}
-		
-		// Date Validation 
-		Calendar cal = new GregorianCalendar();
-		Date today = new Date();
-		cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);;
-		today = cal.getTime();
-		if (reqList.getEffectiveDateStart() == null || StringUtils.isBlank(reqList.getEffectiveDateStart().toString())) {
-			errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
-
-		} else if (reqList.getEffectiveDateStart().before(today)) {
-			errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-		}
-		//Status Validation
-		if (StringUtils.isBlank(reqList.getStatus())) {
-			errorList.add(new Error("06", "Status", "Please Enter Status"));
-		} else if (reqList.getStatus().length() > 1) {
-			errorList.add(new Error("06", "Status", "Enter Status in 1 Character Only"));
-		}else if(!("Y".equals(reqList.getStatus())||"N".equals(reqList.getStatus()) || "R".equals(reqList.getStatus()))) {
-			errorList.add(new Error("06", "Status", "Enter Status in Y or N or R Only"));
-		}
-
-		if (StringUtils.isBlank(reqList.getCoreAppCode())) {
-			errorList.add(new Error("07", "CoreAppCode", "Please Enter CoreAppCode"));
-		}else if (reqList.getCoreAppCode().length() > 20){
-			errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
-		}
-		if (StringUtils.isBlank(reqList.getRegulatoryCode())) {
-			errorList.add(new Error("08", "RegulatoryCode", "Please Enter RegulatoryCode"));
-		}else if (reqList.getRegulatoryCode().length() > 20){
-			errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters")); 
-		}
-		if (StringUtils.isBlank(reqList.getCreatedBy())) {
-			errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy"));
-		}else if (reqList.getCreatedBy().length() > 100){
-			errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
-		}	
-		if (StringUtils.isBlank(reqList.getDocRefNo())) {
-			errorList.add(new Error("15", "DocRefNo", "Please Enter DocRefNo"));
-		}
-		else if (reqList.getDocRefNo().length() > 50){
-			errorList.add(new Error("15","DocRefNo", "Please Enter DocRefNo within 50 Characters")); 
-		}	
-		
-	} catch (Exception e) {
-		log.error(e);
-		e.printStackTrace();
-	}
-	return errorList;
-}
-
-@Override
-public SuccessRes saveWarRate(WarRateMasterListSaveReq reqList) {
-	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-	SuccessRes res = new SuccessRes();
-	WarRateMaster saveData = new WarRateMaster();
-	List<WarRateMaster> list  = new ArrayList<WarRateMaster>();
-	DozerBeanMapper dozerMapper = new DozerBeanMapper();
-	try {
-		
-		
-		Integer amendId = 0;
-		Date StartDate = reqList.getEffectiveDateStart();
-		String end = "31/12/2050";
-		Date endDate = sdf.parse(end);
-		long MILLS_IN_A_DAY = 1000*60*60*24;
-		Date oldEndDate = new Date(reqList.getEffectiveDateStart().getTime()- MILLS_IN_A_DAY);
-		Date entryDate = null;
-		String createdBy ="";
-		createdBy = reqList.getCreatedBy();
-		
-		for(WarRateMasterReq req : reqList.getWarRateReq()) {
-		Integer warrateId = 0;
-		if(StringUtils.isBlank(req.getWarRateId())) {
-			Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getBranchCode(),req.getProductId(),req.getSectionId());
-			warrateId = totalCount+1;
-			entryDate = new Date();
-			res.setResponse("Saved Successfully");
-			res.setSuccessId(warrateId.toString());
-		}
-		else {
-			warrateId = Integer.valueOf(req.getWarRateId());
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<WarRateMaster> query = cb.createQuery(WarRateMaster.class);
-			//Findall
-			Root<WarRateMaster> b = query.from(WarRateMaster.class);
-			//select
-			query.select(b);
-			//Orderby
-			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("effectiveDateStart")));
-			//Where
-			Predicate n1 = cb.equal(b.get("warRateId"),req.getWarRateId());
-			Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId());
-			Predicate n3 = cb.equal(b.get("branchCode"),req.getBranchCode());
-			Predicate n4 = cb.equal(b.get("productId"),req.getProductId());
-			Predicate n5 = cb.equal(b.get("sectionId"),req.getProductId());
-			
-			query.where(n1,n2,n3,n4).orderBy(orderList);
-			
-			// Get Result
-			TypedQuery<WarRateMaster> result = em.createQuery(query);
-			int limit=0, offset=2;
-			result.setFirstResult(limit * offset);
-			result.setMaxResults(offset);
-			list = result.getResultList();
-			if(list.size()>0) {
-				Date beforeOneDay = new Date(new Date().getTime()- MILLS_IN_A_DAY);
-				if(list.get(0).getEffectiveDateStart().before(beforeOneDay)) {
-					amendId = list.get(0).getAmendId()+1;
-					entryDate = new Date();
-					createdBy = reqList.getCreatedBy();
-					WarRateMaster lastRecord = list.get(0);
-					lastRecord.setEffectiveDateEnd(oldEndDate);
-					repo.saveAndFlush(lastRecord);
-				}
-				else {
-					amendId = list.get(0).getAmendId();
-					entryDate = list.get(0).getEntryDate();
-					createdBy = list.get(0).getCreatedBy();
-					saveData = list.get(0);
-					if(list.size()>1) {
-						WarRateMaster lastRecord = list.get(1);	
-						lastRecord.setEffectiveDateEnd(oldEndDate);
-						repo.saveAndFlush(lastRecord);
-					}
-				}
-			}
-			res.setResponse("Updated Successfully");
-			res.setSuccessId(warrateId.toString());
-		}
-		
-		dozerMapper.map(req, saveData);
-		saveData.setWarRateId(warrateId);
-		saveData.setEffectiveDateStart(StartDate);
-		saveData.setEffectiveDateEnd(endDate);
-		saveData.setCreatedBy(createdBy);
-		saveData.setEntryDate(entryDate);
-		saveData.setUpdatedBy(reqList.getCreatedBy());
-		saveData.setUpdatedDate(new Date());
-		saveData.setAmendId(amendId);
-		saveData.setProductId(req.getProductId());
-		saveData.setStatus(reqList.getStatus());
-		saveData.setDocRefNo(reqList.getDocRefNo());
-		saveData.setCoreAppCode(reqList.getCoreAppCode());
-		saveData.setRegulatoryCode(reqList.getRegulatoryCode());
-		repo.saveAndFlush(saveData);	
-		log.info("Saved Details is --> " + json.toJson(saveData));	
-		
-		}
-	}
-	catch(Exception e) {
-		e.printStackTrace();
-		log.info("Exception is --> " + e.getMessage());
-		return null;
-	}
-	return res;
-	
-	
-}
+//@Override
+//public List<Error> validateWarranty(WarRateMasterListSaveReq reqList) {
+//	List<Error> errorList = new ArrayList<Error>();
+//
+//	try {
+//
+//		for(WarRateMasterReq req : reqList.getWarRateReq()) {
+//		
+//		if (StringUtils.isBlank(req.getWarRateDesc())) {
+//			errorList.add(new Error("02", "WarRateDesc", "Please Enter WarRateDesc"));
+//		}else if (req.getWarRateDesc().length() > 100){
+//			errorList.add(new Error("02","WarRateDesc", "Please Enter WarRateDesc 100 Characters")); 
+//		}else if (StringUtils.isBlank(req.getWarRateId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId())) {
+//			List<WarRateMaster> WarrateList = getWarRateDescriptionExistDetails(req.getWarRateDesc() , req.getCompanyId() , req.getBranchCode(),req.getProductId(), req.getSectionId());
+//			if (WarrateList.size()>0 ) {
+//				errorList.add(new Error("01", "WarRateDesc", "This WarRateDesc Already Exist "));
+//			}
+//		}else if (StringUtils.isNotBlank(req.getWarRateId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId())) {
+//			List<WarRateMaster> WarrateList = getWarRateDescriptionExistDetails(req.getWarRateDesc() , req.getCompanyId() , req.getBranchCode(),req.getProductId(), req.getSectionId());
+//			
+//			if (WarrateList.size()>0 &&  (! req.getWarRateId().equalsIgnoreCase(WarrateList.get(0).getWarRateId().toString())) ) {
+//				errorList.add(new Error("01", "WarRateDesc", "This WarRateDesc Already Exist "));
+//			}
+//			
+//		}
+//		
+//		
+//		if (StringUtils.isBlank(req.getCompanyId())) {
+//			errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
+//		}
+//		
+//		if (StringUtils.isBlank(req.getBranchCode())) {
+//			errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
+//		}
+//		if (StringUtils.isBlank(req.getWarRate())) {
+//			errorList.add(new Error("10", "WarRate", "Please Enter Warrate"));
+//		}
+//		if (StringUtils.isBlank(req.getProductId())) {
+//			errorList.add(new Error("11", "ProductId", "Please Enter ProductId"));
+//		}
+//		if (StringUtils.isBlank(req.getSectionId())) {
+//			errorList.add(new Error("12", "SectionId", "Please Enter SectionId"));
+//		}
+//				
+//		}
+//		if (StringUtils.isBlank(reqList.getRemarks())) {
+//			errorList.add(new Error("04", "Remarks", "Please Select Remarks "));
+//		}else if (reqList.getRemarks().length() > 100){
+//			errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
+//		}
+//		
+//		// Date Validation 
+//		Calendar cal = new GregorianCalendar();
+//		Date today = new Date();
+//		cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);;
+//		today = cal.getTime();
+//		if (reqList.getEffectiveDateStart() == null || StringUtils.isBlank(reqList.getEffectiveDateStart().toString())) {
+//			errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+//
+//		} else if (reqList.getEffectiveDateStart().before(today)) {
+//			errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+//		}
+//		//Status Validation
+//		if (StringUtils.isBlank(reqList.getStatus())) {
+//			errorList.add(new Error("06", "Status", "Please Enter Status"));
+//		} else if (reqList.getStatus().length() > 1) {
+//			errorList.add(new Error("06", "Status", "Enter Status in 1 Character Only"));
+//		}else if(!("Y".equals(reqList.getStatus())||"N".equals(reqList.getStatus()) || "R".equals(reqList.getStatus()))) {
+//			errorList.add(new Error("06", "Status", "Enter Status in Y or N or R Only"));
+//		}
+//
+//		if (StringUtils.isBlank(reqList.getCoreAppCode())) {
+//			errorList.add(new Error("07", "CoreAppCode", "Please Enter CoreAppCode"));
+//		}else if (reqList.getCoreAppCode().length() > 20){
+//			errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
+//		}
+//		if (StringUtils.isBlank(reqList.getRegulatoryCode())) {
+//			errorList.add(new Error("08", "RegulatoryCode", "Please Enter RegulatoryCode"));
+//		}else if (reqList.getRegulatoryCode().length() > 20){
+//			errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters")); 
+//		}
+//		if (StringUtils.isBlank(reqList.getCreatedBy())) {
+//			errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy"));
+//		}else if (reqList.getCreatedBy().length() > 100){
+//			errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+//		}	
+//		if (StringUtils.isBlank(reqList.getDocRefNo())) {
+//			errorList.add(new Error("15", "DocRefNo", "Please Enter DocRefNo"));
+//		}
+//		else if (reqList.getDocRefNo().length() > 50){
+//			errorList.add(new Error("15","DocRefNo", "Please Enter DocRefNo within 50 Characters")); 
+//		}	
+//		
+//	} catch (Exception e) {
+//		log.error(e);
+//		e.printStackTrace();
+//	}
+//	return errorList;
+//}
+//
+//@Override
+//public SuccessRes saveWarRate(WarRateMasterListSaveReq reqList) {
+//	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+//	SuccessRes res = new SuccessRes();
+//	WarRateMaster saveData = new WarRateMaster();
+//	List<WarRateMaster> list  = new ArrayList<WarRateMaster>();
+//	DozerBeanMapper dozerMapper = new DozerBeanMapper();
+//	try {
+//		
+//		
+//		Integer amendId = 0;
+//		Date StartDate = reqList.getEffectiveDateStart();
+//		String end = "31/12/2050";
+//		Date endDate = sdf.parse(end);
+//		long MILLS_IN_A_DAY = 1000*60*60*24;
+//		Date oldEndDate = new Date(reqList.getEffectiveDateStart().getTime()- MILLS_IN_A_DAY);
+//		Date entryDate = null;
+//		String createdBy ="";
+//		createdBy = reqList.getCreatedBy();
+//		
+//		for(WarRateMasterReq req : reqList.getWarRateReq()) {
+//		Integer warrateId = 0;
+//		if(StringUtils.isBlank(req.getWarRateId())) {
+//			Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getBranchCode(),req.getProductId(),req.getSectionId());
+//			warrateId = totalCount+1;
+//			entryDate = new Date();
+//			res.setResponse("Saved Successfully");
+//			res.setSuccessId(warrateId.toString());
+//		}
+//		else {
+//			warrateId = Integer.valueOf(req.getWarRateId());
+//			CriteriaBuilder cb = em.getCriteriaBuilder();
+//			CriteriaQuery<WarRateMaster> query = cb.createQuery(WarRateMaster.class);
+//			//Findall
+//			Root<WarRateMaster> b = query.from(WarRateMaster.class);
+//			//select
+//			query.select(b);
+//			//Orderby
+//			List<Order> orderList = new ArrayList<Order>();
+//			orderList.add(cb.desc(b.get("effectiveDateStart")));
+//			//Where
+//			Predicate n1 = cb.equal(b.get("warRateId"),req.getWarRateId());
+//			Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId());
+//			Predicate n3 = cb.equal(b.get("branchCode"),req.getBranchCode());
+//			Predicate n4 = cb.equal(b.get("productId"),req.getProductId());
+//			Predicate n5 = cb.equal(b.get("sectionId"),req.getProductId());
+//			
+//			query.where(n1,n2,n3,n4).orderBy(orderList);
+//			
+//			// Get Result
+//			TypedQuery<WarRateMaster> result = em.createQuery(query);
+//			int limit=0, offset=2;
+//			result.setFirstResult(limit * offset);
+//			result.setMaxResults(offset);
+//			list = result.getResultList();
+//			if(list.size()>0) {
+//				Date beforeOneDay = new Date(new Date().getTime()- MILLS_IN_A_DAY);
+//				if(list.get(0).getEffectiveDateStart().before(beforeOneDay)) {
+//					amendId = list.get(0).getAmendId()+1;
+//					entryDate = new Date();
+//					createdBy = reqList.getCreatedBy();
+//					WarRateMaster lastRecord = list.get(0);
+//					lastRecord.setEffectiveDateEnd(oldEndDate);
+//					repo.saveAndFlush(lastRecord);
+//				}
+//				else {
+//					amendId = list.get(0).getAmendId();
+//					entryDate = list.get(0).getEntryDate();
+//					createdBy = list.get(0).getCreatedBy();
+//					saveData = list.get(0);
+//					if(list.size()>1) {
+//						WarRateMaster lastRecord = list.get(1);	
+//						lastRecord.setEffectiveDateEnd(oldEndDate);
+//						repo.saveAndFlush(lastRecord);
+//					}
+//				}
+//			}
+//			res.setResponse("Updated Successfully");
+//			res.setSuccessId(warrateId.toString());
+//		}
+//		
+//		dozerMapper.map(req, saveData);
+//		saveData.setWarRateId(warrateId);
+//		saveData.setEffectiveDateStart(StartDate);
+//		saveData.setEffectiveDateEnd(endDate);
+//		saveData.setCreatedBy(createdBy);
+//		saveData.setEntryDate(entryDate);
+//		saveData.setUpdatedBy(reqList.getCreatedBy());
+//		saveData.setUpdatedDate(new Date());
+//		saveData.setAmendId(amendId);
+//		saveData.setProductId(req.getProductId());
+//		saveData.setStatus(reqList.getStatus());
+//		saveData.setDocRefNo(reqList.getDocRefNo());
+//		saveData.setCoreAppCode(reqList.getCoreAppCode());
+//		saveData.setRegulatoryCode(reqList.getRegulatoryCode());
+//		repo.saveAndFlush(saveData);	
+//		log.info("Saved Details is --> " + json.toJson(saveData));	
+//		
+//		}
+//	}
+//	catch(Exception e) {
+//		e.printStackTrace();
+//		log.info("Exception is --> " + e.getMessage());
+//		return null;
+//	}
+//	return res;
+//	
+//	
+//}
 
 @Override
 public List<WarRateMasterRes> getallNonSelectedWarrate(NonSelectedClausesGetAllReq req) {
@@ -1048,12 +1003,8 @@ public List<WarRateMasterRes> getallNonSelectedWarrate(NonSelectedClausesGetAllR
 		Predicate cs1 = cb.equal(cs.get("companyId"), req.getCompanyId());
 		Predicate cs2 = cb.equal(cs.get("productId"), req.getProductId());
 		Predicate cs3 = cb.equal(cs.get("sectionId"),req.getSectionId());
-		Predicate cs4 = cb.equal(cs.get("effectiveDateStart"),effectiveDate3);
-		Predicate cs5 = cb.equal(cs.get("effectiveDateEnd"),effectiveDate4);
 		Predicate cs6 = cb.equal(cs.get("branchCode"), req.getBranchCode());
-		Predicate cs7 = cb.equal(cs.get("branchCode"), "99999");
-		Predicate cs8 = cb.or(cs6, cs7);
-		clause.where(cs1,cs2,cs3,cs4,cs5,cs8);
+		clause.where(cs1,cs2,cs3,cs6);
 		
 		// Where
 		Expression<String>e0= b.get("warRateId");
@@ -1063,11 +1014,10 @@ public List<WarRateMasterRes> getallNonSelectedWarrate(NonSelectedClausesGetAllR
 		Predicate n4 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 		Predicate n5 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
 		Predicate n6 = cb.equal(b.get("branchCode"), req.getBranchCode());
-		Predicate n7 = cb.equal(b.get("branchCode"), "99999");
-		Predicate n8 = cb.or(n6, n7);
+		
 		Predicate n9 = e0.in(clause).not();
-	//	Predicate n10 = cb.equal(cs.get("status"), "Y");
-		query.where(n1,n2,n4,n5,n8,n9).orderBy(orderList);
+		Predicate n10 = cb.equal(b.get("status"), "Y");
+		query.where(n1,n2,n3,n4,n5,n6,n9,n10).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<WarRateMaster> result = em.createQuery(query);
@@ -1090,6 +1040,119 @@ public List<WarRateMasterRes> getallNonSelectedWarrate(NonSelectedClausesGetAllR
 	}
 	return resList;
 }
+
+@Override
+public List<Error> validateWarrantyList(List<WarRateMasterReq> reqList) {
+	List<Error> errorList = new ArrayList<Error>();
+
+	try {
+	
+		for (WarRateMasterReq req :  reqList ) {
+			
+			
+			
+			if (StringUtils.isBlank(req.getCompanyId())) {
+				errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
+			}
+			
+			if (StringUtils.isBlank(req.getBranchCode())) {
+				errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
+			}
+	
+			if (StringUtils.isBlank(req.getCreatedBy())) {
+				errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy"));
+			}else if (req.getCreatedBy().length() > 100){
+				errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+			}	
+			if (StringUtils.isBlank(req.getWarRateId())) {
+				errorList.add(new Error("10", "WarRateId", "Please Enter WarrateId"));
+			}
+			if (StringUtils.isBlank(req.getProductId())) {
+				errorList.add(new Error("11", "ProductId", "Please Enter ProductId"));
+			}
+		}
+		
+		
+		
+		
+	} catch (Exception e) {
+		log.error(e);
+		e.printStackTrace();
+	}
+	return errorList;
+}
+
+@Override
+public SuccessRes saveWarRateList(List<WarRateMasterReq> reqList) {
+	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+	SuccessRes res = new SuccessRes();
+	List<WarRateMaster> list  = new ArrayList<WarRateMaster>();
+	DozerBeanMapper dozerMapper = new DozerBeanMapper();
+	try {
+		String end = "31/12/2050";
+		List<String> warRateIds = reqList.stream().map( WarRateMasterReq :: getWarRateId ).collect(Collectors.toList()); 
+	
+			String createdBy ="";
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<WarRateMaster> query = cb.createQuery(WarRateMaster.class);
+			//Findall
+			Root<WarRateMaster> b = query.from(WarRateMaster.class);
+			//select
+			query.select(b);
+			//Orderby
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("amendId")));
+			
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<WarRateMaster> ocpm1 = amendId.from(WarRateMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("warRateId"), b.get("warRateId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+			Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+			Predicate a5 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
+//			Predicate a6 = cb.equal(ocpm1.get("policyType"),b.get("policyType"));
+			amendId.where(a1,a2,a3,a4,a5);
+			// Where
+			Expression<String> e0 = b.get("warRateId");
+			
+			
+			//Where
+			Predicate n1 = e0.in(warRateIds);
+			Predicate n2 = cb.equal(b.get("companyId"),reqList.get(0).getCompanyId());
+			Predicate n3 = cb.equal(b.get("branchCode"),reqList.get(0).getBranchCode());
+			Predicate n4 = cb.equal(b.get("productId"),reqList.get(0).getProductId() );
+			Predicate n5 = cb.equal(b.get("sectionId"),"0");
+			Predicate n6 = cb.equal(b.get("amendId"),amendId);
+			query.where(n1,n2,n3,n4,n5,n5,n6).orderBy(orderList);
+			TypedQuery<WarRateMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			
+			for (WarRateMaster data :  list) {
+				WarRateMaster save = new WarRateMaster();
+				dozerMapper.map(data, save);
+				save.setCreatedBy(createdBy);
+				save.setEntryDate(new Date());
+				save.setUpdatedBy(createdBy);
+				save.setUpdatedDate(new Date());
+				save.setAmendId(0);
+				save.setProductId(reqList.get(0).getProductId());
+				save.setSectionId(reqList.get(0).getSectionId());
+				repo.saveAndFlush(save);	
+				log.info("Saved Details is --> " + json.toJson(save));	
+			}
+			res.setResponse("Added Succesfully");
+			res.setSuccessId("");
+	}
+	catch(Exception e) {
+		e.printStackTrace();
+		log.info("Exception is --> " + e.getMessage());
+		return null;
+	}
+	return res;
+	}
+
 	
 
 

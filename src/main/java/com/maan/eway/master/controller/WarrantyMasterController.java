@@ -19,6 +19,7 @@ import com.maan.eway.master.req.WarrantyMasterDropdownReq;
 import com.maan.eway.master.req.WarrantyMasterGetReq;
 import com.maan.eway.master.req.WarrantyMasterGetallReq;
 import com.maan.eway.master.req.WarrantyMasterListSaveReq;
+import com.maan.eway.master.req.WarrantyMasterReq;
 import com.maan.eway.master.req.WarrantyMasterSaveReq;
 import com.maan.eway.master.res.ClausesMasterRes;
 import com.maan.eway.master.res.WarrantyMasterRes;
@@ -191,11 +192,11 @@ public ResponseEntity<CommonRes> changeStatusOfWarranty(@RequestBody WarrantyCha
 
 	@PostMapping("/insertwarrantylist")
 	@ApiOperation(value="This Method is to save Waranty Master List")
-	public ResponseEntity<CommonRes> saveWarranty(@RequestBody WarrantyMasterListSaveReq req){
+	public ResponseEntity<CommonRes> saveWarranty(@RequestBody List<WarrantyMasterReq> req){
 		CommonRes data = new CommonRes();
 		reqPrinter.reqPrint(req);
 		
-	List<Error> validation = service.validateWarranty(req);
+	List<Error> validation = service.validateWarrantyMultiInsert(req);
 	//validation
 	if(validation !=null && validation.size()!=0) {
 		data.setCommonResponse(null);
@@ -205,7 +206,7 @@ public ResponseEntity<CommonRes> changeStatusOfWarranty(@RequestBody WarrantyCha
 		return new ResponseEntity<CommonRes>(data,HttpStatus.OK);
 	} else {
 		//save
-		SuccessRes res = service.saveWarranty(req);
+		SuccessRes res = service.saveWarrantyMultiInsert(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());

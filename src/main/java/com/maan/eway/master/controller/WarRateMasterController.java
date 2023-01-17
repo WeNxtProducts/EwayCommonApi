@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.common.req.ExclusionMasterDropdownReq;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.NonSelectedClausesGetAllReq;
 import com.maan.eway.master.req.WarRateMasterGetReq;
 import com.maan.eway.master.req.WarRateMasterGetallReq;
 import com.maan.eway.master.req.WarRateMasterListSaveReq;
+import com.maan.eway.master.req.WarRateMasterReq;
 import com.maan.eway.master.req.WarRateMasterSaveReq;
 import com.maan.eway.master.req.WarrantyChangeStatusReq;
 import com.maan.eway.master.req.WarrantyMasterDropdownReq;
@@ -194,14 +196,13 @@ public ResponseEntity<CommonRes> changeStatusOfWarrate(@RequestBody WarrateChang
 	
 	
 	//Save
-
 	@PostMapping("/insertwarratelist")
 	@ApiOperation(value="This Method is to save War Rate Master List")
-	public ResponseEntity<CommonRes> saveWarRate(@RequestBody WarRateMasterListSaveReq req){
+	public ResponseEntity<CommonRes> saveWarRate(@RequestBody  List<WarRateMasterReq> req){
 		CommonRes data = new CommonRes();
 		reqPrinter.reqPrint(req);
 		
-	List<Error> validation = service.validateWarranty(req);
+	List<Error> validation = service.validateWarrantyList(req);
 	//validation
 	if(validation !=null && validation.size()!=0) {
 		data.setCommonResponse(null);
@@ -211,7 +212,7 @@ public ResponseEntity<CommonRes> changeStatusOfWarrate(@RequestBody WarrateChang
 		return new ResponseEntity<CommonRes>(data,HttpStatus.OK);
 	} else {
 		//save
-		SuccessRes res = service.saveWarRate(req);
+		SuccessRes res = service.saveWarRateList(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());

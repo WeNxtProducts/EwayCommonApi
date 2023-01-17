@@ -19,6 +19,7 @@ import com.maan.eway.master.req.ClausesMasterDropdownReq;
 import com.maan.eway.master.req.ClausesMasterGetReq;
 import com.maan.eway.master.req.ClausesMasterGetallReq;
 import com.maan.eway.master.req.ClausesMasterListSaveReq;
+import com.maan.eway.master.req.ClausesMasterReq;
 import com.maan.eway.master.req.ClausesMasterSaveReq;
 import com.maan.eway.master.req.NonSelectedClausesGetAllReq;
 import com.maan.eway.master.res.ClausesMasterRes;
@@ -30,7 +31,7 @@ import com.maan.eway.service.PrintReqService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 @RestController
-@Api(tags="MASTER : Waranty MASTER", description="API's")
+@Api(tags="MASTER : Clauses MASTER", description="API's")
 @RequestMapping("/master")
 public class ClausesMasterController {
 
@@ -177,7 +178,7 @@ public ResponseEntity<DropdownCommonRes> getClausesMasterDropdown(@RequestBody C
 
 }
 
-@PostMapping("/getallnonselectedwars")
+@PostMapping("/getallnonselectedclauses")
 @ApiOperation("This method is getall Company Product Master")
 public ResponseEntity<CommonRes> getallNonSelectedCompanyProducts(@RequestBody NonSelectedClausesGetAllReq req)
 {
@@ -203,11 +204,11 @@ public ResponseEntity<CommonRes> getallNonSelectedCompanyProducts(@RequestBody N
 
 @PostMapping("/insertclauseslist")
 @ApiOperation(value = "This Method is to save Waranty Master List")
-public ResponseEntity<CommonRes> saveClauses(@RequestBody ClausesMasterListSaveReq req) {
+public ResponseEntity<CommonRes> saveClausesList(@RequestBody  List<ClausesMasterReq> req) {
 	CommonRes data = new CommonRes();
 	reqPrinter.reqPrint(req);
 
-	List<Error> validation = service.validateClauses(req);
+	List<Error> validation = service.validateClausesList(req);
 //validation
 	if (validation != null && validation.size() != 0) {
 		data.setCommonResponse(null);
@@ -217,7 +218,7 @@ public ResponseEntity<CommonRes> saveClauses(@RequestBody ClausesMasterListSaveR
 		return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 	} else {
 		// save
-		SuccessRes res = service.saveClauses(req);
+		SuccessRes res = service.saveClausesList(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());

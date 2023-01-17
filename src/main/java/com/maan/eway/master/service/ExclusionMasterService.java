@@ -8,6 +8,7 @@ import com.maan.eway.master.req.ExclusionChangeStatusReq;
 import com.maan.eway.master.req.ExclusionMasterGetReq;
 import com.maan.eway.master.req.ExclusionMasterGetallReq;
 import com.maan.eway.master.req.ExclusionMasterListSaveReq;
+import com.maan.eway.master.req.ExclusionMasterReq;
 import com.maan.eway.master.req.ExclusionMasterSaveReq;
 import com.maan.eway.master.req.NonSelectedClausesGetAllReq;
 import com.maan.eway.master.res.ExclusionMasterRes;
@@ -29,10 +30,10 @@ public interface ExclusionMasterService {
 	SuccessRes changeStatusOfExclusion(ExclusionChangeStatusReq req);
 	List<DropDownRes> getExclusionMasterDropdown(ExclusionMasterDropdownReq req);
 
-	List<Error> validateExclusion(ExclusionMasterListSaveReq req);
-
-	SuccessRes saveExclusion(ExclusionMasterListSaveReq req);
-
 	List<ExclusionMasterRes> getallNonSelectedExclusion(NonSelectedClausesGetAllReq req);
+
+	List<Error> validateExclusionList(List<ExclusionMasterReq> req);
+
+	SuccessRes saveExclusionList(List<ExclusionMasterReq> req);
 
 }
