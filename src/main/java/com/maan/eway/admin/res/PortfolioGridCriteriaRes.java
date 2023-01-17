@@ -57,4 +57,8 @@ public class PortfolioGridCriteriaRes {
 	private String creditNo;
 
 	private Date creditDate;
+	
+	private String emiYn;
+
+	private String installmentPeriod;
 }

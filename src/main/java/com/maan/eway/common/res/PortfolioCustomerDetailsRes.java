@@ -87,6 +87,12 @@ public class PortfolioCustomerDetailsRes {
 	@JsonProperty("CreditDate")
 	private Date creditDate;
 	
+	@JsonProperty("EmiYn")
+	private String emiYn;
+	
+	@JsonProperty("InstallmentPeriod")
+	private String installmentPeriod;
+	
 	@JsonProperty("Count")
 	private String   count ;
 	

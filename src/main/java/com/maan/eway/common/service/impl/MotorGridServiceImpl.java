@@ -1094,7 +1094,9 @@ public class MotorGridServiceImpl implements MotorGridService {
 						m.get("creditTo").alias("creditTo"),
 						m.get("creditToId").alias("creditToId"),
 						m.get("creditNo").alias("creditNo"),
-						m.get("creditDate").alias("creditDate")
+						m.get("creditDate").alias("creditDate"),
+						m.get("emiYn").alias("emiYn"),
+						m.get("installmentPeriod").alias("installmentPeriod")
 //						m.get("creditDate").alias("creditDate"),
 //						m.get("creditDate").alias("creditDate"),
 //						m.get("creditDate").alias("creditDate"),
@@ -1200,7 +1202,9 @@ public class MotorGridServiceImpl implements MotorGridService {
 						m.get("creditTo").alias("creditTo"),
 						m.get("creditToId").alias("creditToId"),
 						m.get("creditNo").alias("creditNo"),
-						m.get("creditDate").alias("creditDate")
+						m.get("creditDate").alias("creditDate"),
+						m.get("emiYn").alias("emiYn"),
+						m.get("installmentPeriod").alias("installmentPeriod")
 						);
 
 				// Order By
@@ -1302,7 +1306,9 @@ public class MotorGridServiceImpl implements MotorGridService {
 						m.get("creditTo").alias("creditTo"),
 						m.get("creditToId").alias("creditToId"),
 						m.get("creditNo").alias("creditNo"),
-						m.get("creditDate").alias("creditDate")
+						m.get("creditDate").alias("creditDate"),
+						m.get("emiYn").alias("emiYn"),
+						m.get("installmentPeriod").alias("installmentPeriod")
 						);
 
 				// Order By
