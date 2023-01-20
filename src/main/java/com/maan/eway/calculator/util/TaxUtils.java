@@ -21,7 +21,7 @@ public class TaxUtils  implements Function<Tuple,Tax>{
 				 	.taxId(t.get("taxId")==null?"":t.get("taxId").toString())
 				 	.taxRate(t.get("value")==null?0D:Double.parseDouble(t.get("value").toString()))
 				 	.calcType(t.get("calcType")==null?"":t.get("calcType").toString())
-					.regulatoryCode(t.get("regulatoryCode")==null?"N/A":t.get("regulatoryCode").toString())
+					.regulatoryCode(t.get("taxCode")==null?"N/A":t.get("taxCode").toString())
 				 	.build();
 			return d;
 		}catch (Exception e) {
