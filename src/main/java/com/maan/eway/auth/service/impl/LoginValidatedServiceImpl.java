@@ -71,6 +71,28 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 			}
 			
 		 */
+		   if (req.getPassword() == null || StringUtils.isBlank(req.getPassword())) {
+				list.add(new Error("", "Password", "Please enter password"));
+			}
+			
+		   // Guest Login Checking
+			if( loginId.equalsIgnoreCase("guest")  ) {
+				if (StringUtils.isNotBlank(req.getLoginId()) && StringUtils.isNotBlank(req.getPassword())) {
+					LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());
+					if (loginData ==null ) {
+						list.add(new Error("", "UserId", "Please enter Valid Login Id"));
+					} 
+					
+					if (loginData != null  ) {
+						data = criteriaQuery.isvalidUser(req);
+						if (CollectionUtils.isEmpty(data)) {
+							list.add(new Error("", "User", "Please enter valid username/password"));
+						}
+					}
+				} 
+			}
+			
+			// Other Login Checking
 			if(! loginId.equalsIgnoreCase("guest")  ) {
 				if (req.getPassword() == null || StringUtils.isBlank(req.getPassword())) {
 					list.add(new Error("", "Password", "Please enter password"));

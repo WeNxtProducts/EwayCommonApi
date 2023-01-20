@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EservicePersonalAccidentDetails;
@@ -53,6 +54,7 @@ import com.maan.eway.common.res.UpdateCoverRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
+import com.maan.eway.repository.EmiTransactionDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EservicePersonalAccidentDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
@@ -120,6 +122,9 @@ private FactorRateRequestDetailsRepository facRateRepo ;
 
 @PersistenceContext
 private EntityManager em;
+
+@Autowired
+private EmiTransactionDetailsRepository emiRepo ;
 
 
 private Logger log=LogManager.getLogger(FactorRateRequestDetailsServiceImpl.class);
@@ -707,15 +712,35 @@ this.repository = repo;
 		try {
 			// Find Datas
 			
+			
 			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
 		
-		//	List<MasterReferralDetails> findRefrals = masReferralRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
-		
+			//	List<MasterReferralDetails> findRefrals = masReferralRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
+			// Emi Details 
+			String emi ="", installementPeriod ="", installementMonth ="", dueAmount =""; 
+			List<EmiTransactionDetails> emiDetails = new ArrayList<EmiTransactionDetails>();
+			
 			if( req.getProductId().equalsIgnoreCase(motorProductId) ) {
+				
 				// Motor Product Details
 				List<EserviceMotorDetails>    motorDatas = eserMotorRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
 						
 				for (EserviceMotorDetails mot :  motorDatas) {
+					
+					// Emi Details
+					if (StringUtils.isNotBlank(mot.getQuoteNo()) && emiDetails.size()<=0 ) {
+						emiDetails = emiRepo.findByQuoteNoAndCompanyIdAndProductId(mot.getQuoteNo() ,mot.getCompanyId() , mot.getProductId().toString());
+						if (emiDetails.size()>0 ) {
+							List<EmiTransactionDetails> filterEmi =  emiDetails.stream().filter( o -> (!o.getPaymentStatus().equalsIgnoreCase("Accepted")) &&  ( o.getInstalment().equalsIgnoreCase("0") || o.getInstalment()!=null ) ).collect(Collectors.toList());
+							if(filterEmi.size()>0   ) {
+								emi = "Y";
+								installementPeriod = filterEmi.get(0).getInstallmentPeriod();
+								installementMonth = filterEmi.get(0).getInstalment() ;
+								dueAmount = filterEmi.get(0).getDueAmount()==null?"":filterEmi.get(0).getDueAmount().toString();
+							}
+						}
+					}
+					
 					List<FactorRateRequestDetails> filterVehicleCovers =  findCovers.stream().filter( o -> o.getVehicleId().equals(mot.getRiskId()) &&
 							o.getCompanyId().equals(mot.getCompanyId()) 
 							&& o.getProductId().toString().equals(mot.getProductId())
@@ -724,10 +749,14 @@ this.repository = repo;
 					
 					List<Cover> coverListRes = 	getCoversList(groupByCover);
 					
-					
 					// Response 
 					EservieMotorDetailsViewRes res = new EservieMotorDetailsViewRes();
 					dozerMapper.map(mot,res);
+					
+					res.setEmiYn(emi);
+					res.setInstallmentPeriod(installementPeriod);
+					res.setInstallmentMonth(installementMonth);
+					res.setDueAmount(dueAmount);
 					res.setActualPremiumFc(mot.getActualPremiumFc()==null?"":mot.getActualPremiumFc().toString());
 					res.setActualPremiumLc(mot.getActualPremiumLc()==null?"":mot.getActualPremiumLc().toString());
 					res.setBranchCode(mot.getBranchCode());

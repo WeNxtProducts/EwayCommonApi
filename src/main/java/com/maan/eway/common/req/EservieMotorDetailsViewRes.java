@@ -103,6 +103,17 @@ public class EservieMotorDetailsViewRes {
 	@JsonProperty("RiskDetails")
 	private Object riskDetails ; 
 	
+	@JsonProperty("EmiYn")
+	private String     emiYn;
+	@JsonProperty("InstallmentPeriod")
+    private String     installmentPeriod ;
+	
+	@JsonProperty("InstallmentMonth")
+    private String     installmentMonth;
+	
+	@JsonProperty("DueAmount")
+    private String     dueAmount;
+	
 	
 	
 }
