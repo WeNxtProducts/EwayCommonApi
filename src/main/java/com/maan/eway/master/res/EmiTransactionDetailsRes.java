@@ -38,7 +38,7 @@ public class EmiTransactionDetailsRes implements Serializable {
 	private String interestAmount;
 	
 	@JsonProperty("AdvanceAmount")
-	private String advanceAmount;
+	private String dueAmount;
 
 	@JsonProperty("BalanceAmount")
 	private String balanceAmount;

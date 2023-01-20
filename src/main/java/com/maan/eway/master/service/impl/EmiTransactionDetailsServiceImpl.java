@@ -150,7 +150,9 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 	@Override
 	public SuccessRes insertEmiTransactionDetails(EmiTransactionDetailsSaveReq req) {
 		SuccessRes res = new SuccessRes();
+		DecimalFormat df = new DecimalFormat("0.00");
 		try {
+			
 			EmiTransactionDetails saveData = new EmiTransactionDetails();
 			String quoteNo = req.getQuoteNo();
 			String insDesc = "";
@@ -203,13 +205,13 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 				saveData.setAdvance(advancePercent.toString());
 				saveData.setInterestAmount(interestAmount);
 				if (i == 0) {
-					saveData.setDueAmount(advanceAmount);
+					saveData.setDueAmount((Double.valueOf(df.format(advanceAmount))));
 					insDesc="Advance Amount";
 					//saveData.setPaymentDate(entryDate);
 					saveData.setStatus(req.getStatus());
 					saveData.setPaymentDetails(req.getPaymentDetails());
 				} else {
-					saveData.setDueAmount((Double.valueOf(installment)));
+					saveData.setDueAmount((Double.valueOf(df.format(installment))));
 					insDesc="Installment Amount";
 					saveData.setStatus("Y");
 					saveData.setPaymentDetails(null);
@@ -219,7 +221,7 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 				saveData.setQuoteNo(quoteNo);
 				saveData.setProductId(req.getProductId());
 				saveData.setCompanyId(req.getCompanyId());
-				saveData.setBalanceAmount(balanceAmount);
+				saveData.setBalanceAmount(Double.valueOf(df.format(balanceAmount)));
 				saveData.setTotalLoanAmount(totalLoanAmount);
 				saveData.setInstallmentDesc(insDesc);
 				saveData.setInstalment(i.toString());
@@ -439,6 +441,7 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 	public List<EmiTransactionDetailsRes> getEmiDetailsByQuoteNo(EmiTransactionDetailsGetReq req) {
 		List<EmiTransactionDetailsRes> resList = new ArrayList<EmiTransactionDetailsRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
+		DecimalFormat df = new DecimalFormat("0.00");
 		try {
 			String quoteNo = req.getQuoteNo();
 			String productId = req.getProductId();
@@ -468,6 +471,8 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 				EmiTransactionDetailsRes res = new EmiTransactionDetailsRes();
 				res = mapper.map(data, EmiTransactionDetailsRes.class);
 				res.setInstallment(data.getInstalment());
+				res.setDueAmount((Double.valueOf(df.format(data.getDueAmount()))).toString());
+				res.setBalanceAmount((Double.valueOf(df.format(data.getBalanceAmount()))).toString());
 				resList.add(res);
 			}
 
