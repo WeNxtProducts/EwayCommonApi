@@ -21,8 +21,10 @@ import com.maan.eway.common.req.PaymentDetailsSaveReq;
 import com.maan.eway.common.req.PaymentDetailsSaveRes;
 import com.maan.eway.common.req.PaymentInfoGetAllReq;
 import com.maan.eway.common.req.PaymentInfoGetReq;
+import com.maan.eway.common.req.PaymentResUrlReq;
 import com.maan.eway.common.req.TinyUrlGetReq;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.LoginEncryptResponse;
 import com.maan.eway.common.res.PaymentDetailGetRes;
 import com.maan.eway.common.res.PaymentInfoGetRes;
 import com.maan.eway.common.service.PaymentService;
@@ -116,6 +118,26 @@ public class PaymentController {
 		
 		if (res != null) {
 			return new ResponseEntity<CommonRes>(res, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+		
+
+	}
+	
+	@PostMapping("/decrypttinyurl")
+	@ApiOperation(value = "This method is Decrypt Tiny Url")
+	public ResponseEntity<CommonRes> decryptTinyUrl(@RequestBody PaymentResUrlReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		// Save
+		LoginEncryptResponse res = service.decryptTinyUrl(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}

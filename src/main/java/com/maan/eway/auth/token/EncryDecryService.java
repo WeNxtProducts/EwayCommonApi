@@ -17,6 +17,7 @@ private static final String FORMAT = "ISO-8859-1";
         byte[] encryptedText = CryptoConfig.getCipher().doFinal(plainText);
         encryptedString = DatatypeConverter.printBase64Binary(encryptedText);
         return encryptedString;
+        
 	
 	}
 	

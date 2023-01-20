@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.auth.token.EncryDecryService;
 import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CompanyProductMaster;
@@ -66,12 +68,15 @@ import com.maan.eway.common.req.PaymentDetailsSaveReq;
 import com.maan.eway.common.req.PaymentDetailsSaveRes;
 import com.maan.eway.common.req.PaymentInfoGetAllReq;
 import com.maan.eway.common.req.PaymentInfoGetReq;
+import com.maan.eway.common.req.PaymentResUrlReq;
 import com.maan.eway.common.req.TinyUrlGenerateReq;
 import com.maan.eway.common.req.TinyUrlGetReq;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.LoginEncryptResponse;
 import com.maan.eway.common.res.PaymentDetailGetRes;
 import com.maan.eway.common.res.PaymentInfoGetRes;
 import com.maan.eway.common.res.TinyUrlGetRes;
+
 import com.maan.eway.common.service.PaymentService;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.service.impl.ClausesMasterServiceImpl;
@@ -91,6 +96,7 @@ import com.maan.eway.req.calcengine.CalcCommission;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.res.calc.DebitAndCredit;
 import com.maan.eway.service.CalculatorEngine;
+
 
 @Service
 @Transactional
@@ -1433,7 +1439,9 @@ public class PaymentServiceImpl implements PaymentService {
 			String branchCode = homeData.getBranchCode();
 			String type = req.getType();			
 			TinyUrlGenerateReq urlReq = TinyUrlGenerateReq.builder()
-					.param("QuoteNo=" + quoteNo  )
+					
+				//	.param("QuoteNo=" + quoteNo)
+					.param("QuoteNo=" + quoteNo+ "~"+"ProductId=" + req.getProductId() )
 					.productId(productId)
 					.companyId(companyId)
 					.branchCode(branchCode)
@@ -1475,7 +1483,7 @@ public class PaymentServiceImpl implements PaymentService {
 			String type = req.getType();
 			log.info("gettinyurl--> type: " + type);
 			passwordEnc passEnc = new passwordEnc();
-			encrData = passEnc.encrypt(req.getParam());
+			encrData = EncryDecryService.encrypt(req.getParam());
 			String url = getAppUrl(type,req.getCompanyId() , req.getProductId() , req.getBranchCode() );
 			url = url == null ? "" : url;
 			log.info("gettinyurl--> URL: " + url);
@@ -1535,7 +1543,8 @@ public class PaymentServiceImpl implements PaymentService {
 			Predicate a3 = cb.equal(c.get("productId"),ocpm1.get("productId"));
 			Predicate a4 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
 			Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1,a2,a3,a4,a5);
+			Predicate a11 = cb.equal(ocpm1.get("type") ,c.get("type"));
+			effectiveDate.where(a1,a2,a3,a4,a5,a11);
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<TinyurlMaster> ocpm2 = effectiveDate2.from(TinyurlMaster.class);
@@ -1545,7 +1554,8 @@ public class PaymentServiceImpl implements PaymentService {
 			Predicate a8 = cb.equal(c.get("productId"),ocpm2.get("productId"));
 			Predicate a9 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
 			Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-			effectiveDate2.where(a6,a7,a8,a9,a10);
+			Predicate a12 = cb.equal(ocpm2.get("type") ,c.get("type"));
+			effectiveDate2.where(a6,a7,a8,a9,a10,a12);
 						
 			// Where
 			Predicate n1 = cb.equal(c.get("status"),"Y");
@@ -1557,7 +1567,7 @@ public class PaymentServiceImpl implements PaymentService {
 			Predicate n7 = cb.equal(c.get("branchCode"), "99999");
 			Predicate n8 = cb.or(n6,n7);
 			Predicate n9 = cb.equal(c.get("type"), type);
-			query.where(n1,n2,n3,n4,n5,n8).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n5,n8,n9).orderBy(orderList);
 			// Get Result
 			TypedQuery<TinyurlMaster> result = em.createQuery(query);
 			List<TinyurlMaster> list = result.getResultList();
@@ -1572,5 +1582,33 @@ public class PaymentServiceImpl implements PaymentService {
 		return url ;
 	}
 
-	
+
+	@Override
+	public LoginEncryptResponse decryptTinyUrl(PaymentResUrlReq req) {
+		LoginEncryptResponse resp = new LoginEncryptResponse();
+		try {
+			log.info("Req==>" + req.getEncryptValue());
+			String decrypt = EncryDecryService.decrypt(URLDecoder.decode(req.getEncryptValue(), "UTF-8"));
+			if (StringUtils.isNotBlank(decrypt) && decrypt.indexOf("~") != -1) {
+				log.info("Encrypt==>" + decrypt);
+				String[] split = decrypt.split("~");
+				if (split.length > 0) {
+					String[] quoteNo = split[0].split("=");
+					String[] productId = split[1].split("=");
+//					String[] loginType = split[2].split("=");
+//					String[] branchcode = split[3].split("=");
+					resp.setQuoteNo(quoteNo[1]);
+					resp.setProductId(productId[1]);
+					//resp.setLoginType(loginType[1]);
+					//resp.setBranchcode(branchcode[1]);
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return resp;
+	}
+
 }
