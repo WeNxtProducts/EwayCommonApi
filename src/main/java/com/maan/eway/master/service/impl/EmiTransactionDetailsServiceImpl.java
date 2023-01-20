@@ -26,7 +26,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 
 import javax.persistence.criteria.CriteriaQuery;
-
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -55,6 +55,7 @@ import com.maan.eway.master.res.EmiInfoListRes;
 import com.maan.eway.master.service.EmiTransactionDetailsService;
 import com.maan.eway.repository.EmiTransactionDetailsRepository;
 import com.maan.eway.bean.EmiTransactionDetails;
+import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.EmiMaster;
 import com.maan.eway.bean.EmiMaster;
 import com.maan.eway.error.Error;
@@ -98,17 +99,28 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 
 			if (StringUtils.isBlank(req.getQuoteNo())) {
 				errorList.add(new Error("03", "QuoteNo", "Please Enter QuoteNo"));
-			} else {
-				List<EmiTransactionDetails> quoteNo = repo.findByQuoteNoAndCompanyIdAndProductId(req.getQuoteNo(),
-						req.getCompanyId(), req.getProductId());
-				quoteNo = quoteNo.stream().filter(o -> o.getQuoteNo() != null)
-						.filter(distinctByKey(o -> o.getQuoteNo())).collect(Collectors.toList());
-				if (quoteNo.size()>0 && StringUtils.isNotBlank(req.getQuoteNo())) {
-					if (quoteNo.get(0).getQuoteNo().equalsIgnoreCase(req.getQuoteNo())) {
-						errorList.add(new Error("08", "QuoteNo", "This QuoteNo  Already Exist"));
-					}
-				}
+			} 
+			else {
+			List<EmiTransactionDetails> quoteNo = repo.findByQuoteNoAndCompanyIdAndProductId(req.getQuoteNo(),
+					req.getCompanyId(), req.getProductId());
+			quoteNo = quoteNo.stream().filter(o -> o.getPaymentStatus().equals("Accept")).collect(Collectors.toList());
+			if (quoteNo.size() > 0 && StringUtils.isNotBlank(req.getQuoteNo())) {
+				// if (quoteNo.get(0).getPaymentStatus().equalsIgnoreCase("Accept")) {
+				errorList.add(new Error("08", "QuoteNo", "This QuoteNo  Already Running"));
 			}
+		}
+		
+//			else {
+//				List<EmiTransactionDetails> quoteNo = repo.findByQuoteNoAndCompanyIdAndProductId(req.getQuoteNo(),
+//						req.getCompanyId(), req.getProductId());
+//				quoteNo = quoteNo.stream().filter(o -> o.getQuoteNo() != null)
+//						.filter(distinctByKey(o -> o.getQuoteNo())).collect(Collectors.toList());
+//				if (quoteNo.size()>0 && StringUtils.isNotBlank(req.getQuoteNo())) {
+//					if (quoteNo.get(0).getQuoteNo().equalsIgnoreCase(req.getQuoteNo())) {
+//						errorList.add(new Error("08", "QuoteNo", "This QuoteNo  Already Exist"));
+//					}
+//				}
+//			}
 			
 			// Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
@@ -149,8 +161,20 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 					advanceAmount, balanceAmount = null, installment = 0d;
 
 			Integer noOfMonth = Integer.valueOf(req.getInstallmentPeriod().toString());
-			List<EmiMaster> emiMasterData = getEmiMasterDataByInsPeriod(req.getCompanyId(), req.getProductId(), req.getPolicyType(),
-					req.getInstallmentPeriod());
+
+			// Finding Old Record
+			List<EmiTransactionDetails> list = repo.findByQuoteNoAndCompanyIdAndProductId(req.getQuoteNo(),
+					req.getCompanyId(), req.getProductId());
+			//list = list.stream().filter(o -> o.getQuoteNo() == null).collect(Collectors.toList());
+			if (list.size() > 0 && StringUtils.isNotBlank(req.getQuoteNo())) {
+				// if (!list.get(0).getPaymentStatus().equalsIgnoreCase("Accept")) {
+				repo.deleteAll(list);
+			}
+			
+	
+			//Getting Record from Emi Master
+			List<EmiMaster> emiMasterData = getEmiMasterDataByInsPeriod(req.getCompanyId(), req.getProductId(),
+					req.getPolicyType(),	req.getInstallmentPeriod());
 			interestPercent = Double.valueOf(emiMasterData.get(0).getInterestPercent().toString());
 			advancePercent = Double.valueOf(emiMasterData.get(0).getAdvancePercent().toString());
 
