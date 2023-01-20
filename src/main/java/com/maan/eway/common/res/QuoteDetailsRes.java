@@ -132,6 +132,12 @@ public class QuoteDetailsRes {
 	@JsonProperty("InstallmentPeriod")
     private String     installmentPeriod ;
 	
+	@JsonProperty("InstallmentMonth")
+    private String     installmentMonth;
+	
+	@JsonProperty("DueAmount")
+    private String     dueAmount;
+	
 	@JsonProperty("TinyUrl")
     private String     tinyUrl;
     

@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EservicePersonalAccidentDetails;
@@ -69,6 +70,7 @@ import com.maan.eway.error.Error;
 import com.maan.eway.repository.CoverDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
+import com.maan.eway.repository.EmiTransactionDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EservicePersonalAccidentDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
@@ -158,6 +160,9 @@ public class QuoteServiceImpl implements QuoteService {
 	@Autowired
 	private PaymentService paymentService ;
 	
+	@Autowired
+	private EmiTransactionDetailsRepository emiRepo ;
+	
 	private Logger log = LogManager.getLogger(QuoteServiceImpl.class);
 	
 	@Override
@@ -176,10 +181,26 @@ public class QuoteServiceImpl implements QuoteService {
 			HomePositionMaster homeData  =  homeRepo.findByQuoteNo(req.getQuoteNo());
 			QuoteDetailsRes quoteRes = new QuoteDetailsRes();
 			
+			
+			
+			
 			quoteRes = dozerMappper.map(homeData, QuoteDetailsRes.class);
 			quoteRes.setOverAllPremiumFc(homeData.getOverallPremiumFc()==null?"":homeData.getOverallPremiumFc().toString() );
 			quoteRes.setOverAllPremiumLc(homeData.getOverallPremiumLc()==null?"":homeData.getOverallPremiumLc().toString());
+			quoteRes.setEmiYn("N");
 			
+			// Emi Details 
+			List<EmiTransactionDetails> emiDetails = emiRepo.findByQuoteNoAndCompanyIdAndProductId(homeData.getQuoteNo() ,homeData.getCompanyId() , homeData.getProductId().toString());
+			if (emiDetails.size()>0 ) {
+				List<EmiTransactionDetails> filterEmi =  emiDetails.stream().filter( o -> (!o.getPaymentStatus().equalsIgnoreCase("Accepted")) &&  ( o.getInstalment().equalsIgnoreCase("0") || o.getInstalment()!=null ) ).collect(Collectors.toList());
+				if(filterEmi.size()>0   ) {
+					quoteRes.setEmiYn("Y");
+					quoteRes.setInstallmentPeriod(filterEmi.get(0).getInstallmentPeriod());
+					quoteRes.setInstallmentMonth(filterEmi.get(0).getInstalment() );
+					quoteRes.setDueAmount(filterEmi.get(0).getDueAmount()==null?"":filterEmi.get(0).getDueAmount().toString());
+				}
+			}
+						
 			// Customer Details
 			PersonalInfo custData = custRepo.findByCustomerId(homeData.getCustomerId());
 			CustomerDetailsRes  custRes = new CustomerDetailsRes();
