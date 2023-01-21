@@ -21,4 +21,9 @@ public class BankChangeStatusReq {
 	
 	@JsonProperty("BranchCode")
 	private String branchCode;
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private String effectiveDateStart;
+
 }

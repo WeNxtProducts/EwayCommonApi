@@ -625,6 +625,7 @@ public List<BankMasterRes> getActiveBankDetails(BankMasterGetAllReq req) {
 @Override
 public SuccessRes changeStatusOfBank(BankChangeStatusReq req) {
 	SuccessRes res = new SuccessRes();
+	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	DozerBeanMapper dozerMapper = new DozerBeanMapper();
 	try {
 		List<BankMaster> list = new ArrayList<BankMaster>();
@@ -667,12 +668,15 @@ public SuccessRes changeStatusOfBank(BankChangeStatusReq req) {
 		BankMaster updateRecord = list.get(0);
 		if(  req.getBranchCode().equalsIgnoreCase(updateRecord.getBranchCode())) {
 			updateRecord.setStatus(req.getStatus());
+			updateRecord.setEffectiveDateStart(sdf.parse(req.getEffectiveDateStart()));
 			repo.save(updateRecord);
 		} else {
 			BankMaster saveNew = new BankMaster();
 			dozerMapper.map(updateRecord,saveNew);
 			saveNew.setBranchCode(req.getBranchCode());
 			saveNew.setStatus(req.getStatus());
+			saveNew.setEffectiveDateStart(sdf.parse(req.getEffectiveDateStart()));
+
 			repo.save(saveNew);
 		}
 	
