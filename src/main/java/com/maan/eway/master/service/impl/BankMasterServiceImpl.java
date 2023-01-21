@@ -627,59 +627,91 @@ public SuccessRes changeStatusOfBank(BankChangeStatusReq req) {
 	SuccessRes res = new SuccessRes();
 	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	DozerBeanMapper dozerMapper = new DozerBeanMapper();
+	List<BankMaster> list = new ArrayList<BankMaster>(); 
+	BankMaster saveData = new BankMaster(); 
 	try {
-		List<BankMaster> list = new ArrayList<BankMaster>();
+		Integer amendId = 0;
+		Date StartDate = req.getEffectiveDateStart();
+		String end = "31/12/2050";
+		Date endDate = sdf.parse(end);
+		long MILLS_IN_A_DAY = 1000*60*60*24;
+		Date oldEndDate = new Date(req.getEffectiveDateStart().getTime()- MILLS_IN_A_DAY);
+		Date entryDate = null;
+		String createdBy ="";
+		String bankCode = "";
 		
-		// Find Latest Record
+		bankCode = req.getBankCode();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<BankMaster> query = cb.createQuery(BankMaster.class);
-		// Find all
+		//Findall
 		Root<BankMaster> b = query.from(BankMaster.class);
-		//Select
+		//select
 		query.select(b);
-
-		// Amend ID Max Filter
-		Subquery<Long> amendId = query.subquery(Long.class);
-		Root<BankMaster> ocpm1 = amendId.from(BankMaster.class);
-		amendId.select(cb.max(ocpm1.get("amendId")));
+		//Orderby
+		Subquery<Long> amendId2 = query.subquery(Long.class);
+		Root<BankMaster> ocpm1 = amendId2.from(BankMaster.class);
+		amendId2.select(cb.max(ocpm1.get("amendId")));
 		Predicate a1 = cb.equal(ocpm1.get("bankCode"), b.get("bankCode"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-
-		amendId.where(a1, a2,a3);
-
-		// Order By
+		amendId2.where(a1, a2,a3);
+		//Orderby
 		List<Order> orderList = new ArrayList<Order>();
 		orderList.add(cb.asc(b.get("branchCode")));
-
-		// Where
-		Predicate n1 = cb.equal(b.get("amendId"), amendId);
-		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
-		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-		Predicate n4 = cb.equal(b.get("bankCode"), req.getBankCode());
-		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
-		Predicate n6 = cb.or(n3,n5);
+		//Where
+		Predicate n1 = cb.equal(b.get("bankCode"),req.getBankCode());
+		Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId());
+		Predicate n3 = cb.equal(b.get("branchCode"),req.getBranchCode());
+		Predicate n4 = cb.equal(b.get("branchCode"),"99999");
+		Predicate n5 = cb.or(n3,n4);
+		Predicate n6 = cb.equal(b.get("amendId"),amendId2);
 		
-		query.where(n1,n2,n4,n6).orderBy(orderList);
+		query.where(n1,n2,n5,n6).orderBy(orderList);
 		
-		// Get Result 
+		// Get Result
 		TypedQuery<BankMaster> result = em.createQuery(query);
+		int limit=0, offset=2;
+		result.setFirstResult(limit * offset);
+		result.setMaxResults(offset);
 		list = result.getResultList();
-		BankMaster updateRecord = list.get(0);
-		if(  req.getBranchCode().equalsIgnoreCase(updateRecord.getBranchCode())) {
-			updateRecord.setStatus(req.getStatus());
-			updateRecord.setEffectiveDateStart(sdf.parse(req.getEffectiveDateStart()));
-			repo.save(updateRecord);
-		} else {
-			BankMaster saveNew = new BankMaster();
-			dozerMapper.map(updateRecord,saveNew);
-			saveNew.setBranchCode(req.getBranchCode());
-			saveNew.setStatus(req.getStatus());
-			saveNew.setEffectiveDateStart(sdf.parse(req.getEffectiveDateStart()));
-
-			repo.save(saveNew);
+		if(req.getBranchCode().equalsIgnoreCase(list.get(0).getBranchCode() ) &&  list.size()>0) {
+			Date beforeOneDay = new Date(new Date().getTime()- MILLS_IN_A_DAY);
+			if(list.get(0).getEffectiveDateStart().before(beforeOneDay)) {
+				amendId = list.get(0).getAmendId()+1;
+				entryDate = new Date();
+				createdBy = req.getCreatedBy();
+				BankMaster lastRecord = list.get(0);
+				lastRecord.setEffectiveDateEnd(oldEndDate);
+				repo.saveAndFlush(lastRecord);
+			}
+			else  {
+				amendId = list.get(0).getAmendId();
+				entryDate = list.get(0).getEntryDate();
+				createdBy = list.get(0).getCreatedBy();
+				saveData = list.get(0);
+				if(req.getBranchCode().equalsIgnoreCase(list.get(0).getBranchCode() ) &&  list.size()>1) {
+					BankMaster lastRecord = list.get(1);	
+					lastRecord.setEffectiveDateEnd(oldEndDate);
+					repo.saveAndFlush(lastRecord);
+				}
+			}
 		}
-	
+		res.setResponse("Updated Successfully");
+		res.setSuccessId(bankCode.toString());
+			
+		dozerMapper.map(list.get(0), saveData);
+		saveData.setBankCode(bankCode.toString());
+		saveData.setEffectiveDateStart(StartDate);
+		saveData.setEffectiveDateEnd(endDate);
+		saveData.setCreatedBy(createdBy);
+		saveData.setEntryDate(entryDate);
+		saveData.setUpdatedBy(req.getCreatedBy());
+		saveData.setUpdatedDate(new Date());
+		saveData.setAmendId(amendId);
+		saveData.setStatus(req.getStatus());
+		saveData.setBranchCode(req.getBranchCode());
+		repo.saveAndFlush(saveData);	
+		log.info("Saved Details is --> " + json.toJson(saveData));	
 		// Perform Update
 		res.setResponse("Status Changed");
 		res.setSuccessId(req.getBankCode());

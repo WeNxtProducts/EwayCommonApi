@@ -16,6 +16,9 @@ public class BankChangeStatusReq {
 	@JsonProperty("Status")
 	private String status;
 	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
 	@JsonProperty("InsuranceId")
 	private String companyId;
 	
@@ -24,6 +27,6 @@ public class BankChangeStatusReq {
 	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
-	private String effectiveDateStart;
+	private Date effectiveDateStart;
 
 }
