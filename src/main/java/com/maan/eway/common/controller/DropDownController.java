@@ -849,7 +849,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	@PostMapping("/fueltype")
+	@PostMapping(value="/fueltype",produces = "application/json")
 	public ResponseEntity<CommonRes> getFuelType(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
 		List<DropDownRes> res = dropDownService.getFuelType(req);
