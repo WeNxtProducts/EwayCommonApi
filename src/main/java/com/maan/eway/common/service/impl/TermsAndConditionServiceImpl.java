@@ -95,11 +95,15 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			exclusionList = exclusionList.stream().filter(distinctByKey(o -> Arrays.asList(o.getExclusionId()))).collect(Collectors.toList());
 			clausesList = clausesList.stream().filter(distinctByKey(o -> Arrays.asList(o.getClausesId()))).collect(Collectors.toList());
 
+			
+			res.setProductId(warrantyList.get(0).getProductId());
+			res.setSectionId(warrantyList.get(0).getSectionId());
+			res.setCompanyId(warrantyList.get(0).getCompanyId());
+			res.setBranchCode(warrantyList.get(0).getBranchCode());
+			
 			for(WarrantyMaster warranties : warrantyList) {
 				WarrantyRes warrantyres = new WarrantyRes();
 				
-				warrantyres.setProductId(warranties.getProductId());
-				warrantyres.setSectionId(warranties.getSectionId());
 				warrantyres.setWarrantyId(warranties.getWarrantyId().toString());
 				warrantyres.setWarrantyDesc(warranties.getWarrantyDescription());
 				warrantyres.setDocRefNo(warranties.getDocRefNo());
@@ -111,8 +115,6 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			for(WarRateMaster warrates : warrateList) {
 				WarrateRes warrateres =	new WarrateRes();
 
-				warrateres.setProductId(warrates.getProductId());
-				warrateres.setSectionId(warrates.getSectionId());
 				warrateres.setWarrateId(warrates.getWarRateId().toString());
 				warrateres.setWarrateDesc(warrates.getWarRateDesc());
 				warrateres.setDocRefNo(warrates.getDocRefNo());
@@ -125,8 +127,6 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			for(ClausesMaster clauses : clausesList) {
 				ClausesRes clausesres = new ClausesRes();			
 
-				clausesres.setProductId(clauses.getProductId());
-				clausesres.setSectionId(clauses.getSectionId());
 				clausesres.setClausesId(clauses.getClausesId().toString());
 				clausesres.setClausesDesc(clauses.getClausesDescription());
 				clausesres.setDocRefNo(clauses.getDocRefNo());
@@ -139,8 +139,6 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			for(ExclusionMaster exclusions : exclusionList) {
 				ExclusionRes exclusionres = new ExclusionRes();
 
-				exclusionres.setProductId(exclusions.getProductId());
-				exclusionres.setSectionId(exclusions.getSectionId());
 				exclusionres.setExclusionId(exclusions.getExclusionId().toString());
 				exclusionres.setExclusionDesc(exclusions.getExclusionDescription());
 				exclusionres.setDocRefNo(exclusions.getDocRefNo());

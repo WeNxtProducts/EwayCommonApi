@@ -33,11 +33,5 @@ private String docRefNo;
 
 @JsonProperty("DocumentId")
 private String documentId;
-@JsonProperty("ProductId")
-private String productId;
-
-
-@JsonProperty("SectionId")
-private String sectionId;
 
 }
