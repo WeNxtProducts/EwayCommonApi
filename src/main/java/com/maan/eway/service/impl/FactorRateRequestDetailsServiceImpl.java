@@ -493,7 +493,7 @@ this.repository = repo;
 			if(req.getReferals()!=null && req.getReferals().size()>0 ) {
 				Long refCount  = masReferralRepo.findByRequestReferenceNoAndRiskIdAndProductIdAndSectionIdAndCompanyId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()) ,
 						                      Integer.valueOf(req.getProductId()),Integer.valueOf(req.getSectionId()),req.getInsuranceId() );
-				if(refCount > 0 ) {
+				if(refCount!=null && refCount > 0 ) {
 					masReferralRepo.deleteByRequestReferenceNoAndRiskIdAndProductIdAndSectionIdAndCompanyId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()) ,
 		                      Integer.valueOf(req.getProductId()),Integer.valueOf(req.getSectionId()),req.getInsuranceId() );
 				}
@@ -503,6 +503,7 @@ this.repository = repo;
 					
 					if (referal.getIsreferral()==true) {
 						row = row + 1 ;
+						saveRef.setRequestReferenceNo(req.getRequestReferenceNo());
 						saveRef.setApiInfo(referal.getApiInfo());
 						saveRef.setReferralDesc(referal.getReferralDesc());
 						saveRef.setSNo(row);

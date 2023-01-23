@@ -43,6 +43,7 @@ import com.maan.eway.bean.SeqCustid;
 import com.maan.eway.bean.SeqQuoteno;
 import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.common.req.CoverIdsReq;
+import com.maan.eway.common.req.IndividualReferalReq;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.QuoteThreadReq;
 import com.maan.eway.common.req.VehicleIdsReq;
@@ -384,7 +385,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		List<Error> errors = new ArrayList<Error>();
 		try {
 			List<MasterReferralDetails> findMasterRefrals = masReferralRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
-				
+			List<IndividualReferalReq>  induRefs = new ArrayList<IndividualReferalReq>(); 
+			
 			boolean referral = false ;
 			String referralRemarks = "" ;
 			
@@ -415,17 +417,19 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				// Covers Referrral Checking
 				List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo()); 
 				for (VehicleIdsReq veh : req.getVehicleIdsList()) {
-					
+					String referrals = "" ;
 					// Cover Referal Checking
 					List<CoverIdsReq> coverList = veh.getCoverIdList();
 					for (CoverIdsReq cov : coverList) {
+						
 						if(StringUtils.isBlank(cov.getSubCoverYn()) || cov.getSubCoverYn().equalsIgnoreCase("N") ) {
 							List<FactorRateRequestDetails> filterCovers = covers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) &&  o.getCoverId().equals(cov.getCoverId()) ).collect(Collectors.toList());	
 							userOptCovers.addAll(filterCovers);
 							
 							List<FactorRateRequestDetails> filterReferalCovers = filterCovers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&  cov.getIsReferal()!=null && cov.getIsReferal().equalsIgnoreCase("Y") ).collect(Collectors.toList());
 							if(filterReferalCovers.size()>0 ) { 
-								referralRemarks = StringUtils.isBlank(referralRemarks)? filterReferalCovers.get(0).getCoverName() : referralRemarks +"~" +filterReferalCovers.get(0).getCoverName() ;
+							
+								referrals = StringUtils.isBlank(referrals)? filterReferalCovers.get(0).getCoverName() : referrals +"~" +filterReferalCovers.get(0).getCoverName() ;
 								referral = true ;
 							}
 						
@@ -434,7 +438,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							userOptCovers.addAll(filterSubCovers);
 							List<FactorRateRequestDetails> filterReferalSubCovers = filterSubCovers.stream().filter( o -> o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&  cov.getIsReferal()!=null && cov.getIsReferal().equalsIgnoreCase("Y")  ).collect(Collectors.toList());
 							if(filterReferalSubCovers.size()>0  ) { 
-								referralRemarks = StringUtils.isBlank(referralRemarks)? filterReferalSubCovers.get(0).getCoverName() : referralRemarks +"~" +filterReferalSubCovers.get(0).getCoverName() ;
+								referrals = StringUtils.isBlank(referrals)? filterReferalSubCovers.get(0).getCoverName() : referrals +"~" +filterReferalSubCovers.get(0).getCoverName() ;
 								referral = true ;
 							}
 						}
@@ -447,10 +451,16 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							
 					if (  filterMasterReferals!=null && filterMasterReferals.size()>0 ) {
 						for ( MasterReferralDetails masRef : filterMasterReferals) {
-							referralRemarks = StringUtils.isBlank(referralRemarks)? masRef.getReferralDesc() : referralRemarks +"~" +masRef.getReferralDesc() ;
+							referrals = StringUtils.isBlank(referrals)? masRef.getReferralDesc() : referrals +"~" +masRef.getReferralDesc() ;
 							referral = true ;
 						}
 					}
+					IndividualReferalReq indu = new IndividualReferalReq();
+					indu.setProductId(req.getProductId());
+					indu.setRiskId(veh.getVehicleId());
+					indu.setSectionId(req.getSectionId());	
+					indu.setReferals(referrals);
+					induRefs.add(indu);
 				}
 			
 				// Update User Opted Covers 
@@ -479,7 +489,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						List<EserviceMotorDetails> motorDatas = eserMotRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
 						for (EserviceMotorDetails mot : motorDatas ) {
 							mot.setStatus("RP");
-							mot.setReferalRemarks(referralRemarks);
+							List<IndividualReferalReq> filterInduRef = induRefs.stream().filter( o -> o.getRiskId().equals(mot.getRiskId()) ).collect(Collectors.toList()) ;
+							String induRefDesc  = filterInduRef.size()> 0 ?  filterInduRef.get(0).getReferals() : "" ;
+							mot.setReferalRemarks(StringUtils.isBlank(referralRemarks) ? induRefDesc : referralRemarks + ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"") ) ;
 							mot.setUpdatedDate(new Date());
 							mot.setQuoteNo("");
 							mot.setCustomerId("");
