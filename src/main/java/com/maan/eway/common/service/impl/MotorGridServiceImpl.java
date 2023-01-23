@@ -336,7 +336,11 @@ public class MotorGridServiceImpl implements MotorGridService {
 					cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId"))
 							.otherwise(m.get("customerId")).alias("customerId"),
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
-					m.get("rejectReason").alias("rejectReason"));
+					m.get("rejectReason").alias("rejectReason"),
+					m.get("adminRemarks").alias("adminRemarks"),
+					m.get("referalRemarks").alias("referalRemarks")
+			
+					);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
