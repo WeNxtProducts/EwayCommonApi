@@ -1128,7 +1128,6 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentDetail.setInstallmentMonth(paymentInfo.getInstallmentMonth());
 			paymentDetail.setInstallmentPeriod(paymentInfo.getInstallmentPeriod());
 			paymentDetail.setPaymentType(req.getPaymentType());
-			paymentDetail.setPremium(data.getPremiumLc());
 			paymentDetail.setReqBillToAddressCity(personaldata.getCityName());
 			paymentDetail.setReqBillToAddressLine1(personaldata.getAddress1());
 			paymentDetail.setReqBillToAddressLine2(personaldata.getAddress2());
