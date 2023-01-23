@@ -125,4 +125,6 @@ public interface DropDownService {
 
 	List<DropDownRes> datatype(LovDropDownReq req);
 
+	List<DropDownRes> termsandcondition(LovDropDownReq req);
+
 }
