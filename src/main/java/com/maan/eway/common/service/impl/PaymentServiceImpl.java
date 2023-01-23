@@ -195,7 +195,7 @@ public class PaymentServiceImpl implements PaymentService {
 			 	DecimalFormat decimalFormat = new DecimalFormat(pattern);
 			 	Double premium =  Double.valueOf (decimalFormat.format(Double.valueOf (req.getPremium())));
 			 	Double overall =  Double.valueOf (decimalFormat.format(emiDetails.getDueAmount()));
-				if(premium < overall ) {
+				if(! premium.equals(overall) ) {
 					error.add(new Error("01","Premium","Premium Mismatched. Given Premium : " + req.getPremium() + " Policy Premium :" + overall));
 				}
 			} else  {
@@ -204,7 +204,7 @@ public class PaymentServiceImpl implements PaymentService {
 			 	DecimalFormat decimalFormat = new DecimalFormat(pattern);
 			 	Double premium =  Double.valueOf (decimalFormat.format( Double.valueOf (req.getPremium())));
 			 	Double overall =  Double.valueOf (decimalFormat.format(findQuote.getOverallPremiumFc()));
-			 	if(premium <overall ) {
+			 	if(! premium.equals(overall)  ) {
 					error.add(new Error("01","Premium","Premium Mismatched. Given Premium : " + premium + " Policy Premium :" +  overall));
 				}
 				
@@ -283,7 +283,8 @@ public class PaymentServiceImpl implements PaymentService {
 				
 				// Madatory Doc
 				List<CoverDocumentMaster> mandatoryDocs = getCoverDocumentMasterMandatoryDocs( companyId, productId , sectionIds);
-				
+				mandatoryDocs =  mandatoryDocs.stream().filter( o ->    !( o.getDocumentId().equals(16) || o.getDocumentId().equals(17)  || o.getDocumentId().equals(18) || o.getDocumentId().equals(19) )
+						).collect(Collectors.toList());
 				//Uploaded Docs
 				List<CoverDocumentUploadDetails> uploadedDocs = docUploadRepo.findByQuoteNo(req.getQuoteNo());
 				
@@ -292,14 +293,16 @@ public class PaymentServiceImpl implements PaymentService {
 					if ( mdoc.getSectionId().equals(99999) ) {
 						
 						// Filter Common Docs 
-						List<CoverDocumentUploadDetails> filterDocs = uploadedDocs.stream().filter( o ->  o.getId().equals(0) && o.getSectionId().equals(99999) ).collect(Collectors.toList());
+						List<CoverDocumentUploadDetails> filterDocs = uploadedDocs.stream().filter( o ->  o.getId().equals(0) && o.getSectionId().equals(99999) 
+								).collect(Collectors.toList());
 						if(filterDocs.size()<=0 ) {
 							error.add(new Error("01","Common Doc", mdoc.getDocumentName() + " is Mandatory In Common Document"));
 						}
 					} else {
 						// Filter Other Docs 
 						for (DocValidationReq doc :  docValidateReqs) {
-							List<CoverDocumentUploadDetails> filterDocs = uploadedDocs.stream().filter( o ->  o.getId().equals(Integer.valueOf(doc.getRiskId())) && o.getSectionId().equals(Integer.valueOf(doc.getSectionId())) ).collect(Collectors.toList());
+							List<CoverDocumentUploadDetails> filterDocs = uploadedDocs.stream().filter( o ->  o.getId().equals(Integer.valueOf(doc.getRiskId())) && o.getSectionId().equals(Integer.valueOf(doc.getSectionId()))
+									).collect(Collectors.toList());
 							if(filterDocs.size()<=0 && doc.getSectionId().equals(mdoc.getSectionId().toString() ) ) {
 								error.add(new Error("01","Iniduvidual Doc", mdoc.getDocumentName() + " Document Mandatory In " + doc.getProductDesc() + " : " + doc.getRiskId() ));
 							}
@@ -458,6 +461,9 @@ public class PaymentServiceImpl implements PaymentService {
 				paymentinfo.setUpdatedBy(req.getCreatedBy());
 				paymentinfo.setUpdatedDate(new Date());
 				paymentinfo.setUserType(req.getUserType());
+				paymentinfo.setInstallmentMonth(req.getInstallmentMonth());
+				paymentinfo.setInstallmentPeriod(req.getInstallmentPeriod());
+				
 	//			Integer validateHour = Integer.valueOf(getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_VALIDATE_HOUR"));
 	//			Integer validateMinutes = Integer.valueOf(getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_VALIDATE_MINUTES"));
 	//			Date today  = new Date();

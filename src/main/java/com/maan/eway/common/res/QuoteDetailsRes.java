@@ -93,6 +93,12 @@ public class QuoteDetailsRes {
 	@JsonProperty("Remarks")
 	private String   remarks;
 	
+	@JsonProperty("AdminRemarks")
+	private String   adminRemarks;
+	
+	@JsonProperty("ReferalRemarks")
+	private String   referalRemarks;
+	
 	@JsonProperty("VehicleNo")
     private String   vehicleNo;
 	

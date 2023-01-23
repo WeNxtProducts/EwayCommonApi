@@ -113,7 +113,9 @@ public class EservieMotorDetailsViewRes {
 	
 	@JsonProperty("DueAmount")
     private String     dueAmount;
-	
+
+	@JsonProperty("ReferalRemarks")
+    private String     referalRemarks;
 	
 	
 }

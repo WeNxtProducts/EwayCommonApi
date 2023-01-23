@@ -187,6 +187,9 @@ public class QuoteServiceImpl implements QuoteService {
 			quoteRes = dozerMappper.map(homeData, QuoteDetailsRes.class);
 			quoteRes.setOverAllPremiumFc(homeData.getOverallPremiumFc()==null?"":homeData.getOverallPremiumFc().toString() );
 			quoteRes.setOverAllPremiumLc(homeData.getOverallPremiumLc()==null?"":homeData.getOverallPremiumLc().toString());
+			quoteRes.setAdminRemarks(homeData.getAdminRemarks());
+			quoteRes.setReferalRemarks(homeData.getReferralDescription());
+			
 			quoteRes.setEmiYn("N");
 			
 			// Emi Details 
@@ -209,6 +212,7 @@ public class QuoteServiceImpl implements QuoteService {
 			// Motor Product Details
 			if( homeData.getProductId().equals(Integer.valueOf(motorProductId))) {
 				viewRes =  getMotorProductDetails( req);
+				
 				viewRes.setCustomerDetails(custRes);
 				viewRes.setQuoteDetails(quoteRes);
 			} else if( homeData.getProductId().equals(Integer.valueOf(travelProductId))) {
