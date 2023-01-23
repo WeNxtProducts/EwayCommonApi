@@ -98,11 +98,13 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			clausesList = clausesList.stream().filter(distinctByKey(o -> Arrays.asList(o.getClausesId()))).collect(Collectors.toList());
 
 			
+			
+			if(warrantyList.size()>0 && !warrantyList.isEmpty()) {
 			res.setProductId(warrantyList.get(0).getProductId());
 			res.setSectionId(warrantyList.get(0).getSectionId());
 			res.setCompanyId(warrantyList.get(0).getCompanyId());
 			res.setBranchCode(warrantyList.get(0).getBranchCode());
-			
+
 			for(WarrantyMaster warranties : warrantyList) {
 				WarrantyRes warrantyres = new WarrantyRes();
 				
@@ -113,7 +115,8 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				warrantyresList.add(warrantyres);
 				res.setWarrantyRes(warrantyresList);
 			}
-			
+			}
+			if(warrateresList.size()>0&&!warrateresList.isEmpty()) {
 			for(WarRateMaster warrates : warrateList) {
 				WarrateRes warrateres =	new WarrateRes();
 
@@ -125,7 +128,9 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				res.setWarrateRes(warrateresList);;
 
 			}
-			
+			}
+			if(clausesList.size()>0&&!clausesList.isEmpty()) {
+
 			for(ClausesMaster clauses : clausesList) {
 				ClausesRes clausesres = new ClausesRes();			
 
@@ -137,7 +142,8 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				res.setClausesRes(clausesresList);
 
 			}
-			
+			}
+			if(exclusionList.size()>0&&!exclusionList.isEmpty()) {
 			for(ExclusionMaster exclusions : exclusionList) {
 				ExclusionRes exclusionres = new ExclusionRes();
 
@@ -149,7 +155,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				res.setExclusionRes(exclusionresList);
 
 			}
-			
+			}
 			
 		}
 		
