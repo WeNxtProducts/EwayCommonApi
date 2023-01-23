@@ -2,6 +2,8 @@ package com.maan.eway.admin.res;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -32,4 +34,7 @@ public class ReferalGridCriteriaRes {
 	private Date policyStartDate;
 	private Date policyEndDate;
 	private String rejectReason;
+	private String adminRemarks;
+	private String referalRemarks;
+
 }

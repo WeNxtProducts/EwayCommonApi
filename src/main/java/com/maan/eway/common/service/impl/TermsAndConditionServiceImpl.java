@@ -1,11 +1,18 @@
 package com.maan.eway.common.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +67,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			List<ClausesMaster> clausesList = new ArrayList<ClausesMaster>();
 			
 			
-			if(!req.getBranchCode().isBlank()) {
+			if(StringUtils.isNotBlank(req.getBranchCode())) {
 			 warrantyList = warrantyRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByAmendIdDesc(req.getCompanyId(),req.getBranchCode(),req.getProductId(),req.getSectionId());
 			 warrateList = warRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByAmendIdDesc(req.getCompanyId(),req.getBranchCode(),req.getProductId(),req.getSectionId());
 			 exclusionList = exclusionRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByAmendIdDesc(req.getCompanyId(),req.getBranchCode(),req.getProductId(),req.getSectionId());
@@ -74,6 +81,8 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				
 			}
 			
+		
+			
 			List<WarrantyRes> warrantyresList = new ArrayList<WarrantyRes>();
 			List<WarrateRes> warrateresList =	new ArrayList<WarrateRes>();
 			List<ExclusionRes> exclusionresList = new ArrayList<ExclusionRes>();
@@ -81,11 +90,20 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			
 			
 			TermsAndConditionRes res = new TermsAndConditionRes();
+			warrantyList = warrantyList.stream().filter(distinctByKey(o -> Arrays.asList(o.getWarrantyId()))).collect(Collectors.toList());
+			warrateList = warrateList.stream().filter(distinctByKey(o -> Arrays.asList(o.getWarRateId()))).collect(Collectors.toList());
+			exclusionList = exclusionList.stream().filter(distinctByKey(o -> Arrays.asList(o.getExclusionId()))).collect(Collectors.toList());
+			clausesList = clausesList.stream().filter(distinctByKey(o -> Arrays.asList(o.getClausesId()))).collect(Collectors.toList());
+
+			
+			res.setProductId(warrantyList.get(0).getProductId());
+			res.setSectionId(warrantyList.get(0).getSectionId());
+			res.setCompanyId(warrantyList.get(0).getCompanyId());
+			res.setBranchCode(warrantyList.get(0).getBranchCode());
+			
 			for(WarrantyMaster warranties : warrantyList) {
 				WarrantyRes warrantyres = new WarrantyRes();
 				
-				warrantyres.setProductId(warranties.getProductId());
-				warrantyres.setSectionId(warranties.getSectionId());
 				warrantyres.setWarrantyId(warranties.getWarrantyId().toString());
 				warrantyres.setWarrantyDesc(warranties.getWarrantyDescription());
 				warrantyres.setDocRefNo(warranties.getDocRefNo());
@@ -97,8 +115,6 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			for(WarRateMaster warrates : warrateList) {
 				WarrateRes warrateres =	new WarrateRes();
 
-				warrateres.setProductId(warrates.getProductId());
-				warrateres.setSectionId(warrates.getSectionId());
 				warrateres.setWarrateId(warrates.getWarRateId().toString());
 				warrateres.setWarrateDesc(warrates.getWarRateDesc());
 				warrateres.setDocRefNo(warrates.getDocRefNo());
@@ -111,8 +127,6 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			for(ClausesMaster clauses : clausesList) {
 				ClausesRes clausesres = new ClausesRes();			
 
-				clausesres.setProductId(clauses.getProductId());
-				clausesres.setSectionId(clauses.getSectionId());
 				clausesres.setClausesId(clauses.getClausesId().toString());
 				clausesres.setClausesDesc(clauses.getClausesDescription());
 				clausesres.setDocRefNo(clauses.getDocRefNo());
@@ -125,8 +139,6 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			for(ExclusionMaster exclusions : exclusionList) {
 				ExclusionRes exclusionres = new ExclusionRes();
 
-				exclusionres.setProductId(exclusions.getProductId());
-				exclusionres.setSectionId(exclusions.getSectionId());
 				exclusionres.setExclusionId(exclusions.getExclusionId().toString());
 				exclusionres.setExclusionDesc(exclusions.getExclusionDescription());
 				exclusionres.setDocRefNo(exclusions.getDocRefNo());
@@ -148,5 +160,9 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 		return resList;
 		}
 
-
+	//Fiter Details By Key
+		private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+		    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+		    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+		}
 }
