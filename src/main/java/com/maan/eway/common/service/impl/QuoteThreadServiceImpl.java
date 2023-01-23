@@ -413,10 +413,11 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				update.where(n3,n4);
 				// perform update
 				em.createQuery(update).executeUpdate();
-				List<FactorRateRequestDetails> userOptCovers = new ArrayList<FactorRateRequestDetails>();
 				// Covers Referrral Checking
 				List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo()); 
 				for (VehicleIdsReq veh : req.getVehicleIdsList()) {
+					List<FactorRateRequestDetails> userOptCovers = new ArrayList<FactorRateRequestDetails>();
+					
 					String referrals = "" ;
 					// Cover Referal Checking
 					List<CoverIdsReq> coverList = veh.getCoverIdList();
@@ -461,14 +462,16 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					indu.setSectionId(req.getSectionId());	
 					indu.setReferals(referrals);
 					induRefs.add(indu);
+					
+					// Update User Opted Covers 
+					for (FactorRateRequestDetails uptCover : userOptCovers ) {
+						
+						uptCover.setUserOpt("Y");
+						facRateRepo.save(uptCover);
+					}
 				}
 			
-				// Update User Opted Covers 
-				for (FactorRateRequestDetails uptCover : userOptCovers ) {
-					
-					uptCover.setUserOpt("Y");
-					facRateRepo.save(uptCover);
-				}
+				
 				
 				// Under Writter Refral Checking
 				List<UwQuestionsDetails>  uwQuestions = uwRepo.findByRequestReferenceNo( req.getRequestReferenceNo());
