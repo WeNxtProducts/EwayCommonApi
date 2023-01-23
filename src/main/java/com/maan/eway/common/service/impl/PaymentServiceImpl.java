@@ -1109,6 +1109,7 @@ public class PaymentServiceImpl implements PaymentService {
 			PaymentDetail paymentDetail = new PaymentDetail();
 			dozermapper.map(data,PaymentDetail.class);
 			paymentDetail.setBranchCode(data.getBranchCode());
+			paymentDetail.setPremium(Double.valueOf(paymentInfo.getPremium().toString()));
 			paymentDetail.setBranchName(branchName);
 			paymentDetail.setCreatedBy(req.getCreatedBy());
 			paymentDetail.setPaymentType(req.getPaymentType());
