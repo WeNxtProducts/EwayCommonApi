@@ -23,6 +23,7 @@ import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.ExclusionMaster;
 import com.maan.eway.bean.WarRateMaster;
 import com.maan.eway.bean.WarrantyMaster;
+import com.maan.eway.common.req.TermsAndConditionInsertReq;
 import com.maan.eway.common.req.TermsAndConditionReq;
 import com.maan.eway.common.res.ClausesRes;
 import com.maan.eway.common.res.ExclusionRes;
@@ -30,10 +31,12 @@ import com.maan.eway.common.res.TermsAndConditionRes;
 import com.maan.eway.common.res.WarrantyRes;
 import com.maan.eway.common.res.WarrateRes;
 import com.maan.eway.common.service.TermsAndConditionService;
+import com.maan.eway.error.Error;
 import com.maan.eway.repository.ClausesMasterRepository;
 import com.maan.eway.repository.ExclusionMasterRepository;
 import com.maan.eway.repository.WarRateMasterRepository;
 import com.maan.eway.repository.WarrantyMasterRepository;
+import com.maan.eway.res.SuccessRes;
 
 @Service
 @Transactional
@@ -57,9 +60,9 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 	private ClausesMasterRepository clausesRepo;
 	
 	@Override
-	public List<TermsAndConditionRes> viewTermsAndCondition(TermsAndConditionReq req) {
+	public TermsAndConditionRes viewTermsAndCondition(TermsAndConditionReq req) {
+		TermsAndConditionRes res = new TermsAndConditionRes();
 
-		List<TermsAndConditionRes> resList = new ArrayList<TermsAndConditionRes>();
 		try {
 			List<WarrantyMaster> warrantyList =  new ArrayList<WarrantyMaster>();
 			List<WarRateMaster> warrateList = new ArrayList<WarRateMaster>();
@@ -89,7 +92,6 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			List<ClausesRes> clausesresList = new ArrayList<ClausesRes>();			
 			
 			
-			TermsAndConditionRes res = new TermsAndConditionRes();
 			warrantyList = warrantyList.stream().filter(distinctByKey(o -> Arrays.asList(o.getWarrantyId()))).collect(Collectors.toList());
 			warrateList = warrateList.stream().filter(distinctByKey(o -> Arrays.asList(o.getWarRateId()))).collect(Collectors.toList());
 			exclusionList = exclusionList.stream().filter(distinctByKey(o -> Arrays.asList(o.getExclusionId()))).collect(Collectors.toList());
@@ -149,7 +151,6 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			}
 			
 			
-			resList.add(res);
 		}
 		
 		catch(Exception e) {
@@ -157,12 +158,24 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			log.info("Exception is --> " + e.getMessage());
 			return null;
 		}
-		return resList;
+		return res;
 		}
 
 	//Fiter Details By Key
 		private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
 		    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
 		    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+		}
+
+		@Override
+		public List<Error> validateTermsAndCondition(TermsAndConditionInsertReq req) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public List<SuccessRes> insertTermsAndCondition(TermsAndConditionInsertReq req) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 }

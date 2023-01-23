@@ -11,10 +11,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.req.TermsAndConditionInsertReq;
 import com.maan.eway.common.req.TermsAndConditionReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.TermsAndConditionRes;
 import com.maan.eway.common.service.TermsAndConditionService;
+import com.maan.eway.error.Error;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
@@ -40,7 +43,7 @@ private PrintReqService reqPrinter;
 		CommonRes data = new CommonRes();
 		reqPrinter.reqPrint(req);
 		
-		List<TermsAndConditionRes> res = service.viewTermsAndCondition(req);
+		TermsAndConditionRes res = service.viewTermsAndCondition(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);
@@ -54,4 +57,44 @@ private PrintReqService reqPrinter;
 		}
 	}
 
+	
+	// Insert Terms And Condition
+	
+
+	@PostMapping("/inserttermsandcondition")
+	@ApiOperation("This method is Insert Terms And Condition")
+	public ResponseEntity<CommonRes> insertTermsAndCondition(@RequestBody TermsAndConditionInsertReq req)
+	{
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		
+
+		List<Error> validation = service.validateTermsAndCondition(req);
+		// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else {
+		List<SuccessRes> res = service.insertTermsAndCondition(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		
+		if(res!= null) {
+			return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	}
+	
+	
+	
 }
