@@ -49,5 +49,16 @@ public class EserviceCustomerDetailsRes {
 	@JsonProperty("Count")
 	private String   count ;
 	
+	@JsonProperty("AdminRemarks")
+	private String adminRemarks;
+	
+	@JsonProperty("ReferalRemarks")
+	private String referalRemarks;
+	
+	
+
+	
+
+	
 	
 }
