@@ -103,4 +103,44 @@ public class OneTimeTableDetailsController {
 		}
 
 	}
+	
+	
+	@GetMapping("//integratointable")
+	@ApiOperation(value = "This method is to Integration Table Name Drop Down")
+	public ResponseEntity<CommonRes> integrationtable() {
+		CommonRes data = new CommonRes();
+
+		List<DropDownRes> res = service.integrationtable();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	
+	
+	@GetMapping("/sourcetable")
+	@ApiOperation(value = "This method is to Source Table Name Drop Down")
+	public ResponseEntity<CommonRes> sourcetable() {
+		CommonRes data = new CommonRes();
+
+		List<DropDownRes> res = service.sourcetable();
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
 }

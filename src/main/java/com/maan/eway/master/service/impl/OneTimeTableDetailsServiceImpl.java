@@ -122,5 +122,46 @@ public List<DropDownRes> columnName(ColumnNameDropDownlReq req) {
 	}
 	return resList;
 }
+@Override
+public List<DropDownRes> sourcetable() {
+	List<DropDownRes> resList = new ArrayList<DropDownRes>();
+	try {
+		List<OneTimeTableDetails> getList = repo.findByItemTypeAndStatusOrderByItemCodeAsc("SOURCE_TABLE", "Y");
+
+		for (OneTimeTableDetails data : getList) {
+			DropDownRes res = new DropDownRes();
+			res.setCode(data.getItemCode());
+			res.setCodeDesc(data.getItemValue());
+			res.setStatus(data.getStatus());
+			resList.add(res);
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return resList;
+}
+@Override
+public List<DropDownRes> integrationtable() {
+	// TODO Auto-generated method stub
+	List<DropDownRes> resList = new ArrayList<DropDownRes>();
+	try {
+		List<OneTimeTableDetails> getList = repo.findByItemTypeAndStatusOrderByItemCodeAsc("INTEGRATION_TABLE", "Y");
+
+		for (OneTimeTableDetails data : getList) {
+			DropDownRes res = new DropDownRes();
+			res.setCode(data.getItemCode());
+			res.setCodeDesc(data.getItemValue());
+			res.setStatus(data.getStatus());
+			resList.add(res);
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return resList;
+}
 
 }

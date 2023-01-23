@@ -20,4 +20,8 @@ public interface OneTimeTableDetailsService  {
 
 	List<DropDownRes> eserviceTable();
 
+	List<DropDownRes> sourcetable();
+
+	List<DropDownRes> integrationtable();
+
 }

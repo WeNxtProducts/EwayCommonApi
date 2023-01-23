@@ -123,4 +123,6 @@ public interface DropDownService {
 
 	List<DropDownRes> getallrisk(LovDropDownReq req);
 
+	List<DropDownRes> datatype(LovDropDownReq req);
+
 }
