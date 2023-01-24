@@ -112,14 +112,18 @@ public class MotorGridServiceImpl implements MotorGridService {
 							.alias("quoteNo"),
 					cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId"))
 							.otherwise(m.get("customerId")).alias("customerId"),
-					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"));
+					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
+					m.get("entryDate").alias("entryDate")
+					
+					);
+			
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.desc(m.get("updatedDate")));
 
 			// Where
-			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
+			Predicate n1 = cb.equal(c.get("9+"), m.get("customerReferenceNo"));
 			Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
 			Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
 			Predicate n4 = cb.equal(m.get("status"), "Y");
@@ -145,7 +149,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			query.where(n1, n2, n3, n4, n5, n6, n7, n8)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
-							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"))
+							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),m.get("entryDate"))
 					.orderBy(orderList);
 
 			// Get Result
@@ -155,7 +159,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			existingQuotes = result.getResultList();
 			existingQuotes = existingQuotes.stream().filter(o -> !o.getIdsCount().equals(0L))
 					.collect(Collectors.toList());
-
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -338,7 +342,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
 					m.get("rejectReason").alias("rejectReason"),
 					m.get("adminRemarks").alias("adminRemarks"),
-					m.get("referalRemarks").alias("referalRemarks")
+					m.get("entryDate").alias("entryDate")
 			
 					);
 
@@ -371,7 +375,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
-							m.get("rejectReason"))
+							m.get("rejectReason"),m.get("adminRemarks"),m.get("entryDate"))
 					.orderBy(orderList);
 
 			// Get Result
@@ -415,8 +419,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 							.otherwise(m.get("customerId")).alias("customerId"),
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
 					m.get("rejectReason").alias("rejectReason"),
-					m.get("adminRemarks").alias("adminRemarks"),
-					m.get("referalRemarks").alias("referalRemarks"));
+					m.get("adminRemarks").alias("adminRemarks")
+					);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -1102,12 +1106,10 @@ public class MotorGridServiceImpl implements MotorGridService {
 						m.get("creditNo").alias("creditNo"),
 						m.get("creditDate").alias("creditDate"),
 						m.get("emiYn").alias("emiYn"),
-						m.get("installmentPeriod").alias("installmentPeriod")
-//						m.get("creditDate").alias("creditDate"),
-//						m.get("creditDate").alias("creditDate"),
-//						m.get("creditDate").alias("creditDate"),
-//						m.get("creditDate").alias("creditDate"),
-						
+						m.get("installmentPeriod").alias("installmentPeriod"),
+						m.get("effectiveDate").alias("effectiveDate"),
+						m.get("currency").alias("currency")
+
 						);
 
 				// Order By
@@ -1140,13 +1142,13 @@ public class MotorGridServiceImpl implements MotorGridService {
 				}
 
 				query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9)
-						.groupBy(
-//								c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"),
-								m.get("companyId"),
-								m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
-								m.get("customerId")
-								, m.get("entryDate"), m.get("expiryDate")
-								)
+				.groupBy(
+						c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"),c.get("mobileNo1"), c.get("isTaxExempted"), c.get("taxExemptedId"),
+						m.get("companyId"),m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
+						m.get("customerId"), m.get("entryDate"), m.get("expiryDate"),m.get("inceptionDate"), m.get("overallPremiumLc"), m.get("overallPremiumFc"),
+						m.get("policyNo"), m.get("debitAcNo"), m.get("debitTo"),m.get("debitToId"), m.get("debitNoteNo"), m.get("debitNoteDate"),
+						m.get("creditTo"), m.get("creditToId"), m.get("creditNo"),m.get("creditDate"), m.get("emiYn"), m.get("installmentPeriod"),m.get("effectiveDate")
+						)
 						.orderBy(orderList);
 
 				// Get Result
@@ -1175,6 +1177,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				// Find All
 				Root<HomePositionMaster> m = query.from(HomePositionMaster.class);
 				Root<PersonalInfo> c = query.from(PersonalInfo.class);
+				
 
 				// Select
 				query.multiselect(
@@ -1210,7 +1213,9 @@ public class MotorGridServiceImpl implements MotorGridService {
 						m.get("creditNo").alias("creditNo"),
 						m.get("creditDate").alias("creditDate"),
 						m.get("emiYn").alias("emiYn"),
-						m.get("installmentPeriod").alias("installmentPeriod")
+						m.get("installmentPeriod").alias("installmentPeriod"),
+						m.get("effectiveDate").alias("effectiveDate"),
+						m.get("currency").alias("currency")
 						);
 
 				// Order By
@@ -1243,14 +1248,13 @@ public class MotorGridServiceImpl implements MotorGridService {
 				}
 
 				query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9)
-						.groupBy(
-//								c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"),
-								m.get("companyId"),
-								m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
-								m.get("customerId")
-							, m.get("entryDate"), m.get("expiryDate")
-//								m.get("rejectReason")
-								)
+				.groupBy(
+						c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"),c.get("mobileNo1"), c.get("isTaxExempted"), c.get("taxExemptedId"),
+						m.get("companyId"),m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
+						m.get("customerId"), m.get("entryDate"), m.get("expiryDate"),m.get("inceptionDate"), m.get("overallPremiumLc"), m.get("overallPremiumFc"),
+						m.get("policyNo"), m.get("debitAcNo"), m.get("debitTo"),m.get("debitToId"), m.get("debitNoteNo"), m.get("debitNoteDate"),
+						m.get("creditTo"), m.get("creditToId"), m.get("creditNo"),m.get("creditDate"), m.get("emiYn"), m.get("installmentPeriod"),m.get("effectiveDate")
+						)
 						.orderBy(orderList);
 
 				// Get Result
@@ -1279,6 +1283,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				// Find All
 				Root<HomePositionMaster> m = query.from(HomePositionMaster.class);
 				Root<PersonalInfo> c = query.from(PersonalInfo.class);
+				
 
 				// Select
 				query.multiselect(
@@ -1314,7 +1319,9 @@ public class MotorGridServiceImpl implements MotorGridService {
 						m.get("creditNo").alias("creditNo"),
 						m.get("creditDate").alias("creditDate"),
 						m.get("emiYn").alias("emiYn"),
-						m.get("installmentPeriod").alias("installmentPeriod")
+						m.get("installmentPeriod").alias("installmentPeriod"),
+						m.get("effectiveDate").alias("effectiveDate"),
+						m.get("currency").alias("currency")
 						);
 
 				// Order By
@@ -1347,11 +1354,11 @@ public class MotorGridServiceImpl implements MotorGridService {
 
 				query.where(n1,n2, n3, n4, n5, n6,n7,n8)
 						.groupBy(
-//								c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"),
-								m.get("companyId"),
-								m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
-								m.get("customerId")
-								, m.get("entryDate"), m.get("expiryDate")
+								c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"),c.get("mobileNo1"), c.get("isTaxExempted"), c.get("taxExemptedId"),
+								m.get("companyId"),m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
+								m.get("customerId"), m.get("entryDate"), m.get("expiryDate"),m.get("inceptionDate"), m.get("overallPremiumLc"), m.get("overallPremiumFc"),
+								m.get("policyNo"), m.get("debitAcNo"), m.get("debitTo"),m.get("debitToId"), m.get("debitNoteNo"), m.get("debitNoteDate"),
+								m.get("creditTo"), m.get("creditToId"), m.get("creditNo"),m.get("creditDate"), m.get("emiYn"), m.get("installmentPeriod"),m.get("effectiveDate")
 								)
 						.orderBy(orderList);
 

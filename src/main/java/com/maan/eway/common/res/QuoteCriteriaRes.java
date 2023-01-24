@@ -29,5 +29,6 @@ public class QuoteCriteriaRes {
 	private String customerId;
 	private Date policyStartDate;
 	private Date policyEndDate;
+	private Date entryDate;
 	
 }

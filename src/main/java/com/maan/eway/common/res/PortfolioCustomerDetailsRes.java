@@ -93,6 +93,13 @@ public class PortfolioCustomerDetailsRes {
 	@JsonProperty("InstallmentPeriod")
 	private String installmentPeriod;
 	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDate")
+	private Date effectiveDate;
+	
+	@JsonProperty("Currency")
+	private String currency;
+	
 	@JsonProperty("Count")
 	private String   count ;
 	

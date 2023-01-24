@@ -96,8 +96,12 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					cb.selectCase().when(m.get("quoteNo").isNotNull(), m.get("quoteNo")).otherwise( m.get("quoteNo")).alias("quoteNo") ,
 					cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId")).otherwise( m.get("customerId")).alias("customerId") ,
 					m.get("travelStartDate").alias("policyStartDate"),
-					m.get("travelEndDate").alias("policyEndDate")
-					);
+					m.get("travelEndDate").alias("policyEndDate"),
+					m.get("registrationNumber").alias("registrationNumber"),
+					m.get("chassisNumber").alias("chassisNumber"),
+					m.get("vehicleType").alias("vehicleType"),
+					m.get("insuranceType").alias("insuranceType"),
+					m.get("motorUsage").alias("motorUsage"));
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();

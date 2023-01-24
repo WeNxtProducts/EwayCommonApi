@@ -49,16 +49,8 @@ public class EserviceCustomerDetailsRes {
 	@JsonProperty("Count")
 	private String   count ;
 	
-	@JsonProperty("AdminRemarks")
-	private String adminRemarks;
-	
-	@JsonProperty("ReferalRemarks")
-	private String referalRemarks;
-	
-	
-
-	
-
-	
-	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EntryDate")
+	private Date entryDate;
+		
 }
