@@ -19,6 +19,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -117,13 +118,13 @@ private static final long serialVersionUID = 1L;
     private String     periodOfInsurance ;
 
     @Column(name="Wind_screen_sum_insured")
-    private Double     windScreenSumInsured ;
+    private BigDecimal     windScreenSumInsured ;
 
     @Column(name="acccessories_sum_insured")
-    private Double     acccessoriesSumInsured ;
+    private BigDecimal     acccessoriesSumInsured ;
 
     @Column(name="Sum_Insured")
-    private Double     sumInsured ;
+    private BigDecimal     sumInsured ;
 
     @Column(name="ncdyears", nullable=false)
     private Integer    ncdyears ;
@@ -139,13 +140,13 @@ private static final long serialVersionUID = 1L;
     private Date       entryDate ;
 
     @Column(name="Vehicle_Weight", nullable=false)
-    private Double       vehicleWeight ;
+    private BigDecimal       vehicleWeight ;
 
     @Column(name="CURRENCY", nullable=false)
     private String    currency ;
 
     @Column(name="EXCHANGE_RATE", nullable=false)
-    private Double     exchangeRate ;
+    private BigDecimal     exchangeRate ;
 
     @Column(name="FLEET_OWNER_YN", nullable=false, length=1)
     private String     fleetOwnerYn ;
@@ -157,12 +158,12 @@ private static final long serialVersionUID = 1L;
     private Integer    noOfCompehensives ;
 
     @Column(name="CLAIM_RATIO", nullable=false)
-    private Double     claimRatio ;
+    private BigDecimal     claimRatio ;
 
     
 
     @Column(name="TPD_INCREASE_LIMIT" )
-    private Double     tpdIncreaseLimit ;
+    private BigDecimal     tpdIncreaseLimit ;
 
     @Column(name="MOTOR_USAGE")
     private String motorUsage;

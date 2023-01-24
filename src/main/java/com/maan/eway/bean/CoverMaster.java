@@ -20,6 +20,7 @@ import javax.persistence.Table;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -109,7 +110,7 @@ private static final long serialVersionUID = 1L;
     private String     coreAppCode ;
 
     @Column(name="COVERAGE_LIMIT")
-    private Double     coverageLimit ;
+    private BigDecimal     coverageLimit ;
 
     @Column(name="TOOL_TIP", length=100)
     private String     toolTip ;
@@ -125,16 +126,16 @@ private static final long serialVersionUID = 1L;
     private String     remarks ;
 
     @Column(name="BASE_RATE")
-    private Double     baseRate ;
+    private BigDecimal     baseRate ;
 
     @Column(name="EXCESS")
-    private Double     excess ;
+    private BigDecimal     excess ;
 
     @Column(name="MIN_PREMIUM")
-    private Double     minPremium ;
+    private BigDecimal     minPremium ;
 
     @Column(name="MIN_SUMINSURED")
-    private Double     minSuminsured ;
+    private BigDecimal     minSuminsured ;
 
     @Column(name="REGULATORY_CODE", length=20)
     private String     regulatoryCode ;
@@ -146,13 +147,13 @@ private static final long serialVersionUID = 1L;
     private Integer    factorTypeId ;
 
     @Column(name="MAX_SUMINSURED")
-    private Double     maxSuminsured ;
+    private BigDecimal     maxSuminsured ;
 
     @Column(name="IS_TAX_EXCEMPTED", length=1)
     private String     isTaxExcempted ;
 
     @Column(name="TAX_AMOUNT")
-    private Double     taxAmount ;
+    private BigDecimal     taxAmount ;
 
     @Column(name="TAX_CODE", length=100)
     private String     taxCode ;

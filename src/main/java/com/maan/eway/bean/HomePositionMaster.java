@@ -166,46 +166,46 @@ private static final long serialVersionUID = 1L;
     private String     remarks ;
 
     @Column(name="EXCHANGE_RATE")
-    private Double     exchangeRate ;
+    private BigDecimal     exchangeRate ;
 
     @Column(name="EXCESS_SIGN", length=1)
     private String     excessSign ;
 
     @Column(name="PREMIUM_FC")
-    private Double     premiumFc ;
+    private BigDecimal     premiumFc ;
 
     @Column(name="EXCESS_PREMIUM")
     private BigDecimal excessPremium ;
 
     @Column(name="PREMIUM_LC")
-    private Double     premiumLc ;
+    private BigDecimal     premiumLc ;
 
     @Column(name="DISCOUNT_PREMIUM")
-    private Double     discountPremium ;
+    private BigDecimal     discountPremium ;
 
     @Column(name="POLICY_FEE")
     private BigDecimal policyFee ;
 
     @Column(name="OTHER_FEE")
-    private Double     otherFee ;
+    private BigDecimal     otherFee ;
 
     @Column(name="VAT_PERCENT")
-    private Double     vatPercent ;
+    private BigDecimal     vatPercent ;
 
     @Column(name="TAX1")
-    private Double     tax1 ;
+    private BigDecimal     tax1 ;
 
     @Column(name="TAX2")
-    private Double     tax2 ;
+    private BigDecimal     tax2 ;
 
     @Column(name="COMMISSION_PERCENTAGE")
     private BigDecimal commissionPercentage ;
 
     @Column(name="TAX3")
-    private Double     tax3 ;
+    private BigDecimal     tax3 ;
 
     @Column(name="VAT_PREMIUM_LC")
-    private Double     vatPremiumLc ;
+    private BigDecimal     vatPremiumLc ;
 
     @Column(name="VAT_COMMISSION")
     private BigDecimal vatCommission ;
@@ -214,19 +214,19 @@ private static final long serialVersionUID = 1L;
     private BigDecimal commission ;
 
     @Column(name="VAT_PREMIUM_FC")
-    private Double     vatPremiumFc ;
+    private BigDecimal     vatPremiumFc ;
 
     @Column(name="OVERALL_PREMIUM_LC")
-    private Double     overallPremiumLc ;
+    private BigDecimal     overallPremiumLc ;
 
     @Column(name="CALC_PREMIUM")
-    private Double     calcPremium ;
+    private BigDecimal     calcPremium ;
 
     @Column(name="ADMIN_REMARKS", length=470)
     private String     adminRemarks ;
 
     @Column(name="OVERALL_PREMIUM_FC")
-    private Double     overallPremiumFc ;
+    private BigDecimal     overallPremiumFc ;
 
     @Column(name="ADMIN_REFERRAL_STATUS", length=1)
     private String     adminReferralStatus ;
@@ -401,7 +401,7 @@ private static final long serialVersionUID = 1L;
     private String     empcode ;
 
     @Column(name="NO_OF_INSTALLMENT")
-    private Double     noOfInstallment ;
+    private BigDecimal     noOfInstallment ;
 
     @Column(name="INSURED_BY", length=25)
     private String     insuredBy ;
@@ -428,31 +428,31 @@ private static final long serialVersionUID = 1L;
     private String     coreIntgRemarks ;
 
     @Column(name="CORE_INTG_QUEUE")
-    private Double     coreIntgQueue ;
+    private BigDecimal     coreIntgQueue ;
 
     @Column(name="OTHER_FEE_1")
-    private Double     otherFee1 ;
+    private BigDecimal     otherFee1 ;
 
     @Column(name="OTHER_FEE_2")
-    private Double     otherFee2 ;
+    private BigDecimal     otherFee2 ;
 
     @Column(name="OTHER_FEE_3")
-    private Double     otherFee3 ;
+    private BigDecimal     otherFee3 ;
 
     @Column(name="OTHER_FEE_PERC_1")
-    private Double     otherFeePerc1 ;
+    private BigDecimal     otherFeePerc1 ;
 
     @Column(name="OTHER_FEE_PERC_2")
-    private Double     otherFeePerc2 ;
+    private BigDecimal     otherFeePerc2 ;
 
     @Column(name="OTHER_FEE_PERC_3")
-    private Double     otherFeePerc3 ;
+    private BigDecimal     otherFeePerc3 ;
 
     @Column(name="PROMO_RATE")
-    private Double     promoRate ;
+    private BigDecimal     promoRate ;
 
     @Column(name="PROMO_PREMIUM")
-    private Double     promoPremium ;
+    private BigDecimal     promoPremium ;
 
     @Column(name="DRAFT_STATUS", length=10)
     private String     draftStatus ;
@@ -525,10 +525,10 @@ private static final long serialVersionUID = 1L;
     private String     collBranchCode ;
 
     @Column(name="EMI_ID")
-    private Double     emiId ;
+    private BigDecimal     emiId ;
 
     @Column(name="EMI_PREMIUM")
-    private Double     emiPremium ;
+    private BigDecimal     emiPremium ;
 
     @Column(name="POLICY_TINYURL", length=250)
     private String     policyTinyurl ;
@@ -549,22 +549,22 @@ private static final long serialVersionUID = 1L;
     private String     tinyUrl ;
 
     @Column(name="TARGET_PRICE")
-    private Double     targetPrice ;
+    private BigDecimal     targetPrice ;
 
     @Column(name="VISION_REPLACEMENT")
-    private Double     visionReplacement ;
+    private BigDecimal     visionReplacement ;
 
     @Column(name="VISION_MAINTENANCE")
-    private Double     visionMaintenance ;
+    private BigDecimal     visionMaintenance ;
 
     @Column(name="AGGR_REFERENCEID", length=80)
     private String     aggrReferenceid ;
 
     @Column(name="PREMIUMWOVAT")
-    private Double     premiumwovat ;
+    private BigDecimal     premiumwovat ;
 
     @Column(name="VERIFICATION_CODE")
-    private Double     verificationCode ;
+    private BigDecimal     verificationCode ;
 
     @Column(name="MMM_CARDNO", length=20)
     private String     mmmCardno ;

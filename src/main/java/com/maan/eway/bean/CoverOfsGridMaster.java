@@ -20,6 +20,7 @@ import javax.persistence.Table;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -72,16 +73,16 @@ private static final long serialVersionUID = 1L;
     private String     calcTypeDesc ;
 
     @Column(name="START_SUMINSURED")
-    private Double     startSuminsured ;
+    private BigDecimal     startSuminsured ;
 
     @Column(name="END_SUMINSURED")
-    private Double     endSuminsured ;
+    private BigDecimal     endSuminsured ;
 
     @Column(name="BASE_RATE")
-    private Double     baseRate ;
+    private BigDecimal     baseRate ;
 
     @Column(name="MINIMUM_PREMIUM")
-    private Double     minimumPremium ;
+    private BigDecimal     minimumPremium ;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")

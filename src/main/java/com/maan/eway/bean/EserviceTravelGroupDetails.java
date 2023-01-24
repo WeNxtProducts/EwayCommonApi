@@ -19,6 +19,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -99,16 +100,16 @@ private static final long serialVersionUID = 1L;
     private String     status ;
 
     @Column(name="ACTUAL_PREMIUM_LC")
-    private Double     actualPremiumLc ;
+    private BigDecimal     actualPremiumLc ;
 
     @Column(name="ACTUAL_PREMIUM_FC")
-    private Double     actualPremiumFc ;
+    private BigDecimal     actualPremiumFc ;
     
     @Column(name="OVERALL_PREMIUM_LC")
-    private Double     overallPremiumLc ;
+    private BigDecimal     overallPremiumLc ;
 
     @Column(name="OVERALL_PREMIUM_FC")
-    private Double     overallPremiumFc ;
+    private BigDecimal     overallPremiumFc ;
 
     @Column(name="CUSTOMER_ID", length=20)
     private String     customerId ;

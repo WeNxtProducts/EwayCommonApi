@@ -18,7 +18,7 @@ public class TaxFromFactor  implements Function<FactorRateRequestDetails,Tax>{
 				 	.taxExemptCode(null)
 				 	.taxExemptType(null)
 				 	.taxId(t.getTaxId()==null?"":t.getTaxId().toString())
-				 	.taxRate(t.getRate()==null?0D:t.getRate())				 	
+				 	.taxRate(t.getRate()==null?0D: t.getRate().doubleValue() )				 	
 				 	.calcType(t.getCalcType()==null?"":t.getCalcType())
 				 	.build();
 			return d;

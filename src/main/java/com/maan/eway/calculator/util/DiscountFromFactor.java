@@ -19,7 +19,7 @@ public class DiscountFromFactor  implements Function<FactorRateRequestDetails,Di
 						 	.discountRate("F".equals(calctype)?"0": t.getRate()==null?"0":t.getRate().toString())
 						 	.discountCalcType(calctype)
 						 	.discountforId(t.getDiscLoadId()==null?"":t.getDiscLoadId().toString())
-						 	.maxAmount(t.getMinimumPremium()==null?BigDecimal.ZERO:new BigDecimal(t.getMinimumPremium()))
+						 	.maxAmount(t.getMinimumPremium()==null?BigDecimal.ZERO:t.getMinimumPremium())
 						 	.factorTypeId(t.getFactorTypeId()==null?"":t.getFactorTypeId().toString())
 						 	.regulatoryCode(t.getRegulatoryCode()==null?"N/A":t.getRegulatoryCode())
 						 	.build();

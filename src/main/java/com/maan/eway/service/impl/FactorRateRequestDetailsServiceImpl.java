@@ -8,9 +8,11 @@ package com.maan.eway.service.impl;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,10 +20,14 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -32,6 +38,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
@@ -245,8 +252,15 @@ this.repository = repo;
 	public String saveNewFactorRateRequestDetails(EserviceMotorDetailsSaveRes req, List<FactorRateRequestDetails> coverIds) {
 		String successRes = "Saved Successfully" ;
 		DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
-		String pattern = "#####0.00";
+		
+		List<EserviceSectionDetails> sectionList =  eserSecRepo.findByRequestReferenceNoAndRiskIdAndProductIdOrderBySectionIdAsc(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()), req.getProductId() );
+		String currencyId =sectionList.size()> 0 ? sectionList.get(0).getCurrencyId() : "" ;	
+		String decimalDigits = currencyDecimalFormat(req.getInsuranceId() , currencyId ).toString();
+		String stringFormat = "%0"+decimalDigits+"d" ;
+		String decimalLength = decimalDigits.equals("0") ?"" : String.format(stringFormat ,0L)  ;
+		String pattern = StringUtils.isBlank(decimalLength) ?  "#####0" :   "#####0." + decimalLength;
 		DecimalFormat df = new DecimalFormat(pattern);
+		
 		try {
 			Double premiumLc = 0D;
 			Double premiumFc = 0D;
@@ -263,7 +277,7 @@ this.repository = repo;
 					saveCover.setSubCoverId(0);
 					//saveCover.setCoverId(Integer.valueOf(coverData.getCoverId()));
 					saveCover.setCurrency(coverData.getCurrency());
-					saveCover.setExchangeRate(coverData.getExchangeRate()==null?null : Double.valueOf(coverData.getExchangeRate().toString()));
+					saveCover.setExchangeRate(coverData.getExchangeRate()==null?null : coverData.getExchangeRate());
 					saveCover.setCompanyId(req.getInsuranceId());
 					saveCover.setProductId(Integer.valueOf(req.getProductId()));
 					saveCover.setSectionId(Integer.valueOf(req.getSectionId()));
@@ -280,14 +294,14 @@ this.repository = repo;
 					saveCover.setDependentCoverYn(coverData.getDependentCoveryn());
 					saveCover.setDependentCoverId(StringUtils.isBlank(coverData.getDependentCoverId())?null :Integer.valueOf(coverData.getDependentCoverId()));
 					saveCover.setIsSelected(coverData.getIsselected());
-					saveCover.setPremiumAfterDiscountFc(coverData.getPremiumAfterDiscount()==null ? null : Double.valueOf(df.format( coverData.getPremiumAfterDiscount())));
-					saveCover.setPremiumBeforeDiscountFc(coverData.getPremiumBeforeDiscount()==null ? null : Double.valueOf(df.format(coverData.getPremiumBeforeDiscount())));
-					saveCover.setPremiumExcludedTaxFc(coverData.getPremiumExcluedTax()==null ? null : Double.valueOf(df.format(coverData.getPremiumExcluedTax())));
-					saveCover.setPremiumIncludedTaxFc(coverData.getPremiumIncludedTax()==null ? null : Double.valueOf(df.format(coverData.getPremiumIncludedTax())));
-					saveCover.setPremiumAfterDiscountLc(coverData.getPremiumAfterDiscountLC()==null ? null : Double.valueOf(df.format(coverData.getPremiumAfterDiscountLC())));
-					saveCover.setPremiumBeforeDiscountLc(coverData.getPremiumBeforeDiscountLC()==null ? null : Double.valueOf(df.format(coverData.getPremiumBeforeDiscountLC())));
-					saveCover.setPremiumExcludedTaxLc(coverData.getPremiumExcluedTaxLC()==null ? null : Double.valueOf(df.format(coverData.getPremiumExcluedTaxLC())));
-					saveCover.setPremiumIncludedTaxLc(coverData.getPremiumIncludedTaxLC()==null ? null : Double.valueOf(df.format(coverData.getPremiumIncludedTaxLC())));
+					saveCover.setPremiumAfterDiscountFc(coverData.getPremiumAfterDiscount()==null ? null : new BigDecimal(df.format( coverData.getPremiumAfterDiscount())));
+					saveCover.setPremiumBeforeDiscountFc(coverData.getPremiumBeforeDiscount()==null ? null : new BigDecimal(df.format(coverData.getPremiumBeforeDiscount())));
+					saveCover.setPremiumExcludedTaxFc(coverData.getPremiumExcluedTax()==null ? null : new BigDecimal(df.format(coverData.getPremiumExcluedTax())));
+					saveCover.setPremiumIncludedTaxFc(coverData.getPremiumIncludedTax()==null ? null : new BigDecimal(df.format(coverData.getPremiumIncludedTax())));
+					saveCover.setPremiumAfterDiscountLc(coverData.getPremiumAfterDiscountLC()==null ? null : new BigDecimal(df.format(coverData.getPremiumAfterDiscountLC())));
+					saveCover.setPremiumBeforeDiscountLc(coverData.getPremiumBeforeDiscountLC()==null ? null : new BigDecimal(df.format(coverData.getPremiumBeforeDiscountLC())));
+					saveCover.setPremiumExcludedTaxLc(coverData.getPremiumExcluedTaxLC()==null ? null : new BigDecimal(df.format(coverData.getPremiumExcluedTaxLC())));
+					saveCover.setPremiumIncludedTaxLc(coverData.getPremiumIncludedTaxLC()==null ? null : new BigDecimal(df.format(coverData.getPremiumIncludedTaxLC())));
  					saveCover.setIsReferral(StringUtils.isBlank(coverData.getIsReferral())?"N":coverData.getIsReferral());
 					saveCover.setReferralDescription(StringUtils.isBlank(coverData.getReferalDescription())?"":coverData.getReferalDescription());
 					String userOpt=!"D".equals(saveCover.getIsSelected())?"N":"Y";
@@ -299,12 +313,12 @@ this.repository = repo;
 					
 					if(req.getUpdateas()==null) {
 						saveCover.setUserOpt(userOpt);
-						saveCover.setActualRate(coverData.getRate());
+						saveCover.setActualRate(new BigDecimal(df.format(coverData.getRate())));
 					}
 						
 					saveCover.setCoverBasedOn(StringUtils.isBlank(coverData.getCoverBasedOn())?"sumInsured":coverData.getCoverBasedOn());
 					//Double b=coverData.getPremiumBeforeDiscountLC()==null ? 0D : Double.valueOf(df.format(coverData.getPremiumBeforeDiscountLC()));
-					saveCover.setRegulSumInsured(coverData.getTiraSumInsured()==null?null:coverData.getTiraSumInsured().doubleValue());
+					saveCover.setRegulSumInsured(coverData.getTiraSumInsured()==null?null:new BigDecimal(df.format(coverData.getTiraSumInsured())));
 					
 //					if(coverData.getTaxes()!=null && coverData.getTaxes().size() > 0 ) {
 //						saveCover.setTax1(coverData.getTaxes().get(0).getTaxAmount()==null ? null : Double.valueOf(df.format(coverData.getTaxes().get(0).getTaxAmount())) );
@@ -316,10 +330,10 @@ this.repository = repo;
 //					}
 					
 					repository.saveAndFlush(saveCover);
-					premiumLc = premiumLc + (saveCover.getPremiumExcludedTaxLc()==null ? 0D :saveCover.getPremiumExcludedTaxLc() );
-					premiumFc = premiumFc + (saveCover.getPremiumExcludedTaxFc()==null ? 0D :saveCover.getPremiumExcludedTaxFc() );
-					overAllPremiumLc = overAllPremiumLc + (saveCover.getPremiumIncludedTaxLc()==null ? 0D :saveCover.getPremiumIncludedTaxLc() );
-					overAllPremiumFc = overAllPremiumFc + (saveCover.getPremiumIncludedTaxFc()==null ? 0D :saveCover.getPremiumIncludedTaxFc() );
+					premiumLc = premiumLc + (saveCover.getPremiumExcludedTaxLc()==null ? 0D :Double.valueOf(saveCover.getPremiumExcludedTaxLc().toString()) );
+					premiumFc = premiumFc + (saveCover.getPremiumExcludedTaxFc()==null ? 0D :Double.valueOf(saveCover.getPremiumExcludedTaxFc().toString()) );
+					overAllPremiumLc = overAllPremiumLc + (saveCover.getPremiumIncludedTaxLc()==null ? 0D :Double.valueOf(saveCover.getPremiumIncludedTaxLc().toString() ));
+					overAllPremiumFc = overAllPremiumFc + (saveCover.getPremiumIncludedTaxFc()==null ? 0D :Double.valueOf(saveCover.getPremiumIncludedTaxFc().toString()));
 					
 					Map<String,Object>  primaryKeys = new HashMap<String,Object>();
 					primaryKeys.put("RefNo" , req.getRequestReferenceNo());
@@ -337,16 +351,16 @@ this.repository = repo;
 					// Save Discount Or Promo Cover
 					if( coverData.getDiscounts()!=null && coverData.getDiscounts().size() > 0 ) {
 						
-						successRes  = 	saveDiscountOrPromoRates( primaryKeys ,coverData ,   coverData.getDiscounts()  ) ;	
+						successRes  = 	saveDiscountOrPromoRates( primaryKeys ,coverData ,   coverData.getDiscounts() , df ) ;	
 					}
 					// Tax
 					if(coverData.getTaxes()!=null && coverData.getTaxes().size() > 0 ) {
-						successRes  =  saveTaxes(primaryKeys ,coverData ,   coverData.getTaxes()  ) ;
+						successRes  =  saveTaxes(primaryKeys ,coverData ,   coverData.getTaxes() ,df ) ;
 					}
 					
 					// Loginds
 					if(coverData.getLoadings()!=null && coverData.getLoadings().size() > 0 ) {
-						successRes  =  saveLoadings(primaryKeys ,coverData ,   coverData.getLoadings()  ) ;
+						successRes  =  saveLoadings(primaryKeys ,coverData ,   coverData.getLoadings() ,df  ) ;
 					}
 					
 					
@@ -363,7 +377,7 @@ this.repository = repo;
 						saveSubCover.setSectionId(Integer.valueOf(req.getSectionId()));
 						saveSubCover.setSubCoverYn( coverData.getIsSubCover());
 						saveSubCover.setCurrency(subCoverData.getCurrency());
-						saveSubCover.setExchangeRate(subCoverData.getExchangeRate()==null?null : Double.valueOf(subCoverData.getExchangeRate().toString()));
+						saveSubCover.setExchangeRate(subCoverData.getExchangeRate()==null?null : subCoverData.getExchangeRate());
 						saveSubCover.setCdRefno(req.getCdRefNo());
 						saveSubCover.setVdRefno(req.getVdRefNo());
 						saveSubCover.setMsRefno(req.getMsrefno());	
@@ -376,17 +390,17 @@ this.repository = repo;
 						saveSubCover.setDependentCoverYn(subCoverData.getDependentCoveryn());
 						saveSubCover.setDependentCoverId(StringUtils.isBlank(subCoverData.getDependentCoverId())?null :Integer.valueOf(subCoverData.getDependentCoverId()));	
 						saveSubCover.setIsSelected(subCoverData.getIsselected());
-						saveSubCover.setPremiumAfterDiscountFc(subCoverData.getPremiumAfterDiscount()==null ? null : Double.valueOf(df.format(subCoverData.getPremiumAfterDiscount())));
-						saveSubCover.setPremiumBeforeDiscountFc(subCoverData.getPremiumBeforeDiscount()==null ? null : Double.valueOf(df.format(subCoverData.getPremiumBeforeDiscount())));
-						saveSubCover.setPremiumExcludedTaxFc(subCoverData.getPremiumExcluedTax()==null ? null : Double.valueOf(df.format(subCoverData.getPremiumExcluedTax())));
-						saveSubCover.setPremiumIncludedTaxFc(subCoverData.getPremiumIncludedTax()==null ? null : Double.valueOf(df.format(subCoverData.getPremiumIncludedTax())));
-						saveSubCover.setPremiumAfterDiscountLc(subCoverData.getPremiumAfterDiscountLC()==null ? null : Double.valueOf(df.format(subCoverData.getPremiumAfterDiscountLC())));
-						saveSubCover.setPremiumBeforeDiscountLc(subCoverData.getPremiumBeforeDiscountLC()==null ? null : Double.valueOf(df.format(subCoverData.getPremiumBeforeDiscountLC())));
-						saveSubCover.setPremiumExcludedTaxLc(subCoverData.getPremiumExcluedTaxLC()==null ? null : Double.valueOf(df.format(subCoverData.getPremiumExcluedTaxLC())));
-						saveSubCover.setPremiumIncludedTaxLc(subCoverData.getPremiumIncludedTaxLC()==null ? null : Double.valueOf(df.format(subCoverData.getPremiumIncludedTaxLC())));
+						saveSubCover.setPremiumAfterDiscountFc(subCoverData.getPremiumAfterDiscount()==null ? null : new BigDecimal(df.format(subCoverData.getPremiumAfterDiscount())));
+						saveSubCover.setPremiumBeforeDiscountFc(subCoverData.getPremiumBeforeDiscount()==null ? null : new BigDecimal(df.format(subCoverData.getPremiumBeforeDiscount())));
+						saveSubCover.setPremiumExcludedTaxFc(subCoverData.getPremiumExcluedTax()==null ? null : new BigDecimal(df.format(subCoverData.getPremiumExcluedTax())));
+						saveSubCover.setPremiumIncludedTaxFc(subCoverData.getPremiumIncludedTax()==null ? null : new BigDecimal(df.format(subCoverData.getPremiumIncludedTax())));
+						saveSubCover.setPremiumAfterDiscountLc(subCoverData.getPremiumAfterDiscountLC()==null ? null : new BigDecimal(df.format(subCoverData.getPremiumAfterDiscountLC())));
+						saveSubCover.setPremiumBeforeDiscountLc(subCoverData.getPremiumBeforeDiscountLC()==null ? null : new BigDecimal(df.format(subCoverData.getPremiumBeforeDiscountLC())));
+						saveSubCover.setPremiumExcludedTaxLc(subCoverData.getPremiumExcluedTaxLC()==null ? null : new BigDecimal(df.format(subCoverData.getPremiumExcluedTaxLC())));
+						saveSubCover.setPremiumIncludedTaxLc(subCoverData.getPremiumIncludedTaxLC()==null ? null : new BigDecimal(df.format(subCoverData.getPremiumIncludedTaxLC())));
 						saveSubCover.setIsReferral(StringUtils.isBlank(subCoverData.getIsReferral())?"N":subCoverData.getIsReferral());
 						saveSubCover.setReferralDescription(StringUtils.isBlank(coverData.getReferalDescription())?"":coverData.getReferalDescription());
-						saveSubCover.setRegulSumInsured(subCoverData.getTiraSumInsured()==null?null:subCoverData.getTiraSumInsured().doubleValue());
+						saveSubCover.setRegulSumInsured(subCoverData.getTiraSumInsured()==null?null:new BigDecimal(df.format(subCoverData.getTiraSumInsured())));
 						
 //						if(subCoverData.getTaxes()!=null && subCoverData.getTaxes().size() > 0 ) {
 //							saveSubCover.setTax1(subCoverData.getTaxes().get(0).getTaxAmount()==null ? null : Double.valueOf(df.format(subCoverData.getTaxes().get(0).getTaxAmount())) );
@@ -404,17 +418,17 @@ this.repository = repo;
 						saveSubCover.setUserOpt(userOpt);
 						if(req.getUpdateas()==null) {
 							saveSubCover.setUserOpt(userOpt);
-							saveSubCover.setActualRate(coverData.getRate());
+							saveSubCover.setActualRate(new BigDecimal(df.format(subCoverData.getRate())));
 						}
 						///Double b=subCoverData.getPremiumBeforeDiscountLC()==null ? 0D : Double.valueOf(df.format(subCoverData.getPremiumBeforeDiscountLC()));
-						saveSubCover.setRegulSumInsured(subCoverData.getTiraSumInsured()==null?null:subCoverData.getTiraSumInsured().doubleValue());
+						saveSubCover.setRegulSumInsured(subCoverData.getTiraSumInsured()==null?null:new BigDecimal(df.format(subCoverData.getTiraSumInsured())));
 
 						saveSubCover.setCoverBasedOn(StringUtils.isBlank(coverData.getCoverBasedOn())?"sumInsured":coverData.getCoverBasedOn());
 						
-						premiumLc = premiumLc + (saveSubCover.getPremiumExcludedTaxLc()==null ? 0D :saveSubCover.getPremiumExcludedTaxLc() );
-						premiumFc = premiumFc + (saveSubCover.getPremiumExcludedTaxFc()==null ? 0D :saveSubCover.getPremiumExcludedTaxFc() );
-						overAllPremiumLc = overAllPremiumLc + (saveSubCover.getPremiumIncludedTaxLc()==null ? 0D :saveSubCover.getPremiumIncludedTaxLc() );
-						overAllPremiumFc = overAllPremiumFc + (saveSubCover.getPremiumIncludedTaxFc()==null ? 0D :saveSubCover.getPremiumIncludedTaxFc() );
+						premiumLc = premiumLc + (saveSubCover.getPremiumExcludedTaxLc()==null ? 0D :Double.valueOf(saveSubCover.getPremiumExcludedTaxLc().toString()));
+						premiumFc = premiumFc + (saveSubCover.getPremiumExcludedTaxFc()==null ? 0D :Double.valueOf(saveSubCover.getPremiumExcludedTaxFc().toString()));
+						overAllPremiumLc = overAllPremiumLc + (saveSubCover.getPremiumIncludedTaxLc()==null ? 0D :Double.valueOf(saveSubCover.getPremiumIncludedTaxLc().toString()));
+						overAllPremiumFc = overAllPremiumFc + (saveSubCover.getPremiumIncludedTaxFc()==null ? 0D :Double.valueOf(saveSubCover.getPremiumIncludedTaxFc().toString()));
 					
 						repository.saveAndFlush(saveSubCover);
 						Map<String,Object>  primaryKeys = new HashMap<String,Object>();
@@ -430,18 +444,18 @@ this.repository = repo;
 						primaryKeys.put("MsRefNo" ,req.getMsrefno());	
 						// Save Discount Cover Or Promo Cover
 						if( subCoverData.getDiscounts()!=null && subCoverData.getDiscounts().size() > 0 ) {
-							successRes  = 	saveDiscountOrPromoRates( primaryKeys ,subCoverData ,   subCoverData.getDiscounts()  ) ;
+							successRes  = 	saveDiscountOrPromoRates( primaryKeys ,subCoverData ,   subCoverData.getDiscounts() ,df ) ;
 						}
 						
 						 
 						// Tax
 						if(subCoverData.getTaxes()!=null && subCoverData.getTaxes().size() > 0 ) {
-							successRes  =  saveTaxes(primaryKeys ,subCoverData ,   subCoverData.getTaxes()  ) ;
+							successRes  =  saveTaxes(primaryKeys ,subCoverData ,   subCoverData.getTaxes() ,df ) ;
 						}
 						
 						// Loginds
 						if(coverData.getLoadings()!=null && coverData.getLoadings().size() > 0 ) {
-							successRes  =  saveLoadings(primaryKeys ,subCoverData ,   subCoverData.getLoadings()  ) ;
+							successRes  =  saveLoadings(primaryKeys ,subCoverData ,   subCoverData.getLoadings() ,df ) ;
 						}	
 					}
 				}
@@ -449,10 +463,10 @@ this.repository = repo;
 				// Update Motor Premium
 				if(   req.getProductId().equalsIgnoreCase(motorProductId)) {
 					EserviceMotorDetails findData =   eserMotorRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo()  ,Integer.valueOf(req.getVehicleId()));
-					findData.setActualPremiumLc(premiumLc ==null ? null :Double.valueOf(df.format(premiumLc )));
-					findData.setActualPremiumFc(premiumFc ==null ? null :Double.valueOf(df.format(premiumFc )));
-					findData.setOverallPremiumLc(overAllPremiumLc ==null ? null :Double.valueOf(df.format(overAllPremiumLc)));
-					findData.setOverallPremiumFc(overAllPremiumFc ==null ? null :Double.valueOf(df.format(overAllPremiumFc)));
+					findData.setActualPremiumLc(premiumLc ==null ? null :new BigDecimal(df.format(premiumLc )));
+					findData.setActualPremiumFc(premiumFc ==null ? null :new BigDecimal(df.format(premiumFc )));
+					findData.setOverallPremiumLc(overAllPremiumLc ==null ? null :new BigDecimal(df.format(overAllPremiumLc)));
+					findData.setOverallPremiumFc(overAllPremiumFc ==null ? null :new BigDecimal(df.format(overAllPremiumFc)));
 					
 					eserMotorRepo.save(findData);
 					
@@ -461,27 +475,27 @@ this.repository = repo;
 					
 					// Update Group Premium
 					EserviceTravelGroupDetails findData =eserGroupRepo.findByRequestReferenceNoAndGroupId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()) ); 
-					findData.setActualPremiumLc(premiumLc ==null ? null :Double.valueOf(df.format(premiumLc )));
-					findData.setActualPremiumFc(premiumFc ==null ? null :Double.valueOf(df.format(premiumFc )));
-					findData.setOverallPremiumLc(overAllPremiumLc ==null ? null :Double.valueOf(df.format(overAllPremiumLc)));
-					findData.setOverallPremiumFc(overAllPremiumFc ==null ? null :Double.valueOf(df.format(overAllPremiumFc)));
+					findData.setActualPremiumLc(premiumLc ==null ? null :new BigDecimal(df.format(premiumLc )));
+					findData.setActualPremiumFc(premiumFc ==null ? null :new BigDecimal(df.format(premiumFc )));
+					findData.setOverallPremiumLc(overAllPremiumLc ==null ? null :new BigDecimal(df.format(overAllPremiumLc)));
+					findData.setOverallPremiumFc(overAllPremiumFc ==null ? null :new BigDecimal(df.format(overAllPremiumFc)));
 					eserGroupRepo.save(findData);
 					
 					List<EserviceTravelGroupDetails> findAll = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(req.getRequestReferenceNo() );
 					
 					
 					// Update OverAll Premium
-					premiumFc = findAll.stream().filter( o -> o.getActualPremiumFc()!=null && o.getActualPremiumFc().doubleValue() > 0D ).mapToDouble( o ->   o.getActualPremiumFc()  ).sum();
-					premiumLc = findAll.stream().filter( o -> o.getActualPremiumLc()!=null && o.getActualPremiumLc().doubleValue() > 0D ).mapToDouble( o ->   o.getActualPremiumLc()  ).sum();
-					overAllPremiumFc = findAll.stream().filter( o -> o.getOverallPremiumFc()!=null && o.getOverallPremiumFc().doubleValue() > 0D ).mapToDouble( o ->   o.getOverallPremiumFc()  ).sum();
-					overAllPremiumLc = findAll.stream().filter( o -> o.getOverallPremiumLc()!=null && o.getOverallPremiumLc().doubleValue() > 0D ).mapToDouble( o ->   o.getOverallPremiumLc()  ).sum();
+					premiumFc = findAll.stream().filter( o -> o.getActualPremiumFc()!=null && o.getActualPremiumFc().doubleValue() > 0D ).mapToDouble( o ->   o.getActualPremiumFc().doubleValue()  ).sum();
+					premiumLc = findAll.stream().filter( o -> o.getActualPremiumLc()!=null && o.getActualPremiumLc().doubleValue() > 0D ).mapToDouble( o ->   o.getActualPremiumLc().doubleValue()  ).sum();
+					overAllPremiumFc = findAll.stream().filter( o -> o.getOverallPremiumFc()!=null && o.getOverallPremiumFc().doubleValue() > 0D ).mapToDouble( o ->   o.getOverallPremiumFc().doubleValue()  ).sum();
+					overAllPremiumLc = findAll.stream().filter( o -> o.getOverallPremiumLc()!=null && o.getOverallPremiumLc().doubleValue() > 0D ).mapToDouble( o ->   o.getOverallPremiumLc().doubleValue()  ).sum();
 					
 					//Update TRavel Premium
 					EserviceTravelDetails traData = eserTraRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
-					traData.setActualPremiumLc(premiumLc ==null ? null :Double.valueOf(df.format(premiumLc )));
-					traData.setActualPremiumFc(premiumFc ==null ? null :Double.valueOf(df.format(premiumFc )));
-					traData.setOverallPremiumLc(overAllPremiumLc ==null ? null :Double.valueOf(df.format(overAllPremiumLc)));
-					traData.setOverallPremiumFc(overAllPremiumFc ==null ? null :Double.valueOf(df.format(overAllPremiumFc)));
+					traData.setActualPremiumLc(premiumLc ==null ? null :new BigDecimal(df.format(premiumLc )));
+					traData.setActualPremiumFc(premiumFc ==null ? null :new BigDecimal(df.format(premiumFc )));
+					traData.setOverallPremiumLc(overAllPremiumLc ==null ? null :new BigDecimal(df.format(overAllPremiumLc)));
+					traData.setOverallPremiumFc(overAllPremiumFc ==null ? null :new BigDecimal(df.format(overAllPremiumFc)));
 					eserTraRepo.save(traData);
 					
 				}
@@ -532,13 +546,84 @@ this.repository = repo;
 	}
 	
 
+	public Integer currencyDecimalFormat(String insuranceId  ,String currencyId ) {
+		Integer decimalFormat = 0 ;
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CurrencyMaster> query = cb.createQuery(CurrencyMaster.class);
+			List<CurrencyMaster> list = new ArrayList<CurrencyMaster>();
+			
+			// Find All
+			Root<CurrencyMaster>    c = query.from(CurrencyMaster.class);		
+			
+			// Select
+			query.select(c);
+			
+		
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("currencyName")));
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CurrencyMaster> ocpm1 = effectiveDate.from(CurrencyMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a11 = cb.equal(c.get("currencyId"),ocpm1.get("currencyId") );
+			Predicate a12 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a18 = cb.equal(c.get("status"),ocpm1.get("status") );
+			Predicate a22 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			
+			effectiveDate.where(a11,a12,a18,a22);
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CurrencyMaster> ocpm2 = effectiveDate2.from(CurrencyMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a13 = cb.equal(c.get("currencyId"),ocpm2.get("currencyId") );
+			Predicate a14 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a19 = cb.equal(c.get("status"),ocpm2.get("status") );
+			Predicate a23 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			
+			effectiveDate2.where(a13,a14,a19,a23);
+			
+		    // Where	
+			Predicate n1 = cb.equal(c.get("status"), "Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"),insuranceId);
+			Predicate n5 = cb.equal(c.get("companyId"),"99999");
+			Predicate n6 = cb.or(n4,n5);
+			Predicate n7 = cb.equal(c.get("currencyId"),currencyId);
+			query.where(n1,n2,n3,n6,n7).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<CurrencyMaster> result = em.createQuery(query);			
+			list =  result.getResultList(); 
+			
+			decimalFormat = list.size() > 0 ? (list.get(0).getDecimalDigit()==null?0 :list.get(0).getDecimalDigit()) :0; 		
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return decimalFormat;
+	}
 
-
-	public String saveTaxes(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Tax> taxes  ) {
+	public String saveTaxes(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Tax> taxes , DecimalFormat df  ) {
 		String res = "Saved Successfully";
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
-		String pattern = "#####0.00";
-		DecimalFormat df = new DecimalFormat(pattern);
 		try {
 			for (Tax tax :  taxes ) {
 				FactorRateRequestDetails saveTax = new FactorRateRequestDetails();
@@ -547,7 +632,7 @@ this.repository = repo;
 				saveTax.setCoverName(coverReq.getCoverName());
 				saveTax.setCoverDesc(coverReq.getCoverDesc());
 				saveTax.setCurrency(coverReq.getCurrency());
-				saveTax.setExchangeRate(coverReq.getExchangeRate()==null?null : Double.valueOf(coverReq.getExchangeRate().toString()));
+				saveTax.setExchangeRate(coverReq.getExchangeRate()==null?null :coverReq.getExchangeRate());
 				saveTax.setCompanyId(primaryKeys.get("InsuranceId").toString());
 				saveTax.setProductId(Integer.valueOf(primaryKeys.get("ProductId").toString()));
 				saveTax.setCoverageType("T");
@@ -564,13 +649,13 @@ this.repository = repo;
 				saveTax.setStatus("Y");
 				saveTax.setIsSelected(coverReq.getIsselected());
 				saveTax.setDiscLoadId(0);
-				saveTax.setTaxAmount(tax.getTaxAmount()==null?null :Double.valueOf(tax.getTaxAmount().toString()));
+				saveTax.setTaxAmount(tax.getTaxAmount()==null?null :new BigDecimal(df.format(tax.getTaxAmount())));
 				saveTax.setTaxCalcType(tax.getCalcType());
 				saveTax.setTaxDesc(tax.getTaxDesc());
 				saveTax.setTaxExemptType(tax.getTaxExemptType());
 				saveTax.setTaxExemptCode(tax.getTaxExemptCode());
 				saveTax.setTaxId(tax.getTaxId()==null?null : Integer.valueOf(tax.getTaxId()) );
-				saveTax.setTaxRate(tax.getTaxRate()==null?null :Double.valueOf(tax.getTaxRate().toString()) );
+				saveTax.setTaxRate(tax.getTaxRate()==null?null :new BigDecimal(df.format(tax.getTaxRate())) );
 				saveTax.setIsTaxExtempted(tax.getIsTaxExempted());
 				
 				repository.saveAndFlush(saveTax);
@@ -586,11 +671,9 @@ this.repository = repo;
 		}return res;
 	}
 	
-	public String saveLoadings(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Loading> lodings  ) {
+	public String saveLoadings(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Loading> lodings , DecimalFormat df ) {
 		String res = "Saved Successfully";
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
-		String pattern = "#####0.00";
-		DecimalFormat df = new DecimalFormat(pattern);
 		try {
 			for (Loading lod :  lodings ) {
 				FactorRateRequestDetails saveLod = new FactorRateRequestDetails();
@@ -599,7 +682,7 @@ this.repository = repo;
 				saveLod.setCoverName(lod.getLoadingDesc());
 				saveLod.setCoverDesc(lod.getLoadingDesc());
 				saveLod.setCurrency(coverReq.getCurrency());
-				saveLod.setExchangeRate(coverReq.getExchangeRate()==null?null : Double.valueOf(coverReq.getExchangeRate().toString()));
+				saveLod.setExchangeRate(coverReq.getExchangeRate()==null?null : coverReq.getExchangeRate());
 				saveLod.setCompanyId(primaryKeys.get("InsuranceId").toString());
 				saveLod.setProductId(Integer.valueOf(primaryKeys.get("ProductId").toString()));
 				saveLod.setSectionId(Integer.valueOf(primaryKeys.get("SectionId").toString()));
@@ -617,11 +700,11 @@ this.repository = repo;
 				saveLod.setCoverageType("L");
 				
 				// Factor
-				saveLod.setFactorTypeId(lod.getFactorTypeId()==null?null:Double.valueOf(lod.getFactorTypeId()));
-				saveLod.setMinimumPremium(lod.getLoadingAmount()==null?null:Double.valueOf(lod.getLoadingAmount().toString()));
-				saveLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:Double.valueOf(lod.getMaxAmount().toString()));
-				saveLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:Double.valueOf(lod.getMaxAmount().toString()));
-				saveLod.setRate(lod.getLoadingRate()==null?null:Double.valueOf(lod.getLoadingRate()));
+				saveLod.setFactorTypeId(lod.getFactorTypeId()==null?null: new BigDecimal(lod.getFactorTypeId()));
+				saveLod.setMinimumPremium(lod.getLoadingAmount()==null?null: new BigDecimal(df.format(lod.getLoadingAmount())));
+				saveLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
+				saveLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
+				saveLod.setRate(lod.getLoadingRate()==null?null:new BigDecimal(df.format(lod.getLoadingRate())));
 			//	saveLod.setLodingSubcoverId(lod.getSubCoverId()==null?null:Integer.valueOf(lod.getSubCoverId()));
 				saveLod.setDiscLoadId(lod.getLoadingId()==null?null:Integer.valueOf(lod.getLoadingId()));
 				saveLod.setDependentCoverYn("Y");
@@ -630,10 +713,10 @@ this.repository = repo;
 				saveLod.setCoverName(lod.getLoadingDesc());
 				saveLod.setCoverDesc(lod.getLoadingDesc());
 				saveLod.setTaxId(0);
-				saveLod.setPremiumAfterDiscountFc(lod.getLoadingAmount()==null ? null : Double.valueOf(df.format(lod.getLoadingAmount())));
-				saveLod.setPremiumBeforeDiscountFc(lod.getLoadingAmount()==null ? null : Double.valueOf(df.format(lod.getLoadingAmount())));
-				saveLod.setPremiumExcludedTaxFc(lod.getLoadingAmount()==null ? null : Double.valueOf(df.format(lod.getLoadingAmount())));
-				saveLod.setPremiumIncludedTaxFc(lod.getLoadingAmount()==null ? null : Double.valueOf(df.format(lod.getLoadingAmount())));
+				saveLod.setPremiumAfterDiscountFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
+				saveLod.setPremiumBeforeDiscountFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
+				saveLod.setPremiumExcludedTaxFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
+				saveLod.setPremiumIncludedTaxFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
 				
 				
 				repository.saveAndFlush(saveLod);
@@ -649,11 +732,9 @@ this.repository = repo;
 		}return res;
 	}
 	
-	public String saveDiscountOrPromoRates(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Discount> discounts ) {
+	public String saveDiscountOrPromoRates(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Discount> discounts , DecimalFormat df ) {
 		String res = "Saved Successfully";
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
-		String pattern = "#####0.00";
-		DecimalFormat df = new DecimalFormat(pattern);
 		try {
 			for (Discount disc :  discounts ) {
 				FactorRateRequestDetails saveDiscounts = new FactorRateRequestDetails();
@@ -663,7 +744,7 @@ this.repository = repo;
 				saveDiscounts.setCoverName(disc.getDiscountDesc());
 				saveDiscounts.setCoverDesc(disc.getDiscountDesc());
 				saveDiscounts.setCurrency(coverReq.getCurrency());
-				saveDiscounts.setExchangeRate(coverReq.getExchangeRate()==null?null : Double.valueOf(coverReq.getExchangeRate().toString()));
+				saveDiscounts.setExchangeRate(coverReq.getExchangeRate()==null?null : coverReq.getExchangeRate());
 				saveDiscounts.setCompanyId(primaryKeys.get("InsuranceId").toString());
 				saveDiscounts.setProductId(Integer.valueOf(primaryKeys.get("ProductId").toString()));
 				saveDiscounts.setSectionId(Integer.valueOf(primaryKeys.get("SectionId").toString()));
@@ -677,16 +758,16 @@ this.repository = repo;
 				saveDiscounts.setSubCoverId(StringUtils.isBlank(coverReq.getSubCoverId()) ?0 : Integer.valueOf(coverReq.getSubCoverId()) );
 				saveDiscounts.setStatus("Y");
 				saveDiscounts.setCoverageType(disc.getCoverAgeType() );
-				saveDiscounts.setMinimumPremium(disc.getMaxAmount()==null ? null : Double.valueOf(disc.getMaxAmount().toString()));
+				saveDiscounts.setMinimumPremium(disc.getMaxAmount()==null ? null : new BigDecimal(df.format(disc.getMaxAmount())));
 				saveDiscounts.setSumInsured(null);
-				saveDiscounts.setRate(Double.valueOf(disc.getDiscountRate()));
-				saveDiscounts.setPremiumAfterDiscountFc(disc.getDiscountAmount()==null ? null : Double.valueOf(df.format(disc.getDiscountAmount())));
-				saveDiscounts.setPremiumBeforeDiscountFc(disc.getDiscountAmount()==null ? null : Double.valueOf(df.format(disc.getDiscountAmount())));
-				saveDiscounts.setPremiumExcludedTaxFc(disc.getDiscountAmount()==null ? null : Double.valueOf(df.format(disc.getDiscountAmount())));
-				saveDiscounts.setPremiumIncludedTaxFc(disc.getDiscountAmount()==null ? null : Double.valueOf(df.format(disc.getDiscountAmount())));
+				saveDiscounts.setRate(disc.getDiscountRate()==null ? null :new BigDecimal(df.format(disc.getDiscountRate())));
+				saveDiscounts.setPremiumAfterDiscountFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
+				saveDiscounts.setPremiumBeforeDiscountFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
+				saveDiscounts.setPremiumExcludedTaxFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
+				saveDiscounts.setPremiumIncludedTaxFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
 				saveDiscounts.setDependentCoverYn("Y");
 				saveDiscounts.setDependentCoverId(saveDiscounts.getCoverId());
-				saveDiscounts.setFactorTypeId(StringUtils.isBlank(disc.getFactorTypeId())?null :Double.valueOf(disc.getFactorTypeId()) );
+				saveDiscounts.setFactorTypeId(StringUtils.isBlank(disc.getFactorTypeId())?null :new BigDecimal(disc.getFactorTypeId()) );
 				saveDiscounts.setIsSelected(coverReq.getIsselected() );
 				saveDiscounts.setCalcType(saveDiscounts.getCalcType());
 				saveDiscounts.setTaxId(0);
@@ -997,11 +1078,11 @@ this.repository = repo;
 					coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
 					coverRes.setDependentCoveryn(filterCover.get(0).getDependentCoverYn());
 					coverRes.setDependentCoverId(filterCover.get(0).getDependentCoverId()==null?"":filterCover.get(0).getDependentCoverId().toString());
-					coverRes.setPremiumExcluedTax( filterCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal(filterCover.get(0).getPremiumExcludedTaxFc()) );	
-					coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumAfterDiscountFc().toString())));
-					coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumBeforeDiscountFc().toString())));
-					coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumExcludedTaxFc().toString())));
-					coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumIncludedTaxFc().toString())));
+					coverRes.setPremiumExcluedTax( filterCover.get(0).getPremiumExcludedTaxFc() );	
+					coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc());
+					coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc());
+					coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc());
+					coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc());
 					coverRes.setIsselected(filterCover.get(0).getIsSelected());
 					coverRes.setDependentCoveryn(filterCover.get(0).getDependentCoverYn());
 					coverRes.setDependentCoverId(filterCover.get(0).getDependentCoverId()==null?"": filterCover.get(0).getDependentCoverId().toString());
@@ -1009,15 +1090,15 @@ this.repository = repo;
 					coverRes.setSubCoverDesc(null);
 					coverRes.setSubCoverName(null);
 					coverRes.setSectionId(filterCover.get(0).getSectionId()==null?"":filterCover.get(0).getSectionId().toString());
-					coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal (filterCover.get(0).getPremiumAfterDiscountFc()));
-					coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal (filterCover.get(0).getPremiumBeforeDiscountFc()));
-					coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal (filterCover.get(0).getPremiumExcludedTaxFc()));
-					coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc()==null ? null :new BigDecimal(filterCover.get(0).getPremiumIncludedTaxFc()));
-					coverRes.setPremiumAfterDiscountLC(filterCover.get(0).getPremiumAfterDiscountLc()==null ? null : new BigDecimal(filterCover.get(0).getPremiumAfterDiscountLc()));
-					coverRes.setPremiumBeforeDiscountLC(filterCover.get(0).getPremiumBeforeDiscountLc()==null ? null : new BigDecimal( filterCover.get(0).getPremiumBeforeDiscountLc()));
-					coverRes.setPremiumExcluedTaxLC(filterCover.get(0).getPremiumExcludedTaxLc()==null ? null : new BigDecimal(filterCover.get(0).getPremiumExcludedTaxLc()));
-					coverRes.setPremiumIncludedTaxLC(filterCover.get(0).getPremiumIncludedTaxLc()==null ? null :new BigDecimal (filterCover.get(0).getPremiumIncludedTaxLc()));
-					coverRes.setExchangeRate(filterCover.get(0).getExchangeRate()==null?null:new BigDecimal(filterCover.get(0).getExchangeRate()));	
+					coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc());
+					coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc());
+					coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc());
+					coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc());
+					coverRes.setPremiumAfterDiscountLC(filterCover.get(0).getPremiumAfterDiscountLc());
+					coverRes.setPremiumBeforeDiscountLC(filterCover.get(0).getPremiumBeforeDiscountLc());
+					coverRes.setPremiumExcluedTaxLC(filterCover.get(0).getPremiumExcludedTaxLc());
+					coverRes.setPremiumIncludedTaxLC(filterCover.get(0).getPremiumIncludedTaxLc());
+					coverRes.setExchangeRate(filterCover.get(0).getExchangeRate());	
 					
 					// Discount Covers Or Promo Covers
 					List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) && (   o.getCoverageType().equalsIgnoreCase("D") || o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
@@ -1055,7 +1136,7 @@ this.repository = repo;
 					 coverRes.setMinimumPremium(filterCover.get(0).getMinimumPremium()==null ? null : new BigDecimal(filterCover.get(0).getMinimumPremium().toString()));
 					 coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
 					 coverRes.setSumInsured(filterCover.get(0).getSumInsured()==null ? null : new BigDecimal(filterCover.get(0).getSumInsured().toString()));
-					 coverRes.setRate(filterCover.get(0).getRate());
+					 coverRes.setRate(filterCover.get(0).getRate()==null?null:Double.valueOf(filterCover.get(0).getRate().toString()));
 					
 					List<Cover>  subCoverListRes = new ArrayList<Cover>();
 					List<FactorRateRequestDetails> filterSubCover = covers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());
@@ -1065,23 +1146,23 @@ this.repository = repo;
 						subCoverRes.setIsSubCover(filterSubCover.get(0).getSubCoverYn());
 						subCoverRes.setDependentCoveryn(filterSubCover.get(0).getDependentCoverYn());
 						subCoverRes.setDependentCoverId(filterSubCover.get(0).getDependentCoverId()==null?"":filterSubCover.get(0).getDependentCoverId().toString());
-						subCoverRes.setPremiumExcluedTax( filterSubCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal(filterSubCover.get(0).getPremiumExcludedTaxFc()) );	
-						subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal((filterSubCover.get(0).getPremiumAfterDiscountFc().toString())));
-						subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal((filterSubCover.get(0).getPremiumBeforeDiscountFc().toString())));
-						subCoverRes.setPremiumExcluedTax(filterSubCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal((filterSubCover.get(0).getPremiumExcludedTaxFc().toString())));
-						subCoverRes.setPremiumIncludedTax(filterSubCover.get(0).getPremiumIncludedTaxFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumIncludedTaxFc().toString())));
+						subCoverRes.setPremiumExcluedTax( filterSubCover.get(0).getPremiumExcludedTaxFc() );	
+						subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc());
+						subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc());
+						subCoverRes.setPremiumExcluedTax(filterSubCover.get(0).getPremiumExcludedTaxFc());
+						subCoverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc());
 						subCoverRes.setIsselected(filterSubCover.get(0).getIsSelected());
-						subCoverRes.setExchangeRate(filterSubCover.get(0).getExchangeRate()==null?null:new BigDecimal(filterSubCover.get(0).getExchangeRate()));	
+						subCoverRes.setExchangeRate(filterSubCover.get(0).getExchangeRate());	
 						subCoverRes.setSectionId(filterSubCover.get(0).getSectionId()==null?"":filterSubCover.get(0).getSectionId().toString());
 
-						subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal (filterSubCover.get(0).getPremiumAfterDiscountFc()));
-						subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal (filterSubCover.get(0).getPremiumBeforeDiscountFc()));
-						subCoverRes.setPremiumExcluedTax(filterSubCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal (filterSubCover.get(0).getPremiumExcludedTaxFc()));
-						subCoverRes.setPremiumIncludedTax(filterSubCover.get(0).getPremiumIncludedTaxFc()==null ? null :new BigDecimal(filterSubCover.get(0).getPremiumIncludedTaxFc()));
-						subCoverRes.setPremiumAfterDiscountLC(filterSubCover.get(0).getPremiumAfterDiscountLc()==null ? null : new BigDecimal(filterSubCover.get(0).getPremiumAfterDiscountLc()));
-						subCoverRes.setPremiumBeforeDiscountLC(filterSubCover.get(0).getPremiumBeforeDiscountLc()==null ? null : new BigDecimal( filterSubCover.get(0).getPremiumBeforeDiscountLc()));
-						subCoverRes.setPremiumExcluedTaxLC(filterSubCover.get(0).getPremiumExcludedTaxLc()==null ? null : new BigDecimal(filterSubCover.get(0).getPremiumExcludedTaxLc()));
-						subCoverRes.setPremiumIncludedTaxLC(filterSubCover.get(0).getPremiumIncludedTaxLc()==null ? null :new BigDecimal (filterSubCover.get(0).getPremiumIncludedTaxLc()));
+						subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc());
+						subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc());
+						subCoverRes.setPremiumExcluedTax(filterSubCover.get(0).getPremiumExcludedTaxFc());
+						subCoverRes.setPremiumIncludedTax(filterSubCover.get(0).getPremiumIncludedTaxFc());
+						subCoverRes.setPremiumAfterDiscountLC(filterSubCover.get(0).getPremiumAfterDiscountLc());
+						subCoverRes.setPremiumBeforeDiscountLC( filterSubCover.get(0).getPremiumBeforeDiscountLc());
+						subCoverRes.setPremiumExcluedTaxLC(filterSubCover.get(0).getPremiumExcludedTaxLc());
+						subCoverRes.setPremiumIncludedTaxLC(filterSubCover.get(0).getPremiumIncludedTaxLc());
 						
 						
 						// Discount Covers Or Promo Covers
@@ -1129,13 +1210,13 @@ this.repository = repo;
 		try {
 			for (FactorRateRequestDetails disc :  filterDiscountCover ) {
 				Discount discount = new Discount();
-				discount.setDiscountAmount(disc.getPremiumIncludedTaxFc()==null?new BigDecimal(0): new BigDecimal(disc.getPremiumIncludedTaxFc()));
+				discount.setDiscountAmount(disc.getPremiumIncludedTaxFc());
 				discount.setDiscountCalcType(disc.getCalcType());
 				discount.setDiscountId(disc.getDiscLoadId().toString());
 				discount.setDiscountDesc(disc.getCoverName());	
 				discount.setDiscountRate(disc.getRate()==null?"0.0" :disc.getRate().toString());
 				discount.setFactorTypeId(disc.getFactorTypeId()==null?"" : disc.getFactorTypeId().toString());
-				discount.setMaxAmount(disc.getMinimumPremium()==null?null :new BigDecimal(disc.getMinimumPremium()));
+				discount.setMaxAmount(disc.getMinimumPremium());
 				discount.setSubCoverId(disc.getSubCoverId().toString());
 				discount.setDiscountforId(disc.getDependentCoverId()==null?null:disc.getDependentCoverId().toString());
 				
@@ -1158,13 +1239,13 @@ this.repository = repo;
 			for (FactorRateRequestDetails lod :  filterLodingCover ) {
 				Loading loding = new Loading();
 				loding.setFactorTypeId(lod.getFactorTypeId()==null?null:lod.getFactorTypeId().toString());
-				loding.setLoadingAmount(lod.getMinimumPremium()==null?null:new BigDecimal(lod.getMinimumPremium()));
+				loding.setLoadingAmount(lod.getMinimumPremium());
 				loding.setLoadingCalcType(lod.getCalcType());
 				loding.setLoadingDesc(lod.getCoverName());
 				loding.setLoadingforId(lod.getDependentCoverId()==null?null:lod.getDependentCoverId().toString());
 				loding.setLoadingId(lod.getDiscLoadId()==null?null:lod.getDiscLoadId().toString());
 				loding.setLoadingRate(lod.getRate()==null?null:lod.getRate().toString());
-				loding.setMaxAmount(lod.getPremiumIncludedTaxFc()==null?null:new BigDecimal(lod.getPremiumIncludedTaxFc()));
+				loding.setMaxAmount(lod.getPremiumIncludedTaxFc());
 				//loding.setSubCoverId(lod.getLodingSubcoverId()==null?null:lod.getLodingSubcoverId().toString());	
 				LodingList.add(loding);
 			}
@@ -1184,12 +1265,12 @@ this.repository = repo;
 				Tax taxes = new Tax();
 				taxes.setCalcType(tax.getCalcType());
 				taxes.setIsTaxExempted(tax.getIsTaxExtempted());
-				taxes.setTaxAmount(tax.getTaxAmount()==null?null:new BigDecimal(tax.getTaxAmount()));
+				taxes.setTaxAmount(tax.getTaxAmount());
 				taxes.setTaxDesc(tax.getTaxDesc());
 				taxes.setTaxExemptCode(tax.getTaxExemptCode());
 				taxes.setTaxExemptType(tax.getTaxExemptType());
 				taxes.setTaxId(tax.getTaxId()==null?null:tax.getTaxId().toString()) ;
-				taxes.setTaxRate(tax.getTaxRate());
+				taxes.setTaxRate( tax.getTaxRate()==null?null : Double.valueOf(tax.getTaxRate().toString()));
 				TaxList.add(taxes);
 			}
 			
@@ -1252,11 +1333,10 @@ this.repository = repo;
 	@Override
 	public UpdateCoverRes updateFactorRatePremiumDetails(UpdateFactorRateReq req) {
 		UpdateCoverRes res = new UpdateCoverRes();
-		String pattern = "#####0.00";
-		DecimalFormat df = new DecimalFormat(pattern);
 		try {
 			String agencyCode = "";
 			String branchCode = "";
+			String currencyId = "" ;
 			
 			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(req.getRequestReferenceNo() , req.getVehicleId() ,
 					req.getCompanyId() , Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;	
@@ -1265,12 +1345,14 @@ this.repository = repo;
 						) ;
 				agencyCode = findMot.getAgencyCode();
 				branchCode = findMot.getBranchCode();
-				
+				currencyId = findMot.getCurrency();
+			
 			} else if(   req.getProductId().equalsIgnoreCase(travelProductId)) {
 				EserviceTravelDetails  findTra = eserTraRepo.findByRequestReferenceNoAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() ,
 						req.getCompanyId() , 	 req.getProductId(),req.getSectionId()  ) ;
 				agencyCode = findTra.getBrokerCode();
 				branchCode = findTra.getBranchCode();
+				currencyId = findTra.getCurrency();
 			//	EserviceTravelGroupDetails  findGroup = eserGroupRepo.findByRequestReferenceNoAndTravelIdAndGroupIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,Integer.valueOf(req.getGroupId()) ,
 			//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
 				
@@ -1279,10 +1361,16 @@ this.repository = repo;
 						req.getCompanyId() , 	 Integer.valueOf(req.getProductId())  ) ;
 				agencyCode = findBuild.getBrokerCode();
 				branchCode = findBuild.getBranchCode();
+				currencyId = findBuild.getCurrency();
 			//	EserviceBuildingSectionDetails  findBuildSec = eserBuildSecRepo.findByRequestReferenceNoAndLocationIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,
 			//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
 			}
 			
+			String decimalDigits = currencyDecimalFormat(req.getCompanyId() , currencyId ).toString();
+			String stringFormat = "%0"+decimalDigits+"d" ;
+			String decimalLength = decimalDigits.equals("0") ?"" : String.format(stringFormat ,0L)  ;
+			String pattern = StringUtils.isBlank(decimalLength) ?  "#####0" :   "#####0." + decimalLength;
+			DecimalFormat df = new DecimalFormat(pattern);
 			
 			for (CoverIdsReq covReq :    req.getCoverIdList()  ) {
 				
@@ -1291,8 +1379,8 @@ this.repository = repo;
 					
 					if(filterCover.size()>0 ) {
 						FactorRateRequestDetails  updateCover = filterCover.get(0);
-						updateCover.setMinimumPremium(Double.valueOf(df.format(Double.valueOf(covReq.getMinimumPremium()))));
-						updateCover.setRate(Double.valueOf(df.format(Double.valueOf(covReq.getRate()))));
+						updateCover.setMinimumPremium(new BigDecimal(df.format(covReq.getMinimumPremium())));
+						updateCover.setRate(new BigDecimal(df.format(covReq.getRate())));
 						repository.save(updateCover);
 						
 					}
@@ -1300,8 +1388,8 @@ this.repository = repo;
 					List<FactorRateRequestDetails> filterSubCover = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId())) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) ).collect(Collectors.toList());
 					if(filterSubCover.size()>0 ) {
 						FactorRateRequestDetails  updateSubCover = filterSubCover.get(0);
-						updateSubCover.setMinimumPremium(Double.valueOf(df.format(Double.valueOf(covReq.getMinimumPremium()))));
-						updateSubCover.setRate(Double.valueOf(df.format(Double.valueOf(covReq.getRate()))));
+						updateSubCover.setMinimumPremium(new BigDecimal(df.format(covReq.getMinimumPremium())));
+						updateSubCover.setRate(new BigDecimal(df.format(covReq.getRate())));
 						repository.save(updateSubCover);
 					}
 					

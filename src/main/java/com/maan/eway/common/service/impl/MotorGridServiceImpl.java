@@ -623,10 +623,10 @@ public class MotorGridServiceImpl implements MotorGridService {
 								savedata.setBranchCode(branchCode);
 							}
 							
-							savedata.setActualPremiumFc(0d);
-							savedata.setActualPremiumLc(0d);
-							savedata.setOverallPremiumFc(0d);
-							savedata.setOverallPremiumLc(0d);
+							savedata.setActualPremiumFc(BigDecimal.ZERO);
+							savedata.setActualPremiumLc(BigDecimal.ZERO);
+							savedata.setOverallPremiumFc(BigDecimal.ZERO);
+							savedata.setOverallPremiumLc(BigDecimal.ZERO);
 							savedata.setQuoteNo("");
 							repo.saveAndFlush(savedata);
 						}
@@ -785,10 +785,10 @@ public class MotorGridServiceImpl implements MotorGridService {
 								savedata.setBranchCode(branchCode);
 							}
 							
-							savedata.setActualPremiumFc(0d);
-							savedata.setActualPremiumLc(0d);
-							savedata.setOverallPremiumFc(0d);
-							savedata.setOverallPremiumLc(0d);
+							savedata.setActualPremiumFc(BigDecimal.ZERO );
+							savedata.setActualPremiumLc(BigDecimal.ZERO);
+							savedata.setOverallPremiumFc(BigDecimal.ZERO);
+							savedata.setOverallPremiumLc(BigDecimal.ZERO);
 							savedata.setQuoteNo("");
 							repo.saveAndFlush(savedata);
 						}

@@ -1,8 +1,11 @@
 package com.maan.eway.common.service.impl;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,10 +13,15 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +30,7 @@ import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
@@ -255,11 +264,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 					}
 				}
 			}
-			Double premiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc()  ).sum();					
-			Double overAllPremiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxFc()  ).sum();
+			Double premiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()  ).sum();					
+			Double overAllPremiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()  ).sum();
 			
-			Double premiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc()  ).sum();					
-			Double overAllPremiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxLc()  ).sum();
+			Double premiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()  ).sum();					
+			Double overAllPremiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()  ).sum();
 			System.out.println("Vehicle :" + request.getVehicleId() + " PremiumFc --> "  + premiumFc );
 			System.out.println("Vehicle :" + request.getVehicleId() + " OverAllPremiumFc --> "  + overAllPremiumFc );
 			System.out.println("Vehicle :" + request.getVehicleId() + " PremiumLc --> "  + premiumLc );
@@ -268,12 +277,17 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			// Find Motor
 			EserviceMotorDetails eserMotors = eserMotRepo.findByRequestReferenceNoAndRiskIdOrderByRiskIdAsc(request.getRequestReferenceNo() ,request.getVehicleId());
+			String decimalDigits = currencyDecimalFormat(eserMotors.getCompanyId() , eserMotors.getCurrency() ).toString();
+			String stringFormat = "%0"+decimalDigits+"d" ;
+			String decimalLength = decimalDigits.equals("0") ?"" : String.format(stringFormat ,0L)  ;
+			String pattern = StringUtils.isBlank(decimalLength) ?  "#####0" :   "#####0." + decimalLength;
+			DecimalFormat df = new DecimalFormat(pattern);
 			
 			// Update Eservice Motor
-			eserMotors.setActualPremiumFc(premiumFc);
-			eserMotors.setActualPremiumLc(premiumLc);
-			eserMotors.setOverallPremiumFc(overAllPremiumFc);
-			eserMotors.setOverallPremiumLc(overAllPremiumLc);
+			eserMotors.setActualPremiumFc(new BigDecimal(df.format(premiumFc)));
+			eserMotors.setActualPremiumLc(new BigDecimal(df.format(premiumLc)));
+			eserMotors.setOverallPremiumFc(new BigDecimal(df.format(overAllPremiumFc)));
+			eserMotors.setOverallPremiumLc(new BigDecimal(df.format(overAllPremiumLc)));
 			eserMotors.setQuoteNo(request.getQuoteNo());
 			eserMotors.setCustomerId(request.getCustomerId());
 			eserMotRepo.saveAndFlush(eserMotors);
@@ -316,6 +330,81 @@ public class QuoteThreadCall implements Callable<Object>  {
 		return res;
 	}
 	
+	public synchronized Integer currencyDecimalFormat(String insuranceId  ,String currencyId ) {
+		Integer decimalFormat = 0 ;
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CurrencyMaster> query = cb.createQuery(CurrencyMaster.class);
+			List<CurrencyMaster> list = new ArrayList<CurrencyMaster>();
+			
+			// Find All
+			Root<CurrencyMaster>    c = query.from(CurrencyMaster.class);		
+			
+			// Select
+			query.select(c);
+			
+		
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("currencyName")));
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CurrencyMaster> ocpm1 = effectiveDate.from(CurrencyMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a11 = cb.equal(c.get("currencyId"),ocpm1.get("currencyId") );
+			Predicate a12 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a18 = cb.equal(c.get("status"),ocpm1.get("status") );
+			Predicate a22 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			
+			effectiveDate.where(a11,a12,a18,a22);
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CurrencyMaster> ocpm2 = effectiveDate2.from(CurrencyMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a13 = cb.equal(c.get("currencyId"),ocpm2.get("currencyId") );
+			Predicate a14 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a19 = cb.equal(c.get("status"),ocpm2.get("status") );
+			Predicate a23 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			
+			effectiveDate2.where(a13,a14,a19,a23);
+			
+		    // Where	
+			Predicate n1 = cb.equal(c.get("status"), "Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"),insuranceId);
+			Predicate n5 = cb.equal(c.get("companyId"),"99999");
+			Predicate n6 = cb.or(n4,n5);
+			Predicate n7 = cb.equal(c.get("currencyId"),currencyId);
+			query.where(n1,n2,n3,n6,n7).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<CurrencyMaster> result = em.createQuery(query);			
+			list =  result.getResultList(); 
+			
+			decimalFormat = list.size() > 0 ? (list.get(0).getDecimalDigit()==null?0 :list.get(0).getDecimalDigit()) :0; 		
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return decimalFormat;
+	}
+	
 	private synchronized  Map<String,Object>  call_BuildingSave(QuoteThreadReq  request  ) {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		 DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -350,21 +439,26 @@ public class QuoteThreadCall implements Callable<Object>  {
 					}
 				}
 			}
-			Double premiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc()  ).sum();					
-			Double overAllPremiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxFc()  ).sum();
+			Double premiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()  ).sum();					
+			Double overAllPremiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()  ).sum();
 			
-			Double premiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc()  ).sum();					
-			Double overAllPremiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxLc()  ).sum();
+			Double premiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()  ).sum();					
+			Double overAllPremiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()  ).sum();
 			
 			
 			// Find Building
 			EserviceBuildingDetails eserBuild = eserBuildRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() ,request.getVehicleId());
-			
+			EserviceMotorDetails eserMotors = eserMotRepo.findByRequestReferenceNoAndRiskIdOrderByRiskIdAsc(request.getRequestReferenceNo() ,request.getVehicleId());
+			String decimalDigits = currencyDecimalFormat(eserMotors.getCompanyId() , eserMotors.getCurrency() ).toString();
+			String stringFormat = "%0"+decimalDigits+"d" ;
+			String decimalLength = decimalDigits.equals("0") ?"" : String.format(stringFormat ,0L)  ;
+			String pattern = StringUtils.isBlank(decimalLength) ?  "#####0" :   "#####0." + decimalLength;
+			DecimalFormat df = new DecimalFormat(pattern);
 			// Update Eservice Building
-			eserBuild.setActualPremiumFc(premiumFc);
-			eserBuild.setActualPremiumLc(premiumLc);
-			eserBuild.setOverallPremiumFc(overAllPremiumFc);
-			eserBuild.setOverallPremiumLc(overAllPremiumLc);
+			eserBuild.setActualPremiumFc(new BigDecimal(df.format(premiumFc)));
+			eserBuild.setActualPremiumLc(new BigDecimal(df.format(premiumLc)));
+			eserBuild.setOverallPremiumFc(new BigDecimal(df.format(overAllPremiumFc)));
+			eserBuild.setOverallPremiumLc(new BigDecimal(df.format(overAllPremiumLc)));
 			eserBuild.setQuoteNo(request.getQuoteNo());
 			eserBuild.setCustomerId(request.getCustomerId());
 			eserBuildRepo.saveAndFlush(eserBuild);
@@ -418,35 +512,41 @@ public class QuoteThreadCall implements Callable<Object>  {
 					}
 				}
 			}
-			Double premiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc()  ).sum();					
-			Double overAllPremiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxFc()  ).sum();
+			Double premiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()  ).sum();					
+			Double overAllPremiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()  ).sum();
 			
-			Double premiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc()  ).sum();					
-			Double overAllPremiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxLc()  ).sum();
+			Double premiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()  ).sum();					
+			Double overAllPremiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()  ).sum();
 
 			// Update Eservice Travel
 			EserviceTravelDetails eserTravel = eserTraRepo.findByRequestReferenceNo(request.getRequestReferenceNo() );
 						
+			EserviceBuildingDetails eserBuild = eserBuildRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() ,request.getVehicleId());
+			EserviceMotorDetails eserMotors = eserMotRepo.findByRequestReferenceNoAndRiskIdOrderByRiskIdAsc(request.getRequestReferenceNo() ,request.getVehicleId());
+			String decimalDigits = currencyDecimalFormat(eserMotors.getCompanyId() , eserMotors.getCurrency() ).toString();
+			String stringFormat = "%0"+decimalDigits+"d" ;
+			String decimalLength = decimalDigits.equals("0") ?"" : String.format(stringFormat ,0L)  ;
+			String pattern = StringUtils.isBlank(decimalLength) ?  "#####0" :   "#####0." + decimalLength;
+			DecimalFormat df = new DecimalFormat(pattern);
 			
-			
-			eserTravel.setActualPremiumFc(premiumFc);
-			eserTravel.setActualPremiumLc(premiumLc);
-			eserTravel.setOverallPremiumFc(overAllPremiumFc);
-			eserTravel.setOverallPremiumLc(overAllPremiumLc);
+			eserTravel.setActualPremiumFc(new BigDecimal(df.format(premiumFc)));
+			eserTravel.setActualPremiumLc(new BigDecimal(df.format(premiumLc)));
+			eserTravel.setOverallPremiumFc(new BigDecimal(df.format(overAllPremiumFc)));
+			eserTravel.setOverallPremiumLc(new BigDecimal(df.format(overAllPremiumLc)));
 			eserTravel.setQuoteNo(request.getQuoteNo());
 			eserTravel.setCustomerId(request.getCustomerId());
 			eserTraRepo.saveAndFlush(eserTravel);
 			
 			
 			EserviceTravelGroupDetails groupData = eserGroupRepo.findByRequestReferenceNoAndGroupId(request.getRequestReferenceNo() , request.getGroupId());
-			Double groupPremiumFc = premiumCovers.stream().filter( o -> o.getVehicleId().equals(groupData.getGroupId()) && o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc()  ).sum();					
-			Double groupOverAllPremiumFc = premiumCovers.stream().filter( o -> o.getVehicleId().equals(groupData.getGroupId()) &&  o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxFc()  ).sum();
-			Double groupPremiumLc = premiumCovers.stream().filter( o -> o.getVehicleId().equals(groupData.getGroupId()) &&  o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc()  ).sum();					
-			Double groupOverAllPremiumLc = premiumCovers.stream().filter( o -> o.getVehicleId().equals(groupData.getGroupId()) &&  o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxLc()  ).sum();
-			groupData.setActualPremiumFc(groupPremiumFc);
-			groupData.setActualPremiumLc(groupPremiumLc);
-			groupData.setOverallPremiumFc(groupOverAllPremiumFc);
-			groupData.setOverallPremiumLc(groupOverAllPremiumLc);
+			Double groupPremiumFc = premiumCovers.stream().filter( o -> o.getVehicleId().equals(groupData.getGroupId()) && o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()  ).sum();					
+			Double groupOverAllPremiumFc = premiumCovers.stream().filter( o -> o.getVehicleId().equals(groupData.getGroupId()) &&  o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()  ).sum();
+			Double groupPremiumLc = premiumCovers.stream().filter( o -> o.getVehicleId().equals(groupData.getGroupId()) &&  o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()  ).sum();					
+			Double groupOverAllPremiumLc = premiumCovers.stream().filter( o -> o.getVehicleId().equals(groupData.getGroupId()) &&  o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()  ).sum();
+			groupData.setActualPremiumFc(new BigDecimal(df.format(groupPremiumFc)));
+			groupData.setActualPremiumLc(new BigDecimal(df.format(groupPremiumLc)));
+			groupData.setOverallPremiumFc(new BigDecimal(df.format(groupOverAllPremiumFc)));
+			groupData.setOverallPremiumLc(new BigDecimal(df.format(groupOverAllPremiumLc)));
 			groupData.setQuoteNo(request.getQuoteNo());
 			groupData.setCustomerId(request.getCustomerId());
 			eserGroupRepo.saveAndFlush(groupData);
@@ -608,10 +708,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 	
 	
 	
-	private synchronized Double getDevidedValue(Double inputValue ,Integer groupCount ) {
-		Double devidedValue = 0D ;
+	private synchronized BigDecimal getDevidedValue(BigDecimal inputValue ,Integer groupCount ) {
+		BigDecimal devidedValue = BigDecimal.ZERO ;
 		try {
-			devidedValue = inputValue / groupCount ;
+			devidedValue = inputValue.divide(new BigDecimal(groupCount)) ;
 	
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -713,8 +813,6 @@ public class QuoteThreadCall implements Callable<Object>  {
 	
 	private synchronized QuoteThreadRes call_QuoteSave(QuoteThreadReq  request) {
 		QuoteThreadRes res= new QuoteThreadRes() ;
-		String pattern = "#####0.00";
-		DecimalFormat df = new DecimalFormat(pattern);
 		try {
 			// Home Positiom Master Thread Call
 			Long homeInfo =  homeRepo.countByQuoteNo(request.getQuoteNo());
@@ -760,12 +858,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 				}
 			}
 			
-			Double premiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc()  ).sum();					
-			Double overAllPremiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0)  &&  o.getTaxId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxFc()  ).sum();
+			Double premiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()   ).sum();					
+			Double overAllPremiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0)  &&  o.getTaxId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum();
 			
 			
-			Double premiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc()  ).sum();					
-			Double overAllPremiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0)  &&  o.getTaxId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxLc()  ).sum();
+			Double premiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()   ).sum();					
+			Double overAllPremiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0)  &&  o.getTaxId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()   ).sum();
 			Double vatPremiumFc = overAllPremiumFc - premiumFc ;  
 			Double vatPercent = vatPremiumFc<=0D ?0 : (vatPremiumFc*100) / premiumFc ;
 			Double vatPremiumLc = overAllPremiumLc - premiumLc ;  
@@ -773,9 +871,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 			System.out.println("Home Position OverAllPremiumFc --> "  + overAllPremiumFc );
 			System.out.println("Home Position PremiumLc --> "  + premiumLc );
 			System.out.println("Home Position OverAllPremiumLc --> "  + overAllPremiumLc );
-			Double tax1 =  premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(1) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc()  ).sum();
-			Double tax2 = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(2) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc()  ).sum();
-			Double tax3 = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(3) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc()  ).sum();
+			Double tax1 =  premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(1) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()   ).sum();
+			Double tax2 = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(2) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()   ).sum();
+			Double tax3 = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(3) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()   ).sum();
 			
 			List<Integer> vehicleIds = request.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId ).collect(Collectors.toList());
 			HomePositionMaster home = new HomePositionMaster();
@@ -891,18 +989,23 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			
 			// No OF Vehicles
+			String decimalDigits = currencyDecimalFormat(home.getCompanyId() , home.getCurrency() ).toString();
+			String stringFormat = "%0"+decimalDigits+"d" ;
+			String decimalLength = decimalDigits.equals("0") ?"" : String.format(stringFormat ,0L)  ;
+			String pattern = StringUtils.isBlank(decimalLength) ?  "#####0" :   "#####0." + decimalLength;
+			DecimalFormat df = new DecimalFormat(pattern);
 			
-			home.setPremiumFc(Double.valueOf(df.format(premiumFc)) );
-			home.setOverallPremiumFc(Double.valueOf(df.format(overAllPremiumFc)));
-			home.setVatPremiumFc(Double.valueOf(df.format(vatPremiumFc)));
-			home.setVatPercent(Double.valueOf(df.format(vatPercent)));
-			home.setPremiumLc(Double.valueOf(df.format(premiumLc)) );
-			home.setOverallPremiumLc(Double.valueOf(df.format(overAllPremiumLc)));
-			home.setVatPremiumLc(Double.valueOf(df.format(vatPremiumLc)));
+			home.setPremiumFc(new BigDecimal(df.format(premiumFc)) );
+			home.setOverallPremiumFc(new BigDecimal(df.format(overAllPremiumFc)));
+			home.setVatPremiumFc(new BigDecimal(df.format(vatPremiumFc)));
+			home.setVatPercent(new BigDecimal(df.format(vatPercent)));
+			home.setPremiumLc(new BigDecimal(df.format(premiumLc)) );
+			home.setOverallPremiumLc(new BigDecimal(df.format(overAllPremiumLc)));
+			home.setVatPremiumLc(new BigDecimal(df.format(vatPremiumLc)));
 			home.setFinalizeYn("N");
-			home.setTax1(tax1);
-			home.setTax2(tax2);
-			home.setTax3(tax3);
+			home.setTax1(new BigDecimal(df.format(tax1)));
+			home.setTax2(new BigDecimal(df.format(tax2)));
+			home.setTax3(new BigDecimal(df.format(tax3)));
 			
 			homeRepo.saveAndFlush(home);
 			

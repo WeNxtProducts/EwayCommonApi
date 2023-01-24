@@ -293,7 +293,7 @@ public class PaymentServiceImpl implements PaymentService {
 					if ( mdoc.getSectionId().equals(99999) ) {
 						
 						// Filter Common Docs 
-						List<CoverDocumentUploadDetails> filterDocs = uploadedDocs.stream().filter( o ->  o.getId().equals(0) && o.getSectionId().equals(99999) 
+						List<CoverDocumentUploadDetails> filterDocs = uploadedDocs.stream().filter( o ->  o.getDocumentId().equals(mdoc.getDocumentId()) && o.getId().equals(0) && o.getSectionId().equals(99999) 
 								).collect(Collectors.toList());
 						if(filterDocs.size()<=0 ) {
 							error.add(new Error("01","Common Doc", mdoc.getDocumentName() + " is Mandatory In Common Document"));
@@ -301,7 +301,7 @@ public class PaymentServiceImpl implements PaymentService {
 					} else {
 						// Filter Other Docs 
 						for (DocValidationReq doc :  docValidateReqs) {
-							List<CoverDocumentUploadDetails> filterDocs = uploadedDocs.stream().filter( o ->  o.getId().equals(Integer.valueOf(doc.getRiskId())) && o.getSectionId().equals(Integer.valueOf(doc.getSectionId()))
+							List<CoverDocumentUploadDetails> filterDocs = uploadedDocs.stream().filter( o -> o.getDocumentId().equals(mdoc.getDocumentId()) && o.getId().equals(Integer.valueOf(doc.getRiskId())) && o.getSectionId().equals(Integer.valueOf(doc.getSectionId()))
 									).collect(Collectors.toList());
 							if(filterDocs.size()<=0 && doc.getSectionId().equals(mdoc.getSectionId().toString() ) ) {
 								error.add(new Error("01","Iniduvidual Doc", mdoc.getDocumentName() + " Document Mandatory In " + doc.getProductDesc() + " : " + doc.getRiskId() ));

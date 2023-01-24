@@ -183,7 +183,7 @@ private static final long serialVersionUID = 1L;
  
         
     @Column(name="RATE")
-    private Double     rate ;
+    private BigDecimal     rate ;
 
     @Column(name="CALC_TYPE", length=1)
     private String     calcType ;
@@ -192,7 +192,7 @@ private static final long serialVersionUID = 1L;
     private String     calcTypeDesc ;
 
     @Column(name="MIN_PREMIUM")
-    private Double     minPremium ;
+    private BigDecimal     minPremium ;
 
     @Column(name="REGULATORY_CODE", length=20)
     private String     regulatoryCode ;

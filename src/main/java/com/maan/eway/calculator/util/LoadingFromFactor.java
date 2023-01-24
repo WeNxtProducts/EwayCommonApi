@@ -19,7 +19,7 @@ public class LoadingFromFactor  implements Function<FactorRateRequestDetails,Loa
 						 	.loadingRate("F".equals(calctype)?"0": t.getRate()==null?"0":t.getRate().toString())
 						 	.loadingCalcType(calctype)
 						 	.loadingforId(t.getDiscLoadId()==null?"":t.getDiscLoadId().toString())
-						 	.maxAmount(t.getMinimumPremium()==null?BigDecimal.ZERO:new BigDecimal(t.getMinimumPremium()))
+						 	.maxAmount(t.getMinimumPremium()==null?BigDecimal.ZERO:t.getMinimumPremium())
 						 	.factorTypeId(t.getFactorTypeId()==null?"":t.getFactorTypeId().toString())
 						 	.regulatoryCode(t.getRegulatoryCode()==null?"N/A":t.getRegulatoryCode())
 						 	.build();

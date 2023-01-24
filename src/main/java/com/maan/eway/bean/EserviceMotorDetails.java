@@ -19,6 +19,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -87,7 +88,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="INSURANCE_TYPE_DESC", length=100)
     private String     insuranceTypeDesc ;
 
-
     @Column(name="POLICY_NO", length=100)
     private String     policyNo;
 
@@ -105,25 +105,25 @@ private static final long serialVersionUID = 1L;
     private String     registrationNumber ;
 
     @Column(name="ACTUAL_PREMIUM_LC")
-    private Double     actualPremiumLc ;
+    private BigDecimal     actualPremiumLc ;
 
     @Column(name="CHASSIS_NUMBER", length=20)
     private String     chassisNumber ;
 
     @Column(name="ACTUAL_PREMIUM_FC")
-    private Double     actualPremiumFc ;
+    private BigDecimal     actualPremiumFc ;
 
     @Column(name="VEHICLE_MAKE", length=20)
     private String     vehicleMake ;
 
     @Column(name="OVERALL_PREMIUM_LC")
-    private Double     overallPremiumLc ;
+    private BigDecimal     overallPremiumLc ;
 
     @Column(name="VEHICLE_MAKE_DESC", length=100)
     private String     vehicleMakeDesc ;
 
     @Column(name="OVERALL_PREMIUM_FC")
-    private Double     overallPremiumFc ;
+    private BigDecimal     overallPremiumFc ;
 
     @Column(name="VEHCILE_MODEL", length=20)
     private String     vehcileModel ;
@@ -150,7 +150,7 @@ private static final long serialVersionUID = 1L;
     private String     fuelTypeDesc ;
 
     @Column(name="OVERRIDE_PERCENTAGE")
-    private Double     overridePercentage ;
+    private BigDecimal     overridePercentage ;
 
     @Temporal(TemporalType.DATE)
     @Column(name="REGISTRATION_YEAR")
@@ -160,7 +160,7 @@ private static final long serialVersionUID = 1L;
     private Integer    seatingCapacity ;
 
     @Column(name="CUBIC_CAPACITY")
-    private Double     cubicCapacity ;
+    private BigDecimal     cubicCapacity ;
 
     @Column(name="COLOR", length=100)
     private String     color ;
@@ -169,10 +169,10 @@ private static final long serialVersionUID = 1L;
     private String     colorDesc ;
 
     @Column(name="GROSS_WEIGHT")
-    private Double     grossWeight ;
+    private BigDecimal     grossWeight ;
 
     @Column(name="TARE_WEIGHT")
-    private Double     tareWeight ;
+    private BigDecimal     tareWeight ;
 
     @Column(name="COVERNOTE_NO", length=20)
     private String     covernoteNo ;
@@ -184,10 +184,10 @@ private static final long serialVersionUID = 1L;
     private String     periodOfInsurance ;
 
     @Column(name="WIND_SCREEN_SUM_INSURED")
-    private Double     windScreenSumInsured ;
+    private BigDecimal     windScreenSumInsured ;
 
     @Column(name="ACCCESSORIES_SUM_INSURED")
-    private Double     acccessoriesSumInsured ;
+    private BigDecimal     acccessoriesSumInsured ;
 
     @Column(name="ACCESSORIES_INFORMATION", length=200)
     private String     accessoriesInformation ;
@@ -196,10 +196,10 @@ private static final long serialVersionUID = 1L;
     private Integer    numberOfAxels ;
 
     @Column(name="AXEL_DISTANCE")
-    private Double     axelDistance ;
+    private BigDecimal     axelDistance ;
 
     @Column(name="SUM_INSURED")
-    private Double     sumInsured ;
+    private BigDecimal     sumInsured ;
 
     @Column(name="ENDORSEMENT_TYPE")
     private Integer    endorsementType ;
@@ -208,10 +208,10 @@ private static final long serialVersionUID = 1L;
     private String     endorsementTypeDesc ;
 
     @Column(name="TPPD_FREE_LIMIT")
-    private Double     tppdFreeLimit ;
+    private BigDecimal     tppdFreeLimit ;
 
     @Column(name="TPPD_INCREAE_LIMIT")
-    private Double     tppdIncreaeLimit ;
+    private BigDecimal     tppdIncreaeLimit ;
 
     @Column(name="SPECIAL_TERMS_OF_PREMIUM", length=5)
     private String     specialTermsOfPremium ;
@@ -253,7 +253,7 @@ private static final long serialVersionUID = 1L;
     private Integer    manufactureAge ;
 
     @Column(name="INSURER_SETTLEMENT")
-    private Double     insurerSettlement ;
+    private BigDecimal     insurerSettlement ;
 
     @Column(name="REGISTRATION_AGE")
     private Integer    registrationAge ;
@@ -271,13 +271,13 @@ private static final long serialVersionUID = 1L;
     private String     policyTypeDesc ;
 
     @Column(name="RADIOORCASSETEPLAYER")
-    private Double     radioorcasseteplayer ;
+    private BigDecimal     radioorcasseteplayer ;
 
     @Column(name="STATUS", length=1)
     private String     status ;
 
     @Column(name="ROOF_RACK")
-    private Double     roofRack ;
+    private BigDecimal     roofRack ;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="UPDATED_DATE")
@@ -287,7 +287,7 @@ private static final long serialVersionUID = 1L;
     private String     createdBy ;
 
     @Column(name="SPOT_FOG_LAMP")
-    private Double     spotFogLamp ;
+    private BigDecimal     spotFogLamp ;
 
     @Column(name="UPDATED_BY", length=100)
     private String     updatedBy ;
@@ -323,7 +323,7 @@ private static final long serialVersionUID = 1L;
     private String     defectiveVisionOrHearing ;
 
     @Column(name="EXCHANGE_RATE")
-    private Double     exchangeRate ;
+    private BigDecimal     exchangeRate ;
 
     @Column(name="MOTORING_OFFENCE", length=5)
     private String     motoringOffence ;
@@ -347,7 +347,7 @@ private static final long serialVersionUID = 1L;
     private String     vehicleInterestedCompany ;
 
     @Column(name="CLAIM_RATIO")
-    private Double     claimRatio ;
+    private BigDecimal     claimRatio ;
 
     @Column(name="INTERESTED_COMPANY_DETAILS", length=200)
     private String     interestedCompanyDetails ;
@@ -456,6 +456,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="PROMOCODE", length=100)
     private String     promocode ;
+    
+    @Column(name="DRIVER_YN", length=100)
+    private String     driverYn;
 }
 
 

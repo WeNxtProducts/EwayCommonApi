@@ -271,26 +271,26 @@ public class QuoteServiceImpl implements QuoteService {
 						coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
 						coverRes.setDependentCoveryn(filterCover.get(0).getDependentCoverYn());
 						coverRes.setDependentCoverId(filterCover.get(0).getDependentCoverId()==null?"":filterCover.get(0).getDependentCoverId().toString());
-						coverRes.setPremiumExcluedTax( filterCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal(filterCover.get(0).getPremiumExcludedTaxFc()) );	
-						coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumAfterDiscountFc().toString())));
-						coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumBeforeDiscountFc().toString())));
-						coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumExcludedTaxFc().toString())));
-						coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumIncludedTaxFc().toString())));
+						coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc() );	
+						coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc());
+						coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc());
+						coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc());
+						coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc());
 						coverRes.setIsselected(filterCover.get(0).getIsSelected());
 						coverRes.setDependentCoveryn(filterCover.get(0).getDependentCoverYn());
 						coverRes.setDependentCoverId(filterCover.get(0).getDependentCoverId()==null?"": filterCover.get(0).getDependentCoverId().toString());
 						coverRes.setSubCoverId(null);
 						coverRes.setSubCoverDesc(null);
 						coverRes.setSubCoverName(null);
-						coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal (filterCover.get(0).getPremiumAfterDiscountFc()));
-						coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal (filterCover.get(0).getPremiumBeforeDiscountFc()));
-						coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal (filterCover.get(0).getPremiumExcludedTaxFc()));
-						coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc()==null ? null :new BigDecimal(filterCover.get(0).getPremiumIncludedTaxFc()));
-						coverRes.setPremiumAfterDiscountLC(filterCover.get(0).getPremiumAfterDiscountLc()==null ? null : new BigDecimal(filterCover.get(0).getPremiumAfterDiscountLc()));
-						coverRes.setPremiumBeforeDiscountLC(filterCover.get(0).getPremiumBeforeDiscountLc()==null ? null : new BigDecimal( filterCover.get(0).getPremiumBeforeDiscountLc()));
-						coverRes.setPremiumExcluedTaxLC(filterCover.get(0).getPremiumExcludedTaxLc()==null ? null : new BigDecimal(filterCover.get(0).getPremiumExcludedTaxLc()));
-						coverRes.setPremiumIncludedTaxLC(filterCover.get(0).getPremiumIncludedTaxLc()==null ? null :new BigDecimal (filterCover.get(0).getPremiumIncludedTaxLc()));
-						coverRes.setExchangeRate(filterCover.get(0).getExchangeRate()==null?null:new BigDecimal(filterCover.get(0).getExchangeRate()));	
+						coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc());
+						coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc());
+						coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc());
+						coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc());
+						coverRes.setPremiumAfterDiscountLC(filterCover.get(0).getPremiumAfterDiscountLc());
+						coverRes.setPremiumBeforeDiscountLC(filterCover.get(0).getPremiumBeforeDiscountLc());
+						coverRes.setPremiumExcluedTaxLC(filterCover.get(0).getPremiumExcludedTaxLc());
+						coverRes.setPremiumIncludedTaxLC(filterCover.get(0).getPremiumIncludedTaxLc());
+						coverRes.setExchangeRate(filterCover.get(0).getExchangeRate());	
 						
 						// Discount Covers Or Promo Covers
 						List<PolicyCoverData> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) && ( o.getCoverageType().equalsIgnoreCase("D") ||  o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
@@ -328,7 +328,7 @@ public class QuoteServiceImpl implements QuoteService {
 						 coverRes.setMinimumPremium(filterCover.get(0).getMinimumPremium()==null ? null : new BigDecimal(filterCover.get(0).getMinimumPremium().toString()));
 						 coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
 						 coverRes.setSumInsured(filterCover.get(0).getSumInsured()==null ? null : new BigDecimal(filterCover.get(0).getSumInsured().toString()));
-						 coverRes.setRate(filterCover.get(0).getRate());
+						 coverRes.setRate( filterCover.get(0).getRate()==null?null : Double.valueOf(filterCover.get(0).getRate().toString()));
 						
 						List<Cover>  subCoverListRes = new ArrayList<Cover>();
 						List<PolicyCoverData> filterSubCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0)).collect(Collectors.toList());
@@ -338,23 +338,23 @@ public class QuoteServiceImpl implements QuoteService {
 							subCoverRes.setIsSubCover(filterSubCover.get(0).getSubCoverYn());
 							subCoverRes.setDependentCoveryn(filterSubCover.get(0).getDependentCoverYn());
 							subCoverRes.setDependentCoverId(filterSubCover.get(0).getDependentCoverId()==null?"":filterSubCover.get(0).getDependentCoverId().toString());
-							subCoverRes.setPremiumExcluedTax( filterSubCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal(filterSubCover.get(0).getPremiumExcludedTaxFc()) );	
-							subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal((filterSubCover.get(0).getPremiumAfterDiscountFc().toString())));
-							subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal((filterSubCover.get(0).getPremiumBeforeDiscountFc().toString())));
-							subCoverRes.setPremiumExcluedTax(filterSubCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal((filterSubCover.get(0).getPremiumExcludedTaxFc().toString())));
-							subCoverRes.setPremiumIncludedTax(filterSubCover.get(0).getPremiumIncludedTaxFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumIncludedTaxFc().toString())));
+							subCoverRes.setPremiumExcluedTax(filterSubCover.get(0).getPremiumExcludedTaxFc() );	
+							subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc());
+							subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc());
+							subCoverRes.setPremiumExcluedTax(filterSubCover.get(0).getPremiumExcludedTaxFc());
+							subCoverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc());
 							subCoverRes.setIsselected(filterSubCover.get(0).getIsSelected());
-							subCoverRes.setExchangeRate(filterSubCover.get(0).getExchangeRate()==null?null:new BigDecimal(filterSubCover.get(0).getExchangeRate()));	
+							subCoverRes.setExchangeRate(filterSubCover.get(0).getExchangeRate());	
 							
 
-							subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal (filterSubCover.get(0).getPremiumAfterDiscountFc()));
-							subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal (filterSubCover.get(0).getPremiumBeforeDiscountFc()));
-							subCoverRes.setPremiumExcluedTax(filterSubCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal (filterSubCover.get(0).getPremiumExcludedTaxFc()));
-							subCoverRes.setPremiumIncludedTax(filterSubCover.get(0).getPremiumIncludedTaxFc()==null ? null :new BigDecimal(filterSubCover.get(0).getPremiumIncludedTaxFc()));
-							subCoverRes.setPremiumAfterDiscountLC(filterSubCover.get(0).getPremiumAfterDiscountLc()==null ? null : new BigDecimal(filterSubCover.get(0).getPremiumAfterDiscountLc()));
-							subCoverRes.setPremiumBeforeDiscountLC(filterSubCover.get(0).getPremiumBeforeDiscountLc()==null ? null : new BigDecimal( filterSubCover.get(0).getPremiumBeforeDiscountLc()));
-							subCoverRes.setPremiumExcluedTaxLC(filterSubCover.get(0).getPremiumExcludedTaxLc()==null ? null : new BigDecimal(filterSubCover.get(0).getPremiumExcludedTaxLc()));
-							subCoverRes.setPremiumIncludedTaxLC(filterSubCover.get(0).getPremiumIncludedTaxLc()==null ? null :new BigDecimal (filterSubCover.get(0).getPremiumIncludedTaxLc()));
+							subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc());
+							subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc());
+							subCoverRes.setPremiumExcluedTax(filterSubCover.get(0).getPremiumExcludedTaxFc());
+							subCoverRes.setPremiumIncludedTax(filterSubCover.get(0).getPremiumIncludedTaxFc());
+							subCoverRes.setPremiumAfterDiscountLC(filterSubCover.get(0).getPremiumAfterDiscountLc());
+							subCoverRes.setPremiumBeforeDiscountLC(filterSubCover.get(0).getPremiumBeforeDiscountLc());
+							subCoverRes.setPremiumExcluedTaxLC(filterSubCover.get(0).getPremiumExcludedTaxLc());
+							subCoverRes.setPremiumIncludedTaxLC(filterSubCover.get(0).getPremiumIncludedTaxLc());
 							
 							
 							// Discount Covers Or Promo Covers
@@ -439,26 +439,26 @@ public class QuoteServiceImpl implements QuoteService {
 						coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
 						coverRes.setDependentCoveryn(filterCover.get(0).getDependentCoverYn());
 						coverRes.setDependentCoverId(filterCover.get(0).getDependentCoverId()==null?"":filterCover.get(0).getDependentCoverId().toString());
-						coverRes.setPremiumExcluedTax( filterCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal(filterCover.get(0).getPremiumExcludedTaxFc()) );	
-						coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumAfterDiscountFc().toString())));
-						coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumBeforeDiscountFc().toString())));
-						coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumExcludedTaxFc().toString())));
-						coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumIncludedTaxFc().toString())));
+						coverRes.setPremiumExcluedTax( filterCover.get(0).getPremiumExcludedTaxFc() );	
+						coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc());
+						coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc());
+						coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc());
+						coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc());
 						coverRes.setIsselected(filterCover.get(0).getIsSelected());
 						coverRes.setDependentCoveryn(filterCover.get(0).getDependentCoverYn());
 						coverRes.setDependentCoverId(filterCover.get(0).getDependentCoverId()==null?"": filterCover.get(0).getDependentCoverId().toString());
 						coverRes.setSubCoverId(null);
 						coverRes.setSubCoverDesc(null);
 						coverRes.setSubCoverName(null);
-						coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal (filterCover.get(0).getPremiumAfterDiscountFc()));
-						coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal (filterCover.get(0).getPremiumBeforeDiscountFc()));
-						coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal (filterCover.get(0).getPremiumExcludedTaxFc()));
-						coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc()==null ? null :new BigDecimal(filterCover.get(0).getPremiumIncludedTaxFc()));
-						coverRes.setPremiumAfterDiscountLC(filterCover.get(0).getPremiumAfterDiscountLc()==null ? null : new BigDecimal(filterCover.get(0).getPremiumAfterDiscountLc()));
-						coverRes.setPremiumBeforeDiscountLC(filterCover.get(0).getPremiumBeforeDiscountLc()==null ? null : new BigDecimal( filterCover.get(0).getPremiumBeforeDiscountLc()));
-						coverRes.setPremiumExcluedTaxLC(filterCover.get(0).getPremiumExcludedTaxLc()==null ? null : new BigDecimal(filterCover.get(0).getPremiumExcludedTaxLc()));
-						coverRes.setPremiumIncludedTaxLC(filterCover.get(0).getPremiumIncludedTaxLc()==null ? null :new BigDecimal (filterCover.get(0).getPremiumIncludedTaxLc()));
-						coverRes.setExchangeRate(filterCover.get(0).getExchangeRate()==null?null:new BigDecimal(filterCover.get(0).getExchangeRate()));	
+						coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc());
+						coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc());
+						coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc());
+						coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc());
+						coverRes.setPremiumAfterDiscountLC(filterCover.get(0).getPremiumAfterDiscountLc());
+						coverRes.setPremiumBeforeDiscountLC(filterCover.get(0).getPremiumBeforeDiscountLc());
+						coverRes.setPremiumExcluedTaxLC(filterCover.get(0).getPremiumExcludedTaxLc());
+						coverRes.setPremiumIncludedTaxLC(filterCover.get(0).getPremiumIncludedTaxLc());
+						coverRes.setExchangeRate(filterCover.get(0).getExchangeRate());	
 						
 						// Discount Covers Or Promo Covers
 						List<PolicyCoverData> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) && ( o.getCoverageType().equalsIgnoreCase("D") ||  o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
@@ -496,7 +496,7 @@ public class QuoteServiceImpl implements QuoteService {
 						 coverRes.setMinimumPremium(filterCover.get(0).getMinimumPremium()==null ? null : new BigDecimal(filterCover.get(0).getMinimumPremium().toString()));
 						 coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
 						 coverRes.setSumInsured(filterCover.get(0).getSumInsured()==null ? null : new BigDecimal(filterCover.get(0).getSumInsured().toString()));
-						 coverRes.setRate(filterCover.get(0).getRate());
+						 coverRes.setRate(filterCover.get(0).getRate()==null?null : Double.valueOf(filterCover.get(0).getRate().toString()));
 						
 						List<Cover>  subCoverListRes = new ArrayList<Cover>();
 						List<PolicyCoverData> filterSubCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0)).collect(Collectors.toList());
@@ -506,23 +506,23 @@ public class QuoteServiceImpl implements QuoteService {
 							subCoverRes.setIsSubCover(filterSubCover.get(0).getSubCoverYn());
 							subCoverRes.setDependentCoveryn(filterSubCover.get(0).getDependentCoverYn());
 							subCoverRes.setDependentCoverId(filterSubCover.get(0).getDependentCoverId()==null?"":filterSubCover.get(0).getDependentCoverId().toString());
-							subCoverRes.setPremiumExcluedTax( filterSubCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal(filterSubCover.get(0).getPremiumExcludedTaxFc()) );	
-							subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal((filterSubCover.get(0).getPremiumAfterDiscountFc().toString())));
-							subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal((filterSubCover.get(0).getPremiumBeforeDiscountFc().toString())));
-							subCoverRes.setPremiumExcluedTax(filterSubCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal((filterSubCover.get(0).getPremiumExcludedTaxFc().toString())));
-							subCoverRes.setPremiumIncludedTax(filterSubCover.get(0).getPremiumIncludedTaxFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumIncludedTaxFc().toString())));
+							subCoverRes.setPremiumExcluedTax( filterSubCover.get(0).getPremiumExcludedTaxFc() );	
+							subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc());
+							subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc());
+							subCoverRes.setPremiumExcluedTax(filterSubCover.get(0).getPremiumExcludedTaxFc());
+							subCoverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc());
 							subCoverRes.setIsselected(filterSubCover.get(0).getIsSelected());
-							subCoverRes.setExchangeRate(filterSubCover.get(0).getExchangeRate()==null?null:new BigDecimal(filterSubCover.get(0).getExchangeRate()));	
+							subCoverRes.setExchangeRate(filterSubCover.get(0).getExchangeRate());	
 							
 
-							subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal (filterSubCover.get(0).getPremiumAfterDiscountFc()));
-							subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal (filterSubCover.get(0).getPremiumBeforeDiscountFc()));
-							subCoverRes.setPremiumExcluedTax(filterSubCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal (filterSubCover.get(0).getPremiumExcludedTaxFc()));
-							subCoverRes.setPremiumIncludedTax(filterSubCover.get(0).getPremiumIncludedTaxFc()==null ? null :new BigDecimal(filterSubCover.get(0).getPremiumIncludedTaxFc()));
-							subCoverRes.setPremiumAfterDiscountLC(filterSubCover.get(0).getPremiumAfterDiscountLc()==null ? null : new BigDecimal(filterSubCover.get(0).getPremiumAfterDiscountLc()));
-							subCoverRes.setPremiumBeforeDiscountLC(filterSubCover.get(0).getPremiumBeforeDiscountLc()==null ? null : new BigDecimal( filterSubCover.get(0).getPremiumBeforeDiscountLc()));
-							subCoverRes.setPremiumExcluedTaxLC(filterSubCover.get(0).getPremiumExcludedTaxLc()==null ? null : new BigDecimal(filterSubCover.get(0).getPremiumExcludedTaxLc()));
-							subCoverRes.setPremiumIncludedTaxLC(filterSubCover.get(0).getPremiumIncludedTaxLc()==null ? null :new BigDecimal (filterSubCover.get(0).getPremiumIncludedTaxLc()));
+							subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc());
+							subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc());
+							subCoverRes.setPremiumExcluedTax(filterSubCover.get(0).getPremiumExcludedTaxFc());
+							subCoverRes.setPremiumIncludedTax(filterSubCover.get(0).getPremiumIncludedTaxFc());
+							subCoverRes.setPremiumAfterDiscountLC(filterSubCover.get(0).getPremiumAfterDiscountLc());
+							subCoverRes.setPremiumBeforeDiscountLC(filterSubCover.get(0).getPremiumBeforeDiscountLc());
+							subCoverRes.setPremiumExcluedTaxLC(filterSubCover.get(0).getPremiumExcludedTaxLc());
+							subCoverRes.setPremiumIncludedTaxLC(filterSubCover.get(0).getPremiumIncludedTaxLc());
 							
 							
 							// Discount Covers Or Promo Covers
@@ -611,26 +611,26 @@ public class QuoteServiceImpl implements QuoteService {
 						coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
 						coverRes.setDependentCoveryn(filterCover.get(0).getDependentCoverYn());
 						coverRes.setDependentCoverId(filterCover.get(0).getDependentCoverId()==null?"":filterCover.get(0).getDependentCoverId().toString());
-						coverRes.setPremiumExcluedTax( filterCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal(filterCover.get(0).getPremiumExcludedTaxFc()) );	
-						coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumAfterDiscountFc().toString())));
-						coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumBeforeDiscountFc().toString())));
-						coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumExcludedTaxFc().toString())));
-						coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumIncludedTaxFc().toString())));
+						coverRes.setPremiumExcluedTax( filterCover.get(0).getPremiumExcludedTaxFc());	
+						coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc());
+						coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc());
+						coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc());
+						coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc());
 						coverRes.setIsselected(filterCover.get(0).getIsSelected());
 						coverRes.setDependentCoveryn(filterCover.get(0).getDependentCoverYn());
 						coverRes.setDependentCoverId(filterCover.get(0).getDependentCoverId()==null?"": filterCover.get(0).getDependentCoverId().toString());
 						coverRes.setSubCoverId(null);
 						coverRes.setSubCoverDesc(null);
 						coverRes.setSubCoverName(null);
-						coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal (filterCover.get(0).getPremiumAfterDiscountFc()));
-						coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal (filterCover.get(0).getPremiumBeforeDiscountFc()));
-						coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal (filterCover.get(0).getPremiumExcludedTaxFc()));
-						coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc()==null ? null :new BigDecimal(filterCover.get(0).getPremiumIncludedTaxFc()));
-						coverRes.setPremiumAfterDiscountLC(filterCover.get(0).getPremiumAfterDiscountLc()==null ? null : new BigDecimal(filterCover.get(0).getPremiumAfterDiscountLc()));
-						coverRes.setPremiumBeforeDiscountLC(filterCover.get(0).getPremiumBeforeDiscountLc()==null ? null : new BigDecimal( filterCover.get(0).getPremiumBeforeDiscountLc()));
-						coverRes.setPremiumExcluedTaxLC(filterCover.get(0).getPremiumExcludedTaxLc()==null ? null : new BigDecimal(filterCover.get(0).getPremiumExcludedTaxLc()));
-						coverRes.setPremiumIncludedTaxLC(filterCover.get(0).getPremiumIncludedTaxLc()==null ? null :new BigDecimal (filterCover.get(0).getPremiumIncludedTaxLc()));
-						coverRes.setExchangeRate(filterCover.get(0).getExchangeRate()==null?null:new BigDecimal(filterCover.get(0).getExchangeRate()));	
+						coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc());
+						coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc());
+						coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc());
+						coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc());
+						coverRes.setPremiumAfterDiscountLC(filterCover.get(0).getPremiumAfterDiscountLc());
+						coverRes.setPremiumBeforeDiscountLC(filterCover.get(0).getPremiumBeforeDiscountLc());
+						coverRes.setPremiumExcluedTaxLC(filterCover.get(0).getPremiumExcludedTaxLc());
+						coverRes.setPremiumIncludedTaxLC(filterCover.get(0).getPremiumIncludedTaxLc());
+						coverRes.setExchangeRate(filterCover.get(0).getExchangeRate());	
 						
 						// Discount Covers Or Promo Covers
 						List<PolicyCoverData> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) && ( o.getCoverageType().equalsIgnoreCase("D") ||  o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
@@ -668,7 +668,7 @@ public class QuoteServiceImpl implements QuoteService {
 						 coverRes.setMinimumPremium(filterCover.get(0).getMinimumPremium()==null ? null : new BigDecimal(filterCover.get(0).getMinimumPremium().toString()));
 						 coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
 						 coverRes.setSumInsured(filterCover.get(0).getSumInsured()==null ? null : new BigDecimal(filterCover.get(0).getSumInsured().toString()));
-						 coverRes.setRate(filterCover.get(0).getRate());
+						 coverRes.setRate(filterCover.get(0).getRate()==null?null : Double.valueOf(filterCover.get(0).getRate().toString()));
 						
 						List<Cover>  subCoverListRes = new ArrayList<Cover>();
 						List<PolicyCoverData> filterSubCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0)).collect(Collectors.toList());
@@ -678,23 +678,23 @@ public class QuoteServiceImpl implements QuoteService {
 							subCoverRes.setIsSubCover(filterSubCover.get(0).getSubCoverYn());
 							subCoverRes.setDependentCoveryn(filterSubCover.get(0).getDependentCoverYn());
 							subCoverRes.setDependentCoverId(filterSubCover.get(0).getDependentCoverId()==null?"":filterSubCover.get(0).getDependentCoverId().toString());
-							subCoverRes.setPremiumExcluedTax( filterSubCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal(filterSubCover.get(0).getPremiumExcludedTaxFc()) );	
-							subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal((filterSubCover.get(0).getPremiumAfterDiscountFc().toString())));
-							subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal((filterSubCover.get(0).getPremiumBeforeDiscountFc().toString())));
-							subCoverRes.setPremiumExcluedTax(filterSubCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal((filterSubCover.get(0).getPremiumExcludedTaxFc().toString())));
-							subCoverRes.setPremiumIncludedTax(filterSubCover.get(0).getPremiumIncludedTaxFc()==null ? null : new BigDecimal((filterCover.get(0).getPremiumIncludedTaxFc().toString())));
+							subCoverRes.setPremiumExcluedTax( filterSubCover.get(0).getPremiumExcludedTaxFc() );	
+							subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc());
+							subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc());
+							subCoverRes.setPremiumExcluedTax(filterSubCover.get(0).getPremiumExcludedTaxFc());
+							subCoverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc());
 							subCoverRes.setIsselected(filterSubCover.get(0).getIsSelected());
-							subCoverRes.setExchangeRate(filterSubCover.get(0).getExchangeRate()==null?null:new BigDecimal(filterSubCover.get(0).getExchangeRate()));	
+							subCoverRes.setExchangeRate(filterSubCover.get(0).getExchangeRate());	
 							
 
-							subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc()==null ? null : new BigDecimal (filterSubCover.get(0).getPremiumAfterDiscountFc()));
-							subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc()==null ? null : new BigDecimal (filterSubCover.get(0).getPremiumBeforeDiscountFc()));
-							subCoverRes.setPremiumExcluedTax(filterSubCover.get(0).getPremiumExcludedTaxFc()==null ? null : new BigDecimal (filterSubCover.get(0).getPremiumExcludedTaxFc()));
-							subCoverRes.setPremiumIncludedTax(filterSubCover.get(0).getPremiumIncludedTaxFc()==null ? null :new BigDecimal(filterSubCover.get(0).getPremiumIncludedTaxFc()));
-							subCoverRes.setPremiumAfterDiscountLC(filterSubCover.get(0).getPremiumAfterDiscountLc()==null ? null : new BigDecimal(filterSubCover.get(0).getPremiumAfterDiscountLc()));
-							subCoverRes.setPremiumBeforeDiscountLC(filterSubCover.get(0).getPremiumBeforeDiscountLc()==null ? null : new BigDecimal( filterSubCover.get(0).getPremiumBeforeDiscountLc()));
-							subCoverRes.setPremiumExcluedTaxLC(filterSubCover.get(0).getPremiumExcludedTaxLc()==null ? null : new BigDecimal(filterSubCover.get(0).getPremiumExcludedTaxLc()));
-							subCoverRes.setPremiumIncludedTaxLC(filterSubCover.get(0).getPremiumIncludedTaxLc()==null ? null :new BigDecimal (filterSubCover.get(0).getPremiumIncludedTaxLc()));
+							subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc());
+							subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc());
+							subCoverRes.setPremiumExcluedTax(filterSubCover.get(0).getPremiumExcludedTaxFc());
+							subCoverRes.setPremiumIncludedTax(filterSubCover.get(0).getPremiumIncludedTaxFc());
+							subCoverRes.setPremiumAfterDiscountLC(filterSubCover.get(0).getPremiumAfterDiscountLc());
+							subCoverRes.setPremiumBeforeDiscountLC(filterSubCover.get(0).getPremiumBeforeDiscountLc());
+							subCoverRes.setPremiumExcluedTaxLC(filterSubCover.get(0).getPremiumExcludedTaxLc());
+							subCoverRes.setPremiumIncludedTaxLC(filterSubCover.get(0).getPremiumIncludedTaxLc());
 							
 							
 							// Discount Covers Or Promo Covers
@@ -749,13 +749,13 @@ public class QuoteServiceImpl implements QuoteService {
 		try {
 			for (PolicyCoverData disc :  filterDiscountCover ) {
 				Discount discount = new Discount();
-				discount.setDiscountAmount(disc.getPremiumIncludedTaxFc()==null?new BigDecimal(0): new BigDecimal(disc.getPremiumIncludedTaxFc()));
+				discount.setDiscountAmount(disc.getPremiumIncludedTaxFc());
 				discount.setDiscountCalcType(disc.getCalcType());
 				discount.setDiscountId(disc.getDiscLoadId().toString());
 				discount.setDiscountDesc(disc.getCoverName());	
 				discount.setDiscountRate(disc.getRate()==null?"0.0" :disc.getRate().toString());
 				discount.setFactorTypeId(disc.getFactorTypeId()==null?"" : disc.getFactorTypeId().toString());
-				discount.setMaxAmount(disc.getMinimumPremium()==null?null :new BigDecimal(disc.getMinimumPremium()));
+				discount.setMaxAmount(disc.getMinimumPremium());
 				discount.setSubCoverId(disc.getSubCoverId().toString());
 				discount.setDiscountforId(disc.getDependentCoverId()==null?null:disc.getDependentCoverId().toString());
 				
@@ -778,13 +778,13 @@ public class QuoteServiceImpl implements QuoteService {
 			for (PolicyCoverData lod :  filterLodingCover ) {
 				Loading loding = new Loading();
 				loding.setFactorTypeId(lod.getFactorTypeId()==null?null:lod.getFactorTypeId().toString());
-				loding.setLoadingAmount(lod.getMinimumPremium()==null?null:new BigDecimal(lod.getMinimumPremium()));
+				loding.setLoadingAmount(lod.getMinimumPremium());
 				loding.setLoadingCalcType(lod.getCalcType());
 				loding.setLoadingDesc(lod.getCoverName());
 				loding.setLoadingforId(lod.getDependentCoverId()==null?null:lod.getDependentCoverId().toString());
 				loding.setLoadingId(lod.getDiscLoadId()==null?null:lod.getDiscLoadId().toString());
 				loding.setLoadingRate(lod.getRate()==null?null:lod.getRate().toString());
-				loding.setMaxAmount(lod.getPremiumIncludedTaxFc()==null?null:new BigDecimal(lod.getPremiumIncludedTaxFc()));
+				loding.setMaxAmount(lod.getPremiumIncludedTaxFc());
 				//loding.setSubCoverId(lod.getLodingSubcoverId()==null?null:lod.getLodingSubcoverId().toString());	
 				LodingList.add(loding);
 			}
@@ -804,13 +804,14 @@ public class QuoteServiceImpl implements QuoteService {
 				Tax taxes = new Tax();
 				taxes.setCalcType(tax.getCalcType());
 				taxes.setIsTaxExempted(tax.getIsTaxExtempted());
-				taxes.setTaxAmount(tax.getTaxAmount()==null?null:new BigDecimal(tax.getTaxAmount()));
+				taxes.setTaxAmount(tax.getTaxAmount());
 				taxes.setTaxDesc(tax.getTaxDesc());
 				taxes.setTaxExemptCode(tax.getTaxExemptCode());
 				taxes.setTaxExemptType(tax.getTaxExemptType());
 				taxes.setTaxId(tax.getTaxId()==null?null:tax.getTaxId().toString()) ;
-				taxes.setTaxRate(tax.getTaxRate());
+				taxes.setTaxRate(tax.getTaxRate()==null?null : Double.valueOf(tax.getTaxRate().toString()));
 				TaxList.add(taxes);
+			
 			}
 			
 		} catch(Exception e){
@@ -1255,10 +1256,10 @@ public class QuoteServiceImpl implements QuoteService {
 					String sumInsuredColumn = filterCovers.stream().filter( o -> o.getCoverId().equals(cover.getCoverId() )
 							&& o.getSubCoverId().equals(cover.getSubCoverId() )).collect(Collectors.toList()).get(0).getCoverBasedOn();
 					if(sumInsuredColumn.equalsIgnoreCase("buildingSuminsured")) {
-						buildingSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
+						buildingSuminsured =cover.getSumInsured();
 						
 					} else if(sumInsuredColumn.equalsIgnoreCase("allriskSuminsured")) {
-						allriskSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
+						allriskSuminsured =cover.getSumInsured();
 						
 					}  else if(sumInsuredColumn.equalsIgnoreCase("paDeathSuminsured")) {
 						OccupationReqClass  occ = new OccupationReqClass(); 
@@ -1269,9 +1270,9 @@ public class QuoteServiceImpl implements QuoteService {
 						occupation.add(occ);
 						
 					} else if(sumInsuredColumn.equalsIgnoreCase("contentSuminsured")) {
-						contentSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
+						contentSuminsured =cover.getSumInsured();
 					}  else if(sumInsuredColumn.equalsIgnoreCase("personalIntSuminsured")) {
-						personalIntSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
+						personalIntSuminsured =cover.getSumInsured();
 						
 					} 
 //						else if(sumInsuredColumn.equalsIgnoreCase("paPermanentdisablementSuminsured")) {

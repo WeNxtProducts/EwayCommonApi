@@ -20,6 +20,7 @@ import javax.persistence.Table;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -118,25 +119,25 @@ private static final long serialVersionUID = 1L;
     private String     calcType ;
 
     @Column(name="MINIMUM_PREMIUM")
-    private Double     minimumPremium ;
+    private BigDecimal     minimumPremium ;
 
     @Column(name="SUM_INSURED")
-    private Double     sumInsured ;
+    private BigDecimal     sumInsured ;
 
     @Column(name="RATE")
-    private Double     rate ;
+    private BigDecimal     rate ;
 
     @Column(name="FACTOR_TYPE_ID")
-    private Double     factorTypeId ;
+    private BigDecimal     factorTypeId ;
 
     @Column(name="CURRENCY", length=20)
     private String     currency ;
 
     @Column(name="EXCHANGE_RATE")
-    private Double     exchangeRate ;
+    private BigDecimal     exchangeRate ;
 
     @Column(name="PREMIUM_BEFORE_DISCOUNT_LC")
-    private Double     premiumBeforeDiscountLc ;
+    private BigDecimal     premiumBeforeDiscountLc ;
 
     @Column(name="DEPENDENT_COVER_YN", length=20)
     private String     dependentCoverYn ;
@@ -145,31 +146,31 @@ private static final long serialVersionUID = 1L;
     private Integer    dependentCoverId ;
 
     @Column(name="PREMIUM_BEFORE_DISCOUNT_FC")
-    private Double     premiumBeforeDiscountFc ;
+    private BigDecimal     premiumBeforeDiscountFc ;
 
     @Column(name="PREMIUM_AFTER_DISCOUNT_LC")
-    private Double     premiumAfterDiscountLc ;
+    private BigDecimal     premiumAfterDiscountLc ;
 
     @Column(name="COVERAGE_TYPE", length=20)
     private String     coverageType ;
 
     @Column(name="PREMIUM_AFTER_DISCOUNT_FC")
-    private Double     premiumAfterDiscountFc ;
+    private BigDecimal     premiumAfterDiscountFc ;
 
     @Column(name="IS_SELECTED", length=20)
     private String     isSelected ;
 
     @Column(name="PREMIUM_EXCLUDED_TAX_LC")
-    private Double     premiumExcludedTaxLc ;
+    private BigDecimal     premiumExcludedTaxLc ;
 
     @Column(name="PREMIUM_EXCLUDED_TAX_FC")
-    private Double     premiumExcludedTaxFc ;
+    private BigDecimal     premiumExcludedTaxFc ;
 
     @Column(name="PREMIUM_INCLUDED_TAX_LC")
-    private Double     premiumIncludedTaxLc ;
+    private BigDecimal     premiumIncludedTaxLc ;
 
     @Column(name="PREMIUM_INCLUDED_TAX_FC")
-    private Double     premiumIncludedTaxFc ;
+    private BigDecimal     premiumIncludedTaxFc ;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")
@@ -182,10 +183,10 @@ private static final long serialVersionUID = 1L;
     private String     createdBy ;
 
     @Column(name="TAX_RATE")
-    private Double     taxRate ;
+    private BigDecimal     taxRate ;
 
     @Column(name="TAX_AMOUNT")
-    private Double     taxAmount ;
+    private BigDecimal     taxAmount ;
 
     @Column(name="TAX_DESC", length=100)
     private String     taxDesc ;
@@ -203,7 +204,7 @@ private static final long serialVersionUID = 1L;
     private String     taxExemptCode ;
 
     @Column(name="MAX_LODING_AMOUNT")
-    private Double     maxLodingAmount ;
+    private BigDecimal     maxLodingAmount ;
 
     @Column(name="Is_REFERRAL", length=5)
     private String     isReferral ;
@@ -215,11 +216,11 @@ private static final long serialVersionUID = 1L;
     private String     userOpt ;
 
     @Column(name="ACTUAL_RATE")
-    private Double     actualRate ;
+    private BigDecimal     actualRate ;
 
 
     @Column(name="REGUL_SUM_INSURED")
-    private Double     regulSumInsured ;
+    private BigDecimal     regulSumInsured ;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

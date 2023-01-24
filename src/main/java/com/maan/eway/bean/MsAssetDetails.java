@@ -125,7 +125,7 @@ private static final long serialVersionUID = 1L;
     
     
     @Column(name="EXCHANGE_RATE")
-    private Double exchangeRate;
+    private BigDecimal exchangeRate;
     
     
     @Temporal(TemporalType.TIMESTAMP)

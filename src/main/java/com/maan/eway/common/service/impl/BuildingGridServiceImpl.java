@@ -1,5 +1,6 @@
 package com.maan.eway.common.service.impl;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -592,10 +593,10 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 							branchCode = req.getBranchCode();
 						}
 						savedata.setBranchCode(branchCode);
-						savedata.setActualPremiumFc(0d);
-						savedata.setActualPremiumLc(0d);
-						savedata.setOverallPremiumFc(0d);
-						savedata.setOverallPremiumLc(0d);
+						savedata.setActualPremiumFc(BigDecimal.ZERO );
+						savedata.setActualPremiumLc(BigDecimal.ZERO);
+						savedata.setOverallPremiumFc(BigDecimal.ZERO);
+						savedata.setOverallPremiumLc(BigDecimal.ZERO);
 						savedata.setQuoteNo("");
 						repo.saveAndFlush(savedata);
 					}

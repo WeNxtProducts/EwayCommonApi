@@ -71,6 +71,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="COMPANY_ID", length=20)
     private String     companyId ;
 
+
     @Column(name="POLICY_NO", length=100)
     private String     policyNo;
 
@@ -129,7 +130,7 @@ private static final long serialVersionUID = 1L;
     private Integer    buildingAge ;
 
     @Column(name="BUILDING_AREA_SQM")
-    private Double     buildingAreaSqm ;
+    private BigDecimal     buildingAreaSqm ;
 
     @Column(name="BUILDING_SUMINSURED")
     private BigDecimal     buildingSuminsured ;
@@ -214,7 +215,7 @@ private static final long serialVersionUID = 1L;
     private String     currency ;
 
     @Column(name="EXCHANGE_RATE")
-    private Double     exchangeRate ;
+    private BigDecimal     exchangeRate ;
 
     @Column(name="ADMIN_LOGIN_ID", length=100)
     private String     adminLoginId ;
@@ -245,17 +246,17 @@ private static final long serialVersionUID = 1L;
     
     
     @Column(name="ACTUAL_PREMIUM_FC")
-    private Double     actualPremiumFc ;
+    private BigDecimal     actualPremiumFc ;
 
     
     @Column(name="ACTUAL_PREMIUM_LC")
-    private Double     actualPremiumLc ;
+    private BigDecimal     actualPremiumLc ;
 
     @Column(name="OVERALL_PREMIUM_LC")
-    private Double     overallPremiumLc ;
+    private BigDecimal     overallPremiumLc ;
 
     @Column(name="OVERALL_PREMIUM_FC")
-    private Double     overallPremiumFc ;
+    private BigDecimal     overallPremiumFc ;
 
     @Column(name="BROKER_BRANCH_CODE", length=20)
     private String     brokerBranchCode ;
