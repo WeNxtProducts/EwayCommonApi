@@ -103,15 +103,7 @@ public SuccessRes insertCurrency(CurrencyMasterSaveReq req) {
 		Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
 		Date entryDate = null ;
 		String createdBy = "" ;
-		String currencyId="";
-/*		Integer decimalDigit=0;
-		
-		if(req.getCurrencyShortCode().equalsIgnoreCase("TZS")) {
-			decimalDigit=0;
-		}else {
-			decimalDigit=2;
-		}
-*/		
+		String currencyId="";		
 		if (StringUtils.isBlank(req.getCurrencyId())) {
 				// Save
 			   	//Long totalCount = repo.count();
@@ -282,7 +274,7 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 			errorList.add(new Error("12", "DecimalDigit", "Please Enter DecimalDigit "));
 		}else if(req.getDecimalDigit().length()>1) {
 			errorList.add(new Error("12", "DecimalDigit", "Please Enter DecimalDigit Single Digit "));
-		}else if(!req.getDecimalDigit().matches("[0-9]+") ) {
+		}else if(!req.getDecimalDigit().matches("[0-3]+") ) {
 			errorList.add(new Error("12", "DecimalDigit", "Please Enter DecimalDigit 0 to 9 "));
 		}else if(Integer.valueOf(req.getDecimalDigit())<0 ){
 			errorList.add(new Error("12", "DecimalDigit", "Please Enter DecimalDigit greater than 0  "));
