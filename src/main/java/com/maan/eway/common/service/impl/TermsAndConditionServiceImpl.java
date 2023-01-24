@@ -224,9 +224,42 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 	@Override
 	public List<Error> validateTermsAndCondition(TermsAndConditionInsertReq req) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Error> errorList = new ArrayList<Error>();
+
+		try {
+			
+			if (StringUtils.isBlank(req.getCompanyId())) {
+				errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
+			}
+			
+			if (StringUtils.isBlank(req.getBranchCode())) {
+				errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
+			}
+			if (StringUtils.isBlank(req.getProductId())) {
+				errorList.add(new Error("03", "ProductId", "Please Select ProductId"));
+			}
+			
+			if (StringUtils.isBlank(req.getSectionId())) {
+				errorList.add(new Error("04", "SectionId", "Please Select SectionId"));
+			}
+			
+			if (StringUtils.isBlank(req.getQuoteNo())) {
+				errorList.add(new Error("05", "QuoteNo", "Please Enter QuoteNo"));
+			}
+			if (StringUtils.isBlank(req.getRiskId())) {
+				errorList.add(new Error("06", "RiskId", "Please Enter RiskId"));
+			}
+			if (StringUtils.isBlank(req.getId())) {
+				errorList.add(new Error("07", "Id", "Please Select Id"));
+			}
+	} catch (Exception e) {
+		log.error(e);
+		e.printStackTrace();
 	}
+	return errorList;
+}
+
+
 
 	@Override
 	public SuccessRes insertTermsAndCondition(TermsAndConditionInsertReq req) {

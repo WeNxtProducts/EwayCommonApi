@@ -77,17 +77,6 @@ private static final long serialVersionUID = 1L;
 
     //--- ENTITY DATA FIELDS 
 
-    @Column(name="BRANCH_NAME", length=100)
-    private String   branchName ;
-
-    @Column(name="COMPANY_NAME", length=100)
-    private String   companyName ;
-    
-    @Column(name="PRODUCT_NAME", length=100)
-    private String  productName ;
-    
-    @Column(name="SECTION_NAME", length=100)
-    private String sectionName ;
     
     @Column(name="PREMIA_TABLE_NAME", length=100)
     private String   premiaTableName ;
