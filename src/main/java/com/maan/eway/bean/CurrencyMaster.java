@@ -129,6 +129,10 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="MAX_LOADING", length=20)
     private String    maxLoading;
+    
+    @Column(name="DECIMAL_DIGIT")
+    private Double    decimalDigit;
+    
 }
 
 

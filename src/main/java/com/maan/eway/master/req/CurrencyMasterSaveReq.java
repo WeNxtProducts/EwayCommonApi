@@ -69,4 +69,7 @@ public class CurrencyMasterSaveReq implements Serializable {
 	
 	@JsonProperty("MaxLoading")
 	private String maxLoading;
+	
+	@JsonProperty("DecimalDigit")
+	private String decimalDigit;
 }
