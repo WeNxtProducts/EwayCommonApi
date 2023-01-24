@@ -30,10 +30,6 @@ public class TermsAndConditionInsertReq {
 	@JsonProperty("RiskId")
 	private String riskId;
 
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("EffectiveDateStart")
-	private Date effectiveDateStart;
-
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	

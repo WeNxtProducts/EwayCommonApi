@@ -131,13 +131,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_DATE")
     private Date  updatedDate ;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_START")
-    private Date  effectiveDateStart;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_END")
-    private Date  effectiveDateEnd;
 
     @Column(name="AMEND_ID", nullable=false)
     private Integer  amendId;

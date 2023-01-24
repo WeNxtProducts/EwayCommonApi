@@ -241,7 +241,6 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				termsRepo.deleteAll();
 			}
 			
-			String end = "31/12/2050";
 
 			TermsAndCondition saveData = new TermsAndCondition();
 			Long count = termsRepo.count();
@@ -266,8 +265,6 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			saveData.setSectionName(section.get(0).getSectionName());
 			saveData.setSno(count1 + 1);
 			saveData.setEntryDate(new Date());
-			saveData.setEffectiveDateStart(req.getEffectiveDateStart());
-			saveData.setEffectiveDateEnd(sdf.parse(end));
 			saveData.setStatus("Y");
 			saveData.setCreatedBy(req.getCreatedBy());
 			saveData.setUpdatedBy(req.getCreatedBy());

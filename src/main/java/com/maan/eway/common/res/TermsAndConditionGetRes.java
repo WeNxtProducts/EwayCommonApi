@@ -58,13 +58,6 @@ public class TermsAndConditionGetRes {
 	@JsonProperty("EntryDate")
 	private Date entryDate;
 	
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("EffectiveDateStart")
-	private Date effectiveDateStart;
-	
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("EffectiveDateEnd")
-	private Date effectiveDateEnd;
 	
 	@JsonProperty("AmendId")
 	private String amendId;
