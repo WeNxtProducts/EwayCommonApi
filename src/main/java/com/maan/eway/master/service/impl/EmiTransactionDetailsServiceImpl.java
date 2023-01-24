@@ -555,13 +555,15 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 							insDesc="Installment Amount";
 						}
 						EmiInfoListRes emiInfoListRes = new EmiInfoListRes();
-						emiInfoListRes.setPremiumWithTax(premiumWithTax.toString());
+						emiInfoListRes.setPremiumWithTax(Long.valueOf(Math.round(premiumWithTax)).toString());
 						emiInfoListRes.setNoOfMonth(noOfMonth.toString());
-						emiInfoListRes.setInterestAmount(interestAmount.toString());
-						emiInfoListRes.setAdvanceAmount(df.format(advanceAmount));
-						emiInfoListRes.setBalanceAmount(balanceAmount.toString());
-						emiInfoListRes.setTotalLoanAmount(totalLoanAmount.toString());
-						emiInfoListRes.setInstallment((df.format(installment)));
+						emiInfoListRes.setInterestAmount(Long.valueOf(Math.round(interestAmount)).toString());
+					//	emiInfoListRes.setAdvanceAmount(df.format(advanceAmount));
+						emiInfoListRes.setAdvanceAmount(Long.valueOf(Math.round(advanceAmount)).toString());
+						emiInfoListRes.setBalanceAmount(Long.valueOf(Math.round(balanceAmount)).toString());
+						emiInfoListRes.setTotalLoanAmount(Long.valueOf(Math.round(totalLoanAmount)).toString());
+					//	emiInfoListRes.setInstallment((df.format(installment)));
+						emiInfoListRes.setInstallment(Long.valueOf(Math.round(installment)).toString());
 						res.setEmiInfoRes(emiInfoListRes);
 
 						EmiCompanyInfoListRes compInfoRes = new EmiCompanyInfoListRes();
@@ -579,10 +581,10 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 							Date dueDate = cal.getTime();
 							if (i == 0) {
 								insDesc="Advance Amount";
-								emiPremiumRes.setInstallment((df.format(advanceAmount)));
+								emiPremiumRes.setInstallment(Long.valueOf(Math.round(advanceAmount)).toString());
 							} else {
 								insDesc="Installment Amount";
-								emiPremiumRes.setInstallment((df.format(installment)));
+								emiPremiumRes.setInstallment(Long.valueOf(Math.round(installment)).toString());
 							}
 							emiPremiumRes.setNoOfInstallment(i.toString());
 							emiPremiumRes.setDueDate(dueDate);
