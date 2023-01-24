@@ -123,7 +123,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			orderList.add(cb.desc(m.get("updatedDate")));
 
 			// Where
-			Predicate n1 = cb.equal(c.get("9+"), m.get("customerReferenceNo"));
+			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
 			Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
 			Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
 			Predicate n4 = cb.equal(m.get("status"), "Y");
