@@ -35,6 +35,6 @@ public class ReferalGridCriteriaRes {
 	private Date policyEndDate;
 	private String rejectReason;
 	private String adminRemarks;
-	private String referalRemarks;
+	private Date entryDate;
 
 }
