@@ -31,5 +31,7 @@ import com.maan.eway.bean.SectionMasterId;
  
 public interface SectionMasterRepository  extends JpaRepository<SectionMaster,SectionMasterId > , JpaSpecificationExecutor<SectionMaster> {
 
+	List<SectionMaster> findTopBySectionIdOrderByAmendIdDesc(Integer valueOf);
+
 
 }

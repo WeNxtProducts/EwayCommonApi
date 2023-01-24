@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,6 +32,8 @@ import com.maan.eway.bean.InsuranceCompanyMasterId;
 public interface InsuranceCompanyMasterRepository  extends JpaRepository<InsuranceCompanyMaster,InsuranceCompanyMasterId > , JpaSpecificationExecutor<InsuranceCompanyMaster> {
 
 	InsuranceCompanyMaster findByCompanyId(String insuranceId);
+
+	List<InsuranceCompanyMaster> findTopByCompanyIdOrderByAmendIdDesc(String companyId);
 
 
 }

@@ -37,6 +37,7 @@ public class TermsAndConditionId implements Serializable {
     private String     sectionId;
     private Integer   id;
     private Integer  subId;
-    
+    private String  riskId;
+
      
 }

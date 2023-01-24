@@ -13,4 +13,6 @@ public interface ClausesMasterRepository  extends JpaRepository<ClausesMaster,Cl
 	List<ClausesMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByAmendIdDesc(String companyId,
 			String branchCode, String productId, String sectionId);
 
+	ClausesMaster findTopByClausesIdOrderByAmendIdDesc(Integer integer);
+
 }

@@ -12,6 +12,8 @@
 
 package com.maan.eway.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -28,6 +30,16 @@ import com.maan.eway.bean.TermsAndConditionId;
  
  
 public interface TermsAndConditionRepository  extends JpaRepository<TermsAndCondition,TermsAndConditionId > , JpaSpecificationExecutor<TermsAndCondition> {
+
+
+
+	List<TermsAndCondition> findByQuoteNoAndIdAndRiskIdAndProductIdAndSectionId(String quoteNo, Integer valueOf,
+			String riskId, String productId, String sectionId);
+
+	
+	List<TermsAndCondition> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRiskIdAndQuoteNoAndId(
+			String companyId, String branchCode, String productId, String sectionId, String riskId, String quoteNo,
+			Integer valueOf);
 
 
 }
