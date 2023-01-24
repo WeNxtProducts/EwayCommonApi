@@ -11,10 +11,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.req.TermsAndConditionGetBySubIdReq;
 import com.maan.eway.common.req.TermsAndConditionGetReq;
 import com.maan.eway.common.req.TermsAndConditionInsertReq;
 import com.maan.eway.common.req.TermsAndConditionReq;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.TermsAndConditionGetBySubIdRes;
 import com.maan.eway.common.res.TermsAndConditionGetRes;
 import com.maan.eway.common.res.TermsAndConditionRes;
 import com.maan.eway.common.service.TermsAndConditionService;
@@ -122,6 +124,29 @@ private PrintReqService reqPrinter;
 		}
 	}
 
-	
+
+//  Get Terms And Condition By Subid
+
+	@PostMapping("/gettermsandconditionbysubid")
+	@ApiOperation("This method is Get Terms And Condition by Sub Id")
+	public ResponseEntity<CommonRes> getTermsAndConditionSubId(@RequestBody TermsAndConditionGetBySubIdReq req)
+	{
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		
+		TermsAndConditionGetBySubIdRes res = service.getTermsAndConditionSubId(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		
+		if(res!= null) {
+			return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
 	
 }

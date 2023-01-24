@@ -10,7 +10,7 @@ import com.maan.eway.error.Error;
 import lombok.Data;
 
 @Data
-public class TermsAndConditionGetRes {
+public class TermsAndConditionGetBySubIdRes {
 
 
 
@@ -54,6 +54,13 @@ public class TermsAndConditionGetRes {
 	@JsonProperty("IdDesc")
 	private String idDesc;
 
+	
+	@JsonProperty("SubId")
+	private String subId;
+	
+	@JsonProperty("SubIdDesc")
+	private String subIdDesc;
+
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EntryDate")
 	private Date entryDate;
@@ -79,9 +86,4 @@ public class TermsAndConditionGetRes {
 	@JsonProperty("Status")
 	private String status;
 	
-	@JsonProperty("TermsAndConditionListRes")
-	private List<TermsAndConditionListRes> termsAndConditionlistRes;
-	
-	
-
 }

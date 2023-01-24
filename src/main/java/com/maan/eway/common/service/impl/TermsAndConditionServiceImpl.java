@@ -34,6 +34,7 @@ import com.maan.eway.bean.WarRateMaster;
 import com.maan.eway.bean.WarrantyMaster;
 import com.maan.eway.common.req.ClausesTermsReq;
 import com.maan.eway.common.req.ExclusionTermsReq;
+import com.maan.eway.common.req.TermsAndConditionGetBySubIdReq;
 import com.maan.eway.common.req.TermsAndConditionGetReq;
 import com.maan.eway.common.req.TermsAndConditionInsertReq;
 import com.maan.eway.common.req.TermsAndConditionListReq;
@@ -42,6 +43,7 @@ import com.maan.eway.common.req.WarrantyTermsReq;
 import com.maan.eway.common.req.WarrateTermsReq;
 import com.maan.eway.common.res.ClausesRes;
 import com.maan.eway.common.res.ExclusionRes;
+import com.maan.eway.common.res.TermsAndConditionGetBySubIdRes;
 import com.maan.eway.common.res.TermsAndConditionGetRes;
 import com.maan.eway.common.res.TermsAndConditionListRes;
 import com.maan.eway.common.res.TermsAndConditionRes;
@@ -357,7 +359,27 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 		}
 		return res;
 	}
-	
+
+	@Override
+	public TermsAndConditionGetBySubIdRes getTermsAndConditionSubId(TermsAndConditionGetBySubIdReq req) {
+		TermsAndConditionGetBySubIdRes res = new TermsAndConditionGetBySubIdRes();
+		DozerBeanMapper dozermapper = new DozerBeanMapper();
+		try {
+			TermsAndCondition savedata = new TermsAndCondition();
+			TermsAndCondition data = termsRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRiskIdAndQuoteNoAndIdAndSubId(req.getCompanyId(),req.getBranchCode(),req.getProductId(),req.getSectionId(),req.getRiskId(),req.getQuoteNo(),Integer.valueOf(req.getId()),Integer.valueOf(req.getSubId()));
+		
+				res= dozermapper.map(data,TermsAndConditionGetBySubIdRes.class);
+				res.setId(data.getId().toString());
+				res.setSubId(data.getSubId().toString());
+				res.setEntryDate(data.getEntryDate());		
+		}
+			catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --> " + e.getMessage());
+			return null;
+		}
+		return res;
+	}
 	
 	
 
