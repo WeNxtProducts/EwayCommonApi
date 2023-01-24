@@ -471,8 +471,8 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 				EmiTransactionDetailsRes res = new EmiTransactionDetailsRes();
 				res = mapper.map(data, EmiTransactionDetailsRes.class);
 				res.setInstallment(data.getInstalment());
-				res.setDueAmount((Double.valueOf(df.format(data.getDueAmount()))).toString());
-				res.setBalanceAmount((Double.valueOf(df.format(data.getBalanceAmount()))).toString());
+				res.setDueAmount((Double.valueOf(Math.round(data.getDueAmount()))).toString());
+				res.setBalanceAmount((Double.valueOf(Math.round(data.getBalanceAmount()))).toString());
 				resList.add(res);
 			}
 
@@ -703,6 +703,8 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 				EmiTransactionDetailsRes res = new EmiTransactionDetailsRes();
 				res = mapper.map(data, EmiTransactionDetailsRes.class);
 				res.setInstallment(data.getInstalment());
+				res.setDueAmount((Double.valueOf(Math.round(data.getDueAmount()))).toString());
+				res.setBalanceAmount((Double.valueOf(Math.round(data.getBalanceAmount()))).toString());
 				resList.add(res);
 			}
 
