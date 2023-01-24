@@ -104,13 +104,21 @@ public SuccessRes insertCurrency(CurrencyMasterSaveReq req) {
 		Date entryDate = null ;
 		String createdBy = "" ;
 		String currencyId="";
+/*		Integer decimalDigit=0;
 		
+		if(req.getCurrencyShortCode().equalsIgnoreCase("TZS")) {
+			decimalDigit=0;
+		}else {
+			decimalDigit=2;
+		}
+*/		
 		if (StringUtils.isBlank(req.getCurrencyId())) {
 				// Save
 			   	//Long totalCount = repo.count();
 				currencyId = req.getCurrencyShortCode();
 				res.setResponse("Saved Successfully ");
 				res.setSuccessId(currencyId);
+			
 
 			} else {
 				// Update
@@ -184,6 +192,7 @@ public SuccessRes insertCurrency(CurrencyMasterSaveReq req) {
 			saveData.setAmendId(amendId);
 			saveData.setCoreAppCode(req.getCoreAppCode());
 			saveData.setCurrencyShortCode(StringUtils.isBlank(req.getCurrencyShortCode())?"":req.getCurrencyShortCode());
+			saveData.setDecimalDigit(Integer.valueOf(req.getDecimalDigit()));
 			repo.saveAndFlush(saveData);
 			
 			log.info("Saved Details is ---> " + json.toJson(saveData));
@@ -268,6 +277,15 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 		}
 		if (StringUtils.isBlank(req.getMaxLoading())) {
 			errorList.add(new Error("11", "MaxLoading", "Please Enter MaxLoading "));
+		}
+		if (StringUtils.isBlank(req.getDecimalDigit())) {
+			errorList.add(new Error("12", "DecimalDigit", "Please Enter DecimalDigit "));
+		}else if(req.getDecimalDigit().length()>1) {
+			errorList.add(new Error("12", "DecimalDigit", "Please Enter DecimalDigit Single Digit "));
+		}else if(!req.getDecimalDigit().matches("[0-9]+") ) {
+			errorList.add(new Error("12", "DecimalDigit", "Please Enter DecimalDigit 0 to 9 "));
+		}else if(Integer.valueOf(req.getDecimalDigit())<0 ){
+			errorList.add(new Error("12", "DecimalDigit", "Please Enter DecimalDigit greater than 0  "));
 		}
 		
 	} catch (Exception e) {
