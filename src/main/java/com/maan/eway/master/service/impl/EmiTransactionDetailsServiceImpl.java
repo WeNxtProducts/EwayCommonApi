@@ -203,15 +203,15 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 				saveData.setInstallmentPeriod(noOfMonth.toString());
 				saveData.setInterest(interestPercent);
 				saveData.setAdvance(advancePercent.toString());
-				saveData.setInterestAmount(interestAmount);
+				saveData.setInterestAmount((Double.valueOf(Math.round(interestAmount))));
 				if (i == 0) {
-					saveData.setDueAmount((Double.valueOf(df.format(advanceAmount))));
+					saveData.setDueAmount((Double.valueOf(Math.round(advanceAmount))));
 					insDesc="Advance Amount";
 					//saveData.setPaymentDate(entryDate);
 					saveData.setStatus(req.getStatus());
 					saveData.setPaymentDetails(req.getPaymentDetails());
 				} else {
-					saveData.setDueAmount((Double.valueOf(df.format(installment))));
+					saveData.setDueAmount((Double.valueOf(Math.round(installment))));
 					insDesc="Installment Amount";
 					saveData.setStatus("Y");
 					saveData.setPaymentDetails(null);
@@ -221,8 +221,8 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 				saveData.setQuoteNo(quoteNo);
 				saveData.setProductId(req.getProductId());
 				saveData.setCompanyId(req.getCompanyId());
-				saveData.setBalanceAmount(Double.valueOf(df.format(balanceAmount)));
-				saveData.setTotalLoanAmount(totalLoanAmount);
+				saveData.setBalanceAmount(Double.valueOf(Math.round(balanceAmount)));
+				saveData.setTotalLoanAmount(Double.valueOf(Math.round(totalLoanAmount)));
 				saveData.setInstallmentDesc(insDesc);
 				saveData.setInstalment(i.toString());
 				saveData.setEntryDate(entryDate);
