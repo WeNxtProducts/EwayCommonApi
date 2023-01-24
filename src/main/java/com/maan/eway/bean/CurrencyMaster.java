@@ -131,7 +131,7 @@ private static final long serialVersionUID = 1L;
     private String    maxLoading;
     
     @Column(name="DECIMAL_DIGIT")
-    private Double    decimalDigit;
+    private Integer    decimalDigit;
     
 }
 
