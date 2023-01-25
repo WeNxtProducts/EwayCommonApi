@@ -1,9 +1,7 @@
 package com.maan.eway.common.res;
 
+import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
-
-import javax.persistence.Column;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -53,10 +51,10 @@ public class PortfolioCustomerDetailsRes {
 	private String customerId;
 	
 	@JsonProperty("OverallPremiumLc")
-	private Double overallPremiumLc;
+	private BigDecimal overallPremiumLc;
 	
 	@JsonProperty("OverallPremiumFc")
-	private String overallPremiumFc;
+	private BigDecimal overallPremiumFc;
 	
 	@JsonProperty("DebitAcNo")
 	private String debitAcNo;
