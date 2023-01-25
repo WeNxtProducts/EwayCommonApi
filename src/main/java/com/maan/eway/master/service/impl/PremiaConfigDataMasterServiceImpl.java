@@ -1,0 +1,521 @@
+package com.maan.eway.master.service.impl;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.dozer.DozerBeanMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.PremiaConfigDataMaster;
+import com.maan.eway.bean.PremiaConfigMaster;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.PremiaConfigDataMasterGetReq;
+import com.maan.eway.master.req.PremiaConfigDataMasterGetallReq;
+import com.maan.eway.master.req.PremiaConfigDataMasterSaveReq;
+import com.maan.eway.master.res.PremiaConfigDataMasterGetRes;
+import com.maan.eway.master.res.PremiaConfigDataMasterGetallRes;
+import com.maan.eway.master.res.PremiaConfigDataMasterListRes;
+import com.maan.eway.master.res.PremiaConfigMasterRes;
+import com.maan.eway.master.service.PremiaConfigDataMasterService;
+import com.maan.eway.repository.ListItemValueRepository;
+import com.maan.eway.repository.PremiaConfigDataMasterRepository;
+import com.maan.eway.res.SuccessRes;
+
+@Service
+@Transactional
+public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMasterService {
+
+	@PersistenceContext
+	private EntityManager em;
+
+	private Logger log = LogManager.getLogger(PremiaConfigDataMasterServiceImpl.class);
+
+	@Autowired
+	private PremiaConfigDataMasterRepository repo;
+
+	@Autowired
+	private ListItemValueRepository listrepo;
+
+	@Override
+	public List<Error> validatePremiaConfigData(PremiaConfigDataMasterSaveReq req) {
+		List<Error> errorList = new ArrayList<Error>();
+
+		try {
+			
+			if (StringUtils.isBlank(req.getCompanyId())) {
+				errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
+			}
+			
+			if (StringUtils.isBlank(req.getBranchCode())) {
+				errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
+			}
+			if (StringUtils.isBlank(req.getProductId())) {
+				errorList.add(new Error("03", "ProductId", "Please Select ProductId"));
+			}
+			if (StringUtils.isBlank(req.getSectionId())) {
+				errorList.add(new Error("04", "SectionId", "Please Select SectionId"));
+			}
+			// Date Validation 
+			Calendar cal = new GregorianCalendar();
+			Date today = new Date();
+			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);;
+			today = cal.getTime();
+			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
+				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+
+			} else if (req.getEffectiveDateStart().before(today)) {
+				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			}
+			//Status Validation
+			if (StringUtils.isBlank(req.getStatus())) {
+				errorList.add(new Error("06", "Status", "Please Enter Status"));
+			} else if (req.getStatus().length() > 1) {
+				errorList.add(new Error("06", "Status", "Enter Status in 1 Character Only"));
+			}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()) || "R".equals(req.getStatus()))) {
+				errorList.add(new Error("06", "Status", "Enter Status in Y or N or R Only"));
+			}
+
+			if (StringUtils.isBlank(req.getCreatedBy())) {
+				errorList.add(new Error("07", "CreatedBy", "Please Select CreatedBy"));
+			}else if (req.getCreatedBy().length() > 100){
+				errorList.add(new Error("07","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+			}		
+		
+			if (StringUtils.isBlank(req.getDefaultYn())) {
+				errorList.add(new Error("08", "DefaultYn", "Please Select DefaultYn"));
+			}
+			if(StringUtils.isNotBlank(req.getDefaultYn()) && req.getDefaultYn().equalsIgnoreCase("Y")) {
+				if (StringUtils.isBlank(req.getDefaultValue())) {
+				errorList.add(new Error("09", "DefaultValue", "Please Select DefaultValue"));				
+			}
+				if (StringUtils.isBlank(req.getDataTypeId())) {
+					errorList.add(new Error("10", "DataType", "Please Select DataType"));				
+				}
+				if ( StringUtils.isNotBlank(req.getDataTypeId())&& req.getDataTypeId().equalsIgnoreCase("3")) {
+					errorList.add(new Error("11", "Date Format Type", "Please Enter Date Format Type"));				
+				}
+			}
+			
+			if (StringUtils.isBlank(req.getCaseConditionYn())) {
+				errorList.add(new Error("12", "CaseConditionYn", "Please Select CaseConditionYn"));
+			}
+
+			if(StringUtils.isNotBlank(req.getCaseConditionYn()) && req.getCaseConditionYn().equalsIgnoreCase("Y")) {
+				if (StringUtils.isBlank(req.getCaseCondition())) {
+				errorList.add(new Error("13", "CaseCondition", "Please Enter CaseCondition"));				
+			}
+			}
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		return errorList;
+	}
+
+
+
+	@Override
+	public SuccessRes insertPremiaConfigData(PremiaConfigDataMasterSaveReq req) {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		SuccessRes res = new SuccessRes();
+		PremiaConfigDataMaster saveData = new PremiaConfigDataMaster();
+		List<PremiaConfigDataMaster> list = new ArrayList<PremiaConfigDataMaster>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			Integer amendId = 0;
+			Date StartDate = req.getEffectiveDateStart();
+			String end = "31/12/2050";
+			Date endDate = sdf.parse(end);
+			long MILLS_IN_A_DAY = 1000 * 60 * 60 * 24;
+			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLS_IN_A_DAY);
+			Date entryDate = null;
+			String createdBy = "";
+			String columnId = "";
+
+			if (StringUtils.isBlank(req.getColumnId())) {
+				Integer totalCount = getMasterTableCount(req.getPremiaId(), req.getCompanyId(), req.getBranchCode(),
+						req.getProductId(), req.getSectionId());
+				Integer column = totalCount + 1;
+				columnId = column.toString();
+				entryDate = new Date();
+				createdBy = req.getCreatedBy();
+				res.setResponse("Saved Successfully");
+				res.setSuccessId(column.toString());
+			} else {
+				columnId = req.getColumnId();
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<PremiaConfigDataMaster> query = cb.createQuery(PremiaConfigDataMaster.class);
+				// Findall
+				Root<PremiaConfigDataMaster> b = query.from(PremiaConfigDataMaster.class);
+				// select
+				query.select(b);
+				// Orderby
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(b.get("effectiveDateStart")));
+				// Where
+				Predicate n1 = cb.equal(b.get("premiaId"), req.getPremiaId());
+				Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+				Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+				Predicate n4 = cb.equal(b.get("productId"), req.getProductId());
+				Predicate n5 = cb.equal(b.get("sectionId"), req.getSectionId());
+				Predicate n6 = cb.equal(b.get("columnId"), req.getColumnId());
+
+				query.where(n1, n2, n3, n4, n5, n6).orderBy(orderList);
+
+				// Get Result
+				TypedQuery<PremiaConfigDataMaster> result = em.createQuery(query);
+				int limit = 0, offset = 2;
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
+				list = result.getResultList();
+				if (list.size() > 0) {
+					Date beforeOneDay = new Date(new Date().getTime() - MILLS_IN_A_DAY);
+					if (list.get(0).getEffectiveDateStart().before(beforeOneDay)) {
+						amendId = list.get(0).getAmendId() + 1;
+						entryDate = new Date();
+						createdBy = req.getCreatedBy();
+						PremiaConfigDataMaster lastRecord = list.get(0);
+						lastRecord.setEffectiveDateEnd(oldEndDate);
+						repo.saveAndFlush(lastRecord);
+					} else {
+						amendId = list.get(0).getAmendId();
+						entryDate = list.get(0).getEntryDate();
+						createdBy = list.get(0).getCreatedBy();
+						saveData = list.get(0);
+						if (list.size() > 1) {
+							PremiaConfigDataMaster lastRecord = list.get(1);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							repo.saveAndFlush(lastRecord);
+						}
+					}
+				}
+				res.setResponse("Updated Successfully");
+				res.setSuccessId(columnId.toString());
+			}
+			
+			if(StringUtils.isNotBlank(req.getDataTypeId())) {
+			ListItemValue datatype = listrepo.findByItemTypeAndItemCode("DATA_TYPE", req.getDataTypeId());
+			}
+			dozerMapper.map(req, saveData);
+
+			saveData.setPremiaId(Integer.valueOf(req.getPremiaId()));
+			saveData.setEffectiveDateStart(StartDate);
+			saveData.setEffectiveDateEnd(endDate);
+			saveData.setCreatedBy(createdBy);
+			saveData.setEntryDate(entryDate);
+			saveData.setUpdatedBy(req.getCreatedBy());
+			saveData.setUpdatedDate(new Date());
+			saveData.setAmendId(amendId);
+			saveData.setBranchCode(req.getBranchCode());
+			saveData.setProductId(req.getProductId());
+			saveData.setSectionId(req.getSectionId());
+			saveData.setColumnName(req.getColumnName());
+			saveData.setDefaultYn(req.getDefaultYn());
+			saveData.setDefaultValue(req.getDefaultValue());
+			saveData.setInputTableName(req.getInputTableName());
+			saveData.setInputTableColumn(req.getInputTableColumn());
+			saveData.setDataFormatType(req.getDateFormatType()==null?null:req.getDateFormatType());
+			saveData.setCaseConditionYn(req.getCaseConditionYn());
+			saveData.setCaseCondition(req.getCaseCondition()==null?null:req.getCaseCondition());
+			saveData.setColumnId(Integer.valueOf(columnId));
+			saveData.setDataTypeId(req.getDataTypeId()==null?null:req.getDataTypeId());
+			if(StringUtils.isNotBlank(req.getDataTypeId())) {
+				ListItemValue datatype = listrepo.findByItemTypeAndItemCode("DATA_TYPE", req.getDataTypeId());
+				saveData.setDataTypeDesc(datatype.getItemValue()==null?null:datatype.getItemValue());
+				
+			}
+		
+			repo.saveAndFlush(saveData);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --> " + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
+	public Integer getMasterTableCount(String premiaId, String companyId, String branchCode, String productId,
+			String sectionId) {
+
+		Integer data = 0;
+		try {
+			List<PremiaConfigDataMaster> list = new ArrayList<PremiaConfigDataMaster>();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<PremiaConfigDataMaster> query = cb.createQuery(PremiaConfigDataMaster.class);
+			// Find all
+			Root<PremiaConfigDataMaster> b = query.from(PremiaConfigDataMaster.class);
+			// Select
+			query.select(b);
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<PremiaConfigDataMaster> ocpm1 = effectiveDate.from(PremiaConfigDataMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("premiaId"), b.get("premiaId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a5 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+			Predicate a6 = cb.equal(ocpm1.get("columnId"), b.get("columnId"));
+
+			effectiveDate.where(a1, a2, a3, a4, a5, a6);
+
+			// OrderBy
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("columnId")));
+
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("companyId"), companyId);
+			Predicate n3 = cb.equal(b.get("branchCode"), branchCode);
+			Predicate n4 = cb.equal(b.get("productId"), productId);
+			Predicate n5 = cb.equal(b.get("sectionId"), sectionId);
+			Predicate n6 = cb.equal(b.get("premiaId"), premiaId);
+
+			query.where(n1, n2, n3, n4, n5, n6).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<PremiaConfigDataMaster> result = em.createQuery(query);
+			int limit = 0, offset = 1;
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+			data = list.size() > 0 ? Integer.valueOf(list.get(0).getColumnId()) : 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+		}
+		return data;
+	}
+
+
+
+	@Override
+	public PremiaConfigDataMasterGetRes getPremiaConfigData(PremiaConfigDataMasterGetReq req) {
+		PremiaConfigDataMasterGetRes res = new PremiaConfigDataMasterGetRes();
+		DozerBeanMapper mapper = new DozerBeanMapper();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+
+			List<PremiaConfigDataMaster> list = new ArrayList<PremiaConfigDataMaster>();
+		
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<PremiaConfigDataMaster> query = cb.createQuery(PremiaConfigDataMaster.class);
+
+			// Find All
+			Root<PremiaConfigDataMaster> b = query.from(PremiaConfigDataMaster.class);
+
+			// Select
+			query.select(b);
+
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<PremiaConfigDataMaster> ocpm1 = amendId.from(PremiaConfigDataMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("premiaId"), b.get("premiaId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+			Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+			Predicate a5 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
+			Predicate a6 = cb.equal(ocpm1.get("columnId"),b.get("columnId"));
+
+			amendId.where(a1, a2,a3,a4,a5,a6);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("columnId")));
+
+			// Where
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n4 = cb.equal(b.get("premiaId"), req.getPremiaId());
+			Predicate n5 = cb.equal(b.get("productId"), req.getProductId());
+			Predicate n6 = cb.equal(b.get("sectionId"), req.getSectionId());
+			Predicate n7 = cb.equal(b.get("columnId"), req.getColumnId());
+						
+			query.where(n1,n2,n3,n4,n5,n6,n7).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<PremiaConfigDataMaster> result = em.createQuery(query);
+
+			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getColumnId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(PremiaConfigDataMaster :: getColumnId ));
+			if(list.size()>0 && list!=null) {
+			res.setPremiaId(list.get(0).getPremiaId().toString());
+			res.setEntryDate(list.get(0).getEntryDate());
+			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
+			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+			res.setCompanyId(list.get(0).getCompanyId());
+			res.setBranchCode(list.get(0).getBranchCode());
+			res.setProductId(list.get(0).getProductId());
+			res.setSectionId(list.get(0).getSectionId());
+			res.setStatus(list.get(0).getStatus());		
+			res.setAmendId(list.get(0).getAmendId().toString());
+			res.setCreatedBy(list.get(0).getCreatedBy());
+			res.setUpdatedBy(list.get(0).getUpdatedBy());
+			res.setUpdatedDate(list.get(0).getUpdatedDate());
+			res.setRemarks(list.get(0).getRemarks());;
+			res.setColumnId(list.get(0).getColumnId().toString());
+			res.setColumnName(list.get(0).getColumnName());
+			res.setDefaultYn(list.get(0).getDefaultYn()==null?"":list.get(0).getDefaultYn());
+			res.setDefaultValue(list.get(0).getDefaultValue()==null?"":list.get(0).getDefaultValue());
+			res.setCaseConditionYn(list.get(0).getCaseConditionYn()==null?"":list.get(0).getCaseConditionYn());
+			res.setCaseCondition(list.get(0).getCaseCondition()==null?"":list.get(0).getCaseCondition());
+			res.setInputTableName(list.get(0).getInputTableName());
+			res.setInputTableColumn(list.get(0).getInputTableColumn());
+			res.setDataTypeId(list.get(0).getDataTypeId()==null?"":list.get(0).getDataTypeId());
+			res.setDataTypeDesc(list.get(0).getDataTypeDesc()==null?"":list.get(0).getDataTypeDesc());
+			res.setDateFormatType(list.get(0).getDataFormatType()==null?"":list.get(0).getDataFormatType());
+			
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
+
+	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
+
+
+
+	@Override
+	public PremiaConfigDataMasterGetallRes getallPremiaConfigData(PremiaConfigDataMasterGetallReq req) {
+		PremiaConfigDataMasterGetallRes res1 = new PremiaConfigDataMasterGetallRes();
+		DozerBeanMapper mapper = new DozerBeanMapper();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+
+			List<PremiaConfigDataMaster> list = new ArrayList<PremiaConfigDataMaster>();
+		
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<PremiaConfigDataMaster> query = cb.createQuery(PremiaConfigDataMaster.class);
+
+			// Find All
+			Root<PremiaConfigDataMaster> b = query.from(PremiaConfigDataMaster.class);
+
+			// Select
+			query.select(b);
+
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<PremiaConfigDataMaster> ocpm1 = amendId.from(PremiaConfigDataMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("premiaId"), b.get("premiaId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+			Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+			Predicate a5 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
+
+			amendId.where(a1, a2,a3,a4,a5);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("premiaId")));
+
+			// Where
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n4 = cb.equal(b.get("premiaId"), req.getPremiaId());
+			Predicate n5 = cb.equal(b.get("productId"), req.getProductId());
+			Predicate n6 = cb.equal(b.get("sectionId"), req.getSectionId());
+						
+			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<PremiaConfigDataMaster> result = em.createQuery(query);
+
+			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getColumnId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(PremiaConfigDataMaster :: getColumnId ));
+			if(list.size()>0 && list!=null) {
+			res1.setPremiaId(list.get(0).getPremiaId().toString());
+			res1.setCompanyId(list.get(0).getCompanyId());
+			res1.setBranchCode(list.get(0).getBranchCode());
+			res1.setProductId(list.get(0).getProductId());
+			res1.setSectionId(list.get(0).getSectionId());
+			res1.setCreatedBy(list.get(0).getCreatedBy());
+			
+			List<PremiaConfigDataMasterListRes> resList = new ArrayList<PremiaConfigDataMasterListRes>();	
+			for(PremiaConfigDataMaster data : list) {	
+				PremiaConfigDataMasterListRes res = new PremiaConfigDataMasterListRes();
+			res.setEntryDate(data.getEntryDate());
+			res.setEffectiveDateStart(data.getEffectiveDateStart());
+			res.setEffectiveDateEnd(data.getEffectiveDateEnd());
+			res.setStatus(data.getStatus());		
+			res.setAmendId(data.getAmendId().toString());
+			res.setUpdatedBy(data.getUpdatedBy());
+			res.setUpdatedDate(data.getUpdatedDate());
+			res.setRemarks(data.getRemarks());;
+			res.setColumnId(data.getColumnId().toString());
+			res.setColumnName(data.getColumnName());
+			res.setDefaultYn(data.getDefaultYn()==null?"":data.getDefaultYn());
+			res.setDefaultValue(data.getDefaultValue()==null?"":data.getDefaultValue());
+			res.setCaseConditionYn(data.getCaseConditionYn()==null?"":data.getCaseConditionYn());
+			res.setCaseCondition(data.getCaseCondition()==null?"":data.getCaseCondition());
+			res.setInputTableName(data.getInputTableName());
+			res.setInputTableColumn(data.getInputTableColumn());
+			res.setDataTypeId(data.getDataTypeId()==null?"":data.getDataTypeId());
+			res.setDataTypeDesc(data.getDataTypeDesc()==null?"":data.getDataTypeDesc());
+			res.setDateFormatType(data.getDataFormatType()==null?"":data.getDataFormatType());
+			resList.add(res);
+			
+			}
+			res1.setColumnList(resList);;
+			
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res1;
+	}
+
+
+}
