@@ -419,7 +419,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 							.otherwise(m.get("customerId")).alias("customerId"),
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
 					m.get("rejectReason").alias("rejectReason"),
-					m.get("adminRemarks").alias("adminRemarks")
+					m.get("adminRemarks").alias("adminRemarks"),
+					m.get("entryDate").alias("entryDate")
 					);
 
 			// Order By
@@ -439,7 +440,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
-							m.get("rejectReason"))
+							m.get("rejectReason"),m.get("adminRemarks"),m.get("entryDate"))
 					.orderBy(orderList);
 
 			// Get Result
