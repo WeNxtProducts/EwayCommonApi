@@ -1379,8 +1379,8 @@ this.repository = repo;
 					
 					if(filterCover.size()>0 ) {
 						FactorRateRequestDetails  updateCover = filterCover.get(0);
-						updateCover.setMinimumPremium(new BigDecimal(df.format(covReq.getMinimumPremium())));
-						updateCover.setRate(new BigDecimal(df.format(covReq.getRate())));
+						updateCover.setMinimumPremium(new BigDecimal(df.format(Double.valueOf(covReq.getMinimumPremium()))));
+						updateCover.setRate(new BigDecimal(df.format(Double.valueOf(covReq.getRate()))));
 						repository.save(updateCover);
 						
 					}
@@ -1388,8 +1388,8 @@ this.repository = repo;
 					List<FactorRateRequestDetails> filterSubCover = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId())) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) ).collect(Collectors.toList());
 					if(filterSubCover.size()>0 ) {
 						FactorRateRequestDetails  updateSubCover = filterSubCover.get(0);
-						updateSubCover.setMinimumPremium(new BigDecimal(df.format(covReq.getMinimumPremium())));
-						updateSubCover.setRate(new BigDecimal(df.format(covReq.getRate())));
+						updateSubCover.setMinimumPremium(new BigDecimal(df.format(Double.valueOf(covReq.getMinimumPremium()))));
+						updateSubCover.setRate(new BigDecimal(df.format(Double.valueOf(covReq.getRate()))));
 						repository.save(updateSubCover);
 					}
 					
