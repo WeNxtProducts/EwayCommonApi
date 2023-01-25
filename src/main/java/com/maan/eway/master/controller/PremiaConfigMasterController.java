@@ -47,7 +47,7 @@ public class PremiaConfigMasterController {
 
 	// save
 	@PostMapping("/insertpremiaconfig")
-	@ApiOperation(value = "This method is Insert Bank Details")
+	@ApiOperation(value = "This method is Insert Premia Config Master")
 	public ResponseEntity<CommonRes> insertPremiaConfig(@RequestBody PremiaConfigMasterSaveReq req) {
 
 		reqPrinter.reqPrint(req);
