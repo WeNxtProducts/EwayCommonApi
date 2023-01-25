@@ -484,8 +484,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 				} else if ("RegistrationNumber".equalsIgnoreCase(searchKey)) {
 					searchQuote = searchDetails(searchKey, searchValue, companyId, loginId, userType, branches);
 				} else if ("EntryDate".equalsIgnoreCase(searchKey)) {
-					Date entryDate = sdf.parse(searchValue);
-					searchValue = sdf.format(entryDate);
+					//Date entryDate = sdf.parse(searchValue);
+					//searchValue = sdf.format(entryDate);
 					searchQuote = searchDetails(searchKey, searchValue, companyId, loginId, userType, branches);
 				}
 			} catch (Exception e) {
@@ -499,6 +499,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 		public List<Tuple> searchDetails(String searchKey, String searchValue, String companyId, String loginId,
 				String userType, List<String> branches) {
 			List<Tuple> customerDetailsList = new ArrayList<Tuple>();
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 			try {
 
 				CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -529,7 +530,22 @@ public class MotorGridServiceImpl implements MotorGridService {
 				} else if (searchKey.equalsIgnoreCase("QuoteNumber")) {
 					n1 = cb.equal(cb.lower(c.get("quoteNo")), searchValue);
 				} else if (searchKey.equalsIgnoreCase("EntryDate")) {
-					n1 = cb.like(cb.lower(c.get("entryDate").as(String.class)), "%" + searchValue + "%");
+					//n1 = cb.like(cb.lower(c.get("entryDate").as(String.class)), "%" + searchValue + "%");
+					
+					Date entryDate = sdf.parse(searchValue);
+					Calendar cal = new GregorianCalendar();
+					cal.setTime(entryDate);
+					cal.add(Calendar.HOUR , 1);
+					Date startDate = cal.getTime() ;
+					cal.setTime(entryDate);
+					cal.add(Calendar.HOUR , 23);
+					Date endDate = cal.getTime() ;
+							
+					//searchValue = sdf.format(entryDate);
+					n1=cb.between(c.get("entryDate"), startDate, endDate);
+					
+					//(c.get("entryDate"), entryDate);
+					// entry_Date between startDate and end_Date 
 				} else if (searchKey.equalsIgnoreCase("ChassisNumber")) {
 					n1 = cb.equal(cb.lower(c.get("chassisNumber")), searchValue);
 				} else if (searchKey.equalsIgnoreCase("ClientName")) {
