@@ -127,7 +127,51 @@ private static final long serialVersionUID = 1L;
     @Column(name="COUNT")
     private Integer count;
 
+    @Column(name="ADMIN_LOGIN_ID", length=100)
+    private String    adminLoginId ;
+
+    @Column(name="ADMIN_REMARKS", length=100)
+    private String    adminRemarks ;
     
+    @Column(name="REFERAL_REMARKS", length=100)
+    private String    referalRemarks ;
+    
+    @Column(name="REJECT_REASON", length=100)
+    private String    rejectReason ;
+    
+    @Column(name="LOGIN_ID", length=100)
+    private String    loginId;
+    
+    @Column(name="BROKER_CODE", length=100)
+    private String  brokerCode;
+    
+    @Column(name="AC_EXCECUTIVE_ID", length=100)
+    private String    acExecutiveId;
+    
+    @Column(name="APPLICATION_ID", length=100)
+    private String    applicationId ;
+    
+    @Column(name="BROKER_BRANCH_CODE", length=100)
+    private String brokerBranchCode ;
+    
+    @Column(name="BROKER_BRANCH_NAME", length=100)
+    private String   brokerBranchName ;
+    
+    @Column(name="BDM_CODE", length=100)
+    private String  bdmCode;
+    
+    @Column(name="CUSTOMER_ID", length=100)
+    private String  customerId;
+    
+    @Column(name="OLD_REQ_REF_NO", length=100)
+    private String   oldReqRefNo;
+    
+    @Column(name="BENEFIT_COVER_MONTH")
+    private Integer benefitCoverMonth;
+    
+    @Column(name="SALARY_PER_ANNUM")
+    private BigDecimal salaryPerAnnum;
+        
 }
 
 
