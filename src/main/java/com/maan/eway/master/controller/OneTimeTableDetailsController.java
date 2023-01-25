@@ -105,7 +105,7 @@ public class OneTimeTableDetailsController {
 	}
 	
 	
-	@GetMapping("//integratointable")
+	@GetMapping("/integratointable")
 	@ApiOperation(value = "This method is to Integration Table Name Drop Down")
 	public ResponseEntity<CommonRes> integrationtable() {
 		CommonRes data = new CommonRes();
@@ -143,4 +143,7 @@ public class OneTimeTableDetailsController {
 		}
 
 	}
+	
+	
+	
 }

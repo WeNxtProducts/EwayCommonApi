@@ -17,13 +17,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DropdownCommonRes;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.PremiaConfigDataMasterChangeStatusReq;
 import com.maan.eway.master.req.PremiaConfigDataMasterGetReq;
 import com.maan.eway.master.req.PremiaConfigDataMasterGetallReq;
 import com.maan.eway.master.req.PremiaConfigDataMasterSaveReq;
+import com.maan.eway.master.req.PremiaConfigMasterDropDownReq;
 import com.maan.eway.master.res.PremiaConfigDataMasterGetRes;
 import com.maan.eway.master.res.PremiaConfigDataMasterGetallRes;
 import com.maan.eway.master.service.PremiaConfigDataMasterService;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -75,8 +79,7 @@ public class PremiaConfigDataMasterController {
 		}
 
 	}
-	
-	
+
 	// Get
 	@PostMapping("/getpremiaconfigdata")
 	@ApiOperation(value = "This method is Get Premia Config Data")
@@ -85,41 +88,106 @@ public class PremiaConfigDataMasterController {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 
-			PremiaConfigDataMasterGetRes res = service.getPremiaConfigData(req);
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
+		PremiaConfigDataMasterGetRes res = service.getPremiaConfigData(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
 
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-
+	}
 
 	// GetAll
-		@PostMapping("/getallpremiaconfigdata")
-		@ApiOperation(value = "This method is Getall Premia Config Data")
-		public ResponseEntity<CommonRes> getallPremiaConfigData(@RequestBody PremiaConfigDataMasterGetallReq req) {
+	@PostMapping("/getallpremiaconfigdata")
+	@ApiOperation(value = "This method is Getall Premia Config Data")
+	public ResponseEntity<CommonRes> getallPremiaConfigData(@RequestBody PremiaConfigDataMasterGetallReq req) {
 
-			reqPrinter.reqPrint(req);
-			CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
 
-				PremiaConfigDataMasterGetallRes res = service.getallPremiaConfigData(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
+		PremiaConfigDataMasterGetallRes res = service.getallPremiaConfigData(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
 
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
-	
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	// GetActive
+	@PostMapping("/getactivepremiaconfigdata")
+	@ApiOperation(value = "This method is Getactive Premia Config Data")
+	public ResponseEntity<CommonRes> getactivePremiaConfigData(@RequestBody PremiaConfigDataMasterGetallReq req) {
+
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+
+		PremiaConfigDataMasterGetallRes res = service.getactivePremiaConfigData(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	// Premia Config Master Drop Down Type
+	@PostMapping(value = "/dropdown/premiaconfigdata", produces = "application/json")
+	@ApiOperation(value = "This method is get Premia Config Data Master Drop Down")
+
+	public ResponseEntity<DropdownCommonRes> getPremiaConfigDataMasterDropdown(
+			@RequestBody PremiaConfigDataMasterGetallReq req) {
+
+		DropdownCommonRes data = new DropdownCommonRes();
+
+		// Save
+		List<DropDownRes> res = service.getPremiaConfigDataMasterDropdown(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+
+	// Change Status
+	@PostMapping("/changestatuspremiaconfigdata")
+	@ApiOperation(value = "This method is Change Status Premia Config Data")
+	public ResponseEntity<CommonRes> changeStatusPremiaConfigData(@RequestBody PremiaConfigDataMasterChangeStatusReq req) {
+
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+
+		SuccessRes res = service.changeStatusPremiaConfigData(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
 	
 	
 }
