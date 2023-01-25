@@ -313,7 +313,7 @@ this.repository = repo;
 					
 					if(req.getUpdateas()==null) {
 						saveCover.setUserOpt(userOpt);
-						saveCover.setActualRate(new BigDecimal(df.format(coverData.getRate())));
+						saveCover.setActualRate(new BigDecimal(coverData.getRate()));
 					}
 						
 					saveCover.setCoverBasedOn(StringUtils.isBlank(coverData.getCoverBasedOn())?"sumInsured":coverData.getCoverBasedOn());
@@ -418,7 +418,7 @@ this.repository = repo;
 						saveSubCover.setUserOpt(userOpt);
 						if(req.getUpdateas()==null) {
 							saveSubCover.setUserOpt(userOpt);
-							saveSubCover.setActualRate(new BigDecimal(df.format(subCoverData.getRate())));
+							saveSubCover.setActualRate(new BigDecimal(subCoverData.getRate()));
 						}
 						///Double b=subCoverData.getPremiumBeforeDiscountLC()==null ? 0D : Double.valueOf(df.format(subCoverData.getPremiumBeforeDiscountLC()));
 						saveSubCover.setRegulSumInsured(subCoverData.getTiraSumInsured()==null?null:new BigDecimal(df.format(subCoverData.getTiraSumInsured())));
@@ -655,7 +655,7 @@ this.repository = repo;
 				saveTax.setTaxExemptType(tax.getTaxExemptType());
 				saveTax.setTaxExemptCode(tax.getTaxExemptCode());
 				saveTax.setTaxId(tax.getTaxId()==null?null : Integer.valueOf(tax.getTaxId()) );
-				saveTax.setTaxRate(tax.getTaxRate()==null?null :new BigDecimal(df.format(tax.getTaxRate())) );
+				saveTax.setTaxRate(tax.getTaxRate()==null?null :new BigDecimal(tax.getTaxRate()) );
 				saveTax.setIsTaxExtempted(tax.getIsTaxExempted());
 				
 				repository.saveAndFlush(saveTax);
@@ -704,7 +704,7 @@ this.repository = repo;
 				saveLod.setMinimumPremium(lod.getLoadingAmount()==null?null: new BigDecimal(df.format(lod.getLoadingAmount())));
 				saveLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
 				saveLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
-				saveLod.setRate(lod.getLoadingRate()==null?null:new BigDecimal(df.format(lod.getLoadingRate())));
+				saveLod.setRate(lod.getLoadingRate()==null?null:new BigDecimal(lod.getLoadingRate()));
 			//	saveLod.setLodingSubcoverId(lod.getSubCoverId()==null?null:Integer.valueOf(lod.getSubCoverId()));
 				saveLod.setDiscLoadId(lod.getLoadingId()==null?null:Integer.valueOf(lod.getLoadingId()));
 				saveLod.setDependentCoverYn("Y");
@@ -760,7 +760,7 @@ this.repository = repo;
 				saveDiscounts.setCoverageType(disc.getCoverAgeType() );
 				saveDiscounts.setMinimumPremium(disc.getMaxAmount()==null ? null : new BigDecimal(df.format(disc.getMaxAmount())));
 				saveDiscounts.setSumInsured(null);
-				saveDiscounts.setRate(disc.getDiscountRate()==null ? null :new BigDecimal(df.format(disc.getDiscountRate())));
+				saveDiscounts.setRate(disc.getDiscountRate()==null ? null :new BigDecimal(disc.getDiscountRate()));
 				saveDiscounts.setPremiumAfterDiscountFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
 				saveDiscounts.setPremiumBeforeDiscountFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
 				saveDiscounts.setPremiumExcludedTaxFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
