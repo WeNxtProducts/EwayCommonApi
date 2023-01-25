@@ -1380,7 +1380,7 @@ this.repository = repo;
 					if(filterCover.size()>0 ) {
 						FactorRateRequestDetails  updateCover = filterCover.get(0);
 						updateCover.setMinimumPremium(new BigDecimal(df.format(Double.valueOf(covReq.getMinimumPremium()))));
-						updateCover.setRate(new BigDecimal(df.format(Double.valueOf(covReq.getRate()))));
+						updateCover.setRate(new BigDecimal(covReq.getRate()));
 						repository.save(updateCover);
 						
 					}
@@ -1389,7 +1389,7 @@ this.repository = repo;
 					if(filterSubCover.size()>0 ) {
 						FactorRateRequestDetails  updateSubCover = filterSubCover.get(0);
 						updateSubCover.setMinimumPremium(new BigDecimal(df.format(Double.valueOf(covReq.getMinimumPremium()))));
-						updateSubCover.setRate(new BigDecimal(df.format(Double.valueOf(covReq.getRate()))));
+						updateSubCover.setRate(new BigDecimal(covReq.getRate()));
 						repository.save(updateSubCover);
 					}
 					
