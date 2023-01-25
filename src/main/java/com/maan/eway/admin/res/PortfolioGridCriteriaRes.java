@@ -1,13 +1,9 @@
 package com.maan.eway.admin.res;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -39,8 +35,8 @@ public class PortfolioGridCriteriaRes {
 	private String customerId;
 	private Date inceptionDate;
 	private Date expiryDate;
-	private Double overallPremiumLc;
-	private Double overallPremiumFc;
+	private BigDecimal overallPremiumLc;
+	private BigDecimal overallPremiumFc;
 	private String policyNo;
 	private String debitAcNo;
 	private String debitTo;
