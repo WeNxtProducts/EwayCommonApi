@@ -89,14 +89,7 @@ public class EserviceCommonGetRes {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("Dob")
     private Date    dob;
-	
-	
-	@JsonProperty("IdProofType")
-    private String    idProofType;
-	
-	@JsonProperty("IdNo")
-    private String    idNo;
-	
+
 	@JsonProperty("JobJoiningMonth")
     private String    jobJoiningMonth;
 	
