@@ -54,7 +54,9 @@ import com.maan.eway.master.res.EmiDisplayRes;
 import com.maan.eway.master.res.EmiInfoListRes;
 import com.maan.eway.master.service.EmiTransactionDetailsService;
 import com.maan.eway.repository.EmiTransactionDetailsRepository;
+import com.maan.eway.repository.ExchangeMasterRepository;
 import com.maan.eway.bean.EmiTransactionDetails;
+import com.maan.eway.bean.ExchangeMaster;
 import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.EmiMaster;
 import com.maan.eway.bean.EmiMaster;
@@ -75,6 +77,9 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 	@Autowired
 	private EmiTransactionDetailsRepository repo;
 
+	@Autowired
+	private ExchangeMasterRepository exchangeMasterRepo;
+	
 	Gson json = new Gson();
 
 	private Logger log = LogManager.getLogger(EmiTransactionDetailsServiceImpl.class);
@@ -522,14 +527,21 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 	@Override
 	public List<EmiDisplayRes> viewEmiInstallmentDetails(EmiInstallmentDetailsReq req) {
 		List<EmiDisplayRes> resList = new ArrayList<EmiDisplayRes>();
-		DecimalFormat df = new DecimalFormat("0.00");
+		//DecimalFormat df = new DecimalFormat("0.0");
 		try {
 			Integer i = 0;
 			String insDesc = "";
 			Double temp = 0d, premiumWithTax, interestPercent, advancePercent, interestAmount, totalLoanAmount,
-					advanceAmount, balanceAmount = null, installment = 0d;
+					advanceAmount, balanceAmount = null, installment = 0d,exchangeDate=0d,curPremium=0d;
+			premiumWithTax = Double.valueOf(req.getPremiumWithTax());
+			if(!req.getCurrency().equalsIgnoreCase("TZS")) {
+				ExchangeMaster exchangeData=exchangeMasterRepo.findByCurrencyIdOrderByAmendIdDesc(req.getCurrency());
+				exchangeDate= exchangeData.getExchangeRate();
+				curPremium=exchangeDate*premiumWithTax;
+				premiumWithTax=Double.valueOf(Math.round(curPremium));
+			}
 			List<EmiMaster> list = getEmiMasterData(req.getCompanyId(), req.getProductId(), req.getPolicyType(),
-					req.getPremiumWithTax());
+					premiumWithTax);
 			EmiDisplayRes res=null;
 			if (list.size()>0) {
 				for (EmiMaster data : list) {
@@ -540,7 +552,7 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 					// Calculation
 					for (i = 0; i <= noOfMonth; i++) {
 						// Response
-						premiumWithTax = Double.valueOf(req.getPremiumWithTax());
+						
 						interestAmount = premiumWithTax * interestPercent / 100;
 						totalLoanAmount = premiumWithTax + interestAmount;
 						advanceAmount = totalLoanAmount * advancePercent / 100;
@@ -615,7 +627,7 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 
 		return resList;
 	}
-	public List<EmiMaster> getEmiMasterData( String companyId, String productId,String policyType,String amt) {
+	public List<EmiMaster> getEmiMasterData( String companyId, String productId,String policyType,Double amt) {
 		List<EmiMaster> list = new ArrayList<EmiMaster>();
 		
 		try {
