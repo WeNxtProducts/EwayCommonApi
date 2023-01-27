@@ -2,6 +2,8 @@ package com.maan.eway.repository;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -19,5 +21,10 @@ public interface PersonalAccidentRepository
 
 	List<PersonalAccident> findByRequestReferenceNoAndSectionIdOrderByPersonId(String requestReferenceNo,
 			String sectionId);
+
+	Long countByQuoteNo(String quoteNo);
+
+	@Transactional
+	void deleteByQuoteNo(String quoteNo);
 
 }

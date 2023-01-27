@@ -74,7 +74,10 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="SOURCE_COUNTRY", length=50)
     private String     sourceCountry ;
-
+    
+    @Column(name="CATEGORY_ID", length=50)
+    private String     categoryId;
+    
     @Column(name="DESTINATION_COUNTRY", length=50)
     private String     destinationCountry ;
 

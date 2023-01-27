@@ -56,6 +56,7 @@ import com.maan.eway.common.req.EservieMotorDetailsViewRes;
 import com.maan.eway.common.req.UpdateFactorRateReq;
 import com.maan.eway.common.req.VehicleIdsReq;
 import com.maan.eway.common.res.EserviceMotorDetailsRes;
+import com.maan.eway.common.res.EservicePaccGetRes;
 import com.maan.eway.common.res.EserviceTravelGetRes;
 import com.maan.eway.common.res.UpdateCoverRes;
 import com.maan.eway.error.Error;
@@ -120,6 +121,9 @@ private String travelProductId;
 @Value(value = "${building.productId}")
 private String buildingProductId;
 
+@Value(value="${personalaccident.productId}")
+private String personalaccidentProductId;
+
 
 @Autowired
 private CalculatorEngine calcEngine;
@@ -132,6 +136,8 @@ private EntityManager em;
 
 @Autowired
 private EmiTransactionDetailsRepository emiRepo ;
+
+
 
 
 private Logger log=LogManager.getLogger(FactorRateRequestDetailsServiceImpl.class);
@@ -1050,7 +1056,77 @@ this.repository = repo;
 					
 					
 				}
-			}  
+			}   else if( req.getProductId().equalsIgnoreCase(personalaccidentProductId) ) {
+				
+				List<EservicePersonalAccidentDetails> findDatas = eserPaccRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+				
+				for (EservicePersonalAccidentDetails pacc : findDatas ) {
+					if (StringUtils.isNotBlank(pacc.getQuoteNo()) && emiDetails.size()<=0 ) {
+						emiDetails = emiRepo.findByQuoteNoAndCompanyIdAndProductId(pacc.getQuoteNo() ,pacc.getCompanyId() , pacc.getProductId().toString());
+						if (emiDetails.size()>0 ) {
+							List<EmiTransactionDetails> filterEmi =  emiDetails.stream().filter( o -> (!o.getPaymentStatus().equalsIgnoreCase("Accepted")) &&  ( o.getInstalment().equalsIgnoreCase("0") || o.getInstalment()!=null ) ).collect(Collectors.toList());
+							if(filterEmi.size()>0   ) {
+								emi = "Y";
+								installementPeriod = filterEmi.get(0).getInstallmentPeriod();
+								installementMonth = filterEmi.get(0).getInstalment() ;
+								dueAmount = filterEmi.get(0).getDueAmount()==null?"":filterEmi.get(0).getDueAmount().toString();
+							}
+						}
+					}
+					
+					List<FactorRateRequestDetails> filterVehicleCovers =  findCovers.stream().filter( o -> o.getVehicleId().equals(pacc.getRiskId()) &&
+							o.getCompanyId().equals(pacc.getCompanyId()) 
+							&& o.getProductId().toString().equals(pacc.getProductId())
+							&& o.getSectionId().toString().equals(pacc.getSectionId()) ).collect(Collectors.toList());
+					Map<Integer,List<FactorRateRequestDetails>> groupByCover = filterVehicleCovers.stream().collect(Collectors.groupingBy(FactorRateRequestDetails :: getCoverId));			
+					
+					List<Cover> coverListRes = 	getCoversList(groupByCover);
+					
+					// Response 
+					EservieMotorDetailsViewRes res = new EservieMotorDetailsViewRes();
+					dozerMapper.map(pacc,res);
+					
+					res.setEmiYn(emi);
+					res.setInstallmentPeriod(installementPeriod);
+					res.setInstallmentMonth(installementMonth);
+					res.setDueAmount(dueAmount);
+					res.setActualPremiumFc(pacc.getActualPremiumFc()==null?"":pacc.getActualPremiumFc().toString());
+					res.setActualPremiumLc(pacc.getActualPremiumLc()==null?"":pacc.getActualPremiumLc().toString());
+					res.setBranchCode(pacc.getBranchCode());
+					res.setCdRefNo(filterVehicleCovers.size() > 0 ? filterVehicleCovers.get(0).getCdRefno() : "");
+					res.setCreatedBy(pacc.getCreatedBy());
+					res.setCurrency(pacc.getCurrency());
+					res.setCustomerReferenceNo(pacc.getCustomerReferenceNo());
+					res.setExchangeRate(pacc.getExchangeRate()==null?"":pacc.getExchangeRate().toString());
+					res.setInsuranceId(pacc.getCompanyId());
+					res.setMsrefno(filterVehicleCovers.size() > 0 ?filterVehicleCovers.get(0).getMsRefno(): "");
+					res.setOverallPremiumFc(pacc.getOverallPremiumFc()==null?"":pacc.getOverallPremiumFc().toString());
+					res.setOverallPremiumLc(pacc.getOverallPremiumLc()==null?"":pacc.getOverallPremiumLc().toString());
+					res.setPolicyStartDate(pacc.getPolicyStartDate());
+					res.setPolicyEndDate(pacc.getPolicyEndDate());
+					res.setProductId(pacc.getProductId());
+					res.setRequestReferenceNo(pacc.getRequestReferenceNo());
+					res.setSectionId(pacc.getSectionId());
+					res.setVdRefNo(filterVehicleCovers.size() > 0 ?filterVehicleCovers.get(0).getVdRefno(): "");
+					res.setVehicleId(pacc.getRiskId().toString());
+					res.setHavepromocode(pacc.getHavepromocode());
+					res.setPromocode(pacc.getPromocode());
+					res.setGroupId(1);
+					res.setGroupMember(0);
+					res.setAdminRemarks(pacc.getAdminRemarks());
+					res.setReferalRemarks(pacc.getReferalRemarks());
+					res.setRejectReason(pacc.getRejectReason());
+					res.setCoverList(coverListRes);
+					Object riskDetails = new Object();
+					EservicePaccGetRes  pacRes = new EservicePaccGetRes();
+					dozerMapper.map(pacc, pacRes);
+					riskDetails = pacRes ;
+					res.setRiskDetails(riskDetails);
+					resList.add(res);	
+				}
+				// Emi Details
+				
+			}
 		
 			
 		} catch(Exception e){

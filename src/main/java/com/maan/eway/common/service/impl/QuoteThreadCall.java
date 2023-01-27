@@ -40,6 +40,7 @@ import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MotorDataDetails;
+import com.maan.eway.bean.PersonalAccident;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.TravelPassengerDetails;
@@ -54,11 +55,13 @@ import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
+import com.maan.eway.repository.EservicePersonalAccidentDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
+import com.maan.eway.repository.PersonalAccidentRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerHistoryRepository;
@@ -100,11 +103,15 @@ public class QuoteThreadCall implements Callable<Object>  {
 	private EserviceBuildingDetailsRepository eserBuildRepo  ;
 	private EServiceSectionDetailsRepository eserSecRepo  ;
 	
+	//Personal Accident
+	private EservicePersonalAccidentDetailsRepository eserPaccRepo  ;
+	private PersonalAccidentRepository paccRepo  ;
+	
 	// productId
 	private String motorProductId;
 	private String travelProductId;
 	private String buildingProductId;
-	
+	private String personalAccidentProductId;
 	
 	public QuoteThreadCall(String type , QuoteThreadReq request , EntityManager em ,EserviceCustomerDetailsRepository eserCustRepo ,
 			EServiceMotorDetailsRepository eserMotRepo  ,FactorRateRequestDetailsRepository facRateRepo  ,PersonalInfoRepository perInfoRepo  , MotorDataDetailsRepository motorRepo , 
@@ -789,6 +796,13 @@ public class QuoteThreadCall implements Callable<Object>  {
 						
 					
 					}	
+				} else if( req.getProductId().equalsIgnoreCase(personalAccidentProductId) ) {
+					
+					Long paccInfo =  paccRepo.countByQuoteNo(req.getQuoteNo());
+					if (paccInfo > 0  ) {
+						paccRepo.deleteByQuoteNo(req.getQuoteNo());
+					}
+					
 				}
 				
 				// Remove Covers

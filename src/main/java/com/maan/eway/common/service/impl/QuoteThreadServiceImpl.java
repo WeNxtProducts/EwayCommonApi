@@ -101,6 +101,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	@Value(value = "${building.productId}")
 	private String buildingProductId;
 	
+	@Value(value = "${personalaccident.productId}")
+	private String personalAccidentProductId;
 	
 	Gson json = new Gson();
 	
@@ -674,7 +676,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						queue.add(coverSave);	
 		            }
 					
-			// Multiple Travel Thread Call	 
+			// Bulding Thread Call	 
 			} else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
 				 for (Integer vehId :  vehicleIds ) {
 		            	threadCount = threadCount +  2 ;
@@ -743,7 +745,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		         } 
 	        	
 			}
-	        
+					
+			
 	    
 	        
 	        // Response 

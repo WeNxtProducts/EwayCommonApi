@@ -84,6 +84,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="OCCUPATION_DESC", length=100)
     private String occupationDesc ;
 
+    @Column(name="OCCUPATION_TYPE", length=100)
+    private String occupationType ;
     
     @Column(name="COMPANY_ID", length=20)
     private String     companyId ;
@@ -99,6 +101,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="BRANCH_Name", length=100)
     private String     branchName;
        
+    @Column(name="AGENCY_CODE", length=100)
+    private String     agencyCode;
     
     @Column(name="CATEGORY_ID", length=20)
     private String     categoryId ;
@@ -127,6 +131,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="COUNT")
     private Integer count;
 
+    
     @Column(name="ADMIN_LOGIN_ID", length=100)
     private String    adminLoginId ;
 
@@ -145,8 +150,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="BROKER_CODE", length=100)
     private String  brokerCode;
     
-    @Column(name="AC_EXCECUTIVE_ID", length=100)
+    @Column(name="POLICY_PERIOD", length=100)
+    private Integer policyPeriod;
+    
+    @Column(name="AC_EXECUTIVE_ID", length=100)
     private String    acExecutiveId;
+    
+    @Column(name="QUOTE_NO", length=100)
+    private String    quoteNo;
     
     @Column(name="APPLICATION_ID", length=100)
     private String    applicationId ;
@@ -171,7 +182,46 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="SALARY_PER_ANNUM")
     private BigDecimal salaryPerAnnum;
-        
+    
+    @Column(name="CURRENCY", length=20)
+    private String     currency;
+    
+    @Column(name="EXCHANGE_RATE", length=20)
+    private BigDecimal     exchangeRate ;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="POLICY_START_DATE")
+    private Date       policyStartDate ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="POLICY_END_DATE")
+    private Date       policyEndDate ;
+
+    @Column(name="ACTUAL_PREMIUM_FC")
+    private BigDecimal     actualPremiumFc ;
+
+    
+    @Column(name="ACTUAL_PREMIUM_LC")
+    private BigDecimal     actualPremiumLc ;
+
+    @Column(name="OVERALL_PREMIUM_LC")
+    private BigDecimal     overallPremiumLc ;
+
+    @Column(name="OVERALL_PREMIUM_FC")
+    private BigDecimal     overallPremiumFc ;
+    
+    @Column(name="HAVEPROMOCODE", length=20)
+    private String     havepromocode;
+
+    @Column(name="PROMOCODE", length=100)
+    private String     promocode;
+    
+    @Column(name="CUSTOMER_NAME", length=100)
+    private String     customerName;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="DOB")
+    private Date       dob ;
 }
 
 
