@@ -8,4 +8,6 @@ import com.maan.eway.bean.ExchangeMasterId;
 
 public interface ExchangeMasterRepository extends JpaRepository<ExchangeMaster, ExchangeMasterId>, JpaSpecificationExecutor<ExchangeMaster> {
 
+	ExchangeMaster findByCurrencyIdOrderByAmendIdDesc(String currency);
+
 }

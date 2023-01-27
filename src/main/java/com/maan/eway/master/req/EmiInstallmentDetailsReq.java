@@ -18,6 +18,9 @@ public class EmiInstallmentDetailsReq implements Serializable {
 	@JsonProperty("QuoteNo")
 	private String quoteNo;
 	
+	@JsonProperty("Currency")
+	private String currency;
+	
 	@JsonProperty("PremiumWithTax")
 	private String premiumWithTax;
 
