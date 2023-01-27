@@ -158,6 +158,19 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="INSTALLMENT_PERIOD", length=100)
     private String     installmentPeriod;
+    
+    @Column(name="EXCHANGE_RATE")
+    private BigDecimal     exchangeRate;
+    
+    @Column(name="PREMIUM_FC")
+    private BigDecimal     premiumFc;
+    
+    @Column(name="PREMIUM_LC")
+    private BigDecimal     premiumLc;
+    
+    @Column(name="CURRENCY_ID", length=100)
+    private String     currencyId;
+    
 
 
 }

@@ -451,6 +451,11 @@ public class PaymentServiceImpl implements PaymentService {
 				paymentinfo.setPolicyEndDate(data.getExpiryDate());
 				paymentinfo.setPolicyStartDate(data.getInceptionDate() );
 				paymentinfo.setPremium(new BigDecimal(req.getPremium()));
+				paymentinfo.setPremiumFc(new BigDecimal(req.getPremium()));
+				BigDecimal premiumLc = new BigDecimal(req.getPremium()).divide(data.getExchangeRate() );
+				paymentinfo.setPremiumLc(premiumLc);
+				paymentinfo.setCurrencyId(data.getCurrency());
+				paymentinfo.setExchangeRate(data.getExchangeRate() );
 				paymentinfo.setProductId(data.getProductId());
 				paymentinfo.setProductDesc(productName);
 				paymentinfo.setQuoteNo(req.getQuoteNo());
@@ -1109,7 +1114,6 @@ public class PaymentServiceImpl implements PaymentService {
 			PaymentDetail paymentDetail = new PaymentDetail();
 			dozermapper.map(data,PaymentDetail.class);
 			paymentDetail.setBranchCode(data.getBranchCode());
-			paymentDetail.setPremium(Double.valueOf(paymentInfo.getPremium().toString()));
 			paymentDetail.setBranchName(branchName);
 			paymentDetail.setCreatedBy(req.getCreatedBy());
 			paymentDetail.setPaymentType(req.getPaymentType());
@@ -1139,6 +1143,12 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentDetail.setReqCardExpiryDate(null);
 			paymentDetail.setReqBillToCompanyName(companyName);
 			paymentDetail.setShorternUrl(tinyUrl);
+			paymentDetail.setPremium(paymentInfo.getPremium());
+			paymentDetail.setPremiumFc(paymentInfo.getPremiumFc());
+			paymentDetail.setPremiumLc(paymentInfo.getPremiumLc());
+			paymentDetail.setCurrencyId(paymentInfo.getCurrencyId());
+			paymentDetail.setExchangeRate(paymentInfo.getExchangeRate() );
+			
 			
 			Integer validateHour = Integer.valueOf(getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_VALIDATE_HOUR"));
 			Integer validateMinutes = Integer.valueOf(getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_VALIDATE_MINUTES"));

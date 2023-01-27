@@ -19,6 +19,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -75,7 +76,7 @@ private static final long serialVersionUID = 1L;
 
     
     @Column(name="PREMIUM")
-    private Double     premium ;
+    private BigDecimal     premium ;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="REQUEST_TIME")
@@ -212,7 +213,17 @@ private static final long serialVersionUID = 1L;
     @Column(name="INSTALLMENT_PERIOD", length=20)
     private String     installmentPeriod;
 
+    @Column(name="EXCHANGE_RATE")
+    private BigDecimal     exchangeRate;
     
+    @Column(name="PREMIUM_FC")
+    private BigDecimal     premiumFc;
+    
+    @Column(name="PREMIUM_LC")
+    private BigDecimal     premiumLc;
+    
+    @Column(name="CURRENCY_ID", length=100)
+    private String     currencyId;
     
 }
 
