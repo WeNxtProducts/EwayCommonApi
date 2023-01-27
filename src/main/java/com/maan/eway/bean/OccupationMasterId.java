@@ -36,6 +36,7 @@ public class OccupationMasterId implements Serializable {
     private String     companyId ;
     
     private String     branchCode ;
-    
+    private String    productId;
+
      
 }
