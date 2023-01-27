@@ -87,12 +87,8 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 							.alias("quoteNo"),
 					cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId"))
 							.otherwise(m.get("customerId")).alias("customerId"),
-					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
-					m.get("registrationNumber").alias("registrationNumber"),
-					m.get("chassisNumber").alias("chassisNumber"),
-					m.get("vehicleType").alias("vehicleType"),
-					m.get("insuranceType").alias("insuranceType"),
-					m.get("motorUsage").alias("motorUsage"));
+					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate")
+					);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();

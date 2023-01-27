@@ -113,8 +113,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 							.alias("quoteNo"),
 					cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId"))
 							.otherwise(m.get("customerId")).alias("customerId"),
-					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
-					m.get("entryDate").alias("entryDate")
+					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate")
 					
 					);
 			
@@ -342,8 +341,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 							.otherwise(m.get("customerId")).alias("customerId"),
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
 					m.get("rejectReason").alias("rejectReason"),
-					m.get("adminRemarks").alias("adminRemarks"),
-					m.get("entryDate").alias("entryDate")
+					m.get("adminRemarks").alias("adminRemarks")
 			
 					);
 
@@ -420,8 +418,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 							.otherwise(m.get("customerId")).alias("customerId"),
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
 					m.get("rejectReason").alias("rejectReason"),
-					m.get("adminRemarks").alias("adminRemarks"),
-					m.get("entryDate").alias("entryDate")
+					m.get("adminRemarks").alias("adminRemarks")
 					);
 
 			// Order By
