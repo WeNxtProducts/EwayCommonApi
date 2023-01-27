@@ -223,13 +223,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="DOB")
     private Date       dob ;
     
-    
-    @Column(name="ID_PROOF_TYPE", length=100)
-    private String    idProofType;
-    
-    @Column(name="ID_NO", length=100)
-    private String    idNo;
-    
+      
     @Column(name="JOB_JOINING_MONTH", length=100)
     private String    jobJoiningMonth;
     
