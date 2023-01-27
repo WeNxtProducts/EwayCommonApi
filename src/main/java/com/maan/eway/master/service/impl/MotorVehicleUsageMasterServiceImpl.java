@@ -41,6 +41,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.google.gson.Gson;
 import com.maan.eway.bean.MotorVehicleUsageMaster;
 import com.maan.eway.bean.MotorVehicleUsageMaster;
+import com.maan.eway.bean.MotorVehicleUsageMaster;
 
 
 import com.maan.eway.common.res.MotorVehicleUsageMasterGetRes;
@@ -642,63 +643,104 @@ public List<DropDownRes> getVehicleUsageDropdown(UsageDropDownReq req) {
 
 @Override
 public SuccessRes changeStatusOfVehicleUsage(MotorVehicleUsageChangeStatusReq req) {
+	SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
 	SuccessRes res = new SuccessRes();
+	MotorVehicleUsageMaster saveData = new MotorVehicleUsageMaster();
+	List<MotorVehicleUsageMaster> list = new ArrayList<MotorVehicleUsageMaster>();
 	DozerBeanMapper dozerMapper = new DozerBeanMapper();
 	try {
-		Date today =new Date();
-		Calendar cal = new GregorianCalendar();
-		MotorVehicleUsageMaster updateRecord = new MotorVehicleUsageMaster();
-		cal.setTime(today);
-		cal.set(Calendar.HOUR_OF_DAY, 23);
-		cal.set(Calendar.MINUTE, 1);
-		today = cal.getTime();
-		List<MotorVehicleUsageMaster> list = new ArrayList<MotorVehicleUsageMaster>();
-		// Find Latest Record
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<MotorVehicleUsageMaster> query = cb.createQuery(MotorVehicleUsageMaster.class);
-		// Find all
-		Root<MotorVehicleUsageMaster> b = query.from(MotorVehicleUsageMaster.class);
-		//Select
-		query.select(b);
+		Integer amendId=0;
+		Date startDate = req.getEffectiveDateStart() ;
+		String end = "31/12/2050";
+		Date endDate = sdformat.parse(end);
+		long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+		Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+		Date entryDate = new Date() ;
+		String createdBy = req.getCreatedBy();
 
-		// Amend ID Max Filter
-		Subquery<Long> amendId = query.subquery(Long.class);
-		Root<MotorVehicleUsageMaster> ocpm1 = amendId.from(MotorVehicleUsageMaster.class);
-		amendId.select(cb.max(ocpm1.get("amendId")));
-		Predicate a1 = cb.equal(b.get("vehicleUsageId"), ocpm1.get("vehicleUsageId"));
-		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-		Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-		Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		amendId.where(a1, a2, a3, a4);
-
-		// Order By
-		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("branchCode")));
-
-		// Where
-		Predicate n1 = cb.equal(b.get("amendId"), amendId);
-		Predicate n2 = cb.equal(b.get("vehicleUsageId"),req.getVehicleUsageId());
-		Predicate n3 = cb.equal(b.get("companyId"), req.getInsuranceId());
-		Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
-		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
-		Predicate n6 = cb.or(n5,n4);
+		String vehicleUsageId = "";
 		
-		query.where(n1,n2,n3,n6).orderBy(orderList);
-		// Get Result 
-		TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
-		list = result.getResultList();
-		updateRecord = list.get(0);
-		
-		if(  req.getBranchCode().equalsIgnoreCase(updateRecord.getBranchCode())) {
-			updateRecord.setStatus(req.getStatus());
-			repo.save(updateRecord);
-		} else {
-			MotorVehicleUsageMaster saveNew = new MotorVehicleUsageMaster();
-			dozerMapper.map(updateRecord,saveNew);
-			saveNew.setBranchCode(req.getBranchCode());
-			saveNew.setStatus(req.getStatus());
-			repo.save(saveNew);
-		}	// Perform Update
+			// Update
+			vehicleUsageId = req.getVehicleUsageId();
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<MotorVehicleUsageMaster> query = cb.createQuery(MotorVehicleUsageMaster.class);
+			// Find all
+			Root<MotorVehicleUsageMaster> b = query.from(MotorVehicleUsageMaster.class);
+			// Select
+			query.select(b);
+			//Orderby
+			Subquery<Long> amendId2 = query.subquery(Long.class);
+			Root<MotorVehicleUsageMaster> ocpm1 = amendId2.from(MotorVehicleUsageMaster.class);
+			amendId2.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("vehicleUsageId"), b.get("vehicleUsageId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+			amendId2.where(a1, a2,a3);
+			//Orderby
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("branchCode")));
+			//Where
+			Predicate n1 = cb.equal(b.get("vehicleUsageId"),req.getVehicleUsageId());
+			Predicate n2 = cb.equal(b.get("companyId"),req.getInsuranceId());
+			Predicate n3 = cb.equal(b.get("branchCode"),req.getBranchCode());
+			Predicate n4 = cb.equal(b.get("branchCode"),"99999");
+			Predicate n5 = cb.or(n3,n4);
+			Predicate n6 = cb.equal(b.get("amendId"),amendId2);
+			
+			query.where(n1,n2,n5,n6).orderBy(orderList);
+			
+
+			// Get Result
+			TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
+			int limit = 0 , offset = 2 ;
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+			
+			if(req.getBranchCode().equalsIgnoreCase(list.get(0).getBranchCode() ) &&  list.size()>0) {
+				Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+			
+				if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+					amendId = list.get(0).getAmendId() + 1 ;
+					entryDate = new Date() ;
+					createdBy = req.getCreatedBy();
+					MotorVehicleUsageMaster lastRecord = list.get(0);
+						lastRecord.setEffectiveDateEnd(oldEndDate);
+						repo.saveAndFlush(lastRecord);
+					
+				} else {
+					amendId = list.get(0).getAmendId() ;
+					entryDate = list.get(0).getEntryDate() ;
+					createdBy = list.get(0).getCreatedBy();
+					saveData = list.get(0) ;
+					if(req.getBranchCode().equalsIgnoreCase(list.get(0).getBranchCode() ) &&  list.size()>1) {
+						MotorVehicleUsageMaster lastRecord = list.get(1);
+						lastRecord.setEffectiveDateEnd(oldEndDate);
+						repo.saveAndFlush(lastRecord);
+					}
+				
+			    }
+			}
+			res.setResponse("Updated Successfully");
+			res.setSuccessId(vehicleUsageId);
+
+		dozerMapper.map(list.get(0), saveData);
+		saveData.setVehicleUsageId(Integer.valueOf(vehicleUsageId));
+		saveData.setSectionId(list.get(0).getSectionId());
+		saveData.setEffectiveDateStart(startDate);
+		saveData.setEffectiveDateEnd(endDate);
+		saveData.setCreatedBy(createdBy);
+		saveData.setStatus(req.getStatus());
+		saveData.setCompanyId(req.getInsuranceId());
+		saveData.setBranchCode(req.getBranchCode());
+		saveData.setEntryDate(entryDate);
+		saveData.setUpdatedDate(new Date());
+		saveData.setUpdatedBy(req.getCreatedBy());
+		saveData.setAmendId(amendId);
+		repo.saveAndFlush(saveData);
+	
+
+		log.info("Saved Details is --> " + json.toJson(saveData));
 		res.setResponse("Status Changed");
 		res.setSuccessId(req.getVehicleUsageId());
 	}

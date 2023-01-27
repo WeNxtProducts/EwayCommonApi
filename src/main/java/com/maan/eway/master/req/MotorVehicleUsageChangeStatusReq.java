@@ -21,4 +21,11 @@ public class MotorVehicleUsageChangeStatusReq {
 	
 	@JsonProperty("BranchCode")
 	private String branchCode;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
 }

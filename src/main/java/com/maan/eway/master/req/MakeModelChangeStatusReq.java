@@ -19,6 +19,9 @@ public class MakeModelChangeStatusReq {
 	@JsonProperty("BodyId")
 	private String bodyId;
 	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
 	@JsonProperty("InsuranceId")
 	private String insuranceId;
 	
