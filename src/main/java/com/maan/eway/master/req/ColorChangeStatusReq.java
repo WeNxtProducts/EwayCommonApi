@@ -15,8 +15,12 @@ public class ColorChangeStatusReq {
 
 	@JsonProperty("Status")
 	private String status;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
 	@JsonProperty("InsuranceId")
-	private String insuranceId;
+	private String companyId;
 	
 	@JsonProperty("BranchCode")
 	private String branchCode;

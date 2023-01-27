@@ -40,6 +40,7 @@ import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.MotorBodyTypeMaster;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
@@ -511,6 +512,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				query.multiselect(c,
 						cus.get("clientName").alias("clientName"),cb.count(c).alias("idsCount"));
 
+
 				// Order By
 				List<Order> orderList = new ArrayList<Order>();
 				orderList.add(cb.asc(c.get("customerReferenceNo")));
@@ -519,6 +521,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Predicate n3 = null;
 				Predicate n4 = null;
 				Predicate n5 = null;
+		
 
 				// Where
 				if (searchKey.equalsIgnoreCase("RequestReferenceNo")) {
@@ -530,22 +533,18 @@ public class MotorGridServiceImpl implements MotorGridService {
 				} else if (searchKey.equalsIgnoreCase("QuoteNumber")) {
 					n1 = cb.equal(cb.lower(c.get("quoteNo")), searchValue);
 				} else if (searchKey.equalsIgnoreCase("EntryDate")) {
-					//n1 = cb.like(cb.lower(c.get("entryDate").as(String.class)), "%" + searchValue + "%");
-					
 					Date entryDate = sdf.parse(searchValue);
 					Calendar cal = new GregorianCalendar();
 					cal.setTime(entryDate);
-					cal.add(Calendar.HOUR , 1);
+					//cal.add(Calendar.HOUR , -1);
+					cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
 					Date startDate = cal.getTime() ;
 					cal.setTime(entryDate);
-					cal.add(Calendar.HOUR , 23);
+				//	cal.add(Calendar.HOUR , +23);
+					cal.add(Calendar.DAY_OF_MONTH, 0);cal.set(Calendar.HOUR_OF_DAY,23 );cal.set(Calendar.MINUTE, 59);
 					Date endDate = cal.getTime() ;
-							
-					//searchValue = sdf.format(entryDate);
 					n1=cb.between(c.get("entryDate"), startDate, endDate);
 					
-					//(c.get("entryDate"), entryDate);
-					// entry_Date between startDate and end_Date 
 				} else if (searchKey.equalsIgnoreCase("ChassisNumber")) {
 					n1 = cb.equal(cb.lower(c.get("chassisNumber")), searchValue);
 				} else if (searchKey.equalsIgnoreCase("ClientName")) {
@@ -579,6 +578,9 @@ public class MotorGridServiceImpl implements MotorGridService {
 				query.where(n1,n2,n3,n4,n5).orderBy(orderList);
 				if (searchKey.equalsIgnoreCase("ClientName")) {
 					query.where(n1, n2,n4,n5).orderBy(orderList);
+				}
+				if (searchKey.equalsIgnoreCase("EntryDate")) {
+					query.where(n1,n2,n3,n4).orderBy(orderList);
 				}
 
 				// Get Result

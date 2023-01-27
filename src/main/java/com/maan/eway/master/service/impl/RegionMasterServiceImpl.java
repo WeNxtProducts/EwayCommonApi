@@ -45,6 +45,7 @@ import com.maan.eway.master.req.RegionMasterGetReq;
 import com.maan.eway.master.req.RegionMasterSaveReq;
 import com.maan.eway.master.res.RegionMasterRes;
 import com.maan.eway.master.service.RegionMasterService;
+import com.maan.eway.bean.RegionMaster;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.OccupationMaster;
@@ -655,94 +656,112 @@ private Logger log=LogManager.getLogger(RegionMasterServiceImpl.class);
 		return resList;
 	}
 
-
 	@Override
 	public SuccessRes changeStatusOfRegion(RegionChangeStatusReq req) {
+		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
 		SuccessRes res = new SuccessRes();
+		RegionMaster saveData = new RegionMaster();
+		List<RegionMaster> list = new ArrayList<RegionMaster>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			Date today  = req.getEffectiveDateStart()!=null ?req.getEffectiveDateStart() : new Date();
-			Calendar cal = new GregorianCalendar(); 
-			
-			RegionMaster updateRecord  = new RegionMaster();
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today   = cal.getTime();
-			
-			List<RegionMaster> list = new ArrayList<RegionMaster>();
-			// Find Latest Record
+			Integer amendId = 0;
+			Date startDate = req.getEffectiveDateStart();
+			String end = "31/12/2050";
+			Date endDate = sdformat.parse(end);
+			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+			Date entryDate = null;
+			String createdBy = "";
+
+			String regionCode = "";
+
+			// Update
+			regionCode = req.getRegionCode();
+			// Get Less than Equal Today Record
+			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<RegionMaster> query = cb.createQuery(RegionMaster.class);
-	
+
 			// Find All
 			Root<RegionMaster> b = query.from(RegionMaster.class);
-	
+
 			// Select
 			query.select(b);
-	
-			// AmendID Max Filter
-			Subquery<Long> amendId = query.subquery(Long.class);
-			Root<RegionMaster> ocpm1 = amendId.from(RegionMaster.class);
-			amendId.select(cb.max(ocpm1.get("amendId")));
-			Predicate a1 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			Predicate a3 = cb.equal(ocpm1.get("regionCode"), b.get("regionCode"));
-			amendId.where(a1,a2,a3);
-	
-			// Order By
+			//Orderby
+			Subquery<Long> amendId2 = query.subquery(Long.class);
+			Root<RegionMaster> ocpm1 = amendId2.from(RegionMaster.class);
+			amendId2.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("regionCode"), b.get("regionCode"));
+			Predicate a2 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
+			amendId2.where(a1, a2);
+			//Orderby
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("effectiveDateStart")));
-	
-			// Where
-			Predicate n1 = cb.equal(b.get("amendId"), amendId);
-			Predicate n2 = cb.equal(b.get("countryId"), req.getCountryId() );
-			Predicate n3 = cb.equal(b.get("regionCode"), req.getRegionCode() );
-	
+			orderList.add(cb.asc(b.get("effectiveDateStart")));
+			//Where
+			Predicate n1 =  cb.equal(b.get("regionCode"), req.getRegionCode() );
+			Predicate n2 =  cb.equal(b.get("countryId"), req.getCountryId() );
+			Predicate n3 = cb.equal(b.get("amendId"),amendId2);
+			
 			query.where(n1,n2,n3).orderBy(orderList);
-	
+
 			// Get Result
 			TypedQuery<RegionMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			updateRecord = list.get(0) ;
-				
-			if (req.getStatus().equalsIgnoreCase("N") )	{
-					// Delete Old Records
-					cal.setTime(today);
-					cal.set(Calendar.HOUR_OF_DAY, 23);
-					cal.set(Calendar.MINUTE, 30);
-					today   = cal.getTime();
-					
-					// create update
-					CriteriaDelete<RegionMaster> delete = cb.createCriteriaDelete(RegionMaster.class);
-					Root<RegionMaster> pm = delete.from(RegionMaster.class);
-					
-					 // Where	
-					javax.persistence.criteria.Predicate n4 = cb.equal(pm.get("countryId"), req.getCountryId());
-					javax.persistence.criteria.Predicate n5 = cb.greaterThanOrEqualTo(pm.get("effectiveDateStart"), today);
-					javax.persistence.criteria.Predicate n6 = cb.equal(pm.get("regionCode"), req.getRegionCode());
-					delete.where(n4,n5,n6);	
-					em.createQuery(delete).executeUpdate();
-					// Insert Updated Record
-					updateRecord.setStatus(req.getStatus());
-					repo.save(updateRecord);
-				
-			} else if (req.getStatus().equalsIgnoreCase("Y") ) {
-				// Insert Updated Record
-				updateRecord.setStatus(req.getStatus());
-				repo.save(updateRecord);
+
+			if (list.size() > 0) {
+				Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+
+				if (list.get(0).getEffectiveDateStart().before(beforeOneDay)) {
+					amendId = list.get(0).getAmendId() + 1;
+					entryDate = new Date();
+					createdBy = req.getCreatedBy();
+					RegionMaster lastRecord = list.get(0);
+					lastRecord.setEffectiveDateEnd(oldEndDate);
+					repo.saveAndFlush(lastRecord);
+
+				} else {
+					amendId = list.get(0).getAmendId();
+					entryDate = list.get(0).getEntryDate();
+					createdBy = list.get(0).getCreatedBy();
+					saveData = list.get(0);
+					if (list.size() > 1) {
+						RegionMaster lastRecord = list.get(1);
+						lastRecord.setEffectiveDateEnd(oldEndDate);
+						repo.saveAndFlush(lastRecord);
+					}
+
+				}
 			}
-			// perform update
-			
+			res.setResponse("Updated Successfully ");
+			res.setSuccessId(req.getRegionCode());
+
+			dozerMapper.map(list.get(0), saveData);
+			saveData.setRegionCode(regionCode);
+			saveData.setRegionShortCode(list.get(0).getRegionShortCode());
+			saveData.setRegionName(list.get(0).getRegionName());
+			saveData.setTiraCode(list.get(0).getTiraCode());
+			saveData.setEffectiveDateStart(startDate);
+			saveData.setEffectiveDateEnd(endDate);
+			saveData.setCreatedBy(createdBy);
+			saveData.setStatus(req.getStatus());
+			saveData.setEntryDate(entryDate);
+			saveData.setUpdatedDate(new Date());
+			saveData.setRegulatoryCode(list.get(0).getRegionShortCode());
+			saveData.setUpdatedBy(req.getCreatedBy());
+			saveData.setAmendId(amendId);
+			saveData.setCountryId(req.getCountryId());
+			repo.saveAndFlush(saveData);
+
 			res.setResponse("Status Changed");
 			res.setSuccessId(req.getRegionCode());
-		} catch(Exception e ) {
+		} catch (
+
+		Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
 			return null;
 		}
 		return res;
 	}
-	
-
 
 }

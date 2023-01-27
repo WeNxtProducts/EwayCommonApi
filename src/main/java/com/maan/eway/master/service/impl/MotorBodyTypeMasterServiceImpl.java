@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.MotorBodyTypeMaster;
+import com.maan.eway.bean.MotorBodyTypeMaster;
 import com.maan.eway.bean.MotorMakeMaster;
 import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.MotorBodyTypeMaster;
@@ -289,12 +290,12 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			saveData.setCyclinders(req.getCylinders());
 			repo.saveAndFlush(saveData);
 
-			if (list.size() > 0) {
-				// Update Old Record
-				MotorBodyTypeMaster lastRecord = list.get(0);
-				lastRecord.setEffectiveDateEnd(oldEndDate);
-				repo.saveAndFlush(lastRecord);
-			}
+//			if (list.size() > 0) {
+//				// Update Old Record
+//				MotorBodyTypeMaster lastRecord = list.get(0);
+//				lastRecord.setEffectiveDateEnd(oldEndDate);
+//				repo.saveAndFlush(lastRecord);
+//			}
 
 			log.info("Saved Details is ---> " + json.toJson(saveData));
 
@@ -566,70 +567,116 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 		}
 		return resList;
 	}
+
 	@Override
 	public SuccessRes changeStatusOfBodyType(BodyTypeChangeStatusReq req) {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YYYY");
 		SuccessRes res = new SuccessRes();
+		MotorBodyTypeMaster saveData = new MotorBodyTypeMaster();
+		List<MotorBodyTypeMaster> list = new ArrayList<MotorBodyTypeMaster>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+
 		try {
-			
-			List<MotorBodyTypeMaster> list = new ArrayList<MotorBodyTypeMaster>();
-			
-			// Find Latest Record
+			Integer amendId = 0;
+			Date startDate = req.getEffectiveDateStart();
+			String end = "31/12/2022";
+			Date endDate = sdf.parse(end);
+			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+			Date entryDate = null;
+			String createdBy = "";
+			String bodyId = "";
+
+			// Update
+			// Get Less than Equal Today Record
+			// Criteria
+			bodyId = req.getBodyId();
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<MotorBodyTypeMaster> query = cb.createQuery(MotorBodyTypeMaster.class);
-			
-			// Find all
-			Root<MotorBodyTypeMaster> b = query.from(MotorBodyTypeMaster.class);
-			
-			//Select
-			query.select(b);
-			// Effective Date Max Filter
-			Subquery<Long> amendId = query.subquery(Long.class);
-			Root<MotorBodyTypeMaster> ocpm1 = amendId.from(MotorBodyTypeMaster.class);
-			amendId.select(cb.max(ocpm1.get("amendId")));
-			Predicate a1 = cb.equal(ocpm1.get("bodyId"),b.get("bodyId"));
-			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 
-			amendId.where(a1,a2,a3);
-			
-			//Order By
+			// Find All
+			Root<MotorBodyTypeMaster> b = query.from(MotorBodyTypeMaster.class);
+
+			// Select
+			query.select(b);
+
+			// Orderby
+			Subquery<Long> amendId2 = query.subquery(Long.class);
+			Root<MotorBodyTypeMaster> ocpm1 = amendId2.from(MotorBodyTypeMaster.class);
+			amendId2.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("bodyId"), b.get("bodyId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			amendId2.where(a1, a2, a3);
+			// Orderby
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("branchCode")));
-			//where 
-			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			// Where
+			Predicate n1 = cb.equal(b.get("bodyId"), req.getBodyId());
 			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
 			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-//			Predicate n4 = cb.equal(b.get("status"), "Y");
-			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n6 = cb.or(n3,n5);
-			Predicate n7 = cb.equal(b.get("bodyId"),req.getBodyId());
-			query.where(n1,n2,n6,n7).orderBy(orderList);
-			// Get Result 
+			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n5 = cb.or(n3, n4);
+			Predicate n6 = cb.equal(b.get("amendId"), amendId2);
+
+			query.where(n1, n2, n5, n6).orderBy(orderList);
+			// Get Result
 			TypedQuery<MotorBodyTypeMaster> result = em.createQuery(query);
+			int limit = 0, offset = 2;
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
 			list = result.getResultList();
-			MotorBodyTypeMaster updateRecord = list.get(0);
-			
-			if(  req.getBranchCode().equalsIgnoreCase(updateRecord.getBranchCode())) {
-				updateRecord.setStatus(req.getStatus());
-				repo.save(updateRecord);
-			} else {
-				MotorBodyTypeMaster saveNew = new MotorBodyTypeMaster();
-				dozerMapper.map(updateRecord,saveNew);
-				saveNew.setBranchCode(req.getBranchCode());
-				saveNew.setStatus(req.getStatus());
-				repo.save(saveNew);
+
+			if (req.getBranchCode().equalsIgnoreCase(list.get(0).getBranchCode()) && list.size() > 0) {
+				Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+
+				if (list.get(0).getEffectiveDateStart().before(beforeOneDay)) {
+					amendId = list.get(0).getAmendId() + 1;
+					entryDate = new Date();
+					createdBy = req.getCreatedBy();
+					MotorBodyTypeMaster lastRecord = list.get(0);
+					lastRecord.setEffectiveDateEnd(oldEndDate);
+					repo.saveAndFlush(lastRecord);
+
+				} else {
+					amendId = list.get(0).getAmendId();
+					entryDate = list.get(0).getEntryDate();
+					createdBy = list.get(0).getCreatedBy();
+					saveData = list.get(0);
+					if (req.getBranchCode().equalsIgnoreCase(list.get(0).getBranchCode()) && list.size() > 1) {
+						MotorBodyTypeMaster lastRecord = list.get(1);
+						lastRecord.setEffectiveDateEnd(oldEndDate);
+						repo.saveAndFlush(lastRecord);
+					}
+
+				}
 			}
-		
-			// Perform Update
+
+			res.setResponse("Updated Successfully ");
+			res.setSuccessId(bodyId);
+
+			dozerMapper.map(list.get(0), saveData);
+			saveData.setBodyId(Integer.valueOf(bodyId));
+
+			saveData.setEffectiveDateStart(startDate);
+			saveData.setEffectiveDateEnd(endDate);
+			saveData.setCreatedBy(createdBy);
+			saveData.setStatus(req.getStatus());
+			saveData.setCompanyId(req.getInsuranceId());
+			saveData.setEntryDate(entryDate);
+
+			saveData.setAmendId(amendId);
+			saveData.setUpdatedDate(new Date());
+			saveData.setUpdatedBy(req.getCreatedBy());
+			saveData.setCyclinders(list.get(0).getCyclinders());
+			repo.saveAndFlush(saveData);
 			res.setResponse("Status Changed");
 			res.setSuccessId(req.getBodyId());
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --> " + e.getMessage());
 			return null;
-			}
+		}
 		return res;
 	}
 

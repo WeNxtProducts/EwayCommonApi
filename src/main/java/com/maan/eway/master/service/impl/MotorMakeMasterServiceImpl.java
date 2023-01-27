@@ -621,61 +621,108 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 
 	@Override
 	public SuccessRes changeStatusOfMotorMake(MotorMakeChangeStatusReq req) {
+		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
 		SuccessRes res = new SuccessRes();
+		MotorMakeMaster saveData = new MotorMakeMaster();
+		List<MotorMakeMaster> list = new ArrayList<MotorMakeMaster>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+
 		try {
-			Date today = req.getEffectiveDateStart()!=null ? req.getEffectiveDateStart(): new Date();
-			Calendar cal = new GregorianCalendar();
-			MotorMakeMaster updateRecord = new MotorMakeMaster();
-			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
-			today = cal.getTime();
-			List<MotorMakeMaster> list = new ArrayList<MotorMakeMaster>();
-			// Find Latest Record
+			Integer amendId=0;
+			Date startDate = req.getEffectiveDateStart() ;
+			String end = "31/12/2050";
+			Date endDate = sdformat.parse(end);
+			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+			Date entryDate = null;
+			String createdBy = "";
+
+			String makeId = "";
+
+			// Update
+			// Get Less than Equal Today Record
+			// Criteria
+			makeId = req.getMakeId().toString();
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<MotorMakeMaster> query = cb.createQuery(MotorMakeMaster.class);
-			// Find all
+
+			// Find All
 			Root<MotorMakeMaster> b = query.from(MotorMakeMaster.class);
-			//Select
+
+			// Select
 			query.select(b);
-			// AmendId Max Filter
-			Subquery<Long> amendId = query.subquery(Long.class);
-			Root<MotorMakeMaster> ocpm1 = amendId.from(MotorMakeMaster.class);
-			amendId.select(cb.max(ocpm1.get("amendId")));
+
+//						//Orderby
+			Subquery<Long> amendId2 = query.subquery(Long.class);
+			Root<MotorMakeMaster> ocpm1 = amendId2.from(MotorMakeMaster.class);
+			amendId2.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("makeId"), b.get("makeId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			amendId.where(a1, a2, a3,a4);
-
-			//Order By
+			amendId2.where(a1, a2, a3);
+			// Orderby
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("branchCode")));
-			// where
-			Predicate n1 = cb.equal(b.get("companyId"), req.getInsuranceId());
-			Predicate n2 = cb.equal(b.get("branchCode"), req.getBranchCode());
-			Predicate n3 = cb.equal(b.get("makeId"), req.getMakeId());
+			// Where
+			Predicate n1 = cb.equal(b.get("makeId"), req.getMakeId());
+			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
+			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
 			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n5 = cb.or(n2, n4);
-			Predicate n6 = cb.equal(b.get("amendId"), amendId);
-			Predicate n7 = cb.equal(b.get("makeId"), req.getMakeId());
-			query.where(n1, n3, n5, n6, n7).orderBy(orderList);
-			// Get Result 
+			Predicate n5 = cb.or(n3, n4);
+			Predicate n6 = cb.equal(b.get("amendId"), amendId2);
+
+			query.where(n1, n2, n5, n6).orderBy(orderList);
+
+			// Get Result
 			TypedQuery<MotorMakeMaster> result = em.createQuery(query);
+			int limit = 0, offset = 2;
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
 			list = result.getResultList();
-			updateRecord = list.get(0);
-			
-			if(  req.getBranchCode().equalsIgnoreCase(updateRecord.getBranchCode())) {
-				updateRecord.setStatus(req.getStatus());
-				repo.save(updateRecord);
-			} else {
-				MotorMakeMaster saveNew = new MotorMakeMaster();
-				dozerMapper.map(updateRecord,saveNew);
-				saveNew.setBranchCode(req.getBranchCode());
-				saveNew.setStatus(req.getStatus());
-				repo.save(saveNew);
+
+			if (req.getBranchCode().equalsIgnoreCase(list.get(0).getBranchCode()) && list.size() > 0) {
+				Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+
+				if (list.get(0).getEffectiveDateStart().before(beforeOneDay)) {
+					amendId = list.get(0).getAmendId() + 1;
+					entryDate = new Date();
+					createdBy = req.getCreatedBy();
+					MotorMakeMaster lastRecord = list.get(0);
+					lastRecord.setEffectiveDateEnd(oldEndDate);
+					repo.saveAndFlush(lastRecord);
+
+				} else {
+					amendId = list.get(0).getAmendId();
+					entryDate = list.get(0).getEntryDate();
+					createdBy = list.get(0).getCreatedBy();
+					saveData = list.get(0);
+					if (req.getBranchCode().equalsIgnoreCase(list.get(0).getBranchCode()) && list.size() > 1) {
+						MotorMakeMaster lastRecord = list.get(1);
+						lastRecord.setEffectiveDateEnd(oldEndDate);
+						repo.saveAndFlush(lastRecord);
+					}
+
+				}
 			}
+
+			res.setResponse("Updated Successfully ");
+			res.setSuccessId(makeId);
+
+			dozerMapper.map(list.get(0), saveData);
+			saveData.setMakeId(Integer.valueOf(makeId));
+			saveData.setEffectiveDateStart(startDate);
+			saveData.setEffectiveDateEnd(endDate);
+			saveData.setEntryDate(entryDate);
+			saveData.setCreatedBy(createdBy);
+			saveData.setStatus(req.getStatus());
+			saveData.setUpdatedDate(new Date());
+			saveData.setUpdatedBy(req.getCreatedBy());
+			saveData.setCompanyId(req.getInsuranceId());
+			saveData.setAmendId(amendId);
+			repo.saveAndFlush(saveData);
+			
+
+			log.info("Saved Details is ---> " + json.toJson(saveData));
 			// Perform Update
 			res.setResponse("Status Changed");
 			res.setSuccessId(req.getMakeId());

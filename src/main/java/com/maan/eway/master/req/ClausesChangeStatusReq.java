@@ -27,6 +27,13 @@ public class ClausesChangeStatusReq {
 //	
 	@JsonProperty("SectionId")
 	private String sectionId;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart;
 //	
 //	@JsonProperty("PolicyType")
 //	private String policyType;
