@@ -92,7 +92,10 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="APPLICATION_ID", length=50)
     private String     applicationId ;
-
+    
+    @Column(name="CUSTOMER_NAME", length=50)
+    private String     customerName;
+    
     @Column(name="SECTION_ID", nullable=false)
     private Integer    sectionId ;
 
