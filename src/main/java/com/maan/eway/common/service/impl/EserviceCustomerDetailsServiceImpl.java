@@ -347,19 +347,20 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					} else if (req.getDobOrRegDate().after(today)) {
 						errorList.add(new Error("38", "DobOrRegDate", "Please Enter Dob as Past Date"));
 
-					}
+					} else {
+						LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
+								.toLocalDate();
+						LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-					LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
-							.toLocalDate();
-					LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+						Integer years = Period.between(localDate1, localDate2).getYears();
+						if (years > 100) {
+							errorList.add(new Error("38", "DobOrRegDate", "Dob Not Accepted More than 100 Years"));
 
-					Integer years = Period.between(localDate1, localDate2).getYears();
-					if (years > 100) {
-						errorList.add(new Error("38", "DobOrRegDate", "Dob Not Accepted More than 100 Years"));
+						} else if (years < 18) {
+							errorList.add(new Error("38", "DobOrRegDate", "Dob Not Accepted Less than 18 Years For Induvidual"));
 
-					} else if (years < 18) {
-						errorList.add(new Error("38", "DobOrRegDate", "Dob Not Accepted Less than 18 Years For Induvidual"));
-
+						}
+	
 					}
 				}
 
