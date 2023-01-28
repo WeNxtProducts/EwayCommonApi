@@ -13,6 +13,7 @@ import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
+import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.SuccessRes;
 
 public interface BuildingGridService {
@@ -29,7 +30,7 @@ public interface BuildingGridService {
 	
 	List<Tuple> searchBuildingQuote(CopyQuoteReq req, List<String> branches);
 
-	SuccessRes buildingCopyQuote(CopyQuoteReq req, List<String> branches);
+	CopyQuoteSuccessRes buildingCopyQuote(CopyQuoteReq req, List<String> branches);
 
 	List<ListItemValue> geBuildingCoptyQuotetListItem(CopyQuoteDropDownReq req,String itemType);
 }

@@ -14,6 +14,7 @@ import com.maan.eway.common.res.UpdateLapsedQuoteRes;
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
+import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
@@ -41,7 +42,7 @@ public interface GridService {
 
 	List<GetAllMotorDetailsRes> getbyReqRefNo(CopyQuoteReq req);
 
-	SuccessRes copyQuote(CopyQuoteReq req);
+	CopyQuoteSuccessRes copyQuote(CopyQuoteReq req);
 
 	List<DropDownRes> copyQuoteByDropdown(CopyQuoteDropDownReq req);
 

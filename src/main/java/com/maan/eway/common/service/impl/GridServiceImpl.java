@@ -74,6 +74,7 @@ import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
+import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
@@ -624,16 +625,13 @@ public class GridServiceImpl implements GridService {
 
 
 	@Override
-	public SuccessRes copyQuote(CopyQuoteReq req) {
-		SuccessRes res = new SuccessRes();
+	public CopyQuoteSuccessRes copyQuote(CopyQuoteReq req) {
+		CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 		try {
-
-			String loginId = req.getLoginId();
-
 			// Branch Res
-			List<String> branches = new ArrayList<String>();
+			
 
-			if (req.getBranchCode().equalsIgnoreCase("99999")) {
+		/*	if (req.getBranchCode().equalsIgnoreCase("99999")) {
 
 				List<LoginBranchMaster> loginBranch = loginBranchRepo.findByLoginId(loginId);
 
@@ -648,7 +646,26 @@ public class GridServiceImpl implements GridService {
 				branches.add(req.getBrokerBranchCode());
 			} else {
 				branches.add(req.getBranchCode());
+			}*/
+			String loginId = "" ;
+			List<String> branches = new ArrayList<String>();
+			if (req.getApplicationId().equalsIgnoreCase("1") ) {
+				loginId = req.getLoginId();
+			} else {
+				loginId = req.getApplicationId();
 			}
+			// Branch Res
+
+			List<LoginBranchMaster> loginBranch = loginBranchRepo.findByLoginId(loginId);
+
+			branches = loginBranch.stream().filter(o -> !o.getBrokerBranchCode().equalsIgnoreCase("None"))
+					.map(LoginBranchMaster::getBrokerBranchCode).collect(Collectors.toList());
+			if (branches.size() <= 0) {
+				branches = loginBranch.stream().map(LoginBranchMaster::getBranchCode).collect(Collectors.toList());
+
+			}
+
+			branches.add(req.getBranchCode());
 
 			if (req.getTypeId().equalsIgnoreCase("Endt")) {
 				// Product Wise Get
@@ -677,12 +694,14 @@ public class GridServiceImpl implements GridService {
 				}
 			}
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.info("Log Details" + e.getMessage());
-			return null;
-		}
-		return res;
+		}catch(
+
+	Exception e)
+	{
+		e.printStackTrace();
+		log.info("Log Details" + e.getMessage());
+		return null;
+	}return res;
 	}
 	//Validation
 	@Override
@@ -757,7 +776,7 @@ public class GridServiceImpl implements GridService {
 				}
 
 			} else if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
-				branches.add(req.getBrokerBranchCode());
+				branches.add(req.getBranchCode());
 			} else {
 				branches.add(req.getBranchCode());
 			}

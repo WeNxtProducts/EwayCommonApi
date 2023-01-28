@@ -18,24 +18,27 @@ public class CopyQuoteReq {
 	
 	@JsonProperty("EndtTypeId")
 	private String endtTypeId;
-	
+
 	@JsonProperty("SearchKey")
 	private String searchKey;
-	
+
 	@JsonProperty("LoginId")
 	private String loginId;
-	
+
+	@JsonProperty("ApplicationId")
+	private String applicationId;
+
 	@JsonProperty("UserType")
 	private String userType;
-	
+
 	@JsonProperty("InsuranceId")
 	private String insuranceId;
-	
+
 	@JsonProperty("BranchCode")
 	private String branchCode;
-	
-	@JsonProperty("BrokerBranchCode")
-	private String brokerBranchCode;
+
+//	@JsonProperty("BrokerBranchCode")
+//	private String brokerBranchCode;
 	
 	@JsonProperty("ProductId")
 	private String productId;

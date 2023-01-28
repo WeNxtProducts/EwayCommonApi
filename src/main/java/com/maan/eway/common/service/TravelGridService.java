@@ -13,6 +13,7 @@ import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
+import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.SuccessRes;
 
 public interface TravelGridService {
@@ -31,6 +32,6 @@ public interface TravelGridService {
 
 	List<Tuple> searchTravelQuote(CopyQuoteReq req, List<String> branches);
 
-	SuccessRes travelCopyQuote(CopyQuoteReq req, List<String> branches);
+	CopyQuoteSuccessRes travelCopyQuote(CopyQuoteReq req, List<String> branches);
 
 }

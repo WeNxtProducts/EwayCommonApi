@@ -52,6 +52,7 @@ import com.maan.eway.common.service.TravelGridService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
+import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.SuccessRes;
 
 import io.swagger.v3.oas.annotations.servers.Server;
@@ -427,8 +428,8 @@ public class TravelGridServiceImpl implements  TravelGridService {
 		return referrals;
 	}
 	@Override
-	public SuccessRes travelCopyQuote(CopyQuoteReq req, List<String> branches) {
-		SuccessRes res = new SuccessRes();
+	public CopyQuoteSuccessRes travelCopyQuote(CopyQuoteReq req, List<String> branches) {
+		CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 		SimpleDateFormat idf = new SimpleDateFormat("yyMMddmmssSSS");
 		DozerBeanMapper dozerMapper  = new DozerBeanMapper(); 
 		EserviceTravelDetails savedata = new EserviceTravelDetails();
@@ -459,7 +460,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				savedata.setRequestReferenceNo(refNo);
 				savedata.setOldReqRefNo(req.getRequestReferenceNo());
 				if (req.getUserType().equalsIgnoreCase("Broker") || ( req.getUserType().equalsIgnoreCase("User"))) {  
-					branchCode=req.getBrokerBranchCode();
+					branchCode=req.getBranchCode();
 					savedata.setApplicationId("1");
 					savedata.setBrokerBranchCode(branchCode);
 					
@@ -476,7 +477,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				repo.saveAndFlush(savedata);
 				}	
 				res.setResponse("Successfully Updated");
-				res.setSuccessId(refNo);
+				res.setRequestReferenceNo(refNo);
 			}
 			
 			

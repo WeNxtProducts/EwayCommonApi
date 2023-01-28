@@ -22,6 +22,7 @@ import com.maan.eway.common.res.UpdateLapsedQuoteRes;
 import com.maan.eway.common.service.GridService;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
+import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -236,7 +237,7 @@ public class GridController {
 				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 
 			} else {
-				SuccessRes res = entityService.copyQuote(req);
+				CopyQuoteSuccessRes res = entityService.copyQuote(req);
 				data.setCommonResponse(res);
 				data.setIsError(false);
 				data.setErrorMessage(Collections.emptyList());

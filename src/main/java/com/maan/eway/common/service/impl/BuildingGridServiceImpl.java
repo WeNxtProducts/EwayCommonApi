@@ -45,6 +45,7 @@ import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.service.BuildingGridService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
+import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.SuccessRes;
 
 @Service
@@ -545,8 +546,8 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 	}
 
 	@Override
-	public SuccessRes buildingCopyQuote(CopyQuoteReq req, List<String> branches) {
-		SuccessRes res = new SuccessRes();
+	public CopyQuoteSuccessRes buildingCopyQuote(CopyQuoteReq req, List<String> branches) {
+		CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 		SimpleDateFormat idf = new SimpleDateFormat("yyMMddmmssSSS");
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		EserviceBuildingDetails savedata = new EserviceBuildingDetails();
@@ -579,7 +580,7 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 						savedata.setOldReqRefNo(req.getRequestReferenceNo());
 						if (req.getUserType().equalsIgnoreCase("Broker")
 								|| (req.getUserType().equalsIgnoreCase("User"))) {
-							branchCode = req.getBrokerBranchCode();
+							branchCode = req.getBranchCode();
 							savedata.setApplicationId("1");
 
 						} else if ("issuer".equalsIgnoreCase(userType)) {
@@ -598,7 +599,7 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 		
 			
 			res.setResponse("Successfully Updated");
-			res.setSuccessId(refNo);
+			res.setRequestReferenceNo(refNo);
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());

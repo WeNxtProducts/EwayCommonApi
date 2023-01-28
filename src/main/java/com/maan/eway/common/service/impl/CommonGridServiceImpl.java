@@ -58,6 +58,7 @@ import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
+import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.SuccessRes;
 
 @Service
@@ -597,8 +598,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 
 		//CopyQuote
 		@Override
-		public SuccessRes commonCopyQuote(CopyQuoteReq req, List<String> branches) {
-			SuccessRes res = new SuccessRes();
+		public CopyQuoteSuccessRes commonCopyQuote(CopyQuoteReq req, List<String> branches) {
+			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 			SimpleDateFormat idf = new SimpleDateFormat("yyMMddmmssSSS");
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			EserviceCommonDetails savedata = new EserviceCommonDetails();
@@ -631,7 +632,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 							savedata.setOldReqRefNo(req.getRequestReferenceNo());
 							if (req.getUserType().equalsIgnoreCase("Broker")
 									|| (req.getUserType().equalsIgnoreCase("User"))) {
-								branchCode = req.getBrokerBranchCode();
+								branchCode = req.getBranchCode();
 								savedata.setApplicationId("1");
 								savedata.setBrokerBranchCode(branchCode);
 
@@ -649,7 +650,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 							repo.saveAndFlush(savedata);
 						}
 					res.setResponse("Successfully Updated");
-					res.setSuccessId(refNo);
+					res.setRequestReferenceNo(refNo);
+				//	res.setQuoteNo(quoteNo);
 					}
 			
 				
@@ -793,7 +795,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 							savedata.setOldReqRefNo(req.getRequestReferenceNo());
 							if (req.getUserType().equalsIgnoreCase("Broker")
 									|| (req.getUserType().equalsIgnoreCase("User"))) {
-								branchCode = req.getBrokerBranchCode();
+								branchCode = req.getBranchCode();
 								savedata.setApplicationId("1");
 								savedata.setBrokerBranchCode(branchCode);
 
