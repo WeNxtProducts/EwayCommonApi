@@ -13,4 +13,10 @@ public class OccupationDropDownReq {
 	@JsonProperty("BranchCode")
 	private String branchCode;
 	
+	@JsonProperty("CategoryId")
+	private String categoryId;
+	
+	@JsonProperty("ProductId")
+	private String productId;
+	
 }

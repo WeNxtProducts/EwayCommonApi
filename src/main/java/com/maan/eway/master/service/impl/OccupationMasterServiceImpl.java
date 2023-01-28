@@ -81,13 +81,13 @@ public List<Error> validateOccupation(OccupationMasterSaveReq req) {
 			errorList.add(new Error("02", "OccupationName", "Please Enter OccupationName"));
 		}else if (req.getOccupationName().length() > 100){
 			errorList.add(new Error("02","OccupationName", "Please Enter OccupationName 100 Characters")); 
-		}else if (StringUtils.isBlank(req.getOccupationId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
-			List<OccupationMaster> OccupationList = getOccupationNameExistDetails(req.getOccupationName() , req.getInsuranceId() , req.getBranchCode());
+		}else if (StringUtils.isBlank(req.getOccupationId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getCategoryId())) {
+			List<OccupationMaster> OccupationList = getOccupationNameExistDetails(req.getOccupationName() , req.getInsuranceId() , req.getBranchCode() , req.getProductId() , req.getCategoryId());
 			if (OccupationList.size()>0 ) {
 				errorList.add(new Error("01", "OccupationName", "This Occupation Name Already Exist "));
 			}
-		}else if (StringUtils.isNotBlank(req.getOccupationId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
-			List<OccupationMaster> OccupationList = getOccupationNameExistDetails(req.getOccupationName() , req.getInsuranceId() , req.getBranchCode());
+		}else if (StringUtils.isNotBlank(req.getOccupationId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getCategoryId())) {
+			List<OccupationMaster> OccupationList = getOccupationNameExistDetails(req.getOccupationName() , req.getInsuranceId() , req.getBranchCode(), req.getProductId() , req.getCategoryId());
 			
 			if (OccupationList.size()>0 &&  (! req.getOccupationId().equalsIgnoreCase(OccupationList.get(0).getOccupationId().toString())) ) {
 				errorList.add(new Error("01", "OccupationName", "This Occupation Name Already Exist "));
@@ -149,7 +149,14 @@ public List<Error> validateOccupation(OccupationMasterSaveReq req) {
 			errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
 		}else if (req.getCreatedBy().length() > 100){
 			errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
-		}		
+		}
+		if (StringUtils.isBlank(req.getProductId())) {
+			errorList.add(new Error("10", "ProductId", "Please Select ProductId"));
+		}
+		if (StringUtils.isBlank(req.getCategoryId())) {
+			errorList.add(new Error("11", "CategoryId", "Please Select CategoryId"));
+		}
+		
 	} catch (Exception e) {
 		log.error(e);
 		e.printStackTrace();
@@ -187,7 +194,10 @@ try {
 	Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 	Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 	Predicate a6 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
-	effectiveDate.where(a1,a2,a5,a6);
+	Predicate a9 = cb.equal(c.get("productId"),ocpm1.get("productId"));
+	Predicate a10 = cb.equal(c.get("categoryId"),ocpm1.get("categoryId"));
+
+	effectiveDate.where(a1,a2,a5,a6,a9,a10);
 	// Effective Date End Max Filter
 	Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 	Root<OccupationMaster> ocpm2 = effectiveDate2.from(OccupationMaster.class);
@@ -196,7 +206,10 @@ try {
 	Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 	Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
 	Predicate a8 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
-	effectiveDate2.where(a3,a4,a7,a8);
+	Predicate a11 = cb.equal(c.get("productId"),ocpm2.get("productId"));
+	Predicate a12 = cb.equal(c.get("categoryId"),ocpm2.get("categoryId"));
+
+	effectiveDate2.where(a3,a4,a7,a8,a11,a12);
 	// Where
 	Predicate n1 = cb.equal(c.get("status"),"Y");
 	Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
@@ -205,8 +218,16 @@ try {
 	Predicate n5 = cb.equal(c.get("branchCode"),req.getBranchCode());
 	Predicate n6 = cb.equal(c.get("branchCode"),"99999");
 	Predicate n7 = cb.or(n5,n6);
-	query.where(n1,n2,n3,n4,n7).orderBy(orderList);
+	Predicate n8 = cb.equal(c.get("productId"),req.getProductId());
+	Predicate n9 = cb.equal(c.get("categoryId"),req.getCategoryId());
 	
+	if(StringUtils.isBlank(req.getProductId())) {
+		query.where(n1,n2,n3,n4,n7,n9).orderBy(orderList);
+		
+	}
+	else {
+	query.where(n1,n2,n3,n4,n7,n8,n9).orderBy(orderList);
+	}
 	list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getOccupationId()))).collect(Collectors.toList());
 	list.sort(Comparator.comparing(OccupationMaster :: getOccupationName ));
 	
@@ -230,7 +251,7 @@ try {
 	return resList;
 }
 
-public List<OccupationMaster> getOccupationNameExistDetails(String occupationName , String InsuranceId , String branchCode) {
+public List<OccupationMaster> getOccupationNameExistDetails(String occupationName , String InsuranceId , String branchCode, String productId, String categoryId) {
 	List<OccupationMaster> list = new ArrayList<OccupationMaster>();
 	try {
 		Date today = new Date();
@@ -253,7 +274,10 @@ public List<OccupationMaster> getOccupationNameExistDetails(String occupationNam
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 		Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 		Predicate a5 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"), today);
-		amendId.where(a1,a2,a3,a4,a5);
+		Predicate a6 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+		Predicate a7 = cb.equal(ocpm1.get("categoryId"), b.get("categoryId"));
+		
+		amendId.where(a1,a2,a3,a4,a5,a6,a7);
 
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
 		Predicate n2 = cb.equal(cb.lower( b.get("occupationName")), occupationName.toLowerCase());
@@ -261,7 +285,10 @@ public List<OccupationMaster> getOccupationNameExistDetails(String occupationNam
 		Predicate n4 = cb.equal(b.get("branchCode"), branchCode);
 		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n6 = cb.or(n4,n5);
-		query.where(n1,n2,n3,n6);
+		Predicate n7 = cb.equal(b.get("productId"), productId);
+		Predicate n8 = cb.equal(b.get("categoryId"), categoryId);
+		
+		query.where(n1,n2,n3,n6,n7,n8);
 		
 		// Get Result
 		TypedQuery<OccupationMaster> result = em.createQuery(query);
@@ -295,7 +322,7 @@ public SuccessRes insertOccupation(OccupationMasterSaveReq req) {
 		Integer occupationId = 0 ;
 		if(StringUtils.isBlank(req.getOccupationId())) {
 			// Save
-			Integer totalCount = getMasterTableCount( req.getInsuranceId() , req.getBranchCode());
+			Integer totalCount = getMasterTableCount( req.getInsuranceId() , req.getBranchCode(), req.getProductId());
 			occupationId =  totalCount+1 ;
 			entryDate = new Date();
 			createdBy = req.getCreatedBy();
@@ -321,8 +348,9 @@ public SuccessRes insertOccupation(OccupationMasterSaveReq req) {
 			Predicate n2 = cb.equal(b.get("occupationId"), req.getOccupationId());
 			Predicate n3 = cb.equal(b.get("companyId"), req.getInsuranceId());
 			Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n5 = cb.equal(b.get("productId"), req.getProductId());
 			
-			query.where(n2,n3,n4).orderBy(orderList);
+			query.where(n2,n3,n4,n5).orderBy(orderList);
 			
 			// Get Result 
 			TypedQuery<OccupationMaster> result = em.createQuery(query);
@@ -366,10 +394,11 @@ public SuccessRes insertOccupation(OccupationMasterSaveReq req) {
 		saveData.setStatus(req.getStatus());
 		saveData.setCompanyId(req.getInsuranceId());
 		saveData.setEntryDate(entryDate);
-		//saveData.setUpdatedDate(new Date());
-		//saveData.setUpdatedBy(req.getCreatedBy());
+		saveData.setUpdatedDate(new Date());
+		saveData.setUpdatedBy(req.getCreatedBy());
 		saveData.setAmendId(amendId);
 		saveData.setCoreAppcode(req.getCoreAppCode());
+		saveData.setOccupationNameAr(req.getOccupationName());
 		repo.saveAndFlush(saveData);
 		log.info("Saved Details is --> " + json.toJson(saveData));
 		
@@ -383,7 +412,7 @@ public SuccessRes insertOccupation(OccupationMasterSaveReq req) {
 	}
 
 	
-	public Integer getMasterTableCount(String companyId , String branchCode) {
+	public Integer getMasterTableCount(String companyId , String branchCode, String productId) {
 		Integer data =0;
 		try {
 			List<OccupationMaster> list = new ArrayList<OccupationMaster>();
@@ -402,7 +431,9 @@ public SuccessRes insertOccupation(OccupationMasterSaveReq req) {
 			Predicate a1 = cb.equal(ocpm1.get("occupationId"), b.get("occupationId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-			effectiveDate.where(a1,a2,a3);
+			Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+
+			effectiveDate.where(a1,a2,a3,a4);
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -413,7 +444,9 @@ public SuccessRes insertOccupation(OccupationMasterSaveReq req) {
 			Predicate n3 = cb.equal(b.get("branchCode"), branchCode);
 			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
 			Predicate n5 = cb.or(n3,n4);
-			query.where(n1,n2,n5).orderBy(orderList);
+			Predicate n6 = cb.equal(b.get("productId"),productId);
+
+			query.where(n1,n2,n5,n6).orderBy(orderList);
 			
 			
 			
@@ -457,8 +490,9 @@ public List<OccupationMasterRes> getallOccupation(OccupationMasterGetAllReq req)
 		Predicate a1 = cb.equal(ocpm1.get("occupationId"), b.get("occupationId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
 
-		amendId.where(a1, a2,a3);
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -470,7 +504,10 @@ public List<OccupationMasterRes> getallOccupation(OccupationMasterGetAllReq req)
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
 		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n5 = cb.or(n3,n4);
-		query.where(n1,n2,n5).orderBy(orderList);
+		Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
+		
+		
+		query.where(n1,n2,n5,n6).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<OccupationMaster> result = em.createQuery(query);
@@ -483,7 +520,7 @@ public List<OccupationMasterRes> getallOccupation(OccupationMasterGetAllReq req)
 
 			res = mapper.map(data, OccupationMasterRes.class);
 			res.setCoreAppCode(data.getCoreAppcode());
-
+			res.setInsuranceId(data.getCompanyId());
 			resList.add(res);
 		}
 
@@ -525,8 +562,9 @@ public List<OccupationMasterRes> getActiveOccupation(OccupationMasterGetAllReq r
 		Predicate a1 = cb.equal(ocpm1.get("occupationId"), b.get("occupationId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
 
-		amendId.where(a1, a2,a3);
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -539,7 +577,9 @@ public List<OccupationMasterRes> getActiveOccupation(OccupationMasterGetAllReq r
 		Predicate n4 = cb.equal(b.get("status"), "Y");
 		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n6 = cb.or(n3,n5);
-		query.where(n1,n2,n4,n6).orderBy(orderList);
+		Predicate n7 = cb.equal(b.get("productId"), req.getProductId());
+
+		query.where(n1,n2,n4,n6,n7).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<OccupationMaster> result = em.createQuery(query);
@@ -552,7 +592,8 @@ public List<OccupationMasterRes> getActiveOccupation(OccupationMasterGetAllReq r
 
 			res = mapper.map(data, OccupationMasterRes.class);
 			res.setCoreAppCode(data.getCoreAppcode());
-
+			res.setInsuranceId(data.getCompanyId());
+			
 			resList.add(res);
 		}
 
@@ -597,8 +638,9 @@ public OccupationMasterRes getByOccupationId(OccupationMasterGetReq req) {
 		Predicate a1 = cb.equal(ocpm1.get("occupationId"), b.get("occupationId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
 
-		amendId.where(a1, a2,a3);
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -611,7 +653,9 @@ public OccupationMasterRes getByOccupationId(OccupationMasterGetReq req) {
 		Predicate n4 = cb.equal(b.get("occupationId"), req.getOccupationId());
 		Predicate n6 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n7 = cb.or(n3,n6);
-		query.where(n1,n2,n4,n7).orderBy(orderList);
+		Predicate n8 = cb.equal(b.get("productId"), req.getProductId());
+		
+		query.where(n1,n2,n4,n7,n8).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<OccupationMaster> result = em.createQuery(query);
@@ -625,7 +669,9 @@ public OccupationMasterRes getByOccupationId(OccupationMasterGetReq req) {
 		res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 		res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 		res.setCoreAppCode(list.get(0).getCoreAppcode());
-		} catch (Exception e) {
+		res.setInsuranceId(list.get(0).getCompanyId());
+			
+	} catch (Exception e) {
 		e.printStackTrace();
 		log.info("Exception is ---> " + e.getMessage());
 		return null;
@@ -719,8 +765,9 @@ public SuccessRes changeStatusOfOccupation(OccupationChangeStatusReq req) {
 		Predicate a1 = cb.equal(ocpm1.get("occupationId"), b.get("occupationId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
 
-		amendId.where(a1, a2,a3);
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -733,8 +780,9 @@ public SuccessRes changeStatusOfOccupation(OccupationChangeStatusReq req) {
 		Predicate n4 = cb.equal(b.get("occupationId"), req.getOccupationId());
 		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
 		Predicate n6 = cb.or(n3,n5);
+		Predicate n7 = cb.equal(b.get("productId"), req.getProductId());
 		
-		query.where(n1,n2,n4,n6).orderBy(orderList);
+		query.where(n1,n2,n4,n6,n7).orderBy(orderList);
 		
 		// Get Result 
 		TypedQuery<OccupationMaster> result = em.createQuery(query);

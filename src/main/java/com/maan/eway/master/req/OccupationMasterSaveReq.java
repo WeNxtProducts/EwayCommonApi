@@ -50,5 +50,13 @@ public class OccupationMasterSaveReq implements Serializable {
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
+	
+	@JsonProperty("ProductId")
+	private String productId;
+
+	
+	@JsonProperty("CategoryId")
+	private String categoryId;
+
 
 }

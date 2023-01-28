@@ -127,4 +127,6 @@ public interface DropDownService {
 
 	List<DropDownRes> termsandcondition(LovDropDownReq req);
 
+	List<DropDownRes> categoryid(LovDropDownReq req);
+
 }

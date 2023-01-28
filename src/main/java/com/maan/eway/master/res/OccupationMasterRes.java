@@ -64,6 +64,11 @@ public class OccupationMasterRes implements Serializable {
 	@JsonProperty("UpdatedBy")
 	private String updatedBy;
 
-	
+	@JsonProperty("ProductId")
+	private String productId;
+
+	@JsonProperty("CategoryId")
+	private String categoryId;
+
 
 }

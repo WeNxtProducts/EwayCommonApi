@@ -107,4 +107,11 @@ public class OccupationMaster implements Serializable {
 	@Column(name = "CREATED_BY", length = 100)
 	private String createdBy;
 
+	@Column(name = "UPDATED_BY", length = 100)
+	private String updatedBy;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "UPDATED_DATE")
+	private Date updatedDate;
+
 }
