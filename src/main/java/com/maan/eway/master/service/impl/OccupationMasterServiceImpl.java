@@ -195,9 +195,8 @@ try {
 	Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 	Predicate a6 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
 	Predicate a9 = cb.equal(c.get("productId"),ocpm1.get("productId"));
-	Predicate a10 = cb.equal(c.get("categoryId"),ocpm1.get("categoryId"));
 
-	effectiveDate.where(a1,a2,a5,a6,a9,a10);
+	effectiveDate.where(a1,a2,a5,a6,a9);
 	// Effective Date End Max Filter
 	Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 	Root<OccupationMaster> ocpm2 = effectiveDate2.from(OccupationMaster.class);
@@ -207,9 +206,8 @@ try {
 	Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
 	Predicate a8 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
 	Predicate a11 = cb.equal(c.get("productId"),ocpm2.get("productId"));
-	Predicate a12 = cb.equal(c.get("categoryId"),ocpm2.get("categoryId"));
 
-	effectiveDate2.where(a3,a4,a7,a8,a11,a12);
+	effectiveDate2.where(a3,a4,a7,a8,a11);
 	// Where
 	Predicate n1 = cb.equal(c.get("status"),"Y");
 	Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
@@ -219,14 +217,13 @@ try {
 	Predicate n6 = cb.equal(c.get("branchCode"),"99999");
 	Predicate n7 = cb.or(n5,n6);
 	Predicate n8 = cb.equal(c.get("productId"),req.getProductId());
-	Predicate n9 = cb.equal(c.get("categoryId"),req.getCategoryId());
 	
 	if(StringUtils.isBlank(req.getProductId())) {
-		query.where(n1,n2,n3,n4,n7,n9).orderBy(orderList);
+		query.where(n1,n2,n3,n4,n7).orderBy(orderList);
 		
 	}
 	else {
-	query.where(n1,n2,n3,n4,n7,n8,n9).orderBy(orderList);
+	query.where(n1,n2,n3,n4,n7,n8).orderBy(orderList);
 	}
 	list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getOccupationId()))).collect(Collectors.toList());
 	list.sort(Comparator.comparing(OccupationMaster :: getOccupationName ));
