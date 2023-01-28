@@ -12,6 +12,9 @@
 
 package com.maan.eway.notification.repository;
 
+import java.util.List;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -27,5 +30,7 @@ import com.maan.eway.notification.bean.NotifTransactionDetails;
  
  
 public interface NotifTransactionDetailsRepository  extends JpaRepository<NotifTransactionDetails,Integer > , JpaSpecificationExecutor<NotifTransactionDetails> {
+
+	List<NotifTransactionDetails> findByNotifPushedStatus(String string, Pageable secondPageWithFiveElements);
 
 }

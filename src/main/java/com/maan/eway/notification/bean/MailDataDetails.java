@@ -56,10 +56,10 @@ private static final long serialVersionUID = 1L;
     private Long       mailTranId ;
 
     //--- ENTITY DATA FIELDS 
-    @Column(name="MAIL_SUBJECT", length=100)
+    @Column(name="MAIL_SUBJECT")
     private String     mailSubject ;
 
-    @Column(name="MAIL_BODY", length=500)
+    @Column(name="MAIL_BODY")
     private String     mailBody ;
 
     @Column(name="MAIL_REGARDS", length=100)
@@ -75,6 +75,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="FROM_EMAIL", length=50)
     private String     fromEmail ;
 
+    @Column(name="status", length=5)
+    private String     status ;
+
+    @Column(name="MAIL_RESPONSE", length=100)
+    private String     mailResponse ;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 
