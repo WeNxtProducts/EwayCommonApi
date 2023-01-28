@@ -30,7 +30,7 @@ public class NotifTemplateMasterId implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //--- ENTITY KEY ATTRIBUTES 
-    private Integer    sno ;
+   /* private Integer    sno ;
     
     private String     branchCode ;
     
@@ -39,6 +39,14 @@ public class NotifTemplateMasterId implements Serializable {
     private Integer    amendId ;
     
     private String     queryKey ;
+    */
     
+   private Long       notifTemplateCode ;
+    
+    private String     companyId ;
+    
+    private Long       productId ;
+    
+    private Integer    amendId ;
      
 }

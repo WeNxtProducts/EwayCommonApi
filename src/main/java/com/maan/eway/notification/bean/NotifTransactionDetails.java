@@ -52,7 +52,7 @@ private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="Notif_No", nullable=false)
     private Integer    notifNo ;
 
@@ -60,7 +60,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="Customer_Name", length=20)
     private String     customerName ;
 
-    @Column(name="Customer_MailId", length=20)
+    @Column(name="Customer_Mail_Id", length=20)
     private String     customerMailid ;
 
     @Column(name="Customer_Phone_No")
@@ -99,10 +99,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="UW_name", length=20)
     private String     uwName ;
 
-    @Column(name="UW_MailId", length=20)
+    @Column(name="uw_mail_id", length=20)
     private String     uwMailid ;
 
-    @Column(name="UW_PhoneCode")
+    @Column(name="UW_Phone_Code")
     private Integer    uwPhonecode ;
 
     @Column(name="UW_Phone_No")
@@ -138,7 +138,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="Notif_Description", length=100)
     private String     notifDescription ;
 
-    @Column(name="Notif_TemplateName", length=20)
+    @Column(name="notif_template_name", length=20)
     private String     notifTemplatename ;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -146,8 +146,12 @@ private static final long serialVersionUID = 1L;
     private Date       entryDate ;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="Notifcation_date")
-    private Date       notifcationDate ;
+    @Column(name="Notifcation_Push_date")
+    private Date       notifcationPushDate ;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="Notifcation_End_date")
+    private Date       notifcationEndDate ;
 
     @Column(name="Notif_pushed_status", length=20)
     private String     notifPushedStatus ;
@@ -158,7 +162,13 @@ private static final long serialVersionUID = 1L;
     @Column(name="Tiny_URL", length=15)
     private String     tinyUrl ;
 
+    @Column(name="company_id", nullable=false, length=15)
+    private String     companyid ;
 
+    @Column(name="product_id", nullable=false)
+    private Integer    productid ;
+
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

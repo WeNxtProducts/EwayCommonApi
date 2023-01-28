@@ -14,7 +14,6 @@ import javax.persistence.Tuple;
 
 import org.apache.tomcat.util.buf.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +25,7 @@ import com.maan.eway.bean.DropdownTableDetails;
 import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.RatingFieldMaster;
+import com.maan.eway.notification.bean.NotifTransactionDetails;
 import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.req.referal.ReferralRequest;
 import com.maan.eway.res.calc.RatingInfo;
@@ -282,5 +282,19 @@ public class RatingFactorsUtil {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public List<Tuple> loadNotificationPending() {
+		try {
+			String todayInString = DD_MM_YYYY.format(new Date());
+			String search="notifPushedStatus:P;"+todayInString+"~notifcationPushDate&notifcationEndDate";
+			SpecCriteria criteria = crservice.createCriteria(NotifTransactionDetails.class, search, "notifPriority");
+			List<Tuple> prorata = crservice.getResult(criteria, 0, 500);
+			return prorata;
+		}catch (Exception e) {
+			e.printStackTrace();	
+		}
+		return null;
+		
 	}
 }

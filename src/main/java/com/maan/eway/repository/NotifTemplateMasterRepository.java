@@ -12,13 +12,13 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import com.maan.eway.bean.NotifTemplateMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+import com.maan.eway.bean.NotifTemplateMaster;
 import com.maan.eway.bean.NotifTemplateMasterId;
 /**
  * <h2>NotifTemplateMasterRepository</h2>
@@ -34,7 +34,7 @@ public interface NotifTemplateMasterRepository  extends JpaRepository<NotifTempl
 
 
 
-	List<NotifTemplateMaster> findByCompanyIdAndNotificationApplicableOrderByEntryDateDesc(String string,
+	/*List<NotifTemplateMaster> findByCompanyIdAndNotificationApplicableOrderByEntryDateDesc(String string,
 			String notificationApplicable);
 
 	List<NotifTemplateMaster> findByCompanyIdOrderByEntryDateDesc(String companyId);
@@ -43,6 +43,11 @@ public interface NotifTemplateMasterRepository  extends JpaRepository<NotifTempl
 			Integer sno, String string, String notificationApplicable, String insuranceId, Date date);
 
 	List<NotifTemplateMaster> findByStatusAndNotificationApplicableAndEffectiveDateStartLessThanEqualOrderByEntryDateDesc(
-			String string, String notifTemplateId, Date today);
+			String string, String notifTemplateId, Date today);*/
+
+	List<NotifTemplateMaster> findByCompanyIdAndProductIdAndStatusAndNotifTemplatenameOrderByAmendIdDesc(String companyid, Long productid, String string,String notifTemplatename);
+
+	List<NotifTemplateMaster> findByCompanyIdAndProductIdAndStatusAndNotifTemplatenameIgnoreCaseOrderByAmendIdDesc(
+			String companyid, Long valueOf, String string, String notifTemplatename);
 
 }

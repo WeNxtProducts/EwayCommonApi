@@ -13,16 +13,28 @@
 package com.maan.eway.bean;
 
 
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import lombok.*;
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.List;
-
-import java.util.Date;
-import javax.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 
 
@@ -46,32 +58,47 @@ import javax.persistence.*;
 @Table(name="notif_template_master")
 
 
-public class NotifTemplateMaster implements Serializable {
- 
-private static final long serialVersionUID = 1L;
- 
-    //--- ENTITY PRIMARY KEY 
-    @Id
-    @Column(name="SNO", nullable=false)
-    private Integer    sno ;
+public class NotifTemplateMaster implements Serializable {  //--- ENTITY PRIMARY KEY 
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    @Column(name="NOTIF_TEMPLATE_CODE", nullable=false)
+    private Long       notifTemplateCode ;
 
     @Id
-    @Column(name="COMPANY_ID", nullable=false, length=100)
+    @Column(name="COMPANY_ID", nullable=false, length=10)
     private String     companyId ;
 
     @Id
-    @Column(name="BRANCH_CODE", nullable=false, length=20)
-    private String     branchCode ;
+    @Column(name="PRODUCT_ID", nullable=false)
+    private Long       productId ;
 
     @Id
     @Column(name="AMEND_ID", nullable=false)
     private Integer    amendId ;
 
-    @Id
-    @Column(name="QUERY_KEY", nullable=false, length=100)
-    private String     queryKey ;
-
     //--- ENTITY DATA FIELDS 
+    @Column(name="TO_MESSENGERNO")
+    private String toMessengerno ;
+
+    @Column(name="TO_SMSNO")
+    private String toSmsno ;
+
+    @Column(name="TO_EMAIL", length=100)
+    private String     toEmail ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_START", nullable=false)
+    private Date       effectiveDateStart ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_END", nullable=false)
+    private Date       effectiveDateEnd ;
+
     @Column(name="MAIL_REQUIRED", length=10)
     private String     mailRequired ;
 
@@ -84,16 +111,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="MAIL_REGARDS", length=500)
     private String     mailRegards ;
 
-    @Column(name="MODEL_NAME_EN", length=500)
-    private String     modelNameEn ;
-
-    @Column(name="MAIL_BODY_AR", length=500)
-    private String     mailBodyAr ;
-
-    @Column(name="MAIL_REGARDS_AR", length=500)
-    private String     mailRegardsAr ;
-
-    @Column(name="SMS_REQUIRED", length=10)
+    @Column(name="SMS_REQUIRED", nullable=false, length=10)
     private String     smsRequired ;
 
     @Column(name="SMS_SUBJECT", length=500)
@@ -101,15 +119,6 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="SMS_BODY_EN", length=2000)
     private String     smsBodyEn ;
-
-    @Column(name="SMS_BODY_AR", length=500)
-    private String     smsBodyAr ;
-
-    @Column(name="SMS_REGARDS", length=500)
-    private String     smsRegards ;
-
-    @Column(name="SMS_REGARDS_AR", length=500)
-    private String     smsRegardsAr ;
 
     @Column(name="WHATSAPP_REQUIRED", length=10)
     private String     whatsappRequired ;
@@ -120,29 +129,15 @@ private static final long serialVersionUID = 1L;
     @Column(name="WHATSAPP_BODY_EN", length=500)
     private String     whatsappBodyEn ;
 
-    @Column(name="WHATSAPP_BODY_AR", length=500)
-    private String     whatsappBodyAr ;
-
     @Column(name="WHATSAPP_REGARDS", length=500)
     private String     whatsappRegards ;
 
-    @Column(name="WHATSAPP_REGARDS_AR", length=500)
-    private String     whatsappRegardsAr ;
-
-    @Column(name="NOTIFICATION_APPLICABLE", length=500)
-    private String     notificationApplicable ;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_START", nullable=false)
-    private Date       effectiveDateStart ;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_END", nullable=false)
-    private Date       effectiveDateEnd ;
-    
     @Temporal(TemporalType.DATE)
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;
+
+    @Column(name="NOTIF_TEMPLATENAME", length=60)
+    private String     notifTemplatename ;
 
     @Column(name="REMARKS", length=100)
     private String     remarks ;
@@ -153,23 +148,19 @@ private static final long serialVersionUID = 1L;
     @Column(name="CREATED_BY", nullable=false, length=100)
     private String     createdBy ;
 
-    @Column(name="UPDATED_BY", nullable=false, length=100)
-    private String     updatedBy ;
-    
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="UPDATED_DATE")
-    private Date       updatedDate ;
-    
     @Column(name="CORE_APP_CODE", nullable=false, length=20)
     private String     coreAppCode ;
 
     @Column(name="REGULATORY_CODE", nullable=false, length=20)
     private String     regulatoryCode ;
 
+    @Column(name="UPDATED_BY", length=20)
+    private String     updatedBy ;
 
-    //--- ENTITY LINKS ( RELATIONSHIP )
-
-
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="UPDATED_DATE")
+    private Date       updatedDate ;
+    
 }
 
 

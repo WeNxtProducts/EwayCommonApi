@@ -12,11 +12,12 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
+import java.util.List;
 
-import com.maan.eway.bean.MailMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+import com.maan.eway.bean.MailMaster;
 import com.maan.eway.bean.MailMasterId;
 /**
  * <h2>MailMasterRepository</h2>
@@ -31,5 +32,6 @@ import com.maan.eway.bean.MailMasterId;
 public interface MailMasterRepository  extends JpaRepository<MailMaster,MailMasterId > , JpaSpecificationExecutor<MailMaster> {
 
 	MailMaster findByCompanyId(String insuranceId);
+	List<MailMaster> findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(String insuranceId,String branchCode,String status);
 
 }

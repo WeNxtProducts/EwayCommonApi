@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
 import com.maan.eway.error.Error;
 import com.maan.eway.notification.req.Broker;
 import com.maan.eway.notification.req.Customer;
 import com.maan.eway.notification.req.Notification;
 import com.maan.eway.notification.req.UnderWriter;
-
+@Service
 public class NotificationValidation {
 
 	public List<Error> pushValidation(Notification n) {
@@ -91,6 +92,12 @@ public class NotificationValidation {
 			errors.add(new Error("04","UwPhoneNo" , "Please Select UwPhoneNo" ));
 		}
 		
+		if(n.getCompanyid()==null) {
+			errors.add(new Error("04","CompanyId" , "Please Select CompanyId" ));
+		}
+		if(n.getProductid()==null) {
+			errors.add(new Error("04","Productid" , "Please Select ProductId" ));
+		}
 		return errors;
 		
 	}
