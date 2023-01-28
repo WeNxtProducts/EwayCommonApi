@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -11,6 +12,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -340,10 +342,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				if (req.getPolicyHolderType().equalsIgnoreCase("1")) {
 
 					if (req.getDobOrRegDate() == null) {
-						errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate "));
+						errorList.add(new Error("38", "DobOrRegDate", "Please Enter Dob "));
 
 					} else if (req.getDobOrRegDate().after(today)) {
-						errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate as Past Date"));
+						errorList.add(new Error("38", "DobOrRegDate", "Please Enter Dob as Past Date"));
 
 					}
 
@@ -353,7 +355,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 
 					Integer years = Period.between(localDate1, localDate2).getYears();
 					if (years > 100) {
-						errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Accepted More than 100 Years"));
+						errorList.add(new Error("38", "DobOrRegDate", "Dob Not Accepted More than 100 Years"));
+
+					} else if (years < 18) {
+						errorList.add(new Error("38", "DobOrRegDate", "Dob Not Accepted Less than 18 Years For Induvidual"));
 
 					}
 				}
@@ -361,10 +366,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
 
 					if (req.getDobOrRegDate() == null) {
-						errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate "));
+						errorList.add(new Error("38", "DobOrRegDate", "Please Enter RegDate "));
 
 					} else if (req.getDobOrRegDate().after(today)) {
-						errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate as Past Date"));
+						errorList.add(new Error("38", "DobOrRegDate", "Please Enter RegDate as Past Date"));
 
 					}
 
@@ -374,7 +379,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 
 					Integer years = Period.between(localDate1, localDate2).getYears();
 					if (years > 100) {
-						errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Accepted More than 100 Years"));
+						errorList.add(new Error("38", "DobOrRegDate", "RegDate Not Accepted More than 100 Years"));
 
 					}
 				}
@@ -697,7 +702,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				saveData.setBusinessTypeDesc(businessType);
 			}
 
-			String occupationDesc = getByOccupationId(req.getOccupation(), req.getCompanyId(), req.getBranchCode());
+			String occupationDesc = getByOccupationId(req.getOccupation(), req.getCompanyId(),req.getProductId() , req.getBranchCode());
 			saveData.setGenderDesc(gender);
 			saveData.setTitleDesc(title);
 			saveData.setLanguageDesc(language);
@@ -803,65 +808,74 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		return itemDesc ;
 	}
 
-	public String getByOccupationId(String occupationId, String insuranceId, String branchCode) {
+	public String getByOccupationId(String occupationId, String insuranceId, String productId , String branchCode) {
 		String occupationDesc = "";
 		try {
 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();
-
-			List<OccupationMaster> list = new ArrayList<OccupationMaster>();
-
-			// Find Latest Record
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<OccupationMaster> query = cb.createQuery(OccupationMaster.class);
-
+			CriteriaQuery<OccupationMaster> query=  cb.createQuery(OccupationMaster.class);
+			List<OccupationMaster> list = new ArrayList<OccupationMaster>();
+			
 			// Find All
-			Root<OccupationMaster> b = query.from(OccupationMaster.class);
-
-			// Select
-			query.select(b);
-
-			// Amend ID Max Filter
-			Subquery<Long> amendId = query.subquery(Long.class);
-			Root<OccupationMaster> ocpm1 = amendId.from(OccupationMaster.class);
-			amendId.select(cb.max(ocpm1.get("amendId")));
-			Predicate a1 = cb.equal(ocpm1.get("occupationId"), b.get("occupationId"));
-			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-
-			amendId.where(a1, a2, a3);
-
+			Root<OccupationMaster> c = query.from(OccupationMaster.class);
+			//Select
+			query.select(c);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("branchCode")));
-
+			orderList.add(cb.asc(c.get("branchCode")));
+			
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<OccupationMaster> ocpm1 = effectiveDate.from(OccupationMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("occupationId"),ocpm1.get("occupationId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+			Predicate a6 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
+			Predicate a9 = cb.equal(c.get("productId"),ocpm1.get("productId"));
+			effectiveDate.where(a1,a2,a5,a6,a9);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<OccupationMaster> ocpm2 = effectiveDate2.from(OccupationMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a3 = cb.equal(c.get("occupationId"),ocpm2.get("occupationId"));
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+			Predicate a8 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
+			Predicate a10 = cb.equal(c.get("productId"),ocpm2.get("productId"));
+			effectiveDate2.where(a3,a4,a7,a8,a10);
 			// Where
-			Predicate n1 = cb.equal(b.get("amendId"), amendId);
-			Predicate n2 = cb.equal(b.get("companyId"), insuranceId);
-			Predicate n3 = cb.equal(b.get("branchCode"), branchCode);
-			Predicate n4 = cb.equal(b.get("occupationId"), occupationId);
-			Predicate n6 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n7 = cb.or(n3, n6);
-			query.where(n1, n2, n4, n7).orderBy(orderList);
-
-			// Get Result
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+			Predicate n4 = cb.equal(c.get("companyId"),insuranceId);
+			Predicate n5 = cb.equal(c.get("branchCode"),branchCode);
+			Predicate n6 = cb.equal(c.get("branchCode"),"99999");
+			Predicate n7 = cb.or(n5,n6);
+			Predicate n8 = cb.equal(c.get("occupationId"),occupationId);
+			Predicate n9 = cb.equal(c.get("productId"),productId );
+			query.where(n1,n2,n3,n4,n7,n8,n9).orderBy(orderList);
 			TypedQuery<OccupationMaster> result = em.createQuery(query);
-
 			list = result.getResultList();
-			list.sort(Comparator.comparing(OccupationMaster::getOccupationName));
-			occupationDesc = list.size() > 0 ? list.get(0).getOccupationName() : "";
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.info("Exception is ---> " + e.getMessage());
-			return null;
+			if(list.size()>0) {
+				list = result.getResultList();
+				list.sort(Comparator.comparing(OccupationMaster::getOccupationName));
+				occupationDesc = list.size() > 0 ? list.get(0).getOccupationName() : "";
+			}
+		} catch(Exception e) {
+				e.printStackTrace();
+				log.info("Exception is --->"+e.getMessage());
+				return null;
 		}
-		return occupationDesc;
-	}
+			return occupationDesc;
+		}
 
 	public List<StateMaster> getStateAndCityName(String countryId, String stateCode) {
 		List<StateMaster> list = new ArrayList<StateMaster>();

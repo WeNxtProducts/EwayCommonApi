@@ -29,15 +29,19 @@ public class CommonDetailsRes {
 	
 	@JsonProperty("SectionDesc")
     private String sectionDesc   ;
-	@JsonProperty("Suminsured")
-    private String     suminsured ;
+	@JsonProperty("SumInsured")
+    private String     sumInsured ;
 	
 	@JsonProperty("PolicyPeriod")
     private String     policyPeriod   ;
 	
 	@JsonProperty("CreatedBy")
     private String     createdBy    ;
+	@JsonProperty("SalaryPerAnnum")
+    private String     salaryPerAnnum ;
 	
+	@JsonProperty("BenefitCoverMonth")
+    private String     benefitCoverMonth;
 	@JsonProperty("AcExecutiveId")
     private String    acExecutiveId ;
 	@JsonProperty("ApplicationId")

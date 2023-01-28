@@ -22,14 +22,18 @@ public class EserviceCommonGetRes {
     private String     companyId    ;
 	@JsonProperty("BranchCode")
     private String     branchCode   ;
+	@JsonProperty("SalaryPerAnnum")
+    private String     salaryPerAnnum ;
 	
+	@JsonProperty("BenefitCoverMonth")
+    private String     benefitCoverMonth;
 	@JsonProperty("SectionId")
     private String sectionId    ;
 	
 	@JsonProperty("SectionDesc")
     private String sectionDesc   ;
-	@JsonProperty("Suminsured")
-    private String     suminsured ;
+	@JsonProperty("SumInsured")
+    private String     sumInsured ;
 	
 	@JsonProperty("PolicyPeriod")
     private String     policyPeriod   ;

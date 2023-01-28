@@ -319,6 +319,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 			}else if(request.getProductId().equalsIgnoreCase(buildingProductId) ) {
 				EserviceBuildingDetails buldingData = eserBuildRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo(),request.getVehicleIdsList().get(0).getVehicleId());
 				customerRefNo = buldingData.getCustomerReferenceNo();
+			}else {
+				EserviceCommonDetails commonData = eserCommonRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo(),request.getVehicleIdsList().get(0).getVehicleId());
+				customerRefNo = commonData.getCustomerReferenceNo();
 			}
 			
 			// Find Customer
@@ -775,6 +778,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 				coverReqList = VehicleList.get(0).getCoverIdList();
 			
 			} else if( request.getProductId().equalsIgnoreCase(travelProductId)) {
+				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())). collect(Collectors.toList());
+				coverReqList = VehicleList.get(0).getCoverIdList();
+			} else   {
 				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())). collect(Collectors.toList());
 				coverReqList = VehicleList.get(0).getCoverIdList();
 			}
