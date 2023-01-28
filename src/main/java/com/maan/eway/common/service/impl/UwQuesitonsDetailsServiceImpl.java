@@ -180,6 +180,7 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 		for(UwQuestionsDetails data : datas) {
 			UwQuestionsDetailsRes res = new UwQuestionsDetailsRes();
 			res=dozerMapper.map(data,UwQuestionsDetailsRes.class);
+			res.setValue(data.getValue()==null?"":data.getValue());
 			resList.add(res);
 		}
 		}
