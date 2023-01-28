@@ -41,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
+import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
@@ -61,11 +62,14 @@ import com.maan.eway.common.res.ProductThreadRes;
 import com.maan.eway.common.res.QuoteThreadRes;
 import com.maan.eway.common.service.QuoteThreadService;
 import com.maan.eway.error.Error;
+import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.CoverDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
+import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
+import com.maan.eway.repository.EservicePersonalAccidentDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
@@ -73,6 +77,7 @@ import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.MasterReferralDetailsRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
+import com.maan.eway.repository.PersonalAccidentRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.SeqCustidRepository;
 import com.maan.eway.repository.SeqCustrefnoRepository;
@@ -104,6 +109,12 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	@Value(value = "${personalaccident.productId}")
 	private String personalAccidentProductId;
 	
+	@Value(value = "${workmencompensation.productId}")
+	private String workmenCompensationProductId;
+	
+	@Value(value = "${employeesliability.productId}")
+	private String employeesliabilityProductId;
+
 	Gson json = new Gson();
 	
 	@PersistenceContext
@@ -166,6 +177,11 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	@Autowired
 	private MasterReferralDetailsRepository masReferralRepo ;
 	
+	@Autowired
+	private EserviceCommonDetailsRepository eserCommonRepo;
+	
+	@Autowired
+	private CommonDataDetailsRepository commonDataRepo;
 	
 	@Override
 	public CommonRes call_OT_Insert(NewQuoteReq req) {
@@ -212,7 +228,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             
             // Customer Save Thread Call
             QuoteThreadCall customerSave = new QuoteThreadCall("CustomerSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
-            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
+            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo);
             queue.add(customerSave);
             
             int threadCount = 1 ;
@@ -322,7 +338,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				MyTaskList taskList2 = new MyTaskList(queue2);
 				request.setVehicleId(req.getVehicleIdsList().get(0).getVehicleId());
 				QuoteThreadCall quoteSave = new QuoteThreadCall("QuoteSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo  
-	            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
+	            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo);
 	            
 				queue2.add(quoteSave);
 				
@@ -531,6 +547,18 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							build.setCustomerId("");
 							eserBuildRepo.save(build);
 						}
+					} else {
+						List<EserviceCommonDetails> commonDatas = eserCommonRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
+						for (EserviceCommonDetails commonData : commonDatas ) {
+							List<IndividualReferalReq> filterInduRef = induRefs.stream().filter( o -> o.getRiskId().equals(commonData.getRiskId()) ).collect(Collectors.toList()) ;
+							String induRefDesc  = filterInduRef.size()> 0 ?  filterInduRef.get(0).getReferals() : "" ;
+							commonData.setStatus("RP");
+							commonData.setReferalRemarks(StringUtils.isBlank(referralRemarks) ? induRefDesc : referralRemarks + ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"") ) ;
+							commonData.setUpdatedDate(new Date());
+							commonData.setQuoteNo("");
+							commonData.setCustomerId("");
+							eserCommonRepo.save(commonData);
+						}
 					}
 					
 					ReferalResponse res = new ReferalResponse();
@@ -585,7 +613,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			MyTaskList taskList = new MyTaskList(queue);
 			
         	QuoteThreadCall deleteOldRecords = new QuoteThreadCall("DeleteOldRecords" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo  
-            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
+            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo);
           
         	queue.add(deleteOldRecords);
         	res = "Success";
@@ -669,10 +697,10 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		            	request2.setSectionId(sectionId.get(0));
 		            	
 		            	QuoteThreadCall motorSave = new QuoteThreadCall("MotorSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo  
-		                		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
+		                		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo);
 			            queue.add(motorSave);
 						QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
-			            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
+			            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo);
 						queue.add(coverSave);	
 		            }
 					
@@ -693,10 +721,10 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			            	request2.setVehicleId(vehId);
 			            	request2.setSectionId(sec);	 
 			            	QuoteThreadCall buildingSave = new QuoteThreadCall("BuildingSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo  
-			                		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
+			                		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo);
 				            queue.add(buildingSave);
 							QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
-				            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
+				            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo);
 							queue.add(coverSave);	
 		            	}
 		            	
@@ -736,19 +764,42 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		            	 request2.setSectionId(sectionId.get(0));
 		            	 
 		            	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
-		            			 , homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
+		            			 , homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo);
 			             queue.add(travelSave);
 						 QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,coverRepo 
-								 , homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo);
+								 , homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo);
 						 queue.add(coverSave);
 					 }					 
 		         } 
-	        	
-			}
-					
-			
-	    
-	        
+					// Multiple Personal Accident Thread Call
+				} else  {
+					for (Integer vehId : vehicleIds) {
+						threadCount = threadCount + 2;
+						List<String> sectionId = req.getVehicleIdsList().stream().filter(o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq::getSectionId).collect(Collectors.toList());
+
+						for (String sec : sectionId) {
+							QuoteThreadReq request2 = new QuoteThreadReq();
+							request2.setCustomerId(request.getCustomerId());
+							request2.setProductId(request.getProductId());
+							request2.setQuoteNo(request.getQuoteNo());
+							request2.setRequestReferenceNo(request.getRequestReferenceNo());
+							request2.setVehicleIdsList(request.getVehicleIdsList());
+							request2.setCreatedBy(request.getCreatedBy());
+							request2.setVehicleId(vehId);
+							request2.setSectionId(sec);
+							QuoteThreadCall commonDataSave = new QuoteThreadCall("CommonDataSave", request2, em,
+									eserCustRepo, eserMotRepo, facRateRepo, perInfoRepo, motorRepo, coverRepo, homeRepo,
+									eserRepo, eserGroupRepo, traPassRepo, traPassHisRepo, motorProductId,
+									travelProductId, buildingProductId, eserBuildRepo, eserSecRepo,eserCommonRepo,commonDataRepo);
+							queue.add(commonDataSave);
+							QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave", request2, em, eserCustRepo,
+									eserMotRepo, facRateRepo, perInfoRepo, motorRepo, coverRepo, homeRepo, eserRepo,
+									eserGroupRepo, traPassRepo, traPassHisRepo, motorProductId, travelProductId,
+									buildingProductId, eserBuildRepo, eserSecRepo,eserCommonRepo,commonDataRepo);
+							queue.add(coverSave);
+						}
+					}
+				}
 	        // Response 
 	        ProductThreadRes.setQueue(queue);
 	        ProductThreadRes.setThreadCount(threadCount);	
