@@ -31,11 +31,11 @@ public interface MotorGridService {
 	
 	List<Tuple> searchMotorQuote(CopyQuoteReq req, List<String> branches);
 
-	CopyQuoteSuccessRes motorCopyQuote(CopyQuoteReq req, List<String> branches);
+	CopyQuoteSuccessRes motorCopyQuote(CopyQuoteReq req, List<String> branches,String loginId);
 
 	List<ListItemValue> geMotorCoptyQuotetListItem(CopyQuoteDropDownReq req,String itemType);
 
-	CopyQuoteSuccessRes motorEndt(CopyQuoteReq req, List<String> branches);
+	CopyQuoteSuccessRes motorEndt(CopyQuoteReq req, List<String> branches,String loginId);
 
 	List<Tuple> validateMotorEndt(String quoteNo);
 

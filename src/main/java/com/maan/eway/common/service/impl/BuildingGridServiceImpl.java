@@ -546,7 +546,7 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 	}
 
 	@Override
-	public CopyQuoteSuccessRes buildingCopyQuote(CopyQuoteReq req, List<String> branches) {
+	public CopyQuoteSuccessRes buildingCopyQuote(CopyQuoteReq req, List<String> branches,String loginId) {
 		CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 		SimpleDateFormat idf = new SimpleDateFormat("yyMMddmmssSSS");
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -556,7 +556,6 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 			String searchValue = req.getRequestReferenceNo();
 			String searchKey = "RequestReferenceNo";
 			String companyId = req.getInsuranceId();
-			String loginId = req.getLoginId();
 			String userType = req.getUserType();
 			String branchCode = "";
 			List<Tuple> list = searchDetails(searchKey, searchValue, companyId, loginId, userType, branches);

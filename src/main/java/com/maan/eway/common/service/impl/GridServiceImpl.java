@@ -654,23 +654,13 @@ public class GridServiceImpl implements GridService {
 			} else {
 				loginId = req.getApplicationId();
 			}
-			// Branch Res
-
-			List<LoginBranchMaster> loginBranch = loginBranchRepo.findByLoginId(loginId);
-
-			branches = loginBranch.stream().filter(o -> !o.getBrokerBranchCode().equalsIgnoreCase("None"))
-					.map(LoginBranchMaster::getBrokerBranchCode).collect(Collectors.toList());
-			if (branches.size() <= 0) {
-				branches = loginBranch.stream().map(LoginBranchMaster::getBranchCode).collect(Collectors.toList());
-
-			}
 
 			branches.add(req.getBranchCode());
 
 			if (req.getTypeId().equalsIgnoreCase("Endt")) {
 				// Product Wise Get
 				if (req.getProductId().equalsIgnoreCase(motorProductId)) {
-					res = motService.motorEndt(req, branches);
+					res = motService.motorEndt(req, branches,loginId);
 				}
 //					else if (req.getProductId().equalsIgnoreCase(travelProductId)) {
 //					res = traService.travelCopyQuote(req, branches);
@@ -681,12 +671,12 @@ public class GridServiceImpl implements GridService {
 			}else if (req.getTypeId().equalsIgnoreCase("Normal") || StringUtils.isBlank(req.getTypeId())) {
 				// Product Wise Get
 				if (req.getProductId().equalsIgnoreCase(motorProductId)) {
-					res = motService.motorCopyQuote(req, branches);
+					res = motService.motorCopyQuote(req, branches,loginId);
 
 				} else if (req.getProductId().equalsIgnoreCase(travelProductId)) {
-					res = traService.travelCopyQuote(req, branches);
+					res = traService.travelCopyQuote(req, branches,loginId);
 				} else if (req.getProductId().equalsIgnoreCase(buildingProductId)) {
-					res = buiService.buildingCopyQuote(req, branches);
+					res = buiService.buildingCopyQuote(req, branches,loginId);
 
 				} else {
 					res = commonService.commonCopyQuote(req, branches);
@@ -759,7 +749,7 @@ public class GridServiceImpl implements GridService {
 		List<GetAllMotorDetailsRes> reslist = new ArrayList<GetAllMotorDetailsRes>();
 		DozerBeanMapper dozermapper = new DozerBeanMapper();
 		try {
-			String loginId = req.getLoginId();
+		/*	String loginId = req.getLoginId();
 
 			// Branch Res
 			List<String> branches = new ArrayList<String>();
@@ -779,7 +769,26 @@ public class GridServiceImpl implements GridService {
 				branches.add(req.getBranchCode());
 			} else {
 				branches.add(req.getBranchCode());
+			}*/
+			String loginId = "" ;
+			List<String> branches = new ArrayList<String>();
+			if (req.getApplicationId().equalsIgnoreCase("1") ) {
+				loginId = req.getLoginId();
+			} else {
+				loginId = req.getApplicationId();
 			}
+			// Branch Res
+
+			List<LoginBranchMaster> loginBranch = loginBranchRepo.findByLoginId(loginId);
+
+			branches = loginBranch.stream().filter(o -> !o.getBrokerBranchCode().equalsIgnoreCase("None"))
+					.map(LoginBranchMaster::getBrokerBranchCode).collect(Collectors.toList());
+			if (branches.size() <= 0) {
+				branches = loginBranch.stream().map(LoginBranchMaster::getBranchCode).collect(Collectors.toList());
+
+			}
+
+			branches.add(req.getBranchCode());
 			List<Tuple> list = null;
 
 			// Product Wise Get

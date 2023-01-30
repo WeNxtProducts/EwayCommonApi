@@ -610,7 +610,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 
 		//CopyQuote
 		@Override
-		public CopyQuoteSuccessRes motorCopyQuote(CopyQuoteReq req, List<String> branches) {
+		public CopyQuoteSuccessRes motorCopyQuote(CopyQuoteReq req, List<String> branches,String loginId) {
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 		//	SimpleDateFormat idf = new SimpleDateFormat("yyMMddmmssSSS");
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -620,7 +620,6 @@ public class MotorGridServiceImpl implements MotorGridService {
 				String searchValue = req.getRequestReferenceNo();
 				String searchKey = "RequestReferenceNo";
 				String companyId = req.getInsuranceId();
-				String loginId = req.getLoginId();
 				String userType = req.getUserType();
 				String branchCode = "";
 				List<Tuple> list = copyQuoteSearchDetails(searchKey, searchValue, companyId, loginId, userType, branches);
@@ -731,7 +730,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 		//Endrosment
 		@Transactional
 		@Override
-		public CopyQuoteSuccessRes motorEndt(CopyQuoteReq req, List<String> branches) {
+		public CopyQuoteSuccessRes motorEndt(CopyQuoteReq req, List<String> branches,String loginId) {
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 //			SimpleDateFormat idf = new SimpleDateFormat("yyMMddmmssSSS");
 			try {
@@ -752,21 +751,21 @@ public class MotorGridServiceImpl implements MotorGridService {
 				customerId = "C-" + generateCustId();
 	            
 	            //Copy Quote Eservice Motor Details
-	            res=eserviceMotorCopyquote(req,refNo,branches);
+	            res=eserviceMotorCopyquote(req,refNo,branches,loginId);
 	            
 				//Copy Quote Home Position Master
 
-	            res=homeEndoCopyQuote(req,refNo,customerId,quoteNo);
+	            res=homeEndoCopyQuote(req,refNo,customerId,quoteNo,loginId);
 				
 				//Copy Quote Personal Info 
 				res=personolInfoEndoCopyQuote(req,customerId);
 				
 				//Copy Quote Policy Cover Data
-				res=policyCoverDataEndocopyQuote(req,refNo,quoteNo);
+				res=policyCoverDataEndocopyQuote(req,refNo,quoteNo,loginId);
 				
 				
 				//Copy Quote Motor Data Details
-				res=motorDataDetailsEndoCopyquote(req,refNo,quoteNo,customerId);
+				res=motorDataDetailsEndoCopyquote(req,refNo,quoteNo,customerId,loginId);
 				
 				
 				res.setResponse("Successfully Updated");
@@ -820,7 +819,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 		       
 		 }
 		//Eservice Motor Copy Quote
-		public CopyQuoteSuccessRes eserviceMotorCopyquote(CopyQuoteReq req,String refNo,List<String> branches) {
+		public CopyQuoteSuccessRes eserviceMotorCopyquote(CopyQuoteReq req, String refNo, List<String> branches,String loginId) {
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			EserviceMotorDetails savedata = new EserviceMotorDetails();
@@ -828,46 +827,45 @@ public class MotorGridServiceImpl implements MotorGridService {
 				String searchValue = req.getRequestReferenceNo();
 				String searchKey = "RequestReferenceNo";
 				String companyId = req.getInsuranceId();
-				String loginId = req.getLoginId();
 				String userType = req.getUserType();
 				String branchCode = "";
-			    
-	            List<Tuple> list = copyQuoteSearchDetails(searchKey, searchValue, companyId, loginId, userType, branches);
+
+				List<Tuple> list = copyQuoteSearchDetails(searchKey, searchValue, companyId, loginId, userType,
+						branches);
 				if (list.size() > 0) {
 					for (Tuple data : list) {
-		
-							savedata = dozerMapper.map(data.get(0), EserviceMotorDetails.class);
 
-							savedata.setEntryDate(new Date());
-							savedata.setCreatedBy(req.getLoginId());
-							savedata.setUpdatedBy(req.getLoginId());
-							savedata.setUpdatedDate(new Date());
-							savedata.setRequestReferenceNo(refNo);
-							savedata.setOldReqRefNo(req.getRequestReferenceNo());
-							if (req.getUserType().equalsIgnoreCase("Broker")
-									|| (req.getUserType().equalsIgnoreCase("User"))) {
-								branchCode = req.getBranchCode();
-								savedata.setApplicationId("1");
-								savedata.setBrokerBranchCode(branchCode);
+						savedata = dozerMapper.map(data.get(0), EserviceMotorDetails.class);
 
-							} else if ("issuer".equalsIgnoreCase(userType)) {
-								savedata.setApplicationId(req.getLoginId());
-								branchCode = req.getBranchCode();
-								savedata.setBranchCode(branchCode);
-							}
-							
-							savedata.setActualPremiumFc(BigDecimal.ZERO );
-							savedata.setActualPremiumLc(BigDecimal.ZERO);
-							savedata.setOverallPremiumFc(BigDecimal.ZERO);
-							savedata.setOverallPremiumLc(BigDecimal.ZERO);
-							savedata.setQuoteNo("");
-							repo.saveAndFlush(savedata);
+						savedata.setEntryDate(new Date());
+						savedata.setCreatedBy(req.getLoginId());
+						savedata.setUpdatedBy(req.getLoginId());
+						savedata.setUpdatedDate(new Date());
+						savedata.setRequestReferenceNo(refNo);
+						savedata.setOldReqRefNo(req.getRequestReferenceNo());
+						if (req.getUserType().equalsIgnoreCase("Broker")
+								|| (req.getUserType().equalsIgnoreCase("User"))) {
+							branchCode = req.getBranchCode();
+							savedata.setApplicationId("1");
+							savedata.setBrokerBranchCode(branchCode);
+
+						} else if ("issuer".equalsIgnoreCase(userType)) {
+							savedata.setApplicationId(req.getLoginId());
+							branchCode = req.getBranchCode();
+							savedata.setBranchCode(branchCode);
 						}
+
+						savedata.setActualPremiumFc(BigDecimal.ZERO);
+						savedata.setActualPremiumLc(BigDecimal.ZERO);
+						savedata.setOverallPremiumFc(BigDecimal.ZERO);
+						savedata.setOverallPremiumLc(BigDecimal.ZERO);
+						savedata.setQuoteNo("");
+						repo.saveAndFlush(savedata);
+					}
 					res.setResponse("Successfully Updated");
 					res.setRequestReferenceNo(refNo);
-					}
-				
-			
+				}
+
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.info("Exception is ---> " + e.getMessage());
@@ -876,7 +874,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			return res;
 		}
 		//Home Position Master Endt Copy Quote
-		public CopyQuoteSuccessRes homeEndoCopyQuote(CopyQuoteReq req,String refNo,String customerId,String quoteNo) {
+		public CopyQuoteSuccessRes homeEndoCopyQuote(CopyQuoteReq req,String refNo,String customerId,String quoteNo,String loginId) {
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 			HomePositionMaster savedata = new HomePositionMaster();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -891,7 +889,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			savedata.setEndtTypeId(req.getEndtTypeId());
 			savedata.setIsFinacialEndt(req.getEndtTypeId());
 			savedata.setEndtDate(new Date());
-			savedata.setEndtBy(req.getLoginId());
+			savedata.setEndtBy(loginId);
 			savedata.setEndtStatus("P");
 			savedata.setEndtPremium(0L);
 			savedata.setEndtCommission(BigDecimal.valueOf(0));
@@ -943,7 +941,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			return res;
 		}
 		//Policy Cover Data Enst Copy Quote
-		public CopyQuoteSuccessRes policyCoverDataEndocopyQuote(CopyQuoteReq req,String refNo,String quoteNo) {
+		public CopyQuoteSuccessRes policyCoverDataEndocopyQuote(CopyQuoteReq req,String refNo,String quoteNo,String loginId) {
 			CopyQuoteSuccessRes res=new CopyQuoteSuccessRes();
 			PolicyCoverData savedata = new PolicyCoverData();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -955,7 +953,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 						savedata.setRequestReferenceNo(refNo);
 						savedata.setQuoteNo(quoteNo);
 						savedata.setEntryDate(new Date());
-						savedata.setCreatedBy(req.getLoginId());
+						savedata.setCreatedBy(loginId);
 						policyCoverDataRepo.saveAndFlush(savedata);
 					}
 				}
@@ -969,7 +967,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			return res;
 		}
 		//Motor Data Details Enst Copy Quote
-		public CopyQuoteSuccessRes motorDataDetailsEndoCopyquote(CopyQuoteReq req,String refNo,String quoteNo,String customerId) {
+		public CopyQuoteSuccessRes motorDataDetailsEndoCopyquote(CopyQuoteReq req,String refNo,String quoteNo,String customerId,String loginId ) {
 			CopyQuoteSuccessRes res=new CopyQuoteSuccessRes();
 			MotorDataDetails savedata = new MotorDataDetails();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -982,8 +980,10 @@ public class MotorGridServiceImpl implements MotorGridService {
 						savedata.setCustomerId(customerId);
 						savedata.setQuoteNo(quoteNo);
 						savedata.setEntryDate(new Date());
-						savedata.setCreatedBy(req.getLoginId());
-						savedata.setUpdatedBy(req.getLoginId());
+						// savedata.setCreatedBy(req.getLoginId());
+						// savedata.setUpdatedBy(req.getLoginId());
+						savedata.setCreatedBy(loginId);
+						savedata.setUpdatedBy(loginId);
 						savedata.setUpdatedDate(new Date());
 						motorDataDetepo.saveAndFlush(savedata);
 					}

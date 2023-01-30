@@ -30,7 +30,7 @@ public interface BuildingGridService {
 	
 	List<Tuple> searchBuildingQuote(CopyQuoteReq req, List<String> branches);
 
-	CopyQuoteSuccessRes buildingCopyQuote(CopyQuoteReq req, List<String> branches);
+	CopyQuoteSuccessRes buildingCopyQuote(CopyQuoteReq req, List<String> branches,String loginId);
 
 	List<ListItemValue> geBuildingCoptyQuotetListItem(CopyQuoteDropDownReq req,String itemType);
 }

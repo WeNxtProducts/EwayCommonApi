@@ -32,6 +32,6 @@ public interface TravelGridService {
 
 	List<Tuple> searchTravelQuote(CopyQuoteReq req, List<String> branches);
 
-	CopyQuoteSuccessRes travelCopyQuote(CopyQuoteReq req, List<String> branches);
+	CopyQuoteSuccessRes travelCopyQuote(CopyQuoteReq req, List<String> branches,String loginId);
 
 }

@@ -428,7 +428,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 		return referrals;
 	}
 	@Override
-	public CopyQuoteSuccessRes travelCopyQuote(CopyQuoteReq req, List<String> branches) {
+	public CopyQuoteSuccessRes travelCopyQuote(CopyQuoteReq req, List<String> branches,String loginId) {
 		CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 		SimpleDateFormat idf = new SimpleDateFormat("yyMMddmmssSSS");
 		DozerBeanMapper dozerMapper  = new DozerBeanMapper(); 
@@ -438,7 +438,6 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			String searchValue = req.getRequestReferenceNo();
 			String searchKey = "RequestReferenceNo";
 			String companyId = req.getInsuranceId();
-			String loginId=req.getLoginId();
 			String userType=req.getUserType();
 			String branchCode="";
 			List<Tuple> list = searchDetails(searchKey, searchValue, companyId,loginId,userType,branches);
