@@ -457,7 +457,7 @@ public class PaymentServiceImpl implements PaymentService {
 				paymentinfo.setPolicyStartDate(data.getInceptionDate() );
 				paymentinfo.setPremium(new BigDecimal(req.getPremium()));
 				paymentinfo.setPremiumFc(new BigDecimal(req.getPremium()));
-				BigDecimal premiumLc = new BigDecimal(req.getPremium()).divide(data.getExchangeRate() );
+				BigDecimal premiumLc = new BigDecimal(req.getPremium()).multiply(data.getExchangeRate() );
 				paymentinfo.setPremiumLc(premiumLc);
 				paymentinfo.setCurrencyId(data.getCurrency());
 				paymentinfo.setExchangeRate(data.getExchangeRate() );
