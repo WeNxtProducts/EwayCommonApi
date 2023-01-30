@@ -676,8 +676,10 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("companyId"), req.getCompanyId());
 			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
 			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			javax.persistence.criteria.Predicate n6 = cb.equal(c.get("status"), "R");
+			Predicate n7 = cb.or(n1,n6);
 
-			query.where(n1, n2, n3, n4, n5).orderBy(orderList);
+			query.where(n7, n2, n3, n4, n5).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<UWQuestionsMaster> result = em.createQuery(query);
