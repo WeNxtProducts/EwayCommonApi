@@ -40,4 +40,8 @@ public interface HomePositionMasterRepository  extends JpaRepository<HomePositio
 	@Transactional
 	void deleteByQuoteNo(String quoteNo);
 
+	Long countByRequestReferenceNo(String requestReferenceNo);
+
+	List<HomePositionMaster> findByRequestReferenceNo(String requestReferenceNo);
+
 }

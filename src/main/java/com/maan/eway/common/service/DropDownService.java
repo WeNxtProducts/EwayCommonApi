@@ -131,4 +131,6 @@ public interface DropDownService {
 
 	List<DropDownRes> benefitcovermonth(LovDropDownReq req);
 
+	List<DropDownRes> quoteStatus(LovDropDownReq req);
+
 }

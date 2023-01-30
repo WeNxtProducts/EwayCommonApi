@@ -15,13 +15,13 @@ import com.maan.eway.common.req.AdminReferalStatusReq;
 import com.maan.eway.common.req.DeleteOldQuoteReq;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.SectionSumInsuredGetReq;
-import com.maan.eway.common.req.TinyUrlGetReq;
+import com.maan.eway.common.req.UpdateQuoteStatusReq;
 import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.QuoteUpdateRes;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.error.Error;
-import com.maan.eway.res.QuoteUpdateRes;
 import com.maan.eway.res.SectionWiseSumInsuredRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -140,6 +140,35 @@ public class QuoteController {
 		} else {
 			/////// save
 			QuoteUpdateRes res = entityService.updateReferralStatus(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+    } 
+	
+	@PostMapping("/updatestatus")
+	public ResponseEntity<CommonRes> saveCustomerDetails(@RequestBody  UpdateQuoteStatusReq req) {
+
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<Error> validation = entityService.validateQuoteStatus(req);
+		//// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else {
+			/////// save
+			QuoteUpdateRes res = entityService.updateQuoteStatus(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());

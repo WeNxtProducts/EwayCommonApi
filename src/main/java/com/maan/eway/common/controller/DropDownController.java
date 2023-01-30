@@ -1053,4 +1053,19 @@ public class DropDownController {
 		}
 	}
 	
+	@PostMapping("/quotestatus")
+	public ResponseEntity<CommonRes> quoteStatus(@RequestBody LovDropDownReq req) {
+		CommonRes data = new CommonRes();
+		List<DropDownRes> res = dropDownService.quoteStatus(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 }

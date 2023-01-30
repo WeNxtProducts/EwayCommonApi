@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
+import com.maan.eway.admin.res.ReferalCommonCriteriaRes;
 import com.maan.eway.admin.res.ReferalCriteriaRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.EserviceCommonDetails;
@@ -319,12 +320,12 @@ public class CommonGridServiceImpl implements CommonGridService {
 
 
 	@Override
-	public synchronized List<ReferalGridCriteriaRes> getCommonReferalDetails(ExistingQuoteReq req, List<String> branches,
+	public synchronized List<ReferalCommonCriteriaRes> getCommonReferalDetails(ExistingQuoteReq req, List<String> branches,
 			int limit, int offset, String status) {
-		List<ReferalGridCriteriaRes> referrals = new ArrayList<ReferalGridCriteriaRes>();
+		List<ReferalCommonCriteriaRes> referrals = new ArrayList<ReferalCommonCriteriaRes>();
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<ReferalGridCriteriaRes> query = cb.createQuery(ReferalGridCriteriaRes.class);
+			CriteriaQuery<ReferalCommonCriteriaRes> query = cb.createQuery(ReferalCommonCriteriaRes.class);
 
 			// Find All
 			Root<EserviceCommonDetails> m = query.from(EserviceCommonDetails.class);
@@ -344,7 +345,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 							.otherwise(m.get("customerId")).alias("customerId"),
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
 					m.get("rejectReason").alias("rejectReason"),
-					m.get("adminRemarks").alias("adminRemarks")
+					m.get("adminRemarks").alias("adminRemarks"),m.get("referalRemarks").alias("referalRemarks")
 			
 					);
 
@@ -377,11 +378,11 @@ public class CommonGridServiceImpl implements CommonGridService {
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
-							m.get("rejectReason"),m.get("adminRemarks"))
+							m.get("rejectReason"),m.get("adminRemarks"),m.get("referalRemarks"))
 					.orderBy(orderList);
 
 			// Get Result
-			TypedQuery<ReferalGridCriteriaRes> result = em.createQuery(query);
+			TypedQuery<ReferalCommonCriteriaRes> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			referrals = result.getResultList();
@@ -396,12 +397,12 @@ public class CommonGridServiceImpl implements CommonGridService {
 	}
 
 	@Override
-	public synchronized List<ReferalGridCriteriaRes> getCommonAdminReferalDetails(ExistingQuoteReq req, List<String> branches, int limit,
+	public synchronized List<ReferalCommonCriteriaRes> getCommonAdminReferalDetails(ExistingQuoteReq req, List<String> branches, int limit,
 			int offset ,String status) {
-		List<ReferalGridCriteriaRes> referrals = new ArrayList<ReferalGridCriteriaRes>();
+		List<ReferalCommonCriteriaRes> referrals = new ArrayList<ReferalCommonCriteriaRes>();
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<ReferalGridCriteriaRes> query = cb.createQuery(ReferalGridCriteriaRes.class);
+			CriteriaQuery<ReferalCommonCriteriaRes> query = cb.createQuery(ReferalCommonCriteriaRes.class);
 
 			// Find All
 			Root<EserviceCommonDetails> m = query.from(EserviceCommonDetails.class);
@@ -421,7 +422,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 							.otherwise(m.get("customerId")).alias("customerId"),
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
 					m.get("rejectReason").alias("rejectReason"),
-					m.get("adminRemarks").alias("adminRemarks")
+					m.get("adminRemarks").alias("adminRemarks"),m.get("referalRemarks").alias("referalRemarks")
 					);
 
 			// Order By
@@ -441,11 +442,11 @@ public class CommonGridServiceImpl implements CommonGridService {
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
-							m.get("rejectReason"),m.get("adminRemarks"))
+							m.get("rejectReason"),m.get("adminRemarks"),m.get("referalRemarks"))
 					.orderBy(orderList);
 
 			// Get Result
-			TypedQuery<ReferalGridCriteriaRes> result = em.createQuery(query);
+			TypedQuery<ReferalCommonCriteriaRes> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			referrals = result.getResultList();

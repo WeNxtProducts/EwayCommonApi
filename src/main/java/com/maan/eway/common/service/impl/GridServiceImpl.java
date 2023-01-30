@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
+import com.maan.eway.admin.res.ReferalCommonCriteriaRes;
 import com.maan.eway.admin.res.ReferalCriteriaRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.BranchMaster;
@@ -375,8 +376,16 @@ public class GridServiceImpl implements GridService {
 			else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
 				referralPendingList = buiService.getBuildingReferalDetails(req  , branches, limit , offset, "RP" );
 			}else  {
-				referralPendingList = commonService.getCommonReferalDetails(req  , branches, limit , offset, "RP" );
+				List<ReferalCommonCriteriaRes> referralPendingList2 = commonService.getCommonReferalDetails(req  , branches, limit , offset, "RP" );
+				for(ReferalCommonCriteriaRes data : referralPendingList2  ) {
+					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+					 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+					 custRes.add(res);	
+				}
+				return custRes;
 			}
+			
 			for(ReferalGridCriteriaRes data : referralPendingList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 				 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
@@ -433,7 +442,14 @@ public class GridServiceImpl implements GridService {
 			else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
 				referralApprovedList = buiService.getBuildingReferalDetails(req  , branches, limit , offset, "RA" );
 			} else  {
-				referralApprovedList = commonService.getCommonReferalDetails(req  , branches, limit , offset, "RA" );
+				List<ReferalCommonCriteriaRes> referralPendingList2 = commonService.getCommonReferalDetails(req  , branches, limit , offset, "RA" );
+				for(ReferalCommonCriteriaRes data : referralPendingList2  ) {
+					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+					 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+					 custRes.add(res);	
+				}
+				return custRes;
 			}
 			for(ReferalGridCriteriaRes data : referralApprovedList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
@@ -491,7 +507,14 @@ public class GridServiceImpl implements GridService {
 			else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
 				referralRejectedList = buiService.getBuildingReferalDetails(req  , branches, limit , offset, "RR" );
 			} else {
-				referralRejectedList = commonService.getCommonReferalDetails(req  , branches, limit , offset, "RR" );
+				List<ReferalCommonCriteriaRes> referralPendingList2  = commonService.getCommonReferalDetails(req  , branches, limit , offset, "RR" );
+				for(ReferalCommonCriteriaRes data : referralPendingList2  ) {
+					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+					 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+					 custRes.add(res);	
+				}
+				return custRes;
 			}
 			for(ReferalGridCriteriaRes data : referralRejectedList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
@@ -529,7 +552,14 @@ public class GridServiceImpl implements GridService {
 			else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
 				adminReferralPendingList = buiService.getBuildingAdminReferalDetails(req  , branches, limit , offset,"RP" );
 			} else  {
-				adminReferralPendingList = commonService.getCommonAdminReferalDetails(req  , branches, limit , offset,"RP" );
+				List<ReferalCommonCriteriaRes> adminReferralPendingList2 = commonService.getCommonAdminReferalDetails(req  , branches, limit , offset,"RP" );
+				for(ReferalCommonCriteriaRes data : adminReferralPendingList2  ) {
+					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+					 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+					 custRes.add(res);	
+				}
+				return custRes;
 			}
 			for(ReferalGridCriteriaRes data : adminReferralPendingList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
@@ -567,7 +597,14 @@ public class GridServiceImpl implements GridService {
 			else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
 				adminReferralApprovedList = buiService.getBuildingAdminReferalDetails(req  , branches, limit , offset,"RA" );
 			}else  {
-				adminReferralApprovedList = commonService.getCommonAdminReferalDetails(req  , branches, limit , offset,"RA" );
+				List<ReferalCommonCriteriaRes> adminReferralApprovedList2 = commonService.getCommonAdminReferalDetails(req  , branches, limit , offset,"RA" );
+				for(ReferalCommonCriteriaRes data : adminReferralApprovedList2  ) {
+					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+					 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+					 custRes.add(res);	
+				}
+				return custRes;
 			}
 			for(ReferalGridCriteriaRes data : adminReferralApprovedList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
@@ -605,7 +642,14 @@ public class GridServiceImpl implements GridService {
 			else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
 				adminReferralRejectedList = buiService.getBuildingAdminReferalDetails(req  , branches, limit , offset,"RR" );
 			}else {
-				adminReferralRejectedList = commonService.getCommonAdminReferalDetails(req  , branches, limit , offset,"RR" );
+				List<ReferalCommonCriteriaRes>	adminReferralRejectedList2 = commonService.getCommonAdminReferalDetails(req  , branches, limit , offset,"RR" );
+				for(ReferalCommonCriteriaRes data : adminReferralRejectedList2  ) {
+					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+					 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+					 custRes.add(res);	
+				}
+				return custRes;
 			}
 			for(ReferalGridCriteriaRes data : adminReferralRejectedList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
@@ -906,7 +950,14 @@ public class GridServiceImpl implements GridService {
 			else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
 				referralRejectedList = buiService.getBuildingReferalDetails(req  , branches, limit , offset, "RE" );
 			}else {
-				referralRejectedList = commonService.getCommonReferalDetails(req  , branches, limit , offset, "RE" );
+				List<ReferalCommonCriteriaRes> referralPendingList2  = commonService.getCommonReferalDetails(req  , branches, limit , offset, "RE" );
+				for(ReferalCommonCriteriaRes data : referralPendingList2  ) {
+					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+					 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+					 custRes.add(res);	
+				}
+				return custRes;
 			}
 			for(ReferalGridCriteriaRes data : referralRejectedList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
@@ -946,7 +997,14 @@ public class GridServiceImpl implements GridService {
 			else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
 				adminReferralRejectedList = buiService.getBuildingAdminReferalDetails(req  , branches, limit , offset,"RE" );
 			}else  {
-				adminReferralRejectedList = commonService.getCommonAdminReferalDetails(req  , branches, limit , offset,"RE" );
+				List<ReferalCommonCriteriaRes> referralPendingList2  = commonService.getCommonAdminReferalDetails(req  , branches, limit , offset,"RE" );
+				for(ReferalCommonCriteriaRes data : referralPendingList2  ) {
+					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+					 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+					 custRes.add(res);	
+				}
+				return custRes;
 			}
 			for(ReferalGridCriteriaRes data : adminReferralRejectedList  ) {
 				 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();

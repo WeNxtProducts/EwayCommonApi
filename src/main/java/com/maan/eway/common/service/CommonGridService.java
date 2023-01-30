@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.Tuple;
 
 import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
+import com.maan.eway.admin.res.ReferalCommonCriteriaRes;
 import com.maan.eway.admin.res.ReferalCriteriaRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.ListItemValue;
@@ -25,9 +26,9 @@ public interface CommonGridService {
 
 	List<RejectCriteriaRes> getCommonRejectedQuoteDetails(ExistingQuoteReq req, List<String> branches ,int limit, int offset);
 
-	List<ReferalGridCriteriaRes> getCommonReferalDetails(ExistingQuoteReq req, List<String> branches, int limit,int offset , String Status);
+	List<ReferalCommonCriteriaRes> getCommonReferalDetails(ExistingQuoteReq req, List<String> branches, int limit,int offset , String Status);
 
-	List<ReferalGridCriteriaRes> getCommonAdminReferalDetails(ExistingQuoteReq req, List<String> branches, int limit,int offset , String Status);
+	List<ReferalCommonCriteriaRes> getCommonAdminReferalDetails(ExistingQuoteReq req, List<String> branches, int limit,int offset , String Status);
 	
 	List<Tuple> searchCommonQuote(CopyQuoteReq req, List<String> branches);
 

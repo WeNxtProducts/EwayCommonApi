@@ -292,6 +292,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="DRIVEN_BY_UNDER_AGE", length=5)
     private String     drivenByUnderAge ;
+    
+    @Column(name="REJECT_REASON", length=5)
+    private String     rejectReason ;
 
     @Column(name="DEFECTIVE_VISION_OR_HEARING", length=5)
     private String     defectiveVisionOrHearing ;

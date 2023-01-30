@@ -46,6 +46,12 @@ public class EserviceCustomerDetailsRes {
 	@JsonProperty("RejectReason")
 	private String rejectReason;
 	
+	@JsonProperty("AdminRemarks")
+	private String adminRemarks;
+	
+	@JsonProperty("ReferalRemarks")
+	private String referalRemarks;
+	
 	@JsonProperty("Count")
 	private String   count ;
 	
