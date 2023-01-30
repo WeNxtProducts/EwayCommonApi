@@ -43,11 +43,15 @@ import com.google.gson.Gson;
 import com.maan.eway.auth.token.EncryDecryService;
 import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CoverDocumentMaster;
 import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.EmiTransactionDetails;
+import com.maan.eway.bean.EserviceBuildingDetails;
+import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
@@ -58,6 +62,7 @@ import com.maan.eway.bean.PaymentRefno;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.SeqPaymentid;
 import com.maan.eway.bean.TinyurlMaster;
+import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.common.req.MakePaymentRes;
 import com.maan.eway.common.req.MakePaymentSaveReq;
 import com.maan.eway.common.req.MakePaymentUpdateReq;
@@ -76,7 +81,7 @@ import com.maan.eway.common.res.LoginEncryptResponse;
 import com.maan.eway.common.res.PaymentDetailGetRes;
 import com.maan.eway.common.res.PaymentInfoGetRes;
 import com.maan.eway.common.res.TinyUrlGetRes;
-
+import com.maan.eway.common.res.TravelPassDetailsRes;
 import com.maan.eway.common.service.PaymentService;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.service.impl.ClausesMasterServiceImpl;
@@ -1365,6 +1370,111 @@ public class PaymentServiceImpl implements PaymentService {
 						CriteriaUpdate<MotorDataDetails> update = cb.createCriteriaUpdate(MotorDataDetails.class);
 						// set the root class
 						Root<MotorDataDetails> m = update.from(MotorDataDetails.class);
+						// set update and where clause
+						update.set("policyNo", policyNo);
+						update.set("status", "P");
+						
+						Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
+						update.where(n1);
+						// perform update
+						em.createQuery(update).executeUpdate();
+						
+	    		   }
+	    	   } else  if(productId.equalsIgnoreCase(travelProductId) ) {
+	    		   // Eservice Travel Update
+	    		   {
+	    		    CriteriaBuilder cb = em.getCriteriaBuilder();
+					// create update
+					CriteriaUpdate<EserviceTravelDetails> update = cb.createCriteriaUpdate(EserviceTravelDetails.class);
+					// set the root class
+					Root<EserviceTravelDetails> m = update.from(EserviceTravelDetails.class);
+					// set update and where clause
+					update.set("policyNo", policyNo);
+					update.set("status", "P");
+					
+					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
+					update.where(n1);
+					// perform update
+					em.createQuery(update).executeUpdate();
+					
+	    		   }
+	    		   // Travel Data Details Update
+	    		   {
+		    		    CriteriaBuilder cb = em.getCriteriaBuilder();
+						// create update
+						CriteriaUpdate<TravelPassengerDetails> update = cb.createCriteriaUpdate(TravelPassengerDetails.class);
+						// set the root class
+						Root<TravelPassengerDetails> m = update.from(TravelPassengerDetails.class);
+						// set update and where clause
+						update.set("policyNo", policyNo);
+						update.set("status", "P");
+						
+						Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
+						update.where(n1);
+						// perform update
+						em.createQuery(update).executeUpdate();
+						
+	    		   }
+	    	   } else  if(productId.equalsIgnoreCase(buildingProductId) ) {
+	    		   // Eservice Building Update
+	    		   {
+	    		    CriteriaBuilder cb = em.getCriteriaBuilder();
+					// create update
+					CriteriaUpdate<EserviceBuildingDetails> update = cb.createCriteriaUpdate(EserviceBuildingDetails.class);
+					// set the root class
+					Root<EserviceBuildingDetails> m = update.from(EserviceBuildingDetails.class);
+					// set update and where clause
+					update.set("policyNo", policyNo);
+					update.set("status", "P");
+					
+					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
+					update.where(n1);
+					// perform update
+					em.createQuery(update).executeUpdate();
+					
+	    		   }
+	    		   // Building Data Details Update
+//	    		   {
+//		    		    CriteriaBuilder cb = em.getCriteriaBuilder();
+//						// create update
+//						CriteriaUpdate<MotorDataDetails> update = cb.createCriteriaUpdate(MotorDataDetails.class);
+//						// set the root class
+//						Root<MotorDataDetails> m = update.from(MotorDataDetails.class);
+//						// set update and where clause
+//						update.set("policyNo", policyNo);
+//						update.set("status", "P");
+//						
+//						Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
+//						update.where(n1);
+//						// perform update
+//						em.createQuery(update).executeUpdate();
+//						
+//	    		   }
+	    	   } else {
+	    		// Eservice Common Update
+	    		   {
+	    		    CriteriaBuilder cb = em.getCriteriaBuilder();
+					// create update
+					CriteriaUpdate<EserviceCommonDetails> update = cb.createCriteriaUpdate(EserviceCommonDetails.class);
+					// set the root class
+					Root<EserviceCommonDetails> m = update.from(EserviceCommonDetails.class);
+					// set update and where clause
+					update.set("policyNo", policyNo);
+					update.set("status", "P");
+					
+					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
+					update.where(n1);
+					// perform update
+					em.createQuery(update).executeUpdate();
+					
+	    		   }
+	    		   // Common Data Details Update
+	    		   {
+		    		    CriteriaBuilder cb = em.getCriteriaBuilder();
+						// create update
+						CriteriaUpdate<CommonDataDetails> update = cb.createCriteriaUpdate(CommonDataDetails.class);
+						// set the root class
+						Root<CommonDataDetails> m = update.from(CommonDataDetails.class);
 						// set update and where clause
 						update.set("policyNo", policyNo);
 						update.set("status", "P");
