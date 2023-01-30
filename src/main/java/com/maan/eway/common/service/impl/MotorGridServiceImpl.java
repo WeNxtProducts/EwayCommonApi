@@ -707,7 +707,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 					n4 = e0.in(branches);
 				} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
 					n3 = cb.equal(c.get("loginId"), loginId);
-					Expression<String> e0 = c.get("brokerBranchCode");
+				//	Expression<String> e0 = c.get("brokerBranchCode");
+				Expression<String> e0 = c.get("branchCode");
 					n4 = e0.in(branches);
 				}
 				
