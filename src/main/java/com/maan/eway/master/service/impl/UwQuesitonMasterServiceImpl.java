@@ -678,8 +678,12 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 			javax.persistence.criteria.Predicate n6 = cb.equal(c.get("status"), "R");
 			Predicate n7 = cb.or(n1,n6);
+			javax.persistence.criteria.Predicate n8 = cb.equal(c.get("branchCode"), req.getBranchCode());
+			javax.persistence.criteria.Predicate n9 = cb.equal(c.get("branchCode"),"99999");
 
-			query.where(n7, n2, n3, n4, n5).orderBy(orderList);
+			Predicate n10 = cb.or(n8,n9);
+
+			query.where(n7, n2, n3, n4, n5,n10).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<UWQuestionsMaster> result = em.createQuery(query);
@@ -689,6 +693,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getUwQuestionId().toString());
 				res.setCodeDesc(data.getUwQuestionDesc());
+				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
 		} catch (Exception e) {
