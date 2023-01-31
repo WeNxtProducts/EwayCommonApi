@@ -213,7 +213,7 @@ public class QuoteServiceImpl implements QuoteService {
 					quoteRes.setEmiYn("Y");
 					quoteRes.setInstallmentPeriod(filterEmi.get(0).getInstallmentPeriod());
 					quoteRes.setInstallmentMonth(filterEmi.get(0).getInstalment() );
-					quoteRes.setDueAmount(filterEmi.get(0).getDueAmount()==null?"":filterEmi.get(0).getDueAmount().toString());
+					quoteRes.setDueAmount(filterEmi.get(0).getDueAmount()==null?"":new BigDecimal(filterEmi.get(0).getDueAmount()).toPlainString());
 				}
 			}
 						
