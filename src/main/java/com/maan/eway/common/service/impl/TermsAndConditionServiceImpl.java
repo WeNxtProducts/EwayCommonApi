@@ -113,22 +113,22 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			List<ClausesMaster> clausesList = new ArrayList<ClausesMaster>();
 
 			if (StringUtils.isNotBlank(req.getBranchCode())) {
-				warrantyList = warrantyRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByAmendIdDesc(
+				warrantyList = warrantyRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarrantyIdAscAmendIdDesc(
 						req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId());
-				warrateList = warRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByAmendIdDesc(
+				warrateList = warRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarRateIdAscAmendIdDesc(
 						req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId());
-				exclusionList = exclusionRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByAmendIdDesc(
+				exclusionList = exclusionRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByExclusionIdAscAmendIdDesc(
 						req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId());
-				clausesList = clausesRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByAmendIdDesc(
+				clausesList = clausesRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByClausesIdAscAmendIdDesc(
 						req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId());
 			} else {
-				warrantyList = warrantyRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByAmendIdDesc(
+				warrantyList = warrantyRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarrantyIdAscAmendIdDesc(
 						req.getCompanyId(), "99999", req.getProductId(), req.getSectionId());
-				warrateList = warRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByAmendIdDesc(
+				warrateList = warRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarRateIdAscAmendIdDesc(
 						req.getCompanyId(), "99999", req.getProductId(), req.getSectionId());
-				exclusionList = exclusionRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByAmendIdDesc(
+				exclusionList = exclusionRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByExclusionIdAscAmendIdDesc(
 						req.getCompanyId(), "99999", req.getProductId(), req.getSectionId());
-				clausesList = clausesRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByAmendIdDesc(
+				clausesList = clausesRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByClausesIdAscAmendIdDesc(
 						req.getCompanyId(), "99999", req.getProductId(), req.getSectionId());
 
 			}
@@ -249,9 +249,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			if (StringUtils.isBlank(req.getRiskId())) {
 				errorList.add(new Error("06", "RiskId", "Please Enter RiskId"));
 			}
-			if (StringUtils.isBlank(req.getId())) {
-				errorList.add(new Error("07", "Id", "Please Select Id"));
-			}
+			
 	} catch (Exception e) {
 		log.error(e);
 		e.printStackTrace();
@@ -269,7 +267,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 		try {
 			
-			List<TermsAndCondition> data = termsRepo.findByQuoteNoAndIdAndRiskIdAndProductIdAndSectionId(req.getQuoteNo(),Integer.valueOf(req.getId()),req.getRiskId(),req.getProductId(),req.getSectionId());
+			List<TermsAndCondition> data = termsRepo.findByQuoteNoAndRiskIdAndProductIdAndSectionId(req.getQuoteNo(),req.getRiskId(),req.getProductId(),req.getSectionId());
 			if(data.size()>0 && data!=null) {
 				termsRepo.deleteAll();
 			}
@@ -286,7 +284,6 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 					.findTopByProductIdOrderByAmendIdDesc(Integer.valueOf(req.getProductId()));
 			List<SectionMaster> section = sectionRepo
 					.findTopBySectionIdOrderByAmendIdDesc(Integer.valueOf(req.getSectionId()));
-			ListItemValue id = listRepo.findByItemTypeAndItemCode("TERMS_AND_CONDITION", req.getId());
 
 			saveData.setCompanyId(req.getCompanyId());
 			saveData.setBranchCode(req.getBranchCode());
@@ -296,7 +293,6 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			saveData.setBranchName(branch.get(0).getBranchName());
 			saveData.setProductName(product.get(0).getProductName());
 			saveData.setSectionName(section.get(0).getSectionName());
-			saveData.setSno(count1 + 1);
 			saveData.setEntryDate(new Date());
 			saveData.setStatus("Y");
 			saveData.setCreatedBy(req.getCreatedBy());
@@ -305,10 +301,24 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			saveData.setQuoteNo(req.getQuoteNo());
 			saveData.setRiskId(req.getRiskId());
 			saveData.setAmendId(0);
-			saveData.setId(Integer.valueOf(req.getId()));
-			saveData.setIdDesc(id.getItemValue());			
 			
+			for(TermsAndConditionListReq req1 : req.getTermsAndConditionReq()) {
+			ListItemValue id = listRepo.findByItemTypeAndItemCode("TERMS_AND_CONDITION", req1.getId());
 
+
+			
+			saveData.setSno(count1 + 1);
+			saveData.setId(Integer.valueOf(req1.getId()));
+			saveData.setIdDesc(id.getItemValue());
+			saveData.setSubId(Integer.valueOf(req1.getSubId()));
+			saveData.setSubIdDesc(req1.getSubIdDesc());
+			termsRepo.saveAndFlush(saveData);
+
+			}
+
+			
+			
+			/*
 			//Warranty Save 
 			if(req.getId().equalsIgnoreCase("4")) {
 			for (TermsAndConditionListReq reqList : req.getTermsAndConditionReq()) {
@@ -348,7 +358,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 					termsRepo.saveAndFlush(saveData);
 				}
 				}
-			
+			*/
 			termsRepo.saveAndFlush(saveData);
 			res.setResponse("Saved Successful");
 			res.setSuccessId(req.getQuoteNo());

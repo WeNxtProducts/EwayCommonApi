@@ -33,10 +33,7 @@ public interface TermsAndConditionRepository  extends JpaRepository<TermsAndCond
 
 
 
-	List<TermsAndCondition> findByQuoteNoAndIdAndRiskIdAndProductIdAndSectionId(String quoteNo, Integer valueOf,
-			String riskId, String productId, String sectionId);
 
-	
 	List<TermsAndCondition> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRiskIdAndQuoteNoAndId(
 			String companyId, String branchCode, String productId, String sectionId, String riskId, String quoteNo,
 			Integer valueOf);
@@ -45,6 +42,12 @@ public interface TermsAndConditionRepository  extends JpaRepository<TermsAndCond
 	TermsAndCondition findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRiskIdAndQuoteNoAndIdAndSubId(
 			String companyId, String branchCode, String productId, String sectionId, String riskId, String quoteNo,
 			Integer valueOf, Integer valueOf2);
+
+
+	List<TermsAndCondition> findByQuoteNoAndRiskIdAndProductIdAndSectionId(String quoteNo, String riskId,
+			String productId, String sectionId);
+
+
 
 
 }

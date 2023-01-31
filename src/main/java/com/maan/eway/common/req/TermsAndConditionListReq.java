@@ -9,8 +9,14 @@ import lombok.Data;
 @Data
 public class TermsAndConditionListReq {
 
+	
+	@JsonProperty("Id")
+	private String id;
+	
 	@JsonProperty("SubId")
 	private String subId;
 	
+	@JsonProperty("SubIdDesc")
+	private String subIdDesc;
 	
 }

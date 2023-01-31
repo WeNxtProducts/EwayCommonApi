@@ -10,9 +10,10 @@ import com.maan.eway.bean.ClausesMasterId;
 
 public interface ClausesMasterRepository  extends JpaRepository<ClausesMaster,ClausesMasterId>, JpaSpecificationExecutor<ClausesMaster>{
 
-	List<ClausesMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByAmendIdDesc(String companyId,
-			String branchCode, String productId, String sectionId);
-
 	ClausesMaster findTopByClausesIdOrderByAmendIdDesc(Integer integer);
+
+	
+	List<ClausesMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByClausesIdAscAmendIdDesc(
+			String companyId, String branchCode, String productId, String sectionId);
 
 }

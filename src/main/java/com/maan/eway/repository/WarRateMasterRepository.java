@@ -13,10 +13,14 @@ public interface WarRateMasterRepository  extends JpaRepository<WarRateMaster,Wa
 
 	
 	
-	List<WarRateMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByAmendIdDesc(String companyId,
-			String branchCode, String productId, String sectionId);
 
 	WarRateMaster findTopByWarRateIdOrderByAmendIdDesc(Integer integer);
+
+	
+
+
+	List<WarRateMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarRateIdAscAmendIdDesc(
+			String companyId, String branchCode, String productId, String sectionId);
 
 
 }

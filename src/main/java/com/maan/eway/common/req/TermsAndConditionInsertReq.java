@@ -33,8 +33,6 @@ public class TermsAndConditionInsertReq {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
-	@JsonProperty("Id")
-	private String id;
 	
 	@JsonProperty("TermsAndConditionReq")
 	private List<TermsAndConditionListReq> termsAndConditionReq;

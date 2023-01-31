@@ -11,9 +11,12 @@ import com.maan.eway.bean.WarrantyMasterId;
 public interface WarrantyMasterRepository  extends JpaRepository<WarrantyMaster,WarrantyMasterId>, JpaSpecificationExecutor<WarrantyMaster>{
 
 	
-	List<WarrantyMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByAmendIdDesc(String companyId,
-			String branchCode, String productId, String sectionId);
+//	List<WarrantyMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByAmendIdDesc(String companyId,
+//			String branchCode, String productId, String sectionId);
 
 	WarrantyMaster findTopByWarrantyIdOrderByAmendIdDesc(Integer integer);
+
+	List<WarrantyMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarrantyIdAscAmendIdDesc(
+			String companyId, String branchCode, String productId, String sectionId);
 
 }
