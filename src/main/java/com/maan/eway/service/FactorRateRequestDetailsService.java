@@ -25,7 +25,7 @@ FactorRateRequestDetails update(FactorRateRequestDetails d);
  List<FactorRateRequestDetails> getAll();
 long getTotal();
 //boolean delete(long id);
-List<EservieMotorDetailsViewRes>  getFactorRateRequestDetails(FactorRateDetailsGetReq req);
+List<EservieMotorDetailsViewRes>  getFactorRateRequestDetails(FactorRateDetailsGetReq req,String tokens);
 SuccessRes saveFactorRateRequestDetails(EserviceMotorDetailsSaveRes req);
 List<Error> validateFoctorPremiumDetails(UpdateFactorRateReq req);
 UpdateCoverRes updateFactorRatePremiumDetails(UpdateFactorRateReq req);

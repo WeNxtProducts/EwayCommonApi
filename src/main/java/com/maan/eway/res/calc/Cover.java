@@ -119,5 +119,33 @@ public class Cover implements Serializable{
 
 	    @JsonProperty("RegulatoryCode")
 	    private String  regulatoryCode ;
+	    
+	    @JsonProperty("InsuranceId") 
+		private String insuranceId;
+		@JsonProperty("BranchCode") 
+		private String branchCode;
+		@JsonProperty("AgencyCode") 
+		private String agencyCode;
+		
+		 @JsonProperty("ProductId") 
+		 private String productId;
+		 
+		 @JsonProperty("MSRefNo") 
+		 private String msrefno;
+		 @JsonProperty("VehicleId") 
+		 private String vehicleId;
+		 
+		 
+		 @JsonProperty("CdRefNo")
+			private String cdRefNo;
+
+			@JsonProperty("VdRefNo")
+			private String vdRefNo;
+			@JsonProperty("CreatedBy")
+			private String createdBy;
+			
+			
+			@JsonProperty("RequestReferenceNo")
+			private String requestReferenceNo;
 
 }

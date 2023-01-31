@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -138,11 +139,11 @@ public class FactorRateRequestDetailsController {
     }
 	
 	@PostMapping("/view/calc")
-	public ResponseEntity<CommonRes> getFactorRateRequestDetails(@RequestBody  FactorRateDetailsGetReq req) {
+	public ResponseEntity<CommonRes> getFactorRateRequestDetails(@RequestBody  FactorRateDetailsGetReq req,@RequestHeader("Authorization") String tokens) {
 
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<EservieMotorDetailsViewRes> res = entityService.getFactorRateRequestDetails(req);
+		List<EservieMotorDetailsViewRes> res = entityService.getFactorRateRequestDetails(req,tokens.replaceAll("Bearer ", "").split(",")[0]);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());

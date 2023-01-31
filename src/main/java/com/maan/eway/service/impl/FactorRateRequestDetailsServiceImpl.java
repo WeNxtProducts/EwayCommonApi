@@ -81,9 +81,11 @@ import com.maan.eway.res.calc.Cover;
 import com.maan.eway.res.calc.Discount;
 import com.maan.eway.res.calc.Loading;
 import com.maan.eway.res.calc.Tax;
+import com.maan.eway.res.calc.UWReferrals;
 import com.maan.eway.res.referal.MasterReferal;
 import com.maan.eway.service.CalculatorEngine;
 import com.maan.eway.service.FactorRateRequestDetailsService;
+import com.maan.eway.service.impl.referal.ReferalServiceImpl;
 /**
 * <h2>FactorRateRequestDetailsServiceimpl</h2>
 */
@@ -143,7 +145,8 @@ private EntityManager em;
 @Autowired
 private EmiTransactionDetailsRepository emiRepo ;
 
-
+@Autowired
+private ReferalServiceImpl referal;
 
 
 private Logger log=LogManager.getLogger(FactorRateRequestDetailsServiceImpl.class);
@@ -799,7 +802,7 @@ this.repository = repo;
 	}
 	
 	@Override
-	public List<EservieMotorDetailsViewRes>  getFactorRateRequestDetails(FactorRateDetailsGetReq req) {
+	public List<EservieMotorDetailsViewRes>  getFactorRateRequestDetails(FactorRateDetailsGetReq req,String token) {
 		List<EservieMotorDetailsViewRes>  resList = new ArrayList<EservieMotorDetailsViewRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		
@@ -883,6 +886,37 @@ this.repository = repo;
 					dozerMapper.map(mot, motorRes);
 					riskDetails = motorRes ;
 					res.setRiskDetails(riskDetails);
+					
+					// Referal Checking.
+					if ( coverListRes.size()>0  ) {
+
+						CalcEngine engine = new CalcEngine();
+						engine.setAgencyCode(mot.getAgencyCode());
+						engine.setBranchCode(mot.getBranchCode());
+						engine.setCdRefNo(coverListRes.get(0).getCdRefNo());
+						engine.setCreatedBy(coverListRes.get(0).getCreatedBy());
+						engine.setInsuranceId(coverListRes.get(0).getInsuranceId());
+						engine.setMsrefno(coverListRes.get(0).getMsrefno());
+						engine.setProductId(coverListRes.get(0).getProductId().toString() );
+						engine.setRequestReferenceNo(coverListRes.get(0).getRequestReferenceNo());
+						engine.setSectionId(coverListRes.get(0).getSectionId()==null?"" :coverListRes.get(0).getSectionId().toString());
+						engine.setVdRefNo(coverListRes.get(0).getVdRefNo());
+						engine.setVehicleId(coverListRes.get(0).getVehicleId()==null?"" :coverListRes.get(0).getVehicleId().toString());
+						
+						List<UWReferrals> referr = referal.underwriterReferral(engine);
+						
+						List<MasterReferal> masterreferral=null;
+						try {
+							masterreferral = referal.masterreferral(engine, token);
+						} catch (ClassNotFoundException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						res.setUwList(referr);
+						res.setReferals(masterreferral);
+						
+					}
+					
 					resList.add(res);
 					
 					
@@ -941,6 +975,37 @@ this.repository = repo;
 					travelRes.setTravelId(tra.getGroupId().toString());
 					riskDetails = travelRes ;
 					res.setRiskDetails(riskDetails);
+					
+					// Referal Checking.
+					if ( coverListRes.size()>0  ) {
+
+						CalcEngine engine = new CalcEngine();
+						engine.setAgencyCode(travelData.getBrokerCode());
+						engine.setBranchCode(travelData.getBranchCode());
+						engine.setCdRefNo(coverListRes.get(0).getCdRefNo());
+						engine.setCreatedBy(coverListRes.get(0).getCreatedBy());
+						engine.setInsuranceId(coverListRes.get(0).getInsuranceId());
+						engine.setMsrefno(coverListRes.get(0).getMsrefno());
+						engine.setProductId(coverListRes.get(0).getProductId().toString() );
+						engine.setRequestReferenceNo(coverListRes.get(0).getRequestReferenceNo());
+						engine.setSectionId(coverListRes.get(0).getSectionId()==null?"" :coverListRes.get(0).getSectionId().toString());
+						engine.setVdRefNo(coverListRes.get(0).getVdRefNo());
+						engine.setVehicleId(coverListRes.get(0).getVehicleId()==null?"" :coverListRes.get(0).getVehicleId().toString());
+						
+						List<UWReferrals> referr = referal.underwriterReferral(engine);
+						
+						List<MasterReferal> masterreferral=null;
+						try {
+							masterreferral = referal.masterreferral(engine, token);
+						} catch (ClassNotFoundException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						res.setUwList(referr);
+						res.setReferals(masterreferral);
+						
+					}
+					
 					resList.add(res);
 					
 					
@@ -1007,6 +1072,35 @@ this.repository = repo;
 							dozerMapper.map(buildData, buildRes);
 							riskDetails = buildRes ;
 							res.setRiskDetails(riskDetails); 
+							// Referal Checking.
+							if ( coverListRes.size()>0  ) {
+
+								CalcEngine engine = new CalcEngine();
+								engine.setAgencyCode(buildData.getAgencyCode());
+								engine.setBranchCode(buildData.getBranchCode());
+								engine.setCdRefNo(coverListRes.get(0).getCdRefNo());
+								engine.setCreatedBy(coverListRes.get(0).getCreatedBy());
+								engine.setInsuranceId(coverListRes.get(0).getInsuranceId());
+								engine.setMsrefno(coverListRes.get(0).getMsrefno());
+								engine.setProductId(coverListRes.get(0).getProductId().toString() );
+								engine.setRequestReferenceNo(coverListRes.get(0).getRequestReferenceNo());
+								engine.setSectionId(coverListRes.get(0).getSectionId()==null?"" :coverListRes.get(0).getSectionId().toString());
+								engine.setVdRefNo(coverListRes.get(0).getVdRefNo());
+								engine.setVehicleId(coverListRes.get(0).getVehicleId()==null?"" :coverListRes.get(0).getVehicleId().toString());
+								
+								List<UWReferrals> referr = referal.underwriterReferral(engine);
+								
+								List<MasterReferal> masterreferral=null;
+								try {
+									masterreferral = referal.masterreferral(engine, token);
+								} catch (ClassNotFoundException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+								res.setUwList(referr);
+								res.setReferals(masterreferral);
+								
+							}
 							resList.add(res);
 						}
 						
@@ -1055,6 +1149,35 @@ this.repository = repo;
 						dozerMapper.map(buildData, buildRes);
 						riskDetails = buildRes ;
 						res.setRiskDetails(riskDetails); 
+						// Referal Checking.
+						if ( coverListRes.size()>0  ) {
+
+							CalcEngine engine = new CalcEngine();
+							engine.setAgencyCode(buildData.getAgencyCode());
+							engine.setBranchCode(buildData.getBranchCode());
+							engine.setCdRefNo(coverListRes.get(0).getCdRefNo());
+							engine.setCreatedBy(coverListRes.get(0).getCreatedBy());
+							engine.setInsuranceId(coverListRes.get(0).getInsuranceId());
+							engine.setMsrefno(coverListRes.get(0).getMsrefno());
+							engine.setProductId(coverListRes.get(0).getProductId().toString() );
+							engine.setRequestReferenceNo(coverListRes.get(0).getRequestReferenceNo());
+							engine.setSectionId(coverListRes.get(0).getSectionId()==null?"" :coverListRes.get(0).getSectionId().toString());
+							engine.setVdRefNo(coverListRes.get(0).getVdRefNo());
+							engine.setVehicleId(coverListRes.get(0).getVehicleId()==null?"" :coverListRes.get(0).getVehicleId().toString());
+							
+							List<UWReferrals> referr = referal.underwriterReferral(engine);
+							
+							List<MasterReferal> masterreferral=null;
+							try {
+								masterreferral = referal.masterreferral(engine, token);
+							} catch (ClassNotFoundException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							res.setUwList(referr);
+							res.setReferals(masterreferral);
+							
+						}
 						resList.add(res);
 					}
 					
@@ -1128,6 +1251,35 @@ this.repository = repo;
 					dozerMapper.map(comData, comRes);
 					riskDetails = comRes ;
 					res.setRiskDetails(riskDetails);
+					// Referal Checking.
+					if ( coverListRes.size()>0  ) {
+
+						CalcEngine engine = new CalcEngine();
+						engine.setAgencyCode(comData.getAgencyCode());
+						engine.setBranchCode(comData.getBranchCode());
+						engine.setCdRefNo(coverListRes.get(0).getCdRefNo());
+						engine.setCreatedBy(coverListRes.get(0).getCreatedBy());
+						engine.setInsuranceId(coverListRes.get(0).getInsuranceId());
+						engine.setMsrefno(coverListRes.get(0).getMsrefno());
+						engine.setProductId(coverListRes.get(0).getProductId().toString() );
+						engine.setRequestReferenceNo(coverListRes.get(0).getRequestReferenceNo());
+						engine.setSectionId(coverListRes.get(0).getSectionId()==null?"" :coverListRes.get(0).getSectionId().toString());
+						engine.setVdRefNo(coverListRes.get(0).getVdRefNo());
+						engine.setVehicleId(coverListRes.get(0).getVehicleId()==null?"" :coverListRes.get(0).getVehicleId().toString());
+						
+						List<UWReferrals> referr = referal.underwriterReferral(engine);
+						
+						List<MasterReferal> masterreferral=null;
+						try {
+							masterreferral = referal.masterreferral(engine, token);
+						} catch (ClassNotFoundException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						res.setUwList(referr);
+						res.setReferals(masterreferral);
+						
+					}
 					resList.add(res);	
 				}
 				// Emi Details
@@ -1181,6 +1333,15 @@ this.repository = repo;
 					coverRes.setPremiumExcluedTaxLC(filterCover.get(0).getPremiumExcludedTaxLc());
 					coverRes.setPremiumIncludedTaxLC(filterCover.get(0).getPremiumIncludedTaxLc());
 					coverRes.setExchangeRate(filterCover.get(0).getExchangeRate());	
+					coverRes.setCdRefNo(filterCover.get(0).getCdRefno());
+					coverRes.setCreatedBy(filterCover.get(0).getCreatedBy());
+					coverRes.setInsuranceId(filterCover.get(0).getCompanyId());
+					coverRes.setMsrefno(filterCover.get(0).getMsRefno());
+					coverRes.setProductId(filterCover.get(0).getProductId().toString() );
+					coverRes.setRequestReferenceNo(filterCover.get(0).getRequestReferenceNo());
+					coverRes.setSectionId(filterCover.get(0).getSectionId()==null?"" :filterCover.get(0).getSectionId().toString());
+					coverRes.setVdRefNo(filterCover.get(0).getVdRefno());
+					coverRes.setVehicleId(filterCover.get(0).getVehicleId()==null?"" :filterCover.get(0).getVehicleId().toString());
 					
 					// Discount Covers Or Promo Covers
 					List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) && (   o.getCoverageType().equalsIgnoreCase("D") || o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
@@ -1245,6 +1406,15 @@ this.repository = repo;
 						subCoverRes.setPremiumBeforeDiscountLC( filterSubCover.get(0).getPremiumBeforeDiscountLc());
 						subCoverRes.setPremiumExcluedTaxLC(filterSubCover.get(0).getPremiumExcludedTaxLc());
 						subCoverRes.setPremiumIncludedTaxLC(filterSubCover.get(0).getPremiumIncludedTaxLc());
+						subCoverRes.setCdRefNo(filterSubCover.get(0).getCdRefno());
+						subCoverRes.setCreatedBy(filterSubCover.get(0).getCreatedBy());
+						subCoverRes.setInsuranceId(filterSubCover.get(0).getCompanyId());
+						subCoverRes.setMsrefno(filterSubCover.get(0).getMsRefno());
+						subCoverRes.setProductId(filterSubCover.get(0).getProductId().toString() );
+						subCoverRes.setRequestReferenceNo(filterSubCover.get(0).getRequestReferenceNo());
+						subCoverRes.setSectionId(filterSubCover.get(0).getSectionId()==null?"" :filterSubCover.get(0).getSectionId().toString());
+						subCoverRes.setVdRefNo(filterSubCover.get(0).getVdRefno());
+						subCoverRes.setVehicleId(filterSubCover.get(0).getVehicleId()==null?"" :filterSubCover.get(0).getVehicleId().toString());
 						
 						
 						// Discount Covers Or Promo Covers
