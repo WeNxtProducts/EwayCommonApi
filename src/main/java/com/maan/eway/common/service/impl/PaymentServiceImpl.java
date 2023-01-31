@@ -284,7 +284,7 @@ public class PaymentServiceImpl implements PaymentService {
 				if(homeData.getProductId().equals(Integer.valueOf(motorProductId)) ) {
 					List<MotorDataDetails>  motorDatas = motorRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());	
 					List<Integer> sectionList = motorDatas.stream().map(MotorDataDetails :: getSectionId ) .collect(Collectors.toList());
-					sectionIds = Lists.transform(sectionList, Functions.toStringFunction());
+					sectionIds.addAll(Lists.transform(sectionList, Functions.toStringFunction()));
 					sectionIds.add("99999");
 					// Common Docs 
 					
@@ -325,7 +325,7 @@ public class PaymentServiceImpl implements PaymentService {
 				} else if(homeData.getProductId().equals(Integer.valueOf(travelProductId)) ) {
 					List<TravelPassengerDetails>  passDatas = passengerRepo.findByQuoteNoOrderByTravelIdAsc(req.getQuoteNo());	
 					List<Integer> sectionList =passDatas.stream().map(TravelPassengerDetails :: getSectionId ) .collect(Collectors.toList());
-					sectionIds = Lists.transform(sectionList, Functions.toStringFunction());
+					sectionIds.addAll(Lists.transform(sectionList, Functions.toStringFunction()));
 					sectionIds.add("99999");
 					// Common Docs 
 					
