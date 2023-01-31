@@ -274,8 +274,6 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			
 
 			TermsAndCondition saveData = new TermsAndCondition();
-			Long count = termsRepo.count();
-			Integer count1 = count.intValue();
 			List<InsuranceCompanyMaster> insurance = inuranceRepo
 					.findTopByCompanyIdOrderByAmendIdDesc(req.getCompanyId());
 			List<BranchMaster> branch = branchRepo
@@ -305,7 +303,9 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			for(TermsAndConditionListReq req1 : req.getTermsAndConditionReq()) {
 			ListItemValue id = listRepo.findByItemTypeAndItemCode("TERMS_AND_CONDITION", req1.getId());
 
-
+			Long count = termsRepo.count();
+			Integer count1 = count.intValue();
+			
 			
 			saveData.setSno(count1 + 1);
 			saveData.setId(Integer.valueOf(req1.getId()));
