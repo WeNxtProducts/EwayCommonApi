@@ -271,6 +271,8 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			if(data.size()>0 && data!=null) {
 				termsRepo.deleteAll();
 			}
+			Long count = termsRepo.count();
+			Integer count1 = count.intValue();
 			
 
 			TermsAndCondition saveData = new TermsAndCondition();
@@ -303,8 +305,6 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			for(TermsAndConditionListReq req1 : req.getTermsAndConditionReq()) {
 			ListItemValue id = listRepo.findByItemTypeAndItemCode("TERMS_AND_CONDITION", req1.getId());
 
-			Long count = termsRepo.count();
-			Integer count1 = count.intValue();
 			
 			
 			saveData.setSno(count1 + 1);
@@ -313,7 +313,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			saveData.setSubId(Integer.valueOf(req1.getSubId()));
 			saveData.setSubIdDesc(req1.getSubIdDesc());
 			termsRepo.saveAndFlush(saveData);
-
+			count1++;
 			}
 
 			
