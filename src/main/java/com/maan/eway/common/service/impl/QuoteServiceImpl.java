@@ -199,8 +199,8 @@ public class QuoteServiceImpl implements QuoteService {
 			
 			
 			quoteRes = dozerMappper.map(homeData, QuoteDetailsRes.class);
-			quoteRes.setOverAllPremiumFc(homeData.getOverallPremiumFc()==null?"":homeData.getOverallPremiumFc().toString() );
-			quoteRes.setOverAllPremiumLc(homeData.getOverallPremiumLc()==null?"":homeData.getOverallPremiumLc().toString());
+			quoteRes.setOverAllPremiumFc(homeData.getOverallPremiumFc()==null?"":homeData.getOverallPremiumFc().toPlainString() );
+			quoteRes.setOverAllPremiumLc(homeData.getOverallPremiumLc()==null?"":homeData.getOverallPremiumLc().toPlainString());
 			quoteRes.setAdminRemarks(homeData.getAdminRemarks());
 			quoteRes.setReferalRemarks(homeData.getReferralDescription());
 			
