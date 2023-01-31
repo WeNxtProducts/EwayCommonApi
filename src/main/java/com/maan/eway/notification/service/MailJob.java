@@ -29,7 +29,7 @@ public class MailJob implements Consumer<Mail> {
 	
 	 
 	public void pushMail(Mail m) {
-		
+		   
 		String statusResponse=null;
 		try {
 			Properties prop = new Properties();

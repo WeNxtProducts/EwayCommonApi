@@ -19,7 +19,7 @@ public class NotificationValidation {
 		Customer customer = n.getCustomer();
 		UnderWriter underwriter = n.getUnderwriter();
 		List<Error>  errors = new ArrayList<Error>();
-		
+		    
 		if(StringUtils.isBlank(broker.getBrokerCompanyName())) {
 			errors.add(new Error("01","BrokerCompanyName" , "Please Select BrokerCompanyName" ));
 		}

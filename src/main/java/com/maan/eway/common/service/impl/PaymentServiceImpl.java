@@ -39,6 +39,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.base.Functions;
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.maan.eway.auth.token.EncryDecryService;
 import com.maan.eway.auth.token.passwordEnc;
@@ -51,6 +53,7 @@ import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
@@ -86,8 +89,10 @@ import com.maan.eway.common.service.PaymentService;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.service.impl.ClausesMasterServiceImpl;
 import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
+import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EmiTransactionDetailsRepository;
+import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
@@ -97,6 +102,7 @@ import com.maan.eway.repository.PaymentInfoRepository;
 import com.maan.eway.repository.PaymentRefnoRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.SeqPaymentidRepository;
+import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.req.calcengine.CalcCommission;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.res.calc.DebitAndCredit;
@@ -161,6 +167,18 @@ public class PaymentServiceImpl implements PaymentService {
 	private CoverDocumentUploadDetailsRepository docUploadRepo ;
 	
 	@Autowired
+	private EserviceBuildingDetailsRepository buildingRepo ;
+	
+	@Autowired
+	private EServiceSectionDetailsRepository sectionRepo ;
+	
+	@Autowired
+	private TravelPassengerDetailsRepository passengerRepo ;
+	
+	@Autowired
+	private CommonDataDetailsRepository commonRepo ;
+	
+	@Autowired
 	private PaymentService paymentService ;
 	
 	private Logger log = LogManager.getLogger(ClausesMasterServiceImpl.class);
@@ -208,7 +226,7 @@ public class PaymentServiceImpl implements PaymentService {
 				String pattern = "#####0";
 			 	DecimalFormat decimalFormat = new DecimalFormat(pattern);
 			 	Double premium =  Double.valueOf (decimalFormat.format( Double.valueOf (req.getPremium())));
-			 	Double overall =  Double.valueOf (decimalFormat.format(findQuote.getOverallPremiumFc()));
+			 	Double overall =  Double.valueOf (decimalFormat.format(findQuote.getOverallPremiumLc()));
 			 	if(! premium.equals(overall)  ) {
 					error.add(new Error("01","Premium","Premium Mismatched. Given Premium : " + premium + " Policy Premium :" +  overall));
 				}
@@ -258,15 +276,16 @@ public class PaymentServiceImpl implements PaymentService {
 				HomePositionMaster homeData = homerepo.findByQuoteNo(req.getQuoteNo());
 				String companyId = homeData.getCompanyId() ;
 				Integer productId =  homeData.getProductId() ;
-				List<Integer> sectionIds = new ArrayList<Integer>(); 
+				List<String> sectionIds = new ArrayList<String>(); 
 				
 				List<DocValidationReq> docValidateReqs = new ArrayList<DocValidationReq>() ;
 				
 				// Motor Product Specific Doc Valdiation
 				if(homeData.getProductId().equals(Integer.valueOf(motorProductId)) ) {
 					List<MotorDataDetails>  motorDatas = motorRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());	
-					sectionIds = motorDatas.stream().map(MotorDataDetails :: getSectionId ) .collect(Collectors.toList());
-					sectionIds.add(99999);
+					List<Integer> sectionList = motorDatas.stream().map(MotorDataDetails :: getSectionId ) .collect(Collectors.toList());
+					sectionIds = Lists.transform(sectionList, Functions.toStringFunction());
+					sectionIds.add("99999");
 					// Common Docs 
 					
 					
@@ -279,6 +298,67 @@ public class PaymentServiceImpl implements PaymentService {
 						doc.setRiskId(mot.getVehicleId() );
 						doc.setSectionId(String.valueOf(mot.getSectionId()));
 						doc.setSectionDesc(mot.getSectionName());
+						docValidateReqs.add(doc);
+						
+					}
+					
+				} else if(homeData.getProductId().equals(Integer.valueOf(buildingProductId)) ) {
+					List<EserviceSectionDetails>  buidingDatas = sectionRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());	
+					sectionIds = buidingDatas.stream().map(EserviceSectionDetails ::  getSectionId ) .collect(Collectors.toList());
+					sectionIds.add("99999");
+					// Common Docs 
+					
+					
+					// Other Docs
+					for (EserviceSectionDetails mot : buidingDatas) {
+						DocValidationReq doc = new DocValidationReq();
+						doc.setQuoteNo(mot.getQuoteNo() );
+						doc.setProductId(String.valueOf(mot.getProductId()));
+						doc.setProductDesc("Risk Id");
+						doc.setRiskId(mot.getRiskId().toString());
+						doc.setSectionId(String.valueOf(mot.getSectionId()));
+						doc.setSectionDesc(mot.getSectionDesc());
+						docValidateReqs.add(doc);
+						
+					}
+					
+				} else if(homeData.getProductId().equals(Integer.valueOf(travelProductId)) ) {
+					List<TravelPassengerDetails>  passDatas = passengerRepo.findByQuoteNoOrderByTravelIdAsc(req.getQuoteNo());	
+					List<Integer> sectionList =passDatas.stream().map(TravelPassengerDetails :: getSectionId ) .collect(Collectors.toList());
+					sectionIds = Lists.transform(sectionList, Functions.toStringFunction());
+					sectionIds.add("99999");
+					// Common Docs 
+					
+					
+					// Other Docs
+					for (TravelPassengerDetails mot : passDatas) {
+						DocValidationReq doc = new DocValidationReq();
+						doc.setQuoteNo(mot.getQuoteNo() );
+						doc.setProductId(String.valueOf(mot.getProductId()));
+						doc.setProductDesc("Passenger Id");
+						doc.setRiskId(mot.getPassengerId().toString() );
+						doc.setSectionId(String.valueOf(mot.getSectionId()));
+						doc.setSectionDesc(mot.getSectionName());
+						docValidateReqs.add(doc);
+						
+					}
+					
+				} else  {
+					List<CommonDataDetails>  commonDatas = commonRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());	
+					sectionIds = commonDatas.stream().map(CommonDataDetails :: getSectionId ) .collect(Collectors.toList());
+					sectionIds.add("99999");
+					// Common Docs 
+					
+					
+					// Other Docs
+					for (CommonDataDetails mot : commonDatas) {
+						DocValidationReq doc = new DocValidationReq();
+						doc.setQuoteNo(mot.getQuoteNo() );
+						doc.setProductId(String.valueOf(mot.getProductId()));
+						doc.setProductDesc("Risk Id");
+						doc.setRiskId(mot.getRiskId().toString() );
+						doc.setSectionId(String.valueOf(mot.getSectionId()));
+						doc.setSectionDesc(mot.getSectionDesc());
 						docValidateReqs.add(doc);
 						
 					}
@@ -332,7 +412,7 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 	
 	
-	public List<CoverDocumentMaster> getCoverDocumentMasterMandatoryDocs(String companyId , Integer productId , List<Integer> sectionIds  ) {
+	public List<CoverDocumentMaster> getCoverDocumentMasterMandatoryDocs(String companyId , Integer productId , List<String> sectionIds  ) {
 		List<CoverDocumentMaster> list = new ArrayList<CoverDocumentMaster>();
 		try {
 			Date today = new Date();
@@ -456,9 +536,9 @@ public class PaymentServiceImpl implements PaymentService {
 				paymentinfo.setPolicyEndDate(data.getExpiryDate());
 				paymentinfo.setPolicyStartDate(data.getInceptionDate() );
 				paymentinfo.setPremium(new BigDecimal(req.getPremium()));
-				paymentinfo.setPremiumFc(new BigDecimal(req.getPremium()));
-				BigDecimal premiumLc = new BigDecimal(req.getPremium()).multiply(data.getExchangeRate() );
-				paymentinfo.setPremiumLc(premiumLc);
+				paymentinfo.setPremiumLc(new BigDecimal(req.getPremium()) );
+				BigDecimal premiumFc = new BigDecimal(req.getPremium()).divide(data.getExchangeRate() );
+				paymentinfo.setPremiumFc(premiumFc);
 				paymentinfo.setCurrencyId(data.getCurrency());
 				paymentinfo.setExchangeRate(data.getExchangeRate() );
 				paymentinfo.setProductId(data.getProductId());
