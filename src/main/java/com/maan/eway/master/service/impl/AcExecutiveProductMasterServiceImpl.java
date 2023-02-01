@@ -610,11 +610,11 @@ public class AcExecutiveProductMasterServiceImpl implements AcExecutiveProductMa
 			Subquery<Long> effectiveDate4 = query.subquery(Long.class);
 			Root<AcExecutiveMaster> ocpm4 = effectiveDate4.from(AcExecutiveMaster.class);
 			effectiveDate4.select(cb.max(ocpm4.get("effectiveDateEnd")));
-			Predicate a11 = cb.equal(ac.get("acExecutiveId"),ocpm3.get("acExecutiveId"));
-			Predicate a12 = cb.equal(ac.get("companyId"),ocpm3.get("companyId"));
-			Predicate a13 = cb.equal(ac.get("oaCode"),ocpm3.get("oaCode"));
-			Predicate a14 = cb.equal(ac.get("bankCode"),ocpm3.get("bankCode"));
-			Predicate a15 = cb.greaterThanOrEqualTo(ocpm3.get("effectiveDateEnd"), todayEnd);
+			Predicate a11 = cb.equal(ac.get("acExecutiveId"),ocpm4.get("acExecutiveId"));
+			Predicate a12 = cb.equal(ac.get("companyId"),ocpm4.get("companyId"));
+			Predicate a13 = cb.equal(ac.get("oaCode"),ocpm4.get("oaCode"));
+			Predicate a14 = cb.equal(ac.get("bankCode"),ocpm4.get("bankCode"));
+			Predicate a15 = cb.greaterThanOrEqualTo(ocpm4.get("effectiveDateEnd"), todayEnd);
 			
 			effectiveDate4.where(a11,a12,a13,a14,a15);
 
@@ -672,7 +672,7 @@ public class AcExecutiveProductMasterServiceImpl implements AcExecutiveProductMa
 			TypedQuery<Tuple> result = em.createQuery(query);
 			list = result.getResultList(); 
 		
-						
+			if(list.size()>0 && list!=null) {
 			for (Tuple data : list) {
 				// Response 
 				AcExecutiveProductDropdownRes res = new AcExecutiveProductDropdownRes();
@@ -681,6 +681,7 @@ public class AcExecutiveProductMasterServiceImpl implements AcExecutiveProductMa
 				res.setBankCode(data.get("bankCode")==null?"":data.get("bankCode").toString());
 				res.setBankName("");
 				resList.add(res);
+			}
 			}
 		}
 			catch(Exception e) {
