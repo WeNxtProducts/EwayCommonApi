@@ -20,17 +20,20 @@ import com.maan.eway.admin.req.GetAllBrokerBranchReq;
 import com.maan.eway.admin.req.GetBrokerBranchReq;
 import com.maan.eway.admin.req.GetallBrokerBranchesReq;
 import com.maan.eway.admin.req.IssuerBranchGetReq;
+import com.maan.eway.admin.req.LoginBranchReq;
 import com.maan.eway.admin.req.LoginBranchesSaveReq;
 import com.maan.eway.admin.req.UserCompanyProductGetReq;
 import com.maan.eway.admin.res.BrokerCompanyGetRes;
 import com.maan.eway.admin.res.GetBrokerBranchRes;
 import com.maan.eway.admin.res.GetallBrokerBranchesRes;
 import com.maan.eway.admin.res.IssuerCompanyGetRes;
+import com.maan.eway.admin.res.LoginBranchRes;
 import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.service.LoginBranchService;
 import com.maan.eway.admin.service.LoginValidationService;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.res.CompanyProductMasterRes;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.service.PrintReqService;
@@ -294,6 +297,26 @@ public class LoginBranchController {
 	}
 	
 
+	@PostMapping("/loginbranches")
+	@ApiOperation("This Method is to get Login Branch and Broker Branches")
+	public ResponseEntity<CommonRes> getloginbranches(@RequestBody LoginBranchReq req){
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		List<LoginBranchRes> res = entityService.getLoginbranches(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if(res!=null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+	
+	
+	
 	}
 	
 	

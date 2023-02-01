@@ -1,11 +1,9 @@
 package com.maan.eway.admin.service.impl;
 
-import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -13,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -30,8 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +42,7 @@ import com.maan.eway.admin.req.GetAllBrokerBranchReq;
 import com.maan.eway.admin.req.GetBrokerBranchReq;
 import com.maan.eway.admin.req.GetallBrokerBranchesReq;
 import com.maan.eway.admin.req.IssuerBranchGetReq;
+import com.maan.eway.admin.req.LoginBranchReq;
 import com.maan.eway.admin.req.LoginBranchesSaveReq;
 import com.maan.eway.admin.req.UserCompanyProductGetReq;
 import com.maan.eway.admin.res.BranchCriteriaRes;
@@ -56,20 +52,17 @@ import com.maan.eway.admin.res.GetBrokerBranchRes;
 import com.maan.eway.admin.res.GetallBrokerBranchesRes;
 import com.maan.eway.admin.res.IssuerBranchGetRes;
 import com.maan.eway.admin.res.IssuerCompanyGetRes;
+import com.maan.eway.admin.res.LoginBranchRes;
 import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.service.LoginBranchService;
 import com.maan.eway.auth.dto.LoginBranchCriteriaRes;
 import com.maan.eway.bean.BranchMaster;
-import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginBranchMasterArch;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginMasterArch;
-import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.RegionMaster;
-import com.maan.eway.bean.TravelPassengerHistory;
-import com.maan.eway.master.res.CompanyProductMasterRes;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterArchRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
@@ -783,5 +776,33 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			return null;
 		}
 		return res;
+	}
+
+	@Override
+	public List<LoginBranchRes> getLoginbranches(LoginBranchReq req) {
+		// TODO Auto-generated method stub
+		List<LoginBranchRes> resList = new ArrayList<LoginBranchRes>();
+		try {
+			
+		List<LoginBranchMaster> datas = loginBrokerRepo.findByLoginIdOrderByBranchCodeAsc(req.getLoginId());
+			
+		if(datas.size()>0 && datas!=null) {
+		for(LoginBranchMaster data : datas) {
+			LoginBranchRes res = new LoginBranchRes();
+			res.setBranchCode(data.getBranchCode()==null?"":data.getBranchCode());
+			res.setBranchName(data.getBranchName()==null?"":data.getBranchName());
+			res.setBrokerBranchCode(data.getBrokerBranchCode()==null?"":data.getBrokerBranchCode());
+			res.setBrokerBranchName(data.getBrokerBranchName()==null?"":data.getBrokerBranchName());
+			resList.add(res);
+			}
+		}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->"+ e.getMessage());
+			return null;
+		}
+		return resList;
+		
 	}
 }

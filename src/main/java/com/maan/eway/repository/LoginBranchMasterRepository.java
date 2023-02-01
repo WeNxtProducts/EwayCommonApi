@@ -60,6 +60,8 @@ public interface LoginBranchMasterRepository  extends JpaRepository<LoginBranchM
 	LoginBranchMaster findByLoginIdAndBrokerBranchCodeAndCompanyId(String loginId, String brokerBranchCode,
 			String companyId);
 
+	List<LoginBranchMaster> findByLoginIdOrderByBranchCodeAsc(String loginId);
+
 	
 
 
