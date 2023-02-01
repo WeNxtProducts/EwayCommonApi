@@ -113,6 +113,8 @@ public class ContentAndRisk implements Serializable {
 	@Column(name = "UPDATED_DATE")
 	private Date updatedDate;
 
+	@Column(name = "BANK_CODE", length = 100)
+	private String bankCode;
 
 	
 
