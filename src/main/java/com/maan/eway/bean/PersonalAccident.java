@@ -136,4 +136,7 @@ public class PersonalAccident implements Serializable {
 	@Column(name="POLICY_NO", length=100)
     private String     policyNo;
 
+
+    @Column(name="BANK_CODE", length=100)
+    private String   bankCode;
 }

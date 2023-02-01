@@ -295,7 +295,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="CATEGORY_DESC", length=100)
     private String     categoryDesc;
 
-    
+
+    @Column(name="BANK_CODE", length=100)
+    private String   bankCode;    
 }
 
 

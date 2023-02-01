@@ -222,6 +222,11 @@ private static final long serialVersionUID = 1L;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="DOB")
     private Date       dob ;
+
+    @Column(name="BANK_CODE", length=100)
+    private String   bankCode;
+
+
 }
 
 

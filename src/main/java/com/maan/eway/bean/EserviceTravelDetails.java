@@ -252,7 +252,10 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="OLD_REQ_REF_NO", length=20)
     private String     oldReqRefNo ;
-    
+
+
+    @Column(name="BANK_CODE", length=100)
+    private String   bankCode;
 }
 
 
