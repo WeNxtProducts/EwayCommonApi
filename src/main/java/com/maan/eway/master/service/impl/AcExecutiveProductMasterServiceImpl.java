@@ -621,7 +621,7 @@ public class AcExecutiveProductMasterServiceImpl implements AcExecutiveProductMa
 			// Where
 			acExecutive.select(ac.get("acExecutiveName"));
 			Predicate n1 = cb.equal(ac.get("status"),"Y");
-			Predicate n2 = cb.equal(ac.get("effectiveDateStart"),effectiveDate3);
+			Predicate n2 = cb.equal(ac.get("effectiveDateStart") ,effectiveDate3 );
 			Predicate n3 = cb.equal(ac.get("effectiveDateEnd"),effectiveDate4);	
 			Predicate n4 = cb.equal(ac.get("oaCode"),req.getOaCode());
 			Predicate n5 = cb.equal(ac.get("oaCode"),"99999");
@@ -638,7 +638,9 @@ public class AcExecutiveProductMasterServiceImpl implements AcExecutiveProductMa
 			Predicate n16 = cb.equal(c.get("acExecutiveId"),ac.get("acExecutiveId"));
 			acExecutive.where(n1,n2,n3,n6,n9,n12,n15,n16);
 
-			query.multiselect(acExecutive.alias("acExecutiveName") ,   c.get("productId").alias("productId"));
+			query.multiselect(acExecutive.alias("acExecutiveName") ,   c.get("acExecutiveId").alias("acExecutiveId"),
+					c.get("bankCode").alias("bankCode") , c.get("bankName").alias("bankName")
+					);
 			
 			
 			// Effective Date Start Max Filter
@@ -676,10 +678,10 @@ public class AcExecutiveProductMasterServiceImpl implements AcExecutiveProductMa
 			for (Tuple data : list) {
 				// Response 
 				AcExecutiveProductDropdownRes res = new AcExecutiveProductDropdownRes();
-				res.setAcExecutiveId(data.get("acExecutiveId").toString());
+				res.setAcExecutiveId(data.get("acExecutiveId")==null?"":data.get("acExecutiveId").toString());
 				res.setAcExecutiveName(data.get("acExecutiveName")==null?"":data.get("acExecutiveName").toString());
-				res.setBankCode(data.get("bankCode")==null?"":data.get("bankCode").toString());
-				res.setBankName("");
+				res.setBankCode(data.get("bankCode")==null?"":data.get("bankCode").toString());		
+				res.setBankName(data.get("bankName")==null?"":data.get("bankName").toString());
 				resList.add(res);
 			}
 			}
