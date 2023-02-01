@@ -632,11 +632,11 @@ public class AcExecutiveProductMasterServiceImpl implements AcExecutiveProductMa
 			Predicate n10 = cb.equal(ac.get("companyId"),req.getCompanyId());
 			Predicate n11 = cb.equal(ac.get("companyId"),"99999");
 			Predicate n12 = cb.or(n10,n11);		
-			Predicate n13 = cb.equal(ac.get("bankCode"),req.getBankCode());
-			Predicate n14 = cb.equal(ac.get("bankCode"),"None");
-			Predicate n15 = cb.or(n13,n14);					
+		//	Predicate n13 = cb.equal(ac.get("bankCode"),req.getBankCode());
+		//	Predicate n14 = cb.equal(ac.get("bankCode"),"None");
+		//	Predicate n15 = cb.or(n13,n14);					
 			Predicate n16 = cb.equal(c.get("acExecutiveId"),ac.get("acExecutiveId"));
-			acExecutive.where(n1,n2,n3,n6,n9,n12,n15,n16);
+			acExecutive.where(n1,n2,n3,n6,n9,n12,n16);
 
 			query.multiselect(acExecutive.alias("acExecutiveName") ,   c.get("acExecutiveId").alias("acExecutiveId"),
 					c.get("bankCode").alias("bankCode") , c.get("bankName").alias("bankName")
@@ -663,13 +663,13 @@ public class AcExecutiveProductMasterServiceImpl implements AcExecutiveProductMa
 			Predicate n22 = cb.equal(c.get("oaCode"),req.getOaCode());
 			Predicate n23 = cb.equal(c.get("companyId"),req.getCompanyId());
 			Predicate n24 = cb.equal(c.get("productId"),req.getProductId());
-			Predicate n25 = cb.equal(c.get("bankCode"),req.getBankCode());
+		//	Predicate n25 = cb.equal(c.get("bankCode"),req.getBankCode());
 			Predicate n26 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 			Predicate n27 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
 
 		//	Predicate n27 = cb.equal(c.get("branchCode"),req.getBranchCode());
 
-			query.where(n21,n22,n23,n24,n25,n26,n27);
+			query.where(n21,n22,n23,n24,n26,n27);
 			// Get Result
 			TypedQuery<Tuple> result = em.createQuery(query);
 			list = result.getResultList(); 

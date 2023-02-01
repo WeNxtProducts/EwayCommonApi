@@ -10,8 +10,6 @@ public class AcExecutiveProductDropDownReq {
 	@JsonProperty("OaCode")
 	private String oaCode;
 
-	@JsonProperty("BankCode")
-	private String bankCode;
 
 	@JsonProperty("BranchCode")
 	private String branchCode;
