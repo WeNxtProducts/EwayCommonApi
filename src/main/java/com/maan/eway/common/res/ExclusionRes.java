@@ -22,11 +22,11 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ExclusionRes {
 
-@JsonProperty("ExclusionId")
-private String exclusionId;
+	@JsonProperty("SubId")
+	private String subId;
 
-@JsonProperty("ExclusionDesc")
-private String exclusionDesc;
+	@JsonProperty("SubIdDesc")
+	private String subIdDesc;
 
 @JsonProperty("DocRefNo")
 private String docRefNo;

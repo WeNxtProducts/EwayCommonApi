@@ -156,8 +156,8 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				for (WarrantyMaster warranties : warrantyList) {
 					WarrantyRes warrantyres = new WarrantyRes();
 
-					warrantyres.setWarrantyId(warranties.getWarrantyId().toString());
-					warrantyres.setWarrantyDesc(warranties.getWarrantyDescription());
+					warrantyres.setSubId(warranties.getWarrantyId().toString());
+					warrantyres.setSubIdDesc(warranties.getWarrantyDescription());
 					warrantyres.setDocRefNo(warranties.getDocRefNo());
 					warrantyres.setDocumentId("16");
 					warrantyresList.add(warrantyres);
@@ -168,8 +168,8 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				for (WarRateMaster warrates : warrateList) {
 					WarrateRes warrateres = new WarrateRes();
 
-					warrateres.setWarrateId(warrates.getWarRateId().toString());
-					warrateres.setWarrateDesc(warrates.getWarRateDesc());
+					warrateres.setSubId(warrates.getWarRateId().toString());
+					warrateres.setSubIdDesc(warrates.getWarRateDesc());
 					warrateres.setDocRefNo(warrates.getDocRefNo());
 					warrateres.setDocumentId("17");
 					warrateresList.add(warrateres);
@@ -183,8 +183,8 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				for (ClausesMaster clauses : clausesList) {
 					ClausesRes clausesres = new ClausesRes();
 
-					clausesres.setClausesId(clauses.getClausesId().toString());
-					clausesres.setClausesDesc(clauses.getClausesDescription());
+					clausesres.setSubId(clauses.getClausesId().toString());
+					clausesres.setSubIdDesc(clauses.getClausesDescription());
 					clausesres.setDocRefNo(clauses.getDocRefNo());
 					clausesres.setDocumentId("18");
 					clausesresList.add(clausesres);
@@ -196,8 +196,8 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				for (ExclusionMaster exclusions : exclusionList) {
 					ExclusionRes exclusionres = new ExclusionRes();
 
-					exclusionres.setExclusionId(exclusions.getExclusionId().toString());
-					exclusionres.setExclusionDesc(exclusions.getExclusionDescription());
+					exclusionres.setSubId(exclusions.getExclusionId().toString());
+					exclusionres.setSubIdDesc(exclusions.getExclusionDescription());
 					exclusionres.setDocRefNo(exclusions.getDocRefNo());
 					exclusionres.setDocumentId("19");
 					exclusionresList.add(exclusionres);

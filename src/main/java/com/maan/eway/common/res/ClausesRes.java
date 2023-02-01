@@ -22,11 +22,11 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ClausesRes {
 
-@JsonProperty("ClausesId")
-private String clausesId;
+	@JsonProperty("SubId")
+	private String subId;
 
-@JsonProperty("ClausesDesc")
-private String clausesDesc;
+	@JsonProperty("SubIdDesc")
+	private String subIdDesc;
 
 @JsonProperty("DocRefNo")
 private String docRefNo;

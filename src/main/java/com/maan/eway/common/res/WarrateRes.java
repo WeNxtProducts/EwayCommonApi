@@ -22,11 +22,11 @@ import lombok.Setter;
 @AllArgsConstructor
 public class WarrateRes {
 
-@JsonProperty("WarrateId")
-private String warrateId;
+	@JsonProperty("SubId")
+	private String subId;
 
-@JsonProperty("WarrateDesc")
-private String warrateDesc;
+	@JsonProperty("SubIdDesc")
+	private String subIdDesc;
 
 @JsonProperty("DocRefNo")
 private String docRefNo;

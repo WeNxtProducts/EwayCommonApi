@@ -22,11 +22,11 @@ import lombok.Setter;
 @AllArgsConstructor
 public class WarrantyRes {
 
-@JsonProperty("WarrantyId")
-private String warrantyId;
+@JsonProperty("SubId")
+private String subId;
 
-@JsonProperty("WarrantyDesc")
-private String warrantyDesc;
+@JsonProperty("SubIdDesc")
+private String subIdDesc;
 
 @JsonProperty("DocRefNo")
 private String docRefNo;
