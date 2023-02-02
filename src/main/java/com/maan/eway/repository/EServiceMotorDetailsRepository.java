@@ -60,6 +60,10 @@ public interface EServiceMotorDetailsRepository  extends JpaRepository<EserviceM
 	EserviceMotorDetails findByRequestReferenceNoAndQuoteNoAndProductIdAndCompanyId(String requestReferenceNo,
 			String quoteNo, String productId, String companyId);
 
+	List<EserviceMotorDetails> findByRequestReferenceNoAndProductId(String requestReferenceNo, String productId);
+
+	
+
 
 
 }

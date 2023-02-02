@@ -1,8 +1,7 @@
 package com.maan.eway.notification.req;
 
 import java.util.Date;
-
-import javax.persistence.Column;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.notification.req.statealgo.NotificationStatus;
@@ -52,7 +51,7 @@ public class Notification {
 	@JsonProperty("Broker")
 	private Broker broker;
 	@JsonProperty("UnderWriter")
-	private UnderWriter underwriter;
+	private List<UnderWriter> underwriters;
 	@JsonProperty("CompanyId")
 	private String     companyid;
 	@JsonProperty("ProductId")

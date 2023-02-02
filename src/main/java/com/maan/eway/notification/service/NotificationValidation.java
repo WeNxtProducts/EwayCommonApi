@@ -17,7 +17,7 @@ public class NotificationValidation {
 	public List<Error> pushValidation(Notification n) {
 		Broker broker = n.getBroker();
 		Customer customer = n.getCustomer();
-		UnderWriter underwriter = n.getUnderwriter();
+		//UnderWriter underwriter = n.getUnderwriter();
 		List<Error>  errors = new ArrayList<Error>();
 		    
 		if(StringUtils.isBlank(broker.getBrokerCompanyName())) {
@@ -71,7 +71,7 @@ public class NotificationValidation {
 			errors.add(new Error("04","CustomerPhoneNo" , "Please Select CustomerPhoneNo" ));
 		}
 		
-		if(StringUtils.isBlank(underwriter.getUwMailid())) {
+	/*	if(StringUtils.isBlank(underwriter.getUwMailid())) {
 			errors.add(new Error("04","UwMailid" , "Please Select UwMailid" ));
 		}
 		
@@ -90,7 +90,7 @@ public class NotificationValidation {
 		}
 		if(underwriter.getUwPhoneNo()==null) {
 			errors.add(new Error("04","UwPhoneNo" , "Please Select UwPhoneNo" ));
-		}
+		}*/
 		
 		if(n.getCompanyid()==null) {
 			errors.add(new Error("04","CompanyId" , "Please Select CompanyId" ));
