@@ -454,7 +454,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			Predicate n6 = cb.or(n3,n5);
 			Predicate n7 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n8 = cb.equal(b.get("status"), "R");
-			Predicate n9 = cb.or(n7,n8);
+			Predicate n9 = cb.or(n4,n8);
 				
 			query.where(n1,n2,n9,n6,n7).orderBy(orderList);
 			
