@@ -19,4 +19,7 @@ public class TermsAndConditionListReq {
 	@JsonProperty("SubIdDesc")
 	private String subIdDesc;
 	
+	@JsonProperty("DocRefNo")
+	private String docRefNo;
+	
 }

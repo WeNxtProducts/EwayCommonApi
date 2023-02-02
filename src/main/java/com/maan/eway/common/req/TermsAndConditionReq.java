@@ -8,6 +8,10 @@ import lombok.Data;
 public class TermsAndConditionReq {
 
 	
+	@JsonProperty("QuoteNo")
+	private String quoteNo;
+	
+	
 	@JsonProperty("InsuranceId")
 	private String companyId;
 	

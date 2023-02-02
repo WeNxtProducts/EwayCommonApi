@@ -49,5 +49,10 @@ public interface TermsAndConditionRepository  extends JpaRepository<TermsAndCond
 
 
 
+	List<TermsAndCondition> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndQuoteNoOrderBySnoAsc(
+			String companyId, String branchCode, String productId, String sectionId, String quoteNo);
+
+
+
 
 }

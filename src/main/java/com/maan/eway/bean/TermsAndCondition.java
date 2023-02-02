@@ -134,7 +134,10 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="AMEND_ID", nullable=false)
     private Integer  amendId;
-        
+
+    @Column(name="DOC_REF_NO",length=100)
+    private String  docRefNo;
+
 }
 
 
