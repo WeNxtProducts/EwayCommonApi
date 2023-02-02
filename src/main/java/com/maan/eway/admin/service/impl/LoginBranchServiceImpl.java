@@ -783,8 +783,14 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 		// TODO Auto-generated method stub
 		List<LoginBranchRes> resList = new ArrayList<LoginBranchRes>();
 		try {
+			List<LoginBranchMaster> datas = new ArrayList<LoginBranchMaster>();
 			
-		List<LoginBranchMaster> datas = loginBrokerRepo.findByLoginIdOrderByBranchCodeAsc(req.getLoginId());
+		if(StringUtils.isNotBlank(req.getBranchCode()) ) {
+			 datas = loginBrokerRepo.findByLoginIdAndBranchCodeOrderByBranchCodeAsc(req.getLoginId() , req.getBranchCode() );	
+		} else {
+			 datas = loginBrokerRepo.findByLoginIdOrderByBranchCodeAsc(req.getLoginId());
+		}
+		
 			
 		if(datas.size()>0 && datas!=null) {
 		for(LoginBranchMaster data : datas) {
