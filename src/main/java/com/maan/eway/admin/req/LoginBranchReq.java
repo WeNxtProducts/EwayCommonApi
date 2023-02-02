@@ -10,4 +10,8 @@ public class LoginBranchReq {
 	
 	@JsonProperty("LoginId")
 	private String loginId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
 }
