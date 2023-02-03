@@ -46,4 +46,6 @@ public interface EserviceBuildingDetailsRepository  extends JpaRepository<Eservi
 
 	EserviceBuildingDetails findByQuoteNo(String quoteNo);
 
+	List<EserviceBuildingDetails> findByRequestReferenceNoAndProductId(String requestReferenceNo, String productId);
+
 }
