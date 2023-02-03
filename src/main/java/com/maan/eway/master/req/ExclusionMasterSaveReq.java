@@ -57,6 +57,8 @@ public class ExclusionMasterSaveReq {
 	@JsonProperty("DocRefNo")
 	private String docRefNo;
 
+	@JsonProperty("TypeId")
+	private String typeId;
 	
 	//	
 //	@JsonProperty("PolicyType")

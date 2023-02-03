@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.ClausesMaster;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.WarrantyMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ClausesChangeStatusReq;
@@ -46,6 +47,7 @@ import com.maan.eway.master.req.WarrantyMasterReq;
 import com.maan.eway.master.res.ClausesMasterRes;
 import com.maan.eway.master.service.ClausesMasterService;
 import com.maan.eway.repository.ClausesMasterRepository;
+import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 @Service
@@ -56,6 +58,9 @@ public class ClausesMasterServiceImpl implements ClausesMasterService {
 	
 	@Autowired
 	private ClausesMasterRepository repo;
+
+	@Autowired
+	private ListItemValueRepository listrepo;
 
 	Gson json = new Gson();
 	
@@ -159,6 +164,10 @@ public class ClausesMasterServiceImpl implements ClausesMasterService {
 //				errorList.add(new Error("16", "PolicyType", "Please Enter PolicyType"));
 //			}
 			
+			if (StringUtils.isBlank(req.getTypeId())) {
+				errorList.add(new Error("16", "TypeId", "Please Enter TypeId"));
+			}
+			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
@@ -228,6 +237,9 @@ public class ClausesMasterServiceImpl implements ClausesMasterService {
 		Date entryDate = null;
 		String createdBy ="";
 		Integer clausesId = 0;
+		
+		ListItemValue data = listrepo.findByItemTypeAndItemCode("TERMS_TYPE",req.getTypeId());
+		
 		if(StringUtils.isBlank(req.getClausesId())) {
 			Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getProductId(),req.getSectionId());
 			clausesId = totalCount+1;
@@ -302,7 +314,8 @@ public class ClausesMasterServiceImpl implements ClausesMasterService {
 		saveData.setProductId(req.getProductId()==null?"99999": req.getProductId());
 		saveData.setSectionId(req.getSectionId()==null?"99999": req.getSectionId());
 //		saveData.setPolicyType(req.getPolicyType()==null?"" : "99999");
-		
+		saveData.setTypeId(req.getTypeId());
+		saveData.setTypeDesc(data.getItemValue());
 		repo.saveAndFlush(saveData);	
 		log.info("Saved Details is --> " + json.toJson(saveData));	
 		}

@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.ExclusionMaster;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.WarRateMaster;
 import com.maan.eway.bean.WarrantyMaster;
 import com.maan.eway.error.Error;
@@ -48,6 +49,7 @@ import com.maan.eway.master.res.ClausesMasterRes;
 import com.maan.eway.master.res.WarRateMasterRes;
 import com.maan.eway.master.res.WarrantyMasterRes;
 import com.maan.eway.master.service.WarrantyMasterService;
+import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.WarrantyMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -59,6 +61,9 @@ public class WarrantyMasterServiceImpl implements WarrantyMasterService {
 	
 	@Autowired
 	private WarrantyMasterRepository repo;
+
+	@Autowired
+	private ListItemValueRepository listrepo;
 
 	Gson json = new Gson();
 	
@@ -148,6 +153,9 @@ public class WarrantyMasterServiceImpl implements WarrantyMasterService {
 			if (StringUtils.isBlank(req.getSectionId())) {
 				errorList.add(new Error("11", "SectionId", "Please Enter SectionId"));
 			}
+			if (StringUtils.isBlank(req.getTypeId())) {
+				errorList.add(new Error("12", "TypeId", "Please Enter TypeId"));
+			}
 //			if (StringUtils.isBlank(req.getPolicyType())) {
 //				errorList.add(new Error("12", "PolicyType", "Please Enter PolicyType"));
 //			}
@@ -223,6 +231,8 @@ public class WarrantyMasterServiceImpl implements WarrantyMasterService {
 		Date entryDate = null;
 		String createdBy ="";
 		Integer warrantyId = 0;
+		
+		ListItemValue data = listrepo.findByItemTypeAndItemCode("TERMS_TYPE",req.getTypeId());
 		if(StringUtils.isBlank(req.getWarrantyId())) {
 			Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getProductId(),req.getSectionId());
 			warrantyId = totalCount+1;
@@ -295,7 +305,8 @@ public class WarrantyMasterServiceImpl implements WarrantyMasterService {
 		saveData.setProductId(req.getProductId()==null? "99999":req.getProductId());
 		saveData.setSectionId(req.getSectionId()==null? "99999" : req.getSectionId());
 //		saveData.setPolicyType(req.getPolicyType()==null?"" : "99999");
-		
+		saveData.setTypeDesc(data.getItemValue());
+		saveData.setTypeId(req.getTypeId());
 		repo.saveAndFlush(saveData);	
 		log.info("Saved Details is --> " + json.toJson(saveData));	
 	}

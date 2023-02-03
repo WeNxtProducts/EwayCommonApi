@@ -1067,5 +1067,20 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	
+
+	@PostMapping("/termstype")
+	public ResponseEntity<CommonRes> termsType(@RequestBody LovDropDownReq req) {
+		CommonRes data = new CommonRes();
+		List<DropDownRes> res = dropDownService.termsType(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
 }

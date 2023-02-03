@@ -133,4 +133,6 @@ public interface DropDownService {
 
 	List<DropDownRes> quoteStatus(LovDropDownReq req);
 
+	List<DropDownRes> termsType(LovDropDownReq req);
+
 }

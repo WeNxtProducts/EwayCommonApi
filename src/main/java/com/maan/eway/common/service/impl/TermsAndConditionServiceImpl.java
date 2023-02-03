@@ -108,7 +108,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 		try {
 			List<WarrantyRes> warrantyresList = new ArrayList<WarrantyRes>();
-			List<WarrateRes> warrateresList = new ArrayList<WarrateRes>();
+		//	List<WarrateRes> warrateresList = new ArrayList<WarrateRes>();
 			List<ExclusionRes> exclusionresList = new ArrayList<ExclusionRes>();
 			List<ClausesRes> clausesresList = new ArrayList<ClausesRes>();
 
@@ -134,7 +134,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 								res.setWarrantyRes(warrantyresList);
 
 							}
-							if (data.getId() == 5) {
+			/*				if (data.getId() == 5) {
 								WarrateRes warrateres = new WarrateRes();
 
 								warrateres.setSubId(data.getSubId().toString());
@@ -145,7 +145,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 								res.setWarrateRes(warrateresList);
 
 							}
-							if (data.getId() == 6) {
+				*/			if (data.getId() == 6) {
 								ClausesRes clausesres = new ClausesRes();
 
 								clausesres.setSubId(data.getSubId().toString());
@@ -173,7 +173,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 				else {
 					List<WarrantyMaster> warrantyList = new ArrayList<WarrantyMaster>();
-					List<WarRateMaster> warrateList = new ArrayList<WarRateMaster>();
+				//	List<WarRateMaster> warrateList = new ArrayList<WarRateMaster>();
 					List<ExclusionMaster> exclusionList = new ArrayList<ExclusionMaster>();
 					List<ClausesMaster> clausesList = new ArrayList<ClausesMaster>();
 
@@ -182,10 +182,11 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarrantyIdAscAmendIdDesc(
 										req.getCompanyId(), req.getBranchCode(), req.getProductId(),
 										req.getSectionId());
-						warrateList = warRepo
+					/*	warrateList = warRepo
 								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarRateIdAscAmendIdDesc(
 										req.getCompanyId(), req.getBranchCode(), req.getProductId(),
 										req.getSectionId());
+					*/
 						exclusionList = exclusionRepo
 								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByExclusionIdAscAmendIdDesc(
 										req.getCompanyId(), req.getBranchCode(), req.getProductId(),
@@ -198,9 +199,10 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						warrantyList = warrantyRepo
 								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarrantyIdAscAmendIdDesc(
 										req.getCompanyId(), "99999", req.getProductId(), req.getSectionId());
-						warrateList = warRepo
+					/*	warrateList = warRepo
 								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarRateIdAscAmendIdDesc(
 										req.getCompanyId(), "99999", req.getProductId(), req.getSectionId());
+						*/
 						exclusionList = exclusionRepo
 								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByExclusionIdAscAmendIdDesc(
 										req.getCompanyId(), "99999", req.getProductId(), req.getSectionId());
@@ -212,8 +214,9 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 					warrantyList = warrantyList.stream().filter(distinctByKey(o -> Arrays.asList(o.getWarrantyId())))
 							.collect(Collectors.toList());
-					warrateList = warrateList.stream().filter(distinctByKey(o -> Arrays.asList(o.getWarRateId())))
+				/*	warrateList = warrateList.stream().filter(distinctByKey(o -> Arrays.asList(o.getWarRateId())))
 							.collect(Collectors.toList());
+				*/
 					exclusionList = exclusionList.stream().filter(distinctByKey(o -> Arrays.asList(o.getExclusionId())))
 							.collect(Collectors.toList());
 					clausesList = clausesList.stream().filter(distinctByKey(o -> Arrays.asList(o.getClausesId())))
@@ -236,7 +239,8 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 							res.setWarrantyRes(warrantyresList);
 						}
 					}
-					if (warrateresList.size() > 0 && !warrateresList.isEmpty()) {
+				
+			/*		if (warrateresList.size() > 0 && !warrateresList.isEmpty()) {
 						for (WarRateMaster warrates : warrateList) {
 							WarrateRes warrateres = new WarrateRes();
 
@@ -249,6 +253,8 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 						}
 					}
+				
+				*/
 					if (clausesList.size() > 0 && !clausesList.isEmpty()) {
 
 						for (ClausesMaster clauses : clausesList) {
@@ -281,7 +287,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 			else {
 				List<WarrantyMaster> warrantyList = new ArrayList<WarrantyMaster>();
-				List<WarRateMaster> warrateList = new ArrayList<WarRateMaster>();
+			//	List<WarRateMaster> warrateList = new ArrayList<WarRateMaster>();
 				List<ExclusionMaster> exclusionList = new ArrayList<ExclusionMaster>();
 				List<ClausesMaster> clausesList = new ArrayList<ClausesMaster>();
 
@@ -289,9 +295,10 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 					warrantyList = warrantyRepo
 							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarrantyIdAscAmendIdDesc(
 									req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId());
-					warrateList = warRepo
+			/*		warrateList = warRepo
 							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarRateIdAscAmendIdDesc(
 									req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId());
+			*/	
 					exclusionList = exclusionRepo
 							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByExclusionIdAscAmendIdDesc(
 									req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId());
@@ -302,9 +309,10 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 					warrantyList = warrantyRepo
 							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarrantyIdAscAmendIdDesc(
 									req.getCompanyId(), "99999", req.getProductId(), req.getSectionId());
-					warrateList = warRepo
+			/*		warrateList = warRepo
 							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarRateIdAscAmendIdDesc(
 									req.getCompanyId(), "99999", req.getProductId(), req.getSectionId());
+			*/	
 					exclusionList = exclusionRepo
 							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByExclusionIdAscAmendIdDesc(
 									req.getCompanyId(), "99999", req.getProductId(), req.getSectionId());
@@ -316,8 +324,9 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 				warrantyList = warrantyList.stream().filter(distinctByKey(o -> Arrays.asList(o.getWarrantyId())))
 						.collect(Collectors.toList());
-				warrateList = warrateList.stream().filter(distinctByKey(o -> Arrays.asList(o.getWarRateId())))
+			/*	warrateList = warrateList.stream().filter(distinctByKey(o -> Arrays.asList(o.getWarRateId())))
 						.collect(Collectors.toList());
+			*/
 				exclusionList = exclusionList.stream().filter(distinctByKey(o -> Arrays.asList(o.getExclusionId())))
 						.collect(Collectors.toList());
 				clausesList = clausesList.stream().filter(distinctByKey(o -> Arrays.asList(o.getClausesId())))
@@ -340,6 +349,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						res.setWarrantyRes(warrantyresList);
 					}
 				}
+			/*
 				if (warrateresList.size() > 0 && !warrateresList.isEmpty()) {
 					for (WarRateMaster warrates : warrateList) {
 						WarrateRes warrateres = new WarrateRes();
@@ -353,6 +363,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 					}
 				}
+			*/
 				if (clausesList.size() > 0 && !clausesList.isEmpty()) {
 
 					for (ClausesMaster clauses : clausesList) {

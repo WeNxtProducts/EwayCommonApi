@@ -90,7 +90,13 @@ public class WarrantyMaster {
 	@Column(name="CORE_APP_CODE",length=20)
 	private String coreAppCode;
 	
+	@Column(name="TYPE_ID",length=20)
+	private String typeId;
+
+	@Column(name="TYPE_DESC",length=20)
+	private String typeDesc;
+
 	@Column(name="DOC_REF_NO",length=50)
 	private String docRefNo;
-	
+
 }

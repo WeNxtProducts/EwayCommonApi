@@ -69,5 +69,10 @@ public class WarrantyMasterRes {
 	@JsonProperty("DocRefNo")
 	private String docRefNo;
 	
-
+	@JsonProperty("TypeId")
+	private String typeId;
+	
+	@JsonProperty("TypeDesc")
+	private String typeDesc;
+	
 }

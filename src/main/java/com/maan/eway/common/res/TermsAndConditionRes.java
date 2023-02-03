@@ -26,13 +26,15 @@ public class TermsAndConditionRes {
 	@JsonProperty("WarrantyList")
 	private List<WarrantyRes> warrantyRes;
 
-	@JsonProperty("WarrateList")
-	private List<WarrateRes> warrateRes;
-
+	
 	@JsonProperty("ClausesList")
 	private List<ClausesRes> clausesRes;
 
 	@JsonProperty("ExclusionList")
 	private List<ExclusionRes> exclusionRes;
 
+	/*
+	@JsonProperty("WarrateList")
+	private List<WarrateRes> warrateRes;
+	*/
 }

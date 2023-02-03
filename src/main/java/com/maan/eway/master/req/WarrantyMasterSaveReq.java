@@ -65,4 +65,7 @@ public class WarrantyMasterSaveReq {
 	@JsonProperty("DocRefNo")
 	private String docRefNo;
 	
+	@JsonProperty("TypeId")
+	private String typeId;
+	
 }

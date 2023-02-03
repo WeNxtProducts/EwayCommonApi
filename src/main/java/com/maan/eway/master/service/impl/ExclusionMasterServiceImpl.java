@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.ExclusionMaster;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.WarrantyMaster;
 import com.maan.eway.common.req.ExclusionMasterDropdownReq;
 import com.maan.eway.error.Error;
@@ -48,6 +49,7 @@ import com.maan.eway.master.res.ExclusionMasterRes;
 import com.maan.eway.master.res.WarrantyMasterRes;
 import com.maan.eway.master.service.ExclusionMasterService;
 import com.maan.eway.repository.ExclusionMasterRepository;
+import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 @Service
@@ -58,6 +60,9 @@ public class ExclusionMasterServiceImpl implements ExclusionMasterService {
 	
 	@Autowired
 	private ExclusionMasterRepository repo;
+
+	@Autowired
+	private ListItemValueRepository listrepo;
 
 	Gson json = new Gson();
 	
@@ -152,6 +157,10 @@ public class ExclusionMasterServiceImpl implements ExclusionMasterService {
 //			if (StringUtils.isBlank(req.getPolicyType())) {
 //				errorList.add(new Error("12", "PolicyType", "Please Select PolicyType"));
 //			}
+			
+			if (StringUtils.isBlank(req.getTypeId())) {
+				errorList.add(new Error("12", "TypeId", "Please Select TypeId"));
+			}
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
@@ -222,6 +231,9 @@ public class ExclusionMasterServiceImpl implements ExclusionMasterService {
 		Date entryDate = null;
 		String createdBy ="";
 		Integer exclusionId = 0;
+		
+		ListItemValue data = listrepo.findByItemTypeAndItemCode("LIST_TYPE",req.getTypeId());
+		
 		if(StringUtils.isBlank(req.getExclusionId())) {
 			Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getProductId(),req.getSectionId());
 			exclusionId = totalCount+1;
@@ -291,6 +303,8 @@ public class ExclusionMasterServiceImpl implements ExclusionMasterService {
 		saveData.setUpdatedDate(new Date());
 		saveData.setAmendId(amendId);
 		saveData.setDocRefNo(req.getDocRefNo());
+		saveData.setTypeId(req.getTypeId());
+		saveData.setTypeDesc(data.getItemValue());
 		repo.saveAndFlush(saveData);	
 		log.info("Saved Details is --> " + json.toJson(saveData));	
 		}

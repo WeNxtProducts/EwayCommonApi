@@ -93,5 +93,11 @@ public class ExclusionMaster {
 
 	@Column(name="DOC_REF_NO",length=20)
 	private String docRefNo;
-	
+
+	@Column(name="TYPE_ID",length=20)
+	private String typeId;
+
+	@Column(name="TYPE_DESC",length=20)
+	private String typeDesc;
+
 }
