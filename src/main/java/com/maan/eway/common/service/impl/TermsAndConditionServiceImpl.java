@@ -118,7 +118,8 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				res.setProductId(req.getProductId());
 				res.setSectionId(req.getSectionId());
 				List<TermsAndCondition> datas = termsRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndQuoteNoOrderBySnoAsc(req.getCompanyId(),req.getBranchCode(), req.getProductId(),req.getSectionId(),req.getQuoteNo());				if(datas.size()>0 && !datas.isEmpty()) {
-				for(TermsAndCondition data : datas) {
+					if(datas.size()>0) {
+					for(TermsAndCondition data : datas) {
 					if(data.getId()==4) {
 						WarrantyRes warrantyres = new WarrantyRes();
 
@@ -164,10 +165,10 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			
 					}	
 				}
+					}
+			}
 				
-			}
 			
-			}
 			
 			else {
 			List<WarrantyMaster> warrantyList = new ArrayList<WarrantyMaster>();
@@ -265,6 +266,105 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				}
 			}
 			}
+			}
+			
+			else {
+				List<WarrantyMaster> warrantyList = new ArrayList<WarrantyMaster>();
+				List<WarRateMaster> warrateList = new ArrayList<WarRateMaster>();
+				List<ExclusionMaster> exclusionList = new ArrayList<ExclusionMaster>();
+				List<ClausesMaster> clausesList = new ArrayList<ClausesMaster>();
+
+				if (StringUtils.isNotBlank(req.getBranchCode())) {
+					warrantyList = warrantyRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarrantyIdAscAmendIdDesc(
+							req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId());
+					warrateList = warRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarRateIdAscAmendIdDesc(
+							req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId());
+					exclusionList = exclusionRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByExclusionIdAscAmendIdDesc(
+							req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId());
+					clausesList = clausesRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByClausesIdAscAmendIdDesc(
+							req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId());
+				} else {
+					warrantyList = warrantyRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarrantyIdAscAmendIdDesc(
+							req.getCompanyId(), "99999", req.getProductId(), req.getSectionId());
+					warrateList = warRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarRateIdAscAmendIdDesc(
+							req.getCompanyId(), "99999", req.getProductId(), req.getSectionId());
+					exclusionList = exclusionRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByExclusionIdAscAmendIdDesc(
+							req.getCompanyId(), "99999", req.getProductId(), req.getSectionId());
+					clausesList = clausesRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByClausesIdAscAmendIdDesc(
+							req.getCompanyId(), "99999", req.getProductId(), req.getSectionId());
+
+				}
+
+
+				warrantyList = warrantyList.stream().filter(distinctByKey(o -> Arrays.asList(o.getWarrantyId())))
+						.collect(Collectors.toList());
+				warrateList = warrateList.stream().filter(distinctByKey(o -> Arrays.asList(o.getWarRateId())))
+						.collect(Collectors.toList());
+				exclusionList = exclusionList.stream().filter(distinctByKey(o -> Arrays.asList(o.getExclusionId())))
+						.collect(Collectors.toList());
+				clausesList = clausesList.stream().filter(distinctByKey(o -> Arrays.asList(o.getClausesId())))
+						.collect(Collectors.toList());
+
+				if (warrantyList.size() > 0 && !warrantyList.isEmpty()) {
+					res.setProductId(warrantyList.get(0).getProductId());
+					res.setSectionId(warrantyList.get(0).getSectionId());
+					res.setCompanyId(warrantyList.get(0).getCompanyId());
+					res.setBranchCode(warrantyList.get(0).getBranchCode());
+
+					for (WarrantyMaster warranties : warrantyList) {
+						WarrantyRes warrantyres = new WarrantyRes();
+
+						warrantyres.setSubId(warranties.getWarrantyId().toString());
+						warrantyres.setSubIdDesc(warranties.getWarrantyDescription());
+						warrantyres.setDocRefNo(warranties.getDocRefNo());
+						warrantyres.setDocumentId("16");
+						warrantyresList.add(warrantyres);
+						res.setWarrantyRes(warrantyresList);
+					}
+				}
+				if (warrateresList.size() > 0 && !warrateresList.isEmpty()) {
+					for (WarRateMaster warrates : warrateList) {
+						WarrateRes warrateres = new WarrateRes();
+
+						warrateres.setSubId(warrates.getWarRateId().toString());
+						warrateres.setSubIdDesc(warrates.getWarRateDesc());
+						warrateres.setDocRefNo(warrates.getDocRefNo());
+						warrateres.setDocumentId("17");
+						warrateresList.add(warrateres);
+						res.setWarrateRes(warrateresList);
+						
+
+					}
+				}
+				if (clausesList.size() > 0 && !clausesList.isEmpty()) {
+
+					for (ClausesMaster clauses : clausesList) {
+						ClausesRes clausesres = new ClausesRes();
+
+						clausesres.setSubId(clauses.getClausesId().toString());
+						clausesres.setSubIdDesc(clauses.getClausesDescription());
+						clausesres.setDocRefNo(clauses.getDocRefNo());
+						clausesres.setDocumentId("18");
+						clausesresList.add(clausesres);
+						res.setClausesRes(clausesresList);
+
+					}
+				}
+				if (exclusionList.size() > 0 && !exclusionList.isEmpty()) {
+					for (ExclusionMaster exclusions : exclusionList) {
+						ExclusionRes exclusionres = new ExclusionRes();
+
+						exclusionres.setSubId(exclusions.getExclusionId().toString());
+						exclusionres.setSubIdDesc(exclusions.getExclusionDescription());
+						exclusionres.setDocRefNo(exclusions.getDocRefNo());
+						exclusionres.setDocumentId("19");
+						exclusionresList.add(exclusionres);
+						res.setExclusionRes(exclusionresList);
+
+					}
+				}				
+			}
+			
 			
 			
 		}
