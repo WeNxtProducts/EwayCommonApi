@@ -108,9 +108,12 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 		try {
 			List<WarrantyRes> warrantyresList = new ArrayList<WarrantyRes>();
-		//	List<WarrateRes> warrateresList = new ArrayList<WarrateRes>();
 			List<ExclusionRes> exclusionresList = new ArrayList<ExclusionRes>();
 			List<ClausesRes> clausesresList = new ArrayList<ClausesRes>();
+
+			List<WarrantyMaster> warrantyList = new ArrayList<WarrantyMaster>();
+			List<ExclusionMaster> exclusionList = new ArrayList<ExclusionMaster>();
+			List<ClausesMaster> clausesList = new ArrayList<ClausesMaster>();
 
 			if (StringUtils.isNotBlank(req.getQuoteNo())) {
 				res.setCompanyId(req.getCompanyId());
@@ -134,18 +137,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 								res.setWarrantyRes(warrantyresList);
 
 							}
-			/*				if (data.getId() == 5) {
-								WarrateRes warrateres = new WarrateRes();
-
-								warrateres.setSubId(data.getSubId().toString());
-								warrateres.setSubIdDesc(data.getSubIdDesc());
-								warrateres.setDocRefNo(data.getDocRefNo());
-								warrateres.setDocumentId("17");
-								warrateresList.add(warrateres);
-								res.setWarrateRes(warrateresList);
-
-							}
-				*/			if (data.getId() == 6) {
+							if (data.getId() == 6) {
 								ClausesRes clausesres = new ClausesRes();
 
 								clausesres.setSubId(data.getSubId().toString());
@@ -172,51 +164,38 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				}
 
 				else {
-					List<WarrantyMaster> warrantyList = new ArrayList<WarrantyMaster>();
-				//	List<WarRateMaster> warrateList = new ArrayList<WarRateMaster>();
-					List<ExclusionMaster> exclusionList = new ArrayList<ExclusionMaster>();
-					List<ClausesMaster> clausesList = new ArrayList<ClausesMaster>();
 
 					if (StringUtils.isNotBlank(req.getBranchCode())) {
 						warrantyList = warrantyRepo
-								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarrantyIdAscAmendIdDesc(
-										req.getCompanyId(), req.getBranchCode(), req.getProductId(),
-										req.getSectionId());
-					/*	warrateList = warRepo
-								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarRateIdAscAmendIdDesc(
-										req.getCompanyId(), req.getBranchCode(), req.getProductId(),
-										req.getSectionId());
-					*/
+								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByWarrantyIdAscAmendIdDesc(
+										req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
+										req.getTermsId());
 						exclusionList = exclusionRepo
-								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByExclusionIdAscAmendIdDesc(
-										req.getCompanyId(), req.getBranchCode(), req.getProductId(),
-										req.getSectionId());
+								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByExclusionIdAscAmendIdDesc(
+										req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
+										req.getTermsId());
 						clausesList = clausesRepo
-								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByClausesIdAscAmendIdDesc(
-										req.getCompanyId(), req.getBranchCode(), req.getProductId(),
-										req.getSectionId());
+								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByClausesIdAscAmendIdDesc(
+										req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
+										req.getTermsId());
 					} else {
 						warrantyList = warrantyRepo
-								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarrantyIdAscAmendIdDesc(
-										req.getCompanyId(), "99999", req.getProductId(), req.getSectionId());
-					/*	warrateList = warRepo
-								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarRateIdAscAmendIdDesc(
-										req.getCompanyId(), "99999", req.getProductId(), req.getSectionId());
-						*/
+								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByWarrantyIdAscAmendIdDesc(
+										req.getCompanyId(), "99999", req.getProductId(), req.getSectionId(),
+										req.getTermsId());
 						exclusionList = exclusionRepo
-								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByExclusionIdAscAmendIdDesc(
-										req.getCompanyId(), "99999", req.getProductId(), req.getSectionId());
+								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByExclusionIdAscAmendIdDesc(
+										req.getCompanyId(), "99999", req.getProductId(), req.getSectionId(),
+										req.getTermsId());
 						clausesList = clausesRepo
-								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByClausesIdAscAmendIdDesc(
-										req.getCompanyId(), "99999", req.getProductId(), req.getSectionId());
+								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByClausesIdAscAmendIdDesc(
+										req.getCompanyId(), "99999", req.getProductId(), req.getSectionId(),
+										req.getTermsId());
 
 					}
 
 					warrantyList = warrantyList.stream().filter(distinctByKey(o -> Arrays.asList(o.getWarrantyId())))
 							.collect(Collectors.toList());
-				/*	warrateList = warrateList.stream().filter(distinctByKey(o -> Arrays.asList(o.getWarRateId())))
-							.collect(Collectors.toList());
-				*/
 					exclusionList = exclusionList.stream().filter(distinctByKey(o -> Arrays.asList(o.getExclusionId())))
 							.collect(Collectors.toList());
 					clausesList = clausesList.stream().filter(distinctByKey(o -> Arrays.asList(o.getClausesId())))
@@ -239,22 +218,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 							res.setWarrantyRes(warrantyresList);
 						}
 					}
-				
-			/*		if (warrateresList.size() > 0 && !warrateresList.isEmpty()) {
-						for (WarRateMaster warrates : warrateList) {
-							WarrateRes warrateres = new WarrateRes();
 
-							warrateres.setSubId(warrates.getWarRateId().toString());
-							warrateres.setSubIdDesc(warrates.getWarRateDesc());
-							warrateres.setDocRefNo(warrates.getDocRefNo());
-							warrateres.setDocumentId("17");
-							warrateresList.add(warrateres);
-							res.setWarrateRes(warrateresList);
-
-						}
-					}
-				
-				*/
 					if (clausesList.size() > 0 && !clausesList.isEmpty()) {
 
 						for (ClausesMaster clauses : clausesList) {
@@ -286,47 +250,38 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			}
 
 			else {
-				List<WarrantyMaster> warrantyList = new ArrayList<WarrantyMaster>();
-			//	List<WarRateMaster> warrateList = new ArrayList<WarRateMaster>();
-				List<ExclusionMaster> exclusionList = new ArrayList<ExclusionMaster>();
-				List<ClausesMaster> clausesList = new ArrayList<ClausesMaster>();
 
 				if (StringUtils.isNotBlank(req.getBranchCode())) {
 					warrantyList = warrantyRepo
-							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarrantyIdAscAmendIdDesc(
-									req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId());
-			/*		warrateList = warRepo
-							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarRateIdAscAmendIdDesc(
-									req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId());
-			*/	
+							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByWarrantyIdAscAmendIdDesc(
+									req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
+									req.getTermsId());
 					exclusionList = exclusionRepo
-							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByExclusionIdAscAmendIdDesc(
-									req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId());
+							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByExclusionIdAscAmendIdDesc(
+									req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
+									req.getTermsId());
 					clausesList = clausesRepo
-							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByClausesIdAscAmendIdDesc(
-									req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId());
+							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByClausesIdAscAmendIdDesc(
+									req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
+									req.getTermsId());
 				} else {
 					warrantyList = warrantyRepo
-							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarrantyIdAscAmendIdDesc(
-									req.getCompanyId(), "99999", req.getProductId(), req.getSectionId());
-			/*		warrateList = warRepo
-							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarRateIdAscAmendIdDesc(
-									req.getCompanyId(), "99999", req.getProductId(), req.getSectionId());
-			*/	
+							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByWarrantyIdAscAmendIdDesc(
+									req.getCompanyId(), "99999", req.getProductId(), req.getSectionId(),
+									req.getTermsId());
 					exclusionList = exclusionRepo
-							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByExclusionIdAscAmendIdDesc(
-									req.getCompanyId(), "99999", req.getProductId(), req.getSectionId());
+							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByExclusionIdAscAmendIdDesc(
+									req.getCompanyId(), "99999", req.getProductId(), req.getSectionId(),
+									req.getTermsId());
 					clausesList = clausesRepo
-							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByClausesIdAscAmendIdDesc(
-									req.getCompanyId(), "99999", req.getProductId(), req.getSectionId());
+							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByClausesIdAscAmendIdDesc(
+									req.getCompanyId(), "99999", req.getProductId(), req.getSectionId(),
+									req.getTermsId());
 
 				}
 
 				warrantyList = warrantyList.stream().filter(distinctByKey(o -> Arrays.asList(o.getWarrantyId())))
 						.collect(Collectors.toList());
-			/*	warrateList = warrateList.stream().filter(distinctByKey(o -> Arrays.asList(o.getWarRateId())))
-						.collect(Collectors.toList());
-			*/
 				exclusionList = exclusionList.stream().filter(distinctByKey(o -> Arrays.asList(o.getExclusionId())))
 						.collect(Collectors.toList());
 				clausesList = clausesList.stream().filter(distinctByKey(o -> Arrays.asList(o.getClausesId())))
@@ -349,21 +304,6 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						res.setWarrantyRes(warrantyresList);
 					}
 				}
-			/*
-				if (warrateresList.size() > 0 && !warrateresList.isEmpty()) {
-					for (WarRateMaster warrates : warrateList) {
-						WarrateRes warrateres = new WarrateRes();
-
-						warrateres.setSubId(warrates.getWarRateId().toString());
-						warrateres.setSubIdDesc(warrates.getWarRateDesc());
-						warrateres.setDocRefNo(warrates.getDocRefNo());
-						warrateres.setDocumentId("17");
-						warrateresList.add(warrateres);
-						res.setWarrateRes(warrateresList);
-
-					}
-				}
-			*/
 				if (clausesList.size() > 0 && !clausesList.isEmpty()) {
 
 					for (ClausesMaster clauses : clausesList) {
@@ -493,9 +433,17 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				saveData.setSno(count1 + 1);
 				saveData.setId(Integer.valueOf(req1.getId()));
 				saveData.setIdDesc(id.getItemValue());
+				saveData.setDocRefNo(req1.getDocRefNo());
+				
+				if(StringUtils.isNotBlank(req1.getSubId())) {
 				saveData.setSubId(Integer.valueOf(req1.getSubId()));
 				saveData.setSubIdDesc(req1.getSubIdDesc());
-				saveData.setDocRefNo(req1.getDocRefNo());
+				}
+				
+				else {
+					saveData.setSubId(count1 + 1);
+					saveData.setSubIdDesc(req1.getSubIdDesc());								
+				}
 				termsRepo.saveAndFlush(saveData);
 				count1++;
 			}

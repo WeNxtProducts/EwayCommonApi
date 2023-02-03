@@ -19,4 +19,7 @@ public interface WarrantyMasterRepository  extends JpaRepository<WarrantyMaster,
 	List<WarrantyMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarrantyIdAscAmendIdDesc(
 			String companyId, String branchCode, String productId, String sectionId);
 
+	List<WarrantyMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByWarrantyIdAscAmendIdDesc(
+			String companyId, String branchCode, String productId, String sectionId, String string);
+
 }

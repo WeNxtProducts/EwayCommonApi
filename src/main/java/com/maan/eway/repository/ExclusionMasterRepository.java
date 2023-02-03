@@ -19,4 +19,8 @@ public interface ExclusionMasterRepository extends JpaRepository<ExclusionMaster
 	List<ExclusionMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByExclusionIdAscAmendIdDesc(
 			String companyId, String branchCode, String productId, String sectionId);
 
+
+	List<ExclusionMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByExclusionIdAscAmendIdDesc(
+			String companyId, String branchCode, String productId, String sectionId, String string);
+
 }
