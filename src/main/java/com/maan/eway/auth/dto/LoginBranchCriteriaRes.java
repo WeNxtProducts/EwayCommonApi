@@ -33,7 +33,7 @@ public class LoginBranchCriteriaRes {
 	
 	@JsonProperty("CurrencyId")
 	private String currencyId;  
-	
+	/*
 	@JsonProperty("SourceType")
 	private String sourceType;  
 	
@@ -42,5 +42,5 @@ public class LoginBranchCriteriaRes {
 	
 	@JsonProperty("CustomerCode")
 	private String customerCode;  
-	
+	*/
 }
