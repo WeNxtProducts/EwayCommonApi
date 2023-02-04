@@ -399,7 +399,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			}
 			Long count = termsRepo.count();
 			Integer count1 = count.intValue();
-
+			Integer a =1000;
 			TermsAndCondition saveData = new TermsAndCondition();
 			List<InsuranceCompanyMaster> insurance = inuranceRepo
 					.findTopByCompanyIdOrderByAmendIdDesc(req.getCompanyId());
@@ -441,7 +441,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				}
 				
 				else {
-					saveData.setSubId(count1 + 1);
+					saveData.setSubId(a++);
 					saveData.setSubIdDesc(req1.getSubIdDesc());								
 				}
 				termsRepo.saveAndFlush(saveData);
