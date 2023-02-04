@@ -161,6 +161,9 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 					loginRes.setSubUserType(login.getSubUserType());
 					loginRes.setOaCode(login.getOaCode().toString());
 					loginRes.setBankCode(login.getBankCode());
+					
+					
+					
 				} else {
 					loginRes = setTokenResponse(session,login,mslogin);
 				}
@@ -226,6 +229,9 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 					branchRes.setCompanyName(getBranch.getCompanyName() );
 			//		branchRes.setCompanyLogo(getBranch.getCompanyLogo() );
 					branchRes.setCurrencyId(getBranch.getCurrencyId() );;
+					branchRes.setSourceType(getBranch.getSourceType());
+					branchRes.setDepartmentCode(getBranch.getDepartmentCode());
+					branchRes.setCustomerCode(getBranch.getCustomerCode());
 				}
 				
 				// Attached Branch
@@ -241,6 +247,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 						branchRes.setAttachedCompanyName(getAttachedBranch.getCompanyName() );
 				//		branchRes.setAttachedCompanyLogo(getAttachedBranch.getCompanyLogo() );
 						branchRes.setCurrencyId(getAttachedBranch.getCurrencyId() );
+					
 					}
 				}
 				loginBranchRes.add(branchRes);
