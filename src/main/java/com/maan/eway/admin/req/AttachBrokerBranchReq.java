@@ -68,4 +68,15 @@ public class AttachBrokerBranchReq {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
+	
+	
+	@JsonProperty("SourceType")
+	private String sourceType;
+	
+	@JsonProperty("DepartmentCode")
+	private String departmentCode;
+	
+	@JsonProperty("CustomerCode")
+	private String customerCode;
+	
 }

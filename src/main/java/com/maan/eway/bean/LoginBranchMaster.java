@@ -135,6 +135,16 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="SUB_USER_TYPE", nullable=false, length=20)
     private String     subUserType ;
+    
+    @Column(name="SOURCE_TYPE", length=100)
+    private String    sourceType;
+
+    @Column(name="DEPARTMENT_CODE", length=100)
+    private String   departmentCode;
+    
+    @Column(name="CUSTOMER_CODE", length=100)
+    private String    customerCode;
+
 }
 
 

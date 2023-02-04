@@ -502,7 +502,7 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			save.setAttachedCompany(
 					StringUtils.isBlank(req.getAttachedCompany()) ? req.getCompanyId() : req.getAttachedCompany());
 			save.setBrokerBranchCode(brokerBranchCode);
-			;
+			
 			save.setUserType(loginData.getUserType());
 			save.setSubUserType(loginData.getSubUserType());
 			loginBrokerRepo.save(save);
