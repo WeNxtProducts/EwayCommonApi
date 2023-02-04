@@ -618,8 +618,17 @@ public class CommonGridServiceImpl implements CommonGridService {
 
 				Random rand = new Random();
 				int random = rand.nextInt(90) + 10;
-				refNo = "Mot-" + idf.format(new Date()) + random;
+				if(req.getProductId().equalsIgnoreCase("13")){
+					refNo = "PAC-" + idf.format(new Date()) + random;
+				}
 
+				else if(req.getProductId().equalsIgnoreCase("14")){
+					refNo = "EMP-" + idf.format(new Date()) + random;
+				}
+				
+				else if(req.getProductId().equalsIgnoreCase("15")){
+					refNo = "WOC-" + idf.format(new Date()) + random;
+				}
 				if (list.size() > 0) {
 					for (Tuple data : list) {
 		
