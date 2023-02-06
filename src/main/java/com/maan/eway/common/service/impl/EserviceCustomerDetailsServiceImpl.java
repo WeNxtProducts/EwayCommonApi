@@ -428,12 +428,6 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				if (StringUtils.isBlank(req.getMobileCode1())) {
 					errorList.add(new Error("46", "MobileCode1", "Please Select MobileCode1 "));
 				}
-				if (StringUtils.isBlank(req.getMobileCode2())) {
-					errorList.add(new Error("47", "MobileCode2", "Please Select MobileCode2 "));
-				}
-				if (StringUtils.isBlank(req.getMobileCode3())) {
-					errorList.add(new Error("48", "MobileCode3", "Please Select MobileCode3 "));
-				}
 				List<EserviceCustomerDetails> list = new ArrayList<EserviceCustomerDetails>();
 				if ((StringUtils.isNotBlank(req.getAddress1())) && (StringUtils.isNotBlank(req.getAddress2()))
 						&& (StringUtils.isNotBlank(req.getBranchCode()))
