@@ -515,8 +515,9 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 			Predicate a4 = cb.equal(ocpm1.get("uwQuestionId"),b.get("uwQuestionId"));
+			Predicate a5 = cb.equal(ocpm1.get("productId"),b.get("productId"));
 
-			amendId.where(a1, a2,a3,a4);
+			amendId.where(a1, a2,a3,a4,a5);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
