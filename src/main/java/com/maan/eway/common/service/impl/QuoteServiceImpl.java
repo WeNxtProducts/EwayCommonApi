@@ -1546,6 +1546,8 @@ public class QuoteServiceImpl implements QuoteService {
 				eserMotRepo.saveAndFlush(mot);
 				
 			}
+			
+			
 		} catch ( Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
