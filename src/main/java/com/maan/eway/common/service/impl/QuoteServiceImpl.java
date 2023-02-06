@@ -1082,17 +1082,17 @@ public class QuoteServiceImpl implements QuoteService {
 			if( req.getProductId().equalsIgnoreCase(motorProductId)) {
 				updateRes = motorReferalUpdate(req);
 				//Mail Push Notification
-				updateRes= motorPushNotification(req);
+				 motorPushNotification(req);
 				
 			} else if( req.getProductId().equalsIgnoreCase(travelProductId)) {
 				updateRes = travelReferalUpdate(req);
 				//Mail Push Notification
-				//updateRes= travelPushNotification(req);
+				 travelPushNotification(req);
 				
 			} else if( req.getProductId().equalsIgnoreCase(buildingProductId)) {
 				updateRes = buildingReferalUpdate(req);
 				//Mail Push Notification
-				//updateRes= buildingPushNotification(req);
+				 buildingPushNotification(req);
 			}  else {
 				updateRes = commonReferalUpdate(req);
 			} 
@@ -2096,7 +2096,8 @@ public class QuoteServiceImpl implements QuoteService {
 			
 			if( req.getProductId().equalsIgnoreCase(motorProductId)) {
 				updateRes = updateMotorPorductStatus(req) ;
-				updateRes= motorPushNotification(req);
+				// Notification Trigger
+				motorPushNotification(req);
 				
 			} else if( req.getProductId().equalsIgnoreCase(travelProductId)) {
 				updateRes = updateTravelPorductStatus(req);

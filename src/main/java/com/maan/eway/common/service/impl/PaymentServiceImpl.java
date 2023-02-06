@@ -1287,8 +1287,9 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentdetailrepo.saveAndFlush(paymentDetail);
 			log.info("Saved Details " + json.toJson(paymentDetail));
 			
-			QuoteUpdateRes notificationTigger=notificationTrigger(data.getProductId(),req.getQuoteNo(),paymentStatus);
-			log.info("Pushed Succesfully " + json.toJson(notificationTigger));
+			// Notification Trigger
+			notificationTrigger(data.getProductId(),req.getQuoteNo(),paymentStatus);
+			
 			
 			// Update Payment Info
 			paymentInfo.setValidityDate(validateDate);
