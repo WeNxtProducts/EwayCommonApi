@@ -2250,15 +2250,7 @@ public class QuoteServiceImpl implements QuoteService {
 				//Company Info
 				n.setCompanyid(cusRefNo.get(0).getCompanyId());
 				n.setCompanyName(cusRefNo.get(0).getCompanyName());
-				
-				
-				if("R".equalsIgnoreCase(req.getStatus())){
-					n.setNotifTemplatename("Referal");
-				}else if("Y".equalsIgnoreCase(req.getStatus())){
-					n.setNotifTemplatename("Approved");
-				}else if("P".equalsIgnoreCase(req.getStatus())){
-					n.setNotifTemplatename("Pending");
-				}
+		
 				//Common Info
 				n.setBroker(brokerReq);
 				n.setCustomer(cusReq);
@@ -2266,7 +2258,7 @@ public class QuoteServiceImpl implements QuoteService {
 				n.setNotifDescription("");
 				n.setNotifPriority(0);
 				n.setNotifPushedStatus(NotificationStatus.PENDING);
-			//	n.setNotifTemplatename("Referral Pending");
+				n.setNotifTemplatename("Referral Notification");
 				n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
 				n.setProductid(Integer.valueOf(req.getProductId()));
 				n.setProductName("Motor");
