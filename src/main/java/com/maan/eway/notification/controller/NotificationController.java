@@ -1,5 +1,7 @@
 package com.maan.eway.notification.controller;
 
+import java.time.Instant;
+
 import org.jobrunr.scheduling.JobScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,19 +39,18 @@ public class NotificationController {
 	
 	
 	@Autowired
-	private JobScheduler jobs;
+	private JobScheduler jobScheduler;
 	
 	@Autowired
 	private JobRunrService ourservice;
-	
- public void x() {
+	@PostMapping("/startsched")
+	public void x() { 
+	 //jobs.schedule(Instant.now().plusSeconds(60), 
+		//	 ourservice -> o);
+			
+	 //jobs.schedule<JobRunrService>(Instant.now().plusSeconds(60),()-> x.jobProcess());
 	 
-	 /*jobs.schedule(Instant.now().plusSeconds(60), 
-			 ourservice -> o);
-			 */
-	/* jobs.schedule<JobRunrService>(Instant.now().plusSeconds(60), 
-			  x -> x.jobProcess());*/
-	 
+	 jobScheduler.schedule(Instant.now(), () ->ourservice.jobProcess());
 	 /*
 	  * @Inject
 private JobRequestScheduler jobRequestScheduler;

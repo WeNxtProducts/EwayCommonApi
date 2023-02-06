@@ -109,7 +109,7 @@ private static final long serialVersionUID = 1L;
     private String     createdBy ;
 
     @Column(name="SMTP_PORT")
-    private Double     smtpPort ;
+    private Long     smtpPort ;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )

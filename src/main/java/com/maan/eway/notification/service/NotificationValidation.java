@@ -17,7 +17,7 @@ public class NotificationValidation {
 	public List<Error> pushValidation(Notification n) {
 		Broker broker = n.getBroker();
 		Customer customer = n.getCustomer();
-		//UnderWriter underwriter = n.getUnderwriter();
+		List<UnderWriter> underwriters = n.getUnderwriters();
 		List<Error>  errors = new ArrayList<Error>();
 		    
 		if(StringUtils.isBlank(broker.getBrokerCompanyName())) {
@@ -71,27 +71,28 @@ public class NotificationValidation {
 			errors.add(new Error("04","CustomerPhoneNo" , "Please Select CustomerPhoneNo" ));
 		}
 		
-	/*	if(StringUtils.isBlank(underwriter.getUwMailid())) {
-			errors.add(new Error("04","UwMailid" , "Please Select UwMailid" ));
+		for(UnderWriter underwriter: underwriters) {
+			if(StringUtils.isBlank(underwriter.getUwMailid())) {
+				errors.add(new Error("04","UwMailid" , "Please Select UwMailid" ));
+			}
+
+			if(StringUtils.isBlank(underwriter.getUwName())) {
+				errors.add(new Error("04","UwName" , "Please Select UwName" ));
+			}
+
+			if(underwriter.getUwMessengerCode()==null) {
+				errors.add(new Error("04","UwMessengerCode" , "Please Select UwMessengerCode" ));
+			}
+			if(underwriter.getUwMessengerPhone()==null) {
+				errors.add(new Error("04","UwMessengerPhone" , "Please Select UwMessengerPhone" ));
+			}
+			if(underwriter.getUwPhonecode()==null) {
+				errors.add(new Error("04","UwPhonecode" , "Please Select UwPhonecode" ));
+			}
+			if(underwriter.getUwPhoneNo()==null) {
+				errors.add(new Error("04","UwPhoneNo" , "Please Select UwPhoneNo" ));
+			} 
 		}
-		
-		if(StringUtils.isBlank(underwriter.getUwName())) {
-			errors.add(new Error("04","UwName" , "Please Select UwName" ));
-		}
-		
-		if(underwriter.getUwMessengerCode()==null) {
-			errors.add(new Error("04","UwMessengerCode" , "Please Select UwMessengerCode" ));
-		}
-		if(underwriter.getUwMessengerPhone()==null) {
-			errors.add(new Error("04","UwMessengerPhone" , "Please Select UwMessengerPhone" ));
-		}
-		if(underwriter.getUwPhonecode()==null) {
-			errors.add(new Error("04","UwPhonecode" , "Please Select UwPhonecode" ));
-		}
-		if(underwriter.getUwPhoneNo()==null) {
-			errors.add(new Error("04","UwPhoneNo" , "Please Select UwPhoneNo" ));
-		}*/
-		
 		if(n.getCompanyid()==null) {
 			errors.add(new Error("04","CompanyId" , "Please Select CompanyId" ));
 		}
