@@ -23,4 +23,6 @@ public class Endorsment {
 	private String branchCode;
 	@JsonProperty("ProductId")
 	private String productId;
+	@JsonProperty("EndtType")
+	private String endtType;
 }
