@@ -539,14 +539,16 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			list = result.getResultList();
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getUwQuestionId()))).collect(Collectors.toList());
 			list.sort(Comparator.comparing(UWQuestionsMaster :: getUwQuestionDesc ));
-			
+			if(list!=null &&list.size()>0) {
 			res = mapper.map(list.get(0), UwQuestionMasterRes.class);
 			res.setUwQuestionId(list.get(0).getUwQuestionId().toString());
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 			res.setCoreAppCode(list.get(0).getCoreAppCode());
-			} catch (Exception e) {
+			}
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
 			return null;
