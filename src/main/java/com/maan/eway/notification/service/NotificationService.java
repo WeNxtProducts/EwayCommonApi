@@ -24,10 +24,10 @@ public class NotificationService {
 	
 	
 	
-	
+	/*
 	@Autowired
 	private JobScheduler jobScheduler;
-	
+	*/
 	public CommonRes pushNotification(Notification n) {
 		
 		

@@ -1,5 +1,6 @@
 package com.maan.eway.notification.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -73,6 +74,9 @@ public class PushedStateChange implements  Function<Tuple,List<Object>>{
 	private Object getValue(Tuple t, String fieldNameString) {
 		 try {
 			Object o=(Object) t.get(fieldNameString);
+			if (o instanceof BigDecimal) {
+				return o.toString();
+			}
 			return o;
 		} catch (Exception e) {
 			e.printStackTrace();

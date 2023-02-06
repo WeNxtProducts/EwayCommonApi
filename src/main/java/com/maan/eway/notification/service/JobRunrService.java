@@ -1,6 +1,7 @@
 package com.maan.eway.notification.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,6 +42,8 @@ public class JobRunrService {
 	
 	@Autowired
 	private NotifTransactionDetailsRepository notRepo;
+	@Autowired
+	MailJob job;
 	
 	@Job(name = "The sample job with variable %0", retries = 2)
 	public void jobProcess() {
@@ -50,7 +53,8 @@ public class JobRunrService {
 			Pageable secondPageWithFiveElements = PageRequest.of(1, 500);
 			
 			List<List<Object>> collect =null;
-			List<NotifTransactionDetails> transDetails= notRepo.findByNotifPushedStatus("P",secondPageWithFiveElements);
+			Date d=new Date();
+			List<NotifTransactionDetails> transDetails= notRepo.findByNotifPushedStatusAndNotifcationPushDateLessThanEqualAndNotifcationEndDateGreaterThanEqual("P",d,d);
 			transDetails.stream().forEach(tr-> tr.setNotifPushedStatus("Y"));
 			List<Tuple> ne = rat.loadNotificationPending();				
 			notRepo.saveAll(transDetails);
@@ -73,7 +77,7 @@ public class JobRunrService {
 								List<NotifTemplateMaster> templat = masterRepo.findByCompanyIdAndProductIdAndStatusAndNotifTemplatenameIgnoreCaseOrderByAmendIdDesc(n.get(0).getCompanyid(),Long.valueOf(n.get(0).getProductid()),"Y",n.get(0).getNotifTemplatename());
 								List<MailMaster> mailc = mailRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(n.get(0).getCompanyid(),"99999","Y");						
 								PushedStateChange p=new PushedStateChange(templat.get(0),mailc.get(0));					
-								collect = ne.stream().map(p).filter(d->d!=null).collect(Collectors.toList());					
+								collect = ne.stream().map(p).filter(dd->dd!=null).collect(Collectors.toList());					
 								List<Mail> totalMailJob=new ArrayList<Mail>();
 								List<Sms> totalSmSJob=new ArrayList<Sms>();
 								List<Messenger> totalMessnJob=new ArrayList<Messenger>();
@@ -94,7 +98,7 @@ public class JobRunrService {
 										}
 									}
 									if(!totalMailJob.isEmpty()) {
-										MailJob job=new MailJob();
+										
 										totalMailJob.stream().forEach(job);
 									}
 									

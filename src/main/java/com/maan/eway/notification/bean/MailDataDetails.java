@@ -51,7 +51,7 @@ private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="MAIL_TRAN_ID", nullable=false)
     private Long       mailTranId ;
 
