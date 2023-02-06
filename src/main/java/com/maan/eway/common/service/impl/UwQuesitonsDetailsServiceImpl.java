@@ -137,8 +137,9 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			uwRepo.delete(saveData);	
 			saveData = dozerMapper.map(data,UwQuestionsDetails.class);
 			saveData.setEntryDate(da.get().getEntryDate());		
-			saveData.setStatus(da.get().getStatus());
 			saveData.setUpdatedDate(new Date());			
+			saveData.setStatus(da.get().getStatus());
+			
 			res.setResponse("Updated Successfully");
 
 			saveData1 = dozerMapper.map(data,UwQuestionsDetailsArch.class);
@@ -157,8 +158,20 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			saveData.setEntryDate(new Date());
 			saveData.setStatus("Y");
 			saveData.setUpdatedDate(data.getUpdatedDate());
+			
 			res.setResponse("Inserted Successfully");
+			
 			}
+			saveData.setStatus(StringUtils.isNotBlank(data.getStatus())? data.getStatus() : "Y" );
+			if(StringUtils.isNotBlank(data.getStatus()) && data.getStatus().equalsIgnoreCase("R")) {
+				saveData.setIsReferral("Y");
+				
+			}
+			else {
+				saveData.setIsReferral("N");							
+			}
+			
+			
 			uwRepo.save(saveData);				
 			res.setSuccessId(data.getRequestReferenceNo());			
 			}

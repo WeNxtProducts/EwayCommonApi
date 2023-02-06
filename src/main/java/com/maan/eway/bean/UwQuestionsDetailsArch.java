@@ -106,6 +106,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_BY", length=100)
     private String     updatedBy ;
 
+    @Column(name="IS_REFERRAL", length=20)
+    private String     isReferral;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 
