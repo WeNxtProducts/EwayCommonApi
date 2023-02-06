@@ -655,8 +655,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			Date entryDate = null;
 			String createdBy = "";
 			String custRefNo = "";
-
-			if (StringUtils.isBlank(req.getCustomerReferenceNo())) {
+        
+        if (StringUtils.isBlank(req.getCustomerReferenceNo())) {
 				// Save
 				entryDate = new Date();
 				createdBy = req.getCreatedBy();
@@ -697,7 +697,13 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			String language = getListItem (req.getCompanyId() , req.getBranchCode() ,"LANGUAGE",req.getLanguage());//listRepo.findByItemTypeAndItemCode("LANGUAGE", req.getLanguage());
 			String policyHolderType = getListItem (req.getCompanyId() , req.getBranchCode() ,"POLICY_HOLDER_TYPE",req.getPolicyHolderType());//listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_TYPE",	req.getPolicyHolderType());
 			String policyHolderTypeId = getListItem (req.getCompanyId() , req.getBranchCode() ,"POLICY_HOLDER_ID_TYPE",req.getPolicyHolderTypeid());// listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_ID_TYPE", req.getPolicyHolderTypeid());
+			
+	        ListItemValue mobiledesc1 = listRepo.findByItemTypeAndItemCode("MOBILE_CODE",req.getMobileCode1());
+	        ListItemValue mobiledesc2 = listRepo.findByItemTypeAndItemCode("MOBILE_CODE",req.getMobileCode2());
+	        ListItemValue mobiledesc3 = listRepo.findByItemTypeAndItemCode("MOBILE_CODE",req.getMobileCode3());
 
+			
+			
 			if (StringUtils.isNotBlank(req.getBusinessType())) {
 				String businessType =  getListItem (req.getCompanyId() , req.getBranchCode() ,"BUSINESS_TYPE",req.getBusinessType());//listRepo.findByItemTypeAndItemCode("BUSINESS_TYPE", req.getBusinessType());
 				saveData.setBusinessTypeDesc(businessType);
@@ -713,7 +719,13 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setIdType(req.getPolicyHolderTypeid());
 			saveData.setIdTypeDesc(policyHolderTypeId);
 			saveData.setAge(age);
-
+			saveData.setMobileCodeDesc1(mobiledesc1.getItemValue());
+			saveData.setMobileCodeDesc2(mobiledesc2.getItemValue());
+			saveData.setMobileCodeDesc3(mobiledesc3.getItemValue());
+			saveData.setMobileCode1(req.getMobileCode1());
+			saveData.setMobileCode2(req.getMobileCode2());
+			saveData.setMobileCode3(req.getMobileCode3());
+			
 			if((StringUtils.isNotBlank(req.getNationality()))&&(StringUtils.isNotBlank(req.getStateCode()))){
 			List<StateMaster> stateCityNames = getStateAndCityName(req.getNationality(), req.getStateCode());
 			saveData.setStateName(stateCityNames.get(0).getStateName() == null ? "" : stateCityNames.get(0).getStateName().toString());
@@ -949,7 +961,13 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		try {
 			EserviceCustomerDetails data = repository.findByCustomerReferenceNo(req.getCustomerReferenceNo());
 			res = dozerMapper.map(data, CustomerDetailsGetRes.class);
-
+			res.setMobileCodeDesc1(data.getMobileCodeDesc1());
+			res.setMobileCodeDesc2(data.getMobileCodeDesc2());
+			res.setMobileCodeDesc3(data.getMobileCodeDesc3());
+			res.setMobileCode1(data.getMobileCode1());
+			res.setMobileCode2(data.getMobileCode2());
+			res.setMobileCode3(data.getMobileCode3());
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -984,6 +1002,13 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			for (EserviceCustomerDetails data : datas) {
 				CustomerDetailsGetRes res = new CustomerDetailsGetRes();
 				res = dozerMapper.map(data, CustomerDetailsGetRes.class);
+				res.setMobileCodeDesc1(data.getMobileCodeDesc1());
+				res.setMobileCodeDesc2(data.getMobileCodeDesc2());
+				res.setMobileCodeDesc3(data.getMobileCodeDesc3());
+				res.setMobileCode1(data.getMobileCode1());
+				res.setMobileCode2(data.getMobileCode2());
+				res.setMobileCode3(data.getMobileCode3());
+				
 				resList.add(res);
 			}
 
@@ -1096,6 +1121,13 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			for (EserviceCustomerDetails data : datas) {
 				CustomerDetailsGetRes res = new CustomerDetailsGetRes();
 				res = dozerMapper.map(data, CustomerDetailsGetRes.class);
+				res.setMobileCodeDesc1(data.getMobileCodeDesc1());
+				res.setMobileCodeDesc2(data.getMobileCodeDesc2());
+				res.setMobileCodeDesc3(data.getMobileCodeDesc3());
+				res.setMobileCode1(data.getMobileCode1());
+				res.setMobileCode2(data.getMobileCode2());
+				res.setMobileCode3(data.getMobileCode3());
+				
 				resList.add(res);
 			}
 
