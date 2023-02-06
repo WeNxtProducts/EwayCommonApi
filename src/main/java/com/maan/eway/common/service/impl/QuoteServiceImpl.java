@@ -1165,14 +1165,7 @@ public class QuoteServiceImpl implements QuoteService {
 			//Company Info
 			n.setCompanyid(cusRefNo.get(0).getCompanyId());
 			n.setCompanyName(cusRefNo.get(0).getCompanyName());
-			
-			if("RA".equalsIgnoreCase(req.getStatus())){
-				n.setNotifTemplatename("Referal Approved");
-			}else if("RP".equalsIgnoreCase(req.getStatus())){
-				n.setNotifTemplatename("Referal Pending");
-			}else if("RR".equalsIgnoreCase(req.getStatus())){
-				n.setNotifTemplatename("Referal Reject");
-			}
+		
 			//Common Info
 			n.setBroker(brokerReq);
 			n.setCustomer(cusReq);
@@ -1180,7 +1173,7 @@ public class QuoteServiceImpl implements QuoteService {
 			n.setNotifDescription("");
 			n.setNotifPriority(0);
 			n.setNotifPushedStatus(NotificationStatus.PENDING);
-			n.setNotifTemplatename("Referral Pending");
+			n.setNotifTemplatename("Referral Notification");
 			n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
 			n.setProductid(Integer.valueOf(req.getProductId()));
 			n.setProductName("Motor");
@@ -2251,6 +2244,14 @@ public class QuoteServiceImpl implements QuoteService {
 				n.setCompanyid(cusRefNo.get(0).getCompanyId());
 				n.setCompanyName(cusRefNo.get(0).getCompanyName());
 		
+				
+				if("RA".equalsIgnoreCase(req.getStatus())){
+					n.setNotifTemplatename("Referal Approved");
+				}else if("RP".equalsIgnoreCase(req.getStatus())){
+					n.setNotifTemplatename("Referal Pending");
+				}else if("RR".equalsIgnoreCase(req.getStatus())){
+					n.setNotifTemplatename("Referal Reject");
+				}
 				//Common Info
 				n.setBroker(brokerReq);
 				n.setCustomer(cusReq);
@@ -2258,7 +2259,7 @@ public class QuoteServiceImpl implements QuoteService {
 				n.setNotifDescription("");
 				n.setNotifPriority(0);
 				n.setNotifPushedStatus(NotificationStatus.PENDING);
-				n.setNotifTemplatename("Referral Notification");
+			//	n.setNotifTemplatename("Referral Notification");
 				n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
 				n.setProductid(Integer.valueOf(req.getProductId()));
 				n.setProductName("Motor");
