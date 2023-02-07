@@ -1116,7 +1116,7 @@ public class QuoteServiceImpl implements QuoteService {
 					.collect(Collectors.toList());
 
 			String loginId = "";
-			if (cusRefNo.get(0).getApplicationId().equalsIgnoreCase("1")) {
+			if (cusRefNo.get(0).getApplicationId().equalsIgnoreCase("1")||cusRefNo.get(0).getApplicationId().equalsIgnoreCase("01")) {
 				loginId = cusRefNo.get(0).getLoginId();
 			} else {
 				loginId = cusRefNo.get(0).getApplicationId();
@@ -1192,7 +1192,7 @@ public class QuoteServiceImpl implements QuoteService {
 
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+ 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
 			return null;
 		}
@@ -1261,19 +1261,13 @@ public class QuoteServiceImpl implements QuoteService {
 
 			// Common Info
 			
-			if("RA".equalsIgnoreCase(req.getStatus())){
-				n.setNotifTemplatename("Referal Approved");
-			}else if("RP".equalsIgnoreCase(req.getStatus())){
-				n.setNotifTemplatename("Referal Pending");
-			}else if("RR".equalsIgnoreCase(req.getStatus())){
-				n.setNotifTemplatename("Referal Reject");
-			}
 			n.setBroker(brokerReq);
 			n.setCustomer(cusReq);
 			n.setNotifcationDate(new Date());
 			n.setNotifDescription("");
 			n.setNotifPriority(0);
 			n.setNotifPushedStatus(NotificationStatus.PENDING);
+			n.setNotifTemplatename("Referal Notification");
 			n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
 			n.setProductid(5);
 			n.setProductName("Travel");
@@ -1372,7 +1366,7 @@ public class QuoteServiceImpl implements QuoteService {
 			n.setNotifDescription("");
 			n.setNotifPriority(0);
 			n.setNotifPushedStatus(NotificationStatus.PENDING);
-			n.setNotifTemplatename("Referral Pending");
+			n.setNotifTemplatename("Referal Notification");
 			n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
 			n.setProductid(5);
 			n.setProductName("Motor");
@@ -1397,6 +1391,7 @@ public class QuoteServiceImpl implements QuoteService {
 		}
 		return updateRes;
 	}
+	
 	
 	private List<Tuple> getUnderWriterDetails(String productId,String companyId,String branchCode,String loginId) {
 		List<Tuple> list = new ArrayList<Tuple>();
@@ -2092,7 +2087,7 @@ public class QuoteServiceImpl implements QuoteService {
 			if( req.getProductId().equalsIgnoreCase(motorProductId)) {
 				updateRes = updateMotorPorductStatus(req) ;
 				// Notification Trigger
-				motorPushNotification(req);
+				motorNotiReferralStatus(req);
 				
 			} else if( req.getProductId().equalsIgnoreCase(travelProductId)) {
 				updateRes = updateTravelPorductStatus(req);
@@ -2185,7 +2180,7 @@ public class QuoteServiceImpl implements QuoteService {
 	       return res ;
 	 }
 	 
-	 private QuoteUpdateRes motorPushNotification(UpdateQuoteStatusReq req) {
+	 private QuoteUpdateRes motorNotiReferralStatus(UpdateQuoteStatusReq req) {
 			QuoteUpdateRes updateRes = new QuoteUpdateRes();
 			try {
 				List<EserviceMotorDetails> cusRefNo = eserMotRepo.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
@@ -2259,7 +2254,6 @@ public class QuoteServiceImpl implements QuoteService {
 				n.setNotifDescription("");
 				n.setNotifPriority(0);
 				n.setNotifPushedStatus(NotificationStatus.PENDING);
-			//	n.setNotifTemplatename("Referral Notification");
 				n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
 				n.setProductid(Integer.valueOf(req.getProductId()));
 				n.setProductName("Motor");
