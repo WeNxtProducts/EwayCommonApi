@@ -425,6 +425,13 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				if (StringUtils.isBlank(req.getStateCode())) {
 					errorList.add(new Error("45", "StateCode", "Please Enter StateCode "));
 				}
+				if (StringUtils.isBlank(req.getMobileCode1())) {
+					errorList.add(new Error("46", "MobileCode1", "Please Select MobileCode1 "));
+				}
+				
+				if (StringUtils.isBlank(req.getWhatsappCode())) {
+					errorList.add(new Error("47", "WhatsappCode", "Please Select WhatsappCode "));
+				}
 				
 				List<EserviceCustomerDetails> list = new ArrayList<EserviceCustomerDetails>();
 				if ((StringUtils.isNotBlank(req.getAddress1())) && (StringUtils.isNotBlank(req.getAddress2()))
@@ -655,8 +662,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			Date entryDate = null;
 			String createdBy = "";
 			String custRefNo = "";
-
-			if (StringUtils.isBlank(req.getCustomerReferenceNo())) {
+        
+        if (StringUtils.isBlank(req.getCustomerReferenceNo())) {
 				// Save
 				entryDate = new Date();
 				createdBy = req.getCreatedBy();
@@ -697,7 +704,28 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			String language = getListItem (req.getCompanyId() , req.getBranchCode() ,"LANGUAGE",req.getLanguage());//listRepo.findByItemTypeAndItemCode("LANGUAGE", req.getLanguage());
 			String policyHolderType = getListItem (req.getCompanyId() , req.getBranchCode() ,"POLICY_HOLDER_TYPE",req.getPolicyHolderType());//listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_TYPE",	req.getPolicyHolderType());
 			String policyHolderTypeId = getListItem (req.getCompanyId() , req.getBranchCode() ,"POLICY_HOLDER_ID_TYPE",req.getPolicyHolderTypeid());// listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_ID_TYPE", req.getPolicyHolderTypeid());
+			
+			if(StringUtils.isNotBlank(req.getMobileCode1())){		        
+	        ListItemValue mobiledesc1 = listRepo.findByItemTypeAndItemCode("MOBILE_CODE",req.getMobileCode1());
+			saveData.setMobileCodeDesc1(mobiledesc1.getItemValue());
 
+			}
+	        if(StringUtils.isNotBlank(req.getMobileCode2())){
+	        ListItemValue mobiledesc2 = listRepo.findByItemTypeAndItemCode("MOBILE_CODE",req.getMobileCode2());
+			saveData.setMobileCodeDesc2(mobiledesc2.getItemValue());
+
+	        }
+	        if(StringUtils.isNotBlank(req.getMobileCode3())){		        
+	        ListItemValue mobiledesc3 = listRepo.findByItemTypeAndItemCode("MOBILE_CODE",req.getMobileCode3());
+			saveData.setMobileCodeDesc3(mobiledesc3.getItemValue());
+
+	        }
+	        if(StringUtils.isNotBlank(req.getWhatsappCode())){		        
+	        ListItemValue whatsappCode = listRepo.findByItemTypeAndItemCode("MOBILE_CODE",req.getWhatsappCode());
+			saveData.setWhatsappCodeDesc(whatsappCode.getItemValue());
+
+	        }			
+			
 			if (StringUtils.isNotBlank(req.getBusinessType())) {
 				String businessType =  getListItem (req.getCompanyId() , req.getBranchCode() ,"BUSINESS_TYPE",req.getBusinessType());//listRepo.findByItemTypeAndItemCode("BUSINESS_TYPE", req.getBusinessType());
 				saveData.setBusinessTypeDesc(businessType);
@@ -713,7 +741,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setIdType(req.getPolicyHolderTypeid());
 			saveData.setIdTypeDesc(policyHolderTypeId);
 			saveData.setAge(age);
-
+			saveData.setMobileCode1(req.getMobileCode1());
+			saveData.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
+			saveData.setMobileCode3(req.getMobileCode3()==null?"":req.getMobileCode3());
+			saveData.setWhatsappCode(req.getWhatsappCode());
+					
 			if((StringUtils.isNotBlank(req.getNationality()))&&(StringUtils.isNotBlank(req.getStateCode()))){
 			List<StateMaster> stateCityNames = getStateAndCityName(req.getNationality(), req.getStateCode());
 			saveData.setStateName(stateCityNames.get(0).getStateName() == null ? "" : stateCityNames.get(0).getStateName().toString());
@@ -949,7 +981,13 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		try {
 			EserviceCustomerDetails data = repository.findByCustomerReferenceNo(req.getCustomerReferenceNo());
 			res = dozerMapper.map(data, CustomerDetailsGetRes.class);
-
+			res.setMobileCodeDesc1(data.getMobileCodeDesc1()==null?"":data.getMobileCodeDesc1());
+			res.setMobileCodeDesc2(data.getMobileCodeDesc2()==null?"":data.getMobileCodeDesc2());
+			res.setMobileCodeDesc3(data.getMobileCodeDesc3()==null?"":data.getMobileCodeDesc3());
+			res.setMobileCode1(data.getMobileCode1()==null?"":data.getMobileCode1());
+			res.setMobileCode2(data.getMobileCode2()==null?"":data.getMobileCode2());
+			res.setMobileCode3(data.getMobileCode3()==null?"":data.getMobileCode3());
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -984,6 +1022,16 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			for (EserviceCustomerDetails data : datas) {
 				CustomerDetailsGetRes res = new CustomerDetailsGetRes();
 				res = dozerMapper.map(data, CustomerDetailsGetRes.class);
+				res.setMobileCodeDesc1(data.getMobileCodeDesc1()==null?"":data.getMobileCodeDesc1());
+				res.setMobileCodeDesc2(data.getMobileCodeDesc2()==null?"":data.getMobileCodeDesc2());
+				res.setMobileCodeDesc3(data.getMobileCodeDesc3()==null?"":data.getMobileCodeDesc3());
+				res.setMobileCode1(data.getMobileCode1()==null?"":data.getMobileCode1());
+				res.setMobileCode2(data.getMobileCode2()==null?"":data.getMobileCode2());
+				res.setMobileCode3(data.getMobileCode3()==null?"":data.getMobileCode3());
+				res.setWhatsappCode(data.getWhatsappCode()==null?"":data.getWhatsappCode());
+				res.setWhatsappDesc(data.getWhatsappCodeDesc()==null?"":data.getWhatsappCodeDesc());
+				res.setWhatsappNo(data.getWhatsappNo()==null?"":data.getWhatsappNo());
+												
 				resList.add(res);
 			}
 
@@ -1096,6 +1144,16 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			for (EserviceCustomerDetails data : datas) {
 				CustomerDetailsGetRes res = new CustomerDetailsGetRes();
 				res = dozerMapper.map(data, CustomerDetailsGetRes.class);
+				res.setMobileCodeDesc1(data.getMobileCodeDesc1()==null?"":data.getMobileCodeDesc1());
+				res.setMobileCodeDesc2(data.getMobileCodeDesc2()==null?"":data.getMobileCodeDesc2());
+				res.setMobileCodeDesc3(data.getMobileCodeDesc3()==null?"":data.getMobileCodeDesc3());
+				res.setMobileCode1(data.getMobileCode1()==null?"":data.getMobileCode1());
+				res.setMobileCode2(data.getMobileCode2()==null?"":data.getMobileCode2());
+				res.setMobileCode3(data.getMobileCode3()==null?"":data.getMobileCode3());
+				res.setWhatsappCode(data.getWhatsappCode()==null?"":data.getWhatsappCode());
+				res.setWhatsappDesc(data.getWhatsappCodeDesc()==null?"":data.getWhatsappCodeDesc());
+				res.setWhatsappNo(data.getWhatsappNo()==null?"":data.getWhatsappNo());
+												
 				resList.add(res);
 			}
 

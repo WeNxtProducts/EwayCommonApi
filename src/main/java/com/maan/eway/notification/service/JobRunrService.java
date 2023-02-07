@@ -1,6 +1,7 @@
 package com.maan.eway.notification.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,78 +42,82 @@ public class JobRunrService {
 	
 	@Autowired
 	private NotifTransactionDetailsRepository notRepo;
+	@Autowired
+	MailJob job;
 	
 	@Job(name = "The sample job with variable %0", retries = 2)
 	public void jobProcess() {
-		 
-		 
-		
-			Pageable secondPageWithFiveElements = PageRequest.of(1, 500);
-			
-			List<List<Object>> collect =null;
-			List<NotifTransactionDetails> transDetails= notRepo.findByNotifPushedStatus("P",secondPageWithFiveElements);
+
+
+
+		Pageable secondPageWithFiveElements = PageRequest.of(1, 500);
+
+		List<List<Object>> collect =null;
+		Date d=new Date();
+		List<NotifTransactionDetails> transDetails= notRepo.findByNotifPushedStatusAndNotifcationPushDateLessThanEqualAndNotifcationEndDateGreaterThanEqual("P",d,d);
+		if(transDetails.size()>0) {
 			transDetails.stream().forEach(tr-> tr.setNotifPushedStatus("Y"));
 			List<Tuple> ne = rat.loadNotificationPending();				
 			notRepo.saveAll(transDetails);
-			
+
 			Map<String, Map<Integer, Map<String, List<NotifTransactionDetails>>>> groups = transDetails.stream().collect(Collectors.groupingBy(NotifTransactionDetails::getCompanyid,
 					Collectors.groupingBy(NotifTransactionDetails::getProductid,
 							Collectors.groupingBy(NotifTransactionDetails::getNotifTemplatename))));
-			
-			
-			
+
+
+
 			synchronized (transDetails) {
-				
-					for (Entry<String, Map<Integer, Map<String, List<NotifTransactionDetails>>>> g : groups.entrySet()){
-						Map<Integer, Map<String, List<NotifTransactionDetails>>> h = g.getValue();
-						for (Entry<Integer, Map<String, List<NotifTransactionDetails>>> h1 : h.entrySet()) {
-							Map<String, List<NotifTransactionDetails>> h2 = h1.getValue();
-							for (Entry<String, List<NotifTransactionDetails>> h3 : h2.entrySet()) {
-								 
-								List<NotifTransactionDetails> n=h3.getValue();
-								List<NotifTemplateMaster> templat = masterRepo.findByCompanyIdAndProductIdAndStatusAndNotifTemplatenameIgnoreCaseOrderByAmendIdDesc(n.get(0).getCompanyid(),Long.valueOf(n.get(0).getProductid()),"Y",n.get(0).getNotifTemplatename());
-								List<MailMaster> mailc = mailRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(n.get(0).getCompanyid(),"99999","Y");						
-								PushedStateChange p=new PushedStateChange(templat.get(0),mailc.get(0));					
-								collect = ne.stream().map(p).filter(d->d!=null).collect(Collectors.toList());					
-								List<Mail> totalMailJob=new ArrayList<Mail>();
-								List<Sms> totalSmSJob=new ArrayList<Sms>();
-								List<Messenger> totalMessnJob=new ArrayList<Messenger>();
-								
-								if(!collect.isEmpty()) {
-									for (List<Object> list : collect) {
-										//totalJob.addAll(list);
-										for (Object o:list) {
-											
-											 if(o instanceof Mail) {
-												 totalMailJob.add((Mail) o);
-											 }else if(o instanceof Sms) {
-												 totalSmSJob.add((Sms) o);
-											 }else if(o instanceof Messenger) {
-												 totalMessnJob.add((Messenger) o);
-											 }
-											
+
+				for (Entry<String, Map<Integer, Map<String, List<NotifTransactionDetails>>>> g : groups.entrySet()){
+					Map<Integer, Map<String, List<NotifTransactionDetails>>> h = g.getValue();
+					for (Entry<Integer, Map<String, List<NotifTransactionDetails>>> h1 : h.entrySet()) {
+						Map<String, List<NotifTransactionDetails>> h2 = h1.getValue();
+						for (Entry<String, List<NotifTransactionDetails>> h3 : h2.entrySet()) {
+
+							List<NotifTransactionDetails> n=h3.getValue();
+							List<NotifTemplateMaster> templat = masterRepo.findByCompanyIdAndProductIdAndStatusAndNotifTemplatenameIgnoreCaseOrderByAmendIdDesc(n.get(0).getCompanyid(),Long.valueOf(n.get(0).getProductid()),"Y",n.get(0).getNotifTemplatename());
+							List<MailMaster> mailc = mailRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(n.get(0).getCompanyid(),"99999","Y");						
+							PushedStateChange p=new PushedStateChange(templat.get(0),mailc.get(0));					
+							collect = ne.stream().map(p).filter(dd->dd!=null).collect(Collectors.toList());					
+							List<Mail> totalMailJob=new ArrayList<Mail>();
+							List<Sms> totalSmSJob=new ArrayList<Sms>();
+							List<Messenger> totalMessnJob=new ArrayList<Messenger>();
+
+							if(!collect.isEmpty()) {
+								for (List<Object> list : collect) {
+									//totalJob.addAll(list);
+									for (Object o:list) {
+
+										if(o instanceof Mail) {
+											totalMailJob.add((Mail) o);
+										}else if(o instanceof Sms) {
+											totalSmSJob.add((Sms) o);
+										}else if(o instanceof Messenger) {
+											totalMessnJob.add((Messenger) o);
 										}
+
 									}
-									if(!totalMailJob.isEmpty()) {
-										MailJob job=new MailJob();
-										totalMailJob.stream().forEach(job);
-									}
-									
-									 
 								}
+								if(!totalMailJob.isEmpty()) {
+
+									totalMailJob.stream().forEach(job);
+								}
+
+
 							}
 						}
 					}
+				}
 
-				
-			 
-					    
-						
-						
-					 
+
 			}
-			
-			  
-		 
+
+
+
+
+		}
+
+
+
 	}
 }

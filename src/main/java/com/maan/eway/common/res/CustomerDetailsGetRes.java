@@ -171,4 +171,26 @@ public class CustomerDetailsGetRes {
 	
 	@JsonProperty("VrTinNo")
 	private String vrTinNo;
+
+	@JsonProperty("MobileCode1")
+	private String mobileCode1;
+	@JsonProperty("MobileCode2")
+	private String mobileCode2;
+	@JsonProperty("MobileCode3")
+	private String mobileCode3;
+
+	@JsonProperty("MobileCodeDesc1")
+	private String mobileCodeDesc1;
+	@JsonProperty("MobileCodeDesc2")
+	private String mobileCodeDesc2;
+	@JsonProperty("MobileCodeDesc3")
+	private String mobileCodeDesc3;
+
+	@JsonProperty("WhatsappCode")
+	private String whatsappCode;
+	@JsonProperty("WhatsappDesc")
+	private String whatsappDesc;
+	@JsonProperty("WhatsappNo")
+	private String whatsappNo;
+
 }

@@ -38,4 +38,7 @@ public interface ProductSectionMasterRepository  extends JpaRepository<ProductSe
 	Long countBySectionNameAndCompanyIdAndProductIdOrderByEntryDateDesc(String sectionName, String companyId,
 			Integer productId);
 
+	List<ProductSectionMaster> findByProductIdAndCompanyIdAndSectionIdAndStatusOrderByAmendIdDesc(Integer productId,
+			String companyId, Integer sectionId, String string);
+
 }

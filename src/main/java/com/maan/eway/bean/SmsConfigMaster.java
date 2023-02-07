@@ -96,25 +96,25 @@ private static final long serialVersionUID = 1L;
     @Column(name="CORE_APP_CODE", length=20)
     private String     coreAppCode ;
 
-    @Column(name="REGULATORY_CODE", nullable=false, length=20)
+    @Column(name="REGULATORY_CODE", length=20)
     private String     regulatoryCode ;
 
     @Column(name="CREATED_BY", length=100)
     private String     createdBy ;
 
-    @Column(name="UPDATED_BY", nullable=false, length=100)
+    @Column(name="UPDATED_BY", length=100)
     private String     updatedBy ;
     
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="UPDATED_DATE")
     private Date       updatedDate ;
-    
+    	
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_START", nullable=false)
+    @Column(name="EFFECTIVE_DATE_START")
     private Date       effectiveDateStart ;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EFFECTIVE_DATE_END", nullable=false)
+    @Column(name="EFFECTIVE_DATE_END")
     private Date       effectiveDateEnd ;
     //--- ENTITY LINKS ( RELATIONSHIP )
 

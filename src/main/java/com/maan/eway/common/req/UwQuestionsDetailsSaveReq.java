@@ -45,6 +45,10 @@ public class UwQuestionsDetailsSaveReq implements Serializable {
     
 	@JsonProperty("Remarks")
 	private String remarks;
+	
+	 
+	@JsonProperty("Status")
+	private String status;
 
 	@JsonProperty("CreatedBy")
 	private String createdBy;
@@ -55,5 +59,8 @@ public class UwQuestionsDetailsSaveReq implements Serializable {
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("UpdatedDate")
 	private Date updatedDate;
+
+	@JsonProperty("TextValue")
+	private String textValue;
 
 }

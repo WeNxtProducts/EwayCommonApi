@@ -84,7 +84,7 @@ public class MailJob implements Consumer<Mail> {
 				.mailTranId(null)
 				.pushedEntryDate(new Date())
 				.status(statusResponse==null?"S":"F")
-				.toEmail(statusResponse)
+				.toEmail(m.getMailTo())
 				.build();
 		mailRepo.save(mdd);
 		 

@@ -230,9 +230,10 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		
 		// Referal Returning Block
 		if( referal == true || (commonRes.getIsError()!=null && commonRes.getIsError()==true) ) {
-			 QuoteUpdateRes updateRefStatus= updateReferralStatus(req);
-			 commonRes.setCommonResponse(updateRefStatus.getResponse());
-			return  commonRes ;
+			 
+			 // Notification Trigger
+			 updateReferralStatus(req);
+			 return  commonRes ;
 	
 		} else {
 			// Thread Call Setup
@@ -404,8 +405,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				response.setCustomerId(quoteRes.getCustomerId());
 				response.setResponse("Saved SuccessFully");
 				 
-				QuoteUpdateRes updateRefStatus= updateReferralStatus(req);
-				log.info("Pushed SuccessFully " + json.toJson(updateRefStatus));
+				// Notification Trigger
+				updateReferralStatus(req);
 				// Response 
 				if ( errors !=null && errors.size()>0 ) {
 					commonRes.setCommonResponse(null);
@@ -1075,7 +1076,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					cusReq.setCustomerName(customerData.getClientName());
 					cusReq.setCustomerPhoneCode(Integer.valueOf(customerData.getMobileCodeDesc1()));
 					cusReq.setCustomerPhoneNo(new BigDecimal(customerData.getMobileNo1()));
-					cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappcodeDesc()));
+					cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappCodeDesc()));
 					cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
 				}
 

@@ -22,6 +22,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ExclusionRes {
 
+	@JsonProperty("Id")
+	private String id;
+		
+	
 	@JsonProperty("SubId")
 	private String subId;
 

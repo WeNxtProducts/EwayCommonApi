@@ -34,7 +34,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  * Description: "CustomerDetails" Repository
  */
  
- 
+ @Transactional
 public interface EServiceMotorDetailsRepository  extends JpaRepository<EserviceMotorDetails,EserviceMotorDetailsId > , JpaSpecificationExecutor<EserviceMotorDetails> {
   
 
@@ -60,6 +60,7 @@ public interface EServiceMotorDetailsRepository  extends JpaRepository<EserviceM
 	EserviceMotorDetails findByRequestReferenceNoAndQuoteNoAndProductIdAndCompanyId(String requestReferenceNo,
 			String quoteNo, String productId, String companyId);
 
+	@Transactional
 	List<EserviceMotorDetails> findByRequestReferenceNoAndProductId(String requestReferenceNo, String productId);
 
 	

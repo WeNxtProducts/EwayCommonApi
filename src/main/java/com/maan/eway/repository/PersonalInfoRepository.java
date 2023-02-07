@@ -48,6 +48,8 @@ public interface PersonalInfoRepository  extends JpaRepository<PersonalInfo,Pers
 
 	PersonalInfo findByCustomerId(String customerId);
 
+	List<PersonalInfo> findByCompanyIdAndCustomerId(String companyId, String customerId);
+
 
 
 }
