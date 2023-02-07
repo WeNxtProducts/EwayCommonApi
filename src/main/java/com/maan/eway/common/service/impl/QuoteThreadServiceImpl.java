@@ -510,8 +510,11 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							
 					if (  filterMasterReferals!=null && filterMasterReferals.size()>0 ) {
 						for ( MasterReferralDetails masRef : filterMasterReferals) {
-							referrals = StringUtils.isBlank(referrals)? masRef.getReferralDesc() : referrals +"~" +masRef.getReferralDesc() ;
-							referral = true ;
+							if(! masRef.getReferralDesc().contains("Exception")) {
+								referrals = StringUtils.isBlank(referrals)? masRef.getReferralDesc() : referrals +"~" +masRef.getReferralDesc() ;
+								referral = true ;	
+							}
+							
 						}
 					}
 					IndividualReferalReq indu = new IndividualReferalReq();
