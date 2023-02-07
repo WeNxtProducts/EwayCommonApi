@@ -236,6 +236,15 @@ private static final long serialVersionUID = 1L;
     @Column(name="MOBILE_NO_3", length=20)
     private String     mobileNo3 ;
 
+    @Column(name="WHATSAPP_CODE", length=20)
+    private String     whatsappCode ;
+    @Column(name="WHATSAPP_CODE_DESC", length=20)
+    private String     whatsappCodeDesc ;
+    @Column(name="WHATSAPP_NO", length=20)
+    private String     whatsappNo ;
+    
+
+    
     @Column(name="EMAIL_1", length=20)
     private String     email1 ;
 
@@ -252,14 +261,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="PREFERRED_NOTIFICATION", length=20)
     private String     preferredNotification ;
     
-    @Column(name="WHATSAPP_CODE", length=20)
-    private String     whatsappCode ;
-    @Column(name="WHATSAPP_CODE_DESC", length=20)
-    private String     whatsappcodeDesc ;
-    @Column(name="WHATSAPP_NO", length=20)
-    private String     whatsappNo ;
-    
-
+   
 }
 
 

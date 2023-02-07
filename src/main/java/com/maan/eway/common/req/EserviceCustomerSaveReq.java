@@ -147,6 +147,13 @@ public class EserviceCustomerSaveReq {
 	@JsonProperty("MobileCode3")
 	private String mobileCode3;
 
+
+	@JsonProperty("WhatsappCode")
+	private String whatsappCode;
+	@JsonProperty("WhatsappNo")
+	private String whatsappNo;
+
+	
 	
 	@JsonProperty("Email1")
 	private String email1;

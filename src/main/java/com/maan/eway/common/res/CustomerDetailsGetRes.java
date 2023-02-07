@@ -186,4 +186,11 @@ public class CustomerDetailsGetRes {
 	@JsonProperty("MobileCodeDesc3")
 	private String mobileCodeDesc3;
 
+	@JsonProperty("WhatsappCode")
+	private String whatsappCode;
+	@JsonProperty("WhatsappDesc")
+	private String whatsappDesc;
+	@JsonProperty("WhatsappNo")
+	private String whatsappNo;
+
 }

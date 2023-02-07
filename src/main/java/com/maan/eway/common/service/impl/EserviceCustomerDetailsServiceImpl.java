@@ -428,6 +428,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				if (StringUtils.isBlank(req.getMobileCode1())) {
 					errorList.add(new Error("46", "MobileCode1", "Please Select MobileCode1 "));
 				}
+				
+				if (StringUtils.isBlank(req.getWhatsappCode())) {
+					errorList.add(new Error("47", "WhatsappCode", "Please Select WhatsappCode "));
+				}
+				
 				List<EserviceCustomerDetails> list = new ArrayList<EserviceCustomerDetails>();
 				if ((StringUtils.isNotBlank(req.getAddress1())) && (StringUtils.isNotBlank(req.getAddress2()))
 						&& (StringUtils.isNotBlank(req.getBranchCode()))
@@ -715,7 +720,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setMobileCodeDesc3(mobiledesc3.getItemValue());
 
 	        }
-			
+	        if(StringUtils.isNotBlank(req.getWhatsappCode())){		        
+	        ListItemValue whatsappCode = listRepo.findByItemTypeAndItemCode("MOBILE_CODE",req.getWhatsappCode());
+			saveData.setWhatsappCodeDesc(whatsappCode.getItemValue());
+
+	        }			
 			
 			if (StringUtils.isNotBlank(req.getBusinessType())) {
 				String businessType =  getListItem (req.getCompanyId() , req.getBranchCode() ,"BUSINESS_TYPE",req.getBusinessType());//listRepo.findByItemTypeAndItemCode("BUSINESS_TYPE", req.getBusinessType());
@@ -735,7 +744,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setMobileCode1(req.getMobileCode1());
 			saveData.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
 			saveData.setMobileCode3(req.getMobileCode3()==null?"":req.getMobileCode3());
-			
+			saveData.setWhatsappCode(req.getWhatsappCode());
+					
 			if((StringUtils.isNotBlank(req.getNationality()))&&(StringUtils.isNotBlank(req.getStateCode()))){
 			List<StateMaster> stateCityNames = getStateAndCityName(req.getNationality(), req.getStateCode());
 			saveData.setStateName(stateCityNames.get(0).getStateName() == null ? "" : stateCityNames.get(0).getStateName().toString());
@@ -1018,7 +1028,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				res.setMobileCode1(data.getMobileCode1()==null?"":data.getMobileCode1());
 				res.setMobileCode2(data.getMobileCode2()==null?"":data.getMobileCode2());
 				res.setMobileCode3(data.getMobileCode3()==null?"":data.getMobileCode3());
-				
+				res.setWhatsappCode(data.getWhatsappCode()==null?"":data.getWhatsappCode());
+				res.setWhatsappDesc(data.getWhatsappCodeDesc()==null?"":data.getWhatsappCodeDesc());
+				res.setWhatsappNo(data.getWhatsappNo()==null?"":data.getWhatsappNo());
+												
 				resList.add(res);
 			}
 
@@ -1137,7 +1150,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				res.setMobileCode1(data.getMobileCode1()==null?"":data.getMobileCode1());
 				res.setMobileCode2(data.getMobileCode2()==null?"":data.getMobileCode2());
 				res.setMobileCode3(data.getMobileCode3()==null?"":data.getMobileCode3());
-				
+				res.setWhatsappCode(data.getWhatsappCode()==null?"":data.getWhatsappCode());
+				res.setWhatsappDesc(data.getWhatsappCodeDesc()==null?"":data.getWhatsappCodeDesc());
+				res.setWhatsappNo(data.getWhatsappNo()==null?"":data.getWhatsappNo());
+												
 				resList.add(res);
 			}
 
