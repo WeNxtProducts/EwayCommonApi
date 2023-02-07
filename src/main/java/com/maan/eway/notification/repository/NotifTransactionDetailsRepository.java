@@ -20,6 +20,7 @@ import javax.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.maan.eway.notification.bean.NotifTransactionDetails;
 /**
@@ -32,7 +33,7 @@ import com.maan.eway.notification.bean.NotifTransactionDetails;
  
  
  
-public interface NotifTransactionDetailsRepository  extends JpaRepository<NotifTransactionDetails,Integer > , JpaSpecificationExecutor<NotifTransactionDetails> {
+public interface NotifTransactionDetailsRepository  extends JpaRepository<NotifTransactionDetails,Integer > , JpaSpecificationExecutor<NotifTransactionDetails> ,PagingAndSortingRepository<NotifTransactionDetails, Integer> {
 	@Transactional
 	List<NotifTransactionDetails> findByNotifPushedStatus(String string);//, Pageable secondPageWithFiveElements);
 
@@ -40,6 +41,9 @@ public interface NotifTransactionDetailsRepository  extends JpaRepository<NotifT
 			String string, Date d, Date d2);
 
 	List<NotifTransactionDetails> findByNotifPushedStatusAndNotifcationPushDateLessThanEqualAndNotifcationEndDateGreaterThanEqual(
-			String string, Date d, Date d2);
+			String string, Date d, Date d2,Pageable paging);
+
+	List<NotifTransactionDetails> findByNotifPushedStatusAndNotifcationPushDateLessThanEqualAndNotifcationEndDateGreaterThanEqualOrderByNotifPriorityDesc(
+			String string, Date d, Date d2, Pageable pages);
 
 }

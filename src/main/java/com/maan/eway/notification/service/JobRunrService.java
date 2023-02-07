@@ -50,11 +50,11 @@ public class JobRunrService {
 
 
 
-		Pageable secondPageWithFiveElements = PageRequest.of(1, 500);
+		Pageable pages = PageRequest.of(0, 50);
 
 		List<List<Object>> collect =null;
 		Date d=new Date();
-		List<NotifTransactionDetails> transDetails= notRepo.findByNotifPushedStatusAndNotifcationPushDateLessThanEqualAndNotifcationEndDateGreaterThanEqual("P",d,d);
+		List<NotifTransactionDetails> transDetails= notRepo.findByNotifPushedStatusAndNotifcationPushDateLessThanEqualAndNotifcationEndDateGreaterThanEqualOrderByNotifPriorityDesc("P",d,d,pages);
 		if(transDetails.size()>0) {
 			transDetails.stream().forEach(tr-> tr.setNotifPushedStatus("Y"));
 			List<Tuple> ne = rat.loadNotificationPending();				
@@ -112,8 +112,8 @@ public class JobRunrService {
 
 			}
 
-
-
+			transDetails.stream().forEach(tr-> tr.setNotifPushedStatus("C"));
+			notRepo.saveAll(transDetails);
 
 		}
 

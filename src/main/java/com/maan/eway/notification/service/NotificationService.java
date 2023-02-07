@@ -3,8 +3,8 @@ package com.maan.eway.notification.service;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.jobrunr.scheduling.JobScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -66,7 +66,7 @@ public class NotificationService {
 					.otp(n.getOtp())
 					.policyNo(n.getPolicyNo())
 					.quoteNo(n.getQuoteNo()) 
-					.uwMailid(n.getUnderwriters().get(0).getUwMailid())
+					.uwMailid(n.getUnderwriters().subList(0, 5).stream().map(a -> a.getUwMailid()).collect(Collectors.joining(",")))
 					.uwMessengerCode(n.getUnderwriters().get(0).getUwMessengerCode())
 					.uwMessengerPhone(n.getUnderwriters().get(0).getUwMessengerPhone())
 					.uwName(n.getUnderwriters().get(0).getUwName())

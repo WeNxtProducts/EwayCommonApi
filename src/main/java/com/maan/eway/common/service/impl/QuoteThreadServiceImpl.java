@@ -232,6 +232,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		if( referal == true || (commonRes.getIsError()!=null && commonRes.getIsError()==true) ) {
 			 
 			 // Notification Trigger
+			req.setReferralRemarks(((ReferalResponse) commonRes.getCommonResponse()).getReferalRemarks());
 			 updateReferralStatus(req);
 			 return  commonRes ;
 	
@@ -1063,7 +1064,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				LoginUserInfo loginInfo = loginUserRepo.findByLoginId(loginId);
 				Broker brokerReq = new Broker();
 				if(loginInfo!=null) {
-				brokerReq.setBrokerCompanyName(loginInfo.getCompanyName()==null?null: loginInfo.getCompanyName());
+				brokerReq.setBrokerCompanyName(loginInfo.getCompanyName()==null?loginInfo.getUserName(): loginInfo.getCompanyName());
 				brokerReq.setBrokerMailId(loginInfo.getUserMail()==null?"":loginInfo.getUserMail());
 				brokerReq.setBrokerMessengerCode(loginInfo.getWhatsappCodeDesc()==null?null:Integer.valueOf(loginInfo.getWhatsappCodeDesc()));
 				brokerReq.setBrokerMessengerPhone(loginInfo.getWhatsappNo()==null? BigDecimal.ZERO: new BigDecimal(loginInfo.getWhatsappNo().toString()));
@@ -1110,13 +1111,13 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				n.setNotifDescription("");
 				n.setNotifPriority(0);
 				n.setNotifPushedStatus(NotificationStatus.PENDING);
-				n.setNotifTemplatename("Referral Pending");
+				n.setNotifTemplatename("Referral Notification");
 				n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
 				n.setProductid(Integer.valueOf(req.getProductId()));
 				n.setProductName("Motor");
 				n.setQuoteNo(cusRefNo.get(0).getQuoteNo().toString());
 				n.setSectionName(cusRefNo.get(0).getSectionName());
-				n.setStatusMessage("");
+				n.setStatusMessage(req.getReferralRemarks());
 				n.getTinyUrl();
 
 				// Calling pushNotification

@@ -289,7 +289,7 @@ public class RatingFactorsUtil {
 			String todayInString = DD_MM_YYYY.format(new Date());
 			String search="notifPushedStatus:P;"+todayInString+"~notifcationPushDate&notifcationEndDate";
 			SpecCriteria criteria = crservice.createCriteria(NotifTransactionDetails.class, search, "notifPriority");
-			List<Tuple> prorata = crservice.getResult(criteria, 0, 500);
+			List<Tuple> prorata = crservice.getResult(criteria, 0, 50);
 			return prorata;
 		}catch (Exception e) {
 			e.printStackTrace();	
