@@ -67,4 +67,7 @@ public class UwQuestionsDetailsRes implements Serializable {
 	@JsonProperty("IsReferral")
 	private String isReferral;
 
+	@JsonProperty("TextValue")
+	private String textValue;
+	
 }
