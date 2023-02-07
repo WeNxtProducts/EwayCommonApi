@@ -1134,9 +1134,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
 				n.setProductid(Integer.valueOf(req.getProductId()));
 				n.setProductName("Motor");
-				n.setQuoteNo(cusRefNo.get(0).getQuoteNo().toString());
+				n.setQuoteNo(StringUtils.isBlank(cusRefNo.get(0).getQuoteNo().toString())?cusRefNo.get(0).getRequestReferenceNo():cusRefNo.get(0).getQuoteNo().toString());
 				n.setSectionName(cusRefNo.get(0).getSectionName());
-				n.setStatusMessage(req.getReferralRemarks());
+				n.setStatusMessage(req.getReferralRemarks());// Referral Noti , referral app,recj
 				n.getTinyUrl();
 
 				// Calling pushNotification
