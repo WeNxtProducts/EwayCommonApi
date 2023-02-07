@@ -485,7 +485,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							List<FactorRateRequestDetails> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(veh.getVehicleId()) && o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) &&  o.getCoverId().equals(cov.getCoverId()) ).collect(Collectors.toList());	
 							userOptCovers.addAll(filterCovers);
 							
-							List<FactorRateRequestDetails> filterReferalCovers = filterCovers.stream().filter( o ->  o.getVehicleId().equals(veh.getVehicleId()) && o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&  cov.getIsReferal()!=null && cov.getIsReferal().equalsIgnoreCase("Y") ).collect(Collectors.toList());
+							List<FactorRateRequestDetails> filterReferalCovers = filterCovers.stream().filter( o ->  o.getVehicleId().equals(veh.getVehicleId()) && o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&  o.getIsReferral()!=null && o.getIsReferral().equalsIgnoreCase("Y") ).collect(Collectors.toList());
 							if(filterReferalCovers.size()>0 ) { 
 							
 								referrals = StringUtils.isBlank(referrals)? filterReferalCovers.get(0).getCoverName() : referrals +"~" +filterReferalCovers.get(0).getCoverName() ;
@@ -495,7 +495,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						} else {
 							List<FactorRateRequestDetails> filterSubCovers  = covers.stream().filter( o -> o.getVehicleId().equals(veh.getVehicleId()) &&  o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(cov.getSubCoverId()))  ).collect(Collectors.toList());
 							userOptCovers.addAll(filterSubCovers);
-							List<FactorRateRequestDetails> filterReferalSubCovers = filterSubCovers.stream().filter( o ->  o.getVehicleId().equals(veh.getVehicleId()) &&  o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&  cov.getIsReferal()!=null && cov.getIsReferal().equalsIgnoreCase("Y")  ).collect(Collectors.toList());
+							List<FactorRateRequestDetails> filterReferalSubCovers = filterSubCovers.stream().filter( o ->  o.getVehicleId().equals(veh.getVehicleId()) &&  o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&   o.getIsReferral()!=null && o.getIsReferral().equalsIgnoreCase("Y")  ).collect(Collectors.toList());
 							if(filterReferalSubCovers.size()>0  ) { 
 								referrals = StringUtils.isBlank(referrals)? filterReferalSubCovers.get(0).getCoverName() : referrals +"~" +filterReferalSubCovers.get(0).getCoverName() ;
 								referral = true ;
