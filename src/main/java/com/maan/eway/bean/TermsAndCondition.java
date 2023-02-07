@@ -93,7 +93,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="ID_DESC", length=100)
     private String     idDesc;
     
-    @Column(name="SUB_ID_DESC", length=100)
+    @Column(name="SUB_ID_DESC", length=500)
     private String     subIdDesc;
     
     
