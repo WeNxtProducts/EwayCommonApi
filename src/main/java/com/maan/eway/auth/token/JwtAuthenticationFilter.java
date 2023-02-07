@@ -112,14 +112,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			
 			if (validtoken) {
 							
-				if(userType.equalsIgnoreCase("Issuer") ) {
+				if(userType.equalsIgnoreCase("Issuer") && subUserType.equalsIgnoreCase("SuperAdmin") ) {
 					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 							userDetails, null, Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
 					authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(requestWrapper));
 					logger.info("authenticated user " + username + ", setting security context");
 					SecurityContextHolder.getContext().setAuthentication(authentication);
 					
-				} else if (userType.equalsIgnoreCase("Broker") || userType.equalsIgnoreCase("User")  ) {
+				} else if(userType.equalsIgnoreCase("Issuer") && ( subUserType.equalsIgnoreCase("high") ||subUserType.equalsIgnoreCase("both") ) ) {
+					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+							userDetails, null, Arrays.asList(new SimpleGrantedAuthority("ROLE_APPROVER")));
+					authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(requestWrapper));
+					logger.info("authenticated user " + username + ", setting security context");
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+					
+				} else if (userType.equalsIgnoreCase("Broker") || userType.equalsIgnoreCase("User") || (userType.equalsIgnoreCase("Issuer") &&  subUserType.equalsIgnoreCase("low"))   ) {
 					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 							userDetails, null, Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
 					authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(requestWrapper));
@@ -128,12 +135,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				}
 				
 				
-			} else if (validtoken) {
-				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-						userDetails, null, Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
-				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(requestWrapper));
-				logger.info("authenticated user " + username + ", setting security context");
-				SecurityContextHolder.getContext().setAuthentication(authentication);
 			}
 		}
 		chain.doFilter(requestWrapper, res);
