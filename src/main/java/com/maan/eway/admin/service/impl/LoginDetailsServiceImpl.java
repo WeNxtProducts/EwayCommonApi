@@ -88,6 +88,7 @@ import com.maan.eway.auth.dto.Menu;
 import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.CountryMaster;
+import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
@@ -98,6 +99,7 @@ import com.maan.eway.bean.MenuMaster;
 import com.maan.eway.bean.StateMaster;
 import com.maan.eway.master.req.BrokerProductReq;
 import com.maan.eway.master.req.LovDropDownReq;
+import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterArchRepository;
@@ -144,7 +146,9 @@ public class LoginDetailsServiceImpl implements LoginDetailsService {
 
 	Gson json = new Gson();
 
-
+	@Autowired
+	private InsuranceCompanyMasterRepository insuranceRepo ;
+	
 private Logger log=LogManager.getLogger(LoginDetailsServiceImpl.class);
 /*
 public LoginMasterServiceImpl(LoginMasterRepository repo) {
@@ -483,9 +487,12 @@ this.repository = repo;
 				userInfo.setCountryName(stateCityNames.get(0).get("countryName") == null ? "" :  stateCityNames.get(0).get("countryName").toString());
 			}
 				
-
-			
-			loginUserRepo.saveAndFlush(userInfo);
+		      List<InsuranceCompanyMaster> companyname=	insuranceRepo.findByCompanyIdOrderByAmendIdDesc(req.getLoginInformation().getCompanyId());			
+		      userInfo.setCompanyName(companyname.get(0).getCompanyName());
+		      
+		      
+		      
+		      loginUserRepo.saveAndFlush(userInfo);
 			
 			
 			res = saveLogin.getAgencyCode() ; 
@@ -683,6 +690,11 @@ this.repository = repo;
 				updateUser.setStateName(stateCityNames.get(0).get("stateName") == null ? "" :  stateCityNames.get(0).get("stateName").toString());
 				updateUser.setCountryName(stateCityNames.get(0).get("countryName") == null ? "" :  stateCityNames.get(0).get("countryName").toString());;
 			}
+			
+			List<InsuranceCompanyMaster> companyname=	insuranceRepo.findByCompanyIdOrderByAmendIdDesc(req.getLoginInformation().getCompanyId());			
+			updateUser.setCompanyName(companyname.get(0).getCompanyName());
+		      
+			
 			loginUserRepo.saveAndFlush(updateUser);
 			log.info( "Login User Info Updated Details ---> " + json.toJson(updateUser) );
 			
