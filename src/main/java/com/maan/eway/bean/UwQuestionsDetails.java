@@ -118,6 +118,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="IS_REFERRAL", length=5)
     private String     isReferral ;
 
+    @Column(name="TEXT_VALUE", length=100)
+    private String    textValue;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 

@@ -102,7 +102,9 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			else if (req.getBranchCode().length() > 20) {
 				error.add(new Error("12", "BranchCode", "Please Enter BranchCode within 20 Characters"+row));
 			}
-				
+			 if (req.getTextValue().length() > 100) {
+				error.add(new Error("13", "TextValue", "Please Enter TextValue within 100 Characters"+row));
+			}	
 			}
 		} catch (Exception e) {
 
@@ -139,7 +141,8 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			saveData.setEntryDate(da.get().getEntryDate());		
 			saveData.setUpdatedDate(new Date());			
 			saveData.setStatus(da.get().getStatus());
-			
+			saveData.setTextValue(da.get().getTextValue());
+			;
 			res.setResponse("Updated Successfully");
 
 			saveData1 = dozerMapper.map(data,UwQuestionsDetailsArch.class);

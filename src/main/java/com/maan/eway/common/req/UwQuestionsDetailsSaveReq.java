@@ -60,4 +60,7 @@ public class UwQuestionsDetailsSaveReq implements Serializable {
 	@JsonProperty("UpdatedDate")
 	private Date updatedDate;
 
+	@JsonProperty("TextValue")
+	private String textValue;
+
 }
