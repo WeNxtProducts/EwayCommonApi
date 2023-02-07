@@ -163,7 +163,7 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			
 			}
 			saveData.setStatus(StringUtils.isNotBlank(data.getStatus())? data.getStatus() : "Y" );
-			if(StringUtils.isNotBlank(data.getStatus()) && data.getStatus().equalsIgnoreCase("R")) {
+			if(StringUtils.isNotBlank(data.getStatus()) && data.getStatus().equalsIgnoreCase("R") && data.getValue().equalsIgnoreCase("Y")) {
 				saveData.setIsReferral("Y");
 				
 			}

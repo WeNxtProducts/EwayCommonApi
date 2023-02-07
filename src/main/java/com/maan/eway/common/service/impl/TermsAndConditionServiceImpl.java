@@ -128,7 +128,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						for (TermsAndCondition data : datas) {
 							if (data.getId() == 4) {
 								WarrantyRes warrantyres = new WarrantyRes();
-
+								warrantyres.setId(data.getId().toString());
 								warrantyres.setSubId(data.getSubId().toString());
 								warrantyres.setSubIdDesc(data.getSubIdDesc());
 								warrantyres.setDocRefNo(data.getDocRefNo());
@@ -139,7 +139,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 							}
 							if (data.getId() == 6) {
 								ClausesRes clausesres = new ClausesRes();
-
+								clausesres.setId(data.getId().toString());
 								clausesres.setSubId(data.getSubId().toString());
 								clausesres.setSubIdDesc(data.getSubIdDesc());
 								clausesres.setDocRefNo(data.getDocRefNo());
@@ -150,6 +150,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 							}
 							if (data.getId() == 7) {
 								ExclusionRes exclusionres = new ExclusionRes();
+								exclusionres.setId(data.getId().toString());
 
 								exclusionres.setSubId(data.getSubId().toString());
 								exclusionres.setSubIdDesc(data.getSubIdDesc());
@@ -209,6 +210,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 						for (WarrantyMaster warranties : warrantyList) {
 							WarrantyRes warrantyres = new WarrantyRes();
+							warrantyres.setId("4");
 
 							warrantyres.setSubId(warranties.getWarrantyId().toString());
 							warrantyres.setSubIdDesc(warranties.getWarrantyDescription());
@@ -223,6 +225,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 						for (ClausesMaster clauses : clausesList) {
 							ClausesRes clausesres = new ClausesRes();
+							clausesres.setId("6");
 
 							clausesres.setSubId(clauses.getClausesId().toString());
 							clausesres.setSubIdDesc(clauses.getClausesDescription());
@@ -236,6 +239,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 					if (exclusionList.size() > 0 && !exclusionList.isEmpty()) {
 						for (ExclusionMaster exclusions : exclusionList) {
 							ExclusionRes exclusionres = new ExclusionRes();
+							exclusionres.setId("7");
 
 							exclusionres.setSubId(exclusions.getExclusionId().toString());
 							exclusionres.setSubIdDesc(exclusions.getExclusionDescription());
@@ -295,6 +299,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 					for (WarrantyMaster warranties : warrantyList) {
 						WarrantyRes warrantyres = new WarrantyRes();
+						warrantyres.setId("4");
 
 						warrantyres.setSubId(warranties.getWarrantyId().toString());
 						warrantyres.setSubIdDesc(warranties.getWarrantyDescription());
@@ -308,6 +313,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 					for (ClausesMaster clauses : clausesList) {
 						ClausesRes clausesres = new ClausesRes();
+						clausesres.setId("6");
 
 						clausesres.setSubId(clauses.getClausesId().toString());
 						clausesres.setSubIdDesc(clauses.getClausesDescription());
@@ -321,6 +327,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				if (exclusionList.size() > 0 && !exclusionList.isEmpty()) {
 					for (ExclusionMaster exclusions : exclusionList) {
 						ExclusionRes exclusionres = new ExclusionRes();
+						exclusionres.setId("7");
 
 						exclusionres.setSubId(exclusions.getExclusionId().toString());
 						exclusionres.setSubIdDesc(exclusions.getExclusionDescription());

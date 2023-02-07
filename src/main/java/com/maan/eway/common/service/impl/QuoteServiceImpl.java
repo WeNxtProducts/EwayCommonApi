@@ -1142,7 +1142,7 @@ public class QuoteServiceImpl implements QuoteService {
 				cusReq.setCustomerName(customerData.getClientName());
 				cusReq.setCustomerPhoneCode(Integer.valueOf(customerData.getMobileCodeDesc1()));
 				cusReq.setCustomerPhoneNo(new BigDecimal(customerData.getMobileNo1()));
-				cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappcodeDesc()));
+				cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappCodeDesc()));
 				cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
 			}
 
@@ -1235,7 +1235,7 @@ public class QuoteServiceImpl implements QuoteService {
 			cusReq.setCustomerName(customerData.getClientName());
 			cusReq.setCustomerPhoneCode(Integer.valueOf(customerData.getMobileCodeDesc1()));
 			cusReq.setCustomerPhoneNo(new BigDecimal(customerData.getMobileNo1()));
-			cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappcodeDesc()));
+			cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappCodeDesc()));
 			cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
 			}
 			// UnderWriter Info
@@ -1328,7 +1328,7 @@ public class QuoteServiceImpl implements QuoteService {
 				cusReq.setCustomerName(customerData.getClientName());
 				cusReq.setCustomerPhoneCode(Integer.valueOf(customerData.getMobileCodeDesc1()));
 				cusReq.setCustomerPhoneNo(new BigDecimal(customerData.getMobileNo1()));
-				cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappcodeDesc()));
+				cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappCodeDesc()));
 				cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
 			}
 
@@ -2215,7 +2215,7 @@ public class QuoteServiceImpl implements QuoteService {
 				cusReq.setCustomerName(customerData.getClientName());
 				cusReq.setCustomerPhoneCode(Integer.valueOf(customerData.getMobileCodeDesc1()));
 				cusReq.setCustomerPhoneNo(new BigDecimal(customerData.getMobileNo1()));
-				cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappcodeDesc()));
+				cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappCodeDesc()));
 				cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
 				}
 
