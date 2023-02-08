@@ -191,13 +191,13 @@ private static final long serialVersionUID = 1L;
     @Column(name="MOBILE_NO_3", length=20)
     private String     mobileNo3 ;
 
-    @Column(name="EMAIL_1", length=20)
+    @Column(name="EMAIL_1", length=100)
     private String     email1 ;
 
-    @Column(name="EMAIL_2", length=20)
+    @Column(name="EMAIL_2", length=100)
     private String     email2 ;
 
-    @Column(name="EMAIL_3", length=20)
+    @Column(name="EMAIL_3", length=100)
     private String     email3 ;
 
     @Column(name="LANGUAGE", length=1)
