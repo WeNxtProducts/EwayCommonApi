@@ -12,6 +12,8 @@
 
 package com.maan.eway.repository;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -60,6 +62,8 @@ public interface EserviceCustomerDetailsRepository  extends JpaRepository<Eservi
 
 	Page<EserviceCustomerDetails> findByCompanyIdAndBranchCodeAndCreatedByAndStatus(Pageable paging, String comapanyId,
 			String branchCode, String createdBy, String string);
+
+	List<EserviceCustomerDetails> findByCustomerReferenceNoOrderByEntryDateDesc(String customerReferenceNo);
 	
 
 }

@@ -979,7 +979,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 
 		try {
-			EserviceCustomerDetails data = repository.findByCustomerReferenceNo(req.getCustomerReferenceNo());
+			List<EserviceCustomerDetails> datas = repository.findByCustomerReferenceNoOrderByEntryDateDesc(req.getCustomerReferenceNo());
+			for(EserviceCustomerDetails data : datas) {
 			res = dozerMapper.map(data, CustomerDetailsGetRes.class);
 			res.setMobileCodeDesc1(data.getMobileCodeDesc1()==null?"":data.getMobileCodeDesc1());
 			res.setMobileCodeDesc2(data.getMobileCodeDesc2()==null?"":data.getMobileCodeDesc2());
@@ -987,7 +988,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			res.setMobileCode1(data.getMobileCode1()==null?"":data.getMobileCode1());
 			res.setMobileCode2(data.getMobileCode2()==null?"":data.getMobileCode2());
 			res.setMobileCode3(data.getMobileCode3()==null?"":data.getMobileCode3());
-			
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
