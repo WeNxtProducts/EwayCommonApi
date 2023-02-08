@@ -1082,7 +1082,8 @@ public class QuoteServiceImpl implements QuoteService {
 			if( req.getProductId().equalsIgnoreCase(motorProductId)) {
 				updateRes = motorReferalUpdate(req);
 				//Mail Push Notification
-				 motorPushNotification(req);
+					motorPushNotification(req);
+
 				
 			} else if( req.getProductId().equalsIgnoreCase(travelProductId)) {
 				updateRes = travelReferalUpdate(req);
@@ -1108,6 +1109,7 @@ public class QuoteServiceImpl implements QuoteService {
 	
 	// --------------------------------------MOTOR UPDATE REFERRAL STATUS----------------------------------------------------------------------//	
 	private QuoteUpdateRes motorPushNotification(AdminReferalStatusReq req) {
+
 		QuoteUpdateRes updateRes = new QuoteUpdateRes();
 		try {
 			List<EserviceMotorDetails> cusRefNo = eserMotRepo.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
@@ -1138,12 +1140,12 @@ public class QuoteServiceImpl implements QuoteService {
 			EserviceCustomerDetails customerData = customerDetailsRepo.findByCustomerReferenceNo(cusRefNo.get(0).getCustomerReferenceNo());
 			Customer cusReq = new Customer();
 			if(customerData!=null) {
-				cusReq.setCustomerMailid(customerData.getEmail1());
-				cusReq.setCustomerName(customerData.getClientName());
-				cusReq.setCustomerPhoneCode(Integer.valueOf(customerData.getMobileCodeDesc1()));
-				cusReq.setCustomerPhoneNo(new BigDecimal(customerData.getMobileNo1()));
-				cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappCodeDesc()));
-				cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
+			cusReq.setCustomerMailid(customerData.getEmail1());
+			cusReq.setCustomerName(customerData.getClientName());
+			cusReq.setCustomerPhoneCode(Integer.valueOf(customerData.getMobileCodeDesc1()));
+			cusReq.setCustomerPhoneNo(new BigDecimal(customerData.getMobileNo1()));
+			cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappCodeDesc()));
+			cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
 			}
 
 			// UnderWriter Info
@@ -1165,7 +1167,18 @@ public class QuoteServiceImpl implements QuoteService {
 			//Company Info
 			n.setCompanyid(cusRefNo.get(0).getCompanyId());
 			n.setCompanyName(cusRefNo.get(0).getCompanyName());
-		
+	
+			
+			if("RA".equalsIgnoreCase(req.getStatus())){
+				n.setNotifTemplatename("Referal Approved");
+				n.setStatusMessage(req.getAdminRemarks());
+			}else if("RP".equalsIgnoreCase(req.getStatus())){
+				n.setNotifTemplatename("Referal Pending");
+				n.setStatusMessage(req.getAdminRemarks());				
+			}else if("RR".equalsIgnoreCase(req.getStatus())){
+				n.setNotifTemplatename("Referal Reject");
+				n.setStatusMessage(req.getAdminRemarks());
+			}
 			//Common Info
 			n.setBroker(brokerReq);
 			n.setCustomer(cusReq);
@@ -1173,13 +1186,12 @@ public class QuoteServiceImpl implements QuoteService {
 			n.setNotifDescription("");
 			n.setNotifPriority(0);
 			n.setNotifPushedStatus(NotificationStatus.PENDING);
-			n.setNotifTemplatename("Referral Notification");
 			n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
 			n.setProductid(Integer.valueOf(req.getProductId()));
 			n.setProductName("Motor");
 			n.setQuoteNo(cusRefNo.get(0).getQuoteNo().toString());
 			n.setSectionName(cusRefNo.get(0).getSectionName());
-			n.setStatusMessage("");
+			
 			n.getTinyUrl();
 
 			// Calling pushNotification
@@ -1192,12 +1204,14 @@ public class QuoteServiceImpl implements QuoteService {
 
 			}
 		} catch (Exception e) {
- 			e.printStackTrace();
+			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
 			return null;
 		}
 		return updateRes;
+	
 	}
+	
 
 	// --------------------------------------TRAVEL UPDATE REFERRAL STATUS----------------------------------------------------------------------//
 	private QuoteUpdateRes travelPushNotification(AdminReferalStatusReq req) {
