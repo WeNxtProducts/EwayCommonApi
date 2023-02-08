@@ -229,8 +229,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				}
 				if (StringUtils.isBlank(req.getEmail1())) {
 					errorList.add(new Error("27", "Email1", "Please Enter Email1"));
-				} else if (req.getEmail1().length() > 20) {
-					errorList.add(new Error("27", "Email1", "Please Enter Email1 within 20 Characters"));
+				} else if (req.getEmail1().length() > 100) {
+					errorList.add(new Error("27", "Email1", "Please Enter Email1 within 100 Characters"));
 				} else {
 					boolean b = isValidMail(req.getEmail1());
 					if (b == false) {
