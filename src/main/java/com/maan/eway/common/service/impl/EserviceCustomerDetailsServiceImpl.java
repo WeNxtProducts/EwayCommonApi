@@ -979,16 +979,16 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 
 		try {
-			List<EserviceCustomerDetails> datas = repository.findByCustomerReferenceNoOrderByEntryDateDesc(req.getCustomerReferenceNo());
-			for(EserviceCustomerDetails data : datas) {
-			res = dozerMapper.map(data, CustomerDetailsGetRes.class);
-			res.setMobileCodeDesc1(data.getMobileCodeDesc1()==null?"":data.getMobileCodeDesc1());
-			res.setMobileCodeDesc2(data.getMobileCodeDesc2()==null?"":data.getMobileCodeDesc2());
-			res.setMobileCodeDesc3(data.getMobileCodeDesc3()==null?"":data.getMobileCodeDesc3());
-			res.setMobileCode1(data.getMobileCode1()==null?"":data.getMobileCode1());
-			res.setMobileCode2(data.getMobileCode2()==null?"":data.getMobileCode2());
-			res.setMobileCode3(data.getMobileCode3()==null?"":data.getMobileCode3());
-			}
+			List<EserviceCustomerDetails> data = repository.findByCustomerReferenceNoOrderByEntryDateDesc(req.getCustomerReferenceNo());
+	
+			res = dozerMapper.map(data.get(0), CustomerDetailsGetRes.class);
+			res.setMobileCodeDesc1(data.get(0).getMobileCodeDesc1()==null?"":data.get(0).getMobileCodeDesc1());
+			res.setMobileCodeDesc2(data.get(0).getMobileCodeDesc2()==null?"":data.get(0).getMobileCodeDesc2());
+			res.setMobileCodeDesc3(data.get(0).getMobileCodeDesc3()==null?"":data.get(0).getMobileCodeDesc3());
+			res.setMobileCode1(data.get(0).getMobileCode1()==null?"":data.get(0).getMobileCode1());
+			res.setMobileCode2(data.get(0).getMobileCode2()==null?"":data.get(0).getMobileCode2());
+			res.setMobileCode3(data.get(0).getMobileCode3()==null?"":data.get(0).getMobileCode3());
+	
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
