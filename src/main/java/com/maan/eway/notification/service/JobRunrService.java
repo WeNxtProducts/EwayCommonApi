@@ -49,15 +49,16 @@ public class JobRunrService {
 	public void jobProcess() {
 
 
-
+		
 		Pageable pages = PageRequest.of(0, 50);
 
 		List<List<Object>> collect =null;
 		Date d=new Date();
 		List<NotifTransactionDetails> transDetails= notRepo.findByNotifPushedStatusAndNotifcationPushDateLessThanEqualAndNotifcationEndDateGreaterThanEqualOrderByNotifPriorityDesc("P",d,d,pages);
-		if(transDetails.size()>0) {
+		if(transDetails.size()>0) {		
+			try {
+			List<Tuple> ne = rat.loadNotificationPending();
 			transDetails.stream().forEach(tr-> tr.setNotifPushedStatus("Y"));
-			List<Tuple> ne = rat.loadNotificationPending();				
 			notRepo.saveAll(transDetails);
 
 			Map<String, Map<Integer, Map<String, List<NotifTransactionDetails>>>> groups = transDetails.stream().collect(Collectors.groupingBy(NotifTransactionDetails::getCompanyid,
@@ -100,7 +101,7 @@ public class JobRunrService {
 								}
 								if(!totalMailJob.isEmpty()) {
 
-									totalMailJob.stream().forEach(job);
+									totalMailJob.stream().forEach(job);									
 								}
 
 
@@ -114,10 +115,15 @@ public class JobRunrService {
 
 			transDetails.stream().forEach(tr-> tr.setNotifPushedStatus("C"));
 			notRepo.saveAll(transDetails);
+			}catch (Exception e) {
+				e.printStackTrace();
+				transDetails.stream().forEach(tr-> tr.setNotifPushedStatus("E"));
+				notRepo.saveAll(transDetails);
+			}
 
 		}
 
-
+		
 
 	}
 }

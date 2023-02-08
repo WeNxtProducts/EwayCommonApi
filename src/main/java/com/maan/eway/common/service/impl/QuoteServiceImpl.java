@@ -1170,14 +1170,14 @@ public class QuoteServiceImpl implements QuoteService {
 	
 			
 			if("RA".equalsIgnoreCase(req.getStatus())){
-				n.setNotifTemplatename("Referal Approved");
+				n.setNotifTemplatename("Referral Approved");
 				n.setStatusMessage(req.getAdminRemarks());
 			}else if("RP".equalsIgnoreCase(req.getStatus())){
-				n.setNotifTemplatename("Referal Pending");
+				n.setNotifTemplatename("Referral Pending");
 				n.setStatusMessage(req.getAdminRemarks());				
 			}else if("RR".equalsIgnoreCase(req.getStatus())){
-				n.setNotifTemplatename("Referal Reject");
-				n.setStatusMessage(req.getAdminRemarks());
+				n.setNotifTemplatename("Referral Rejected");
+				n.setStatusMessage(StringUtils.isBlank(req.getAdminRemarks())?req.getRejectReason():req.getAdminRemarks());
 			}
 			//Common Info
 			n.setBroker(brokerReq);
@@ -1516,6 +1516,7 @@ public class QuoteServiceImpl implements QuoteService {
 				req2.setVehicleIdsList(vehicleIdsList);
 				req2.setManualReferralYn("N");
 				req2.setReferralRemarks("");
+				 
 				CommonRes	res = otSer.call_OT_Insert(req2);
 				NewQuoteRes response = (NewQuoteRes) res.getCommonResponse();
 				updateRes.setResponse("Referal Approved");

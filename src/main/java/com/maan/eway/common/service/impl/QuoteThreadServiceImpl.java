@@ -406,8 +406,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				response.setCustomerId(quoteRes.getCustomerId());
 				response.setResponse("Saved SuccessFully");
 				 
-				// Notification Trigger
-				updateReferralStatus(req);
+				
 				// Response 
 				if ( errors !=null && errors.size()>0 ) {
 					commonRes.setCommonResponse(null);
