@@ -3,6 +3,7 @@ package com.maan.eway.common.service.impl;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.text.DecimalFormat;
@@ -566,7 +567,7 @@ public class PaymentServiceImpl implements PaymentService {
 				paymentinfo.setPolicyStartDate(data.getInceptionDate() );
 				paymentinfo.setPremium(new BigDecimal(req.getPremium()));
 				paymentinfo.setPremiumLc(new BigDecimal(req.getPremium()) );
-				BigDecimal premiumFc = new BigDecimal(req.getPremium()).divide(data.getExchangeRate() );
+				BigDecimal premiumFc = new BigDecimal(req.getPremium()).divide(data.getExchangeRate(), MathContext.DECIMAL128  );
 				paymentinfo.setPremiumFc(premiumFc);
 				paymentinfo.setCurrencyId(data.getCurrency());
 				paymentinfo.setExchangeRate(data.getExchangeRate() );
