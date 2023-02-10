@@ -12,6 +12,7 @@
 
 package com.maan.eway.repository;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -49,5 +50,7 @@ public interface NotifTemplateMasterRepository  extends JpaRepository<NotifTempl
 
 	List<NotifTemplateMaster> findByCompanyIdAndProductIdAndStatusAndNotifTemplatenameIgnoreCaseOrderByAmendIdDesc(
 			String companyid, Long valueOf, String string, String notifTemplatename);
+
+	List<NotifTemplateMaster> findByCompanyIdAndProductIdOrderByAmendIdDesc(String companyId, Long long1);
 
 }

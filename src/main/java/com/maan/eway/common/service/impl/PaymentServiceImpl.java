@@ -67,6 +67,7 @@ import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MotorDataDetails;
+import com.maan.eway.bean.NotifTemplateMaster;
 import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PaymentRefno;
@@ -86,6 +87,7 @@ import com.maan.eway.common.req.PaymentDetailsSaveRes;
 import com.maan.eway.common.req.PaymentInfoGetAllReq;
 import com.maan.eway.common.req.PaymentInfoGetReq;
 import com.maan.eway.common.req.PaymentResUrlReq;
+import com.maan.eway.common.req.SendSmsReq;
 import com.maan.eway.common.req.TinyUrlGenerateReq;
 import com.maan.eway.common.req.TinyUrlGetReq;
 import com.maan.eway.common.res.CommonRes;
@@ -116,6 +118,7 @@ import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
+import com.maan.eway.repository.NotifTemplateMasterRepository;
 import com.maan.eway.repository.PaymentDetailRepository;
 import com.maan.eway.repository.PaymentInfoRepository;
 import com.maan.eway.repository.PaymentRefnoRepository;
@@ -211,6 +214,13 @@ public class PaymentServiceImpl implements PaymentService {
 	
 	@Autowired
 	private EServiceMotorDetailsRepository eserMotRepo;
+	
+	@Autowired
+	private SmsDetailsImpl smsRepo ;
+	
+	@Autowired
+	private NotifTemplateMasterRepository notifRepo;
+	
 	
 	private Logger log = LogManager.getLogger(ClausesMasterServiceImpl.class);
 
@@ -599,6 +609,25 @@ public class PaymentServiceImpl implements PaymentService {
 	//			
 	//			paymentinfo.setValidityDate(validateDate);
 				
+				//SMS Calling
+				
+				SendSmsReq smsreq = new SendSmsReq();
+				smsreq.setCompanyId(data.getCompanyId());
+				smsreq.setBranchCode(data.getBranchCode());
+				smsreq.setCustomerId(data.getCustomerId());
+				smsreq.setQuoteNo(req.getQuoteNo());
+				smsreq.setProductId(data.getProductId().toString());
+				smsreq.setLoginId(req.getCreatedBy()); 
+				smsreq.setRequestReferenceNo(data.getRequestReferenceNo());
+				smsreq.setSectionId(data.getSectionId().toString());
+				smsreq.setNotifTemplateName("Payment Message");
+				smsreq.setMobileNo(personaldata.getMobileNo1());
+				smsreq.setMobileNoDesc(personaldata.getMobileCodeDesc1());
+
+				List<NotifTemplateMaster> notiftemplate = notifRepo.findByCompanyIdAndProductIdOrderByAmendIdDesc(data.getCompanyId(),Long.valueOf(data.getProductId()));
+				smsreq.setSmsSubject(notiftemplate.get(0).getSmsSubject());
+				smsreq.setSmsBody(notiftemplate.get(0).getSmsBodyEn());
+				smsRepo.sendSms(smsreq);
 				paymentinforepo.save(paymentinfo);
 				log.info("Saved Details " + json.toJson(paymentinfo));
 				

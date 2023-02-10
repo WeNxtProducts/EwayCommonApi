@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import com.maan.eway.bean.SmsConfigMaster;
@@ -32,5 +33,7 @@ import com.maan.eway.bean.SmsConfigMasterId;
 public interface SmsConfigMasterRepository  extends JpaRepository<SmsConfigMaster,SmsConfigMasterId > , JpaSpecificationExecutor<SmsConfigMaster> {
 
 	Optional<SmsConfigMaster> findByCompanyId(String insuranceid);
+
+	List<SmsConfigMaster> findByCompanyIdAndBranchCode(String companyId, String branchCode);
 
 }
