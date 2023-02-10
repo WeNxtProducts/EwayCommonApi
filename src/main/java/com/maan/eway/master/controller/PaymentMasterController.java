@@ -154,7 +154,7 @@ public ResponseEntity<CommonRes> changeStatusOfPayment(@RequestBody PaymentMaste
 }
 
 //Payment Master Drop Down Type
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 @PostMapping(value="/dropdown/paymenttypes",produces = "application/json")
 @ApiOperation(value = "This method is get Payment Master Drop Down")
 

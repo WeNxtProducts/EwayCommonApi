@@ -173,7 +173,7 @@ public class ExclusionMasterController {
 	}
 
 	//Exclusion Master Drop Down Type
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping(value="/dropdown/exclusion",produces = "application/json")
 	@ApiOperation(value = "This method is get Exclusion Master Drop Down")
 

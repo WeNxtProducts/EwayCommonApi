@@ -164,7 +164,7 @@ public ResponseEntity<CommonRes> changeStatusOfWarranty(@RequestBody WarrantyCha
 
 }
 //Warranty Master Drop Down Type
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping(value="/dropdown/warranty",produces = "application/json")
 	@ApiOperation(value = "This method is get Warranty Master Drop Down")
 
@@ -190,7 +190,7 @@ public ResponseEntity<CommonRes> changeStatusOfWarranty(@RequestBody WarrantyCha
 	
 	
 	//List Save
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/insertwarrantylist")
 	@ApiOperation(value="This Method is to save Waranty Master List")
 	public ResponseEntity<CommonRes> saveWarranty(@RequestBody List<WarrantyMasterReq> req){
@@ -222,7 +222,7 @@ public ResponseEntity<CommonRes> changeStatusOfWarranty(@RequestBody WarrantyCha
 	}
 	}
 
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getallnonselectedwarranty")
 	@ApiOperation("This method is getall Warranty Master")
 	public ResponseEntity<CommonRes> getallNonSelectedWarranty(@RequestBody NonSelectedClausesGetAllReq req)

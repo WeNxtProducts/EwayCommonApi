@@ -171,7 +171,7 @@ public ResponseEntity<CommonRes> changeStatusOfWarrate(@RequestBody WarrateChang
 
 }
 //War Rate Master Drop Down Type
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping(value="/dropdown/warrate",produces = "application/json")
 	@ApiOperation(value = "This method is get War Rate Master Drop Down")
 

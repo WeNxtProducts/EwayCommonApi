@@ -39,7 +39,7 @@ private PrintReqService reqPrinter;
 
 
 //  View Terms And Condition
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/viewtermsandcondition")
 	@ApiOperation("This method is View Terms And Condition")
 	public ResponseEntity<CommonRes> viewTermsAndCondition(@RequestBody TermsAndConditionReq req)
@@ -102,7 +102,7 @@ private PrintReqService reqPrinter;
 	
 
 //  Get Terms And Condition
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/gettermsandcondition")
 	@ApiOperation("This method is Get Terms And Condition")
 	public ResponseEntity<CommonRes> getTermsAndCondition(@RequestBody TermsAndConditionGetReq req)
@@ -126,7 +126,7 @@ private PrintReqService reqPrinter;
 
 
 //  Get Terms And Condition By Subid
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/gettermsandconditionbysubid")
 	@ApiOperation("This method is Get Terms And Condition by Sub Id")
 	public ResponseEntity<CommonRes> getTermsAndConditionSubId(@RequestBody TermsAndConditionGetBySubIdReq req)

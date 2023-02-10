@@ -47,7 +47,7 @@ public class RegionMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// Region Master Drop Down Type
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 			@PostMapping(value="/dropdown/region",produces = "application/json")
 			@ApiOperation(value = "This method is get Region Master Drop Down")
 

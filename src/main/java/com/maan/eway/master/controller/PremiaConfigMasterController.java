@@ -168,7 +168,7 @@ public class PremiaConfigMasterController {
 
 	
 	//Premia Config Master Drop Down Type
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping(value="/dropdown/premiaconfig",produces = "application/json")
 	@ApiOperation(value = "This method is get Premia Config Master Drop Down")
 

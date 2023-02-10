@@ -46,7 +46,7 @@ public class PremiaConfigDataMasterController {
 	private PrintReqService reqPrinter;
 
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/insertpremiaconfigdata")
 	@ApiOperation(value = "This method is Insert Premia Config Data")
 	public ResponseEntity<CommonRes> insertPremiaConfigData(@RequestBody PremiaConfigDataMasterSaveReq req) {
@@ -82,7 +82,7 @@ public class PremiaConfigDataMasterController {
 	}
 
 	// Get
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getpremiaconfigdata")
 	@ApiOperation(value = "This method is Get Premia Config Data")
 	public ResponseEntity<CommonRes> getPremiaConfigData(@RequestBody PremiaConfigDataMasterGetReq req) {
@@ -104,7 +104,7 @@ public class PremiaConfigDataMasterController {
 	}
 
 	// GetAll
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getallpremiaconfigdata")
 	@ApiOperation(value = "This method is Getall Premia Config Data")
 	public ResponseEntity<CommonRes> getallPremiaConfigData(@RequestBody PremiaConfigDataMasterGetallReq req) {
@@ -126,7 +126,7 @@ public class PremiaConfigDataMasterController {
 	}
 
 	// GetActive
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getactivepremiaconfigdata")
 	@ApiOperation(value = "This method is Getactive Premia Config Data")
 	public ResponseEntity<CommonRes> getactivePremiaConfigData(@RequestBody PremiaConfigDataMasterGetallReq req) {
@@ -148,7 +148,7 @@ public class PremiaConfigDataMasterController {
 	}
 
 	// Premia Config Master Drop Down Type
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping(value = "/dropdown/premiaconfigdata", produces = "application/json")
 	@ApiOperation(value = "This method is get Premia Config Data Master Drop Down")
 
@@ -173,7 +173,7 @@ public class PremiaConfigDataMasterController {
 	}
 
 	// Change Status
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/changestatuspremiaconfigdata")
 	@ApiOperation(value = "This method is Change Status Premia Config Data")
 	public ResponseEntity<CommonRes> changeStatusPremiaConfigData(@RequestBody PremiaConfigDataMasterChangeStatusReq req) {

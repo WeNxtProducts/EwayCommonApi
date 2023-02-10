@@ -164,7 +164,7 @@ public class AcExecutiveProductMasterController {
 
 
 	// Dropdown
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping(value="/dropdown/acexecutive",produces = "application/json")
 	public ResponseEntity<CommonRes> dropdownacexecutive(@RequestBody AcExecutiveProductDropDownReq req){
 		CommonRes data = new CommonRes();

@@ -42,7 +42,7 @@ public class GridController {
 	private  GridService entityService;
 	
 	// Quote Grids
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/existingquotedetails")
 	public ResponseEntity<CommonRes> getallExistingQuoteDetails(@RequestBody  ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
@@ -59,7 +59,7 @@ public class GridController {
 			}
 	}
 	
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/lapsedquotedetails")
 	public ResponseEntity<CommonRes> getallLapsedQuoteDetails(@RequestBody  ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
@@ -75,7 +75,7 @@ public class GridController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 		}
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/rejectedquotedetails")
 	public ResponseEntity<CommonRes> getallRejectedQuoteDetails(@RequestBody  ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
@@ -94,7 +94,7 @@ public class GridController {
 	
 	
 	// Referral Grids
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/referralpending")
 	public ResponseEntity<CommonRes> getallReferralPendingDetails(@RequestBody  ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
@@ -111,7 +111,7 @@ public class GridController {
 			}
 		}
 	
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/referralapproved")
 	public ResponseEntity<CommonRes> getallReferralApprovedDetails(@RequestBody  ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
@@ -128,7 +128,7 @@ public class GridController {
 			}
 		}
 	
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/referralrejected")
 	public ResponseEntity<CommonRes> getallReferralRejectedDetails(@RequestBody  ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
@@ -144,7 +144,7 @@ public class GridController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 		}
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/referralrequote")
 	public ResponseEntity<CommonRes> getallReferralRequoteDetails(@RequestBody  ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
@@ -161,7 +161,7 @@ public class GridController {
 			}
 		}
 	// Admin Referrral Grids
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/adminreferralpending")
 	public ResponseEntity<CommonRes> getallAdminReferralPendings(@RequestBody  ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
@@ -178,7 +178,7 @@ public class GridController {
 			}
 		}
 	
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/adminreferralapproved")
 	public ResponseEntity<CommonRes> getallAdminReferralApproved(@RequestBody  ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
@@ -194,7 +194,7 @@ public class GridController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 		}
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/adminreferralrejected")
 	public ResponseEntity<CommonRes> getallAdminReferralRejecteds(@RequestBody  ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
@@ -211,7 +211,7 @@ public class GridController {
 			}
 		}
 	
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/adminreferralrequote")
 	public ResponseEntity<CommonRes> getallAdminReferralRequote(@RequestBody  ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
@@ -230,7 +230,7 @@ public class GridController {
 		
 		}
 
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 
 		@PostMapping("/copyquote")
 		public ResponseEntity<CommonRes> copyQuote(@RequestBody CopyQuoteReq req) {
@@ -258,7 +258,7 @@ public class GridController {
 				}
 			}
 		}
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/searchmotordata")
 		public ResponseEntity<CommonRes> getbyReqRefNo(@RequestBody CopyQuoteReq req) {
 			CommonRes data = new CommonRes();
@@ -274,7 +274,7 @@ public class GridController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 		}
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/dropdown/copyquoteby")
 		public ResponseEntity<CommonRes> copyQuoteByDropdown(@RequestBody CopyQuoteDropDownReq req) {
 			CommonRes data = new CommonRes();
@@ -291,7 +291,7 @@ public class GridController {
 		}
 		
 		
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/updatelapsedquote")
 		public ResponseEntity<CommonRes> updateLapsedQuoteDetails(@RequestBody  UpdateLapsedQuoteReq req) {
 			reqPrinter.reqPrint(req);
@@ -309,7 +309,7 @@ public class GridController {
 			}
 		
 			// Portfolio
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 			@PostMapping("/portfolio/active")
 			public ResponseEntity<CommonRes> getallPortfolioActive(@RequestBody ExistingQuoteReq req) {
 				reqPrinter.reqPrint(req);
@@ -325,7 +325,7 @@ public class GridController {
 					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 				}
 			}
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 			@PostMapping("/portfolio/pending")
 			public ResponseEntity<CommonRes> getallPortfolioPending(@RequestBody ExistingQuoteReq req) {
 				reqPrinter.reqPrint(req);
@@ -341,7 +341,7 @@ public class GridController {
 					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 				}
 			}
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 			@PostMapping("/portfolio/cancelled")
 			public ResponseEntity<CommonRes> getallPortfolioCancelled(@RequestBody ExistingQuoteReq req) {
 				reqPrinter.reqPrint(req);
@@ -360,7 +360,7 @@ public class GridController {
 			}
 
 // Quote Grids
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 @PostMapping("/issuerquotedetails")
 public ResponseEntity<CommonRes> getallIssuerQuoteDetails(@RequestBody IssuerQuoteReq req) {
 	reqPrinter.reqPrint(req);

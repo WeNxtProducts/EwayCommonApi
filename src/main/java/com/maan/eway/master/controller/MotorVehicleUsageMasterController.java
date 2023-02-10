@@ -159,7 +159,7 @@ public class MotorVehicleUsageMasterController {
 				
 
 				// Motor Vehicle Usage Master Drop Down Type
-				@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+				@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 				@PostMapping(value="/dropdown/induvidual/vehicleusage",produces = "application/json")
 				@ApiOperation(value = "This method is get Motor Vehicle Usage Master Drop Down")
 

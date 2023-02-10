@@ -35,7 +35,7 @@ public class EserviceCustomerDetailsController {
 	
 	@Autowired
 	private PrintReqService reqPrinter;
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/savecustomerdetails")
 	public ResponseEntity<CommonRes> saveCustomerDetails(@RequestBody  EserviceCustomerSaveReq req) {
 
@@ -68,7 +68,7 @@ public class EserviceCustomerDetailsController {
 	
 	
 	// Get
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getcustomerdetails")
 	public ResponseEntity<CommonRes> getMsPersonalInfo(@RequestBody GetCustomerDetailsReq req){
 	CommonRes data = new CommonRes();
@@ -87,7 +87,7 @@ public class EserviceCustomerDetailsController {
 	}
 			
 	//Getall
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getallcustomerdetails")
 	public ResponseEntity<CommonRes> getallCustomerDetails(@RequestBody GetAllCustomerDetailsReq req){
 	CommonRes data = new CommonRes();
@@ -104,7 +104,7 @@ public class EserviceCustomerDetailsController {
 	return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);	
 	}
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getactivecustomerdetails")
 	public ResponseEntity<CommonRes> getActiveCustomerDetails(@RequestBody GetAllCustomerDetailsReq req){
 	CommonRes data = new CommonRes();
@@ -123,7 +123,7 @@ public class EserviceCustomerDetailsController {
 	}
 
 	// Search by Vr Tin No
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/searchcustomerdata")
 	public ResponseEntity<CommonRes> getbyvrtinno(@RequestBody EserviceCustomerSearchVrtinReq req){
 		CommonRes data = new CommonRes();

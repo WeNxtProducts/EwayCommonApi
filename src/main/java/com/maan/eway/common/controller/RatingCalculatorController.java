@@ -42,14 +42,14 @@ public class RatingCalculatorController {
 	public void LoadFactorRates(@RequestBody CalcEngine request) {
 		service.LoadFactorRates(request,"5");
 	}*/
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/calc")
 	@ApiOperation("This Method is to get by id")
 	public EserviceMotorDetailsSaveRes calc(@RequestBody CalcEngine request,@RequestHeader("Authorization") String tokens) {
 		EserviceMotorDetailsSaveRes response = service.calculator(request,tokens.replaceAll("Bearer ", "").split(",")[0]); 
 		return response;
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/referalcalc")
 	@ApiOperation("This Method is to get by id")
 	public EserviceMotorDetailsSaveRes referalcalc(@RequestBody CalcEngine request) {
@@ -69,7 +69,7 @@ public class RatingCalculatorController {
 		} 
 		return response;
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/commissionCalc")
 	@ApiOperation("This Method is to get by id")
 	public List<DebitAndCredit> commissionCalc(@RequestBody CalcCommission request ,@RequestHeader("Authorization") String tokens ) {
@@ -82,7 +82,7 @@ public class RatingCalculatorController {
 		} 
 		return response;
 	} 
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/sequence")
 	@ApiOperation("This Method is to get by id")
 	public String getsequence() {

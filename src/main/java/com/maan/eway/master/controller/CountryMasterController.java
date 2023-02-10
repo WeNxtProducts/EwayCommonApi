@@ -150,7 +150,7 @@ public class CountryMasterController {
 		}
 	}
 		// Country Master Drop Down Type
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping(value="/dropdown/country",produces = "application/json")
 		@ApiOperation(value = "This method is get Country Master Drop Down")
 
@@ -172,7 +172,7 @@ public class CountryMasterController {
 			}
 
 		}
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")		
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")		
 			@PostMapping(value="/dropdown/nationality",produces = "application/json")
 			@ApiOperation(value = "This method is get Country Master Drop Down")
 

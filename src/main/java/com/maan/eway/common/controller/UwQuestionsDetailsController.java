@@ -44,7 +44,7 @@ public class UwQuestionsDetailsController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/saveuwquestions")
 	@ApiOperation(value = "This method is Save UW Questions")
 	public ResponseEntity<CommonRes> saveUwQuestions(@RequestBody List<UwQuestionsDetailsSaveReq> req) {
@@ -78,7 +78,7 @@ public class UwQuestionsDetailsController {
 		}
 
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getuwquestionsdetails")
 	@ApiOperation(value = "This method is Get UW Questions Details")
 	public ResponseEntity<CommonRes> getUwQuestionsDetails(@RequestBody UwQuestionsDetailsGetReq req) {

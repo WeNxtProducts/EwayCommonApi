@@ -171,7 +171,7 @@ public class TinyUrlMasterController {
 	
 	
 	// Tiny Url Master Drop Down Type
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping(value="/dropdown/tinyurl",produces = "application/json")
 	@ApiOperation(value = "This method is get Tiny URL Drop Down")
 
