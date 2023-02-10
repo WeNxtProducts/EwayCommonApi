@@ -77,14 +77,6 @@ private static final long serialVersionUID = 1L;
     private String  sectionId;
     
     
-    @Column(name="BRANCH_NAME", length=100)
-    private String     branchName ;
-    
-    @Column(name="PRODUCT_NAME", length=100)
-    private String     productName ;
-    
-    @Column(name="SECTION_NAME", length=100)
-    private String     sectionName ;
     
     @Column(name="CUSTOMER_REFERENCE_NO", length=100)
     private String   customerReferenceNo;
@@ -98,8 +90,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="POLICY_NO", length=100)
     private String   policyNo;
     
-    @Column(name="MOBILE_NO_CODE", length=10)
-    private String   mobileNoCode;
     
     @Column(name="MOBILE_NO_DESC", length=10)
     private String   mobileNoDesc;
@@ -107,15 +97,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="MOBILE_NO", length=50)
     private String   mobileNo;
     
-    
-    @Column(name="WHATSAPP_CODE", length=10)
-    private String   whatsappCode;
-    
-    @Column(name="WHATSAPP_DESC", length=10)
-    private String   whatsappDesc;
-    
-    @Column(name="WHATSAPP_NO", length=50)
-    private String   whatsappNo;
     
     
     @Column(name="SMS_TYPE", length=50)
