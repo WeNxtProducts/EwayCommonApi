@@ -1142,6 +1142,7 @@ public class GridServiceImpl implements GridService {
 					PortfolioCustomerDetailsRes res = new PortfolioCustomerDetailsRes();
 					res = dozerMapper.map(data, PortfolioCustomerDetailsRes.class);
 					res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
+					res.setClientName(data.getClientName());
 					custRes.add(res);
 				}
 
