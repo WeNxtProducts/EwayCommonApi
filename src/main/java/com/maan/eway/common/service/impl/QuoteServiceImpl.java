@@ -1914,8 +1914,9 @@ public class QuoteServiceImpl implements QuoteService {
 				 OccupationReqClass occu = new OccupationReqClass(); 
 				 occu.setCount(pac.getCount()==null?"":pac.getCount().toString());		 
 				 occu.setOccupationType(pac.getOccupationType() );
-				 occu.setSumInsuredTotal(pac.getSumInsured()==null?"":pac.getSumInsured().toString());				 
-			 }
+				 occu.setSumInsuredTotal(pac.getSumInsured()==null?"":pac.getSumInsured().toString());
+				 occupation.add(occu);
+			}
 	
 			res.setBuildingSuminsured(build.getBuildingSuminsured() == null?"" :build.getBuildingSuminsured().toString());
 			res.setAllriskSuminsured(build.getAllriskSuminsured() == null?"" :build.getAllriskSuminsured().toString());
