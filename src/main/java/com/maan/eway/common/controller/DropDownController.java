@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import com.maan.eway.common.req.NcdDetailsGetReq;
 import com.maan.eway.common.service.DropDownService;
 import com.maan.eway.master.req.BuildingUsageDropDownReq;
@@ -76,7 +76,7 @@ public class DropDownController {
 //		}
 //
 //	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/citylimit")
 	@ApiOperation(value = "This method is to Cover Note Drop Down")
 	public ResponseEntity<CommonRes> cityLimit(@RequestBody LovDropDownReq req) {
@@ -95,6 +95,7 @@ public class DropDownController {
 		}
 
 	}
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/borrowertype")
 	@ApiOperation(value = "This method is to Cover Note Drop Down")
 	public ResponseEntity<CommonRes> borrowerType(@RequestBody LovDropDownReq req) {
@@ -113,7 +114,7 @@ public class DropDownController {
 		}
 
 	}
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/title")
 	@ApiOperation(value = "This method is to Cover Note Drop Down")
 	public ResponseEntity<CommonRes> title(@RequestBody LovDropDownReq req) {
@@ -151,7 +152,7 @@ public class DropDownController {
 //		}
 //
 //	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/contructtype")
 	@ApiOperation(value = "This method is to Construct Type Drop Down")
 	public ResponseEntity<CommonRes> constructType(@RequestBody LovDropDownReq req ) {
@@ -170,7 +171,7 @@ public class DropDownController {
 		}
 
 	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/consecutivedays")
 	@ApiOperation(value = "This method is to Construct Type Drop Down")
 	public ResponseEntity<CommonRes> consecutiveDays(@RequestBody LovDropDownReq req ) {
@@ -189,7 +190,7 @@ public class DropDownController {
 		}
 
 	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/buildingtype")
 	@ApiOperation(value = "This method is to Construct Type Drop Down")
 	public ResponseEntity<CommonRes> buildingType(@RequestBody LovDropDownReq req ) {
@@ -208,7 +209,7 @@ public class DropDownController {
 		}
 
 	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/covernotetype")
 	@ApiOperation(value = "This method is to Cover Note Drop Down")
 	public ResponseEntity<CommonRes> coverNoteType(@RequestBody LovDropDownReq req) {
@@ -227,7 +228,7 @@ public class DropDownController {
 		}
 
 	}
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/paymentmode")
 	@ApiOperation(value = "This method is to Payment Mode Drop Down")
 	public ResponseEntity<CommonRes> paymentmode(@RequestBody LovDropDownReq req) {
@@ -245,7 +246,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/endorsementtype")
 	@ApiOperation(value = "This method is to Endorsement Type Drop Down")
 	public ResponseEntity<CommonRes> endorsementtype(@RequestBody LovDropDownReq req) {
@@ -263,7 +264,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/discounttypeoffered")
 	@ApiOperation(value = "This method is to Discount Type Offered Drop Down")
 	public ResponseEntity<CommonRes> discounttypeoffered(@RequestBody LovDropDownReq req) {
@@ -281,7 +282,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/istaxexcempted")
 	@ApiOperation(value = "This method is to Tax Excepmted Drop Down")
 	public ResponseEntity<CommonRes> taxexcempted(@RequestBody LovDropDownReq req) {
@@ -299,7 +300,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/taxexcemptiontype")
 	@ApiOperation(value = "This method is to Tax Excepmtion Type Drop Down")
 	public ResponseEntity<CommonRes> taxexcemptiontype(@RequestBody LovDropDownReq req) {
@@ -317,7 +318,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/policyholdertype")
 	@ApiOperation(value = "This method is to Policy Holder Type Drop Down")
 	public ResponseEntity<CommonRes> policyholdertype(@RequestBody LovDropDownReq req) {
@@ -335,7 +336,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/policyholderidtype")
 	@ApiOperation(value = "This method is to Policy Holder ID Type Drop Down")
 	public ResponseEntity<CommonRes> policyholderidtype(@RequestBody LovPolicyDropDownReq req) {
@@ -353,7 +354,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/policyholdergender")
 	@ApiOperation(value = "This method is to Policy Holder Gender Drop Down")
 	public ResponseEntity<CommonRes> policyholdergender(@RequestBody LovDropDownReq req) {
@@ -371,7 +372,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/nametitle")
 	@ApiOperation(value = "This method is to Name Title Drop Down")
 	public ResponseEntity<CommonRes> nametitle(@RequestBody LovDropDownReq req) {
@@ -389,7 +390,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/notificationtype")
 	@ApiOperation(value = "This method is to Notification Type Drop Down")
 	public ResponseEntity<CommonRes> notificationtype(@RequestBody LovDropDownReq req) {
@@ -408,7 +409,7 @@ public class DropDownController {
 		}
 	}
 
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/motorcategory")
 	@ApiOperation(value = "This method is get all Motor Category Drop Down")
 	public ResponseEntity<CommonRes> getMotorCategory(@RequestBody LovDropDownReq req) {
@@ -428,7 +429,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/motortype")
 	@ApiOperation(value = "This method is get all Motor Type Drop Down")
 	public ResponseEntity<CommonRes> getMotorType(@RequestBody LovDropDownReq req) {
@@ -468,7 +469,7 @@ public class DropDownController {
 //			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 //		}
 //	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/ownercategory")
 	@ApiOperation(value = "This method is get all Owner Category Drop Down")
 	public ResponseEntity<CommonRes> ownerCategory(@RequestBody LovDropDownReq req) {
@@ -488,7 +489,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}	
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/fleettype")
 	@ApiOperation(value = "This method is get all Fleet Type Drop Down")
 	public ResponseEntity<CommonRes> fleetType(@RequestBody LovDropDownReq req) {
@@ -509,7 +510,7 @@ public class DropDownController {
 		}
 	}	
 	
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/reinsurancecategory")
 	@ApiOperation(value = "This method is get all Reinsurance Category Drop Down")
 	public ResponseEntity<CommonRes> reinsuranceCategory(@RequestBody LovDropDownReq req) {
@@ -551,7 +552,7 @@ public class DropDownController {
 	}	
 	
 	
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/reinsuranceform")
 	@ApiOperation(value = "This method is get all Reinsurance Form Drop Down")
 	public ResponseEntity<CommonRes> reinsuranceForm(@RequestBody LovDropDownReq req) {
@@ -572,7 +573,7 @@ public class DropDownController {
 		}
 	}	
 	
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/reinsurancetype")
 	@ApiOperation(value = "This method is get all Reinsurance Type Drop Down")
 	public ResponseEntity<CommonRes> reinsuranceType(@RequestBody LovDropDownReq req) {
@@ -592,7 +593,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}	
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/claimformdullyfilled")
 	@ApiOperation(value = "This method is get all Claim Form Dully Filled Drop Down")
 	public ResponseEntity<CommonRes> claimformdullyfilled(@RequestBody LovDropDownReq req) {
@@ -613,7 +614,7 @@ public class DropDownController {
 		}
 	}
 	
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/lostassessmentoption")
 	@ApiOperation(value = "This method is get all Lost Assessment Option Drop Down")
 	public ResponseEntity<CommonRes> lostassessmentoption(@RequestBody LovDropDownReq req) {
@@ -633,7 +634,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}	
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/assessoridtype")
 	@ApiOperation(value = "This method is get all Assessor Id Type Drop Down")
 	public ResponseEntity<CommonRes> assessoridtype(@RequestBody LovDropDownReq req) {
@@ -653,7 +654,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}	
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/claimantcategory")
 	@ApiOperation(value = "This method is get all Calimant Category Drop Down")
 	public ResponseEntity<CommonRes> claimantCategory(@RequestBody LovDropDownReq req) {
@@ -675,7 +676,7 @@ public class DropDownController {
 	}	
 
 	
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/claimanttype")
 	@ApiOperation(value = "This method is get all Calimant Type Drop Down")
 	public ResponseEntity<CommonRes> claimantType(@RequestBody LovDropDownReq req) {
@@ -696,7 +697,7 @@ public class DropDownController {
 		}
 	}	
 	
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/claimantidtype")
 	@ApiOperation(value = "This method is get all Calimant Id Type Drop Down")
 	public ResponseEntity<CommonRes> claimantIdType(@RequestBody LovDropDownReq req) {
@@ -717,7 +718,7 @@ public class DropDownController {
 		}
 	}	
 	
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/isreassessment")
 	@ApiOperation(value = "This method is get all Is Reassessment Drop Down")
 	public ResponseEntity<CommonRes> isreassessment(@RequestBody LovDropDownReq req) {
@@ -737,7 +738,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}	
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/offeraccepted")
 	@ApiOperation(value = "This method is get all Offer Accepted Drop Down")
 	public ResponseEntity<CommonRes> offerAccepted(@RequestBody LovDropDownReq req) {
@@ -758,7 +759,7 @@ public class DropDownController {
 		}
 	}
 	
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/partiesnotified")
 	@ApiOperation(value = "This method is get all Parties Notified Drop Down")
 	public ResponseEntity<CommonRes> partiesNotified(@RequestBody LovDropDownReq req) {
@@ -778,7 +779,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}	
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/claimresultedlitigation")
 	@ApiOperation(value = "This method is get all Claim Resulted Litigation Drop Down")
 	public ResponseEntity<CommonRes> claimResultedLitigation(@RequestBody LovDropDownReq req) {
@@ -798,7 +799,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}	
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/tonnage")
 	@ApiOperation(value = "This method is get all Tonnage Drop Down")
 	public ResponseEntity<CommonRes> tonnage(@RequestBody LovDropDownReq req) {
@@ -819,7 +820,7 @@ public class DropDownController {
 		}
 	}
 	
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/getncddetails")
 	public ResponseEntity<CommonRes> getNcdDetails(@RequestBody NcdDetailsGetReq req) {
 		CommonRes data = new CommonRes();
@@ -834,7 +835,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/language")
 	public ResponseEntity<CommonRes> getLanguage(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
@@ -849,6 +850,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping(value="/fueltype",produces = "application/json")
 	public ResponseEntity<CommonRes> getFuelType(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
@@ -863,7 +865,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/plantype")
 	public ResponseEntity<CommonRes> getPlanType(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
@@ -878,7 +880,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/relationtype")
 	public ResponseEntity<CommonRes> getRelationType(@RequestBody RelationDropDownReq req) {
 		CommonRes data = new CommonRes();
@@ -893,7 +895,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	
 	@PostMapping("/buildingpurpose")
 	public ResponseEntity<CommonRes> getBuildingPurpose(@RequestBody LovDropDownReq req) {
@@ -909,7 +911,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/buildingusage")
 	public ResponseEntity<CommonRes> getBuildingUsage(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
@@ -924,7 +926,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-		
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")	
 	@PostMapping("/paymenttype")
 	public ResponseEntity<CommonRes> getPaymentType(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
@@ -941,7 +943,7 @@ public class DropDownController {
 	}
 	
 	
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/content")
 	public ResponseEntity<CommonRes> getContent(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
@@ -957,7 +959,7 @@ public class DropDownController {
 		}
 	}
 	
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/personal")
 	public ResponseEntity<CommonRes> personal(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
@@ -974,7 +976,7 @@ public class DropDownController {
 	}
 	
 	
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/contentrisk")
 	public ResponseEntity<CommonRes> contentrisk(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
@@ -989,7 +991,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/allrisk")
 	public ResponseEntity<CommonRes> getallrisk(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
@@ -1005,7 +1007,7 @@ public class DropDownController {
 		}
 	}
 	
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/datatype")
 	public ResponseEntity<CommonRes> datatype(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
@@ -1021,7 +1023,7 @@ public class DropDownController {
 		}
 	}
 
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/termsandcondition")
 	public ResponseEntity<CommonRes> termsandcondition(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
@@ -1037,7 +1039,7 @@ public class DropDownController {
 		}
 	}
 
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/categoryid")
 	public ResponseEntity<CommonRes> categoryid(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
@@ -1052,7 +1054,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/benefitcovermonth")
 	public ResponseEntity<CommonRes> benefitcovermonth(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
@@ -1067,7 +1069,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/quotestatus")
 	public ResponseEntity<CommonRes> quoteStatus(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
@@ -1082,7 +1084,7 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/termstype")
 	public ResponseEntity<CommonRes> termsType(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
