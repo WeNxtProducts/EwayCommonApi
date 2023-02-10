@@ -3,6 +3,7 @@ package com.maan.eway.common.service.impl;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.text.DecimalFormat;
@@ -50,6 +51,7 @@ import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CoverDocumentMaster;
 import com.maan.eway.bean.CoverDocumentUploadDetails;
+import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
@@ -566,8 +568,11 @@ public class PaymentServiceImpl implements PaymentService {
 				paymentinfo.setPolicyStartDate(data.getInceptionDate() );
 				paymentinfo.setPremium(new BigDecimal(req.getPremium()));
 				paymentinfo.setPremiumLc(new BigDecimal(req.getPremium()) );
-				BigDecimal premiumFc = new BigDecimal(req.getPremium()).divide(data.getExchangeRate() );
-				paymentinfo.setPremiumFc(premiumFc);
+				String pattern = "#####0.00" ;
+				DecimalFormat df = new DecimalFormat(pattern);
+				BigDecimal premium = new BigDecimal(req.getPremium()) ;
+				BigDecimal premiumFc = premium.divide(data.getExchangeRate(), MathContext.DECIMAL128 );
+				paymentinfo.setPremiumFc( new BigDecimal(df.format(premiumFc)) );
 				paymentinfo.setCurrencyId(data.getCurrency());
 				paymentinfo.setExchangeRate(data.getExchangeRate() );
 				paymentinfo.setProductId(data.getProductId());
@@ -611,6 +616,81 @@ public class PaymentServiceImpl implements PaymentService {
 			return null;
 		}
 		return res;
+	}
+	
+	public synchronized Integer currencyDecimalFormat(String insuranceId  ,String currencyId ) {
+		Integer decimalFormat = 0 ;
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CurrencyMaster> query = cb.createQuery(CurrencyMaster.class);
+			List<CurrencyMaster> list = new ArrayList<CurrencyMaster>();
+			
+			// Find All
+			Root<CurrencyMaster>    c = query.from(CurrencyMaster.class);		
+			
+			// Select
+			query.select(c);
+			
+		
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("currencyName")));
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CurrencyMaster> ocpm1 = effectiveDate.from(CurrencyMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a11 = cb.equal(c.get("currencyId"),ocpm1.get("currencyId") );
+			Predicate a12 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a18 = cb.equal(c.get("status"),ocpm1.get("status") );
+			Predicate a22 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			
+			effectiveDate.where(a11,a12,a18,a22);
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CurrencyMaster> ocpm2 = effectiveDate2.from(CurrencyMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a13 = cb.equal(c.get("currencyId"),ocpm2.get("currencyId") );
+			Predicate a14 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a19 = cb.equal(c.get("status"),ocpm2.get("status") );
+			Predicate a23 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			
+			effectiveDate2.where(a13,a14,a19,a23);
+			
+		    // Where	
+			Predicate n1 = cb.equal(c.get("status"), "Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"),insuranceId);
+			Predicate n5 = cb.equal(c.get("companyId"),"99999");
+			Predicate n6 = cb.or(n4,n5);
+			Predicate n7 = cb.equal(c.get("currencyId"),currencyId);
+			query.where(n1,n2,n3,n6,n7).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<CurrencyMaster> result = em.createQuery(query);			
+			list =  result.getResultList(); 
+			
+			decimalFormat = list.size() > 0 ? (list.get(0).getDecimalDigit()==null?0 :list.get(0).getDecimalDigit()) :0; 		
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return decimalFormat;
 	}
 
 	 public synchronized String generatePaymentid() {
