@@ -472,8 +472,8 @@ this.repository = repo;
 			userInfo.setStateCode(Integer.valueOf(personalReq.getStateCode()));
 			//userInfo.setCityCode(Integer.valueOf(personalReq.getCityCode()));
 			userInfo.setCityName(personalReq.getCityName());
-			userInfo.setMobileCodeDesc(mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getMobileCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
-			userInfo.setWhatsappCodeDesc(mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getWhatsappCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
+			userInfo.setMobileCodeDesc(StringUtils.isBlank(personalReq.getMobileCode()) ? "" : mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getMobileCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
+			userInfo.setWhatsappCodeDesc(StringUtils.isBlank(personalReq.getWhatsappCode()) ? "" : mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getWhatsappCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
 			
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("Issuer") ) {
 				userInfo.setOaCode(saveLogin.getOaCode().toString());
@@ -671,6 +671,7 @@ this.repository = repo;
 			updateLogin.setAttachedRegions(regions);
 			updateLogin.setAttachedCompanies(companies);
 			updateLogin.setMenuIds(findLogin.getMenuIds());
+			
 			updateLogin.setBrokerCompanyYn(findBroker !=null ? findBroker.getBrokerCompanyYn() : loginReq.getBrokerCompanyYn());
 			
 			if( ! loginReq.getSubUserType().equalsIgnoreCase("bank") ) {
@@ -690,6 +691,10 @@ this.repository = repo;
 			updateUser.setUpdatedDate(new Date());
 			updateUser.setUpdatedBy(loginReq.getCreatedBy());
 			updateUser.setStatus(updateLogin.getStatus());
+			List<ListItemValue> mobileCodes = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("MOBILE_CODE" , "Y");
+			updateUser.setMobileCodeDesc(StringUtils.isBlank(personalReq.getMobileCode()) ? "" : mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getMobileCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
+			updateUser.setWhatsappCodeDesc(StringUtils.isBlank(personalReq.getWhatsappCode()) ? "" : mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getWhatsappCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
+			
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("Issuer") ) {
 				updateUser.setOaCode(loginReq.getOaCode());
 				updateUser.setAgencyCode(loginReq.getOaCode());
