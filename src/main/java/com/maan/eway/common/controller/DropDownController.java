@@ -990,6 +990,21 @@ public class DropDownController {
 		}
 	}
 	
+	@PostMapping("/allrisk")
+	public ResponseEntity<CommonRes> getallrisk(@RequestBody LovDropDownReq req) {
+		CommonRes data = new CommonRes();
+		List<DropDownRes> res = dropDownService.getallrisk(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 	
 	@PostMapping("/datatype")
 	public ResponseEntity<CommonRes> datatype(@RequestBody LovDropDownReq req) {
