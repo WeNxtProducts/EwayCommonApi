@@ -48,7 +48,7 @@ public class UwQuestionsMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/insertuwquestions")
 	@ApiOperation(value = "This method is Insert UW Questions")
 	public ResponseEntity<CommonRes> insertUwQuestions(@RequestBody UwQuestionMasterSaveReq req) {
@@ -84,7 +84,7 @@ public class UwQuestionsMasterController {
 	}
 	
 	//  Get All Under Writer Questions
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getalluwquestions")
 	@ApiOperation("This method is getall UW Questions")
 	public ResponseEntity<CommonRes> getallUwQuestions(@RequestBody UwQuestionsMasterGetAllReq req)
@@ -107,7 +107,7 @@ public class UwQuestionsMasterController {
 	}
 	
 	//  Get Active Uw Questions
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/getactiveuwquestions")
 		@ApiOperation("This method is get Active UW Questions")
 		public ResponseEntity<CommonRes> getActiveUwQuestions(@RequestBody UwQuestionsMasterGetAllReq req)
@@ -130,7 +130,7 @@ public class UwQuestionsMasterController {
 		}
 		
 		// Get By Uw Question Id
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/getbyuwquestionid")
 		@ApiOperation("This Method is to get by UW Question Id")
 		public ResponseEntity<CommonRes> getByUwQuestionId(@RequestBody UwQuestionMasterGetReq req)
@@ -149,7 +149,7 @@ public class UwQuestionsMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/uwquestions/changestatus")
 	@ApiOperation(value = "This method is get Uw Question change Status ")
 	public ResponseEntity<CommonRes> changeStatusOfUwQuestion(@RequestBody UwQuestionChangeStatusReq req) {
