@@ -57,7 +57,7 @@ public class LoginBranchController {
 	private PrintReqService reqPrinter;
 	
 //*************************************** Add Branches Apis **********************************************************//
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+	
 	@PostMapping("/attachbrokerbranches")
 	@ApiOperation(value="This method is to Attach Broker Branches")
 	public ResponseEntity<CommonRes> attachBrokerBranch(@RequestBody  AttachCompaniesReq req) {
@@ -88,7 +88,7 @@ public class LoginBranchController {
 
 	}
 	
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+	
 	@PostMapping("/attachissuerbranches")
 	@ApiOperation(value="This method is to Attach Issuer Branches")
 	public ResponseEntity<CommonRes> attachIssuerBranches(@RequestBody  AttachIssuerBrannchReq req) {
@@ -120,7 +120,7 @@ public class LoginBranchController {
 	}
 	
 //*************************************** Get Branches By Login ID **********************************************************//
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+	
 	@PostMapping("/getbrokerbranches")
 	@ApiOperation(value="This method is to Get Broker Branches")
 	public ResponseEntity<CommonRes> getBrokerBranches(@RequestBody  BrokerBranchGetReq req) {
@@ -139,7 +139,7 @@ public class LoginBranchController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	} 
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+	
 	@PostMapping("/getissuerbranches")
 	@ApiOperation(value="This method is to Get Issuer Branches")
 	public ResponseEntity<CommonRes> getIssuerBranches(@RequestBody  IssuerBranchGetReq req) {
@@ -158,7 +158,7 @@ public class LoginBranchController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	} 
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+	
 	@PostMapping("/attachbranches")
 	@ApiOperation(value="This method is to Attach Broker Company Branches")
 	public ResponseEntity<CommonRes> attachBrokerCompanyBranch(@RequestBody  AttachBrokerBranchReq req) {
@@ -188,7 +188,7 @@ public class LoginBranchController {
 		}
 
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+	
 	@PostMapping("/getbrokercompanybranch")
 	@ApiOperation(value="This method is to Attach Broker Company Branches")
 	public ResponseEntity<CommonRes> getBrokerCompanyBranch(@RequestBody  GetBrokerBranchReq req) {
@@ -207,7 +207,7 @@ public class LoginBranchController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+	
 	@PostMapping("/getallbrokercompanybranch")
 	@ApiOperation(value="This method is to Attach Broker Company Branches")
 	public ResponseEntity<CommonRes> getallBrokerCompanyBranch(@RequestBody  GetAllBrokerBranchReq req) {
@@ -227,7 +227,7 @@ public class LoginBranchController {
 		}
 	}
 
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+	
 	@PostMapping("/getallbrokerbranches")
 	@ApiOperation(value="This method is to Get all Broker Company Branches")
 	public ResponseEntity<CommonRes> getallbrokerbranches(@RequestBody GetallBrokerBranchesReq req){
@@ -245,7 +245,7 @@ public class LoginBranchController {
 	}
 	}
 	
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+	
 	@PostMapping("/getallnonselecteduserbranches")
 	@ApiOperation("This method is getall User Company Product Master")
 	public ResponseEntity<CommonRes> getallNonSelectedUserCompanyBranches(@RequestBody UserCompanyProductGetReq req)
@@ -267,7 +267,7 @@ public class LoginBranchController {
 		}
 	}
 	
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+	
 	@PostMapping("/attachuserbranches")
 	@ApiOperation("This method is to save branches as multi insert")
 	public ResponseEntity<CommonRes> saveLoginBranches(@RequestBody LoginBranchesSaveReq req){
@@ -297,7 +297,7 @@ public class LoginBranchController {
 
 	}
 	
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+	
 	@PostMapping("/loginbranches")
 	@ApiOperation("This Method is to get Login Branch and Broker Branches")
 	public ResponseEntity<CommonRes> getloginbranches(@RequestBody LoginBranchReq req){

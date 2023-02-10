@@ -27,7 +27,7 @@ public class MenuMasterController {
 
 	@Autowired
 	private MenuMasterService menuservice;
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+ 
 	@PostMapping("/menu")
 	@ApiOperation(value="This method is to Display Menu Service")
 	public ResponseEntity<CommonRes> menudisplay(@RequestBody MenuServiceReq req){

@@ -84,7 +84,7 @@ public class LoginDetailsController {
 */
 	
 //*************************************** Login Creation Apis **********************************************************//
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+
 	@PostMapping("/createbroker")
 	@ApiOperation(value="This method is to Create Broker Login")
 	public ResponseEntity<CommonRes> createBrokerLogin(@RequestBody  BrokerCreationReq req) {
@@ -114,7 +114,7 @@ public class LoginDetailsController {
 		}
 
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+
 	@PostMapping("/createissuer")
 	@ApiOperation(value="This method is to Create Issuer Login")
 	public ResponseEntity<CommonRes> createIssuerLogin(@RequestBody  IssuerCraeationReq req) {
@@ -145,7 +145,7 @@ public class LoginDetailsController {
 
 	}
 
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+
 	@PostMapping("/createuser")
 	@ApiOperation(value="This method is to Create BrokerEmployees Login")
 	public ResponseEntity<CommonRes> createIssuerLogin(@RequestBody  UserCreationReq req) {
@@ -177,7 +177,7 @@ public class LoginDetailsController {
 	}
 
 //*************************************** Login GetAll Apis **********************************************************//	
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+
 	@PostMapping("/getallbrokers")
 	@ApiOperation(value="This method is to Get All Brokers")
 	public ResponseEntity<CommonRes> getBrokerLoginDetailsByUserType(@RequestBody  BrokerLoginGridReq req) {
@@ -196,7 +196,7 @@ public class LoginDetailsController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+
 	@PostMapping("/getbrokers")
 	@ApiOperation(value="This method is to Get Brokers")
 	public ResponseEntity<CommonRes> getBrokerLoginDetailsSubUserType(@RequestBody  BrokerLoginGridReq req) {
@@ -215,7 +215,7 @@ public class LoginDetailsController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+
 	@PostMapping("/getallusers")
 	@ApiOperation(value="This method is to Get All Brokers Employees")
 	public ResponseEntity<CommonRes> getUserLoginDetailsByUserType(@RequestBody  UserLoginGridReq req) {
@@ -234,7 +234,7 @@ public class LoginDetailsController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+
 	@PostMapping("/getallissuers")
 	@ApiOperation(value="This method is to Get All Issuers")
 	public ResponseEntity<CommonRes> getIssuerLoginDetailsByUserType(@RequestBody  IssuerLoginGridReq req) {
@@ -254,7 +254,7 @@ public class LoginDetailsController {
 	}
 	
 //*************************************** Login Activers Apis **********************************************************//
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+
 	@PostMapping("/getactivebrokers")
 	@ApiOperation(value="This method is to Get Active Brokers")
 	public ResponseEntity<CommonRes> getBrokerActiveDetailsByUserType(@RequestBody  BrokerActiveGridReq req) {
@@ -273,8 +273,7 @@ public class LoginDetailsController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+
 	@PostMapping("/getactiveusers")
 	@ApiOperation(value="This method is to Get Active BrokersEmployees")
 	public ResponseEntity<CommonRes> getUserActiveDetailsByUserType(@RequestBody  UserActiveGridReq req) {
@@ -293,7 +292,7 @@ public class LoginDetailsController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+
 	@PostMapping("/getactiveissuers")
 	@ApiOperation(value="This method is to Get Active Issuers")
 	public ResponseEntity<CommonRes> getIssuerActiveDetailsByUserType(@RequestBody  IssuerActiveGridReq req) {
@@ -314,7 +313,7 @@ public class LoginDetailsController {
 	}
 	
 //***************************************  Login GetById Apis **********************************************************//
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+
 	@PostMapping("/getbrokerbyid")
 	@ApiOperation(value="This method is to Get Broker By Id ")
 	public ResponseEntity<CommonRes> getBrokerDetailsById(@RequestBody  BrokerDetailsGetReq req) {
@@ -333,7 +332,7 @@ public class LoginDetailsController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+
 	@PostMapping("/getissuerbyid")
 	@ApiOperation(value="This method is to Get Issuer By Id ")
 	public ResponseEntity<CommonRes> getIssuerDetailsById(@RequestBody  IssuerDetailsGetReq req) {
@@ -352,7 +351,7 @@ public class LoginDetailsController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+	
 	@PostMapping("/getuserbyid")
 	@ApiOperation(value="This method is to Get User By Id ")
 	public ResponseEntity<CommonRes> getUserDetailsById(@RequestBody  UserDetailsGetReq req) {
@@ -371,7 +370,7 @@ public class LoginDetailsController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+
 	@PostMapping("/getmenulist")
 	@ApiOperation(value="This method is to Get Brokers")
 	public ResponseEntity<CommonRes> getBrokerLoginDetailsSubUserType(@RequestBody  MenuListReq req) {
@@ -390,7 +389,7 @@ public class LoginDetailsController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+
 	@PostMapping("/insertuserlogin")
 	@ApiOperation(value="This method is to Insert User Login")
 	public ResponseEntity<CommonRes> insertUserLogin(@RequestBody  InsertUserLoginReq req) {
@@ -410,7 +409,7 @@ public class LoginDetailsController {
 		}
 	}
 
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+
 	@GetMapping("/dropdown/brokerids")
 	@ApiOperation(value = "This method is to BrokerIds  Drop Down")
 	public ResponseEntity<CommonRes> getBrokerIds() {
@@ -430,7 +429,7 @@ public class LoginDetailsController {
 		}
 
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+
 	@PostMapping("/dropdown/brokerids")
 	@ApiOperation(value = "This method is to BrokerIds  Drop Down")
 	public ResponseEntity<CommonRes> getBrokerIdsByCompany(@RequestBody  LovDropDownReq req) {
@@ -450,7 +449,7 @@ public class LoginDetailsController {
 		}
 
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+
 	@PostMapping("/savemenuids")
 	@ApiOperation(value="This method is to save menu ids")
 	public ResponseEntity<CommonRes> savemenuids(@RequestBody MenuIdSaveReq  req) {

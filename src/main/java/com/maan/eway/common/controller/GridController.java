@@ -360,6 +360,7 @@ public class GridController {
 			}
 
 // Quote Grids
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 @PostMapping("/issuerquotedetails")
 public ResponseEntity<CommonRes> getallIssuerQuoteDetails(@RequestBody IssuerQuoteReq req) {
 	reqPrinter.reqPrint(req);

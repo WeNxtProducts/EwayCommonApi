@@ -35,7 +35,7 @@ public class AdminDropDownController {
 	
 
 	// Gender
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+ 
 	@PostMapping("/gender")
 	@ApiOperation(value = "This method is to Gender Types Drop Down")
 	public ResponseEntity<CommonRes> getgender(@RequestBody LovDropDownReq req) {
@@ -55,7 +55,7 @@ public class AdminDropDownController {
 		}
 
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+ 
 	@PostMapping("/mobilecodes")
 	@ApiOperation(value = "This method is to Gender Types Drop Down")
 	public ResponseEntity<CommonRes> getMobileCodes(@RequestBody LovDropDownReq req) {
@@ -76,7 +76,7 @@ public class AdminDropDownController {
 
 	}
 	
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+ 
 	@PostMapping("/constmaterial")
 	@ApiOperation(value = "This method is to ConstMaterial Drop Down")
 	public ResponseEntity<CommonRes> getConstMaterial(@RequestBody LovDropDownReq req) {
@@ -96,7 +96,7 @@ public class AdminDropDownController {
 		}
 
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+ 
 	@PostMapping("/outbuildingconst")
 	@ApiOperation(value = "This method is to OutbuildingConst  Drop Down")
 	public ResponseEntity<CommonRes> getOutbuildingConst(@RequestBody LovDropDownReq req) {
@@ -116,7 +116,7 @@ public class AdminDropDownController {
 		}
 
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+ 
 	@PostMapping("/aboutbuilding")
 	@ApiOperation(value = "This method is to AboutBuilding  Drop Down")
 	public ResponseEntity<CommonRes> getAboutBuilding(@RequestBody LovDropDownReq req) {
@@ -136,7 +136,7 @@ public class AdminDropDownController {
 		}
 
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+ 
 	@PostMapping("/stateextent")
 	@ApiOperation(value = "This method is to StateExtent Drop Down")
 	public ResponseEntity<CommonRes> getStateExtent(@RequestBody LovDropDownReq req) {
@@ -156,7 +156,7 @@ public class AdminDropDownController {
 		}
 
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+ 
 	@PostMapping("/contentname")
 	@ApiOperation(value = "This method is to Content Name Drop Down")
 	public ResponseEntity<CommonRes> getContentName(@RequestBody LovDropDownReq req) {
@@ -177,7 +177,7 @@ public class AdminDropDownController {
 
 	}
 	
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+ 
 	@PostMapping("/propertyname")
 	@ApiOperation(value = "This method is to Property Name Drop Down")
 	public ResponseEntity<CommonRes> getPropertyName(@RequestBody LovDropDownReq req) {
@@ -198,7 +198,7 @@ public class AdminDropDownController {
 
 	}
 	
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+ 
 	@PostMapping("/businesstype")
 	@ApiOperation(value = "This method is to Business Type  Drop Down")
 	public ResponseEntity<CommonRes> getBusinessType(@RequestBody LovDropDownReq req) {
@@ -218,7 +218,7 @@ public class AdminDropDownController {
 		}
 
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+ 
 	@PostMapping("/sourcetype")
 	@ApiOperation(value = "This method is to Business Type  Drop Down")
 	public ResponseEntity<CommonRes> getSourceType(@RequestBody LovDropDownReq req) {
@@ -238,7 +238,7 @@ public class AdminDropDownController {
 		}
 
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+ 
 	@PostMapping("/commissiontype")
 	@ApiOperation(value = "This method is to Business Type  Drop Down")
 	public ResponseEntity<CommonRes> getCommissionType(@RequestBody LovDropDownReq req) {

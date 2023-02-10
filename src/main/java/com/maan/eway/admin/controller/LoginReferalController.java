@@ -42,7 +42,7 @@ public class LoginReferalController {
 	private PrintReqService reqPrinter;
 
 //*************************************** Add Referaral Apis **********************************************************//	
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+	 
 	@PostMapping("/attachissuerreferal")
 	@ApiOperation(value="This method is to Attach Issuer Referals")
 	public ResponseEntity<CommonRes> attachIssuerReferals(@RequestBody  AttachIssuerReferalReq req) {
@@ -74,7 +74,7 @@ public class LoginReferalController {
 	}
 	
 //*************************************** Get Referal Apis **********************************************************//
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+	 
 	@PostMapping("/getissuerreferals")
 	@ApiOperation(value="This method is to Get Issuer Referals")
 	public ResponseEntity<CommonRes> getIssuerReferals(@RequestBody  IssuerReferalGetReq req) {
@@ -95,7 +95,7 @@ public class LoginReferalController {
 	}
 	
 //*************************************** Get One Company Referal Apis **********************************************************//
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+	 
 	@PostMapping("/getissueronebranchreferals")
 	@ApiOperation(value="This method is to Get Issuer One Branch Referals")
 	public ResponseEntity<CommonRes> getIssuerCompanyReferal(@RequestBody  IssuerCompanyReferalGetReq req) {

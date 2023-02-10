@@ -53,7 +53,7 @@ public class LoginProductController {
 	
 	
 //*************************************** Add Products Apis **********************************************************//
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")	
+	 
 	@PostMapping("/attachbrokerproducts")
 	@ApiOperation(value="This method is to Attach Broker Products")
 	public ResponseEntity<CommonRes> attachBrokerProducts(@RequestBody  AttachCompnayProductRequest req) {
