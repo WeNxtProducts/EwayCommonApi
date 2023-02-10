@@ -1610,7 +1610,7 @@ this.repository = repo;
 				
 			} else if(   req.getProductId().equalsIgnoreCase(buildingProductId)) {
 				EserviceBuildingDetails    findBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndCompanyIdAndProductId(req.getRequestReferenceNo() , req.getVehicleId() ,
-						req.getCompanyId() , 	 Integer.valueOf(req.getProductId())  ) ;
+						req.getCompanyId() , 	 req.getProductId()  ) ;
 				agencyCode = findBuild.getBrokerCode();
 				branchCode = findBuild.getBranchCode();
 				currencyId = findBuild.getCurrency();

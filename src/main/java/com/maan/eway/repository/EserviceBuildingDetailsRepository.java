@@ -31,9 +31,9 @@ import com.maan.eway.bean.EserviceBuildingDetailsId;
  
 public interface EserviceBuildingDetailsRepository  extends JpaRepository<EserviceBuildingDetails,EserviceBuildingDetailsId > , JpaSpecificationExecutor<EserviceBuildingDetails> {
 
-	EserviceBuildingDetails findByRequestReferenceNoAndRiskIdAndCompanyIdAndProductId(String requestReferenceNo,
+/*	EserviceBuildingDetails findByRequestReferenceNoAndRiskIdAndCompanyIdAndProductId(String requestReferenceNo,
 			Integer vehicleId, String companyId, Integer valueOf);
-
+*/
 	List<EserviceBuildingDetails> findByRequestReferenceNoOrderByRiskIdAsc(String requestReferenceNo);
 	EserviceBuildingDetails findByRequestReferenceNoAndQuoteNoAndProductIdAndCompanyId(String requestReferenceNo,
 			String quoteNo, String productId, String companyId);
@@ -47,5 +47,8 @@ public interface EserviceBuildingDetailsRepository  extends JpaRepository<Eservi
 	EserviceBuildingDetails findByQuoteNo(String quoteNo);
 
 	List<EserviceBuildingDetails> findByRequestReferenceNoAndProductId(String requestReferenceNo, String productId);
+
+	EserviceBuildingDetails findByRequestReferenceNoAndRiskIdAndCompanyIdAndProductId(String requestReferenceNo,
+			Integer vehicleId, String companyId, String productId);
 
 }
