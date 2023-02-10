@@ -32,7 +32,7 @@ public class LoginController {
 	@Autowired
 	private PrintReqService reqPrinter;
 
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+	
 	@PostMapping("/login")
 	@ApiOperation(value="This method is to Create Token For Access Other Apis")
 	public ResponseEntity<CommonLoginRes> getloginToken(@RequestBody LoginRequest mslogin, HttpServletRequest http)  {
@@ -52,7 +52,7 @@ public class LoginController {
 		}
 		
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+
 	@PostMapping("/logout")
 	@ApiOperation(value="This method is used to Logout From Screen")
 	public CommonLoginRes logout(@RequestBody LogoutRequest mslogin)  {		

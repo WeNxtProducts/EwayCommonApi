@@ -46,7 +46,7 @@ public class BasicAuthController {
 	private LoginEncryptResponse getLoginEncryptResponse(@RequestBody PaymentResUrlReq request , HttpServletRequest http) {
 		return authservice.getLoginEncryptResponse(request , http);
 	} */
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+
 	@PostMapping("/changepassword")
 	@ApiOperation(value="This method is to change Login Password")
 	public ResponseEntity<CommonLoginRes> getChangePassword(@RequestBody ChangePasswordReq req) throws Exception {
