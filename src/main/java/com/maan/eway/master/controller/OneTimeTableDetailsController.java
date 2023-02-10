@@ -2,7 +2,7 @@ package com.maan.eway.master.controller;
 
 import java.util.Collections;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +28,7 @@ public class OneTimeTableDetailsController {
 
 	@Autowired
 	private OneTimeTableDetailsService service;
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@GetMapping("/tablename")
 	@ApiOperation(value = "This method is to Table Name Drop Down")
 	public ResponseEntity<CommonRes> tableName() {
@@ -47,7 +47,7 @@ public class OneTimeTableDetailsController {
 		}
 
 	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@GetMapping("/mastertable")
 	@ApiOperation(value = "This method is to masterTable Drop Down")
 	public ResponseEntity<CommonRes> masterTable() {
@@ -66,7 +66,7 @@ public class OneTimeTableDetailsController {
 		}
 
 	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@GetMapping("/eservicetable")
 	@ApiOperation(value = "This method is to masterTable Drop Down")
 	public ResponseEntity<CommonRes> eserviceTable() {
@@ -85,6 +85,7 @@ public class OneTimeTableDetailsController {
 		}
 
 	}
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/columnname")
 	@ApiOperation(value = "This method is to Column Name Drop Down")
 	public ResponseEntity<CommonRes> columnName(@RequestBody ColumnNameDropDownlReq req) {
@@ -104,7 +105,7 @@ public class OneTimeTableDetailsController {
 
 	}
 	
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@GetMapping("/integratointable")
 	@ApiOperation(value = "This method is to Integration Table Name Drop Down")
 	public ResponseEntity<CommonRes> integrationtable() {
@@ -124,7 +125,7 @@ public class OneTimeTableDetailsController {
 
 	}
 	
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@GetMapping("/sourcetable")
 	@ApiOperation(value = "This method is to Source Table Name Drop Down")
 	public ResponseEntity<CommonRes> sourcetable() {

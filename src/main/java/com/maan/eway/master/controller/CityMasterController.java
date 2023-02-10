@@ -23,7 +23,7 @@ import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +42,7 @@ import java.util.List;
 * <h2>CityMasterController</h2>
 */
 @RestController
+
 @RequestMapping("/master")
 @Api(tags = "MASTER : City Master ", description = "API's")
 public class CityMasterController {
@@ -53,6 +54,7 @@ public class CityMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/insertcity")
 		@ApiOperation(value = "This method is Insert City Details")
 		public ResponseEntity<CommonRes> insertCity(@RequestBody CityMasterSaveReq req) {
@@ -88,7 +90,7 @@ public class CityMasterController {
 		}
 		
 		//  Get All City Master
-		
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getallcitydetails")
 		@ApiOperation("This method is getall City Details")
 		public ResponseEntity<CommonRes> getallCityDetails(@RequestBody CityMasterGetAllReq req)
@@ -111,7 +113,7 @@ public class CityMasterController {
 		}
 		
 	//  Get Active Referral Master
-		
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 			@PostMapping("/getactivecity")
 			@ApiOperation("This method is get Active City Details")
 			public ResponseEntity<CommonRes> getActiveCityDetails(@RequestBody CityMasterGetAllReq req)
@@ -134,7 +136,7 @@ public class CityMasterController {
 			}
 		
 		// Get By City Id
-		
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getbycityid")
 		@ApiOperation("This Method is to get by City id")
 		public ResponseEntity<CommonRes> getByCityId(@RequestBody CityMasterGetReq req)
@@ -155,6 +157,7 @@ public class CityMasterController {
 	}
 
 	// City Master Drop Down Type
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping(value="/dropdown/city",produces = "application/json")
 	@ApiOperation(value = "This method is get City Master Drop Down")
 

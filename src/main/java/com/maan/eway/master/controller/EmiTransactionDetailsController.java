@@ -29,13 +29,15 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.res.CuurencyDropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
-
+import io.swagger.annotations.ApiOperation;
+import org.springframework.security.access.prepost.PreAuthorize;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
  * <h2>CurrencyMasterController</h2>
  */
+
 @RestController
 @Api(tags = "API : Emi Transaction Details ", description = "API's")
 @RequestMapping("/api")
@@ -48,6 +50,7 @@ public class EmiTransactionDetailsController {
 	private PrintReqService reqPrinter;
 
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/insertemitransactiondetails")
 	@ApiOperation(value = "This method is Insert Emi Transaction Details")
 	public ResponseEntity<CommonRes> insertEmiTransactionDetails(@RequestBody EmiTransactionDetailsSaveReq req) {
@@ -83,7 +86,7 @@ public class EmiTransactionDetailsController {
 	}
 	
 	//Update
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/updateemitransactiondetails")
 	@ApiOperation(value = "This method is Insert Emi Transaction Details")
 	public ResponseEntity<CommonRes> updateEmiTransactionDetails(@RequestBody EmiTransactionDetailsUpdateReq req) {
@@ -119,7 +122,7 @@ public class EmiTransactionDetailsController {
 	}
 
 	//Emi Details
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getemidetailsbyquoteno")
 	@ApiOperation("This method is get Emi Transaction Details")
 	public ResponseEntity<CommonRes> getEmiDetailsByQuoteNo(@RequestBody EmiTransactionDetailsGetReq req) {
@@ -140,7 +143,7 @@ public class EmiTransactionDetailsController {
 	}
 
 	// View Emi Installment Details
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/viewemi")
 	@ApiOperation("This method is get Emi Installment Details")
 	public ResponseEntity<CommonRes> viewEmiInstallmentDetails(@RequestBody EmiInstallmentDetailsReq req) {
@@ -172,7 +175,7 @@ public class EmiTransactionDetailsController {
 
 	
 	//Get Next Emi Details
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getnextemidetails")
 		@ApiOperation("This method is  Get Next Emi Transaction Details")
 		public ResponseEntity<CommonRes> getNextEmiDetails(@RequestBody EmiTransactionDetailsNextReq req) {

@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import io.swagger.annotations.ApiOperation;
+import org.springframework.security.access.prepost.PreAuthorize;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ListItemValueSaveReq;
 import com.maan.eway.master.req.LovChangeStatusReq;
@@ -58,6 +59,7 @@ public class ListItemValueController {
 */
 	
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 			@PostMapping("/insertlovdetails")
 			@ApiOperation(value = "This method is Lov Master")
 			public ResponseEntity<CommonRes> insertLovDetails(@RequestBody ListItemValueSaveReq req) {
@@ -93,7 +95,7 @@ public class ListItemValueController {
 			}
 			
 			//  Get All Occupation Master
-			
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 			@PostMapping("/getalllovdetails")
 			@ApiOperation("This method is getall Occupation")
 			public ResponseEntity<CommonRes> getallLovDetails(@RequestBody LovGetAllReq req)
@@ -116,7 +118,7 @@ public class ListItemValueController {
 			}
 			
 		//  Get Active Occupation Master
-			
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 				@PostMapping("/getactivelovdetails")
 				@ApiOperation("This method is get Active Lov Details")
 				public ResponseEntity<CommonRes> getActiveLovDetails(@RequestBody LovGetAllReq req)
@@ -139,7 +141,7 @@ public class ListItemValueController {
 				}
 			
 			// Get By Occupation Id
-			
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 			@PostMapping("/getbyidlovdetails")
 			@ApiOperation("This Method is to get by  id Lov Details")
 			public ResponseEntity<CommonRes> getByIdLovDetails(@RequestBody LovGetReq req)
@@ -160,6 +162,7 @@ public class ListItemValueController {
 		}
 			
 			// Occupation Master Drop Down Type
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 			@PostMapping("/dropdown/lovlist")
 			@ApiOperation(value = "This method is get Occupation Master Drop Down")
 
@@ -208,7 +211,7 @@ public class ListItemValueController {
 
 			*/
 
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 			@PostMapping("/lovdetails/changestatus")
 			@ApiOperation(value = "This method is get Lov Details Change Status")
 			public ResponseEntity<CommonRes> changeStatusOfOccupation(@RequestBody LovChangeStatusReq req) {

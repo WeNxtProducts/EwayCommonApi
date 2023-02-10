@@ -52,6 +52,7 @@ import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
+import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.UpdateLapsedQuoteReq;
 import com.maan.eway.common.res.CriteriaCustomerRes;
 import com.maan.eway.common.res.CustomerDetailsGetRes;
@@ -1292,4 +1293,86 @@ public class GridServiceImpl implements GridService {
 			}
 			return custRes;
 		}
+
+
+
+	@Override
+	public List<EserviceCustomerDetailsRes> getallIssuerQuoteDetails(IssuerQuoteReq req) {
+		List<EserviceCustomerDetailsRes> custRes = new ArrayList<EserviceCustomerDetailsRes>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			cal.add(Calendar.DAY_OF_MONTH, -30);
+			Date before30 = cal.getTime();
+
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+
+			List<QuoteCriteriaRes> extingQuoteList = new ArrayList<QuoteCriteriaRes>();
+
+			String loginId = "";
+			if (req.getApplicationId().equalsIgnoreCase("1")) {
+				loginId = req.getLoginId();
+			} else {
+				loginId = req.getApplicationId();
+			}
+			// Branch Res
+			List<String> branches = new ArrayList<String>();
+
+			if (req.getBranchCode().equalsIgnoreCase("99999")) {
+
+				List<LoginBranchMaster> loginBranch = loginBranchRepo.findByLoginId(loginId);
+
+				branches = loginBranch.stream().filter(o -> !o.getBrokerBranchCode().equalsIgnoreCase("None"))
+						.map(LoginBranchMaster::getBrokerBranchCode).collect(Collectors.toList());
+				if (branches.size() <= 0) {
+					branches = loginBranch.stream().map(LoginBranchMaster::getBranchCode).collect(Collectors.toList());
+
+				}
+
+			} else if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
+			//	branches.add(req.getBrokerBranchCode());
+			} else {
+				branches.add(req.getBranchCode());
+			}
+
+			// Product Wise Get
+			if (req.getProductId().equalsIgnoreCase(motorProductId)) {
+				extingQuoteList = motService.getMotorIssuerQuoteDetails(req, branches, before30, today, limit,
+						offset);
+			}
+//				else if (req.getProductId().equalsIgnoreCase(travelProductId)) {
+//					extingQuoteList = traService.getTravelExistingQuoteDetails(req, branches, before30, today, limit,
+//							offset);
+//				} else if (req.getProductId().equalsIgnoreCase(buildingProductId)) {
+//					extingQuoteList = buiService.getBuildingExistingQuoteDetails(req, branches, before30, today, limit,
+//							offset);
+//					// Common
+//				} else { // (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
+//					extingQuoteList = commonService.getCommonExistingQuoteDetails(req, branches, before30, today, limit,
+//							offset);
+//				}
+
+			for (QuoteCriteriaRes data : extingQuoteList) {
+				EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+				res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
+				res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
+				custRes.add(res);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return custRes;
+	}
+
 }

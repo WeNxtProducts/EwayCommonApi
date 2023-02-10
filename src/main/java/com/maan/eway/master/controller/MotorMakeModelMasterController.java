@@ -2,7 +2,7 @@ package com.maan.eway.master.controller;
 
 import java.util.Collections;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +37,7 @@ public class MotorMakeModelMasterController {
 	@Autowired
 	private PrintReqService reqPrinter;
 	// Insert
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/savemakemodel")
 	@ApiOperation(value = "This method is Save Motor Make Model")
 
@@ -71,7 +71,7 @@ public class MotorMakeModelMasterController {
 	}
 
 	// Get By Make Id
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getmotormakemodel")
 	@ApiOperation(value = "This method is get by Motor Model")
 
@@ -92,7 +92,7 @@ public class MotorMakeModelMasterController {
 	}
 
 	// Get All
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getallmotormakemodel")
 	@ApiOperation(value = "This method is Get all Motor Make Model ")
 
@@ -115,7 +115,7 @@ public class MotorMakeModelMasterController {
 	}
 
 	// Get All
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getactivemotormakemodel")
 	@ApiOperation(value = "This method is Get Active Motor Make MOdel ")
 
@@ -136,7 +136,7 @@ public class MotorMakeModelMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping(value="/dropdown/motormakemodel",produces = "application/json")
 	@ApiOperation(value = "This method is get Motor Make Master Drop Down")
 
@@ -158,7 +158,7 @@ public class MotorMakeModelMasterController {
 		}
 
 	}
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/motormakemodel/changestatus")
 	@ApiOperation(value = "This method is get MakeModel Change Status")
 	public ResponseEntity<CommonRes> changeStatusOfMakeModel(@RequestBody MakeModelChangeStatusReq req) {

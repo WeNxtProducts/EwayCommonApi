@@ -49,6 +49,7 @@ import com.maan.eway.bean.SeqQuoteno;
 import com.maan.eway.bean.SeqRefno;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
+import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.service.MotorGridService;
@@ -1449,5 +1450,87 @@ public class MotorGridServiceImpl implements MotorGridService {
 			return null;
 		}
 		return portfolio;
+		}
+
+
+		@Override
+		public List<QuoteCriteriaRes> getMotorIssuerQuoteDetails(IssuerQuoteReq req, List<String> branches,
+				Date startDate, Date endDate, int limit, int offset) {
+			List<QuoteCriteriaRes> existingQuotes = new ArrayList<QuoteCriteriaRes>();
+			try {
+
+				// Get Datas
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<QuoteCriteriaRes> query = cb.createQuery(QuoteCriteriaRes.class);
+
+				// Find All
+				Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+				Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
+
+				// Select
+				query.multiselect(cb.count(m).alias("idsCount"),
+						// Customer Info
+						c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
+						c.get("clientName").alias("clientName"),
+						// Vehicle Info
+						m.get("companyId").alias("companyId"), m.get("productId").alias("productId"),
+						m.get("branchCode").alias("branchCode"), m.get("requestReferenceNo").alias("requestReferenceNo"),
+						cb.selectCase().when(m.get("quoteNo").isNotNull(), m.get("quoteNo")).otherwise(m.get("quoteNo"))
+								.alias("quoteNo"),
+						cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId"))
+								.otherwise(m.get("customerId")).alias("customerId"),
+						m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate")
+						
+						);
+				
+
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(m.get("updatedDate")));
+
+				// Where
+				Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
+				Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
+				Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
+				Predicate n4 = cb.equal(m.get("status"), "Y");
+				Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), endDate);
+				Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
+
+				Predicate n7 = null;
+				if (req.getApplicationId().equalsIgnoreCase("1")) {
+					n7 = cb.equal(m.get("loginId"), req.getLoginId());
+				} else {
+					n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
+				}
+
+				Predicate n8 = null;
+				if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
+					Expression<String> e0 = m.get("brokerBranchCode");
+					n8 = e0.in(branches);
+				} else {
+					Expression<String> e0 = m.get("branchCode");
+					n8 = e0.in(branches);
+				}
+
+				query.where(n1, n2, n3, n4, n5, n6, n7, n8)
+						.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
+								m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
+								m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"))
+						.orderBy(orderList);
+
+				// Get Result
+				TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
+				existingQuotes = result.getResultList();
+				existingQuotes = existingQuotes.stream().filter(o -> !o.getIdsCount().equals(0L))
+						.collect(Collectors.toList());
+			
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return existingQuotes;
 		}
 }

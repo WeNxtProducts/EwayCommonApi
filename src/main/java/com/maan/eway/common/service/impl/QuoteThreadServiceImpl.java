@@ -235,7 +235,6 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			req.setReferralRemarks(((ReferalResponse) commonRes.getCommonResponse()).getReferalRemarks());
 			 updateReferralStatus(req);
 			 return  commonRes ;
-	
 		} else {
 			// Thread Call Setup
 			List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
@@ -1142,13 +1141,13 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 
 				// Calling pushNotification
 				CommonRes res=notiService.pushNotification(n);
-				if (res.getIsError()==null) {
-					updateRes.setResponse("Pushed Successfuly");
-					updateRes.setQuoteNo(cusRefNo.get(0).getQuoteNo().toString());
-					updateRes.setCustomerId(cusRefNo.get(0).getCustomerReferenceNo());
-					updateRes.setRequestReferenceNo(cusRefNo.get(0).getRequestReferenceNo().toString());
-
-				}
+//				if (res.getIsError()==null) {
+//					updateRes.setResponse("Pushed Successfuly");
+//					updateRes.setQuoteNo(cusRefNo.get(0).getQuoteNo().toString());
+//					updateRes.setCustomerId(cusRefNo.get(0).getCustomerReferenceNo());
+//					updateRes.setRequestReferenceNo(cusRefNo.get(0).getRequestReferenceNo().toString());
+//
+//				}
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.info("Exception is ---> " + e.getMessage());

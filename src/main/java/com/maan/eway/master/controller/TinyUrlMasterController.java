@@ -7,7 +7,7 @@ package com.maan.eway.master.controller;
 
 import java.util.Collections;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +48,7 @@ public class TinyUrlMasterController {
 	private PrintReqService reqPrinter;
 
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/inserttinyurl")
 	@ApiOperation(value = "This method is Save Tiny Master")
 	public ResponseEntity<CommonRes> insertTinyUrl(@RequestBody TinyUrlMasterSaveReq req) {
@@ -83,7 +84,7 @@ public class TinyUrlMasterController {
 	}
 
 	// Get Tiny URL Master
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/gettinyurl")
 	@ApiOperation("This method is get Tiny Url")
 	public ResponseEntity<CommonRes> getTinyUrl(@RequestBody TinyUrlMasterGetReq req) {
@@ -104,7 +105,7 @@ public class TinyUrlMasterController {
 	}
 
 	// Get All Tiny URL Master
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getalltinyurl")
 	@ApiOperation("This method is getall Tiny Url")
 	public ResponseEntity<CommonRes> getallTinyUrl(@RequestBody TinyUrlMasterGetallReq req) {
@@ -125,7 +126,7 @@ public class TinyUrlMasterController {
 	}
 
 	// Get Active Tiny URL Master
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getactivetinyurl")
 	@ApiOperation("This method is get active Tiny Url")
 	public ResponseEntity<CommonRes> getactiveTinyUrl(@RequestBody TinyUrlMasterGetallReq req) {
@@ -147,7 +148,7 @@ public class TinyUrlMasterController {
 
 	
 	// Change Status Tiny URL Master
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/changestatustinyurl")
 	@ApiOperation("This method is Change Status Tiny Url")
 	public ResponseEntity<CommonRes> changestatusTinyUrl(@RequestBody TinyUrlChangeStatusReq req) {
@@ -170,6 +171,7 @@ public class TinyUrlMasterController {
 	
 	
 	// Tiny Url Master Drop Down Type
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping(value="/dropdown/tinyurl",produces = "application/json")
 	@ApiOperation(value = "This method is get Tiny URL Drop Down")
 

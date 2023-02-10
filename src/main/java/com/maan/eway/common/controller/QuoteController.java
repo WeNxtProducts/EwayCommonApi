@@ -2,7 +2,7 @@ package com.maan.eway.common.controller;
 
 import java.util.Collections;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +37,7 @@ public class QuoteController {
 	
 	@Autowired
 	private  QuoteService entityService ;
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/buypolicy")
 	@ApiOperation(value = "This method is New Quote ")
 	public ResponseEntity<CommonRes> generateNewQuote(@RequestBody NewQuoteReq req) {
@@ -54,7 +54,7 @@ public class QuoteController {
 		
 
 	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/deleteoldquoterecord")
 	@ApiOperation(value = "This method is New Quote ")
 	public ResponseEntity<CommonRes> deleteOldQuoteRecord(@RequestBody DeleteOldQuoteReq req) {
@@ -75,7 +75,7 @@ public class QuoteController {
 		
 
 	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/productsuminsureddetails")
 	@ApiOperation(value = "This method is New Quote ")
 	public ResponseEntity<CommonRes> sectionWiseSuminsuredDetails(@RequestBody SectionSumInsuredGetReq req) {
@@ -99,7 +99,7 @@ public class QuoteController {
 	
 
 	 
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/viewquotedetails")
 	@ApiOperation(value = "This method is Get Quote Details")
 	public ResponseEntity<CommonRes> viewQuoteDetails(@RequestBody ViewQuoteReq req) {
@@ -122,7 +122,7 @@ public class QuoteController {
 
 	} 
 	
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/update/referalstatus")
 	public ResponseEntity<CommonRes> saveCustomerDetails(@RequestBody  AdminReferalStatusReq req) {
 
@@ -151,7 +151,7 @@ public class QuoteController {
 			}
 		}
     } 
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/updatestatus")
 	public ResponseEntity<CommonRes> saveCustomerDetails(@RequestBody  UpdateQuoteStatusReq req) {
 

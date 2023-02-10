@@ -7,7 +7,7 @@ package com.maan.eway.common.controller;
 
 import java.util.Collections;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +50,7 @@ public class FactorRateRequestDetailsController {
 		this.entityService = entityService;
 	}
 */
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/savefactorratedetails")
 	public ResponseEntity<CommonRes> saveFactorRateRequestDetails(@RequestBody  EserviceMotorDetailsSaveRes req) {
 
@@ -79,7 +79,7 @@ public class FactorRateRequestDetailsController {
 			}
 		//}
     }
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/updatefactorrate")
 	public ResponseEntity<CommonRes> updateFactorRatePremiumDetails(@RequestBody  UpdateFactorRateReq req) {
 
@@ -108,7 +108,7 @@ public class FactorRateRequestDetailsController {
 			}
 		}
     }
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/savefactors")
 	public ResponseEntity<CommonRes> updateFactorIsSelectedDetails(@RequestBody  UpdateFactorRateReq req) {
 
@@ -137,7 +137,7 @@ public class FactorRateRequestDetailsController {
 			}
 		}
     }
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/view/calc")
 	public ResponseEntity<CommonRes> getFactorRateRequestDetails(@RequestBody  FactorRateDetailsGetReq req,@RequestHeader("Authorization") String tokens) {
 
@@ -155,7 +155,7 @@ public class FactorRateRequestDetailsController {
 		}
 		
     }
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
     @GetMapping(value = "/factorraterequestdetails")
     public ResponseEntity<List<FactorRateRequestDetails>> getAllFactorRateRequestDetails() {
         List<FactorRateRequestDetails> lst = entityService.getAll();

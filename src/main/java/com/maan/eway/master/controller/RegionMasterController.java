@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import com.maan.eway.master.req.RegionChangeStatusReq;
 import com.maan.eway.master.req.RegionMasterDropDownReq;
 import com.maan.eway.master.req.RegionMasterGetAllReq;
@@ -47,6 +47,7 @@ public class RegionMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// Region Master Drop Down Type
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 			@PostMapping(value="/dropdown/region",produces = "application/json")
 			@ApiOperation(value = "This method is get Region Master Drop Down")
 
@@ -69,6 +70,7 @@ public class RegionMasterController {
 
 			}
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/insertregion")
 		@ApiOperation(value = "This method is Insert Region Details")
 		public ResponseEntity<CommonRes> insertRegion(@RequestBody RegionMasterSaveReq req) {
@@ -104,7 +106,7 @@ public class RegionMasterController {
 		}
 		
 		//  Get All Region Master
-		
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getallregiondetails")
 		@ApiOperation("This method is getall Region Details")
 		public ResponseEntity<CommonRes> getallRegionDetails(@RequestBody RegionMasterGetAllReq req)
@@ -127,7 +129,7 @@ public class RegionMasterController {
 		}
 		
 	//  Get Active Region Master
-		
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 			@PostMapping("/getactiveregion")
 			@ApiOperation("This method is get Active Region Details")
 			public ResponseEntity<CommonRes> getActiveRegionDetails(@RequestBody RegionMasterGetAllReq req)
@@ -150,7 +152,7 @@ public class RegionMasterController {
 			}
 		
 		// Get By Region Id
-		
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getbyregionid")
 		@ApiOperation("This Method is to get by Region id")
 		public ResponseEntity<CommonRes> getByRegionCode(@RequestBody RegionMasterGetReq req)
@@ -171,7 +173,7 @@ public class RegionMasterController {
 	}
 		
 		
-		
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/region/changestatus")
 		@ApiOperation(value = "This method is get Company Product Master Drop Down")
 		public ResponseEntity<CommonRes> changeStatusOfRegion(@RequestBody RegionChangeStatusReq req) {

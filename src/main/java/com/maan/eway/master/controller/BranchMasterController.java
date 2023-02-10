@@ -6,7 +6,7 @@
 package com.maan.eway.master.controller;
 
 
-
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.BranchChangeStatusReq;
@@ -57,6 +57,7 @@ public class BranchMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/insertbranch")
 		@ApiOperation(value = "This method is Insert Branch Details")
 		public ResponseEntity<CommonRes> insertBranch(@RequestBody BranchMasterSaveReq req) {
@@ -92,7 +93,7 @@ public class BranchMasterController {
 		}
 		
 		//  Get All Branch Master
-		
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getallbranchdetails")
 		@ApiOperation("This method is getall Branch Details")
 		public ResponseEntity<CommonRes> getallBranchDetails(@RequestBody BranchMasterGetAllReq req)
@@ -115,7 +116,7 @@ public class BranchMasterController {
 		}
 		
 	//  Get Active Branch Master
-		
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 			@PostMapping("/getactivebranch")
 			@ApiOperation("This method is get Active Branch Details")
 			public ResponseEntity<CommonRes> getActiveBranchDetails(@RequestBody BranchMasterGetAllReq req)
@@ -138,7 +139,7 @@ public class BranchMasterController {
 			}
 		
 		// Get By Branch Id
-		
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getbybranchid")
 		@ApiOperation("This Method is to get by Branch id")
 		public ResponseEntity<CommonRes> getByBranchCode(@RequestBody BranchMasterGetReq req)
@@ -159,6 +160,7 @@ public class BranchMasterController {
 	}
 		
 	// Branch Master Drop Down Type
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 		@PostMapping(value="/dropdown/branchmaster",produces = "application/json")
 		@ApiOperation(value = "This method is get Branch Master Drop Down")
 

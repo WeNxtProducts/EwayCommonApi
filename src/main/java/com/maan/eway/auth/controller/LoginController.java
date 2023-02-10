@@ -16,7 +16,7 @@ import com.maan.eway.auth.dto.LogoutRequest;
 import com.maan.eway.auth.service.AuthendicationService;
 import com.maan.eway.auth.service.LoginValidatedService;
 import com.maan.eway.service.PrintReqService;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -32,6 +32,7 @@ public class LoginController {
 	@Autowired
 	private PrintReqService reqPrinter;
 
+	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
 	@PostMapping("/login")
 	@ApiOperation(value="This method is to Create Token For Access Other Apis")
 	public ResponseEntity<CommonLoginRes> getloginToken(@RequestBody LoginRequest mslogin, HttpServletRequest http)  {
@@ -51,7 +52,7 @@ public class LoginController {
 		}
 		
 	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
 	@PostMapping("/logout")
 	@ApiOperation(value="This method is used to Logout From Screen")
 	public CommonLoginRes logout(@RequestBody LogoutRequest mslogin)  {		

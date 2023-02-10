@@ -7,7 +7,7 @@ package com.maan.eway.master.controller;
 
 import java.util.Collections;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,6 +65,7 @@ public class ProductGroupMasterController {
 
 */
 	// Product Group Master Drop Down Type
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping(value="/dropdown/productgroup",produces = "application/json")
 	@ApiOperation(value = "This method is get Product Group Master Drop Down")
 

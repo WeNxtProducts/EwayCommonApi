@@ -7,7 +7,8 @@ package com.maan.eway.master.controller;
 
 import java.util.Collections;
 import java.util.List;
-
+import io.swagger.annotations.ApiOperation;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +50,7 @@ public class CurrencyMasterController {
 	private PrintReqService reqPrinter;
 
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/insertcurrency")
 	@ApiOperation(value = "This method is Insert Currency Details")
 	public ResponseEntity<CommonRes> insertCurrency(@RequestBody CurrencyMasterSaveReq req) {
@@ -84,7 +86,7 @@ public class CurrencyMasterController {
 	}
 
 	// Get All Currency Master
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getallcurrencydetails")
 	@ApiOperation("This method is getall Currency Details")
 	public ResponseEntity<CommonRes> getallCurrencyDetails(@RequestBody CurrencyMasterGetAllReq req) {
@@ -105,7 +107,7 @@ public class CurrencyMasterController {
 	}
 
 	// Get Active Currency Master
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getactivecurrency")
 	@ApiOperation("This method is get Active Currency Details")
 	public ResponseEntity<CommonRes> getActiveCurrencyDetails(@RequestBody CurrencyMasterGetAllReq req) {
@@ -126,7 +128,7 @@ public class CurrencyMasterController {
 	}
 
 	// Get By Currency Id
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getbycurrencyid")
 	@ApiOperation("This Method is to get by Currency id")
 	public ResponseEntity<CommonRes> getByCurrencyId(@RequestBody CurrencyMasterGetReq req) {
@@ -144,7 +146,7 @@ public class CurrencyMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-		
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")	
 	@PostMapping("/changestatuscurrencydetails")
 	@ApiOperation("This method is change Status Currency Details")
 	public ResponseEntity<CommonRes>changeStatusCurrencyDetails(@RequestBody CurrencyMasterChangeStatusReq req) {
@@ -167,6 +169,7 @@ public class CurrencyMasterController {
 	
 	
 	// Currency Master Drop Down Type
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping(value="/dropdown/currency",produces = "application/json")
 	@ApiOperation(value = "This method is get Currency Master Drop Down")
 
@@ -196,6 +199,7 @@ public class CurrencyMasterController {
 	}
 	
 	// Currency Master Drop Down Type
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping(value="/dropdown/productcurrency")
 	@ApiOperation(value = "This method is get Currency Master Drop Down")
 

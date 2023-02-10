@@ -2,7 +2,7 @@ package com.maan.eway.master.controller;
 
 import java.util.Collections;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +51,7 @@ private WarRateMasterService  service;
 private PrintReqService reqPrinter;
 
 //Save
-
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 @PostMapping("/insertwarrate")
 @ApiOperation(value="This Method is to save War Rate Master")
 public ResponseEntity<CommonRes> saveWarRate(@RequestBody WarRateMasterSaveReq req){
@@ -84,7 +84,7 @@ if(validation !=null && validation.size()!=0) {
 }
 
 //  Get All War Rate Master
-
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 @PostMapping("/getallwarrate")
 @ApiOperation("This method is getall Warrate")
 public ResponseEntity<CommonRes> getallWarRate(@RequestBody WarRateMasterGetallReq req)
@@ -107,7 +107,7 @@ public ResponseEntity<CommonRes> getallWarRate(@RequestBody WarRateMasterGetallR
 }
 
 //  Get Active War RAte Master
-
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getactivewarrate")
 	@ApiOperation("This method is get Active War Rate")
 	public ResponseEntity<CommonRes> getActiveWarrate(@RequestBody WarRateMasterGetallReq req)
@@ -130,7 +130,7 @@ public ResponseEntity<CommonRes> getallWarRate(@RequestBody WarRateMasterGetallR
 	}
 
 // Get By War Rate Id
-
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 @PostMapping("/getbywarrateid")
 @ApiOperation("This Method is to get by War Rate id")
 public ResponseEntity<CommonRes> getByWarrateId(@RequestBody WarRateMasterGetReq req)
@@ -150,7 +150,7 @@ if (res != null) {
 }
 }
 	
-
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 @PostMapping("/warrate/changestatus")
 @ApiOperation(value = "This method is get Warrate Change Status")
 public ResponseEntity<CommonRes> changeStatusOfWarrate(@RequestBody WarrateChangeStatusReq req) {
@@ -171,6 +171,7 @@ public ResponseEntity<CommonRes> changeStatusOfWarrate(@RequestBody WarrateChang
 
 }
 //War Rate Master Drop Down Type
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping(value="/dropdown/warrate",produces = "application/json")
 	@ApiOperation(value = "This method is get War Rate Master Drop Down")
 
@@ -196,6 +197,7 @@ public ResponseEntity<CommonRes> changeStatusOfWarrate(@RequestBody WarrateChang
 	
 	
 	//Save
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/insertwarratelist")
 	@ApiOperation(value="This Method is to save War Rate Master List")
 	public ResponseEntity<CommonRes> saveWarRate(@RequestBody  List<WarRateMasterReq> req){

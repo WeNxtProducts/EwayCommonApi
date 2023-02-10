@@ -7,7 +7,7 @@ package com.maan.eway.common.controller;
 
 import java.util.Collections;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +44,7 @@ public class UwQuestionsDetailsController {
 	private  PrintReqService reqPrinter;
 	
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/saveuwquestions")
 	@ApiOperation(value = "This method is Save UW Questions")
 	public ResponseEntity<CommonRes> saveUwQuestions(@RequestBody List<UwQuestionsDetailsSaveReq> req) {
@@ -77,7 +78,7 @@ public class UwQuestionsDetailsController {
 		}
 
 	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/getuwquestionsdetails")
 	@ApiOperation(value = "This method is Get UW Questions Details")
 	public ResponseEntity<CommonRes> getUwQuestionsDetails(@RequestBody UwQuestionsDetailsGetReq req) {

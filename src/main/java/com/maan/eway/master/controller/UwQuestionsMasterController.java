@@ -7,7 +7,7 @@ package com.maan.eway.master.controller;
 
 import java.util.Collections;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +48,7 @@ public class UwQuestionsMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/insertuwquestions")
 	@ApiOperation(value = "This method is Insert UW Questions")
 	public ResponseEntity<CommonRes> insertUwQuestions(@RequestBody UwQuestionMasterSaveReq req) {
@@ -83,7 +84,7 @@ public class UwQuestionsMasterController {
 	}
 	
 	//  Get All Under Writer Questions
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getalluwquestions")
 	@ApiOperation("This method is getall UW Questions")
 	public ResponseEntity<CommonRes> getallUwQuestions(@RequestBody UwQuestionsMasterGetAllReq req)
@@ -106,7 +107,7 @@ public class UwQuestionsMasterController {
 	}
 	
 	//  Get Active Uw Questions
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getactiveuwquestions")
 		@ApiOperation("This method is get Active UW Questions")
 		public ResponseEntity<CommonRes> getActiveUwQuestions(@RequestBody UwQuestionsMasterGetAllReq req)
@@ -129,7 +130,7 @@ public class UwQuestionsMasterController {
 		}
 		
 		// Get By Uw Question Id
-		
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getbyuwquestionid")
 		@ApiOperation("This Method is to get by UW Question Id")
 		public ResponseEntity<CommonRes> getByUwQuestionId(@RequestBody UwQuestionMasterGetReq req)
@@ -148,7 +149,7 @@ public class UwQuestionsMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-		
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/uwquestions/changestatus")
 	@ApiOperation(value = "This method is get Uw Question change Status ")
 	public ResponseEntity<CommonRes> changeStatusOfUwQuestion(@RequestBody UwQuestionChangeStatusReq req) {
@@ -171,6 +172,7 @@ public class UwQuestionsMasterController {
 	
 
 //	Uw Question Master Drop Down Type
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping(value="/dropdown/uwquestion",produces = "application/json")
 	@ApiOperation(value = "This method is get UwQuestion Master Drop Down")
 

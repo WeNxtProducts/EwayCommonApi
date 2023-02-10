@@ -7,7 +7,7 @@ package com.maan.eway.master.controller;
 
 import java.util.Collections;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +46,7 @@ public class PremiaConfigMasterController {
 	private PrintReqService reqPrinter;
 
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/insertpremiaconfig")
 	@ApiOperation(value = "This method is Insert Premia Config Master")
 	public ResponseEntity<CommonRes> insertPremiaConfig(@RequestBody PremiaConfigMasterSaveReq req) {
@@ -81,6 +82,7 @@ public class PremiaConfigMasterController {
 	}
 
 	//Get Premia Config
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getpremiaconfig")
 	@ApiOperation("This method is get Premia Config")
 	public ResponseEntity<CommonRes> getPremiaConfig(@RequestBody PremiaConfigMasterGetReq req) {
@@ -101,6 +103,7 @@ public class PremiaConfigMasterController {
 	}
 
 	//Getall Premia Config
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getallpremiaconfig")
 	@ApiOperation("This method is getall Premia Config")
 	public ResponseEntity<CommonRes> getallPremiaConfig(@RequestBody PremiaConfigMasterGetAllReq req) {
@@ -121,6 +124,7 @@ public class PremiaConfigMasterController {
 	}
 
 	//Getactive Premia Config
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getactivepremiaconfig")
 	@ApiOperation("This method is getactive Premia Config")
 	public ResponseEntity<CommonRes> getactivePremiaConfig(@RequestBody PremiaConfigMasterGetAllReq req) {
@@ -142,6 +146,7 @@ public class PremiaConfigMasterController {
 
 	
 	//Change Status Premia Config
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/changestatuspremiaconfig")
 	@ApiOperation("This method is Change Status Premia Config")
 	public ResponseEntity<CommonRes> changeStatusPremiaConfig(@RequestBody PremiaConfigMasterChangeStatusReq req) {
@@ -163,6 +168,7 @@ public class PremiaConfigMasterController {
 
 	
 	//Premia Config Master Drop Down Type
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping(value="/dropdown/premiaconfig",produces = "application/json")
 	@ApiOperation(value = "This method is get Premia Config Master Drop Down")
 

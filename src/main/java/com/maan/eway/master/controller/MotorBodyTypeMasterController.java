@@ -2,7 +2,7 @@ package com.maan.eway.master.controller;
 
 import java.util.Collections;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +39,7 @@ public class MotorBodyTypeMasterController {
 	private PrintReqService reqPrinter;
 	
 	// Insert
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/savemotorbodytype")
 	@ApiOperation(value = "This method is Save Make Motor ")
 
@@ -73,7 +73,7 @@ public class MotorBodyTypeMasterController {
 	}
 
 	// Get By Make Id
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getmotorbody")
 	@ApiOperation(value = "This method is get by Make Id ")
 
@@ -94,7 +94,7 @@ public class MotorBodyTypeMasterController {
 	}
 
 	// Get All
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getallmotorbody")
 	@ApiOperation(value = "This method is Get all Motor Make ")
 
@@ -118,7 +118,7 @@ public class MotorBodyTypeMasterController {
 
 	
 	// Get All Active
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getactivemotorbody")
 		@ApiOperation(value = "This method is Get Active Motor Body ")
 
@@ -142,7 +142,7 @@ public class MotorBodyTypeMasterController {
 
 	
 		
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/bodytype/changestatus")
 		@ApiOperation(value = "This method is get Body Type Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfBodyType(@RequestBody BodyTypeChangeStatusReq req) {
@@ -165,6 +165,7 @@ public class MotorBodyTypeMasterController {
 	
 
 		// Body Type Master Drop Down Type
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 		@PostMapping(value="/dropdown/bodytype",produces = "application/json")
 		@ApiOperation(value = "This method is get Body Type Drop Down")
 
@@ -188,6 +189,7 @@ public class MotorBodyTypeMasterController {
 		}
 		
 		// Body Type Master Drop Down Type
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 		@PostMapping("/dropdown/induvidual/bodytype")
 		@ApiOperation(value = "This method is get Body Type Drop Down")
 

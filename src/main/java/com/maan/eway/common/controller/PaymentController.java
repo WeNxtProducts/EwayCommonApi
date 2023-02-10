@@ -2,7 +2,7 @@ package com.maan.eway.common.controller;
 
 import java.util.Collections;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +47,7 @@ public class PaymentController {
 	private  PaymentService service;
 	
 	// Payment Details Save
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/makepayment")
 	@ApiOperation(value="This method is to Save Make Payment")
 	public ResponseEntity<CommonRes> makepayment(@RequestBody  MakePaymentSaveReq req) {
@@ -77,7 +78,7 @@ public class PaymentController {
 	
 		}
 	
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/insertpaymentdetails")
 	@ApiOperation(value="This method is to Save Make Payment")
 	public ResponseEntity<CommonRes> savePaymentDetails(@RequestBody  PaymentDetailsSaveReq req) {
@@ -107,7 +108,7 @@ public class PaymentController {
 		}
 	
 		}
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/gettinyurl")
 	@ApiOperation(value = "This method is Get Quote Details")
 	public ResponseEntity<CommonRes> getTinyUrl(@RequestBody TinyUrlGetReq req) {
@@ -124,7 +125,7 @@ public class PaymentController {
 		
 
 	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/decrypttinyurl")
 	@ApiOperation(value = "This method is Decrypt Tiny Url")
 	public ResponseEntity<CommonRes> decryptTinyUrl(@RequestBody PaymentResUrlReq req) {

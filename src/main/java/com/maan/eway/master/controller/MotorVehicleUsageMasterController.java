@@ -7,7 +7,7 @@ package com.maan.eway.master.controller;
 
 import java.util.Collections;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +50,7 @@ public class MotorVehicleUsageMasterController {
 	
 	@Autowired
 	private PrintReqService reqPrinter;
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/savemotorvehicleusagedetails")
 	public ResponseEntity<CommonRes> saveMotorVehicleUsageDetails(@RequestBody  MotorVehicleUsageMasterSaveReq req) {
 		reqPrinter.reqPrint(req);
@@ -80,6 +81,7 @@ public class MotorVehicleUsageMasterController {
 
 	
 	// Get
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getmotorvehicleusagedetails")
 		public ResponseEntity<CommonRes> getMotorVehicleDetails(@RequestBody MotorVehicleUsageMasterGetReq req) {
 			CommonRes data = new CommonRes();
@@ -97,6 +99,7 @@ public class MotorVehicleUsageMasterController {
 		}
 
 		// Getall
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getallmotorvehicleusagedetails")
 		public ResponseEntity<CommonRes> getallMotorVehicleDetails(@RequestBody MotorVehicleUsageMasterGetallReq req) {
 			CommonRes data = new CommonRes();
@@ -114,6 +117,7 @@ public class MotorVehicleUsageMasterController {
 		}
 
 		// Getactive
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 				@PostMapping("/getactivemotorvehicleusagedetails")
 				public ResponseEntity<CommonRes> getactiveMotorVehicleDetails(@RequestBody MotorVehicleUsageMasterGetallReq req) {
 					CommonRes data = new CommonRes();
@@ -155,6 +159,7 @@ public class MotorVehicleUsageMasterController {
 				
 
 				// Motor Vehicle Usage Master Drop Down Type
+				@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 				@PostMapping(value="/dropdown/induvidual/vehicleusage",produces = "application/json")
 				@ApiOperation(value = "This method is get Motor Vehicle Usage Master Drop Down")
 
@@ -177,7 +182,7 @@ public class MotorVehicleUsageMasterController {
 
 				}
 				
-
+				@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 				@PostMapping("/vehicleusage/changestatus")
 				@ApiOperation(value = "This method is get Vehicle Usage Change Status")
 				public ResponseEntity<CommonRes> changeStatusOfVehicleUsage(@RequestBody MotorVehicleUsageChangeStatusReq req) {

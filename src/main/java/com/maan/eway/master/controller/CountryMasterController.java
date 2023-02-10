@@ -7,7 +7,8 @@ package com.maan.eway.master.controller;
 
 import java.util.Collections;
 import java.util.List;
-
+import io.swagger.annotations.ApiOperation;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +51,7 @@ public class CountryMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/insertcountry")
 		@ApiOperation(value = "This method is Insert Country Details")
 		public ResponseEntity<CommonRes> insertCountry(@RequestBody CountryMasterSaveReq req) {
@@ -85,7 +87,7 @@ public class CountryMasterController {
 		}
 		
 		//  Get All Country Master
-		
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getallcountrydetails")
 		@ApiOperation("This method is getall Country Details")
 		public ResponseEntity<CommonRes> getallCountryDetails(@RequestBody CountryGetAllReq req )
@@ -106,7 +108,7 @@ public class CountryMasterController {
 		}
 		
 	//  Get Active Country Master
-		
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getactivecountry")
 			@ApiOperation("This method is get Active Country Details")
 			public ResponseEntity<CommonRes> getActiveCountryDetails(@RequestBody CountryGetAllReq req )
@@ -128,7 +130,7 @@ public class CountryMasterController {
 			}
 		
 		// Get By Country Id
-		
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getbycountryid")
 		@ApiOperation("This Method is to get by Country id")
 		public ResponseEntity<CommonRes> getByCountryId(@RequestBody CountryMasterGetReq req)
@@ -148,6 +150,7 @@ public class CountryMasterController {
 		}
 	}
 		// Country Master Drop Down Type
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 		@PostMapping(value="/dropdown/country",produces = "application/json")
 		@ApiOperation(value = "This method is get Country Master Drop Down")
 
@@ -169,7 +172,7 @@ public class CountryMasterController {
 			}
 
 		}
-					
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")		
 			@PostMapping(value="/dropdown/nationality",produces = "application/json")
 			@ApiOperation(value = "This method is get Country Master Drop Down")
 

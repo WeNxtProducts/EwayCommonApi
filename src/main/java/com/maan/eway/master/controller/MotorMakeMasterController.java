@@ -1,5 +1,5 @@
 package com.maan.eway.master.controller;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.Collections;
 import java.util.List;
 import com.maan.eway.error.Error;
@@ -37,7 +37,7 @@ public class MotorMakeMasterController {
 	private MotorMakeMasterService service;
 	@Autowired
 	private PrintReqService reqPrinter;
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/savemakemotor")
 	@ApiOperation(value = "This method is Save Make Motor ")
 
@@ -71,7 +71,7 @@ public class MotorMakeMasterController {
 	}
 
 	// Get By Make Id
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getmakeid")
 	@ApiOperation(value = "This method is get by Make Id ")
 
@@ -92,7 +92,7 @@ public class MotorMakeMasterController {
 	}
 
 	// Get All
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getallmotormake")
 	@ApiOperation(value = "This method is Get all Motor Make ")
 
@@ -116,7 +116,7 @@ public class MotorMakeMasterController {
 
 	
 	// Get All
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getactivemotormake")
 		@ApiOperation(value = "This method is Get Active Motor Make ")
 
@@ -139,6 +139,7 @@ public class MotorMakeMasterController {
 		}
 		
 		// Motor Make Drop Down Type
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 		@PostMapping(value="/dropdown/motormake",produces = "application/json")
 		@ApiOperation(value = "This method is get Motor Make Master Drop Down")
 
@@ -161,7 +162,7 @@ public class MotorMakeMasterController {
 
 		}
 		
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/motormake/changestatus")
 		@ApiOperation(value = "This method is Motor Make Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfMotorMake(@RequestBody MotorMakeChangeStatusReq req) {

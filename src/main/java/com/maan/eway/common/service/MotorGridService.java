@@ -11,6 +11,7 @@ import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
+import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
@@ -47,4 +48,8 @@ public interface MotorGridService {
 
 	List<PortfolioGridCriteriaRes> getMotorPortfolioCancelled(ExistingQuoteReq req, List<String> branches,Date startDate,  int limit,
 			int offset, String string);
+
+	List<QuoteCriteriaRes> getMotorIssuerQuoteDetails(IssuerQuoteReq req, List<String> branches, Date startDate ,Date  endDate, int limit, int offset);
+
+	
 }

@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,7 +46,7 @@ public class BasicAuthController {
 	private LoginEncryptResponse getLoginEncryptResponse(@RequestBody PaymentResUrlReq request , HttpServletRequest http) {
 		return authservice.getLoginEncryptResponse(request , http);
 	} */
-	
+	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
 	@PostMapping("/changepassword")
 	@ApiOperation(value="This method is to change Login Password")
 	public ResponseEntity<CommonLoginRes> getChangePassword(@RequestBody ChangePasswordReq req) throws Exception {

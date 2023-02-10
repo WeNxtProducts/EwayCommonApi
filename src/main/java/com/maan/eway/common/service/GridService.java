@@ -5,6 +5,7 @@ import com.maan.eway.error.Error;
 import com.maan.eway.common.req.CopyQuoteReq;
 
 import com.maan.eway.common.req.ExistingQuoteReq;
+import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.UpdateLapsedQuoteReq;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
@@ -60,6 +61,8 @@ public interface GridService {
 	List<PortfolioCustomerDetailsRes> getallPortfolioPending(ExistingQuoteReq req);
 
 	List<PortfolioCustomerDetailsRes> getallPortfolioCancelled(ExistingQuoteReq req);
+
+	List<EserviceCustomerDetailsRes> getallIssuerQuoteDetails(IssuerQuoteReq req);
 
 
 

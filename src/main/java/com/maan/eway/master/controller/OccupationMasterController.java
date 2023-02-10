@@ -7,7 +7,7 @@ package com.maan.eway.master.controller;
 
 import java.util.Collections;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +48,7 @@ public class OccupationMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/insertoccupation")
 		@ApiOperation(value = "This method is Occupation Master")
 		public ResponseEntity<CommonRes> insertOccupation(@RequestBody OccupationMasterSaveReq req) {
@@ -83,7 +84,7 @@ public class OccupationMasterController {
 		}
 		
 		//  Get All Occupation Master
-		
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getalloccupation")
 		@ApiOperation("This method is getall Occupation")
 		public ResponseEntity<CommonRes> getallOccupation(@RequestBody OccupationMasterGetAllReq req)
@@ -106,7 +107,7 @@ public class OccupationMasterController {
 		}
 		
 	//  Get Active Occupation Master
-		
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 			@PostMapping("/getactiveoccupation")
 			@ApiOperation("This method is get Active Occupation")
 			public ResponseEntity<CommonRes> getActiveOccupation(@RequestBody OccupationMasterGetAllReq req)
@@ -129,7 +130,7 @@ public class OccupationMasterController {
 			}
 		
 		// Get By Occupation Id
-		
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getbyoccupationid")
 		@ApiOperation("This Method is to get by Occupation id")
 		public ResponseEntity<CommonRes> getByOccupationId(@RequestBody OccupationMasterGetReq req)
@@ -150,6 +151,7 @@ public class OccupationMasterController {
 	}
 		
 		// Occupation Master Drop Down Type
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 		@PostMapping(value="/dropdown/occupation",produces = "application/json")
 		@ApiOperation(value = "This method is get Occupation Master Drop Down")
 
@@ -221,7 +223,7 @@ public class OccupationMasterController {
 
 		*/
 
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/occupation/changestatus")
 		@ApiOperation(value = "This method is get Occupation Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfOccupation(@RequestBody OccupationChangeStatusReq req) {

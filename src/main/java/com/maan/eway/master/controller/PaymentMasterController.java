@@ -2,7 +2,7 @@ package com.maan.eway.master.controller;
 
 import java.util.Collections;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +40,7 @@ private PaymentMasterService service;
 private PrintReqService reqPrinter;
 
 //Save
-
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 @PostMapping("/insertpayment")
 @ApiOperation(value = "This Method is to save Payment Master")
 public ResponseEntity<CommonRes> savePaymentMaster(@RequestBody PaymentMasterSaveReq req) {
@@ -72,7 +72,7 @@ public ResponseEntity<CommonRes> savePaymentMaster(@RequestBody PaymentMasterSav
 }
 
 //  Get All Payment Master
-
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 @PostMapping("/getallpayment")
 @ApiOperation("This method is getall Payment")
 public ResponseEntity<CommonRes> getallPayment(@RequestBody PaymentMasterGetallReq req) {
@@ -93,7 +93,7 @@ public ResponseEntity<CommonRes> getallPayment(@RequestBody PaymentMasterGetallR
 }
 
 //  Get Active Payment Master
-
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 @PostMapping("/getactivepayment")
 @ApiOperation("This method is get Active Payment")
 public ResponseEntity<CommonRes> getActivePayment(@RequestBody PaymentMasterGetallReq req) {
@@ -114,7 +114,7 @@ public ResponseEntity<CommonRes> getActivePayment(@RequestBody PaymentMasterGeta
 }
 
 // Get By Payment Id
-
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 @PostMapping("/getbypaymentid")
 @ApiOperation("This Method is to get by Payment id")
 public ResponseEntity<CommonRes> getByPaymentId(@RequestBody PaymentMasterGetReq req) {
@@ -132,7 +132,7 @@ public ResponseEntity<CommonRes> getByPaymentId(@RequestBody PaymentMasterGetReq
 		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	}
 }
-
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 @PostMapping("/payment/changestatus")
 @ApiOperation(value = "This method is get Payment Change Status")
 public ResponseEntity<CommonRes> changeStatusOfPayment(@RequestBody PaymentMasterChangeStatusReq req) {
@@ -154,6 +154,7 @@ public ResponseEntity<CommonRes> changeStatusOfPayment(@RequestBody PaymentMaste
 }
 
 //Payment Master Drop Down Type
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 @PostMapping(value="/dropdown/paymenttypes",produces = "application/json")
 @ApiOperation(value = "This method is get Payment Master Drop Down")
 

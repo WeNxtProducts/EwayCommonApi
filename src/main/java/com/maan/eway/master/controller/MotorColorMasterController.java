@@ -1,6 +1,6 @@
 
 package com.maan.eway.master.controller;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.Collections;
 import java.util.List;
 import com.maan.eway.error.Error;
@@ -39,7 +39,7 @@ public class MotorColorMasterController {
 	@Autowired
 	private PrintReqService reqPrinter;
 	// Insert
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/savemotorcolor")
 	@ApiOperation(value = "This method is Save Make Motor ")
 
@@ -73,7 +73,7 @@ public class MotorColorMasterController {
 	}
 
 	// Get By Make Id
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getmotorcolor")
 	@ApiOperation(value = "This method is get by Motor Color")
 
@@ -94,7 +94,7 @@ public class MotorColorMasterController {
 	}
 
 	// Get All
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getallmotorcolor")
 	@ApiOperation(value = "This method is Get all Motor Color ")
 
@@ -118,7 +118,7 @@ public class MotorColorMasterController {
 
 	
 	// Get All
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getactivemotorcolor")
 		@ApiOperation(value = "This method is Get Active Motor Color ")
 
@@ -141,7 +141,7 @@ public class MotorColorMasterController {
 		}
   
 			
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/color/changestatus")
 		@ApiOperation(value = "This method is get Color Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfColor(@RequestBody ColorChangeStatusReq req) {
@@ -164,6 +164,7 @@ public class MotorColorMasterController {
 	
 
 		// Color Master Drop Down Type
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 		@PostMapping(value="/dropdown/color",produces = "application/json")
 		@ApiOperation(value = "This method is get Color Master Drop Down")
 

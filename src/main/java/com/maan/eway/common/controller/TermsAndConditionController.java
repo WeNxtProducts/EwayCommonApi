@@ -2,7 +2,7 @@ package com.maan.eway.common.controller;
 
 import java.util.Collections;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +39,7 @@ private PrintReqService reqPrinter;
 
 
 //  View Terms And Condition
-
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/viewtermsandcondition")
 	@ApiOperation("This method is View Terms And Condition")
 	public ResponseEntity<CommonRes> viewTermsAndCondition(@RequestBody TermsAndConditionReq req)
@@ -102,7 +102,7 @@ private PrintReqService reqPrinter;
 	
 
 //  Get Terms And Condition
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/gettermsandcondition")
 	@ApiOperation("This method is Get Terms And Condition")
 	public ResponseEntity<CommonRes> getTermsAndCondition(@RequestBody TermsAndConditionGetReq req)
@@ -126,7 +126,7 @@ private PrintReqService reqPrinter;
 
 
 //  Get Terms And Condition By Subid
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping("/gettermsandconditionbysubid")
 	@ApiOperation("This method is Get Terms And Condition by Sub Id")
 	public ResponseEntity<CommonRes> getTermsAndConditionSubId(@RequestBody TermsAndConditionGetBySubIdReq req)

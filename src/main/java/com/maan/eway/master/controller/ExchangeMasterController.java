@@ -2,7 +2,8 @@ package com.maan.eway.master.controller;
 
 import java.util.Collections;
 import java.util.List;
-
+import io.swagger.annotations.ApiOperation;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +42,7 @@ public class ExchangeMasterController {
 	private PrintReqService reqPrinter;
 
 	// save
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/insertexchangemaster")
 	@ApiOperation(value = "This method is to Insert Exchange Master")
 	public ResponseEntity<CommonRes> insertExchangeMaster(@RequestBody ExchangeMasterSaveReq req) {
@@ -74,6 +76,7 @@ public class ExchangeMasterController {
 	}
 
 	// Get
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getexchangemaster")
 	public ResponseEntity<CommonRes> getExchangeMaster(@RequestBody ExchangeMasterGetReq req) {
 		CommonRes data = new CommonRes();
@@ -91,6 +94,7 @@ public class ExchangeMasterController {
 	}
 
 	// Getall
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getallexchangemaster")
 	public ResponseEntity<CommonRes> getallExchangeMaster(@RequestBody ExchangeMasterGetallReq req) {
 		CommonRes data = new CommonRes();
@@ -108,7 +112,7 @@ public class ExchangeMasterController {
 	}
 
 	// Active
-
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getactiveexchange")
 	public ResponseEntity<CommonRes> getActiveExchange(@RequestBody ExchangeMasterGetallReq req) {
 		CommonRes data = new CommonRes();
@@ -126,6 +130,7 @@ public class ExchangeMasterController {
 	}
 
 	// Exchange Master Drop Down Type
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 		@GetMapping(value="/dropdown/exchange",produces = "application/json")
 		@ApiOperation(value = "This method is get Exchange Master Drop Down")
 
@@ -146,6 +151,7 @@ public class ExchangeMasterController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 		}
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/exchange/changestatus")
 	@ApiOperation(value = "This method is get Exchange Change Status")
 	public ResponseEntity<CommonRes> changeStatusOfExchange(@RequestBody ExchangeChangeStatusReq req) {

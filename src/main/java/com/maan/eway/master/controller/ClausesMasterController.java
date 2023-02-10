@@ -2,7 +2,8 @@ package com.maan.eway.master.controller;
 
 import java.util.Collections;
 import java.util.List;
-
+import io.swagger.annotations.ApiOperation;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +43,7 @@ private ClausesMasterService service;
 private PrintReqService reqPrinter;
 
 //Save
-
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 @PostMapping("/insertclauses")
 @ApiOperation(value = "This Method is to save Waranty Master")
 public ResponseEntity<CommonRes> saveClauses(@RequestBody ClausesMasterSaveReq req) {
@@ -74,7 +75,7 @@ public ResponseEntity<CommonRes> saveClauses(@RequestBody ClausesMasterSaveReq r
 }
 
 //  Get All Clauses Master
-
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 @PostMapping("/getallclauses")
 @ApiOperation("This method is getall Clauses")
 public ResponseEntity<CommonRes> getallClauses(@RequestBody ClausesMasterGetallReq req) {
@@ -95,7 +96,7 @@ public ResponseEntity<CommonRes> getallClauses(@RequestBody ClausesMasterGetallR
 }
 
 //  Get Active Clauses Master
-
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 @PostMapping("/getactiveclauses")
 @ApiOperation("This method is get Active Clauses")
 public ResponseEntity<CommonRes> getActiveClauses(@RequestBody ClausesMasterGetallReq req) {
@@ -116,7 +117,7 @@ public ResponseEntity<CommonRes> getActiveClauses(@RequestBody ClausesMasterGeta
 }
 
 // Get By Clauses Id
-
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 @PostMapping("/getbyclausesid")
 @ApiOperation("This Method is to get by Clauses id")
 public ResponseEntity<CommonRes> getByClausesId(@RequestBody ClausesMasterGetReq req) {
@@ -134,7 +135,7 @@ public ResponseEntity<CommonRes> getByClausesId(@RequestBody ClausesMasterGetReq
 		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	}
 }
-
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 @PostMapping("/clauses/changestatus")
 @ApiOperation(value = "This method is get Clauses Change Status")
 public ResponseEntity<CommonRes> changeStatusOfClauses(@RequestBody ClausesChangeStatusReq req) {
@@ -156,6 +157,7 @@ public ResponseEntity<CommonRes> changeStatusOfClauses(@RequestBody ClausesChang
 }
 
 //Clauses Master Drop Down Type
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 @PostMapping(value="/dropdown/clauses",produces = "application/json")
 @ApiOperation(value = "This method is get Clauses Master Drop Down")
 

@@ -7,7 +7,7 @@ package com.maan.eway.master.controller;
 
 import java.util.Collections;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +37,7 @@ import io.swagger.annotations.ApiOperation;
 /**
  * <h2>BankMasterController</h2>
  */
+
 @RestController
 @Api(tags = "MASTER : AC Executive Product Master ", description = "API's")
 @RequestMapping("/master")
@@ -48,6 +49,7 @@ public class AcExecutiveProductMasterController {
 	@Autowired
 	private AcExecutiveProductMasterService service;
 	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/saveacexecutive")
 	public ResponseEntity<CommonRes> saveacexecutive(@RequestBody AcExecutiveSaveReq req){
 		CommonRes data = new CommonRes();
@@ -74,7 +76,7 @@ public class AcExecutiveProductMasterController {
 			}
 		}
 	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/updateacexecutive")
 	public ResponseEntity<CommonRes> updateacexecutive(@RequestBody AcExecutiveUpdateReq req){
 		CommonRes data = new CommonRes();
@@ -102,7 +104,7 @@ public class AcExecutiveProductMasterController {
 		}
 	}
 	}
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getacexecutive")
 	public ResponseEntity<CommonRes> getacexecutive(@RequestBody AcExecutiveGetReq req){
 		CommonRes data = new CommonRes();
@@ -120,7 +122,7 @@ public class AcExecutiveProductMasterController {
 		}
 	}
 
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getallacexecutive")
 	public ResponseEntity<CommonRes> getallacexecutive(@RequestBody AcExecutiveGetallReq req){
 		CommonRes data = new CommonRes();
@@ -138,7 +140,7 @@ public class AcExecutiveProductMasterController {
 		}
 	}
 
-	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/getallnonselectedproducts")
 	@ApiOperation("This method is getall non selected products")
 	public ResponseEntity<CommonRes> getallNonSelectedProducts(@RequestBody AcExecutiveNonSelectedReq req)
@@ -162,6 +164,7 @@ public class AcExecutiveProductMasterController {
 
 
 	// Dropdown
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN,ROLE_ADMIN')")
 	@PostMapping(value="/dropdown/acexecutive",produces = "application/json")
 	public ResponseEntity<CommonRes> dropdownacexecutive(@RequestBody AcExecutiveProductDropDownReq req){
 		CommonRes data = new CommonRes();
