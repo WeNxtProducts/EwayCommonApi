@@ -50,7 +50,7 @@ public class CurrencyMasterController {
 	private PrintReqService reqPrinter;
 
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/insertcurrency")
 	@ApiOperation(value = "This method is Insert Currency Details")
 	public ResponseEntity<CommonRes> insertCurrency(@RequestBody CurrencyMasterSaveReq req) {
@@ -86,7 +86,7 @@ public class CurrencyMasterController {
 	}
 
 	// Get All Currency Master
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getallcurrencydetails")
 	@ApiOperation("This method is getall Currency Details")
 	public ResponseEntity<CommonRes> getallCurrencyDetails(@RequestBody CurrencyMasterGetAllReq req) {
@@ -107,7 +107,7 @@ public class CurrencyMasterController {
 	}
 
 	// Get Active Currency Master
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getactivecurrency")
 	@ApiOperation("This method is get Active Currency Details")
 	public ResponseEntity<CommonRes> getActiveCurrencyDetails(@RequestBody CurrencyMasterGetAllReq req) {
@@ -128,7 +128,7 @@ public class CurrencyMasterController {
 	}
 
 	// Get By Currency Id
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getbycurrencyid")
 	@ApiOperation("This Method is to get by Currency id")
 	public ResponseEntity<CommonRes> getByCurrencyId(@RequestBody CurrencyMasterGetReq req) {
@@ -146,7 +146,7 @@ public class CurrencyMasterController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")	
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")	
 	@PostMapping("/changestatuscurrencydetails")
 	@ApiOperation("This method is change Status Currency Details")
 	public ResponseEntity<CommonRes>changeStatusCurrencyDetails(@RequestBody CurrencyMasterChangeStatusReq req) {

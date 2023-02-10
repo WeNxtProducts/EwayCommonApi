@@ -57,7 +57,7 @@ public class BranchMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/insertbranch")
 		@ApiOperation(value = "This method is Insert Branch Details")
 		public ResponseEntity<CommonRes> insertBranch(@RequestBody BranchMasterSaveReq req) {
@@ -93,7 +93,7 @@ public class BranchMasterController {
 		}
 		
 		//  Get All Branch Master
-		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/getallbranchdetails")
 		@ApiOperation("This method is getall Branch Details")
 		public ResponseEntity<CommonRes> getallBranchDetails(@RequestBody BranchMasterGetAllReq req)
@@ -116,7 +116,7 @@ public class BranchMasterController {
 		}
 		
 	//  Get Active Branch Master
-		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 			@PostMapping("/getactivebranch")
 			@ApiOperation("This method is get Active Branch Details")
 			public ResponseEntity<CommonRes> getActiveBranchDetails(@RequestBody BranchMasterGetAllReq req)
@@ -139,7 +139,7 @@ public class BranchMasterController {
 			}
 		
 		// Get By Branch Id
-		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/getbybranchid")
 		@ApiOperation("This Method is to get by Branch id")
 		public ResponseEntity<CommonRes> getByBranchCode(@RequestBody BranchMasterGetReq req)
