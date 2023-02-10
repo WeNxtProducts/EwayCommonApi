@@ -85,7 +85,7 @@ public class LoginProductController {
 	}
 
 //*************************************** Get Products Apis **********************************************************//
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+	 
 	@PostMapping("/getbrokerproductbyid")
 	@ApiOperation(value="This method is to Get Broker Products")
 	public ResponseEntity<CommonRes> getBrokerProducts(@RequestBody  BrokerProductGetReq req) {
@@ -108,7 +108,7 @@ public class LoginProductController {
 	
 //*************************************** Get One CompanyProducts Apis **********************************************************//	
 	
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+	 
 	@PostMapping("/getbrokercompanyproducts")
 	@ApiOperation(value="This method is to Get Broker Company Products")
 	public ResponseEntity<CommonRes> getBrokerCompanyProducts(@RequestBody  BrokerCompanyProductGetReq req) {
@@ -130,7 +130,7 @@ public class LoginProductController {
 	
 	
 //  Get All Cover Master
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+	 
 	@PostMapping("/updatebrokercompanyproducts")
 	@ApiOperation(value = "This method is Insert Company Product Master")
 	public ResponseEntity<CommonRes> insertCompanyProducts(@RequestBody BrokerCompanyProductReq req) {
@@ -165,7 +165,7 @@ public class LoginProductController {
 
 	}
 	
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+	 
 	@PostMapping("/getallnonselectedbrokerproducts")
 	@ApiOperation("This method is getall Company Product Master")
 	public ResponseEntity<CommonRes> getallNonSelectedBrokerCompanyProducts(@RequestBody BrokerCompanyProductGetReq req)
@@ -187,7 +187,7 @@ public class LoginProductController {
 		}
 	}
 	
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+	 
 	@PostMapping("/getallnonselecteduserproducts")
 	@ApiOperation("This method is getall User Company Product Master")
 	public ResponseEntity<CommonRes> getallNonSelectedUserCompanyProducts(@RequestBody UserCompanyProductGetReq req)
@@ -208,7 +208,7 @@ public class LoginProductController {
 			return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
 		}
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+	 
 	@PostMapping("/brokercompanyproducts/changestatus")
 	@ApiOperation(value = "This method is get Company Product Master Drop Down")
 
@@ -231,7 +231,7 @@ public class LoginProductController {
 	}
 	
 	// Branch Master Drop Down Type
-	@PreAuthorize("hasAnyRole('ROLE_APRROVER,ROLE_ADMIN')")
+	 
 	@PostMapping("/dropdown/brokerproducts")
 	@ApiOperation(value = "This method is get Branch Master Drop Down")
 
