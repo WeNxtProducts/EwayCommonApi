@@ -1909,72 +1909,20 @@ public class QuoteServiceImpl implements QuoteService {
 
 			List<String> sectionIds = buildSections.stream().filter( o -> o.getRiskId().equals(build.getRiskId() )).map(EserviceSectionDetails :: getSectionId ).collect(Collectors.toList());
 			
-					
-			List<SectionCoverMaster> sectionCovers  = getSectionCovers(build.getCompanyId() ,build.getProductId() , sectionIds );
-			List<PolicyCoverData>   covers = polCoverRepo.findByQuoteNo(req.getQuoteNo())	;
-			
-			List<EserviceSectionDetails>   filterSections = buildSections.stream().filter( o -> o.getRiskId().equals(build.getRiskId()) ).collect(Collectors.toList());
-			BigDecimal buildingSuminsured = null;
-			BigDecimal allriskSuminsured = null;
 			 List<OccupationReqClass> occupation = new ArrayList<OccupationReqClass>(); 
-	//		BigDecimal paPermanentdisablementSuminsured = null;
-	//		BigDecimal paTotaldisabilitySumInsured = null;
-	//		BigDecimal PaMedicalSuminsured = null;
-			BigDecimal personalIntSuminsured = null;
-			BigDecimal contentSuminsured = null;
-			
-			for (EserviceSectionDetails sec : filterSections) {
-				List<SectionCoverMaster> filterCovers =  sectionCovers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(sec.getSectionId()))  
-							&& o.getProductId().equals(Integer.valueOf(sec.getProductId()))	).collect(Collectors.toList());
-				
-				List<PolicyCoverData>   filterPolCovers = covers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(sec.getSectionId()))  
-						&& o.getProductId().equals(Integer.valueOf(sec.getProductId())) &&  o.getTaxId().equals(0) &&  o.getDiscLoadId().equals(0)  ).collect(Collectors.toList());
-				
-				for(PolicyCoverData cover :  filterPolCovers) {
-					String sumInsuredColumn = filterCovers.stream().filter( o -> o.getCoverId().equals(cover.getCoverId() )
-							&& o.getSubCoverId().equals(cover.getSubCoverId() )).collect(Collectors.toList()).get(0).getCoverBasedOn();
-					if(sumInsuredColumn.equalsIgnoreCase("buildingSuminsured")) {
-						buildingSuminsured =cover.getSumInsured();
-						
-					} else if(sumInsuredColumn.equalsIgnoreCase("allriskSuminsured")) {
-						allriskSuminsured =cover.getSumInsured();
-						
-					}  else if(sumInsuredColumn.equalsIgnoreCase("paDeathSuminsured")) {
-						OccupationReqClass  occ = new OccupationReqClass(); 
-						List<EservicePersonalAccidentDetails> filterPacc = paccDatas.stream().filter( o -> o.getRiskId().equals(cover.getVehicleId())	).collect(Collectors.toList());				
-						occ.setOccupationType(cover.getVehicleId().toString());
-						occ.setSumInsuredTotal( cover.getSumInsured()==null?"" : cover.getSumInsured().toString());
-						occ.setCount(filterPacc.get(0).getCount().toString());
-						occupation.add(occ);
-						
-					} else if(sumInsuredColumn.equalsIgnoreCase("contentSuminsured")) {
-						contentSuminsured =cover.getSumInsured();
-					}  else if(sumInsuredColumn.equalsIgnoreCase("personalIntSuminsured")) {
-						personalIntSuminsured =cover.getSumInsured();
-						
-					} 
-//						else if(sumInsuredColumn.equalsIgnoreCase("paPermanentdisablementSuminsured")) {
-//							paPermanentdisablementSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
-//							
-//						}  else if(sumInsuredColumn.equalsIgnoreCase("paTotaldisabilitySumInsured")) {
-//							paTotaldisabilitySumInsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
-//							
-//						}  else if(sumInsuredColumn.equalsIgnoreCase("PaMedicalSuminsured")) {
-//							PaMedicalSuminsured =cover.getSumInsured()==null?null : new BigDecimal(cover.getSumInsured());
-//							
-//						} 
-				}
-				
-			}
-			res.setBuildingSuminsured(buildingSuminsured == null?"" :buildingSuminsured.toString());
-			res.setAllriskSuminsured(allriskSuminsured == null?"" :allriskSuminsured.toString());
-		//	res.setPaDeathSuminsured(paDeathSuminsured == null?"" :paDeathSuminsured.toString());
-		//	res.setPaPermanentdisablementSuminsured(paPermanentdisablementSuminsured == null?"" :paPermanentdisablementSuminsured.toString());
-		//	res.setPaTotaldisabilitySumInsured(paTotaldisabilitySumInsured == null?"" :paTotaldisabilitySumInsured.toString());
-		//	res.setPaMedicalSuminsured(PaMedicalSuminsured == null?"" :PaMedicalSuminsured.toString());
-			res.setPersonalIntermediarySuminsured(personalIntSuminsured == null?"" :personalIntSuminsured.toString());
-			res.setContentSuminsured(contentSuminsured == null?"" :contentSuminsured.toString());
+			 for (EservicePersonalAccidentDetails pac :  paccDatas) {
+				 OccupationReqClass occu = new OccupationReqClass(); 
+				 occu.setCount(pac.getCount()==null?"":pac.getCount().toString());		 
+				 occu.setOccupationType(pac.getOccupationType() );
+				 occu.setSumInsuredTotal(pac.getSumInsured()==null?"":pac.getSumInsured().toString());				 
+			 }
+	
+			res.setBuildingSuminsured(build.getBuildingSuminsured() == null?"" :build.getBuildingSuminsured().toString());
+			res.setAllriskSuminsured(build.getAllriskSuminsured() == null?"" :build.getAllriskSuminsured().toString());
+			res.setPersonalIntermediarySuminsured(build.getPersonalIntSuminsured() == null?"" :build.getPersonalIntSuminsured().toString());
+			res.setContentSuminsured(build.getContentSuminsured() == null?"" :build.getContentSuminsured().toString());
 			res.setOccupationDetails(occupation);
+			
 			res.setRiskId(build.getRiskId().toString());
 			res.setSectionId(sectionIds);		
 			
