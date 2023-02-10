@@ -41,6 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 import com.maan.eway.master.req.BranchChangeStatusReq;
 import com.maan.eway.master.req.BranchMasterGetAllReq;
@@ -52,8 +53,12 @@ import com.maan.eway.master.req.CompanyBranchReq;
 import com.maan.eway.master.res.BranchMasterRes;
 import com.maan.eway.master.service.BranchMasterService;
 import com.maan.eway.admin.req.AttachCompnayProductRequest;
+import com.maan.eway.admin.req.BrokerCreationReq;
+import com.maan.eway.admin.req.BrokerLoginInfoReq;
+import com.maan.eway.admin.req.BrokerPersonalInfoReq;
 import com.maan.eway.admin.req.DirectBrokerCreateReq;
 import com.maan.eway.admin.res.LoginCreationRes;
+import com.maan.eway.admin.service.LoginDetailsService;
 import com.maan.eway.auth.dto.LoginBranchDetailsRes;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CityMaster;
@@ -100,6 +105,9 @@ private LoginProductMasterRepository loginProductRepo;
 @Autowired
 private SeqAgencycodeRepository seqAgencyRepo;
 
+@Autowired
+private LoginDetailsService loginService ;
+
 Gson json = new Gson();
 
 private Logger log=LogManager.getLogger(BranchMasterServiceImpl.class);
@@ -116,7 +124,6 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 	try {
 		Integer amendId = 0 ;
 		String branchCode = "";
-		String agencyCode = "" ;
 		Date startDate = req.getEffectiveDateStart() ;
 		String end = "31/12/2050";
 		Date endDate = sdformat.parse(end);
@@ -138,7 +145,6 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 				}
 				entryDate = new Date();
 				createdBy = req.getCreatedBy();
-				agencyCode = generateAgencyCode();
 				res.setResponse("Saved Successfully");
 				res.setSuccessId(branchCode);
 				}
@@ -180,7 +186,6 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 						amendId = list.get(0).getAmendId() + 1 ;
 						entryDate = new Date() ;
 						createdBy = req.getCreatedBy();
-						agencyCode = StringUtils.isNotBlank(list.get(0).getBrokerAgencyCode() ) ?  list.get(0).getBrokerAgencyCode()  : generateAgencyCode() ;
 						BranchMaster lastRecord = list.get(0);
 							lastRecord.setEffectiveDateEnd(oldEndDate);
 							branchRepo.saveAndFlush(lastRecord);
@@ -189,7 +194,6 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 						amendId = list.get(0).getAmendId() ;
 						entryDate = list.get(0).getEntryDate() ;
 						createdBy = list.get(0).getCreatedBy();
-						agencyCode = StringUtils.isNotBlank(list.get(0).getBrokerAgencyCode() ) ?  list.get(0).getBrokerAgencyCode()  : generateAgencyCode();
 						saveData = list.get(0) ;
 						if (list.size()>1 ) {
 							BranchMaster lastRecord = list.get(1);
@@ -218,10 +222,10 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 			saveData.setAmendId(amendId);
 			
 			// Direct Broker Details
-			saveData.setBrokerAgencyCode(agencyCode);
 			String createLoginId = req.getBranchName().replaceAll(" ", "").replaceAll("_", "").replaceAll("-", "")  ; 			
-			String brokerLoginId = createLoginId + "_" + "loginId" ;
+			String brokerLoginId = createLoginId + "_" + "brokerId" ;
 			saveData.setDirectBrokerId(brokerLoginId);
+			
 			
 			String countryCode = req.getCountryId();
 			List<Tuple> stateCity =   getStateAndCityName(countryCode ,  req.getStateCode() , req.getCityCode() ) ;
@@ -230,6 +234,56 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 			saveData.setStateName(stateName);
 			saveData.setCityName(cityName);
 			
+			
+			// Login Branch Setup
+			BrokerLoginInfoReq loginReq =  new BrokerLoginInfoReq();
+			loginReq.setAgencyCode(StringUtils.isNotBlank(saveData.getBrokerAgencyCode()) ? saveData.getBrokerAgencyCode() :saveData.getBrokerAgencyCode());
+			loginReq.setAttachedCompanies(null);
+			loginReq.setBrokerCompanyYn("N");
+			loginReq.setCompanyId(req.getCompanyId());
+			loginReq.setCreatedBy(req.getCreatedBy());
+			loginReq.setEffectiveDateStart(new Date());
+			loginReq.setLoginId(brokerLoginId);
+			loginReq.setOaCode(StringUtils.isNotBlank(saveData.getBrokerAgencyCode()) ? saveData.getBrokerAgencyCode() :saveData.getBrokerAgencyCode());
+			loginReq.setPassword("BgBn8jBhAYu3paFVGk54PlgnOGo=");
+			loginReq.setStatus("Y");
+			loginReq.setSubUserType("b2b");
+			loginReq.setUserType("Broker");
+			
+			BrokerPersonalInfoReq personalInfo = new BrokerPersonalInfoReq();
+			personalInfo.setAcExecutiveId("");
+			personalInfo.setAddress1(saveData.getAddress1());
+			personalInfo.setAddress2(saveData.getAddress2());
+			personalInfo.setAddress3(saveData.getAddress2());
+			personalInfo.setCheckerYn("Y");
+		//	personalInfo.setCityCode(saveData.getCityCode()==null?"":saveData.getCityCode() );
+			personalInfo.setCityName(saveData.getCityName());
+			personalInfo.setCommissionVatYn("N");
+		//	personalInfo.setCompanyName(cityName);
+			personalInfo.setContactPersonName(saveData.getBranchName());
+			personalInfo.setCoreAppBrokerCode(saveData.getCoreAppCode());
+			personalInfo.setCountryCode(saveData.getCountryId());
+			personalInfo.setCustConfirmYn("Y");
+			personalInfo.setDesignation(saveData.getBranchName());
+			personalInfo.setFax("");
+			personalInfo.setMakerYn("Y");
+			personalInfo.setMobileCode("");
+			personalInfo.setPobox("" );
+			personalInfo.setRemarks(saveData.getRemarks() );
+			personalInfo.setStateCode(saveData.getStateCode()==null?"":String.valueOf(saveData.getStateCode()));
+			personalInfo.setUserMail(saveData.getEmail());
+			personalInfo.setUserMobile(saveData.getMobileNumber());
+			personalInfo.setUserName(saveData.getBranchName());
+			personalInfo.setVatRegNo("");
+			personalInfo.setWhatsappCode("");
+			personalInfo.setWhatsappNo("");
+			
+			BrokerCreationReq createBrokerReq = new BrokerCreationReq();
+			createBrokerReq.setLoginInformation(loginReq)	;
+			createBrokerReq.setPersonalInformation(personalInfo);
+			
+			LoginCreationRes loginRes = loginService.createBroker(createBrokerReq) ;
+			saveData.setBrokerAgencyCode(loginRes.getAgencyCode());
 			branchRepo.saveAndFlush(saveData);
 			
 			log.info("Saved Details is ---> " + json.toJson(saveData));
