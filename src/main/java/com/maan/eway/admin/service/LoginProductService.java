@@ -10,7 +10,7 @@ import com.maan.eway.admin.req.BrokerProductGetReq;
 import com.maan.eway.admin.req.UserCompanyProductGetReq;
 import com.maan.eway.admin.res.BrokerProductGetRes;
 import com.maan.eway.admin.res.LoginCreationRes;
-import com.maan.eway.admin.res.LoginProductCriteriaRes;
+import com.maan.eway.auth.dto.LoginProductCriteriaRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.BrokerCompanyProductReq;
 import com.maan.eway.master.req.BrokerProductChangeReq;

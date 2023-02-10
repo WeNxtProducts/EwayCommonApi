@@ -465,7 +465,7 @@ public class QuoteServiceImpl implements QuoteService {
 		try {
 			// Find Motor Data
 			List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
-			List<EserviceSectionDetails> secDatas =  eserSecRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+			List<EserviceSectionDetails> secDatas =  eserSecRepo.findByRequestReferenceNoAndRiskIdAndProductIdOrderBySectionIdAsc(buildDatas.get(0).getRequestReferenceNo() , buildDatas.get(0).getRiskId() , buildDatas.get(0).getProductId());
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 			
 			List<BuildingProductDetailsRes>   motorResList = new ArrayList<BuildingProductDetailsRes>();

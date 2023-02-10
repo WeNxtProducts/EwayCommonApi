@@ -96,6 +96,8 @@ import com.maan.eway.bean.LoginMasterArch;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.LoginUserInfoArch;
 import com.maan.eway.bean.MenuMaster;
+import com.maan.eway.bean.SeqAgencycode;
+import com.maan.eway.bean.SeqQuoteno;
 import com.maan.eway.bean.StateMaster;
 import com.maan.eway.master.req.BrokerProductReq;
 import com.maan.eway.master.req.LovDropDownReq;
@@ -106,6 +108,7 @@ import com.maan.eway.repository.LoginMasterArchRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoArchRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
+import com.maan.eway.repository.SeqAgencycodeRepository;
 import com.maan.eway.res.BrokerDropDownRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -140,6 +143,9 @@ public class LoginDetailsServiceImpl implements LoginDetailsService {
 	
 	@Autowired
 	private ListItemValueRepository listRepo;
+	
+	@Autowired
+	private SeqAgencycodeRepository seqAgencyRepo;
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -419,8 +425,7 @@ this.repository = repo;
 			Instant now = Instant.now();
 			Instant after = now.plus(Duration.ofDays(45));
 			Date dateAfter = Date.from(after);
-			Long count = loginRepo.count();
-			Long countId = 10001 + count ; 
+			Long countId = Long.valueOf(generateAgencyCode()) ; 
 			
 			// Login Master Insert
 			LoginMaster saveLogin = new LoginMaster();
@@ -506,6 +511,17 @@ this.repository = repo;
 		return res;
 	}
 	
+	 public String generateAgencyCode() {
+	       try {
+	        	SeqAgencycode entity;
+	            entity = seqAgencyRepo.save(new SeqAgencycode());          
+	            return String.format("%05d",entity.getAgencyCode()) ;
+	        } catch (Exception ex) {
+				log.error(ex);
+	            return null;
+	        }
+	       
+	    }
 	
 	public List<Tuple> getStateAndCityName(String countryId ) {
 		List<Tuple> list = new ArrayList<Tuple>();

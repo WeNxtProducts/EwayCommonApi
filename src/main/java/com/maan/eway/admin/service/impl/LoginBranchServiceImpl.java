@@ -17,6 +17,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
@@ -33,11 +34,13 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.maan.eway.admin.req.AttachBrokerBranchReq;
 import com.maan.eway.admin.req.AttachCompaniesReq;
+import com.maan.eway.admin.req.AttachCompnayProductRequest;
 import com.maan.eway.admin.req.AttachIssuerBrannchReq;
 import com.maan.eway.admin.req.AttacheIssuerBranchReq;
 import com.maan.eway.admin.req.AttachedBranchesReq;
 import com.maan.eway.admin.req.BrokerBranchGetReq;
 import com.maan.eway.admin.req.BrokerBranchesReq;
+import com.maan.eway.admin.req.DirectBrokerCreateReq;
 import com.maan.eway.admin.req.GetAllBrokerBranchReq;
 import com.maan.eway.admin.req.GetBrokerBranchReq;
 import com.maan.eway.admin.req.GetallBrokerBranchesReq;
@@ -57,17 +60,22 @@ import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.service.LoginBranchService;
 import com.maan.eway.auth.dto.LoginBranchCriteriaRes;
 import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginBranchMasterArch;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginMasterArch;
+import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.RegionMaster;
+import com.maan.eway.master.req.FactorRateSaveReq;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterArchRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterArchRepository;
 import com.maan.eway.repository.LoginMasterRepository;
+import com.maan.eway.repository.LoginProductMasterRepository;
 
 @Service
 public class LoginBranchServiceImpl implements LoginBranchService {
@@ -83,6 +91,9 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 
 	@Autowired
 	private LoginBranchMasterArchRepository loginBrokerArchRepo;
+	
+	@Autowired
+	private LoginProductMasterRepository loginProductRepo;
 
 	@Autowired
 	private BranchMasterRepository branchRepo;
@@ -811,4 +822,7 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 		return resList;
 		
 	}
+	
+	
+	
 }

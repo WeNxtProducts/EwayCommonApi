@@ -36,9 +36,9 @@ import com.maan.eway.admin.req.BrokerProductGetReq;
 import com.maan.eway.admin.req.UserCompanyProductGetReq;
 import com.maan.eway.admin.res.BrokerProductGetRes;
 import com.maan.eway.admin.res.LoginCreationRes;
-import com.maan.eway.admin.res.LoginProductCriteriaRes;
 import com.maan.eway.admin.res.ProductCriteriaRes;
 import com.maan.eway.admin.service.LoginProductService;
+import com.maan.eway.auth.dto.LoginProductCriteriaRes;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginMaster;
@@ -150,6 +150,8 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			TypedQuery<CompanyProductMaster> result = em.createQuery(query);			
 			list =  result.getResultList();  
 			
+			LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());
+			
 			for ( CompanyProductMaster data : list  ) {
 				
 			
@@ -163,6 +165,8 @@ public class LoginProductServiceImpl  implements LoginProductService {
 				save.setAmendId(0);
 				save.setLoginId(req.getLoginId());
 				save.setBackDays(0);
+				save.setAgencyCode(Integer.valueOf(loginData.getAgencyCode()));
+				save.setOaCode(loginData.getOaCode());
 				loginProductRepo.saveAndFlush(save);
 				log.info("Saved Details is ---> " + json.toJson(save));
 				

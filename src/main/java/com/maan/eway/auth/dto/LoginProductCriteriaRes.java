@@ -1,5 +1,9 @@
 package com.maan.eway.auth.dto;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -24,16 +28,29 @@ public class LoginProductCriteriaRes {
 	@JsonProperty("OldProductName")
 	private String oldProductName ;
 	
-	@JsonProperty("StartLimit")
-	private Double startLimit ;
+	@JsonProperty("SumInsuredStart")
+	private BigDecimal sumInsuredStart;
 	
-	@JsonProperty("EndLimit")
-	private Double endLimit ;
+	@JsonProperty("SumInsuredEnd")
+	private BigDecimal sumInsuredEnd;
 	
 	@JsonProperty("Status")
 	private String status;
 	
 	@JsonProperty("Remarks")
 	private String remarks ;
+	
+	@JsonProperty("CompanyName")
+	private String companyName ;
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EffectiveDateStart")
+	private Date effectiveDateStart ;
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EffectiveDateEnd")
+	private Date EffectiveDateEnd ;
+	
+	
 	
 }
