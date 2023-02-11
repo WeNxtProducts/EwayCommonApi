@@ -44,6 +44,10 @@ public class JobRunrService {
 	private NotifTransactionDetailsRepository notRepo;
 	@Autowired
 	MailJob job;
+
+	@Autowired
+	SmsJob Sms;
+
 	
 	@Job(name = "The sample job with variable %0", retries = 2)
 	public void jobProcess() {
@@ -102,6 +106,10 @@ public class JobRunrService {
 								if(!totalMailJob.isEmpty()) {
 
 									totalMailJob.stream().forEach(job);									
+								}
+								else if(!totalSmSJob.isEmpty()) {
+
+									totalSmSJob.stream().forEach(Sms);									
 								}
 
 

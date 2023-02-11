@@ -25,16 +25,13 @@ import java.util.Date;
 @AllArgsConstructor
 @ToString
 @Builder
-public class SmsDetailsId implements Serializable {
+public class SmsDataDetailsId implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private String sNo;
-    private String    smsRefNo;
-    private String     companyId ;
-    private String   branchCode;
-    private String  productId;
-    private String  sectionId;
+   // private String     companyId ;
+   // private String   branchCode;
 
      
 }

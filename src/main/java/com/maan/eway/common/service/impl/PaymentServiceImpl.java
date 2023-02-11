@@ -609,6 +609,8 @@ public class PaymentServiceImpl implements PaymentService {
 	//			
 	//			paymentinfo.setValidityDate(validateDate);
 				
+				
+				/*
 				//SMS Calling
 				
 				SendSmsReq smsreq = new SendSmsReq();
@@ -628,6 +630,8 @@ public class PaymentServiceImpl implements PaymentService {
 				smsreq.setSmsSubject(notiftemplate.get(0).getSmsSubject());
 				smsreq.setSmsBody(notiftemplate.get(0).getSmsBodyEn());
 				smsRepo.sendSms(smsreq);
+				*/
+				
 				paymentinforepo.save(paymentinfo);
 				log.info("Saved Details " + json.toJson(paymentinfo));
 				

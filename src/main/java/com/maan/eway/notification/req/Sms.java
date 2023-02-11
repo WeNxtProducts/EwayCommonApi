@@ -3,7 +3,11 @@ package com.maan.eway.notification.req;
 import java.io.Serializable;
 
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 @Builder
+@Getter
+@Setter
 public class Sms implements Serializable {
 
 	/*
@@ -17,4 +21,6 @@ public class Sms implements Serializable {
 	private String smsSubject;
 	private String smsBody;
 	private String smsRegards;
+	private String smsFrom;
+
 }
