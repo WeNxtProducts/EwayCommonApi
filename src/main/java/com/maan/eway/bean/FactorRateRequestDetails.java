@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -230,7 +229,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="REGULATORY_CODE", length=50)
     private String     regulatoryCode ;
 
-    
+    @Column(name="MULTI_SELECT_YN")
+    private String       multiSelectYn;
 }
 
 

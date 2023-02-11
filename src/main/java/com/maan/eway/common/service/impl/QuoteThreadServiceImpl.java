@@ -567,6 +567,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							mot.setUpdatedDate(new Date());
 							mot.setQuoteNo("");
 							mot.setCustomerId("");
+							mot.setManualReferalYn(req.getManualReferralYn());
 							eserMotRepo.save(mot);
 						}
 					} else if ( req.getProductId().equalsIgnoreCase(travelProductId)) {
@@ -581,6 +582,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						travelData.setUpdatedDate(new Date());
 						travelData.setQuoteNo("");
 						travelData.setCustomerId("");
+						travelData.setManualReferalYn(req.getManualReferralYn());
 						eserTraRepo.save(travelData);
 						
 					} else if ( req.getProductId().equalsIgnoreCase(buildingProductId)) {
@@ -596,6 +598,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							build.setUpdatedDate(new Date());
 							build.setQuoteNo("");
 							build.setCustomerId("");
+							build.setManualReferalYn(req.getManualReferralYn());
 							eserBuildRepo.save(build);
 						}
 						
@@ -612,6 +615,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							commonData.setUpdatedDate(new Date());
 							commonData.setQuoteNo("");
 							commonData.setCustomerId("");
+							commonData.setManualReferalYn(req.getManualReferralYn());
 							eserCommonRepo.save(commonData);
 						}
 					}

@@ -463,8 +463,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="BANK_CODE", length=100)
     private String   bankCode;
-
-
+    
+    @Column(name="MANUAL_REFERAL_YN", length=100)
+    private String  manualReferalYn;
 }
 
 

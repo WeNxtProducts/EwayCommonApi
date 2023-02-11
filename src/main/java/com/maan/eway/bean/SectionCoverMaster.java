@@ -197,6 +197,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="COVER_BASED_ON")
     private String       coverBasedOn;
+    
+    @Column(name="MULTI_SELECT_YN")
+    private String       multiSelectYn;
 
 }
 

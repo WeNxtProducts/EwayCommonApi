@@ -168,9 +168,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="BROKER_BRANCH_NAME", length=100)
     private String   brokerBranchName ;
     
-    @Column(name="BDM_CODE", length=100)
-    private String  bdmCode;
-    
+   
     @Column(name="CUSTOMER_ID", length=100)
     private String  customerId;
     
@@ -222,8 +220,7 @@ private static final long serialVersionUID = 1L;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="DOB")
     private Date       dob ;
-    
-      
+     
     @Column(name="JOB_JOINING_MONTH", length=100)
     private String    jobJoiningMonth;
     
@@ -233,12 +230,21 @@ private static final long serialVersionUID = 1L;
     @Column(name="ETHICAL_WORK_INVOLVED", length=10)
     private String  ethicalWorkInvolved;
     
-    
 
     @Column(name="BANK_CODE", length=100)
     private String   bankCode;    
     
+    @Column(name="SOURCE_TYPE", length=100)
+    private String   sourceType;  
     
+    @Column(name="CUSTOMER_CODE", length=100)
+    private String   customerCode;  
+    
+    @Column(name="BDM_CODE", length=100)
+    private String  bdmCode;
+    
+    @Column(name="MANUAL_REFERAL_YN", length=100)
+    private String  manualReferalYn;
 }
 
 
