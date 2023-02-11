@@ -346,6 +346,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="GOODS_TURNOVER_SUMNINSURED")
     private BigDecimal GoodsTurnoverSumninsured;
 
+    @Column(name="INDUSTRY_ID")
+    private Integer  industryId ;
+
+    @Column(name="INDUSTRY_DESC", length=100)
+    private String  industryDesc ;
+
 
 }
 
