@@ -147,5 +147,8 @@ public class Cover implements Serializable{
 			
 			@JsonProperty("RequestReferenceNo")
 			private String requestReferenceNo;
+			
+			 @JsonProperty("MultiSelectYn") 
+			 private String multiSelectYn;
 
 }

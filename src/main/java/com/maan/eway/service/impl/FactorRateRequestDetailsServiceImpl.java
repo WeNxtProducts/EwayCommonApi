@@ -324,6 +324,7 @@ this.repository = repo;
 					saveCover.setPremiumIncludedTaxLc(coverData.getPremiumIncludedTaxLC()==null ? null : new BigDecimal(df.format(coverData.getPremiumIncludedTaxLC())));
  					saveCover.setIsReferral(StringUtils.isBlank(coverData.getIsReferral())?"N":coverData.getIsReferral());
 					saveCover.setReferralDescription(StringUtils.isBlank(coverData.getReferalDescription())?"":coverData.getReferalDescription());
+					saveCover.setMultiSelectYn(coverData.getMultiSelectYn()==null?"N": coverData.getMultiSelectYn());
 					String userOpt=!"D".equals(saveCover.getIsSelected())?"N":"Y";
 					saveCover.setRegulatoryCode(coverData.getRegulatoryCode());
 				/*	if(coverIds!=null && !coverIds.isEmpty()) {
@@ -1166,6 +1167,7 @@ this.repository = repo;
 					coverRes.setSectionId(filterCover.get(0).getSectionId()==null?"" :filterCover.get(0).getSectionId().toString());
 					coverRes.setVdRefNo(filterCover.get(0).getVdRefno());
 					coverRes.setVehicleId(filterCover.get(0).getVehicleId()==null?"" :filterCover.get(0).getVehicleId().toString());
+					coverRes.setMultiSelectYn(filterCover.get(0).getMultiSelectYn()==null?"":filterCover.get(0).getMultiSelectYn());
 					
 					// Discount Covers Or Promo Covers
 					List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) && (   o.getCoverageType().equalsIgnoreCase("D") || o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
