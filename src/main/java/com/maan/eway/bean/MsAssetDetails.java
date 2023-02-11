@@ -160,44 +160,44 @@ private static final long serialVersionUID = 1L;
     @Column(name="CATEGORY_ID", length=20)
     private String     categoryId;
 
-    @Column(name="ELEC_EQUIP_SUMNINSURED")
-    private BigDecimal ElecEquipSumninsured;
+    @Column(name="ELEC_EQUIP_SUMINSURED")
+    private BigDecimal elecEquipSuminsured;
+
+    @Column(name="MONEY_SINGLECARRY_SUMINSURED")
+    private BigDecimal moneySinglecarrySuminsured;
+
+    @Column(name="MONEY_ANNUALCARRY_SUMINSURED")
+    private BigDecimal moneyAnnualcarrySuminsured;
+
+    @Column(name="MONEY_INSAFE_SUMINSURED")
+    private BigDecimal moneyInsafeSuminsured;
+
+    @Column(name="FIDELITY_ANYOCCU_SUMINSURED")
+    private BigDecimal fidelityAnyoccuSuminsured;
+
+    @Column(name="FIDELITY_ANNUAL_SUMINSURED")
+    private BigDecimal fidelityAnnualSuminsured;
+
+    @Column(name="TPLIABILITY_ANYOCCU_SUMINSURED")
+    private BigDecimal tpliabilityAnyoccuSuminsured;
+
+    @Column(name="EMPLIABILITY_ANNUAL_SUMINSURED")
+    private BigDecimal empliabilityAnnualSuminsured;
 
 
-    @Column(name="MONEY_SINGLECARRY_SUMNINSURED")
-    private BigDecimal MoneySinglecarrySumninsured;
+    @Column(name="EMPLIABILITY_EXCESS_SUMINSURED")
+    private BigDecimal empliabilityExcessSuminsured;
 
-    @Column(name="MONEY_ANNUALCARRY_SUMNINSURED")
-    private BigDecimal MoneyAnnualcarrySumninsured;
+    @Column(name="GOODS_SINGLECARRY_SUMINSURED")
+    private BigDecimal goodsSinglecarrySuminsured;
 
-    @Column(name="MONEY_INSAFE_SUMNINSURED")
-    private BigDecimal MoneyInsafeSumninsured;
-
-    @Column(name="FIDELITY_ANYOCCU_SUMNINSURED")
-    private BigDecimal FidelityAnyoccuSumninsured;
-
-    @Column(name="FIDELITY_ANNUAL_SUMNINSURED")
-    private BigDecimal FidelityAnnualSumninsured;
-
-    @Column(name="TPLIABILITY_ANYOCCU_SUMNINSURED")
-    private BigDecimal TpliabilityAnyoccuSumninsured;
-
-    @Column(name="EMPLIABILITY_ANNUAL_SUMNINSURED")
-    private BigDecimal EmpliabilityAnnualSumninsured;
-
-
-    @Column(name="EMPLIABILITY_EXCESS_SUMNINSURED")
-    private BigDecimal EmpliabilityExcessSumninsured;
-
-    @Column(name="GOODS_SINGLECARRY_SUMNINSURED")
-    private BigDecimal GoodsSinglecarrySumninsured;
-
-    @Column(name="GOODS_TURNOVER_SUMNINSURED")
-    private BigDecimal GoodsTurnoverSumninsured;
+    @Column(name="GOODS_TURNOVER_SUMINSURED")
+    private BigDecimal goodsTurnoverSuminsured;
 
     @Column(name="INDUSTRY_ID")
     private Integer  industryId ;
 
+    
     
 }
 
