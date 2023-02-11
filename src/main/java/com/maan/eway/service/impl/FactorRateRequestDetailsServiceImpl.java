@@ -975,7 +975,7 @@ this.repository = repo;
 				
 				// Response 
 				EservieMotorDetailsViewRes res = new EservieMotorDetailsViewRes();
-				dozerMapper.map(tra,res);
+				dozerMapper.map(travelData,res);
 				res.setCurrency(travelData.getCurrency());
 				res.setCustomerReferenceNo(travelData.getCustomerReferenceNo());
 				res.setExchangeRate(travelData.getExchangeRate()==null?"":travelData.getExchangeRate().toString());
