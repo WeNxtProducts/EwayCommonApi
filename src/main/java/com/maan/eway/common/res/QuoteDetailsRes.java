@@ -146,6 +146,9 @@ public class QuoteDetailsRes {
 	
 	@JsonProperty("TinyUrl")
     private String     tinyUrl;
+	
+	@JsonProperty("ManualReferalYn")
+    private String     manualReferalYn;
     
 	/*
 	@JsonProperty("ExcessSign(null);

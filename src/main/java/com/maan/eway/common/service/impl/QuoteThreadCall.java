@@ -1028,6 +1028,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				home.setNoOfVehicles( request.getVehicleIdsList().size());
 				home.setHavepromoYn(motorData.getHavepromocode());
 				home.setPromocode(motorData.getPromocode());
+				home.setManualReferalYn(motorData.getManualReferalYn());
 				
 			} else if(request.getProductId().equalsIgnoreCase(travelProductId) ) {
 				
@@ -1058,6 +1059,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				home.setNoOfVehicles( travelData.getTotalPassengers());
 				home.setHavepromoYn(travelData.getHavepromocode());
 				home.setPromocode(travelData.getPromocode());
+				home.setManualReferalYn(travelData.getManualReferalYn());
 				
 			}  else if(request.getProductId().equalsIgnoreCase(buildingProductId) ) {
 				
@@ -1090,6 +1092,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 				home.setNoOfVehicles(Integer.valueOf(builCount.toString()));
 				home.setHavepromoYn(buildingData.getHavepromocode());
 				home.setPromocode(buildingData.getPromocode());
+				home.setManualReferalYn(buildingData.getManualReferalYn());
+				
 			}   else  {
 				
 				EserviceCommonDetails  eserCommonData = eserCommonRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() , request.getVehicleId()) ;
@@ -1122,6 +1126,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				home.setNoOfVehicles(Integer.valueOf(commonCount.toString()));
 				home.setHavepromoYn(eserCommonData.getHavepromocode());
 				home.setPromocode(eserCommonData.getPromocode());
+				home.setManualReferalYn(eserCommonData.getManualReferalYn());
 			}
 			
 			// Save Home Position Master
