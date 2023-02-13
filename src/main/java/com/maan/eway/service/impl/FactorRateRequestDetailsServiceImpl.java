@@ -1040,7 +1040,7 @@ this.repository = repo;
 						dozerMapper.map(buildData,res);
 						res.setInsuranceId(buildData.getCompanyId());
 						res.setSectionId(sec.getSectionId());
-						res.setVehicleId(sec.getRiskId().toString());
+						res.setVehicleId(acc.getRiskId().toString());
 						res.setGroupId(acc.getRiskId()==null?null:acc.getRiskId());
 						res.setOverallPremiumFc(acc.getOverallPremiumFc()==null?"": acc.getOverallPremiumFc().toPlainString());
 						res.setOverallPremiumLc(acc.getOverallPremiumLc()==null?"":acc.getOverallPremiumLc().toPlainString());
