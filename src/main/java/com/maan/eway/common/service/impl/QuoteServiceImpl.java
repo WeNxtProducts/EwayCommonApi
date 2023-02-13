@@ -136,6 +136,9 @@ public class QuoteServiceImpl implements QuoteService {
 	@Value(value = "${building.productId}")
 	private String buildingProductId;
 	
+	@Value(value = "${sme.productId}")
+	private String smeProductId;
+	
 	@PersistenceContext
 	private EntityManager em;
 
@@ -269,7 +272,7 @@ public class QuoteServiceImpl implements QuoteService {
 				viewRes =	getTravelProductDetails( req);
 				viewRes.setCustomerDetails(custRes);
 				viewRes.setQuoteDetails(quoteRes);
-			} else if( homeData.getProductId().equals(Integer.valueOf(buildingProductId))) {
+			} else if( homeData.getProductId().equals(Integer.valueOf(buildingProductId)) || homeData.getProductId().equals(Integer.valueOf(smeProductId)) ) {
 				// Travel Product Details
 				viewRes =	getBuildingProductDetails( req);
 				viewRes.setCustomerDetails(custRes);

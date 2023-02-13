@@ -134,6 +134,9 @@ private String travelProductId;
 @Value(value = "${building.productId}")
 private String buildingProductId;
 
+@Value(value = "${sme.productId}")
+private String smeProductId;
+
 @Value(value="${personalaccident.productId}")
 private String personalaccidentProductId;
 
@@ -519,7 +522,7 @@ this.repository = repo;
 					traData.setOverallPremiumFc(overAllPremiumFc ==null ? null :new BigDecimal(df.format(overAllPremiumFc)));
 					eserTraRepo.save(traData);
 					
-				} else if(   req.getProductId().equalsIgnoreCase(buildingProductId)) {
+				} else if(   req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) ) {
 					
 					// Update Group Premium
 					EserviceBuildingDetails findData = eserBuildRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()) ); 
@@ -913,7 +916,7 @@ this.repository = repo;
 			} else if(req.getProductId().equalsIgnoreCase(travelProductId)) {
 				viewDetailsList = getTravelDetails(req) ;
 				
-			} else if(req.getProductId().equalsIgnoreCase(buildingProductId)) {
+			} else if(req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)) {
 				viewDetailsList = getBuildingDetails(req) ;
 				
 			} else {

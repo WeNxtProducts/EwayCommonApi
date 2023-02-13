@@ -133,6 +133,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	
 	@Value(value = "${employeesliability.productId}")
 	private String employeesliabilityProductId;
+	
+	@Value(value = "${sme.productId}")
+	private String smeProductId;
 
 	Gson json = new Gson();
 	
@@ -585,7 +588,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						travelData.setManualReferalYn(req.getManualReferralYn());
 						eserTraRepo.save(travelData);
 						
-					} else if ( req.getProductId().equalsIgnoreCase(buildingProductId)) {
+					} else if ( req.getProductId().equalsIgnoreCase(buildingProductId) ||  req.getProductId().equalsIgnoreCase(smeProductId)) {
 						List<EserviceBuildingDetails> buildingDatas = eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 						for (EserviceBuildingDetails build : buildingDatas ) {
 							List<IndividualReferalReq> filterInduRef = induRefs.stream().filter( o -> o.getRiskId().equals(build.getRiskId()) ).collect(Collectors.toList()) ;
@@ -764,7 +767,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		            }
 					
 			// Bulding Thread Call	 
-			} else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
+			} else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) ) {
 				 for (Integer vehId :  vehicleIds ) {
 		            	threadCount = threadCount +  2 ;
 		            	List<String> sectionId = req.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());
