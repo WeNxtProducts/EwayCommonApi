@@ -39,6 +39,10 @@ public class EserviceBuildingsDetailsRes implements Serializable {
     private String     requestReferenceNo ;
 	@JsonProperty("LocationId")
     private String    locationId   ;
+	@JsonProperty("SectionId")
+    private String    sectionId   ;
+	@JsonProperty("PersonId")
+    private String    personId   ;
 	@JsonProperty("CustomerReferenceNo")
     private String     customerReferenceNo ;
 	@JsonProperty("ProductId")
@@ -157,6 +161,8 @@ public class EserviceBuildingsDetailsRes implements Serializable {
 	@JsonProperty("CategoryId")
     private String    categoryId;
 
+	@JsonProperty("SectionName")
+    private String    sectionName;
 
       
 	  

@@ -17,4 +17,6 @@ public interface BuildingDetailsRepository extends JpaRepository<BuildingDetails
 
 	List<BuildingDetails> findByRequestReferenceNo(String requestReferenceNo);
 
+	List<BuildingDetails> findByQuoteNoOrderByRiskIdAsc(String quoteNo);
+
 }

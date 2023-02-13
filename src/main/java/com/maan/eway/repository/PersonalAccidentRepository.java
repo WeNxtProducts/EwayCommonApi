@@ -27,4 +27,6 @@ public interface PersonalAccidentRepository
 	@Transactional
 	void deleteByQuoteNo(String quoteNo);
 
+	List<PersonalAccident> findByQuoteNoOrderByRiskIdAsc(String quoteNo);
+
 }

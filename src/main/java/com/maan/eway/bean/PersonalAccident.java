@@ -88,12 +88,7 @@ public class PersonalAccident implements Serializable {
 	@Column(name = "WEIGHT")
 	private BigDecimal weight;
 
-	@Column(name="SUM_INSURED")
-	private BigDecimal sumInsured;
 
-	@Column(name="BENEFIT_COVER_MONTH")
-	private Integer benefitCoverMonth;
-	    
 	@Column(name = "DESCRIPTION", length = 100)
 	private String description;
 
@@ -137,6 +132,4 @@ public class PersonalAccident implements Serializable {
     private String     policyNo;
 
 
-    @Column(name="BANK_CODE", length=100)
-    private String   bankCode;
 }

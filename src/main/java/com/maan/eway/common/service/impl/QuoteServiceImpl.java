@@ -35,7 +35,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
+import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EserviceBuildingDetails;
@@ -55,6 +55,7 @@ import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.OccupationMaster;
+import com.maan.eway.bean.PersonalAccident;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.SectionCoverMaster;
@@ -91,6 +92,7 @@ import com.maan.eway.notification.req.Notification;
 import com.maan.eway.notification.req.UnderWriter;
 import com.maan.eway.notification.req.statealgo.NotificationStatus;
 import com.maan.eway.notification.service.NotificationService;
+import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.CoverDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
@@ -108,6 +110,7 @@ import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
+import com.maan.eway.repository.PersonalAccidentRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
@@ -216,6 +219,14 @@ public class QuoteServiceImpl implements QuoteService {
 	
 	@Autowired
 	private EserviceCustomerDetailsRepository customerDetailsRepo;
+	
+	@Autowired
+	private BuildingDetailsRepository BuildingRepo;
+	
+	@Autowired
+	private PersonalAccidentRepository personalRepo;
+	
+	
 	private Logger log = LogManager.getLogger(QuoteServiceImpl.class);
 	
 	@Override
@@ -467,20 +478,50 @@ public class QuoteServiceImpl implements QuoteService {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			// Find Motor Data
-			List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
-			List<EserviceSectionDetails> secDatas =  eserSecRepo.findByRequestReferenceNoAndRiskIdAndProductIdOrderBySectionIdAsc(buildDatas.get(0).getRequestReferenceNo() , buildDatas.get(0).getRiskId() , buildDatas.get(0).getProductId());
+			List<BuildingDetails> buildDatas = BuildingRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+			
+			List<EserviceSectionDetails> secDatas =  eserSecRepo.findByRequestReferenceNoAndRiskIdAndProductIdOrderBySectionIdAsc(buildDatas.get(0).getRequestReferenceNo() , buildDatas.get(0).getRiskId() , buildingProductId );
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 			
-			List<BuildingProductDetailsRes>   motorResList = new ArrayList<BuildingProductDetailsRes>();
+			List<BuildingProductDetailsRes>   buildList = new ArrayList<BuildingProductDetailsRes>();
 			for (EserviceSectionDetails sec :  secDatas) {
-				EserviceBuildingDetails buildData = buildDatas.stream().filter( o -> o.getRiskId().equals(sec.getRiskId()) ).collect(Collectors.toList()).get(0);
-				// Build
+				BuildingDetails buildData = buildDatas.stream().filter( o -> o.getRiskId().equals(sec.getRiskId()) ).collect(Collectors.toList()).get(0);
+				
+				if(sec.getSectionId().equalsIgnoreCase("35") ) {
+				
+				} else {
+					// Build
+					EserviceBuildingsDetailsRes buildingRes = new  EserviceBuildingsDetailsRes()  ;
+					dozerMapper.map(buildData, buildingRes);
+					buildingRes.setSectionName(sec.getSectionDesc());
+					buildingRes.setLocationId(buildData.getRiskId().toString());
+					BuildingProductDetailsRes buildingProductRes = new BuildingProductDetailsRes();
+					buildingProductRes.setBuildingDetails(buildingRes);		
+					buildList.add(buildingProductRes);
+					
+				}
+				
+			} 
+			
+			List<PersonalAccident> accData =  	personalRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+			for (PersonalAccident acc : accData ) {
+				BuildingDetails buildData = buildDatas.stream().filter( o -> o.getRiskId().equals(acc.getRiskId()) ).collect(Collectors.toList()).get(0);
+				// Accident
 				EserviceBuildingsDetailsRes buildingRes = new  EserviceBuildingsDetailsRes()  ;
 				dozerMapper.map(buildData, buildingRes);
+				buildingRes.setLocationId(acc.getRiskId().toString());
+				buildingRes.setSectionName(acc.getOccupationDesc());
+				buildingRes.setPersonId(acc.getPersonId());
+				BuildingProductDetailsRes buildingProductRes = new BuildingProductDetailsRes();
+				buildingProductRes.setBuildingDetails(buildingRes);		
+				buildList.add(buildingProductRes);
+			}
 				
-				// Cover Details
-				List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(sec.getRiskId()))).collect(Collectors.toList());
-				
+			// COvers
+			List<BuildingProductDetailsRes>   motorResList = new ArrayList<BuildingProductDetailsRes>();
+			for ( BuildingProductDetailsRes bcc : buildList) {
+				List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(bcc.getBuildingDetails().getLocationId())) &&
+							o.getCompanyId().equals(bcc.getBuildingDetails().getCompanyId()) && o.getProductId().toString().equals(bcc.getBuildingDetails().getProductId()) && o.getSectionId().toString().equals(bcc.getBuildingDetails().getSectionId()) ).collect(Collectors.toList());
 				Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
 				
 				List<Cover>  coverListRes = new ArrayList<Cover>();
@@ -612,12 +653,12 @@ public class QuoteServiceImpl implements QuoteService {
 					coverListRes.add(coverRes);
 				}
 				coverListRes.sort(Comparator.comparing(Cover :: getCoverId));;
-				// Response
+				bcc.setCovers(coverListRes);
 				BuildingProductDetailsRes buildingProductRes = new BuildingProductDetailsRes();
-				buildingProductRes.setBuildingDetails(buildingRes);		
-				buildingProductRes.setCovers(coverListRes);
-				motorResList.add(buildingProductRes);				
+				buildingProductRes.setBuildingDetails(bcc.getBuildingDetails() );		
+				buildList.add(buildingProductRes);
 			}
+			
 			viewRes.setProductDetails(motorResList);	
 			
 		} catch ( Exception e) {
