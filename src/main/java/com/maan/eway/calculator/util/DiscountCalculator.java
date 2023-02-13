@@ -8,6 +8,8 @@ import java.util.function.Consumer;
 
 import javax.persistence.Tuple;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.maan.eway.res.calc.Discount;
 
 public class DiscountCalculator   implements Consumer<Discount> {
@@ -32,7 +34,7 @@ public class DiscountCalculator   implements Consumer<Discount> {
 	 try {
 		 String calctype= t.getDiscountCalcType();
 		 if("F".equals(t.getDiscountCalcType())) {
-			 List<Tuple> factors = calc.LoadFactorRates(calc.engine, t.getDiscountId(),t.getFactorTypeId(),calc.engine.getVehicleId());
+			 List<Tuple> factors = calc.LoadFactorRates(calc.engine, t.getDiscountId(),t.getFactorTypeId(),calc.engine.getVehicleId(),StringUtils.isBlank(t.getSubCoverId())?"0":t.getSubCoverId());
 			 Tuple tuple = factors.get(0);
 			 calctype=tuple.get("calcType").toString();
 			 String rate=tuple.get("rate")==null?"0":tuple.get("rate").toString();

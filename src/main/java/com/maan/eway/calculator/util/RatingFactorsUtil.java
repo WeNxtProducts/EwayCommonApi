@@ -107,13 +107,13 @@ public class RatingFactorsUtil {
 	
 	
 	
-	protected List<Tuple> loopfactorrates(CalcEngine engine,Map<String, List<String>> vloop, String coverId) {
+	protected List<Tuple> loopfactorrates(CalcEngine engine,Map<String, List<String>> vloop, String coverId, String subCoverId) {
 
 		for (Entry<String, List<String>> entry : vloop.entrySet()) {
 			List<String> condtions = entry.getValue();
 			String condtion=StringUtils.join(condtions,';');
 
-			List<Tuple> loadfactorOnlyquery = loadfactorOnlyquery(engine,condtion, coverId);
+			List<Tuple> loadfactorOnlyquery = loadfactorOnlyquery(engine,condtion, coverId,subCoverId);
 			
 			return loadfactorOnlyquery;
 
@@ -122,27 +122,27 @@ public class RatingFactorsUtil {
 	}
 	
 	
-	protected List<Tuple> loadfactorOnlyquery(CalcEngine engine,String condtion,String coverId) {
+	protected List<Tuple> loadfactorOnlyquery(CalcEngine engine,String condtion,String coverId, String subCoverId) {
 		try{
 			String todayInString = DD_MM_YYYY.format(new Date());
 			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+
-					engine.getSectionId()+";status:{Y,R};coverId:"+coverId+";"
+					engine.getSectionId()+";status:{Y,R};coverId:"+coverId+";subCoverId:"+subCoverId+";"
 					+todayInString+"~effectiveDateStart&effectiveDateEnd;agencyCode:"+engine.getAgencyCode()
 					+";branchCode:"+engine.getBranchCode()+";"+condtion;
 
 
 			String search2="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+
-					engine.getSectionId()+";status:{Y,R};coverId:"+coverId+";"
+					engine.getSectionId()+";status:{Y,R};coverId:"+coverId+";subCoverId:"+subCoverId+";"
 					+todayInString+"~effectiveDateStart&effectiveDateEnd;agencyCode:"+engine.getAgencyCode()
 					+";branchCode:99999;"+condtion;
 
 			String search3="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+
-					engine.getSectionId()+";status:{Y,R};coverId:"+coverId+";"
+					engine.getSectionId()+";status:{Y,R};coverId:"+coverId+";subCoverId:"+subCoverId+";"
 					+todayInString+"~effectiveDateStart&effectiveDateEnd;agencyCode:99999"
 					+";branchCode:"+engine.getBranchCode()+";"+condtion;
 
 			String search4="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+
-					engine.getSectionId()+";status:{Y,R};coverId:"+coverId+";"
+					engine.getSectionId()+";status:{Y,R};coverId:"+coverId+";subCoverId:"+subCoverId+";"
 					+todayInString+"~effectiveDateStart&effectiveDateEnd;agencyCode:99999"
 					+";branchCode:99999;"+condtion;
 

@@ -123,7 +123,8 @@ public class CriteriaService {
 
 	 		result.setFirstResult(limit* offset);
 			result.setMaxResults(offset);
-			//System.out.println("Query Input: "+reqPrinter.reqPrint(cr.getWheres()));
+			
+			reqPrinter.reqPrint(cr.getWheres());
 			list =  result.getResultList();
 		 
 		
@@ -250,7 +251,7 @@ public List<Tuple> getResult(SpecCriteria cr,String amendIdCol,Integer limit,Int
 
 	 		result.setFirstResult(limit* offset);
 			result.setMaxResults(offset);
-			//System.out.println("Query Input: "+reqPrinter.reqPrint(cr.getWheres()));
+			reqPrinter.reqPrint(cr.getWheres());
 			list =  result.getResultList();
 		 
 		
@@ -385,7 +386,7 @@ public List<Tuple> getResult(SpecCriteria cr,String amendIdCol,Integer limit,Int
 
 	 		result.setFirstResult(limit* offset);
 			result.setMaxResults(offset);
-			//System.out.println("Query Input: "+reqPrinter.reqPrint(cr.getWheres()));
+			reqPrinter.reqPrint(cr.getWheres());
 			list =  result.getResultList();
 		 
 			 
@@ -520,7 +521,7 @@ public List<Long> getCount(SpecCriteria cr,String amendIdCol,Integer limit,Integ
 
 	 		result.setFirstResult(limit* offset);
 			result.setMaxResults(offset);
-			//System.out.println("Query Input: "+reqPrinter.reqPrint(cr.getWheres()));
+			reqPrinter.reqPrint(cr.getWheres());
 			list =  result.getResultList();
 		 
 		

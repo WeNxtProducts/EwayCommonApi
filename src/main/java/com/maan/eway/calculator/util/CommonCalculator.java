@@ -68,11 +68,11 @@ public class CommonCalculator {
 		this.crservice=crservice;
 	}
 	
-	public List<Tuple> LoadFactorRates(CalcEngine engine,String coverId,String factorid,String vehicleId){
-		return LoadFactorRates(engine, coverId, factorid, vehicleId, vehicles.get(0), customers.get(0), result.get(0));
+	public List<Tuple> LoadFactorRates(CalcEngine engine,String coverId,String factorid,String vehicleId, String subCoverId){
+		return LoadFactorRates(engine, coverId, factorid, vehicleId, vehicles.get(0), customers.get(0), result.get(0),subCoverId);
 	}
 	
-	public List<Tuple> LoadFactorRates(CalcEngine engine,String coverId,String factorid,String vehicleId,Tuple vehicle,Tuple customer,Tuple common) {
+	public List<Tuple> LoadFactorRates(CalcEngine engine,String coverId,String factorid,String vehicleId,Tuple vehicle,Tuple customer,Tuple common,String subCoverId) {
 		Map<String,List<String>> vloop=new HashMap<String, List<String>>();
 		try {
 			
@@ -105,7 +105,7 @@ public class CommonCalculator {
 				vloop.put(vehicleId, condtions);
 
 
-				List<Tuple> loopfactorrates = crservice.loopfactorrates(engine,vloop,coverId);
+				List<Tuple> loopfactorrates = crservice.loopfactorrates(engine,vloop,coverId,subCoverId);
 
 				if(loopfactorrates==null || loopfactorrates.size()==0) {
 					condtions.clear(); 
@@ -117,7 +117,7 @@ public class CommonCalculator {
 							String condtion=r.getDiscretCol()+":"+r.getInputColumValue()+";";
 							if(condtions.size()>0)
 								condtion=condtion.concat(StringUtils.join(condtions,';'));
-							List<Tuple> onlyquery =  crservice.loadfactorOnlyquery(engine,condtion, coverId);
+							List<Tuple> onlyquery =  crservice.loadfactorOnlyquery(engine,condtion, coverId,subCoverId);
 							Long count=0L;
 							if(onlyquery==null || onlyquery.size()==0) {
 								r.setInputColumValue("99999");
@@ -130,7 +130,7 @@ public class CommonCalculator {
 						condtions.add(condtion);  
 					}						 
 					vloop.put(vehicleId, condtions);
-					loopfactorrates =  crservice.loopfactorrates(engine,vloop,coverId); 
+					loopfactorrates =  crservice.loopfactorrates(engine,vloop,coverId,subCoverId); 
 
 				}
 			
