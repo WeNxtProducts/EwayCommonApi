@@ -127,6 +127,8 @@ public class EservieMotorDetailsViewRes {
 	
 	@JsonProperty("ManualReferalYn")
     private String     manualReferalYn;
+	@JsonProperty("SectionName")
+    private String     sectionName;
 	
 	
 }
