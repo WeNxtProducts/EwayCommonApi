@@ -1073,7 +1073,7 @@ this.repository = repo;
 						res.setActualPremiumLc(buildData.getActualPremiumLc()==null?"":buildData.getActualPremiumLc().toPlainString());
 						res.setHavepromocode(buildData.getHavepromocode());
 						res.setPromocode(buildData.getPromocode());
-						res.setSectionName(buildData.getSectionDesc());
+						res.setSectionName(buildData.getProductDesc());
 						res.setGroupId(buildData.getRiskId()==null?null:buildData.getRiskId());
 						Object riskDetails = new Object();
 						EserviceBuildingsDetailsRes  buildRes = new EserviceBuildingsDetailsRes();
