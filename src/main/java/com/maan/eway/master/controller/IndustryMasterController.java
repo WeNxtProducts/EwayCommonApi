@@ -17,10 +17,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.DropdownCommonRes;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CountryGetAllReq;
+import com.maan.eway.master.req.CountryMasterGetReq;
+import com.maan.eway.master.req.CountryMasterSaveReq;
+import com.maan.eway.master.req.IndustryMasterChangeStatusReq;
 import com.maan.eway.master.req.IndustryMasterDropdownReq;
+import com.maan.eway.master.req.IndustryMasterGetReq;
+import com.maan.eway.master.req.IndustryMasterGetallReq;
+import com.maan.eway.master.req.IndustryMasterSaveReq;
+import com.maan.eway.master.res.CountryMasterRes;
+import com.maan.eway.master.res.IndustryMasterRes;
 import com.maan.eway.master.service.IndustryMasterService;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
@@ -42,7 +54,7 @@ public class IndustryMasterController {
 	private IndustryMasterService service;
 		
 	
-	// Insurance Company Master Drop Down Type
+	// Industry Master Drop Down Type
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@PostMapping(value="/dropdown/industry",produces = "application/json")
 		@ApiOperation(value = "This method is get Industry Master Drop Down")
@@ -66,4 +78,128 @@ public class IndustryMasterController {
 
 		}
 
+	
+	// save
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+		@PostMapping("/saveindustry")
+		@ApiOperation(value = "This method is Insert Industry Master")
+		public ResponseEntity<CommonRes> insertIndustry(@RequestBody IndustryMasterSaveReq req) {
+
+			reqPrinter.reqPrint(req);
+			CommonRes data = new CommonRes();
+
+			List<Error> validation = service.validateIndustryDetails(req);
+			// validation
+			if (validation != null && validation.size() != 0) {
+				data.setCommonResponse(null);
+				data.setIsError(true);
+				data.setErrorMessage(validation);
+				data.setMessage("Failed");
+				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+			} else {
+
+				// Get All
+				SuccessRes res = service.insertIndustry(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}
+
+		}
+		
+		//  Get All Industry Master
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+		@PostMapping("/getallindustry")
+		@ApiOperation("This method is getall Country Details")
+		public ResponseEntity<CommonRes> getallIndustry(@RequestBody IndustryMasterGetallReq req )
+		{
+			CommonRes data = new CommonRes();	
+			List<IndustryMasterRes> res = service.getallIndustry(req);
+			data.setCommonResponse(res);
+			data.setErrorMessage(Collections.emptyList());
+			data.setIsError(false);
+			data.setMessage("Success");
+			
+			if(res!= null) {
+				return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+			}
+			else {
+				return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+			}
+		}
+		
+	//  Get Active Industry Master
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+		@PostMapping("/getactiveindustry")
+			@ApiOperation("This method is get Active Industry Details")
+			public ResponseEntity<CommonRes> getActiveIndustryMaster(@RequestBody IndustryMasterGetallReq req )
+			{
+				CommonRes data = new CommonRes();
+				
+				List<IndustryMasterRes> res = service.getActiveIndustryMaster(req);
+				data.setCommonResponse(res);
+				data.setErrorMessage(Collections.emptyList());
+				data.setIsError(false);
+				data.setMessage("Success");
+				
+				if(res!= null) {
+					return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+				}
+				else {
+					return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+				}
+			}
+		
+		// Get By Country Id
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+		@PostMapping("/getbyindustryid")
+		@ApiOperation("This Method is to get by Country id")
+		public ResponseEntity<CommonRes> getByIndustryId(@RequestBody IndustryMasterGetReq req)
+		{
+		CommonRes data = new CommonRes();
+		IndustryMasterRes res = service.getByIndustryId(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	
+	// Get By Country Id
+		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+		@PostMapping("/industrychangestatus")
+		@ApiOperation("This Method is to Change Status")
+		public ResponseEntity<CommonRes> changeStatus(@RequestBody IndustryMasterChangeStatusReq req)
+		{
+		CommonRes data = new CommonRes();
+		SuccessRes res = service.changeStatus(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	
 }

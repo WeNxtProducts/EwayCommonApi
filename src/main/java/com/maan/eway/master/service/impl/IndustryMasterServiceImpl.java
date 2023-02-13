@@ -5,6 +5,7 @@
 */
 package com.maan.eway.master.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -29,16 +30,26 @@ import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.IndustryMaster;
+import com.maan.eway.bean.OccupationMaster;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.IndustryMasterChangeStatusReq;
 import com.maan.eway.master.req.IndustryMasterDropdownReq;
+import com.maan.eway.master.req.IndustryMasterGetReq;
+import com.maan.eway.master.req.IndustryMasterGetallReq;
+import com.maan.eway.master.req.IndustryMasterSaveReq;
+import com.maan.eway.master.res.IndustryMasterRes;
+import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.master.service.IndustryMasterService;
 import com.maan.eway.repository.IndustryMasterRepository;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
 
 /**
  * <h2>CityMasterServiceimpl</h2>
@@ -146,8 +157,590 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
 	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
 	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
-	}		
+	}
+
+	@Override
+	public List<Error> validateIndustryDetails(IndustryMasterSaveReq req) {
+		// TODO Auto-generated method stub
+		List<Error> errorList = new ArrayList<Error>();
+
+		try {
+		
+			if (StringUtils.isBlank(req.getCategoryDesc())) {
+				errorList.add(new Error("02", "CategoryDesc", "Please Enter CategoryDesc"));
+			}else if (req.getCategoryDesc().length() > 100){
+				errorList.add(new Error("02","CategoryDesc", "Please Enter CategoryDesc 100 Characters")); 
+			}else if (StringUtils.isBlank(req.getCategoryId()) &&  StringUtils.isNotBlank(req.getCategoryId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())) {
+				List<IndustryMaster> industrylist = getCategoryDescExistDetails(req.getCategoryDesc() , req.getCompanyId() , req.getBranchCode() , req.getProductId());
+				if (industrylist.size()>0 ) {
+					errorList.add(new Error("01", "Category Desc", "This Category Desc Already Exist "));
+				}
+			}else if (StringUtils.isNotBlank(req.getCategoryId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())) {
+				List<IndustryMaster> industrylist = getCategoryDescExistDetails(req.getCategoryDesc() , req.getCompanyId() , req.getBranchCode(), req.getProductId());
+				
+				if (industrylist.size()>0 &&  (! req.getCategoryId().equalsIgnoreCase(industrylist.get(0).getCategoryId().toString())) ) {
+					errorList.add(new Error("01", "Category Desc", "This Category Desc Already Exist "));
+				}
+				
+			}
+			
+			
+			if (StringUtils.isBlank(req.getCompanyId())) {
+				errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
+			}
+			
+			if (StringUtils.isBlank(req.getBranchCode())) {
+				errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
+			}
+			
+			if (StringUtils.isBlank(req.getRemarks())) {
+				errorList.add(new Error("04", "Remarks", "Please Select Remarks "));
+			}else if (req.getRemarks().length() > 100){
+				errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
+			}
+			
+			// Date Validation 
+			Calendar cal = new GregorianCalendar();
+			Date today = new Date();
+			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);;
+			today = cal.getTime();
+			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
+				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+
+			} else if (req.getEffectiveDateStart().before(today)) {
+				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+			}
+			//Status Validation
+			if (StringUtils.isBlank(req.getStatus())) {
+				errorList.add(new Error("06", "Status", "Please Enter Status"));
+			} else if (req.getStatus().length() > 1) {
+				errorList.add(new Error("06", "Status", "Enter Status in 1 Character Only"));
+			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus()) || "R".equalsIgnoreCase(req.getStatus()))) {
+				errorList.add(new Error("06", "Status", "Enter Status in Y or N or R Only"));
+			}
+
+			if (StringUtils.isBlank(req.getCoreAppCode())) {
+				errorList.add(new Error("07", "CoreAppCode", "Please Select CoreAppCode"));
+			}else if (req.getCoreAppCode().length() > 20){
+				errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
+			}
+			if (StringUtils.isBlank(req.getRegulatoryCode())) {
+				errorList.add(new Error("08", "RegulatoryCode", "Please Select RegulatoryCode"));
+			}else if (req.getRegulatoryCode().length() > 20){
+				errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters")); 
+			}
+			if (StringUtils.isBlank(req.getCreatedBy())) {
+				errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
+			}else if (req.getCreatedBy().length() > 100){
+				errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+			}
+			if (StringUtils.isBlank(req.getProductId())) {
+				errorList.add(new Error("10", "ProductId", "Please Select ProductId"));
+			}
+			
+			
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		return errorList;
+	}
+	private List<IndustryMaster> getCategoryDescExistDetails(String categoryDesc, String companyId, String branchCode,
+			String productId) {
+		// TODO Auto-generated method stub
+		List<IndustryMaster> list = new ArrayList<IndustryMaster>();
+		try {
+			Date today = new Date();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<IndustryMaster> query = cb.createQuery(IndustryMaster.class);
+
+			// Find All
+			Root<IndustryMaster> b = query.from(IndustryMaster.class);
+
+			// Select
+			query.select(b);
+
+			// Effective Date Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<IndustryMaster> ocpm1 = amendId.from(IndustryMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("categoryId"), b.get("categoryId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a5 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"), today);
+			Predicate a6 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			
+			amendId.where(a1,a2,a3,a4,a5,a6);
+
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(cb.lower( b.get("categoryDesc")), categoryDesc.toLowerCase());
+			Predicate n3 = cb.equal(b.get("companyId"),companyId);
+			Predicate n4 = cb.equal(b.get("branchCode"), branchCode);
+			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n6 = cb.or(n4,n5);
+			Predicate n7 = cb.equal(b.get("productId"), productId);
+			
+			query.where(n1,n2,n3,n6,n7);
+			
+			// Get Result
+			TypedQuery<IndustryMaster> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+
+		}
+		return list;
+	}
+
+
+	@Override
+	public SuccessRes insertIndustry(IndustryMasterSaveReq req) {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		SuccessRes res = new SuccessRes();
+		IndustryMaster saveData = new IndustryMaster();
+		List<IndustryMaster> list = new ArrayList<IndustryMaster>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			Integer amendId=0;
+			Date startDate = req.getEffectiveDateStart() ;
+			String end = "31/12/2050";
+			Date endDate = sdf.parse(end);
+			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+			Date entryDate = null ;
+			String createdBy = "" ;
+			
+			Integer categoryId = 0 ;
+			if(StringUtils.isBlank(req.getCategoryId())) {
+				// Save
+				Integer totalCount = getMasterTableCount( req.getBranchCode(), req.getProductId(), req.getCompanyId());
+				categoryId =  totalCount+1 ;
+				entryDate = new Date();
+				createdBy = req.getCreatedBy();
+				res.setResponse("Saved Successfully");
+				res.setSuccessId(categoryId.toString());
+			}
+			else {
+				// Update
+				categoryId = Integer.valueOf(req.getCategoryId());
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<IndustryMaster> query = cb.createQuery(IndustryMaster.class);
+				//Find all
+				Root<IndustryMaster> b = query.from(IndustryMaster.class);
+				//Select 
+				query.select(b);
+//				
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(b.get("effectiveDateStart")));
+				
+				// Where
+			//	Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+				Predicate n2 = cb.equal(b.get("categoryId"), req.getCategoryId());
+				Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
+				Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
+				Predicate n5 = cb.equal(b.get("productId"), req.getProductId());
+				
+				query.where(n2,n3,n4,n5).orderBy(orderList);
+				
+				// Get Result 
+				TypedQuery<IndustryMaster> result = em.createQuery(query);
+				int limit = 0 , offset = 2 ;
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
+				list = result.getResultList();
+				
+				if(list.size()>0) {
+					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+				
+					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+						amendId = list.get(0).getAmendId() + 1 ;
+						entryDate = new Date() ;
+						createdBy = req.getCreatedBy();
+						IndustryMaster lastRecord = list.get(0);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							industryrepo.saveAndFlush(lastRecord);
+						
+					} else {
+						amendId = list.get(0).getAmendId() ;
+						entryDate = list.get(0).getEntryDate() ;
+						createdBy = list.get(0).getCreatedBy();
+						saveData = list.get(0) ;
+						if (list.size()>1 ) {
+							IndustryMaster lastRecord = list.get(1);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							industryrepo.saveAndFlush(lastRecord);
+						}
+					
+				    }
+				}
+				res.setResponse("Updated Successfully");
+				res.setSuccessId(categoryId.toString());
+			}
+			dozerMapper.map(req, saveData);
+			saveData.setCategoryId(categoryId.toString());
+			saveData.setEffectiveDateStart(startDate);
+			saveData.setEffectiveDateEnd(endDate);
+			saveData.setCreatedBy(createdBy);
+			saveData.setStatus(req.getStatus());
+			saveData.setCompanyId(req.getCompanyId());
+			saveData.setEntryDate(entryDate);
+			saveData.setUpdatedDate(new Date());
+			saveData.setUpdatedBy(req.getCreatedBy());
+			saveData.setAmendId(amendId);
+			saveData.setCoreAppCode(req.getCoreAppCode());
+			saveData.setCategoryDesc(req.getCategoryDesc());
+			industryrepo.saveAndFlush(saveData);
+			log.info("Saved Details is --> " + json.toJson(saveData));
+			
+			}
+		catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --> "+ e.getMessage());
+			return null;
+		}
+		return res;
+		}
+
+
+	public Integer getMasterTableCount(String companyId , String branchCode, String productId) {
+		Integer data =0;
+		try {
+			List<IndustryMaster> list = new ArrayList<IndustryMaster>();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<IndustryMaster> query = cb.createQuery(IndustryMaster.class);
+		// Find all
+			Root<IndustryMaster> b = query.from(IndustryMaster.class);
+			//Select 
+			query.select(b);
+
+			//Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<IndustryMaster> ocpm1 = effectiveDate.from(IndustryMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("categoryId"), b.get("categoryId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+
+			effectiveDate.where(a1,a2,a3,a4);
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("categoryId")));
+			
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("companyId"), companyId);
+			Predicate n3 = cb.equal(b.get("branchCode"), branchCode);
+			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n5 = cb.or(n3,n4);
+			Predicate n6 = cb.equal(b.get("productId"),productId);
+
+			query.where(n1,n2,n5,n6).orderBy(orderList);
+			
+			
+			
+			// Get Result
+			TypedQuery<IndustryMaster> result = em.createQuery(query);
+			int limit = 0 , offset = 1 ;
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+			data = list.size() > 0 ? Integer.valueOf(list.get(0).getCategoryId()) : 0 ;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+		}
+		return data;
+	}
+
 	
 	
+	@Override
+	public List<IndustryMasterRes> getallIndustry(IndustryMasterGetallReq req) {
+		// TODO Auto-generated method stub
+		List<IndustryMasterRes> resList = new ArrayList<IndustryMasterRes>();
+		DozerBeanMapper dozermapper = new DozerBeanMapper();
+		try {
+			List<IndustryMaster> list = new ArrayList<IndustryMaster>();
+			//Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<IndustryMaster> query = cb.createQuery(IndustryMaster.class);
+		
+			//FindAll
+			Root<IndustryMaster> b = query.from(IndustryMaster.class);
+			
+			// Select 
+			query.select(b);
+			
+			//Amend Id Max
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<IndustryMaster> ocpm1 = amendId.from(IndustryMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("categoryId"), b.get("categoryId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+			Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+
+			amendId.where(a1, a2,a3,a4);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("branchCode")));
+
+			// Where
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n5 = cb.or(n3,n4);
+			Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
+			
+			
+			query.where(n1,n2,n5,n6).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<IndustryMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCategoryId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(IndustryMaster :: getCategoryDesc ));
+			// Map
+			for (IndustryMaster data : list) {
+				IndustryMasterRes res = new IndustryMasterRes();
+
+				res = dozermapper.map(data, IndustryMasterRes.class);
+				res.setCompanyId(data.getCompanyId());
+				resList.add(res);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+
+		}
+		return resList;
+	}
+
 	
+
+	@Override
+	public List<IndustryMasterRes> getActiveIndustryMaster(IndustryMasterGetallReq req) {
+		// TODO Auto-generated method stub
+		List<IndustryMasterRes> resList = new ArrayList<IndustryMasterRes>();
+		DozerBeanMapper dozermapper = new DozerBeanMapper();
+		try {
+			List<IndustryMaster> list = new ArrayList<IndustryMaster>();
+			//Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<IndustryMaster> query = cb.createQuery(IndustryMaster.class);
+		
+			//FindAll
+			Root<IndustryMaster> b = query.from(IndustryMaster.class);
+			
+			// Select 
+			query.select(b);
+			
+			//Amend Id Max
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<IndustryMaster> ocpm1 = amendId.from(IndustryMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("categoryId"), b.get("categoryId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+			Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+
+			amendId.where(a1, a2,a3,a4);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("branchCode")));
+
+			// Where
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n5 = cb.or(n3,n4);
+			Predicate n6 = cb.equal(b.get("productId"), req.getProductId());			
+			Predicate n7 = cb.equal(b.get("status"),"Y");
+			
+			query.where(n1,n2,n5,n6,n7).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<IndustryMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCategoryId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(IndustryMaster :: getCategoryDesc ));
+			// Map
+			for (IndustryMaster data : list) {
+				IndustryMasterRes res = new IndustryMasterRes();
+
+				res = dozermapper.map(data, IndustryMasterRes.class);
+				res.setCompanyId(data.getCompanyId());
+				resList.add(res);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+
+		}
+		return resList;
+	}
+
+	@Override
+	public IndustryMasterRes getByIndustryId(IndustryMasterGetReq req) {
+		// TODO Auto-generated method stub
+		IndustryMasterRes res = new IndustryMasterRes();
+		DozerBeanMapper dozermapper = new DozerBeanMapper();
+		try {
+			List<IndustryMaster> list = new ArrayList<IndustryMaster>();
+			//Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<IndustryMaster> query = cb.createQuery(IndustryMaster.class);
+		
+			//FindAll
+			Root<IndustryMaster> b = query.from(IndustryMaster.class);
+			
+			// Select 
+			query.select(b);
+			
+			//Amend Id Max
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<IndustryMaster> ocpm1 = amendId.from(IndustryMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("categoryId"), b.get("categoryId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+			Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+
+			amendId.where(a1, a2,a3,a4);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("branchCode")));
+
+			// Where
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n5 = cb.or(n3,n4);
+			Predicate n6 = cb.equal(b.get("productId"), req.getProductId());			
+			Predicate n7 = cb.equal(b.get("categoryId"),req.getCategoryId());
+			
+			query.where(n1,n2,n5,n6,n7).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<IndustryMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCategoryId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(IndustryMaster :: getCategoryDesc ));
+				res = dozermapper.map(list.get(0), IndustryMasterRes.class);
+			
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+			return null;
+
+		}
+		return res;
+	}
+
+	@Override
+	public SuccessRes changeStatus(IndustryMasterChangeStatusReq req) {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		SuccessRes res = new SuccessRes();
+		IndustryMaster saveData = new IndustryMaster();
+		List<IndustryMaster> list = new ArrayList<IndustryMaster>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			Integer amendId=0;
+			Date startDate = req.getEffectiveDateStart() ;
+			String end = "31/12/2050";
+			Date endDate = sdf.parse(end);
+			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
+			Date entryDate = null ;
+			String createdBy = "" ;
+			
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<IndustryMaster> query = cb.createQuery(IndustryMaster.class);
+				//Find all
+				Root<IndustryMaster> b = query.from(IndustryMaster.class);
+				//Select 
+				query.select(b);
+//				
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(b.get("effectiveDateStart")));
+				
+				// Where
+			//	Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+				Predicate n2 = cb.equal(b.get("categoryId"), req.getCategoryId());
+				Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
+				Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
+				Predicate n5 = cb.equal(b.get("productId"), req.getProductId());
+				
+				query.where(n2,n3,n4,n5).orderBy(orderList);
+				
+				// Get Result 
+				TypedQuery<IndustryMaster> result = em.createQuery(query);
+				int limit = 0 , offset = 2 ;
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
+				list = result.getResultList();
+				
+				if(list.size()>0) {
+					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+				
+					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+						amendId = list.get(0).getAmendId() + 1 ;
+						entryDate = new Date() ;
+						IndustryMaster lastRecord = list.get(0);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							industryrepo.saveAndFlush(lastRecord);
+						
+					} else {
+						amendId = list.get(0).getAmendId() ;
+						entryDate = list.get(0).getEntryDate() ;
+						createdBy = list.get(0).getCreatedBy();
+						saveData = list.get(0) ;
+						if (list.size()>1 ) {
+							IndustryMaster lastRecord = list.get(1);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							industryrepo.saveAndFlush(lastRecord);
+						}
+					
+				    }
+				}
+				res.setResponse("Status Changed Successfully");
+				res.setSuccessId(req.getCategoryId());
+			
+			dozerMapper.map(list.get(0), saveData);
+			saveData.setEffectiveDateStart(req.getEffectiveDateStart());
+			saveData.setEffectiveDateEnd(endDate);
+			saveData.setStatus(req.getStatus());
+			saveData.setCompanyId(req.getCompanyId());
+			saveData.setUpdatedDate(new Date());
+			industryrepo.saveAndFlush(saveData);
+			log.info("Saved Details is --> " + json.toJson(saveData));
+			
+			}
+		catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --> "+ e.getMessage());
+			return null;
+		}
+		return res;
+		}
 }
