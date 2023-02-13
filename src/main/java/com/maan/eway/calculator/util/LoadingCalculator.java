@@ -6,6 +6,8 @@ import java.util.function.Consumer;
 
 import javax.persistence.Tuple;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.maan.eway.res.calc.Loading;
 
 public class LoadingCalculator   implements Consumer<Loading> {
@@ -21,7 +23,7 @@ public class LoadingCalculator   implements Consumer<Loading> {
 	 try {
 		 String calctype= t.getLoadingCalcType();
 		 if("F".equals(t.getLoadingCalcType())) {
-			 List<Tuple> factors = calc.LoadFactorRates(calc.engine, t.getLoadingId(),t.getFactorTypeId(),calc.engine.getVehicleId());
+			 List<Tuple> factors = calc.LoadFactorRates(calc.engine, t.getLoadingId(),t.getFactorTypeId(),calc.engine.getVehicleId(),StringUtils.isBlank(t.getSubCoverId())?"0":t.getSubCoverId());
 			 Tuple tuple = factors.get(0);
 			 calctype=tuple.get("calcType").toString();
 			 String rate=tuple.get("rate")==null?"0":tuple.get("rate").toString();

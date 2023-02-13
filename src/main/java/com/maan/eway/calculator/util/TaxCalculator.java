@@ -1,6 +1,7 @@
 package com.maan.eway.calculator.util;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -46,7 +47,7 @@ public class TaxCalculator   implements Consumer<Tax> {
 		 	
 		 if(t.getIsTaxExempted().equals("N"))
 				 domath= calc.domath(calctype, t.getTaxRate(), premium,exchangeRate);
-		 t.setTaxAmount(domath);
+		 t.setTaxAmount(domath.setScale(calc.round.getPrecision(),RoundingMode.HALF_UP));
 		  
 	 }catch (Exception e) {
 		 e.printStackTrace();

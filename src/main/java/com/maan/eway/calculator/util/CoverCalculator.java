@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 
 import javax.persistence.Tuple;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.maan.eway.res.calc.Cover;
@@ -59,7 +60,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 
 				 if("F".equals(t.getCalcType())) {
 					 // Tuple vehicle,Tuple customer,Tuple common
-					 List<Tuple> factors = LoadFactorRates(engine, t.getCoverId(),t.getFactorTypeId(),engine.getVehicleId());
+					 List<Tuple> factors = LoadFactorRates(engine, t.getCoverId(),t.getFactorTypeId(),engine.getVehicleId(),StringUtils.isBlank(t.getSubCoverId())?"0":t.getSubCoverId());
 					 
 					 /*if(factors==null || factors.size()==0) 
 						 throw CoverException.builder().message("Not Found Result "+"CoverID:"+t.getCoverId()+"<Desc>:"+t.getCoverDesc()+",subcoverId:"+t.getSubCoverId())
@@ -85,7 +86,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					 
 					 t.setMinimumPremium(tuple.get("minPremium")==null?BigDecimal.ZERO:new BigDecimal(tuple.get("minPremium").toString())/*.divide(t.getExchangeRate(),round)*/);
 					 BigDecimal domath = domath(calctype, t.getRate(), si,t.getExchangeRate());
-					 t.setPremiumBeforeDiscount(domath);
+					 t.setPremiumBeforeDiscount(domath.setScale(round.getPrecision(),RoundingMode.HALF_UP));
 					 t.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP)) ;
 					 t.setCalcType(calctype);
 					 t.setRegulatoryCode(regulatoryCode);
