@@ -42,9 +42,9 @@ public class UIServiceImpl implements UIService {
 				String uiSplitType = uib.getUiSplitType();
 				GroupSetup g=null;
 				 if("Stepper".equalsIgnoreCase(uiSplitType)) {
-					 g=GroupSetup.builder().type("Stepper").build();
+					 g=GroupSetup.builder().type("stepper").build();
 				 }else if("Tab".equalsIgnoreCase(uiSplitType)) {
-					 g=GroupSetup.builder().type("Tab").build();
+					 g=GroupSetup.builder().type("tabs").build();
 				 }else {
 					 g=GroupSetup.builder().type(null).build();
 				 }
