@@ -372,7 +372,7 @@ public class QuoteServiceImpl implements QuoteService {
 					// Build
 					EserviceBuildingsDetailsRes buildingRes = new  EserviceBuildingsDetailsRes()  ;
 					dozerMapper.map(buildData, buildingRes);
-					buildingRes.setSectionName(sec.getSectionDesc());
+					buildingRes.setSectionName(sec.getProductDesc() + "-" + sec.getSectionDesc() );
 					buildingRes.setLocationId(buildData.getRiskId().toString());
 					BuildingProductDetailsRes buildingProductRes = new BuildingProductDetailsRes();
 					buildingProductRes.setBuildingDetails(buildingRes);		
@@ -397,7 +397,7 @@ public class QuoteServiceImpl implements QuoteService {
 				EserviceBuildingsDetailsRes buildingRes = new  EserviceBuildingsDetailsRes()  ;
 				dozerMapper.map(buildData, buildingRes);
 				buildingRes.setLocationId(acc.getRiskId().toString());
-				buildingRes.setSectionName(acc.getOccupationDesc());
+				buildingRes.setSectionName( acc.getSectionDesc() + "-" + "PersonId " +acc.getOccupationDesc());
 				buildingRes.setPersonId(acc.getPersonId());
 				BuildingProductDetailsRes buildingProductRes = new BuildingProductDetailsRes();
 				buildingProductRes.setBuildingDetails(buildingRes);	
