@@ -29,4 +29,5 @@ public class Mail implements Serializable {
 	private String mailRegards;
 	private List<String> mailcc;
 	private JobCredentials credential;
+	private String attachments;
 }

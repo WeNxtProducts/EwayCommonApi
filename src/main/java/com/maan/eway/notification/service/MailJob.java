@@ -1,5 +1,6 @@
 package com.maan.eway.notification.service;
 
+import java.io.File;
 import java.util.Date;
 import java.util.Properties;
 import java.util.function.Consumer;
@@ -13,6 +14,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.notification.bean.MailDataDetails;
@@ -68,6 +70,19 @@ public class MailJob implements Consumer<Mail> {
 			 
 			mimeMessage.setSubject(m.getMailSubject());
 			mimeMessage.setContent(m.getMailBody(), "text/html");
+			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+			helper.setSubject(m.getMailSubject());
+			helper.setText(m.getMailBody(), true);
+			if(m.getAttachments()!=null && StringUtils.isNotBlank(m.getAttachments())) {
+				for (String attachPath : m.getAttachments().split(";")) {
+					File file=loadFilesFromPath(attachPath);
+					if (file != null && file.exists())
+						helper.addAttachment(file.getName(), file);
+				}
+			}
+			
+			
+			
 			Transport.send(mimeMessage);
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -93,4 +108,17 @@ public class MailJob implements Consumer<Mail> {
 	public void accept(Mail t) {
 		pushMail(t);
 	}
+	
+
+	private File loadFilesFromPath(String attachPath) {
+		
+		try {
+			return new File(attachPath);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
 }

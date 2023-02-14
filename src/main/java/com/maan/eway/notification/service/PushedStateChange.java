@@ -86,6 +86,7 @@ public class PushedStateChange implements  Function<Tuple,List<Object>>{
 						.mailTo(tomailid)
 						.mailcc(mailcc)
 						.credential(JobCredentials.builder().host(mailMaster.getSmtpHost()).isSSL(true).password(mailMaster.getSmtpPwd()).username(mailMaster.getSmtpUser()).build())
+						.attachments(t.get("attachFilePath")==null?"":t.get("attachFilePath").toString())
 						.build();
 				a.add(ml);
 			}
@@ -147,16 +148,15 @@ public class PushedStateChange implements  Function<Tuple,List<Object>>{
 			 		+ "            <div>\r\n"
 			 		+ "              <p style=\"font-weight: bold;\">Why {companyName}?</p>\r\n"
 			 		+ "              <ul>\r\n"
-			 		+ "                <li>Value - Most affordable cover in the market.</li>\r\n"
-			 		+ "                <li>Transparency - File and track your claims online.</li>\r\n"
-			 		+ "                <li>Time - Policies issued in minutes, not days.</li>\r\n"
+			 		+ "                <li>Sample Text -1.</li>\r\n"
+			 		+ "                <li>Sample Text -2.</li>\r\n"
+			 		+ "                <li>Sample Text -3.</li>\r\n"
 			 		+ "              </ul>\r\n"
 			 		+ "              <p style=\"font-weight: bold;\">What’s next?</p>\r\n"
-			 		+ "              <p>It’s about time your insurance earns you stuff instead\r\n"
-			 		+ "                of just being a chore.</p>\r\n"
+			 		+ "              <p>Paragraph Text</p>\r\n"
 			 		+ "              <ul>\r\n"
-			 		+ "                <li>Buy your car insurance online</li>\r\n"
-			 		+ "                <li>Upload and verify your documents</li>\r\n"
+			 		+ "                <li>Sample Text</li>\r\n"
+			 		+ "                <li>Sample Text</li>\r\n"
 			 		+ "              </ul>\r\n"
 			 		+ "              <p style=\"font-size: 1.3em; text-align: center; font-weight: bold;\">That's all, it’s that simple.</p>\r\n"
 			 		+ "            </div>\r\n"
