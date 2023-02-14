@@ -360,20 +360,20 @@ public class GridController {
 			}
 
 // Quote Grids
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-@PostMapping("/issuerquotedetails")
-public ResponseEntity<CommonRes> getallIssuerQuoteDetails(@RequestBody IssuerQuoteReq req) {
-	reqPrinter.reqPrint(req);
-	CommonRes data = new CommonRes();
-	List<EserviceCustomerDetailsRes> res = entityService.getallIssuerQuoteDetails(req);
-	data.setCommonResponse(res);
-	data.setIsError(false);
-	data.setErrorMessage(Collections.emptyList());
-	data.setMessage("Success");
-	if (res != null) {
-		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-	} else {
-		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-	}
-}
-}
+			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+			@PostMapping("dropdown/issuerquotedetails")
+			public ResponseEntity<CommonRes> getallIssuerQuoteDetails(@RequestBody IssuerQuoteReq req) {
+				reqPrinter.reqPrint(req);
+				CommonRes data = new CommonRes();
+				List<DropDownRes> res = entityService.getallIssuerQuoteDetails(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}
+		}

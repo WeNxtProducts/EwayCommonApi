@@ -42,5 +42,8 @@ public interface EservicePersonalAccidentDetailsRepository  extends JpaRepositor
 
 	List<EservicePersonalAccidentDetails> findByRequestReferenceNoOrderByRiskIdAsc(String requestReferenceNo);
 
+	List<EservicePersonalAccidentDetails> findByRequestReferenceNoAndProductId(String requestReferenceNo,
+			String productId);
+
 
 }

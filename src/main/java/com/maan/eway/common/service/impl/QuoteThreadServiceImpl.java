@@ -48,6 +48,7 @@ import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.EservicePersonalAccidentDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
@@ -57,6 +58,7 @@ import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MasterReferralDetails;
+import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.SeqCustid;
 import com.maan.eway.bean.SeqQuoteno;
 import com.maan.eway.bean.UwQuestionsDetails;
@@ -98,6 +100,7 @@ import com.maan.eway.repository.MasterReferralDetailsRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.PersonalAccidentRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
+import com.maan.eway.repository.ProductMasterRepository;
 import com.maan.eway.repository.SeqCustidRepository;
 import com.maan.eway.repository.SeqCustrefnoRepository;
 import com.maan.eway.repository.SeqQuotenoRepository;
@@ -203,6 +206,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	private EserviceCommonDetailsRepository eserCommonRepo;
 	
 	@Autowired
+	private  EservicePersonalAccidentDetailsRepository eserPerAccRepo;
+	
+	@Autowired
 	private CommonDataDetailsRepository commonDataRepo;
 	
 	@Autowired
@@ -210,6 +216,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	
 	@Autowired
 	private LoginUserInfoRepository loginUserRepo;
+	
+	@Autowired
+	private ProductMasterRepository productRepo;
 	
 	@Autowired
 	private QuoteService quoteService;
@@ -1060,7 +1069,14 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				} else if( req.getProductId().equalsIgnoreCase(buildingProductId)) {
 					//Mail Push Notification
 					//updateRes= buildingPushNotification(req);
-				}  
+				}else if( req.getProductId().equalsIgnoreCase(personalAccidentProductId)) {
+					//Mail Push Notification
+					personalAccidentPushNotification(req);
+				}else {
+					//Mail Push Notification
+					commonPushNotification(req);
+				}
+				
 				
 			
 			} catch ( Exception e) {
@@ -1162,6 +1178,194 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			}
 			return updateRes;
 		}
+		// --------------------------------------PERSONAL ACCIDENT UPDATE REFERRAL STATUS----------------------------------------------------------------------//	
+		private QuoteUpdateRes personalAccidentPushNotification(NewQuoteReq req) {
+			QuoteUpdateRes updateRes = new QuoteUpdateRes();
+			try {
+				List<EservicePersonalAccidentDetails> cusRefNo = eserPerAccRepo.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
+				
+				cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
+						.collect(Collectors.toList());
+
+				String loginId = "";
+				if (cusRefNo.get(0).getApplicationId().equalsIgnoreCase("1")) {
+					loginId = cusRefNo.get(0).getLoginId();
+				} else {
+					loginId = cusRefNo.get(0).getApplicationId();
+				}
+				Notification n = new Notification();
+				//Broker Info
+				LoginUserInfo loginInfo = loginUserRepo.findByLoginId(loginId);
+				Broker brokerReq = new Broker();
+				if(loginInfo!=null) {
+				brokerReq.setBrokerCompanyName(loginInfo.getCompanyName()==null?loginInfo.getUserName(): loginInfo.getCompanyName());
+				brokerReq.setBrokerMailId(loginInfo.getUserMail()==null?"":loginInfo.getUserMail());
+				brokerReq.setBrokerMessengerCode(loginInfo.getWhatsappCodeDesc()==null?null:Integer.valueOf(loginInfo.getWhatsappCodeDesc()));
+				brokerReq.setBrokerMessengerPhone(loginInfo.getWhatsappNo()==null? BigDecimal.ZERO: new BigDecimal(loginInfo.getWhatsappNo().toString()));
+				brokerReq.setBrokerPhoneCode(loginInfo.getMobileCodeDesc()==null?null:Integer.valueOf((loginInfo.getMobileCodeDesc())));
+				brokerReq.setBrokerPhoneNo(loginInfo.getUserMobile()==null?BigDecimal.ZERO:new BigDecimal(loginInfo.getUserMobile()));
+				brokerReq.setBrokerName(loginInfo.getUserName());
+				}
+				// Customer Info
+				EserviceCustomerDetails customerData = eserCustRepo.findByCustomerReferenceNo(cusRefNo.get(0).getCustomerReferenceNo());
+				Customer cusReq = new Customer();
+				if(customerData!=null) {
+					cusReq.setCustomerMailid(customerData.getEmail1());
+					cusReq.setCustomerName(customerData.getClientName());
+					cusReq.setCustomerPhoneCode(Integer.valueOf(customerData.getMobileCodeDesc1()));
+					cusReq.setCustomerPhoneNo(new BigDecimal(customerData.getMobileNo1()));
+					cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappCodeDesc()));
+					cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
+				}
+
+				// UnderWriter Info
+				List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),cusRefNo.get(0).getLoginId());
+				List<UnderWriter> underWrite = new ArrayList<UnderWriter>();
+				if (underWriterList != null) {
+					for (Tuple underWriterData : underWriterList) {
+						UnderWriter underWriterReq = new UnderWriter();
+						underWriterReq.setUwMailid(underWriterData.get("userMail") == null ? "": underWriterData.get("userMail").toString());
+						underWriterReq.setUwMessengerCode(underWriterData.get("whatsappCodeDesc")==null?null :Integer.valueOf( underWriterData.get("whatsappCodeDesc").toString()));
+						underWriterReq.setUwMessengerPhone(underWriterData.get("whatsappNo")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("whatsappNo").toString()));
+						underWriterReq.setUwPhonecode(underWriterData.get("mobileCodeDesc")== null ? null:Integer.valueOf(underWriterData.get("mobileCodeDesc").toString()));
+						underWriterReq.setUwPhoneNo(underWriterData.get("userMobile")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("userMobile").toString()));
+						underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
+						underWrite.add(underWriterReq);
+					}
+				}
+				n.setUnderwriters(underWrite);
+				//Company Info
+				n.setCompanyid(cusRefNo.get(0).getCompanyId());
+				n.setCompanyName(cusRefNo.get(0).getCompanyName());
+				
+				//Common Info
+				n.setBroker(brokerReq);
+				n.setCustomer(cusReq);
+				n.setNotifcationDate(new Date());
+				n.setNotifDescription("");
+				n.setNotifPriority(0);
+				n.setNotifPushedStatus(NotificationStatus.PENDING);
+				n.setNotifTemplatename("Referral Notification");
+				n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
+				n.setProductid(Integer.valueOf(req.getProductId()));
+				ProductMaster productData=productRepo.findByProductId(cusRefNo.get(0).getProductId());
+				n.setProductName(productData.getProductName());
+				n.setQuoteNo(StringUtils.isBlank(cusRefNo.get(0).getQuoteNo().toString())?cusRefNo.get(0).getRequestReferenceNo():cusRefNo.get(0).getQuoteNo().toString());
+				n.setSectionName(cusRefNo.get(0).getSectionDesc());
+				n.setStatusMessage(req.getReferralRemarks());// Referral Noti , referral app,recj
+				n.getTinyUrl();
+
+				// Calling pushNotification
+				CommonRes res=notiService.pushNotification(n);
+//				if (res.getIsError()==null) {
+//					updateRes.setResponse("Pushed Successfuly");
+//					updateRes.setQuoteNo(cusRefNo.get(0).getQuoteNo().toString());
+//					updateRes.setCustomerId(cusRefNo.get(0).getCustomerReferenceNo());
+//					updateRes.setRequestReferenceNo(cusRefNo.get(0).getRequestReferenceNo().toString());
+//
+//				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return updateRes;
+		}
+	
+		// -------------------------------------- COMMON UPDATE REFERRAL STATUS----------------------------------------------------------------------//	
+		private QuoteUpdateRes commonPushNotification(NewQuoteReq req) {
+			QuoteUpdateRes updateRes = new QuoteUpdateRes();
+			try {
+				List<EserviceCommonDetails> cusRefNo = eserCommonRepo.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
+				
+				cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
+						.collect(Collectors.toList());
+
+				String loginId = "";
+				if (cusRefNo.get(0).getApplicationId().equalsIgnoreCase("1")) {
+					loginId = cusRefNo.get(0).getLoginId();
+				} else {
+					loginId = cusRefNo.get(0).getApplicationId();
+				}
+				Notification n = new Notification();
+				//Broker Info
+				LoginUserInfo loginInfo = loginUserRepo.findByLoginId(loginId);
+				Broker brokerReq = new Broker();
+				if(loginInfo!=null) {
+				brokerReq.setBrokerCompanyName(loginInfo.getCompanyName()==null?loginInfo.getUserName(): loginInfo.getCompanyName());
+				brokerReq.setBrokerMailId(loginInfo.getUserMail()==null?"":loginInfo.getUserMail());
+				brokerReq.setBrokerMessengerCode(loginInfo.getWhatsappCodeDesc()==null?null:Integer.valueOf(loginInfo.getWhatsappCodeDesc()));
+				brokerReq.setBrokerMessengerPhone(loginInfo.getWhatsappNo()==null? BigDecimal.ZERO: new BigDecimal(loginInfo.getWhatsappNo().toString()));
+				brokerReq.setBrokerPhoneCode(loginInfo.getMobileCodeDesc()==null?null:Integer.valueOf((loginInfo.getMobileCodeDesc())));
+				brokerReq.setBrokerPhoneNo(loginInfo.getUserMobile()==null?BigDecimal.ZERO:new BigDecimal(loginInfo.getUserMobile()));
+				brokerReq.setBrokerName(loginInfo.getUserName());
+				}
+				// Customer Info
+				EserviceCustomerDetails customerData = eserCustRepo.findByCustomerReferenceNo(cusRefNo.get(0).getCustomerReferenceNo());
+				Customer cusReq = new Customer();
+				if(customerData!=null) {
+					cusReq.setCustomerMailid(customerData.getEmail1());
+					cusReq.setCustomerName(customerData.getClientName());
+					cusReq.setCustomerPhoneCode(Integer.valueOf(customerData.getMobileCodeDesc1()));
+					cusReq.setCustomerPhoneNo(new BigDecimal(customerData.getMobileNo1()));
+					cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappCodeDesc()));
+					cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
+				}
+
+				// UnderWriter Info
+				List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),cusRefNo.get(0).getLoginId());
+				List<UnderWriter> underWrite = new ArrayList<UnderWriter>();
+				if (underWriterList != null) {
+					for (Tuple underWriterData : underWriterList) {
+						UnderWriter underWriterReq = new UnderWriter();
+						underWriterReq.setUwMailid(underWriterData.get("userMail") == null ? "": underWriterData.get("userMail").toString());
+						underWriterReq.setUwMessengerCode(underWriterData.get("whatsappCodeDesc")==null?null :Integer.valueOf( underWriterData.get("whatsappCodeDesc").toString()));
+						underWriterReq.setUwMessengerPhone(underWriterData.get("whatsappNo")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("whatsappNo").toString()));
+						underWriterReq.setUwPhonecode(underWriterData.get("mobileCodeDesc")== null ? null:Integer.valueOf(underWriterData.get("mobileCodeDesc").toString()));
+						underWriterReq.setUwPhoneNo(underWriterData.get("userMobile")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("userMobile").toString()));
+						underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
+						underWrite.add(underWriterReq);
+					}
+				}
+				n.setUnderwriters(underWrite);
+				//Company Info
+				n.setCompanyid(cusRefNo.get(0).getCompanyId());
+				n.setCompanyName(cusRefNo.get(0).getCompanyName());
+				
+				//Common Info
+				n.setBroker(brokerReq);
+				n.setCustomer(cusReq);
+				n.setNotifcationDate(new Date());
+				n.setNotifDescription("");
+				n.setNotifPriority(0);
+				n.setNotifPushedStatus(NotificationStatus.PENDING);
+				n.setNotifTemplatename("Referral Notification");
+				n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
+				n.setProductid(Integer.valueOf(req.getProductId()));
+				ProductMaster productData=productRepo.findByProductId(cusRefNo.get(0).getProductId());
+				n.setProductName(productData.getProductName());
+				n.setQuoteNo(StringUtils.isBlank(cusRefNo.get(0).getQuoteNo().toString())?cusRefNo.get(0).getRequestReferenceNo():cusRefNo.get(0).getQuoteNo().toString());
+				n.setSectionName(cusRefNo.get(0).getSectionDesc());
+				n.setStatusMessage(req.getReferralRemarks());// Referral Noti , referral app,recj
+				n.getTinyUrl();
+
+				// Calling pushNotification
+				CommonRes res=notiService.pushNotification(n);
+//				if (res.getIsError()==null) {
+//					updateRes.setResponse("Pushed Successfuly");
+//					updateRes.setQuoteNo(cusRefNo.get(0).getQuoteNo().toString());
+//					updateRes.setCustomerId(cusRefNo.get(0).getCustomerReferenceNo());
+//					updateRes.setRequestReferenceNo(cusRefNo.get(0).getRequestReferenceNo().toString());
+//
+//				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return updateRes;
+		}
+
 		private List<Tuple> getUnderWriterDetails(String productId,String companyId,String branchCode,String loginId) {
 			List<Tuple> list = new ArrayList<Tuple>();
 			try {

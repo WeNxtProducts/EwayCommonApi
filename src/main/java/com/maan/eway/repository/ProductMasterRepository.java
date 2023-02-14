@@ -35,5 +35,9 @@ public interface ProductMasterRepository  extends JpaRepository<ProductMaster,Pr
 
 	List<ProductMaster> findTopByProductIdOrderByAmendIdDesc(Integer valueOf);
 
+	ProductMaster findByProductId(String productId);
+
+
+
 
 }

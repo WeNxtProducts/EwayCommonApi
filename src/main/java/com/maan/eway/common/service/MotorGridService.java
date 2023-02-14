@@ -49,7 +49,6 @@ public interface MotorGridService {
 	List<PortfolioGridCriteriaRes> getMotorPortfolioCancelled(ExistingQuoteReq req, List<String> branches,Date startDate,  int limit,
 			int offset, String string);
 
-	List<QuoteCriteriaRes> getMotorIssuerQuoteDetails(IssuerQuoteReq req, List<String> branches, Date startDate ,Date  endDate, int limit, int offset);
-
+	List<Tuple> getMotorIssuerQuoteDetails(IssuerQuoteReq req, Date startDate, Date endDate);
 	
 }

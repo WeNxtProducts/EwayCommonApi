@@ -1298,8 +1298,8 @@ public class GridServiceImpl implements GridService {
 
 
 	@Override
-	public List<EserviceCustomerDetailsRes> getallIssuerQuoteDetails(IssuerQuoteReq req) {
-		List<EserviceCustomerDetailsRes> custRes = new ArrayList<EserviceCustomerDetailsRes>();
+	public List<DropDownRes> getallIssuerQuoteDetails(IssuerQuoteReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			Date today = new Date();
@@ -1313,41 +1313,11 @@ public class GridServiceImpl implements GridService {
 			cal.add(Calendar.DAY_OF_MONTH, -30);
 			Date before30 = cal.getTime();
 
-			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
-
-			List<QuoteCriteriaRes> extingQuoteList = new ArrayList<QuoteCriteriaRes>();
-
-			String loginId = "";
-			if (req.getApplicationId().equalsIgnoreCase("1")) {
-				loginId = req.getLoginId();
-			} else {
-				loginId = req.getApplicationId();
-			}
-			// Branch Res
-			List<String> branches = new ArrayList<String>();
-
-			if (req.getBranchCode().equalsIgnoreCase("99999")) {
-
-				List<LoginBranchMaster> loginBranch = loginBranchRepo.findByLoginId(loginId);
-
-				branches = loginBranch.stream().filter(o -> !o.getBrokerBranchCode().equalsIgnoreCase("None"))
-						.map(LoginBranchMaster::getBrokerBranchCode).collect(Collectors.toList());
-				if (branches.size() <= 0) {
-					branches = loginBranch.stream().map(LoginBranchMaster::getBranchCode).collect(Collectors.toList());
-
-				}
-
-			} else if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
-			//	branches.add(req.getBrokerBranchCode());
-			} else {
-				branches.add(req.getBranchCode());
-			}
+			List<Tuple> List = new ArrayList<Tuple>();
 
 			// Product Wise Get
 			if (req.getProductId().equalsIgnoreCase(motorProductId)) {
-				extingQuoteList = motService.getMotorIssuerQuoteDetails(req, branches, before30, today, limit,
-						offset);
+				List = motService.getMotorIssuerQuoteDetails(req, before30, today);
 			}
 //				else if (req.getProductId().equalsIgnoreCase(travelProductId)) {
 //					extingQuoteList = traService.getTravelExistingQuoteDetails(req, branches, before30, today, limit,
@@ -1361,11 +1331,11 @@ public class GridServiceImpl implements GridService {
 //							offset);
 //				}
 
-			for (QuoteCriteriaRes data : extingQuoteList) {
-				EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
-				res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
-				custRes.add(res);
+			for (Tuple data : List) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.get("loginId").toString());
+				res.setCodeDesc(data.get("agencyCode").toString());
+				resList.add(res);
 			}
 
 		} catch (Exception e) {
@@ -1373,7 +1343,7 @@ public class GridServiceImpl implements GridService {
 			log.info("Log Details" + e.getMessage());
 			return null;
 		}
-		return custRes;
+		return resList;
 	}
 
 }

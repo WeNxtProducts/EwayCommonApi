@@ -62,7 +62,7 @@ public interface GridService {
 
 	List<PortfolioCustomerDetailsRes> getallPortfolioCancelled(ExistingQuoteReq req);
 
-	List<EserviceCustomerDetailsRes> getallIssuerQuoteDetails(IssuerQuoteReq req);
+	List<DropDownRes> getallIssuerQuoteDetails(IssuerQuoteReq req);
 
 
 
