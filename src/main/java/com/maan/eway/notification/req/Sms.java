@@ -23,5 +23,7 @@ public class Sms implements Serializable {
 	private String smsRegards;
 	private String smsFrom;
 	private String whatsappRegards;
+	private JobCredentials credential;
+	private String senderId;
 
 }

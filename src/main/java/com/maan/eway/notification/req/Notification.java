@@ -56,6 +56,9 @@ public class Notification {
 	private String     companyid;
 	@JsonProperty("ProductId")
 	private Integer    productid;
+	
+	@JsonProperty("Attachments")
+	private List<String> attachments;
 
 }
 
