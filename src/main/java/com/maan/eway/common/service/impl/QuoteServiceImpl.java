@@ -766,7 +766,6 @@ public class QuoteServiceImpl implements QuoteService {
 				//Mail Push Notification
 					motorPushNotification(req);
 
-				
 			} else if( req.getProductId().equalsIgnoreCase(travelProductId)) {
 				updateRes = travelReferalUpdate(req);
 				//Mail Push Notification
@@ -1841,11 +1840,17 @@ public class QuoteServiceImpl implements QuoteService {
 				
 			} else if( req.getProductId().equalsIgnoreCase(travelProductId)) {
 				updateRes = updateTravelPorductStatus(req);
+				// Notification Trigger
+				travelNotiReferralStatus(req);
 				
 			} else if( req.getProductId().equalsIgnoreCase(buildingProductId)) {
 				updateRes = updateBuildingPorductStatus(req);
+				// Notification Trigger
+				buildingNotiReferralStatus(req);
 			} else {
 				updateRes = updateCommonPorductStatus(req);
+				// Notification Trigger
+				commonNotiReferralStatus(req);
 			}
 			
 		
@@ -2028,7 +2033,303 @@ public class QuoteServiceImpl implements QuoteService {
 			}
 			return updateRes;
 		}
-	 
+
+	 private QuoteUpdateRes travelNotiReferralStatus(UpdateQuoteStatusReq req) {
+			QuoteUpdateRes updateRes = new QuoteUpdateRes();
+			try {
+				List<EserviceTravelDetails> cusRefNo = eserTraRepo.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
+				
+				cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
+						.collect(Collectors.toList());
+
+				String loginId = "";
+				if (cusRefNo.get(0).getApplicationId().equalsIgnoreCase("1")||cusRefNo.get(0).getApplicationId().equalsIgnoreCase("01")) {
+					loginId = cusRefNo.get(0).getLoginId();
+				} else {
+					loginId = cusRefNo.get(0).getApplicationId();
+				}
+				Notification n = new Notification();
+				//Broker Info
+				LoginUserInfo loginInfo = loginUserRepo.findByLoginId(loginId);
+				Broker brokerReq = new Broker();
+				if(loginInfo!=null) {
+				brokerReq.setBrokerCompanyName(loginInfo.getCompanyName()==null?null: loginInfo.getCompanyName());
+				brokerReq.setBrokerMailId(loginInfo.getUserMail()==null?"":loginInfo.getUserMail());
+				brokerReq.setBrokerMessengerCode(loginInfo.getWhatsappCodeDesc()==null?null:Integer.valueOf(loginInfo.getWhatsappCodeDesc()));
+				brokerReq.setBrokerMessengerPhone(loginInfo.getWhatsappNo()==null? BigDecimal.ZERO: new BigDecimal(loginInfo.getWhatsappNo().toString()));
+				brokerReq.setBrokerPhoneCode(loginInfo.getMobileCodeDesc()==null?null:Integer.valueOf((loginInfo.getMobileCodeDesc())));
+				brokerReq.setBrokerPhoneNo(loginInfo.getUserMobile()==null?BigDecimal.ZERO:new BigDecimal(loginInfo.getUserMobile()));
+				brokerReq.setBrokerName(loginInfo.getUserName());
+				}
+				// Customer Info
+				EserviceCustomerDetails customerData = customerDetailsRepo.findByCustomerReferenceNo(cusRefNo.get(0).getCustomerReferenceNo());
+				Customer cusReq = new Customer();
+				if(customerData!=null) {
+				cusReq.setCustomerMailid(customerData.getEmail1());
+				cusReq.setCustomerName(customerData.getClientName());
+				cusReq.setCustomerPhoneCode(Integer.valueOf(customerData.getMobileCodeDesc1()));
+				cusReq.setCustomerPhoneNo(new BigDecimal(customerData.getMobileNo1()));
+				cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappCodeDesc()));
+				cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
+				}
+
+				// UnderWriter Info
+				List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),cusRefNo.get(0).getLoginId());
+				List<UnderWriter> underWrite = new ArrayList<UnderWriter>();
+				if (underWriterList != null) {
+					for (Tuple underWriterData : underWriterList) {
+						UnderWriter underWriterReq = new UnderWriter();
+						underWriterReq.setUwMailid(underWriterData.get("userMail") == null ? "": underWriterData.get("userMail").toString());
+						underWriterReq.setUwMessengerCode(underWriterData.get("whatsappCodeDesc")==null?null :Integer.valueOf( underWriterData.get("whatsappCodeDesc").toString()));
+						underWriterReq.setUwMessengerPhone(underWriterData.get("whatsappNo")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("whatsappNo").toString()));
+						underWriterReq.setUwPhonecode(underWriterData.get("mobileCodeDesc")== null ? null:Integer.valueOf(underWriterData.get("mobileCodeDesc").toString()));
+						underWriterReq.setUwPhoneNo(underWriterData.get("userMobile")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("userMobile").toString()));
+						underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
+						underWrite.add(underWriterReq);
+					}
+				}
+				n.setUnderwriters(underWrite);
+				//Company Info
+				n.setCompanyid(cusRefNo.get(0).getCompanyId());
+				n.setCompanyName(cusRefNo.get(0).getCompanyName());
+		
+				
+				if("RA".equalsIgnoreCase(req.getStatus())){
+					n.setNotifTemplatename("Referal Approved");
+				}else if("RP".equalsIgnoreCase(req.getStatus())){
+					n.setNotifTemplatename("Referal Pending");
+				}else if("RR".equalsIgnoreCase(req.getStatus())){
+					n.setNotifTemplatename("Referal Reject");
+				}
+				//Common Info
+				n.setBroker(brokerReq);
+				n.setCustomer(cusReq);
+				n.setNotifcationDate(new Date());
+				n.setNotifDescription("");
+				n.setNotifPriority(0);
+				n.setNotifPushedStatus(NotificationStatus.PENDING);
+				n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
+				n.setProductid(Integer.valueOf(req.getProductId()));
+				n.setProductName("Travel");
+				n.setQuoteNo(cusRefNo.get(0).getQuoteNo().toString());
+				n.setSectionName(cusRefNo.get(0).getSectionName());
+				n.setStatusMessage("");
+				n.getTinyUrl();
+
+				// Calling pushNotification
+				CommonRes res=notiService.pushNotification(n);
+				if (res.getIsError()==null) {
+					updateRes.setResponse("Pushed Successfuly");
+					updateRes.setQuoteNo(cusRefNo.get(0).getQuoteNo().toString());
+					updateRes.setCustomerId(cusRefNo.get(0).getCustomerReferenceNo());
+					updateRes.setRequestReferenceNo(cusRefNo.get(0).getRequestReferenceNo().toString());
+
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return updateRes;
+		}
+	 private QuoteUpdateRes buildingNotiReferralStatus(UpdateQuoteStatusReq req) {
+			QuoteUpdateRes updateRes = new QuoteUpdateRes();
+			try {
+				List<EserviceBuildingDetails> cusRefNo = eserviceBuildingRepo.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
+				
+				cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
+						.collect(Collectors.toList());
+
+				String loginId = "";
+				if (cusRefNo.get(0).getApplicationId().equalsIgnoreCase("1")||cusRefNo.get(0).getApplicationId().equalsIgnoreCase("01")) {
+					loginId = cusRefNo.get(0).getLoginId();
+				} else {
+					loginId = cusRefNo.get(0).getApplicationId();
+				}
+				Notification n = new Notification();
+				//Broker Info
+				LoginUserInfo loginInfo = loginUserRepo.findByLoginId(loginId);
+				Broker brokerReq = new Broker();
+				if(loginInfo!=null) {
+				brokerReq.setBrokerCompanyName(loginInfo.getCompanyName()==null?null: loginInfo.getCompanyName());
+				brokerReq.setBrokerMailId(loginInfo.getUserMail()==null?"":loginInfo.getUserMail());
+				brokerReq.setBrokerMessengerCode(loginInfo.getWhatsappCodeDesc()==null?null:Integer.valueOf(loginInfo.getWhatsappCodeDesc()));
+				brokerReq.setBrokerMessengerPhone(loginInfo.getWhatsappNo()==null? BigDecimal.ZERO: new BigDecimal(loginInfo.getWhatsappNo().toString()));
+				brokerReq.setBrokerPhoneCode(loginInfo.getMobileCodeDesc()==null?null:Integer.valueOf((loginInfo.getMobileCodeDesc())));
+				brokerReq.setBrokerPhoneNo(loginInfo.getUserMobile()==null?BigDecimal.ZERO:new BigDecimal(loginInfo.getUserMobile()));
+				brokerReq.setBrokerName(loginInfo.getUserName());
+				}
+				// Customer Info
+				EserviceCustomerDetails customerData = customerDetailsRepo.findByCustomerReferenceNo(cusRefNo.get(0).getCustomerReferenceNo());
+				Customer cusReq = new Customer();
+				if(customerData!=null) {
+				cusReq.setCustomerMailid(customerData.getEmail1());
+				cusReq.setCustomerName(customerData.getClientName());
+				cusReq.setCustomerPhoneCode(Integer.valueOf(customerData.getMobileCodeDesc1()));
+				cusReq.setCustomerPhoneNo(new BigDecimal(customerData.getMobileNo1()));
+				cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappCodeDesc()));
+				cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
+				}
+
+				// UnderWriter Info
+				List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),cusRefNo.get(0).getLoginId());
+				List<UnderWriter> underWrite = new ArrayList<UnderWriter>();
+				if (underWriterList != null) {
+					for (Tuple underWriterData : underWriterList) {
+						UnderWriter underWriterReq = new UnderWriter();
+						underWriterReq.setUwMailid(underWriterData.get("userMail") == null ? "": underWriterData.get("userMail").toString());
+						underWriterReq.setUwMessengerCode(underWriterData.get("whatsappCodeDesc")==null?null :Integer.valueOf( underWriterData.get("whatsappCodeDesc").toString()));
+						underWriterReq.setUwMessengerPhone(underWriterData.get("whatsappNo")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("whatsappNo").toString()));
+						underWriterReq.setUwPhonecode(underWriterData.get("mobileCodeDesc")== null ? null:Integer.valueOf(underWriterData.get("mobileCodeDesc").toString()));
+						underWriterReq.setUwPhoneNo(underWriterData.get("userMobile")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("userMobile").toString()));
+						underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
+						underWrite.add(underWriterReq);
+					}
+				}
+				n.setUnderwriters(underWrite);
+				//Company Info
+				n.setCompanyid(cusRefNo.get(0).getCompanyId());
+				n.setCompanyName(cusRefNo.get(0).getCompanyName());
+		
+				
+				if("RA".equalsIgnoreCase(req.getStatus())){
+					n.setNotifTemplatename("Referal Approved");
+				}else if("RP".equalsIgnoreCase(req.getStatus())){
+					n.setNotifTemplatename("Referal Pending");
+				}else if("RR".equalsIgnoreCase(req.getStatus())){
+					n.setNotifTemplatename("Referal Reject");
+				}
+				//Common Info
+				n.setBroker(brokerReq);
+				n.setCustomer(cusReq);
+				n.setNotifcationDate(new Date());
+				n.setNotifDescription("");
+				n.setNotifPriority(0);
+				n.setNotifPushedStatus(NotificationStatus.PENDING);
+				n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
+				n.setProductid(Integer.valueOf(req.getProductId()));
+				n.setProductName("Building");
+				n.setQuoteNo(cusRefNo.get(0).getQuoteNo().toString());
+				n.setSectionName(cusRefNo.get(0).getSectionDesc());
+				n.setStatusMessage("");
+				n.getTinyUrl();
+
+				// Calling pushNotification
+				CommonRes res=notiService.pushNotification(n);
+				if (res.getIsError()==null) {
+					updateRes.setResponse("Pushed Successfuly");
+					updateRes.setQuoteNo(cusRefNo.get(0).getQuoteNo().toString());
+					updateRes.setCustomerId(cusRefNo.get(0).getCustomerReferenceNo());
+					updateRes.setRequestReferenceNo(cusRefNo.get(0).getRequestReferenceNo().toString());
+
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return updateRes;
+		}
+	 private QuoteUpdateRes commonNotiReferralStatus(UpdateQuoteStatusReq req) {
+			QuoteUpdateRes updateRes = new QuoteUpdateRes();
+			try {
+				List<EserviceCommonDetails> cusRefNo = eserCommonRepo.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
+				
+				cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
+						.collect(Collectors.toList());
+
+				String loginId = "";
+				if (cusRefNo.get(0).getApplicationId().equalsIgnoreCase("1")||cusRefNo.get(0).getApplicationId().equalsIgnoreCase("01")) {
+					loginId = cusRefNo.get(0).getLoginId();
+				} else {
+					loginId = cusRefNo.get(0).getApplicationId();
+				}
+				Notification n = new Notification();
+				//Broker Info
+				LoginUserInfo loginInfo = loginUserRepo.findByLoginId(loginId);
+				Broker brokerReq = new Broker();
+				if(loginInfo!=null) {
+				brokerReq.setBrokerCompanyName(loginInfo.getCompanyName()==null?null: loginInfo.getCompanyName());
+				brokerReq.setBrokerMailId(loginInfo.getUserMail()==null?"":loginInfo.getUserMail());
+				brokerReq.setBrokerMessengerCode(loginInfo.getWhatsappCodeDesc()==null?null:Integer.valueOf(loginInfo.getWhatsappCodeDesc()));
+				brokerReq.setBrokerMessengerPhone(loginInfo.getWhatsappNo()==null? BigDecimal.ZERO: new BigDecimal(loginInfo.getWhatsappNo().toString()));
+				brokerReq.setBrokerPhoneCode(loginInfo.getMobileCodeDesc()==null?null:Integer.valueOf((loginInfo.getMobileCodeDesc())));
+				brokerReq.setBrokerPhoneNo(loginInfo.getUserMobile()==null?BigDecimal.ZERO:new BigDecimal(loginInfo.getUserMobile()));
+				brokerReq.setBrokerName(loginInfo.getUserName());
+				}
+				// Customer Info
+				EserviceCustomerDetails customerData = customerDetailsRepo.findByCustomerReferenceNo(cusRefNo.get(0).getCustomerReferenceNo());
+				Customer cusReq = new Customer();
+				if(customerData!=null) {
+				cusReq.setCustomerMailid(customerData.getEmail1());
+				cusReq.setCustomerName(customerData.getClientName());
+				cusReq.setCustomerPhoneCode(Integer.valueOf(customerData.getMobileCodeDesc1()));
+				cusReq.setCustomerPhoneNo(new BigDecimal(customerData.getMobileNo1()));
+				cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappCodeDesc()));
+				cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
+				}
+
+				// UnderWriter Info
+				List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),cusRefNo.get(0).getLoginId());
+				List<UnderWriter> underWrite = new ArrayList<UnderWriter>();
+				if (underWriterList != null) {
+					for (Tuple underWriterData : underWriterList) {
+						UnderWriter underWriterReq = new UnderWriter();
+						underWriterReq.setUwMailid(underWriterData.get("userMail") == null ? "": underWriterData.get("userMail").toString());
+						underWriterReq.setUwMessengerCode(underWriterData.get("whatsappCodeDesc")==null?null :Integer.valueOf( underWriterData.get("whatsappCodeDesc").toString()));
+						underWriterReq.setUwMessengerPhone(underWriterData.get("whatsappNo")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("whatsappNo").toString()));
+						underWriterReq.setUwPhonecode(underWriterData.get("mobileCodeDesc")== null ? null:Integer.valueOf(underWriterData.get("mobileCodeDesc").toString()));
+						underWriterReq.setUwPhoneNo(underWriterData.get("userMobile")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("userMobile").toString()));
+						underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
+						underWrite.add(underWriterReq);
+					}
+				}
+				n.setUnderwriters(underWrite);
+				//Company Info
+				n.setCompanyid(cusRefNo.get(0).getCompanyId());
+				n.setCompanyName(cusRefNo.get(0).getCompanyName());
+		
+				
+				if("RA".equalsIgnoreCase(req.getStatus())){
+					n.setNotifTemplatename("Referal Approved");
+				}else if("RP".equalsIgnoreCase(req.getStatus())){
+					n.setNotifTemplatename("Referal Pending");
+				}else if("RR".equalsIgnoreCase(req.getStatus())){
+					n.setNotifTemplatename("Referal Reject");
+				}
+				//Common Info
+				n.setBroker(brokerReq);
+				n.setCustomer(cusReq);
+				n.setNotifcationDate(new Date());
+				n.setNotifDescription("");
+				n.setNotifPriority(0);
+				n.setNotifPushedStatus(NotificationStatus.PENDING);
+				n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
+				n.setProductid(Integer.valueOf(req.getProductId()));
+				n.setProductName("Motor");
+				n.setQuoteNo(cusRefNo.get(0).getQuoteNo().toString());
+				n.setSectionName(cusRefNo.get(0).getSectionDesc());
+				n.setStatusMessage("");
+				n.getTinyUrl();
+
+				// Calling pushNotification
+				CommonRes res=notiService.pushNotification(n);
+				if (res.getIsError()==null) {
+					updateRes.setResponse("Pushed Successfuly");
+					updateRes.setQuoteNo(cusRefNo.get(0).getQuoteNo().toString());
+					updateRes.setCustomerId(cusRefNo.get(0).getCustomerReferenceNo());
+					updateRes.setRequestReferenceNo(cusRefNo.get(0).getRequestReferenceNo().toString());
+
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return updateRes;
+		}
+
+
 	 public  QuoteUpdateRes updateTravelPorductStatus(UpdateQuoteStatusReq req  ) {
 		 QuoteUpdateRes res = new QuoteUpdateRes() ;
 	       try {
