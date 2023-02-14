@@ -1072,10 +1072,12 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				} else if( req.getProductId().equalsIgnoreCase(buildingProductId)) {
 					//Mail Push Notification
 					updateRes= buildingPushNotification(req);
-				}else if( req.getProductId().equalsIgnoreCase(personalAccidentProductId)) {
-					//Mail Push Notification
-					personalAccidentPushNotification(req);
-				}else {
+				}
+//				else if( req.getProductId().equalsIgnoreCase(personalAccidentProductId)) {
+//					//Mail Push Notification
+//					personalAccidentPushNotification(req);
+//				}
+				else {
 					//Mail Push Notification
 					commonPushNotification(req);
 				}
