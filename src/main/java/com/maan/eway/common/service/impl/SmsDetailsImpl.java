@@ -71,7 +71,7 @@ public class SmsDetailsImpl {
 
 			// Customer Personal Info 
 			
-			savedata.setMobileNoDesc(req.getMobileNoDesc());
+		//	savedata.setMobileNoDesc(req.getMobileNoDesc());
 			savedata.setMobileNo(req.getMobileNo());
 
 			// Product Details
@@ -79,7 +79,7 @@ public class SmsDetailsImpl {
 			savedata.setSmsContent(req.getSmsBody());
 			savedata.setEntryDate(new Date());
 			savedata.setSNo(sno.toString());
-			savedata.setSenderId(smsconfig.get(0).getSenderId());
+	//		savedata.setSenderId(smsconfig.get(0).getSenderId());
 			
 			
 			res.setResponse("SMS Sent Successfully");

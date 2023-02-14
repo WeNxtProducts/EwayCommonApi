@@ -24,7 +24,7 @@ public class SmsJob implements Consumer<Sms> {
 			Properties prop = new Properties();
 			prop.put("MobileNo", m.getSmsTo());
 			prop.put("SmsContent", m.getSmsBody());
-			prop.put("SmsRegards", m.getSmsRegards()==null?"":m.getSmsRegards());
+			prop.put("SmsRegards", m.getSmsRegards()==null?m.getWhatsappRegards():m.getSmsRegards());
 			prop.put("SmsSubject", m.getSmsSubject());
 
 		} catch (Exception e) {
@@ -34,7 +34,7 @@ public class SmsJob implements Consumer<Sms> {
 
 		SmsDataDetails savedata = new SmsDataDetails();
 
-		Long sno = smsRepo.count();
+		Long sno = smsRepo.count()+1;
 		savedata.setMobileNo(m.getSmsTo());
 		savedata.setSmsFrom(m.getSmsFrom());		
 		savedata.setSmsType(m.getSmsSubject());

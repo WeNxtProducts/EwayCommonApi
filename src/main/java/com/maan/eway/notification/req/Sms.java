@@ -16,11 +16,12 @@ public class Sms implements Serializable {
 		SmsBody	
 		SmsRegards
 	 */
-	
+	private String smsToCode;	
 	private String smsTo;
 	private String smsSubject;
 	private String smsBody;
 	private String smsRegards;
 	private String smsFrom;
+	private String whatsappRegards;
 
 }

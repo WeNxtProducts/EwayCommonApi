@@ -59,8 +59,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="SMS_FROM", length=100)
     private String   smsFrom;
  
-    @Column(name="MOBILE_NO_DESC", length=10)
-    private String   mobileNoDesc;
  
     @Column(name="MOBILE_NO", length=50)
     private String   mobileNo;
@@ -71,8 +69,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="SMS_CONTENT", length=1000)
     private String   smsContent;   
     
-    @Column(name="SENDER_ID", length=100)
-    private String senderId;
            
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="REQ_TIME")
