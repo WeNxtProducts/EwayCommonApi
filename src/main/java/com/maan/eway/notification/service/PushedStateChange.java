@@ -85,7 +85,7 @@ public class PushedStateChange implements  Function<Tuple,List<Object>>{
 						.mailSubject(mailSubject)
 						.mailTo(tomailid)
 						.mailcc(mailcc)
-						.credential(JobCredentials.builder().host(mailMaster.getSmtpHost()).isSSL(true).password(mailMaster.getSmtpPwd()).username(mailMaster.getSmtpUser()).build())
+						.credential(JobCredentials.builder().host(mailMaster.getSmtpHost()).port(mailMaster.getSmtpPort()).isSSL(true).password(mailMaster.getSmtpPwd()).username(mailMaster.getSmtpUser()).build())
 						.attachments(t.get("attachFilePath")==null?"":t.get("attachFilePath").toString())
 						.build();
 				a.add(ml);
