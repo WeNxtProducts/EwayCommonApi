@@ -89,7 +89,7 @@ public class JobRunrService {
 							List<MailMaster> mailc = mailRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(n.get(0).getCompanyid(),"99999","Y");													
 							List<SmsConfigMaster> smsc = smsRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(n.get(0).getCompanyid(),"99999","Y");													
 
-							PushedStateChange p=new PushedStateChange(templat.get(0),mailc.get(0),smsc.get(0));					
+							PushedStateChange p=new PushedStateChange(n.get(0),templat.get(0),mailc.get(0),smsc.get(0));
 							collect = ne.stream().map(p).filter(dd->dd!=null).collect(Collectors.toList());					
 							List<Mail> totalMailJob=new ArrayList<Mail>();
 							
