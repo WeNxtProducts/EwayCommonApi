@@ -24,7 +24,7 @@ public class SmsJob implements Consumer<Sms> {
 			Properties prop = new Properties();
 			prop.put("MobileNo", m.getSmsTo());
 			prop.put("SmsContent", m.getSmsBody());
-			prop.put("SmsRegards", m.getSmsRegards());
+			prop.put("SmsRegards", m.getSmsRegards()==null?"":m.getSmsRegards());
 			prop.put("SmsSubject", m.getSmsSubject());
 
 		} catch (Exception e) {
