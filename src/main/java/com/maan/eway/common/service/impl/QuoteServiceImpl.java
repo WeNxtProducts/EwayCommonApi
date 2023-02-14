@@ -1167,8 +1167,8 @@ public class QuoteServiceImpl implements QuoteService {
 					n.setNotifTemplatename("Referral Notification");
 					n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
 					n.setProductid(Integer.valueOf(req.getProductId()));
-					ProductMaster productData= getByProductCode(Integer.valueOf(req.getProductId())) ;
-					n.setProductName(productData.getProductName());
+				//	ProductMaster productData= getByProductCode(Integer.valueOf(req.getProductId())) ;
+					n.setProductName(cusRefNo.get(0).getProductDesc());
 					n.setQuoteNo(StringUtils.isBlank(cusRefNo.get(0).getQuoteNo().toString())?cusRefNo.get(0).getRequestReferenceNo():cusRefNo.get(0).getQuoteNo().toString());
 					n.setSectionName(cusRefNo.get(0).getSectionDesc());
 				// Referral Noti , referral app,recj
@@ -2306,8 +2306,7 @@ public class QuoteServiceImpl implements QuoteService {
 				n.setNotifPushedStatus(NotificationStatus.PENDING);
 				n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
 				n.setProductid(Integer.valueOf(req.getProductId()));
-				ProductMaster productData= getByProductCode(Integer.valueOf(req.getProductId())) ;
-				n.setProductName(productData.getProductName());
+				n.setProductName(cusRefNo.get(0).getProductDesc());
 				n.setQuoteNo(cusRefNo.get(0).getQuoteNo().toString());
 				n.setSectionName(cusRefNo.get(0).getSectionDesc());
 				n.setStatusMessage("");

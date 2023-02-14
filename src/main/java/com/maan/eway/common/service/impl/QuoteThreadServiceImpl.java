@@ -1531,8 +1531,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				n.setNotifTemplatename("Referral Notification");
 				n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
 				n.setProductid(Integer.valueOf(req.getProductId()));
-				 ProductMaster productData= getByProductCode(Integer.valueOf(req.getProductId())) ;
-				n.setProductName(productData.getProductName());
+			//	 ProductMaster productData= getByProductCode(Integer.valueOf(req.getProductId())) ;
+				n.setProductName(cusRefNo.get(0).getProductDesc());
 				n.setQuoteNo(StringUtils.isBlank(cusRefNo.get(0).getQuoteNo().toString())?cusRefNo.get(0).getRequestReferenceNo():cusRefNo.get(0).getQuoteNo().toString());
 				n.setSectionName(cusRefNo.get(0).getSectionDesc());
 				n.setStatusMessage(req.getReferralRemarks());// Referral Noti , referral app,recj
