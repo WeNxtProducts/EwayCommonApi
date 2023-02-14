@@ -168,9 +168,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="product_id", nullable=false)
     private Integer    productid ;
 
-    
+    @Column(name="company_Address")
+    private String companyAddress;
+    @Column(name="company_Logo")
+    private String companyLogo;
     //--- ENTITY LINKS ( RELATIONSHIP )
-
+    @Column(name="attach_file_path")
+    private String attachFilePath;
+    
 
 }
 

@@ -3,14 +3,14 @@ package com.maan.eway.notification.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import javax.persistence.Tuple;
-import javax.persistence.TupleElement;
 
-import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.maan.eway.bean.MailMaster;
 import com.maan.eway.bean.NotifTemplateMaster;
@@ -25,10 +25,10 @@ public class PushedStateChange implements  Function<Tuple,List<Object>>{
 
 
 	private NotifTemplateMaster master;
-	 private MailMaster mailMaster;	 
+ 	 private MailMaster mailMaster;	 
 	 private SmsConfigMaster smsmaster;
 	 private NotifTransactionDetails sms;
-	 
+ 
 	public PushedStateChange(NotifTransactionDetails sms,NotifTemplateMaster master, MailMaster mailMaster, SmsConfigMaster smsmaster) {
 		this.master=master;
 		this.mailMaster=mailMaster;
@@ -74,10 +74,15 @@ public class PushedStateChange implements  Function<Tuple,List<Object>>{
 				    List<String> asList = Arrays.asList(mailcsc);
 				    mailcc= (asList.size()>5)?asList.subList(0, 5):asList;
 				}
+				
+				String mailSubject=(String) getContentFrame(t, master.getMailSubject());
+				
+				String templatebody=getTemplateFrame(t, master);
+				
 				Mail ml=Mail.builder()
-						.mailBody((String) getContentFrame(t, master.getMailBody()))
-						.mailRegards((String) getContentFrame(t, master.getMailRegards()))
-						.mailSubject((String) getContentFrame(t, master.getMailSubject()))
+						.mailBody(templatebody)
+						.mailRegards(null)
+						.mailSubject(mailSubject)
 						.mailTo(tomailid)
 						.mailcc(mailcc)
 						.credential(JobCredentials.builder().host(mailMaster.getSmtpHost()).isSSL(true).password(mailMaster.getSmtpPwd()).username(mailMaster.getSmtpUser()).build())
@@ -122,5 +127,87 @@ public class PushedStateChange implements  Function<Tuple,List<Object>>{
 		}
 		return null;
 	} 
-	 
+	private String getTemplateFrame(Tuple t ,NotifTemplateMaster m) {
+		try {
+			 String baseTemplate="<div style=\"margin: 0px auto;width: 700px;max-width: 90%;padding-top: 20px;background-color: rgb(255,255,255);\">\r\n"
+			 		+ "        <div style=\"text-align: center; margin-bottom: 20px;\"> <img height=\"20px\"> </div>\r\n"
+			 		+ "<div class=\"adM\" style=\"text-align: center;\"><img src=\"{xCompanyLogox}\">\r\n"
+			 		+ "        \r\n"
+			 		+ "        </div>"
+			 		+ "        <div style=\"margin: 0px auto; width: 100%; line-height: 1.3;\"> <img width=\"100%\">\r\n"
+			 		+ "          <div style=\"padding: 20px 30px;\">\r\n"
+			 		+ "            <p style=\"text-transform: capitalize;\">Hi {xCustomerx},</p>\r\n"
+			 		+ "            <p style=\"\r\n"
+			 		+ "    font-size: 17px;\r\n"
+			 		+ "\">{xsubjectx}</p>\r\n"
+			 		+ "            <div style=\"border: 1px solid rgb(221, 221, 221); padding: 20px;\">\r\n"
+			 		+ "              {xmailBodyx}"
+			 		+ "                \r\n"
+			 		+ "            </div>\r\n"
+			 		+ "            <div>\r\n"
+			 		+ "              <p style=\"font-weight: bold;\">Why {companyName}?</p>\r\n"
+			 		+ "              <ul>\r\n"
+			 		+ "                <li>Value - Most affordable cover in the market.</li>\r\n"
+			 		+ "                <li>Transparency - File and track your claims online.</li>\r\n"
+			 		+ "                <li>Time - Policies issued in minutes, not days.</li>\r\n"
+			 		+ "              </ul>\r\n"
+			 		+ "              <p style=\"font-weight: bold;\">What’s next?</p>\r\n"
+			 		+ "              <p>It’s about time your insurance earns you stuff instead\r\n"
+			 		+ "                of just being a chore.</p>\r\n"
+			 		+ "              <ul>\r\n"
+			 		+ "                <li>Buy your car insurance online</li>\r\n"
+			 		+ "                <li>Upload and verify your documents</li>\r\n"
+			 		+ "              </ul>\r\n"
+			 		+ "              <p style=\"font-size: 1.3em; text-align: center; font-weight: bold;\">That's all, it’s that simple.</p>\r\n"
+			 		+ "            </div>\r\n"
+			 		+ "             \r\n"
+			 		+ "             \r\n"
+			 		+ "            <p style=\"margin-top: 30px;\">We care,</p>\r\n"
+			 		+ "            <p>{xregardsx} Team</p>\r\n"
+			 		+ "            <div style=\"font-size: 0.8em; color: rgba(0, 0, 0, 0.4); margin-top: 30px;\">\r\n"
+			 		+ "              <p>Your premium may need to be adjusted if the provided\r\n"
+			 		+ "                information is incorrect.</p>\r\n"
+			 		+ "            </div>\r\n"
+			 		+ "            <div style=\"color: rgba(0, 0, 0, 0.4); font-size: 0.8em; border-top: 1px solid; margin-top: 30px; line-height: 0.9em; text-align: center; padding: 30px 0px;\">\r\n"
+			 		+ "              <p><a href='#'/>\r\n"
+			 		+ "               {xCompanyAddressx}</p>\r\n"
+			 		+ "              <div>\r\n"
+			 		+ "                <p style=\"font-weight: bold; color: rgb(0, 0, 0); margin-top: 20px;\">Connect with us</p>\r\n"
+			 		+ "                </div>\r\n"
+			 		+ "            </div>\r\n"
+			 		+ "          </div>\r\n"
+			 		+ "        </div>\r\n"
+			 		+ "      </div>";
+		  
+			     String mailBody=(String) getContentFrame(t, master.getMailBody());
+			     String mailSubject=(String) getContentFrame(t, master.getMailSubject());
+				String mailRegards=(String) getContentFrame(t, master.getMailRegards());
+				String xCustomerx="Team";
+				if("customerMailid".equals(master.getToEmail())) {
+					xCustomerx=(t.get("customerName")==null || StringUtils.isBlank(t.get("customerName").toString()))?"Team":t.get("customerName").toString();
+				}else if("brokerMailId".equals(master.getToEmail())) {
+					xCustomerx=(t.get("brokerName")==null || StringUtils.isBlank(t.get("brokerName").toString()))?"Team":t.get("brokerName").toString();
+				}else if("uwMailid".equals(master.getToEmail())) {
+					xCustomerx=(t.get("uwName")==null || StringUtils.isBlank(t.get("uwName").toString()))?"Team":t.get("uwName").toString();
+				}
+				
+				Map<String,String> hmap=new HashMap<String,String>();
+				hmap.put("xregardsx", mailRegards);
+				hmap.put("xmailBodyx", mailBody);
+				hmap.put("xCustomerx", xCustomerx);
+				hmap.put("xsubjectx", mailSubject);
+				hmap.put("xCompanyLogox", String.valueOf(t.get("companyLogo")));
+				hmap.put("xCompanyAddressx", String.valueOf(t.get("companyAddress")));
+				
+			StringBuffer b=new StringBuffer(baseTemplate);
+			while (b.indexOf("{")!=-1 && b.indexOf("}")!=-1) {
+				 String tx = b.substring(b.indexOf("{")+1, b.indexOf("}"));
+				 b.replace(b.indexOf("{"), b.indexOf("}")+1, String.valueOf(hmap.get(tx)==null?t.get(tx):hmap.get(tx)));
+			} 
+			return b.toString(); 
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	} 
 }

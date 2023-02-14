@@ -8,11 +8,13 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
 import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
 import com.maan.eway.notification.req.Notification;
+import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 @Service
 public class NotificationService {
 	@Autowired 
@@ -22,7 +24,8 @@ public class NotificationService {
 	private NotificationValidation vad;
 	
 	
-	
+	@Autowired
+	private InsuranceCompanyMasterRepository companyRepo;
 	
 	/*
 	@Autowired
@@ -38,8 +41,12 @@ public class NotificationService {
 			Calendar calend = Calendar.getInstance();
 			calend.setTime(n.getNotifcationDate()); 
 			calend.add(Calendar.DATE, 1); 
-			
-			
+			List<InsuranceCompanyMaster> coms = companyRepo.findByCompanyIdOrderByAmendIdDesc(n.getCompanyid());
+			String filesTobeAttch=null;
+			if(n.getAttachments()!=null && n.getAttachments().size()>0) {
+				filesTobeAttch = n.getAttachments().stream().collect(Collectors.joining(";"));
+			}
+				
 			NotifTransactionDetails nt = NotifTransactionDetails.builder()
 					.brokerCompanyName(n.getBroker().getBrokerCompanyName())
 					.brokerMailId(n.getBroker().getBrokerMailId())
@@ -78,7 +85,10 @@ public class NotificationService {
 					.tinyUrl(n.getTinyUrl())
 					.notifPushedStatus(n.getNotifPushedStatus().toString())
 					.companyid(n.getCompanyid())
-					.productid(n.getProductid())					
+					.productid(n.getProductid())
+					.companyLogo(coms.get(0).getCompanyLogo())
+					.companyAddress(coms.get(0).getCompanyAddress())
+					.attachFilePath(filesTobeAttch)
 					.build();	
 			NotifTransactionDetails sv = notifTrans.save(nt);
 			c.setIsError(Boolean.FALSE);
