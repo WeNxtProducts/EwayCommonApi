@@ -36,4 +36,7 @@ public interface SmsConfigMasterRepository  extends JpaRepository<SmsConfigMaste
 
 	List<SmsConfigMaster> findByCompanyIdAndBranchCode(String companyId, String branchCode);
 
+	List<SmsConfigMaster> findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(String companyid, String string,
+			String string2);
+
 }

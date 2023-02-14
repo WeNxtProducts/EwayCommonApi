@@ -317,7 +317,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				EserviceTravelDetails travelData = eserTraRepo.findByRequestReferenceNo(request.getRequestReferenceNo());
 				customerRefNo = travelData.getCustomerReferenceNo();
 			}else if(request.getProductId().equalsIgnoreCase(buildingProductId) ) {
-				EserviceBuildingDetails buldingData = eserBuildRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo(),request.getVehicleIdsList().get(0).getVehicleId());
+				EserviceBuildingDetails buldingData = eserBuildRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo(),1 );
 				customerRefNo = buldingData.getCustomerReferenceNo();
 			}else {
 				EserviceCommonDetails commonData = eserCommonRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo(),request.getVehicleIdsList().get(0).getVehicleId());

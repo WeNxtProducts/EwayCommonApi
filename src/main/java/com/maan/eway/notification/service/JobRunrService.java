@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.MailMaster;
 import com.maan.eway.bean.NotifTemplateMaster;
+import com.maan.eway.bean.SmsConfigMaster;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
 import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
@@ -25,6 +26,8 @@ import com.maan.eway.notification.req.Messenger;
 import com.maan.eway.notification.req.Sms;
 import com.maan.eway.repository.MailMasterRepository;
 import com.maan.eway.repository.NotifTemplateMasterRepository;
+import com.maan.eway.repository.SmsConfigMasterRepository;
+import com.maan.eway.repository.SmsMasterRepository;
 
 @Service
 public class JobRunrService {
@@ -36,7 +39,9 @@ public class JobRunrService {
 	@Autowired
 	private MailMasterRepository mailRepo;
 	
-
+	@Autowired
+	private SmsConfigMasterRepository smsRepo;
+	
 	@Autowired
 	private RatingFactorsUtil rat;
 	
@@ -81,11 +86,17 @@ public class JobRunrService {
 
 							List<NotifTransactionDetails> n=h3.getValue();
 							List<NotifTemplateMaster> templat = masterRepo.findByCompanyIdAndProductIdAndStatusAndNotifTemplatenameIgnoreCaseOrderByAmendIdDesc(n.get(0).getCompanyid(),Long.valueOf(n.get(0).getProductid()),"Y",n.get(0).getNotifTemplatename());
-							List<MailMaster> mailc = mailRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(n.get(0).getCompanyid(),"99999","Y");						
-							PushedStateChange p=new PushedStateChange(templat.get(0),mailc.get(0));					
+							List<MailMaster> mailc = mailRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(n.get(0).getCompanyid(),"99999","Y");													
+							List<SmsConfigMaster> smsc = smsRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(n.get(0).getCompanyid(),"99999","Y");													
+
+							PushedStateChange p=new PushedStateChange(templat.get(0),mailc.get(0),smsc.get(0));					
 							collect = ne.stream().map(p).filter(dd->dd!=null).collect(Collectors.toList());					
 							List<Mail> totalMailJob=new ArrayList<Mail>();
+							
+				
+							
 							List<Sms> totalSmSJob=new ArrayList<Sms>();
+							
 							List<Messenger> totalMessnJob=new ArrayList<Messenger>();
 
 							if(!collect.isEmpty()) {
@@ -107,7 +118,7 @@ public class JobRunrService {
 
 									totalMailJob.stream().forEach(job);									
 								}
-								else if(!totalSmSJob.isEmpty()) {
+								if(!totalSmSJob.isEmpty()) {
 
 									totalSmSJob.stream().forEach(Sms);									
 								}

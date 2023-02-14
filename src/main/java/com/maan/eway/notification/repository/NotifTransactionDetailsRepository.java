@@ -46,4 +46,6 @@ public interface NotifTransactionDetailsRepository  extends JpaRepository<NotifT
 	List<NotifTransactionDetails> findByNotifPushedStatusAndNotifcationPushDateLessThanEqualAndNotifcationEndDateGreaterThanEqualOrderByNotifPriorityDesc(
 			String string, Date d, Date d2, Pageable pages);
 
+
+	
 }

@@ -14,6 +14,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import com.maan.eway.bean.MailMaster;
 import com.maan.eway.bean.NotifTemplateMaster;
+import com.maan.eway.bean.SmsConfigMaster;
 import com.maan.eway.notification.req.JobCredentials;
 import com.maan.eway.notification.req.Mail;
 import com.maan.eway.notification.req.Messenger;
@@ -24,11 +25,13 @@ public class PushedStateChange implements  Function<Tuple,List<Object>>{
 
 	private NotifTemplateMaster master;
 	 private MailMaster mailMaster;	 
-	 
+	 private SmsConfigMaster smsmaster;
 
-	public PushedStateChange(NotifTemplateMaster master, MailMaster mailMaster) {
+	public PushedStateChange(NotifTemplateMaster master, MailMaster mailMaster, SmsConfigMaster smsmaster) {
 		this.master=master;
 		this.mailMaster=mailMaster;
+		this.smsmaster=smsmaster;
+
 	}
 
 	@Override
@@ -49,9 +52,10 @@ public class PushedStateChange implements  Function<Tuple,List<Object>>{
 			if(master.getSmsRequired().equals("Y") ) {
 				Sms s=Sms.builder()
 						.smsBody((String) getContentFrame(t, master.getSmsBodyEn()))
-						//.smsRegards((String) getContentFrame(t, master.getSms))
+						.smsRegards((String) getContentFrame(t, master.getWhatsappRegards()))
 						.smsSubject((String) getContentFrame(t, master.getSmsSubject()))
-						.smsTo((String) getValue(t,master.getToSmsno()))					
+						.smsTo((String) getValue(t,master.getToSmsno()))	
+						.smsFrom((String)getValue(t,smsmaster.getSenderId()))
 						.build();
 				a.add(s);
 			}
