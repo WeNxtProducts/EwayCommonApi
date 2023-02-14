@@ -34,7 +34,8 @@ public class SmsJob implements Consumer<Sms> {
 
 		SmsDataDetails savedata = new SmsDataDetails();
 
-		Long sno = smsRepo.count()+1;
+		Long sno = smsRepo.count();
+		sno=sno+1;
 		savedata.setMobileNo(m.getSmsTo());
 		savedata.setSmsFrom(m.getSmsFrom());		
 		savedata.setSmsType(m.getSmsSubject());
