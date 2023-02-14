@@ -15,6 +15,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import com.maan.eway.bean.MailMaster;
 import com.maan.eway.bean.NotifTemplateMaster;
 import com.maan.eway.bean.SmsConfigMaster;
+import com.maan.eway.notification.bean.NotifTransactionDetails;
 import com.maan.eway.notification.req.JobCredentials;
 import com.maan.eway.notification.req.Mail;
 import com.maan.eway.notification.req.Messenger;
@@ -26,12 +27,13 @@ public class PushedStateChange implements  Function<Tuple,List<Object>>{
 	private NotifTemplateMaster master;
 	 private MailMaster mailMaster;	 
 	 private SmsConfigMaster smsmaster;
-
-	public PushedStateChange(NotifTemplateMaster master, MailMaster mailMaster, SmsConfigMaster smsmaster) {
+	 private NotifTransactionDetails sms;
+	 
+	public PushedStateChange(NotifTransactionDetails sms,NotifTemplateMaster master, MailMaster mailMaster, SmsConfigMaster smsmaster) {
 		this.master=master;
 		this.mailMaster=mailMaster;
 		this.smsmaster=smsmaster;
-
+		this.sms =sms;
 	}
 
 	@Override
@@ -56,6 +58,8 @@ public class PushedStateChange implements  Function<Tuple,List<Object>>{
 						.smsSubject((String) getContentFrame(t, master.getSmsSubject()))
 						.smsTo((String) getValue(t,master.getToSmsno()))	
 						.smsFrom((String)getValue(t,smsmaster.getSenderId()))
+						.credential(JobCredentials.builder().host(smsmaster.getSmsPartyUrl()).isSSL(true).password(smsmaster.getSmsUserPass()).username(smsmaster.getSmsUserName()).build())
+						.smsToCode((String) getValue(t,sms.getCustomerPhoneCode().toString()))
 						.build();
 				a.add(s);
 			}
@@ -76,7 +80,7 @@ public class PushedStateChange implements  Function<Tuple,List<Object>>{
 						.mailSubject((String) getContentFrame(t, master.getMailSubject()))
 						.mailTo(tomailid)
 						.mailcc(mailcc)
-						.credential(JobCredentials.builder().host(mailMaster.getSmtpHost()).isSSL(true).password(mailMaster.getSmtpPwd()).port(Long.parseLong(mailMaster.getSmtpPort().toString())).username(mailMaster.getSmtpUser()).build())
+						.credential(JobCredentials.builder().host(mailMaster.getSmtpHost()).isSSL(true).password(mailMaster.getSmtpPwd()).username(mailMaster.getSmtpUser()).build())
 						.build();
 				a.add(ml);
 			}

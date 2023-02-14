@@ -120,6 +120,10 @@ public class NotifTemplateMaster implements Serializable {  //--- ENTITY PRIMARY
     @Column(name="SMS_BODY_EN", length=2000)
     private String     smsBodyEn ;
 
+    @Column(name="SMS_REGARDS", length=500)
+    private String    smsRegards ;
+
+    
     @Column(name="WHATSAPP_REQUIRED", length=10)
     private String     whatsappRequired ;
 
