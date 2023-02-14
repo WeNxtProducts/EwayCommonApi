@@ -1167,7 +1167,7 @@ public class QuoteServiceImpl implements QuoteService {
 					n.setNotifTemplatename("Referral Notification");
 					n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
 					n.setProductid(Integer.valueOf(req.getProductId()));
-					ProductMaster productData=productRepo.findByProductId(cusRefNo.get(0).getProductId());
+					ProductMaster productData= getByProductCode(Integer.valueOf(req.getProductId())) ;
 					n.setProductName(productData.getProductName());
 					n.setQuoteNo(StringUtils.isBlank(cusRefNo.get(0).getQuoteNo().toString())?cusRefNo.get(0).getRequestReferenceNo():cusRefNo.get(0).getQuoteNo().toString());
 					n.setSectionName(cusRefNo.get(0).getSectionDesc());
@@ -2306,7 +2306,8 @@ public class QuoteServiceImpl implements QuoteService {
 				n.setNotifPushedStatus(NotificationStatus.PENDING);
 				n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
 				n.setProductid(Integer.valueOf(req.getProductId()));
-				n.setProductName("Motor");
+				ProductMaster productData= getByProductCode(Integer.valueOf(req.getProductId())) ;
+				n.setProductName(productData.getProductName());
 				n.setQuoteNo(cusRefNo.get(0).getQuoteNo().toString());
 				n.setSectionName(cusRefNo.get(0).getSectionDesc());
 				n.setStatusMessage("");
@@ -2540,6 +2541,57 @@ public class QuoteServiceImpl implements QuoteService {
 	        }
 	       return res ;
 	 }
-
+	 public ProductMaster getByProductCode(Integer productId) {
+			ProductMaster res = new ProductMaster();
+			try {
+				Date today  =new Date();
+				Calendar cal = new GregorianCalendar(); 
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 1);
+				today   = cal.getTime();
+				
+				List<ProductMaster> list = new ArrayList<ProductMaster>();
+				// Find Latest Record
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<ProductMaster> query = cb.createQuery(ProductMaster.class);
+		
+				// Find All
+				Root<ProductMaster> b = query.from(ProductMaster.class);
+		
+				// Select
+				query.select(b);
+		
+				// Amend ID Max Filter
+				Subquery<Long> amendId = query.subquery(Long.class);
+				Root<ProductMaster> ocpm1 = amendId.from(ProductMaster.class);
+				amendId.select(cb.max(ocpm1.get("amendId")));
+				Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+				amendId.where(a1,a2);
+		
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(b.get("effectiveDateStart")));
+		
+				// Where
+				Predicate n1 = cb.equal(b.get("amendId"), amendId);
+				Predicate n2 = cb.equal(b.get("productId"), productId);
+		
+				query.where(n1,n2).orderBy(orderList);
+		
+				// Get Result
+				TypedQuery<ProductMaster> result = em.createQuery(query);
+				list = result.getResultList();
+				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getProductId()))).collect(Collectors.toList());
+				list.sort(Comparator.comparing(ProductMaster :: getProductName ));
+			
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return res;
+		}
 	
 }
