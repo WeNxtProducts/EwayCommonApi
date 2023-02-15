@@ -277,7 +277,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             
             // Customer Save Thread Call
             QuoteThreadCall customerSave = new QuoteThreadCall("CustomerSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
-            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo);
+            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,smeProductId);
             queue.add(customerSave);
             
             int threadCount = 1 ;
@@ -387,7 +387,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				MyTaskList taskList2 = new MyTaskList(queue2);
 				request.setVehicleId(req.getVehicleIdsList().get(0).getVehicleId());
 				QuoteThreadCall quoteSave = new QuoteThreadCall("QuoteSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo  
-	            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo);
+	            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,smeProductId);
 	            
 				queue2.add(quoteSave);
 				
@@ -691,7 +691,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			MyTaskList taskList = new MyTaskList(queue);
 			
         	QuoteThreadCall deleteOldRecords = new QuoteThreadCall("DeleteOldRecords" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo  
-            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo);
+            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,smeProductId);
           
         	queue.add(deleteOldRecords);
         	res = "Success";
@@ -758,126 +758,22 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
 			
 			// Multiple Vehicle Thread Call
-			List<Integer> vehicleIds = req.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
-	        if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
-				 for (Integer vehId :  vehicleIds ) {
-		            	threadCount = threadCount +  2 ;
-		            	List<String> sectionId = req.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());
-		            	
-		            	QuoteThreadReq request2 = new QuoteThreadReq();
-		            	request2.setCustomerId(request.getCustomerId());
-		            	request2.setProductId(request.getProductId());
-		            	request2.setQuoteNo(request.getQuoteNo());
-		            	request2.setRequestReferenceNo(request.getRequestReferenceNo());
-		            	request2.setVehicleIdsList(request.getVehicleIdsList());
-		            	request2.setCreatedBy(request.getCreatedBy());
-		            	request2.setVehicleId(vehId);
-		            	request2.setSectionId(sectionId.get(0));
-		            	
-		            	QuoteThreadCall motorSave = new QuoteThreadCall("MotorSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo  
-		                		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo);
-			            queue.add(motorSave);
-						QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
-			            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo);
-						queue.add(coverSave);	
-		            }
+			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
+	        	ProductThreadRes =  motorProductThreadCall(req , request )  ;
 					
-			// Bulding Thread Call	 
+			// Multiple Bulding Thread Call	 
 			} else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) ) {
-				 for (Integer vehId :  vehicleIds ) {
-		            	threadCount = threadCount +  2 ;
-		            	List<String> sectionId = req.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());
-		            	
-		            	for ( String sec : sectionId) {
-		            		QuoteThreadReq request2 = new QuoteThreadReq();
-			            	request2.setCustomerId(request.getCustomerId());
-			            	request2.setProductId(request.getProductId());
-			            	request2.setQuoteNo(request.getQuoteNo());
-			            	request2.setRequestReferenceNo(request.getRequestReferenceNo());
-			            	request2.setVehicleIdsList(request.getVehicleIdsList());
-			            	request2.setCreatedBy(request.getCreatedBy());
-			            	request2.setVehicleId(vehId);
-			            	request2.setSectionId(sec);	 
-			            	QuoteThreadCall buildingSave = new QuoteThreadCall("BuildingSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo  
-			                		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo);
-				            queue.add(buildingSave);
-							QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
-				            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo);
-							queue.add(coverSave);	
-		            	}
-		            	
-		            	
-		            }
+				ProductThreadRes =  buildingProductThreadCall(req , request )  ;
 					
 			// Multiple Travel Thread Call	 
 			}else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 	        	
-	        	List<EserviceTravelGroupDetails> groupData = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(request.getRequestReferenceNo() );
-	        	
-	        	Integer passCount = 0;
-	        	List<VehicleIdsReq>  filterAdult  = req.getVehicleIdsList().stream().filter( o ->  o.getVehicleId().equals(2) ).collect(Collectors.toList());
-	        	List<VehicleIdsReq>  filterOthers =req.getVehicleIdsList().stream().filter( o -> ! o.getVehicleId().equals(2) ).collect(Collectors.toList());
-	        	List<VehicleIdsReq>  totalGroup  = new ArrayList<VehicleIdsReq>();
-	        	totalGroup.addAll(filterAdult)	;
-	        	totalGroup.addAll(filterOthers);
-	        	List<Integer> groupIds = totalGroup.stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
-	        	// Filte Count
-	        	 for (Integer vehId :  groupIds ) {
-					 List<EserviceTravelGroupDetails> filterGroup = groupData.stream().filter( o -> o.getGroupId().equals(vehId) ).collect(Collectors.toList());				 
-					 List<String> sectionId = req.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());	
-					 for (int i=0 ; i < filterGroup.get(0).getGrouppMembers() ; i++) {
-						 passCount = passCount + 1 ;
-						 threadCount = threadCount +  2 ;
-						
-		            	 QuoteThreadReq request2 = new QuoteThreadReq();
-		            	 request2.setVehicleId(passCount);
-		            	 request2.setCustomerId(request.getCustomerId());
-		            	 request2.setProductId(request.getProductId());
-		            	 request2.setQuoteNo(request.getQuoteNo());
-		            	 request2.setRequestReferenceNo(request.getRequestReferenceNo());
-		            	 request2.setVehicleIdsList(request.getVehicleIdsList());
-		            	 request2.setCreatedBy(request.getCreatedBy());
-		            	 request2.setGroupId(filterGroup.get(0).getGroupId());
-		            	 request2.setGroupCount(filterGroup.get(0).getGrouppMembers());
-		            	 request2.setSectionId(sectionId.get(0));
-		            	 
-		            	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
-		            			 , homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo);
-			             queue.add(travelSave);
-						 QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
-								 , homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo);
-						 queue.add(coverSave);
-					 }					 
-		         } 
-					// Multiple Personal Accident Thread Call
-				} else  {
-					for (Integer vehId : vehicleIds) {
-						threadCount = threadCount + 2;
-						List<String> sectionId = req.getVehicleIdsList().stream().filter(o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq::getSectionId).collect(Collectors.toList());
-
-						for (String sec : sectionId) {
-							QuoteThreadReq request2 = new QuoteThreadReq();
-							request2.setCustomerId(request.getCustomerId());
-							request2.setProductId(request.getProductId());
-							request2.setQuoteNo(request.getQuoteNo());
-							request2.setRequestReferenceNo(request.getRequestReferenceNo());
-							request2.setVehicleIdsList(request.getVehicleIdsList());
-							request2.setCreatedBy(request.getCreatedBy());
-							request2.setVehicleId(vehId);
-							request2.setSectionId(sec);
-							QuoteThreadCall commonDataSave = new QuoteThreadCall("CommonDataSave", request2, em,
-									eserCustRepo, eserMotRepo, facRateRepo, perInfoRepo, motorRepo,driverRepo , coverRepo, homeRepo,
-									eserRepo, eserGroupRepo, traPassRepo, traPassHisRepo, motorProductId,
-									travelProductId, buildingProductId, eserBuildRepo, eserSecRepo,eserCommonRepo,commonDataRepo);
-							queue.add(commonDataSave);
-							QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave", request2, em, eserCustRepo,
-									eserMotRepo, facRateRepo, perInfoRepo, motorRepo,driverRepo , coverRepo, homeRepo, eserRepo,
-									eserGroupRepo, traPassRepo, traPassHisRepo, motorProductId, travelProductId,
-									buildingProductId, eserBuildRepo, eserSecRepo,eserCommonRepo,commonDataRepo);
-							queue.add(coverSave);
-						}
-					}
-				}
+				ProductThreadRes =  travelProductThreadCall(req , request )  ;
+				
+			// Multiple Common Thread Call
+			} else  {
+				ProductThreadRes =  commonProductThreadCall(req , request )  ;
+			}
 	        // Response 
 	        ProductThreadRes.setQueue(queue);
 	        ProductThreadRes.setThreadCount(threadCount);	
@@ -899,6 +795,182 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	}
 	
 	
+	public ProductThreadRes motorProductThreadCall(NewQuoteReq req , QuoteThreadReq request ) {
+		ProductThreadRes ProductThreadRes = new ProductThreadRes();
+		
+		try {
+			int threadCount = 0 ;
+			List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
+			
+			// Multiple Vehicle Thread Call
+			List<Integer> vehicleIds = req.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
+	    	 for (Integer vehId :  vehicleIds ) {
+	            	threadCount = threadCount +  2 ;
+	            	List<String> sectionId = req.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());
+	            	
+	            	QuoteThreadReq request2 = new QuoteThreadReq();
+	            	request2.setCustomerId(request.getCustomerId());
+	            	request2.setProductId(request.getProductId());
+	            	request2.setQuoteNo(request.getQuoteNo());
+	            	request2.setRequestReferenceNo(request.getRequestReferenceNo());
+	            	request2.setVehicleIdsList(request.getVehicleIdsList());
+	            	request2.setCreatedBy(request.getCreatedBy());
+	            	request2.setVehicleId(vehId);
+	            	request2.setSectionId(sectionId.get(0));
+	            	
+	            	QuoteThreadCall motorSave = new QuoteThreadCall("MotorSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo  
+	                		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,smeProductId);
+		            queue.add(motorSave);
+					QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
+		            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,smeProductId);
+					queue.add(coverSave);	
+	            }
+	    	 // Response 
+	        ProductThreadRes.setQueue(queue);
+	        ProductThreadRes.setThreadCount(threadCount);	
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --> " +  e.getMessage());
+		}
+		return ProductThreadRes ;
+	}
+	
+	public ProductThreadRes travelProductThreadCall(NewQuoteReq req , QuoteThreadReq request ) {
+		ProductThreadRes ProductThreadRes = new ProductThreadRes();
+		
+		try {
+			int threadCount = 0 ;
+			List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
+			
+			// Multiple Vehicle Thread Call
+			List<EserviceTravelGroupDetails> groupData = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(request.getRequestReferenceNo() );
+        	
+        	Integer passCount = 0;
+        	List<VehicleIdsReq>  filterAdult  = req.getVehicleIdsList().stream().filter( o ->  o.getVehicleId().equals(2) ).collect(Collectors.toList());
+        	List<VehicleIdsReq>  filterOthers =req.getVehicleIdsList().stream().filter( o -> ! o.getVehicleId().equals(2) ).collect(Collectors.toList());
+        	List<VehicleIdsReq>  totalGroup  = new ArrayList<VehicleIdsReq>();
+        	totalGroup.addAll(filterAdult)	;
+        	totalGroup.addAll(filterOthers);
+        	List<Integer> groupIds = totalGroup.stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
+        	// Filte Count
+        	 for (Integer vehId :  groupIds ) {
+				 List<EserviceTravelGroupDetails> filterGroup = groupData.stream().filter( o -> o.getGroupId().equals(vehId) ).collect(Collectors.toList());				 
+				 List<String> sectionId = req.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());	
+				 for (int i=0 ; i < filterGroup.get(0).getGrouppMembers() ; i++) {
+					 passCount = passCount + 1 ;
+					 threadCount = threadCount +  2 ;
+					
+	            	 QuoteThreadReq request2 = new QuoteThreadReq();
+	            	 request2.setVehicleId(passCount);
+	            	 request2.setCustomerId(request.getCustomerId());
+	            	 request2.setProductId(request.getProductId());
+	            	 request2.setQuoteNo(request.getQuoteNo());
+	            	 request2.setRequestReferenceNo(request.getRequestReferenceNo());
+	            	 request2.setVehicleIdsList(request.getVehicleIdsList());
+	            	 request2.setCreatedBy(request.getCreatedBy());
+	            	 request2.setGroupId(filterGroup.get(0).getGroupId());
+	            	 request2.setGroupCount(filterGroup.get(0).getGrouppMembers());
+	            	 request2.setSectionId(sectionId.get(0));
+	            	 
+	            	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
+	            			 , homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,smeProductId);
+		             queue.add(travelSave);
+					 QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
+							 , homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,smeProductId);
+					 queue.add(coverSave);
+				 }					 
+	         } 
+        	 ProductThreadRes.setQueue(queue);
+ 	        ProductThreadRes.setThreadCount(threadCount);
+ 	        
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --> " +  e.getMessage());
+		}
+		return ProductThreadRes ;
+	}
+	
+	public ProductThreadRes buildingProductThreadCall(NewQuoteReq req , QuoteThreadReq request ) {
+		ProductThreadRes ProductThreadRes = new ProductThreadRes();
+		
+		try {
+			int threadCount = 0 ;
+			List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
+			List<Integer> vehicleIds = req.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
+			 for (Integer vehId :  vehicleIds ) {
+	            	threadCount = threadCount +  2 ;
+	            	List<String> sectionId = req.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());
+	            	
+	            	for ( String sec : sectionId) {
+	            		QuoteThreadReq request2 = new QuoteThreadReq();
+		            	request2.setCustomerId(request.getCustomerId());
+		            	request2.setProductId(request.getProductId());
+		            	request2.setQuoteNo(request.getQuoteNo());
+		            	request2.setRequestReferenceNo(request.getRequestReferenceNo());
+		            	request2.setVehicleIdsList(request.getVehicleIdsList());
+		            	request2.setCreatedBy(request.getCreatedBy());
+		            	request2.setVehicleId(vehId);
+		            	request2.setSectionId(sec);	 
+		            	QuoteThreadCall buildingSave = new QuoteThreadCall("BuildingSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo  
+		                		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,smeProductId);
+			            queue.add(buildingSave);
+						QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
+			            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,smeProductId);
+						queue.add(coverSave);	
+	            	}
+	            }
+			 	ProductThreadRes.setQueue(queue);
+		        ProductThreadRes.setThreadCount(threadCount);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --> " +  e.getMessage());
+		}
+		return ProductThreadRes ;
+	}
+	
+	public ProductThreadRes commonProductThreadCall(NewQuoteReq req , QuoteThreadReq request ) {
+		ProductThreadRes ProductThreadRes = new ProductThreadRes();
+		
+		try {
+			int threadCount = 0 ;
+			List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
+			List<Integer> vehicleIds = req.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
+			for (Integer vehId : vehicleIds) {
+				threadCount = threadCount + 2;
+				List<String> sectionId = req.getVehicleIdsList().stream().filter(o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq::getSectionId).collect(Collectors.toList());
+
+				for (String sec : sectionId) {
+					QuoteThreadReq request2 = new QuoteThreadReq();
+					request2.setCustomerId(request.getCustomerId());
+					request2.setProductId(request.getProductId());
+					request2.setQuoteNo(request.getQuoteNo());
+					request2.setRequestReferenceNo(request.getRequestReferenceNo());
+					request2.setVehicleIdsList(request.getVehicleIdsList());
+					request2.setCreatedBy(request.getCreatedBy());
+					request2.setVehicleId(vehId);
+					request2.setSectionId(sec);
+					QuoteThreadCall commonDataSave = new QuoteThreadCall("CommonDataSave", request2, em,
+							eserCustRepo, eserMotRepo, facRateRepo, perInfoRepo, motorRepo,driverRepo , coverRepo, homeRepo,
+							eserRepo, eserGroupRepo, traPassRepo, traPassHisRepo, motorProductId,
+							travelProductId, buildingProductId, eserBuildRepo, eserSecRepo,eserCommonRepo,commonDataRepo,smeProductId);
+					queue.add(commonDataSave);
+					QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave", request2, em, eserCustRepo,
+							eserMotRepo, facRateRepo, perInfoRepo, motorRepo,driverRepo , coverRepo, homeRepo, eserRepo,
+							eserGroupRepo, traPassRepo, traPassHisRepo, motorProductId, travelProductId,
+							buildingProductId, eserBuildRepo, eserSecRepo,eserCommonRepo,commonDataRepo,smeProductId);
+					queue.add(coverSave);
+				}
+			}
+			ProductThreadRes.setQueue(queue);
+	        ProductThreadRes.setThreadCount(threadCount);	
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --> " +  e.getMessage());
+		}
+		return ProductThreadRes ;
+	}
 	public CommonRes setQuoteThreadReq(NewQuoteReq req ) {
 		CommonRes commonRes = new CommonRes();
 		List<Error> errors = new ArrayList<Error>();
@@ -922,12 +994,19 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				quoteNo    = findTravel.getQuoteNo()==null?"":findTravel.getQuoteNo();
 				subUserType = findTravel.getSubUserType()==null?"":findTravel.getSubUserType() ;
 			
-			}else if(req.getProductId().equalsIgnoreCase(buildingProductId)) {
+			}else if(req.getProductId().equalsIgnoreCase(buildingProductId) || (req.getProductId().equalsIgnoreCase(smeProductId)) ) {
 				List<EserviceBuildingDetails> findBuilds =  eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo() );
 				customerId = findBuilds.get(0).getCustomerId()==null?"": findBuilds.get(0).getCustomerId();
 				quoteNo    =  findBuilds.get(0).getQuoteNo()==null?"": findBuilds.get(0).getQuoteNo();
 				subUserType =  findBuilds.get(0).getSubUserType()==null?"": findBuilds.get(0).getSubUserType() ;
 			
+			} else {
+				List<EserviceCommonDetails> findCommon =  eserCommonRepo.findByRequestReferenceNo(req.getRequestReferenceNo() );
+				customerId = findCommon.get(0).getCustomerId()==null?"": findCommon.get(0).getCustomerId();
+				quoteNo    =  findCommon.get(0).getQuoteNo()==null?"": findCommon.get(0).getQuoteNo();
+				LoginMaster loginData = loginRepo.findByLoginId(findCommon.get(0).getLoginId());
+				subUserType =  loginData.getSubUserType()==null?"": loginData.getSubUserType() ;
+				
 			}
 			
 			

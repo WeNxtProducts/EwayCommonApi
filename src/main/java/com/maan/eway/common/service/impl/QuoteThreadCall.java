@@ -115,12 +115,13 @@ public class QuoteThreadCall implements Callable<Object>  {
 	private String travelProductId;
 	private String buildingProductId;
 	private String personalAccidentProductId;
+	private String smeProductId;
 	
 	public QuoteThreadCall(String type , QuoteThreadReq request , EntityManager em ,EserviceCustomerDetailsRepository eserCustRepo ,
 			EServiceMotorDetailsRepository eserMotRepo  ,FactorRateRequestDetailsRepository facRateRepo  ,PersonalInfoRepository perInfoRepo  , MotorDataDetailsRepository motorRepo , MotorDriverDetailsRepository driverRepo ,
 			 CoverDetailsRepository coverRepo  , HomePositionMasterRepository homeRepo  ,EserviceTravelDetailsRepository eserTraRepo ,EserviceTravelGroupDetailsRepository eserGroupRepo ,
 			 TravelPassengerDetailsRepository    traPassRepo ,TravelPassengerHistoryRepository traPassHisRepo  , String motorProductId ,String travelProductId, String buildingProductId 
-			 , EserviceBuildingDetailsRepository eserBuildRepo , EServiceSectionDetailsRepository eserSecRepo,EserviceCommonDetailsRepository eserCommonRepo,CommonDataDetailsRepository commonDataRepo) {
+			 , EserviceBuildingDetailsRepository eserBuildRepo , EServiceSectionDetailsRepository eserSecRepo,EserviceCommonDetailsRepository eserCommonRepo,CommonDataDetailsRepository commonDataRepo ,String smeProductId) {
 		this.type = type;
 		this.request = request;
 		this.em=em;
@@ -143,6 +144,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		this.eserSecRepo = eserSecRepo ;
 		this.eserCommonRepo=eserCommonRepo;
 		this.commonDataRepo=commonDataRepo;
+		this.smeProductId = smeProductId;
 	} 
 	
 	@Override
@@ -313,7 +315,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			} else if(request.getProductId().equalsIgnoreCase(travelProductId) ) {
 				EserviceTravelDetails travelData = eserTraRepo.findByRequestReferenceNo(request.getRequestReferenceNo());
 				customerRefNo = travelData.getCustomerReferenceNo();
-			}else if(request.getProductId().equalsIgnoreCase(buildingProductId) ) {
+			}else if(request.getProductId().equalsIgnoreCase(buildingProductId) || request.getProductId().equalsIgnoreCase(smeProductId) ) {
 				EserviceBuildingDetails buldingData = eserBuildRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo(),1 );
 				customerRefNo = buldingData.getCustomerReferenceNo();
 			}else {
@@ -858,7 +860,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())). collect(Collectors.toList());
 				coverReqList = VehicleList.get(0).getCoverIdList();
 				
-			} else if( request.getProductId().equalsIgnoreCase(buildingProductId)    ) {
+			} else if( request.getProductId().equalsIgnoreCase(buildingProductId)  || request.getProductId().equalsIgnoreCase(smeProductId) ) {
 				
 				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())   &&  o.getSectionId().equalsIgnoreCase(request.getSectionId())). collect(Collectors.toList());
 				coverReqList = VehicleList.get(0).getCoverIdList();
@@ -1148,7 +1150,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				home.setPromocode(travelData.getPromocode());
 				home.setManualReferalYn(travelData.getManualReferalYn());
 				
-			}  else if(request.getProductId().equalsIgnoreCase(buildingProductId) ) {
+			}  else if(request.getProductId().equalsIgnoreCase(buildingProductId) || request.getProductId().equalsIgnoreCase(smeProductId)) {
 				
 				EserviceBuildingDetails  buildingData = eserBuildRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() , request.getVehicleId()) ;
 				Long builCount =  eserBuildRepo.countByRequestReferenceNo(request.getRequestReferenceNo() ) ;
