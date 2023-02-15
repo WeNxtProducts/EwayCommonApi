@@ -38,5 +38,7 @@ public class BuildingSumInsuredDetails {
 	@JsonProperty("SectionId")
 	private List<String> sectionId;
 	
+	@JsonProperty("WorkmenCompSuminsured")
+    private String    workmenCompSuminsured;
 	
 }

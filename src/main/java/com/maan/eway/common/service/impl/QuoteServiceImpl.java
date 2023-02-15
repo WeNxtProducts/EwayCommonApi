@@ -1724,6 +1724,8 @@ public class QuoteServiceImpl implements QuoteService {
 			res.setAllriskSuminsured(build.getAllriskSuminsured() == null?"" :build.getAllriskSuminsured().toString());
 			res.setPersonalIntermediarySuminsured(build.getPersonalIntSuminsured() == null?"" :build.getPersonalIntSuminsured().toString());
 			res.setContentSuminsured(build.getContentSuminsured() == null?"" :build.getContentSuminsured().toString());
+			res.setWorkmenCompSuminsured(build.getWorkmenCompSuminsured() == null?"" :build.getWorkmenCompSuminsured().toString());
+
 			res.setOccupationDetails(occupation);
 			
 			res.setRiskId(build.getRiskId().toString());

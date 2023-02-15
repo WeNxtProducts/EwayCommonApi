@@ -200,7 +200,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="INDUSTRY_ID")
     private Integer  industryId ;
 
-    
+    @Column(name="WORKMEN_COMP_SUMINSURED")
+    private BigDecimal     workmenCompSuminsured;
+        
     
 }
 
