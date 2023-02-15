@@ -556,7 +556,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 				Predicate n2 = cb.equal(c.get("companyId"), companyId);
 
 				if ("issuer".equalsIgnoreCase(userType)) {
-					n3 = cb.equal(c.get("applicatioId"), loginId);
+					n3 = cb.equal(c.get("applicationId"), loginId);
 					Expression<String> e0 = c.get("branchCode");
 					n4 = e0.in(branches);
 				} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
