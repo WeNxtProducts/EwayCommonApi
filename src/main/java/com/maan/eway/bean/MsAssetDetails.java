@@ -200,8 +200,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="INDUSTRY_ID")
     private Integer  industryId ;
 
-    
-    
+  
 }
 
 
