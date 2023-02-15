@@ -1220,6 +1220,11 @@ this.repository = repo;
 					coverRes.setPremiumBeforeDiscountLC(filterCover.get(0).getPremiumBeforeDiscountLc()==null?BigDecimal.ZERO :filterCover.get(0).getPremiumBeforeDiscountLc());
 					coverRes.setPremiumExcluedTaxLC(filterCover.get(0).getPremiumExcludedTaxLc()==null?BigDecimal.ZERO :filterCover.get(0).getPremiumExcludedTaxLc());
 					coverRes.setPremiumIncludedTaxLC(filterCover.get(0).getPremiumIncludedTaxLc()==null?BigDecimal.ZERO :filterCover.get(0).getPremiumIncludedTaxLc());
+					coverRes.setPremiumExcluedTax( filterCover.get(0).getPremiumExcludedTaxFc()==null?BigDecimal.ZERO : filterCover.get(0).getPremiumExcludedTaxFc() );	
+					coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc()==null?BigDecimal.ZERO :filterCover.get(0).getPremiumAfterDiscountFc());
+					coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc()==null?BigDecimal.ZERO :filterCover.get(0).getPremiumBeforeDiscountFc());
+					coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc()==null?BigDecimal.ZERO :filterCover.get(0).getPremiumExcludedTaxFc());
+					coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc()==null?BigDecimal.ZERO :filterCover.get(0).getPremiumIncludedTaxFc());
 						
 						
 					List<Cover>  subCoverListRes = new ArrayList<Cover>();
