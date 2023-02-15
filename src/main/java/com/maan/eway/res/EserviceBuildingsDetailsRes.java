@@ -43,6 +43,7 @@ public class EserviceBuildingsDetailsRes implements Serializable {
     private String    sectionId   ;
 	@JsonProperty("PersonId")
     private String    personId   ;
+
 	@JsonProperty("CustomerReferenceNo")
     private String     customerReferenceNo ;
 	@JsonProperty("ProductId")

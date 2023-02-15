@@ -25,6 +25,9 @@ public class EserviceCommonGetRes {
 	@JsonProperty("SalaryPerAnnum")
     private String     salaryPerAnnum ;
 	
+	@JsonProperty("SectionName")
+    private String     sectionName;
+	
 	@JsonProperty("BenefitCoverMonth")
     private String     benefitCoverMonth;
 	@JsonProperty("SectionId")
