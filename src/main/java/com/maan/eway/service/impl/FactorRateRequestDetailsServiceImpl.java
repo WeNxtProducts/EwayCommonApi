@@ -856,6 +856,7 @@ this.repository = repo;
 				
 				Map<Integer,List<FactorRateRequestDetails>> groupByCover = filterVehicleCovers.stream().collect(Collectors.groupingBy(FactorRateRequestDetails :: getCoverId));			
 				List<Cover> coverListRes = 	getCoversList(groupByCover);
+				coverListRes.forEach(cov ->  cov.setSectionName(res.getSectionName())) ;
 				
 				// Set Master Referals
 				List<MasterReferralDetails> filterMasterReferals = findMasterRefrals.stream().filter( o -> o.getRiskId().equals(Integer.valueOf(res.getVehicleId())) &&

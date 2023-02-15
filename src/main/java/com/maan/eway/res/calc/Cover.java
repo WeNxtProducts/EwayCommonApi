@@ -151,4 +151,6 @@ public class Cover implements Serializable{
 			 @JsonProperty("MultiSelectYn") 
 			 private String multiSelectYn;
 
+			 @JsonProperty("SectionName") 
+			 private String sectionName;
 }
