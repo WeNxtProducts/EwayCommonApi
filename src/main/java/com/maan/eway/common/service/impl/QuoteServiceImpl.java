@@ -10,7 +10,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -48,13 +47,12 @@ import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
-import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MotorDataDetails;
-import com.maan.eway.bean.OccupationMaster;
+import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.PersonalAccident;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
@@ -75,6 +73,7 @@ import com.maan.eway.common.res.CommonDetailsRes;
 import com.maan.eway.common.res.CommonProductDetailsRes;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.CustomerDetailsRes;
+import com.maan.eway.common.res.DriverDetailsRes;
 import com.maan.eway.common.res.MotorProductDetailsRes;
 import com.maan.eway.common.res.NewQuoteRes;
 import com.maan.eway.common.res.QuoteDetailsRes;
@@ -107,10 +106,9 @@ import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
-import com.maan.eway.repository.InsuranceCompanyMasterRepository;
-import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
+import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.PersonalAccidentRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
@@ -155,6 +153,9 @@ public class QuoteServiceImpl implements QuoteService {
 	
 	@Autowired
 	private PersonalInfoRepository custRepo ;
+	
+	@Autowired
+	private MotorDriverDetailsRepository driverRepo ;
 	
 	@Autowired
 	private EServiceMotorDetailsRepository eserMotRepo;
@@ -321,6 +322,7 @@ public class QuoteServiceImpl implements QuoteService {
 			List<MotorDataDetails> motorDatas =  motorRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 			
+			List<MotorDriverDetails> driverList = driverRepo.findByQuoteNo(req.getQuoteNo() );
 			List<MotorProductDetailsRes>   motorResList = new ArrayList<MotorProductDetailsRes>();
 			for (MotorDataDetails mot :  motorDatas) {
 				
@@ -335,10 +337,25 @@ public class QuoteServiceImpl implements QuoteService {
 				
 				List<Cover>  coverListRes = getCoverDetails(groupByCover);
 				
+				// Driver Details
+				List<DriverDetailsRes>   driverResList = new ArrayList<DriverDetailsRes>();
+				List<MotorDriverDetails> filterDriverList = driverList.stream().filter( o -> o.getRiskId().equals(Integer.valueOf(mot.getVehicleId()))).collect(Collectors.toList());
+				for (MotorDriverDetails dri :  filterDriverList) {
+					DriverDetailsRes driverRes  = new DriverDetailsRes();  
+					dozerMapper.map(dri, driverRes);
+					driverRes.setLicenseNo(dri.getIdNumber());
+					
+					driverResList.add(driverRes);
+					
+				}
+				driverResList.sort(Comparator.comparing(DriverDetailsRes :: getDriverId  ));
+				
+				
 				// Response
 				MotorProductDetailsRes motorRes = new MotorProductDetailsRes();
 				motorRes.setVehicleDetails(vehicleDetails);		
 				motorRes.setCovers(coverListRes);
+				motorRes.setDriverDetails(driverResList);
 				motorResList.add(motorRes);				
 			}
 			viewRes.setProductDetails(motorResList);	

@@ -3,7 +3,9 @@ package com.maan.eway.common.service.impl;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -15,15 +17,11 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -37,22 +35,22 @@ import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
-import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.MotorDataDetails;
-import com.maan.eway.bean.PersonalAccident;
+import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.bean.TravelPassengerHistory;
 import com.maan.eway.common.req.CoverIdsReq;
-import com.maan.eway.common.req.DeleteOldQuoteReq;
 import com.maan.eway.common.req.QuoteThreadReq;
 import com.maan.eway.common.req.VehicleIdsReq;
 import com.maan.eway.common.res.QuoteThreadRes;
+import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.CoverDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
@@ -60,17 +58,15 @@ import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
-import com.maan.eway.repository.EservicePersonalAccidentDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
-import com.maan.eway.repository.PersonalAccidentRepository;
+import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerHistoryRepository;
-import com.maan.eway.res.SuccessRes;
 
 
 public class QuoteThreadCall implements Callable<Object>  {
@@ -90,7 +86,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 	// motor
 	private EServiceMotorDetailsRepository eserMotRepo ;
 	private MotorDataDetailsRepository motorRepo ;
-	
+	private MotorDriverDetailsRepository driverRepo;
 	//Common
 	
 	// Cover 
@@ -121,7 +117,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 	private String personalAccidentProductId;
 	
 	public QuoteThreadCall(String type , QuoteThreadReq request , EntityManager em ,EserviceCustomerDetailsRepository eserCustRepo ,
-			EServiceMotorDetailsRepository eserMotRepo  ,FactorRateRequestDetailsRepository facRateRepo  ,PersonalInfoRepository perInfoRepo  , MotorDataDetailsRepository motorRepo , 
+			EServiceMotorDetailsRepository eserMotRepo  ,FactorRateRequestDetailsRepository facRateRepo  ,PersonalInfoRepository perInfoRepo  , MotorDataDetailsRepository motorRepo , MotorDriverDetailsRepository driverRepo ,
 			 CoverDetailsRepository coverRepo  , HomePositionMasterRepository homeRepo  ,EserviceTravelDetailsRepository eserTraRepo ,EserviceTravelGroupDetailsRepository eserGroupRepo ,
 			 TravelPassengerDetailsRepository    traPassRepo ,TravelPassengerHistoryRepository traPassHisRepo  , String motorProductId ,String travelProductId, String buildingProductId 
 			 , EserviceBuildingDetailsRepository eserBuildRepo , EServiceSectionDetailsRepository eserSecRepo,EserviceCommonDetailsRepository eserCommonRepo,CommonDataDetailsRepository commonDataRepo) {
@@ -133,6 +129,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		this.facRateRepo = facRateRepo ;
 		this.perInfoRepo = perInfoRepo ;
 		this.motorRepo = motorRepo ;
+		this.driverRepo = driverRepo  ;
 		this.coverRepo = coverRepo ;
 		this.homeRepo = homeRepo ;
 		this.eserTraRepo = eserTraRepo ;
@@ -434,7 +431,34 @@ public class QuoteThreadCall implements Callable<Object>  {
 			log.error("Save Motor Info is ---> " + json.toJson(motorData));
 			
 			// Update Eservice Motor
-			
+			// Save Driver Details
+			EserviceCustomerDetails custData = eserCustRepo.findByCustomerReferenceNo(eserMotors.getCustomerReferenceNo() );
+
+			Long driverInfo = driverRepo.countByQuoteNoAndRiskId(request.getQuoteNo() , request.getVehicleId());
+			if (driverInfo <= 0  ) {
+				MotorDriverDetails saveDri = new MotorDriverDetails(); 		
+				Integer driId = 1 ;
+				saveDri.setCompanyId(motorData.getCompanyId());
+				saveDri.setCreatedBy(motorData.getUpdatedBy());
+				saveDri.setDriverDob(custData.getDobOrRegDate());
+				saveDri.setDriverId(driId);
+				saveDri.setDriverName(custData.getClientName());
+				saveDri.setPolicyHolderType(custData.getPolicyHolderType());
+				saveDri.setPolicyHolderTypeDesc(custData.getPolicyHolderTypeDesc());
+				saveDri.setIdType(pattern);
+				saveDri.setIdTypeDesc(pattern);
+				saveDri.setIdNumber(custData.getIdNumber());
+				saveDri.setDriverType("1");
+				List<ListItemValue> owerDesc = getListItem(motorData.getCompanyId() , motorData.getBranchCode() , "DRIVER_TYPES" , "1" );
+				saveDri.setDriverTypedesc(owerDesc.size()> 0 ? owerDesc.get(0).getItemValue() : "Owner" );
+				saveDri.setEntryDate(new Date());
+				saveDri.setProductId(motorData.getProductId());
+				saveDri.setQuoteNo(motorData.getQuoteNo() );
+				saveDri.setRequestReferenceNo(motorData.getRequestReferenceNo());
+				saveDri.setRiskId(Integer.valueOf(motorData.getVehicleId()));
+				saveDri.setStatus("Y");
+				driverRepo.saveAndFlush(saveDri);
+			}
 			
 	
 			res.put("Response", "Success") ;
@@ -449,6 +473,68 @@ public class QuoteThreadCall implements Callable<Object>  {
 		}
 	
 		return res;
+	}
+	
+	public synchronized List<ListItemValue> getListItem(String companyId ,String branchCode , String itemType , String itemCode) {
+		List<ListItemValue> list = new ArrayList<ListItemValue>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			today = cal.getTime();
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ListItemValue> query=  cb.createQuery(ListItemValue.class);
+			// Find All
+			Root<ListItemValue> c = query.from(ListItemValue.class);
+			
+			//Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("branchCode")));
+			
+			
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a3,a4);
+						
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+			Predicate n4 = cb.equal(c.get("companyId"),companyId);
+			Predicate n5 = cb.equal(c.get("companyId"), "99999");
+			Predicate n6 = cb.equal(c.get("branchCode"), branchCode);
+			Predicate n7 = cb.equal(c.get("branchCode"), "99999");
+			Predicate n8 = cb.or(n4,n5);
+			Predicate n9 = cb.or(n6,n7);
+			Predicate n10 = cb.equal(c.get("itemType"),itemType);
+			Predicate n11 = cb.equal(c.get("itemCode"),itemCode);
+			query.where(n1,n2,n3,n8,n9,n10,n11).orderBy(orderList);
+			// Get Result
+			TypedQuery<ListItemValue> result = em.createQuery(query);
+			list = result.getResultList();
+			list.sort(Comparator.comparing(ListItemValue :: getItemValue));
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return list ;
 	}
 	
 	public synchronized Integer currencyDecimalFormat(String insuranceId  ,String currencyId ) {
@@ -877,6 +963,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					if (motorInfo > 0  ) {
 						motorRepo.deleteByQuoteNo(req.getQuoteNo());
 					}
+					
 					
 				} else if( req.getProductId().equalsIgnoreCase(travelProductId) ) {
 					// Delete Old Record

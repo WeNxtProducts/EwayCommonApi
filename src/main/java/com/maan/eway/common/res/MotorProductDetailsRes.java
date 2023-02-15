@@ -13,7 +13,10 @@ public class MotorProductDetailsRes {
 	@JsonProperty("VehicleDetails")
 	private  VehicleDetailsRes vehicleDetails   ;
 
-
+	@JsonProperty("DriverDetails")
+	private  List<DriverDetailsRes> driverDetails   ;
+	
+	
 	@JsonProperty("Covers")
 	private  List<Cover> covers ;
 
