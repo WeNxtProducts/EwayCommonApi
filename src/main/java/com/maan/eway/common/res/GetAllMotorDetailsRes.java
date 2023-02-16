@@ -158,7 +158,9 @@ public class GetAllMotorDetailsRes {
 		@JsonProperty("CommissionType")
 		private String commissionType;
 		
-
+		@JsonProperty("SectionName")
+	    private String     sectionName    ;
+		
 //		//TAVEL
 //	  
 //	    @JsonProperty("TravelId")

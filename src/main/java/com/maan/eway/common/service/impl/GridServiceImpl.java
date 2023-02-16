@@ -857,8 +857,14 @@ public class GridServiceImpl implements GridService {
 				GetAllMotorDetailsRes res = new GetAllMotorDetailsRes();
 				dozermapper.map(data.get(0), res);
 				res.setClientName((data.get("clientName").toString()));
-				 res.setIdsCount(data.get("idsCount")==null?"":data.get("idsCount").toString() );
-				reslist.add(res);
+				res.setIdsCount(data.get("idsCount")==null?"":data.get("idsCount").toString() );
+				
+				 if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) ) {
+					 res.setSectionName(data.get("productDesc")==null?"":data.get("productDesc").toString()  );	 
+				 } else {
+					 res.setSectionName(data.get("sectionName")!=null?data.get("sectionName").toString() : data.get("sectionDesc")!=null?data.get("sectionDesc").toString() : "");
+				 }
+				 reslist.add(res);
 			}
 
 		} catch (Exception e) {
