@@ -656,7 +656,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			
 			// Find Building
-			EserviceBuildingDetails eserBuild = eserBuildRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() ,request.getVehicleId());
+			EserviceBuildingDetails eserBuild = eserBuildRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() ,1);
 			String decimalDigits = currencyDecimalFormat(eserBuild.getCompanyId() , eserBuild.getCurrency() ).toString();
 			String stringFormat = "%0"+decimalDigits+"d" ;
 			String decimalLength = decimalDigits.equals("0") ?"" : String.format(stringFormat ,0L)  ;
