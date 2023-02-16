@@ -105,6 +105,9 @@ public class MotorGridServiceImpl implements MotorGridService {
 	@Autowired
 	private SeqRefnoRepository refNoRepo ;
 	
+	@Autowired
+	private GenerateSeqNoServiceImpl seqNo ;
+	
 	// Exiting Motor Details
 
 	@Override
@@ -634,7 +637,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 			//	Random rand = new Random();
 			//	int random = rand.nextInt(90) + 10;
 			//	refNo = "Mot-" + idf.format(new Date()) + random;
-			refNo = "Mot-" + generateRefNo();
+			String refShortCode = getListItem(companyId, req.getBranchCode(), "PRODUCT_SHORT_CODE",req.getProductId());
+			refNo = refShortCode + seqNo.generateRefNo();
 			if (list.size() > 0) {
 				for (Tuple data : list) {
 
@@ -675,6 +679,69 @@ public class MotorGridServiceImpl implements MotorGridService {
 		}
 		return res;
 	}
+		
+		public synchronized String getListItem(String insuranceId, String branchCode, String itemType, String itemCode) {
+			String itemDesc = "";
+			List<ListItemValue> list = new ArrayList<ListItemValue>();
+			try {
+				Date today = new Date();
+				Calendar cal = new GregorianCalendar();
+				cal.setTime(today);
+				today = cal.getTime();
+				Date todayEnd = cal.getTime();
+
+				// Criteria
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<ListItemValue> query = cb.createQuery(ListItemValue.class);
+				// Find All
+				Root<ListItemValue> c = query.from(ListItemValue.class);
+
+				// Select
+				query.select(c);
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.asc(c.get("branchCode")));
+
+				// Effective Date Start Max Filter
+				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
+				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				Predicate a1 = cb.equal(c.get("itemId"), ocpm1.get("itemId"));
+				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+				effectiveDate.where(a1, a2);
+				// Effective Date End Max Filter
+				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+				Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
+				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+				Predicate a3 = cb.equal(c.get("itemId"), ocpm2.get("itemId"));
+				Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+				effectiveDate2.where(a3, a4);
+
+				// Where
+				Predicate n1 = cb.equal(c.get("status"), "Y");
+				Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+				Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+				Predicate n4 = cb.equal(c.get("companyId"), insuranceId);
+				Predicate n5 = cb.equal(c.get("companyId"), "99999");
+				Predicate n6 = cb.equal(c.get("branchCode"), branchCode);
+				Predicate n7 = cb.equal(c.get("branchCode"), "99999");
+				Predicate n8 = cb.or(n4, n5);
+				Predicate n9 = cb.or(n6, n7);
+				Predicate n10 = cb.equal(c.get("itemType"), itemType);
+				Predicate n11 = cb.equal(c.get("itemCode"), itemCode);
+				query.where(n1, n2, n3, n8, n9, n10, n11).orderBy(orderList);
+				// Get Result
+				TypedQuery<ListItemValue> result = em.createQuery(query);
+				list = result.getResultList();
+
+				itemDesc = list.size() > 0 ? list.get(0).getItemValue() : "";
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return itemDesc;
+		}
 
 	public List<Tuple> copyQuoteSearchDetails(String searchKey, String searchValue, String companyId, String loginId,
 			String userType, List<String> branches) {
@@ -752,7 +819,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 //				refNo = "Mot-" + idf.format(new Date()) + random;
 //				customerId = "C-" + idf.format(new Date()) + random ;
 //				quoteNo  = "Q"+ idf.format(new Date()) + random ;
-				refNo="Mot-" +generateRefNo();
+				String refShortCode = getListItem(req.getInsuranceId() ,req.getBranchCode(), "PRODUCT_SHORT_CODE",req.getProductId());
+		        refNo=refShortCode +seqNo.generateRefNo();
 				quoteNo  = "Q"+ generateQuoteNo();
 				customerId = "C-" + generateCustId();
 	            
@@ -811,19 +879,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 		        }
 		       
 		 }
-		 
-		 public synchronized String generateRefNo() {
-		       try {
-		    	   SeqRefno entity;
-		            entity = refNoRepo.save(new SeqRefno());          
-		            return String.format("%05d",entity.getRequestReferenceNo()) ;
-		        } catch (Exception e) {
-					e.printStackTrace();
-					log.info( "Exception is ---> " + e.getMessage());
-		            return null;
-		        }
-		       
-		 }
+		
 		//Eservice Motor Copy Quote
 		public CopyQuoteSuccessRes eserviceMotorCopyquote(CopyQuoteReq req, String refNo, List<String> branches,String loginId) {
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();

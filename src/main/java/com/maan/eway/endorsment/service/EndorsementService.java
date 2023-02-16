@@ -41,17 +41,17 @@ public class EndorsementService {
 
 			HomePositionMaster hp=hpmrepo.findByPolicyNoAndStatusAndCompanyIdAndProductId(request.getPolicyNo(),"P",request.getCompanyId(),request.getProductId());
 
-			CopyQuoteReq c=CopyQuoteReq.builder()
-					.requestReferenceNo(hp.getRequestReferenceNo())
-					.loginId(hp.getLoginId())
-					.insuranceId(hp.getCompanyId())
-					.branchCode(hp.getBranchCode())
-					.productId(String.valueOf(hp.getProductId()))
-					.userType("Broker")
-					.endtTypeId("42")
-					.typeId("Endt")
-					.quoteNo(hp.getQuoteNo())
-					.build();
+			CopyQuoteReq c= new CopyQuoteReq();
+					c.setRequestReferenceNo(hp.getRequestReferenceNo());
+					c.setLoginId(hp.getLoginId());
+					c.setInsuranceId(hp.getCompanyId());
+					c.setBranchCode(hp.getBranchCode());
+					c.setProductId(String.valueOf(hp.getProductId()));
+					c.setUserType("Broker");
+					c.setEndtTypeId("42");
+					c.setTypeId("Endt");
+					c.setQuoteNo(hp.getQuoteNo());
+					
 
 			CopyQuoteSuccessRes copyQuote = copyquoteService.copyQuote(c);
 			;

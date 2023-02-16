@@ -67,6 +67,12 @@ public class TravelGridServiceImpl implements  TravelGridService {
 	@Autowired
 	private EserviceTravelDetailsRepository repo;
 	
+	@Autowired
+	private GenerateSeqNoServiceImpl seqNo ;
+	
+	@Autowired
+	private MotorGridServiceImpl motorService ;
+	
 	private Logger log = LogManager.getLogger(MotorGridServiceImpl.class);
 	
 	@Override
@@ -430,7 +436,6 @@ public class TravelGridServiceImpl implements  TravelGridService {
 	@Override
 	public CopyQuoteSuccessRes travelCopyQuote(CopyQuoteReq req, List<String> branches,String loginId) {
 		CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
-		SimpleDateFormat idf = new SimpleDateFormat("yyMMddmmssSSS");
 		DozerBeanMapper dozerMapper  = new DozerBeanMapper(); 
 		EserviceTravelDetails savedata = new EserviceTravelDetails();
 		
@@ -443,10 +448,8 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			List<Tuple> list = searchDetails(searchKey, searchValue, companyId,loginId,userType,branches);
 	
 			String refNo=req.getRequestReferenceNo();
-
-			Random rand = new Random();
-            int random=rand.nextInt(90)+10;  
-            refNo = "Mot-" + idf.format(new Date()) + random ; 
+			String refShortCode = motorService.getListItem(companyId, req.getBranchCode(), "PRODUCT_SHORT_CODE",req.getProductId());
+	        refNo = refShortCode + seqNo.generateRefNo() ; 
             
 			if(list.size()>0) {
 				for (Tuple data : list) {

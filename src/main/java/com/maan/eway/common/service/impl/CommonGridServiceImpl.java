@@ -88,6 +88,12 @@ public class CommonGridServiceImpl implements CommonGridService {
 	@Autowired
 	private EserviceCustomerDetailsRepository custRepo ;
 	
+	@Autowired
+	private GenerateSeqNoServiceImpl seqNo ;
+	
+	@Autowired
+	private MotorGridServiceImpl motorService ;
+	
 
 	// Exiting Motor Details
 
@@ -601,7 +607,6 @@ public class CommonGridServiceImpl implements CommonGridService {
 		@Override
 		public CopyQuoteSuccessRes commonCopyQuote(CopyQuoteReq req, List<String> branches) {
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
-			SimpleDateFormat idf = new SimpleDateFormat("yyMMddmmssSSS");
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			EserviceCommonDetails savedata = new EserviceCommonDetails();
 			
@@ -616,19 +621,9 @@ public class CommonGridServiceImpl implements CommonGridService {
 
 				String refNo = req.getRequestReferenceNo();
 
-				Random rand = new Random();
-				int random = rand.nextInt(90) + 10;
-				if(req.getProductId().equalsIgnoreCase("13")){
-					refNo = "PAC-" + idf.format(new Date()) + random;
-				}
-
-				else if(req.getProductId().equalsIgnoreCase("14")){
-					refNo = "EMP-" + idf.format(new Date()) + random;
-				}
-				
-				else if(req.getProductId().equalsIgnoreCase("15")){
-					refNo = "WOC-" + idf.format(new Date()) + random;
-				}
+				String refShortCode = motorService.getListItem(companyId, req.getBranchCode(), "PRODUCT_SHORT_CODE",req.getProductId());
+		        refNo = refShortCode + seqNo.generateRefNo() ; 
+		        
 				if (list.size() > 0) {
 					for (Tuple data : list) {
 		
@@ -704,7 +699,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 				Predicate n2 = cb.equal(c.get("companyId"), companyId);
 
 				if ("issuer".equalsIgnoreCase(userType)) {
-					n3 = cb.equal(c.get("applicatioId"), loginId);
+					n3 = cb.equal(c.get("applicationId"), loginId);
 					Expression<String> e0 = c.get("branchCode");
 					n4 = e0.in(branches);
 				} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {

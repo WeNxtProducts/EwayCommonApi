@@ -231,7 +231,6 @@ public class GridController {
 		}
 
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-
 		@PostMapping("/copyquote")
 		public ResponseEntity<CommonRes> copyQuote(@RequestBody CopyQuoteReq req) {
 			reqPrinter.reqPrint(req);

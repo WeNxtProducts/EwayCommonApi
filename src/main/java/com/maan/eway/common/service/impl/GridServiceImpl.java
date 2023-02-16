@@ -715,7 +715,7 @@ public class GridServiceImpl implements GridService {
 //					res = buiService.buildingCopyQuote(req, branches);
 //
 //				}
-			}else if (req.getTypeId().equalsIgnoreCase("Normal") || StringUtils.isBlank(req.getTypeId())) {
+			}else if (StringUtils.isBlank(req.getTypeId()) || req.getTypeId().equalsIgnoreCase("Normal")) {
 				// Product Wise Get
 				if (req.getProductId().equalsIgnoreCase(motorProductId)) {
 					res = motService.motorCopyQuote(req, branches,loginId);

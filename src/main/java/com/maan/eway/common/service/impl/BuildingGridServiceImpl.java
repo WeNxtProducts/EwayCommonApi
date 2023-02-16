@@ -59,6 +59,12 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 
 	@Autowired
 	private EserviceBuildingDetailsRepository repo;
+	
+	@Autowired
+	private GenerateSeqNoServiceImpl seqNo ;
+	
+	@Autowired
+	private MotorGridServiceImpl motorService ;
 
 	// Exiting Motor Details
 
@@ -548,7 +554,6 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 	@Override
 	public CopyQuoteSuccessRes buildingCopyQuote(CopyQuoteReq req, List<String> branches,String loginId) {
 		CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
-		SimpleDateFormat idf = new SimpleDateFormat("yyMMddmmssSSS");
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		EserviceBuildingDetails savedata = new EserviceBuildingDetails();
 		List<Tuple> copyQuote = new ArrayList<Tuple>();
@@ -562,9 +567,8 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 
 			String refNo = req.getRequestReferenceNo();
 
-			Random rand = new Random();
-			int random = rand.nextInt(90) + 10;
-			refNo = "Mot-" + idf.format(new Date()) + random;
+			String refShortCode = motorService.getListItem(companyId, req.getBranchCode(), "PRODUCT_SHORT_CODE",req.getProductId());
+	        refNo = refShortCode + seqNo.generateRefNo() ; 
 
 			if (list.size() > 0) {
 				for (Tuple data : list) {
