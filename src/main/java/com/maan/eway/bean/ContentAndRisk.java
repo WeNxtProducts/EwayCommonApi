@@ -114,6 +114,11 @@ public class ContentAndRisk implements Serializable {
 	private Date updatedDate;
 
 
+	@Column(name="PURCHASE_YEAR", length=10)
+    private String    purchaseYear;
+
+	@Column(name="PURCHASE_MONTH", length=10)
+    private String    purchaseMonth;
 	
 
 }
