@@ -754,8 +754,6 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		ProductThreadRes ProductThreadRes = new ProductThreadRes();
 		
 		try {
-			int threadCount = 0 ;
-			List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
 			
 			// Multiple Vehicle Thread Call
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
@@ -774,9 +772,6 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			} else  {
 				ProductThreadRes =  commonProductThreadCall(req , request )  ;
 			}
-	        // Response 
-	        ProductThreadRes.setQueue(queue);
-	        ProductThreadRes.setThreadCount(threadCount);	
 	        commonRes.setCommonResponse(ProductThreadRes);
 			commonRes.setIsError(false);
 			commonRes.setErrorMessage(Collections.emptyList());
