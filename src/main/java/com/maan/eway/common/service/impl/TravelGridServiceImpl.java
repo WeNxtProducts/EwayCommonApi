@@ -537,7 +537,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Root<EserviceTravelDetails> c = query.from(EserviceTravelDetails.class);
 		
 			Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
-			query.multiselect(c,cus.get("clientName").alias("clientName"));
+			query.multiselect(c.alias("c") ,cus.get("clientName").alias("clientName"));
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();

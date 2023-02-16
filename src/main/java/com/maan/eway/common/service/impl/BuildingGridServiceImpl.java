@@ -481,7 +481,7 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 			Root<EserviceBuildingDetails> c = query.from(EserviceBuildingDetails.class);
 			Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
 			
-			query.multiselect(c,cus.get("clientName").alias("clientName"));//,cb.count(c).alias("idsCount"));
+			query.multiselect(c.alias("c") ,cus.get("clientName").alias("clientName"));//,cb.count(c).alias("idsCount"));
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();

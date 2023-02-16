@@ -529,7 +529,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Root<EserviceMotorDetails> c = query.from(EserviceMotorDetails.class);
 				Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
 				
-				query.multiselect(c,
+				query.multiselect(c.alias("c") ,
 						cus.get("clientName").alias("clientName"),cb.count(c).alias("idsCount"));
 
 

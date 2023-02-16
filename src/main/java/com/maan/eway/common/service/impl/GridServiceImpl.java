@@ -845,7 +845,7 @@ public class GridServiceImpl implements GridService {
 			}
 			else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				list = traService.searchTravelQuote(req, branches);
-		}
+			}
 			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)) {
 				list = buiService.searchBuildingQuote(req, branches);
 
@@ -855,15 +855,39 @@ public class GridServiceImpl implements GridService {
 
 			for (Tuple data : list) {
 				GetAllMotorDetailsRes res = new GetAllMotorDetailsRes();
-				dozermapper.map(data.get(0), res);
+				
+				// Risk
+				if (req.getProductId().equalsIgnoreCase(motorProductId)) {
+					EserviceMotorDetails riskData =data.get("c") ==null?null: (EserviceMotorDetails) data.get("c")   ;
+					if( riskData !=null ) {
+						dozermapper.map(riskData, res);
+						res.setSectionName(riskData.getSectionName());	
+					}
+					
+				}
+				else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+					EserviceTravelDetails riskData =data.get("c") ==null?null: (EserviceTravelDetails) data.get("c")   ;
+					if( riskData !=null ) {
+						dozermapper.map(riskData, res);
+						res.setSectionName(riskData.getSectionName());	
+					}
+				}
+				else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)) {
+					EserviceBuildingDetails riskData =data.get("c") ==null?null: (EserviceBuildingDetails) data.get("c")   ;
+					if( riskData !=null ) {
+						dozermapper.map(riskData, res);
+						res.setSectionName(riskData.getProductDesc());	
+					}
+
+				} else {
+					EserviceCommonDetails riskData =data.get("c") ==null?null: (EserviceCommonDetails) data.get("c")   ;
+					if( riskData !=null ) {
+						dozermapper.map(riskData, res);
+						res.setSectionName(riskData.getSectionDesc());	
+					}
+				}
 				res.setClientName((data.get("clientName").toString()));
 				res.setIdsCount(data.get("idsCount")==null?"":data.get("idsCount").toString() );
-				
-				 if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) ) {
-					 res.setSectionName(data.get("productDesc")==null?"":data.get("productDesc").toString()  );	 
-				 } else {
-					 res.setSectionName(data.get("sectionName")!=null?data.get("sectionName").toString() : data.get("sectionDesc")!=null?data.get("sectionDesc").toString() : "");
-				 }
 				 reslist.add(res);
 			}
 
