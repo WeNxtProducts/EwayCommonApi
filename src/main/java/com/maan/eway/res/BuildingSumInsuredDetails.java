@@ -41,4 +41,38 @@ public class BuildingSumInsuredDetails {
 	@JsonProperty("WorkmenCompSuminsured")
     private String    workmenCompSuminsured;
 	
+	@JsonProperty("ElecEquipSuminsured")
+    private String     elecEquipSuminsured ;
+		
+
+	@JsonProperty("MoneySinglecarrySuminsured")
+    private String   moneySinglecarrySuminsured ;
+		
+	@JsonProperty("MoneyAnnualcarrySuminsured")
+    private String   moneyAnnualcarrySuminsured ;
+	
+	@JsonProperty("MoneyInsafeSuminsured")
+    private String   moneyInsafeSuminsured ;
+	
+	@JsonProperty("FidelityAnyoccuSuminsured")
+    private String   fidelityAnyoccuSuminsured ;
+	
+	@JsonProperty("FidelityAnnualSuminsured")
+    private String   fidelityAnnualSuminsured ;
+	
+	@JsonProperty("TpliabilityAnyoccuSuminsured")
+    private String tpliabilityAnyoccuSuminsured ;
+	
+	@JsonProperty("EmpliabilityAnnualSuminsured")
+    private String empliabilityAnnualSuminsured ;
+	
+	@JsonProperty("EmpliabilityExcessSuminsured")
+    private String empliabilityExcessSuminsured ;
+
+	@JsonProperty("GoodsSinglecarrySuminsured")
+    private String   goodsSinglecarrySuminsured ;
+
+	@JsonProperty("GoodsTurnoverSuminsured")
+    private String   goodsTurnoverSuminsured ;
+	
 }

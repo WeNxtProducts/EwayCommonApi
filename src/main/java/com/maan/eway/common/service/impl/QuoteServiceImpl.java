@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.EmiTransactionDetails;
@@ -1684,7 +1685,7 @@ public class QuoteServiceImpl implements QuoteService {
 	public SectionWiseSumInsuredRes sectionWiseSuminsuredDetails(SectionSumInsuredGetReq req) {
 		SectionWiseSumInsuredRes res = new SectionWiseSumInsuredRes();
 		try {
-			 if(req.getProductId().equalsIgnoreCase(buildingProductId )) {
+			 if(req.getProductId().equalsIgnoreCase(buildingProductId ) || req.getProductId().equalsIgnoreCase(smeProductId )) {
 				 BuildingSumInsuredDetails builSum  = buildingSuminsuredDetails(req);
 				 res.setProductSuminsuredDetails(builSum);	
 			}
@@ -1720,14 +1721,21 @@ public class QuoteServiceImpl implements QuoteService {
 				 occupation.add(occu);
 			}
 	
-			res.setBuildingSuminsured(build.getBuildingSuminsured() == null?"" :build.getBuildingSuminsured().toString());
-			res.setAllriskSuminsured(build.getAllriskSuminsured() == null?"" :build.getAllriskSuminsured().toString());
-			res.setPersonalIntermediarySuminsured(build.getPersonalIntSuminsured() == null?"" :build.getPersonalIntSuminsured().toString());
-			res.setContentSuminsured(build.getContentSuminsured() == null?"" :build.getContentSuminsured().toString());
-			res.setWorkmenCompSuminsured(build.getWorkmenCompSuminsured() == null?"" :build.getWorkmenCompSuminsured().toString());
-
+			res.setBuildingSuminsured(build.getBuildingSuminsured() == null?"0" :build.getBuildingSuminsured().toString());
+			res.setAllriskSuminsured(build.getAllriskSuminsured() == null?"0" :build.getAllriskSuminsured().toString());
+			res.setPersonalIntermediarySuminsured(build.getPersonalIntSuminsured() == null?"0" :build.getPersonalIntSuminsured().toString());
+			res.setContentSuminsured(build.getContentSuminsured() == null?"0" :build.getContentSuminsured().toString());
 			res.setOccupationDetails(occupation);
-			
+			res.setMoneySinglecarrySuminsured(build.getMoneySinglecarrySuminsured() == null?"0" :build.getMoneySinglecarrySuminsured().toString());
+			res.setMoneyAnnualcarrySuminsured(build.getMoneyAnnualcarrySuminsured() == null?"0" :build.getMoneyAnnualcarrySuminsured().toString());
+			res.setMoneyInsafeSuminsured(build.getMoneyInsafeSuminsured() == null?"0" :build.getMoneyInsafeSuminsured().toString());
+			res.setFidelityAnyoccuSuminsured(build.getFidelityAnyoccuSuminsured() == null?"0" :build.getFidelityAnyoccuSuminsured().toString());
+			res.setFidelityAnnualSuminsured(build.getFidelityAnnualSuminsured() == null?"0" :build.getFidelityAnnualSuminsured().toString());
+			res.setTpliabilityAnyoccuSuminsured(build.getTpliabilityAnyoccuSuminsured() == null?"0" :build.getTpliabilityAnyoccuSuminsured().toString());
+			res.setEmpliabilityAnnualSuminsured(build.getEmpliabilityAnnualSuminsured() == null?"0" :build.getEmpliabilityAnnualSuminsured().toString());
+			res.setEmpliabilityExcessSuminsured(build.getEmpliabilityExcessSuminsured() == null?"0" :build.getEmpliabilityExcessSuminsured().toString());
+			res.setGoodsSinglecarrySuminsured(build.getGoodsSinglecarrySuminsured() == null?"0" :build.getGoodsSinglecarrySuminsured().toString());
+			res.setGoodsTurnoverSuminsured(build.getGoodsTurnoverSuminsured() == null?"0" :build.getGoodsTurnoverSuminsured().toString());
 			res.setRiskId(build.getRiskId().toString());
 			res.setSectionId(sectionIds);		
 			
