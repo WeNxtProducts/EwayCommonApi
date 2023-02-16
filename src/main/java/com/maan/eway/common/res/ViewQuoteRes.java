@@ -1,5 +1,7 @@
 package com.maan.eway.common.res;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -14,5 +16,5 @@ public class ViewQuoteRes {
 	private CustomerDetailsRes  customerDetails ;
 	
 	@JsonProperty("ProductDetails")
-	private Object  productDetails ;
+	private List<ProductRiskDetailsRes>  productDetails ;
 }

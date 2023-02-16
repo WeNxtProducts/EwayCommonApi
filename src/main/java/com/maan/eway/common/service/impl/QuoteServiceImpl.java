@@ -77,6 +77,7 @@ import com.maan.eway.common.res.CustomerDetailsRes;
 import com.maan.eway.common.res.DriverDetailsRes;
 import com.maan.eway.common.res.MotorProductDetailsRes;
 import com.maan.eway.common.res.NewQuoteRes;
+import com.maan.eway.common.res.ProductRiskDetailsRes;
 import com.maan.eway.common.res.QuoteDetailsRes;
 import com.maan.eway.common.res.QuoteUpdateRes;
 import com.maan.eway.common.res.TravelPassDetailsRes;
@@ -119,6 +120,7 @@ import com.maan.eway.repository.TravelPassengerHistoryRepository;
 import com.maan.eway.res.BuildingSumInsuredDetails;
 import com.maan.eway.res.EserviceBuildingsDetailsRes;
 import com.maan.eway.res.OccupationReqClass;
+import com.maan.eway.res.RiskDetailsGetRes;
 import com.maan.eway.res.SectionWiseSumInsuredRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.res.calc.Cover;
@@ -324,11 +326,11 @@ public class QuoteServiceImpl implements QuoteService {
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 			
 			List<MotorDriverDetails> driverList = driverRepo.findByQuoteNo(req.getQuoteNo() );
-			List<MotorProductDetailsRes>   motorResList = new ArrayList<MotorProductDetailsRes>();
+			List<ProductRiskDetailsRes>   motorResList = new ArrayList<ProductRiskDetailsRes>();
 			for (MotorDataDetails mot :  motorDatas) {
 				
 				// Mot
-				VehicleDetailsRes vehicleDetails = new  VehicleDetailsRes()  ;
+				RiskDetailsGetRes vehicleDetails = new  RiskDetailsGetRes()  ;
 				dozerMapper.map(mot, vehicleDetails);
 				
 				// Cover Details
@@ -353,8 +355,8 @@ public class QuoteServiceImpl implements QuoteService {
 				
 				
 				// Response
-				MotorProductDetailsRes motorRes = new MotorProductDetailsRes();
-				motorRes.setVehicleDetails(vehicleDetails);		
+				ProductRiskDetailsRes motorRes = new ProductRiskDetailsRes();
+				motorRes.setRiskDetails(vehicleDetails);		
 				motorRes.setCovers(coverListRes);
 				motorRes.setDriverDetails(driverResList);
 				motorResList.add(motorRes);				
@@ -380,7 +382,7 @@ public class QuoteServiceImpl implements QuoteService {
 			List<EserviceSectionDetails> secDatas =  eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(buildDatas.get(0).getRequestReferenceNo());
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 			
-			List<BuildingProductDetailsRes>   buildList = new ArrayList<BuildingProductDetailsRes>();
+			List<ProductRiskDetailsRes>   buildList = new ArrayList<ProductRiskDetailsRes>();
 			for (EserviceSectionDetails sec :  secDatas) {
 				BuildingDetails buildData = buildDatas.stream().filter( o -> o.getRiskId().equals(sec.getRiskId()) ).collect(Collectors.toList()).get(0);
 				
@@ -394,12 +396,12 @@ public class QuoteServiceImpl implements QuoteService {
 					
 					List<Cover>  coverListRes = getCoverDetails(groupByCover);
 					// Build
-					EserviceBuildingsDetailsRes buildingRes = new  EserviceBuildingsDetailsRes()  ;
+					RiskDetailsGetRes buildingRes = new  RiskDetailsGetRes()  ;
 					dozerMapper.map(buildData, buildingRes);
 					buildingRes.setSectionName( sec.getSectionDesc() );
 					buildingRes.setLocationId(buildData.getRiskId().toString());
-					BuildingProductDetailsRes buildingProductRes = new BuildingProductDetailsRes();
-					buildingProductRes.setBuildingDetails(buildingRes);		
+					ProductRiskDetailsRes buildingProductRes = new ProductRiskDetailsRes();
+					buildingProductRes.setRiskDetails(buildingRes);		
 					buildingProductRes.setCovers(coverListRes);
 					buildList.add(buildingProductRes);
 					
@@ -418,13 +420,13 @@ public class QuoteServiceImpl implements QuoteService {
 				List<Cover>  coverListRes = getCoverDetails(groupByCover);
 				
 				// Accident
-				EserviceBuildingsDetailsRes buildingRes = new  EserviceBuildingsDetailsRes()  ;
+				RiskDetailsGetRes buildingRes = new  RiskDetailsGetRes()  ;
 				dozerMapper.map(buildData, buildingRes);
 				buildingRes.setLocationId(acc.getRiskId().toString());
 				buildingRes.setSectionName( acc.getSectionDesc() + "-" +acc.getOccupationDesc() + "PersonId Name:" +acc.getPersonName());
 				buildingRes.setPersonId(acc.getPersonId());
-				BuildingProductDetailsRes buildingProductRes = new BuildingProductDetailsRes();
-				buildingProductRes.setBuildingDetails(buildingRes);	
+				ProductRiskDetailsRes buildingProductRes = new ProductRiskDetailsRes();
+				buildingProductRes.setRiskDetails(buildingRes);	
 				buildingProductRes.setCovers(coverListRes);
 				buildList.add(buildingProductRes);
 			}
@@ -594,11 +596,11 @@ public class QuoteServiceImpl implements QuoteService {
 			
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 			
-			List<TravelProductDetailsRes>   travelResList = new ArrayList<TravelProductDetailsRes>();
+			List<ProductRiskDetailsRes>   travelResList = new ArrayList<ProductRiskDetailsRes>();
 			for (TravelPassengerDetails tra :  totalDatas) {
 				
 				// Mot
-				TravelPassDetailsRes travelDetails = new  TravelPassDetailsRes()  ;
+				RiskDetailsGetRes travelDetails = new  RiskDetailsGetRes()  ;
 				dozerMapper.map(tra, travelDetails);
 				
 				// Cover Details
@@ -609,8 +611,8 @@ public class QuoteServiceImpl implements QuoteService {
 				List<Cover>  coverListRes = getCoverDetails(groupByCover);
 							
 				// Response
-				TravelProductDetailsRes traRes = new TravelProductDetailsRes();
-				traRes.setTravelPassengerDetails(travelDetails);		
+				ProductRiskDetailsRes traRes = new ProductRiskDetailsRes();
+				traRes.setRiskDetails(travelDetails);		
 				traRes.setCovers(coverListRes);
 				travelResList.add(traRes);				
 			}
@@ -632,7 +634,7 @@ public class QuoteServiceImpl implements QuoteService {
 			List<CommonDataDetails> commonDatas =  commonDataRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 			
-			List<CommonProductDetailsRes>   commonResList = new ArrayList<CommonProductDetailsRes>();
+			List<ProductRiskDetailsRes>   commonResList = new ArrayList<ProductRiskDetailsRes>();
 			for (CommonDataDetails com :  commonDatas) {
 				
 				
@@ -643,12 +645,12 @@ public class QuoteServiceImpl implements QuoteService {
 				
 				List<Cover>  coverListRes = getCoverDetails(groupByCover);
 				// Response
-				CommonProductDetailsRes commonRes = new CommonProductDetailsRes();
+				ProductRiskDetailsRes commonRes = new ProductRiskDetailsRes();
 				// Mot
-				CommonDetailsRes commonDetails = new  CommonDetailsRes()  ;
+				RiskDetailsGetRes commonDetails = new  RiskDetailsGetRes()  ;
 				dozerMapper.map(com, commonDetails);
 				
-				commonRes.setCommonDetails(commonDetails);		
+				commonRes.setRiskDetails(commonDetails);		
 				commonRes.setCovers(coverListRes);
 				commonResList.add(commonRes);				
 			}
