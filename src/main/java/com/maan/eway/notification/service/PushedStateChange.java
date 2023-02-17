@@ -60,6 +60,7 @@ public class PushedStateChange implements  Function<Tuple,List<Object>>{
 						.smsFrom((String)getValue(t,smsmaster.getSenderId()))
 						.credential(JobCredentials.builder().host(smsmaster.getSmsPartyUrl()).isSSL(true).password(smsmaster.getSmsUserPass()).username(smsmaster.getSmsUserName()).build())
 						.smsToCode((String) getValue(t,sms.getCustomerPhoneCode().toString()))
+						.notifNo(Integer.parseInt(t.get("notifNo").toString()))
 						.build();
 				a.add(s);
 			}
@@ -87,6 +88,7 @@ public class PushedStateChange implements  Function<Tuple,List<Object>>{
 						.mailcc(mailcc)
 						.credential(JobCredentials.builder().host(mailMaster.getSmtpHost()).port(mailMaster.getSmtpPort()).isSSL(true).password(mailMaster.getSmtpPwd()).username(mailMaster.getSmtpUser()).build())
 						.attachments(t.get("attachFilePath")==null?"":t.get("attachFilePath").toString())
+						.notifNo(Integer.parseInt(t.get("notifNo").toString()))
 						.build();
 				a.add(ml);
 			}

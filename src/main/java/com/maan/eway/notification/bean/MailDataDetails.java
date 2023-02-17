@@ -14,7 +14,6 @@ package com.maan.eway.notification.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -82,7 +81,8 @@ private static final long serialVersionUID = 1L;
     private String     mailResponse ;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
-
+    @Column(name="Notif_No", nullable=false)
+    private Integer    notifNo ;
 
 }
 

@@ -100,6 +100,7 @@ public class MailJob implements Consumer<Mail> {
 				.pushedEntryDate(new Date())
 				.status(statusResponse==null?"S":"F")
 				.toEmail(m.getMailTo())
+				.notifNo(m.getNotifNo())
 				.build();
 		mailRepo.save(mdd);
 		 

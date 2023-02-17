@@ -30,4 +30,5 @@ public class Mail implements Serializable {
 	private List<String> mailcc;
 	private JobCredentials credential;
 	private String attachments;
+	  private Integer    notifNo ; 
 }

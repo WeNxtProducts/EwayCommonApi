@@ -81,6 +81,7 @@ public class SmsJob implements Consumer<Sms> {
 		}
 		savedata.setReqTime(new Date());
 		savedata.setResTime(new Date());
+		savedata.setNotifNo(m.getNotifNo());
 		smsRepo.save(savedata);
 
 	}
