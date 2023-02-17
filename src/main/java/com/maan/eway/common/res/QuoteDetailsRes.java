@@ -150,6 +150,43 @@ public class QuoteDetailsRes {
 	@JsonProperty("ManualReferalYn")
     private String     manualReferalYn;
     
+	@JsonProperty("SubUserType")
+	private String subUserType;
+	@JsonProperty("ProductName")
+    private String    productName ;
+	@JsonProperty("CompanyName")
+    private String    companyName ;
+	
+	@JsonProperty("HavePromoCode")
+    private String     havepromocode ;
+	
+	@JsonProperty("PromoCode")
+    private String     promocode    ;
+	
+	@JsonProperty("BrokerBranchCode")
+    private String     brokerBranchCode  ;
+
+	@JsonProperty("AdminLoginId")
+    private String     adminLoginId ;
+	
+	@JsonProperty("UserType")
+	private String userType;
+	
+	@JsonProperty("BdmCode")
+	private String bdmCode;
+	
+	@JsonProperty("SourceType")
+	private String sourceType;
+	
+	@JsonProperty("CustomerCode")
+	private String customerCode;
+	
+	@JsonProperty("BrokerBranchName")
+	private String brokerBranchName;
+	
+	@JsonProperty("BranchName")
+	private String branchName;
+	
 	/*
 	@JsonProperty("ExcessSign(null);
 	@JsonProperty("ExcessPremium(null);

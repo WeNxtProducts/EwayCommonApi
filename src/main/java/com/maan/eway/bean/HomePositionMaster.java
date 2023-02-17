@@ -589,6 +589,30 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="MANUAL_REFERAL_YN", length=100)
     private String  manualReferalYn;
+    
+    @Column(name="CUSTOMER_CODE", length=100)
+    private String  customerCode;
+    
+    @Column(name="BROKER_BRANCH_NAME", length=100)
+    private String  brokerBranchName;
+    
+    @Column(name="COMPANY_NAME", length=100)
+    private String  companyName;
+    
+    @Column(name="PRODUCT_NAME", length=100)
+    private String  productName;
+    
+    @Column(name="USER_TYPE", length=100)
+    private String  userType;
+    
+    @Column(name="SUB_USER_TYPE", length=100)
+    private String  subUserType;
+    
+    @Column(name="COMMISSION_TYPE", length=100)
+    private String  commissionType;
+    
+    @Column(name="COMMISSION_TYPE_DESC", length=100)
+    private String  commissionTypeDesc;
 
 }
 

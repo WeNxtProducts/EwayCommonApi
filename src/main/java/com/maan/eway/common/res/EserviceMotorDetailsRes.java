@@ -7,6 +7,7 @@ package com.maan.eway.common.res;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import lombok.*;
 
@@ -26,9 +27,7 @@ public class EserviceMotorDetailsRes implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-	@JsonProperty("Idnumber")
-    private String     idNumber     ;
-	@JsonProperty("Vehicleid")
+	@JsonProperty("VehicleId")
     private Integer    vehicleId    ;
     private String     accident     ;
 	@JsonProperty("Gpstrackinginstalled")
@@ -45,11 +44,7 @@ public class EserviceMotorDetailsRes implements Serializable {
     private String     motorCategoryDesc ;
 	@JsonProperty("Motorusage")
     private String     motorUsage   ;
-	@JsonProperty("HavePromoCode")
-    private String     havepromocode ;
 	
-	@JsonProperty("PromoCode")
-    private String     promocode    ;
 
 	@JsonProperty("Registrationnumber")
     private String     registrationNumber ;
@@ -129,44 +124,8 @@ public class EserviceMotorDetailsRes implements Serializable {
 	private Double     spotFogLamp  ;
 	@JsonProperty("TrailerDetails")
     private String     trailerDetails ;
-	@JsonProperty("Drivenby")
-    private String     drivenBy     ;
-	@JsonProperty("DrivenByDesc")
-    private String     drivenByDesc     ;
-	@JsonProperty("VehicleInterestedCompany")
-    private String     vehicleInterestedCompany ;
-	@JsonProperty("InterestedCompanyDetails")
-    private String     interestedCompanyDetails ;
-	@JsonProperty("OtherVehicle")
-    private String     otherVehicle ;
-	@JsonProperty("OtherVehicleDetails")
-    private String     otherVehicleDetails ;
-	@JsonProperty("OtherInsurance")
-    private String     otherInsurance ;
-	@JsonProperty("OtherInsuranceDetails")
-    private String     otherInsuranceDetails ;
-	@JsonProperty("HoldInsurancePolicy")
-    private String     holdInsurancePolicy ;
-	@JsonProperty("NoOfClaims")
-    private Integer    noOfClaims   ;
-	@JsonProperty("AdditionalCircumstances")
-    private String     additionalCircumstances ;
-	@JsonProperty("BranchCode")
-    private String     branchCode ;
-	@JsonProperty("AgencyCode")
-    private String     agencyCode ;
-	@JsonProperty("SectionId")
-    private String    sectionId ;
-	@JsonProperty("SectionName")
-    private String    sectionName ;
-	@JsonProperty("ProductId")
-    private String  productId ;
-	@JsonProperty("ProductName")
-    private String    productName ;
-	@JsonProperty("InsuranceId")
-    private String  companyId ;
-	@JsonProperty("CompanyName")
-    private String    companyName ;
+	
+	
 	@JsonProperty("InsuranceClass")
     private String  insuranceClass ;
 	@JsonProperty("OwnerCategory")
@@ -180,42 +139,9 @@ public class EserviceMotorDetailsRes implements Serializable {
 	@JsonProperty("NcdYn")
     private String    ncdYn ;	
 
-	@JsonProperty("AcExecutiveId")
-	private String acExecutiveId;
-	
-	@JsonProperty("CommissionType")
-	private String commissionType;
-
 	@JsonProperty("ManufactureYear")
     private String manufactureYear;
 
-	@JsonProperty("Status")
-    private String   status;
-
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("UpdatedDate")
-    private Date updatedDate;
-
-	@JsonProperty("UpdatedBy")
-    private String  updatedBy;
-
-	@JsonProperty("CreatedBy")
-    private String  createdBy;
-	
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("PolicyStartDate")
-    private Date policyStartDate;
-
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("PolicyEndDate")
-    private Date policyEndDate;
-	
-	@JsonProperty("Currency")
-    private String  currency;
-	
-	@JsonProperty("ExchangeRate")
-    private String  exchangeRate;
-	
 	@JsonProperty("CollateralYn")
     private String  collateralYn;
 	
@@ -231,9 +157,6 @@ public class EserviceMotorDetailsRes implements Serializable {
 	@JsonProperty("FleetOwnerYn")
     private String fleetOwnerYn;
 	
-	@JsonProperty("NoOfVehicles")
-    private String noOfVehicles;
-	
 	@JsonProperty("NoOfComprehensives")
     private String noOfComprehensives;
 	
@@ -246,45 +169,9 @@ public class EserviceMotorDetailsRes implements Serializable {
 	@JsonProperty("SavedFrom")
     private String   savedFrom;
 	
-	@JsonProperty("ActualPremiumLc")
-	private String actualPremiumLc;
-	
-	@JsonProperty("AcctualPremiumFc")
-	private String actualPremiumFc ;
-	
-	@JsonProperty("OverallPremiumLc")
-	private String overallPremiumLc ;
-	
-	@JsonProperty("OverallPremiumFc")
-	private String    overallPremiumFc ;
-	
-	@JsonProperty("BrokerCode")
-	private String brokerCode;
-	
-	@JsonProperty("LoginId")
-	private String loginId;
-	
-	@JsonProperty("SubUserType")
-	private String subUserType;
-	
-	@JsonProperty("ApplicationId")
-	private String applicationId;
+	@JsonProperty("DriverDetails")
+    private List<DriverDetailsRes>   driverDetails;
 	
 	
-	@JsonProperty("QuoteNo")
-	private String quoteNo;
-	  
-	@JsonProperty("CustomerId")
-	private String customerId;
-	
-	@JsonProperty("BdmCode")
-	private String bdmCode;
-	
-	@JsonProperty("SourceType")
-	private String sourceType;
-	
-	@JsonProperty("CustomerCode")
-	private String customerCode;
-	
-	
+
 }
