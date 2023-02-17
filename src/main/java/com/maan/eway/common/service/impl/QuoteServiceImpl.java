@@ -654,7 +654,7 @@ private BuildingDetailsRepository BuildingRepo;
 				traSec.setPassengerId(tra.getPassengerId().toString() );
 				traSec.setPassengerName(tra.getPassengerName());
 				traSec.setGroupDesc(groupRes.stream().filter( o -> o.getCode().equalsIgnoreCase(tra.getGroupId().toString()) ).collect(Collectors.toList()).get(0).getCodeDesc()) ;		
-						
+				traSec.setGroupId(tra.getGroupId().toString());
 				secList.add(traSec);
 				
 				

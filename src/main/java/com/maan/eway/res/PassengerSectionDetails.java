@@ -24,6 +24,9 @@ public class PassengerSectionDetails {
 	@JsonProperty("GroupDesc")
 	private  String groupDesc;
 	
+	@JsonProperty("GroupId")
+	private  String groupId;
+	
 	@JsonProperty("Covers")
 	private  List<CoverRes> covers ;
 }
