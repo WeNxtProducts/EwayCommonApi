@@ -1073,11 +1073,54 @@ public class QuoteThreadCall implements Callable<Object>  {
  				
 			}
 			
-			// Cover Calc
+			// Save Home Position Master
+			HomePositionMaster home = new HomePositionMaster();
+			
+			// Set Product Details
+			if( request.getProductId().equalsIgnoreCase(motorProductId) ) {
+				
+				home = setMotorDetails(request);
+				
+			} else if(request.getProductId().equalsIgnoreCase(travelProductId) ) {
+				
+				home = setTravelDetails(request);
+				
+			}  else if(request.getProductId().equalsIgnoreCase(buildingProductId) || request.getProductId().equalsIgnoreCase(smeProductId)) {
+				
+				home = setBuildingDetails(request);
+				
+			}   else  {
+				
+				home = setCommonDetails(request);
+				
+			}
+			
+			// Set Branch Details 
+			LoginBranchMaster loginBranch =  getBranchDetails(home.getCompanyId() ,home.getBrokerBranchCode() ,home.getLoginId() );
+			home.setUserType(loginBranch.getUserType() );			
+			home.setBranchName(loginBranch.getBranchName());
+			home.setBrokerBranchName(loginBranch.getBrokerBranchName());
+			home.setSubUserType(loginBranch.getSubUserType());		
+			home.setAgencyCode(loginBranch.getAgencyCode());
+			
+			// Primary KEy
+			home.setQuoteNo(request.getQuoteNo());
+			home.setRequestReferenceNo(request.getRequestReferenceNo());
+			home.setCustomerId(request.getCustomerId());
+			//	home.setProposalNo("");
+			home.setAmendId(0);
+			home.setApplicationNo(0L);
+			
+			//home.setLapsedDate(null);
+			//home.setLapsedRemarks(null);
+			//home.setLapsedUpdatedBy(null);
+			
+	//		home.setRemarks("");
+			
+			
+			// Set Premium Details
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(request.getQuoteNo() ,0, 0);
-			
 			List<PolicyCoverData>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList() );
-			
 			List<PolicyCoverData>  premiumCovers = new  ArrayList<PolicyCoverData>();
 			premiumCovers.addAll(defaultCovers);
 			
@@ -1111,8 +1154,6 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			Double premiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()   ).sum();					
 			Double overAllPremiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0)  &&  o.getTaxId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum();
-			
-			
 			Double premiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()   ).sum();					
 			Double overAllPremiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0)  &&  o.getTaxId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()   ).sum();
 			Double vatPremiumFc = overAllPremiumFc - premiumFc ;  
@@ -1125,210 +1166,6 @@ public class QuoteThreadCall implements Callable<Object>  {
 			Double tax1 =  premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(1) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()   ).sum();
 			Double tax2 = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(2) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()   ).sum();
 			Double tax3 = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(3) && o.getPremiumExcludedTaxFc() !=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()   ).sum();
-			
-			List<Integer> vehicleIds = request.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId ).collect(Collectors.toList());
-			HomePositionMaster home = new HomePositionMaster();
-			
-			if( request.getProductId().equalsIgnoreCase(motorProductId) ) {
-				
-				EserviceMotorDetails motorData = eserMotRepo.findByRequestReferenceNoAndRiskIdOrderByRiskIdAsc(request.getRequestReferenceNo() ,request.getVehicleId());
-				home.setCompanyId(motorData.getCompanyId());
-				home.setBranchCode(motorData.getBranchCode());
-				home.setProductId(Integer.valueOf(motorData.getProductId()));
-				home.setSectionId(Integer.valueOf(motorData.getSectionId()));
-				home.setBrokerBranchCode(motorData.getBrokerBranchCode());	
-				home.setLoginId(motorData.getLoginId());
-				home.setBrokerCode(motorData.getBrokerCode());
-				home.setEffectiveDate(motorData.getPolicyStartDate());
-				home.setExpiryDate(motorData.getPolicyEndDate());
-				home.setAdminRemarks(motorData.getAdminRemarks());
-				home.setAdminReferralStatus(motorData.getStatus());			
-				home.setReferralDescription(motorData.getReferalRemarks());
-				home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? motorData.getAdminLoginId() : request.getAdminLoginId() );
-				home.setStatus(motorData.getStatus());
-				home.setQuoteCreatedDate(new Date());
-				home.setEntryDate(new Date());
-				home.setInceptionDate(motorData.getPolicyStartDate());
-				home.setExpiryDate(motorData.getPolicyEndDate());
-				home.setCurrency(motorData.getCurrency());
-				home.setExchangeRate(motorData.getExchangeRate());
-				home.setNoOfVehicles( request.getVehicleIdsList().size());
-				home.setHavepromoYn(motorData.getHavepromocode());
-				home.setPromocode(motorData.getPromocode());
-				home.setManualReferalYn(motorData.getManualReferalYn());
-				
-				home.setCustomerCode(motorData.getCustomerCode());
-				home.setProductName(motorData.getProductName());
-				home.setCompanyName(motorData.getCompanyName());
-				home.setCommissionType(motorData.getCommissionType());
-				home.setCommissionTypeDesc(motorData.getCommissionTypeDesc());
-				home.setSubUserType(motorData.getSubUserType());		
-				home.setBdmCode(motorData.getBdmCode());
-				home.setSourceType(motorData.getSourceType());
-				LoginBranchMaster loginBranch =  getBranchDetails(motorData.getCompanyId() ,motorData.getBrokerBranchCode() ,motorData.getLoginId() );
-				home.setUserType(loginBranch.getUserType() );			
-				home.setBranchName(loginBranch.getBranchName());
-				home.setBrokerBranchName(loginBranch.getBrokerBranchName());
-				home.setAgencyCode(loginBranch.getOaCode());		
-				
-			} else if(request.getProductId().equalsIgnoreCase(travelProductId) ) {
-				
-				EserviceTravelDetails  travelData = eserTraRepo.findByRequestReferenceNo(request.getRequestReferenceNo()) ;
-				home.setCompanyId(travelData.getCompanyId());
-				home.setBranchCode(travelData.getBranchCode());
-				home.setProductId(Integer.valueOf(travelData.getProductId()));
-				home.setSectionId(Integer.valueOf(travelData.getSectionId()));
-				home.setBrokerBranchCode(travelData.getBrokerBranchCode());	
-				home.setLoginId(travelData.getLoginId());
-				home.setApplicationId(travelData.getApplicationId());
-				home.setAgencyCode(Integer.valueOf(travelData.getBrokerCode()));
-				home.setAcExecutiveId(travelData.getAcExecutiveId()==null?null : Long.valueOf(travelData.getAcExecutiveId()));
-				home.setBrokerCode(travelData.getBrokerCode());
-				home.setEffectiveDate(travelData.getTravelStartDate());
-				home.setExpiryDate(travelData.getTravelEndDate());
-				home.setAdminRemarks(travelData.getAdminRemarks());
-				home.setAdminReferralStatus(travelData.getStatus());			
-				home.setReferralDescription(travelData.getReferalRemarks());
-				home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? travelData.getAdminLoginId() : request.getAdminLoginId() );
-				home.setStatus(travelData.getStatus());
-				home.setQuoteCreatedDate(new Date());
-				home.setEntryDate(new Date());
-				home.setInceptionDate(travelData.getTravelStartDate());
-				home.setExpiryDate(travelData.getTravelEndDate());
-				home.setCurrency(travelData.getCurrency());
-				home.setExchangeRate(travelData.getExchangeRate());
-				home.setNoOfVehicles( travelData.getTotalPassengers());
-				home.setHavepromoYn(travelData.getHavepromocode());
-				home.setPromocode(travelData.getPromocode());
-				home.setManualReferalYn(travelData.getManualReferalYn());
-				
-				home.setCustomerCode(travelData.getCustomerCode());
-				home.setProductName(travelData.getProductName());
-				home.setCompanyName(travelData.getCompanyName());
-				home.setCommissionType(travelData.getCommissionType());
-				home.setCommissionTypeDesc(travelData.getCommissionTypeDesc());
-				home.setSubUserType(travelData.getSubUserType());		
-				home.setBdmCode(travelData.getBdmCode());
-				home.setSourceType(travelData.getSourceType());
-				LoginBranchMaster loginBranch =  getBranchDetails(travelData.getCompanyId() ,travelData.getBrokerBranchCode() ,travelData.getLoginId() );
-				home.setUserType(loginBranch.getUserType() );			
-				home.setBranchName(loginBranch.getBranchName());
-				home.setBrokerBranchName(loginBranch.getBrokerBranchName());
-				home.setAgencyCode(loginBranch.getOaCode());
-				
-			}  else if(request.getProductId().equalsIgnoreCase(buildingProductId) || request.getProductId().equalsIgnoreCase(smeProductId)) {
-				
-				EserviceBuildingDetails  buildingData = eserBuildRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() , 1) ;
-				Long builCount =  eserBuildRepo.countByRequestReferenceNo(request.getRequestReferenceNo() ) ;
-				//List<EserviceSectionDetails> sections = eserSecRepo.findByRequestReferenceNoAndRiskIdAndProductIdOrderBySectionIdAsc(request.getRequestReferenceNo() , request.getVehicleId(),request.getProductId() );
-				home.setCompanyId(buildingData.getCompanyId());
-				home.setBranchCode(buildingData.getBranchCode());
-				home.setProductId(Integer.valueOf(buildingData.getProductId()));
-				home.setSectionId(Integer.valueOf(0));
-				home.setBrokerBranchCode(buildingData.getBrokerBranchCode());	
-				home.setLoginId(buildingData.getLoginId());
-				home.setApplicationId(buildingData.getApplicationId());
-				home.setAgencyCode(Integer.valueOf(buildingData.getBrokerCode()));
-				home.setAcExecutiveId(buildingData.getAcExecutiveId()==null?null : Long.valueOf(buildingData.getAcExecutiveId()));
-				home.setBrokerCode(buildingData.getBrokerCode());
-				home.setEffectiveDate(buildingData.getPolicyStartDate());
-				home.setExpiryDate(buildingData.getPolicyEndDate());
-				home.setAdminRemarks(buildingData.getAdminRemarks());
-				home.setAdminReferralStatus(buildingData.getStatus());			
-				home.setReferralDescription(buildingData.getReferalRemarks());
-				home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? buildingData.getAdminLoginId() : request.getAdminLoginId() );
-				home.setStatus(buildingData.getStatus());
-				home.setQuoteCreatedDate(new Date());
-				home.setEntryDate(new Date());
-				home.setInceptionDate(buildingData.getPolicyStartDate());
-				home.setExpiryDate(buildingData.getPolicyEndDate());
-				home.setCurrency(buildingData.getCurrency());
-				home.setExchangeRate(buildingData.getExchangeRate());
-				home.setNoOfVehicles(Integer.valueOf(builCount.toString()));
-				home.setHavepromoYn(buildingData.getHavepromocode());
-				home.setPromocode(buildingData.getPromocode());
-				home.setManualReferalYn(buildingData.getManualReferalYn());
-				
-				home.setCustomerCode(buildingData.getCustomerCode());
-				home.setProductName(buildingData.getProductDesc());
-				home.setCompanyName(buildingData.getCompanyName());
-				home.setCommissionType(buildingData.getCommissionType());
-				home.setCommissionTypeDesc(buildingData.getCommissionTypeDesc());
-				home.setSubUserType(buildingData.getSubUserType());		
-				home.setBdmCode(buildingData.getBdmCode());
-				home.setSourceType(buildingData.getSourceType());
-				LoginBranchMaster loginBranch =  getBranchDetails(buildingData.getCompanyId() ,buildingData.getBrokerBranchCode() ,buildingData.getLoginId() );
-				home.setUserType(loginBranch.getUserType() );			
-				home.setBranchName(loginBranch.getBranchName());
-				home.setBrokerBranchName(loginBranch.getBrokerBranchName());
-				home.setAgencyCode(loginBranch.getOaCode());
-				
-			}   else  {
-				
-				EserviceCommonDetails  eserCommonData = eserCommonRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() , request.getVehicleId()) ;
-				Long commonCount =  eserCommonRepo.countByRequestReferenceNo(request.getRequestReferenceNo() ) ;
-				//List<EserviceSectionDetails> sections = eserSecRepo.findByRequestReferenceNoAndRiskIdAndProductIdOrderBySectionIdAsc(request.getRequestReferenceNo() , request.getVehicleId(),request.getProductId() );
-				home.setCompanyId(eserCommonData.getCompanyId());
-				home.setCustomerName(eserCommonData.getCustomerName() );
-				home.setBranchCode(eserCommonData.getBranchCode());
-				home.setProductId(Integer.valueOf(eserCommonData.getProductId()));
-				home.setSectionId(Integer.valueOf(0));
-				home.setBrokerBranchCode(eserCommonData.getBrokerBranchCode());	
-				home.setLoginId(eserCommonData.getLoginId());
-				home.setApplicationId(eserCommonData.getApplicationId());
-				home.setAgencyCode(Integer.valueOf(eserCommonData.getBrokerCode()));
-				home.setAcExecutiveId(eserCommonData.getAcExecutiveId()==null?null : Long.valueOf(eserCommonData.getAcExecutiveId()));
-				home.setBrokerCode(eserCommonData.getBrokerCode());
-				home.setEffectiveDate(eserCommonData.getPolicyStartDate());
-				home.setExpiryDate(eserCommonData.getPolicyEndDate());
-				home.setAdminRemarks(eserCommonData.getAdminRemarks());
-				home.setAdminReferralStatus(eserCommonData.getStatus());			
-				home.setReferralDescription(eserCommonData.getReferalRemarks());
-				home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? eserCommonData.getAdminLoginId() : request.getAdminLoginId() );
-				home.setStatus(eserCommonData.getStatus());
-				home.setQuoteCreatedDate(new Date());
-				home.setEntryDate(new Date());
-				home.setInceptionDate(eserCommonData.getPolicyStartDate());
-				home.setExpiryDate(eserCommonData.getPolicyEndDate());
-				home.setCurrency(eserCommonData.getCurrency());
-				home.setExchangeRate(eserCommonData.getExchangeRate());
-				home.setNoOfVehicles(Integer.valueOf(commonCount.toString()));
-				home.setHavepromoYn(eserCommonData.getHavepromocode());
-				home.setPromocode(eserCommonData.getPromocode());
-				home.setManualReferalYn(eserCommonData.getManualReferalYn());
-				
-				home.setCustomerCode(eserCommonData.getCustomerCode());
-				home.setProductName(eserCommonData.getProductDesc());
-				home.setCompanyName(eserCommonData.getCompanyName());
-			//	home.setCommissionType(eserCommonData.getCommissionType());
-			//	home.setCommissionTypeDesc(eserCommonData.getCommissionTypeDesc());
-				home.setBdmCode(eserCommonData.getBdmCode());
-				home.setSourceType(eserCommonData.getSourceType());
-				LoginBranchMaster loginBranch =  getBranchDetails(eserCommonData.getCompanyId() ,eserCommonData.getBrokerBranchCode() ,eserCommonData.getLoginId() );
-				home.setUserType(loginBranch.getUserType() );			
-				home.setBranchName(loginBranch.getBranchName());
-				home.setBrokerBranchName(loginBranch.getBrokerBranchName());
-				home.setSubUserType(loginBranch.getSubUserType());		
-				home.setAgencyCode(loginBranch.getOaCode());
-				
-			}
-			
-			// Save Home Position Master
-			
-			home.setQuoteNo(request.getQuoteNo());
-			home.setRequestReferenceNo(request.getRequestReferenceNo());
-			home.setCustomerId(request.getCustomerId());
-			//	home.setProposalNo("");
-			home.setAmendId(0);
-			home.setApplicationNo(0L);
-			
-			//home.setLapsedDate(null);
-			//home.setLapsedRemarks(null);
-			//home.setLapsedUpdatedBy(null);
-			
-	//		home.setRemarks("");
-			home.setVehicleNo(vehicleIds.size());
-			
 			
 			// No OF Vehicles
 			String decimalDigits = currencyDecimalFormat(home.getCompanyId() , home.getCurrency() ).toString();
@@ -1348,6 +1185,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setTax1(new BigDecimal(df.format(tax1)));
 			home.setTax2(new BigDecimal(df.format(tax2)));
 			home.setTax3(new BigDecimal(df.format(tax3)));
+			
+			List<Integer> vehicleIds = request.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId ).collect(Collectors.toList());
+			home.setVehicleNo(vehicleIds.size());
 			
 			homeRepo.saveAndFlush(home);
 			
@@ -1385,8 +1225,218 @@ public class QuoteThreadCall implements Callable<Object>  {
 
 	
 
+	private HomePositionMaster setMotorDetails(QuoteThreadReq  request) {
+		HomePositionMaster home = new HomePositionMaster();
+		try {
+			
+			
+			EserviceMotorDetails motorData = eserMotRepo.findByRequestReferenceNoAndRiskIdOrderByRiskIdAsc(request.getRequestReferenceNo() ,request.getVehicleId());
+			home.setCompanyId(motorData.getCompanyId());
+			home.setBranchCode(motorData.getBranchCode());
+			home.setProductId(Integer.valueOf(motorData.getProductId()));
+			home.setSectionId(Integer.valueOf(motorData.getSectionId()));
+			home.setBrokerBranchCode(motorData.getBrokerBranchCode());	
+			home.setLoginId(motorData.getLoginId());
+			home.setBrokerCode(motorData.getBrokerCode());
+			home.setEffectiveDate(motorData.getPolicyStartDate());
+			home.setExpiryDate(motorData.getPolicyEndDate());
+			home.setAdminRemarks(motorData.getAdminRemarks());
+			home.setAdminReferralStatus(motorData.getStatus());			
+			home.setReferralDescription(motorData.getReferalRemarks());
+			home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? motorData.getAdminLoginId() : request.getAdminLoginId() );
+			home.setStatus(motorData.getStatus());
+			home.setQuoteCreatedDate(new Date());
+			home.setEntryDate(new Date());
+			home.setInceptionDate(motorData.getPolicyStartDate());
+			home.setExpiryDate(motorData.getPolicyEndDate());
+			home.setCurrency(motorData.getCurrency());
+			home.setExchangeRate(motorData.getExchangeRate());
+			home.setNoOfVehicles( request.getVehicleIdsList().size());
+			home.setHavepromoYn(motorData.getHavepromocode());
+			home.setPromocode(motorData.getPromocode());
+			home.setManualReferalYn(motorData.getManualReferalYn());
+			
+			home.setCustomerCode(motorData.getCustomerCode());
+			home.setProductName(motorData.getProductName());
+			home.setCompanyName(motorData.getCompanyName());
+			home.setCommissionType(motorData.getCommissionType());
+			home.setCommissionTypeDesc(motorData.getCommissionTypeDesc());
+			home.setSubUserType(motorData.getSubUserType());		
+			home.setBdmCode(motorData.getBdmCode());
+			home.setSourceType(motorData.getSourceType());
+					
+				
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.error("Exception is ---> " + e.getMessage());
+			return null ;
+		}
 	
+		return home;
+	}
 
+	private HomePositionMaster setTravelDetails(QuoteThreadReq  request) {
+		HomePositionMaster home = new HomePositionMaster();
+		try {
+			
+			
+			EserviceTravelDetails  travelData = eserTraRepo.findByRequestReferenceNo(request.getRequestReferenceNo()) ;
+			home.setCompanyId(travelData.getCompanyId());
+			home.setBranchCode(travelData.getBranchCode());
+			home.setProductId(Integer.valueOf(travelData.getProductId()));
+			home.setSectionId(Integer.valueOf(travelData.getSectionId()));
+			home.setBrokerBranchCode(travelData.getBrokerBranchCode());	
+			home.setLoginId(travelData.getLoginId());
+			home.setApplicationId(travelData.getApplicationId());
+			home.setAgencyCode(Integer.valueOf(travelData.getBrokerCode()));
+			home.setAcExecutiveId(travelData.getAcExecutiveId()==null?null : Long.valueOf(travelData.getAcExecutiveId()));
+			home.setBrokerCode(travelData.getBrokerCode());
+			home.setEffectiveDate(travelData.getTravelStartDate());
+			home.setExpiryDate(travelData.getTravelEndDate());
+			home.setAdminRemarks(travelData.getAdminRemarks());
+			home.setAdminReferralStatus(travelData.getStatus());			
+			home.setReferralDescription(travelData.getReferalRemarks());
+			home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? travelData.getAdminLoginId() : request.getAdminLoginId() );
+			home.setStatus(travelData.getStatus());
+			home.setQuoteCreatedDate(new Date());
+			home.setEntryDate(new Date());
+			home.setInceptionDate(travelData.getTravelStartDate());
+			home.setExpiryDate(travelData.getTravelEndDate());
+			home.setCurrency(travelData.getCurrency());
+			home.setExchangeRate(travelData.getExchangeRate());
+			home.setNoOfVehicles( travelData.getTotalPassengers());
+			home.setHavepromoYn(travelData.getHavepromocode());
+			home.setPromocode(travelData.getPromocode());
+			home.setManualReferalYn(travelData.getManualReferalYn());
+			
+			home.setCustomerCode(travelData.getCustomerCode());
+			home.setProductName(travelData.getProductName());
+			home.setCompanyName(travelData.getCompanyName());
+			home.setCommissionType(travelData.getCommissionType());
+			home.setCommissionTypeDesc(travelData.getCommissionTypeDesc());
+			home.setSubUserType(travelData.getSubUserType());		
+			home.setBdmCode(travelData.getBdmCode());
+			home.setSourceType(travelData.getSourceType());
+					
+				
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.error("Exception is ---> " + e.getMessage());
+			return null ;
+		}
+	
+		return home;
+	}
+	
+	private HomePositionMaster setBuildingDetails(QuoteThreadReq  request) {
+		HomePositionMaster home = new HomePositionMaster();
+		try {
+			
+			
+			EserviceBuildingDetails  buildingData = eserBuildRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() , 1) ;
+			Long builCount =  eserBuildRepo.countByRequestReferenceNo(request.getRequestReferenceNo() ) ;
+			//List<EserviceSectionDetails> sections = eserSecRepo.findByRequestReferenceNoAndRiskIdAndProductIdOrderBySectionIdAsc(request.getRequestReferenceNo() , request.getVehicleId(),request.getProductId() );
+			home.setCompanyId(buildingData.getCompanyId());
+			home.setBranchCode(buildingData.getBranchCode());
+			home.setProductId(Integer.valueOf(buildingData.getProductId()));
+			home.setSectionId(Integer.valueOf(0));
+			home.setBrokerBranchCode(buildingData.getBrokerBranchCode());	
+			home.setLoginId(buildingData.getLoginId());
+			home.setApplicationId(buildingData.getApplicationId());
+			home.setAgencyCode(Integer.valueOf(buildingData.getBrokerCode()));
+			home.setAcExecutiveId(buildingData.getAcExecutiveId()==null?null : Long.valueOf(buildingData.getAcExecutiveId()));
+			home.setBrokerCode(buildingData.getBrokerCode());
+			home.setEffectiveDate(buildingData.getPolicyStartDate());
+			home.setExpiryDate(buildingData.getPolicyEndDate());
+			home.setAdminRemarks(buildingData.getAdminRemarks());
+			home.setAdminReferralStatus(buildingData.getStatus());			
+			home.setReferralDescription(buildingData.getReferalRemarks());
+			home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? buildingData.getAdminLoginId() : request.getAdminLoginId() );
+			home.setStatus(buildingData.getStatus());
+			home.setQuoteCreatedDate(new Date());
+			home.setEntryDate(new Date());
+			home.setInceptionDate(buildingData.getPolicyStartDate());
+			home.setExpiryDate(buildingData.getPolicyEndDate());
+			home.setCurrency(buildingData.getCurrency());
+			home.setExchangeRate(buildingData.getExchangeRate());
+			home.setNoOfVehicles(Integer.valueOf(builCount.toString()));
+			home.setHavepromoYn(buildingData.getHavepromocode());
+			home.setPromocode(buildingData.getPromocode());
+			home.setManualReferalYn(buildingData.getManualReferalYn());
+			
+			home.setCustomerCode(buildingData.getCustomerCode());
+			home.setProductName(buildingData.getProductDesc());
+			home.setCompanyName(buildingData.getCompanyName());
+			home.setCommissionType(buildingData.getCommissionType());
+			home.setCommissionTypeDesc(buildingData.getCommissionTypeDesc());
+			home.setSubUserType(buildingData.getSubUserType());		
+			home.setBdmCode(buildingData.getBdmCode());
+			home.setSourceType(buildingData.getSourceType());
+					
+				
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.error("Exception is ---> " + e.getMessage());
+			return null ;
+		}
+	
+		return home;
+	}
+	
+	private HomePositionMaster setCommonDetails(QuoteThreadReq  request) {
+		HomePositionMaster home = new HomePositionMaster();
+		try {
+			
+			
+			EserviceCommonDetails  eserCommonData = eserCommonRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() , request.getVehicleId()) ;
+			Long commonCount =  eserCommonRepo.countByRequestReferenceNo(request.getRequestReferenceNo() ) ;
+			//List<EserviceSectionDetails> sections = eserSecRepo.findByRequestReferenceNoAndRiskIdAndProductIdOrderBySectionIdAsc(request.getRequestReferenceNo() , request.getVehicleId(),request.getProductId() );
+			home.setCompanyId(eserCommonData.getCompanyId());
+			home.setCustomerName(eserCommonData.getCustomerName() );
+			home.setBranchCode(eserCommonData.getBranchCode());
+			home.setProductId(Integer.valueOf(eserCommonData.getProductId()));
+			home.setSectionId(Integer.valueOf(0));
+			home.setBrokerBranchCode(eserCommonData.getBrokerBranchCode());	
+			home.setLoginId(eserCommonData.getLoginId());
+			home.setApplicationId(eserCommonData.getApplicationId());
+			home.setAgencyCode(Integer.valueOf(eserCommonData.getBrokerCode()));
+			home.setAcExecutiveId(eserCommonData.getAcExecutiveId()==null?null : Long.valueOf(eserCommonData.getAcExecutiveId()));
+			home.setBrokerCode(eserCommonData.getBrokerCode());
+			home.setEffectiveDate(eserCommonData.getPolicyStartDate());
+			home.setExpiryDate(eserCommonData.getPolicyEndDate());
+			home.setAdminRemarks(eserCommonData.getAdminRemarks());
+			home.setAdminReferralStatus(eserCommonData.getStatus());			
+			home.setReferralDescription(eserCommonData.getReferalRemarks());
+			home.setAdminLoginId(StringUtils.isBlank(request.getAdminLoginId() ) ? eserCommonData.getAdminLoginId() : request.getAdminLoginId() );
+			home.setStatus(eserCommonData.getStatus());
+			home.setQuoteCreatedDate(new Date());
+			home.setEntryDate(new Date());
+			home.setInceptionDate(eserCommonData.getPolicyStartDate());
+			home.setExpiryDate(eserCommonData.getPolicyEndDate());
+			home.setCurrency(eserCommonData.getCurrency());
+			home.setExchangeRate(eserCommonData.getExchangeRate());
+			home.setNoOfVehicles(Integer.valueOf(commonCount.toString()));
+			home.setHavepromoYn(eserCommonData.getHavepromocode());
+			home.setPromocode(eserCommonData.getPromocode());
+			home.setManualReferalYn(eserCommonData.getManualReferalYn());
+			
+			home.setCustomerCode(eserCommonData.getCustomerCode());
+			home.setProductName(eserCommonData.getProductDesc());
+			home.setCompanyName(eserCommonData.getCompanyName());
+		//	home.setCommissionType(eserCommonData.getCommissionType());
+		//	home.setCommissionTypeDesc(eserCommonData.getCommissionTypeDesc());
+			home.setBdmCode(eserCommonData.getBdmCode());
+			home.setSourceType(eserCommonData.getSourceType());
+					
+				
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.error("Exception is ---> " + e.getMessage());
+			return null ;
+		}
+	
+		return home;
+	}
 	
 
 	
