@@ -448,6 +448,7 @@ private BuildingDetailsRepository BuildingRepo;
 						pacRes.setOccupationType(acc.getOccupationType());
 						pacRes.setOccupationTypeDesc(acc.getOccupationDesc());
 						pacRes.setSuminsured(acc.getSumInsured()==null?"":acc.getSumInsured().toPlainString());
+						pacRes.setRiskId(acc.getOccupationType());
 						List<SectionDetails>  paSectionList = new ArrayList<SectionDetails>();
 						SectionDetails secData = new SectionDetails(); 
 						secData.setSectionId(acc.getSectionId()==null?"":acc.getSectionId().toString());
