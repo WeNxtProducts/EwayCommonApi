@@ -445,10 +445,10 @@ private BuildingDetailsRepository BuildingRepo;
 						// Accident
 						PaccGetRes pacRes = new  PaccGetRes()  ;
 						dozerMapper.map(acc, pacRes);
-						pacRes.setOccupationType(acc.getOccupationType());
+						pacRes.setOccupationType(acc.getRiskId().toString() );
 						pacRes.setOccupationTypeDesc(acc.getOccupationDesc());
 						pacRes.setSuminsured(acc.getSumInsured()==null?"":acc.getSumInsured().toPlainString());
-						pacRes.setRiskId(acc.getOccupationType());
+						pacRes.setRiskId(acc.getRiskId().toString());
 						List<SectionDetails>  paSectionList = new ArrayList<SectionDetails>();
 						SectionDetails secData = new SectionDetails(); 
 						secData.setSectionId(acc.getSectionId()==null?"":acc.getSectionId().toString());
