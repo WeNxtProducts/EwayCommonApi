@@ -135,4 +135,6 @@ public interface DropDownService {
 
 	List<DropDownRes> termsType(LovDropDownReq req);
 
+	List<DropDownRes> driverType(LovDropDownReq req);
+
 }

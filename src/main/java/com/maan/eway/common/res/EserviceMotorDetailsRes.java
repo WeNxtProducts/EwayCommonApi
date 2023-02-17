@@ -16,6 +16,7 @@ import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maan.eway.res.SectionDetails;
 
  
 @Getter
@@ -27,8 +28,10 @@ public class EserviceMotorDetailsRes implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-	@JsonProperty("VehicleId")
-    private Integer    vehicleId    ;
+    @JsonProperty("RiskId")
+ 	private  String riskId;	
+     
+	@JsonProperty("Accident")
     private String     accident     ;
 	@JsonProperty("Gpstrackinginstalled")
     private String     gpsTrackingInstalled ;
@@ -91,8 +94,7 @@ public class EserviceMotorDetailsRes implements Serializable {
     private String     covernoteNo  ;
 	@JsonProperty("Stickerno")
     private String     stickerNo    ;
-    private String     periodOfInsurance ;
-	@JsonProperty("WindScreenSumInsured")
+   @JsonProperty("WindScreenSumInsured")
     private Double     windScreenSumInsured ;
 	@JsonProperty("AcccessoriesSumInsured")
     private Double     acccessoriesSumInsured ;
@@ -172,6 +174,10 @@ public class EserviceMotorDetailsRes implements Serializable {
 	@JsonProperty("DriverDetails")
     private List<DriverDetailsRes>   driverDetails;
 	
+
+	 @JsonProperty("SectionDetails")
+	 private List<SectionDetails>    sectionDetails;
+	 
 	
 
 }

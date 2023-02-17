@@ -5,16 +5,18 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maan.eway.res.PassengerSectionDetails;
+import com.maan.eway.res.SectionDetails;
 
 import lombok.Data;
 
 @Data
 public class EserviceTravelGetRes {
 
-		@JsonProperty("CustomerReferenceNo")
-	    private String   customerReferenceNo ;
+		@JsonProperty("RiskId")
+	 	private  String riskId;	
 	    
-	    @JsonProperty("TravelId")
+		@JsonProperty("TravelId")
 	    private String    travelId     ;
 		
 		@JsonProperty("TravelCoverId")
@@ -56,6 +58,9 @@ public class EserviceTravelGetRes {
 		@JsonProperty("DestinationCountryDesc")
 		private String desctinationCountryDesc;
 		
-	
+		 
+		@JsonProperty("SectionDetails")
+		private List<PassengerSectionDetails>    sectionDetails;
+		
 		
 }

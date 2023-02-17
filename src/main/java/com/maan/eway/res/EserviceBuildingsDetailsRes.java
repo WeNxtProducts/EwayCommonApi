@@ -35,9 +35,9 @@ public class EserviceBuildingsDetailsRes implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-	@JsonProperty("CustomerReferenceNo")
-    private String     customerReferenceNo ;
-	
+    @JsonProperty("RiskId")
+	private  String riskId;	
+    
 	@JsonProperty("InbuildConstructType")
     private String     inbuildConstructType ;
 	@JsonProperty("BuildingFloors")
@@ -96,23 +96,13 @@ public class EserviceBuildingsDetailsRes implements Serializable {
 	@JsonProperty("ContentSuminsured")
     private String     contentSuminsured ;
 	
-	@JsonProperty("Createdby")
-    private String     createdBy    ;
-	
-	
-	@JsonProperty("InsuranceType")
-    private String    insuranceType;
-	
-	@JsonProperty("OccupationType")
-    private String    occupationType;
-
-	@JsonProperty("OccupationTypeDesc")
-    private String    occupationTypeDesc;
-
 	@JsonProperty("DomesticPackageYn")
     private String    domesticPackageYn;
 
-	@JsonProperty("CategoryId")
-    private String    categoryId;
+
+    @JsonProperty("SectionDetails")
+    private List<SectionDetails>    sectionDetails;
+	
+
 	  
 }

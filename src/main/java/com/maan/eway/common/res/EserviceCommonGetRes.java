@@ -1,17 +1,19 @@
 package com.maan.eway.common.res;
 
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maan.eway.res.SectionDetails;
 
 import lombok.Data;
 
 @Data
 public class EserviceCommonGetRes {
 
-	@JsonProperty("CustomerReferenceNo")
-    private String     customerReferenceNo ;
+	 @JsonProperty("RiskId")
+	private  String riskId;	
 
 	@JsonProperty("SalaryPerAnnum")
     private String     salaryPerAnnum ;
@@ -47,5 +49,9 @@ public class EserviceCommonGetRes {
 	@JsonProperty("EthicalWorkInvolved")
     private String    ethicalWorkInvolved;
 	
+	    
+	@JsonProperty("SectionDetails")
+	private List<SectionDetails>    sectionDetails;
+
 	
 }

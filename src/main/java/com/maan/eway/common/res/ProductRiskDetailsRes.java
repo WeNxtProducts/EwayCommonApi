@@ -12,19 +12,8 @@ import lombok.Data;
 @Data
 public class ProductRiskDetailsRes {
 	
-	@JsonProperty("RiskId")
-	private  String riskId;	
-	
-	@JsonProperty("SectionId")
-	private  String sectionId;	
-	
-	@JsonProperty("SectionName")
-	private  String sectionName;	
 	
 	@JsonProperty("RiskDetails")
 	private  Object riskDetails   ;	
 	
-	
-	@JsonProperty("Covers")
-	private  List<CoverRes> covers ;
 }

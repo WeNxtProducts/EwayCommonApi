@@ -80,6 +80,7 @@ import com.maan.eway.common.res.EserviceMotorDetailsRes;
 import com.maan.eway.common.res.EserviceTravelGetRes;
 import com.maan.eway.common.res.MotorProductDetailsRes;
 import com.maan.eway.common.res.NewQuoteRes;
+import com.maan.eway.common.res.PaccGetRes;
 import com.maan.eway.common.res.ProductRiskDetailsRes;
 import com.maan.eway.common.res.QuoteDetailsRes;
 import com.maan.eway.common.res.QuoteUpdateRes;
@@ -128,7 +129,9 @@ import com.maan.eway.res.BuildingSumInsuredDetails;
 import com.maan.eway.res.CoverRes;
 import com.maan.eway.res.EserviceBuildingsDetailsRes;
 import com.maan.eway.res.OccupationReqClass;
+import com.maan.eway.res.PassengerSectionDetails;
 import com.maan.eway.res.RiskDetailsGetRes;
+import com.maan.eway.res.SectionDetails;
 import com.maan.eway.res.SectionWiseSumInsuredRes;
 import com.maan.eway.res.SubCoverRes;
 import com.maan.eway.res.SuccessRes;
@@ -351,11 +354,13 @@ private BuildingDetailsRepository BuildingRepo;
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 			
 			List<MotorDriverDetails> driverList = driverRepo.findByQuoteNo(req.getQuoteNo() );
-			List<ProductRiskDetailsRes>   motorResList = new ArrayList<ProductRiskDetailsRes>();
+			List<EserviceMotorDetailsRes>   motorResList = new ArrayList<EserviceMotorDetailsRes>();
+			
+			
 			for (MotorDataDetails mot :  motorDatas) {
+				EserviceMotorDetailsRes vehicleDetails = new  EserviceMotorDetailsRes()  ;
 				
 				// Mot
-				EserviceMotorDetailsRes vehicleDetails = new  EserviceMotorDetailsRes()  ;
 				dozerMapper.map(mot, vehicleDetails);
 				
 				// Cover Details
@@ -376,19 +381,24 @@ private BuildingDetailsRepository BuildingRepo;
 					driverResList.add(driverRes);
 					
 				}
+				vehicleDetails.setRiskId(mot.getVehicleId());
 				driverResList.sort(Comparator.comparing(DriverDetailsRes :: getDriverId  ));
 				vehicleDetails.setDriverDetails(driverResList);
 				
+				// Section Details
+				SectionDetails sec = new SectionDetails(); 
+				sec.setSectionId(mot.getSectionId()==null?"":mot.getSectionId().toString());
+				sec.setSectionName( mot.getSectionName());
+				sec.setCovers(coverListRes);
+				
+				List<SectionDetails>  sectionList = new ArrayList<SectionDetails>();
+				sectionList.add(sec);
+				vehicleDetails.setSectionDetails(sectionList);
+				
 				// Response
-				ProductRiskDetailsRes motorRes = new ProductRiskDetailsRes();
-				motorRes.setSectionId(mot.getSectionId()==null?"":mot.getSectionId().toString());
-				motorRes.setSectionName( mot.getSectionName());
-				motorRes.setRiskId(mot.getVehicleId().toString());
-				motorRes.setRiskDetails(vehicleDetails);		
-				motorRes.setCovers(coverListRes);
-				motorResList.add(motorRes);		
+				motorResList.add(vehicleDetails);		
 			}
-			viewRes.setProductDetails(motorResList);
+			viewRes.setRiskDetails(motorResList);
 			
 		} catch ( Exception e) {
 			e.printStackTrace();
@@ -405,33 +415,23 @@ private BuildingDetailsRepository BuildingRepo;
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			// Find Motor Data
-			List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
-			List<EserviceSectionDetails> secDatas =  eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(buildDatas.get(0).getRequestReferenceNo());
+			EserviceBuildingDetails buildData = eserBuildRepo.findByQuoteNo(req.getQuoteNo());
+			List<EserviceSectionDetails> secDatas =  eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(buildData.getRequestReferenceNo());
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 			
-			List<ProductRiskDetailsRes>   buildList = new ArrayList<ProductRiskDetailsRes>();
+			
+			// Building Details 
+			// Build
+			// Section Details
+			
+			List<PaccGetRes> paccGetResList = new ArrayList<PaccGetRes>(); 
+			List<EserviceBuildingsDetailsRes>   buildList = new ArrayList<EserviceBuildingsDetailsRes>();
+			EserviceBuildingsDetailsRes buildingRes = new  EserviceBuildingsDetailsRes()  ;
+			dozerMapper.map(buildData, buildingRes);
+			
+			List<SectionDetails>  buildingSectionList = new ArrayList<SectionDetails>();
 			for (EserviceSectionDetails sec :  secDatas) {
-				EserviceBuildingDetails buildData = buildDatas.stream().filter( o -> o.getRiskId().equals(sec.getRiskId()) ).collect(Collectors.toList()).get(0);
-				
-				if(! sec.getSectionId().equalsIgnoreCase("35") ) {
-					List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(sec.getRiskId())) &&
-							o.getCompanyId().equals(sec.getCompanyId()) && o.getProductId().toString().equals(sec.getProductId()) && o.getSectionId().toString().equals(sec.getSectionId()) ).collect(Collectors.toList());
-				
-					Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
-					
-					List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
-					// Build
-					EserviceBuildingsDetailsRes buildingRes = new  EserviceBuildingsDetailsRes()  ;
-					dozerMapper.map(buildData, buildingRes);
-					ProductRiskDetailsRes buildingProductRes = new ProductRiskDetailsRes();
-					buildingProductRes.setSectionId(sec.getSectionId());
-					buildingProductRes.setSectionName( sec.getSectionDesc() );
-					buildingProductRes.setRiskId(buildData.getRiskId().toString());
-					buildingProductRes.setRiskDetails(buildingRes);		
-					buildingProductRes.setCovers(coverListRes);
-					buildList.add(buildingProductRes);
-					
-				} else {
+				if( sec.getSectionId().equalsIgnoreCase("35") ) {
 					List<EservicePersonalAccidentDetails> accData =  	eserPaccRepo.findByRequestReferenceNo(buildData.getRequestReferenceNo());
 					for (EservicePersonalAccidentDetails acc : accData ) {
 						
@@ -443,26 +443,44 @@ private BuildingDetailsRepository BuildingRepo;
 						List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
 						
 						// Accident
-						EserviceBuildingsDetailsRes buildingRes = new  EserviceBuildingsDetailsRes()  ;
-						dozerMapper.map(buildData, buildingRes);
-						buildingRes.setOccupationType(acc.getOccupationType());
-						buildingRes.setOccupationTypeDesc(acc.getOccupationDesc());		
-						
-						ProductRiskDetailsRes buildingProductRes = new ProductRiskDetailsRes();
-						buildingProductRes.setSectionId(acc.getSectionId());
-						buildingProductRes.setSectionName( acc.getSectionDesc() + "-" +acc.getOccupationDesc() );
-						buildingProductRes.setRiskId(acc.getRiskId().toString());
-						buildingProductRes.setRiskDetails(buildingRes);
-						buildingProductRes.setCovers(coverListRes);
-						buildList.add(buildingProductRes);
+						PaccGetRes pacRes = new  PaccGetRes()  ;
+						dozerMapper.map(acc, pacRes);
+						pacRes.setOccupationType(acc.getOccupationType());
+						pacRes.setOccupationTypeDesc(acc.getOccupationDesc());
+						pacRes.setSuminsured(acc.getSumInsured()==null?"":acc.getSumInsured().toPlainString());
+						List<SectionDetails>  paSectionList = new ArrayList<SectionDetails>();
+						SectionDetails secData = new SectionDetails(); 
+						secData.setSectionId(acc.getSectionId()==null?"":acc.getSectionId().toString());
+						secData.setSectionName( acc.getSectionDesc());
+						secData.setCovers(coverListRes);
+						paSectionList.add(secData);
+						pacRes.setSectionDetails(paSectionList);
+						paccGetResList.add(pacRes);
 					}
+					
+				} else {
+					List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(sec.getRiskId())) &&
+							o.getCompanyId().equals(sec.getCompanyId()) && o.getProductId().toString().equals(sec.getProductId()) && o.getSectionId().toString().equals(sec.getSectionId()) ).collect(Collectors.toList());
+				
+					Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
+					
+					List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
+					// Build
+					SectionDetails buildSec = new SectionDetails(); 
+					buildSec.setSectionId(sec.getSectionId()==null?"":sec.getSectionId().toString());
+					buildSec.setSectionName( sec.getSectionDesc());
+					buildSec.setCovers(coverListRes);
+					buildingSectionList.add(buildSec);
+					
 				}
 				
 			} 
-			
-			
-				
-			viewRes.setProductDetails(buildList);	
+			buildingRes.setSectionDetails(buildingSectionList);
+			buildList.add(buildingRes);
+			List<Object> totalList = new ArrayList<Object>(); 
+			totalList.addAll(buildList);
+			totalList.addAll(paccGetResList);
+			viewRes.setRiskDetails(totalList);	
 			
 		} catch ( Exception e) {
 			e.printStackTrace();
@@ -613,13 +631,13 @@ private BuildingDetailsRepository BuildingRepo;
 			List<ProductGroupMasterDropDownRes> groupRes =	groupService.getProductGroupMasterDropdown(groupReq);
 			
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
+			EserviceTravelGetRes travelDetails = new  EserviceTravelGetRes()  ;
+			dozerMapper.map(travelDatas.get(0), travelDetails);
+			travelDetails.setRiskId("1");
 			
-			List<ProductRiskDetailsRes>   travelResList = new ArrayList<ProductRiskDetailsRes>();
+			List<EserviceTravelGetRes>   travelResList = new ArrayList<EserviceTravelGetRes>();
+			List<PassengerSectionDetails> secList = new ArrayList<PassengerSectionDetails>();
 			for (TravelPassengerDetails tra :  totalDatas) {
-				
-				// Mot
-				EserviceTravelGetRes travelDetails = new  EserviceTravelGetRes()  ;
-				dozerMapper.map(tra, travelDetails);
 				
 				// Cover Details
 				List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(tra.getPassengerId()))).collect(Collectors.toList());
@@ -629,16 +647,21 @@ private BuildingDetailsRepository BuildingRepo;
 				List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
 							
 				// Response
-				ProductRiskDetailsRes traRes = new ProductRiskDetailsRes();
-				traRes.setSectionId(tra.getSectionId()==null?"":tra.getSectionId().toString());
-				String groupDesc = groupRes.stream().filter( o -> o.getCode().equalsIgnoreCase(tra.getGroupId().toString()) ).collect(Collectors.toList()).get(0).getCodeDesc()  ;
-				traRes.setSectionName( tra.getSectionName() + " - " +groupDesc + " - PassengerId: " + tra.getPassengerId()) ;
-				traRes.setRiskId(tra.getTravelId().toString());
-				traRes.setRiskDetails(travelDetails);		
-				traRes.setCovers(coverListRes);
-				travelResList.add(traRes);				
+				PassengerSectionDetails traSec = new PassengerSectionDetails(); 
+				traSec.setSectionId(tra.getSectionId()==null?"":tra.getSectionId().toString());
+				traSec.setSectionName( tra.getSectionName());
+				traSec.setCovers(coverListRes);
+				traSec.setPassengerId(tra.getPassengerId().toString() );
+				traSec.setPassengerName(tra.getPassengerName());
+				traSec.setGroupDesc(groupRes.stream().filter( o -> o.getCode().equalsIgnoreCase(tra.getGroupId().toString()) ).collect(Collectors.toList()).get(0).getCodeDesc()) ;		
+						
+				secList.add(traSec);
+				
+				
 			}
-			viewRes.setProductDetails(travelResList);	
+			travelDetails.setSectionDetails(secList);
+			travelResList.add(travelDetails);
+			viewRes.setRiskDetails(travelResList);	
 			
 		} catch ( Exception e) {
 			e.printStackTrace();
@@ -658,7 +681,7 @@ private BuildingDetailsRepository BuildingRepo;
 			List<CommonDataDetails> commonDatas =  commonDataRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 			
-			List<ProductRiskDetailsRes>   commonResList = new ArrayList<ProductRiskDetailsRes>();
+			List<EserviceCommonGetRes>   commonResList = new ArrayList<EserviceCommonGetRes>();
 			for (CommonDataDetails com :  commonDatas) {
 				
 				// Cover Details
@@ -668,18 +691,21 @@ private BuildingDetailsRepository BuildingRepo;
 				
 				List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
 				// Response
-				ProductRiskDetailsRes commonRes = new ProductRiskDetailsRes();
 				// Mot
 				EserviceCommonGetRes commonDetails = new  EserviceCommonGetRes()  ;
 				dozerMapper.map(com, commonDetails);
-				commonRes.setSectionId(com.getSectionId()==null?"":com.getSectionId().toString());
-				commonRes.setSectionName( com.getSectionDesc());
-				commonRes.setRiskId(com.getRiskId().toString());
-				commonRes.setRiskDetails(commonDetails);		
-				commonRes.setCovers(coverListRes);
-				commonResList.add(commonRes);				
+				// Section Details
+				SectionDetails sec = new SectionDetails(); 
+				sec.setSectionId(com.getSectionId()==null?"":com.getSectionId().toString());
+				sec.setSectionName( com.getSectionDesc());
+				sec.setCovers(coverListRes);
+				
+				List<SectionDetails>  sectionList = new ArrayList<SectionDetails>();
+				sectionList.add(sec);
+				commonDetails.setSectionDetails(sectionList);
+				commonResList.add(commonDetails);				
 			}
-			viewRes.setProductDetails(commonResList);	
+			viewRes.setRiskDetails(commonResList);	
 			
 		} catch ( Exception e) {
 			e.printStackTrace();

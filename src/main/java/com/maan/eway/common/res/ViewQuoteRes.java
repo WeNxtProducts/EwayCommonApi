@@ -15,6 +15,6 @@ public class ViewQuoteRes {
 	@JsonProperty("CustomerDetails")
 	private CustomerDetailsRes  customerDetails ;
 	
-	@JsonProperty("ProductDetails")
-	private List<ProductRiskDetailsRes>  productDetails ;
+	@JsonProperty("RiskDetails")
+	private Object  riskDetails ;
 }
