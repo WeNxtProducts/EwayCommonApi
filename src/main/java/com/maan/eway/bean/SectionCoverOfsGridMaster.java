@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -77,6 +76,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="COMPANY_ID", nullable=false, length=20)
     private String     companyId ;
 
+    @Id
+    @Column(name="AGENCY_CODE", nullable=false, length=20)
+    private String     agencyCode;
+    
+    @Id
+    @Column(name="BRANCH_CODE", nullable=false, length=20)
+    private String     branchCode;
+    
     //--- ENTITY DATA FIELDS 
     @Column(name="CALC_TYPE", length=1)
     private String     calcType ;

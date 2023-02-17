@@ -41,5 +41,9 @@ public class SectionCoverOfsGridMasterId implements Serializable {
     
     private String     companyId ;
     
+    private String     agencyCode;
+    
+    private String     branchCode;
+    
      
 }

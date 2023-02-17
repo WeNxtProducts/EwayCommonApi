@@ -75,6 +75,14 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="AMEND_ID", nullable=false)
     private Integer    amendId ;
+    
+    @Id
+    @Column(name="AGENCY_CODE", nullable=false, length=20)
+    private String     agencyCode;
+    
+    @Id
+    @Column(name="BRANCH_CODE", nullable=false, length=20)
+    private String     branchCode ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="COVER_NAME", length=100)
