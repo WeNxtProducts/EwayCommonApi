@@ -72,7 +72,7 @@ public class JasperServiceImpl implements JasperService{
 				}			
 				
 				
-				res = getJasperPdfFile("/report/jasper/SampleReport.jrxml",getPdfOutFilePath,input);
+				res = getJasperPdfFile("/report/jasper/TravelReport.jrxml",getPdfOutFilePath,input);
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
