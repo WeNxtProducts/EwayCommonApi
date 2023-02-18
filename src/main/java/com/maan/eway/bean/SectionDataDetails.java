@@ -43,11 +43,11 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@IdClass(EserviceSectionDetailsId.class)
-@Table(name="eservice_section_details")
+@IdClass(SectionDataDetailsId.class)
+@Table(name="section_data_details")
 
 
-public class EserviceSectionDetails implements Serializable {
+public class SectionDataDetails implements Serializable {
  
 private static final long serialVersionUID = 1L;
  
@@ -61,9 +61,10 @@ private static final long serialVersionUID = 1L;
     private Integer    riskId ;
 
     @Id
-    @Column(name="CUSTOMER_REFERENCE_NO", nullable=false, length=20)
-    private String     customerReferenceNo ;
-
+    @Column(name="QUOTE_NO", length=20)
+    private String     quoteNo ;
+    
+    
     @Id    
     @Column(name="PRODUCT_ID", length=20)
     private String  productId ;
@@ -73,6 +74,8 @@ private static final long serialVersionUID = 1L;
     private String  sectionId ;
 
     //--- ENTITY DATA FIELDS 
+    @Column(name="CUSTOMER_REFERENCE_NO", nullable=false, length=20)
+    private String     customerReferenceNo ;
 
     @Column(name="PRODUCT_DESC", length=100)
     private String  productDesc;
@@ -107,10 +110,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_BY", length=100)
     private String     updatedBy ;
 
-    @Column(name="QUOTE_NO", length=20)
-    private String     quoteNo ;
-
-    @Column(name="CUSTOMER_ID", length=20)
+       @Column(name="CUSTOMER_ID", length=20)
     private String     customerId ;
 
     @Column(name="CURRENCY_ID", length=20)
@@ -118,10 +118,6 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="EXCHANGE_RATE", length=20)
     private BigDecimal     exchageRate ;
-    
-    @Column(name="USER_OPT", length=20)
-    private String     userOpt ;
-    
     
 }
 

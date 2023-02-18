@@ -8,7 +8,7 @@ import com.maan.eway.res.CoverRes;
 import lombok.Data;
 
 @Data
-public class BuildingRiskDetails {
+public class BuildingRiskDetailsRes {
 
 	@JsonProperty("RiskId")
 	private  String riskId;	

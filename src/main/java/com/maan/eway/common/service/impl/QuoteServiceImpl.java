@@ -34,15 +34,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.maan.eway.bean.BuildingDetails;
+import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
-import com.maan.eway.bean.EservicePersonalAccidentDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
@@ -54,7 +52,6 @@ import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
-import com.maan.eway.bean.PersonalAccident;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductMaster;
@@ -69,24 +66,16 @@ import com.maan.eway.common.req.SectionSumInsuredGetReq;
 import com.maan.eway.common.req.UpdateQuoteStatusReq;
 import com.maan.eway.common.req.VehicleIdsReq;
 import com.maan.eway.common.req.ViewQuoteReq;
-import com.maan.eway.common.res.BuildingProductDetailsRes;
-import com.maan.eway.common.res.CommonDetailsRes;
-import com.maan.eway.common.res.CommonProductDetailsRes;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.CustomerDetailsRes;
 import com.maan.eway.common.res.DriverDetailsRes;
 import com.maan.eway.common.res.EserviceCommonGetRes;
 import com.maan.eway.common.res.EserviceMotorDetailsRes;
 import com.maan.eway.common.res.EserviceTravelGetRes;
-import com.maan.eway.common.res.MotorProductDetailsRes;
 import com.maan.eway.common.res.NewQuoteRes;
 import com.maan.eway.common.res.PaccGetRes;
-import com.maan.eway.common.res.ProductRiskDetailsRes;
 import com.maan.eway.common.res.QuoteDetailsRes;
 import com.maan.eway.common.res.QuoteUpdateRes;
-import com.maan.eway.common.res.TravelPassDetailsRes;
-import com.maan.eway.common.res.TravelProductDetailsRes;
-import com.maan.eway.common.res.VehicleDetailsRes;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.PaymentService;
 import com.maan.eway.common.service.QuoteService;
@@ -102,6 +91,7 @@ import com.maan.eway.notification.req.UnderWriter;
 import com.maan.eway.notification.req.statealgo.NotificationStatus;
 import com.maan.eway.notification.service.NotificationService;
 import com.maan.eway.repository.BuildingDetailsRepository;
+import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.CoverDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
@@ -110,7 +100,6 @@ import com.maan.eway.repository.EmiTransactionDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
-import com.maan.eway.repository.EservicePersonalAccidentDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
@@ -130,12 +119,10 @@ import com.maan.eway.res.CoverRes;
 import com.maan.eway.res.EserviceBuildingsDetailsRes;
 import com.maan.eway.res.OccupationReqClass;
 import com.maan.eway.res.PassengerSectionDetails;
-import com.maan.eway.res.RiskDetailsGetRes;
 import com.maan.eway.res.SectionDetails;
 import com.maan.eway.res.SectionWiseSumInsuredRes;
 import com.maan.eway.res.SubCoverRes;
 import com.maan.eway.res.SuccessRes;
-import com.maan.eway.res.calc.Cover;
 import com.maan.eway.res.calc.Discount;
 import com.maan.eway.res.calc.Loading;
 import com.maan.eway.res.calc.Tax;
@@ -206,7 +193,7 @@ public class QuoteServiceImpl implements QuoteService {
 	private PolicyCoverDataRepository polCoverRepo  ;
 	
 	@Autowired
-	private EservicePersonalAccidentDetailsRepository eserPaccRepo  ;
+	private BuildingRiskDetailsRepository buildRiskRepo  ;
 	
 	@Autowired
 	private GenerateSeqNoServiceImpl generateSeqService ;
@@ -432,8 +419,8 @@ private BuildingDetailsRepository BuildingRepo;
 			List<SectionDetails>  buildingSectionList = new ArrayList<SectionDetails>();
 			for (EserviceSectionDetails sec :  secDatas) {
 				if( sec.getSectionId().equalsIgnoreCase("35") ) {
-					List<EservicePersonalAccidentDetails> accData =  	eserPaccRepo.findByRequestReferenceNo(buildData.getRequestReferenceNo());
-					for (EservicePersonalAccidentDetails acc : accData ) {
+					List<CommonDataDetails> accData =  	commonDataRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+					for (CommonDataDetails	 acc : accData ) {
 						
 						List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(acc.getRiskId())) &&
 								 o.getSectionId().toString().equals(acc.getSectionId()) ).collect(Collectors.toList());
@@ -1759,14 +1746,14 @@ private BuildingDetailsRepository BuildingRepo;
 	public BuildingSumInsuredDetails buildingSuminsuredDetails(SectionSumInsuredGetReq req) {
 		BuildingSumInsuredDetails res = new BuildingSumInsuredDetails();
 		try {
-			EserviceBuildingDetails build  = eserBuildRepo.findByQuoteNo(req.getQuoteNo());
+			BuildingRiskDetails build  = buildRiskRepo.findByQuoteNo(req.getQuoteNo());
 			List<EserviceSectionDetails>   buildSections = eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(build.getRequestReferenceNo());	
-			List<EservicePersonalAccidentDetails> paccDatas = eserPaccRepo.findByRequestReferenceNo(build.getRequestReferenceNo());
+			List<CommonDataDetails> paccDatas = commonDataRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
 
 			List<String> sectionIds = buildSections.stream().filter( o -> o.getRiskId().equals(build.getRiskId() )).map(EserviceSectionDetails :: getSectionId ).collect(Collectors.toList());
 			
 			 List<OccupationReqClass> occupation = new ArrayList<OccupationReqClass>(); 
-			 for (EservicePersonalAccidentDetails pac :  paccDatas) {
+			 for (CommonDataDetails pac :  paccDatas) {
 				 OccupationReqClass occu = new OccupationReqClass(); 
 				 occu.setCount(pac.getCount()==null?"":pac.getCount().toString());		 
 				 occu.setOccupationType(pac.getOccupationType() );

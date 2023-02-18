@@ -21,8 +21,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCommonDetailsId;
-import com.maan.eway.bean.EservicePersonalAccidentDetails;
-import com.maan.eway.bean.EservicePersonalAccidentDetailsId;
 /**
  * <h2>BankMasterRepository</h2>
  *

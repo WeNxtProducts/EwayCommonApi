@@ -24,7 +24,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 @Builder
-public class EservicePersonalAccidentDetailsId implements Serializable {
+public class SectionDataDetailsId implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -33,7 +33,9 @@ public class EservicePersonalAccidentDetailsId implements Serializable {
     
     private Integer    riskId ;
     
-    private String     customerReferenceNo ;
+    private String     quoteNo ;
     
-     
+    private String  productId ;
+    private String  sectionId ;
+
 }

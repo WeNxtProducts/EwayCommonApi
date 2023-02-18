@@ -23,7 +23,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -39,27 +38,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.bean.CurrencyMaster;
-import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
-import com.maan.eway.bean.EservicePersonalAccidentDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
-import com.maan.eway.bean.FactorTypeDetails;
-import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MasterReferralDetails;
 import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.EservieMotorDetailsViewRes;
 import com.maan.eway.common.req.UpdateFactorRateReq;
-import com.maan.eway.common.req.VehicleIdsReq;
 import com.maan.eway.common.res.EserviceCommonGetRes;
 import com.maan.eway.common.res.EserviceMotorDetailsRes;
-import com.maan.eway.common.res.EservicePaccGetRes;
 import com.maan.eway.common.res.EserviceTravelGetRes;
 import com.maan.eway.common.res.UpdateCoverRes;
 import com.maan.eway.error.Error;
@@ -68,13 +61,11 @@ import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EmiTransactionDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
-import com.maan.eway.repository.EservicePersonalAccidentDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.MasterReferralDetailsRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
-import com.maan.eway.req.EservicePersonalAccidentSaveReq;
 import com.maan.eway.req.FactorRateDetailsGetReq;
 import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.res.EserviceBuildingsDetailsRes;
@@ -114,10 +105,8 @@ private EserviceBuildingDetailsRepository eserBuildRepo;
 private EServiceSectionDetailsRepository eserSecRepo;
 
 @Autowired
-private EservicePersonalAccidentDetailsRepository eserPaccRepo;
-
-@Autowired
 private EserviceCommonDetailsRepository eserCommonRepo;
+
 
 @Autowired
 private MasterReferralDetailsRepository masReferralRepo;
@@ -1034,14 +1023,13 @@ this.repository = repo;
 				
 				if ( sec.getSectionId().equalsIgnoreCase("35")) {
 					
-					List<EservicePersonalAccidentDetails> personalDatas = eserPaccRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
-					for (EservicePersonalAccidentDetails acc : personalDatas ) {
-						EserviceBuildingDetails buildData = buildDatas.stream().filter( o -> o.getRiskId().equals(sec.getRiskId())  ).collect(Collectors.toList()).get(0);
+					List<EserviceCommonDetails> personalDatas = eserCommonRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
+					for (EserviceCommonDetails acc : personalDatas ) {
 						
 						// Response 
 						EservieMotorDetailsViewRes res = new EservieMotorDetailsViewRes();
-						dozerMapper.map(buildData,res);
-						res.setInsuranceId(buildData.getCompanyId());
+						dozerMapper.map(acc,res);
+						res.setInsuranceId(acc.getCompanyId());
 						res.setSectionId(sec.getSectionId());
 						res.setVehicleId(acc.getRiskId().toString());
 						res.setSectionName(acc.getOccupationDesc());
@@ -1053,7 +1041,7 @@ this.repository = repo;
 						res.setActualPremiumLc(acc.getActualPremiumLc()==null?"0":acc.getActualPremiumLc().toPlainString());
 						Object riskDetails = new Object();
 						EserviceBuildingsDetailsRes  buildRes = new EserviceBuildingsDetailsRes();
-						dozerMapper.map(buildData, buildRes);
+						dozerMapper.map(acc, buildRes);
 					//	buildRes.setSectionName(sec.getSectionDesc());
 						riskDetails = buildRes ;
 						res.setRiskDetails(riskDetails); 
