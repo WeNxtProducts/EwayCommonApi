@@ -137,4 +137,6 @@ public interface DropDownService {
 
 	List<DropDownRes> driverType(LovDropDownReq req);
 
+	List<DropDownRes> getallelectronicItems(LovDropDownReq req);
+
 }

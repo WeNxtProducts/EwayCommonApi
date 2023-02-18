@@ -50,6 +50,7 @@ public class ListItemValue implements Serializable {
 private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
+	
     @Id
     @Column(name="ITEM_ID", nullable=false)
     private Integer     itemId ;

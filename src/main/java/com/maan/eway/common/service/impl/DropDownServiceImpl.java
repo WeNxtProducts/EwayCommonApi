@@ -1467,7 +1467,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
-			String itemType = "CONTENT" ;
+			String itemType = "Content" ;
 			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
@@ -1536,7 +1536,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
-			String itemType = "ALL_RISK" ;
+			String itemType = "All Risk" ;
 			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
@@ -1698,6 +1698,29 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "DRIVER_TYPES" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+	@Override
+	public List<DropDownRes> getallelectronicItems(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
+			String itemType = "Electronic Items" ;
 			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
