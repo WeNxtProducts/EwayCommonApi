@@ -943,6 +943,9 @@ this.repository = repo;
 				res.setVehicleId(mot.getRiskId().toString());
 				res.setGroupId(1);
 				res.setGroupMember(0);
+				res.setSectionId(mot.getSectionId() );
+				res.setSectionName(mot.getSectionName());	
+				
 				Object riskDetails = new Object();
 				EserviceMotorDetailsRes  motorRes = new EserviceMotorDetailsRes();
 				dozerMapper.map(mot, motorRes);
@@ -987,6 +990,8 @@ this.repository = repo;
 				res.setOverallPremiumLc(travelData.getOverallPremiumLc()==null?"0":travelData.getOverallPremiumLc().toPlainString());
 				res.setActualPremiumFc(travelData.getActualPremiumFc()==null?"0":travelData.getActualPremiumFc().toPlainString());
 				res.setActualPremiumLc(travelData.getActualPremiumLc()==null?"0":travelData.getActualPremiumLc().toPlainString());
+				res.setSectionId(travelData.getSectionId() );
+				res.setSectionName(travelData.getSectionName());
 				
 				Object riskDetails = new Object();
 				EserviceTravelGetRes  travelRes = new EserviceTravelGetRes();
@@ -1105,6 +1110,8 @@ this.repository = repo;
 				res.setOverallPremiumLc(comData.getOverallPremiumLc()==null?"0":comData.getOverallPremiumLc().toPlainString());
 				res.setActualPremiumFc(comData.getActualPremiumFc()==null?"0":comData.getActualPremiumFc().toPlainString());
 				res.setActualPremiumLc(comData.getActualPremiumLc()==null?"0":comData.getActualPremiumLc().toPlainString());
+				res.setSectionId(comData.getSectionId() );
+				res.setSectionName(comData.getSectionDesc());
 				
 				Object riskDetails = new Object();
 				EserviceCommonGetRes comRes = new EserviceCommonGetRes();
