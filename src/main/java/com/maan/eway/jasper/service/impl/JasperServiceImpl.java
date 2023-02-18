@@ -42,29 +42,28 @@ public class JasperServiceImpl implements JasperService{
 		String getPdfOutFilePath="";
 		try {
 			Map<String,Object> input = new HashMap<String,Object>();
-			input.put("PvQuoteNo",req.getQuoteNo());
+			input.put("QuoteNo",req.getQuoteNo());
+			input.put("imagePath",config.getImagePath());
 			
 			HomePositionMaster homeData = homeRepo.findByQuoteNo(req.getQuoteNo()) ;
 			
 			if(null!=input && input.size()>0) {
 				
-				String directoryname=null ;
+				//String directoryname=null ;
 				// File Save Path
 				String filePath=null;
-				 Random random=new Random();
-				 int num=random.nextInt(100) ;
 				 
 				if(StringUtils.isNotBlank(homeData.getPolicyNo()) ) {
 					
-					directoryname=homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
-					filePath = 	config.getPolicyPath()+"pdf/"+directoryname;
-					getPdfOutFilePath = filePath+"/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"(RandomNum"+num+").pdf";
+					//directoryname=homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
+					filePath = 	config.getPolicyPath()+"pdf";
+					getPdfOutFilePath = filePath+"/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+".pdf";
 					
 				} else {
 					
-					directoryname=req.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
-					filePath = 	config.getDraftPath()+"pdf/"+directoryname;
-					getPdfOutFilePath = filePath+"/"+req.getQuoteNo()+"(RandomNum"+num+").pdf";
+					//directoryname=req.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
+					filePath = 	config.getDraftPath()+"pdf";
+					getPdfOutFilePath = filePath+"/"+req.getQuoteNo()+".pdf";
 				}
 				
 				File theDir = new File(filePath);
@@ -73,7 +72,7 @@ public class JasperServiceImpl implements JasperService{
 				}			
 				
 				
-				res = getJasperPdfFile("/report/jasper/PolicyReport.jrxml",getPdfOutFilePath,input);
+				res = getJasperPdfFile("/report/jasper/SampleReport.jrxml",getPdfOutFilePath,input);
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -89,6 +88,7 @@ public class JasperServiceImpl implements JasperService{
 			InputStream inputStream = this.getClass().getResourceAsStream(jasperPath);
 			JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
 			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport,input, connection);
+			//JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport,input);
 			
 					/*servletRequest.getRealPath(getPdfOutFilePath)*/;
 			//filePath=filePath.replaceAll("%20", " ");

@@ -13,6 +13,9 @@ public class JasperConfiguration {
 	@Value("${draft.file.path}")
 	private String draftPath;
 	
+	@Value("${image.path}")
+	private String imagePath;
+	
 	@Value("${policy.file.path}")
 	private String policyPath;
 	
@@ -54,7 +57,7 @@ public class JasperConfiguration {
 	}
 	
 	// Enable This 4 Value For run in Application properties 
-	@Value("${spring.datasource.driverClassName}")
+	@Value("${spring.datasource.driver-class-name}")
 	private String driverclassname;
 	@Value("${spring.datasource.url}")
 	private String datasourceurl;

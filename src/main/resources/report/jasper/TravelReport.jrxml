@@ -1,14 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TravelReport" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ee17b5e5-2150-4972-b3dc-c9f6a12dd017">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TravelReport" pageWidth="650" pageHeight="800" columnWidth="590" leftMargin="30" rightMargin="30" topMargin="25" bottomMargin="25" uuid="fcd8918c-6be5-472c-9128-6be9381ad25b">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<parameter name="QuoteNo" class="java.lang.String"/>
+	<parameter name="imagePath" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<pageHeader>
 		<band height="60" splitType="Stretch">
 			<image>
-				<reportElement x="0" y="0" width="80" height="60" uuid="0f18e202-e23e-4eef-85f6-58c2a4babcb4"/>
-				<imageExpression><![CDATA["/report/images/travellogo.JPG"]]></imageExpression>
+				<reportElement x="0" y="0" width="80" height="60" uuid="e72aebd1-f3c7-4f55-9c0f-88b922cdbdad"/>
+				<imageExpression><![CDATA[$P{imagePath} + "travellogo.jpg"]]></imageExpression>
 			</image>
 		</band>
 	</pageHeader>
@@ -111,10 +117,10 @@
 					<topPen lineWidth="0.75"/>
 					<rightPen lineWidth="0.75"/>
 				</box>
-				<textElement textAlignment="Center">
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{QuoteNo}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="480" y="25" width="74" height="15" uuid="17e2b123-10e9-4af6-8069-29841c10826a"/>
@@ -3158,7 +3164,7 @@
 				<textFieldExpression><![CDATA["+216 29 67 72 76"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="45" width="170" height="24" uuid="a1713e8b-81aa-4ca2-a113-ed2411ad8e97"/>
+				<reportElement x="3" y="45" width="167" height="24" uuid="a1713e8b-81aa-4ca2-a113-ed2411ad8e97"/>
 				<box leftPadding="15" rightPadding="3">
 					<leftPen lineWidth="0.75"/>
 				</box>
@@ -3167,11 +3173,6 @@
 				</textElement>
 				<textFieldExpression><![CDATA["Please state your policy number When requesting assistance"]]></textFieldExpression>
 			</textField>
-			<image>
-				<reportElement x="170" y="25" width="32" height="44" uuid="b53f8e98-12ff-4733-bf6f-5304ed22a600"/>
-				<box topPadding="7"/>
-				<imageExpression><![CDATA["/report/images/Wtahrs.JPG"]]></imageExpression>
-			</image>
 			<textField>
 				<reportElement x="202" y="25" width="55" height="10" uuid="2c753113-5489-4412-aa8e-961221d5107d"/>
 				<box leftPadding="2"/>
@@ -3215,10 +3216,6 @@
 				</textElement>
 				<textFieldExpression><![CDATA["Emergency Contacts Available 24th/7d ALL Year Round"]]></textFieldExpression>
 			</textField>
-			<image>
-				<reportElement x="330" y="25" width="40" height="44" uuid="ef2d52e7-520c-4a2d-a03a-76602a33ac63"/>
-				<imageExpression><![CDATA["/report/images/Email.JPG"]]></imageExpression>
-			</image>
 			<textField>
 				<reportElement x="370" y="25" width="184" height="10" uuid="3800981e-7cad-4130-b22a-dc23a8c500ae"/>
 				<box leftPadding="3">
@@ -3282,6 +3279,14 @@
 				</textElement>
 				<textFieldExpression><![CDATA["Select your country of Residence and Then Enter the POlicy Number printed on your insurance Certificate"]]></textFieldExpression>
 			</textField>
+			<image>
+				<reportElement x="170" y="26" width="29" height="43" uuid="80f574e3-27be-4a34-a9d2-1a45532a8ff1"/>
+				<imageExpression><![CDATA[$P{imagePath} + "WhatApplogo.jpg"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="330" y="25" width="40" height="44" uuid="dc1cfbe2-db84-4e8a-9cfb-fd63cdc33b11"/>
+				<imageExpression><![CDATA[$P{imagePath} + "Email.jpg"]]></imageExpression>
+			</image>
 		</band>
 	</columnFooter>
 	<pageFooter>
@@ -3387,6 +3392,6 @@
 		</band>
 	</pageFooter>
 	<summary>
-		<band height="42" splitType="Stretch"/>
+		<band height="54" splitType="Stretch"/>
 	</summary>
 </jasperReport>
