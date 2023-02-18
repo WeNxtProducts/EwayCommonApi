@@ -1316,11 +1316,28 @@ public class QuoteThreadCall implements Callable<Object>  {
 					
 					
 					
-				} else if(!veh.getSectionId().equalsIgnoreCase("35") ) {
+				} else if(!veh.getSectionId().equalsIgnoreCase("35") && request.getProductId().equalsIgnoreCase(motorProductId)  ) {
 					List<EserviceSectionDetails> filterSecId =  updateEserSec.stream().filter( o ->  o.getRiskId().equals(veh.getVehicleId() ) && o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList());
 					if(filterSecId.size() <=0 ) {
 						
 						EserviceSectionDetails filterSec = eserSec.stream().filter( o ->  o.getRiskId().equals(veh.getVehicleId() ) &&  o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList()).get(0);	
+						filterSec.setUserOpt("Y");
+						filterSec.setQuoteNo(request.getQuoteNo());
+						filterSec.setUpdatedDate(new Date());
+						updateEserSec.add(filterSec);
+						
+						SectionDataDetails  saveSec = new  SectionDataDetails();
+						mapper.map(filterSec, saveSec)	;
+						saveSec.setQuoteNo(request.getQuoteNo());
+						saveSec.setUpdatedDate(new Date());
+						secList.add(saveSec);	
+					}
+					
+				} else if(!veh.getSectionId().equalsIgnoreCase("35") ) {
+					List<EserviceSectionDetails> filterSecId =  updateEserSec.stream().filter( o ->  o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList());
+					if(filterSecId.size() <=0 ) {
+						
+						EserviceSectionDetails filterSec = eserSec.stream().filter( o -> o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList()).get(0);	
 						filterSec.setUserOpt("Y");
 						filterSec.setQuoteNo(request.getQuoteNo());
 						filterSec.setUpdatedDate(new Date());
