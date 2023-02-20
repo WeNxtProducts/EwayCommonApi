@@ -1764,21 +1764,21 @@ private BuildingDetailsRepository BuildingRepo;
 				 occupation.add(occu);
 			}
 	
-			res.setBuildingSuminsured(build.getBuildingSuminsured() == null?"0" :build.getBuildingSuminsured().toString());
-			res.setAllriskSuminsured(build.getAllriskSuminsured() == null?"0" :build.getAllriskSuminsured().toString());
-			res.setPersonalIntermediarySuminsured(build.getPersonalIntSuminsured() == null?"0" :build.getPersonalIntSuminsured().toString());
-			res.setContentSuminsured(build.getContentSuminsured() == null?"0" :build.getContentSuminsured().toString());
+			res.setBuildingSuminsured(build.getBuildingSuminsured() == null?"0" :build.getBuildingSuminsured().toPlainString());
+			res.setAllriskSuminsured(build.getAllriskSuminsured() == null?"0" :build.getAllriskSuminsured().toPlainString());
+			res.setPersonalIntermediarySuminsured(build.getPersonalIntSuminsured() == null?"0" :build.getPersonalIntSuminsured().toPlainString());
+			res.setContentSuminsured(build.getContentSuminsured() == null?"0" :build.getContentSuminsured().toPlainString());
 			res.setOccupationDetails(occupation);
-			res.setMoneySinglecarrySuminsured(build.getMoneySinglecarrySuminsured() == null?"0" :build.getMoneySinglecarrySuminsured().toString());
-			res.setMoneyAnnualcarrySuminsured(build.getMoneyAnnualcarrySuminsured() == null?"0" :build.getMoneyAnnualcarrySuminsured().toString());
-			res.setMoneyInsafeSuminsured(build.getMoneyInsafeSuminsured() == null?"0" :build.getMoneyInsafeSuminsured().toString());
-			res.setFidelityAnyoccuSuminsured(build.getFidelityAnyoccuSuminsured() == null?"0" :build.getFidelityAnyoccuSuminsured().toString());
-			res.setFidelityAnnualSuminsured(build.getFidelityAnnualSuminsured() == null?"0" :build.getFidelityAnnualSuminsured().toString());
-			res.setTpliabilityAnyoccuSuminsured(build.getTpliabilityAnyoccuSuminsured() == null?"0" :build.getTpliabilityAnyoccuSuminsured().toString());
-			res.setEmpliabilityAnnualSuminsured(build.getEmpliabilityAnnualSuminsured() == null?"0" :build.getEmpliabilityAnnualSuminsured().toString());
-			res.setEmpliabilityExcessSuminsured(build.getEmpliabilityExcessSuminsured() == null?"0" :build.getEmpliabilityExcessSuminsured().toString());
-			res.setGoodsSinglecarrySuminsured(build.getGoodsSinglecarrySuminsured() == null?"0" :build.getGoodsSinglecarrySuminsured().toString());
-			res.setGoodsTurnoverSuminsured(build.getGoodsTurnoverSuminsured() == null?"0" :build.getGoodsTurnoverSuminsured().toString());
+			res.setMoneySinglecarrySuminsured(build.getMoneySinglecarrySuminsured() == null?"0" :build.getMoneySinglecarrySuminsured().toPlainString());
+			res.setMoneyAnnualcarrySuminsured(build.getMoneyAnnualcarrySuminsured() == null?"0" :build.getMoneyAnnualcarrySuminsured().toPlainString());
+			res.setMoneyInsafeSuminsured(build.getMoneyInsafeSuminsured() == null?"0" :build.getMoneyInsafeSuminsured().toPlainString());
+			res.setFidelityAnyoccuSuminsured(build.getFidelityAnyoccuSuminsured() == null?"0" :build.getFidelityAnyoccuSuminsured().toPlainString());
+			res.setFidelityAnnualSuminsured(build.getFidelityAnnualSuminsured() == null?"0" :build.getFidelityAnnualSuminsured().toPlainString());
+			res.setTpliabilityAnyoccuSuminsured(build.getTpliabilityAnyoccuSuminsured() == null?"0" :build.getTpliabilityAnyoccuSuminsured().toPlainString());
+			res.setEmpliabilityAnnualSuminsured(build.getEmpliabilityAnnualSuminsured() == null?"0" :build.getEmpliabilityAnnualSuminsured().toPlainString());
+			res.setEmpliabilityExcessSuminsured(build.getEmpliabilityExcessSuminsured() == null?"0" :build.getEmpliabilityExcessSuminsured().toPlainString());
+			res.setGoodsSinglecarrySuminsured(build.getGoodsSinglecarrySuminsured() == null?"0" :build.getGoodsSinglecarrySuminsured().toPlainString());
+			res.setGoodsTurnoverSuminsured(build.getGoodsTurnoverSuminsured() == null?"0" :build.getGoodsTurnoverSuminsured().toPlainString());
 			res.setRiskId(build.getRiskId().toString());
 			res.setSectionId(sectionIds);		
 			
