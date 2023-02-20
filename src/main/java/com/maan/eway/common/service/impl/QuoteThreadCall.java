@@ -1372,6 +1372,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			
 			EserviceMotorDetails motorData = eserMotRepo.findByRequestReferenceNoAndRiskIdOrderByRiskIdAsc(request.getRequestReferenceNo() ,request.getVehicleId());
+			EserviceCustomerDetails custData = eserCustRepo.findByCustomerReferenceNo(motorData.getCustomerReferenceNo());
+			home.setCustomerName(custData.getClientName());
+			
 			home.setCompanyId(motorData.getCompanyId());
 			home.setBranchCode(motorData.getBranchCode());
 			home.setProductId(Integer.valueOf(motorData.getProductId()));
@@ -1422,6 +1425,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			
 			EserviceTravelDetails  travelData = eserTraRepo.findByRequestReferenceNo(request.getRequestReferenceNo()) ;
+			EserviceCustomerDetails custData = eserCustRepo.findByCustomerReferenceNo(travelData.getCustomerReferenceNo());
+			home.setCustomerName(custData.getClientName());
+			
 			home.setCompanyId(travelData.getCompanyId());
 			home.setBranchCode(travelData.getBranchCode());
 			home.setProductId(Integer.valueOf(travelData.getProductId()));
@@ -1476,6 +1482,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			EserviceBuildingDetails  buildingData = eserBuildRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() , 1) ;
 			Long builCount =  eserBuildRepo.countByRequestReferenceNo(request.getRequestReferenceNo() ) ;
+			EserviceCustomerDetails custData = eserCustRepo.findByCustomerReferenceNo(buildingData.getCustomerReferenceNo());
+			home.setCustomerName(custData.getClientName());
+			
 			//List<EserviceSectionDetails> sections = eserSecRepo.findByRequestReferenceNoAndRiskIdAndProductIdOrderBySectionIdAsc(request.getRequestReferenceNo() , request.getVehicleId(),request.getProductId() );
 			home.setCompanyId(buildingData.getCompanyId());
 			home.setBranchCode(buildingData.getBranchCode());
