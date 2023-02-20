@@ -197,7 +197,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			r.setBankCode(login.getBankCode());
 			
 			// Branch Res	
-			List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(login.getLoginId());
+			List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginIdAndStatus(login.getLoginId() , "Y");
 		
 			List<String> branchCode =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
 			List<String> attachedBranchCode = loginBranch.stream().map(LoginBranchMaster ::getAttachedBranch ).collect(Collectors.toList()) ;

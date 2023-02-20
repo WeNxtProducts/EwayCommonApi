@@ -225,12 +225,14 @@ try {
 	else {
 	query.where(n1,n2,n3,n4,n7,n8).orderBy(orderList);
 	}
+	TypedQuery<OccupationMaster> result = em.createQuery(query);
+	list = result.getResultList();
 	list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getOccupationId()))).collect(Collectors.toList());
+	list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getOccupationName()))).collect(Collectors.toList());
 	list.sort(Comparator.comparing(OccupationMaster :: getOccupationName ));
 	
 	// Get Result
-	TypedQuery<OccupationMaster> result = em.createQuery(query);
-	list = result.getResultList();
+
 	for (OccupationMaster data : list) {
 		// Response 
 		DropDownRes res = new DropDownRes();
