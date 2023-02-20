@@ -18,4 +18,5 @@ public class JasperDocumentReq {
 	@JsonProperty("QuoteNo")
 	private String quoteNo;
 	
+	
 }

@@ -114,4 +114,40 @@ public class JasperServiceImpl implements JasperService{
 		return res;
 	}
 
+	@Override
+	public JasperDocumentRes proposalform(JasperDocumentReq req) {
+		JasperDocumentRes res = new JasperDocumentRes();
+		String getPdfOutFilePath="";
+		try {
+			Map<String,Object> input = new HashMap<String,Object>();
+			input.put("QuoteNo",req.getQuoteNo());
+			input.put("imagePath",config.getImagePath());
+			
+			HomePositionMaster homeData = homeRepo.findByQuoteNo(req.getQuoteNo()) ;
+			
+			if(null!=input && input.size()>0) {
+				
+				//String directoryname=null ;
+				// File Save Path
+				String filePath=null;
+				 
+		
+				//directoryname=req.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
+				filePath = 	config.getProposalPath()+"pdf";
+				getPdfOutFilePath = filePath+"/"+req.getQuoteNo()+".pdf";
+				
+				File theDir = new File(filePath);
+				if (!theDir.exists()){
+				    theDir.mkdirs();
+				}			
+				
+				
+				res = getJasperPdfFile("/report/jasper/TravelReport.jrxml",getPdfOutFilePath,input);
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return res;
+	}
+
 }

@@ -42,4 +42,21 @@ public class JasperController {
 		}
 	}
 	
+	@PostMapping("/proposalform") 
+	private ResponseEntity<CommonRes> proposalform(@RequestBody JasperDocumentReq req) {
+		printReq.reqPrint(req);
+		CommonRes data = new CommonRes();
+		
+		JasperDocumentRes res = jasper.proposalform(req);;
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 }

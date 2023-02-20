@@ -7,5 +7,7 @@ public interface JasperService {
 
 	public JasperDocumentRes policyform(JasperDocumentReq req);
 
+	public JasperDocumentRes proposalform(JasperDocumentReq req);
+
 
 }

@@ -19,6 +19,9 @@ public class JasperConfiguration {
 	@Value("${policy.file.path}")
 	private String policyPath;
 	
+	@Value("${proposal.file.path}")
+	private String proposalPath;
+	
 	@Value("${jasper.datasourceby.jndi}")
 	private String datasourcebyjndi; 
 	 
@@ -32,6 +35,10 @@ public class JasperConfiguration {
 	
 	public String getPolicyPath() {
 		return policyPath;		
+	}
+	
+	public String getProposalPath() {
+		return proposalPath;		
 	}
 	
 	private static String classpathof;
