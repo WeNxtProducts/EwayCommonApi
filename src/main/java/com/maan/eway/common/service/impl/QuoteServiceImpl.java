@@ -371,6 +371,7 @@ private BuildingDetailsRepository BuildingRepo;
 				vehicleDetails.setRiskId(mot.getVehicleId());
 				driverResList.sort(Comparator.comparing(DriverDetailsRes :: getDriverId  ));
 				vehicleDetails.setDriverDetails(driverResList);
+				vehicleDetails.setDocumentsTitle(mot.getSectionName());			
 				
 				// Section Details
 				SectionDetails sec = new SectionDetails(); 
@@ -415,6 +416,7 @@ private BuildingDetailsRepository BuildingRepo;
 			List<EserviceBuildingsDetailsRes>   buildList = new ArrayList<EserviceBuildingsDetailsRes>();
 			EserviceBuildingsDetailsRes buildingRes = new  EserviceBuildingsDetailsRes()  ;
 			dozerMapper.map(buildData, buildingRes);
+			buildingRes.setDocumentsTitle(buildData.getProductDesc());	
 			
 			List<SectionDetails>  buildingSectionList = new ArrayList<SectionDetails>();
 			for (EserviceSectionDetails sec :  secDatas) {
@@ -436,6 +438,7 @@ private BuildingDetailsRepository BuildingRepo;
 						pacRes.setOccupationTypeDesc(acc.getOccupationDesc());
 						pacRes.setSuminsured(acc.getSumInsured()==null?"":acc.getSumInsured().toPlainString());
 						pacRes.setRiskId(acc.getRiskId().toString());
+						pacRes.setDocumentsTitle(acc.getOccupationDesc());
 						List<SectionDetails>  paSectionList = new ArrayList<SectionDetails>();
 						SectionDetails secData = new SectionDetails(); 
 						secData.setSectionId(acc.getSectionId()==null?"":acc.getSectionId().toString());

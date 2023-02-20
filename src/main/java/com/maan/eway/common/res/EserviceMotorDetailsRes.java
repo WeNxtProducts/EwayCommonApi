@@ -168,6 +168,10 @@ public class EserviceMotorDetailsRes implements Serializable {
 	@JsonProperty("CityLimit")
 	private String     cityLimit;
 	
+
+	@JsonProperty("DocumentsTitle")
+	private String     documentsTitle;
+	
 	@JsonProperty("SavedFrom")
     private String   savedFrom;
 	
