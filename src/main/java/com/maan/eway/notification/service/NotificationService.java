@@ -99,7 +99,7 @@ public class NotificationService {
 					.otp(n.getOtp())
 					.policyNo(n.getPolicyNo())
 					.quoteNo(n.getQuoteNo()) 
-					.uwMailid(n.getUnderwriters().subList(0, 5).stream().map(a -> a.getUwMailid()).collect(Collectors.joining(",")))
+					.uwMailid(n.getUnderwriters().size()>5?n.getUnderwriters().subList(0, 5).stream().map(a -> a.getUwMailid()).collect(Collectors.joining(",")):n.getUnderwriters().stream().map(a -> a.getUwMailid()).collect(Collectors.joining(","))
 					.uwMessengerCode(n.getUnderwriters().get(0).getUwMessengerCode())
 					.uwMessengerPhone(n.getUnderwriters().get(0).getUwMessengerPhone())
 					.uwName(n.getUnderwriters().get(0).getUwName())
