@@ -1418,7 +1418,10 @@ this.repository = repo;
 							errors.add(new Error("01"," Excess Percent","Please Enter Excess Percent")) ;				
 						} else if (! cov.getExcessPercent().matches("[0-9.]+")   ) {
 							errors.add(new Error("01"," Excess Percent","Please Enter Valid Excess Percent")) ;				
+						} else if (Double.valueOf(cov.getExcessPercent())> 100 ) {
+							errors.add(new Error("01"," Excess Percent","Excess Percent More Then 100 Percent Not Allowed")) ;				
 						}
+						
 						
 						if (StringUtils.isBlank(cov.getExcessDesc() ) ) {
 							errors.add(new Error("01"," Excess Desc","Please Enter  Excess Description")) ;				
