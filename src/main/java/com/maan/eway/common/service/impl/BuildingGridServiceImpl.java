@@ -320,7 +320,8 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 							.otherwise(m.get("customerId")).alias("customerId"),
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
 					m.get("rejectReason").alias("rejectReason"),
-					m.get("adminRemarks").alias("adminRemarks"));
+					m.get("adminRemarks").alias("adminRemarks"),
+					m.get("referalRemarks").alias("referalRemarks"));
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -351,7 +352,7 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
-							m.get("rejectReason"),m.get("adminRemarks"))
+							m.get("rejectReason"),m.get("adminRemarks"),m.get("referalRemarks"))
 					.orderBy(orderList);
 
 			// Get Result
@@ -396,7 +397,8 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 							.otherwise(m.get("customerId")).alias("customerId"),
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
 					m.get("rejectReason").alias("rejectReason"),
-					m.get("adminRemarks").alias("adminRemarks"));
+					m.get("adminRemarks").alias("adminRemarks"),
+					m.get("referalRemarks").alias("referalRemarks"));
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -415,7 +417,7 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
-							m.get("rejectReason"),m.get("adminRemarks"))
+							m.get("rejectReason"),m.get("adminRemarks"),m.get("referalRemarks"))
 					.orderBy(orderList);
 
 			// Get Result
