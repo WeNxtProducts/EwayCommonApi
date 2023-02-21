@@ -617,7 +617,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					} else if ( req.getProductId().equalsIgnoreCase(buildingProductId) ||  req.getProductId().equalsIgnoreCase(smeProductId)) {
 						List<EserviceBuildingDetails> buildingDatas = eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 						for (EserviceBuildingDetails build : buildingDatas ) {
-							List<IndividualReferalReq> filterInduRef = induRefs.stream().filter( o -> o.getRiskId().equals(build.getRiskId()) ).collect(Collectors.toList()) ;
+							List<IndividualReferalReq> filterInduRef = induRefs.stream().filter( o -> o.getRiskId().equals(build.getRiskId()) &&   StringUtils.isNotBlank(o.getReferals())   ).collect(Collectors.toList()) ;
 							String induRefDesc  = filterInduRef.size()> 0 ?  filterInduRef.get(0).getReferals() : "" ;
 							String induRefDesc3  = StringUtils.isBlank(otherReferals) ? induRefDesc : otherReferals + ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"")  ;
 							referralRemarks = StringUtils.isBlank(referralRemarks) ? induRefDesc : referralRemarks + ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"") ;
