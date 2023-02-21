@@ -67,14 +67,6 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="COMPANY_ID", nullable=false, length=20)
     private String     companyId ;
-
-    @Id
-    @Column(name="SUB_COVER_ID", nullable=false)
-    private Integer    subCoverId ;
-
-    @Id
-    @Column(name="AMEND_ID", nullable=false)
-    private Integer    amendId ;
     
     @Id
     @Column(name="AGENCY_CODE", nullable=false, length=20)
@@ -83,6 +75,14 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="BRANCH_CODE", nullable=false, length=20)
     private String     branchCode ;
+
+    @Id
+    @Column(name="SUB_COVER_ID", nullable=false)
+    private Integer    subCoverId ;
+
+    @Id
+    @Column(name="AMEND_ID", nullable=false)
+    private Integer    amendId ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="COVER_NAME", length=100)
@@ -145,8 +145,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="BASE_RATE")
     private BigDecimal     baseRate ;
 
-    @Column(name="EXCESS")
-    private BigDecimal     excess ;
+    @Column(name="EXCESS_AMOUNT")
+    private BigDecimal     excessAmount ;
+    
+    @Column(name="EXCESS_PERCENT")
+    private BigDecimal     excessPercent ;
+    
+    @Column(name="EXCESS_DESC")
+    private String     excessDesc ;
 
     @Column(name="MIN_PREMIUM")
     private BigDecimal     minPremium ;
