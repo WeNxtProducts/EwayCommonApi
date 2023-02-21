@@ -2,13 +2,10 @@ package com.maan.eway.notification.service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.persistence.Tuple;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +24,9 @@ import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.QuoteUpdateRes;
 import com.maan.eway.error.Error;
+import com.maan.eway.jasper.req.JasperDocumentReq;
+import com.maan.eway.jasper.res.JasperDocumentRes;
+import com.maan.eway.jasper.service.JasperService;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
 import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
 import com.maan.eway.notification.req.Broker;
@@ -179,6 +179,8 @@ public class NotificationService {
 	@Autowired
 	private EserviceCommonDetailsRepository eserCommonRepo;
 	
+	@Autowired
+	private JasperService jasperService;
 	@Async
 	public QuoteUpdateRes motorQuotationNotification(NewQuoteReq req) {
 		QuoteUpdateRes updateRes = new QuoteUpdateRes();
@@ -306,8 +308,12 @@ public class NotificationService {
 			n.setQuoteNo(quoteNo);
 			n.setSectionName(sectionName);
 		 
+			JasperDocumentReq r=JasperDocumentReq.builder().quoteNo(quoteNo).build();
+			JasperDocumentRes rse = jasperService.proposalform(r);
 			
-
+			List<String> atact=new ArrayList<String>();
+			atact.add(rse.getPdfoutfilepath());
+			n.setAttachments(atact);
 			// Calling pushNotification
 			CommonRes res=pushNotification(n);
  
