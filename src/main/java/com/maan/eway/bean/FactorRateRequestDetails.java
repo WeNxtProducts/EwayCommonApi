@@ -231,6 +231,16 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="MULTI_SELECT_YN")
     private String       multiSelectYn;
+    
+
+    @Column(name="EXCESS_AMOUNT")
+    private BigDecimal     excessAmount ;
+    
+    @Column(name="EXCESS_PERCENT")
+    private BigDecimal     excessPercent ;
+    
+    @Column(name="EXCESS_DESC")
+    private String     excessDesc ;
 }
 
 

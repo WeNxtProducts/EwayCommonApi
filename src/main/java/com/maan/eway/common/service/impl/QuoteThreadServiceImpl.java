@@ -449,6 +449,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				}
 			}
 			
+				notiService.motorQuotationNotification(req);
 		}	
 		} catch (Exception e) {
 			e.printStackTrace();

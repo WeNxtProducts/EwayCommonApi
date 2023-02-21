@@ -153,4 +153,11 @@ public class Cover implements Serializable{
 
 			 @JsonProperty("SectionName") 
 			 private String sectionName;
+			 
+			 @JsonProperty("ExcessPercent") 
+			 private BigDecimal excessPercent;
+			 @JsonProperty("ExcessAmount") 
+			 private BigDecimal excessAmount;
+			 @JsonProperty("ExcessDesc") 
+			 private String excessDesc;
 }

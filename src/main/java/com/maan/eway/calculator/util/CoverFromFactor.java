@@ -55,6 +55,9 @@ public class CoverFromFactor implements Function<FactorRateRequestDetails,Cover>
 					.premiumIncludedTax(new BigDecimal(t.get("coverId").toString()))*/
 					.regulatoryCode(t.getRegulatoryCode()==null?"N/A":t.getRegulatoryCode())
 					.multiSelectYn(t.getMultiSelectYn()==null?"N":t.getMultiSelectYn())
+					.excessAmount(t.getExcessAmount()==null?BigDecimal.ZERO:t.getExcessAmount())
+					.excessDesc(t.getExcessDesc()==null?"":t.getExcessDesc())
+					.excessPercent(t.getExcessPercent()==null?BigDecimal.ZERO:t.getExcessPercent())
 					.build();
 				return c;
 			 }			

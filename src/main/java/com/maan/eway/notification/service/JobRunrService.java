@@ -86,45 +86,49 @@ public class JobRunrService {
 
 							List<NotifTransactionDetails> n=h3.getValue();
 							List<NotifTemplateMaster> templat = masterRepo.findByCompanyIdAndProductIdAndStatusAndNotifTemplatenameIgnoreCaseOrderByAmendIdDesc(n.get(0).getCompanyid(),Long.valueOf(n.get(0).getProductid()),"Y",n.get(0).getNotifTemplatename());
-							List<MailMaster> mailc = mailRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(n.get(0).getCompanyid(),"99999","Y");													
-							List<SmsConfigMaster> smsc = smsRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(n.get(0).getCompanyid(),"99999","Y");													
+							if(!templat.isEmpty()) {
+								
+								List<MailMaster> mailc = mailRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(n.get(0).getCompanyid(),"99999","Y");													
+								List<SmsConfigMaster> smsc = smsRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(n.get(0).getCompanyid(),"99999","Y");													
 
-							PushedStateChange p=new PushedStateChange(n.get(0),templat.get(0),mailc.get(0),smsc.get(0));
-							collect = ne.stream().map(p).filter(dd->dd!=null).collect(Collectors.toList());					
-							List<Mail> totalMailJob=new ArrayList<Mail>();
-							
-				
-							
-							List<Sms> totalSmSJob=new ArrayList<Sms>();
-							
-							List<Messenger> totalMessnJob=new ArrayList<Messenger>();
+								PushedStateChange p=new PushedStateChange(n.get(0),templat.get(0),mailc.get(0),smsc.get(0));
+								collect = ne.stream().map(p).filter(dd->dd!=null).collect(Collectors.toList());					
+								List<Mail> totalMailJob=new ArrayList<Mail>();
+								
+					
+								
+								List<Sms> totalSmSJob=new ArrayList<Sms>();
+								
+								List<Messenger> totalMessnJob=new ArrayList<Messenger>();
 
-							if(!collect.isEmpty()) {
-								for (List<Object> list : collect) {
-									//totalJob.addAll(list);
-									for (Object o:list) {
+								if(!collect.isEmpty()) {
+									for (List<Object> list : collect) {
+										//totalJob.addAll(list);
+										for (Object o:list) {
 
-										if(o instanceof Mail) {
-											totalMailJob.add((Mail) o);
-										}else if(o instanceof Sms) {
-											totalSmSJob.add((Sms) o);
-										}else if(o instanceof Messenger) {
-											totalMessnJob.add((Messenger) o);
+											if(o instanceof Mail) {
+												totalMailJob.add((Mail) o);
+											}else if(o instanceof Sms) {
+												totalSmSJob.add((Sms) o);
+											}else if(o instanceof Messenger) {
+												totalMessnJob.add((Messenger) o);
+											}
+
 										}
-
 									}
+									if(!totalMailJob.isEmpty()) {
+
+										totalMailJob.stream().forEach(job);									
+									}
+									if(!totalSmSJob.isEmpty()) {
+
+										totalSmSJob.stream().forEach(Sms);									
+									}
+
+
 								}
-								if(!totalMailJob.isEmpty()) {
-
-									totalMailJob.stream().forEach(job);									
-								}
-								if(!totalSmSJob.isEmpty()) {
-
-									totalSmSJob.stream().forEach(Sms);									
-								}
-
-
 							}
+							
 						}
 					}
 				}
