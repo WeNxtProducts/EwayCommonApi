@@ -1468,12 +1468,19 @@ this.repository = repo;
 			//	EserviceTravelGroupDetails  findGroup = eserGroupRepo.findByRequestReferenceNoAndTravelIdAndGroupIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,Integer.valueOf(req.getGroupId()) ,
 			//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
 				
-			} else if(   req.getProductId().equalsIgnoreCase(buildingProductId)) {
-				EserviceBuildingDetails    findBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndCompanyIdAndProductId(req.getRequestReferenceNo() , req.getVehicleId() ,
+			} else if(   req.getProductId().equalsIgnoreCase(buildingProductId) ||  req.getProductId().equalsIgnoreCase(smeProductId)) {
+				EserviceBuildingDetails    findBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndCompanyIdAndProductId(req.getRequestReferenceNo() , 1 ,
 						req.getCompanyId() , 	 req.getProductId()  ) ;
 				agencyCode = findBuild.getBrokerCode();
 				branchCode = findBuild.getBranchCode();
 				currencyId = findBuild.getCurrency();
+			//	EserviceBuildingSectionDetails  findBuildSec = eserBuildSecRepo.findByRequestReferenceNoAndLocationIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,
+			//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
+			} else  {
+				EserviceCommonDetails    findCommon = eserCommonRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo() , req.getVehicleId()) ;
+				agencyCode = findCommon.getBrokerCode();
+				branchCode = findCommon.getBranchCode();
+				currencyId = findCommon.getCurrency();
 			//	EserviceBuildingSectionDetails  findBuildSec = eserBuildSecRepo.findByRequestReferenceNoAndLocationIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,
 			//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
 			}
