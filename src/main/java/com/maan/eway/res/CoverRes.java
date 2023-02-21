@@ -63,6 +63,15 @@ public class CoverRes {
     
     @JsonProperty("RegulatoryCode")
     private String  regulatoryCode ;
+    
+    @JsonProperty("ExcessAmount")
+    private String  excessAmount;
+    
+    @JsonProperty("ExcessPercent")
+    private String  excessPercent;
+    
+    @JsonProperty("ExcessDesc")
+    private String  excessDesc;
    
 	
 	

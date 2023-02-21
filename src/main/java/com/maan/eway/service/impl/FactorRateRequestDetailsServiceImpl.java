@@ -317,6 +317,9 @@ this.repository = repo;
  					saveCover.setIsReferral(StringUtils.isBlank(coverData.getIsReferral())?"N":coverData.getIsReferral());
 					saveCover.setReferralDescription(StringUtils.isBlank(coverData.getReferalDescription())?"":coverData.getReferalDescription());
 					saveCover.setMultiSelectYn(coverData.getMultiSelectYn()==null?"N": coverData.getMultiSelectYn());
+					saveCover.setExcessAmount(coverData.getExcessAmount()==null ? null : coverData.getExcessAmount());
+					saveCover.setExcessDesc(coverData.getExcessDesc()==null ? null : coverData.getExcessDesc());
+					saveCover.setExcessPercent(coverData.getExcessPercent()==null ? null : coverData.getExcessPercent());
 					String userOpt=!"D".equals(saveCover.getIsSelected())?"N":"Y";
 					saveCover.setRegulatoryCode(coverData.getRegulatoryCode());
 				/*	if(coverIds!=null && !coverIds.isEmpty()) {
@@ -414,7 +417,9 @@ this.repository = repo;
 						saveSubCover.setIsReferral(StringUtils.isBlank(subCoverData.getIsReferral())?"N":subCoverData.getIsReferral());
 						saveSubCover.setReferralDescription(StringUtils.isBlank(coverData.getReferalDescription())?"":coverData.getReferalDescription());
 						saveSubCover.setRegulSumInsured(subCoverData.getTiraSumInsured()==null?null:new BigDecimal(df.format(subCoverData.getTiraSumInsured())));
-						
+						saveSubCover.setExcessAmount(subCoverData.getExcessAmount()==null ? null : subCoverData.getExcessAmount());
+						saveSubCover.setExcessDesc(subCoverData.getExcessDesc()==null ? null : subCoverData.getExcessDesc());
+						saveSubCover.setExcessPercent(subCoverData.getExcessPercent()==null ? null : subCoverData.getExcessPercent());
 //						if(subCoverData.getTaxes()!=null && subCoverData.getTaxes().size() > 0 ) {
 //							saveSubCover.setTax1(subCoverData.getTaxes().get(0).getTaxAmount()==null ? null : Double.valueOf(df.format(subCoverData.getTaxes().get(0).getTaxAmount())) );
 //							if(coverData.getTaxes().size() > 1  ) 
@@ -1402,6 +1407,26 @@ this.repository = repo;
 					} else if ( cov.getRate().equalsIgnoreCase("0") &&  cov.getCoverageType().equalsIgnoreCase("D")    ) {
 						errors.add(new Error("01","Rate","Please Enter Valid Number In Rate")) ;				
 					}
+					if(StringUtils.isNotBlank(cov.getUserOpt())  && cov.getUserOpt().equalsIgnoreCase("Y")  ) {
+						if (StringUtils.isBlank(cov.getExcessAmount() ) ) {
+							errors.add(new Error("01"," Excess Amount","Please Enter Excess Amount")) ;				
+						} else if (! cov.getExcessAmount().matches("[0-9.]+")   ) {
+							errors.add(new Error("01"," Excess Amount","Please Enter Valid Excess Amount")) ;				
+						}
+						
+						if (StringUtils.isBlank(cov.getExcessPercent() ) ) {
+							errors.add(new Error("01"," Excess Percent","Please Enter Excess Percent")) ;				
+						} else if (! cov.getExcessPercent().matches("[0-9.]+")   ) {
+							errors.add(new Error("01"," Excess Percent","Please Enter Valid Excess Percent")) ;				
+						}
+						
+						if (StringUtils.isBlank(cov.getExcessDesc() ) ) {
+							errors.add(new Error("01"," Excess Desc","Please Enter  Excess Description")) ;				
+						} else if (! cov.getExcessDesc().matches("[0-9.]+")   ) {
+							errors.add(new Error("01"," Excess Desc"," Excess Description Must Be Under 500 Charaters Only Allowed")) ;				
+						}
+					}
+					
 				}
 			}
 			
@@ -1465,6 +1490,9 @@ this.repository = repo;
 						FactorRateRequestDetails  updateCover = filterCover.get(0);
 						updateCover.setMinimumPremium(new BigDecimal(df.format(Double.valueOf(covReq.getMinimumPremium()))));
 						updateCover.setRate(new BigDecimal(covReq.getRate()));
+						updateCover.setExcessAmount(new BigDecimal(covReq.getExcessAmount()));
+						updateCover.setExcessPercent(new BigDecimal(covReq.getExcessPercent()));
+						updateCover.setExcessDesc(covReq.getExcessDesc());
 						repository.save(updateCover);
 						
 					}
@@ -1474,6 +1502,9 @@ this.repository = repo;
 						FactorRateRequestDetails  updateSubCover = filterSubCover.get(0);
 						updateSubCover.setMinimumPremium(new BigDecimal(df.format(Double.valueOf(covReq.getMinimumPremium()))));
 						updateSubCover.setRate(new BigDecimal(covReq.getRate()));
+						updateSubCover.setExcessAmount(new BigDecimal(covReq.getExcessAmount()));
+						updateSubCover.setExcessPercent(new BigDecimal(covReq.getExcessPercent()));
+						updateSubCover.setExcessDesc(covReq.getExcessDesc());
 						repository.save(updateSubCover);
 					}
 					

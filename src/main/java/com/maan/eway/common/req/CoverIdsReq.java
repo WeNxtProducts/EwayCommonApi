@@ -35,5 +35,13 @@ public class CoverIdsReq {
 	@JsonProperty("CoverageType")
 	private String coverageType;
 	
+	@JsonProperty("ExcessAmount")
+	private String excessAmount;
+	
+	@JsonProperty("ExcessPercent")
+	private String excessPercent;
+	
+	@JsonProperty("ExcessDesc")
+	private String excessDesc;
 	
 }
