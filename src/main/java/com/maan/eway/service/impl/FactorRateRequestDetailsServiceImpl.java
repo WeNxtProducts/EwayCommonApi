@@ -1425,7 +1425,7 @@ this.repository = repo;
 						
 						if (StringUtils.isBlank(cov.getExcessDesc() ) ) {
 							errors.add(new Error("01"," Excess Desc","Please Enter  Excess Description")) ;				
-						} else if (! cov.getExcessDesc().matches("[0-9.]+")   ) {
+						} else if ( cov.getExcessDesc().length() > 500  ) {
 							errors.add(new Error("01"," Excess Desc"," Excess Description Must Be Under 500 Charaters Only Allowed")) ;				
 						}
 					}
