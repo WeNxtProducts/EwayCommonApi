@@ -1042,7 +1042,7 @@ this.repository = repo;
 						res.setInsuranceId(acc.getCompanyId());
 						res.setSectionId(sec.getSectionId());
 						res.setVehicleId(acc.getRiskId().toString());
-						res.setSectionName(acc.getOccupationDesc());
+						res.setSectionName(acc.getSectionDesc());
 						
 						res.setGroupId(acc.getRiskId()==null?null:acc.getRiskId());
 						res.setOverallPremiumFc(acc.getOverallPremiumFc()==null?"0": acc.getOverallPremiumFc().toPlainString());
@@ -1075,7 +1075,7 @@ this.repository = repo;
 						res.setActualPremiumLc(buildData.getActualPremiumLc()==null?"0":buildData.getActualPremiumLc().toPlainString());
 						res.setHavepromocode(buildData.getHavepromocode());
 						res.setPromocode(buildData.getPromocode());
-						res.setSectionName(buildData.getProductId().equalsIgnoreCase("19") ? sec.getSectionDesc() : buildData.getProductDesc());
+						res.setSectionName( sec.getSectionDesc() );
 						res.setGroupId(buildData.getRiskId()==null?null:buildData.getRiskId());
 						Object riskDetails = new Object();
 						EserviceBuildingsDetailsRes  buildRes = new EserviceBuildingsDetailsRes();
