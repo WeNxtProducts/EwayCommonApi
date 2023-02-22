@@ -44,7 +44,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(CountryMasterId.class)
-@Table(name="country_master")
+@Table(name="eway_country_master")
 
 
 public class CountryMaster implements Serializable {

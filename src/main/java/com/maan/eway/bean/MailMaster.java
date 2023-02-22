@@ -44,7 +44,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(MailMasterId.class)
-@Table(name="mail_master")
+@Table(name="eway_mail_master")
 
 
 public class MailMaster implements Serializable {

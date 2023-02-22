@@ -44,7 +44,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(CityMasterId.class)
-@Table(name="city_master")
+@Table(name="eway_city_master")
 
 
 public class CityMaster implements Serializable {

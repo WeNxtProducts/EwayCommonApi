@@ -55,7 +55,7 @@ import lombok.ToString;
 @DynamicUpdate
 @Builder
 @IdClass(NotifTemplateMasterId.class)
-@Table(name="notif_template_master")
+@Table(name="eway_notif_template_master")
 
 
 public class NotifTemplateMaster implements Serializable {  //--- ENTITY PRIMARY KEY 

@@ -43,7 +43,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(MotorMakeMasterId.class)
-@Table(name="motor_make_master")
+@Table(name="eway_motor_make_master")
 
 
 public class MotorMakeMaster implements Serializable {

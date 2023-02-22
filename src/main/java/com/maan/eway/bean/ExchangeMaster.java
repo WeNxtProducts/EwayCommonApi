@@ -48,7 +48,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(ExchangeMasterId.class)
-@Table(name="exchange_master")
+@Table(name="eway_exchange_master")
 
 
 public class ExchangeMaster implements Serializable {

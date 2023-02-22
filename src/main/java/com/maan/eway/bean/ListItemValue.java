@@ -42,7 +42,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(ListItemValueId.class)
-@Table(name="list_item_value")
+@Table(name="eway_list_item_value")
 
 
 public class ListItemValue implements Serializable {

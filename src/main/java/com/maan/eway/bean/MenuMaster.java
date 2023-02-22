@@ -41,7 +41,7 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@Table(name="menu_master")
+@Table(name="eway_menu_master")
 
 
 public class MenuMaster implements Serializable {

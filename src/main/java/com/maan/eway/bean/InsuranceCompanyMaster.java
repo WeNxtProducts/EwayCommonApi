@@ -44,7 +44,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(InsuranceCompanyMasterId.class)
-@Table(name="insurance_company_master")
+@Table(name="eway_insurance_company_master")
 
 
 public class InsuranceCompanyMaster implements Serializable {

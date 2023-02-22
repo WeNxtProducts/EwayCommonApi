@@ -44,7 +44,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(LoginMasterId.class)
-@Table(name="login_master")
+@Table(name="eway_login_master")
 
 
 public class LoginMaster implements Serializable {

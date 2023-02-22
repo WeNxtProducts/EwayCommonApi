@@ -39,7 +39,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(OccupationMasterId.class)
-@Table(name = "occupation_master")
+@Table(name = "eway_occupation_master")
 
 public class OccupationMaster implements Serializable {
 

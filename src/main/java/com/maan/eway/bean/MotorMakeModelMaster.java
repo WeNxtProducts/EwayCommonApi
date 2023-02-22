@@ -24,7 +24,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @IdClass(MotorMakeModelMasterId.class)
-@Table(name = "MOTOR_MAKEMODEL_MASTER")
+@Table(name = "eway_motor_makemodel_master")
 public class MotorMakeModelMaster implements Serializable {
 	/**
 	 * 

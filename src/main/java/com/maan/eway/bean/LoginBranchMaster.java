@@ -43,7 +43,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(LoginBranchMasterId.class)
-@Table(name="login_branch_master")
+@Table(name="eway_login_branch_master")
 
 
 public class LoginBranchMaster implements Serializable {

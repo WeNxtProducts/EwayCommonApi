@@ -45,7 +45,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(CurrencyMasterId.class)
-@Table(name="currency_master")
+@Table(name="eway_currency_master")
 
 
 public class CurrencyMaster implements Serializable {
