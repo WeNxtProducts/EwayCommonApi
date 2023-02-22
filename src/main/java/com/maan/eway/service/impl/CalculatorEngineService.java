@@ -447,7 +447,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 				dependedcovers.add("N");
 				dependedcovers.add("Y");
 				
-				List<FactorRateRequestDetails> factors = repository.findByRequestReferenceNoAndVehicleIdOrderByCoverIdAsc(request.getRequestReferenceNo(), Integer.valueOf(request.getVehicleId()));
+				List<FactorRateRequestDetails> factors = repository.findByRequestReferenceNoAndVehicleIdAndProductIdAndSectionIdOrderByCoverIdAsc(request.getRequestReferenceNo(), Integer.valueOf(request.getVehicleId()),Integer.valueOf(request.getProductId()),Integer.valueOf(request.getSectionId()));
 				
 				//TaxFromFactor tzx=new TaxFromFactor(); 
 				List<Tuple> taxes = ratingutil.LoadTax(request);
