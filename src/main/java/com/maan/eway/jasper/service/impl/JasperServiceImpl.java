@@ -10,6 +10,7 @@ import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.HomePositionMaster;
@@ -114,35 +115,82 @@ public class JasperServiceImpl implements JasperService{
 		return res;
 	}
 
+	@Value(value = "${motor.productId}")
+	private String motorProductId;
+	
+	@Value(value = "${travel.productId}")
+	private String travelProductId;
+	
+	@Value(value = "${building.productId}")
+	private String buildingProductId;
+	
+	@Value(value = "${personalaccident.productId}")
+	private String personalAccidentProductId;
+	
+	@Value(value = "${workmencompensation.productId}")
+	private String workmenCompensationProductId;
+	
+	@Value(value = "${employeesliability.productId}")
+	private String employeesliabilityProductId;
+	
+	@Value(value = "${sme.productId}")
+	private String smeProductId;
+	
 	@Override
 	public JasperDocumentRes proposalform(JasperDocumentReq req) {
-		JasperDocumentRes res = new JasperDocumentRes();
+		JasperDocumentRes res =null;
 		String getPdfOutFilePath="";
 		try {
 			Map<String,Object> input = new HashMap<String,Object>();
 			input.put("QuoteNo",req.getQuoteNo());
 			input.put("imagePath",config.getImagePath());
 			
-			HomePositionMaster homeData = homeRepo.findByQuoteNo(req.getQuoteNo()) ;
-			
-			if(null!=input && input.size()>0) {
+			//HomePositionMaster homeData = homeRepo.findByQuoteNo(req.getQuoteNo()) ;
+			if(travelProductId.equals(req.getProductId())) {
+				if(null!=input && input.size()>0) {
+
+					//String directoryname=null ;
+					// File Save Path
+					String filePath=null;
+
+
+					//directoryname=req.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
+					filePath = 	config.getProposalPath()+"pdf";
+					getPdfOutFilePath = filePath+"/"+req.getQuoteNo()+".pdf";
+
+					File theDir = new File(filePath);
+					if (!theDir.exists()){
+						theDir.mkdirs();
+					}			
+
+
+					res = getJasperPdfFile("/report/jasper/TravelReport.jrxml",getPdfOutFilePath,input);
+				}
+			}else if (motorProductId.equals(req.getProductId())) {
+				// Temporary
+				res=new JasperDocumentRes();
+				String filePath=config.getPolicyPath()+"pdf/MOTOR PRIVATE.pdf";
+				GetFileFromPath path=new GetFileFromPath(filePath);
+				res.setPdfoutfile(path.call().getImgUrl());
+				res.setPdfoutfilepath(filePath);
+			} else if (buildingProductId.equals(req.getProductId())) {
+				res=new JasperDocumentRes();
+				String filePath=config.getPolicyPath()+"pdf/PERSONAL PLUS.pdf";
+				GetFileFromPath path=new GetFileFromPath(filePath);
+				res.setPdfoutfile(path.call().getImgUrl());
+				res.setPdfoutfilepath(filePath);
+			}else if (personalAccidentProductId.equals(req.getProductId())) {
 				
-				//String directoryname=null ;
-				// File Save Path
-				String filePath=null;
-				 
-		
-				//directoryname=req.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
-				filePath = 	config.getProposalPath()+"pdf";
-				getPdfOutFilePath = filePath+"/"+req.getQuoteNo()+".pdf";
+			} else if (workmenCompensationProductId.equals(req.getProductId())) {
 				
-				File theDir = new File(filePath);
-				if (!theDir.exists()){
-				    theDir.mkdirs();
-				}			
+			}  else if (employeesliabilityProductId.equals(req.getProductId())) {
+				res=new JasperDocumentRes();
+				String filePath=config.getPolicyPath()+"pdf/GROUP PERSONAL ACCIDENT.pdf";
+				GetFileFromPath path=new GetFileFromPath(filePath);
+				res.setPdfoutfile(path.call().getImgUrl());
+				res.setPdfoutfilepath(filePath);
+			} else if(smeProductId.equals(req.getProductId())) {
 				
-				
-				res = getJasperPdfFile("/report/jasper/TravelReport.jrxml",getPdfOutFilePath,input);
 			}
 		}catch(Exception e) {
 			e.printStackTrace();

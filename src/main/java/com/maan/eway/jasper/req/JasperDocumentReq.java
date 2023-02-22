@@ -18,5 +18,7 @@ public class JasperDocumentReq {
 	@JsonProperty("QuoteNo")
 	private String quoteNo;
 	
+	@JsonProperty("ProductId")
+	private String productId;
 	
 }

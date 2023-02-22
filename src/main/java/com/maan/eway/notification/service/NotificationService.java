@@ -311,12 +311,14 @@ public class NotificationService {
 			n.setQuoteNo(quoteNo);
 			n.setSectionName(sectionName);
 		 
-			JasperDocumentReq r=JasperDocumentReq.builder().quoteNo(quoteNo).build();
+			JasperDocumentReq r=JasperDocumentReq.builder().quoteNo(quoteNo).productId(req.getProductId()).build();
 			JasperDocumentRes rse = jasperService.proposalform(r);
 			
-			List<String> atact=new ArrayList<String>();
-			atact.add(rse.getPdfoutfilepath());
-			n.setAttachments(atact);
+			if(StringUtils.isNotBlank(rse.getPdfoutfilepath())) {
+				List<String> atact=new ArrayList<String>();
+				atact.add(rse.getPdfoutfilepath());
+				n.setAttachments(atact);
+			}
 			// Calling pushNotification
 			CommonRes res=pushNotification(n);
  
