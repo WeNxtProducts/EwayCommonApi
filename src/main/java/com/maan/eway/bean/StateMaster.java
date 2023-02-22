@@ -43,7 +43,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(StateMasterId.class)
-@Table(name="state_master")
+@Table(name="eway_state_master")
 
 
 public class StateMaster implements Serializable {

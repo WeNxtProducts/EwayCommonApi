@@ -43,7 +43,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(SmsDataDetailsId.class)
-@Table(name="sms_data_details")
+@Table(name="eway_sms_data_details")
 
 
 public class SmsDataDetails implements Serializable {

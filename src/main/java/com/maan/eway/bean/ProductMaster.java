@@ -43,7 +43,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(ProductMasterId.class)
-@Table(name="product_master")
+@Table(name="eway_product_master")
 
 
 public class ProductMaster implements Serializable {

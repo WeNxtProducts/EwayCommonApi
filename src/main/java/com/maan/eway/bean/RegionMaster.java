@@ -43,7 +43,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(RegionMasterId.class)
-@Table(name="region_master")
+@Table(name="eway_region_master")
 
 
 public class RegionMaster implements Serializable {

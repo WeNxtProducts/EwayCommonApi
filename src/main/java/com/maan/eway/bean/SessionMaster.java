@@ -44,7 +44,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(SessionMasterId.class)
-@Table(name="session_master")
+@Table(name="eway_session_master")
 
 
 public class SessionMaster implements Serializable {

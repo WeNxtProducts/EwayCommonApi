@@ -43,7 +43,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(BankMasterId.class)
-@Table(name="bank_master")
+@Table(name="eway_bank_master")
 
 
 public class BankMaster implements Serializable {
