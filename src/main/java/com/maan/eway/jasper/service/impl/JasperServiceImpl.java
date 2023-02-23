@@ -27,84 +27,110 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 
 @Service
-public class JasperServiceImpl implements JasperService{
-
+public class JasperServiceImpl implements JasperService {
 
 	@Autowired
 	private JasperConfiguration config;
-	
+
 	@Autowired
 	private HomePositionMasterRepository homeRepo;
-	
+
+	@Value(value = "${motor.productId}")
+	private String motorProductId;
+
+	@Value(value = "${travel.productId}")
+	private String travelProductId;
+
+	@Value(value = "${building.productId}")
+	private String buildingProductId;
+
+	@Value(value = "${personalaccident.productId}")
+	private String personalAccidentProductId;
+
+	@Value(value = "${workmencompensation.productId}")
+	private String workmenCompensationProductId;
+
+	@Value(value = "${employeesliability.productId}")
+	private String employeesliabilityProductId;
+
+	@Value(value = "${sme.productId}")
+	private String smeProductId;
 
 	@Override
 	public JasperDocumentRes policyform(JasperDocumentReq req) {
 		JasperDocumentRes res = new JasperDocumentRes();
-		String getPdfOutFilePath="";
+		String getPdfOutFilePath = "";
 		try {
-			Map<String,Object> input = new HashMap<String,Object>();
-			input.put("QuoteNo",req.getQuoteNo());
-			input.put("imagePath",config.getImagePath());
-			
-			HomePositionMaster homeData = homeRepo.findByQuoteNo(req.getQuoteNo()) ;
-			
-			if(null!=input && input.size()>0) {
-				
-				//String directoryname=null ;
+			Map<String, Object> input = new HashMap<String, Object>();
+			input.put("QuoteNo", req.getQuoteNo());
+			input.put("imagePath", config.getImagePath());
+
+			HomePositionMaster homeData = homeRepo.findByQuoteNo(req.getQuoteNo());
+
+			if (null != input && input.size() > 0) {
+
+				// String directoryname=null ;
 				// File Save Path
-				String filePath=null;
-				 
-				if(StringUtils.isNotBlank(homeData.getPolicyNo()) ) {
-					
-					//directoryname=homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
-					filePath = 	config.getPolicyPath()+"pdf";
-					getPdfOutFilePath = filePath+"/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+".pdf";
-					
+				String filePath = null;
+
+				if (StringUtils.isNotBlank(homeData.getPolicyNo())) {
+
+					// directoryname=homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
+					filePath = config.getPolicyPath() + "pdf";
+					getPdfOutFilePath = filePath + "/" + homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")
+							+ ".pdf";
+
 				} else {
-					
-					//directoryname=req.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
-					filePath = 	config.getDraftPath()+"pdf";
-					getPdfOutFilePath = filePath+"/"+req.getQuoteNo()+".pdf";
+
+					// directoryname=req.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
+					filePath = config.getDraftPath() + "pdf";
+					getPdfOutFilePath = filePath + "/" + req.getQuoteNo() + ".pdf";
 				}
-				
+
 				File theDir = new File(filePath);
-				if (!theDir.exists()){
-				    theDir.mkdirs();
-				}			
-				
-				
-				res = getJasperPdfFile("/report/jasper/TravelReport.jrxml",getPdfOutFilePath,input);
+				if (!theDir.exists()) {
+					theDir.mkdirs();
+				}
+
+				if (buildingProductId.equals(homeData.getProductId().toString())) {
+					res = getJasperPdfFile("/report/jasper/PersonalPlus.jrxml", getPdfOutFilePath, input);
+				}
+
+				else if (travelProductId.equals(req.getProductId())) {
+					res = getJasperPdfFile("/report/jasper/TravelReport.jrxml", getPdfOutFilePath, input);
+				}
+
 			}
-		}catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return res;
 	}
 
-	private JasperDocumentRes getJasperPdfFile(String jasperPath, String filePath,Map<String, Object> input) {
+	private JasperDocumentRes getJasperPdfFile(String jasperPath, String filePath, Map<String, Object> input) {
 		JasperDocumentRes res = new JasperDocumentRes();
-		Connection connection=null;
+		Connection connection = null;
 		try {
-			connection=config.getDataSourceForJasper().getConnection();
+			connection = config.getDataSourceForJasper().getConnection();
 			InputStream inputStream = this.getClass().getResourceAsStream(jasperPath);
 			JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
-			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport,input, connection);
-			//JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport,input);
-			
-					/*servletRequest.getRealPath(getPdfOutFilePath)*/;
-			//filePath=filePath.replaceAll("%20", " ");
-			System.out.println("filePath name is ====> "+filePath);
-			JasperExportManager.exportReportToPdfFile(jasperPrint,filePath);
-			//res.setPdfoutfilepath(commonPath+"/"+getPdfOutFilePath);
-			
-			GetFileFromPath path=new GetFileFromPath(filePath);
+			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, input, connection);
+			// JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport,input);
+
+			/* servletRequest.getRealPath(getPdfOutFilePath) */;
+			// filePath=filePath.replaceAll("%20", " ");
+			System.out.println("filePath name is ====> " + filePath);
+			JasperExportManager.exportReportToPdfFile(jasperPrint, filePath);
+			// res.setPdfoutfilepath(commonPath+"/"+getPdfOutFilePath);
+
+			GetFileFromPath path = new GetFileFromPath(filePath);
 			res.setPdfoutfile(path.call().getImgUrl());
 			res.setPdfoutfilepath(filePath);
-			
-		}catch(Exception e) {
-			e.printStackTrace();		
-		}finally {
-			if(connection!=null)
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null)
 				try {
 					connection.close();
 				} catch (SQLException e) {
@@ -115,84 +141,61 @@ public class JasperServiceImpl implements JasperService{
 		return res;
 	}
 
-	@Value(value = "${motor.productId}")
-	private String motorProductId;
-	
-	@Value(value = "${travel.productId}")
-	private String travelProductId;
-	
-	@Value(value = "${building.productId}")
-	private String buildingProductId;
-	
-	@Value(value = "${personalaccident.productId}")
-	private String personalAccidentProductId;
-	
-	@Value(value = "${workmencompensation.productId}")
-	private String workmenCompensationProductId;
-	
-	@Value(value = "${employeesliability.productId}")
-	private String employeesliabilityProductId;
-	
-	@Value(value = "${sme.productId}")
-	private String smeProductId;
-	
 	@Override
 	public JasperDocumentRes proposalform(JasperDocumentReq req) {
-		JasperDocumentRes res =null;
-		String getPdfOutFilePath="";
+		JasperDocumentRes res = null;
+		String getPdfOutFilePath = "";
 		try {
-			Map<String,Object> input = new HashMap<String,Object>();
-			input.put("QuoteNo",req.getQuoteNo());
-			input.put("imagePath",config.getImagePath());
-			
-			//HomePositionMaster homeData = homeRepo.findByQuoteNo(req.getQuoteNo()) ;
-			if(travelProductId.equals(req.getProductId())) {
-				if(null!=input && input.size()>0) {
+			Map<String, Object> input = new HashMap<String, Object>();
+			input.put("QuoteNo", req.getQuoteNo());
+			input.put("imagePath", config.getImagePath());
 
-					//String directoryname=null ;
+			// HomePositionMaster homeData = homeRepo.findByQuoteNo(req.getQuoteNo()) ;
+			if (travelProductId.equals(req.getProductId())) {
+				if (null != input && input.size() > 0) {
+
+					// String directoryname=null ;
 					// File Save Path
-					String filePath=null;
+					String filePath = null;
 
-
-					//directoryname=req.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
-					filePath = 	config.getProposalPath()+"pdf";
-					getPdfOutFilePath = filePath+"/"+req.getQuoteNo()+".pdf";
+					// directoryname=req.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
+					filePath = config.getProposalPath() + "pdf";
+					getPdfOutFilePath = filePath + "/" + req.getQuoteNo() + ".pdf";
 
 					File theDir = new File(filePath);
-					if (!theDir.exists()){
+					if (!theDir.exists()) {
 						theDir.mkdirs();
-					}			
-
-
-					res = getJasperPdfFile("/report/jasper/TravelReport.jrxml",getPdfOutFilePath,input);
+					}
+					res = getJasperPdfFile("/report/jasper/TravelReport.jrxml", getPdfOutFilePath, input);
 				}
-			}else if (motorProductId.equals(req.getProductId())) {
+			} else if (motorProductId.equals(req.getProductId())) {
 				// Temporary
-				res=new JasperDocumentRes();
-				String filePath=config.getPolicyPath()+"pdf/MOTOR PRIVATE.pdf";
-				GetFileFromPath path=new GetFileFromPath(filePath);
+				res = new JasperDocumentRes();
+				String filePath = config.getPolicyPath() + "pdf/MOTOR PRIVATE.pdf";
+				GetFileFromPath path = new GetFileFromPath(filePath);
 				res.setPdfoutfile(path.call().getImgUrl());
 				res.setPdfoutfilepath(filePath);
 			} else if (buildingProductId.equals(req.getProductId())) {
-				res=new JasperDocumentRes();
-				String filePath=config.getPolicyPath()+"pdf/PERSONAL PLUS.pdf";
-				GetFileFromPath path=new GetFileFromPath(filePath);
+				res = new JasperDocumentRes();
+				String filePath = config.getPolicyPath() + "pdf/PERSONAL PLUS.pdf";
+				GetFileFromPath path = new GetFileFromPath(filePath);
 				res.setPdfoutfile(path.call().getImgUrl());
 				res.setPdfoutfilepath(filePath);
-			}else if (personalAccidentProductId.equals(req.getProductId())) {
-				
+
+			} else if (personalAccidentProductId.equals(req.getProductId())) {
+
 			} else if (workmenCompensationProductId.equals(req.getProductId())) {
-				
-			}  else if (employeesliabilityProductId.equals(req.getProductId())) {
-				res=new JasperDocumentRes();
-				String filePath=config.getPolicyPath()+"pdf/GROUP PERSONAL ACCIDENT.pdf";
-				GetFileFromPath path=new GetFileFromPath(filePath);
+
+			} else if (employeesliabilityProductId.equals(req.getProductId())) {
+				res = new JasperDocumentRes();
+				String filePath = config.getPolicyPath() + "pdf/GROUP PERSONAL ACCIDENT.pdf";
+				GetFileFromPath path = new GetFileFromPath(filePath);
 				res.setPdfoutfile(path.call().getImgUrl());
 				res.setPdfoutfilepath(filePath);
-			} else if(smeProductId.equals(req.getProductId())) {
-				
+			} else if (smeProductId.equals(req.getProductId())) {
+
 			}
-		}catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return res;

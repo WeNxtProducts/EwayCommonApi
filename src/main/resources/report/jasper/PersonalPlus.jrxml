@@ -1,0 +1,1138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PersonalPlus" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d3d4a562-6029-4865-a4fb-e81e4eee21ed">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="19" splitType="Stretch">
+			<textField>
+				<reportElement x="210" y="0" width="150" height="14" uuid="52606e57-d103-4153-8eef-df0c04637052"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["PERSONAL PLUS POLICY SCHEDULE"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="210" height="19" uuid="09758ed2-f4e1-459a-9d6b-cd7b7ab4bd6a"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="210" y="14" width="150" height="5" uuid="cd73a810-fce6-4927-a071-1f4e9cccc8be"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="360" y="0" width="189" height="19" uuid="19386670-f391-4e6a-8fa7-275f227408ff"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="12">
+			<textField>
+				<reportElement x="0" y="0" width="130" height="12" uuid="b16ae64a-0771-4302-8f2b-888fc403a4c0"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["POLICY NO. :"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="130" y="0" width="419" height="12" uuid="72c2ed02-f77c-42fe-9f7b-c7ffb3ae026e"/>
+				<box leftPadding="2">
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="12">
+			<textField>
+				<reportElement x="0" y="0" width="130" height="12" uuid="8e4f8c83-cf0d-410a-a8e2-3ff43edc3e7a"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["INSURED :"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="130" y="0" width="419" height="12" uuid="ea21dcc5-0660-4b51-8151-e6ae386d0dad"/>
+				<box leftPadding="2">
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="12">
+			<textField>
+				<reportElement x="0" y="0" width="130" height="12" uuid="e861d7ae-ee82-4f64-b2ac-3037e40f765f"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FIRST LOSS PAYEE :"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="130" y="0" width="419" height="12" uuid="295a0c1f-d1b7-4c29-aedb-dcc1ecd07867"/>
+				<box leftPadding="2">
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="12">
+			<textField>
+				<reportElement x="0" y="0" width="130" height="12" uuid="1c618c56-e306-4f98-a527-f53d762dae3f"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ADDRESS :"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="130" y="0" width="419" height="12" uuid="1ebe3e1d-039b-43db-a301-7332992fa677"/>
+				<box leftPadding="2">
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="12">
+			<textField>
+				<reportElement x="0" y="0" width="130" height="12" uuid="a92992c1-1244-40c2-b0b1-c1e12cf16003"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["BROKER INVOICE NO :"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="130" y="0" width="419" height="12" uuid="35b6a6a5-667f-4708-a3d4-81f77097bd49"/>
+				<box leftPadding="2">
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="12">
+			<textField>
+				<reportElement x="0" y="0" width="130" height="12" uuid="a3b5845e-5531-4faf-a3df-3fa231cf4563"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["PERIOD FROM :"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="130" y="0" width="419" height="12" uuid="27af9155-52a5-44fb-9ce4-c3ec158a1155"/>
+				<box leftPadding="2">
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="12">
+			<textField>
+				<reportElement x="0" y="0" width="130" height="12" uuid="944429b8-da74-413d-8114-0b1c3896fcec"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["TO :"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="130" y="0" width="419" height="12" uuid="772574bd-50b6-473d-b7ae-d2be38640fb9"/>
+				<box leftPadding="2">
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="12">
+			<textField>
+				<reportElement x="0" y="0" width="130" height="12" uuid="95749294-fc54-4d86-a0e7-323b00902aca"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["RENEWAL DATE :"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="130" y="0" width="419" height="12" uuid="f519fe7a-6a59-41d6-9de3-2941080a7aa2"/>
+				<box leftPadding="2">
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="12">
+			<textField>
+				<reportElement x="0" y="0" width="549" height="12" uuid="608e58a3-7cf3-4190-b4f4-b81dac6e03ff"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="13">
+			<textField>
+				<reportElement x="0" y="0" width="60" height="13" uuid="a7f5c2f5-81a4-40a2-85ba-360cd3a318ea"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="60" y="0" width="80" height="13" uuid="aceb2ec4-f5e4-4261-9b90-545c409231de"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial Black" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Policy section"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="140" y="0" width="120" height="13" uuid="57a5e330-2294-451b-b675-5e5598475d20"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="310" y="0" width="239" height="13" uuid="f37f4449-8d63-48d7-8982-6300f80c683d"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="260" y="0" width="50" height="13" uuid="851de4e5-20c9-4cee-84ea-c8568f494724"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial Black" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Premium"]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="12">
+			<textField>
+				<reportElement x="0" y="0" width="280" height="12" uuid="312999de-5190-49a1-9fed-72529b66ce35"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="0" width="40" height="12" uuid="7d39dbae-0a32-4c96-af30-ee2237325e8d"/>
+				<box topPadding="1"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["TZS"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="320" y="0" width="229" height="12" uuid="f554296f-bd99-4c02-a0ab-6d5801a0a8e2"/>
+				<box>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA["Text Field"]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="12">
+			<textField>
+				<reportElement x="0" y="0" width="100" height="12" uuid="0b30f464-7dc5-4c59-a223-a5907e08786a"/>
+				<box topPadding="1" leftPadding="2">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Building"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="0" width="180" height="12" uuid="6a98e4d2-4871-4af2-850e-31849633dbe3"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="0" width="100" height="12" uuid="d032d43e-397f-42ee-8127-d974b3a68531"/>
+				<box topPadding="1" leftPadding="2"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="380" y="0" width="169" height="12" uuid="2ddbb283-cca7-4219-a50c-c53bfe4b3b0a"/>
+				<box>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="12">
+			<textField>
+				<reportElement x="0" y="0" width="180" height="12" uuid="05f6f031-31ff-43de-bd64-f6ce6c7cddee"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="180" y="0" width="100" height="12" uuid="fd40e488-3c2f-4101-b68a-5ee36349965c"/>
+				<box topPadding="1"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["VAT@18%"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="0" width="100" height="12" uuid="39081466-45cc-4d0d-96a4-b9aa8847aa82"/>
+				<box topPadding="1" leftPadding="2"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="380" y="0" width="169" height="12" uuid="ddca0afd-b4eb-4fc0-9938-cb071432619a"/>
+				<box>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="12">
+			<textField>
+				<reportElement x="0" y="0" width="180" height="12" uuid="417cf4e4-2b9d-46f0-b0e0-d6af903ffe37"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="180" y="0" width="100" height="12" uuid="795b499d-f423-4e0f-b58c-7beb7f3bc75e"/>
+				<box topPadding="0"/>
+				<textElement textAlignment="Left">
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Total"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="0" width="100" height="12" uuid="49a1ad81-0332-4b60-a16c-66e127598a96"/>
+				<box topPadding="0">
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="380" y="0" width="169" height="12" uuid="734fe4e2-7157-4fed-896f-c2d4f4116f9b"/>
+				<box>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="468">
+			<textField>
+				<reportElement x="0" y="0" width="548" height="468" uuid="169fe113-548f-45c0-af9b-2aa27371445e"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="20">
+			<textField>
+				<reportElement x="0" y="0" width="210" height="20" uuid="a93536d5-bf95-4fd4-8f08-4bb63a7f65fe"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="210" y="0" width="139" height="19" uuid="51104ba2-a0c0-4277-b550-f02d3c2a3159"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["BUILDING POLICY SCHEDULE "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="349" y="0" width="199" height="20" uuid="dc490eeb-11fb-43e6-8c26-5fee8633411c"/>
+				<box>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="11">
+			<textField>
+				<reportElement x="0" y="-1" width="280" height="12" uuid="a1dc4669-5ecc-4bc2-8cab-e59d79500834"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["SCHEDULE FORMING PART AND ATTACHED TO POLICY NO ."]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="-1" width="268" height="12" uuid="0b5bb06f-36af-4349-8a58-4b306e525861"/>
+				<box leftPadding="2">
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="14">
+			<textField>
+				<reportElement x="0" y="0" width="90" height="14" uuid="f1094ec8-cffa-4e2b-b6c6-f973834faf17"/>
+				<box topPadding="1" leftPadding="2">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["PERIOD FROM : "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="90" y="0" width="100" height="14" uuid="f420c77d-33a0-4f10-aa1c-007843a992f5"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="190" y="0" width="30" height="14" uuid="fdd60437-147f-424a-895b-8568406cb10f"/>
+				<box topPadding="1" leftPadding="2">
+					<leftPen lineWidth="0.0"/>
+				</box>
+				<textElement>
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["To :"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="0" width="100" height="14" uuid="4fbb139a-f8f9-4f9b-b812-6a6f8ada5273"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="320" y="0" width="228" height="14" uuid="30973479-29f1-4833-9dd1-37b4a4d3e6e1"/>
+				<box leftPadding="2">
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="10">
+			<textField>
+				<reportElement x="0" y="0" width="548" height="10" uuid="b0382be1-c5d1-4540-90d9-10c5cd19a9f6"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="18">
+			<textField>
+				<reportElement x="5" y="4" width="34" height="14" uuid="15af1c66-a48b-40b1-b378-f5c1375cb78b"/>
+				<box leftPadding="2">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["S/No"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="39" y="4" width="100" height="14" uuid="e55faf74-3b86-454f-ad57-d025726b3f30"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Description"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="139" y="4" width="130" height="14" uuid="05a078a7-14f7-421d-bfd0-04d65cd7cfef"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Details/location"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="269" y="4" width="130" height="14" uuid="dbcecf36-cf27-49ad-863e-711e82870c89"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Tira Covernote No"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="399" y="4" width="143" height="14" uuid="322ef54f-d60f-4e23-8a82-efc28572b44f"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Sum Insured    TZS"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="5" height="18" uuid="fff3cc96-efad-4937-bf88-f29309abf4a4"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="542" y="0" width="6" height="18" uuid="c7740b6d-0c0b-4def-a4fa-e052755c149c"/>
+				<box>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="40">
+			<textField>
+				<reportElement x="0" y="0" width="5" height="40" uuid="c7b73eba-2671-4a32-863b-c120c7a6ec2c"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="5" y="0" width="34" height="40" uuid="ff280e90-fb16-4dcb-9197-6c07acd0cc27"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="39" y="0" width="100" height="40" uuid="9cb5e5d1-cef3-4206-ac8f-6919d5637412"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="139" y="0" width="130" height="40" uuid="4195df75-bf71-46b2-96f5-6e6535f5e1b7"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="269" y="0" width="130" height="40" uuid="81dddd43-5469-40dd-88ee-ea522547e051"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="399" y="0" width="143" height="40" uuid="7a6ded33-6295-4f33-864d-baab7bf5d8de"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="542" y="0" width="6" height="40" uuid="cefca639-ec88-4ace-a257-51c06db69afe"/>
+				<box>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="20">
+			<textField>
+				<reportElement x="0" y="0" width="339" height="20" uuid="c7a0b9b4-e694-46ab-b16a-776724dd230f"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="339" y="0" width="70" height="20" uuid="b58d9f8d-89a9-41f7-8c92-f29e0d45531f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Total"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="409" y="0" width="121" height="19" uuid="43b2ffb0-64fd-46f0-b0fe-8f94fe2ca5e0"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="530" y="0" width="18" height="20" uuid="44c53c41-ae10-469d-a4f4-d3431a281ddd"/>
+				<box>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="20">
+			<textField>
+				<reportElement x="0" y="0" width="320" height="20" uuid="e5f6f9dc-aca7-402f-9a4b-6da11732cbf9"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="320" y="0" width="89" height="20" uuid="ba5cbbef-def7-422e-9068-e84bfe5be83c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Total Premium"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="409" y="1" width="121" height="18" uuid="1924c1ca-8338-41d8-8b7b-2b0893e49ece"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="530" y="0" width="18" height="20" uuid="0b523834-8d5e-42df-ae03-b8ab63f83529"/>
+				<box>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="14">
+			<textField>
+				<reportElement x="0" y="0" width="348" height="14" uuid="8425f432-5490-4661-b4e0-2430de4a47d7"/>
+				<box leftPadding="6">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Additional Conditions, Clauses and Warranties"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="348" y="0" width="61" height="14" uuid="e3ef3d0c-5dd1-410b-b4a0-e71fe95035f8"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="409" y="1" width="121" height="13" uuid="7bee9479-1e20-4c4a-97a0-ae0f27020634"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="530" y="0" width="18" height="14" uuid="418fe0e0-69b5-4938-ba78-263235d7fd2d"/>
+				<box>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="14">
+			<textField>
+				<reportElement x="0" y="0" width="348" height="14" uuid="f1780648-8d73-459d-82c9-abc9627997d9"/>
+				<box leftPadding="6">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["General, War & Terrorism Exclusion Endorsement"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="348" y="0" width="200" height="14" uuid="89a24617-0c53-43d4-98b6-138c83f319ea"/>
+				<box>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="10">
+			<textField>
+				<reportElement x="0" y="0" width="548" height="10" uuid="c7c572c4-593b-4ae9-a87b-8c544d3eef32"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="14">
+			<textField>
+				<reportElement x="0" y="0" width="348" height="14" uuid="fcf935f1-04d6-41cf-a508-07e11243e44b"/>
+				<box leftPadding="6">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["CRDB BANK PLC BANCASSURANCE :SONGEA BRANCH"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="348" y="0" width="200" height="14" uuid="2f9f8a62-919f-4e54-9433-86281a6dc39d"/>
+				<box>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="10">
+			<textField>
+				<reportElement x="0" y="0" width="50" height="10" uuid="263a79b2-24aa-4fc0-8f5b-3889607145d6"/>
+				<box leftPadding="6">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Excess :"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="50" y="0" width="498" height="10" uuid="f7b974a8-cf9d-4dd6-9f13-94201ab5151d"/>
+				<box>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["(a) Fire - NIL (b) AOG Perils - 10% of claim, minimum TZS 10Million or Equivalent in USD"]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="15">
+			<textField>
+				<reportElement x="50" y="0" width="498" height="15" uuid="35c26229-7ecb-4b3c-ad5c-afacbca7e760"/>
+				<box>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["This cover is subject to the terms, conditions and exceptions attached at the end of the policy document."]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="50" height="15" uuid="2ebec980-a847-4f3a-b5bf-3b252b019054"/>
+				<box leftPadding="6">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Note :"]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="385">
+			<textField>
+				<reportElement x="0" y="0" width="548" height="385" uuid="5568375c-4160-4c8a-ac53-3106e7ef6a3c"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="91" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="548" height="11" uuid="f59cbe75-004f-4443-b0b3-0789e5a97480"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="11" width="548" height="16" uuid="35222985-d798-4271-9af7-86ba9fa520cd"/>
+				<box topPadding="2" leftPadding="3">
+					<leftPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["In witness whereof the undersigned being duly authorised by the Insurers and on behalf of the Insurers has/have hereunto set"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="27" width="548" height="16" uuid="bc80bb3f-3826-4c75-827d-6bea3c8f6202"/>
+				<box topPadding="2" leftPadding="3">
+					<leftPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["his/their hand(s)"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="43" width="50" height="16" uuid="e67a926e-9e78-4214-bc38-2e8d524bbed6"/>
+				<box leftPadding="3">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["PLACE :"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="50" y="43" width="110" height="16" uuid="f9d94e36-f57e-430b-a2da-da0a02195dfe"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="160" y="43" width="40" height="16" uuid="3ac6ee2d-bb4b-489a-8fae-395ba3eadb84"/>
+				<box leftPadding="3"/>
+				<textElement>
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Date :"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="200" y="43" width="114" height="16" uuid="68837cb5-0a5a-43e3-bca9-24546d6daede"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="314" y="43" width="234" height="16" uuid="5d948872-95cc-4c3a-b485-92cad501a52d"/>
+				<box leftPadding="3">
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["For Alliance Insurance Corporation Ltd."]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="59" width="50" height="16" uuid="c41bb580-8d5e-47a3-9fc1-32d5d0ec6a52"/>
+				<box leftPadding="3">
+					<leftPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Agent :"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="50" y="59" width="498" height="16" uuid="2df747ed-546e-4d60-b15d-ed6f994edcb8"/>
+				<box>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="75" width="60" height="16" uuid="daea2f07-84f0-4e90-a99c-8fcbc14e652c"/>
+				<box leftPadding="3">
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Prepared By :"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="60" y="75" width="90" height="16" uuid="43055909-71b7-49c7-b8ee-6f5a0937b2bf"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="150" y="75" width="60" height="16" uuid="7e107a32-2953-4d23-9529-b37cbb933c0e"/>
+				<box leftPadding="3">
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Printed By :"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="210" y="75" width="109" height="16" uuid="742465c2-2788-47ad-82b1-d01dfcbfdf0c"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="319" y="75" width="109" height="16" uuid="f750bf98-e617-4dcb-b281-f303b97871ec"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="428" y="75" width="120" height="16" uuid="c075db80-cdb7-4a5b-977f-1303cbfff32a"/>
+				<box leftPadding="3">
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial Black" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Authorized Signatory"]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
