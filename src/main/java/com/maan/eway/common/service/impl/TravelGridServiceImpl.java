@@ -183,7 +183,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(m.get("updatedDate")));
+			orderList.add(cb.desc(m.get("travelStartDate")));
 			
 		
 			// Where
@@ -255,7 +255,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(m.get("updatedDate")));
+			orderList.add(cb.desc(m.get("travelStartDate")));
 			
 		
 			// Where
@@ -329,7 +329,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(m.get("updatedDate")));
+			orderList.add(cb.desc(m.get("travelStartDate")));
 			
 		
 			// Where
@@ -406,7 +406,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(m.get("updatedDate")));
+			orderList.add(cb.desc(m.get("travelStartDate")));
 			
 		
 			// Where
