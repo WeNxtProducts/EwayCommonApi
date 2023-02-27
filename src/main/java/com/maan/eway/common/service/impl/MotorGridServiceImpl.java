@@ -143,7 +143,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(m.get("updatedDate")));
+			orderList.add(cb.desc(m.get("policyStartDate")));
 
 			// Where
 			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));

@@ -130,7 +130,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(m.get("updatedDate")));
+			orderList.add(cb.desc(m.get("policyStartDate")));
 
 			// Where
 			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
@@ -157,7 +157,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 			}
 
 			query.where(n1, n2, n3, n4, n5, n6, n7, n8)
-					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
+					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), m.get("customerName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"))
 					.orderBy(orderList);
