@@ -1168,7 +1168,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 
 				query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9)
 				.groupBy(
-						c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"),c.get("mobileNo1"), c.get("isTaxExempted"), c.get("taxExemptedId"),
+						c.get("customerReferenceNo"), c.get("idNumber"), m.get("customerName"),c.get("mobileNo1"), c.get("isTaxExempted"), c.get("taxExemptedId"),
 						m.get("companyId"),m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 						m.get("customerId"), m.get("entryDate"), m.get("expiryDate"),m.get("inceptionDate"), m.get("overallPremiumLc"), m.get("overallPremiumFc"),
 						m.get("policyNo"), m.get("debitAcNo"), m.get("debitTo"),m.get("debitToId"), m.get("debitNoteNo"), m.get("debitNoteDate"),
