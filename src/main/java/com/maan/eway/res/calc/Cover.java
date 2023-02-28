@@ -160,4 +160,7 @@ public class Cover implements Serializable{
 			 private BigDecimal excessAmount;
 			 @JsonProperty("ExcessDesc") 
 			 private String excessDesc;
+			 
+			 @JsonProperty("MinimumPremiumYn") 
+			 private String minimumPremiumYn;
 }

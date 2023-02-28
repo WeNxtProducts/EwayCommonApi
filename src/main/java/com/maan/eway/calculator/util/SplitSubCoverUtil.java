@@ -59,6 +59,7 @@ public class SplitSubCoverUtil implements Function<Tuple,Cover> {
 					.excessAmount(t.get("excessAmount")==null?BigDecimal.ZERO:new BigDecimal(t.get("excessAmount").toString()))
 					.excessDesc(t.get("excessDesc")==null?"N":t.get("excessDesc").toString())
 					.excessPercent(t.get("excessPercent")==null?BigDecimal.ZERO:new BigDecimal(t.get("excessPercent").toString()))
+					.minimumPremiumYn("N")
 					.build();
 				return c;
 			 }			

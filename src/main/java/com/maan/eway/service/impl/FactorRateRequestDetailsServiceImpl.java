@@ -322,6 +322,7 @@ this.repository = repo;
 					saveCover.setExcessPercent(coverData.getExcessPercent()==null ? null : coverData.getExcessPercent());
 					String userOpt=!"D".equals(saveCover.getIsSelected())?"N":"Y";
 					saveCover.setRegulatoryCode(coverData.getRegulatoryCode());
+					saveCover.setMinimumPremiumYn(StringUtils.isBlank(coverData.getMinimumPremiumYn())?"N":coverData.getMinimumPremiumYn());
 				/*	if(coverIds!=null && !coverIds.isEmpty()) {
 						long count = coverIds.stream().filter(t-> (saveCover.getCoverId().equals(t.getCoverId()) && saveCover.getSubCoverId().equals(t.getSubCoverId()) )).count() ;
 						if(count>0) userOpt="Y";
@@ -429,6 +430,7 @@ this.repository = repo;
 //						}
 						String userOpt=!"D".equals(saveSubCover.getIsSelected())?"N":"Y";
 						saveSubCover.setRegulatoryCode(subCoverData.getRegulatoryCode());
+						saveSubCover.setMinimumPremiumYn(StringUtils.isBlank(subCoverData.getMinimumPremiumYn())?"N":subCoverData.getMinimumPremiumYn());
 						/*if(coverIds!=null && !coverIds.isEmpty()) {
 							long count = coverIds.stream().filter(t-> (saveSubCover.getCoverId().equals(t.getCoverId()) && saveSubCover.getSubCoverId().equals(t.getSubCoverId()) )).count() ;
 							if(count>0) userOpt="Y";

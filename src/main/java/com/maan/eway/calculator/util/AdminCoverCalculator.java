@@ -80,9 +80,11 @@ public class AdminCoverCalculator  extends CommonCalculator implements Consumer<
 				 t.setPremiumExcluedTaxLC(t.getPremiumExcluedTax().multiply(t.getExchangeRate()).round(round));
 				 
 				 // Minimium Premium setup.
+				 t.setMinimumPremiumYn("N");
 				 if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0) {
 					 t.setPremiumExcluedTax(t.getMinimumPremium().divide(t.getExchangeRate()).round(round)); 
 					 t.setPremiumExcluedTaxLC(t.getMinimumPremium());
+					 t.setMinimumPremiumYn("Y");
 				 }
 				 
 				 Double totaltax=0D;
