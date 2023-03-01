@@ -228,8 +228,8 @@ public class EndorsementService {
 
 				// Get Result
 				TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);
-				result.setFirstResult(500);
-				result.setMaxResults(500);
+				////result.setFirstResult(500);
+				//result.setMaxResults(500);
 				  List<QuoteCriteriaRes> grids = result.getResultList();
 				  
 				  return grids;
