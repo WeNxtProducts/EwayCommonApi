@@ -466,6 +466,34 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="MANUAL_REFERAL_YN", length=100)
     private String  manualReferalYn;
+    
+    
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ENDORSEMENT_DATE")
+    private Date       endorsementDate ;
+
+    @Column(name="ENDORSEMENT_REMARKS", length=500)
+    private String     endorsementRemarks ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ENDORSEMENT_EFFDATE")
+    private Date       endorsementEffdate ;
+
+    @Column(name="ORIGINAL_POLICY_NO", length=500)
+    private String     originalPolicyNo ;
+
+    @Column(name="ENDT_PREV_POLICY_NO", length=500)
+    private String     endtPrevPolicyNo ;
+
+    @Column(name="ENDT_PREV_QUOTE_NO", length=500)
+    private String     endtPrevQuoteNo ;
+
+    @Column(name="ENDT_COUNT")
+    private BigDecimal endtCount ;
+
+    @Column(name="ENDT_STATUS", length=10)
+    private String     endtStatus ;
 }
 
 

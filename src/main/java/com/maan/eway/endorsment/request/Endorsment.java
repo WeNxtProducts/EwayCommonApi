@@ -1,5 +1,7 @@
 package com.maan.eway.endorsment.request;
 
+import java.math.BigDecimal;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -17,12 +19,14 @@ public class Endorsment {
 	
 	@JsonProperty("PolicyNo")
 	private String policyNo;	
+	
 	@JsonProperty("CompanyId")
 	private String companyId;
 	@JsonProperty("BranchCode")
 	private String branchCode;
 	@JsonProperty("ProductId")
-	private String productId;
+	private BigDecimal productId;
+	
 	@JsonProperty("EndtType")
 	private String endtType;
 }
