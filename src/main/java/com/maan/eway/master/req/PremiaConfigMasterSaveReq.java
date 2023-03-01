@@ -35,6 +35,8 @@ public class PremiaConfigMasterSaveReq implements Serializable {
 	@JsonProperty("Status")
 	private String status;
 	
+	@JsonProperty("QueryKey")
+	private String queryKey;
 	
 	@JsonProperty("SourceTableName")
 	private List<String> sourceTableName;

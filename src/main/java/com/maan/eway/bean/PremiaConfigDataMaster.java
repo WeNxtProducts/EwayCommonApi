@@ -43,7 +43,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(PremiaConfigDataMasterId.class)
-@Table(name="premia_config_data_master")
+@Table(name="eway_premia_config_data_master")
 
 
 public class PremiaConfigDataMaster implements Serializable {

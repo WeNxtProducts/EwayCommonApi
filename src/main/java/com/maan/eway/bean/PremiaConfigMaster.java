@@ -77,6 +77,9 @@ private static final long serialVersionUID = 1L;
 
     //--- ENTITY DATA FIELDS 
 
+    @Column(name="QUERY_KEY", length=100)
+    private String   queryKey ;
+
     
     @Column(name="PREMIA_TABLE_NAME", length=100)
     private String   premiaTableName ;

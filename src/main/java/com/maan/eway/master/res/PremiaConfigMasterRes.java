@@ -67,4 +67,7 @@ public class PremiaConfigMasterRes implements Serializable {
 	@JsonProperty("AmendId")
 	private String amendId;
 
+	@JsonProperty("QueryKey")
+	private String queryKey;
+	
 }

@@ -256,6 +256,9 @@ public List<Error> validatePremiaConfig(PremiaConfigMasterSaveReq req) {
 			errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
 		}		
 	
+		 if (req.getQueryKey().length() > 100){
+				errorList.add(new Error("10","QueryKey", "Please Enter QueryKey within 100 Characters")); 
+			}		
 	} catch (Exception e) {
 		log.error(e);
 		e.printStackTrace();
@@ -346,13 +349,14 @@ public SuccessRes insertPremiaConfig(PremiaConfigMasterSaveReq req) {
 		saveData.setEffectiveDateStart(StartDate);
 		saveData.setEffectiveDateEnd(endDate);
 		saveData.setCreatedBy(createdBy);
-		saveData.setEntryDate(entryDate);
+		saveData.setEntryDate(new Date());
 		saveData.setUpdatedBy(req.getCreatedBy());
 		saveData.setUpdatedDate(new Date());
 		saveData.setAmendId(amendId);
 		saveData.setBranchCode(req.getBranchCode());
 		saveData.setProductId(req.getProductId());
 		saveData.setSectionId(req.getSectionId());
+		saveData.setQueryKey(StringUtils.isBlank(req.getQueryKey())?"": req.getQueryKey());
 		String key = "";
 		List<String> keys = req.getSourceTableName();
 		for (String menuId : keys) {
@@ -448,8 +452,7 @@ public PremiaConfigMasterRes getPremiaConfig(PremiaConfigMasterGetReq req) {
 		res.setUpdatedDate(list.get(0).getUpdatedDate());
 		res.setRemarks(list.get(0).getRemarks());;
 		res.setPremiaTableName(list.get(0).getPremiaTableName());
-		
-		
+		res.setQueryKey(StringUtils.isBlank(list.get(0).getQueryKey())?"":list.get(0).getQueryKey());		
 		String tablename = list.get(0).getSourceTableName();
 		List<String> tablenames = tablename!=null ? new ArrayList<String>(Arrays.asList(tablename.split("~"))) : new ArrayList<String>() ;
 		tablenames = tablenames.stream().filter( o -> ! o.equals("")).collect(Collectors.toList());
@@ -545,6 +548,7 @@ public List<PremiaConfigMasterRes> getallPremiaConfig(PremiaConfigMasterGetAllRe
 		res.setUpdatedDate(data.getUpdatedDate());
 		res.setRemarks(data.getRemarks());
 		res.setPremiaTableName(data.getPremiaTableName());
+		res.setQueryKey(StringUtils.isBlank(data.getQueryKey())?"":data.getQueryKey());		
 		
 		
 		String tablename = data.getSourceTableName();
@@ -639,6 +643,7 @@ public List<PremiaConfigMasterRes> getactivePremiaConfig(PremiaConfigMasterGetAl
 		res.setUpdatedDate(data.getUpdatedDate());
 		res.setRemarks(data.getRemarks());
 		res.setPremiaTableName(data.getPremiaTableName());
+		res.setQueryKey(StringUtils.isBlank(data.getQueryKey())?"":data.getQueryKey());		
 		
 		
 		String tablename = data.getSourceTableName();
@@ -752,6 +757,7 @@ public SuccessRes changeStatusPremiaConfig(PremiaConfigMasterChangeStatusReq req
 		saveData.setAmendId(amendId);
 		saveData.setStatus(req.getStatus());
 		saveData.setBranchCode(req.getBranchCode());
+				
 		repo.saveAndFlush(saveData);	
 		// Perform Update
 		res.setResponse("Status Changed");
