@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.access.prepost.PreAuthorize;
 import com.maan.eway.common.req.NcdDetailsGetReq;
 import com.maan.eway.common.service.DropDownService;
+import com.maan.eway.integration.req.PremiaRequest;
+import com.maan.eway.integration.req.QueryKeyReq;
+import com.maan.eway.integration.res.PremiaResponse;
 import com.maan.eway.master.req.BuildingUsageDropDownReq;
 import com.maan.eway.master.req.CityDropDownReq;
 import com.maan.eway.master.req.LovDropDownReq;
@@ -1121,6 +1124,21 @@ public class DropDownController {
 	public ResponseEntity<CommonRes> driverType(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
 		List<DropDownRes> res = dropDownService.driverType(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PostMapping("/querykeycolumns")
+	public ResponseEntity<CommonRes> getQueryKeyColumns(@RequestBody QueryKeyReq req){
+		CommonRes data = new CommonRes();
+		List<DropDownRes> res = dropDownService.getQueryKeyColumns(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);

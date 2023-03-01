@@ -95,11 +95,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="CASE_CONDITION", length=100)
     private String caseCondition;
         
-    @Column(name="INPUT_TABLE_NAME", length=100)
-    private String    inputTableName ;
-
-    @Column(name="INPUT_TABLE_COLUMN", length=100)
-    private String    inputTableColumn;
+    @Column(name="INPUT_COLUMN", length=100)
+    private String    inputColumn;
 
     @Column(name="DATA_TYPE_ID", length=1)
     private String dataTypeId;

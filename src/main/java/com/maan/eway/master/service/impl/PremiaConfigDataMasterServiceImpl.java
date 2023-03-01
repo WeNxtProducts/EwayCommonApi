@@ -132,6 +132,12 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 				if (StringUtils.isBlank(req.getCaseCondition())) {
 				errorList.add(new Error("13", "CaseCondition", "Please Enter CaseCondition"));				
 			}
+				
+			if(StringUtils.isNotBlank(req.getCaseConditionYn()) && ( ! req.getCaseConditionYn().equalsIgnoreCase("Y") ) 
+					&& StringUtils.isNotBlank(req.getDefaultYn()) && ( ! req.getDefaultYn().equalsIgnoreCase("Y")  )
+					&&  StringUtils.isBlank(req.getInputColumn()) ) {
+				errorList.add(new Error("14", "InputColumn", "Please Enter Input Column Name"));
+			}
 			}
 		} catch (Exception e) {
 			log.error(e);
@@ -240,8 +246,7 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			saveData.setColumnName(req.getColumnName());
 			saveData.setDefaultYn(req.getDefaultYn());
 			saveData.setDefaultValue(req.getDefaultValue());
-			saveData.setInputTableName(req.getInputTableName());
-			saveData.setInputTableColumn(req.getInputTableColumn());
+			saveData.setInputColumn(req.getInputColumn());
 			saveData.setDataFormatType(req.getDateFormatType()==null?null:req.getDateFormatType());
 			saveData.setCaseConditionYn(req.getCaseConditionYn());
 			saveData.setCaseCondition(req.getCaseCondition()==null?null:req.getCaseCondition());
@@ -397,8 +402,8 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			res.setDefaultValue(list.get(0).getDefaultValue()==null?"":list.get(0).getDefaultValue());
 			res.setCaseConditionYn(list.get(0).getCaseConditionYn()==null?"":list.get(0).getCaseConditionYn());
 			res.setCaseCondition(list.get(0).getCaseCondition()==null?"":list.get(0).getCaseCondition());
-			res.setInputTableName(list.get(0).getInputTableName());
-			res.setInputTableColumn(list.get(0).getInputTableColumn());
+			res.setInputColumn(	list.get(0).getInputColumn()==null?"":list.get(0).getInputColumn());
+			
 			res.setDataTypeId(list.get(0).getDataTypeId()==null?"":list.get(0).getDataTypeId());
 			res.setDataTypeDesc(list.get(0).getDataTypeDesc()==null?"":list.get(0).getDataTypeDesc());
 			res.setDateFormatType(list.get(0).getDataFormatType()==null?"":list.get(0).getDataFormatType());
@@ -501,8 +506,7 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			res.setDefaultValue(data.getDefaultValue()==null?"":data.getDefaultValue());
 			res.setCaseConditionYn(data.getCaseConditionYn()==null?"":data.getCaseConditionYn());
 			res.setCaseCondition(data.getCaseCondition()==null?"":data.getCaseCondition());
-			res.setInputTableName(data.getInputTableName());
-			res.setInputTableColumn(data.getInputTableColumn());
+			res.setInputColumn(data.getInputColumn()==null?"":data.getInputColumn());
 			res.setDataTypeId(data.getDataTypeId()==null?"":data.getDataTypeId());
 			res.setDataTypeDesc(data.getDataTypeDesc()==null?"":data.getDataTypeDesc());
 			res.setDateFormatType(data.getDataFormatType()==null?"":data.getDataFormatType());
@@ -604,8 +608,7 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			res.setDefaultValue(data.getDefaultValue()==null?"":data.getDefaultValue());
 			res.setCaseConditionYn(data.getCaseConditionYn()==null?"":data.getCaseConditionYn());
 			res.setCaseCondition(data.getCaseCondition()==null?"":data.getCaseCondition());
-			res.setInputTableName(data.getInputTableName());
-			res.setInputTableColumn(data.getInputTableColumn());
+			res.setInputColumn(data.getInputColumn()==null?"":data.getInputColumn());
 			res.setDataTypeId(data.getDataTypeId()==null?"":data.getDataTypeId());
 			res.setDataTypeDesc(data.getDataTypeDesc()==null?"":data.getDataTypeDesc());
 			res.setDateFormatType(data.getDataFormatType()==null?"":data.getDataFormatType());

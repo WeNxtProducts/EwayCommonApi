@@ -35,6 +35,8 @@ public class PremiaConfigDataMasterListRes {
 	@JsonProperty("DataTypeDesc")
 	private String dataTypeDesc;
 
+	@JsonProperty("InputColumn")
+	private String inputColumn;
 	
 	@JsonProperty("DateFormatType")
 	private String dateFormatType;

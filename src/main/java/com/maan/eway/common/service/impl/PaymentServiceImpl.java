@@ -179,6 +179,9 @@ public class PaymentServiceImpl implements PaymentService {
 	@Value(value = "${building.productId}")
 	private String buildingProductId;
 	
+	@Value(value = "${sme.productId}")
+	private String smeProductId;
+	
 	@Autowired
 	private LoginBranchMasterRepository lbranchRepo ;
 	
@@ -1642,7 +1645,7 @@ public class PaymentServiceImpl implements PaymentService {
 						em.createQuery(update).executeUpdate();
 						
 	    		   }
-	    	   } else  if(productId.equalsIgnoreCase(buildingProductId) ) {
+	    	   } else  if(productId.equalsIgnoreCase(buildingProductId) || productId.equalsIgnoreCase(smeProductId)) {
 	    		   // Eservice Building Update
 	    		   {
 	    		    CriteriaBuilder cb = em.getCriteriaBuilder();

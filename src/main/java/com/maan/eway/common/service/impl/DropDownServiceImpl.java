@@ -39,6 +39,9 @@ import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.req.NcdDetailsGetReq;
 import com.maan.eway.common.service.DropDownService;
+import com.maan.eway.integration.req.PremiaRequest;
+import com.maan.eway.integration.req.QueryKeyReq;
+import com.maan.eway.integration.service.impl.OracleQuery;
 import com.maan.eway.master.req.BuildingUsageDropDownReq;
 import com.maan.eway.master.req.CityDropDownReq;
 import com.maan.eway.master.req.LovDropDownReq;
@@ -81,6 +84,9 @@ public class DropDownServiceImpl  implements DropDownService{
 	
 	@Autowired
 	private PolicyTypeMasterServiceImpl service;
+	
+	@Autowired
+	private OracleQuery oracle;
 	
 	// Cover Note Type Drop Down
 
@@ -1738,6 +1744,40 @@ public class DropDownServiceImpl  implements DropDownService{
 	}
 
 
+	@Override
+	public List<DropDownRes> getQueryKeyColumns(QueryKeyReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			String query = oracle.getQuery(req.getQueryKey());
+			List<String> asList = fromQuerytoList(query);
+			
+			for (String data : asList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data);
+				res.setCodeDesc(data);
+				res.setStatus("Y");
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	private List<String> fromQuerytoList(String selectquery){
+		if(selectquery.indexOf(",")!=-1) {
+			selectquery=selectquery.substring(selectquery.indexOf("SELECT")+6, selectquery.indexOf("FROM"));
+			List<String> arrays=new ArrayList<String>();
+			String[] col_aliz = selectquery.split(",");
+			for(int i=0;i<col_aliz.length;i++) {
+				arrays.add(col_aliz[i]);
+			}
+			return arrays;
+		}
+		return null;
+	}
 
 	
 }

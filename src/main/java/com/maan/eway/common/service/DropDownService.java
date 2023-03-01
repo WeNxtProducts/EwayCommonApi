@@ -3,6 +3,8 @@ package com.maan.eway.common.service;
 import java.util.List;
 
 import com.maan.eway.common.req.NcdDetailsGetReq;
+import com.maan.eway.integration.req.PremiaRequest;
+import com.maan.eway.integration.req.QueryKeyReq;
 import com.maan.eway.master.req.BuildingUsageDropDownReq;
 import com.maan.eway.master.req.CityDropDownReq;
 import com.maan.eway.master.req.LovDropDownReq;
@@ -138,5 +140,7 @@ public interface DropDownService {
 	List<DropDownRes> driverType(LovDropDownReq req);
 
 	List<DropDownRes> getallelectronicItems(LovDropDownReq req);
+
+	List<DropDownRes> getQueryKeyColumns(QueryKeyReq req);
 
 }

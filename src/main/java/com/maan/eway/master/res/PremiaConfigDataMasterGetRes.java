@@ -28,6 +28,9 @@ public class PremiaConfigDataMasterGetRes {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
+	@JsonProperty("InputColumn")
+	private String inputColumn;
+	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
