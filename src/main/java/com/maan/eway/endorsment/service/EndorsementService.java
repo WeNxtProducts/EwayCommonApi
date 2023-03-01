@@ -62,6 +62,7 @@ public class EndorsementService {
 			CopyQuoteReq c= new CopyQuoteReq();
 					c.setRequestReferenceNo(hp.getRequestReferenceNo());
 					c.setLoginId(hp.getLoginId());
+					c.setApplicationId(hp.getApplicationId());
 					c.setInsuranceId(hp.getCompanyId());
 					c.setBranchCode(hp.getBranchCode());
 					c.setProductId(String.valueOf(hp.getProductId()));
