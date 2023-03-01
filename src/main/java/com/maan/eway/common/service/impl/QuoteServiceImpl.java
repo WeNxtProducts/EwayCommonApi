@@ -1764,19 +1764,23 @@ private BuildingDetailsRepository BuildingRepo;
 			List<String> sectionIds = buildSections.stream().filter( o -> o.getRiskId().equals(build.getRiskId() )).map(EserviceSectionDetails :: getSectionId ).collect(Collectors.toList());
 			
 			 List<OccupationReqClass> occupation = new ArrayList<OccupationReqClass>(); 
-			 for (CommonDataDetails pac :  paccDatas) {
-				 OccupationReqClass occu = new OccupationReqClass(); 
-				 occu.setCount(pac.getCount()==null?"":pac.getCount().toString());		 
-				 occu.setOccupationType(pac.getOccupationType() );
-				 occu.setSumInsuredTotal(pac.getSumInsured()==null?"":pac.getSumInsured().toString());
-				 occupation.add(occu);
-			}
-	
+//			 for (CommonDataDetails pac :  paccDatas) {
+//				 OccupationReqClass occu = new OccupationReqClass(); 
+//				 occu.setCount(pac.getCount()==null?"":pac.getCount().toString());		 
+//				 occu.setOccupationType(pac.getOccupationType() );
+//				 occu.setSumInsuredTotal(pac.getSumInsured()==null?"":pac.getSumInsured().toString());
+//				 occupation.add(occu);
+//				 
+//			}
+			res.setOccupationType(paccDatas.size()> 0 ? paccDatas.get(0).getOccupationType().toString() : "");
+			res.setPersonalAccSuminsured(paccDatas.size()> 0 ? paccDatas.get(0).getSumInsured().toString() : "");
+			res.setCount(paccDatas.size()> 0 ? paccDatas.get(0).getCount().toString() : "");
+			
 			res.setBuildingSuminsured(build.getBuildingSuminsured() == null?"0" :build.getBuildingSuminsured().toPlainString());
 			res.setAllriskSuminsured(build.getAllriskSuminsured() == null?"0" :build.getAllriskSuminsured().toPlainString());
 			res.setPersonalIntermediarySuminsured(build.getPersonalIntSuminsured() == null?"0" :build.getPersonalIntSuminsured().toPlainString());
 			res.setContentSuminsured(build.getContentSuminsured() == null?"0" :build.getContentSuminsured().toPlainString());
-			res.setOccupationDetails(occupation);
+		//	res.setOccupationDetails(occupation);
 			res.setMoneySinglecarrySuminsured(build.getMoneySinglecarrySuminsured() == null?"0" :build.getMoneySinglecarrySuminsured().toPlainString());
 			res.setMoneyAnnualcarrySuminsured(build.getMoneyAnnualcarrySuminsured() == null?"0" :build.getMoneyAnnualcarrySuminsured().toPlainString());
 			res.setMoneyInsafeSuminsured(build.getMoneyInsafeSuminsured() == null?"0" :build.getMoneyInsafeSuminsured().toPlainString());
@@ -1789,6 +1793,7 @@ private BuildingDetailsRepository BuildingRepo;
 			res.setGoodsTurnoverSuminsured(build.getGoodsTurnoverSuminsured() == null?"0" :build.getGoodsTurnoverSuminsured().toPlainString());
 			res.setRiskId(build.getRiskId().toString());
 			res.setSectionId(sectionIds);		
+			
 			
 		} catch ( Exception e) {
 			e.printStackTrace();

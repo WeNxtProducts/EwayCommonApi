@@ -19,9 +19,18 @@ public class BuildingSumInsuredDetails {
 	@JsonProperty("AllriskSumInsured")
     private String     allriskSuminsured ;
 	
-	@JsonProperty("OccupationDetails")
-    private List<OccupationReqClass>     occupationDetails ;
+//	@JsonProperty("OccupationDetails")
+//    private List<OccupationReqClass>     occupationDetails ;
 	
+	@JsonProperty("OccupationType")
+    private String    occupationType;
+
+	
+	@JsonProperty("PersonalAccSuminsured")
+    private String    personalAccSuminsured;
+
+	@JsonProperty("Count")
+    private String    count;
 //	@JsonProperty("PaTotaldisabilitySumInsured")
 //    private String     paTotaldisabilitySumInsured ;
 //	
