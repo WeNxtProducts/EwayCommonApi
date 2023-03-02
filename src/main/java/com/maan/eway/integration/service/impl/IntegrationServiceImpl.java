@@ -1,5 +1,6 @@
 package com.maan.eway.integration.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -131,8 +132,14 @@ public boolean push(PremiaConfigMaster configMas , List<String> params ) {
 							
 							if("Date".equals(data.getDataTypeDesc())) { 
 								String dateformatt=StringUtils.isNotEmpty(data.getDataFormatType())?data.getDataFormatType().toUpperCase().replace("TO_CHAR", "TO_DATE"):null;
-								if(dateformatt!=null) 
+								SimpleDateFormat dbF = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"); 
+								if(value.equalsIgnoreCase("sysdate()") ) {
+									value= dbF.format(new Date()) ;
+								} else {
 									value=dateformatt.replaceAll("<>",value );
+								}
+							
+									
 							}
 							value=(("String".equals(data.getDataTypeDesc())|| "Date".equals(data.getDataTypeDesc()) )?"'"+value+"'":value );
 							
