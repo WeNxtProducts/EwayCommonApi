@@ -45,6 +45,7 @@ import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
+import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
@@ -75,6 +76,7 @@ import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
+import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.DropDownRes;
@@ -127,6 +129,9 @@ public class GridServiceImpl implements GridService {
 	@Autowired
 	private EserviceBuildingDetailsRepository buildingRepo;
 	
+
+	@Autowired
+	private HomePositionMasterRepository homeRepo;
 	
 	
 	@PersistenceContext
@@ -694,9 +699,10 @@ public class GridServiceImpl implements GridService {
 			} else {
 				branches.add(req.getBranchCode());
 			}*/
+			HomePositionMaster  homeData=homeRepo.findByQuoteNo(req.getQuoteNo());
 			String loginId = "" ;
 			List<String> branches = new ArrayList<String>();
-			if (req.getApplicationId().equalsIgnoreCase("1") ) {
+			if (homeData.getApplicationId().equalsIgnoreCase("1") ) {
 				loginId = req.getLoginId();
 			} else {
 				loginId = req.getApplicationId();
