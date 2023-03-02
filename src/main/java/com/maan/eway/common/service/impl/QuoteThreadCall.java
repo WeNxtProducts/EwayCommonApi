@@ -1188,7 +1188,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				for ( CoverIdsReq covReq :  coverReqList) { 
 					List<PolicyCoverData> filterNonDefaultCovers  = new ArrayList<PolicyCoverData>();
 					
-					 if( request.getProductId().equalsIgnoreCase(buildingProductId)    ) {
+					 if( request.getProductId().equalsIgnoreCase(buildingProductId)  || request.getProductId().equalsIgnoreCase(smeProductId)    ) {
 						 
 						 filterNonDefaultCovers = covers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(vehReq.getSectionId())) && o.getVehicleId().equals(request.getGroupId()==null? vehReq.getVehicleId() : request.getGroupId()) &&  o.getIsSelected()!=null &&  (! o.getIsSelected().equalsIgnoreCase("D")) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());				
 					
