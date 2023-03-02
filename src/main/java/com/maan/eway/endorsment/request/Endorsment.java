@@ -1,7 +1,9 @@
 package com.maan.eway.endorsment.request;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -29,4 +31,11 @@ public class Endorsment {
 	
 	@JsonProperty("EndtType")
 	private String endtType;
+	
+	@JsonProperty("EndtRemarks")
+	private String endtRemarks;
+	
+	@JsonProperty("EndtEffectiveDate")
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	private Date endtEffectiveDate;
 }

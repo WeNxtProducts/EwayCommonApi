@@ -12,6 +12,7 @@
 
 package com.maan.eway.repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -34,5 +35,8 @@ public interface EndtTypeMasterRepository  extends JpaRepository<EndtTypeMaster,
 	List<EndtTypeMaster> findByCompanyIdAndProductIdAndStatus(String companyId, Integer productId, String status);
 
 	List<EndtTypeMaster> findByCompanyIdAndProductIdAndStatusOrderByPriorityAsc(String companyId, Integer productId, String status);
+
+	EndtTypeMaster findByCompanyIdAndProductIdAndStatusAndEndtTypeId(String companyId, Integer productId,
+			String string, Integer parseInt);
 
 }

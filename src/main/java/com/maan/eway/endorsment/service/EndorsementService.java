@@ -3,18 +3,14 @@ package com.maan.eway.endorsment.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -34,11 +30,11 @@ import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
-import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.service.impl.GridServiceImpl;
 import com.maan.eway.endorsment.request.EndorsementType;
 import com.maan.eway.endorsment.request.Endorsment;
 import com.maan.eway.endorsment.request.EndtMaster;
+import com.maan.eway.endorsment.util.CopyRawTable;
 import com.maan.eway.endorsment.util.QuoteInfoUtil;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
@@ -58,6 +54,9 @@ public class EndorsementService {
 	
 	@Autowired
 	private PolicyCoverDataRepository pcdRepo;
+	
+	@Autowired
+	private CopyRawTable copyraw;
 	
 	public CommonRes cancelPolicy(Endorsment request) {
 		try {
@@ -197,7 +196,8 @@ public class EndorsementService {
 						m.get("endorsementTypeDesc").alias("endorsementDesc"),
 						m.get("endtCategDesc").alias("endorsementCategoryDesc"),
 						m.get("endorsementEffdate").alias("effectiveDate"),
-						m.get("endtStatus").alias("endorsementStatus")
+						m.get("endtStatus").alias("endorsementStatus"),
+						m.get("policyNo").alias("policyNo")
 						
 						);
 			 
@@ -246,6 +246,21 @@ public class EndorsementService {
 			
 		 }catch (Exception e) {
 			 e.printStackTrace();
+		}
+		return null;
+	}
+	public CommonRes createEndorsment(Endorsment request) {
+		try {
+			
+			EserviceMotorDetails motorRaw = copyraw.copyMotorRaw(request);
+			CommonRes c=new CommonRes();
+			c.setCommonResponse(motorRaw);
+			c.setErroCode(0);
+			c.setIsError(false);
+			c.setMessage("Success");
+			return c;
+		}catch (Exception e) {
+			e.printStackTrace();
 		}
 		return null;
 	}

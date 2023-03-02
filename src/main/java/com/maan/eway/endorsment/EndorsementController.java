@@ -56,4 +56,16 @@ public class EndorsementController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/create")
+	public ResponseEntity<CommonRes> createEndorsment(@RequestBody Endorsment request) {
+		CommonRes data = eservice.createEndorsment(request);
+	 	if (data != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 }

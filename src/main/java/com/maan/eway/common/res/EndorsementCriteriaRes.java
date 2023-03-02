@@ -43,5 +43,6 @@ public class EndorsementCriteriaRes {
 		@JsonFormat(pattern = "dd/MM/yyyy")
 		private Date effectiveDate;
 		private String endorsementStatus;
+		private String policyNo;
 
 }

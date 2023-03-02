@@ -1581,5 +1581,11 @@ public class MotorGridServiceImpl implements MotorGridService {
 			}
 			return unionAll;
 		}
+		
+		public String generateRequestNo(String companyId,String branchcode,String productId) {
+			String refShortCode = getListItem(companyId, branchcode, "PRODUCT_SHORT_CODE",productId);
+			String refNo = refShortCode + seqNo.generateRefNo();
+			return refNo;
+		} 
 
 }
