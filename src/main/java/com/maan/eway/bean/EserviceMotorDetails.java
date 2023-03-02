@@ -494,6 +494,15 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="ENDT_STATUS", length=10)
     private String     endtStatus ;
+    
+    
+    
+    @Column(name="IS_FINYN", length=10)
+    private String     isFinaceYn ;
+    
+    
+    @Column(name="ENDT_CATEG_DESC", length=10)
+    private String     endtCategDesc ;
 }
 
 

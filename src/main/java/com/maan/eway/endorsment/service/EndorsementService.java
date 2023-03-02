@@ -3,14 +3,18 @@ package com.maan.eway.endorsment.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -29,6 +33,7 @@ import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.EndorsementCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.service.impl.GridServiceImpl;
 import com.maan.eway.endorsment.request.EndorsementType;
@@ -162,21 +167,21 @@ public class EndorsementService {
 	private EntityManager em;
 	
 	
-	public List<QuoteCriteriaRes> endorsementPendingData(Endorsment request) {
+	public List<EndorsementCriteriaRes> endorsementPendingData(Endorsment request) {
 
 		 try {
 
 
 				// Get Datas
 				CriteriaBuilder cb = em.getCriteriaBuilder();
-				CriteriaQuery<QuoteCriteriaRes> query = cb.createQuery(QuoteCriteriaRes.class);
+				CriteriaQuery<EndorsementCriteriaRes> query = cb.createQuery(EndorsementCriteriaRes.class);
 
 				// Find All
 				Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 				Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
 
 				// Select
-				query.multiselect(cb.literal(Long.parseLong("1")).alias("idsCount"),
+				query.multiselect(//cb.literal(Long.parseLong("1")).alias("idsCount"),
 						// Customer Info
 						c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
 						c.get("clientName").alias("clientName"),
@@ -187,11 +192,15 @@ public class EndorsementService {
 								.alias("quoteNo"),
 						cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId"))
 								.otherwise(m.get("customerId")).alias("customerId"),
-						m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate")
+						m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
+						m.get("endorsementType").alias("endorsementTypeId"),
+						m.get("endorsementTypeDesc").alias("endorsementDesc"),
+						m.get("endtCategDesc").alias("endorsementCategoryDesc"),
+						m.get("endorsementEffdate").alias("effectiveDate"),
+						m.get("endtStatus").alias("endorsementStatus")
 						
 						);
-				
-
+			 
 				// Order By
 				List<Order> orderList = new ArrayList<Order>();
 				orderList.add(cb.desc(m.get("endorsementDate")));
@@ -228,10 +237,10 @@ public class EndorsementService {
 						.orderBy(orderList);
 
 				// Get Result
-				TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);
+				TypedQuery<EndorsementCriteriaRes> result = em.createQuery(query);
 				////result.setFirstResult(500);
 				//result.setMaxResults(500);
-				  List<QuoteCriteriaRes> grids = result.getResultList();
+				  List<EndorsementCriteriaRes> grids = result.getResultList();
 				  
 				  return grids;
 			

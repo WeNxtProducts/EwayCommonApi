@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.res.CommonRes;
-import com.maan.eway.common.res.QuoteCriteriaRes;
+import com.maan.eway.common.res.EndorsementCriteriaRes;
 import com.maan.eway.endorsment.request.Endorsment;
 import com.maan.eway.endorsment.request.EndtMaster;
 import com.maan.eway.endorsment.service.EndorsementService;
@@ -48,10 +48,10 @@ public class EndorsementController {
 	}
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/datas")
-	public ResponseEntity<List<QuoteCriteriaRes>> endorsementPendingData(@RequestBody Endorsment request) {
-		List<QuoteCriteriaRes> data = eservice.endorsementPendingData(request);
+	public ResponseEntity<List<EndorsementCriteriaRes>> endorsementPendingData(@RequestBody Endorsment request) {
+		List<EndorsementCriteriaRes> data = eservice.endorsementPendingData(request);
 	 	if (data != null) {
-			return new ResponseEntity<List<QuoteCriteriaRes>>(data, HttpStatus.CREATED);
+			return new ResponseEntity<List<EndorsementCriteriaRes>>(data, HttpStatus.CREATED);
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
