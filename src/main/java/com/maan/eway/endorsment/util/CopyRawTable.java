@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
+import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,8 @@ public class CopyRawTable  {
 			Integer count=emotorRepo.countByOriginalPolicyNo(ent.getPolicyNo());
 			String prevPolicyNo=null;
 			String prevQuoteNo=null;
+			String newRequestNo =null;
+			long pendingcount =0;
 			if(count>0) {
 				List<EserviceMotorDetails> motors=emotorRepo.findByOriginalPolicyNo(ent.getPolicyNo());
 				//Compar
@@ -48,12 +51,13 @@ public class CopyRawTable  {
 					}
 				}.reversed());
 				
-				long pendingcount = motors.stream().filter(m->m.getEndtStatus().equals("P")).count();
+				pendingcount = motors.stream().filter(m->m.getEndtStatus().equals("P")).count();
 				if(pendingcount>0) {
 					 List<EserviceMotorDetails> pendingData = motors.stream().filter(m->m.getEndtStatus().equals("P")).collect(Collectors.toList());
 					 motor= pendingData.get(0);
 					 prevPolicyNo=motor.getEndtPrevPolicyNo();
 					 prevQuoteNo=motor.getEndtPrevQuoteNo();
+					 newRequestNo=motor.getRequestReferenceNo();
 					 count--;
 				}else {
 					motor=motors.get(0);
@@ -70,25 +74,29 @@ public class CopyRawTable  {
 			}else {
 				motor=emotorRepo.findByPolicyNoAndStatus(ent.getPolicyNo(),"P");
 				prevPolicyNo=ent.getPolicyNo();
-				prevQuoteNo =motor.getEndtPrevQuoteNo();
+				prevQuoteNo =motor.getQuoteNo();
 			}
-			
-			String newRequestNo = numberGenerate.generateRequestNo(ent.getCompanyId(), ent.getBranchCode(), String.valueOf(ent.getProductId()));
+			if(pendingcount==0)
+				newRequestNo=numberGenerate.generateRequestNo(ent.getCompanyId(), ent.getBranchCode(), String.valueOf(ent.getProductId()));
 			
 			EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(ent.getCompanyId(), ent.getProductId().intValue(), "Y",Integer.parseInt(ent.getEndtType()));
 			
-			motor.setRequestReferenceNo(newRequestNo);
-			motor.setOriginalPolicyNo(ent.getPolicyNo());
-			motor.setEndorsementDate(new Date());
-			motor.setEndorsementRemarks(ent.getEndtRemarks());
-			motor.setEndorsementEffdate(ent.getEndtEffectiveDate());
-			motor.setEndtPrevPolicyNo(prevPolicyNo);
-			motor.setEndtPrevQuoteNo(prevQuoteNo);
-			motor.setEndtCount(new BigDecimal(count++));
-			motor.setEndtStatus("P");
-			motor.setIsFinaceYn(entMaster.getEndtTypeCategoryId()==2?"Y":"N");
-			motor.setEndtCategDesc(entMaster.getEndtTypeCategory());
-			EserviceMotorDetails save = emotorRepo.save(motor);
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			EserviceMotorDetails newObject = dozerMapper.map(motor, EserviceMotorDetails.class);
+			newObject.setRequestReferenceNo(newRequestNo);
+			newObject.setOriginalPolicyNo(ent.getPolicyNo());
+			newObject.setEndorsementDate(new Date());
+			newObject.setEndorsementRemarks(ent.getEndtRemarks());
+			newObject.setEndorsementEffdate(ent.getEndtEffectiveDate());
+			newObject.setEndtPrevPolicyNo(prevPolicyNo);
+			newObject.setEndtPrevQuoteNo(prevQuoteNo);
+			newObject.setEndtCount(new BigDecimal(++count));
+			newObject.setEndtStatus("P");
+			newObject.setIsFinaceYn(entMaster.getEndtTypeCategoryId()==2?"Y":"N");
+			newObject.setEndtCategDesc(entMaster.getEndtTypeCategory());
+			newObject.setEndorsementType(Integer.parseInt(ent.getEndtType()));
+			newObject.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
+			EserviceMotorDetails save = emotorRepo.save(newObject);
 			return save;
 		}catch (Exception e) {
 			e.printStackTrace();
