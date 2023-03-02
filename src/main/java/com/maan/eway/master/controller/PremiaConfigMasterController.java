@@ -46,7 +46,7 @@ public class PremiaConfigMasterController {
 	private PrintReqService reqPrinter;
 
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/insertpremiaconfig")
 	@ApiOperation(value = "This method is Insert Premia Config Master")
 	public ResponseEntity<CommonRes> insertPremiaConfig(@RequestBody PremiaConfigMasterSaveReq req) {
@@ -82,7 +82,7 @@ public class PremiaConfigMasterController {
 	}
 
 	//Get Premia Config
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getpremiaconfig")
 	@ApiOperation("This method is get Premia Config")
 	public ResponseEntity<CommonRes> getPremiaConfig(@RequestBody PremiaConfigMasterGetReq req) {
@@ -103,7 +103,7 @@ public class PremiaConfigMasterController {
 	}
 
 	//Getall Premia Config
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getallpremiaconfig")
 	@ApiOperation("This method is getall Premia Config")
 	public ResponseEntity<CommonRes> getallPremiaConfig(@RequestBody PremiaConfigMasterGetAllReq req) {
@@ -124,7 +124,7 @@ public class PremiaConfigMasterController {
 	}
 
 	//Getactive Premia Config
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getactivepremiaconfig")
 	@ApiOperation("This method is getactive Premia Config")
 	public ResponseEntity<CommonRes> getactivePremiaConfig(@RequestBody PremiaConfigMasterGetAllReq req) {
@@ -146,7 +146,7 @@ public class PremiaConfigMasterController {
 
 	
 	//Change Status Premia Config
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/changestatuspremiaconfig")
 	@ApiOperation("This method is Change Status Premia Config")
 	public ResponseEntity<CommonRes> changeStatusPremiaConfig(@RequestBody PremiaConfigMasterChangeStatusReq req) {
