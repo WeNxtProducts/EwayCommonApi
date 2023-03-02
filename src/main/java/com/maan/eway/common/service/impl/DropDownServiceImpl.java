@@ -1753,8 +1753,8 @@ public class DropDownServiceImpl  implements DropDownService{
 			
 			for (String data : asList) {
 				DropDownRes res = new DropDownRes();
-				res.setCode(data);
-				res.setCodeDesc(data);
+				res.setCode(data.trim());
+				res.setCodeDesc(data.trim());
 				res.setStatus("Y");
 				resList.add(res);
 			}

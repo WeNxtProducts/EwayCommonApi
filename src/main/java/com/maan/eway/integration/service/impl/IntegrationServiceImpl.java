@@ -72,8 +72,8 @@ public boolean push(PremiaConfigMaster configMas , List<String> params ) {
 		if(masterop!=null ) {
 			PremiaConfigMaster masterdata = masterop ;
 			List<PremiaConfigDataMaster> configData = getPremiaConfigData(configMas.getCompanyId() ,configMas.getProductId() ,configMas.getPremiaId()  ) ;
+			List<Map<String, Object>> listFromQuery = new ArrayList<Map<String, Object>>();
 			
-			Map<String, Object> qdata =null;
 			if(StringUtils.isNotBlank(masterdata.getQueryKey())) {
 				String query=oracle.getQuery(masterdata.getQueryKey());
 				List<String> asList = fromQuerytoList(query);
@@ -112,59 +112,62 @@ public boolean push(PremiaConfigMaster configMas , List<String> params ) {
 				log.info("framedselecquery with Select :: "+query);
 				/*maps.get(0);
 				***********/
-				List<Map<String, Object>> listFromQuery = oracle.getListFromQueryWithoutKey(query, params);
-				if(listFromQuery!=null && listFromQuery.size()>0) {
-					 qdata = listFromQuery.get(0);
+				listFromQuery = oracle.getListFromQueryWithoutKey(query, params);
+//				if(listFromQuery!=null && listFromQuery.size()>0) {
+//					 qdata = listFromQuery.get(0);
+//				}
+			}
+			
+			for (Map<String, Object> qdata  : listFromQuery ) {
+				if(configData!=null && !configData.isEmpty() && qdata!=null) {
+					Map<String,String> jmap=new HashMap<String,String>();
+					List<String> colums=new ArrayList<String>();
+					List<String> values=new ArrayList<String>();
+					
+					for (PremiaConfigDataMaster data : configData) {
+						String value="";
+						if("Y".equals(data.getDefaultYn())) {
+							value= StringUtils.isBlank(data.getDefaultValue())?"":data.getDefaultValue();
+							
+							if("Date".equals(data.getDataTypeDesc())) { 
+								String dateformatt=StringUtils.isNotEmpty(data.getDataFormatType())?data.getDataFormatType().toUpperCase().replace("TO_CHAR", "TO_DATE"):null;
+								if(dateformatt!=null) 
+									value=dateformatt.replaceAll("<>",value );
+							}
+							value=(("String".equals(data.getDataTypeDesc())|| "Date".equals(data.getDataTypeDesc()) )?"'"+value+"'":value );
+							
+						}/*else if("N".equals(data.getDefaultYn()) &&  "Y".equals(data.getCasecondYn() ) ){
+							Object aliazval=qdata.get(data.getQueryAliaz())==null?"":qdata.get(data.getQueryAliaz());
+							value=aliazval;
+						}*/else {
+							Object aliazval=qdata.get(data.getInputColumn())==null?"":qdata.get(data.getInputColumn());
+							
+							value=String.valueOf(aliazval);
+							if("Date".equals(data.getDataTypeDesc())) { 
+								String dateformatt=StringUtils.isNotEmpty(data.getDataFormatType())?data.getDataFormatType().toUpperCase().replace("TO_CHAR", "TO_DATE"):null;
+								if(dateformatt!=null) 
+									value=dateformatt.replaceAll("<>","'"+aliazval.toString()+"'" );
+							}
+							
+							value=(("String".equals(data.getDataTypeDesc()) )?"'"+String.valueOf(aliazval)+"'":value);
+						}
+						jmap.put(data.getColumnName(), value);
+						colums.add(data.getColumnName());
+						values.add(value);
+					}
+					
+					if(!jmap.isEmpty()) {
+						
+						String insertQuery="INSERT INTO "+masterdata.getPremiaTableName()+" ("+StringUtils.join(colums,",")
+						+") VALUES ("+StringUtils.join(values,",")+")";
+						log.info("Insert Query::"+insertQuery);
+						oracle.insert(insertQuery);
+					}
+					
+					
 				}
 			}
 			
-			if(configData!=null && !configData.isEmpty() && qdata!=null) {
-				Map<String,String> jmap=new HashMap<String,String>();
-				List<String> colums=new ArrayList<String>();
-				List<String> values=new ArrayList<String>();
-				
-				for (PremiaConfigDataMaster data : configData) {
-					String value="";
-					if("Y".equals(data.getDefaultYn())) {
-						value= StringUtils.isBlank(data.getDefaultValue())?"":data.getDefaultValue();
-						
-						if("Date".equals(data.getDataTypeDesc())) { 
-							String dateformatt=StringUtils.isNotEmpty(data.getDataFormatType())?data.getDataFormatType().toUpperCase().replace("TO_CHAR", "TO_DATE"):null;
-							if(dateformatt!=null) 
-								value=dateformatt.replaceAll("<>",value );
-						}
-						value=(("String".equals(data.getDataTypeDesc())|| "Date".equals(data.getDataTypeDesc()) )?"'"+value+"'":value );
-						
-					}/*else if("N".equals(data.getDefaultYn()) &&  "Y".equals(data.getCasecondYn() ) ){
-						Object aliazval=qdata.get(data.getQueryAliaz())==null?"":qdata.get(data.getQueryAliaz());
-						value=aliazval;
-					}*/else {
-						Object aliazval=qdata.get(data.getInputColumn())==null?"":qdata.get(data.getInputColumn());
-						
-						value=String.valueOf(aliazval);
-						if("Date".equals(data.getDataTypeDesc())) { 
-							String dateformatt=StringUtils.isNotEmpty(data.getDataFormatType())?data.getDataFormatType().toUpperCase().replace("TO_CHAR", "TO_DATE"):null;
-							if(dateformatt!=null) 
-								value=dateformatt.replaceAll("<>","'"+aliazval.toString()+"'" );
-						}
-						
-						value=(("String".equals(data.getDataTypeDesc()) )?"'"+String.valueOf(aliazval)+"'":value);
-					}
-					jmap.put(data.getColumnName(), value);
-					colums.add(data.getColumnName());
-					values.add(value);
-				}
-				
-				if(!jmap.isEmpty()) {
-					
-					String insertQuery="INSERT INTO "+masterdata.getPremiaTableName()+" ("+StringUtils.join(colums,",")
-					+") VALUES ("+StringUtils.join(values,",")+")";
-					log.info("Insert Query::"+insertQuery);
-					oracle.insert(insertQuery);
-				}
-				
-				
-			}
 		 
 		}
 		
