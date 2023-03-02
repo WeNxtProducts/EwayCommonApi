@@ -23,11 +23,6 @@ public class PremiaConfigDataMasterListRes {
 	@JsonProperty("DefaultValue")
 	private String defaultValue;
 	
-	@JsonProperty("InputTableName")
-	private String inputTableName;
-	
-	@JsonProperty("InputTableColumn")
-	private String inputTableColumn;
 	
 	@JsonProperty("DataTypeId")
 	private String dataTypeId;
