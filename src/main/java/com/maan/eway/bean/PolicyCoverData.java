@@ -227,6 +227,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="EXCESS_DESC")
     private String     excessDesc ;
+    
+    @Column(name="ACTUAL_RATE")
+    private BigDecimal     actualRate ;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 
