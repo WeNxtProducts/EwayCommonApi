@@ -44,5 +44,6 @@ public class EndorsementCriteriaRes {
 		private Date effectiveDate;
 		private String endorsementStatus;
 		private String policyNo;
+		private String endorsementRemarks;
 
 }

@@ -197,7 +197,8 @@ public class EndorsementService {
 						m.get("endtCategDesc").alias("endorsementCategoryDesc"),
 						m.get("endorsementEffdate").alias("effectiveDate"),
 						m.get("endtStatus").alias("endorsementStatus"),
-						m.get("policyNo").alias("policyNo")
+						m.get("policyNo").alias("policyNo"),
+						m.get("endorsementRemarks").alias("endorsementRemarks")
 						
 						);
 			 
@@ -251,14 +252,19 @@ public class EndorsementService {
 	}
 	public CommonRes createEndorsment(Endorsment request) {
 		try {
-			
-			EserviceMotorDetails motorRaw = copyraw.copyMotorRaw(request);
-			CommonRes c=new CommonRes();
-			c.setCommonResponse(motorRaw);
-			c.setErroCode(0);
-			c.setIsError(false);
-			c.setMessage("Success");
-			return c;
+
+			if("42".equals(request.getEndtType())) {
+				CommonRes cancelPolicy = cancelPolicy(request);	
+				return cancelPolicy;
+			}else {
+				EserviceMotorDetails motorRaw = copyraw.copyMotorRaw(request);
+				CommonRes c=new CommonRes();
+				c.setCommonResponse(motorRaw);
+				c.setErroCode(0);
+				c.setIsError(false);
+				c.setMessage("Success");
+				return c;
+			}
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
