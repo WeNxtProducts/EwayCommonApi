@@ -49,7 +49,7 @@ public class BankMasterController {
 	private PrintReqService reqPrinter;
 
 	// save
-	@PreAuthorize("hasAnyRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
 	@PostMapping("/insertbank")
 	@ApiOperation(value = "This method is Insert Bank Details")
 	public ResponseEntity<CommonRes> insertBank(@RequestBody BankMasterSaveReq req) {
@@ -85,7 +85,7 @@ public class BankMasterController {
 	}
 
 	// Get All Bank Master
-	@PreAuthorize("hasAnyRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getallbankdetails")
 	@ApiOperation("This method is getall Bank Details")
 	public ResponseEntity<CommonRes> getallBankDetails(@RequestBody BankMasterGetAllReq req) {
@@ -106,7 +106,7 @@ public class BankMasterController {
 	}
 
 	// Get Active Bank Master
-	@PreAuthorize("hasAnyRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER',ROLE_USER)")
 	@PostMapping("/getactivebank")
 	@ApiOperation("This method is get Active Bank Details")
 	public ResponseEntity<CommonRes> getActiveBankDetails(@RequestBody BankMasterGetAllReq req) {
@@ -147,7 +147,7 @@ public class BankMasterController {
 	}
 
 	// Change Status
-	@PreAuthorize("hasAnyRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
 	@PostMapping("/bank/changestatus")
 	@ApiOperation(value = "This method is Bank Change Status")
 	public ResponseEntity<CommonRes> changeStatusOfBank(@RequestBody BankChangeStatusReq req) {
@@ -169,7 +169,7 @@ public class BankMasterController {
 	}
 
 	// Bank Master Drop Down Type
-	//@PreAuthorize("hasAnyRole('ADMIN','DB-ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping(value="/dropdown/bankmaster",produces = "application/json")
 	@ApiOperation(value = "This method is get Bank Master Drop Down")
 
