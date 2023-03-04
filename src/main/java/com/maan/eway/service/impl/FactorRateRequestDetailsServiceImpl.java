@@ -320,6 +320,7 @@ this.repository = repo;
 					saveCover.setExcessAmount(coverData.getExcessAmount()==null ? null : coverData.getExcessAmount());
 					saveCover.setExcessDesc(coverData.getExcessDesc()==null ? null : coverData.getExcessDesc());
 					saveCover.setExcessPercent(coverData.getExcessPercent()==null ? null : coverData.getExcessPercent());
+					saveCover.setProRataYn(coverData.getProRataYn()==null ? "N" : coverData.getProRataYn());
 					String userOpt=!"D".equals(saveCover.getIsSelected())?"N":"Y";
 					saveCover.setRegulatoryCode(coverData.getRegulatoryCode());
 					saveCover.setMinimumPremiumYn(StringUtils.isBlank(coverData.getMinimumPremiumYn())?"N":coverData.getMinimumPremiumYn());
@@ -421,6 +422,7 @@ this.repository = repo;
 						saveSubCover.setExcessAmount(subCoverData.getExcessAmount()==null ? null : subCoverData.getExcessAmount());
 						saveSubCover.setExcessDesc(subCoverData.getExcessDesc()==null ? null : subCoverData.getExcessDesc());
 						saveSubCover.setExcessPercent(subCoverData.getExcessPercent()==null ? null : subCoverData.getExcessPercent());
+						saveSubCover.setProRataYn(subCoverData.getProRataYn()==null ? "N" : subCoverData.getProRataYn());
 //						if(subCoverData.getTaxes()!=null && subCoverData.getTaxes().size() > 0 ) {
 //							saveSubCover.setTax1(subCoverData.getTaxes().get(0).getTaxAmount()==null ? null : Double.valueOf(df.format(subCoverData.getTaxes().get(0).getTaxAmount())) );
 //							if(coverData.getTaxes().size() > 1  ) 
