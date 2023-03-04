@@ -40,7 +40,7 @@ private PaymentMasterService service;
 private PrintReqService reqPrinter;
 
 //Save
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 @PostMapping("/insertpayment")
 @ApiOperation(value = "This Method is to save Payment Master")
 public ResponseEntity<CommonRes> savePaymentMaster(@RequestBody PaymentMasterSaveReq req) {
@@ -93,7 +93,7 @@ public ResponseEntity<CommonRes> getallPayment(@RequestBody PaymentMasterGetallR
 }
 
 //  Get Active Payment Master
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 @PostMapping("/getactivepayment")
 @ApiOperation("This method is get Active Payment")
 public ResponseEntity<CommonRes> getActivePayment(@RequestBody PaymentMasterGetallReq req) {
@@ -114,7 +114,7 @@ public ResponseEntity<CommonRes> getActivePayment(@RequestBody PaymentMasterGeta
 }
 
 // Get By Payment Id
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 @PostMapping("/getbypaymentid")
 @ApiOperation("This Method is to get by Payment id")
 public ResponseEntity<CommonRes> getByPaymentId(@RequestBody PaymentMasterGetReq req) {
@@ -132,7 +132,7 @@ public ResponseEntity<CommonRes> getByPaymentId(@RequestBody PaymentMasterGetReq
 		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	}
 }
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 @PostMapping("/payment/changestatus")
 @ApiOperation(value = "This method is get Payment Change Status")
 public ResponseEntity<CommonRes> changeStatusOfPayment(@RequestBody PaymentMasterChangeStatusReq req) {
