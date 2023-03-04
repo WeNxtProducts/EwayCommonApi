@@ -49,7 +49,7 @@ public class BankMasterController {
 	private PrintReqService reqPrinter;
 
 	// save
-	@PreAuthorize("hasAnyRole('ADMIN','DB-ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	@PostMapping("/insertbank")
 	@ApiOperation(value = "This method is Insert Bank Details")
 	public ResponseEntity<CommonRes> insertBank(@RequestBody BankMasterSaveReq req) {
@@ -85,7 +85,7 @@ public class BankMasterController {
 	}
 
 	// Get All Bank Master
-	@PreAuthorize("hasAnyRole('ADMIN','DB-ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	@PostMapping("/getallbankdetails")
 	@ApiOperation("This method is getall Bank Details")
 	public ResponseEntity<CommonRes> getallBankDetails(@RequestBody BankMasterGetAllReq req) {
@@ -106,7 +106,7 @@ public class BankMasterController {
 	}
 
 	// Get Active Bank Master
-	@PreAuthorize("hasAnyRole('ADMIN','DB-ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	@PostMapping("/getactivebank")
 	@ApiOperation("This method is get Active Bank Details")
 	public ResponseEntity<CommonRes> getActiveBankDetails(@RequestBody BankMasterGetAllReq req) {
@@ -127,7 +127,7 @@ public class BankMasterController {
 	}
 
 	// Get By Bank Id
-	@PreAuthorize("hasAnyRole('ADMIN','DB-ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getbybankid")
 	@ApiOperation("This Method is to get by Bank id")
 	public ResponseEntity<CommonRes> getByBankCode(@RequestBody BankMasterGetReq req) {
@@ -147,7 +147,7 @@ public class BankMasterController {
 	}
 
 	// Change Status
-	@PreAuthorize("hasAnyRole('ADMIN','DB-ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	@PostMapping("/bank/changestatus")
 	@ApiOperation(value = "This method is Bank Change Status")
 	public ResponseEntity<CommonRes> changeStatusOfBank(@RequestBody BankChangeStatusReq req) {
