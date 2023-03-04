@@ -104,7 +104,7 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 						.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
 			}
 			// Status Validation
-			 if (req.getStatus().length() > 1) {
+			 if (req.getStatus() == null || req.getStatus().length() > 1) {
 				errorList.add(new Error("03", "Status", "Status 1 Character Only"));
 			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()) || "P".equals(req.getStatus()) || "R".equals(req.getStatus()))) {
 				errorList.add(new Error("03", "Status", "Enter Status Y or N Only"));
@@ -114,10 +114,10 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			} else if (req.getCompanyId().length() > 20) {
 				errorList.add(new Error("04", "CompanyId", "CompanyId 20 Character Only"));
 			}
-			if (StringUtils.isBlank(req.getBranchCode())) {
-				errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
-			}
-			
+//			if (StringUtils.isBlank(req.getBranchCode())) {
+//				errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
+//			}
+//			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
@@ -286,6 +286,7 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			saveData.setEntryDate(entryDate);
 			saveData.setAmendId(amendId);
 			saveData.setUpdatedDate(new Date());
+			saveData.setBranchCode(StringUtils.isBlank(req.getBranchCode())?  "99999" :req.getBranchCode()  );
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setCyclinders(req.getCylinders());
 			repo.saveAndFlush(saveData);

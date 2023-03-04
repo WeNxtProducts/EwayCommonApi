@@ -39,11 +39,13 @@ import com.maan.eway.bean.ExchangeMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CurrencyMasterGetReq;
 import com.maan.eway.master.req.ExchangeChangeStatusReq;
 import com.maan.eway.master.req.ExchangeMasterGetReq;
 import com.maan.eway.master.req.ExchangeMasterGetallReq;
 import com.maan.eway.master.req.ExchangeMasterSaveReq;
 import com.maan.eway.master.res.CityMasterRes;
+import com.maan.eway.master.res.CurrencyMasterRes;
 import com.maan.eway.master.res.ExchangeMasterGetRes;
 import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.master.service.ExchangeMasterService;
@@ -205,7 +207,8 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 		List<ExchangeMaster> list = new ArrayList<ExchangeMaster>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			CurrencyMaster currencyname = currencyrepo.findByCurrencyId(req.getCurrencyId());
+			 List<CurrencyMaster>   currencyList = getByCurrencyId(req.getCompanyId() ,req.getCurrencyId() );
+			String  currencyname =currencyList.size()>0  ? currencyList.get(0).getCurrencyName() : "";// currencyrepo.findByCurrencyId(req.getCurrencyId());
 			Integer amendId=0;
 			Date startDate = req.getEffectiveDateStart() ;
 			String end = "31/12/2050";
@@ -287,7 +290,7 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			saveData.setUpdatedDate(new Date());
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setCreatedBy(createdBy);
-			saveData.setCurrencyName(currencyname.getCurrencyName());
+			saveData.setCurrencyName(currencyname);
 			repo.saveAndFlush(saveData);
 			log.info("Saved Details is --> " + json.toJson(saveData));
 		} catch (Exception e) {
@@ -298,6 +301,67 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 		return res;
 	}
 
+	public List<CurrencyMaster>  getByCurrencyId(String companyId , String currencyId) {
+		List<CurrencyMaster> list = new ArrayList<CurrencyMaster>();
+		ModelMapper mapper = new ModelMapper();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CurrencyMaster> query = cb.createQuery(CurrencyMaster.class);
+		
+			
+			// Find All
+			Root<CurrencyMaster>    c = query.from(CurrencyMaster.class);		
+			
+			// Select
+			query.select(c );
+			
+			// amendId Max Filter
+			Subquery<Long>amendId = query.subquery(Long.class);
+			Root<CurrencyMaster> ocpm1 = amendId.from(CurrencyMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(c.get("currencyId"),ocpm1.get("currencyId") );
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+
+			amendId.where(a1,a2);
+			
+		
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("companyId")));
+			
+		    // Where	
+		
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("amendId"), amendId);		
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("currencyId"),currencyId) ;
+			Predicate n3 = cb.equal(c.get("companyId"), companyId);
+			Predicate n4 = cb.equal(c.get("companyId"), "99999");
+			Predicate n5 = cb.or(n3,n4);
+			query.where(n1,n2,n5).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<CurrencyMaster> result = em.createQuery(query);			
+			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCurrencyId()))).collect(Collectors.toList());
+			
+			} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return list;
+	}
+	
 	public Integer getMasterTableCount(String companyId ) {
 		Integer data = 0;
 		try {
