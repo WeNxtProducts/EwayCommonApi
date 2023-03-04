@@ -99,7 +99,7 @@ private static final long serialVersionUID = 1L;
     private String     shortName ;
 
     @Column(name="RFACTOR")
-    private Byte       rfactor ;
+    private Integer       rfactor ;
 
     @Column(name="SUB_CURRENCY", length=10)
     private String     subCurrency ;

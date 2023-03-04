@@ -72,4 +72,11 @@ public class CurrencyMasterSaveReq implements Serializable {
 	
 	@JsonProperty("DecimalDigit")
 	private String decimalDigit;
+	
+	@JsonProperty("ShortName")
+	private String shortName;
+	
+	@JsonProperty("Rfactor")
+	private String rfactor;
+	
 }
