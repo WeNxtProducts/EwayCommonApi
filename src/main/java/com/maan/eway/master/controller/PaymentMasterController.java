@@ -72,7 +72,7 @@ public ResponseEntity<CommonRes> savePaymentMaster(@RequestBody PaymentMasterSav
 }
 
 //  Get All Payment Master
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER''ROLE_ADMIN')")
 @PostMapping("/getallpayment")
 @ApiOperation("This method is getall Payment")
 public ResponseEntity<CommonRes> getallPayment(@RequestBody PaymentMasterGetallReq req) {
