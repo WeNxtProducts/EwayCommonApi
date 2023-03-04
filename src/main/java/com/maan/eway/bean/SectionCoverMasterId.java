@@ -44,4 +44,6 @@ public class SectionCoverMasterId implements Serializable {
     private String     agencyCode;
     
     private String     branchCode ;
+    
+     
 }

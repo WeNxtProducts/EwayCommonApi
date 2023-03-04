@@ -215,6 +215,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="MULTI_SELECT_YN")
     private String       multiSelectYn;
 
+    @Column(name="PRO_RATA_YN")
+    private String       proRataYn;
 }
 
 
