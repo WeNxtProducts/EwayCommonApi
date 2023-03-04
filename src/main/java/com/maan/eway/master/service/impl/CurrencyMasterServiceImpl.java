@@ -185,6 +185,8 @@ public SuccessRes insertCurrency(CurrencyMasterSaveReq req) {
 			saveData.setCoreAppCode(req.getCoreAppCode());
 			saveData.setCurrencyShortCode(StringUtils.isBlank(req.getCurrencyShortCode())?"":req.getCurrencyShortCode());
 			saveData.setDecimalDigit(Integer.valueOf(req.getDecimalDigit()));
+			saveData.setShortName(req.getShortName()==null?"":req.getShortName());
+			saveData.setRfactor((req.getRfactor())==null?0:Integer.valueOf(req.getRfactor()));
 			repo.saveAndFlush(saveData);
 			
 			log.info("Saved Details is ---> " + json.toJson(saveData));
@@ -546,6 +548,11 @@ public CurrencyMasterRes getByCurrencyId(CurrencyMasterGetReq req) {
 		res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 		res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 		res.setCompanyId(list.get(0).getCompanyId());
+		res.setShortName(list.get(0).getShortName()==null?"":list.get(0).getShortName());
+		res.setRfactor(list.get(0).getRfactor().toString()==null?"":list.get(0).getRfactor().toString());
+		res.setCreatedBy(list.get(0).getCreatedBy()==null?"":list.get(0).getCreatedBy());
+		res.setUpdatedBy(list.get(0).getUpdatedBy()==null?"":list.get(0).getUpdatedBy());
+	//	res.setRsaCode(list.get(0).getRsaCode==null?"":list.get(0).getRsaCode());
 		} catch (Exception e) {
 		e.printStackTrace();
 		log.info("Exception is ---> " + e.getMessage());

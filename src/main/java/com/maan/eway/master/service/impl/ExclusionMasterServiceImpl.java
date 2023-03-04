@@ -232,7 +232,7 @@ public class ExclusionMasterServiceImpl implements ExclusionMasterService {
 		String createdBy ="";
 		Integer exclusionId = 0;
 		
-		ListItemValue data = listrepo.findByItemTypeAndItemCode("LIST_TYPE",req.getTypeId());
+		ListItemValue data = listrepo.findByItemTypeAndItemCode("TERMS_TYPE",req.getTypeId());
 		
 		if(StringUtils.isBlank(req.getExclusionId())) {
 			Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getProductId(),req.getSectionId());
