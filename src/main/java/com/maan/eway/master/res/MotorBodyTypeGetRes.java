@@ -2,6 +2,8 @@ package com.maan.eway.master.res;
 
 import java.util.Date;
 
+import javax.persistence.Column;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -18,43 +20,60 @@ public class MotorBodyTypeGetRes {
 
 	@JsonProperty("BodyId")
 	private Integer bodyId;
-	@JsonProperty("SectionId")
-	private String sectionId;
 	
 	@JsonProperty("BodyNameEn")
 	private String bodyNameEn;
 	
-	@JsonFormat(pattern="dd/MM/YYYY")
+	@JsonProperty("SectionId")
+	private String sectionId;
+
+	@JsonProperty("InsuranceId")
+	private String companyId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
+	@JsonFormat(pattern = "dd/MM/YYYY")
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
-	
-	@JsonFormat(pattern="dd/MM/YYYY")
+
+	@JsonFormat(pattern = "dd/MM/YYYY")
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
 
-	
 	@JsonProperty("AmendId")
 	private Integer amendId;
-	
-	@JsonProperty("Status")
-	private String status;
 
-	@JsonProperty("Remarks")
-	private String remarks;
-	
-	@JsonFormat(pattern="dd/MM/YYYY")
-	@JsonProperty("EntryDate")
-	private Date entryDate;
-	
 	@JsonProperty("SeatingCapacity")
 	private Integer seatingCapacity;
 
 	@JsonProperty("Tonnage")
 	private Integer tonnage;
-		  
 
 	@JsonProperty("Cylinders")
 	private Integer cylinders;
-		    
+
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
+	@JsonFormat(pattern = "dd/MM/YYYY")
+	@JsonProperty("EntryDate")
+	private Date entryDate;
+	
+	@JsonProperty( "UpdatedBy")
+	private String updatedBy;
+
+	@JsonFormat(pattern = "dd/MM/YYYY")
+	@JsonProperty("UpdatedDate")
+	private Date updatedDate;
+	
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
+
+	@JsonProperty("Status")
+	private String status;
+
+	@JsonProperty("Remarks")
+	private String remarks;
 
 }
