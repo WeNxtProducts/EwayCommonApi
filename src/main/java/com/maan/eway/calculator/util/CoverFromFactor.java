@@ -59,6 +59,7 @@ public class CoverFromFactor implements Function<FactorRateRequestDetails,Cover>
 					.excessDesc(t.getExcessDesc()==null?"":t.getExcessDesc())
 					.excessPercent(t.getExcessPercent()==null?BigDecimal.ZERO:t.getExcessPercent())
 					.minimumPremiumYn(t.getMinimumPremiumYn())
+					.proRataYn(t.getProRataYn())
 					.build();
 				return c;
 			 }			
