@@ -80,6 +80,14 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="BRANCH_CODE", nullable=false, length=20)
     private String     branchCode ;
+    
+    @Id
+    @Column(name="ENDT_TYPE_ID")
+    private Integer    endtTypeId ;
+    
+    @Id
+    @Column(name="ENDT_CATEGORY_ID")
+    private String    endtCategoryId ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="BUILDING_AGE")
@@ -200,11 +208,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="INDUSTRY_ID")
     private Integer  industryId ;
 
-    @Column(name="ENDT_TYPE_ID")
-    private Integer    endtTypeId ;
-    
-    @Column(name="ENDT_CATEGORY_ID")
-    private Integer    endtCategoryId ;
     
 }
 

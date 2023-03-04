@@ -36,5 +36,9 @@ public class MsHumanDetailsId implements Serializable {
     private Long       vdRefno ;
     
     private Integer    groupId ;
+    
+    private Integer    endtTypeId ;
+    
+    private String    endtCategoryId ;
      
 }

@@ -42,6 +42,10 @@ public class MsAssetDetailsId implements Serializable {
     private String     branchCode ;
     
     private String     requestReferenceNo ;
+    
+    private Integer    endtTypeId ;
+    
+    private String    endtCategoryId ;
 
      
 }
