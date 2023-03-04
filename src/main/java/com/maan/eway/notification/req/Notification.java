@@ -59,6 +59,8 @@ public class Notification {
 	
 	@JsonProperty("Attachments")
 	private List<String> attachments;
-
+	
+	@JsonProperty("PushedBy")
+	private String pushedBy;
 }
 

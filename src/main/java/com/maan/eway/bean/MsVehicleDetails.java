@@ -184,6 +184,13 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="PROMOCODE", length=100)
     private String     promocode ;
+    
+    @Column(name="ENDT_TYPE_ID")
+    private Integer    endtTypeId ;
+    
+    @Column(name="ENDT_CATEGORY_ID")
+    private Integer    endtCategoryId ;
+    
 }
 
 

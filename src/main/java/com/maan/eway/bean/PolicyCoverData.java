@@ -50,7 +50,7 @@ import javax.persistence.*;
 public class PolicyCoverData implements Serializable {
  
 private static final long serialVersionUID = 1L;
- 
+
     //--- ENTITY PRIMARY KEY 
     @Id
     @Column(name="QUOTE_NO", nullable=false, length=20)
@@ -230,7 +230,23 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="ACTUAL_RATE")
     private BigDecimal     actualRate ;
+    
+    
+    @Column(name="REGUL_SUM_INSURED")
+    private BigDecimal     regulSumInsured ;
+    //--- ENTITY LINKS ( RELATIONSHIP )
 
+
+    @Column(name="cover_based_on", length=100)
+    private String     coverBasedOn ;
+
+    @Column(name="MULTI_SELECT_YN")
+    private String       multiSelectYn;
+
+
+    @Column(name="MINIMUM_PREMIUM_YN")
+    private String    minimumPremiumYn ;
+ 
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

@@ -132,6 +132,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="GROUP_COUNT")
     private Integer    groupCount ;
 
+    @Column(name="ENDT_TYPE_ID")
+    private Integer    endtTypeId ;
+    
+    @Column(name="ENDT_CATEGORY_ID")
+    private Integer    endtCategoryId ;
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

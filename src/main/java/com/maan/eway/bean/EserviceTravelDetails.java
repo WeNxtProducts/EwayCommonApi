@@ -259,6 +259,12 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="MANUAL_REFERAL_YN", length=100)
     private String  manualReferalYn;
+    
+    @Column(name="ENDORSEMENT_TYPE")
+    private Integer    endorsementType ;
+
+    @Column(name="ENDORSEMENT_TYPE_DESC", length=100)
+    private String     endorsementTypeDesc ;
 }
 
 

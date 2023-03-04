@@ -73,6 +73,14 @@ public class CoverRes {
     @JsonProperty("ExcessDesc")
     private String  excessDesc;
    
+	 @JsonProperty("MultiSelectYn") 
+	 private String multiSelectYn;
+
+	 @JsonProperty("SectionName") 
+	 private String sectionName;
+	 
+	 @JsonProperty("MinimumPremiumYn") 
+	 private String minimumPremiumYn;
 	
 	
 }

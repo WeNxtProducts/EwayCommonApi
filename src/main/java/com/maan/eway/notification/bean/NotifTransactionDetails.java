@@ -176,7 +176,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="attach_file_path")
     private String attachFilePath;
     
-
+    @Column(name="PUSHED_BY")
+    private String pushedBy;
 }
 
 

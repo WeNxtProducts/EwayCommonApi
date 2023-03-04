@@ -54,5 +54,15 @@ public class SubCoverRes {
 		 
 	    @JsonProperty("RegulatoryCode")
 	    private String  regulatoryCode ;
+	    
+
+		 @JsonProperty("MultiSelectYn") 
+		 private String multiSelectYn;
+
+		 @JsonProperty("SectionName") 
+		 private String sectionName;
+		 
+		 @JsonProperty("MinimumPremiumYn") 
+		 private String minimumPremiumYn;
 
 }
