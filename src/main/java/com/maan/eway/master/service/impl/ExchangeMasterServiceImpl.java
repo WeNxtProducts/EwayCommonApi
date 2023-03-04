@@ -124,7 +124,7 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 				errorList.add(new Error("02", "CoreAppCode", "Please Enter getCoreAppCode"));
 			} else if (req.getCoreAppCode().length() > 20) {
 				errorList.add(new Error("02", "CoreAppCode", "getCoreAppCode under 20 Characters only allowed"));
-			}else if (req.getCoreAppCode().equalsIgnoreCase("99999")&&   StringUtils.isBlank(req.getExchangeId())) {
+			}else if (req.getCoreAppCode().equalsIgnoreCase("99999")||   StringUtils.isBlank(req.getExchangeId())||req.getExchangeId()==null) {
 				List<ExchangeMaster> CompanyList = getCoreAppCodeExistDetails(req.getCoreAppCode() , req.getEffectiveDateStart() , req.getEffectiveDateEnd()  );
 				if (CompanyList.size()>0 ) {
 					errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
@@ -218,7 +218,7 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			Date entryDate = null ;
 			String createdBy = "" ;
 				Integer exchangeId = 0;
-			if (StringUtils.isBlank(req.getExchangeId().toString())) {
+			if (StringUtils.isBlank(req.getExchangeId()) || req.getExchangeId()==null) {
 				// Save
 				Integer totalCount = getMasterTableCount( req.getCompanyId());
 				exchangeId =  totalCount+1 ;

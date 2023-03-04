@@ -32,11 +32,11 @@ public class MotorBodySaveReq {
 	@JsonProperty("Remarks")
 	private String remarks;
 	@JsonProperty("SeatingCapacity")
-	private Integer seatingCapacity	;
+	private String seatingCapacity	;
 	@JsonProperty("Tonnage")
-	private Integer tonnage	;
+	private String tonnage	;
 	@JsonProperty("Cylinders")
-	private Integer cylinders	;
+	private String cylinders	;
 	@JsonProperty("Status")
 	private String status;
 	@JsonProperty("CreatedBy")

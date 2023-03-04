@@ -114,6 +114,28 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			} else if (req.getCompanyId().length() > 20) {
 				errorList.add(new Error("04", "CompanyId", "CompanyId 20 Character Only"));
 			}
+			if (StringUtils.isBlank(req.getSeatingCapacity())) {
+				errorList.add(new Error("05", "SeatingCapacity", "Please Enter Seatin Capacity"));
+			} else if (!req.getSeatingCapacity().matches("[0-9.]+")) {
+				errorList.add(new Error("05", "SeatingCapacity", "Please Enter Valid Seating Capacity"));
+			}else if (Integer.valueOf(req.getSeatingCapacity())<0) {
+				errorList.add(new Error("05", "SeatingCapacity", "Please Enter Seating Capacity correct Value"));
+			}
+			if (StringUtils.isBlank(req.getCylinders())) {
+				errorList.add(new Error("06", "Cylinders", "Please Enter Cylinders"));
+			} else if (!req.getCylinders().matches("[0-9.]+")) {
+				errorList.add(new Error("06", "Cylinders", "Cylinders"));
+			}else if (Integer.valueOf(req.getCylinders())<0) {
+				errorList.add(new Error("05", "Cylinders", "Please Enter  Cylinders correct Value"));
+			}
+			if (StringUtils.isBlank(req.getTonnage())) {
+				errorList.add(new Error("07", "Tonnage", "Please Enter Tonnage"));
+			} else if (!req.getTonnage().matches("[0-9.]+")) {
+				errorList.add(new Error("06", "Tonnage", "Tonnage"));
+			}else if (Integer.valueOf(req.getTonnage())<0) {
+				errorList.add(new Error("05", "Tonnage", "Please Enter  Tonnage correct Value"));
+			}
+			
 //			if (StringUtils.isBlank(req.getBranchCode())) {
 //				errorList.add(new Error("02", "BranchCode", "Please Select BranchCode"));
 //			}
@@ -288,7 +310,7 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			saveData.setUpdatedDate(new Date());
 			saveData.setBranchCode(StringUtils.isBlank(req.getBranchCode())?  "99999" :req.getBranchCode()  );
 			saveData.setUpdatedBy(req.getCreatedBy());
-			saveData.setCyclinders(req.getCylinders());
+			saveData.setCyclinders(Integer.valueOf(req.getCylinders()));
 			repo.saveAndFlush(saveData);
 
 //			if (list.size() > 0) {
