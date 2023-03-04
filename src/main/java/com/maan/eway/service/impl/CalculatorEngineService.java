@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import javax.persistence.Tuple;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -303,7 +304,14 @@ public class CalculatorEngineService implements CalculatorEngine{
 				 Comparator<Cover> comp=Comparator.comparing(Cover::getCoverageType); 
 				 retc.sort(comp); 
 		}
-				  
+		 	try {
+		 		String endtTypeId=vehicles.get(0).get("endtTypeId")==null?"":vehicles.get(0).get("endtTypeId").toString();
+		 		if(StringUtils.isNotBlank(endtTypeId) && !"0".equals(endtTypeId)) {
+		 			loadAndRemoveCoversForEndt(engine,retc);
+		 		}		 	
+		 	}catch (Exception e) {
+		 		e.printStackTrace();
+			}
 				 
 		}/*catch(CoverException e) {
 			e.printStackTrace();
@@ -336,9 +344,26 @@ public class CalculatorEngineService implements CalculatorEngine{
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		
+		/// Endoresment calculation
+		
+		
 		return null;
 	}
 	
+	private void loadAndRemoveCoversForEndt(CalcEngine engine, List<Cover> retc) {
+		try {
+			
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+
+
 	public void loadOnetimetable(CalcEngine engine) {
 		///One time table record
 		try {

@@ -163,4 +163,8 @@ public class Cover implements Serializable{
 			 
 			 @JsonProperty("MinimumPremiumYn") 
 			 private String minimumPremiumYn;
+			 @JsonProperty("ProRataApplicable")
+			 private String proRataYn;
 }
+
+

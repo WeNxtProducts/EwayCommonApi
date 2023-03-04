@@ -46,6 +46,12 @@ public class CoverFromPolicy implements Function<PolicyCoverData,Cover> {
 					.isselected(t.getIsSelected()==null?"N":t.getIsSelected().toString())
 					.isReferral(referal)
 					.referalDescription("Y".equals(referal)?(t.getCoverDesc()==null?"":t.getCoverDesc().toString()+" Referral"):"")
+					.multiSelectYn(t.getMultiSelectYn()==null?"N":t.getMultiSelectYn())
+					.excessAmount(t.getExcessAmount()==null?BigDecimal.ZERO:t.getExcessAmount())
+					.excessDesc(t.getExcessDesc()==null?"":t.getExcessDesc())
+					.excessPercent(t.getExcessPercent()==null?BigDecimal.ZERO:t.getExcessPercent())
+					.minimumPremiumYn(t.getMinimumPremiumYn())
+					
 					//Premium
 					.premiumAfterDiscount(null)
 					.premiumAfterDiscountLC(null)
