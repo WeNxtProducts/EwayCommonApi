@@ -36,4 +36,8 @@ public class MsVehicleDetailsId implements Serializable {
     private String     status ;    
   
     private String     chassisNumber ;
+    
+    private Integer    endtTypeId ;
+    
+    private String    endtCategoryId ;
 }

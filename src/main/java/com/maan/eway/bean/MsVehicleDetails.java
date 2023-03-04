@@ -66,6 +66,14 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="REQUEST_REFERENCE_NO", nullable=false, length=10)
     private String     requestReferenceNo;
+    
+    @Id
+    @Column(name="ENDT_TYPE_ID")
+    private Integer    endtTypeId ;
+    
+    @Id
+    @Column(name="ENDT_CATEGORY_ID")
+    private String    endtCategoryId ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="ACCIDENT_YN", nullable=false, length=20)
@@ -185,12 +193,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="PROMOCODE", length=100)
     private String     promocode ;
     
-    @Column(name="ENDT_TYPE_ID")
-    private Integer    endtTypeId ;
-    
-    
-    @Column(name="ENDT_CATEGORY_ID")
-    private String    endtCategoryId ;
+   
     
 }
 
