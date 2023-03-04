@@ -352,10 +352,49 @@ private static final long serialVersionUID = 1L;
     private Integer  industryId ;
 
     
-      @Column(name="INDUSTRY_DESC", length=100)
+    @Column(name="INDUSTRY_DESC", length=100)
     private String  industryDesc ;
 
+      @Column(name="ENDORSEMENT_TYPE")
+      private Integer    endorsementType ;
+
+      @Column(name="ENDORSEMENT_TYPE_DESC", length=100)
+      private String     endorsementTypeDesc ;
+
+      @Temporal(TemporalType.TIMESTAMP)
+      @Column(name="ENDORSEMENT_DATE")
+      private Date       endorsementDate ;
+
+      @Column(name="ENDORSEMENT_REMARKS", length=500)
+      private String     endorsementRemarks ;
+
+      @Temporal(TemporalType.TIMESTAMP)
+      @Column(name="ENDORSEMENT_EFFDATE")
+      private Date       endorsementEffdate ;
+
+      @Column(name="ORIGINAL_POLICY_NO", length=500)
+      private String     originalPolicyNo ;
+
+      @Column(name="ENDT_PREV_POLICY_NO", length=500)
+      private String     endtPrevPolicyNo ;
+
+      @Column(name="ENDT_PREV_QUOTE_NO", length=500)
+      private String     endtPrevQuoteNo ;
+
+      @Column(name="ENDT_COUNT")
+      private BigDecimal endtCount ;
+
+      @Column(name="ENDT_STATUS", length=10)
+      private String     endtStatus ;
       
+      
+      
+      @Column(name="IS_FINYN", length=10)
+      private String     isFinaceYn ;
+      
+      
+      @Column(name="ENDT_CATEG_DESC", length=10)
+      private String     endtCategDesc ;
 }
 
 
