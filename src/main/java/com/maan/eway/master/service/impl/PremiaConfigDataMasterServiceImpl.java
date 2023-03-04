@@ -119,7 +119,7 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 				if (StringUtils.isBlank(req.getDataTypeId())) {
 					errorList.add(new Error("10", "DataType", "Please Select DataType"));				
 				}
-				if ( StringUtils.isNotBlank(req.getDataTypeId())&& req.getDataTypeId().equalsIgnoreCase("3")) {
+				else if ( StringUtils.isNotBlank(req.getDataTypeId())&& req.getDataTypeId().equalsIgnoreCase("3")) {
 					errorList.add(new Error("11", "Date Format Type", "Please Enter Date Format Type"));				
 				}
 			}
