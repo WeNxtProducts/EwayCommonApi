@@ -107,13 +107,18 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 					} 
 					
 					if (loginData != null  ) {
-						data = criteriaQuery.isvalidUser(req);
-						if (CollectionUtils.isEmpty(data)) {
-							list.add(new Error("", "User", "Please enter valid username/password"));
-						}else if(isExpired(data.get(0).getLpassDate())) {
-							list.add(new Error("", "User", "Password Expired Please Change Your Password"));
-							changePwd = "Y";
+						if (! loginData.getStatus().equalsIgnoreCase("Y") ) {
+							list.add(new Error("", "UserId", "This Login Id is Deactivated"));
+						} else {
+							data = criteriaQuery.isvalidUser(req);
+							if (CollectionUtils.isEmpty(data)) {
+								list.add(new Error("", "User", "Please enter valid username/password"));
+							}else if(isExpired(data.get(0).getLpassDate())) {
+								list.add(new Error("", "User", "Password Expired Please Change Your Password"));
+								changePwd = "Y";
+							}
 						}
+						
 					}
 				} 
 				
