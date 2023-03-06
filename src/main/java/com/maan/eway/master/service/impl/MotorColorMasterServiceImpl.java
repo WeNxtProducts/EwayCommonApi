@@ -235,8 +235,10 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 				Predicate n1 = cb.equal(b.get("status"), "Y");
 			//	Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 				Predicate n3 = cb.equal(b.get("colorId"), req.getColorId());
+				Predicate n4 = cb.equal(b.get("companyId"), req.getInsuranceId());
+				Predicate n5 = cb.equal(b.get("branchCode"), req.getBranchCode());
 
-				query.where(n1, n3).orderBy(orderList);
+				query.where(n1, n3,n4,n5).orderBy(orderList);
 
 				// Get Result
 				TypedQuery<MotorColorMaster> result = em.createQuery(query);
