@@ -444,8 +444,8 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
-			res.setCylinders(list.get(0).getCyclinders().toString());
-			res.setSeatingCapacity(list.get(0).getSeatingCapacity().toString());
+			res.setCylinders(list.get(0).getCyclinders()==null?"":list.get(0).getCyclinders().toString());
+			res.setSeatingCapacity(list.get(0).getSeatingCapacity()==null?"":list.get(0).getSeatingCapacity().toString());
 
 		} catch (Exception e) {
 			e.printStackTrace();
