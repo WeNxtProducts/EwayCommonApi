@@ -125,11 +125,11 @@ public class ExclusionMasterServiceImpl implements ExclusionMasterService {
 			}
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("06", "Status", "Please Enter Status"));
+			errorList.add(new Error("05", "Status", "Please Select Status  "));
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("06", "Status", "Enter Status in 1 Character Only"));
-			}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()) || "R".equals(req.getStatus()))) {
-				errorList.add(new Error("06", "Status", "Enter Status in Y or N or R Only"));
+			errorList.add(new Error("05", "Status", "Please Select Valid Status - 1 Character Only Allwed"));
+			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
+			errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 			}
 
 			if (StringUtils.isBlank(req.getCoreAppCode())) {
@@ -703,7 +703,10 @@ try {
 	Predicate n7 = cb.or(n5,n6);
 	Predicate n8 = cb.equal(c.get("productId"), req.getProductId());
 	Predicate n11 = cb.equal(c.get("sectionId"), req.getSectionId());
-	query.where(n1,n2,n3,n4,n7,n8,n11).orderBy(orderList);
+	Predicate n12 = cb.equal(c.get("status"),"R");
+	Predicate n13 = cb.or(n1,n12);
+
+	query.where(n13,n2,n3,n4,n7,n8,n11).orderBy(orderList);
 	// Get Result
 	TypedQuery<ExclusionMaster> result = em.createQuery(query);
 	list = result.getResultList();
