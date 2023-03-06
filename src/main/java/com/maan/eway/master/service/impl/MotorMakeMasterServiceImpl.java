@@ -405,6 +405,8 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+			res.setBranchCode(list.get(0).getBranchCode()==null?"":list.get(0).getBranchCode());
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());

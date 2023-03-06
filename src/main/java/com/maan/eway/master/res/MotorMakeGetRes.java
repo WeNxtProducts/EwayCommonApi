@@ -47,7 +47,9 @@ public class MotorMakeGetRes {
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
 	  
-		
+	@JsonProperty("BranchCode")
+	private String branchCode;
+	
 	  
 
 }
