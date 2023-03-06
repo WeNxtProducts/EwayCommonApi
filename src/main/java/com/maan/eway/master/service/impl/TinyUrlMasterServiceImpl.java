@@ -125,11 +125,11 @@ public List<Error> validateTinyUrl(TinyUrlMasterSaveReq req) {
 	}
 	//Status Validation
 	if (StringUtils.isBlank(req.getStatus())) {
-		errorList.add(new Error("07", "Status", "Please Enter Status"));
+		errorList.add(new Error("05", "Status", "Please Select Status  "));
 	} else if (req.getStatus().length() > 1) {
-		errorList.add(new Error("07", "Status", "Enter Status in 1 Character Only"));
-	}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus()) || "R".equalsIgnoreCase(req.getStatus()))) {
-		errorList.add(new Error("07", "Status", "Enter Status in Y or N or R Only"));
+		errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+	}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
+		errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 	}
 
 	
@@ -691,6 +691,8 @@ public List<DropDownRes> getTinyUrlDropdown(TinyUrlDropdownReq req) {
 		effectiveDate2.where(a3,a4,a7,a8,a10);
 		// Where
 		Predicate n1 = cb.equal(c.get("status"),"Y");
+		Predicate n11 = cb.equal(c.get("status"),"R");
+		Predicate n12 = cb.or(n1,n11);
 		Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 		Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
 		Predicate n4 = cb.equal(c.get("companyId"),req.getCompanyId());
@@ -701,7 +703,7 @@ public List<DropDownRes> getTinyUrlDropdown(TinyUrlDropdownReq req) {
 		Predicate n9 = cb.equal(c.get("productId"),"99999");
 		Predicate n10 = cb.or(n8,n9);
 
-		query.where(n1,n2,n3,n4,n7,n10).orderBy(orderList);
+		query.where(n12,n2,n3,n4,n7,n10).orderBy(orderList);
 		
 		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getSno()))).collect(Collectors.toList());
 		list.sort(Comparator.comparing(TinyurlMaster :: getType ));

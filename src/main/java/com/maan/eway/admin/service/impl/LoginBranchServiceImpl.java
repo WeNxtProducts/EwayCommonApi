@@ -724,7 +724,7 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			// Map
 			for (LoginBranchMaster data : branchList ) {
 				
-				List<LoginBranchMaster> filterUser = userbranchList.stream().filter( o ->  o.getBrokerBranchCode().equalsIgnoreCase(data.getBranchCode())).collect(Collectors.toList());				
+				List<LoginBranchMaster> filterUser = userbranchList.stream().filter( o ->  o.getBrokerBranchCode().equalsIgnoreCase(data.getBrokerBranchCode())).collect(Collectors.toList());				
 				
 				if( filterUser.size()<=0	) {
 					GetBrokerBranchRes res = new GetBrokerBranchRes();

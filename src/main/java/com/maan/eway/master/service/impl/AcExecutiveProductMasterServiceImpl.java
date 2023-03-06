@@ -122,6 +122,7 @@ public class AcExecutiveProductMasterServiceImpl implements AcExecutiveProductMa
 					errors.add(new Error("11", "Product Id", "Please Enter Product Id"));
 				}
 			}
+			
 			// Date Validation
 			Calendar cal = new GregorianCalendar();
 			Date today = new Date();
@@ -659,7 +660,9 @@ public class AcExecutiveProductMasterServiceImpl implements AcExecutiveProductMa
 			effectiveDate2.where(a23,a24);
 
 			// Where
-			Predicate n21 = cb.equal(c.get("status"),"Y");
+			Predicate n28 = cb.equal(c.get("status"),"Y");
+			Predicate n29 = cb.equal(c.get("status"),"R");
+			Predicate n30 = cb.or(n28,n29);
 			Predicate n22 = cb.equal(c.get("oaCode"),req.getOaCode());
 			Predicate n23 = cb.equal(c.get("companyId"),req.getCompanyId());
 			Predicate n24 = cb.equal(c.get("productId"),req.getProductId());
@@ -669,7 +672,7 @@ public class AcExecutiveProductMasterServiceImpl implements AcExecutiveProductMa
 
 		//	Predicate n27 = cb.equal(c.get("branchCode"),req.getBranchCode());
 
-			query.where(n21,n22,n23,n24,n26,n27);
+			query.where(n30,n22,n23,n24,n26,n27);
 			// Get Result
 			TypedQuery<Tuple> result = em.createQuery(query);
 			list = result.getResultList(); 

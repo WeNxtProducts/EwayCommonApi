@@ -226,13 +226,15 @@ public class CityMasterServiceImpl implements CityMasterService {
 			} else if (req.getEffectiveDateStart().before(today)) {
 				errorList
 						.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-			} 			// Status Validation
+			}
+
+			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Enter Status"));
+				errorList.add(new Error("05", "Status", "Please Select Status  "));
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Status 1 Character Only"));
-			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())|| "R".equals(req.getStatus()) || "P".equals(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Please Enter Status "));
+				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
+				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 			}
 
 			if (StringUtils.isBlank(req.getStateId()) || req.getStateId() == null) {
@@ -505,13 +507,16 @@ public class CityMasterServiceImpl implements CityMasterService {
 			effectiveDate2.where(a6, a7, a8, a9, a10);
 
 			// Where
-			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n11 = cb.equal(c.get("status"),"R");
+			Predicate n12 = cb.or(n1,n11);
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("countryId"), req.getCountryId());
 			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("stateId"), req.getStateId());
 			javax.persistence.criteria.Predicate n6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 
-			query.where(n1, n2, n3, n5, n6).orderBy(orderList);
+			query.where(n12, n2, n3, n5, n6).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CityMaster> result = em.createQuery(query);

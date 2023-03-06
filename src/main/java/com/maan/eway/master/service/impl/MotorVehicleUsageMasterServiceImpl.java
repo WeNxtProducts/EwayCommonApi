@@ -125,11 +125,9 @@ public List<Error> validateMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveR
 		if (StringUtils.isBlank(req.getStatus())) {
 			errorList.add(new Error("05", "Status", "Please Select Status  "));
 		} else if (req.getStatus().length() > 1) {
-			errorList.add(new Error("05", "Status", "Please Select Valid Status - 1 Character Only Allwed"));
-		} else if (!("Y".equalsIgnoreCase(req.getStatus()) || "N".equalsIgnoreCase(req.getStatus())
-				|| "R".equalsIgnoreCase(req.getStatus()) || "P".equalsIgnoreCase(req.getStatus()))) {
-			errorList.add(new Error("05", "Status",
-					"Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+		}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
+			errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 		}
 		// Claim Status Validation
 		if (req.getClaimStatus().length() > 1) {
@@ -250,13 +248,15 @@ public SuccessRes saveMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveReq re
 			orderList.add(cb.desc(b.get("effectiveDateStart")));
 			
 			// Where
-			Predicate n1 = cb.equal(b.get("status"), "Y");
+			Predicate n1 = cb.equal(b.get("status"),"Y");
+			Predicate n11 = cb.equal(b.get("status"),"R");
+			Predicate n12 = cb.or(n1,n11);
 			Predicate n3 = cb.equal(b.get("vehicleUsageId"), req.getVehicleUsageId());
 			Predicate n4 = cb.equal(b.get("sectionId"), req.getSectionId());
 			Predicate n2 = cb.equal(b.get("companyId"),req.getInsuranceId());
 			Predicate n5 = cb.equal(b.get("branchCode"),req.getBranchCode());
 			
-			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			query.where(n12,n2,n3,n4,n5).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);

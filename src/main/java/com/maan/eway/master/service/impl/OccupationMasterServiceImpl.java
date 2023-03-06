@@ -128,11 +128,11 @@ public List<Error> validateOccupation(OccupationMasterSaveReq req) {
 		}
 		//Status Validation
 		if (StringUtils.isBlank(req.getStatus())) {
-		errorList.add(new Error("05", "Status", "Please Select Status  "));
+			errorList.add(new Error("05", "Status", "Please Select Status  "));
 		} else if (req.getStatus().length() > 1) {
-		errorList.add(new Error("05", "Status", "Please Select Valid Status - 1 Character Only Allwed"));
+			errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
 		}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-		errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 		}
 
 		if (StringUtils.isBlank(req.getCoreAppCode())) {
@@ -210,6 +210,9 @@ try {
 	effectiveDate2.where(a3,a4,a7,a8,a11);
 	// Where
 	Predicate n1 = cb.equal(c.get("status"),"Y");
+	Predicate n11 = cb.equal(c.get("status"),"R");
+	Predicate n12 = cb.or(n1,n11);
+
 	Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 	Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
 	Predicate n4 = cb.equal(c.get("companyId"),req.getInsuranceId());
@@ -217,14 +220,12 @@ try {
 	Predicate n6 = cb.equal(c.get("branchCode"),"99999");
 	Predicate n7 = cb.or(n5,n6);
 	Predicate n8 = cb.equal(c.get("productId"),req.getProductId());
-	Predicate n9 = cb.equal(c.get("status"),"R");
-	Predicate n10 = cb.or(n1,n9);
 	if(StringUtils.isBlank(req.getProductId())) {
-		query.where(n10,n2,n3,n4,n7).orderBy(orderList);
+		query.where(n12,n2,n3,n4,n7).orderBy(orderList);
 		
 	}
 	else {
-	query.where(n10,n2,n3,n4,n7,n8).orderBy(orderList);
+	query.where(n12,n2,n3,n4,n7,n8).orderBy(orderList);
 	}
 	TypedQuery<OccupationMaster> result = em.createQuery(query);
 	list = result.getResultList();

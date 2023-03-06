@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -26,6 +28,8 @@ import javax.persistence.criteria.Subquery;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.query.internal.NativeQueryImpl;
+import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -1749,12 +1753,28 @@ public class DropDownServiceImpl  implements DropDownService{
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			String query = oracle.getQuery(req.getQueryKey());
+			List<String> params  = new ArrayList<String>();
+			params.add("");
+			 
+		//	List<Map<String, Object>>  listFromQuery = oracle.getListFromQueryWithoutKey(query, params);
+			Query nativequery = em.createNativeQuery(query);		
+		
+			nativequery.unwrap(NativeQueryImpl.class).setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			Map<String,Object> list = nativequery.getHints();
+		//	String data2 = listFromQuery.getClass().getCanonicalName() ; 
+//			List<String> list = map.values().stream().sorted().collect(Collectors.toList());
+//			
+//			 List<String> collect = listFromQuery.keySet() ;
+//		                .stream()
+//		                .filter(e -> Objects.isNull(hashMap.get(e)))
+//		                .collect(Collectors.toList());
+//		        System.out.println(collect);
 			List<String> asList = fromQuerytoList(query);
 			
 			for (String data : asList) {
 				DropDownRes res = new DropDownRes();
-				res.setCode(data.trim());
-				res.setCodeDesc(data.trim());
+				res.setCode(data.trim().replaceAll("[a-z.A-Z_ ]", "")  );
+				res.setCodeDesc(data.trim().replaceAll("[a-z.A-Z_ ]", "")  );
 				res.setStatus("Y");
 				resList.add(res);
 			}

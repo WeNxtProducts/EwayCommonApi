@@ -444,6 +444,15 @@ public List<Error> validateBrokerCompanyBranchReq(AttachBrokerBranchReq req) {
 //		if(StringUtils.isBlank(req.getAttachedCompany()) ) {
 //			errors.add(new Error("03", "AttachedComapany", "Plese Enter AttachedComapany" ));
 //		}
+
+		//Status Validation
+		if (StringUtils.isBlank(req.getStatus())) {
+			errors.add(new Error("05", "Status", "Please Select Status  "));
+		} else if (req.getStatus().length() > 1) {
+			errors.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+		}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
+			errors.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+		}
 		
 		if (StringUtils.isBlank(req.getRemarks())) {
 			errors.add(new Error("03", "Remarks", "Plese Enter Remarks"));

@@ -127,12 +127,14 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 //				}
 //			}
 			
-			// Status Validation
+			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Enter Status"));
+				errorList.add(new Error("05", "Status", "Please Select Status  "));
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Status 1 Character Only"));
-			} 
+				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
+				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			}
 
 			if (StringUtils.isBlank(req.getCreatedBy())) {
 				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy"));

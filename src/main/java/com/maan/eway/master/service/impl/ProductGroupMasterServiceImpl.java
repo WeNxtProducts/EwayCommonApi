@@ -196,7 +196,9 @@ try {
 
 	effectiveDate2.where(a6, a7, a8, a9, a10);
 	// Where
-	Predicate n1 = cb.equal(c.get("status"), "Y");
+	Predicate n1 = cb.equal(c.get("status"),"Y");
+	Predicate n11 = cb.equal(c.get("status"),"R");
+	Predicate n12 = cb.or(n1,n11);
 	Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 	Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 	Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
@@ -204,7 +206,7 @@ try {
 	Predicate n5 = cb.equal(c.get("branchCode"), req.getBranchCode());
 	Predicate n6 = cb.equal(c.get("branchCode"), "99999");
 	Predicate n7 = cb.or(n5, n6);
-	query.where(n1, n2, n3, n4, n7, n8).orderBy(orderList);
+	query.where(n12, n2, n3, n4, n7, n8).orderBy(orderList);
 	// Get Result
 	TypedQuery<ProductGroupMaster> result = em.createQuery(query);
 	list = result.getResultList();

@@ -85,9 +85,15 @@ public class BasicLoginValidationService {
 			}
 			
 			
+
+			//Status Validation
 			if (StringUtils.isBlank(loginReq.getStatus())) {
-				errors.add(new Error("05", "Status", "Please Select Status"));
-			} 
+				errors.add(new Error("05", "Status", "Please Select Status  "));
+			} else if (loginReq.getStatus().length() > 1) {
+				errors.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			}else if(!("Y".equalsIgnoreCase(loginReq.getStatus())||"N".equalsIgnoreCase(loginReq.getStatus())||"R".equalsIgnoreCase(loginReq.getStatus())|| "P".equalsIgnoreCase(loginReq.getStatus()))) {
+				errors.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+			}
 			
 			if (StringUtils.isBlank(loginReq.getCompanyId())) {
 				errors.add(new Error("05", "InsuranceId", "Please Select InsuranceId"));

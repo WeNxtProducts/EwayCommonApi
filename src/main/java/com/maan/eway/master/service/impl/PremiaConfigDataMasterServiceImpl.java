@@ -96,11 +96,11 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			}
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("06", "Status", "Please Enter Status"));
+				errorList.add(new Error("05", "Status", "Please Select Status  "));
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("06", "Status", "Enter Status in 1 Character Only"));
-			}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()) || "R".equals(req.getStatus()))) {
-				errorList.add(new Error("06", "Status", "Enter Status in Y or N or R Only"));
+				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
+				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 			}
 
 			if (StringUtils.isBlank(req.getCreatedBy())) {
@@ -676,6 +676,8 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			effectiveDate2.where(a7,a8,a9,a10,a11,a12);
 			// Where
 			Predicate n1 = cb.equal(b.get("status"),"Y");
+			Predicate n11 = cb.equal(b.get("status"),"R");
+			Predicate n12 = cb.or(n1,n11);
 			Predicate n2 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
 			Predicate n3 = cb.equal(b.get("effectiveDateEnd"),effectiveDate2);	
 			Predicate n4 = cb.equal(b.get("companyId"),req.getCompanyId());
@@ -683,7 +685,7 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			Predicate n6 = cb.equal(b.get("productId"),req.getProductId());
 			Predicate n7 = cb.equal(b.get("sectionId"),req.getSectionId());
 			
-			query.where(n1,n2,n3,n4,n5,n6,n7).orderBy(orderList);
+			query.where(n12,n2,n3,n4,n5,n6,n7).orderBy(orderList);
 			// Get Result
 			TypedQuery<PremiaConfigDataMaster> result = em.createQuery(query);
 			list = result.getResultList();

@@ -276,11 +276,11 @@ public List<Error> validateBankDetails(BankMasterSaveReq req) {
 		}
 		//Status Validation
 		if (StringUtils.isBlank(req.getStatus())) {
-			errorList.add(new Error("06", "Status", "Please Enter Status"));
+			errorList.add(new Error("05", "Status", "Please Select Status  "));
 		} else if (req.getStatus().length() > 1) {
-			errorList.add(new Error("06", "Status", "Enter Status in 1 Character Only"));
-		}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus()) || "R".equals(req.getStatus()))) {
-			errorList.add(new Error("06", "Status", "Enter Status in Y or N or R Only"));
+			errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+		}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
+			errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 		}
 
 		if (StringUtils.isBlank(req.getCoreAppCode())) {
@@ -774,16 +774,16 @@ public List<DropDownRes> getBankMasterDropdown( BankChangeStatusReq req) {
 		orderList.add(cb.asc(c.get("branchCode")));
 		
 		// Where
-		Predicate n1 = cb.notEqual(c.get("status"),"N");
-		Predicate n8 = cb.notEqual(c.get("status"),"R");
-		Predicate n9 = cb.or(n1,n8);
+		Predicate n1 = cb.equal(c.get("status"),"Y");
+		Predicate n11 = cb.equal(c.get("status"),"R");
+		Predicate n12 = cb.or(n1,n11);
 		Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 		Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);
 		Predicate n4 = cb.equal(c.get("companyId"), req.getCompanyId());
 		Predicate n5 = cb.equal(c.get("branchCode"), req.getBranchCode());
 		Predicate n6 = cb.equal(c.get("branchCode"), "99999");
 		Predicate n7 = cb.or(n5,n6);
-		query.where(n9,n2,n3,n4,n7).orderBy(orderList);
+		query.where(n12,n2,n3,n4,n7).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<BankMaster> result = em.createQuery(query);

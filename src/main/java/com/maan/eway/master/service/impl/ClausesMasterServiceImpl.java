@@ -118,11 +118,11 @@ public class ClausesMasterServiceImpl implements ClausesMasterService {
 			}
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-			errorList.add(new Error("05", "Status", "Please Select Status  "));
+				errorList.add(new Error("05", "Status", "Please Select Status  "));
 			} else if (req.getStatus().length() > 1) {
-			errorList.add(new Error("05", "Status", "Please Select Valid Status - 1 Character Only Allwed"));
+				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
 			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-			errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 			}
 			
 			if (StringUtils.isBlank(req.getCoreAppCode())) {
@@ -733,6 +733,8 @@ public List<DropDownRes> getClausesMasterDropdown(ClausesMasterDropdownReq req) 
 		effectiveDate2.where(a7,a8,a9,a10,a11,a12);
 		// Where
 		Predicate n1 = cb.equal(b.get("status"),"Y");
+		Predicate n12 = cb.equal(b.get("status"),"R");
+		Predicate n13 = cb.or(n1,n12);
 		Predicate n2 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
 		Predicate n3 = cb.equal(b.get("effectiveDateEnd"),effectiveDate2);	
 		Predicate n4 = cb.equal(b.get("companyId"),req.getCompanyId());
@@ -742,8 +744,7 @@ public List<DropDownRes> getClausesMasterDropdown(ClausesMasterDropdownReq req) 
 		
 		Predicate n8 = cb.equal(b.get("productId"),req.getProductId());
 		Predicate n11 = cb.equal(b.get("sectionId"),req.getSectionId());
-		Predicate n12 = cb.equal(b.get("status"),"R");
-		Predicate n13 = cb.or(n1,n12);
+		
 	
 		query.where(n13,n2,n3,n4,n7,n8,n11).orderBy(orderList);
 		// Get Result
