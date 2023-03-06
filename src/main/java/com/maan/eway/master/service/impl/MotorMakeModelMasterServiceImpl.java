@@ -135,11 +135,11 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 			}
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("06", "Status", "Please Enter Status"));
+			errorList.add(new Error("05", "Status", "Please Select Status  "));
 			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("06", "Status", "Enter Status in 1 Character Only"));
-			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus()) || "R".equalsIgnoreCase(req.getStatus()))) {
-				errorList.add(new Error("06", "Status", "Enter Status in Y or N or R Only"));
+			errorList.add(new Error("05", "Status", "Please Select Valid Status One Character Only Allwed"));
+			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
+			errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 			}
 
 			if (StringUtils.isBlank(req.getCoreAppCode())) {
@@ -604,6 +604,8 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 			effectiveDate2.where(a4,a5,a6,a9,a10);
 			// Where
 			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n9 = cb.notEqual(c.get("status"),"R");
+			Predicate n10 = cb.or(n1,n9);
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
 			Predicate n4 = cb.equal(c.get("companyId"),req.getInsuranceId());
@@ -611,7 +613,7 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 			Predicate n6 = cb.equal(c.get("branchCode"),"99999");
 			Predicate n7 = cb.or(n5,n6);
 			Predicate n8 = cb.equal(c.get("makeId"),req.getMakeId());
-			query.where(n1,n2,n3,n4,n7,n8).orderBy(orderList);
+			query.where(n10,n2,n3,n4,n7,n8).orderBy(orderList);
 			// Get Result
 			TypedQuery<MotorMakeModelMaster> result = em.createQuery(query);
 			list = result.getResultList();

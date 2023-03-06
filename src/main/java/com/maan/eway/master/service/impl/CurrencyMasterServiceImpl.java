@@ -607,11 +607,13 @@ public List<CuurencyDropDownRes> getCurrencyMasterDropdown( CurrencyDropDownReq 
 		// Exhange Rate Sub Query
 		exchangeRate.select(ex.get("exchangeRate"));
 		Predicate a7 = cb.equal(ex.get("currencyId"),c.get("currencyId"));
-		Predicate a8 = cb.equal(ex.get("status"),"Y");
+		Predicate a8 = cb.notEqual(c.get("status"),"Y");
+		Predicate a20 = cb.notEqual(c.get("status"),"R");
+		Predicate a21 = cb.or(a8,a20);
 		Predicate a9 = cb.equal(ex.get("effectiveDateStart"), effectiveDate3);
 		Predicate a10 = cb.equal(ex.get("effectiveDateEnd"), effectiveDate4);
 		Predicate a17 = cb.equal(ex.get("companyId"),c.get("companyId"));
-		exchangeRate.where(a7,a8,a9,a10,a17);
+		exchangeRate.where(a7,a21,a9,a10,a17);
 
 		// Select
 		query.multiselect(c.get("currencyId").alias("currencyId") ,
@@ -874,10 +876,12 @@ public List<CuurencyDropDownRes> getProductCurrencyMasterDropdown(ProductCurrDro
 		exchangeRate.select(ex.get("exchangeRate"));
 		Predicate a7 = cb.equal(ex.get("currencyId"),c.get("currencyId"));
 		Predicate a8 = cb.equal(ex.get("status"),"Y");
+		Predicate a24 = cb.notEqual(c.get("status"),"R");
+		Predicate a25 = cb.or(a8,a24);
 		Predicate a9 = cb.equal(ex.get("effectiveDateStart"), effectiveDate3);
 		Predicate a10 = cb.equal(ex.get("effectiveDateEnd"), effectiveDate4);
 		Predicate a17 = cb.equal(ex.get("companyId"),req.getInsuranceId());
-		exchangeRate.where(a7,a8,a9,a10,a17);
+		exchangeRate.where(a7,a25,a9,a10,a17);
 
 		// Select
 		query.multiselect(c.get("currencyId").alias("currencyId") ,
