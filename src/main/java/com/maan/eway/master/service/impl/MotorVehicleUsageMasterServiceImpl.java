@@ -215,7 +215,7 @@ public SuccessRes saveMotorVehicleUsageDetails(MotorVehicleUsageMasterSaveReq re
 		String createdBy = req.getCreatedBy();
 
 		String vehicleUsageId = "";
-		if (StringUtils.isBlank(req.getVehicleUsageId().toString())) {
+		if (req.getVehicleUsageId()==null) {
 			// Save
 			Integer totalCount = getMasterTableCount( req.getInsuranceId() , req.getBranchCode());
 			vehicleUsageId = Integer.valueOf(totalCount + 1).toString();
