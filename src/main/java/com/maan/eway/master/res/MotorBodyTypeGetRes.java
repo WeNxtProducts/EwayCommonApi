@@ -45,13 +45,13 @@ public class MotorBodyTypeGetRes {
 	private Integer amendId;
 
 	@JsonProperty("SeatingCapacity")
-	private Integer seatingCapacity;
+	private String seatingCapacity;
 
 	@JsonProperty("Tonnage")
 	private Integer tonnage;
 
 	@JsonProperty("Cylinders")
-	private Integer cylinders;
+	private String cylinders;
 
 	@JsonProperty("CreatedBy")
 	private String createdBy;
