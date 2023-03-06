@@ -216,7 +216,7 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			String createdBy = "" ;
 			String bodyId = "";
 
-			if (StringUtils.isBlank(req.getBodyId())) {
+			if (StringUtils.isBlank(req.getBodyId()) || req.getBodyId()==null) {
 				// Save
 				// Long totalCount = repo.count();
 				Long totalCount =  getMasterTableCount( req.getCompanyId() , req.getBranchCode());
@@ -497,7 +497,9 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
 			Predicate n5 = cb.or(n3,n4);
 			Predicate n6 = cb.equal(b.get("sectionId"), req.getSectionId());
-			query.where(n1,n2,n5,n6).orderBy(orderList);
+			Predicate n7 = cb.equal(b.get("sectionId"), "99999");
+			Predicate n8 = cb.or(n6,n7);
+			query.where(n1,n2,n5,n8).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<MotorBodyTypeMaster> result = em.createQuery(query);
