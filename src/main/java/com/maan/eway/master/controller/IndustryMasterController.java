@@ -80,7 +80,7 @@ public class IndustryMasterController {
 
 	
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/saveindustry")
 		@ApiOperation(value = "This method is Insert Industry Master")
 		public ResponseEntity<CommonRes> insertIndustry(@RequestBody IndustryMasterSaveReq req) {
@@ -116,7 +116,7 @@ public class IndustryMasterController {
 		}
 		
 		//  Get All Industry Master
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getallindustry")
 		@ApiOperation("This method is getall Country Details")
 		public ResponseEntity<CommonRes> getallIndustry(@RequestBody IndustryMasterGetallReq req )
@@ -137,7 +137,7 @@ public class IndustryMasterController {
 		}
 		
 	//  Get Active Industry Master
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getactiveindustry")
 			@ApiOperation("This method is get Active Industry Details")
 			public ResponseEntity<CommonRes> getActiveIndustryMaster(@RequestBody IndustryMasterGetallReq req )
@@ -159,7 +159,7 @@ public class IndustryMasterController {
 			}
 		
 		// Get By Country Id
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/getbyindustryid")
 		@ApiOperation("This Method is to get by Country id")
 		public ResponseEntity<CommonRes> getByIndustryId(@RequestBody IndustryMasterGetReq req)
@@ -181,7 +181,7 @@ public class IndustryMasterController {
 
 	
 	// Get By Country Id
-		@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 		@PostMapping("/industrychangestatus")
 		@ApiOperation("This Method is to Change Status")
 		public ResponseEntity<CommonRes> changeStatus(@RequestBody IndustryMasterChangeStatusReq req)
