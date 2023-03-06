@@ -223,15 +223,15 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 		} else if (req.getEffectiveDateStart().before(today)) {
 			errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
 		}
-		//Status Validation
+		// Status Validation
 		if (StringUtils.isBlank(req.getStatus())) {
 			errorList.add(new Error("05", "Status", "Please Enter Status"));
 		} else if (req.getStatus().length() > 1) {
-			errorList.add(new Error("05", "Status", "Enter Status in 1 Character Only"));
-		}else if(!("Y".equals(req.getStatus())||"N".equals(req.getStatus())||"R".equals(req.getStatus()))) {
-			errorList.add(new Error("05", "Status", "Please Enter Status"));
+			errorList.add(new Error("05", "Status", "Enter Status in One Character Only"));
+		} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()) || "R".equals(req.getStatus())
+				|| "P".equals(req.getStatus()))) {
+			errorList.add(new Error("05", "Status", "Please Enter Status "));
 		}
-
 		if (StringUtils.isBlank(req.getCurrencyShortCode())) {
 			errorList.add(new Error("05", "CurrencyShortCode", "Please Enter CurrencyShortCode"));
 		} else if (req.getCurrencyShortCode().length() > 5) {

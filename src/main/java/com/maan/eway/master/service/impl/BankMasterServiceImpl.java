@@ -111,8 +111,10 @@ public SuccessRes insertBank(BankMasterSaveReq req) {
 			Predicate n1 = cb.equal(b.get("bankCode"),req.getBankCode());
 			Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId());
 			Predicate n3 = cb.equal(b.get("branchCode"),req.getBranchCode());
-			
-			query.where(n1,n2,n3).orderBy(orderList);
+			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n5 = cb.or(n3,n4);
+		
+			query.where(n1,n2,n5).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<BankMaster> result = em.createQuery(query);
@@ -772,14 +774,16 @@ public List<DropDownRes> getBankMasterDropdown( BankChangeStatusReq req) {
 		orderList.add(cb.asc(c.get("branchCode")));
 		
 		// Where
-		Predicate n1 = cb.equal(c.get("status"),"Y");
+		Predicate n1 = cb.notEqual(c.get("status"),"N");
+		Predicate n8 = cb.notEqual(c.get("status"),"R");
+		Predicate n9 = cb.or(n1,n8);
 		Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 		Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);
 		Predicate n4 = cb.equal(c.get("companyId"), req.getCompanyId());
 		Predicate n5 = cb.equal(c.get("branchCode"), req.getBranchCode());
 		Predicate n6 = cb.equal(c.get("branchCode"), "99999");
 		Predicate n7 = cb.or(n5,n6);
-		query.where(n1,n2,n3,n4,n7).orderBy(orderList);
+		query.where(n9,n2,n3,n4,n7).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<BankMaster> result = em.createQuery(query);

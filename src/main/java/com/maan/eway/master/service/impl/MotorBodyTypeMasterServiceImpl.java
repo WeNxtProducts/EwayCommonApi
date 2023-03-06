@@ -104,10 +104,13 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 						.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
 			}
 			// Status Validation
-			 if (req.getStatus() == null || req.getStatus().length() > 1) {
-				errorList.add(new Error("03", "Status", "Status 1 Character Only"));
-			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()) || "P".equals(req.getStatus()) || "R".equals(req.getStatus()))) {
-				errorList.add(new Error("03", "Status", "Enter Status Y or N Only"));
+			if (StringUtils.isBlank(req.getStatus())) {
+				errorList.add(new Error("05", "Status", "Please Enter Status"));
+			} else if (req.getStatus().length() > 1) {
+				errorList.add(new Error("05", "Status", "Enter Status in One Character Only"));
+			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()) || "R".equals(req.getStatus())
+					|| "P".equals(req.getStatus()))) {
+				errorList.add(new Error("05", "Status", "Please Enter Status "));
 			}
 			if (StringUtils.isBlank(req.getCompanyId())) {
 				errorList.add(new Error("04", "CompanyId", "Please Enter CompanyId"));
@@ -205,7 +208,7 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 		try {
 			Integer amendId=0;
 			Date startDate = req.getEffectiveDateStart() ;
-			String  end = "31/12/2022";
+			String  end = "31/12/2050";
 			Date endDate = sdf.parse(end);
 			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
 			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
@@ -311,6 +314,7 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			saveData.setBranchCode(StringUtils.isBlank(req.getBranchCode())?  "99999" :req.getBranchCode()  );
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setCyclinders(Integer.valueOf(req.getCylinders()));
+			saveData.setSeatingCapacity(Integer.valueOf(req.getSeatingCapacity()));
 			repo.saveAndFlush(saveData);
 
 //			if (list.size() > 0) {
@@ -440,6 +444,9 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			res.setEntryDate(list.get(0).getEntryDate());
 			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+			res.setCylinders(list.get(0).getCyclinders().toString());
+			res.setSeatingCapacity(list.get(0).getSeatingCapacity().toString());
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -504,11 +511,12 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 				MotorBodyTypeGetRes res = new MotorBodyTypeGetRes();
 
 				res = mapper.map(data, MotorBodyTypeGetRes.class);
-				res.setCylinders(data.getCyclinders());
 				res.setTonnage(data.getTonnage());
-				res.setSeatingCapacity(data.getSeatingCapacity());
 				res.setRemarks(data.getRemarks());;
 				res.setBodyId(data.getBodyId());
+				res.setCylinders(data.getCyclinders()==null?"": data.getCyclinders().toString());
+				res.setSeatingCapacity(data.getSeatingCapacity()==null?"":data.getSeatingCapacity().toString());
+
 				resList.add(res);
 			}
 
@@ -575,9 +583,9 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 
 				res = mapper.map(data, MotorBodyTypeGetRes.class);
 				res.setBodyId(data.getBodyId());
-				res.setCylinders(data.getCyclinders());
+				res.setCylinders(data.getCyclinders().toString());
 				res.setTonnage(data.getTonnage());
-				res.setSeatingCapacity(data.getSeatingCapacity());
+				res.setSeatingCapacity(data.getSeatingCapacity().toString());
 				res.setRemarks(data.getRemarks());
 				resList.add(res);
 			}
@@ -760,7 +768,10 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			Predicate n5 = cb.equal(c.get("branchCode"), req.getBranchCode());
 			Predicate n6 = cb.equal(c.get("branchCode"), "99999");
 			Predicate n7 = cb.or(n5,n6);
-			query.where(n1,n2,n3,n4,n7,n8).orderBy(orderList);
+			Predicate n12 = cb.equal(c.get("status"),"R");
+			Predicate n13 = cb.or(n1,n12);
+		
+			query.where(n13,n2,n3,n4,n7,n8).orderBy(orderList);
 			// Get Result
 			TypedQuery<MotorBodyTypeMaster> result = em.createQuery(query);
 			list = result.getResultList();

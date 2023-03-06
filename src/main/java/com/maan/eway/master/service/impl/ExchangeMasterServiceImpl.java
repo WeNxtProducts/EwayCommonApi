@@ -125,12 +125,12 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			} else if (req.getCoreAppCode().length() > 20) {
 				errorList.add(new Error("02", "CoreAppCode", "getCoreAppCode under 20 Characters only allowed"));
 			}else if (req.getCoreAppCode().equalsIgnoreCase("99999")||   StringUtils.isBlank(req.getExchangeId())||req.getExchangeId()==null) {
-				List<ExchangeMaster> CompanyList = getCoreAppCodeExistDetails(req.getCoreAppCode() , req.getEffectiveDateStart() , req.getEffectiveDateEnd()  );
+				List<ExchangeMaster> CompanyList = getCoreAppCodeExistDetails(req.getCoreAppCode() , req.getEffectiveDateStart() , req.getEffectiveDateEnd());
 				if (CompanyList.size()>0 ) {
 					errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
 				}
 			}else  {
-				List<ExchangeMaster> CompanyList =  getCoreAppCodeExistDetails(req.getCoreAppCode()  , req.getEffectiveDateStart() , req.getEffectiveDateEnd() );
+				List<ExchangeMaster> CompanyList =  getCoreAppCodeExistDetails(req.getCoreAppCode()  , req.getEffectiveDateStart() , req.getEffectiveDateEnd());
 				if (CompanyList.size()>0 &&  (! req.getExchangeId().equalsIgnoreCase(CompanyList.get(0).getExchangeId().toString())) ) {
 					errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
 				}
@@ -142,7 +142,7 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 		}
 		return errorList;
 	}
-	private List<ExchangeMaster> getCoreAppCodeExistDetails(String coreAppCode , Date effStartDate , Date effEndDate ) {
+	private List<ExchangeMaster> getCoreAppCodeExistDetails(String coreAppCode , Date effStartDate , Date effEndDate) {
 		List<ExchangeMaster> list = new ArrayList<ExchangeMaster>();
 		try {
 			Calendar cal = new GregorianCalendar(); 
@@ -186,6 +186,7 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
 			Predicate n3 = cb.equal(b.get("coreAppCode"), coreAppCode );	
+	//		Predicate n4 = cb.equal(b.get("exchangeId"), exchangeId);
 			query.where(n1,n2,n3);
 			// Get Result
 			TypedQuery<ExchangeMaster> result = em.createQuery(query);
@@ -767,11 +768,13 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			effectiveDate2.where(a3,a4);
 			// Where
-			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n1 = cb.notEqual(c.get("status"),"N");
+			Predicate n8 = cb.notEqual(c.get("status"),"R");
+			Predicate n9 = cb.or(n1,n8);
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
-			query.where(n1,n2,n3).orderBy(orderList);
-	// Get Result
+			query.where(n9,n2,n3).orderBy(orderList);
+			// Get Result
 			TypedQuery<ExchangeMaster> result = em.createQuery(query);
 			list = result.getResultList();
 			for (ExchangeMaster data : list) {
