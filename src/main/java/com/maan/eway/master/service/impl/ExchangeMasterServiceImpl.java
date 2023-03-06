@@ -768,8 +768,8 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			effectiveDate2.where(a3,a4);
 			// Where
-			Predicate n1 = cb.notEqual(c.get("status"),"N");
-			Predicate n8 = cb.notEqual(c.get("status"),"R");
+			Predicate n1 = cb.equal(c.get("status"),"N");
+			Predicate n8 = cb.equal(c.get("status"),"R");
 			Predicate n9 = cb.or(n1,n8);
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	

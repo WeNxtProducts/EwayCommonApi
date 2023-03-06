@@ -607,8 +607,8 @@ public List<CuurencyDropDownRes> getCurrencyMasterDropdown( CurrencyDropDownReq 
 		// Exhange Rate Sub Query
 		exchangeRate.select(ex.get("exchangeRate"));
 		Predicate a7 = cb.equal(ex.get("currencyId"),c.get("currencyId"));
-		Predicate a8 = cb.notEqual(c.get("status"),"Y");
-		Predicate a20 = cb.notEqual(c.get("status"),"R");
+		Predicate a8 = cb.equal(ex.get("status"),"Y");
+		Predicate a20 = cb.equal(ex.get("status"),"R");
 		Predicate a21 = cb.or(a8,a20);
 		Predicate a9 = cb.equal(ex.get("effectiveDateStart"), effectiveDate3);
 		Predicate a10 = cb.equal(ex.get("effectiveDateEnd"), effectiveDate4);
@@ -652,12 +652,14 @@ public List<CuurencyDropDownRes> getCurrencyMasterDropdown( CurrencyDropDownReq 
 		
 	    // Where	
 		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+		javax.persistence.criteria.Predicate n7 = cb.equal(c.get("status"), "R");
+		Predicate n8 = cb.or(n7,n1);
 		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 		javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 		javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"),req.getInsuranceId());
 		Predicate n5 = cb.equal(c.get("companyId"),"99999");
 		Predicate n6 = cb.or(n4,n5);
-		query.where(n1,n2,n3,n6).orderBy(orderList);
+		query.where(n8,n2,n3,n6).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<Tuple> result = em.createQuery(query);			
@@ -876,12 +878,12 @@ public List<CuurencyDropDownRes> getProductCurrencyMasterDropdown(ProductCurrDro
 		exchangeRate.select(ex.get("exchangeRate"));
 		Predicate a7 = cb.equal(ex.get("currencyId"),c.get("currencyId"));
 		Predicate a8 = cb.equal(ex.get("status"),"Y");
-		Predicate a24 = cb.notEqual(c.get("status"),"R");
+		Predicate a24 = cb.equal(ex.get("status"),"R");
 		Predicate a25 = cb.or(a8,a24);
 		Predicate a9 = cb.equal(ex.get("effectiveDateStart"), effectiveDate3);
 		Predicate a10 = cb.equal(ex.get("effectiveDateEnd"), effectiveDate4);
 		Predicate a17 = cb.equal(ex.get("companyId"),req.getInsuranceId());
-		exchangeRate.where(a7,a25,a9,a10,a17);
+		exchangeRate.where(a25,a7,a25,a9,a10,a17);
 
 		// Select
 		query.multiselect(c.get("currencyId").alias("currencyId") ,
@@ -920,6 +922,8 @@ public List<CuurencyDropDownRes> getProductCurrencyMasterDropdown(ProductCurrDro
 		
 	    // Where	
 		javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+		javax.persistence.criteria.Predicate n8 = cb.equal(c.get("status"),"R");
+		javax.persistence.criteria.Predicate n10 = cb.or(n8,n1);
 		javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 		javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 		javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"),req.getInsuranceId());
@@ -929,7 +933,7 @@ public List<CuurencyDropDownRes> getProductCurrencyMasterDropdown(ProductCurrDro
 		Expression<String>e0=c.get("currencyId");
 		Predicate n7 = e0.in(currencyIds);
 		
-		query.where(n1,n2,n3,n6,n7).orderBy(orderList);
+		query.where(n10,n2,n3,n6,n7).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<Tuple> result = em.createQuery(query);			

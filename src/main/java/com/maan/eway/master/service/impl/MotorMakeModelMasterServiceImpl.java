@@ -604,7 +604,7 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 			effectiveDate2.where(a4,a5,a6,a9,a10);
 			// Where
 			Predicate n1 = cb.equal(c.get("status"),"Y");
-			Predicate n9 = cb.notEqual(c.get("status"),"R");
+			Predicate n9 = cb.equal(c.get("status"),"R");
 			Predicate n10 = cb.or(n1,n9);
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
