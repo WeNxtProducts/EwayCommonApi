@@ -511,8 +511,8 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 				res.setTonnage(data.getTonnage());
 				res.setRemarks(data.getRemarks());;
 				res.setBodyId(data.getBodyId());
-				res.setCylinders(data.getCyclinders().toString());
-				res.setSeatingCapacity(data.getSeatingCapacity().toString());
+				res.setCylinders(data.getCyclinders()==null?"": data.getCyclinders().toString());
+				res.setSeatingCapacity(data.getSeatingCapacity()==null?"":data.getSeatingCapacity().toString());
 
 				resList.add(res);
 			}
