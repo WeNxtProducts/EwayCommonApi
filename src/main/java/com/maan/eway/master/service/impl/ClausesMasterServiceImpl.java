@@ -412,15 +412,17 @@ public List<ClausesMasterRes> getallClauses(ClausesMasterGetallReq req) {
 		orderList.add(cb.asc(b.get("branchCode")));
 
 		// Where
-		Predicate n1 = cb.equal(b.get("amendId"), amendId);
-		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
-		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-		Predicate n6 = cb.equal(b.get("productId"),req.getProductId());
-		Predicate n9 = cb.equal(b.get("sectionId"),req.getSectionId());
-		
-		
-		query.where(n1,n2,n3,n6,n9).orderBy(orderList);
-		
+				Predicate n1 = cb.equal(b.get("amendId"), amendId);
+				Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+				Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+				Predicate n4 = cb.equal(b.get("branchCode"),"99999");
+				Predicate n5 = cb.or(n3,n4);
+				Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
+				Predicate n9 = cb.equal(b.get("sectionId"), req.getSectionId());
+				Predicate n10 = cb.equal(b.get("sectionId"),"99999");
+				Predicate n11 = cb.or(n9,n10);
+				
+				query.where(n1,n2,n5,n6,n11).orderBy(orderList);
 		// Get Result
 		TypedQuery<ClausesMaster> result = em.createQuery(query);
 		list = result.getResultList();
@@ -487,12 +489,15 @@ public List<ClausesMasterRes> getActiveClauses(ClausesMasterGetallReq req) {
 		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
 		Predicate n4 = cb.equal(b.get("status"), "Y");
-		Predicate n7 = cb.equal(b.get("productId"),req.getProductId());
-		Predicate n10 = cb.equal(b.get("sectionId"),req.getSectionId());
-	
+		Predicate n7 = cb.equal(b.get("productId"), req.getProductId());
+		Predicate n10 = cb.equal(b.get("sectionId"), req.getSectionId());
+		Predicate n11 = cb.equal(b.get("branchCode"),"99999");
+		Predicate n12 = cb.or(n3,n11);
+		Predicate n13 = cb.equal(b.get("sectionId"),"99999");
+		Predicate n14 = cb.or(n10,n13);
 		
-		query.where(n1,n2,n4,n3,n7,n10).orderBy(orderList);
-		
+		query.where(n1,n2,n4,n12,n7,n14).orderBy(orderList);
+
 		// Get Result
 		TypedQuery<ClausesMaster> result = em.createQuery(query);
 		list = result.getResultList();
