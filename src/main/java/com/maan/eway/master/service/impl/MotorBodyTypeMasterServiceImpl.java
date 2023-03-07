@@ -108,9 +108,8 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 				errorList.add(new Error("05", "Status", "Please Enter Status"));
 			} else if (req.getStatus().length() > 1) {
 				errorList.add(new Error("05", "Status", "Enter Status in One Character Only"));
-			} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus()) || "R".equals(req.getStatus())
-					|| "P".equals(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Please Enter Status "));
+			} else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
+				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 			}
 			if (StringUtils.isBlank(req.getCompanyId())) {
 				errorList.add(new Error("04", "CompanyId", "Please Enter CompanyId"));
