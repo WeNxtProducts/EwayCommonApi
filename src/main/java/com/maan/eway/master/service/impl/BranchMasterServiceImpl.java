@@ -443,6 +443,11 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 			errorList.add(new Error("04","State","Please Select State"));
 		}
 		
+		if(StringUtils.isBlank(req.getCountryId())) {
+			errorList.add(new Error("04","CountryID","Please Select CountryId"));
+		}
+		
+		
 //		if (StringUtils.isBlank(req.getRegionCode())) {
 //			errorList.add(new Error("03", "RegionCode", "Please Select Region Code "));
 //		}else if (req.getRegionCode().length() > 20){
@@ -494,13 +499,13 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 			}
 		}
 		
-		if (req.getRegulatoryCode().length() > 20){
+		if (StringUtils.isBlank(req.getRegulatoryCode()) && req.getRegulatoryCode().length() > 20){
 			errorList.add(new Error("08","Regulatory Code", "Please Enter Regulatory Code within 20 Characters")); 
 		}
-		if (req.getAddress1().length() > 100){
+		if (StringUtils.isBlank(req.getAddress1()) &&req.getAddress1().length() > 100){
 			errorList.add(new Error("09","Address1", "Please Enter Address1 within 100 Characters")); 
 		}
-		if (req.getAddress2().length() > 100){
+		if (StringUtils.isBlank(req.getAddress1()) && req.getAddress2().length() > 100){
 			errorList.add(new Error("10","Address2", "Please Enter Address2 within 20 Characters")); 
 		}
 		
