@@ -429,7 +429,7 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 				
 				if (req.getOldpassword() == null || StringUtils.isBlank(req.getOldpassword())) {
 					list.add(new Error("", "Old password", "Please enter Oldpassword"));
-				} else if (model.getPassword().equals(epass)) {
+				} else if (model.getPassword().equalsIgnoreCase(epass)) {
 					list.add(new Error("", "ChangePassword", "Oldpassword  and Newpassword should not match"));
 				}
 				/*else if(model.getLpass1().equals(epass) || model.getLpass2().equals(epass) || model.getLpass3().equals(epass) || model.getLpass4().equals(epass) || model.getLpass5().equals(epass)) {
