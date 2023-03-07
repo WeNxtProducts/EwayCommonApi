@@ -28,6 +28,9 @@ public class MotorMakeModelGetRes {
 	private String bodyId;
 	
 
+	@JsonProperty("BranchCode")
+	private String branchCode;
+
 	@JsonProperty("VehicleModelCode")
 	private String vehicleModelCode;
 	
