@@ -70,10 +70,10 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 		try {
 
 			if (StringUtils.isBlank(req.getColorCode())) {
-				errorList.add(new Error("01", "Color Code", "Please Enter Color Code "));
+				errorList.add(new Error("01", "Color Code", "Please Enter Color Name "));
 			}
 			else if (req.getColorCode().length()>100) {
-				errorList.add(new Error("01", "Color Code", "Please Enter Color Code within 100 Characters "));
+				errorList.add(new Error("01", "Color Code", "Please Enter Color Name within 100 Characters "));
 			}
 			if (StringUtils.isBlank(req.getColorDesc())) {
 				errorList.add(new Error("02", "Color Desc", "Please Enter Color Desc "));
@@ -83,13 +83,13 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 			}else if (StringUtils.isBlank(req.getColorId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
 				List<MotorColorMaster> colorList = getColorDescExistDetails(req.getColorDesc() , req.getInsuranceId() , req.getBranchCode());
 				if (colorList.size()>0 ) {
-					errorList.add(new Error("01", "ColorDesc", "This Color Name Already Exist "));
+					errorList.add(new Error("01", "ColorDesc", "This Color Desc Already Exist "));
 				}
 			}else if (StringUtils.isNotBlank(req.getColorId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
 				List<MotorColorMaster> colorList = getColorDescExistDetails(req.getColorDesc() , req.getInsuranceId() , req.getBranchCode());
 				
 				if (colorList.size()>0 &&  (! req.getColorId().equalsIgnoreCase(colorList.get(0).getColorId().toString())) ) {
-					errorList.add(new Error("01", "ColorDesc", "This Color Name Already Exist "));
+					errorList.add(new Error("01", "ColorDesc", "This Color Desc Already Exist "));
 				}
 				
 			}
