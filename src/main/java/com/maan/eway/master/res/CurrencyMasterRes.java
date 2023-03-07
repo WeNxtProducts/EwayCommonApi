@@ -47,9 +47,7 @@ public class CurrencyMasterRes implements Serializable {
 	@JsonProperty("Status")
 	private String status;
 
-	@JsonProperty("Rsacode")
-	private String rsacode;
-
+	
 	@JsonProperty("ExMinlmt")
 	private String exMinlmt;
 	

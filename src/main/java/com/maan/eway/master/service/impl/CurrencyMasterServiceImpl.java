@@ -549,10 +549,9 @@ public CurrencyMasterRes getByCurrencyId(CurrencyMasterGetReq req) {
 		res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
 		res.setCompanyId(list.get(0).getCompanyId());
 		res.setShortName(list.get(0).getShortName()==null?"":list.get(0).getShortName());
-		res.setRfactor(list.get(0).getRfactor().toString()==null?"":list.get(0).getRfactor().toString());
+		res.setRfactor(list.get(0).getRfactor()==null?"":list.get(0).getRfactor().toString());
 		res.setCreatedBy(list.get(0).getCreatedBy()==null?"":list.get(0).getCreatedBy());
 		res.setUpdatedBy(list.get(0).getUpdatedBy()==null?"":list.get(0).getUpdatedBy());
-	//	res.setRsaCode(list.get(0).getRsaCode==null?"":list.get(0).getRsaCode());
 		} catch (Exception e) {
 		e.printStackTrace();
 		log.info("Exception is ---> " + e.getMessage());
