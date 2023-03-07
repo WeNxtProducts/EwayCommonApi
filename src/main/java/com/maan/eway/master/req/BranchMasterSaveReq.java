@@ -43,8 +43,8 @@ public class BranchMasterSaveReq implements Serializable {
 	
 	@JsonProperty("StateCode")
     private String    stateCode    ;
-	@JsonProperty("CityCode")
-    private String    cityCode     ;
+	@JsonProperty("CityName")
+    private String    cityName ;
 	@JsonProperty("RegulatoryCode")
     private String    regulatoryCode     ;
 	@JsonProperty("Address1")
