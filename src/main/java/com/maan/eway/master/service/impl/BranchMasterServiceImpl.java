@@ -484,20 +484,20 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 		}else if (req.getCompanyId().length() > 20){
 			errorList.add(new Error("06","CompanyId", "Please Enter Company Id within 20 Characters")); 
 		}
-		if (req.getCoreAppCode().length() > 20){
+		if (StringUtils.isBlank(req.getCoreAppCode()) &&req.getCoreAppCode().length() > 20){
 			errorList.add(new Error("07","Core App Code", "Please Enter CoreAppCode within 20 Characters")); 
 		}
-		else if (StringUtils.isBlank(req.getCoreAppCode())) {
-			List<BranchMaster> coreAppCode = getCoreAppCodeExistDetails(req.getCompanyId() , null,req.getCoreAppCode());
-			if (coreAppCode.size()>0 ) {
-				errorList.add(new Error("07", "CoreAppCode", "This core App Code  Already Exist "));
-			}
-		}else  {
-			List<BranchMaster> coreAppCode =  getCoreAppCodeExistDetails(req.getCompanyId(),req.getBranchCode(),req.getCoreAppCode());
-			if (coreAppCode.size()>0 &&  (! req.getBranchCode().equalsIgnoreCase(coreAppCode.get(0).getBranchCode().toString())) ) {
-				errorList.add(new Error("08", "Core App Code", "This core App Code Already Exist "));
-			}
-		}
+//		else if (StringUtils.isNotBlank(req.getCoreAppCode())) {
+//			List<BranchMaster> coreAppCode = getCoreAppCodeExistDetails(req.getCompanyId() , null,req.getCoreAppCode());
+//			if (coreAppCode.size()>0 ) {
+//				errorList.add(new Error("07", "CoreAppCode", "This core App Code  Already Exist "));
+//			}
+//		}else  {
+//			List<BranchMaster> coreAppCode =  getCoreAppCodeExistDetails(req.getCompanyId(),req.getBranchCode(),req.getCoreAppCode());
+//			if (coreAppCode.size()>0 &&  (! req.getBranchCode().equalsIgnoreCase(coreAppCode.get(0).getBranchCode().toString())) ) {
+//				errorList.add(new Error("08", "Core App Code", "This core App Code Already Exist "));
+//			}
+//		}
 		
 		if (StringUtils.isBlank(req.getRegulatoryCode()) && req.getRegulatoryCode().length() > 20){
 			errorList.add(new Error("08","Regulatory Code", "Please Enter Regulatory Code within 20 Characters")); 
