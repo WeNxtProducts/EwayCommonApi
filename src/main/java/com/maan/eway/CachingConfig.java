@@ -24,7 +24,8 @@ public class CachingConfig   {
 	        b->b.name("ProductType").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
 	        b->b.name("loadTax").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
 	        b->b.name("loadProRata").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
-	        b->b.name("LoadConstant").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(true)
+	        b->b.name("LoadConstant").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(true),
+	        b->b.name("ProductToRawtable").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(true)
 	        );
 		
 	  }
@@ -122,5 +123,20 @@ public class CachingConfig   {
 	    	
 	    
 	
-	
+	    	 @Bean
+	    	 public KeyGenerator getProductIdBasedRawTable() {
+	    		 return new KeyGenerator() {
+	    			 @Override
+	    			 public Object generate(Object target, Method method, Object... params) {
+	    				 CalcEngine e=(CalcEngine)params[0]; 
+	    				 String string = new StringBuilder().append(e.getInsuranceId())
+	    						 .append(e.getProductId())
+	    						 .append("rawtable")
+	    						 .toString();
+	    				 return string;
+	    			 }
+
+	    		 };
+	    	 }
+	 	    
 }

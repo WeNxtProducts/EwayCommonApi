@@ -26,6 +26,7 @@ import com.maan.eway.bean.MsCommonDetails;
 import com.maan.eway.bean.MsCustomerDetails;
 import com.maan.eway.bean.MsHumanDetails;
 import com.maan.eway.bean.MsVehicleDetails;
+import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.calculator.util.AdminCoverCalculator;
 import com.maan.eway.calculator.util.CoverCalculator;
@@ -43,8 +44,12 @@ import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
+import com.maan.eway.endorsment.util.CoverFromPolicy;
+import com.maan.eway.endorsment.util.DiscountFromPolicy;
+import com.maan.eway.endorsment.util.LoadingFromPolicy;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.LoginProductMasterRepository;
+import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.req.calcengine.CalcCommission;
 import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.res.calc.Cover;
@@ -108,6 +113,10 @@ public class CalculatorEngineService implements CalculatorEngine{
 	
 	@Autowired
 	private GenerateSeqNoServiceImpl genNo;
+	
+	
+	@Autowired
+	private PolicyCoverDataRepository coverDataRepo;
 	/*public void LoadSection(CalcEngine engine) {
 	
 		try {
@@ -340,20 +349,84 @@ public class CalculatorEngineService implements CalculatorEngine{
 			
 			//Update Premium,referral
 			
+
+			/// Endoresment calculation
+			try {
+		 		String endtTypeId=vehicles.get(0).get("endtTypeId")==null?"":vehicles.get(0).get("endtTypeId").toString();
+		 		if(StringUtils.isNotBlank(endtTypeId) && !"0".equals(endtTypeId)) {
+		 			referalCalculator(engine);
+		 		}		 	
+		 	}catch (Exception e) {
+		 		e.printStackTrace();
+			}
+				
+			
 			return  response ;
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		
-		/// Endoresment calculation
-		
+		 
 		
 		return null;
 	}
 	
 	private void loadAndRemoveCoversForEndt(CalcEngine engine, List<Cover> retc) {
 		try {
+			
+			String requestRefercenNo=vehicles.get(0).get("requestReferenceNo").toString();
+			String rawtable = ratingutil.getProductIdBasedRawTable(engine);
+			
+			
+			if(StringUtils.isNotBlank(rawtable)) {
+				 String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()+";riskId:"+engine.getVehicleId()+";status:E;requestReferenceNo:"+requestRefercenNo+";";
+				//String search="riskId:"+engine.getVehicleId()+";requestReferenceNo:"+requestRefercenNo+";";
+				List<Tuple> result=null;
+				SpecCriteria criteria = crservice.createCriteria(Class.forName(rawtable), search, "requestReferenceNo"); 
+				result=crservice.getResult(criteria, 0, 50);
+				
+				
+				String endtPrevPolicyNo=result.get(0).get("endtPrevPolicyNo").toString();
+				String endtPrevQuoteNo=result.get(0).get("endtPrevQuoteNo").toString();
+				
+				//find Prev Quote Data
+				List<PolicyCoverData> oldPolicyCovers = coverDataRepo.findByQuoteNoAndVehicleIdOrderByCoverIdAsc(endtPrevQuoteNo,Integer.parseInt(engine.getVehicleId()));
+				List<Tuple> taxes = ratingutil.LoadTax(engine);
+				TaxUtils tzx=new TaxUtils(); 
+				//CoverFromPolicy
+				
+				for (PolicyCoverData d : oldPolicyCovers) {
+					List<Cover> operatedList=new ArrayList<Cover>();
+					
+					DiscountFromPolicy discountUtil=new DiscountFromPolicy();
+					List<Discount> discounts = oldPolicyCovers.stream().filter(r -> d.getCoverId()==r.getCoverId())
+							.map(discountUtil).filter(dx->dx!=null).collect(Collectors.toList());
+					
+					LoadingFromPolicy loadingUtil=new LoadingFromPolicy();
+					List<Loading> loadings = oldPolicyCovers.stream().filter(r -> d.getCoverId()==r.getCoverId()).map(loadingUtil).filter(dx->dx!=null).collect(Collectors.toList());
+					
+					CoverFromPolicy coverUtil=new CoverFromPolicy("");
+					List<Cover> covers = oldPolicyCovers.stream().filter(r -> d.getCoverId()==r.getCoverId()).map(coverUtil).filter(dx->dx!=null).collect(Collectors.toList());
+					List<Cover> oldTax = covers.stream().filter(c -> "T".equals(c.getCoverageType())).collect(Collectors.toList());
+					covers.removeAll(oldTax);
+					
+					List<Tax> taxey = taxes.stream().map(tzx).filter(t->t!=null).collect(Collectors.toList());
+
+					
+					covers.forEach(c -> c.setDiscounts(discounts));
+					covers.forEach(c -> c.setLoadings(loadings));
+					covers.forEach(c -> c.setTaxes(taxey));
+					
+					
+					retc.stream().filter(r -> d.getCoverId()==Integer.parseInt(r.getCoverId())).forEach(item -> {		
+						
+						
+					    operatedList.add(item);
+					});
+					retc.removeAll(operatedList);	
+					retc.addAll(covers); 
+				}
+			}
 			
 			
 		}catch (Exception e) {
@@ -368,7 +441,8 @@ public class CalculatorEngineService implements CalculatorEngine{
 		///One time table record
 		try {
 			SpecCriteria criteria =null;
-			/*MsVehicleDetails findByVdRefno = msvech.findByVdRefno(Long.parseLong(engine.getVdRefNo()));
+			/*
+			MsVehicleDetails findByVdRefno = msvech.findByVdRefno(Long.parseLong(engine.getVdRefNo()));
 			System.out.println("findByVdRefno"+findByVdRefno.getChassisNumber());
 			*/
 			String oneProduct= ratingutil.collectProductType(engine);

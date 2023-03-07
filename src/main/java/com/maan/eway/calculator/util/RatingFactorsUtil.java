@@ -24,6 +24,7 @@ import com.maan.eway.bean.ConstantTableDetails;
 import com.maan.eway.bean.DropdownTableDetails;
 import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.FactorTypeDetails;
+import com.maan.eway.bean.OneTimeTableDetails;
 import com.maan.eway.bean.RatingFieldMaster;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
 import com.maan.eway.req.calcengine.CalcEngine;
@@ -296,5 +297,22 @@ public class RatingFactorsUtil {
 		}
 		return null;
 		
+	}
+	
+	@Cacheable(cacheNames = {"ProductToRawtable"},keyGenerator  = "getProductIdBasedRawTable",value = "ProductToRawtable" )
+	public synchronized String getProductIdBasedRawTable(CalcEngine engine) {
+		try{
+			//String todayInString = DD_MM_YYYY.format(new Date());
+			String prodSearch="itemType:ESERVICE_TABLE;status:Y;displayName:"+engine.getProductId()+";";				
+			SpecCriteria	criteria = crservice.createCriteria(OneTimeTableDetails.class, prodSearch, "parentId");			  
+			List<Tuple> product = crservice.getResult(criteria, 0, 1);
+			String rawTable=product.get(0).get("itemCode")==null?"0":product.get(0).get("itemCode").toString();
+			return "com.maan.eway.bean."+rawTable;
+
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

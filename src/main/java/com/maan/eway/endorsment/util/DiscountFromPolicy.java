@@ -17,13 +17,14 @@ public class DiscountFromPolicy  implements Function<PolicyCoverData,Discount>{
 				 String calctype=t.getCalcType()==null?"":t.getCalcType();
 				 Discount d=Discount.builder()
 						 	.discountDesc(t.getCoverName()==null?"":t.getCoverName())
-						 	.discountId(t.getCoverId()==null?"":t.getCoverId().toString())
+						 	.discountId(t.getDiscLoadId()==null?"":t.getDiscLoadId().toString())
 						 	.discountRate("F".equals(calctype)?"0": t.getRate()==null?"0":t.getRate().toString())
 						 	.discountCalcType(calctype)
-						 	.discountforId(t.getDiscLoadId()==null?"":t.getDiscLoadId().toString())
+						 	.discountforId(t.getDependentCoverId()==null?"":t.getDependentCoverId().toString())
 						 	.maxAmount(t.getMinimumPremium()==null?BigDecimal.ZERO:t.getMinimumPremium())
 						 	.factorTypeId(t.getFactorTypeId()==null?"":t.getFactorTypeId().toString())
 						 	.regulatoryCode(t.getRegulatoryCode()==null?"N/A":t.getRegulatoryCode())
+						 	
 						 	.build();
 				 return d;
 			 }

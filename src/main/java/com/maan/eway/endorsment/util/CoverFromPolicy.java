@@ -21,7 +21,7 @@ public class CoverFromPolicy implements Function<PolicyCoverData,Cover> {
 	public Cover apply(PolicyCoverData t) {
 		try {
 			
-			 if(!("D".equalsIgnoreCase(t.getCoverageType()) || "L".equalsIgnoreCase(t.getCoverageType()) ) &&  filterBy.equalsIgnoreCase(t.getSubCoverYn())) {
+			 if(!("D".equalsIgnoreCase(t.getCoverageType()) || "L".equalsIgnoreCase(t.getCoverageType()) ) /*&&  filterBy.equalsIgnoreCase(t.getSubCoverYn())*/) {
 				 String subc=t.getSubCoverYn()==null?"N":t.getSubCoverYn();
 				 
 				 // Referral 
@@ -51,7 +51,7 @@ public class CoverFromPolicy implements Function<PolicyCoverData,Cover> {
 					.excessDesc(t.getExcessDesc()==null?"":t.getExcessDesc())
 					.excessPercent(t.getExcessPercent()==null?BigDecimal.ZERO:t.getExcessPercent())
 					.minimumPremiumYn(t.getMinimumPremiumYn())
-					
+					.proRataYn(t.getProRataYn())
 					//Premium
 					.premiumAfterDiscount(null)
 					.premiumAfterDiscountLC(null)
@@ -61,17 +61,13 @@ public class CoverFromPolicy implements Function<PolicyCoverData,Cover> {
 					.premiumExcluedTaxLC(null)
 					.premiumIncludedTax(null)
 					.premiumIncludedTaxLC(null)
-					.minimumPremium(null)
-					.sumInsured(null)
-					.exchangeRate(null)
-					.currency(null)
-					.proRata(null)
-					.calcType(null)
-					.regulatoryCode(null)
+					//.minimumPremium(null)
+					//.sumInsured(null)					
+			 		 .regulatoryCode(t.getRegulatoryCode())
 					.isReferral(referal)
-				 
-					//.userOpt(t.getUserOpt())
-					//.coverBasedOn(t.getCoverBasedOn())
+					 
+					.userOpt("Y")
+					.coverBasedOn(t.getCoverBasedOn())
 					//.exchangeRate(t.get("isSelectedYn")==null?0D:t.get("isSelectedYn").toString())
 					/*	.premiumBeforeDiscount(new BigDecimal(t.get("coverId").toString()))
 					.premiumAfterDiscount(new BigDecimal(t.get("coverId").toString()))
