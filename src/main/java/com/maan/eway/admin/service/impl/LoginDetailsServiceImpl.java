@@ -485,11 +485,11 @@ this.repository = repo;
 			}
 			
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("User")  ) {
-				List<Tuple> stateCityNames = 	getStateAndCityName(personalReq.getCountryCode());
+				List<Tuple> stateCityNames = 	getStateAndCityName(personalReq.getCountryCode() ,personalReq.getStateCode());
 				
 			//	userInfo.setCityName(stateCityNames.get(0).get("cityName") == null ? "" :  stateCityNames.get(0).get("cityName").toString());
 				userInfo.setStateName(stateCityNames.get(0).get("stateName") == null ? "" :  stateCityNames.get(0).get("stateName").toString());
-				userInfo.setCountryName(stateCityNames.get(0).get("countryName") == null ? "" :  stateCityNames.get(0).get("countryName").toString());
+				//userInfo.setCountryName(stateCityNames.get(0).get("countryName") == null ? "" :  stateCityNames.get(0).get("countryName").toString());
 			}
 				
 		      List<InsuranceCompanyMaster> companyname=	insuranceRepo.findByCompanyIdOrderByAmendIdDesc(req.getLoginInformation().getCompanyId());			
@@ -523,88 +523,41 @@ this.repository = repo;
 	       
 	    }
 	
-	public List<Tuple> getStateAndCityName(String countryId ) {
-		List<Tuple> list = new ArrayList<Tuple>();
-		try {
-			Date today = new Date();
-			// Find Latest Record
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
-
-			// Find All
-			Root<CityMaster> c = query.from(CityMaster.class);
-			
-			// City Effective Date Max Filter
-			Subquery<Long> effectiveDate1 = query.subquery(Long.class);
-			Root<CityMaster> ocpm1 = effectiveDate1.from(CityMaster.class);
-			effectiveDate1.select(cb.max(ocpm1.get("effectiveDateStart")));
-			//Predicate c1 = cb.equal(ocpm1.get("cityId"), c.get("cityId"));
-			Predicate c2 = cb.equal(ocpm1.get("stateId"), c.get("stateId"));
-			Predicate c3 = cb.equal(ocpm1.get("countryId"), c.get("countryId"));
-			Predicate c4 = cb.equal(ocpm1.get("status"),c.get("status"));
-			Predicate c5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate1.where(c2,c3,c4,c5);
-			
-			Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate1);
-			//Predicate n2 = cb.equal(c.get("cityId"), cityId);
-			Predicate n4 = cb.equal(c.get("countryId"), countryId);
-			Predicate n5 = cb.equal(c.get("status"), "Y");
-			
-			// State Effective Date Max Filter
-			Subquery<Long> state = query.subquery(Long.class);
-			Root<StateMaster> s = state.from(StateMaster.class);
-			
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
-			Root<StateMaster> ocpm2 = effectiveDate2.from(StateMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateStart")));
-			Predicate seff1 = cb.equal(ocpm2.get("stateId"), s.get("stateId"));
-			Predicate seff2 = cb.equal(ocpm2.get("countryId"), s.get("countryId"));
-			Predicate seff3 = cb.equal(ocpm2.get("status"),s.get("status"));
-			Predicate seff4 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), today);
-			effectiveDate2.where(seff1,seff2,seff3,seff4);
-			
-			// State Name Max Filter
-			state .select(s.get("stateName"));
-			Predicate s1 = cb.equal(s.get("stateId"), c.get("stateId"));
-			Predicate s2 = cb.equal(s.get("countryId"), c.get("countryId"));
-			Predicate s3 = cb.equal(s.get("status"), c.get("status"));
-			Predicate s4 = cb.equal(s.get("effectiveDateStart"), effectiveDate2);
-			state.where(s1,s2,s3,s4);
-			
-			// Country Effective Date Max Filter
-			Subquery<Long> country = query.subquery(Long.class);
-			Root<CountryMaster> cm = country.from(CountryMaster.class);
-			
-			Subquery<Long> effectiveDate3 = query.subquery(Long.class);
-			Root<CountryMaster> ocpm3 = effectiveDate3.from(CountryMaster.class);
-			effectiveDate3.select(cb.max(ocpm3.get("effectiveDateStart")));
-			Predicate ceff2 = cb.equal(ocpm3.get("countryId"), cm.get("countryId"));
-			Predicate ceff3 = cb.equal(ocpm3.get("status"),cm.get("status"));
-			Predicate ceff4 = cb.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
-			effectiveDate3.where(ceff2,ceff3,ceff4);
-			
-			// Country Name Max Filter
-			country .select(cm.get("countryName"));
-			Predicate cm2 = cb.equal(cm.get("countryId"), c.get("countryId"));
-			Predicate cm3 = cb.equal(cm.get("status"), c.get("status"));
-			Predicate cm4 = cb.equal(cm.get("effectiveDateStart"), effectiveDate3);
-			country.where(cm2,cm3,cm4);
-			
-			// Select
-			query.multiselect( state.alias("stateName") ,country.alias("countryName") );
-			
-			query.where(n1,n4,n5);
-			// Get Result
-			TypedQuery<Tuple> result = em.createQuery(query);
-			list = result.getResultList();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.info(e.getMessage());
-			return null;
+	 public List<Tuple> getStateAndCityName(String countryId , String stateId  ) {
+			List<Tuple> list = new ArrayList<Tuple>();
+			try {
+				Date today = new Date();
+				// Find Latest Record
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+				Root<StateMaster> s = query.from(StateMaster.class);
+				
+				Subquery<Long> amendId2 = query.subquery(Long.class);
+				Root<StateMaster> ocpm2 = amendId2.from(StateMaster.class);
+				amendId2.select(cb.max(ocpm2.get("amendId")));
+				Predicate seff1 = cb.equal(ocpm2.get("stateId"), s.get("stateId"));
+				Predicate seff2 = cb.equal(ocpm2.get("countryId"), s.get("countryId"));
+				Predicate seff3 = cb.equal(ocpm2.get("status"),s.get("status"));
+				amendId2.where(seff1,seff2,seff3);
+				
+				// Select
+				query.multiselect( s.get("stateName").alias("stateName")  );
+				Predicate s1 = cb.equal(s.get("stateId"), stateId);
+				Predicate s2 = cb.equal(s.get("countryId"),countryId);
+				Predicate s4 = cb.equal(s.get("amendId"), amendId2);
+				
+				query.where(s1,s2,s4);
+				// Get Result
+				TypedQuery<Tuple> result = em.createQuery(query);
+				list = result.getResultList();
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info(e.getMessage());
+				return null;
+			}
+			return list;
 		}
-		return list;
-	}
 	
 	// Login Save Method
 	
@@ -705,11 +658,11 @@ this.repository = repo;
 			}
 			
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("User")  ) {
-				List<Tuple> stateCityNames = 	getStateAndCityName(personalReq.getCountryCode());
+				List<Tuple> stateCityNames = 	getStateAndCityName(personalReq.getCountryCode()  , req.getPersonalInformation().getStateCode());
 				
 			//	updateUser.setCityName(stateCityNames.get(0).get("cityName") == null ? "" :  stateCityNames.get(0).get("cityName").toString());
 				updateUser.setStateName(stateCityNames.get(0).get("stateName") == null ? "" :  stateCityNames.get(0).get("stateName").toString());
-				updateUser.setCountryName(stateCityNames.get(0).get("countryName") == null ? "" :  stateCityNames.get(0).get("countryName").toString());;
+			//	updateUser.setCountryName(stateCityNames.get(0).get("countryName") == null ? "" :  stateCityNames.get(0).get("countryName").toString());;
 			}
 			
 			List<InsuranceCompanyMaster> companyname=	insuranceRepo.findByCompanyIdOrderByAmendIdDesc(req.getLoginInformation().getCompanyId());			

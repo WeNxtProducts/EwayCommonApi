@@ -70,10 +70,10 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 		try {
 
 			if (StringUtils.isBlank(req.getColorCode())) {
-				errorList.add(new Error("01", "Color Code", "Please Enter Color Code "));
+				errorList.add(new Error("01", "Color Code", "Please Enter Color Name "));
 			}
 			else if (req.getColorCode().length()>100) {
-				errorList.add(new Error("01", "Color Code", "Please Enter Color Code within 100 Characters "));
+				errorList.add(new Error("01", "Color Code", "Please Enter Color Name within 100 Characters "));
 			}
 			if (StringUtils.isBlank(req.getColorDesc())) {
 				errorList.add(new Error("02", "Color Desc", "Please Enter Color Desc "));
@@ -83,13 +83,13 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 			}else if (StringUtils.isBlank(req.getColorId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
 				List<MotorColorMaster> colorList = getColorDescExistDetails(req.getColorDesc() , req.getInsuranceId() , req.getBranchCode());
 				if (colorList.size()>0 ) {
-					errorList.add(new Error("01", "ColorDesc", "This Color Name Already Exist "));
+					errorList.add(new Error("01", "ColorDesc", "This Color Desc Already Exist "));
 				}
 			}else if (StringUtils.isNotBlank(req.getColorId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
 				List<MotorColorMaster> colorList = getColorDescExistDetails(req.getColorDesc() , req.getInsuranceId() , req.getBranchCode());
 				
 				if (colorList.size()>0 &&  (! req.getColorId().equalsIgnoreCase(colorList.get(0).getColorId().toString())) ) {
-					errorList.add(new Error("01", "ColorDesc", "This Color Name Already Exist "));
+					errorList.add(new Error("01", "ColorDesc", "This Color Desc Already Exist "));
 				}
 				
 			}
@@ -594,13 +594,15 @@ public class MotorColorMasterServiceImpl implements MotorColorMasterService {
 			effectiveDate2.where(a3,a4,a7,a8);
 			// Where
 			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n11 = cb.equal(c.get("status"),"R");
+			Predicate n12 = cb.or(n1,n11);
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
 			Predicate n4 = cb.equal(c.get("companyId"), req.getInsuranceId());
 			Predicate n5 = cb.equal(c.get("branchCode"), req.getBranchCode());
 			Predicate n6 = cb.equal(c.get("branchCode"), "99999");
 			Predicate n7 = cb.or(n5,n6);
-			query.where(n1,n2,n3,n4,n7).orderBy(orderList);
+			query.where(n12,n2,n3,n4,n7).orderBy(orderList);
 			// Get Result
 			TypedQuery<MotorColorMaster> result = em.createQuery(query);
 			list = result.getResultList();

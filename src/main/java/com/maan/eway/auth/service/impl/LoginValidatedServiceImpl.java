@@ -94,9 +94,9 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 			
 			// Other Login Checking
 			if(! loginId.equalsIgnoreCase("guest")  ) {
-				if (req.getPassword() == null || StringUtils.isBlank(req.getPassword())) {
-					list.add(new Error("", "Password", "Please enter password"));
-				}
+//				if (req.getPassword() == null || StringUtils.isBlank(req.getPassword())) {
+//					list.add(new Error("", "Password", "Please enter password"));
+//				}
 				
 				if (StringUtils.isNotBlank(req.getLoginId()) && StringUtils.isNotBlank(req.getPassword())) {
 					LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());
@@ -429,7 +429,7 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 				
 				if (req.getOldpassword() == null || StringUtils.isBlank(req.getOldpassword())) {
 					list.add(new Error("", "Old password", "Please enter Oldpassword"));
-				} else if (model.getPassword().equals(epass)) {
+				} else if (model.getPassword().equalsIgnoreCase(epass)) {
 					list.add(new Error("", "ChangePassword", "Oldpassword  and Newpassword should not match"));
 				}
 				/*else if(model.getLpass1().equals(epass) || model.getLpass2().equals(epass) || model.getLpass3().equals(epass) || model.getLpass4().equals(epass) || model.getLpass5().equals(epass)) {
