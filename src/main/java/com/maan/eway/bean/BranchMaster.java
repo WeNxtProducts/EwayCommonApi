@@ -114,7 +114,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="ADDRESS1", nullable=false, length=100)
     private String     address1 ;
 
-    @Column(name="ADDRESS2", nullable=false, length=100)
+    @Column(name="ADDRESS2",  length=100)
     private String     address2 ;
 
     @Column(name="EMAIL", nullable=false, length=100)

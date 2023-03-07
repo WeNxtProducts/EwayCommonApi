@@ -443,6 +443,11 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 			errorList.add(new Error("04","State","Please Select State"));
 		}
 		
+		if(StringUtils.isBlank(req.getCountryId())) {
+			errorList.add(new Error("04","CountryID","Please Select CountryId"));
+		}
+		
+		
 //		if (StringUtils.isBlank(req.getRegionCode())) {
 //			errorList.add(new Error("03", "RegionCode", "Please Select Region Code "));
 //		}else if (req.getRegionCode().length() > 20){
@@ -479,29 +484,29 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 		}else if (req.getCompanyId().length() > 20){
 			errorList.add(new Error("06","CompanyId", "Please Enter Company Id within 20 Characters")); 
 		}
-		if (req.getCoreAppCode().length() > 20){
-			errorList.add(new Error("07","Core App Code", "Please Enter CoreAppCode within 20 Characters")); 
+		if (StringUtils.isBlank(req.getCoreAppCode()) ){
+			errorList.add(new Error("07","Core App Code", "Please Enter CoreAppCode")); 
 		}
-		else if (StringUtils.isBlank(req.getCoreAppCode())) {
-			List<BranchMaster> coreAppCode = getCoreAppCodeExistDetails(req.getCompanyId() , null,req.getCoreAppCode());
-			if (coreAppCode.size()>0 ) {
-				errorList.add(new Error("07", "CoreAppCode", "This core App Code  Already Exist "));
-			}
-		}else  {
-			List<BranchMaster> coreAppCode =  getCoreAppCodeExistDetails(req.getCompanyId(),req.getBranchCode(),req.getCoreAppCode());
-			if (coreAppCode.size()>0 &&  (! req.getBranchCode().equalsIgnoreCase(coreAppCode.get(0).getBranchCode().toString())) ) {
-				errorList.add(new Error("08", "Core App Code", "This core App Code Already Exist "));
-			}
-		}
+//		else if (StringUtils.isNotBlank(req.getCoreAppCode())) {
+//			List<BranchMaster> coreAppCode = getCoreAppCodeExistDetails(req.getCompanyId() , null,req.getCoreAppCode());
+//			if (coreAppCode.size()>0 ) {
+//				errorList.add(new Error("07", "CoreAppCode", "This core App Code  Already Exist "));
+//			}
+//		}else  {
+//			List<BranchMaster> coreAppCode =  getCoreAppCodeExistDetails(req.getCompanyId(),req.getBranchCode(),req.getCoreAppCode());
+//			if (coreAppCode.size()>0 &&  (! req.getBranchCode().equalsIgnoreCase(coreAppCode.get(0).getBranchCode().toString())) ) {
+//				errorList.add(new Error("08", "Core App Code", "This core App Code Already Exist "));
+//			}
+//		}
 		
-		if (req.getRegulatoryCode().length() > 20){
-			errorList.add(new Error("08","Regulatory Code", "Please Enter Regulatory Code within 20 Characters")); 
+		if (StringUtils.isBlank(req.getRegulatoryCode()) ){
+			errorList.add(new Error("08","Regulatory Code", "Please Enter Regulatory Code")); 
 		}
-		if (req.getAddress1().length() > 100){
-			errorList.add(new Error("09","Address1", "Please Enter Address1 within 100 Characters")); 
+		if (StringUtils.isBlank(req.getAddress1()) ){
+			errorList.add(new Error("09","Address1", "Please Enter Address1")); 
 		}
-		if (req.getAddress2().length() > 100){
-			errorList.add(new Error("10","Address2", "Please Enter Address2 within 20 Characters")); 
+		if (StringUtils.isBlank(req.getAddress1()) ){
+			errorList.add(new Error("10","Address2", "Please Enter Address2")); 
 		}
 		
 		String regex = "^[a-zA-Z0-9_+&*-]+(?:\\." + "[a-zA-Z0-9_+&*-]+)*@" + "(?:[a-zA-Z0-9-]+\\.)+[a-z" + "A-Z]{2,7}$";
