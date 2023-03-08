@@ -1020,6 +1020,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setIsSelected(cov.getIsSelected().equalsIgnoreCase("N") ? "Y" :cov.getIsSelected());
 					coverData.setCreatedBy(request.getCreatedBy());
 					coverData.setVehicleId(request.getVehicleId());
+					coverData.setDiscountCoverId(cov.getDiscountCoverId()==null?0 :cov.getDiscountCoverId());
 					coverRepo.saveAndFlush(coverData);	
 					log.error("Save Cover Info is ---> " + json.toJson(coverData));
 					
