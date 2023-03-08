@@ -1063,8 +1063,10 @@ public WarrantyMasterRes getByWarrantyId(WarrantyMasterGetReq req) {
 		Predicate n11 = cb.equal(b.get("sectionId"), req.getSectionId());
 		Predicate n12 = cb.equal(b.get("sectionId"), "99999");
 		Predicate n13 = cb.or(n12,n11);
+		Predicate n14 = cb.equal(b.get("branchCode"), "99999");
+		Predicate n15 = cb.or(n3,n14);
 
-		query.where(n1,n2,n4,n3,n8,n13).orderBy(orderList);
+		query.where(n1,n2,n4,n15,n8,n13).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<WarrantyMaster> result = em.createQuery(query);
