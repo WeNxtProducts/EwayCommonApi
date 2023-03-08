@@ -202,7 +202,7 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			}
 			
 			if (StringUtils.isBlank(req.getRemarks())) {
-				errorList.add(new Error("04", "Remarks", "Please Select Remarks "));
+				errorList.add(new Error("04", "Remarks", "Please Enter Remarks "));
 			}else if (req.getRemarks().length() > 100){
 				errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
 			}
