@@ -11,17 +11,18 @@ public class DiscountFromFactor  implements Function<FactorRateRequestDetails,Di
 	@Override
 	public Discount apply(FactorRateRequestDetails t) {
 		try {
-			 if(t.getCoverageType()!=null && "D".equalsIgnoreCase(t.getCoverageType())) {
+			 if(t.getCoverageType()!=null && ("D".equalsIgnoreCase(t.getCoverageType()) || "P".equalsIgnoreCase(t.getCoverageType()))) {
 				 String calctype=t.getCalcType()==null?"":t.getCalcType();
 				 Discount d=Discount.builder()
 						 	.discountDesc(t.getCoverName()==null?"":t.getCoverName())
-						 	.discountId(t.getCoverId()==null?"":t.getCoverId().toString())
+						 	.discountId(t.getDiscLoadId()==null?"":t.getDiscLoadId().toString())
 						 	.discountRate("F".equals(calctype)?"0": t.getRate()==null?"0":t.getRate().toString())
 						 	.discountCalcType(calctype)
-						 	.discountforId(t.getDiscLoadId()==null?"":t.getDiscLoadId().toString())
+						 	.discountforId(t.getDiscountCoverId()==null?"":t.getDiscountCoverId().toString())
 						 	.maxAmount(t.getMinimumPremium()==null?BigDecimal.ZERO:t.getMinimumPremium())
 						 	.factorTypeId(t.getFactorTypeId()==null?"":t.getFactorTypeId().toString())
 						 	.regulatoryCode(t.getRegulatoryCode()==null?"N/A":t.getRegulatoryCode())
+						 	.coverAgeType(t.getCoverageType())
 						 	.build();
 				 return d;
 			 }
