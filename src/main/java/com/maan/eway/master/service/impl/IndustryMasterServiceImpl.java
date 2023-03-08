@@ -228,17 +228,17 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			}
 
 			if (StringUtils.isBlank(req.getCoreAppCode())) {
-				errorList.add(new Error("07", "CoreAppCode", "Please Select CoreAppCode"));
+				errorList.add(new Error("07", "CoreAppCode", "Please Enter CoreAppCode"));
 			}else if (req.getCoreAppCode().length() > 20){
 				errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
 			}
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
-				errorList.add(new Error("08", "RegulatoryCode", "Please Select RegulatoryCode"));
+				errorList.add(new Error("08", "RegulatoryCode", "Please Enter RegulatoryCode"));
 			}else if (req.getRegulatoryCode().length() > 20){
 				errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters")); 
 			}
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
+				errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy"));
 			}else if (req.getCreatedBy().length() > 100){
 				errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
 			}
