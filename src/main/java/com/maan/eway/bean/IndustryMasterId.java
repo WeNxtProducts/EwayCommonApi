@@ -35,6 +35,7 @@ public class IndustryMasterId implements Serializable {
     private String     branchCode ;
     
     private String    productId ;
+	private Integer  industryId ;
 
      
 }

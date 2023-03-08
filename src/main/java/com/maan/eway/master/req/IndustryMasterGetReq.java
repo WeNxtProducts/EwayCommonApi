@@ -20,4 +20,8 @@ public class IndustryMasterGetReq {
 	@JsonProperty("CategoryId")
 	private String categoryId;
 	
+	@JsonProperty("IndustryId")
+	private String industryId;
+	
+
 }

@@ -16,5 +16,7 @@ public class IndustryMasterDropdownReq {
 	@JsonProperty("ProductId")
 	private String productId;
 
+	@JsonProperty("CategoryId")
+	private String categoryId;
 	
 }

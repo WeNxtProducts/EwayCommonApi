@@ -37,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.IndustryMaster;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.IndustryMasterChangeStatusReq;
@@ -48,6 +49,7 @@ import com.maan.eway.master.res.IndustryMasterRes;
 import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.master.service.IndustryMasterService;
 import com.maan.eway.repository.IndustryMasterRepository;
+import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
@@ -64,6 +66,8 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 	@Autowired
 	private IndustryMasterRepository industryrepo;
 
+	@Autowired
+	private ListItemValueRepository listrepo;
 
 	Gson json = new Gson();
 
@@ -89,7 +93,7 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			query.select(c);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("categoryId")));
+			orderList.add(cb.asc(c.get("industryId")));
 			
 			// Effective Date Start Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
@@ -124,16 +128,17 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate n6 = cb.equal(c.get("branchCode"),"99999");
 			Predicate n7 = cb.or(n5,n6);
 			Predicate n8 = cb.equal(c.get("productId"),req.getProductId());
+			Predicate n9 = cb.equal(c.get("categoryId"),req.getCategoryId());
 			
 			if(StringUtils.isBlank(req.getProductId())) {
-				query.where(n12,n2,n3,n4,n7).orderBy(orderList);
+				query.where(n12,n2,n3,n4,n7,n9).orderBy(orderList);
 				
 			}
 			else {
-			query.where(n12,n2,n3,n4,n7,n8).orderBy(orderList);
+			query.where(n12,n2,n3,n4,n7,n8,n9).orderBy(orderList);
 			}
-			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCategoryId()))).collect(Collectors.toList());
-			list.sort(Comparator.comparing(IndustryMaster :: getCategoryDesc ));
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getIndustryId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(IndustryMaster :: getIndustryName ));
 			
 			// Get Result
 			TypedQuery<IndustryMaster> result = em.createQuery(query);
@@ -141,8 +146,8 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			for (IndustryMaster data : list) {
 				// Response 
 				DropDownRes res = new DropDownRes();
-				res.setCode(data.getCategoryId());
-				res.setCodeDesc(data.getCategoryDesc());
+				res.setCode(data.getIndustryId().toString());
+				res.setCodeDesc(data.getIndustryName());
 				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
@@ -168,23 +173,24 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 
 		try {
 		
-			if (StringUtils.isBlank(req.getCategoryDesc())) {
-				errorList.add(new Error("02", "CategoryDesc", "Please Enter CategoryDesc"));
-			}else if (req.getCategoryDesc().length() > 100){
-				errorList.add(new Error("02","CategoryDesc", "Please Enter CategoryDesc 100 Characters")); 
-			}else if (StringUtils.isBlank(req.getCategoryId()) &&  StringUtils.isNotBlank(req.getCategoryId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())) {
-				List<IndustryMaster> industrylist = getCategoryDescExistDetails(req.getCategoryDesc() , req.getCompanyId() , req.getBranchCode() , req.getProductId());
+			if (StringUtils.isBlank(req.getIndustryName())) {
+				errorList.add(new Error("02", "IndustryName", "Please Enter IndustryName"));
+			}else if (req.getIndustryName().length() > 100){
+				errorList.add(new Error("02","IndustryName", "Please Enter IndustryName 100 Characters")); 
+			}else if (StringUtils.isBlank(req.getIndustryId()) &&  StringUtils.isNotBlank(req.getCategoryId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())) {
+				List<IndustryMaster> industrylist = getCategoryDescExistDetails( req.getIndustryName(), req.getCategoryId() , req.getCompanyId() , req.getBranchCode() , req.getProductId());
 				if (industrylist.size()>0 ) {
-					errorList.add(new Error("01", "Category Desc", "This Category Desc Already Exist "));
+					errorList.add(new Error("01", "IndustryName", "This IndustryName Already Exist "));
 				}
-			}else if (StringUtils.isNotBlank(req.getCategoryId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())) {
-				List<IndustryMaster> industrylist = getCategoryDescExistDetails(req.getCategoryDesc() , req.getCompanyId() , req.getBranchCode(), req.getProductId());
+			}else if (StringUtils.isNotBlank(req.getIndustryId()) && StringUtils.isNotBlank(req.getCategoryId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())) {
+				List<IndustryMaster> industrylist = getCategoryDescExistDetails(req.getIndustryName(),req.getCategoryId() , req.getCompanyId() , req.getBranchCode(), req.getProductId());
 				
 				if (industrylist.size()>0 &&  (! req.getCategoryId().equalsIgnoreCase(industrylist.get(0).getCategoryId().toString())) ) {
-					errorList.add(new Error("01", "Category Desc", "This Category Desc Already Exist "));
+					errorList.add(new Error("01", "IndustryName", "This Industry Name Already Exist "));
 				}
 				
 			}
+			
 			
 			
 			if (StringUtils.isBlank(req.getCompanyId())) {
@@ -240,14 +246,16 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 				errorList.add(new Error("10", "ProductId", "Please Select ProductId"));
 			}
 			
-			
+			if (StringUtils.isBlank(req.getCategoryId())) {
+				errorList.add(new Error("11", "CategoryId", "Please Enter CategoryId"));
+			}
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
 		}
 		return errorList;
 	}
-	private List<IndustryMaster> getCategoryDescExistDetails(String categoryDesc, String companyId, String branchCode,
+	private List<IndustryMaster> getCategoryDescExistDetails(String industryName,String categoryId, String companyId, String branchCode,
 			String productId) {
 		// TODO Auto-generated method stub
 		List<IndustryMaster> list = new ArrayList<IndustryMaster>();
@@ -277,14 +285,15 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			amendId.where(a1,a2,a3,a4,a5,a6);
 
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
-			Predicate n2 = cb.equal(cb.lower( b.get("categoryDesc")), categoryDesc.toLowerCase());
+			Predicate n2 = cb.equal(cb.lower( b.get("industryName")), industryName.toLowerCase());
 			Predicate n3 = cb.equal(b.get("companyId"),companyId);
 			Predicate n4 = cb.equal(b.get("branchCode"), branchCode);
 			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
 			Predicate n6 = cb.or(n4,n5);
 			Predicate n7 = cb.equal(b.get("productId"), productId);
+			Predicate n8 = cb.equal(b.get("categoryId"), categoryId);
 			
-			query.where(n1,n2,n3,n6,n7);
+			query.where(n1,n2,n3,n6,n7,n8);
 			
 			// Get Result
 			TypedQuery<IndustryMaster> result = em.createQuery(query);
@@ -316,19 +325,21 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Date entryDate = null ;
 			String createdBy = "" ;
 			
-			Integer categoryId = 0 ;
-			if(StringUtils.isBlank(req.getCategoryId())) {
+			Integer industryId = 0 ;
+			ListItemValue data = listrepo.findByItemTypeAndItemCode("INDUSTRY_CATEGORY",req.getCategoryId());
+
+			if(StringUtils.isBlank(req.getIndustryId())) {
 				// Save
-				Integer totalCount = getMasterTableCount( req.getBranchCode(), req.getProductId(), req.getCompanyId());
-				categoryId =  totalCount+1 ;
+				Integer totalCount = getMasterTableCount(req.getCategoryId(),req.getBranchCode(), req.getProductId(), req.getCompanyId());
+				industryId =  totalCount+1 ;
 				entryDate = new Date();
 				createdBy = req.getCreatedBy();
 				res.setResponse("Saved Successfully");
-				res.setSuccessId(categoryId.toString());
+				res.setSuccessId(industryId.toString());
 			}
 			else {
 				// Update
-				categoryId = Integer.valueOf(req.getCategoryId());
+				industryId = Integer.valueOf(req.getIndustryId());
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<IndustryMaster> query = cb.createQuery(IndustryMaster.class);
 				//Find all
@@ -346,8 +357,9 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 				Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 				Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
 				Predicate n5 = cb.equal(b.get("productId"), req.getProductId());
+				Predicate n6 = cb.equal(b.get("industryId"), req.getIndustryId());
 				
-				query.where(n2,n3,n4,n5).orderBy(orderList);
+				query.where(n2,n3,n4,n5,n6).orderBy(orderList);
 				
 				// Get Result 
 				TypedQuery<IndustryMaster> result = em.createQuery(query);
@@ -381,10 +393,12 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 				    }
 				}
 				res.setResponse("Updated Successfully");
-				res.setSuccessId(categoryId.toString());
+				res.setSuccessId(industryId.toString());
 			}
 			dozerMapper.map(req, saveData);
-			saveData.setCategoryId(categoryId.toString());
+			saveData.setIndustryId(industryId);
+			saveData.setIndustryName(req.getIndustryName());
+			saveData.setCategoryId(req.getCategoryId());
 			saveData.setEffectiveDateStart(startDate);
 			saveData.setEffectiveDateEnd(endDate);
 			saveData.setCreatedBy(createdBy);
@@ -395,7 +409,7 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setAmendId(amendId);
 			saveData.setCoreAppCode(req.getCoreAppCode());
-			saveData.setCategoryDesc(req.getCategoryDesc());
+			saveData.setCategoryDesc(data.getItemValue());
 			industryrepo.saveAndFlush(saveData);
 			log.info("Saved Details is --> " + json.toJson(saveData));
 			
@@ -409,7 +423,7 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 		}
 
 
-	public Integer getMasterTableCount(String companyId , String branchCode, String productId) {
+	public Integer getMasterTableCount(String categoryId , String branchCode, String productId, String companyId) {
 		Integer data =0;
 		try {
 			List<IndustryMaster> list = new ArrayList<IndustryMaster>();
@@ -442,8 +456,9 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
 			Predicate n5 = cb.or(n3,n4);
 			Predicate n6 = cb.equal(b.get("productId"),productId);
+			Predicate n7 = cb.equal(b.get("categoryId"),categoryId);
 
-			query.where(n1,n2,n5,n6).orderBy(orderList);
+			query.where(n1,n2,n5,n6,n7).orderBy(orderList);
 			
 			
 			
@@ -453,7 +468,7 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			list = result.getResultList();
-			data = list.size() > 0 ? Integer.valueOf(list.get(0).getCategoryId()) : 0 ;
+			data = list.size() > 0 ? Integer.valueOf(list.get(0).getIndustryId()) : 0 ;
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -503,15 +518,16 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
 			Predicate n5 = cb.or(n3,n4);
 			Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
+			Predicate n7 = cb.equal(b.get("categoryId"),req.getCategoryId());
+
 			
-			
-			query.where(n1,n2,n5,n6).orderBy(orderList);
+			query.where(n1,n2,n5,n6,n7).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<IndustryMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCategoryId()))).collect(Collectors.toList());
-			list.sort(Comparator.comparing(IndustryMaster :: getCategoryDesc ));
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getIndustryId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(IndustryMaster :: getIndustryName ));
 			// Map
 			for (IndustryMaster data : list) {
 				IndustryMasterRes res = new IndustryMasterRes();
@@ -572,14 +588,15 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate n5 = cb.or(n3,n4);
 			Predicate n6 = cb.equal(b.get("productId"), req.getProductId());			
 			Predicate n7 = cb.equal(b.get("status"),"Y");
-			
-			query.where(n1,n2,n5,n6,n7).orderBy(orderList);
+			Predicate n8 = cb.equal(b.get("categoryId"),req.getCategoryId());
+
+			query.where(n1,n2,n5,n6,n7,n8).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<IndustryMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCategoryId()))).collect(Collectors.toList());
-			list.sort(Comparator.comparing(IndustryMaster :: getCategoryDesc ));
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getIndustryId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(IndustryMaster :: getIndustryName ));
 			// Map
 			for (IndustryMaster data : list) {
 				IndustryMasterRes res = new IndustryMasterRes();
@@ -638,14 +655,15 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate n5 = cb.or(n3,n4);
 			Predicate n6 = cb.equal(b.get("productId"), req.getProductId());			
 			Predicate n7 = cb.equal(b.get("categoryId"),req.getCategoryId());
-			
-			query.where(n1,n2,n5,n6,n7).orderBy(orderList);
+			Predicate n8 = cb.equal(b.get("industryId"),req.getIndustryId());
+
+			query.where(n1,n2,n5,n6,n7,n8).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<IndustryMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCategoryId()))).collect(Collectors.toList());
-			list.sort(Comparator.comparing(IndustryMaster :: getCategoryDesc ));
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getIndustryId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(IndustryMaster :: getIndustryName ));
 				res = dozermapper.map(list.get(0), IndustryMasterRes.class);
 			
 
@@ -692,8 +710,9 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 				Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
 				Predicate n4 = cb.equal(b.get("branchCode"), req.getBranchCode());
 				Predicate n5 = cb.equal(b.get("productId"), req.getProductId());
-				
-				query.where(n2,n3,n4,n5).orderBy(orderList);
+				Predicate n6 = cb.equal(b.get("industryId"),req.getIndustryId());
+
+				query.where(n2,n3,n4,n5,n6).orderBy(orderList);
 				
 				// Get Result 
 				TypedQuery<IndustryMaster> result = em.createQuery(query);
@@ -726,7 +745,7 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 				    }
 				}
 				res.setResponse("Status Changed Successfully");
-				res.setSuccessId(req.getCategoryId());
+				res.setSuccessId(req.getIndustryId());
 			
 			dozerMapper.map(list.get(0), saveData);
 			saveData.setEffectiveDateStart(req.getEffectiveDateStart());

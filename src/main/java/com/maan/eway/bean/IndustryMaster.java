@@ -52,7 +52,13 @@ public class IndustryMaster implements Serializable {
 private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
-    @Id
+	@Id
+	@Column(name="INDUSTRY_ID", nullable=false)
+	private Integer  industryId ;
+
+
+
+	@Id
     @Column(name="CATEGORY_ID", nullable=false, length=20)
     private String    categoryId ;
 
@@ -74,6 +80,8 @@ private static final long serialVersionUID = 1L;
     private String categoryDesc ;
 
     
+    @Column(name="INDUSTRY_NAME", length=100)
+    private String industryName ;
 
     
     @Temporal(TemporalType.TIMESTAMP)

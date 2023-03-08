@@ -10,13 +10,16 @@ import lombok.Data;
 @Data
 public class IndustryMasterSaveReq {
 
+	@JsonProperty("IndustryId")
+	private String industryId;
+	
+	@JsonProperty("IndustryName")
+	private String industryName;
+	
 	
 	@JsonProperty("CategoryId")
 	private String categoryId;
 	
-	
-	@JsonProperty("CategoryDesc")
-	private String categoryDesc;
 	
 	@JsonProperty("InsuranceId")
 	private String companyId;

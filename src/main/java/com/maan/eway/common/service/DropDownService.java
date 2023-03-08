@@ -143,4 +143,6 @@ public interface DropDownService {
 
 	List<DropDownRes> getQueryKeyColumns(QueryKeyReq req);
 
+	List<DropDownRes> industryCategory(LovDropDownReq req);
+
 }

@@ -16,4 +16,7 @@ public class IndustryMasterGetallReq {
 	@JsonProperty("ProductId")
 	private String productId;
 	
+	@JsonProperty("CategoryId")
+	private String categoryId;
+
 }

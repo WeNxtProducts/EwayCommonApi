@@ -18,6 +18,13 @@ public class IndustryMasterRes {
 	@JsonProperty("CategoryDesc")
 	private String categoryDesc;
 	
+	@JsonProperty("IndustryId")
+	private String industryId;
+	
+	@JsonProperty("IndustryName")
+	private String industryName;
+
+	
 	@JsonProperty("InsuranceId")
 	private String companyId;
 	

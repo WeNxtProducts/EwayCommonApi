@@ -23,6 +23,9 @@ public class IndustryMasterChangeStatusReq {
 	@JsonProperty("CategoryId")
 	private String categoryId;
 	
+	@JsonProperty("IndustryId")
+	private String industryId;
+	
 	@JsonProperty("Status")
 	private String status;
 	
