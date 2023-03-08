@@ -2,11 +2,9 @@ package com.maan.eway.res.calc;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.maan.eway.endorsment.request.Endorsment;
-import com.maan.eway.endorsment.request.Endorsment.EndorsmentBuilder;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -65,4 +63,7 @@ public class Endorsement implements Serializable {
     
     @JsonProperty("EndtCount") 
     private BigDecimal endtCount;
+    
+    @JsonProperty("Taxes")
+    private List<Tax> taxes;
 }

@@ -433,7 +433,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 					
 					 //CurrentEndorsement
 					 Endorsement currentEndt=Endorsement.builder()
-							 	.endorsementDesc(endtDesc+" "+endtCount.intValue())
+							 	.endorsementDesc(d.getCoverDesc()+" "+endtDesc+" "+endtCount.intValue())
 							 	.endorsementId(endtTypeId)
 							 	.endorsementRate("0")
 							 	.endorsementCalcType("A")
@@ -645,7 +645,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 					Comparator<Cover> comp=Comparator.comparing(Cover::getCoverageType); 
 					 retc.sort(comp);
 					 
-					 
+					 x
 					 
 					 
 				}
