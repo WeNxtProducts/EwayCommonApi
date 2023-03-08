@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.Tuple;
 
+import com.maan.eway.admin.res.MotorGridCriteriaRes;
 import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
 import com.maan.eway.admin.res.ReferalCriteriaRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
@@ -26,9 +27,9 @@ public interface MotorGridService {
 
 	List<RejectCriteriaRes> getMotorRejectedQuoteDetails(ExistingQuoteReq req, List<String> branches ,int limit, int offset);
 
-	List<ReferalGridCriteriaRes> getMotorReferalDetails(ExistingQuoteReq req, List<String> branches, int limit,int offset , String Status);
+	List<MotorGridCriteriaRes> getMotorReferalDetails(ExistingQuoteReq req, List<String> branches, int limit,int offset , String Status);
 
-	List<ReferalGridCriteriaRes> getMotorAdminReferalDetails(ExistingQuoteReq req, List<String> branches, int limit,int offset , String Status);
+	List<MotorGridCriteriaRes> getMotorAdminReferalDetails(ExistingQuoteReq req, List<String> branches, int limit,int offset , String Status);
 	
 	List<Tuple> searchMotorQuote(CopyQuoteReq req, List<String> branches);
 

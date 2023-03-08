@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.maan.eway.admin.res.MotorGridCriteriaRes;
 import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
 import com.maan.eway.admin.res.ReferalCommonCriteriaRes;
 import com.maan.eway.admin.res.ReferalCriteriaRes;
@@ -377,7 +378,15 @@ public class GridServiceImpl implements GridService {
 			
 			List<ReferalGridCriteriaRes> referralPendingList = new ArrayList<ReferalGridCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
-				referralPendingList = motService.getMotorReferalDetails(req  , branches, limit , offset , "RP" );
+				List<MotorGridCriteriaRes> referralPendingList2 = motService.getMotorReferalDetails(req  , branches, limit , offset , "RP" );
+				for(MotorGridCriteriaRes data : referralPendingList2  ) {
+					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+					 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+					 custRes.add(res);	
+				}
+				return custRes;
+				
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				referralPendingList = traService.getTravelReferalDetails(req  , branches, limit , offset, "RP" );
 			}
@@ -443,7 +452,14 @@ public class GridServiceImpl implements GridService {
 			
 			List<ReferalGridCriteriaRes> referralApprovedList = new ArrayList<ReferalGridCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
-				referralApprovedList = motService.getMotorReferalDetails(req  , branches, limit , offset, "RA" );
+				List<MotorGridCriteriaRes> List2 = motService.getMotorReferalDetails(req  , branches, limit , offset, "RA" );
+				for(MotorGridCriteriaRes data : List2  ) {
+					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+					 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+					 custRes.add(res);	
+				}
+				return custRes;
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				referralApprovedList = traService.getTravelReferalDetails(req  , branches, limit , offset, "RA" );
 			}
@@ -508,7 +524,14 @@ public class GridServiceImpl implements GridService {
 			
 			List<ReferalGridCriteriaRes> referralRejectedList = new ArrayList<ReferalGridCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
-				referralRejectedList = motService.getMotorReferalDetails(req  , branches, limit , offset, "RR" );
+				List<MotorGridCriteriaRes> List2 = motService.getMotorReferalDetails(req  , branches, limit , offset, "RR" );
+				for(MotorGridCriteriaRes data : List2  ) {
+					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+					 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+					 custRes.add(res);	
+				}
+				return custRes;
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				referralRejectedList = traService.getTravelReferalDetails(req  , branches, limit , offset, "RR" );
 			}
@@ -553,7 +576,15 @@ public class GridServiceImpl implements GridService {
 			
 			List<ReferalGridCriteriaRes> adminReferralPendingList = new ArrayList<ReferalGridCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
-				adminReferralPendingList = motService.getMotorAdminReferalDetails(req  , branches, limit , offset ,"RP" );
+				List<MotorGridCriteriaRes> adminReferralPendingList2 = motService.getMotorAdminReferalDetails(req  , branches, limit , offset ,"RP" );
+				for(MotorGridCriteriaRes data : adminReferralPendingList2  ) {
+					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+					 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+					 custRes.add(res);	
+				}
+				return custRes;
+				
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				adminReferralPendingList = traService.getTravelAdminReferalDetails(req  , branches, limit , offset,"RP" );
 			}
@@ -598,7 +629,14 @@ public class GridServiceImpl implements GridService {
 			
 			List<ReferalGridCriteriaRes> adminReferralApprovedList = new ArrayList<ReferalGridCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
-				adminReferralApprovedList = motService.getMotorAdminReferalDetails(req  , branches, limit , offset,"RA" );
+				List<MotorGridCriteriaRes> List2 = motService.getMotorAdminReferalDetails(req  , branches, limit , offset,"RA" );
+				for(MotorGridCriteriaRes data : List2  ) {
+					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+					 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+					 custRes.add(res);	
+				}
+				return custRes;
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				adminReferralApprovedList = traService.getTravelAdminReferalDetails(req  , branches, limit , offset,"RA" );
 			}
@@ -643,7 +681,14 @@ public class GridServiceImpl implements GridService {
 			
 			List<ReferalGridCriteriaRes> adminReferralRejectedList = new ArrayList<ReferalGridCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
-				adminReferralRejectedList = motService.getMotorAdminReferalDetails(req  , branches, limit , offset ,"RR" );
+				List<MotorGridCriteriaRes> List2 = motService.getMotorAdminReferalDetails(req  , branches, limit , offset ,"RR" );
+				for(MotorGridCriteriaRes data : List2  ) {
+					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+					 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+					 custRes.add(res);	
+				}
+				return custRes;
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				adminReferralRejectedList = traService.getTravelAdminReferalDetails(req  , branches, limit , offset,"RR" );
 			}
@@ -982,7 +1027,14 @@ public class GridServiceImpl implements GridService {
 			
 			List<ReferalGridCriteriaRes> referralRejectedList = new ArrayList<ReferalGridCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
-				referralRejectedList = motService.getMotorReferalDetails(req  , branches, limit , offset, "RE" );
+				List<MotorGridCriteriaRes> List2 = motService.getMotorReferalDetails(req  , branches, limit , offset, "RE" );
+				for(MotorGridCriteriaRes data : List2  ) {
+					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+					 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+					 custRes.add(res);	
+				}
+				return custRes;
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				referralRejectedList = traService.getTravelReferalDetails(req  , branches, limit , offset, "RE" );
 			}
@@ -1029,7 +1081,14 @@ public class GridServiceImpl implements GridService {
 			
 			List<ReferalGridCriteriaRes> adminReferralRejectedList = new ArrayList<ReferalGridCriteriaRes>();
 			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
-				adminReferralRejectedList = motService.getMotorAdminReferalDetails(req  , branches, limit , offset ,"RE" );
+				List<MotorGridCriteriaRes> List2 = motService.getMotorAdminReferalDetails(req  , branches, limit , offset ,"RE" );
+				for(MotorGridCriteriaRes data : List2  ) {
+					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					 res = dozerMapper.map(data , EserviceCustomerDetailsRes.class);	
+					 res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
+					 custRes.add(res);	
+				}
+				return custRes;
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				adminReferralRejectedList = traService.getTravelAdminReferalDetails(req  , branches, limit , offset,"RE" );
 			}

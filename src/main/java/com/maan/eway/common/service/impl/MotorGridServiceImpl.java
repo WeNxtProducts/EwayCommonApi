@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.maan.eway.admin.res.MotorGridCriteriaRes;
 import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
 import com.maan.eway.admin.res.ReferalCriteriaRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
@@ -339,12 +340,12 @@ public class MotorGridServiceImpl implements MotorGridService {
 
 
 	@Override
-	public synchronized List<ReferalGridCriteriaRes> getMotorReferalDetails(ExistingQuoteReq req, List<String> branches,
+	public synchronized List<MotorGridCriteriaRes> getMotorReferalDetails(ExistingQuoteReq req, List<String> branches,
 			int limit, int offset, String status) {
-		List<ReferalGridCriteriaRes> referrals = new ArrayList<ReferalGridCriteriaRes>();
+		List<MotorGridCriteriaRes> referrals = new ArrayList<MotorGridCriteriaRes>();
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<ReferalGridCriteriaRes> query = cb.createQuery(ReferalGridCriteriaRes.class);
+			CriteriaQuery<MotorGridCriteriaRes> query = cb.createQuery(MotorGridCriteriaRes.class);
 
 			// Find All
 			Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
@@ -401,7 +402,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					.orderBy(orderList);
 
 			// Get Result
-			TypedQuery<ReferalGridCriteriaRes> result = em.createQuery(query);
+			TypedQuery<MotorGridCriteriaRes> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			referrals = result.getResultList();
@@ -416,12 +417,12 @@ public class MotorGridServiceImpl implements MotorGridService {
 	}
 
 	@Override
-	public synchronized List<ReferalGridCriteriaRes> getMotorAdminReferalDetails(ExistingQuoteReq req, List<String> branches, int limit,
+	public synchronized List<MotorGridCriteriaRes> getMotorAdminReferalDetails(ExistingQuoteReq req, List<String> branches, int limit,
 			int offset ,String status) {
-		List<ReferalGridCriteriaRes> referrals = new ArrayList<ReferalGridCriteriaRes>();
+		List<MotorGridCriteriaRes> referrals = new ArrayList<MotorGridCriteriaRes>();
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<ReferalGridCriteriaRes> query = cb.createQuery(ReferalGridCriteriaRes.class);
+			CriteriaQuery<MotorGridCriteriaRes> query = cb.createQuery(MotorGridCriteriaRes.class);
 
 			// Find All
 			Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
@@ -465,7 +466,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					.orderBy(orderList);
 
 			// Get Result
-			TypedQuery<ReferalGridCriteriaRes> result = em.createQuery(query);
+			TypedQuery<MotorGridCriteriaRes> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			referrals = result.getResultList();
