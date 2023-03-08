@@ -32,6 +32,8 @@ import com.maan.eway.calculator.util.AdminCoverCalculator;
 import com.maan.eway.calculator.util.CoverCalculator;
 import com.maan.eway.calculator.util.CoverFromFactor;
 import com.maan.eway.calculator.util.DiscountFromFactor;
+import com.maan.eway.calculator.util.EndtCoverCalculator;
+import com.maan.eway.calculator.util.EndtFromFactor;
 import com.maan.eway.calculator.util.LoadingFromFactor;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.calculator.util.SplitDiscountUtils;
@@ -46,6 +48,7 @@ import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.endorsment.util.CoverFromPolicy;
 import com.maan.eway.endorsment.util.DiscountFromPolicy;
+import com.maan.eway.endorsment.util.EndtFromPolicy;
 import com.maan.eway.endorsment.util.LoadingFromPolicy;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.LoginProductMasterRepository;
@@ -55,6 +58,7 @@ import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.res.calc.Cover;
 import com.maan.eway.res.calc.DebitAndCredit;
 import com.maan.eway.res.calc.Discount;
+import com.maan.eway.res.calc.Endorsement;
 import com.maan.eway.res.calc.Loading;
 import com.maan.eway.res.calc.Tax;
 import com.maan.eway.res.calc.UWReferrals;
@@ -354,7 +358,9 @@ public class CalculatorEngineService implements CalculatorEngine{
 			try {
 		 		String endtTypeId=vehicles.get(0).get("endtTypeId")==null?"":vehicles.get(0).get("endtTypeId").toString();
 		 		if(StringUtils.isNotBlank(endtTypeId) && !"0".equals(endtTypeId)) {
-		 			referalCalculator(engine);
+		 			// referalCalculator = referalCalculator(engine);
+		 			endorsementCalculator(engine);
+		 			
 		 		}		 	
 		 	}catch (Exception e) {
 		 		e.printStackTrace();
@@ -371,6 +377,10 @@ public class CalculatorEngineService implements CalculatorEngine{
 		return null;
 	}
 	
+
+
+
+	
 	private void loadAndRemoveCoversForEndt(CalcEngine engine, List<Cover> retc) {
 		try {
 			
@@ -386,16 +396,27 @@ public class CalculatorEngineService implements CalculatorEngine{
 				result=crservice.getResult(criteria, 0, 50);
 				
 				
-				String endtPrevPolicyNo=result.get(0).get("endtPrevPolicyNo").toString();
+				//String endtPrevPolicyNo=result.get(0).get("endtPrevPolicyNo").toString();
 				String endtPrevQuoteNo=result.get(0).get("endtPrevQuoteNo").toString();
 				
-				//find Prev Quote Data
-				List<PolicyCoverData> oldPolicyCovers = coverDataRepo.findByQuoteNoAndVehicleIdOrderByCoverIdAsc(endtPrevQuoteNo,Integer.parseInt(engine.getVehicleId()));
-				List<Tuple> taxes = ratingutil.LoadTax(engine);
-				TaxUtils tzx=new TaxUtils(); 
-				//CoverFromPolicy
+				String endtDesc=result.get(0).get("endorsementTypeDesc").toString();
+				String endtTypeId=result.get(0).get("endorsementType").toString();
+				BigDecimal endtCount=new BigDecimal(result.get(0).get("endtCount").toString());
 				
-				for (PolicyCoverData d : oldPolicyCovers) {
+				
+				
+				 
+				 
+				//find Prev Quote Data
+					List<PolicyCoverData> oldPolicyCovers = coverDataRepo.findByQuoteNoAndVehicleIdOrderByCoverIdAsc(endtPrevQuoteNo,Integer.parseInt(engine.getVehicleId()));
+					List<Tuple> taxes = ratingutil.LoadTax(engine);
+					TaxUtils tzx=new TaxUtils(); 
+					
+					
+					//CoverFromPolicy
+					List<PolicyCoverData> basecovers=oldPolicyCovers.stream().filter( d -> !("T".equals(d.getCoverageType()) || "D".equals(d.getCoverageType()) || "L".equals(d.getCoverageType()) || "E".equals(d.getCoverageType())))
+					.collect(Collectors.toList());
+				for (PolicyCoverData d : basecovers) {
 					List<Cover> operatedList=new ArrayList<Cover>();
 					
 					DiscountFromPolicy discountUtil=new DiscountFromPolicy();
@@ -405,23 +426,50 @@ public class CalculatorEngineService implements CalculatorEngine{
 					LoadingFromPolicy loadingUtil=new LoadingFromPolicy();
 					List<Loading> loadings = oldPolicyCovers.stream().filter(r -> d.getCoverId()==r.getCoverId()).map(loadingUtil).filter(dx->dx!=null).collect(Collectors.toList());
 					
+					
+					EndtFromPolicy endtUtils=new EndtFromPolicy();
+					List<Endorsement> endorsements = oldPolicyCovers.stream().filter(r -> d.getCoverId()==r.getCoverId()).map(endtUtils).filter(dx->dx!=null).collect(Collectors.toList());
+					
+					
+					 //CurrentEndorsement
+					 Endorsement currentEndt=Endorsement.builder()
+							 	.endorsementDesc(endtDesc+" "+endtCount.intValue())
+							 	.endorsementId(endtTypeId)
+							 	.endorsementRate("0")
+							 	.endorsementCalcType("A")
+							 	.endorsementforId(String.valueOf( d.getCoverId()))
+							 	.maxAmount(BigDecimal.ZERO)
+							 	.factorTypeId(null)
+							 	.regulatoryCode("N/A")	
+							 	.endtCount(endtCount)
+							 	.premiumAfterDiscount(d.getPremiumAfterDiscountFc())
+							    .premiumAfterDiscountLC(d.getPremiumAfterDiscountLc())
+							    .premiumBeforeDiscount(d.getPremiumBeforeDiscountFc())
+							    .premiumBeforeDiscountLC(d.getPremiumBeforeDiscountLc())
+							    .premiumExcluedTax(d.getPremiumExcludedTaxFc())
+							    .premiumExcluedTaxLC(d.getPremiumExcludedTaxLc())
+							    .premiumIncludedTax(d.getPremiumIncludedTaxFc())
+							    .premiumIncludedTaxLC(d.getPremiumIncludedTaxLc())
+							 	.build();
+					 endorsements.add(currentEndt);
+					
+					
 					CoverFromPolicy coverUtil=new CoverFromPolicy("");
 					List<Cover> covers = oldPolicyCovers.stream().filter(r -> d.getCoverId()==r.getCoverId()).map(coverUtil).filter(dx->dx!=null).collect(Collectors.toList());
 					List<Cover> oldTax = covers.stream().filter(c -> "T".equals(c.getCoverageType())).collect(Collectors.toList());
 					covers.removeAll(oldTax);
 					
 					List<Tax> taxey = taxes.stream().map(tzx).filter(t->t!=null).collect(Collectors.toList());
-
+					covers.forEach(c -> c.setTaxes(taxey));
 					
+					covers.forEach(c ->c.setEndorsements(endorsements));// Existing Endorsement
 					covers.forEach(c -> c.setDiscounts(discounts));
 					covers.forEach(c -> c.setLoadings(loadings));
-					covers.forEach(c -> c.setTaxes(taxey));
+					
 					
 					
 					retc.stream().filter(r -> d.getCoverId()==Integer.parseInt(r.getCoverId())).forEach(item -> {		
-						
-						
-					    operatedList.add(item);
+						operatedList.add(item);
 					});
 					retc.removeAll(operatedList);	
 					retc.addAll(covers); 
@@ -435,6 +483,202 @@ public class CalculatorEngineService implements CalculatorEngine{
 		
 	}
 
+	private EserviceMotorDetailsSaveRes endorsementCalculator(CalcEngine request) {
+		 try {
+			   List<Cover> retc=new ArrayList<Cover>();
+			   
+			   	loadOnetimetable(request);
+				if((commontbl==null || commontbl.size()==0) || (vehicles==null || vehicles.size()==0) || (customers==null || customers.size()==0)) {
+					System.out.println("::: Exception :: ");
+					throw new Exception();
+					
+					 /*throw CoverException.builder().message("Exception :: onetime table not inserted")
+					 .isError(true).build();*/
+				}
+				
+			   
+			 	List<String> dependedcovers=new ArrayList<String>();
+			 	
+				dependedcovers.add("N");
+				dependedcovers.add("Y");
+				
+				List<FactorRateRequestDetails> factors = repository.findByRequestReferenceNoAndVehicleIdAndProductIdAndSectionIdOrderByCoverIdAsc(request.getRequestReferenceNo(), Integer.valueOf(request.getVehicleId()),Integer.valueOf(request.getProductId()),Integer.valueOf(request.getSectionId()));
+				
+				//TaxFromFactor tzx=new TaxFromFactor(); 
+				List<Tuple> taxes = ratingutil.LoadTax(request);
+				TaxUtils tzx=new TaxUtils(); 
+				
+				for (String dependcover : dependedcovers) {
+					List<Cover> totalcovers=new ArrayList<Cover>();
+					List<FactorRateRequestDetails> covers = factors.stream().filter(f -> dependcover.equals(f.getDependentCoverYn())).collect(Collectors.toList());
+				 
+					DiscountFromFactor discountUtil=new DiscountFromFactor();
+					List<Discount> discounts = covers.stream().map(discountUtil).filter(d->d!=null).collect(Collectors.toList());
+					LoadingFromFactor loadingtuils=new LoadingFromFactor();
+					List<Loading> loadings = covers.stream().map(loadingtuils).filter(d->d!=null).collect(Collectors.toList());
+					EndtFromFactor endtUtil=new EndtFromFactor();
+					List<Endorsement> endorsements = covers.stream().map(endtUtil).filter(d->d!=null).collect(Collectors.toList());
+					
+					
+					CoverFromFactor splitsub=new CoverFromFactor("N");
+					Map<String, List<Cover>> nonSubcovers = covers.stream().map(splitsub).filter(d->d!=null).collect(Collectors.groupingBy(Cover::getIsSubCover));
+					 if(!nonSubcovers.isEmpty()) {
+						 List<Cover> noncovers = nonSubcovers.get("N");					 //noncovers
+						 if(!discounts.isEmpty() && !noncovers.isEmpty()) {
+							 for(Cover c:noncovers) {
+								 List<Discount> ds = discounts.stream().filter(d-> d.getDiscountforId().equals(c.getCoverId())).collect(Collectors.toList());
+								 ds.stream().forEach(dss->dss.setSubCoverId(c.getSubCoverId()));
+								 //List<Tax> taxey = taxes.stream().map(tzx).filter(d->d!=null).collect(Collectors.toList());
+								 c.setDiscounts(ds);
+								 //c.setTaxes(taxey);
+							 }
+						 }
+						 if(!loadings.isEmpty() && !noncovers.isEmpty()) {
+							 for(Cover c:noncovers) {
+								 List<Loading> ds = loadings.stream().filter(d-> d.getLoadingforId().equals(c.getCoverId())).collect(Collectors.toList());
+								 ds.stream().forEach(dss->dss.setSubCoverId(c.getSubCoverId()));
+								 //List<Tax> taxey = taxes.stream().map(tzx).filter(d->d!=null).collect(Collectors.toList());
+								 c.setLoadings(ds);
+								 //c.setTaxes(taxey);
+							 }
+						 }
+						 
+						 if(!endorsements.isEmpty() && !noncovers.isEmpty()) {
+							 for(Cover c:noncovers) {
+								 List<Endorsement> ds = endorsements.stream().filter(d-> d.getEndorsementforId().equals(c.getCoverId())).collect(Collectors.toList());
+								 ds.stream().forEach(dss->dss.setSubCoverId(c.getSubCoverId()));
+								 //List<Tax> taxey = taxes.stream().map(tzx).filter(d->d!=null).collect(Collectors.toList());
+								 c.setEndorsements(ds);
+								 //c.setTaxes(taxey);
+							 }
+						 }
+						 
+						 
+						 if(!noncovers.isEmpty()) {
+							 for(Cover c:noncovers) {
+								 List<Tax> taxey = taxes.stream().map(tzx).filter(d->d!=null).collect(Collectors.toList());
+								 c.setTaxes(taxey);
+							 }
+						 }
+					 }
+					 
+					 splitsub=new CoverFromFactor("Y");
+					 Map<String, List<Cover>> subcovers = covers.stream().map(splitsub).filter(d->(d!=null && !"0".equals(d.getSubCoverId()))).collect(Collectors.groupingBy(Cover::getIsSubCover));
+					 if(!subcovers.isEmpty()) {
+						 List<Cover> noncovers = subcovers.get("Y");					 //noncovers
+						 if(!discounts.isEmpty() && !noncovers.isEmpty()) {
+							 for(Cover c:noncovers) {
+								 List<Discount> ds = discounts.stream().filter(d-> d.getDiscountforId().equals(c.getCoverId())).collect(Collectors.toList());
+								 ds.stream().forEach(dss->dss.setSubCoverId(c.getSubCoverId()));
+
+								 List<Discount> dss=ds.stream().map(dx-> SerializationUtils.clone(dx)).collect(Collectors.toList());
+								// List<Tax> taxez = taxes.stream().map(tzx).filter(d->d!=null).collect(Collectors.toList());
+								 c.setDiscounts(dss);
+								// c.setTaxes(taxez);
+							 }	
+						 }
+						 
+						 if(!loadings.isEmpty() && !noncovers.isEmpty()) {
+							 for(Cover c:noncovers) {
+								 List<Loading> ds = loadings.stream().filter(d-> d.getLoadingforId().equals(c.getCoverId())).collect(Collectors.toList());
+								 ds.stream().forEach(dss->dss.setSubCoverId(c.getSubCoverId()));
+
+								 List<Loading> dss=ds.stream().map(dx-> SerializationUtils.clone(dx)).collect(Collectors.toList());
+								 c.setLoadings(dss);
+							 }	
+						 }
+						 
+						 if(!endorsements.isEmpty() && !noncovers.isEmpty()) {
+							 for(Cover c:noncovers) {
+								 List<Endorsement> ds = endorsements.stream().filter(d-> d.getEndorsementforId().equals(c.getCoverId())).collect(Collectors.toList());
+								 ds.stream().forEach(dss->dss.setSubCoverId(c.getSubCoverId()));
+								 List<Endorsement> dss=ds.stream().map(dx-> SerializationUtils.clone(dx)).collect(Collectors.toList());
+								 c.setEndorsements(dss);
+								 //c.setTaxes(taxey);
+							 }
+						 }
+						 
+						 if(!noncovers.isEmpty()) {
+							 for(Cover c:noncovers) {
+								 List<Tax> taxey = taxes.stream().map(tzx).filter(d->d!=null).collect(Collectors.toList());
+								 c.setTaxes(taxey);
+							 }
+						 }
+						 
+						 List<Cover> d = noncovers.stream().filter(SubCoverCreationUtil.distinctByKey(Cover::getCoverId)).collect(Collectors.toList());
+						 List<Cover> subcov=new ArrayList<Cover>();
+							for (Cover cover : d) {
+								 List<Cover> subcover = noncovers.stream().filter(cv-> cv.getCoverId().equals(cover.getCoverId())).collect(Collectors.toList());
+								 subcover.stream().forEach(s->s.setIsSubCover("N"));
+								 //subcover.stream().forEach(s->s.setTaxes(new ArrayList<Tax>(taxez)));
+								 Cover newcover=SerializationUtils.clone(cover);
+								 newcover.setSubcovers(subcover);
+								 newcover.setIsSubCover("Y");
+								 newcover.setSubCoverId(null);
+								 newcover.setSubCoverDesc(null);
+								 newcover.setSubCoverName(null);
+								 newcover.setDiscounts(null);
+								 newcover.setLoadings(null);
+								 newcover.setTaxes(null);
+								 subcov.add(newcover);
+							}
+							subcovers.put("Y", subcov);						
+					 }
+					 
+					 if(!nonSubcovers.isEmpty() && !subcovers.isEmpty() ) {
+						 totalcovers=subcovers.get("Y");
+						 totalcovers.addAll(nonSubcovers.get("N"));
+					 }else if(!nonSubcovers.isEmpty() && subcovers.isEmpty()  ) {
+						 totalcovers=nonSubcovers.get("N");
+					 }else if( nonSubcovers.isEmpty() && !subcovers.isEmpty()  ) {
+						 totalcovers=subcovers.get("Y");
+					 }
+					 
+					 
+					 EndtCoverCalculator calc=new EndtCoverCalculator();
+					 calc.setEngine(request,retc,commontbl,vehicles,customers,prorata,ratingutil);
+					 
+					 totalcovers.stream().forEach(calc);
+					 //remove error records
+					 totalcovers.removeIf(ll-> (ll.isNotsutable()));
+					 retc.addAll(totalcovers);
+					Comparator<Cover> comp=Comparator.comparing(Cover::getCoverageType); 
+					 retc.sort(comp);
+					 
+					 
+					 
+					 
+				}
+				try {
+					EserviceMotorDetailsSaveRes response=new EserviceMotorDetailsSaveRes();
+					response.setCoverList(retc);
+					response.setResponse("Saved Successfully");
+					response.setRequestReferenceNo(request.getRequestReferenceNo());
+					//response.setCustomerReferenceNo(req.getCustomerReferenceNo());
+					response.setVehicleId(request.getVehicleId()) ;	
+					response.setVdRefNo(request.getVdRefNo());
+					response.setCdRefNo(request.getCdRefNo());
+					response.setInsuranceId(request.getInsuranceId());
+					response.setSectionId(request.getSectionId());
+					response.setCreatedBy(request.getCreatedBy());
+					response.setProductId(request.getProductId()); 
+					response.setMsrefno(request.getMsrefno());
+					response.setUpdateas("admin");
+					//response.setUwList(referr);
+					
+					fservice.saveFactorRateRequestDetails(response);
+					
+					//Update Premium,referral
+					
+					return  response ;
+				}catch (Exception e) {
+					e.printStackTrace();
+				}		 
+		 }catch (Exception e) {
+			 e.printStackTrace();
+		}
+		return null;
+	}
 
 
 	public void loadOnetimetable(CalcEngine engine) {

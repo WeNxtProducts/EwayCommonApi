@@ -19,7 +19,7 @@ public class LoadingFromPolicy  implements Function<PolicyCoverData,Loading>{
 						 	.loadingId(t.getDiscLoadId()==null?"":t.getDiscLoadId().toString())
 						 	.loadingRate("F".equals(calctype)?"0": t.getRate()==null?"0":t.getRate().toString())
 						 	.loadingCalcType(calctype)
-						 	.loadingforId(t.getDependentCoverId()==null?"":t.getDependentCoverId().toString())
+						 	.loadingforId(t.getDiscountCoverId()==null?"":t.getDiscountCoverId().toString())
 						 	.maxAmount(t.getMinimumPremium()==null?BigDecimal.ZERO:t.getMinimumPremium())
 						 	.factorTypeId(t.getFactorTypeId()==null?"":t.getFactorTypeId().toString())
 						 	.regulatoryCode(t.getRegulatoryCode()==null?"N/A":t.getRegulatoryCode())						 

@@ -72,6 +72,7 @@ import com.maan.eway.res.EserviceBuildingsDetailsRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.res.calc.Cover;
 import com.maan.eway.res.calc.Discount;
+import com.maan.eway.res.calc.Endorsement;
 import com.maan.eway.res.calc.Loading;
 import com.maan.eway.res.calc.Tax;
 import com.maan.eway.res.calc.UWReferrals;
@@ -381,6 +382,12 @@ this.repository = repo;
 						successRes  =  saveLoadings(primaryKeys ,coverData ,   coverData.getLoadings() ,df  ) ;
 					}
 					
+					//Endt
+					if(coverData.getEndorsements()!=null && coverData.getEndorsements().size() > 0 ) {
+						successRes  =  saveEndorsements(primaryKeys ,coverData ,   coverData.getEndorsements() ,df  ) ;
+					}
+					
+					
 					
 				} else {
 					// Save SubCover Details
@@ -479,6 +486,12 @@ this.repository = repo;
 						if(coverData.getLoadings()!=null && coverData.getLoadings().size() > 0 ) {
 							successRes  =  saveLoadings(primaryKeys ,subCoverData ,   subCoverData.getLoadings() ,df ) ;
 						}	
+						//Endt
+						if(coverData.getEndorsements()!=null && coverData.getEndorsements().size() > 0 ) {
+							successRes  =  saveEndorsements(primaryKeys ,coverData ,   subCoverData.getEndorsements() ,df  ) ;
+						}
+						
+						
 					}
 				}
 				
@@ -715,14 +728,83 @@ this.repository = repo;
 			
 		}return res;
 	}
-	
+	public String saveEndorsements(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Endorsement> endorsements , DecimalFormat df ) {
+		String res = "Saved Successfully";
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			for (Endorsement lod :  endorsements ) {
+				FactorRateRequestDetails saveLod = new FactorRateRequestDetails();
+				dozerMapper.map(coverReq, saveLod);
+				saveLod.setRequestReferenceNo(primaryKeys.get("RefNo").toString() );
+				saveLod.setCoverName(lod.getEndorsementDesc());
+				saveLod.setCoverDesc(lod.getEndorsementDesc());
+				saveLod.setCurrency(coverReq.getCurrency());
+				saveLod.setExchangeRate(coverReq.getExchangeRate()==null?null : coverReq.getExchangeRate());
+				saveLod.setCompanyId(primaryKeys.get("InsuranceId").toString());
+				saveLod.setProductId(Integer.valueOf(primaryKeys.get("ProductId").toString()));
+				saveLod.setSectionId(Integer.valueOf(primaryKeys.get("SectionId").toString()));
+				saveLod.setSubCoverYn( primaryKeys.get("SubCoverYn").toString());
+				saveLod.setVehicleId(Integer.valueOf(primaryKeys.get("VehId").toString()));	
+				saveLod.setCdRefno( primaryKeys.get("CdRefNo").toString());
+				saveLod.setVdRefno( primaryKeys.get("VdRefNo").toString());
+				saveLod.setMsRefno( primaryKeys.get("MsRefNo").toString());	
+				saveLod.setEntryDate(new Date());			
+				saveLod.setCreatedBy(primaryKeys.get("CreatedBy").toString());
+				//saveLod.setSubCoverId(StringUtils.isBlank(coverReq.getSubCoverId()) ?0 : Integer.valueOf(coverReq.getSubCoverId()) );
+				saveLod.setSubCoverId(lod.getEndtCount()==null ?0 : lod.getEndtCount().intValue() );
+				saveLod.setEndtCount(lod.getEndtCount()==null ?BigDecimal.ZERO: lod.getEndtCount() );
+				saveLod.setCoverId(Integer.valueOf(coverReq.getCoverId()));
+				saveLod.setStatus("Y");
+				saveLod.setIsSelected(coverReq.getIsselected());
+				saveLod.setCoverageType("E");
+				
+				// Factor
+				saveLod.setFactorTypeId(StringUtils.isBlank(lod.getFactorTypeId())?null: new BigDecimal(lod.getFactorTypeId()));
+				//saveLod.setMinimumPremium(lod.getEndorsementAmount()==null?null: new BigDecimal(df.format(lod.getEndorsementAmount())));
+				saveLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
+				saveLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
+				saveLod.setRate(lod.getEndorsementRate()==null?null:new BigDecimal(lod.getEndorsementRate()));
+			//	saveLod.setLodingSubcoverId(lod.getSubCoverId()==null?null:Integer.valueOf(lod.getSubCoverId()));
+				saveLod.setDiscLoadId(lod.getEndorsementId()==null?null:Integer.valueOf(lod.getEndorsementId()));
+				saveLod.setDependentCoverYn("N");
+				saveLod.setDependentCoverId(null);
+				saveLod.setCalcType(lod.getEndorsementCalcType());
+				saveLod.setCoverName(lod.getEndorsementDesc());
+				saveLod.setCoverDesc(lod.getEndorsementDesc());
+				saveLod.setTaxId(0);
+				
+				
+				saveLod.setPremiumAfterDiscountFc(lod.getPremiumAfterDiscount()==null ? null : new BigDecimal(df.format( lod.getPremiumAfterDiscount())));
+				saveLod.setPremiumBeforeDiscountFc(lod.getPremiumBeforeDiscount()==null ? null : new BigDecimal(df.format(lod.getPremiumBeforeDiscount())));
+				saveLod.setPremiumExcludedTaxFc(lod.getPremiumExcluedTax()==null ? null : new BigDecimal(df.format(lod.getPremiumExcluedTax())));
+				saveLod.setPremiumIncludedTaxFc(lod.getPremiumIncludedTax()==null ? null : new BigDecimal(df.format(lod.getPremiumIncludedTax())));
+				saveLod.setPremiumAfterDiscountLc(lod.getPremiumAfterDiscountLC()==null ? null : new BigDecimal(df.format(lod.getPremiumAfterDiscountLC())));
+				saveLod.setPremiumBeforeDiscountLc(lod.getPremiumBeforeDiscountLC()==null ? null : new BigDecimal(df.format(lod.getPremiumBeforeDiscountLC())));
+				saveLod.setPremiumExcludedTaxLc(lod.getPremiumExcluedTaxLC()==null ? null : new BigDecimal(df.format(lod.getPremiumExcluedTaxLC())));
+				saveLod.setPremiumIncludedTaxLc(lod.getPremiumIncludedTaxLC()==null ? null : new BigDecimal(df.format(lod.getPremiumIncludedTaxLC())));
+				saveLod.setDiscountCoverId(StringUtils.isBlank(lod.getEndorsementforId())?0:Integer.parseInt(lod.getEndorsementforId()));
+				 
+				
+				
+				repository.saveAndFlush(saveLod);
+				
+			}
+			res = "Success" ;
+		} catch(Exception e){
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			res = "Failed";
+			return res;
+			
+		}return res;
+	}
 	public String saveLoadings(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Loading> lodings , DecimalFormat df ) {
 		String res = "Saved Successfully";
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			for (Loading lod :  lodings ) {
 				FactorRateRequestDetails saveLod = new FactorRateRequestDetails();
-				dozerMapper.map(coverReq, lod);
+				dozerMapper.map(coverReq, saveLod);
 				saveLod.setRequestReferenceNo(primaryKeys.get("RefNo").toString() );
 				saveLod.setCoverName(lod.getLoadingDesc());
 				saveLod.setCoverDesc(lod.getLoadingDesc());
@@ -752,8 +834,8 @@ this.repository = repo;
 				saveLod.setRate(lod.getLoadingRate()==null?null:new BigDecimal(lod.getLoadingRate()));
 			//	saveLod.setLodingSubcoverId(lod.getSubCoverId()==null?null:Integer.valueOf(lod.getSubCoverId()));
 				saveLod.setDiscLoadId(lod.getLoadingId()==null?null:Integer.valueOf(lod.getLoadingId()));
-				saveLod.setDependentCoverYn("Y");
-				saveLod.setDependentCoverId(lod.getLoadingforId()==null?null:Integer.valueOf(lod.getLoadingforId()));
+				saveLod.setDependentCoverYn("N");
+				saveLod.setDependentCoverId(null);
 				saveLod.setCalcType(lod.getLoadingCalcType());
 				saveLod.setCoverName(lod.getLoadingDesc());
 				saveLod.setCoverDesc(lod.getLoadingDesc());
@@ -762,7 +844,7 @@ this.repository = repo;
 				saveLod.setPremiumBeforeDiscountFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
 				saveLod.setPremiumExcludedTaxFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
 				saveLod.setPremiumIncludedTaxFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
-				
+				saveLod.setDiscountCoverId(StringUtils.isBlank(lod.getLoadingforId())?0:Integer.parseInt(lod.getLoadingforId()));
 				
 				repository.saveAndFlush(saveLod);
 				
@@ -802,7 +884,7 @@ this.repository = repo;
 				saveDiscounts.setCreatedBy(primaryKeys.get("CreatedBy").toString());
 				saveDiscounts.setSubCoverId(StringUtils.isBlank(coverReq.getSubCoverId()) ?0 : Integer.valueOf(coverReq.getSubCoverId()) );
 				saveDiscounts.setStatus("Y");
-				saveDiscounts.setCoverageType(disc.getCoverAgeType() );
+				saveDiscounts.setCoverageType(StringUtils.isBlank(disc.getCoverAgeType())?"D":disc.getCoverAgeType());
 				saveDiscounts.setMinimumPremium(disc.getMaxAmount()==null ? null : new BigDecimal(df.format(disc.getMaxAmount())));
 				saveDiscounts.setSumInsured(null);
 				saveDiscounts.setRate(disc.getDiscountRate()==null ? null :new BigDecimal(disc.getDiscountRate()));
@@ -810,13 +892,13 @@ this.repository = repo;
 				saveDiscounts.setPremiumBeforeDiscountFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
 				saveDiscounts.setPremiumExcludedTaxFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
 				saveDiscounts.setPremiumIncludedTaxFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
-				saveDiscounts.setDependentCoverYn("Y");
-				saveDiscounts.setDependentCoverId(saveDiscounts.getCoverId());
+				saveDiscounts.setDependentCoverYn("N");
+				saveDiscounts.setDependentCoverId(null);
 				saveDiscounts.setFactorTypeId(StringUtils.isBlank(disc.getFactorTypeId())?null :new BigDecimal(disc.getFactorTypeId()) );
 				saveDiscounts.setIsSelected(coverReq.getIsselected() );
 				saveDiscounts.setCalcType(saveDiscounts.getCalcType());
 				saveDiscounts.setTaxId(0);
-				
+				saveDiscounts.setDiscountCoverId(StringUtils.isBlank(disc.getDiscountforId())?0:Integer.parseInt(disc.getDiscountforId()));
 				
 				repository.saveAndFlush(saveDiscounts);
 				

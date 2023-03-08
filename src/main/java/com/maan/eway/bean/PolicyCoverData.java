@@ -252,6 +252,9 @@ private static final long serialVersionUID = 1L;
  
     @Column(name="DISCOUNT_COVER_ID")
     private Integer    discountCoverId;
+ 
+    @Column(name="ENDT_COUNT")
+    private BigDecimal     endtCount ; 
     
     //--- ENTITY LINKS ( RELATIONSHIP )
 
