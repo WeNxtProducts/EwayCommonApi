@@ -803,8 +803,8 @@ private BuildingDetailsRepository BuildingRepo;
 			
 			if(StringUtils.isBlank(req.getStatus())) {
 				errors.add(new Error("02","ReferralStatus","Please Select Referral Status"));
-			} else if ( !(req.getStatus().equalsIgnoreCase("RP") || req.getStatus().equalsIgnoreCase("RA") || req.getStatus().equalsIgnoreCase("RR")) ) {
-				errors.add(new Error("02","ReferralStatus","Please Select Valid Referral Status Accept/Reject/Pending"));
+			} else if ( !(req.getStatus().equalsIgnoreCase("RP") || req.getStatus().equalsIgnoreCase("RA") || req.getStatus().equalsIgnoreCase("RR") ||  req.getStatus().equalsIgnoreCase("RE"))) {
+				errors.add(new Error("02","ReferralStatus","Please Select Valid Referral Status Accept/Reject/Pending/Re-Quote"));
 			} else if ( req.getStatus().equalsIgnoreCase("RR")  ) {
 				if(StringUtils.isBlank(req.getRejectReason())) {
 					errors.add(new Error("03","Reject Reason","Please Enter Reject Reason"));
@@ -812,7 +812,7 @@ private BuildingDetailsRepository BuildingRepo;
 				
 			} 
 			
-			if(StringUtils.isNotBlank(req.getStatus()) && (req.getStatus().equalsIgnoreCase("RA") || req.getStatus().equalsIgnoreCase("RR") ) &&  StringUtils.isBlank(req.getAdminRemarks())) {
+			if(StringUtils.isNotBlank(req.getStatus()) && (req.getStatus().equalsIgnoreCase("RA") || req.getStatus().equalsIgnoreCase("RR") || req.getStatus().equalsIgnoreCase("RE")) &&  StringUtils.isBlank(req.getAdminRemarks())) {
 				errors.add(new Error("03","Admin Remarks","Please Enter Admin Remarks"));
 			}
 			
@@ -1391,6 +1391,11 @@ private BuildingDetailsRepository BuildingRepo;
 				updateRes.setQuoteNo("");
 				updateRes.setCustomerId("");
 				updateRes.setRequestReferenceNo(req.getRequestReferenceNo());
+			}  else if (req.getStatus().equalsIgnoreCase("RE") ) {
+				updateRes.setResponse("Referal Re-Quote");
+				updateRes.setQuoteNo("");
+				updateRes.setCustomerId("");
+				updateRes.setRequestReferenceNo(req.getRequestReferenceNo());
 			} 
 			
 			// Update Mot Status 
@@ -1478,7 +1483,12 @@ private BuildingDetailsRepository BuildingRepo;
 				updateRes.setQuoteNo("");
 				updateRes.setCustomerId("");
 				updateRes.setRequestReferenceNo(req.getRequestReferenceNo());
-			} 
+			}   else if (req.getStatus().equalsIgnoreCase("RE") ) {
+				updateRes.setResponse("Referal Re-Quote");
+				updateRes.setQuoteNo("");
+				updateRes.setCustomerId("");
+				updateRes.setRequestReferenceNo(req.getRequestReferenceNo());
+			}
 			
 			// Update Mot Status 
 			for ( EserviceCommonDetails com : commonDatas ) {
@@ -1565,6 +1575,11 @@ private BuildingDetailsRepository BuildingRepo;
 				updateRes.setQuoteNo("");
 				updateRes.setCustomerId("");
 				updateRes.setRequestReferenceNo(req.getRequestReferenceNo());
+			}  else if (req.getStatus().equalsIgnoreCase("RE") ) {
+				updateRes.setResponse("Referal Re-Quote");
+				updateRes.setQuoteNo("");
+				updateRes.setCustomerId("");
+				updateRes.setRequestReferenceNo(req.getRequestReferenceNo());
 			} 
 			
 			// Update Travel Status 
@@ -1648,7 +1663,12 @@ private BuildingDetailsRepository BuildingRepo;
 				updateRes.setQuoteNo("");
 				updateRes.setCustomerId("");
 				updateRes.setRequestReferenceNo(req.getRequestReferenceNo());
-			} 
+			}   else if (req.getStatus().equalsIgnoreCase("RE") ) {
+				updateRes.setResponse("Referal Re-Quote");
+				updateRes.setQuoteNo("");
+				updateRes.setCustomerId("");
+				updateRes.setRequestReferenceNo(req.getRequestReferenceNo());
+			}
 			
 			// Update Mot Status 
 			for ( EserviceBuildingDetails build : buildingDatas ) {

@@ -48,4 +48,15 @@ public class LovDetailsGetRes {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("UpdatedDate")
     private Date       updatedDate;
+	
+
+	@JsonProperty("CoreAppCode")
+	private String coreAppCode;
+	
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
+	
+	
+	@JsonProperty("Remarks")
+	private String remarks;
 }

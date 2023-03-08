@@ -164,33 +164,35 @@ this.repository = repo;
 				errorList.add(new Error("02", "ItemCode", "Please Enter ItemCode"));
 			}else if (req.getItemCode().length() > 20){
 				errorList.add(new Error("02","ItemCode", "Please Enter ItemCode Under 20 Characters")); 
-			}else if (StringUtils.isBlank(req.getItemId())  && StringUtils.isNotBlank(req.getItemCode()) && StringUtils.isNotBlank(req.getItemType()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
-				List<ListItemValue> lovList = getItemCodeExistDetails( req.getItemCode() ,req.getItemType() , req.getInsuranceId() , req.getBranchCode());
-				if (lovList.size()>0 ) {
-					errorList.add(new Error("01", "ItemCode", "This ItemCode Already Exist For This L.O.V"));
-				}
-			}else if (StringUtils.isNotBlank(req.getItemId())  &&  StringUtils.isNotBlank(req.getItemCode()) && StringUtils.isNotBlank(req.getItemType()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
-				List<ListItemValue> lovList = getItemCodeExistDetails( req.getItemCode() ,req.getItemType() , req.getInsuranceId() , req.getBranchCode());
-				if (lovList.size()>0 &&  (! req.getItemId().equalsIgnoreCase(lovList.get(0).getItemId().toString()))  ) {
-					errorList.add(new Error("01", "ItemCode", "This ItemCode Already Exist For This L.O.V"));
-				}
 			}
+//			else if (StringUtils.isBlank(req.getItemId())  && StringUtils.isNotBlank(req.getItemCode()) && StringUtils.isNotBlank(req.getItemType()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
+//				List<ListItemValue> lovList = getItemCodeExistDetails( req.getItemCode() ,req.getItemType() , req.getInsuranceId() , req.getBranchCode());
+//				if (lovList.size()>0 && (! req.getItemId().equalsIgnoreCase(lovList.get(0).getItemId().toString()))) {
+//					errorList.add(new Error("01", "ItemCode", "This ItemCode Already Exist For This L.O.V"));
+//				}
+//			}else if (StringUtils.isNotBlank(req.getItemId())  &&  StringUtils.isNotBlank(req.getItemCode()) && StringUtils.isNotBlank(req.getItemType()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
+//				List<ListItemValue> lovList = getItemCodeExistDetails( req.getItemCode() ,req.getItemType() , req.getInsuranceId() , req.getBranchCode());
+//				if (lovList.size()>0 &&  (! req.getItemId().equalsIgnoreCase(lovList.get(0).getItemId().toString()))  ) {
+//					errorList.add(new Error("01", "ItemCode", "This ItemCode Already Exist For This L.O.V"));
+//				}
+//			}
 			
 			if (StringUtils.isBlank(req.getItemValue())) {
 				errorList.add(new Error("02", "ItemCode", "Please Enter ItemCode"));
 			}else if (req.getItemCode().length() > 20){
 				errorList.add(new Error("02","ItemCode", "Please Enter ItemCode Under 20 Characters")); 
-			}else if (StringUtils.isBlank(req.getItemId()) && StringUtils.isNotBlank(req.getItemValue()) && StringUtils.isNotBlank(req.getItemType()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
-				List<ListItemValue> lovList = getItemValueExistDetails( req.getItemValue() ,req.getItemType() , req.getInsuranceId() , req.getBranchCode());
-				if (lovList.size()>0 ) {
-					errorList.add(new Error("01", "ItemCode", "This ItemCode Already Exist For This L.O.V"));
-				}
-			}else if (StringUtils.isNotBlank(req.getItemId()) && StringUtils.isNotBlank(req.getItemValue()) && StringUtils.isNotBlank(req.getItemType()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
-				List<ListItemValue> lovList = getItemValueExistDetails( req.getItemValue() ,req.getItemType() , req.getInsuranceId() , req.getBranchCode());
-				if (lovList.size()>0 &&  (! req.getItemId().equalsIgnoreCase(lovList.get(0).getItemId().toString()))   ) {
-					errorList.add(new Error("01", "ItemCode", "This ItemCode Already Exist For This L.O.V"));
-				}
 			}
+//			else if (StringUtils.isBlank(req.getItemId()) && StringUtils.isNotBlank(req.getItemValue()) && StringUtils.isNotBlank(req.getItemType()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
+//				List<ListItemValue> lovList = getItemValueExistDetails(req.getItemCode() , req.getItemValue() ,req.getItemType() , req.getInsuranceId() , req.getBranchCode());
+//				if (lovList.size()>0 && lovList.get(0).getItemCode().equalsIgnoreCase(req.getItemCode())   ) {
+//					errorList.add(new Error("01", "ItemCode", "This ItemCode Already Exist For This L.O.V"));
+//				}
+//			}else if (StringUtils.isNotBlank(req.getItemId()) && StringUtils.isNotBlank(req.getItemValue()) && StringUtils.isNotBlank(req.getItemType()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
+//				List<ListItemValue> lovList = getItemValueExistDetails(req.getItemCode() , req.getItemValue() ,req.getItemType() , req.getInsuranceId() , req.getBranchCode());
+//				if (lovList.size()>0 &&  (! req.getItemId().equalsIgnoreCase(lovList.get(0).getItemId().toString()))   ) {
+//					errorList.add(new Error("01", "ItemCode", "This ItemCode Already Exist For This L.O.V"));
+//				}
+//			}
 			
 			if (StringUtils.isBlank(req.getInsuranceId())) {
 				errorList.add(new Error("02", "InsuranceId", "Please Enter InsuranceId"));
@@ -201,7 +203,7 @@ this.repository = repo;
 			}
 
 			if (StringUtils.isBlank(req.getRemarks())) {
-				errorList.add(new Error("04", "Remarks", "Please Select Remarks "));
+				errorList.add(new Error("04", "Remarks", "Please Enter Remarks "));
 			}else if (req.getRemarks().length() > 100){
 				errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
 			}
@@ -212,10 +214,10 @@ this.repository = repo;
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);;
 			today = cal.getTime();
 			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start"));
+				errorList.add(new Error("05", "EffectiveDateStart", "Please Select Effective Date Start"));
 
 			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
+				errorList.add(new Error("05", "EffectiveDateStart", "Please Select Effective Date Start as Future Date"));
 			}
 			//Status Validation
 			if (StringUtils.isBlank(req.getStatus())) {
@@ -227,17 +229,17 @@ this.repository = repo;
 			}
 
 			if (StringUtils.isBlank(req.getCoreAppCode())) {
-				errorList.add(new Error("07", "CoreAppCode", "Please Select CoreAppCode"));
+				errorList.add(new Error("07", "CoreAppCode", "Please Enter CoreAppCode"));
 			}else if (req.getCoreAppCode().length() > 20){
 				errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
 			}
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
-				errorList.add(new Error("08", "RegulatoryCode", "Please Select RegulatoryCode"));
+				errorList.add(new Error("08", "RegulatoryCode", "Please Enter RegulatoryCode"));
 			}else if (req.getRegulatoryCode().length() > 20){
 				errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters")); 
 			}
 			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
+				errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy"));
 			}else if (req.getCreatedBy().length() > 100){
 				errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
 			}		
@@ -295,7 +297,7 @@ this.repository = repo;
 		}
 
 	 
-	 List<ListItemValue> getItemValueExistDetails(String itemValue ,String itemType , String InsuranceId , String branchCode ) {
+	 List<ListItemValue> getItemValueExistDetails(String itemCode , String itemValue ,String itemType , String InsuranceId , String branchCode ) {
 			List<ListItemValue> list = new ArrayList<ListItemValue>();
 			try {
 				Date today = new Date();
@@ -326,8 +328,9 @@ this.repository = repo;
 				Predicate n6 = cb.equal(b.get("branchCode"), "99999");
 				Predicate n7 = cb.or(n3,n4);
 				Predicate n8 = cb.or(n5,n6);
+				Predicate n10 = cb.equal( b.get("itemCode"),itemCode );
 				Predicate n9 = cb.equal(cb.lower( b.get("itemValue")),itemValue.toLowerCase() );
-				query.where(n1,n2,n7,n8,n9);
+				query.where(n1,n2,n7,n8,n9,n10);
 				
 				// Get Result
 				TypedQuery<ListItemValue> result = em.createQuery(query);
