@@ -7,6 +7,7 @@ package com.maan.eway.bean;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -48,6 +49,10 @@ public class FactorRateRequestDetailsId implements Serializable {
     private Integer    discLoadId ;
     
     private Integer    taxId ;
+    
+    private Integer    discountCoverId;
+    
+    private BigDecimal     endtCount ;
     
      
 }

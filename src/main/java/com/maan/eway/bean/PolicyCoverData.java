@@ -90,8 +90,15 @@ private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name="TAX_ID", nullable=false)
-    
     private Integer    taxId ;
+    
+    @Id
+    @Column(name="DISCOUNT_COVER_ID")
+    private Integer    discountCoverId;
+     
+    @Id
+    @Column(name="ENDT_COUNT")
+    private BigDecimal     endtCount ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="CD_REFNO", nullable=false, length=20)
@@ -250,11 +257,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="PRO_RATA_YN")
     private String    proRataYn ;
  
-    @Column(name="DISCOUNT_COVER_ID")
-    private Integer    discountCoverId;
- 
-    @Column(name="ENDT_COUNT")
-    private BigDecimal     endtCount ; 
     
     //--- ENTITY LINKS ( RELATIONSHIP )
 
