@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -37,6 +38,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
@@ -432,177 +434,64 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 	public List<Tuple> loadNotificationPending(Integer notifNo) {
 		 List<Tuple> list = new ArrayList<Tuple>();
 		try {
-			// Criteria
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
 			
-
-			// Find All
-			Root<NotifTransactionDetails> c = query.from(NotifTransactionDetails.class);
-
-			// Select
-			//query.select(c.get("").alias(""));
-//			 private Integer    notifNo ;
+//			CriteriaBuilder cb = em.getCriteriaBuilder();
+//			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+//			// Find All
+//			Root<NotifTransactionDetails> b = query.from(NotifTransactionDetails.class);
+//			query.multiselect( b.get("notifNo").alias("notifNo") ,
 //
-//			    //--- ENTITY DATA FIELDS 
-//			    @Column(name="Customer_Name", length=20)
-//			    private String     customerName ;
+//   			    b.get("customerName").alias("customerName") ; 
+//			    b.get("customerMailid").alias("customerMailid"),
+//			    b.get("customerPhoneNo").alias("customerPhoneNo"),
+//			    b.get("customerPhoneCode").alias("customerPhoneCode"),
+//			    b.get("customerMessengerCode").alias("customerMessengerCode"),
+//			    b.get("customerMessengerPhone").alias("customerMessengerPhone"),
+//			    b.get("brokerName").alias("brokerName"),
+//			    b.get("brokerCompanyName").alias("brokerCompanyName"),
+//			    b.get("brokerMailId").alias("brokerMailId"),
+//			    b.get("brokerPhoneNo").alias("brokerPhoneNo"),
+//			    b.get("brokerPhoneCode").alias("brokerPhoneCode"),
+//			    b.get("brokerMessengerCode").alias("brokerMessengerCode"),
+//			    b.get("brokerMessengerPhone").alias("brokerMessengerPhone"),
+//			    b.get("uwName").alias("uwName"),
+//			    b.get("uwMailid").alias("uwMailid"),
+//			    b.get("uwPhonecode").alias("uwPhonecode"),
+//			    b.get("uwPhoneNo").alias("uwPhoneNo"),
+//			    b.get("uwMessengerCode").alias("uwMessengerCode"),
+//			    b.get("uwMessengerPhone").alias("uwMessengerPhone"),
+//			    b.get("companyName").alias("companyName"),
+//			    b.get("productName").alias("productName"),
+//			    b.get("sectionName").alias("sectionName"),
+//			    b.get("statusMessage").alias("statusMessage"),
+//			    b.get("otp").alias("otp"),
+//			    b.get("policyNo").alias("policyNo"),
+//			    b.get("quoteNo").alias("quoteNo"),
+//			    b.get("notifDescription").alias("notifDescription"),
+//			    b.get("notifTemplatename").alias("notifTemplatename"),
+//			    b.get("entryDate").alias("entryDate"),
+//			    b.get("notifcationPushDate").alias("notifcationPushDate"),
+//			    b.get("notifcationEndDate").alias("notifcationEndDate"),
+//			    b.get("notifPushedStatus").alias(),
+//			    b.get("notifPriority").alias(),
+//			    b.get("tinyUrl").alias(),
+//			    b.get("companyid").alias(),
+//			    b.get("productid").alias(),
+//			    b.get("companyAddress").alias(),
+//			    b.get("companyLogo").alias(),
+//			    b.get("attachFilePath").alias(),
+//			    b.get("pushedBy").alias(),
+//			
+//			// Where
+//			Predicate n1 = cb.equal(b.get("notifNo"), notifNo);
+//			
+//			query.where(n1, n2,n3, n4).orderBy(orderList);
 //
-//			    @Column(name="Customer_Mail_Id", length=20)
-//			    private String     customerMailid ;
-//
-//			    @Column(name="Customer_Phone_No")
-//			    private BigDecimal customerPhoneNo ;
-//
-//			    @Column(name="Customer_Phone_Code")
-//			    private Integer    customerPhoneCode ;
-//
-//			    @Column(name="Customer_Messenger_Code")
-//			    private Integer    customerMessengerCode ;
-//
-//			    @Column(name="Customer_Messenger_Phone")
-//			    private BigDecimal customerMessengerPhone ;
-//
-//			    @Column(name="Broker_Name", length=20)
-//			    private String     brokerName ;
-//
-//			    @Column(name="Broker_Company_Name", length=20)
-//			    private String     brokerCompanyName ;
-//
-//			    @Column(name="Broker_Mail_Id", length=20)
-//			    private String     brokerMailId ;
-//
-//			    @Column(name="Broker_Phone_No")
-//			    private BigDecimal brokerPhoneNo ;
-//
-//			    @Column(name="Broker_Phone_Code")
-//			    private Integer    brokerPhoneCode ;
-//
-//			    @Column(name="Broker_Messenger_Code")
-//			    private Integer    brokerMessengerCode ;
-//
-//			    @Column(name="Broker_Messenger_Phone")
-//			    private BigDecimal brokerMessengerPhone ;
-//
-//			    @Column(name="UW_name", length=20)
-//			    private String     uwName ;
-//
-//			    @Column(name="uw_mail_id", length=20)
-//			    private String     uwMailid ;
-//
-//			    @Column(name="UW_Phone_Code")
-//			    private Integer    uwPhonecode ;
-//
-//			    @Column(name="UW_Phone_No")
-//			    private BigDecimal uwPhoneNo ;
-//
-//			    @Column(name="UW_messenger_code")
-//			    private Integer    uwMessengerCode ;
-//
-//			    @Column(name="UW_messenger_phone")
-//			    private BigDecimal uwMessengerPhone ;
-//
-//			    @Column(name="Company_Name", length=20)
-//			    private String     companyName ;
-//
-//			    @Column(name="Product_Name", length=20)
-//			    private String     productName ;
-//
-//			    @Column(name="Section_Name", length=20)
-//			    private String     sectionName ;
-//
-//			    @Column(name="Status_message", length=20)
-//			    private String     statusMessage ;
-//
-//			    @Column(name="OTP")
-//			    private Integer    otp ;
-//
-//			    @Column(name="Policy_No")
-//			    private String policyNo ;
-//
-//			    @Column(name="Quote_No")
-//			    private String quoteNo ;
-//
-//			    @Column(name="Notif_Description", length=100)
-//			    private String     notifDescription ;
-//
-//			    @Column(name="notif_template_name", length=20)
-//			    private String     notifTemplatename ;
-//
-//			    @Temporal(TemporalType.TIMESTAMP)
-//			    @Column(name="Entry_Date")
-//			    private Date       entryDate ;
-//
-//			    @Temporal(TemporalType.TIMESTAMP)
-//			    @Column(name="Notifcation_Push_date")
-//			    private Date       notifcationPushDate ;
-//			    
-//			    @Temporal(TemporalType.TIMESTAMP)
-//			    @Column(name="Notifcation_End_date")
-//			    private Date       notifcationEndDate ;
-//
-//			    @Column(name="Notif_pushed_status", length=20)
-//			    private String     notifPushedStatus ;
-//
-//			    @Column(name="Notif_Priority", nullable=false)
-//			    private Integer    notifPriority ;
-//
-//			    @Column(name="Tiny_URL", length=15)
-//			    private String     tinyUrl ;
-//
-//			    @Column(name="company_id", nullable=false, length=15)
-//			    private String     companyid ;
-//
-//			    @Column(name="product_id", nullable=false)
-//			    private Integer    productid ;
-//
-//			    @Column(name="company_Address")
-//			    private String companyAddress;
-//			    @Column(name="company_Logo")
-//			    private String companyLogo;
-//			    //--- ENTITY LINKS ( RELATIONSHIP )
-//			    @Column(name="attach_file_path")
-//			    private String attachFilePath;
-//			    
-//			    @Column(name="PUSHED_BY")
-//			    private String pushedBy;
-			// Order By
-			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("notifTemplatename")));
-    
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<NotifTemplateMaster> ocpm1 = effectiveDate.from(NotifTemplateMaster.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate a1 = cb.equal(c.get("notifTemplateCode"), ocpm1.get("notifTemplateCode"));
-		//	Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			Predicate a3 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
-			Predicate a4 = cb.equal(c.get("productId"), ocpm1.get("productId"));
-			effectiveDate.where(a1);// a2, a3, a4);
-			
-			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
-			Root<NotifTemplateMaster> ocpm2 = effectiveDate2.from(NotifTemplateMaster.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-			Predicate a6 = cb.equal(c.get("notifTemplateCode"), ocpm2.get("notifTemplateCode"));
-			Predicate a7 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
-			Predicate a8 = cb.equal(c.get("productId"), ocpm2.get("productId"));
-			//Predicate a9 = cb.lessThanOrEqualTo(ocpm2.get("effectiveDateStart"), todayEnd);
-		//	effectiveDate2.where(a6, a7, a8 ,a9);
-
-			// Where
-			Predicate n1 = cb.equal(c.get("status"), "Y");
-			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-		//	Predicate n3 = cb.equal(c.get("companyId"), req.getInsuranceId());
-		//	Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
-			Predicate n5 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-		//	Predicate n6 = cb.equal(c.get("notifTemplateCode"), req.getNotifTemplateCode() );
-			
-		//	query.where(n1, n2, n3,n4, n5, n6).orderBy(orderList);
-
-			// Get Result
-		///	TypedQuery<NotifTemplateMaster> result = em.createQuery(query);
-		//	data = result.getResultList().get(0) ;
+//			// Get Result
+//			TypedQuery<CityMaster> result = em.createQuery(query);
+//			list = result.getResultList();
+//			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCityId()))).collect(Collectors.toList());
+//			list.sort(Comparator.comparing(CityMaster :: getCityName ));
 		}catch (Exception e) {
 			e.printStackTrace();	
 		}

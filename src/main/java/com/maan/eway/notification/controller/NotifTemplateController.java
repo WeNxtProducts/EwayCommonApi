@@ -58,7 +58,7 @@ public class NotifTemplateController {
 		
 		
 		
-		@PostMapping("/get/framedmailtemplate")
+		@PostMapping("/getmailtemplate")
 		@ApiOperation(value = "This method is to Get Framed Mail Template Details")
 		public ResponseEntity<CommonRes> getMailTemplate(@RequestBody NotifTemplateGetReq req) {
 
@@ -83,7 +83,7 @@ public class NotifTemplateController {
 			}
 		}
 		
-		@PostMapping("/get/framedsmstemplate")
+		@PostMapping("/getsmstemplate")
 		@ApiOperation(value = "This method is to Get Framed SMS Template Details")
 		public ResponseEntity<CommonRes> getSmsTemplate(@RequestBody NotifTemplateGetReq req) {
 

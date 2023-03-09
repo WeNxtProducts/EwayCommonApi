@@ -347,7 +347,8 @@ this.repository = repo;
 //						saveCover.setTax3(coverData.getTaxes().get(2).getTaxAmount()==null ? null : Double.valueOf(df.format(coverData.getTaxes().get(2).getTaxAmount())) );
 //						
 //					}
-					
+					saveCover.setDiscountCoverId(0) ;
+					saveCover.setEndtCount(BigDecimal.ZERO );
 					repository.saveAndFlush(saveCover);
 					premiumLc = premiumLc + (saveCover.getPremiumExcludedTaxLc()==null ? 0D :Double.valueOf(saveCover.getPremiumExcludedTaxLc().toString()) );
 					premiumFc = premiumFc + (saveCover.getPremiumExcludedTaxFc()==null ? 0D :Double.valueOf(saveCover.getPremiumExcludedTaxFc().toString()) );
@@ -458,7 +459,9 @@ this.repository = repo;
 						premiumFc = premiumFc + (saveSubCover.getPremiumExcludedTaxFc()==null ? 0D :Double.valueOf(saveSubCover.getPremiumExcludedTaxFc().toString()));
 						overAllPremiumLc = overAllPremiumLc + (saveSubCover.getPremiumIncludedTaxLc()==null ? 0D :Double.valueOf(saveSubCover.getPremiumIncludedTaxLc().toString()));
 						overAllPremiumFc = overAllPremiumFc + (saveSubCover.getPremiumIncludedTaxFc()==null ? 0D :Double.valueOf(saveSubCover.getPremiumIncludedTaxFc().toString()));
-					
+						
+						saveSubCover.setDiscountCoverId(0) ;
+						saveSubCover.setEndtCount(BigDecimal.ZERO );
 						repository.saveAndFlush(saveSubCover);
 						Map<String,Object>  primaryKeys = new HashMap<String,Object>();
 						primaryKeys.put("RefNo" , req.getRequestReferenceNo());
@@ -716,6 +719,8 @@ this.repository = repo;
 				saveTax.setTaxRate(tax.getTaxRate()==null?null :new BigDecimal(tax.getTaxRate()) );
 				saveTax.setIsTaxExtempted(tax.getIsTaxExempted());
 				saveTax.setEndtCount(tax.getEndtTypeCount()==null?BigDecimal.ZERO:tax.getEndtTypeCount());
+				saveTax.setDiscountCoverId(0);
+
 				repository.saveAndFlush(saveTax);
 				
 			}
@@ -851,7 +856,7 @@ this.repository = repo;
 				saveLod.setPremiumExcludedTaxFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
 				saveLod.setPremiumIncludedTaxFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
 				saveLod.setDiscountCoverId(StringUtils.isBlank(lod.getLoadingforId())?0:Integer.parseInt(lod.getLoadingforId()));
-				
+				saveLod.setEndtCount(BigDecimal.ZERO);
 				repository.saveAndFlush(saveLod);
 				
 			}
@@ -905,7 +910,7 @@ this.repository = repo;
 				saveDiscounts.setCalcType(saveDiscounts.getCalcType());
 				saveDiscounts.setTaxId(0);
 				saveDiscounts.setDiscountCoverId(StringUtils.isBlank(disc.getDiscountforId())?0:Integer.parseInt(disc.getDiscountforId()));
-				
+				saveDiscounts.setEndtCount(BigDecimal.ZERO );
 				repository.saveAndFlush(saveDiscounts);
 				
 			}
