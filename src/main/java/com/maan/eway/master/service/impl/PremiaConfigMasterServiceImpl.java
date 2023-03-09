@@ -355,7 +355,7 @@ public SuccessRes insertPremiaConfig(PremiaConfigMasterSaveReq req) {
 		saveData.setAmendId(amendId);
 		saveData.setBranchCode(req.getBranchCode());
 		saveData.setProductId(req.getProductId());
-		saveData.setSectionId(req.getSectionId());
+		saveData.setSectionId(req.getSectionId()==null?"99999":req.getSectionId());
 		saveData.setQueryKey(StringUtils.isBlank(req.getQueryKey())?"": req.getQueryKey());
 		String key = "";
 		List<String> keys = req.getSourceTableName();
@@ -427,8 +427,9 @@ public PremiaConfigMasterRes getPremiaConfig(PremiaConfigMasterGetReq req) {
 		Predicate n4 = cb.equal(b.get("premiaId"), req.getPremiaId());
 		Predicate n5 = cb.equal(b.get("productId"), req.getProductId());
 		Predicate n6 = cb.equal(b.get("sectionId"), req.getSectionId());
-					
-		query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
+		Predicate n7 = cb.equal(b.get("sectionId"),"99999");
+		Predicate n8 = cb.or(n6,n7);			
+		query.where(n1,n2,n3,n4,n5,n8).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<PremiaConfigMaster> result = em.createQuery(query);
@@ -444,7 +445,7 @@ public PremiaConfigMasterRes getPremiaConfig(PremiaConfigMasterGetReq req) {
 		res.setCompanyId(list.get(0).getCompanyId());
 		res.setBranchCode(list.get(0).getBranchCode());
 		res.setProductId(list.get(0).getProductId());
-		res.setSectionId(list.get(0).getSectionId());
+		res.setSectionId(list.get(0).getSectionId()==null?"":list.get(0).getSectionId());
 		res.setStatus(list.get(0).getStatus());		
 		res.setAmendId(list.get(0).getAmendId().toString());
 		res.setCreatedBy(list.get(0).getCreatedBy());
@@ -540,7 +541,7 @@ public List<PremiaConfigMasterRes> getallPremiaConfig(PremiaConfigMasterGetAllRe
 		res.setCompanyId(data.getCompanyId());
 		res.setBranchCode(data.getBranchCode());
 		res.setProductId(data.getProductId());
-		res.setSectionId(data.getSectionId());
+		res.setSectionId(data.getSectionId()==null?"":data.getSectionId());
 		res.setStatus(data.getStatus());		
 		res.setAmendId(data.getAmendId().toString());
 		res.setCreatedBy(data.getCreatedBy());
@@ -635,7 +636,7 @@ public List<PremiaConfigMasterRes> getactivePremiaConfig(PremiaConfigMasterGetAl
 		res.setCompanyId(data.getCompanyId());
 		res.setBranchCode(data.getBranchCode());
 		res.setProductId(data.getProductId());
-		res.setSectionId(data.getSectionId());
+		res.setSectionId(data.getSectionId()==null?"": data.getSectionId());
 		res.setStatus(data.getStatus());		
 		res.setAmendId(data.getAmendId().toString());
 		res.setCreatedBy(data.getCreatedBy());
@@ -712,8 +713,10 @@ public SuccessRes changeStatusPremiaConfig(PremiaConfigMasterChangeStatusReq req
 		Predicate n5 = cb.equal(b.get("productId"),req.getProductId());
 		Predicate n6 = cb.equal(b.get("sectionId"),req.getSectionId());
 		Predicate n7 = cb.equal(b.get("premiaId"),req.getPremiaId());
+		Predicate n8 = cb.equal(b.get("sectionId"),"99999");
+		Predicate n9 = cb.or(n6,n8);			
 		
-		query.where(n2,n3,n4,n5,n6,n7).orderBy(orderList);
+		query.where(n2,n3,n4,n5,n9,n7).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<PremiaConfigMaster> result = em.createQuery(query);
@@ -831,8 +834,10 @@ public List<DropDownRes> getPremiaConfigMasterDropdown(PremiaConfigMasterDropDow
 		Predicate n5 = cb.equal(b.get("branchCode"),req.getBranchCode());
 		Predicate n6 = cb.equal(b.get("productId"),req.getProductId());
 		Predicate n7 = cb.equal(b.get("sectionId"),req.getSectionId());
+		Predicate n8 = cb.equal(b.get("sectionId"),"99999");
+		Predicate n9 = cb.or(n8,n7);			
 		
-		query.where(n12,n2,n3,n4,n5,n6,n7).orderBy(orderList);
+		query.where(n12,n2,n3,n4,n5,n6,n9).orderBy(orderList);
 		// Get Result
 		TypedQuery<PremiaConfigMaster> result = em.createQuery(query);
 		list = result.getResultList();

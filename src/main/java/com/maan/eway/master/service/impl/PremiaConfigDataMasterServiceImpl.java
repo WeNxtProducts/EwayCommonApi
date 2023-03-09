@@ -80,9 +80,10 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			if (StringUtils.isBlank(req.getProductId())) {
 				errorList.add(new Error("03", "ProductId", "Please Select ProductId"));
 			}
-			if (StringUtils.isBlank(req.getSectionId())) {
+		/*	if (StringUtils.isBlank(req.getSectionId())) {
 				errorList.add(new Error("04", "SectionId", "Please Select SectionId"));
 			}
+			*/
 			// Date Validation 
 			Calendar cal = new GregorianCalendar();
 			Date today = new Date();
@@ -242,7 +243,7 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			saveData.setAmendId(amendId);
 			saveData.setBranchCode(req.getBranchCode());
 			saveData.setProductId(req.getProductId());
-			saveData.setSectionId(req.getSectionId());
+			saveData.setSectionId(req.getSectionId()==null?"99999":req.getSectionId());
 			saveData.setColumnName(req.getColumnName());
 			saveData.setDefaultYn(req.getDefaultYn());
 			saveData.setDefaultValue(req.getDefaultValue());
@@ -304,8 +305,10 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			Predicate n4 = cb.equal(b.get("productId"), productId);
 			Predicate n5 = cb.equal(b.get("sectionId"), sectionId);
 			Predicate n6 = cb.equal(b.get("premiaId"), premiaId);
-
-			query.where(n1, n2, n3, n4, n5, n6).orderBy(orderList);
+			Predicate n7 = cb.equal(b.get("sectionId"), sectionId);
+			Predicate n8 = cb.equal(b.get("sectionId"),"99999");
+			Predicate n9 = cb.or(n7,n8);
+			query.where(n1, n2, n3, n4, n5, n6,n9).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<PremiaConfigDataMaster> result = em.createQuery(query);
@@ -372,8 +375,10 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			Predicate n5 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n6 = cb.equal(b.get("sectionId"), req.getSectionId());
 			Predicate n7 = cb.equal(b.get("columnId"), req.getColumnId());
+			Predicate n8 = cb.equal(b.get("sectionId"),"99999");
+			Predicate n9 = cb.or(n6,n8);
 						
-			query.where(n1,n2,n3,n4,n5,n6,n7).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n5,n9,n7).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<PremiaConfigDataMaster> result = em.createQuery(query);
@@ -389,7 +394,7 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			res.setCompanyId(list.get(0).getCompanyId());
 			res.setBranchCode(list.get(0).getBranchCode());
 			res.setProductId(list.get(0).getProductId());
-			res.setSectionId(list.get(0).getSectionId());
+			res.setSectionId(list.get(0).getSectionId()==null?"":list.get(0).getSectionId());
 			res.setStatus(list.get(0).getStatus());		
 			res.setAmendId(list.get(0).getAmendId().toString());
 			res.setCreatedBy(list.get(0).getCreatedBy());
@@ -472,8 +477,10 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			Predicate n4 = cb.equal(b.get("premiaId"), req.getPremiaId());
 			Predicate n5 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n6 = cb.equal(b.get("sectionId"), req.getSectionId());
-						
-			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
+			Predicate n7 = cb.equal(b.get("sectionId"),"99999");
+			Predicate n8 = cb.or(n6,n7);
+								
+			query.where(n1,n2,n3,n4,n5,n8).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<PremiaConfigDataMaster> result = em.createQuery(query);
@@ -486,7 +493,7 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			res1.setCompanyId(list.get(0).getCompanyId());
 			res1.setBranchCode(list.get(0).getBranchCode());
 			res1.setProductId(list.get(0).getProductId());
-			res1.setSectionId(list.get(0).getSectionId());
+			res1.setSectionId(list.get(0).getSectionId()==null?"": list.get(0).getSectionId());
 			res1.setCreatedBy(list.get(0).getCreatedBy());
 			
 			List<PremiaConfigDataMasterListRes> resList = new ArrayList<PremiaConfigDataMasterListRes>();	
@@ -574,8 +581,10 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			Predicate n5 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n6 = cb.equal(b.get("sectionId"), req.getSectionId());
 			Predicate n7 = cb.equal(b.get("status"), "Y");
-
-			query.where(n1,n2,n3,n4,n5,n6,n7).orderBy(orderList);
+			Predicate n8 = cb.equal(b.get("sectionId"),"99999");
+			Predicate n9 = cb.or(n6,n8);
+		
+			query.where(n1,n2,n3,n4,n5,n9,n7).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<PremiaConfigDataMaster> result = em.createQuery(query);
@@ -588,7 +597,7 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			res1.setCompanyId(list.get(0).getCompanyId());
 			res1.setBranchCode(list.get(0).getBranchCode());
 			res1.setProductId(list.get(0).getProductId());
-			res1.setSectionId(list.get(0).getSectionId());
+			res1.setSectionId(list.get(0).getSectionId()==null?"":list.get(0).getSectionId());
 			res1.setCreatedBy(list.get(0).getCreatedBy());
 			
 			List<PremiaConfigDataMasterListRes> resList = new ArrayList<PremiaConfigDataMasterListRes>();	
@@ -684,8 +693,10 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			Predicate n5 = cb.equal(b.get("branchCode"),req.getBranchCode());
 			Predicate n6 = cb.equal(b.get("productId"),req.getProductId());
 			Predicate n7 = cb.equal(b.get("sectionId"),req.getSectionId());
-			
-			query.where(n12,n2,n3,n4,n5,n6,n7).orderBy(orderList);
+			Predicate n8 = cb.equal(b.get("sectionId"),"99999");
+			Predicate n9 = cb.or(n7,n8);
+		
+			query.where(n12,n2,n3,n4,n5,n6,n9).orderBy(orderList);
 			// Get Result
 			TypedQuery<PremiaConfigDataMaster> result = em.createQuery(query);
 			list = result.getResultList();
@@ -756,8 +767,10 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			Predicate n5 = cb.equal(b.get("productId"),req.getProductId());
 			Predicate n6 = cb.equal(b.get("sectionId"),req.getSectionId());
 			Predicate n7 = cb.equal(b.get("premiaId"),req.getPremiaId());
-			
-			query.where(n1,n2,n3,n4,n5,n6,n7).orderBy(orderList);
+			Predicate n8 = cb.equal(b.get("sectionId"),"99999");
+			Predicate n9 = cb.or(n6,n8);
+		
+			query.where(n1,n2,n3,n4,n5,n9,n7).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<PremiaConfigDataMaster> result = em.createQuery(query);
