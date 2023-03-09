@@ -141,8 +141,7 @@ public Integer getMasterTableCount(String companyId, String branchCode, String p
 
 
 
-
-public List<PremiaConfigMaster> getPremiaTableNameExistDetails(String PremiaTableName , String InsuranceId , String branchCode, String productId, String sectionId) {
+public List<PremiaConfigMaster> getPremiaNameExistDetails(String premiaName , String InsuranceId , String branchCode, String productId, String sectionId) {
 	List<PremiaConfigMaster> list = new ArrayList<PremiaConfigMaster>();
 	try {
 		Date today = new Date();
@@ -163,28 +162,21 @@ public List<PremiaConfigMaster> getPremiaTableNameExistDetails(String PremiaTabl
 		Predicate a1 = cb.equal(ocpm1.get("premiaId"), b.get("premiaId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-		Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-		Predicate a5 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"), today);
+		//Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		//Predicate a5 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"), today);
 		Predicate a6 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 		Predicate a7 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-		Predicate a8 = cb.equal(ocpm1.get("status"),b.get("status"));
-		amendId.where(a1,a2,a3,a4,a5,a6,a7,a8);
-
-		Predicate n1 = cb.equal(b.get("amendId"), amendId);
-		Predicate n2 = cb.equal(cb.lower( b.get("premiaTableName")), PremiaTableName.toLowerCase());
-		Predicate n3 = cb.equal(b.get("companyId"),InsuranceId);
-		Predicate n4 = cb.equal(b.get("branchCode"), branchCode);
-		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
-		Predicate n6 = cb.or(n4,n5);
-		Predicate n7 = cb.equal(b.get("productId"),productId);
-		Predicate n8 = cb.equal(b.get("productId"), "99999");
-		Predicate n9 = cb.or(n7,n8);
-		Predicate n10 = cb.equal(b.get("sectionId"),sectionId);
-		Predicate n11 = cb.equal(b.get("sectionId"), "99999");
-		Predicate n12 = cb.or(n10,n11);
-		Predicate n13 = cb.equal(b.get("status"), "Y");
 		
-		query.where(n1,n2,n3,n6,n9,n12,n13);
+		//amendId.where(a1,a2,a3,a4,a5,a6);
+		amendId.where(a1,a2,a3,a6,a7);
+		Predicate n1 = cb.equal(b.get("amendId"), amendId);
+		Predicate n2 = cb.equal(cb.lower( b.get("premiaTableName")), premiaName.toLowerCase());
+		Predicate n3 = cb.equal(b.get("companyId"),InsuranceId);
+		Predicate n4 = cb.equal(b.get("branchCode"), StringUtils.isBlank(branchCode)?"99999":branchCode);
+		Predicate n7 = cb.equal(b.get("productId"), productId);
+		Predicate n8 = cb.equal(b.get("sectionId"),StringUtils.isBlank(sectionId)?"99999":sectionId);
+		
+		query.where(n1,n2,n3,n4,n7,n8);
 		
 		// Get Result
 		TypedQuery<PremiaConfigMaster> result = em.createQuery(query);
@@ -199,6 +191,7 @@ public List<PremiaConfigMaster> getPremiaTableNameExistDetails(String PremiaTabl
 }
 
 
+
 @Override
 public List<Error> validatePremiaConfig(PremiaConfigMasterSaveReq req) {
 	List<Error> errorList = new ArrayList<Error>();
@@ -208,20 +201,21 @@ public List<Error> validatePremiaConfig(PremiaConfigMasterSaveReq req) {
 			errorList.add(new Error("02", "PremiaTableName", "Please Select PremiaTableName"));
 		}else if (req.getPremiaTableName().length() > 100){
 			errorList.add(new Error("02","PremiaTableName", "Please Enter PremiaTableName 100 Characters"));
-			}else if (StringUtils.isBlank(req.getPremiaId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId())){
-				List<PremiaConfigMaster> premiaList = getPremiaTableNameExistDetails(req.getPremiaTableName() , req.getCompanyId() , req.getBranchCode(), req.getProductId(), req.getSectionId());
-			if (premiaList.size()>0 ) {
-				errorList.add(new Error("01", "PremiaTableName", "This PremiaTableName Already Exist "));
+			}
+		
+		else if (StringUtils.isBlank(req.getPremiaId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId())) {
+			List<PremiaConfigMaster> PremiaList = getPremiaNameExistDetails(req.getPremiaTableName() , req.getCompanyId() , req.getBranchCode() , req.getProductId(),req.getSectionId());
+			if (PremiaList.size()>0 ) {
+				errorList.add(new Error("01", "Premia Table Name", "This Premia Table Name Already Exist "));
 			}
 		}else if (StringUtils.isNotBlank(req.getPremiaId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId())) {
-			List<PremiaConfigMaster> premiaList = getPremiaTableNameExistDetails(req.getPremiaTableName() , req.getCompanyId() , req.getBranchCode(), req.getProductId(), req.getSectionId());
+			List<PremiaConfigMaster> PremiaList = getPremiaNameExistDetails(req.getPremiaTableName() , req.getCompanyId() , req.getBranchCode(), req.getProductId(), req.getSectionId());
 			
-			if (premiaList.size()>0 &&  (! req.getPremiaId().equalsIgnoreCase(premiaList.get(0).getPremiaId().toString())) ) {
-				errorList.add(new Error("01", "PremiaTableName", "This PremiaTableName Already Exist "));
+			if (PremiaList.size()>0 &&  (! req.getPremiaId().equalsIgnoreCase(PremiaList.get(0).getPremiaId().toString())) ) {
+				errorList.add(new Error("01", "Premia Table Name", "This Premia Table Name Already Exist "));
 			}
 			
 		}
-		
 		
 		if (StringUtils.isBlank(req.getCompanyId())) {
 			errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
