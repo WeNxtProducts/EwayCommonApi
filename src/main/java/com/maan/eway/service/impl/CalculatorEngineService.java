@@ -41,6 +41,8 @@ import com.maan.eway.calculator.util.SplitDiscountUtils;
 import com.maan.eway.calculator.util.SplitLoadingUtils;
 import com.maan.eway.calculator.util.SplitSubCoverUtil;
 import com.maan.eway.calculator.util.SubCoverCreationUtil;
+import com.maan.eway.calculator.util.TaxFromFactor;
+import com.maan.eway.calculator.util.TaxFromPolicy;
 import com.maan.eway.calculator.util.TaxUtils;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.ViewQuoteReq;
@@ -435,7 +437,16 @@ public class CalculatorEngineService implements CalculatorEngine{
 					EndtFromPolicy endtUtils=new EndtFromPolicy();
 					List<Endorsement> endorsements = oldPolicyCovers.stream().filter(r -> d.getCoverId()==r.getCoverId()).map(endtUtils).filter(dx->dx!=null).collect(Collectors.toList());
 					
-					
+					TaxFromPolicy endttaxUtil=new TaxFromPolicy();
+					if(endorsements!=null && endorsements.size()>0) {
+						for (Endorsement e : endorsements) {
+							 List<Tax> txx = oldPolicyCovers.stream().filter(r -> (d.getCoverId() ==r.getCoverId() 
+									 && d.getEndtCount().intValue()==e.getEndtCount().intValue()
+									 &&  r.getCoverId() ==Integer.parseInt(e.getEndorsementforId())
+									 )  ).map(endttaxUtil).filter(dx->dx!=null).collect(Collectors.toList());
+							 e.setTaxes(txx);
+						}
+					}
 					 //CurrentEndorsement
 					
 					
@@ -458,12 +469,14 @@ public class CalculatorEngineService implements CalculatorEngine{
 							    .premiumExcluedTax(d.getPremiumExcludedTaxFc())
 							    .premiumExcluedTaxLC(d.getPremiumExcludedTaxLc())
 							    .premiumIncludedTax(d.getPremiumIncludedTaxFc())
-							    .premiumIncludedTaxLC(d.getPremiumIncludedTaxLc())
+							    .premiumIncludedTaxLC(d.getPremiumIncludedTaxLc())							    
 							 	.build();
 					 
 					 {
 						 List<Tax> taxey = taxes.stream().map(tzx).filter(t->t!=null).collect(Collectors.toList());
 						 taxey.stream().forEach(t ->t.setEndtTypeId(endtTypeId+""));
+						 taxey.stream().forEach(t ->t.setEndtTypeCount(endtCount));
+						 taxey.stream().forEach(t -> t.setTaxDesc(endtDesc +" "+t.getTaxDesc()));
 						 if("Y".equals(endtmaster.getEndtFeeYn())) {
 								Tax tax=Tax.builder()
 										.calcType("P")
@@ -474,7 +487,8 @@ public class CalculatorEngineService implements CalculatorEngine{
 										.taxExemptCode(null)
 										.taxRate(Double.parseDouble(endtmaster.getEndtFeePercent()))
 										.taxId(endtTypeId+"")
-										.endtTypeId(endtTypeId+"").build();
+										.endtTypeId(endtTypeId+"")
+										.endtTypeCount(endtCount).build();
 								taxey.add(tax);	
 							}
 						 
@@ -549,6 +563,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 					List<Endorsement> endorsements = covers.stream().map(endtUtil).filter(d->d!=null).collect(Collectors.toList());
 					
 					
+					
 					CoverFromFactor splitsub=new CoverFromFactor("N");
 					Map<String, List<Cover>> nonSubcovers = covers.stream().map(splitsub).filter(d->d!=null).collect(Collectors.groupingBy(Cover::getIsSubCover));
 					 if(!nonSubcovers.isEmpty()) {
@@ -577,6 +592,21 @@ public class CalculatorEngineService implements CalculatorEngine{
 								 List<Endorsement> ds = endorsements.stream().filter(d-> d.getEndorsementforId().equals(c.getCoverId())).collect(Collectors.toList());
 								 ds.stream().forEach(dss->dss.setSubCoverId(c.getSubCoverId()));
 								 //List<Tax> taxey = taxes.stream().map(tzx).filter(d->d!=null).collect(Collectors.toList());
+								 
+								 TaxFromFactor endttaxUtil=new TaxFromFactor();
+									if(ds!=null && ds.size()>0) {
+										for (Endorsement e : ds) {
+											 List<Tax> txx = covers.stream().filter(r -> (r.getDiscLoadId()==Integer.parseInt(e.getEndorsementId())
+													 && r.getCoverId().equals(e.getEndorsementforId())
+													 && r.getEndtCount().intValue()==e.getEndtCount().intValue())
+													  ).map(endttaxUtil).filter(dx->dx!=null).collect(Collectors.toList());
+											 e.setTaxes(txx);
+										}
+									}
+									
+									
+									
+									
 								 c.setEndorsements(ds);
 								 //c.setTaxes(taxey);
 							 }
@@ -622,6 +652,21 @@ public class CalculatorEngineService implements CalculatorEngine{
 								 List<Endorsement> ds = endorsements.stream().filter(d-> d.getEndorsementforId().equals(c.getCoverId())).collect(Collectors.toList());
 								 ds.stream().forEach(dss->dss.setSubCoverId(c.getSubCoverId()));
 								 List<Endorsement> dss=ds.stream().map(dx-> SerializationUtils.clone(dx)).collect(Collectors.toList());
+								 
+								 
+								 TaxFromFactor endttaxUtil=new TaxFromFactor();
+									if(dss!=null && dss.size()>0) {
+										for (Endorsement e : dss) {
+											 List<Tax> txx = covers.stream().filter(r -> r.getDiscLoadId()==Integer.parseInt(e.getEndorsementId())
+													 && r.getCoverId().equals(e.getEndorsementforId())
+													 && r.getEndtCount().intValue()==e.getEndtCount().intValue()
+													  ).map(endttaxUtil).filter(dx->dx!=null).collect(Collectors.toList());
+											 e.setTaxes(txx);
+										}
+									}
+									
+									
+									
 								 c.setEndorsements(dss);
 								 //c.setTaxes(taxey);
 							 }

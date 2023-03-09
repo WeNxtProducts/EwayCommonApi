@@ -36,6 +36,7 @@ public class Tax implements Serializable  {
     
     @JsonProperty("EndtTypeId")
     private String endtTypeId;
-
+    @JsonProperty("EndtTypeCount")
+    private BigDecimal endtTypeCount;
     
 }

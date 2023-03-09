@@ -706,7 +706,7 @@ this.repository = repo;
 				saveTax.setCoverId(Integer.valueOf(coverReq.getCoverId()));
 				saveTax.setStatus("Y");
 				saveTax.setIsSelected(coverReq.getIsselected());
-				saveTax.setDiscLoadId(0);
+				saveTax.setDiscLoadId(StringUtils.isBlank(tax.getEndtTypeId())?0:Integer.parseInt(tax.getEndtTypeId()));
 				saveTax.setTaxAmount(tax.getTaxAmount()==null?null :new BigDecimal(df.format(tax.getTaxAmount())));
 				saveTax.setTaxCalcType(tax.getCalcType());
 				saveTax.setTaxDesc(tax.getTaxDesc());
@@ -715,7 +715,7 @@ this.repository = repo;
 				saveTax.setTaxId(tax.getTaxId()==null?null : Integer.valueOf(tax.getTaxId()) );
 				saveTax.setTaxRate(tax.getTaxRate()==null?null :new BigDecimal(tax.getTaxRate()) );
 				saveTax.setIsTaxExtempted(tax.getIsTaxExempted());
-				
+				saveTax.setEndtCount(tax.getEndtTypeCount()==null?BigDecimal.ZERO:tax.getEndtTypeCount());
 				repository.saveAndFlush(saveTax);
 				
 			}
