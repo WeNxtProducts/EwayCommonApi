@@ -687,8 +687,8 @@ this.repository = repo;
 				FactorRateRequestDetails saveTax = new FactorRateRequestDetails();
 				dozerMapper.map(coverReq, saveTax);
 				saveTax.setRequestReferenceNo(primaryKeys.get("RefNo").toString() );
-				saveTax.setCoverName(coverReq.getCoverName() +" Tax" );
-				saveTax.setCoverDesc(coverReq.getCoverDesc() +" Tax");
+				saveTax.setCoverName(coverReq.getCoverName() +" "+tax.getTaxDesc() );
+				saveTax.setCoverDesc(coverReq.getCoverDesc() +" "+tax.getTaxDesc());
 				saveTax.setCurrency(coverReq.getCurrency());
 				saveTax.setExchangeRate(coverReq.getExchangeRate()==null?null :coverReq.getExchangeRate());
 				saveTax.setCompanyId(primaryKeys.get("InsuranceId").toString());
@@ -787,6 +787,12 @@ this.repository = repo;
 				
 				
 				repository.saveAndFlush(saveLod);
+				
+				
+				// Tax
+				if(lod.getTaxes()!=null && lod.getTaxes().size() > 0 ) {
+					String successRes = saveTaxes(primaryKeys ,coverReq ,   lod.getTaxes() ,df ) ;
+				}
 				
 			}
 			res = "Success" ;

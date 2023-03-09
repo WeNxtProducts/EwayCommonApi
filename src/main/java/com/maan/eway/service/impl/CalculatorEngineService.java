@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.MsAssetDetails;
@@ -50,6 +51,7 @@ import com.maan.eway.endorsment.util.CoverFromPolicy;
 import com.maan.eway.endorsment.util.DiscountFromPolicy;
 import com.maan.eway.endorsment.util.EndtFromPolicy;
 import com.maan.eway.endorsment.util.LoadingFromPolicy;
+import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.LoginProductMasterRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
@@ -379,7 +381,9 @@ public class CalculatorEngineService implements CalculatorEngine{
 	
 
 
-
+	@Autowired
+	private EndtTypeMasterRepository endtTypeRepo;
+	 
 	
 	private void loadAndRemoveCoversForEndt(CalcEngine engine, List<Cover> retc) {
 		try {
@@ -403,6 +407,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 				String endtTypeId=result.get(0).get("endorsementType").toString();
 				BigDecimal endtCount=new BigDecimal(result.get(0).get("endtCount").toString());
 				
+				EndtTypeMaster endtmaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(engine.getInsuranceId(), Integer.parseInt(engine.getProductId()), "Y",  Integer.parseInt(endtTypeId));
 				
 				
 				 
@@ -432,6 +437,10 @@ public class CalculatorEngineService implements CalculatorEngine{
 					
 					
 					 //CurrentEndorsement
+					
+					
+					
+					
 					 Endorsement currentEndt=Endorsement.builder()
 							 	.endorsementDesc(d.getCoverDesc()+" "+endtDesc+" "+endtCount.intValue())
 							 	.endorsementId(endtTypeId)
@@ -451,6 +460,26 @@ public class CalculatorEngineService implements CalculatorEngine{
 							    .premiumIncludedTax(d.getPremiumIncludedTaxFc())
 							    .premiumIncludedTaxLC(d.getPremiumIncludedTaxLc())
 							 	.build();
+					 
+					 {
+						 List<Tax> taxey = taxes.stream().map(tzx).filter(t->t!=null).collect(Collectors.toList());
+						 taxey.stream().forEach(t ->t.setEndtTypeId(endtTypeId+""));
+						 if("Y".equals(endtmaster.getEndtFeeYn())) {
+								Tax tax=Tax.builder()
+										.calcType("P")
+										.isTaxExempted("N")
+										.regulatoryCode("N/A")
+										.taxAmount(BigDecimal.ZERO)
+										.taxDesc(endtDesc+" Endorsement Fee"+" "+endtCount.intValue())
+										.taxExemptCode(null)
+										.taxRate(Double.parseDouble(endtmaster.getEndtFeePercent()))
+										.taxId(endtTypeId+"")
+										.endtTypeId(endtTypeId+"").build();
+								taxey.add(tax);	
+							}
+						 
+						 currentEndt.setTaxes(taxey);
+					 }
 					 endorsements.add(currentEndt);
 					
 					
@@ -645,7 +674,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 					Comparator<Cover> comp=Comparator.comparing(Cover::getCoverageType); 
 					 retc.sort(comp);
 					 
-				//	 x
+
 					 
 					 
 				}
