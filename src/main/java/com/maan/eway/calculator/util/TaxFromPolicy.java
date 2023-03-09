@@ -18,7 +18,7 @@ public class TaxFromPolicy  implements Function<PolicyCoverData,Tax>{
 						.taxExemptCode(t.getTaxExemptCode())
 						.taxExemptType(t.getTaxExemptType())
 						.taxId(t.getTaxId()==null?"":t.getTaxId().toString())
-						.taxRate(t.getRate()==null?0D: t.getRate().doubleValue() )				 	
+						.taxRate(t.getTaxRate()==null?0D: t.getTaxRate().doubleValue() )				 	
 						.calcType(t.getCalcType()==null?"":t.getCalcType())
 						.endtTypeId(t.getTaxId().toString())
 						.endtTypeCount(t.getEndtCount())

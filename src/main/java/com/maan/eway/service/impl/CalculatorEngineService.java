@@ -596,10 +596,12 @@ public class CalculatorEngineService implements CalculatorEngine{
 								 TaxFromFactor endttaxUtil=new TaxFromFactor();
 									if(ds!=null && ds.size()>0) {
 										for (Endorsement e : ds) {
-											 List<Tax> txx = covers.stream().filter(r -> (r.getDiscLoadId()==Integer.parseInt(e.getEndorsementId())
-													 && r.getCoverId().equals(e.getEndorsementforId())
+											
+											// only for endrose we cannt use cover objs tax cover wontbe list.
+											 List<Tax> txx = factors.stream().filter(r -> (r.getDiscLoadId()==Integer.parseInt(e.getEndorsementId())
+													 && r.getCoverId()==Integer.parseInt(e.getEndorsementforId())
 													 && r.getEndtCount().intValue()==e.getEndtCount().intValue())
-													  ).map(endttaxUtil).filter(dx->dx!=null).collect(Collectors.toList());
+													  ).map(endttaxUtil).filter(dx->(dx!=null && !"0".equals(dx.getTaxId())) ).collect(Collectors.toList());
 											 e.setTaxes(txx);
 										}
 									}
@@ -657,9 +659,9 @@ public class CalculatorEngineService implements CalculatorEngine{
 								 TaxFromFactor endttaxUtil=new TaxFromFactor();
 									if(dss!=null && dss.size()>0) {
 										for (Endorsement e : dss) {
-											 List<Tax> txx = covers.stream().filter(r -> r.getDiscLoadId()==Integer.parseInt(e.getEndorsementId())
-													 && r.getCoverId().equals(e.getEndorsementforId())
-													 && r.getEndtCount().intValue()==e.getEndtCount().intValue()
+											 List<Tax> txx = covers.stream().filter(r -> (r.getDiscLoadId()==Integer.parseInt(e.getEndorsementId())
+													 && r.getCoverId()==Integer.parseInt(e.getEndorsementforId())
+													 && r.getEndtCount().intValue()==e.getEndtCount().intValue())
 													  ).map(endttaxUtil).filter(dx->dx!=null).collect(Collectors.toList());
 											 e.setTaxes(txx);
 										}
