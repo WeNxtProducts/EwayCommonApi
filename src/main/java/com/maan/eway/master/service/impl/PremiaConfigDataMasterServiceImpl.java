@@ -80,10 +80,10 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			if (StringUtils.isBlank(req.getProductId())) {
 				errorList.add(new Error("03", "ProductId", "Please Select ProductId"));
 			}
-		/*	if (StringUtils.isBlank(req.getSectionId())) {
+			if (StringUtils.isBlank(req.getSectionId())) {
 				errorList.add(new Error("04", "SectionId", "Please Select SectionId"));
 			}
-			*/
+			
 			// Date Validation 
 			Calendar cal = new GregorianCalendar();
 			Date today = new Date();
