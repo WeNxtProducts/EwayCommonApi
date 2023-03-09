@@ -316,6 +316,14 @@ public class ClausesMasterServiceImpl implements ClausesMasterService {
 //		saveData.setPolicyType(req.getPolicyType()==null?"" : "99999");
 		saveData.setTypeId(req.getTypeId());
 		saveData.setTypeDesc(data.getItemValue());
+		
+		saveData.setCoverId(req.getCoverId()==null?0:Integer.valueOf(req.getCoverId()));
+		saveData.setExtraCoverId(req.getExtraCoverId()==null?0:Integer.valueOf(req.getExtraCoverId()));
+		saveData.setDisplayOrder(req.getDisplayOrder()==null?0:Integer.valueOf(req.getDisplayOrder()));
+		saveData.setPdfLocation(req.getPdfLocation()==null?"":req.getPdfLocation());
+		saveData.setOptionalType(req.getOptionalType()==null?"":req.getOptionalType());		
+		saveData.setIntCode(req.getIntCode()==null?"":req.getIntCode());
+		
 		repo.saveAndFlush(saveData);	
 		log.info("Saved Details is --> " + json.toJson(saveData));	
 		}
@@ -676,7 +684,7 @@ public SuccessRes changeStatusOfClauses(ClausesChangeStatusReq req) {
 		saveData.setUpdatedDate(new Date());
 		saveData.setAmendId(amendId);
 		saveData.setStatus(req.getStatus());
-		saveData.setIntCode(list.get(0).getIntCode());
+		saveData.setIntCode(list.get(0).getIntCode()==null?"":list.get(0).getIntCode());
 		saveData.setClausesDescription(list.get(0).getClausesDescription());
 		saveData.setCompanyId(list.get(0).getCompanyId());
 		saveData.setBranchCode(req.getBranchCode()==null?"99999" :req.getBranchCode());

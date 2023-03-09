@@ -16,7 +16,7 @@ public class ClausesMasterRes {
 	
 	@JsonProperty("ClausesDescription")
 	private String clausesDescription;
-	
+	/*
 	@JsonProperty("CoverId")
 	private String coverId;
 	
@@ -34,7 +34,7 @@ public class ClausesMasterRes {
 	
 	@JsonProperty("IntCode")
 	private String intCode;
-	
+	*/
 	@JsonProperty("BranchCode")
 	private String branchCode;
 	
