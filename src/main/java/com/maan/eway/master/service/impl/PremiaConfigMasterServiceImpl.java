@@ -215,7 +215,7 @@ public List<Error> validatePremiaConfig(PremiaConfigMasterSaveReq req) {
 		}else if (StringUtils.isNotBlank(req.getPremiaId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId())) {
 			List<PremiaConfigMaster> premiaList = getPremiaTableNameExistDetails(req.getPremiaTableName() , req.getCompanyId() , req.getBranchCode(), req.getProductId(), req.getSectionId());
 			
-			if (premiaList.size()>0 &&  (! req.getPremiaId().equalsIgnoreCase(premiaList.get(0).getPremiaTableName().toString())) ) {
+			if (premiaList.size()>0 &&  (! req.getPremiaId().equalsIgnoreCase(premiaList.get(0).getPremiaId().toString())) ) {
 				errorList.add(new Error("01", "PremiaTableName", "This PremiaTableName Already Exist "));
 			}
 			
@@ -428,8 +428,11 @@ public PremiaConfigMasterRes getPremiaConfig(PremiaConfigMasterGetReq req) {
 		Predicate n5 = cb.equal(b.get("productId"), req.getProductId());
 		Predicate n6 = cb.equal(b.get("sectionId"), req.getSectionId());
 		Predicate n7 = cb.equal(b.get("sectionId"),"99999");
-		Predicate n8 = cb.or(n6,n7);			
-		query.where(n1,n2,n3,n4,n5,n8).orderBy(orderList);
+		Predicate n8 = cb.or(n6,n7);	
+		Predicate n9 = cb.equal(b.get("branchCode"), "99999");
+		Predicate n10 = cb.or(n3,n9);
+	
+		query.where(n1,n2,n10,n4,n5,n8).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<PremiaConfigMaster> result = em.createQuery(query);
@@ -508,8 +511,9 @@ public List<PremiaConfigMasterRes> getallPremiaConfig(PremiaConfigMasterGetAllRe
 		amendId.select(cb.max(ocpm1.get("amendId")));
 		Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a2 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+		Predicate a3 = cb.equal(ocpm1.get("premiaId"), b.get("premiaId"));
 
-		amendId.where(a1, a2);
+		amendId.where(a1, a2,a3);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -519,8 +523,10 @@ public List<PremiaConfigMasterRes> getallPremiaConfig(PremiaConfigMasterGetAllRe
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
 		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-		
-		query.where(n1,n2,n3).orderBy(orderList);
+		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+		Predicate n5 = cb.or(n3,n4);
+	
+		query.where(n1,n2,n5).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<PremiaConfigMaster> result = em.createQuery(query);
@@ -602,8 +608,9 @@ public List<PremiaConfigMasterRes> getactivePremiaConfig(PremiaConfigMasterGetAl
 		amendId.select(cb.max(ocpm1.get("amendId")));
 		Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a2 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+		Predicate a3 = cb.equal(ocpm1.get("premiaId"), b.get("premiaId"));
 
-		amendId.where(a1, a2);
+		amendId.where(a1, a2,a3);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -614,8 +621,10 @@ public List<PremiaConfigMasterRes> getactivePremiaConfig(PremiaConfigMasterGetAl
 		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
 		Predicate n4 = cb.equal(b.get("status"), "Y");
-		
-		query.where(n1,n2,n3,n4).orderBy(orderList);
+		Predicate n5 = cb.equal(b.get("branchCode"), "99999");
+		Predicate n6 = cb.or(n3,n5);
+	
+		query.where(n1,n2,n6,n4).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<PremiaConfigMaster> result = em.createQuery(query);
@@ -715,8 +724,10 @@ public SuccessRes changeStatusPremiaConfig(PremiaConfigMasterChangeStatusReq req
 		Predicate n7 = cb.equal(b.get("premiaId"),req.getPremiaId());
 		Predicate n8 = cb.equal(b.get("sectionId"),"99999");
 		Predicate n9 = cb.or(n6,n8);			
-		
-		query.where(n2,n3,n4,n5,n9,n7).orderBy(orderList);
+		Predicate n10 = cb.equal(b.get("branchCode"), "99999");
+		Predicate n11 = cb.or(n3,n10);
+	
+		query.where(n2,n11,n4,n5,n9,n7).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<PremiaConfigMaster> result = em.createQuery(query);
@@ -798,7 +809,7 @@ public List<DropDownRes> getPremiaConfigMasterDropdown(PremiaConfigMasterDropDow
 		query.select(b);
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("premiaId")));
+		orderList.add(cb.asc(b.get("branchCode")));
 		
 		// Effective Date Start Max Filter
 		Subquery<Long> effectiveDate = query.subquery(Long.class);
@@ -836,8 +847,10 @@ public List<DropDownRes> getPremiaConfigMasterDropdown(PremiaConfigMasterDropDow
 		Predicate n7 = cb.equal(b.get("sectionId"),req.getSectionId());
 		Predicate n8 = cb.equal(b.get("sectionId"),"99999");
 		Predicate n9 = cb.or(n8,n7);			
-		
-		query.where(n12,n2,n3,n4,n5,n6,n9).orderBy(orderList);
+		Predicate n10 = cb.equal(b.get("branchCode"), "99999");
+		Predicate n13 = cb.or(n5,n10);
+	
+		query.where(n12,n2,n3,n4,n13,n6,n9).orderBy(orderList);
 		// Get Result
 		TypedQuery<PremiaConfigMaster> result = em.createQuery(query);
 		list = result.getResultList();
