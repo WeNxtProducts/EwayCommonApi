@@ -345,7 +345,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 		List<MotorGridCriteriaRes> referrals = new ArrayList<MotorGridCriteriaRes>();
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<MotorGridCriteriaRes> query = cb.createQuery(MotorGridCriteriaRes.class);
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
 
 			// Find All
 			Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
@@ -402,10 +402,29 @@ public class MotorGridServiceImpl implements MotorGridService {
 					.orderBy(orderList);
 
 			// Get Result
-			TypedQuery<MotorGridCriteriaRes> result = em.createQuery(query);
+			TypedQuery<Tuple> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
-			referrals = result.getResultList();
+			List<Tuple> referralsList = result.getResultList();
+			for (  Tuple r :referralsList   ) {
+				MotorGridCriteriaRes res = new MotorGridCriteriaRes();
+				res.setIdsCount(r.get("idsCount")==null ? null : (Long) r.get("idsCount"));
+				res.setAdminRemarks(r.get("adminRemarks")==null ? "" : (String) r.get("adminRemarks"));
+				res.setBranchCode(r.get("branchCode")==null ? "" : (String) r.get("branchCode"));
+				res.setClientName(r.get("clientName")==null ? "" : (String) r.get("clientName"));
+				res.setCompanyId(r.get("companyId")==null ? "" : (String) r.get("companyId"));
+				res.setCustomerId(r.get("customerId")==null ? "" : (String) r.get("customerId"));
+				res.setCustomerReferenceNo(r.get("customerReferenceNo")==null ? "" : (String) r.get("customerReferenceNo"));
+				res.setIdNumber(r.get("idNumber")==null ? "" : (String) r.get("idNumber"));
+				res.setPolicyEndDate(r.get("policyEndDate")==null ? null : (Date) r.get("policyEndDate"));
+				res.setPolicyStartDate(r.get("policyStartDate")==null ? null : (Date) r.get("policyStartDate"));
+				res.setProductId(r.get("productId")==null ? "" : (String) r.get("productId"));
+				res.setQuoteNo(r.get("quoteNo")==null ? "" : (String) r.get("quoteNo"));
+				res.setRejectReason(r.get("rejectReason")==null ? "" : (String) r.get("rejectReason"));
+				res.setRequestReferenceNo(r.get("requestReferenceNo")==null ? "" : (String) r.get("requestReferenceNo"));
+				referrals.add(res);
+			}
+			
 			referrals = referrals.stream().filter(o -> !o.getIdsCount().equals(0L))
 					.collect(Collectors.toList());
 		} catch (Exception e) {
