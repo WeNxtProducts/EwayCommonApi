@@ -352,7 +352,7 @@ public SuccessRes insertPremiaConfig(PremiaConfigMasterSaveReq req) {
 		saveData.setProductId(req.getProductId());
 		saveData.setSectionId(req.getSectionId()==null?"99999":req.getSectionId());
 		saveData.setQueryKey(StringUtils.isBlank(req.getQueryKey())?"": req.getQueryKey());
-		String key = "";
+	/*	String key = "";
 		List<String> keys = req.getSourceTableName();
 		for (String menuId : keys) {
 		key = StringUtils.isBlank(key) ? menuId  :key + "," + menuId;
@@ -360,6 +360,7 @@ public SuccessRes insertPremiaConfig(PremiaConfigMasterSaveReq req) {
 		key = key.replaceAll(",","~");               
 
 		saveData.setSourceTableName(key);
+		*/
 		repo.saveAndFlush(saveData);	
 		log.info("Saved Details is --> " + json.toJson(saveData));	
 		}
@@ -452,11 +453,12 @@ public PremiaConfigMasterRes getPremiaConfig(PremiaConfigMasterGetReq req) {
 		res.setRemarks(list.get(0).getRemarks());;
 		res.setPremiaTableName(list.get(0).getPremiaTableName());
 		res.setQueryKey(StringUtils.isBlank(list.get(0).getQueryKey())?"":list.get(0).getQueryKey());		
-		String tablename = list.get(0).getSourceTableName();
+	/*	String tablename = list.get(0).getSourceTableName();
 		List<String> tablenames = tablename!=null ? new ArrayList<String>(Arrays.asList(tablename.split("~"))) : new ArrayList<String>() ;
 		tablenames = tablenames.stream().filter( o -> ! o.equals("")).collect(Collectors.toList());
 		
 		res.setSourceTableName(tablenames);	
+	*/	
 	}
 	}catch (Exception e) {
 		e.printStackTrace();
@@ -552,12 +554,13 @@ public List<PremiaConfigMasterRes> getallPremiaConfig(PremiaConfigMasterGetAllRe
 		res.setPremiaTableName(data.getPremiaTableName());
 		res.setQueryKey(StringUtils.isBlank(data.getQueryKey())?"":data.getQueryKey());		
 		
-		
+		/*
 		String tablename = data.getSourceTableName();
 		List<String> tablenames = tablename!=null ? new ArrayList<String>(Arrays.asList(tablename.split("~"))) : new ArrayList<String>() ;
 		tablenames = tablenames.stream().filter( o -> ! o.equals("")).collect(Collectors.toList());
 		
 		res.setSourceTableName(tablenames);	
+		*/
 		resList.add(res);
 		}
 	}
@@ -650,12 +653,13 @@ public List<PremiaConfigMasterRes> getactivePremiaConfig(PremiaConfigMasterGetAl
 		res.setPremiaTableName(data.getPremiaTableName());
 		res.setQueryKey(StringUtils.isBlank(data.getQueryKey())?"":data.getQueryKey());		
 		
-		
+		/*
 		String tablename = data.getSourceTableName();
 		List<String> tablenames = tablename!=null ? new ArrayList<String>(Arrays.asList(tablename.split("~"))) : new ArrayList<String>() ;
 		tablenames = tablenames.stream().filter( o -> ! o.equals("")).collect(Collectors.toList());
 		
-		res.setSourceTableName(tablenames);	
+		res.setSourceTableName(tablenames);
+		*/	
 		resList.add(res);
 		}
 	}
