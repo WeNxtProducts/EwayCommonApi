@@ -93,7 +93,7 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			query.select(c);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("industryId")));
+			orderList.add(cb.asc(c.get("branchCode")));
 			
 			// Effective Date Start Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
@@ -104,8 +104,9 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 			Predicate a6 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
 			Predicate a9 = cb.equal(c.get("productId"),ocpm1.get("productId"));
+			Predicate a10 = cb.equal(c.get("industryId"),ocpm1.get("industryId"));
 
-			effectiveDate.where(a1,a2,a5,a6,a9);
+			effectiveDate.where(a1,a2,a5,a6,a9,a10);
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<IndustryMaster> ocpm2 = effectiveDate2.from(IndustryMaster.class);
@@ -115,8 +116,9 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
 			Predicate a8 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
 			Predicate a11 = cb.equal(c.get("productId"),ocpm2.get("productId"));
+			Predicate a12 = cb.equal(c.get("industryId"),ocpm2.get("industryId"));
 
-			effectiveDate2.where(a3,a4,a7,a8,a11);
+			effectiveDate2.where(a3,a4,a7,a8,a11,a12);
 			// Where
 			Predicate n1 = cb.equal(c.get("status"),"Y");
 			Predicate n11 = cb.equal(c.get("status"),"R");
@@ -137,12 +139,13 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			else {
 			query.where(n12,n2,n3,n4,n7,n8,n9).orderBy(orderList);
 			}
-			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getIndustryId()))).collect(Collectors.toList());
-			list.sort(Comparator.comparing(IndustryMaster :: getIndustryName ));
-			
 			// Get Result
 			TypedQuery<IndustryMaster> result = em.createQuery(query);
 			list = result.getResultList();
+		
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getIndustryId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(IndustryMaster :: getIndustryName ));
+			
 			for (IndustryMaster data : list) {
 				// Response 
 				DropDownRes res = new DropDownRes();

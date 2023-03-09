@@ -167,8 +167,8 @@ public List<PremiaConfigMaster> getPremiaTableNameExistDetails(String PremiaTabl
 		Predicate a5 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"), today);
 		Predicate a6 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 		Predicate a7 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-		
-		amendId.where(a1,a2,a3,a4,a5,a6,a7);
+		Predicate a8 = cb.equal(ocpm1.get("status"),b.get("status"));
+		amendId.where(a1,a2,a3,a4,a5,a6,a7,a8);
 
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
 		Predicate n2 = cb.equal(cb.lower( b.get("premiaTableName")), PremiaTableName.toLowerCase());
@@ -182,8 +182,9 @@ public List<PremiaConfigMaster> getPremiaTableNameExistDetails(String PremiaTabl
 		Predicate n10 = cb.equal(b.get("sectionId"),sectionId);
 		Predicate n11 = cb.equal(b.get("sectionId"), "99999");
 		Predicate n12 = cb.or(n10,n11);
-
-		query.where(n1,n2,n3,n6,n9,n12);
+		Predicate n13 = cb.equal(b.get("status"), "Y");
+		
+		query.where(n1,n2,n3,n6,n9,n12,n13);
 		
 		// Get Result
 		TypedQuery<PremiaConfigMaster> result = em.createQuery(query);
