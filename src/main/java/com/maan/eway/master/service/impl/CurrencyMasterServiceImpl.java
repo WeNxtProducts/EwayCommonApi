@@ -841,6 +841,7 @@ public List<CuurencyDropDownRes> getProductCurrencyMasterDropdown(ProductCurrDro
 		
 		// Get Product Currency Ids
 		List<String> currencyIds = getCompanyProductCurrencyIds(req.getInsuranceId() ,req.getProductId() ) ;
+		log.info("Currency ID --->"+currencyIds);
 		
 		// Criteria
 		CriteriaBuilder cb = em.getCriteriaBuilder();
