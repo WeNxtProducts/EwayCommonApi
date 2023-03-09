@@ -91,7 +91,13 @@ private static final long serialVersionUID = 1L;
     @Column(name="CORE_APP_CODE")
     private BigDecimal coreAppCode ;
 
+    @Column(name="ENDT_FEE_YN")
+    private String endtFeeYn ;
+    @Column(name="ENDT_FEE_PERCENT")
+    private String endtFeePercent ;
 
+ 
+     
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 
