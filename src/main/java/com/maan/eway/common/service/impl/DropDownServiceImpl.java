@@ -1773,8 +1773,11 @@ public class DropDownServiceImpl  implements DropDownService{
 			
 			for (String data : asList) {
 				DropDownRes res = new DropDownRes();
-				res.setCode(data.trim().replaceAll("[a-z.A-Z_ ]", "")  );
-				res.setCodeDesc(data.trim().replaceAll("[a-z.A-Z_ ]", "")  );
+				String trimValue = data.trim() ;
+				int spacePos = trimValue.indexOf(" ")  ;
+				String value = trimValue.substring(spacePos + 1 , trimValue.length() );
+				res.setCode(value);
+				res.setCodeDesc(value);
 				res.setStatus("Y");
 				resList.add(res);
 			}
