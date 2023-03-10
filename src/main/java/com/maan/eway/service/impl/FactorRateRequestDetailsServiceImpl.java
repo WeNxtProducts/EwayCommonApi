@@ -322,7 +322,7 @@ this.repository = repo;
 					saveCover.setExcessDesc(coverData.getExcessDesc()==null ? null : coverData.getExcessDesc());
 					saveCover.setExcessPercent(coverData.getExcessPercent()==null ? null : coverData.getExcessPercent());
 					saveCover.setProRataYn(coverData.getProRataYn()==null ? "N" : coverData.getProRataYn());
-					String userOpt=!"D".equals(saveCover.getIsSelected())?"N":"Y";
+					String userOpt=(!"D".equals(saveCover.getIsSelected()) )?(StringUtils.isBlank(coverData.getUserOpt())?"N":coverData.getUserOpt()):(StringUtils.isBlank(coverData.getUserOpt())?"N":coverData.getUserOpt());
 					saveCover.setRegulatoryCode(coverData.getRegulatoryCode());
 					saveCover.setMinimumPremiumYn(StringUtils.isBlank(coverData.getMinimumPremiumYn())?"N":coverData.getMinimumPremiumYn());
 				/*	if(coverIds!=null && !coverIds.isEmpty()) {
@@ -438,8 +438,8 @@ this.repository = repo;
 //							if(coverData.getTaxes().size() > 2  ) 
 //								saveSubCover.setTax3(subCoverData.getTaxes().get(2).getTaxAmount()==null ? null : Double.valueOf(df.format(subCoverData.getTaxes().get(2).getTaxAmount())) );
 //						}
-						String userOpt=!"D".equals(saveSubCover.getIsSelected())?"N":"Y";
-						saveSubCover.setRegulatoryCode(subCoverData.getRegulatoryCode());
+						//String userOpt=(!"D".equals(saveSubCover.getIsSelected()))?"N":(StringUtils.isBlank(coverData.getUserOpt())?"N":coverData.getUserOpt());						saveSubCover.setRegulatoryCode(subCoverData.getRegulatoryCode());
+						String userOpt=(!"D".equals(saveSubCover.getIsSelected()) )?(StringUtils.isBlank(coverData.getUserOpt())?"N":coverData.getUserOpt()):(StringUtils.isBlank(coverData.getUserOpt())?"N":coverData.getUserOpt());
 						saveSubCover.setMinimumPremiumYn(StringUtils.isBlank(subCoverData.getMinimumPremiumYn())?"N":subCoverData.getMinimumPremiumYn());
 						/*if(coverIds!=null && !coverIds.isEmpty()) {
 							long count = coverIds.stream().filter(t-> (saveSubCover.getCoverId().equals(t.getCoverId()) && saveSubCover.getSubCoverId().equals(t.getSubCoverId()) )).count() ;
