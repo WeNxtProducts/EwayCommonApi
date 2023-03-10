@@ -37,6 +37,10 @@ public class SmsNofiGetRes {
 	@JsonProperty("ResMessage")
 	private String resMessage;
 	    
+
+	@JsonProperty("CustomerName")
+	private String customerName;
+	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")
 	private Date EntryDate;

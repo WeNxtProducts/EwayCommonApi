@@ -21,7 +21,7 @@ public class MailNotifGetRes {
 	
 	@JsonProperty("MailRegards")
 	private String mailRegards;
-	
+		
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("PushedEntryDate")
 	private Date pushedEntryDate;
@@ -31,6 +31,10 @@ public class MailNotifGetRes {
 	
 	@JsonProperty("FromMail")
 	private String fromMail;
+	
+
+	@JsonProperty("CustomerName")
+	private String customerName;
 	
 	@JsonProperty("Status")
 	private String status;

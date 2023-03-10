@@ -1444,15 +1444,15 @@ public List<MailNotifGetRes> getSentMailList(NotifGetReq req) {
 	try {
 		// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<MailDataDetails> query = cb.createQuery(MailDataDetails.class);
-			List<MailDataDetails> list = new ArrayList<MailDataDetails>();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+			List<Tuple> list = new ArrayList<Tuple>();
 
 			// Find All
 			Root<NotifTransactionDetails> n = query.from(NotifTransactionDetails.class);
 			Root<MailDataDetails> m = query.from(MailDataDetails.class);
 
 			// Select
-			query.select(m);
+			query.multiselect( m.alias("mail") , n.alias("notif")   );
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -1469,12 +1469,14 @@ public List<MailNotifGetRes> getSentMailList(NotifGetReq req) {
 			int offset =StringUtils.isBlank(req.getOffset())? 100 :Integer.valueOf(req.getOffset()) ;
 			
 			// Get Result
-			TypedQuery<MailDataDetails> result = em.createQuery(query);
+			TypedQuery<Tuple> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			list = result.getResultList();
 			
-		for (MailDataDetails data : list) {
+		for (Tuple t : list) {
+			MailDataDetails data = (MailDataDetails) t.get("mail") ;
+			NotifTransactionDetails notif = (NotifTransactionDetails) t.get("notif") ;
 			// Response
 			MailNotifGetRes res = new MailNotifGetRes();
 			res.setFromMail(data.getFromEmail());
@@ -1487,7 +1489,8 @@ public List<MailNotifGetRes> getSentMailList(NotifGetReq req) {
 			res.setPushedBy(data.getPushedBy());
 			res.setPushedEntryDate(data.getPushedEntryDate());
 			res.setStatus(data.getStatus());
-			res.setToMail(data.getToEmail());		
+			res.setToMail(data.getToEmail());
+			res.setCustomerName(notif.getCustomerName());
 			resList.add(res);
 		}
 	} catch (Exception e) {
@@ -1504,15 +1507,15 @@ public List<SmsNofiGetRes> getSmsSentList(NotifGetReq req) {
 	try {
 		// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<SmsDataDetails> query = cb.createQuery(SmsDataDetails.class);
-			List<SmsDataDetails> list = new ArrayList<SmsDataDetails>();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+			List<Tuple> list = new ArrayList<Tuple>();
 
 			// Find All
 			Root<NotifTransactionDetails> n = query.from(NotifTransactionDetails.class);
 			Root<SmsDataDetails> s = query.from(SmsDataDetails.class);
 
 			// Select
-			query.select(s);
+			query.multiselect( s.alias("sms") , n.alias("notif")   );
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -1529,12 +1532,14 @@ public List<SmsNofiGetRes> getSmsSentList(NotifGetReq req) {
 			int offset =StringUtils.isBlank(req.getOffset())? 100 :Integer.valueOf(req.getOffset()) ;
 			
 			// Get Result
-			TypedQuery<SmsDataDetails> result = em.createQuery(query);
+			TypedQuery<Tuple> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			list = result.getResultList();
 			
-		for (SmsDataDetails data : list) {
+		for (Tuple t : list) {
+			SmsDataDetails data = (SmsDataDetails) t.get("sms") ;
+			NotifTransactionDetails notif = (NotifTransactionDetails) t.get("notif") ;
 			// Response
 			SmsNofiGetRes res = new SmsNofiGetRes();
 			res.setEntryDate(data.getEntryDate());
@@ -1550,6 +1555,7 @@ public List<SmsNofiGetRes> getSmsSentList(NotifGetReq req) {
 			res.setSmsType(data.getSmsType());
 			res.setSno(data.getSNo());
 			res.setSmsRegards(data.getSmsRegards());
+			res.setCustomerName(notif.getCustomerName());
 			resList.add(res);
 		}
 	} catch (Exception e) {
@@ -1565,6 +1571,7 @@ public MailNotifGetRes viewSentMail(NotifGetByIdReq req) {
 	MailNotifGetRes res = new MailNotifGetRes();
 	try {
 		List<MailDataDetails> list = mailDataRepo.findByNotifNoOrderByPushedEntryDateDesc(Integer.valueOf(req.getNotificationNo()));
+		List<NotifTransactionDetails> notiflist = notifTrans.findByNotifNoOrderByEntryDateDesc(Integer.valueOf(req.getNotificationNo()));
 
 		MailDataDetails data = list.get(0) ;
 		// Response
@@ -1578,8 +1585,9 @@ public MailNotifGetRes viewSentMail(NotifGetByIdReq req) {
 		res.setPushedBy(data.getPushedBy());
 		res.setPushedEntryDate(data.getPushedEntryDate());
 		res.setStatus(data.getStatus());
-		res.setToMail(data.getToEmail());		
-	
+		res.setToMail(data.getToEmail());
+		res.setCustomerName(notiflist.get(0).getCustomerName());
+		
 	} catch (Exception e) {
 		e.printStackTrace();
 		log.info("Exception is ---> " + e.getMessage());
@@ -1594,7 +1602,7 @@ public SmsNofiGetRes viewSmsSent(NotifGetByIdReq req) {
 	SmsNofiGetRes res = new SmsNofiGetRes();
 	try {
 		List<SmsDataDetails> list = smsDataRepo.findByNotifNoOrderByEntryDateDesc(Integer.valueOf(req.getNotificationNo()));
-
+		List<NotifTransactionDetails> notiflist = notifTrans.findByNotifNoOrderByEntryDateDesc(Integer.valueOf(req.getNotificationNo()));
 			
 		SmsDataDetails data = list.get(0);
 		// Response
@@ -1611,7 +1619,7 @@ public SmsNofiGetRes viewSmsSent(NotifGetByIdReq req) {
 		res.setSmsType(data.getSmsType());
 		res.setSno(data.getSNo());
 		res.setSmsRegards(data.getSmsRegards());
-		;
+		res.setCustomerName(notiflist.get(0).getCustomerName());;
 	
 	} catch (Exception e) {
 		e.printStackTrace();
