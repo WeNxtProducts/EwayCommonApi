@@ -97,10 +97,10 @@ public class FollowupDetailsServiceImpl  implements FollowupDetailsService{
 				List<Order> orderList = new ArrayList<Order>();
 				orderList.add(cb.desc(b.get("entryDate")));
 				//Where
-				Predicate n1 = cb.equal(b.get("followupid"),req.getFollowupId());
+				Predicate n1 = cb.equal(b.get("followupId"),req.getFollowupId());
 				Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId());
 				Predicate n3 = cb.equal(b.get("branchCode"),"99999");
-				Predicate n4 = cb.equal(b.get("requestReferecnceNo"),req.getRequestReferenceNo());
+				Predicate n4 = cb.equal(b.get("requestReferenceNo"),req.getRequestReferenceNo());
 				Predicate n5 = cb.equal(b.get("loginId"),req.getLoginId());
 				Predicate n6 = cb.equal(b.get("productId"),req.getProductId());
 			
@@ -123,6 +123,7 @@ public class FollowupDetailsServiceImpl  implements FollowupDetailsService{
 			saveData.setUpdatedDate(new Date());
 			saveData.setStatus(req.getStatus());
 			saveData.setStatusDesc(data.getItemValue());
+			saveData.setCompanyId(req.getCompanyId());
 			repository.saveAndFlush(saveData);	
 			log.info("Saved Details is --> " + json.toJson(saveData));	
 			}
