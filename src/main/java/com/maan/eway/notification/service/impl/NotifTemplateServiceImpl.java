@@ -583,7 +583,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
 			n.setProductid(Integer.valueOf(req.getProductId()));
 			n.setProductName(cusRefNo.get(0).getProductName());
-			n.setQuoteNo(StringUtils.isBlank(cusRefNo.get(0).getQuoteNo().toString())?cusRefNo.get(0).getRequestReferenceNo():cusRefNo.get(0).getQuoteNo().toString());
+			n.setQuoteNo(cusRefNo.get(0).getQuoteNo()!=null? cusRefNo.get(0).getQuoteNo().toString() : "");
 			n.setSectionName(cusRefNo.get(0).getSectionName());
 			n.setPushedBy(req.getCreatedBy());
 			n.getTinyUrl();
@@ -674,7 +674,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
 			n.setProductid(Integer.valueOf(req.getProductId()));
 			n.setProductName(cusRefNo.get(0).getProductName());
-			n.setQuoteNo(cusRefNo.get(0).getQuoteNo().toString());
+			n.setQuoteNo(cusRefNo.get(0).getQuoteNo()!=null? cusRefNo.get(0).getQuoteNo().toString() : "");
 			n.setSectionName(cusRefNo.get(0).getSectionName());
 			n.getTinyUrl();
 			
@@ -769,7 +769,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
 			n.setProductid(Integer.valueOf(req.getProductId()));
 			n.setProductName(cusRefNo.get(0).getProductDesc());
-			n.setQuoteNo(cusRefNo.get(0).getQuoteNo().toString());
+			n.setQuoteNo(cusRefNo.get(0).getQuoteNo()!=null? cusRefNo.get(0).getQuoteNo().toString() : "");
 			n.setSectionName(cusRefNo.get(0).getSectionDesc());
 			n.setPushedBy(req.getCreatedBy());
 			n.getTinyUrl();
@@ -857,7 +857,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
 			n.setProductid(Integer.valueOf(req.getProductId()));
 			n.setProductName(cusRefNo.get(0).getProductDesc());
-			n.setQuoteNo(StringUtils.isBlank(cusRefNo.get(0).getQuoteNo().toString())?cusRefNo.get(0).getRequestReferenceNo():cusRefNo.get(0).getQuoteNo().toString());
+			n.setQuoteNo(cusRefNo.get(0).getQuoteNo()!=null? cusRefNo.get(0).getQuoteNo().toString() : "");
 			n.setSectionName(cusRefNo.get(0).getSectionDesc());
 			n.setPushedBy(req.getCreatedBy());
 			// Referral Noti , referral app,recj
@@ -1464,7 +1464,7 @@ public List<MailNotifGetRes> getSentMailList(NotifGetReq req) {
 			Predicate n3 = cb.equal(n.get("companyid"), req.getInsuranceId());
 			Predicate n4 = cb.equal(n.get("productid"), req.getProductId());
 			Predicate n5 = cb.equal(n.get("notifNo"), m.get("notifNo"));
-			query.where(n1,n2,n3,n4,n5);
+			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
 			int limit =StringUtils.isBlank(req.getLimit())? 0 :Integer.valueOf(req.getLimit()) ;
 			int offset =StringUtils.isBlank(req.getOffset())? 100 :Integer.valueOf(req.getOffset()) ;
 			
@@ -1524,7 +1524,7 @@ public List<SmsNofiGetRes> getSmsSentList(NotifGetReq req) {
 			Predicate n3 = cb.equal(n.get("companyid"), req.getInsuranceId());
 			Predicate n4 = cb.equal(n.get("productid"), req.getProductId());
 			Predicate n5 = cb.equal(n.get("notifNo"), s.get("notifNo"));
-			query.where(n1,n2,n3,n4 , n5);
+			query.where(n1,n2,n3,n4 , n5).orderBy(orderList);
 			int limit =StringUtils.isBlank(req.getLimit())? 0 :Integer.valueOf(req.getLimit()) ;
 			int offset =StringUtils.isBlank(req.getOffset())? 100 :Integer.valueOf(req.getOffset()) ;
 			
