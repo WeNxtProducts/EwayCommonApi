@@ -12,6 +12,8 @@
 
 package com.maan.eway.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -19,6 +21,8 @@ import com.maan.eway.bean.SmsDataDetails;
 import com.maan.eway.bean.SmsDataDetailsId;
  
 public interface SmsDataDetailsRepository  extends JpaRepository<SmsDataDetails,SmsDataDetailsId > , JpaSpecificationExecutor<SmsDataDetails> {
+
+	List<SmsDataDetails> findByNotifNoOrderByEntryDateDesc(Integer valueOf);
 
 
 }

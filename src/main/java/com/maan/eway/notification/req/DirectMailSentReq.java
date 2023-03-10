@@ -1,18 +1,26 @@
-package com.maan.eway.notification.res;
+package com.maan.eway.notification.req;
 
-import java.util.Date;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
 
 @Data
-public class MailTemplateRes {
+public class DirectMailSentReq {
 
+	@JsonProperty("RequestReferenceNo")
+	private String  requestReferenceNo;
+	
+	@JsonProperty("InsuranceId")
+	private String  insuranceId ;
+	
+	@JsonProperty("ProductId")
+	private String  productId ;
 
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+	
 	@JsonProperty("MailSubject")
-	private String mailSubject;
+	private String MailSubject;
 
 	@JsonProperty("MailBody")
 	private String mailBody;
@@ -25,6 +33,6 @@ public class MailTemplateRes {
 	
 	@JsonProperty("NotifTemplateCode")
 	private String notifTemplateCode ;
-
-
+	
+	
 }

@@ -15,4 +15,11 @@ public class SmsTemplateRes {
 
 	@JsonProperty("SmsRegards")
 	private String smsRegards;
+	
+	@JsonProperty("NotificationNo")
+	private String notificationNo;
+	
+	@JsonProperty("NotifTemplateCode")
+	private String notifTemplateCode ;
+	
 }

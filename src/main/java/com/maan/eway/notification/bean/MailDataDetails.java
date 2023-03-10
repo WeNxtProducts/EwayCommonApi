@@ -83,6 +83,10 @@ private static final long serialVersionUID = 1L;
     //--- ENTITY LINKS ( RELATIONSHIP )
     @Column(name="Notif_No", nullable=false)
     private Integer    notifNo ;
+    
+    @Column(name="PUSHED_BY", length=100)
+    private String     pushedBy ;
+
 
 }
 

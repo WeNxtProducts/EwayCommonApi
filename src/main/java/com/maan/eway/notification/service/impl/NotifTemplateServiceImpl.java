@@ -1,24 +1,30 @@
 package com.maan.eway.notification.service.impl;
 
+import java.io.File;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import javax.persistence.Column;
+import javax.mail.Message;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -34,11 +40,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
@@ -49,21 +56,24 @@ import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
+import com.maan.eway.bean.MailMaster;
 import com.maan.eway.bean.NotifTemplateMaster;
-import com.maan.eway.common.req.AdminReferalStatusReq;
+import com.maan.eway.bean.SmsConfigMaster;
+import com.maan.eway.bean.SmsDataDetails;
 import com.maan.eway.common.res.CommonRes;
-import com.maan.eway.common.res.QuoteUpdateRes;
-import com.maan.eway.common.service.PaymentService;
-import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.service.ProductGroupMasterService;
+import com.maan.eway.notification.bean.MailDataDetails;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
+import com.maan.eway.notification.repository.MailDataDetailsRepository;
 import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
 import com.maan.eway.notification.req.Broker;
 import com.maan.eway.notification.req.Customer;
+import com.maan.eway.notification.req.DirectMailSentReq;
+import com.maan.eway.notification.req.DirectSmsSentReq;
 import com.maan.eway.notification.req.JobCredentials;
 import com.maan.eway.notification.req.Mail;
-import com.maan.eway.notification.req.Messenger;
+import com.maan.eway.notification.req.NotifGetByIdReq;
+import com.maan.eway.notification.req.NotifGetReq;
 import com.maan.eway.notification.req.NotifTemplateGetReq;
 import com.maan.eway.notification.req.Notification;
 import com.maan.eway.notification.req.NotificationFrameReq;
@@ -71,39 +81,26 @@ import com.maan.eway.notification.req.Sms;
 import com.maan.eway.notification.req.TemplatesDropDownReq;
 import com.maan.eway.notification.req.UnderWriter;
 import com.maan.eway.notification.req.statealgo.NotificationStatus;
+import com.maan.eway.notification.res.MailNotifGetRes;
 import com.maan.eway.notification.res.MailTemplateRes;
+import com.maan.eway.notification.res.SmsNofiGetRes;
 import com.maan.eway.notification.res.SmsTemplateRes;
 import com.maan.eway.notification.service.NotifTemplateService;
 import com.maan.eway.notification.service.NotificationService;
 import com.maan.eway.notification.service.NotificationValidation;
-import com.maan.eway.repository.BuildingDetailsRepository;
-import com.maan.eway.repository.BuildingRiskDetailsRepository;
-import com.maan.eway.repository.CommonDataDetailsRepository;
-import com.maan.eway.repository.CoverDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
-import com.maan.eway.repository.EServiceSectionDetailsRepository;
-import com.maan.eway.repository.EmiTransactionDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
-import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
-import com.maan.eway.repository.FactorRateRequestDetailsRepository;
-import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
-import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
-import com.maan.eway.repository.MotorDataDetailsRepository;
-import com.maan.eway.repository.MotorDriverDetailsRepository;
-import com.maan.eway.repository.PersonalAccidentRepository;
-import com.maan.eway.repository.PersonalInfoRepository;
-import com.maan.eway.repository.PolicyCoverDataRepository;
-import com.maan.eway.repository.ProductMasterRepository;
-import com.maan.eway.repository.TravelPassengerDetailsRepository;
-import com.maan.eway.repository.TravelPassengerHistoryRepository;
+import com.maan.eway.repository.MailMasterRepository;
+import com.maan.eway.repository.SmsConfigMasterRepository;
+import com.maan.eway.repository.SmsDataDetailsRepository;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.upgrade.criteria.CriteriaService;
-import com.maan.eway.upgrade.criteria.SpecCriteria;
 
 @Service
 @Transactional
@@ -152,14 +149,26 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 	private EServiceMotorDetailsRepository eserMotRepo;
 	
 	@Autowired 
-	private NotifTransactionDetailsRepository notifTrans;
+	private MailMasterRepository mailRepo;
+	
+	@Autowired
+	private SmsConfigMasterRepository smsRepo;
+	
+	@Autowired 
+	private MailDataDetailsRepository mailDataRepo;
+	
+	@Autowired
+	private SmsDataDetailsRepository smsDataRepo;
+	
+	@Autowired
+	private NotifTransactionDetailsRepository notifTrans ; 
+	
+	@Autowired
+	private InsuranceCompanyMasterRepository companyRepo;
 	
 	@Autowired
 	private NotificationValidation vad;
 	
-	
-	@Autowired
-	private InsuranceCompanyMasterRepository companyRepo;
 	
 	@Override
 	public List<DropDownRes> getTemplatesDropDown(TemplatesDropDownReq req) {
@@ -329,7 +338,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			nf.setNotifTemplateName(template.getNotifTemplatename());
 			nf.setProductId(req.getProductId() );
 			nf.setRequestReferenceNo(req.getRequestReferenceNo());;
-			nf.setRemarks(req.getRemarks());
+		//	nf.setRemarks(req.getRemarks());
 			nf.setCreatedBy(req.getCreatedBy());
 			
 			if( req.getProductId().equalsIgnoreCase(motorProductId)) {
@@ -359,6 +368,8 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			mailTemplateRes.setMailBody(mailBody);
 			mailTemplateRes.setMailSubject(mailSubject);
 			mailTemplateRes.setMailRegards(mailRegards);
+			mailTemplateRes.setNotificationNo(ne.getNotifNo()==null?"":String.valueOf(ne.getNotifNo()));
+			mailTemplateRes.setNotifTemplateCode(req.getNotifTemplateCode());
 			res.setCommonResponse(mailTemplateRes);
 			res.setIsError(false);
 			
@@ -392,7 +403,8 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			nf.setNotifTemplateName(template.getNotifTemplatename());
 			nf.setProductId(req.getProductId() );
 			nf.setRequestReferenceNo(req.getRequestReferenceNo());
-			nf.setRemarks(req.getRemarks());
+			nf.setCreatedBy(req.getCreatedBy());
+	//		nf.setRemarks(req.getRemarks());
 			
 			if( req.getProductId().equalsIgnoreCase(motorProductId)) {
 				res = 	motorPushNotification(nf);
@@ -415,6 +427,8 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			smsTemplateRes.setSmsBody(smsBody);
 			smsTemplateRes.setSmsSubject(smsSubject);
 			smsTemplateRes.setSmsRegards(smsRegards);
+			smsTemplateRes.setNotificationNo(ne.getNotifNo()==null?"":String.valueOf(ne.getNotifNo()));
+			smsTemplateRes.setNotifTemplateCode(req.getNotifTemplateCode());
 			res.setCommonResponse(smsTemplateRes);
 			res.setIsError(false);
 			
@@ -435,67 +449,64 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 		 List<Tuple> list = new ArrayList<Tuple>();
 		try {
 			
-//			CriteriaBuilder cb = em.getCriteriaBuilder();
-//			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
-//			// Find All
-//			Root<NotifTransactionDetails> b = query.from(NotifTransactionDetails.class);
-//			query.multiselect( b.get("notifNo").alias("notifNo") ,
-//
-//   			    b.get("customerName").alias("customerName") ; 
-//			    b.get("customerMailid").alias("customerMailid"),
-//			    b.get("customerPhoneNo").alias("customerPhoneNo"),
-//			    b.get("customerPhoneCode").alias("customerPhoneCode"),
-//			    b.get("customerMessengerCode").alias("customerMessengerCode"),
-//			    b.get("customerMessengerPhone").alias("customerMessengerPhone"),
-//			    b.get("brokerName").alias("brokerName"),
-//			    b.get("brokerCompanyName").alias("brokerCompanyName"),
-//			    b.get("brokerMailId").alias("brokerMailId"),
-//			    b.get("brokerPhoneNo").alias("brokerPhoneNo"),
-//			    b.get("brokerPhoneCode").alias("brokerPhoneCode"),
-//			    b.get("brokerMessengerCode").alias("brokerMessengerCode"),
-//			    b.get("brokerMessengerPhone").alias("brokerMessengerPhone"),
-//			    b.get("uwName").alias("uwName"),
-//			    b.get("uwMailid").alias("uwMailid"),
-//			    b.get("uwPhonecode").alias("uwPhonecode"),
-//			    b.get("uwPhoneNo").alias("uwPhoneNo"),
-//			    b.get("uwMessengerCode").alias("uwMessengerCode"),
-//			    b.get("uwMessengerPhone").alias("uwMessengerPhone"),
-//			    b.get("companyName").alias("companyName"),
-//			    b.get("productName").alias("productName"),
-//			    b.get("sectionName").alias("sectionName"),
-//			    b.get("statusMessage").alias("statusMessage"),
-//			    b.get("otp").alias("otp"),
-//			    b.get("policyNo").alias("policyNo"),
-//			    b.get("quoteNo").alias("quoteNo"),
-//			    b.get("notifDescription").alias("notifDescription"),
-//			    b.get("notifTemplatename").alias("notifTemplatename"),
-//			    b.get("entryDate").alias("entryDate"),
-//			    b.get("notifcationPushDate").alias("notifcationPushDate"),
-//			    b.get("notifcationEndDate").alias("notifcationEndDate"),
-//			    b.get("notifPushedStatus").alias(),
-//			    b.get("notifPriority").alias(),
-//			    b.get("tinyUrl").alias(),
-//			    b.get("companyid").alias(),
-//			    b.get("productid").alias(),
-//			    b.get("companyAddress").alias(),
-//			    b.get("companyLogo").alias(),
-//			    b.get("attachFilePath").alias(),
-//			    b.get("pushedBy").alias(),
-//			
-//			// Where
-//			Predicate n1 = cb.equal(b.get("notifNo"), notifNo);
-//			
-//			query.where(n1, n2,n3, n4).orderBy(orderList);
-//
-//			// Get Result
-//			TypedQuery<CityMaster> result = em.createQuery(query);
-//			list = result.getResultList();
-//			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCityId()))).collect(Collectors.toList());
-//			list.sort(Comparator.comparing(CityMaster :: getCityName ));
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+			// Find All
+			Root<NotifTransactionDetails> b = query.from(NotifTransactionDetails.class);
+			query.multiselect( b.get("notifNo").alias("notifNo") ,
+   			    b.get("customerName").alias("customerName") ,
+			    b.get("customerMailid").alias("customerMailid"),
+			    b.get("customerPhoneNo").alias("customerPhoneNo"),
+			    b.get("customerPhoneCode").alias("customerPhoneCode"),
+			    b.get("customerMessengerCode").alias("customerMessengerCode"),
+			    b.get("customerMessengerPhone").alias("customerMessengerPhone"),
+			    b.get("brokerName").alias("brokerName"),
+			    b.get("brokerCompanyName").alias("brokerCompanyName"),
+			    b.get("brokerMailId").alias("brokerMailId"),
+			    b.get("brokerPhoneNo").alias("brokerPhoneNo"),
+			    b.get("brokerPhoneCode").alias("brokerPhoneCode"),
+			    b.get("brokerMessengerCode").alias("brokerMessengerCode"),
+			    b.get("brokerMessengerPhone").alias("brokerMessengerPhone"),
+			    b.get("uwName").alias("uwName"),
+			    b.get("uwMailid").alias("uwMailid"),
+			    b.get("uwPhonecode").alias("uwPhonecode"),
+			    b.get("uwPhoneNo").alias("uwPhoneNo"),
+			    b.get("uwMessengerCode").alias("uwMessengerCode"),
+			    b.get("uwMessengerPhone").alias("uwMessengerPhone"),
+			    b.get("companyName").alias("companyName"),
+			    b.get("productName").alias("productName"),
+			    b.get("sectionName").alias("sectionName"),
+			    b.get("statusMessage").alias("statusMessage"),
+			    b.get("otp").alias("otp"),
+			    b.get("policyNo").alias("policyNo"),
+			    b.get("quoteNo").alias("quoteNo"),
+			    b.get("notifDescription").alias("notifDescription"),
+			    b.get("notifTemplatename").alias("notifTemplatename"),
+			    b.get("entryDate").alias("entryDate"),
+			    b.get("notifcationPushDate").alias("notifcationPushDate"),
+			    b.get("notifcationEndDate").alias("notifcationEndDate"),
+			    b.get("notifPushedStatus").alias("notifPushedStatus"),
+			    b.get("notifPriority").alias("notifPriority"),
+			    b.get("tinyUrl").alias("tinyUrl"),
+			    b.get("companyid").alias("companyid"),
+			    b.get("productid").alias("productid"),
+			    b.get("companyAddress").alias("companyAddress"),
+			    b.get("companyLogo").alias("companyLogo"),
+			    b.get("attachFilePath").alias("attachFilePath"),
+			    b.get("pushedBy").alias("pushedBy") );
+			
+			// Where
+			Predicate n1 = cb.equal(b.get("notifNo"), notifNo);
+			
+			query.where(n1);
+
+			// Get Result
+			TypedQuery<Tuple> result = em.createQuery(query);
+			list = result.getResultList();
 		}catch (Exception e) {
 			e.printStackTrace();	
 		}
-		return null;
+		return list;
 		
 	}
 	
@@ -1031,7 +1042,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 	} 
 	
 	
-	private String getTemplateFrame(Tuple t ,NotifTemplateMaster m) {
+	private String getTemplateFrame(Tuple t ,NotifTemplateMaster m , String mailBody , 	String mailSubject,	String mailRegards) {
 		try {
 			 String baseTemplate="<div style=\"margin: 0px auto;width: 700px;max-width: 90%;padding-top: 20px;background-color: rgb(255,255,255);\">\r\n"
 			 		+ "        <div style=\"text-align: center; margin-bottom: 20px;\"> <img height=\"20px\"> </div>\r\n"
@@ -1081,10 +1092,6 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			 		+ "          </div>\r\n"
 			 		+ "        </div>\r\n"
 			 		+ "      </div>";
-		  
-			     String mailBody=(String) getContentFrame(t, m.getMailBody());
-			     String mailSubject=(String) getContentFrame(t, m.getMailSubject());
-				String mailRegards=(String) getContentFrame(t, m.getMailRegards());
 				String xCustomerx="Team";
 				if("customerMailid".equals(m.getToEmail())) {
 					xCustomerx=(t.get("customerName")==null || StringUtils.isBlank(t.get("customerName").toString()))?"Team":t.get("customerName").toString();
@@ -1112,5 +1119,493 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			e.printStackTrace();
 		}
 		return null;
-	} 
+	}
+
+	@Override
+	public CommonRes sentDirectMail(DirectMailSentReq req) {
+		CommonRes res = new CommonRes();
+		SuccessRes response = new SuccessRes();
+		try {
+			
+			String mailBody= req.getMailBody();
+			String mailSubject= req.getMailSubject();
+			String mailRegards=req.getMailRegards();
+			
+			NotifTemplateGetReq ntr = new NotifTemplateGetReq();
+			ntr.setNotifTemplateCode(req.getNotifTemplateCode());
+			ntr.setInsuranceId(req.getInsuranceId());
+			ntr.setProductId(req.getProductId());
+			
+			NotifTemplateMaster template = getTemplateDetails(ntr) ;
+			
+			Tuple t =  loadNotificationPending(Integer.valueOf( req.getNotificationNo())).get(0);
+			MailMaster mailc = mailRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(req.getInsuranceId(),"99999","Y").get(0);													
+
+			// Mail Credentials 
+			String tomailds=(String) getValue(t,template.getToEmail());
+			String tomailid=tomailds;
+			List<String> mailcc=null;
+			if(tomailds.indexOf(",")!=1) {
+				tomailid=tomailds.split(",")[0];
+			    String[] mailcsc = tomailid.split(",");
+			    List<String> asList = Arrays.asList(mailcsc);
+			    mailcc= (asList.size()>5)?asList.subList(0, 5):asList;
+			}
+			
+			String templatebody=getTemplateFrame(t, template ,  mailSubject ,mailBody , mailRegards);
+			
+			Mail ml=Mail.builder()
+					.mailBody(templatebody)
+					.mailRegards(null)
+					.mailSubject(mailSubject)
+					.mailTo(tomailid)
+					.mailcc(mailcc)
+					.credential(JobCredentials.builder().host(mailc.getSmtpHost()).port(mailc.getSmtpPort()).isSSL(true).password(mailc.getSmtpPwd()).username(mailc.getSmtpUser()).build())
+					.attachments(t.get("attachFilePath")==null?"":t.get("attachFilePath").toString())
+					.notifNo(Integer.parseInt(t.get("notifNo").toString()))
+					.build();
+			
+			
+			// Push Mail
+			ExecutorService service = Executors.newFixedThreadPool(4);
+		    service.submit(new Runnable() {
+		        public void run() {
+		        	pushMail(ml ,req.getCreatedBy() );
+		        }
+		    });
+			
+		 	response.setResponse("Mail Sent Successfully");	
+			response.setSuccessId(req.getNotificationNo());
+			res.setCommonResponse(response);
+			res.setIsError(false);
+		
+			 
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			List<Error> errors = new ArrayList<Error>();
+			errors.add(new Error("01" ,"Common Error" ,e.getMessage() ));
+			res.setCommonResponse(null);
+			res.setIsError(false);
+			res.setErrorMessage(errors);
+			return res ;
+		}
+		return res;
+	}
+	
+	private Object getValue(Tuple t, String fieldNameString) {
+		 try {
+			Object o=(Object) t.get(fieldNameString);
+			if (o instanceof BigDecimal) {
+				return o.toString();
+			}
+			return o;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+		
+	}
+
+	@Override
+	public CommonRes sentDirectSms(DirectSmsSentReq req) {
+		CommonRes res = new CommonRes();
+		SuccessRes response = new SuccessRes();
+		try {
+			String smsBody= req.getSmsBody();
+			String smsSubject= req.getSmsSubject();
+			String smsRegards=req.getSmsRegards();
+		
+			NotifTemplateGetReq ntr = new NotifTemplateGetReq();
+			ntr.setNotifTemplateCode(req.getNotifTemplateCode());
+			ntr.setInsuranceId(req.getInsuranceId());
+			ntr.setProductId(req.getProductId());
+			
+			NotifTemplateMaster template = getTemplateDetails(ntr) ;
+			Tuple t =  loadNotificationPending(Integer.valueOf( req.getNotificationNo())).get(0);
+			SmsConfigMaster smsc = smsRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(req.getInsuranceId(),"99999","Y").get(0);													
+			
+			Sms s=Sms.builder()
+					.smsBody((String) getContentFrame(t, smsBody))
+					.smsRegards((String) getContentFrame(t,smsRegards))
+					.smsSubject((String) getContentFrame(t, smsSubject))
+					.smsTo((String) getValue(t,template.getToSmsno()))	
+					.smsFrom((String)getValue(t,smsc.getSenderId()))
+					.credential(JobCredentials.builder().host(smsc.getSmsPartyUrl()).isSSL(true).password(smsc.getSmsUserPass()).username(smsc.getSmsUserName()).build())
+					.smsToCode((String) getValue(t,t.get("customerPhoneCode").toString()))
+					.notifNo(Integer.parseInt(t.get("notifNo").toString()))
+					.build();
+			
+			ExecutorService service = Executors.newFixedThreadPool(4);
+		    service.submit(new Runnable() {
+		        public void run() {
+		        	pushSms(s , req.getCreatedBy());
+		        }
+		    });
+			
+			
+			response.setResponse("Sms Sent Successfully");	
+			response.setSuccessId(req.getNotificationNo());
+			res.setCommonResponse(response);
+			res.setIsError(false);
+			
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			List<Error> errors = new ArrayList<Error>();
+			errors.add(new Error("01" ,"Common Error" ,e.getMessage() ));
+			res.setCommonResponse(null);
+			res.setIsError(false);
+			res.setErrorMessage(errors);
+			return res ;
+		}
+		return res;
+	}
+	
+	
+	public String pushMail(Mail m , String pushedBy) {
+		   
+		String statusResponse=null;
+		try {
+			Properties prop = new Properties();
+			prop.put("mail.smtp.host", m.getCredential().getHost());
+			prop.put("mail.smtp.port", m.getCredential().getPort());
+			if(m.getCredential().getIsSSL()) {
+				prop.put("mail.smtp.auth", "true");
+				prop.put("mail.smtp.starttls.enable", "true"); // TLS
+			}else {
+				prop.put("mail.smtp.auth", "false");
+				prop.put("mail.smtp.starttls.enable", "false"); // TLS
+			}
+			
+			Session session = Session.getInstance(prop, new javax.mail.Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(m.getCredential().getUsername(), m.getCredential().getPassword());
+				}
+			});
+			MimeMessage mimeMessage = new MimeMessage(session);
+
+			mimeMessage.setFrom(new InternetAddress(m.getCredential().getUsername()));
+			
+			InternetAddress	to = new InternetAddress(m.getMailTo());
+			mimeMessage.addRecipient(Message.RecipientType.TO, to);
+			// Mail Cc
+			InternetAddress[] addressCc=null;
+			if (m.getMailcc() != null && m.getMailcc().size()>0 ) {
+				 addressCc = new InternetAddress[m.getMailcc().size()];
+				for (int i = 0; i < m.getMailcc().size(); i++) {
+					if (StringUtils.isNotBlank( m.getMailcc().get(i))) {
+						addressCc[i] = new InternetAddress( m.getMailcc().get(i)); 
+						mimeMessage.addRecipient(Message.RecipientType.CC, addressCc[i]); 
+					}
+				} 
+			}
+			 
+			mimeMessage.setSubject(m.getMailSubject());
+			mimeMessage.setContent(m.getMailBody(), "text/html");
+			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+			helper.setSubject(m.getMailSubject());
+			helper.setText(m.getMailBody(), true);
+			if(m.getAttachments()!=null && StringUtils.isNotBlank(m.getAttachments())) {
+				for (String attachPath : m.getAttachments().split(";")) {
+					File file=loadFilesFromPath(attachPath);
+					if (file != null && file.exists())
+						helper.addAttachment(file.getName(), file);
+				}
+			}
+			
+			
+			
+			Transport.send(mimeMessage);
+		}catch (Exception e) {
+			e.printStackTrace();
+			statusResponse=e.getLocalizedMessage();
+			return statusResponse ;
+		}
+		
+		
+		MailDataDetails mdd=MailDataDetails.builder()
+				.fromEmail(m.getCredential().getUsername())
+				.mailBody(m.getMailBody())
+				.mailRegards(m.getMailRegards())
+				.mailResponse(statusResponse)
+				.mailSubject(m.getMailSubject())
+				.mailTranId(null)
+				.pushedEntryDate(new Date())
+				.status(statusResponse==null?"S":"F")
+				.toEmail(m.getMailTo())
+				.notifNo(m.getNotifNo())
+				.pushedBy(pushedBy)
+				.build();
+		mailDataRepo.save(mdd);
+		statusResponse = "Success" ;
+		return statusResponse ;
+		 
+	}
+	
+	
+private File loadFilesFromPath(String attachPath) {
+		
+		try {
+			return new File(attachPath);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
+public String pushSms(Sms m , String pushedBy) {
+
+	String statusResponse = null;
+	String type="0";	
+	String dlr="1";
+	String statuscode="";
+	Integer statusvalue =0;
+	try {
+		/*
+		Properties prop = new Properties();
+		prop.put("MobileNo", m.getSmsTo());
+		prop.put("SmsContent", m.getSmsBody());
+		prop.put("SmsRegards", m.getSmsRegards()==null?m.getWhatsappRegards():m.getSmsRegards());
+		prop.put("SmsSubject", m.getSmsSubject());
+		*/	
+		String mobileCode="";
+		RestTemplate restTemplate = new RestTemplate();
+		String fooResourceUrl = m.getCredential().getHost();
+		if(StringUtils.isNotBlank( m.getSmsToCode())) {
+		mobileCode = m.getSmsToCode().replace("+", "");
+		}
+		String content="username="
+				+ URLEncoder.encode(m.getCredential().getUsername(), "UTF-8") + "&password="
+				+ m.getCredential().getPassword() + "&type="
+				+ URLEncoder.encode(type, "UTF-8") + "&dlr="
+				+ URLEncoder.encode(dlr, "UTF-8") + "&destination="
+				 + URLEncoder.encode(m.getSmsBody(), "UTF-8") + "&source="
+						+ URLEncoder.encode(mobileCode+m.getSmsFrom(), "UTF-8") + "&message="
+						+m.getSmsBody()+m.getSmsRegards()==null?"":m.getSmsRegards();
+		System.out.println("SMS request  ---> "+fooResourceUrl + "?"+content);
+		
+		ResponseEntity<String> response	  = restTemplate.getForEntity(fooResourceUrl + "?"+content, String.class);
+		
+		System.out.println("SMS Response"+response.getBody());
+		statuscode = response.getStatusCode().toString();
+		statusvalue = response.getStatusCodeValue();		
+	} catch (Exception e) {
+		e.printStackTrace();
+		statusResponse = e.getLocalizedMessage();
+		return statusResponse ;
+	}
+
+	SmsDataDetails savedata = new SmsDataDetails();
+
+	Long sno = smsDataRepo.count();
+	sno=sno+1;
+	savedata.setMobileNo(m.getSmsTo());
+	savedata.setSmsFrom(m.getSmsFrom());		
+	savedata.setSmsType(m.getSmsSubject());
+	savedata.setSmsContent(m.getSmsBody());
+	savedata.setEntryDate(new Date());
+	savedata.setSNo(sno.toString());
+	if(statuscode.equalsIgnoreCase("200OK")) {
+	savedata.setResStatus("OK");
+	savedata.setResMessage("SMS Sent Successful");		
+	}
+	else {
+		savedata.setResStatus("Not OK");
+		savedata.setResMessage("SMS Sent Failed");					
+	}
+	savedata.setReqTime(new Date());
+	savedata.setResTime(new Date());
+	savedata.setNotifNo(m.getNotifNo());
+	savedata.setPushedBy(pushedBy);
+	smsDataRepo.save(savedata);
+	statusResponse = "Success" ;
+	return statusResponse ;
+
+}
+
+@Override
+public List<MailNotifGetRes> getSentMailList(NotifGetReq req) {
+	List<MailNotifGetRes> resList = new ArrayList<MailNotifGetRes>();
+	try {
+		// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<MailDataDetails> query = cb.createQuery(MailDataDetails.class);
+			List<MailDataDetails> list = new ArrayList<MailDataDetails>();
+
+			// Find All
+			Root<NotifTransactionDetails> n = query.from(NotifTransactionDetails.class);
+			Root<MailDataDetails> m = query.from(MailDataDetails.class);
+
+			// Select
+			query.select(m);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(m.get("pushedEntryDate")));
+
+			// Where
+			Predicate n1 = cb.equal(m.get("pushedBy"), req.getCreatedBy() );
+			Predicate n2 = cb.equal(n.get("pushedBy"), req.getCreatedBy());
+			Predicate n3 = cb.equal(n.get("companyid"), req.getInsuranceId());
+			Predicate n4 = cb.equal(n.get("productid"), req.getProductId());
+			Predicate n5 = cb.equal(n.get("notifNo"), m.get("notifNo"));
+			query.where(n1,n2,n3,n4,n5);
+			int limit =StringUtils.isBlank(req.getLimit())? 0 :Integer.valueOf(req.getLimit()) ;
+			int offset =StringUtils.isBlank(req.getOffset())? 100 :Integer.valueOf(req.getOffset()) ;
+			
+			// Get Result
+			TypedQuery<MailDataDetails> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+			
+		for (MailDataDetails data : list) {
+			// Response
+			MailNotifGetRes res = new MailNotifGetRes();
+			res.setFromMail(data.getFromEmail());
+			res.setMailBody(data.getMailBody());
+			res.setMailRegards(data.getMailRegards());
+			res.setMailResponse(data.getMailResponse());
+			res.setMailSubject(data.getMailSubject());		
+			res.setMailTranId(data.getMailTranId()==null?"" : data.getMailTranId().toString() );
+			res.setNotificationNo(data.getNotifNo()==null?"" : data.getNotifNo().toString() );
+			res.setPushedBy(data.getPushedBy());
+			res.setPushedEntryDate(data.getPushedEntryDate());
+			res.setStatus(data.getStatus());
+			res.setToMail(data.getToEmail());		
+			resList.add(res);
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return resList;
+}
+
+@Override
+public List<SmsNofiGetRes> getSmsSentList(NotifGetReq req) {
+	List<SmsNofiGetRes> resList = new ArrayList<SmsNofiGetRes>();
+	try {
+		// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<SmsDataDetails> query = cb.createQuery(SmsDataDetails.class);
+			List<SmsDataDetails> list = new ArrayList<SmsDataDetails>();
+
+			// Find All
+			Root<NotifTransactionDetails> n = query.from(NotifTransactionDetails.class);
+			Root<SmsDataDetails> s = query.from(SmsDataDetails.class);
+
+			// Select
+			query.select(s);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(s.get("entryDate")));
+
+			// Where
+			Predicate n1 = cb.equal(s.get("pushedBy"), req.getCreatedBy() );
+			Predicate n2 = cb.equal(n.get("pushedBy"), req.getCreatedBy());
+			Predicate n3 = cb.equal(n.get("companyid"), req.getInsuranceId());
+			Predicate n4 = cb.equal(n.get("productid"), req.getProductId());
+			Predicate n5 = cb.equal(n.get("notifNo"), s.get("notifNo"));
+			query.where(n1,n2,n3,n4 , n5);
+			int limit =StringUtils.isBlank(req.getLimit())? 0 :Integer.valueOf(req.getLimit()) ;
+			int offset =StringUtils.isBlank(req.getOffset())? 100 :Integer.valueOf(req.getOffset()) ;
+			
+			// Get Result
+			TypedQuery<SmsDataDetails> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+			
+		for (SmsDataDetails data : list) {
+			// Response
+			SmsNofiGetRes res = new SmsNofiGetRes();
+			res.setEntryDate(data.getEntryDate());
+			res.setMobileNo(data.getMobileNo());
+			res.setNotificationNo(data.getNotifNo()==null?"":data.getNotifNo().toString());		
+			res.setPushedBy(data.getPushedBy());
+			res.setReqTime(data.getReqTime());
+			res.setResTime(data.getResTime());
+			res.setResMessage(data.getResMessage());		
+			res.setResStatus(data.getResStatus());
+			res.setSmsContent(data.getSmsContent());		
+			res.setSmsFrom(data.getSmsFrom());
+			res.setSmsType(data.getSmsType());
+			res.setSno(data.getSNo());		
+		;
+			resList.add(res);
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return resList;
+}
+
+@Override
+public MailNotifGetRes viewSentMail(NotifGetByIdReq req) {
+	MailNotifGetRes res = new MailNotifGetRes();
+	try {
+		List<MailDataDetails> list = mailDataRepo.findByNotifNoOrderByPushedEntryDateDesc(Integer.valueOf(req.getNotificationNo()));
+
+		MailDataDetails data = list.get(0) ;
+		// Response
+		res.setFromMail(data.getFromEmail());
+		res.setMailBody(data.getMailBody());
+		res.setMailRegards(data.getMailRegards());
+		res.setMailResponse(data.getMailResponse());
+		res.setMailSubject(data.getMailSubject());		
+		res.setMailTranId(data.getMailTranId()==null?"" : data.getMailTranId().toString() );
+		res.setNotificationNo(data.getNotifNo()==null?"" : data.getNotifNo().toString() );
+		res.setPushedBy(data.getPushedBy());
+		res.setPushedEntryDate(data.getPushedEntryDate());
+		res.setStatus(data.getStatus());
+		res.setToMail(data.getToEmail());		
+	
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return res ;
+}
+	
+
+@Override
+public SmsNofiGetRes viewSmsSent(NotifGetByIdReq req) {
+	SmsNofiGetRes res = new SmsNofiGetRes();
+	try {
+		List<SmsDataDetails> list = smsDataRepo.findByNotifNoOrderByEntryDateDesc(Integer.valueOf(req.getNotificationNo()));
+
+			
+		SmsDataDetails data = list.get(0);
+		// Response
+		res.setEntryDate(data.getEntryDate());
+		res.setMobileNo(data.getMobileNo());
+		res.setNotificationNo(data.getNotifNo()==null?"":data.getNotifNo().toString());		
+		res.setPushedBy(data.getPushedBy());
+		res.setReqTime(data.getReqTime());
+		res.setResTime(data.getResTime());
+		res.setResMessage(data.getResMessage());		
+		res.setResStatus(data.getResStatus());
+		res.setSmsContent(data.getSmsContent());		
+		res.setSmsFrom(data.getSmsFrom());
+		res.setSmsType(data.getSmsType());
+		res.setSno(data.getSNo());		
+	
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return res;
+}
 }

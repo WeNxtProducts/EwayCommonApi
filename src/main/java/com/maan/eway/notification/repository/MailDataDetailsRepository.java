@@ -12,6 +12,8 @@
 
 package com.maan.eway.notification.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -27,5 +29,7 @@ import com.maan.eway.notification.bean.MailDataDetails;
  
  
 public interface MailDataDetailsRepository  extends JpaRepository<MailDataDetails,Long > , JpaSpecificationExecutor<MailDataDetails> {
+
+	List<MailDataDetails> findByNotifNoOrderByPushedEntryDateDesc(Integer valueOf);
 
 }

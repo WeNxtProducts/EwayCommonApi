@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class NotifTemplateGetReq {
+public class DirectMailSmsSentReq {
 
 	@JsonProperty("RequestReferenceNo")
 	private String  requestReferenceNo;
@@ -16,9 +16,24 @@ public class NotifTemplateGetReq {
 	@JsonProperty("ProductId")
 	private String  productId ;
 	
+	@JsonProperty("NotifApplicable")
+	private String notifApplicable ;
+	
 	@JsonProperty("NotifTemplateCode")
 	private String notifTemplateCode ;
 	
+	@JsonProperty("Remarks")
+	private String remarks;
+	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
+	
+	@JsonProperty("MailSubject")
+	private String mailSubject;
+
+	@JsonProperty("MailBody")
+	private String mailBody;
+
+	@JsonProperty("MailRegards")
+	private String mailRegards;
 }
