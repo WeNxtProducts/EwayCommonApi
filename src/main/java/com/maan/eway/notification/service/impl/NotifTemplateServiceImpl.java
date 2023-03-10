@@ -1260,8 +1260,8 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			sno=sno+1;
 			savedata.setMobileNo(m.getSmsTo());
 			savedata.setSmsFrom(m.getSmsFrom());		
-			savedata.setSmsType(m.getSmsSubject());
-			savedata.setSmsContent(m.getSmsBody());
+			savedata.setSmsType(smsSubject);
+			savedata.setSmsContent(smsBody);
 			savedata.setEntryDate(new Date());
 			savedata.setSNo(sno.toString());
 			savedata.setResMessage("Pending");
