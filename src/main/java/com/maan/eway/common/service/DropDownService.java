@@ -145,4 +145,6 @@ public interface DropDownService {
 
 	List<DropDownRes> industryCategory(LovDropDownReq req);
 
+	List<DropDownRes> followupDetailsStatus(LovDropDownReq req);
+
 }
