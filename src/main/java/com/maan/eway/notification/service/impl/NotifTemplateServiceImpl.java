@@ -1246,7 +1246,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 					.smsBody(smsBody)
 					.smsRegards(smsRegards)
 					.smsSubject(smsSubject)
-					.smsTo(template.getToSmsno())	
+					.smsTo(t.get("customerPhoneNo").toString() )	
 					.smsFrom(smsc.getSenderId())
 					.credential(JobCredentials.builder().host(smsc.getSmsPartyUrl()).isSSL(true).password(smsc.getSmsUserPass()).username(smsc.getSmsUserName()).build())
 					.smsToCode(t.get("customerPhoneCode")==null?"255" : t.get("customerPhoneCode").toString())
