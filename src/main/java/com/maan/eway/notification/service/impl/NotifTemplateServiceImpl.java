@@ -1326,7 +1326,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			return statusResponse ;
 		}
 		
-		
+		statusResponse = "Success" ;
 		MailDataDetails mdd=MailDataDetails.builder()
 				.fromEmail(m.getCredential().getUsername())
 				.mailBody(m.getMailBody())
@@ -1341,7 +1341,6 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 				.pushedBy(pushedBy)
 				.build();
 		mailDataRepo.save(mdd);
-		statusResponse = "Success" ;
 		return statusResponse ;
 		 
 	}
