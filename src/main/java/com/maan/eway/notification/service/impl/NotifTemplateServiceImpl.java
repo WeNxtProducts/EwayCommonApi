@@ -1270,6 +1270,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			savedata.setResTime(new Date());
 			savedata.setNotifNo(m.getNotifNo());
 			savedata.setPushedBy(req.getCreatedBy());
+			savedata.setSmsRegards(smsRegards);
 			smsDataRepo.saveAndFlush(savedata);
 			
 			ExecutorService service = Executors.newFixedThreadPool(4);
@@ -1547,8 +1548,8 @@ public List<SmsNofiGetRes> getSmsSentList(NotifGetReq req) {
 			res.setSmsContent(data.getSmsContent());		
 			res.setSmsFrom(data.getSmsFrom());
 			res.setSmsType(data.getSmsType());
-			res.setSno(data.getSNo());		
-		;
+			res.setSno(data.getSNo());
+			res.setSmsRegards(data.getSmsRegards());
 			resList.add(res);
 		}
 	} catch (Exception e) {
