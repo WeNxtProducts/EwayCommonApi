@@ -1156,7 +1156,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			
 			Mail m=Mail.builder()
 					.mailBody(templatebody)
-					.mailRegards(null)
+					.mailRegards(mailRegards)
 					.mailSubject(mailSubject)
 					.mailTo(tomailid)
 					.mailcc(mailcc)
@@ -1243,9 +1243,9 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			SmsConfigMaster smsc = smsRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(req.getInsuranceId(),"99999","Y").get(0);													
 			
 			Sms m=Sms.builder()
-					.smsBody((String) getContentFrame(t, smsBody))
-					.smsRegards((String) getContentFrame(t,smsRegards))
-					.smsSubject((String) getContentFrame(t, smsSubject))
+					.smsBody(smsBody)
+					.smsRegards(smsRegards)
+					.smsSubject(smsSubject)
 					.smsTo(template.getToSmsno())	
 					.smsFrom(smsc.getSenderId())
 					.credential(JobCredentials.builder().host(smsc.getSmsPartyUrl()).isSSL(true).password(smsc.getSmsUserPass()).username(smsc.getSmsUserName()).build())
