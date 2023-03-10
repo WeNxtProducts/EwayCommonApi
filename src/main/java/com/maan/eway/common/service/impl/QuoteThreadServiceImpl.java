@@ -1251,7 +1251,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				n.setNotifDescription("");
 				n.setNotifPriority(0);
 				n.setNotifPushedStatus(NotificationStatus.PENDING);
-				n.setNotifTemplatename("Referral Notification");
+				n.setNotifTemplatename("Referral Pending");
 				n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
 				n.setProductid(Integer.valueOf(req.getProductId()));
 				n.setProductName("Motor");
