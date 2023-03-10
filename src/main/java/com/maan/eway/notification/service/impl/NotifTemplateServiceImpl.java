@@ -1609,7 +1609,9 @@ public SmsNofiGetRes viewSmsSent(NotifGetByIdReq req) {
 		res.setSmsContent(data.getSmsContent());		
 		res.setSmsFrom(data.getSmsFrom());
 		res.setSmsType(data.getSmsType());
-		res.setSno(data.getSNo());		
+		res.setSno(data.getSNo());
+		res.setSmsRegards(data.getSmsRegards());
+		;
 	
 	} catch (Exception e) {
 		e.printStackTrace();
