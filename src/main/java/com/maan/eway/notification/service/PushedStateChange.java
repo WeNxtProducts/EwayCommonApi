@@ -54,12 +54,12 @@ public class PushedStateChange implements  Function<Tuple,List<Object>>{
 			if(master.getSmsRequired().equals("Y") ) {
 				Sms s=Sms.builder()
 						.smsBody((String) getContentFrame(t, master.getSmsBodyEn()))
-						.smsRegards((String) getContentFrame(t, master.getWhatsappRegards()))
+						.smsRegards((String) getContentFrame(t, master.getSmsRegards()))
 						.smsSubject((String) getContentFrame(t, master.getSmsSubject()))
-						.smsTo((String) getValue(t,master.getToSmsno()))	
-						.smsFrom((String)getValue(t,smsmaster.getSenderId()))
+						.smsTo(master.getToSmsno())	
+						.smsFrom(smsmaster.getSenderId())
 						.credential(JobCredentials.builder().host(smsmaster.getSmsPartyUrl()).isSSL(true).password(smsmaster.getSmsUserPass()).username(smsmaster.getSmsUserName()).build())
-						.smsToCode((String) getValue(t,sms.getCustomerPhoneCode().toString()))
+						.smsToCode(sms.getCustomerPhoneCode().toString())
 						.notifNo(Integer.parseInt(t.get("notifNo").toString()))
 						.build();
 				a.add(s);

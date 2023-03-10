@@ -1231,10 +1231,10 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 					.smsBody((String) getContentFrame(t, smsBody))
 					.smsRegards((String) getContentFrame(t,smsRegards))
 					.smsSubject((String) getContentFrame(t, smsSubject))
-					.smsTo((String) getValue(t,template.getToSmsno()))	
-					.smsFrom((String)getValue(t,smsc.getSenderId()))
+					.smsTo(template.getToSmsno())	
+					.smsFrom(smsc.getSenderId())
 					.credential(JobCredentials.builder().host(smsc.getSmsPartyUrl()).isSSL(true).password(smsc.getSmsUserPass()).username(smsc.getSmsUserName()).build())
-					.smsToCode((String) getValue(t,t.get("customerPhoneCode").toString()))
+					.smsToCode(t.get("customerPhoneCode")==null?"255" : t.get("customerPhoneCode").toString())
 					.notifNo(Integer.parseInt(t.get("notifNo").toString()))
 					.build();
 			
