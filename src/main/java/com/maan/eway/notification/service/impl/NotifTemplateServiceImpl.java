@@ -1154,7 +1154,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			
 			String templatebody=getTemplateFrame(t, template ,  mailSubject ,mailBody , mailRegards);
 			
-			Mail ml=Mail.builder()
+			Mail m=Mail.builder()
 					.mailBody(templatebody)
 					.mailRegards(null)
 					.mailSubject(mailSubject)
@@ -1165,12 +1165,27 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 					.notifNo(Integer.parseInt(t.get("notifNo").toString()))
 					.build();
 			
+			// save Mail
+			MailDataDetails mdd=MailDataDetails.builder()
+					.fromEmail(m.getCredential().getUsername())
+					.mailBody(m.getMailBody())
+					.mailRegards(m.getMailRegards())
+					.mailResponse("Pending")
+					.mailSubject(m.getMailSubject())
+					.mailTranId(null)
+					.pushedEntryDate(new Date())
+					.status("P")
+					.toEmail(m.getMailTo())
+					.notifNo(m.getNotifNo())
+					.pushedBy(req.getCreatedBy())
+					.build();
+			mailDataRepo.saveAndFlush(mdd);
 			
 			// Push Mail
 			ExecutorService service = Executors.newFixedThreadPool(4);
 		    service.submit(new Runnable() {
 		        public void run() {
-		        	pushMail(ml ,req.getCreatedBy() );
+		        	pushMail(m , mdd );
 		        }
 		    });
 			
@@ -1227,7 +1242,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			Tuple t =  loadNotificationPending(Integer.valueOf( req.getNotificationNo())).get(0);
 			SmsConfigMaster smsc = smsRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(req.getInsuranceId(),"99999","Y").get(0);													
 			
-			Sms s=Sms.builder()
+			Sms m=Sms.builder()
 					.smsBody((String) getContentFrame(t, smsBody))
 					.smsRegards((String) getContentFrame(t,smsRegards))
 					.smsSubject((String) getContentFrame(t, smsSubject))
@@ -1238,10 +1253,29 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 					.notifNo(Integer.parseInt(t.get("notifNo").toString()))
 					.build();
 			
+			// Save Sms Data Details
+			SmsDataDetails savedata = new SmsDataDetails();
+
+			Long sno = smsDataRepo.count();
+			sno=sno+1;
+			savedata.setMobileNo(m.getSmsTo());
+			savedata.setSmsFrom(m.getSmsFrom());		
+			savedata.setSmsType(m.getSmsSubject());
+			savedata.setSmsContent(m.getSmsBody());
+			savedata.setEntryDate(new Date());
+			savedata.setSNo(sno.toString());
+			savedata.setResMessage("Pending");
+			savedata.setResStatus("P");
+			savedata.setReqTime(new Date());
+			savedata.setResTime(new Date());
+			savedata.setNotifNo(m.getNotifNo());
+			savedata.setPushedBy(req.getCreatedBy());
+			smsDataRepo.saveAndFlush(savedata);
+			
 			ExecutorService service = Executors.newFixedThreadPool(4);
 		    service.submit(new Runnable() {
 		        public void run() {
-		        	pushSms(s , req.getCreatedBy());
+		        	pushSms(m , savedata);
 		        }
 		    });
 			
@@ -1266,7 +1300,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 	}
 	
 	
-	public String pushMail(Mail m , String pushedBy) {
+	public String pushMail(Mail m , MailDataDetails mdd) {
 		   
 		String statusResponse=null;
 		try {
@@ -1327,19 +1361,8 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 		}
 		
 		statusResponse = "Success" ;
-		MailDataDetails mdd=MailDataDetails.builder()
-				.fromEmail(m.getCredential().getUsername())
-				.mailBody(m.getMailBody())
-				.mailRegards(m.getMailRegards())
-				.mailResponse(statusResponse)
-				.mailSubject(m.getMailSubject())
-				.mailTranId(null)
-				.pushedEntryDate(new Date())
-				.status(statusResponse==null?"S":"F")
-				.toEmail(m.getMailTo())
-				.notifNo(m.getNotifNo())
-				.pushedBy(pushedBy)
-				.build();
+		mdd.setMailResponse("Success");
+		mdd.setStatus("C");
 		mailDataRepo.save(mdd);
 		return statusResponse ;
 		 
@@ -1357,7 +1380,7 @@ private File loadFilesFromPath(String attachPath) {
 		return null;
 	}
 
-public String pushSms(Sms m , String pushedBy) {
+public String pushSms(Sms m , SmsDataDetails savedata) {
 
 	String statusResponse = null;
 	String type="0";	
@@ -1391,24 +1414,14 @@ public String pushSms(Sms m , String pushedBy) {
 		ResponseEntity<String> response	  = restTemplate.getForEntity(fooResourceUrl + "?"+content, String.class);
 		
 		System.out.println("SMS Response"+response.getBody());
-		statuscode = response.getStatusCode().toString();
-		statusvalue = response.getStatusCodeValue();		
+		statuscode =response.getStatusCode()!=null? response.getStatusCode().toString() : "";
+		statusvalue = response.getStatusCodeValue() ;		
 	} catch (Exception e) {
 		e.printStackTrace();
 		statusResponse = e.getLocalizedMessage();
 		return statusResponse ;
 	}
 
-	SmsDataDetails savedata = new SmsDataDetails();
-
-	Long sno = smsDataRepo.count();
-	sno=sno+1;
-	savedata.setMobileNo(m.getSmsTo());
-	savedata.setSmsFrom(m.getSmsFrom());		
-	savedata.setSmsType(m.getSmsSubject());
-	savedata.setSmsContent(m.getSmsBody());
-	savedata.setEntryDate(new Date());
-	savedata.setSNo(sno.toString());
 	if(statuscode.equalsIgnoreCase("200OK")) {
 	savedata.setResStatus("OK");
 	savedata.setResMessage("SMS Sent Successful");		
@@ -1417,10 +1430,7 @@ public String pushSms(Sms m , String pushedBy) {
 		savedata.setResStatus("Not OK");
 		savedata.setResMessage("SMS Sent Failed");					
 	}
-	savedata.setReqTime(new Date());
 	savedata.setResTime(new Date());
-	savedata.setNotifNo(m.getNotifNo());
-	savedata.setPushedBy(pushedBy);
 	smsDataRepo.save(savedata);
 	statusResponse = "Success" ;
 	return statusResponse ;
