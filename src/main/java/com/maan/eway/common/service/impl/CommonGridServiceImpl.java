@@ -445,7 +445,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 			Predicate n6 = e0.in(branches);
 
 			query.where(n1, n2, n3, n4, n6)
-					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
+					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), m.get("customerName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
 							m.get("rejectReason"),m.get("adminRemarks"),m.get("referalRemarks"))
