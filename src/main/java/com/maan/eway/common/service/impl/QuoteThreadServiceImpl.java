@@ -1343,7 +1343,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						n.setNotifDescription("");
 						n.setNotifPriority(0);
 						n.setNotifPushedStatus(NotificationStatus.PENDING);
-						n.setNotifTemplatename("Referral Notification");
+						n.setNotifTemplatename("Referral Penidng");
 						n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
 						n.setProductid(Integer.valueOf(req.getProductId()));
 						n.setProductName("Travel");
@@ -1435,10 +1435,10 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						n.setNotifDescription("");
 						n.setNotifPriority(0);
 						n.setNotifPushedStatus(NotificationStatus.PENDING);
-						n.setNotifTemplatename("Referral Notification");
+						n.setNotifTemplatename("Referral Pending");
 						n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
 						n.setProductid(Integer.valueOf(req.getProductId()));
-						n.setProductName("Travel");
+						n.setProductName("Buliding");
 						n.setQuoteNo(StringUtils.isBlank(cusRefNo.get(0).getQuoteNo().toString())?cusRefNo.get(0).getRequestReferenceNo():cusRefNo.get(0).getQuoteNo().toString());
 						n.setSectionName(cusRefNo.get(0).getSectionDesc());
 						n.setStatusMessage(req.getReferralRemarks());// Referral Noti , referral app,recj
