@@ -145,10 +145,27 @@ public class CalculatorEngineService implements CalculatorEngine{
 	public List<Tuple> LoadCover(CalcEngine engine) {
 		try {
 			String todayInString = DD_MM_YYYY.format(new Date());
-			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()+";status:{Y,R};"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
+			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()+";status:{Y,R};"+todayInString+"~effectiveDateStart&effectiveDateEnd;"
+					+ "agencyCode:"+engine.getAgencyCode()+";branchCode:"+engine.getBranchCode()+";";
 			List<Tuple> result=null;
 			SpecCriteria criteria = crservice.createCriteria(SectionCoverMaster.class, search, "coverId"); 
 			result=crservice.getResult(criteria, 0, 50);
+
+			if(result==null || result.size()==0) {
+				search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()+";status:{Y,R};"+todayInString+"~effectiveDateStart&effectiveDateEnd;"
+						+ "agencyCode:"+engine.getAgencyCode()+";branchCode:99999;";
+
+				criteria = crservice.createCriteria(SectionCoverMaster.class, search, "coverId"); 
+				result=crservice.getResult(criteria, 0, 50);
+				if(result==null || result.size()==0) {
+					search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()+";status:{Y,R};"+todayInString+"~effectiveDateStart&effectiveDateEnd;"
+							+ "agencyCode:99999;branchCode:99999;";
+
+					criteria = crservice.createCriteria(SectionCoverMaster.class, search, "coverId"); 
+					result=crservice.getResult(criteria, 0, 50);
+				}
+
+			}
 
 			return result;
 		}catch (Exception e) {
