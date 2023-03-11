@@ -33,7 +33,7 @@ public class FollowupDetailsSaveReq {
     
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("StartDate")
-    private Date startDate;
+    private String startDate;
 	
 	@JsonProperty("StartTime")
     private String startTime;
@@ -41,7 +41,7 @@ public class FollowupDetailsSaveReq {
 	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EndDate")
-    private Date endDate;
+    private String endDate;
 	
 	@JsonProperty("EndTime")
     private String endTime;
