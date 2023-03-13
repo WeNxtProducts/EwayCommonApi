@@ -48,7 +48,7 @@ public class Endorsement implements Serializable {
     @JsonProperty("PremiumAfterDiscountLC") 
     private BigDecimal premiumAfterDiscountLC;
     @JsonProperty("PremiumExcluedTaxLC") 
-    private BigDecimal premiumExcluedTaxLC;
+    private BigDecimal premiumExcludedTaxLC;
     @JsonProperty("PremiumIncludedTaxLC") 
     private BigDecimal premiumIncludedTaxLC;
     
@@ -56,7 +56,7 @@ public class Endorsement implements Serializable {
     private BigDecimal premiumBeforeDiscount;
     @JsonProperty("PremiumAfterDiscount") 
     private BigDecimal premiumAfterDiscount;
-    @JsonProperty("PremiumExcluedTax") 
+    @JsonProperty("PremiumExcludedTax") 
     private BigDecimal premiumExcluedTax;
     @JsonProperty("PremiumIncludedTax") 
     private BigDecimal premiumIncludedTax;
