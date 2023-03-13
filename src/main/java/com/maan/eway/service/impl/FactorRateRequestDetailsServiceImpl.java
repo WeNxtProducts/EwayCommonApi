@@ -47,6 +47,7 @@ import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.MasterReferralDetails;
 import com.maan.eway.bean.UwQuestionsDetails;
+import com.maan.eway.calculator.util.TaxFromFactor;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.EservieMotorDetailsViewRes;
@@ -1282,12 +1283,23 @@ this.repository = repo;
 					}
 					
 					// Tax Covers
-					List<FactorRateRequestDetails> filterTaxCover = covers.stream().filter( o -> (! o.getTaxId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("T")).collect(Collectors.toList());
+					List<FactorRateRequestDetails> filterTaxCover = covers.stream().filter( o -> 
+					(! o.getTaxId().equals(0)) && o.getDiscLoadId()==0 &&   o.getCoverageType().equalsIgnoreCase("T")).collect(Collectors.toList());
 					
 					if( filterTaxCover.size() > 0 ) {
 						 List<Tax> taxes = getTaxRates(filterTaxCover) ;
 						 coverRes.setTaxes(taxes);	
 					}
+
+					//Endorsement
+					List<FactorRateRequestDetails> filterEndtCover = covers.stream().filter(o -> (o.getDiscLoadId()!=0 &&   o.getCoverageType().equalsIgnoreCase("E"))).collect(Collectors.toList());
+					
+					if(filterEndtCover.size() > 0 ) {
+						List<Endorsement> endorsment  =   getEndorsementRates(filterEndtCover,covers);
+						coverRes.setEndorsements(endorsment);
+					}
+						
+					
 					
 					// Loginds Covers
 					List<FactorRateRequestDetails> filterLodingCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("L") ).collect(Collectors.toList());
@@ -1467,6 +1479,59 @@ this.repository = repo;
 			return null;
 			
 		}return TaxList;
+	}
+	
+	public List<Endorsement> getEndorsementRates(List<FactorRateRequestDetails> filterEndtCover ,List<FactorRateRequestDetails> totalCovers) {
+		List<Endorsement> endtList = new  ArrayList<Endorsement>();
+		try {
+			for (FactorRateRequestDetails t :  filterEndtCover ) {
+				 Endorsement d=Endorsement.builder()
+						 	.endorsementDesc(t.getCoverName()==null?"":t.getCoverName())
+						 	.endorsementId(t.getDiscLoadId()==null?"":t.getDiscLoadId().toString())
+						 	.endorsementRate("F".equals(t.getCalcType()==null?"A":t.getCalcType())?"0": t.getRate()==null?"0":t.getRate().toString())
+						 	.endorsementCalcType(t.getCalcType()==null?"":t.getCalcType())
+						 	.endorsementforId(t.getDiscountCoverId()==null?"":t.getDiscountCoverId().toString())
+						 	.maxAmount(t.getMinimumPremium()==null?BigDecimal.ZERO:t.getMinimumPremium())
+						 	.factorTypeId(t.getFactorTypeId()==null?"":t.getFactorTypeId().toString())
+						 	.regulatoryCode(t.getRegulatoryCode()==null?"N/A":t.getRegulatoryCode())	
+						 	.premiumAfterDiscount(t.getPremiumAfterDiscountFc())
+						    .premiumAfterDiscountLC(t.getPremiumAfterDiscountLc())
+						     .premiumBeforeDiscount(t.getPremiumBeforeDiscountFc())
+						    .premiumBeforeDiscountLC(t.getPremiumBeforeDiscountLc())
+						    .premiumExcluedTax(t.getPremiumExcludedTaxFc())
+						    .premiumExcluedTaxLC(t.getPremiumExcludedTaxLc())
+						    .premiumIncludedTax(t.getPremiumIncludedTaxFc())
+						    .premiumIncludedTaxLC(t.getPremiumIncludedTaxLc())	 
+						    .endtCount(t.getEndtCount())
+						     
+						 	.build();
+				 
+				
+					
+					
+				 endtList.add(d);
+			}
+			
+			
+			 TaxFromFactor endttaxUtil=new TaxFromFactor();
+				if(endtList!=null && endtList.size()>0) {
+					for (Endorsement e : endtList) {
+						
+						// only for endrose we cannt use cover objs tax cover wontbe list.
+						 List<Tax> txx = totalCovers.stream().filter(r -> (r.getDiscLoadId()==Integer.parseInt(e.getEndorsementId())
+								 && r.getCoverId()==Integer.parseInt(e.getEndorsementforId())
+								 && r.getEndtCount().intValue()==e.getEndtCount().intValue())
+								  ).map(endttaxUtil).filter(dx->(dx!=null && !"0".equals(dx.getTaxId())) ).collect(Collectors.toList());
+						 e.setTaxes(txx);
+					}
+				}
+			
+		} catch(Exception e){
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+			
+		}return endtList;
 	}
 
 
