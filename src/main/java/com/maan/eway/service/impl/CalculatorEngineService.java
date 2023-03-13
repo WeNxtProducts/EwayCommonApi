@@ -438,7 +438,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 					
 					
 					//CoverFromPolicy
-					List<PolicyCoverData> basecovers=oldPolicyCovers.stream().filter( d -> !("T".equals(d.getCoverageType()) || "D".equals(d.getCoverageType()) || "L".equals(d.getCoverageType()) || "E".equals(d.getCoverageType())))
+					List<PolicyCoverData> basecovers=oldPolicyCovers.stream().filter( d -> !("T".equals(d.getCoverageType()) || "D".equals(d.getCoverageType()) || "L".equals(d.getCoverageType()) || "E".equals(d.getCoverageType()) ))
 					.collect(Collectors.toList());
 				for (PolicyCoverData d : basecovers) {
 					List<Cover> operatedList=new ArrayList<Cover>();
@@ -516,9 +516,9 @@ public class CalculatorEngineService implements CalculatorEngine{
 					
 					CoverFromPolicy coverUtil=new CoverFromPolicy("");
 					List<Cover> covers = oldPolicyCovers.stream().filter(r -> d.getCoverId()==r.getCoverId()).map(coverUtil).filter(dx->dx!=null).collect(Collectors.toList());
-					List<Cover> oldTax = covers.stream().filter(c -> "T".equals(c.getCoverageType())).collect(Collectors.toList());
+					/*List<Cover> oldTax = covers.stream().filter(c -> "T".equals(c.getCoverageType())).collect(Collectors.toList());
 					covers.removeAll(oldTax);
-					
+					*/
 					List<Tax> taxey = taxes.stream().map(tzx).filter(t->t!=null).collect(Collectors.toList());
 					covers.forEach(c -> c.setTaxes(taxey));
 					
