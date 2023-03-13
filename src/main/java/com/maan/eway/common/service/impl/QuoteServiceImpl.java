@@ -283,6 +283,7 @@ private BuildingDetailsRepository BuildingRepo;
 			quoteRes.setBranchName(homeData.getBranchName());
 			quoteRes.setBrokerBranchName(homeData.getBrokerBranchName());		
 			quoteRes.setEmiYn("N");
+			quoteRes.setEndtTypeId(homeData.getEndtTypeId());
 			
 			// Emi Details 
 			List<EmiTransactionDetails> emiDetails = emiRepo.findByQuoteNoAndCompanyIdAndProductId(homeData.getQuoteNo() ,homeData.getCompanyId() , homeData.getProductId().toString());

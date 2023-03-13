@@ -203,4 +203,12 @@ public class QuoteDetailsRes {
 	@JsonProperty("ApprovedBy(null);
 	@JsonProperty("ApprCanBy(null);"
  */
+	@JsonProperty("EndtStatus")
+	private String endtStatus;
+	@JsonProperty("EndtTypeId")
+	private String endtTypeId;
+	@JsonProperty("policyNo")
+	private String policyNo;
+	
+	
 }

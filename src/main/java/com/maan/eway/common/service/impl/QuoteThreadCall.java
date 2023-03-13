@@ -1410,6 +1410,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setBdmCode(motorData.getBdmCode());
 			home.setSourceType(motorData.getSourceType());
 			home.setApplicationId(motorData.getApplicationId());
+			home.setEndtTypeId(motorData.getEndorsementType()==null?null:String.valueOf(motorData.getEndorsementType()));
+			home.setEndtStatus(StringUtils.isBlank(motorData.getEndtStatus())?"":motorData.getEndtStatus());
+			home.setEndtDate(motorData.getEndorsementEffdate()==null?null:motorData.getEndorsementEffdate());
+			home.setEndtBy(StringUtils.isBlank(request.getCreatedBy())?"":request.getCreatedBy());
+			home.setPolicyNo(motorData.getEndorsementType()==null?null:motorData.getPolicyNo());
 			
 				
 		} catch (Exception e) {

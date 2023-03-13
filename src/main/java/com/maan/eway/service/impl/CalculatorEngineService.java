@@ -1057,6 +1057,8 @@ public class CalculatorEngineService implements CalculatorEngine{
 			 						.getPrecision(),RoundingMode.HALF_UP);
 			 v.getQuoteDetails().getVatPercent();
 			 BigDecimal commissionVat=BigDecimal.ZERO;
+			 
+			 String endttypeid=v.getQuoteDetails().getEndtTypeId();
 			 List<Map<String,Object>> rules=new ArrayList<Map<String,Object>>();
 					 
 			 // Setup
@@ -1128,8 +1130,13 @@ public class CalculatorEngineService implements CalculatorEngine{
 
 			 String crnumber= "CN-"+genNo.generateCreditNo(); //ThreadLocalRandom.current().ints(1001, 4999).distinct().limit(5).findAny().toString();
 			 String drnumber= "DN-"+genNo.generateDebitNo(); //ThreadLocalRandom.current().ints(4999, 9999).distinct().limit(5).findAny().toString();
-			 String policyNo= genNo.generatePolicyNo();
-			 request.setPolicyNo(policyNo);
+			 
+			 if(StringUtils.isBlank(endttypeid)) {
+				 String policyNo= genNo.generatePolicyNo();
+				 request.setPolicyNo(policyNo);
+			 }else {
+				 request.setPolicyNo(v.getQuoteDetails().getPolicyNo());
+			 }
 			 int rownum=1;
 			 
 			 List<DebitAndCredit> result=new ArrayList<DebitAndCredit>();
@@ -1169,7 +1176,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 			 crdrservice.insertDRCR(result, request.getQuoteno());
 			 return result;
 			 
-			 
+			  
 			 
 			 
 		 }catch (Exception e) {
