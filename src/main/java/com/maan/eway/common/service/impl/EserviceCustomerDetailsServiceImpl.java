@@ -1,5 +1,6 @@
 package com.maan.eway.common.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
@@ -86,7 +87,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 	@Override
 	public List<Error> validateCustomerDetails(EserviceCustomerSaveReq req) {
 		List<Error> errorList = new ArrayList<Error>();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
 		try {
+			Calendar cal = Calendar.getInstance();
 
 			if (req.getSaveOrSubmit().equalsIgnoreCase("Submit")) {
 				if (StringUtils.isBlank(req.getClientName())) {
@@ -141,8 +145,17 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 //					errorList.add(new Error("12", "PreferredNotification", "Please select Preferred Notification"));
 //				}
 				
-				Calendar cal = new GregorianCalendar();
-//				Date today2 = new Date();
+				if(StringUtils.isNotBlank(req.getAppointmentDate().toString())) {
+				cal.add(Calendar.DATE, -1);
+				Date yesterday = cal.getTime();
+				String a1 = sdf.format(req.getAppointmentDate());
+				Date a = sdf.parse(a1);
+
+				if (a.before(yesterday)) {
+					errorList.add(new Error("07", "Appointment Date", "Please Enter Appointment Date as Future Date"));
+					} 
+				}
+				//				Date today2 = new Date();
 //				cal.setTime(today2);
 //				cal.set(Calendar.HOUR_OF_DAY, 1);
 //				cal.set(Calendar.MINUTE, 1);
@@ -558,7 +571,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				}
 */
 				// Date Validation
-				Calendar cal = new GregorianCalendar();
+			//	Calendar cal = new GregorianCalendar();
 				Date today = new Date();
 				cal.setTime(today);
 				cal.add(Calendar.DAY_OF_MONTH, -1);
