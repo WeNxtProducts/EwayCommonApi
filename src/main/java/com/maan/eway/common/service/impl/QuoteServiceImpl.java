@@ -958,6 +958,9 @@ private BuildingDetailsRepository BuildingRepo;
 			}else if("RR".equalsIgnoreCase(req.getStatus())){
 				n.setNotifTemplatename("Referral Rejected");
 				n.setStatusMessage(StringUtils.isBlank(req.getAdminRemarks())?req.getRejectReason():req.getAdminRemarks());
+			}else if("RE".equalsIgnoreCase(req.getStatus())){
+				n.setNotifTemplatename("ReQuote");
+				n.setStatusMessage(req.getAdminRemarks());
 			}
 			//Common Info
 			n.setBroker(brokerReq);
@@ -1053,6 +1056,19 @@ private BuildingDetailsRepository BuildingRepo;
 			n.setCompanyid(cusRefNo.get(0).getCompanyId());
 			n.setCompanyName(cusRefNo.get(0).getCompanyName());
 
+			if("RA".equalsIgnoreCase(req.getStatus())){
+				n.setNotifTemplatename("Referral Approved");
+				n.setStatusMessage(req.getAdminRemarks());
+			}else if("RP".equalsIgnoreCase(req.getStatus())){
+				n.setNotifTemplatename("Referral Pending");
+				n.setStatusMessage(req.getAdminRemarks());				
+			}else if("RR".equalsIgnoreCase(req.getStatus())){
+				n.setNotifTemplatename("Referral Rejected");
+				n.setStatusMessage(StringUtils.isBlank(req.getAdminRemarks())?req.getRejectReason():req.getAdminRemarks());
+			}else if("RE".equalsIgnoreCase(req.getStatus())){
+				n.setNotifTemplatename("ReQuote");
+				n.setStatusMessage(req.getAdminRemarks());
+			}
 			// Common Info
 			
 			n.setBroker(brokerReq);
@@ -1153,6 +1169,20 @@ private BuildingDetailsRepository BuildingRepo;
 			n.setCompanyid(cusRefNo.get(0).getCompanyId());
 			n.setCompanyName(cusRefNo.get(0).getCompanyName());
 
+			if("RA".equalsIgnoreCase(req.getStatus())){
+				n.setNotifTemplatename("Referral Approved");
+				n.setStatusMessage(req.getAdminRemarks());
+			}else if("RP".equalsIgnoreCase(req.getStatus())){
+				n.setNotifTemplatename("Referral Pending");
+				n.setStatusMessage(req.getAdminRemarks());				
+			}else if("RR".equalsIgnoreCase(req.getStatus())){
+				n.setNotifTemplatename("Referral Rejected");
+				n.setStatusMessage(StringUtils.isBlank(req.getAdminRemarks())?req.getRejectReason():req.getAdminRemarks());
+			}else if("RE".equalsIgnoreCase(req.getStatus())){
+				n.setNotifTemplatename("ReQuote");
+				n.setStatusMessage(req.getAdminRemarks());
+			}
+			
 			// Common Info
 			n.setBroker(brokerReq);
 			n.setCustomer(cusReq);
@@ -1225,16 +1255,7 @@ private BuildingDetailsRepository BuildingRepo;
 						cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
 					}
 
-					if("RA".equalsIgnoreCase(req.getStatus())){
-						n.setNotifTemplatename("Referral Approved");
-						n.setStatusMessage(req.getAdminRemarks());
-					}else if("RP".equalsIgnoreCase(req.getStatus())){
-						n.setNotifTemplatename("Referral Pending");
-						n.setStatusMessage(req.getAdminRemarks());				
-					}else if("RR".equalsIgnoreCase(req.getStatus())){
-						n.setNotifTemplatename("Referral Rejected");
-						n.setStatusMessage(StringUtils.isBlank(req.getAdminRemarks())?req.getRejectReason():req.getAdminRemarks());
-					}
+					
 					// UnderWriter Info
 					List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),cusRefNo.get(0).getLoginId());
 					List<UnderWriter> underWrite = new ArrayList<UnderWriter>();
@@ -1254,6 +1275,20 @@ private BuildingDetailsRepository BuildingRepo;
 					//Company Info
 					n.setCompanyid(cusRefNo.get(0).getCompanyId());
 					n.setCompanyName(cusRefNo.get(0).getCompanyName());
+					
+					if("RA".equalsIgnoreCase(req.getStatus())){
+						n.setNotifTemplatename("Referral Approved");
+						n.setStatusMessage(req.getAdminRemarks());
+					}else if("RP".equalsIgnoreCase(req.getStatus())){
+						n.setNotifTemplatename("Referral Pending");
+						n.setStatusMessage(req.getAdminRemarks());				
+					}else if("RR".equalsIgnoreCase(req.getStatus())){
+						n.setNotifTemplatename("Referral Rejected");
+						n.setStatusMessage(StringUtils.isBlank(req.getAdminRemarks())?req.getRejectReason():req.getAdminRemarks());
+					}else if("RE".equalsIgnoreCase(req.getStatus())){
+						n.setNotifTemplatename("ReQuote");
+						n.setStatusMessage(req.getAdminRemarks());
+					}
 					
 					//Common Info
 					n.setBroker(brokerReq);
@@ -2133,6 +2168,8 @@ private BuildingDetailsRepository BuildingRepo;
 					n.setNotifTemplatename("Referal Pending");
 				}else if("RR".equalsIgnoreCase(req.getStatus())){
 					n.setNotifTemplatename("Referal Reject");
+				}else if("RE".equalsIgnoreCase(req.getStatus())){
+					n.setNotifTemplatename("ReQuote");
 				}
 				//Common Info
 				n.setBroker(brokerReq);
@@ -2232,6 +2269,8 @@ private BuildingDetailsRepository BuildingRepo;
 					n.setNotifTemplatename("Referal Pending");
 				}else if("RR".equalsIgnoreCase(req.getStatus())){
 					n.setNotifTemplatename("Referal Reject");
+				}else if("RE".equalsIgnoreCase(req.getStatus())){
+					n.setNotifTemplatename("ReQuote");
 				}
 				//Common Info
 				n.setBroker(brokerReq);
@@ -2330,6 +2369,8 @@ private BuildingDetailsRepository BuildingRepo;
 					n.setNotifTemplatename("Referal Pending");
 				}else if("RR".equalsIgnoreCase(req.getStatus())){
 					n.setNotifTemplatename("Referal Reject");
+				}else if("RE".equalsIgnoreCase(req.getStatus())){
+					n.setNotifTemplatename("ReQuote");
 				}
 				//Common Info
 				n.setBroker(brokerReq);
@@ -2428,6 +2469,8 @@ private BuildingDetailsRepository BuildingRepo;
 					n.setNotifTemplatename("Referal Pending");
 				}else if("RR".equalsIgnoreCase(req.getStatus())){
 					n.setNotifTemplatename("Referal Reject");
+				}else if("RE".equalsIgnoreCase(req.getStatus())){
+					n.setNotifTemplatename("ReQuote");
 				}
 				//Common Info
 				n.setBroker(brokerReq);

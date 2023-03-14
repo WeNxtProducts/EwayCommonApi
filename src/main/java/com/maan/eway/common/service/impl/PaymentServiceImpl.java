@@ -1223,6 +1223,21 @@ public class PaymentServiceImpl implements PaymentService {
 			if(StringUtils.isBlank(req.getPaymentType())) {
 				error.add(new Error("01","PaymentType","Please Select PaymentType"));
 			}
+			if("2".equals(req.getPaymentType())) {
+				Calendar cal = new GregorianCalendar();
+				Date today = new Date();
+				cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
+				today = cal.getTime();
+				if(StringUtils.isBlank(req.getBankName())) {
+					error.add(new Error("01","BankName","Please Enter BankName"));
+				}else if(StringUtils.isBlank(req.getChequeNo())) {
+					error.add(new Error("01","ChequeNo","Please Enter ChequeNo"));
+				}else if (req.getChequeDate() == null) {
+					error.add(new Error("04", "ChequeDate", "Please Enter ChequeDatet "));
+				} else if (req.getChequeDate().before(today)) {
+					error.add(new Error("04", "ChequeDate", "Please Enter ChequeDate as Future Date"));
+				}
+			}
 			
 			// Check Paymetn Info
 			if (StringUtils.isNotBlank(req.getQuoteNo()) && StringUtils.isNotBlank(req.getPaymentId()) ) {
@@ -1378,8 +1393,11 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentDetail.setPremiumLc(paymentInfo.getPremiumLc());
 			paymentDetail.setCurrencyId(paymentInfo.getCurrencyId());
 			paymentDetail.setExchangeRate(paymentInfo.getExchangeRate() );
-			
-			
+			if("2".equals(req.getPaymentType())) {
+				paymentDetail.setBankName(req.getBankName());
+				paymentDetail.setChequeNo(req.getChequeNo());
+				paymentDetail.setChequeDate(req.getChequeDate());
+			}
 			Integer validateHour = Integer.valueOf(getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_VALIDATE_HOUR"));
 			Integer validateMinutes = Integer.valueOf(getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_VALIDATE_MINUTES"));
 			Date today  = new Date();
@@ -1391,13 +1409,14 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			paymentDetail.setValidityDate(validateDate);
 			
-			if( req.getPaymentType().equalsIgnoreCase("1") ) {
+			if( req.getPaymentType().equalsIgnoreCase("1") || req.getPaymentType().equalsIgnoreCase("2")) {
 				paymentStatus = "ACCEPTED" ;
 				paymentDetail.setPaymentStatus(paymentStatus);
 			} else {
 				paymentStatus = "PENDING" ;
 				paymentDetail.setPaymentStatus(paymentStatus);
 			}
+			
 			
 			
 			paymentdetailrepo.saveAndFlush(paymentDetail);
@@ -1444,7 +1463,6 @@ public class PaymentServiceImpl implements PaymentService {
 				List<DebitAndCredit> filterCredit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")).collect(Collectors.toList());
 				
 				String policyNo = policyDetails.get(0).getPolicyNo();
-			 
 				// Debit
 				String debitNo = filterDebit.get(0).getDocNo() ;
 				Date debitDate = filterDebit.get(0).getEntryDate();
@@ -1486,7 +1504,7 @@ public class PaymentServiceImpl implements PaymentService {
 				homerepo.saveAndFlush(data);
 				
 				// Update ProductWise
-				String msg = updateProductWisePolicyNo(paymentInfo.getProductId().toString() ,policyNo ,req.getQuoteNo(),data.getEndtTypeId()); 
+				String msg = updateProductWisePolicyNo(paymentInfo.getProductId().toString() ,policyNo ,req.getQuoteNo() ); 
 						
 				res.setPolicyNo(policyNo);
 				res.setDebitNoteNo(debitNo);
@@ -1573,7 +1591,7 @@ public class PaymentServiceImpl implements PaymentService {
 		return itemDesc ;
 	}
 	
-	 public  String updateProductWisePolicyNo(String productId , String policyNo , String quoteNo ,String endtypeId) {
+	 public  String updateProductWisePolicyNo(String productId , String policyNo , String quoteNo ) {
 		 String res = "" ;
 	       try {
 	    	   if(productId.equalsIgnoreCase(motorProductId) ) {
@@ -1587,9 +1605,7 @@ public class PaymentServiceImpl implements PaymentService {
 					// set update and where clause
 					update.set("policyNo", policyNo);
 					update.set("status", "P");
-					if(StringUtils.isNotBlank(endtypeId)) {
-						update.set("endtStatus", "C");	
-					}
+					
 					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
 					update.where(n1);
 					// perform update
@@ -1606,10 +1622,7 @@ public class PaymentServiceImpl implements PaymentService {
 						// set update and where clause
 						update.set("policyNo", policyNo);
 						update.set("status", "P");
-						if(StringUtils.isNotBlank(endtypeId)) {
-							update.set("endtStatus", "C");	
-						}
-
+						
 						Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
 						update.where(n1);
 						// perform update

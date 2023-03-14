@@ -225,6 +225,13 @@ private static final long serialVersionUID = 1L;
     @Column(name="CURRENCY_ID", length=100)
     private String     currencyId;
     
+    @Column(name="CHEQUE_NO", length=20)
+    private String     chequeNo;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="CHEQUE_DATE")
+    private Date       chequeDate ;
+    
 }
 
 
