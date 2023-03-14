@@ -38,6 +38,9 @@ public class EserviceBuildingsDetailsRes implements Serializable {
     @JsonProperty("RiskId")
 	private  String riskId;	
     
+    @JsonProperty("DocumentsTitle")
+    private String    documentsTitle;
+    
 	@JsonProperty("InbuildConstructType")
     private String     inbuildConstructType ;
 	@JsonProperty("BuildingFloors")
@@ -100,8 +103,7 @@ public class EserviceBuildingsDetailsRes implements Serializable {
     private String    domesticPackageYn;
 
 	
-	@JsonProperty("DocumentsTitle")
-    private String    documentsTitle;
+	
 
     @JsonProperty("SectionDetails")
     private List<SectionDetails>    sectionDetails;

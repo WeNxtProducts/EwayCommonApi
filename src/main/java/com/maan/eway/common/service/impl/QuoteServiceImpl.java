@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.EmiTransactionDetails;
@@ -114,6 +115,7 @@ import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.ProductMasterRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerHistoryRepository;
+import com.maan.eway.res.BuildingLocationDetails;
 import com.maan.eway.res.BuildingSumInsuredDetails;
 import com.maan.eway.res.CoverRes;
 import com.maan.eway.res.EserviceBuildingsDetailsRes;
@@ -413,7 +415,8 @@ private BuildingDetailsRepository BuildingRepo;
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			// Find Motor Data
-			EserviceBuildingDetails buildData = eserBuildRepo.findByQuoteNo(req.getQuoteNo());
+			
+			BuildingRiskDetails buildData = buildRiskRepo.findByQuoteNo(req.getQuoteNo());
 			List<EserviceSectionDetails> secDatas =  eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(buildData.getRequestReferenceNo());
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 			
@@ -481,6 +484,22 @@ private BuildingDetailsRepository BuildingRepo;
 			List<Object> totalList = new ArrayList<Object>(); 
 			totalList.addAll(buildList);
 			totalList.addAll(paccGetResList);
+			
+			// Location Wise Details
+			List<BuildingDetails> buildingRiskDatas = BuildingRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+			List<BuildingLocationDetails> buildLocList = new ArrayList<BuildingLocationDetails>();
+			for(BuildingDetails data : buildingRiskDatas) {
+				BuildingLocationDetails loc = new BuildingLocationDetails();
+				loc.setDocumentsTitle( "Location - " +  data.getLocationName());
+				loc.setLocationId(data.getRiskId().toString());
+				loc.setLocationName(data.getLocationName());
+				loc.setRiskId(data.getRiskId().toString());
+				loc.setSuminsured(data.getBuildingSuminsured()==null?"" : data.getBuildingSuminsured().toPlainString());
+				buildLocList.add(loc);
+				
+			}
+			totalList.addAll(buildLocList);
+			
 			viewRes.setRiskDetails(totalList);	
 			
 		} catch ( Exception e) {
