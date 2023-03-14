@@ -1178,6 +1178,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 	//		home.setRemarks("");
 			
 			
+			
 			// Set Premium Details
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(request.getQuoteNo() ,0, 0);
 			List<PolicyCoverData>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList() );
@@ -1248,6 +1249,21 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			List<Integer> vehicleIds = request.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId ).collect(Collectors.toList());
 			home.setVehicleNo(vehicleIds.size());
+			
+			String endtChargeOrRefund="";
+			if(StringUtils.isNotBlank(home.getEndtTypeId())) {
+				String prevQuoteNo=home.getEndtPrevQuoteNo();
+				HomePositionMaster oldHomeData = homeRepo.findByQuoteNo(prevQuoteNo);
+				if(oldHomeData.getOverallPremiumLc().compareTo(home.getOverallPremiumLc())<0) {
+					endtChargeOrRefund="CHARGE";
+				}else {
+					endtChargeOrRefund="REFUND";
+				}
+				Double endtPremium = premiumCovers.stream().filter(o ->("E".equals(o.getCoverageType()))).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()   ).sum();
+				home.setEndtPremium(endtPremium.longValue());
+				home.setIsChargRefund(endtChargeOrRefund);
+	
+			}
 			
 			homeRepo.saveAndFlush(home);
 			
@@ -1412,11 +1428,16 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setApplicationId(motorData.getApplicationId());
 			home.setEndtTypeId(motorData.getEndorsementType()==null?null:String.valueOf(motorData.getEndorsementType()));
 			home.setEndtStatus(StringUtils.isBlank(motorData.getEndtStatus())?"":motorData.getEndtStatus());
-			home.setEndtDate(motorData.getEndorsementEffdate()==null?null:motorData.getEndorsementEffdate());
+			home.setEndtDate(motorData.getEndorsementDate()==null?null:motorData.getEndorsementDate());
 			home.setEndtBy(StringUtils.isBlank(request.getCreatedBy())?"":request.getCreatedBy());
 			home.setPolicyNo(motorData.getEndorsementType()==null?null:motorData.getPolicyNo());
-			
-				
+			home.setEndtCategDesc(motorData.getEndtCategDesc()==null?null:motorData.getEndtCategDesc());
+			home.setEndorsementRemarks(motorData.getEndorsementRemarks()==null?null:motorData.getEndorsementRemarks());
+			home.setEndorsementEffdate(motorData.getEndorsementEffdate()==null?null:motorData.getEndorsementEffdate());
+			home.setEndtPrevPolicyNo(motorData.getEndtPrevPolicyNo()==null?null:motorData.getEndtPrevPolicyNo());
+			home.setEndtPrevQuoteNo(motorData.getEndtPrevQuoteNo()==null?null:motorData.getEndtPrevQuoteNo());
+			home.setEndtCount(motorData.getEndtCount()==null?0:motorData.getEndtCount().intValue());	
+			home.setEndtTypeDesc(motorData.getEndorsementTypeDesc()==null?"":motorData.getEndorsementTypeDesc());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("Exception is ---> " + e.getMessage());

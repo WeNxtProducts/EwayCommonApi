@@ -284,6 +284,14 @@ private BuildingDetailsRepository BuildingRepo;
 			quoteRes.setBrokerBranchName(homeData.getBrokerBranchName());		
 			quoteRes.setEmiYn("N");
 			quoteRes.setEndtTypeId(homeData.getEndtTypeId());
+			quoteRes.setEndtTypeDesc(homeData.getEndtTypeDesc()==null?"":homeData.getEndtTypeDesc());
+			quoteRes.setEndtCategDesc(homeData.getEndtCategDesc()==null?null:homeData.getEndtCategDesc());
+			quoteRes.setEndorsementRemarks(homeData.getEndorsementRemarks()==null?null:homeData.getEndorsementRemarks());
+			quoteRes.setEndorsementEffdate(homeData.getEndorsementEffdate()==null?null:homeData.getEndorsementEffdate());
+			quoteRes.setEndtPrevPolicyNo(homeData.getEndtPrevPolicyNo()==null?null:homeData.getEndtPrevPolicyNo());
+			quoteRes.setEndtPrevQuoteNo(homeData.getEndtPrevQuoteNo()==null?null:homeData.getEndtPrevQuoteNo());
+			quoteRes.setEndtCount(homeData.getEndtCount()==null?0:homeData.getEndtCount().intValue());
+			quoteRes.setIsChargeOrRefund(homeData.getIsChargRefund()==null?"":homeData.getIsChargRefund());
 			
 			// Emi Details 
 			List<EmiTransactionDetails> emiDetails = emiRepo.findByQuoteNoAndCompanyIdAndProductId(homeData.getQuoteNo() ,homeData.getCompanyId() , homeData.getProductId().toString());

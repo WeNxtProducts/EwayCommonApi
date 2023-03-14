@@ -613,6 +613,32 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="COMMISSION_TYPE_DESC", length=100)
     private String  commissionTypeDesc;
+    
+    @Column(name="ENDT_CATEG_DESC", length=100)
+    private String     endtCategDesc ;
+
+    @Column(name="ENDORSEMENT_REMARKS", length=500)
+    private String     endorsementRemarks ;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ENDORSEMENT_EFFDATE")
+    private Date       endorsementEffdate ;
+
+    @Column(name="ENDT_PREV_POLICY_NO", length=100)
+    private String     endtPrevPolicyNo ;
+
+    @Column(name="ENDT_PREV_QUOTE_NO", length=50)
+    private String     endtPrevQuoteNo ;
+
+    @Column(name="ENDT_COUNT")
+    private Integer    endtCount ;
+    
+    @Column(name="IS_CHARG_REFUND")
+    private String isChargRefund;
+    
+    @Column(name="ENDT_TYPE_DESC")
+    private String endtTypeDesc;
+
 
 }
 

@@ -210,5 +210,23 @@ public class QuoteDetailsRes {
 	@JsonProperty("policyNo")
 	private String policyNo;
 	
+	@JsonProperty("Endtcategdesc")
+    private String     endtCategDesc ;
+	@JsonProperty("Endorsementremarks")
+    private String     endorsementRemarks ;
+	@JsonFormat( pattern = "dd/MM/yyyy")
+	@JsonProperty("Endorsementeffdate")
+    private Date       endorsementEffdate ;
+	@JsonProperty("Endtprevpolicyno")
+    private String     endtPrevPolicyNo ;
+	@JsonProperty("Endtprevquoteno")
+    private String     endtPrevQuoteNo ;
+	@JsonProperty("Endtcount")
+    private Integer    endtCount    ;
+	@JsonProperty("EndtTypeDesc")
+	private String endtTypeDesc;
+	@JsonProperty("IsChargeOrRefund")
+	private String isChargeOrRefund;
+
 	
 }
