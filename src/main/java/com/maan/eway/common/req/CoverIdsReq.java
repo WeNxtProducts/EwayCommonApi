@@ -13,7 +13,7 @@ public class CoverIdsReq {
 	@JsonProperty("CoverId")
 	private Integer coverId;
 	
-	@JsonProperty("SubCoverYn")
+	@JsonProperty("IsSubCover")
 	private String subCoverYn;
 
 	@JsonProperty("SubCoverId")
