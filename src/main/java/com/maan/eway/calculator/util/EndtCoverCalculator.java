@@ -125,16 +125,16 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 if(endorsement.getTaxes()!=null && endorsement.getTaxes().size()>0) {
 						 TaxCalculator tcal=new TaxCalculator(endorsement.getPremiumExcluedTax(),t.getExchangeRate(),this,customers.get(0));
 						 endorsement.getTaxes().stream().forEach(tcal);
-						 totaltax = t.getTaxes().stream().mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
+						 totaltax = endorsement.getTaxes().stream().mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
 					 }
 					/* t.setPremiumIncludedTax(t.getPremiumExcluedTax().add(new BigDecimal(totaltax,round)));				 
 					 t.setPremiumIncludedTaxLC(t.getPremiumIncludedTax().multiply(t.getExchangeRate()).round(round));
 					*/
-					 BigDecimal totalWithTax=endorsement.getPremiumIncludedTax().add(new BigDecimal(totaltax,round));
+					 BigDecimal totalWithTax=endorsement.getPremiumExcluedTax().add(new BigDecimal(totaltax,round));
 					 BigDecimal totalWithTaxLC=totalWithTax.multiply(t.getExchangeRate()).round(round);
 					 
-					 endorsement.setPremiumIncludedTax(t.getPremiumIncludedTax().subtract(totalWithTax));
-					 endorsement.setPremiumIncludedTaxLC(t.getPremiumIncludedTaxLC().subtract(totalWithTaxLC));
+					 endorsement.setPremiumIncludedTax(totalWithTax);
+					 endorsement.setPremiumIncludedTaxLC(totalWithTaxLC);
 				 }
 				 
 				 
