@@ -18,7 +18,7 @@ public class UpdateFactorRateReq {
 	private Integer vehicleId;
 	
 	@JsonProperty("Covers")
-	private List<CoverIdsReq> coverIdList;
+	private List<CoverIdReq2> coverIdList;
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;

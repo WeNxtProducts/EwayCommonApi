@@ -1,19 +1,15 @@
 package com.maan.eway.common.req;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
-
 @Data
-public class CoverIdsReq {
-
-
+public class CoverIdReq2 {
+	
 	@JsonProperty("CoverId")
 	private Integer coverId;
 	
-	@JsonProperty("SubCoverYn")
+	@JsonProperty("IsSubCover")
 	private String subCoverYn;
 
 	@JsonProperty("SubCoverId")
@@ -43,5 +39,5 @@ public class CoverIdsReq {
 	
 	@JsonProperty("ExcessDesc")
 	private String excessDesc;
-	
+
 }

@@ -48,6 +48,7 @@ import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.MasterReferralDetails;
 import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.calculator.util.TaxFromFactor;
+import com.maan.eway.common.req.CoverIdReq2;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.EservieMotorDetailsViewRes;
@@ -1542,7 +1543,7 @@ this.repository = repo;
 			if ( req.getCoverIdList()==null  || req.getCoverIdList().size()<=0 ) {
 				errors.add(new Error("01","CoverList","Please Enter Cover List")) ;				
 			} else {
-				for (CoverIdsReq cov : req.getCoverIdList() ) {
+				for (CoverIdReq2 cov : req.getCoverIdList() ) {
 					
 					if (cov.getCoverId()==null   ) {
 						errors.add(new Error("01","CoverIds","Please Enter Cover Id")) ;				
@@ -1654,7 +1655,7 @@ this.repository = repo;
 			String pattern = StringUtils.isBlank(decimalLength) ?  "#####0" :   "#####0." + decimalLength;
 			DecimalFormat df = new DecimalFormat(pattern);
 			
-			for (CoverIdsReq covReq :    req.getCoverIdList()  ) {
+			for (CoverIdReq2 covReq :    req.getCoverIdList()  ) {
 				
 				if(StringUtils.isBlank(covReq.getSubCoverYn()) || covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
 					List<FactorRateRequestDetails> filterCover = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)  ).collect(Collectors.toList()); 
@@ -1733,7 +1734,7 @@ this.repository = repo;
 			if ( req.getCoverIdList()==null  || req.getCoverIdList().size()<=0 ) {
 				errors.add(new Error("01","CoverList","Please Enter Cover List")) ;				
 			} else {
-				for (CoverIdsReq cov : req.getCoverIdList() ) {
+				for (CoverIdReq2 cov : req.getCoverIdList() ) {
 					
 					if (cov.getCoverId()==null   ) {
 						errors.add(new Error("01","CoverIds","Please Enter Cover Id")) ;				
@@ -1770,7 +1771,7 @@ this.repository = repo;
 			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(req.getRequestReferenceNo() , req.getVehicleId() ,
 					req.getCompanyId() , Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
 			
-			for (CoverIdsReq covReq :    req.getCoverIdList()  ) {
+			for (CoverIdReq2 covReq :    req.getCoverIdList()  ) {
 				
 				if(covReq.getSubCoverYn()==null || covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
 					List<FactorRateRequestDetails> filterCover = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) ).collect(Collectors.toList()); 
