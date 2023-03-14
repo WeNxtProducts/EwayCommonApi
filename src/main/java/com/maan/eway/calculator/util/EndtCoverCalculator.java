@@ -127,9 +127,9 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 						 endorsement.getTaxes().stream().forEach(tcal);
 						 totaltax = t.getTaxes().stream().mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
 					 }
-					 t.setPremiumIncludedTax(t.getPremiumExcluedTax().add(new BigDecimal(totaltax,round)));				 
+					/* t.setPremiumIncludedTax(t.getPremiumExcluedTax().add(new BigDecimal(totaltax,round)));				 
 					 t.setPremiumIncludedTaxLC(t.getPremiumIncludedTax().multiply(t.getExchangeRate()).round(round));
-					
+					*/
 					 BigDecimal totalWithTax=endorsement.getPremiumIncludedTax().add(new BigDecimal(totaltax,round));
 					 BigDecimal totalWithTaxLC=totalWithTax.multiply(t.getExchangeRate()).round(round);
 					 
