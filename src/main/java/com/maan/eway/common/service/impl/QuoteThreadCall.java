@@ -1438,6 +1438,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setEndtPrevQuoteNo(motorData.getEndtPrevQuoteNo()==null?null:motorData.getEndtPrevQuoteNo());
 			home.setEndtCount(motorData.getEndtCount()==null?0:motorData.getEndtCount().intValue());	
 			home.setEndtTypeDesc(motorData.getEndorsementTypeDesc()==null?"":motorData.getEndorsementTypeDesc());
+			home.setOriginalPolicyNo(motorData.getOriginalPolicyNo()==null?"":motorData.getOriginalPolicyNo());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("Exception is ---> " + e.getMessage());

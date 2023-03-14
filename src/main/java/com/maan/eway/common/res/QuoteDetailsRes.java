@@ -228,5 +228,7 @@ public class QuoteDetailsRes {
 	@JsonProperty("IsChargeOrRefund")
 	private String isChargeOrRefund;
 
+	@JsonProperty("OriginalPolicyNo")
+	private String originalPolicyNo;
 	
 }

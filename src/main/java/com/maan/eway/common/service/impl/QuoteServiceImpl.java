@@ -292,7 +292,8 @@ private BuildingDetailsRepository BuildingRepo;
 			quoteRes.setEndtPrevQuoteNo(homeData.getEndtPrevQuoteNo()==null?null:homeData.getEndtPrevQuoteNo());
 			quoteRes.setEndtCount(homeData.getEndtCount()==null?0:homeData.getEndtCount().intValue());
 			quoteRes.setIsChargeOrRefund(homeData.getIsChargRefund()==null?"":homeData.getIsChargRefund());
-			
+			quoteRes.setPolicyNo(homeData.getPolicyNo()==null?"":homeData.getPolicyNo());
+			quoteRes.setOriginalPolicyNo(homeData.getOriginalPolicyNo()==null?"":homeData.getOriginalPolicyNo());
 			// Emi Details 
 			List<EmiTransactionDetails> emiDetails = emiRepo.findByQuoteNoAndCompanyIdAndProductId(homeData.getQuoteNo() ,homeData.getCompanyId() , homeData.getProductId().toString());
 			if (emiDetails.size()>0 ) {
