@@ -268,6 +268,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByClausesIdAscAmendIdDesc(
 									req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
 									req.getTermsId());
+								
 				} else {
 					warrantyList = warrantyRepo
 							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByWarrantyIdAscAmendIdDesc(
@@ -284,6 +285,9 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 				}
 
+				
+				
+				
 				warrantyList = warrantyList.stream().filter(distinctByKey(o -> Arrays.asList(o.getWarrantyId())))
 						.collect(Collectors.toList());
 				exclusionList = exclusionList.stream().filter(distinctByKey(o -> Arrays.asList(o.getExclusionId())))
@@ -338,6 +342,53 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 					}
 				}
+				
+				
+				///Newly Added		
+				List<TermsAndCondition> datas = termsRepo
+						.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRequestReferenceNoOrderBySnoAsc(req.getCompanyId(),
+								req.getBranchCode(), req.getProductId(), req.getSectionId(), req.getRequestReferenceNo());
+				if (datas.size() > 0 && !datas.isEmpty()) {
+					if (datas.size() > 0) {
+						for (TermsAndCondition data : datas) {
+							if (data.getId() == 4) {
+								WarrantyRes warrantyres = new WarrantyRes();
+								warrantyres.setId(data.getId().toString());
+								warrantyres.setSubId(data.getSubId().toString());
+								warrantyres.setSubIdDesc(data.getSubIdDesc());
+								warrantyres.setDocRefNo(data.getDocRefNo());
+								warrantyres.setDocumentId("16");
+								warrantyresList.add(warrantyres);
+								res.setWarrantyRes(warrantyresList);
+
+							}
+							if (data.getId() == 6) {
+								ClausesRes clausesres = new ClausesRes();
+								clausesres.setId(data.getId().toString());
+								clausesres.setSubId(data.getSubId().toString());
+								clausesres.setSubIdDesc(data.getSubIdDesc());
+								clausesres.setDocRefNo(data.getDocRefNo());
+								clausesres.setDocumentId("18");
+								clausesresList.add(clausesres);
+								res.setClausesRes(clausesresList);
+
+							}
+							if (data.getId() == 7) {
+								ExclusionRes exclusionres = new ExclusionRes();
+								exclusionres.setId(data.getId().toString());
+
+								exclusionres.setSubId(data.getSubId().toString());
+								exclusionres.setSubIdDesc(data.getSubIdDesc());
+								exclusionres.setDocRefNo(data.getDocRefNo());
+								exclusionres.setDocumentId("19");
+								exclusionresList.add(exclusionres);
+								res.setExclusionRes(exclusionresList);
+
+							}
+						}
+					}
+				}
+
 			}
 
 		}
@@ -377,8 +428,8 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				errorList.add(new Error("04", "SectionId", "Please Select SectionId"));
 			}
 
-			if (StringUtils.isBlank(req.getQuoteNo())) {
-				errorList.add(new Error("05", "QuoteNo", "Please Enter QuoteNo"));
+			if (StringUtils.isBlank(req.getRequestReferenceNo())) {
+				errorList.add(new Error("05", "RequestReferenceNo", "Please Enter RequestReferenceNo"));
 			}
 			if (StringUtils.isBlank(req.getRiskId())) {
 				errorList.add(new Error("06", "RiskId", "Please Enter RiskId"));
@@ -398,9 +449,16 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 		try {
-
-			List<TermsAndCondition> data = termsRepo.findByQuoteNoAndRiskIdAndProductIdAndSectionId(req.getQuoteNo(),
+			List<TermsAndCondition> data = new ArrayList<TermsAndCondition>();
+			if(req.getQuoteNo()==null && StringUtils.isNotBlank(req.getQuoteNo())) {
+				data = termsRepo.findByQuoteNoAndRiskIdAndProductIdAndSectionId(req.getQuoteNo(),
 					req.getRiskId(), req.getProductId(), req.getSectionId());
+			}
+			else {
+				data = termsRepo.findByRequestReferenceNoAndRiskIdAndProductIdAndSectionId(req.getRequestReferenceNo(),
+						req.getRiskId(), req.getProductId(), req.getSectionId());
+					
+			}
 			if (data.size() > 0 && data != null) {
 				termsRepo.deleteAll();
 			}
@@ -433,6 +491,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			saveData.setQuoteNo(req.getQuoteNo());
 			saveData.setRiskId(req.getRiskId());
 			saveData.setAmendId(0);
+			saveData.setRequestReferenceNo(req.getRequestReferenceNo());
 
 			for (TermsAndConditionListReq req1 : req.getTermsAndConditionReq()) {
 				ListItemValue id = listRepo.findByItemTypeAndItemCode("TERMS_AND_CONDITION", req1.getId());
@@ -474,11 +533,22 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 		DozerBeanMapper dozermapper = new DozerBeanMapper();
 		try {
 			TermsAndCondition savedata = new TermsAndCondition();
-			List<TermsAndCondition> datas = termsRepo
-					.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRiskIdAndQuoteNoAndId(req.getCompanyId(),
+			List<TermsAndCondition> datas = new ArrayList<TermsAndCondition>();
+			if(req.getQuoteNo()==null &&  StringUtils.isNotBlank(req.getQuoteNo())) {
+			 datas = termsRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRiskIdAndQuoteNoAndId(req.getCompanyId(),
 							req.getBranchCode(), req.getProductId(), req.getSectionId(), req.getRiskId(),
 							req.getQuoteNo(), Integer.valueOf(req.getId()));
-
+			}
+			
+			else {
+	
+				 datas = termsRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRiskIdAndRequestReferenceNoAndId(req.getCompanyId(),
+							req.getBranchCode(), req.getProductId(), req.getSectionId(), req.getRiskId(),
+							req.getRequestReferenceNo(), Integer.valueOf(req.getId()));
+	
+			}
+			
+			
 			if (datas.size() > 0 && datas != null) {
 				res = dozermapper.map(datas.get(0), TermsAndConditionGetRes.class);
 				List<TermsAndConditionListRes> resList = new ArrayList<TermsAndConditionListRes>();
@@ -504,12 +574,20 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 		DozerBeanMapper dozermapper = new DozerBeanMapper();
 		try {
 			TermsAndCondition savedata = new TermsAndCondition();
-			TermsAndCondition data = termsRepo
-					.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRiskIdAndQuoteNoAndIdAndSubId(
+			TermsAndCondition data = new TermsAndCondition();
+			if(req.getQuoteNo()==null && StringUtils.isNotBlank(req.getQuoteNo())) {
+				 data = termsRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRiskIdAndQuoteNoAndIdAndSubId(
 							req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
 							req.getRiskId(), req.getQuoteNo(), Integer.valueOf(req.getId()),
 							Integer.valueOf(req.getSubId()));
-
+			}
+			else {
+				 data = termsRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRiskIdAndRequestReferenceNoAndIdAndSubId(
+						req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
+						req.getRiskId(), req.getRequestReferenceNo(), Integer.valueOf(req.getId()),
+						Integer.valueOf(req.getSubId()));
+			
+			}
 			res = dozermapper.map(data, TermsAndConditionGetBySubIdRes.class);
 			res.setId(data.getId().toString());
 			res.setSubId(data.getSubId().toString());

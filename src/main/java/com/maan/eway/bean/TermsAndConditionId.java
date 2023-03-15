@@ -38,6 +38,7 @@ public class TermsAndConditionId implements Serializable {
     private Integer   id;
     private Integer  subId;
     private String  riskId;
+    private String     requestReferenceNo;
 
      
 }

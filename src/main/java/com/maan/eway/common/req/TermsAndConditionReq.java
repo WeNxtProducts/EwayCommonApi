@@ -27,4 +27,9 @@ public class TermsAndConditionReq {
 
 	@JsonProperty("TermsId")
 	private String termsId;
+	
+
+	@JsonProperty("RequestReferenceNo")
+	private String requestReferenceNo;
+	
 }

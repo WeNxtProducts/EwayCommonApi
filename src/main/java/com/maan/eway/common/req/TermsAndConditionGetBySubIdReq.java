@@ -31,5 +31,8 @@ public class TermsAndConditionGetBySubIdReq {
 	
 	@JsonProperty("SubId")
 	private String subId;
-	
+
+	@JsonProperty("RequestReferenceNo")
+	private String requestReferenceNo;
+
 }

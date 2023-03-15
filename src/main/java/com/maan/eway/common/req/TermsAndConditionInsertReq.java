@@ -27,6 +27,10 @@ public class TermsAndConditionInsertReq {
 	@JsonProperty("QuoteNo")
 	private String quoteNo;
 
+	@JsonProperty("RequestReferenceNo")
+	private String requestReferenceNo;
+
+	
 	@JsonProperty("RiskId")
 	private String riskId;
 

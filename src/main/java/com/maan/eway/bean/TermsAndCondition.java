@@ -89,6 +89,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="RISK_ID", nullable=false)
     private String  riskId;
         
+    @Id
+    @Column(name="REQUEST_REFERENCE_NO", nullable=false, length=100)
+    private String     requestReferenceNo;
+
     
     @Column(name="ID_DESC", length=100)
     private String     idDesc;
