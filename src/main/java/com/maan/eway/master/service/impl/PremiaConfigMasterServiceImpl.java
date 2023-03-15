@@ -517,6 +517,7 @@ public List<PremiaConfigMasterRes> getallPremiaConfig(PremiaConfigMasterGetAllRe
 		List<Order> orderList = new ArrayList<Order>();
 		orderList.add(cb.asc(b.get("branchCode")));
 
+		
 		// Where
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
 		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
@@ -525,7 +526,14 @@ public List<PremiaConfigMasterRes> getallPremiaConfig(PremiaConfigMasterGetAllRe
 		Predicate n5 = cb.or(n3,n4);
 		Predicate n6 = cb.equal(b.get("productId"),req.getProductId());
 			
+		if((StringUtils.isNotBlank(req.getProductId()))) {
 		query.where(n1,n2,n5,n6).orderBy(orderList);
+		}
+		
+		else {
+			query.where(n1,n2,n5).orderBy(orderList);
+			
+		}
 		
 		// Get Result
 		TypedQuery<PremiaConfigMaster> result = em.createQuery(query);
