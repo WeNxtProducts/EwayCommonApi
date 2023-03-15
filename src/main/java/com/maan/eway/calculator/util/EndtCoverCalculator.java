@@ -131,11 +131,18 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					/* t.setPremiumIncludedTax(t.getPremiumExcluedTax().add(new BigDecimal(totaltax,round)));				 
 					 t.setPremiumIncludedTaxLC(t.getPremiumIncludedTax().multiply(t.getExchangeRate()).round(round));
 					*/
-					 BigDecimal totalWithTax=endorsement.getPremiumExcluedTax().add(new BigDecimal(totaltax,round));
-					 BigDecimal totalWithTaxLC=totalWithTax.multiply(t.getExchangeRate()).round(round);
+					 BigDecimal totalWithTax=endorsement.getPremiumExcluedTax().add(new BigDecimal(totaltax));
+					 BigDecimal totalWithTaxLC=totalWithTax.multiply(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP);
+					 
+					 
+					// Temp Prev Premium
+					 endorsement.setPremiumAfterDiscountLC(endorsement.getPremiumIncludedTaxLC());
+					 endorsement.setPremiumAfterDiscount(endorsement.getPremiumIncludedTax());
+					 
 					 
 					 endorsement.setPremiumIncludedTax(totalWithTax);
 					 endorsement.setPremiumIncludedTaxLC(totalWithTaxLC);
+					 
 				 }
 				 
 				 
