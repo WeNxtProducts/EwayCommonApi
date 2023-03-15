@@ -472,7 +472,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 					 Endorsement currentEndt=Endorsement.builder()
 							 	.endorsementDesc(d.getCoverDesc()+" "+endtDesc+" "+endtCount.intValue())
 							 	.endorsementId(endtTypeId)
-							 	.endorsementRate("0")
+							 	.endorsementRate(d.getRate().toPlainString())
 							 	.endorsementCalcType("A")
 							 	.endorsementforId(String.valueOf( d.getCoverId()))
 							 	.maxAmount(BigDecimal.ZERO)
@@ -1050,6 +1050,13 @@ public class CalculatorEngineService implements CalculatorEngine{
 			 String commissionVatYn = lp.get(0).getCommissionVatYn()==null?"N": lp.get(0).getCommissionVatYn();
 			 String premiumFc = v.getQuoteDetails().getPremiumFc();
 			 String vatPremiumFc =	v.getQuoteDetails().getVatPremiumFc();
+			 
+			 if(StringUtils.isNotBlank(v.getQuoteDetails().getEndtTypeId())) {
+				 premiumFc=v.getQuoteDetails().getEndtPremium().toPlainString();
+				 vatPremiumFc=v.getQuoteDetails().getEndtPremiumTax().toPlainString();
+			 }
+			 
+			 
 			 BigDecimal commission=	new BigDecimal(premiumFc)
 					 				.multiply(new BigDecimal(commissionPercent))
 			 						.divide(BigDecimal.valueOf(100D))

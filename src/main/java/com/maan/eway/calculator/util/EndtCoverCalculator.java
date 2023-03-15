@@ -1,6 +1,7 @@
 package com.maan.eway.calculator.util;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -75,11 +76,11 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 				 
 				 
 				 
-				 t.setPremiumAfterDiscount( t.getPremiumBeforeDiscount().subtract(new BigDecimal(totaldiscount,round)).add(new BigDecimal(totalloading,round)).multiply(t.getProRata()).round(round));
-				 t.setPremiumAfterDiscountLC(t.getPremiumAfterDiscount().multiply(t.getExchangeRate()).multiply(t.getProRata()).round(round));
+				 t.setPremiumAfterDiscount( t.getPremiumBeforeDiscount().subtract(new BigDecimal(totaldiscount)).add(new BigDecimal(totalloading)).multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
+				 t.setPremiumAfterDiscountLC(t.getPremiumAfterDiscount().multiply(t.getExchangeRate()).multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
 				 
 				 t.setPremiumExcluedTax(t.getPremiumAfterDiscount());
-				 t.setPremiumExcluedTaxLC(t.getPremiumExcluedTax().multiply(t.getExchangeRate()).round(round));
+				 t.setPremiumExcluedTaxLC(t.getPremiumExcluedTax().multiply(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
 				 
 				 // Minimium Premium setup.
 				 t.setMinimumPremiumYn("N");
@@ -96,8 +97,8 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 totaltax = t.getTaxes().stream().mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
 				 }
 				 
-				 t.setPremiumIncludedTax(t.getPremiumExcluedTax().add(new BigDecimal(totaltax,round)));				 
-				 t.setPremiumIncludedTaxLC(t.getPremiumIncludedTax().multiply(t.getExchangeRate()).round(round));
+				 t.setPremiumIncludedTax(t.getPremiumExcluedTax().add(new BigDecimal(totaltax)));				 
+				 t.setPremiumIncludedTaxLC(t.getPremiumIncludedTax().multiply(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
 				 
 				 
 				 if(t.getEndorsements()!=null && t.getEndorsements().size()>0) {
