@@ -22,7 +22,7 @@ public class SplitSubCoverUtil implements Function<Tuple,Cover> {
 	public Cover apply(Tuple t) {
 		try {
 			
-			 if(t.get("coverageType")!=null && !("D".equalsIgnoreCase(t.get("coverageType").toString()) || "L".equalsIgnoreCase(t.get("coverageType").toString()) ) &&  filterBy.equalsIgnoreCase(t.get("subCoverYn").toString())) {
+			 if(t.get("coverageType")!=null && !("D".equalsIgnoreCase(t.get("coverageType").toString()) || "L".equalsIgnoreCase(t.get("coverageType").toString()) || "P".equalsIgnoreCase(t.get("coverageType").toString()) ) &&  filterBy.equalsIgnoreCase(t.get("subCoverYn").toString())) {
 				 String subc=t.get("subCoverYn")==null?"N":t.get("subCoverYn").toString();
 				 
 				 // Referral 
