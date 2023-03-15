@@ -1,8 +1,7 @@
 package com.maan.eway.common.res;
 
+import java.math.BigDecimal;
 import java.util.Date;
-
-import javax.persistence.Column;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -231,4 +230,9 @@ public class QuoteDetailsRes {
 	@JsonProperty("OriginalPolicyNo")
 	private String originalPolicyNo;
 	
+	@JsonProperty("EndtPremium")
+	private BigDecimal endtPremium;
+	
+	@JsonProperty("EndtPremiumTax")
+	private BigDecimal endtPremiumTax;
 }

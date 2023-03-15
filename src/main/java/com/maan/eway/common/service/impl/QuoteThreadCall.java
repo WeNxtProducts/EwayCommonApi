@@ -1259,8 +1259,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 				}else {
 					endtChargeOrRefund="REFUND";
 				}
-				Double endtPremium = premiumCovers.stream().filter(o ->("E".equals(o.getCoverageType()))).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()   ).sum();
-				home.setEndtPremium(endtPremium.longValue());
+				Double endtPremium = premiumCovers.stream().filter(o ->("E".equals(o.getCoverageType()))).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()   ).sum();
+				home.setEndtPremium(new BigDecimal(endtPremium));
+				Double endtPremiumTax = premiumCovers.stream().filter(i -> ( i.getDiscLoadId()!=0 && "T".equals(i.getCoverageType()))).mapToDouble(o->o.getTaxAmount().doubleValue()).sum();
+				home.setEndtPremiumTax(new BigDecimal(endtPremiumTax));
 				home.setIsChargRefund(endtChargeOrRefund);
 	
 			}

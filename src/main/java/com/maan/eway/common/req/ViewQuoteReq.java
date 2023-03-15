@@ -16,4 +16,7 @@ public class ViewQuoteReq {
 	
 	@JsonProperty("Type")
 	private String type ;
+	
+	@JsonProperty("EndtTypeId")
+	private String endtTypeId ;
 }

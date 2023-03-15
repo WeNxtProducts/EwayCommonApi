@@ -847,7 +847,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 			savedata.setEndtDate(new Date());
 			savedata.setEndtBy(req.getLoginId());
 			savedata.setEndtStatus("P");
-			savedata.setEndtPremium(0L);
+			savedata.setEndtPremium(BigDecimal.ZERO);
 			savedata.setEndtCommission(BigDecimal.valueOf(0));
 			savedata.setOriginalPolicyNo(homeData.getPolicyNo());
 			savedata.setQuoteCreatedDate(new Date());

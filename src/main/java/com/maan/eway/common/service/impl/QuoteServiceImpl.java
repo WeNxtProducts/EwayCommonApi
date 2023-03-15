@@ -296,6 +296,10 @@ private BuildingDetailsRepository BuildingRepo;
 			quoteRes.setIsChargeOrRefund(homeData.getIsChargRefund()==null?"":homeData.getIsChargRefund());
 			quoteRes.setPolicyNo(homeData.getPolicyNo()==null?"":homeData.getPolicyNo());
 			quoteRes.setOriginalPolicyNo(homeData.getOriginalPolicyNo()==null?"":homeData.getOriginalPolicyNo());
+			quoteRes.setEndtPremium(homeData.getEndtPremium()==null?BigDecimal.ZERO:homeData.getEndtPremium());
+			req.setEndtTypeId(homeData.getEndtTypeId());
+			quoteRes.setEndtPremiumTax(homeData.getEndtPremiumTax());
+			
 			// Emi Details 
 			List<EmiTransactionDetails> emiDetails = emiRepo.findByQuoteNoAndCompanyIdAndProductId(homeData.getQuoteNo() ,homeData.getCompanyId() , homeData.getProductId().toString());
 			if (emiDetails.size()>0 ) {
@@ -307,7 +311,8 @@ private BuildingDetailsRepository BuildingRepo;
 					quoteRes.setDueAmount(filterEmi.get(0).getDueAmount()==null?"":new BigDecimal(filterEmi.get(0).getDueAmount()).toPlainString());
 				}
 			}
-						
+				
+			
 			// Customer Details
 			PersonalInfo custData = custRepo.findByCustomerId(homeData.getCustomerId());
 			CustomerDetailsRes  custRes = new CustomerDetailsRes();
@@ -355,7 +360,7 @@ private BuildingDetailsRepository BuildingRepo;
 			List<MotorDriverDetails> driverList = driverRepo.findByQuoteNo(req.getQuoteNo() );
 			List<EserviceMotorDetailsRes>   motorResList = new ArrayList<EserviceMotorDetailsRes>();
 			
-			
+						
 			for (MotorDataDetails mot :  motorDatas) {
 				EserviceMotorDetailsRes vehicleDetails = new  EserviceMotorDetailsRes()  ;
 				

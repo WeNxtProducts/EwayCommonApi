@@ -991,7 +991,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			savedata.setEndtDate(new Date());
 			savedata.setEndtBy(loginId);
 			savedata.setEndtStatus("P");
-			savedata.setEndtPremium(0L);
+			savedata.setEndtPremium(BigDecimal.ZERO);
 			savedata.setEndtCommission(BigDecimal.valueOf(0));
 			savedata.setOriginalPolicyNo(homeData.getPolicyNo());
 			savedata.setQuoteCreatedDate(new Date());
