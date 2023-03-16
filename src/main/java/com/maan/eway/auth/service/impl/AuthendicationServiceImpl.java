@@ -1,5 +1,6 @@
 package com.maan.eway.auth.service.impl;
 
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.Instant;
@@ -9,12 +10,23 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import javax.mail.Message;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -32,6 +44,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,6 +53,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.maan.eway.auth.dto.BrokerProductCompaniesRes;
 import com.maan.eway.auth.dto.BrokerProductsGetRes;
@@ -46,6 +61,7 @@ import com.maan.eway.auth.dto.ChangePasswordReq;
 import com.maan.eway.auth.dto.ClaimLoginResponse;
 import com.maan.eway.auth.dto.ClaimLogoutResponse;
 import com.maan.eway.auth.dto.CommonLoginRes;
+import com.maan.eway.auth.dto.ForgetPasswordReq;
 import com.maan.eway.auth.dto.LoginBranchCriteriaRes;
 import com.maan.eway.auth.dto.LoginBranchDetailsRes;
 import com.maan.eway.auth.dto.LoginProductCriteriaRes;
@@ -64,16 +80,30 @@ import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginMasterId;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
+import com.maan.eway.bean.MailMaster;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.SessionMaster;
+import com.maan.eway.bean.SmsConfigMaster;
+import com.maan.eway.bean.SmsDataDetails;
+import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.error.Error;
+import com.maan.eway.notification.bean.MailDataDetails;
+import com.maan.eway.notification.repository.MailDataDetailsRepository;
+import com.maan.eway.notification.req.JobCredentials;
+import com.maan.eway.notification.req.Mail;
+import com.maan.eway.notification.req.Sms;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginProductMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
+import com.maan.eway.repository.MailMasterRepository;
 import com.maan.eway.repository.ProductMasterRepository;
 import com.maan.eway.repository.SessionMasterRepository;
+import com.maan.eway.repository.SmsConfigMasterRepository;
+import com.maan.eway.repository.SmsDataDetailsRepository;
+import com.maan.eway.res.SuccessRes;
 
 
 @Lazy
@@ -108,8 +138,23 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 	@Autowired
 	private ProductMasterRepository productRepo;
 	
+	@Autowired
+	private MailMasterRepository mailRepo ;
+	
 	@PersistenceContext
 	private EntityManager em;
+	
+	@Autowired
+	private LoginUserInfoRepository userInfoRepo ;
+	
+	@Autowired
+	private MailDataDetailsRepository mailDataRepo ;
+	
+	@Autowired
+	private  SmsConfigMasterRepository smsRepo ;
+	
+	@Autowired
+	private  SmsDataDetailsRepository smsDataRepo ;
 	
 	private Logger log = LogManager.getLogger(AuthendicationServiceImpl.class);
 	
@@ -690,7 +735,495 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 		return res;
 	}
 
+	@Override
+	public SuccessRes LoginForgetPassword(ForgetPasswordReq req) {
+		SuccessRes res = new SuccessRes();
+		try {
+				String msg = sendUserPwd(req , "tempPwd" );
+				res.setResponse(msg);
+			
+		
+		} catch (Exception e) {
+			log.info(e);
+		}
+		return res;
+	}
+
 	
+	public String sendUserPwd( ForgetPasswordReq req, String temp) {
+		String msg = "Temporary Password Notification Sent " ;
+		try {
+			String tempPassword = getTempPassword(req.getLoginId() );
+			
+			LoginMaster ld = loginRepo.findByLoginId(req.getLoginId()  );
+			
+			InsuranceCompanyMaster cm = getInscompanyMaster(ld.getCompanyId());
+			
+			LoginUserInfo lu = userInfoRepo.findByLoginId(req.getLoginId()  );
+			
+			// Send Mail
+			sentDirectMail(req.getLoginId()  , tempPassword ,  ld ,  lu , cm  ) ;
+			// Send Sms
+			sentDirectSms(req.getLoginId()  , tempPassword ,  ld ,  lu , cm  ) ;
+				 
+				 
+			
+		} catch (Exception e) {
+			log.info(e);
+			return null ;	
+		}
+		return msg;
+	}
+	
+	public CommonRes sentDirectMail(String loginId , String tempPassword , LoginMaster ld , LoginUserInfo lu , InsuranceCompanyMaster cm  ) {
+		CommonRes res = new CommonRes();
+		SuccessRes response = new SuccessRes();
+		try {
+			
+			MailMaster mailc = mailRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(ld.getCompanyId(),"99999","Y").get(0);													
+			
+			String name = lu.getUserName();
+			String companylogo= cm.getCompanyLogo() ;
+			String companyAddress= cm.getCompanyAddress() ;
+			String mailBody= "Your Temporary Password Is : <p style=color:red;> " + tempPassword + " </p>";
+			String mailSubject= "Temporary Password";
+			String mailRegards= cm.getRegards() ;
+			
+			String templatebody = getTemplateFrame( name , companylogo , companyAddress,  mailBody , 	mailSubject,	mailRegards) ; 
+			
+			// Mail Credentials 
+			
+			String tomailid=lu.getUserMail() ;
+			List<String> mailcc= new ArrayList<String>(); ;
+			mailcc.add(tomailid);
+			
+			Mail m=Mail.builder()
+					.mailBody(templatebody)
+					.mailRegards(mailRegards)
+					.mailSubject(mailSubject)
+					.mailTo(tomailid)
+					.mailcc(mailcc)
+					.credential(JobCredentials.builder().host(mailc.getSmtpHost()).port(mailc.getSmtpPort()).isSSL(true).password(mailc.getSmtpPwd()).username(mailc.getSmtpUser()).build())
+				//	.attachments(t.get("attachFilePath")==null?"":t.get("attachFilePath").toString())
+					.notifNo(0)
+					.build();
+			
+			// save Mail
+			MailDataDetails mdd=MailDataDetails.builder()
+					.fromEmail(m.getCredential().getUsername())
+					.mailBody(m.getMailBody())
+					.mailRegards(m.getMailRegards())
+					.mailResponse("Pending")
+					.mailSubject(m.getMailSubject())
+					.mailTranId(null)
+					.pushedEntryDate(new Date())
+					.status("P")
+					.toEmail(m.getMailTo())
+					.notifNo(m.getNotifNo())
+					.pushedBy("none")
+					.build();
+			mailDataRepo.saveAndFlush(mdd);
+			
+			// Push Mail
+			ExecutorService service = Executors.newFixedThreadPool(4);
+		    service.submit(new Runnable() {
+		        public void run() {
+		        	pushMail(m , mdd );
+		        }
+		    });
+			
+		 	response.setResponse("Temporary Password Sent Successfully");	
+			response.setSuccessId(tomailid);
+			res.setCommonResponse(response);
+			res.setIsError(false);
+		
+			 
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			List<Error> errors = new ArrayList<Error>();
+			errors.add(new Error("01" ,"Common Error" ,e.getMessage() ));
+			res.setCommonResponse(null);
+			res.setIsError(false);
+			res.setErrorMessage(errors);
+			return res ;
+		}
+		return res;
+	}
+	
+	public CommonRes sentDirectSms(String loginId , String tempPassword , LoginMaster ld , LoginUserInfo lu , InsuranceCompanyMaster cm  ) {
+		CommonRes res = new CommonRes();
+		SuccessRes response = new SuccessRes();
+		try {
+			String smsBody= "Your Temporary Password Is : " + tempPassword ;
+			String smsSubject= "Temporary Password";
+			String smsRegards= cm.getRegards() ;
+			
+			SmsConfigMaster smsc = smsRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(ld.getCompanyId(),"99999","Y").get(0);													
+			
+			Sms m=Sms.builder()
+					.smsBody(smsBody)
+					.smsRegards(smsRegards)
+					.smsSubject(smsSubject)
+					.smsTo(lu.getUserMobile() )	
+					.smsFrom(smsc.getSenderId())
+					.credential(JobCredentials.builder().host(smsc.getSmsPartyUrl()).isSSL(true).password(smsc.getSmsUserPass()).username(smsc.getSmsUserName()).build())
+					.smsToCode(lu.getMobileCodeDesc())
+					.notifNo(0)
+					.build();
+			
+			// Save Sms Data Details
+			SmsDataDetails savedata = new SmsDataDetails();
+
+			Long sno = smsDataRepo.count();
+			sno=sno+1;
+			savedata.setMobileNo(m.getSmsTo());
+			savedata.setSmsFrom(m.getSmsFrom());		
+			savedata.setSmsType(smsSubject);
+			savedata.setSmsContent(smsBody);
+			savedata.setEntryDate(new Date());
+			savedata.setSNo(sno.toString());
+			savedata.setResMessage("Pending");
+			savedata.setResStatus("P");
+			savedata.setReqTime(new Date());
+			savedata.setResTime(new Date());
+			savedata.setNotifNo(m.getNotifNo());
+			savedata.setPushedBy("None");
+			savedata.setSmsRegards(smsRegards);
+			smsDataRepo.saveAndFlush(savedata);
+			
+			ExecutorService service = Executors.newFixedThreadPool(4);
+		    service.submit(new Runnable() {
+		        public void run() {
+		        	pushSms(m , savedata);
+		        }
+		    });
+			
+			
+			response.setResponse("Sms Sent Successfully");	
+			response.setSuccessId(sno.toString());
+			res.setCommonResponse(response);
+			res.setIsError(false);
+			
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			List<Error> errors = new ArrayList<Error>();
+			errors.add(new Error("01" ,"Common Error" ,e.getMessage() ));
+			res.setCommonResponse(null);
+			res.setIsError(false);
+			res.setErrorMessage(errors);
+			return res ;
+		}
+		return res;
+	}
+	
+	public String pushMail(Mail m , MailDataDetails mdd) {
+		   
+		String statusResponse=null;
+		try {
+			Properties prop = new Properties();
+			prop.put("mail.smtp.host", m.getCredential().getHost());
+			prop.put("mail.smtp.port", m.getCredential().getPort());
+			if(m.getCredential().getIsSSL()) {
+				prop.put("mail.smtp.auth", "true");
+				prop.put("mail.smtp.starttls.enable", "true"); // TLS
+			}else {
+				prop.put("mail.smtp.auth", "false");
+				prop.put("mail.smtp.starttls.enable", "false"); // TLS
+			}
+			
+			Session session = Session.getInstance(prop, new javax.mail.Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(m.getCredential().getUsername(), m.getCredential().getPassword());
+				}
+			});
+			MimeMessage mimeMessage = new MimeMessage(session);
+
+			mimeMessage.setFrom(new InternetAddress(m.getCredential().getUsername()));
+			
+			InternetAddress	to = new InternetAddress(m.getMailTo());
+			mimeMessage.addRecipient(Message.RecipientType.TO, to);
+			// Mail Cc
+			InternetAddress[] addressCc=null;
+			if (m.getMailcc() != null && m.getMailcc().size()>0 ) {
+				 addressCc = new InternetAddress[m.getMailcc().size()];
+				for (int i = 0; i < m.getMailcc().size(); i++) {
+					if (StringUtils.isNotBlank( m.getMailcc().get(i))) {
+						addressCc[i] = new InternetAddress( m.getMailcc().get(i)); 
+						mimeMessage.addRecipient(Message.RecipientType.CC, addressCc[i]); 
+					}
+				} 
+			}
+			 
+			mimeMessage.setSubject(m.getMailSubject());
+			mimeMessage.setContent(m.getMailBody(), "text/html");
+			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+			helper.setSubject(m.getMailSubject());
+			helper.setText(m.getMailBody(), true);
+//			if(m.getAttachments()!=null && StringUtils.isNotBlank(m.getAttachments())) {
+//				for (String attachPath : m.getAttachments().split(";")) {
+//					File file=loadFilesFromPath(attachPath);
+//					if (file != null && file.exists())
+//						helper.addAttachment(file.getName(), file);
+//				}
+//			}
+			
+			Transport.send(mimeMessage);
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			statusResponse=e.getLocalizedMessage();
+			return statusResponse ;
+		}
+		
+		statusResponse = "Success" ;
+		mdd.setMailResponse("Success");
+		mdd.setStatus("C");
+		mailDataRepo.save(mdd);
+		return statusResponse ;
+		 
+	}
+	
+	public String pushSms(Sms m , SmsDataDetails savedata) {
+
+		String statusResponse = null;
+		String type="0";	
+		String dlr="1";
+		String statuscode="";
+		Integer statusvalue =0;
+		try {
+			/*
+			Properties prop = new Properties();
+			prop.put("MobileNo", m.getSmsTo());
+			prop.put("SmsContent", m.getSmsBody());
+			prop.put("SmsRegards", m.getSmsRegards()==null?m.getWhatsappRegards():m.getSmsRegards());
+			prop.put("SmsSubject", m.getSmsSubject());
+			*/	
+			String mobileCode="";
+			RestTemplate restTemplate = new RestTemplate();
+			String fooResourceUrl = m.getCredential().getHost();
+			if(StringUtils.isNotBlank( m.getSmsToCode())) {
+			mobileCode = m.getSmsToCode().replace("+", "");
+			}
+			String content="username="
+					+ URLEncoder.encode(m.getCredential().getUsername(), "UTF-8") + "&password="
+					+ m.getCredential().getPassword() + "&type="
+					+ URLEncoder.encode(type, "UTF-8") + "&dlr="
+					+ URLEncoder.encode(dlr, "UTF-8") + "&destination="
+					 + URLEncoder.encode(m.getSmsBody(), "UTF-8") + "&source="
+							+ URLEncoder.encode(mobileCode+m.getSmsFrom(), "UTF-8") + "&message="
+							+m.getSmsBody()+m.getSmsRegards()==null?"":m.getSmsRegards();
+			System.out.println("SMS request  ---> "+fooResourceUrl + "?"+content);
+			
+			ResponseEntity<String> response	  = restTemplate.getForEntity(fooResourceUrl + "?"+content, String.class);
+			
+			System.out.println("SMS Response"+response.getBody());
+			statuscode =response.getStatusCode()!=null? response.getStatusCode().toString() : "";
+			statusvalue = response.getStatusCodeValue() ;		
+		} catch (Exception e) {
+			e.printStackTrace();
+			statusResponse = e.getLocalizedMessage();
+			return statusResponse ;
+		}
+
+		if(statuscode.equalsIgnoreCase("200OK")) {
+		savedata.setResStatus("OK");
+		savedata.setResMessage("SMS Sent Successful");		
+		}
+		else {
+			savedata.setResStatus("Not OK");
+			savedata.setResMessage("SMS Sent Failed");					
+		}
+		savedata.setResTime(new Date());
+		smsDataRepo.save(savedata);
+		statusResponse = "Success" ;
+		return statusResponse ;
+
+	}
+	
+	
+	private String getTempPassword(String loginId) {
+		final String alphabet = "Aa2Bb@3Cc#4Dd$5Ee%6Ff7Gg&8Hh9Jj2Kk=3L4Mm5Nn@6Pp7Qq#8Rr$9Ss%2Tt3Uu&4Vv5Ww+6Xx=7Yy8Zz9";
+		final int N = alphabet.length();
+		String temppwd = "";
+		Random r = new Random();
+		for (int i = 0; i < 10; i++) {
+			temppwd += alphabet.charAt(r.nextInt(N));
+		}
+		try {
+			passwordEnc passEnc = new passwordEnc();
+			String password = passEnc.crypt(temppwd.trim());
+			log.info("newpwd ==>" + password + ":userId ==>" + loginId + ":Temppassword==>" + temppwd);
+			Integer count = Integer.valueOf(loginRepo.findByLoginId(loginId).getPwdCount()) + 1   ;
+			LoginMaster loginData = loginRepo.findByLoginId(loginId);
+			
+			if (loginData !=null) {
+				LoginMaster model = loginData ;
+				model.setLpass5(loginData.getLpass4());
+				model.setLpass4(loginData.getLpass3());
+				model.setLpass3(loginData.getLpass2());
+				model.setLpass2(loginData.getLpass1());
+				model.setLpass1(loginData.getPassword()); 
+				model.setStatus("Y");
+				model.setPwdCount(count.toString() );;
+				Instant now = Instant.now();
+				Instant after = now.plus(Duration.ofDays(1));
+				Date dateAfter = Date.from(after);
+				model.setLpassDate(dateAfter);
+			//	String encpass = endecryService.encrypt(temppwd);
+				model.setPassword(password);
+				loginRepo.saveAndFlush(model);
+				
+			}
+			
+		} catch (Exception e) {
+			log.info(e);
+		}
+		return temppwd;
+	}
+	
+	
+	private String getTemplateFrame(String name ,String companylogo ,String companyAddress, String mailBody , 	String mailSubject,	String mailRegards) {
+		try {
+			 String baseTemplate="<div style=\"margin: 0px auto;width: 700px;max-width: 90%;padding-top: 20px;background-color: rgb(255,255,255);\">\r\n"
+			 		+ "        <div style=\"text-align: center; margin-bottom: 20px;\"> <img height=\"20px\"> </div>\r\n"
+			 		+ "<div class=\"adM\" style=\"text-align: center;\"><img src=\"{xCompanyLogox}\">\r\n"
+			 		+ "        \r\n"
+			 		+ "        </div>"
+			 		+ "        <div style=\"margin: 0px auto; width: 100%; line-height: 1.3;\"> <img width=\"100%\">\r\n"
+			 		+ "          <div style=\"padding: 20px 30px;\">\r\n"
+			 		+ "            <p style=\"text-transform: capitalize;\">Hi {xCustomerx},</p>\r\n"
+			 		+ "            <p style=\"\r\n"
+			 		+ "    font-size: 17px;\r\n"
+			 		+ "\">{xsubjectx}</p>\r\n"
+			 		+ "            <div style=\"border: 1px solid rgb(221, 221, 221); padding: 20px;\">\r\n"
+			 		+ "              {xmailBodyx}"
+			 		+ "                \r\n"
+			 		+ "            </div>\r\n"
+			 		+ "            <div>\r\n"
+			 		+ "              <p style=\"font-weight: bold;\">Why {companyName}?</p>\r\n"
+			 		+ "              <ul>\r\n"
+			 		+ "                <li>Sample Text -1.</li>\r\n"
+			 		+ "                <li>Sample Text -2.</li>\r\n"
+			 		+ "                <li>Sample Text -3.</li>\r\n"
+			 		+ "              </ul>\r\n"
+			 		+ "              <p style=\"font-weight: bold;\">What’s next?</p>\r\n"
+			 		+ "              <p>Paragraph Text</p>\r\n"
+			 		+ "              <ul>\r\n"
+			 		+ "                <li>Sample Text</li>\r\n"
+			 		+ "                <li>Sample Text</li>\r\n"
+			 		+ "              </ul>\r\n"
+			 		+ "              <p style=\"font-size: 1.3em; text-align: center; font-weight: bold;\">That's all, it’s that simple.</p>\r\n"
+			 		+ "            </div>\r\n"
+			 		+ "             \r\n"
+			 		+ "             \r\n"
+			 		+ "            <p style=\"margin-top: 30px;\">We care,</p>\r\n"
+			 		+ "            <p>{xregardsx} Team</p>\r\n"
+			 		+ "            <div style=\"font-size: 0.8em; color: rgba(0, 0, 0, 0.4); margin-top: 30px;\">\r\n"
+			 		+ "              <p>Your premium may need to be adjusted if the provided\r\n"
+			 		+ "                information is incorrect.</p>\r\n"
+			 		+ "            </div>\r\n"
+			 		+ "            <div style=\"color: rgba(0, 0, 0, 0.4); font-size: 0.8em; border-top: 1px solid; margin-top: 30px; line-height: 0.9em; text-align: center; padding: 30px 0px;\">\r\n"
+			 		+ "              <p><a href='#'/>\r\n"
+			 		+ "               {xCompanyAddressx}</p>\r\n"
+			 		+ "              <div>\r\n"
+			 		+ "                <p style=\"font-weight: bold; color: rgb(0, 0, 0); margin-top: 20px;\">Connect with us</p>\r\n"
+			 		+ "                </div>\r\n"
+			 		+ "            </div>\r\n"
+			 		+ "          </div>\r\n"
+			 		+ "        </div>\r\n"
+			 		+ "      </div>";
+				String xCustomerx=name ;
+				
+				
+				Map<String,String> hmap=new HashMap<String,String>();
+				hmap.put("xregardsx", mailRegards);
+				hmap.put("xmailBodyx", mailBody);
+				hmap.put("xCustomerx", xCustomerx);
+				hmap.put("xsubjectx", mailSubject);
+				hmap.put("xCompanyLogox", companylogo );
+				hmap.put("xCompanyAddressx", companyAddress);
+				
+			StringBuffer b=new StringBuffer(baseTemplate);
+			while (b.indexOf("{")!=-1 && b.indexOf("}")!=-1) {
+				 String tx = b.substring(b.indexOf("{")+1, b.indexOf("}"));
+				 b.replace(b.indexOf("{"), b.indexOf("}")+1, String.valueOf(hmap.get(tx)!=null?hmap.get(tx) : ""));
+			} 
+			return b.toString(); 
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public InsuranceCompanyMaster getInscompanyMaster(String companyId) {
+		InsuranceCompanyMaster data = new InsuranceCompanyMaster();
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<InsuranceCompanyMaster> query = cb.createQuery(InsuranceCompanyMaster.class);
+			
+			// Find All
+			Root<InsuranceCompanyMaster>    c = query.from(InsuranceCompanyMaster.class);		
+			
+			// Select
+			query.select(c );
+			
+		
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("companyName")));
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm1 = effectiveDate.from(InsuranceCompanyMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
+			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
+			
+			// Effective Date End
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<InsuranceCompanyMaster> ocpm2 = effectiveDate2.from(InsuranceCompanyMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("companyId"),ocpm2.get("companyId") );
+			javax.persistence.criteria.Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a3,a4);
+			
+		    // Where	
+			Predicate n1 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n3 = cb.equal(c.get("companyId"), companyId);
+	
+			query.where(n1,n2,n3).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<InsuranceCompanyMaster> result = em.createQuery(query);
+			List<InsuranceCompanyMaster> list  = result.getResultList();
+					
+			data = list.get(0);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return data;
+	}
 }
 
 

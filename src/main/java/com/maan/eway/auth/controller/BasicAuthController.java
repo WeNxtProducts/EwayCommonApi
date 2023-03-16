@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,10 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.auth.dto.ChangePasswordReq;
 import com.maan.eway.auth.dto.CommonLoginRes;
+import com.maan.eway.auth.dto.ForgetPasswordReq;
 import com.maan.eway.auth.service.AuthendicationService;
 import com.maan.eway.auth.service.LoginValidatedService;
-import com.maan.eway.service.PrintReqService;
 import com.maan.eway.error.Error;
+import com.maan.eway.res.SuccessRes;
+import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -80,5 +81,37 @@ public class BasicAuthController {
 			}
 		}
 	
-	} 
+	}
+	
+	@PostMapping("/forgotpassword")
+	public  ResponseEntity<CommonLoginRes> getForgotPwd(@RequestBody ForgetPasswordReq req){
+		
+		reqPrinter.reqPrint(req);
+		CommonLoginRes data = new CommonLoginRes(); 
+		List<Error> validation = loginValidationComponent.forgetPwdValidation(req);
+		if(validation!= null && validation.size()!=0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			
+			return new ResponseEntity<CommonLoginRes>(data, HttpStatus.OK);
+		}
+		else {
+			// Save 
+			SuccessRes res = authservice.LoginForgetPassword(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			
+			if( res !=null  ) {
+				return new ResponseEntity<CommonLoginRes>(data, HttpStatus.CREATED);
+			}
+			else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+		
+	}
 }

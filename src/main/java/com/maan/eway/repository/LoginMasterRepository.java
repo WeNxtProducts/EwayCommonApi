@@ -40,5 +40,7 @@ public interface LoginMasterRepository  extends JpaRepository<LoginMaster,LoginM
 
 	LoginMaster findByCompanyIdAndLoginId(String companyId, String loginId);
 
+	LoginMaster findByLoginIdAndStatus(String loginId, String string);
+
 
 }

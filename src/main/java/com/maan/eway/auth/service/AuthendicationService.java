@@ -4,8 +4,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.maan.eway.auth.dto.ChangePasswordReq;
 import com.maan.eway.auth.dto.CommonLoginRes;
+import com.maan.eway.auth.dto.ForgetPasswordReq;
 import com.maan.eway.auth.dto.LoginRequest;
 import com.maan.eway.auth.dto.LogoutRequest;
+import com.maan.eway.res.SuccessRes;
 
 public interface AuthendicationService {
 
@@ -14,6 +16,8 @@ public interface AuthendicationService {
 	String LoginChangePassword(ChangePasswordReq req);
 
 	CommonLoginRes logout(LogoutRequest mslogin);
+
+	SuccessRes LoginForgetPassword(ForgetPasswordReq req);
 
 
 /*	CommonCrmRes LoginChangePassword(ChangePasswordReq req);

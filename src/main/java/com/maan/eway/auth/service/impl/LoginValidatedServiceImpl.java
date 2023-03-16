@@ -21,6 +21,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.maan.eway.auth.dto.ChangePasswordReq;
 import com.maan.eway.auth.dto.CommonLoginRes;
+import com.maan.eway.auth.dto.ForgetPasswordReq;
 import com.maan.eway.auth.dto.LoginRequest;
 import com.maan.eway.auth.service.LoginCriteriaQueryService;
 import com.maan.eway.auth.service.LoginValidatedService;
@@ -449,6 +450,32 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 		Pattern pattern=Pattern.compile("(?=\\S+$).{7,20}");
     	Matcher matcher = pattern.matcher(newPassword);
     	return matcher.matches();
+	}
+
+	@Override
+	public List<Error> forgetPwdValidation(ForgetPasswordReq req) {
+		log.info(req);
+		
+		List<Error> list = new ArrayList<Error>();
+		
+		if(StringUtils.isBlank(req.getLoginId())) {
+			list.add(new Error("","Login Id", "Please Enter Login Id"));
+		}
+		else {
+			LoginMaster model = loginRepo.findByLoginIdAndStatus(req.getLoginId() , "Y");
+			if(model == null ) {
+				list.add(new Error("", "ForgotPassword", " Login Id is Deactive"));
+			} else {
+				model = loginRepo.findByLoginId(req.getLoginId());
+				if(model ==null ) {
+					
+					list.add(new Error("", "ForgotPassword", "You are not authorized user..!"));
+				} 	
+			}
+			 
+			
+		}
+		return list;
 	}
 
 		
