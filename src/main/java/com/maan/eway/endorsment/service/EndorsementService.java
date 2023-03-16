@@ -257,7 +257,7 @@ public class EndorsementService {
 				CommonRes cancelPolicy = cancelPolicy(request);	
 				return cancelPolicy;
 			}else {
-				EserviceMotorDetails motorRaw = copyraw.copyMotorRaw(request);
+				List<EserviceMotorDetails> motorRaw = copyraw.copyMotorRaw(request);
 				CommonRes c=new CommonRes();
 				c.setCommonResponse(motorRaw);
 				c.setErroCode(0);
