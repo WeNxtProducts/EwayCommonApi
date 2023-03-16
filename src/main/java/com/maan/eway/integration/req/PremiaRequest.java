@@ -24,6 +24,6 @@ public class PremiaRequest {
 	private String quoteNo;
 	
 	@JsonProperty("PremiaIds")
-	private List<String> premiaIds;
+	private List<String> premiaIds; 
 	
 }

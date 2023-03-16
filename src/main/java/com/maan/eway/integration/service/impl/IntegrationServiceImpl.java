@@ -240,7 +240,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 		
 		List<String> param=new ArrayList<String>();
 		param.add(request.getQuoteNo());
-		
+		 
 		for (PremiaConfigMaster configMas :  configMasterList ) {
 			boolean push = push(configMas , param );
 			if(push ==true  ) {
