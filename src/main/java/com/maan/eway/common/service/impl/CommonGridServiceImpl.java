@@ -582,7 +582,12 @@ public class CommonGridServiceImpl implements CommonGridService {
 					}
 				}
 				n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
-				query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+				query.where(n1,n2,n3,n4,n5)
+				.groupBy(c.get("customerReferenceNo"), c.get("occupationType"),c.get("riskId"),
+						cus.get("clientName"), c.get("companyId"),
+						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
+						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"))
+				.orderBy(orderList);
 				if (searchKey.equalsIgnoreCase("ClientName")) {
 					query.where(n1, n2,n4,n5).orderBy(orderList);
 				}

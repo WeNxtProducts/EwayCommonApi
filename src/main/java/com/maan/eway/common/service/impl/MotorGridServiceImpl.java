@@ -567,7 +567,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Root<EserviceMotorDetails> c = query.from(EserviceMotorDetails.class);
 				Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
 				
-				query.multiselect(c.alias("c") ,
+				query.multiselect(c.alias("c"),
 						cus.get("clientName").alias("clientName"),cb.count(c).alias("idsCount"));
 
 
@@ -632,13 +632,28 @@ public class MotorGridServiceImpl implements MotorGridService {
 						n4 = e0.in(branches);
 					}
 				}
-				n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
-				query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+				n5 = cb.equal(cus.get("customerReferenceNo"), c.get("customerReferenceNo"));
+				query.where(n1,n2,n3,n4,n5)
+				.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
+						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
+						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
+						c.get("rejectReason"),c.get("riskId"),c.get("insuranceType"))
+				.orderBy(orderList);
 				if (searchKey.equalsIgnoreCase("ClientName")) {
-					query.where(n1, n2,n4,n5).orderBy(orderList);
+					query.where(n1, n2,n4,n5)
+					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
+							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
+							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
+							c.get("rejectReason"),c.get("riskId"),c.get("insuranceType"))
+					.orderBy(orderList);
 				}
 				if (searchKey.equalsIgnoreCase("EntryDate")) {
-					query.where(n1,n2,n3,n4).orderBy(orderList);
+					query.where(n1,n2,n3,n4)
+					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
+							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
+							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
+							c.get("rejectReason"),c.get("riskId"),c.get("insuranceType"))
+					.orderBy(orderList);
 				}
 
 				// Get Result
