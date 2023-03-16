@@ -1791,7 +1791,7 @@ public class DropDownServiceImpl  implements DropDownService{
 
 	private List<String> fromQuerytoList(String selectquery){
 		if(selectquery.indexOf(",")!=-1) {
-			selectquery=selectquery.substring(selectquery.indexOf("SELECT")+6, selectquery.indexOf("FROM"));
+			selectquery=selectquery.substring(selectquery.indexOf("SELECT")+6, selectquery.indexOf(" FROM"));
 			List<String> arrays=new ArrayList<String>();
 			String[] col_aliz = selectquery.split(",");
 			for(int i=0;i<col_aliz.length;i++) {
