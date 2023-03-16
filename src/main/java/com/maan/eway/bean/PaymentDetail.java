@@ -232,6 +232,15 @@ private static final long serialVersionUID = 1L;
     @Column(name="CHEQUE_DATE")
     private Date       chequeDate ;
     
+    @Column(name="PAYMENTS")
+    private String       payments ;
+    
+    @Column(name="ACCOUNT_NUMBER")
+    private String       accountNumber ;
+    
+    @Column(name="IBAN_NUMBER")
+    private String       ibanNumber ;
+    
 }
 
 

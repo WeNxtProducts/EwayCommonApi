@@ -47,4 +47,12 @@ public class PaymentDetailsSaveReq {
 	@JsonProperty("ChequeDate")
 	private Date chequeDate;
 	
+	@JsonProperty("Payments")
+	private String payments;
+	
+	@JsonProperty("AccountNumber")
+	private String accountNumber;
+	
+	@JsonProperty("IbanNumber")
+	private String ibanNumber;
 }

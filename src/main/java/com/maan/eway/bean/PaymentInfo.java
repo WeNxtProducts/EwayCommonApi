@@ -171,6 +171,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="CURRENCY_ID", length=100)
     private String     currencyId;
     
+    @Column(name="PAYMENTS")
+    private String       payments ;
 
 
 }

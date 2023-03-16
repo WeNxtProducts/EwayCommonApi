@@ -32,6 +32,7 @@ public class MakePaymentSaveReq {
 	@JsonProperty("SubUserType")
 	private String subUserType;
 	
+	
 	@JsonProperty("Remarks")
 	private String remarks;
 	

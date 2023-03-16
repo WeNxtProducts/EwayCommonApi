@@ -1223,6 +1223,16 @@ public class PaymentServiceImpl implements PaymentService {
 			if(StringUtils.isBlank(req.getPaymentType())) {
 				error.add(new Error("01","PaymentType","Please Select PaymentType"));
 			}
+			
+			if(StringUtils.isNotBlank(req.getPayments()) && req.getPayments().equalsIgnoreCase("Refund") ){
+				if(StringUtils.isBlank(req.getAccountNumber())) {
+					error.add(new Error("01","AccountNumber","Please Enter AccountNumber "));
+				}
+				if(StringUtils.isBlank(req.getIbanNumber())) {
+					error.add(new Error("01","IbanNumber","Please Enter IbanNumber"));
+				}
+			}
+			
 			if("2".equals(req.getPaymentType())) {
 				Calendar cal = new GregorianCalendar();
 				Date today = new Date();
@@ -1230,13 +1240,18 @@ public class PaymentServiceImpl implements PaymentService {
 				today = cal.getTime();
 				if(StringUtils.isBlank(req.getBankName())) {
 					error.add(new Error("01","BankName","Please Enter BankName"));
-				}else if(StringUtils.isBlank(req.getChequeNo())) {
-					error.add(new Error("01","ChequeNo","Please Enter ChequeNo"));
-				}else if (req.getChequeDate() == null) {
-					error.add(new Error("04", "ChequeDate", "Please Enter ChequeDatet "));
-				} else if (req.getChequeDate().before(today)) {
-					error.add(new Error("04", "ChequeDate", "Please Enter ChequeDate as Future Date"));
 				}
+				if (StringUtils.isBlank(req.getPayments())  || ( StringUtils.isNotBlank(req.getPayments()) && ! req.getPayments().equalsIgnoreCase("Refund") ) ){
+					if(StringUtils.isBlank(req.getChequeNo())) {
+						error.add(new Error("01","ChequeNo","Please Enter ChequeNo"));
+					}else if (req.getChequeDate() == null) {
+						error.add(new Error("04", "ChequeDate", "Please Enter ChequeDate "));
+					} else if (req.getChequeDate().before(today)) {
+						error.add(new Error("04", "ChequeDate", "Please Enter ChequeDate as Future Date"));
+					}
+				}
+					
+			
 			}
 			
 			// Check Paymetn Info
@@ -1393,6 +1408,10 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentDetail.setPremiumLc(paymentInfo.getPremiumLc());
 			paymentDetail.setCurrencyId(paymentInfo.getCurrencyId());
 			paymentDetail.setExchangeRate(paymentInfo.getExchangeRate() );
+			paymentDetail.setAccountNumber( req.getAccountNumber()  ); 
+			paymentDetail.setIbanNumber(req.getIbanNumber()  ); 
+			paymentDetail.setPayments( StringUtils.isBlank(req.getPayments() ) ? "Charge" : req.getPayments()  ); 
+			
 			if("2".equals(req.getPaymentType())) {
 				paymentDetail.setBankName(req.getBankName());
 				paymentDetail.setChequeNo(req.getChequeNo());
@@ -1431,6 +1450,7 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentInfo.setShorternUrl(tinyUrl);
 			paymentInfo.setPaymentStatus(paymentStatus);
 			paymentInfo.setMerchantReference(refno);
+			paymentInfo.setPayments( StringUtils.isBlank(req.getPayments() ) ? "Charge" : req.getPayments()  ); 			
 			paymentinforepo.saveAndFlush(paymentInfo);
 			
 			// Update Emi 
