@@ -548,12 +548,27 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 				}
 			}
 			n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
-			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n5)
+			.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),
+					c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
+					c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"))
+			
+			.orderBy(orderList);
 			if (searchKey.equalsIgnoreCase("ClientName")) {
-				query.where(n1, n2,n4,n5).orderBy(orderList);
+				query.where(n1, n2,n4,n5)
+				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),
+						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
+						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"))
+			
+				.orderBy(orderList);
 			}
 			if (searchKey.equalsIgnoreCase("EntryDate")) {
-				query.where(n1,n2,n3,n4).orderBy(orderList);
+				query.where(n1,n2,n3,n4)
+				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),
+						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
+						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"))
+			
+				.orderBy(orderList);
 			}
 			// Get Result
 			TypedQuery<Tuple> result = em.createQuery(query);
