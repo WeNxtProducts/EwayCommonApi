@@ -17,6 +17,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -235,7 +236,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 	PremiaResponse response = new PremiaResponse();
 	try {
 		HomePositionMaster home = homeRepo.findByQuoteNo(request.getQuoteNo());
-		 List<PremiaConfigMaster> configMasterList =   getPremiaConfigMaster(home.getCompanyId() , home.getProductId() );
+		 List<PremiaConfigMaster> configMasterList =   getPremiaConfigMaster(home.getCompanyId() , home.getProductId() , request.getPremiaIds() );
 		
 		List<String> param=new ArrayList<String>();
 		param.add(request.getQuoteNo());
@@ -258,7 +259,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 
 	
 	
-	public synchronized List<PremiaConfigMaster> getPremiaConfigMaster(String insuraceId , Integer productId ) {
+	public synchronized List<PremiaConfigMaster> getPremiaConfigMaster(String insuraceId , Integer productId , List<String> premiaIds ) {
 		List<PremiaConfigMaster> list = new ArrayList<PremiaConfigMaster>();
 		try {
 			Date today = new Date();
@@ -306,7 +307,10 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
 			Predicate n4 = cb.equal(c.get("companyId"), insuraceId);
 			Predicate n5 = cb.equal(c.get("productId"), productId);
-			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			//In 
+			Expression<String>e0= c.get("premiaId");
+			Predicate n6 = e0.in(premiaIds);
+			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<PremiaConfigMaster> result = em.createQuery(query);
