@@ -98,7 +98,7 @@ public class CopyRawTable  {
 			newObject.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
 			newObject.setStatus("E");
 			newObject.setPolicyNo(ent.getPolicyNo()+"-"+count);
-			newObject.setQuoteNo(null);
+		//	newObject.setQuoteNo(null);
 			EserviceMotorDetails save = emotorRepo.save(newObject);
 			return save;
 		}catch (Exception e) {
