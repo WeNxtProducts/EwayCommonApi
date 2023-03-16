@@ -131,12 +131,14 @@ public boolean push(PremiaConfigMaster configMas , List<String> params ) {
 							value= StringUtils.isBlank(data.getDefaultValue())?"":data.getDefaultValue();
 							
 							if("Date".equals(data.getDataTypeDesc())) { 
-								String dateformatt=StringUtils.isNotEmpty(data.getDataFormatType())?data.getDataFormatType().toUpperCase().replace("TO_CHAR", "TO_DATE"):null;
-								SimpleDateFormat dbF = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"); 
-								if(value.equalsIgnoreCase("sysdate()") ) {
+							//	String dateformatt=StringUtils.isNotEmpty(data.getDataFormatType())?data.getDataFormatType().toUpperCase().replace("TO_CHAR", "TO_DATE"):null;
+								String dateformatt=  StringUtils.isNotEmpty(data.getDataFormatType())?data.getDataFormatType().toUpperCase() : "yyyy-MM-dd hh:mm:ss" ;
+								
+								if(value.equalsIgnoreCase("SYSDATE") ) {
+									SimpleDateFormat dbF = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 									value= dbF.format(new Date()) ;
 								} else {
-									value=dateformatt.replaceAll("<>",value );
+									value = " STR_TO_DATE(" + value + ","+ dateformatt+") " ;
 								}
 							
 									
@@ -151,9 +153,11 @@ public boolean push(PremiaConfigMaster configMas , List<String> params ) {
 							
 							value=String.valueOf(aliazval);
 							if("Date".equals(data.getDataTypeDesc())) { 
-								String dateformatt=StringUtils.isNotEmpty(data.getDataFormatType())?data.getDataFormatType().toUpperCase().replace("TO_CHAR", "TO_DATE"):null;
+							//	String dateformatt=StringUtils.isNotEmpty(data.getDataFormatType())?data.getDataFormatType().toUpperCase().replace("TO_CHAR", "TO_DATE"):null;
+								String dateformatt=  StringUtils.isNotEmpty(data.getDataFormatType())?data.getDataFormatType().toUpperCase() : "yyyy-MM-dd hh:mm:ss" ;
 								if(dateformatt!=null) 
-									value=dateformatt.replaceAll("<>","'"+aliazval.toString()+"'" );
+									value = " STR_TO_DATE(" + value + ","+ dateformatt+") " ;
+									//value=dateformatt.replaceAll("<>","'"+aliazval.toString()+"'" );
 							}
 							
 							value=(("String".equals(data.getDataTypeDesc()) )?"'"+String.valueOf(aliazval)+"'":value);

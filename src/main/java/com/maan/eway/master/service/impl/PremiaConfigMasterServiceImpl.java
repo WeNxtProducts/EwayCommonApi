@@ -352,7 +352,9 @@ public SuccessRes insertPremiaConfig(PremiaConfigMasterSaveReq req) {
 		saveData.setProductId(req.getProductId());
 		saveData.setSectionId(req.getSectionId()==null?"99999":req.getSectionId());
 		saveData.setQueryKey(StringUtils.isBlank(req.getQueryKey())?"": req.getQueryKey());
-	/*	String key = "";
+		saveData.setPremiaTableName(req.getPremiaTableName());
+		saveData.setEntityName(req.getEntityName());
+		/*	String key = "";
 		List<String> keys = req.getSourceTableName();
 		for (String menuId : keys) {
 		key = StringUtils.isBlank(key) ? menuId  :key + "," + menuId;
@@ -452,6 +454,7 @@ public PremiaConfigMasterRes getPremiaConfig(PremiaConfigMasterGetReq req) {
 		res.setUpdatedDate(list.get(0).getUpdatedDate());
 		res.setRemarks(list.get(0).getRemarks());;
 		res.setPremiaTableName(list.get(0).getPremiaTableName());
+		res.setEntityName(list.get(0).getEntityName());
 		res.setQueryKey(StringUtils.isBlank(list.get(0).getQueryKey())?"":list.get(0).getQueryKey());		
 	/*	String tablename = list.get(0).getSourceTableName();
 		List<String> tablenames = tablename!=null ? new ArrayList<String>(Arrays.asList(tablename.split("~"))) : new ArrayList<String>() ;
@@ -563,7 +566,7 @@ public List<PremiaConfigMasterRes> getallPremiaConfig(PremiaConfigMasterGetAllRe
 		res.setRemarks(data.getRemarks());
 		res.setPremiaTableName(data.getPremiaTableName());
 		res.setQueryKey(StringUtils.isBlank(data.getQueryKey())?"":data.getQueryKey());		
-		
+		res.setEntityName(data.getEntityName());
 		/*
 		String tablename = data.getSourceTableName();
 		List<String> tablenames = tablename!=null ? new ArrayList<String>(Arrays.asList(tablename.split("~"))) : new ArrayList<String>() ;
@@ -662,7 +665,8 @@ public List<PremiaConfigMasterRes> getactivePremiaConfig(PremiaConfigMasterGetAl
 		res.setRemarks(data.getRemarks());
 		res.setPremiaTableName(data.getPremiaTableName());
 		res.setQueryKey(StringUtils.isBlank(data.getQueryKey())?"":data.getQueryKey());		
-		
+		res.setEntityName(data.getEntityName());
+
 		/*
 		String tablename = data.getSourceTableName();
 		List<String> tablenames = tablename!=null ? new ArrayList<String>(Arrays.asList(tablename.split("~"))) : new ArrayList<String>() ;
@@ -780,7 +784,8 @@ public SuccessRes changeStatusPremiaConfig(PremiaConfigMasterChangeStatusReq req
 		saveData.setAmendId(amendId);
 		saveData.setStatus(req.getStatus());
 		saveData.setBranchCode(req.getBranchCode());
-				
+		saveData.setEntityName(list.get(0).getEntityName());
+
 		repo.saveAndFlush(saveData);	
 		// Perform Update
 		res.setResponse("Status Changed");

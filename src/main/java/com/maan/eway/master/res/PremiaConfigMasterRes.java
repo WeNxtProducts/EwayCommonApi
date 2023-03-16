@@ -35,6 +35,9 @@ public class PremiaConfigMasterRes implements Serializable {
 	@JsonProperty("Status")
 	private String status;
 	
+	@JsonProperty("EntityName")
+	private String entityName;
+	
 	
 	@JsonProperty("SourceTableName")
 	private List<String> sourceTableName;

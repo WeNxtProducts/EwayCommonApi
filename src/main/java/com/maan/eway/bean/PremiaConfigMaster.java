@@ -84,6 +84,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="PREMIA_TABLE_NAME", length=100)
     private String   premiaTableName ;
 
+    @Column(name="ENTITY_NAME", length=100)
+    private String  entityName ;
+
+    
     @Column(name="SOURCE_TABLE_NAME", length=500)
     private String    sourceTableName ;
 

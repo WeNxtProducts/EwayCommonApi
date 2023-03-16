@@ -20,6 +20,11 @@ public class PremiaConfigMasterSaveReq implements Serializable {
 	@JsonProperty("PremiaTableName")
     private String premiaTableName  ;
     
+
+	@JsonProperty("EntityName")
+    private String entityName  ;
+    
+	
 	@JsonProperty("InsuranceId")
 	private String companyId;
 	
