@@ -671,7 +671,7 @@ private BuildingDetailsRepository BuildingRepo;
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 			
 			List<EserviceTravelGetRes>   travelResList = new ArrayList<EserviceTravelGetRes>();
-			List<PassengerSectionDetails> secList = new ArrayList<PassengerSectionDetails>();
+			
 			for (TravelPassengerDetails tra :  totalDatas) {
 				EserviceTravelGetRes travelDetails = new  EserviceTravelGetRes()  ;
 				dozerMapper.map(tra, travelDetails);
@@ -686,6 +686,7 @@ private BuildingDetailsRepository BuildingRepo;
 				List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
 							
 				// Response
+				List<PassengerSectionDetails> secList = new ArrayList<PassengerSectionDetails>();
 				PassengerSectionDetails traSec = new PassengerSectionDetails(); 
 				traSec.setSectionId(tra.getSectionId()==null?"":tra.getSectionId().toString());
 				traSec.setSectionName( tra.getSectionName());
