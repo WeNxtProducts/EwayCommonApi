@@ -178,8 +178,6 @@ public class CityMasterServiceImpl implements CityMasterService {
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setUpdatedDate(new Date());
 			saveData.setTiraCode(req.getRegulatoryCode());
-			
-			saveData.setCreatedBy(req.getTest());
 			repo.saveAndFlush(saveData);
 
 			log.info("Saved Details is ---> " + json.toJson(saveData));
