@@ -1069,6 +1069,10 @@ public class MotorGridServiceImpl implements MotorGridService {
 //
 //				//Copy COVER_DOCUMENT_UPLOAD_DETAILS 
 //				res=coverDocumentUploadDetailsEndoCopyquote(req,refNo,quoteNo,customerId,loginId,prevQuoteNo,prevPolicyNo,count);
+					res.setResponse("Successfully Updated");
+					res.setRequestReferenceNo(newRequestNo);
+					res.setPolicyNo(prevPolicyNo);
+					res.setQuoteNo(prevQuoteNo);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
