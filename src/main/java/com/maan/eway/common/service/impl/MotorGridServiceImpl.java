@@ -38,6 +38,7 @@ import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
 import com.maan.eway.admin.res.ReferalCriteriaRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.CityMaster;
+import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.HomePositionMaster;
@@ -59,6 +60,7 @@ import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.service.MotorGridService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
+import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
@@ -109,6 +111,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 	@Autowired
 	private GenerateSeqNoServiceImpl seqNo ;
 	
+	@Autowired
+	private EndtTypeMasterRepository endtTypeRepo;
 	// Exiting Motor Details
 
 	@Override
@@ -153,7 +157,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			Predicate n4 = cb.equal(m.get("status"), "Y");
 			Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), endDate);
 			Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
-
+			Predicate n9 = cb.isNull(m.get("endtTypeId"));
 			Predicate n7 = null;
 			if (req.getApplicationId().equalsIgnoreCase("1")) {
 				n7 = cb.equal(m.get("loginId"), req.getLoginId());
@@ -170,7 +174,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				n8 = e0.in(branches);
 			}
 
-			query.where(n1, n2, n3, n4, n5, n6, n7, n8)
+			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"))
@@ -243,8 +247,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Expression<String> e0 = m.get("branchCode");
 				n7 = e0.in(branches);
 			}
-
-			query.where(n1, n2, n3, n4, n5, n6, n7)
+			Predicate n8 = cb.isNull(m.get("endtTypeId"));
+			query.where(n1, n2, n3, n4, n5, n6, n7,n8)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"))
@@ -315,8 +319,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Expression<String> e0 = m.get("branchCode");
 				n6 = e0.in(branches);
 			}
-
-			query.where(n1, n2, n3, n4, n5, n6)
+			Predicate n7 = cb.isNull(m.get("endtTypeId"));
+			query.where(n1, n2, n3, n4, n5, n6,n7)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
@@ -393,8 +397,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Expression<String> e0 = m.get("branchCode");
 				n6 = e0.in(branches);
 			}
-
-			query.where(n1, n2, n3, n4, n5, n6)
+			Predicate n7 = cb.isNull(m.get("endtTypeId"));
+			query.where(n1, n2, n3, n4, n5, n6,n7)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
@@ -476,8 +480,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 
 			Expression<String> e0 = c.get("branchCode");
 			Predicate n6 = e0.in(branches);
-
-			query.where(n1, n2, n3, n4, n6)
+			Predicate n7 = cb.isNull(m.get("endtTypeId"));
+			query.where(n1, n2, n3, n4, n6,n7)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
@@ -633,14 +637,15 @@ public class MotorGridServiceImpl implements MotorGridService {
 					}
 				}
 				n5 = cb.equal(cus.get("customerReferenceNo"), c.get("customerReferenceNo"));
-				query.where(n1,n2,n3,n4,n5)
+				Predicate n6 = cb.isNull(c.get("endtTypeId"));
+				query.where(n1,n2,n3,n4,n5,n6)
 				.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
 						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
 						c.get("rejectReason"),c.get("riskId"),c.get("insuranceType"))
 				.orderBy(orderList);
 				if (searchKey.equalsIgnoreCase("ClientName")) {
-					query.where(n1, n2,n4,n5)
+					query.where(n1, n2,n4,n5,n6)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
 							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
@@ -648,7 +653,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					.orderBy(orderList);
 				}
 				if (searchKey.equalsIgnoreCase("EntryDate")) {
-					query.where(n1,n2,n3,n4)
+					query.where(n1,n2,n3,n4,n6)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
 							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
@@ -862,9 +867,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 			try {
 		
 				
-				String refNo = req.getRequestReferenceNo();
-				String customerId="";
-				String quoteNo=req.getQuoteNo();
+//				String customerId="";
+//				String quoteNo=req.getQuoteNo();
 				
 				//Generating
 //				Random rand = new Random();
@@ -872,32 +876,33 @@ public class MotorGridServiceImpl implements MotorGridService {
 //				refNo = "Mot-" + idf.format(new Date()) + random;
 //				customerId = "C-" + idf.format(new Date()) + random ;
 //				quoteNo  = "Q"+ idf.format(new Date()) + random ;
+				
 				String refShortCode = getListItem(req.getInsuranceId() ,req.getBranchCode(), "PRODUCT_SHORT_CODE",req.getProductId());
-		        refNo=refShortCode +seqNo.generateRefNo();
-				quoteNo  = "Q"+ generateQuoteNo();
-				customerId = "C-" + generateCustId();
+				String refNo=refShortCode +seqNo.generateRefNo();
+				String quoteNo  = "Q"+ generateQuoteNo();
+				String customerId = "C-" + generateCustId();
 	            
 	            //Copy Quote Eservice Motor Details
-	            res=eserviceMotorCopyquote(req,refNo,branches,loginId);
+	            res=eserviceMotorCopyquote(req,refNo,branches,loginId,customerId,quoteNo);
 	            
-				//Copy Quote Home Position Master
-
-	            res=homeEndoCopyQuote(req,refNo,customerId,quoteNo,loginId);
-				
-				//Copy Quote Personal Info 
-				res=personolInfoEndoCopyQuote(req,customerId);
-				
-				//Copy Quote Policy Cover Data
-				res=policyCoverDataEndocopyQuote(req,refNo,quoteNo,loginId);
-				
-				
-				//Copy Quote Motor Data Details
-				res=motorDataDetailsEndoCopyquote(req,refNo,quoteNo,customerId,loginId);
+//				//Copy Quote Home Position Master
+//	            res=homeEndoCopyQuote(req,refNo,customerId,quoteNo,loginId);
+//				
+//				//Copy Quote Personal Info 
+//				res=personolInfoEndoCopyQuote(req,customerId);
+//				
+//				//Copy Quote Policy Cover Data
+//				res=policyCoverDataEndocopyQuote(req,refNo,quoteNo,loginId);
+//				
+//				
+//				//Copy Quote Motor Data Details
+//				res=motorDataDetailsEndoCopyquote(req,refNo,quoteNo,customerId,loginId);
 				
 				
 				res.setResponse("Successfully Updated");
-				res.setRequestReferenceNo(refNo);
-				res.setQuoteNo(quoteNo);
+				res.setRequestReferenceNo(res.getRequestReferenceNo());
+				res.setQuoteNo(res.getQuoteNo());
+				res.setPolicyNo(res.getPolicyNo());
 				
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -934,32 +939,79 @@ public class MotorGridServiceImpl implements MotorGridService {
 		 }
 		
 		//Eservice Motor Copy Quote
-		public CopyQuoteSuccessRes eserviceMotorCopyquote(CopyQuoteReq req, String refNo, List<String> branches,String loginId) {
+		public CopyQuoteSuccessRes eserviceMotorCopyquote(CopyQuoteReq req, String refNo, List<String> branches,String loginId,String customerId,String quoteNo) {
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			EserviceMotorDetails savedata = new EserviceMotorDetails();
 			try {
-				String searchValue = req.getRequestReferenceNo();
-				String searchKey = "RequestReferenceNo";
-				String companyId = req.getInsuranceId();
+//				String searchValue = req.getRequestReferenceNo();
+//				String searchKey = "RequestReferenceNo";
 				String userType = req.getUserType();
 				String branchCode = "";
 
-				List<Tuple> list = copyQuoteSearchDetails(searchKey, searchValue, companyId, loginId, userType,
-						branches);
-				if (list.size() > 0) {
-					for (Tuple data : list) {
+				List<EserviceMotorDetails> motor=null;
+				Integer count=repo.countByOriginalPolicyNoAndRiskId(req.getPolicyNo(),1);
+				String prevPolicyNo=null;
+				String prevQuoteNo=null;
+				String newRequestNo =null;
+				long pendingcount =0;
+				if(count>0) {
+					List<EserviceMotorDetails> motors=repo.findByOriginalPolicyNoAndRiskId(req.getPolicyNo(),1);
+					//Compare
+					motors.sort(new Comparator<EserviceMotorDetails>() {
 
-						savedata = dozerMapper.map(data.get(0), EserviceMotorDetails.class);
+						@Override
+						public int compare(EserviceMotorDetails o1, EserviceMotorDetails o2) {
+							// TODO Auto-generated method stub
+							return o1.getEndtCount().compareTo(o2.getEndtCount());
+						}
+					}.reversed());
+					
+					pendingcount = motors.stream().filter(m->m.getEndtStatus().equals("P")).count();
+					if(pendingcount>0) {
+						 List<EserviceMotorDetails> pendingData = motors.stream().filter(m->m.getEndtStatus().equals("P")).collect(Collectors.toList());
+						 motor= pendingData;
+						 prevPolicyNo=motor.get(0).getEndtPrevPolicyNo();
+						 prevQuoteNo=motor.get(0).getEndtPrevQuoteNo();
+						 newRequestNo=motor.get(0).getRequestReferenceNo();
+						 count--;
+					}else {
+						motor=motors;
+						
+						if(motors.size()>1) {
+							prevPolicyNo=motors.get(1).getPolicyNo();
+							prevQuoteNo =motors.get(1).getQuoteNo();
+						}else {
+							prevPolicyNo=req.getPolicyNo();
+							prevQuoteNo =motor.get(0).getEndtPrevQuoteNo();
+						}
+					}
+					
+				}else {
+					motor=repo.findByPolicyNoAndStatus(req.getPolicyNo(),"P");
+					prevPolicyNo=req.getPolicyNo();
+					prevQuoteNo =motor.get(0).getQuoteNo();
+				}
+				if(pendingcount==0)
+					newRequestNo=refNo;
+				
+				
+//				List<Tuple> list = copyQuoteSearchDetails(searchKey, searchValue, companyId, loginId, userType,
+//						branches);
+				List<EserviceMotorDetails> motors=repo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
+				
+				if (motors.size() > 0) {
+					for (EserviceMotorDetails data : motors) {
+						EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()));
+						savedata = dozerMapper.map(data, EserviceMotorDetails.class);
 
 						savedata.setEntryDate(new Date());
 						savedata.setCreatedBy(req.getLoginId());
 						savedata.setUpdatedBy(req.getLoginId());
 						savedata.setUpdatedDate(new Date());
-						savedata.setRequestReferenceNo(refNo);
+						savedata.setRequestReferenceNo(newRequestNo);
 						savedata.setOldReqRefNo(req.getRequestReferenceNo());
-						if (req.getUserType().equalsIgnoreCase("Broker")
-								|| (req.getUserType().equalsIgnoreCase("User"))) {
+						if (req.getUserType().equalsIgnoreCase("Broker")|| (req.getUserType().equalsIgnoreCase("User"))) {
 							branchCode = req.getBranchCode();
 							savedata.setApplicationId("1");
 							savedata.setBrokerBranchCode(branchCode);
@@ -974,13 +1026,50 @@ public class MotorGridServiceImpl implements MotorGridService {
 						savedata.setActualPremiumLc(BigDecimal.ZERO);
 						savedata.setOverallPremiumFc(BigDecimal.ZERO);
 						savedata.setOverallPremiumLc(BigDecimal.ZERO);
-						savedata.setQuoteNo("");
+						savedata.setQuoteNo(quoteNo);
+						
+						savedata.setOriginalPolicyNo(req.getPolicyNo());
+						savedata.setEndorsementDate(new Date());
+						savedata.setEndorsementRemarks(req.getEndtRemarks());
+						savedata.setEndorsementEffdate(req.getEndtEffectiveDate());
+						savedata.setEndtPrevPolicyNo(prevPolicyNo);
+						savedata.setEndtPrevQuoteNo(prevQuoteNo);
+						savedata.setEndtCount(new BigDecimal(count));
+						savedata.setEndtStatus("P");
+						savedata.setIsFinaceYn(entMaster.getEndtTypeCategoryId()==2?"Y":"N");
+						savedata.setEndtCategDesc(entMaster.getEndtTypeCategory());
+						savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
+						savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
+						savedata.setStatus("E");
+						savedata.setPolicyNo(req.getPolicyNo()+"-"+count);
 						repo.saveAndFlush(savedata);
 					}
 					res.setResponse("Successfully Updated");
-					res.setRequestReferenceNo(refNo);
+					res.setRequestReferenceNo(newRequestNo);
+					res.setPolicyNo(prevPolicyNo);
+					res.setQuoteNo(prevQuoteNo);
 				}
+		
+				if (pendingcount == 0) {
+					// Copy Quote Home Position Master
+					res = homeEndoCopyQuote(req, refNo, customerId, quoteNo, loginId, prevQuoteNo, prevPolicyNo, count);
 
+					// Copy Quote Personal Info
+					res = personolInfoEndoCopyQuote(req, customerId, prevQuoteNo, prevPolicyNo, count);
+
+					// Copy Quote Policy Cover Data
+					res = policyCoverDataEndocopyQuote(req, refNo, quoteNo, loginId, prevQuoteNo, prevPolicyNo, count);
+
+					// Copy Quote Motor Data Details
+					res = motorDataDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId, prevQuoteNo,
+							prevPolicyNo, count);
+
+//				//Copy Quote Motor Driver Details
+//				res=motorDriverDetailsEndoCopyquote(req,refNo,quoteNo,customerId,loginId,prevQuoteNo,prevPolicyNo,count);
+//
+//				//Copy COVER_DOCUMENT_UPLOAD_DETAILS 
+//				res=coverDocumentUploadDetailsEndoCopyquote(req,refNo,quoteNo,customerId,loginId,prevQuoteNo,prevPolicyNo,count);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.info("Exception is ---> " + e.getMessage());
@@ -989,33 +1078,48 @@ public class MotorGridServiceImpl implements MotorGridService {
 			return res;
 		}
 		//Home Position Master Endt Copy Quote
-		public CopyQuoteSuccessRes homeEndoCopyQuote(CopyQuoteReq req,String refNo,String customerId,String quoteNo,String loginId) {
+		public CopyQuoteSuccessRes homeEndoCopyQuote(CopyQuoteReq req,String refNo,String customerId,String quoteNo,String loginId,	String prevPolicyNo,
+		String prevQuoteNo,Integer count) {
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 			HomePositionMaster savedata = new HomePositionMaster();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			
 		try {
-
+			EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()));
 			HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
 			savedata = dozerMapper.map(homeData, HomePositionMaster.class);
 			savedata.setRequestReferenceNo(refNo);
 			savedata.setCustomerId(customerId);
 			savedata.setQuoteNo(quoteNo);
 			savedata.setEndtTypeId(req.getEndtTypeId());
-			savedata.setIsFinacialEndt(req.getEndtTypeId());
 			savedata.setEndtDate(new Date());
 			savedata.setEndtBy(loginId);
 			savedata.setEndtStatus("P");
 			savedata.setEndtPremium(BigDecimal.ZERO);
 			savedata.setEndtCommission(BigDecimal.valueOf(0));
-			savedata.setOriginalPolicyNo(homeData.getPolicyNo());
+		//	savedata.setOriginalPolicyNo(homeData.getPolicyNo());
 			savedata.setQuoteCreatedDate(new Date());
 			savedata.setEntryDate(new Date());
+			
+			savedata.setRequestReferenceNo(refNo);
+			savedata.setOriginalPolicyNo(req.getPolicyNo());
+			savedata.setEndorsementRemarks(req.getEndtRemarks());
+			savedata.setEndorsementEffdate(req.getEndtEffectiveDate());
+			savedata.setEndtPrevPolicyNo(prevPolicyNo);
+			savedata.setEndtPrevQuoteNo(prevQuoteNo);
+			savedata.setEndtCount(count);
+			savedata.setEndtStatus("P");
+			savedata.setIsFinacialEndt("N");
+			savedata.setEndtCategDesc(entMaster.getEndtTypeCategory());
+			savedata.setEndtTypeDesc(entMaster.getEndtTypeDesc());
+			savedata.setStatus("E");
+			savedata.setPolicyNo(req.getPolicyNo()+"-"+count);
 
 			homePosistionRepo.saveAndFlush(savedata);
 			res.setResponse("Successfully Updated");
 			res.setRequestReferenceNo(refNo);
 			res.setQuoteNo(quoteNo);
+			res.setPolicyNo(prevPolicyNo);
 			System.out.println("QUOTE NO:"+quoteNo);
 			System.out.println("Customer Id:"+customerId);
 			System.out.println("Reference No:"+refNo);
@@ -1029,11 +1133,13 @@ public class MotorGridServiceImpl implements MotorGridService {
 		}
 		
 		//Personal Info Endt Copy Quote
-		public CopyQuoteSuccessRes personolInfoEndoCopyQuote(CopyQuoteReq req,String customerId) {
+		public CopyQuoteSuccessRes personolInfoEndoCopyQuote(CopyQuoteReq req,String customerId,String prevPolicyNo,
+				String prevQuoteNo,Integer count) {
 			CopyQuoteSuccessRes res =new CopyQuoteSuccessRes();
 			PersonalInfo savedata = new PersonalInfo();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
+				EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()));
 				HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
 				String olsCustomerId=homeData.getCustomerId();
 				
@@ -1044,6 +1150,21 @@ public class MotorGridServiceImpl implements MotorGridService {
 				savedata.setCreatedBy(req.getLoginId());
 				savedata.setUpdatedBy(req.getLoginId());
 				savedata.setUpdatedDate(new Date());
+				
+				//Endo
+				savedata.setOriginalPolicyNo(req.getPolicyNo());
+				savedata.setEndorsementDate(new Date());
+				savedata.setEndorsementRemarks(req.getEndtRemarks());
+				savedata.setEndorsementEffdate(req.getEndtEffectiveDate());
+				savedata.setEndtPrevPolicyNo(prevPolicyNo);
+				savedata.setEndtPrevQuoteNo(prevQuoteNo);
+				savedata.setEndtCount(new BigDecimal(count));
+				savedata.setEndtStatus("P");
+				savedata.setIsFinaceYn(entMaster.getEndtTypeCategoryId()==2?"Y":"N");
+				savedata.setEndtCategDesc(entMaster.getEndtTypeCategory());
+				savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
+				savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
+				savedata.setStatus("E");
 				personalInforepo.saveAndFlush(savedata);
 				res.setResponse("Successfully Updated");
 				//res.setSuccessId(customerId);
@@ -1056,11 +1177,13 @@ public class MotorGridServiceImpl implements MotorGridService {
 			return res;
 		}
 		//Policy Cover Data Enst Copy Quote
-		public CopyQuoteSuccessRes policyCoverDataEndocopyQuote(CopyQuoteReq req,String refNo,String quoteNo,String loginId) {
+		public CopyQuoteSuccessRes policyCoverDataEndocopyQuote(CopyQuoteReq req,String refNo,String quoteNo,String loginId,String prevPolicyNo,
+				String prevQuoteNo,Integer count) {
 			CopyQuoteSuccessRes res=new CopyQuoteSuccessRes();
 			PolicyCoverData savedata = new PolicyCoverData();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
+				EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()));
 				List<PolicyCoverData> policyCoverData=policyCoverDataRepo.findByQuoteNo(req.getQuoteNo());
 				if (policyCoverData.size() > 0) {
 					for (PolicyCoverData data : policyCoverData) {
@@ -1069,11 +1192,14 @@ public class MotorGridServiceImpl implements MotorGridService {
 						savedata.setQuoteNo(quoteNo);
 						savedata.setEntryDate(new Date());
 						savedata.setCreatedBy(loginId);
+						savedata.setEndtCount(new BigDecimal(count));
+						savedata.setStatus("E");
 						policyCoverDataRepo.saveAndFlush(savedata);
 					}
 				}
 				res.setResponse("Successfully Updated");
 				res.setRequestReferenceNo(refNo);
+				res.setPolicyNo(prevPolicyNo);
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.info("Exception is ---> " + e.getMessage());
@@ -1082,11 +1208,13 @@ public class MotorGridServiceImpl implements MotorGridService {
 			return res;
 		}
 		//Motor Data Details Enst Copy Quote
-		public CopyQuoteSuccessRes motorDataDetailsEndoCopyquote(CopyQuoteReq req,String refNo,String quoteNo,String customerId,String loginId ) {
+		public CopyQuoteSuccessRes motorDataDetailsEndoCopyquote(CopyQuoteReq req,String refNo,String quoteNo,String customerId,String loginId,String prevPolicyNo,
+				String prevQuoteNo,Integer count ) {
 			CopyQuoteSuccessRes res=new CopyQuoteSuccessRes();
 			MotorDataDetails savedata = new MotorDataDetails();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
+				EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()));
 				List<MotorDataDetails> motorData=motorDataDetepo.findByQuoteNo(req.getQuoteNo());
 				if (motorData.size() > 0) {
 					for (MotorDataDetails data : motorData) {
@@ -1095,17 +1223,31 @@ public class MotorGridServiceImpl implements MotorGridService {
 						savedata.setCustomerId(customerId);
 						savedata.setQuoteNo(quoteNo);
 						savedata.setEntryDate(new Date());
-						// savedata.setCreatedBy(req.getLoginId());
-						// savedata.setUpdatedBy(req.getLoginId());
 						savedata.setCreatedBy(loginId);
 						savedata.setUpdatedBy(loginId);
 						savedata.setUpdatedDate(new Date());
+						
+						savedata.setOriginalPolicyNo(req.getPolicyNo());
+						savedata.setEndorsementDate(new Date());
+						savedata.setEndorsementRemarks(req.getEndtRemarks());
+						savedata.setEndorsementEffdate(req.getEndtEffectiveDate());
+						savedata.setEndtPrevPolicyNo(prevPolicyNo);
+						savedata.setEndtPrevQuoteNo(prevQuoteNo);
+						savedata.setEndtCount(new BigDecimal(count));
+						savedata.setEndtStatus("P");
+						savedata.setIsFinaceYn(entMaster.getEndtTypeCategoryId()==2?"Y":"N");
+						savedata.setEndtCategDesc(entMaster.getEndtTypeCategory());
+						savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
+						savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
+						savedata.setStatus("E");
+						savedata.setPolicyNo(req.getPolicyNo()+"-"+count);
 						motorDataDetepo.saveAndFlush(savedata);
 					}
 				}
 				res.setResponse("Successfully Updated");
 				res.setRequestReferenceNo(refNo);
-				res.setQuoteNo(quoteNo);;
+				res.setQuoteNo(quoteNo);
+				res.setPolicyNo(prevPolicyNo);
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.info("Exception is ---> " + e.getMessage());
@@ -1113,7 +1255,111 @@ public class MotorGridServiceImpl implements MotorGridService {
 			}
 			return res;
 		}
-		//Validaton
+
+		// Motor Data Details Enst Copy Quote
+		public CopyQuoteSuccessRes motorDriverDetailsEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo,
+				String customerId, String loginId, String prevPolicyNo, String prevQuoteNo, Integer count) {
+			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
+			MotorDataDetails savedata = new MotorDataDetails();
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			try {
+				EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(
+						req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
+						Integer.parseInt(req.getEndtTypeId()));
+				List<MotorDataDetails> motorData = motorDataDetepo.findByQuoteNo(req.getQuoteNo());
+				if (motorData.size() > 0) {
+					for (MotorDataDetails data : motorData) {
+						savedata = dozerMapper.map(data, MotorDataDetails.class);
+						savedata.setRequestReferenceNo(refNo);
+						savedata.setCustomerId(customerId);
+						savedata.setQuoteNo(quoteNo);
+						savedata.setEntryDate(new Date());
+						savedata.setCreatedBy(loginId);
+						savedata.setUpdatedBy(loginId);
+						savedata.setUpdatedDate(new Date());
+
+						savedata.setOriginalPolicyNo(req.getPolicyNo());
+						savedata.setEndorsementDate(new Date());
+						savedata.setEndorsementRemarks(req.getEndtRemarks());
+						savedata.setEndorsementEffdate(req.getEndtEffectiveDate());
+						savedata.setEndtPrevPolicyNo(prevPolicyNo);
+						savedata.setEndtPrevQuoteNo(prevQuoteNo);
+						savedata.setEndtCount(new BigDecimal(count));
+						savedata.setEndtStatus("P");
+						savedata.setIsFinaceYn(entMaster.getEndtTypeCategoryId() == 2 ? "Y" : "N");
+						savedata.setEndtCategDesc(entMaster.getEndtTypeCategory());
+						savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
+						savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
+						savedata.setStatus("E");
+						savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+						motorDataDetepo.saveAndFlush(savedata);
+					}
+				}
+				res.setResponse("Successfully Updated");
+				res.setRequestReferenceNo(refNo);
+				res.setQuoteNo(quoteNo);
+				;
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return res;
+		}
+
+		// Motor Data Details Enst Copy Quote
+		public CopyQuoteSuccessRes coverDocumentUploadDetailsEndoCopyquote(CopyQuoteReq req, String refNo,
+				String quoteNo, String customerId, String loginId, String prevPolicyNo, String prevQuoteNo,
+				Integer count) {
+			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
+			MotorDataDetails savedata = new MotorDataDetails();
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			try {
+				EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(
+						req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
+						Integer.parseInt(req.getEndtTypeId()));
+				List<MotorDataDetails> motorData = motorDataDetepo.findByQuoteNo(req.getQuoteNo());
+				if (motorData.size() > 0) {
+					for (MotorDataDetails data : motorData) {
+						savedata = dozerMapper.map(data, MotorDataDetails.class);
+						savedata.setRequestReferenceNo(refNo);
+						savedata.setCustomerId(customerId);
+						savedata.setQuoteNo(quoteNo);
+						savedata.setEntryDate(new Date());
+						savedata.setCreatedBy(loginId);
+						savedata.setUpdatedBy(loginId);
+						savedata.setUpdatedDate(new Date());
+
+						savedata.setOriginalPolicyNo(req.getPolicyNo());
+						savedata.setEndorsementDate(new Date());
+						savedata.setEndorsementRemarks(req.getEndtRemarks());
+						savedata.setEndorsementEffdate(req.getEndtEffectiveDate());
+						savedata.setEndtPrevPolicyNo(prevPolicyNo);
+						savedata.setEndtPrevQuoteNo(prevQuoteNo);
+						savedata.setEndtCount(new BigDecimal(count));
+						savedata.setEndtStatus("P");
+						savedata.setIsFinaceYn(entMaster.getEndtTypeCategoryId() == 2 ? "Y" : "N");
+						savedata.setEndtCategDesc(entMaster.getEndtTypeCategory());
+						savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
+						savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
+						savedata.setStatus("E");
+						savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+						motorDataDetepo.saveAndFlush(savedata);
+					}
+				}
+				res.setResponse("Successfully Updated");
+				res.setRequestReferenceNo(refNo);
+				res.setQuoteNo(quoteNo);
+				;
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return res;
+		}
+
+		// Validaton
 		@Override
 		public List<Tuple> validateMotorEndt(String quoteNo) {
 			List<Tuple> list = new ArrayList<Tuple>();
@@ -1418,7 +1664,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Predicate n9 = cb.notEqual(m.get("integrationStatus"),"S");
 				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), startDate);
 				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), startDate);
-
+				Predicate n10 = cb.isNull(m.get("endtTypeId"));
 
 				Predicate n5 = null;
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
@@ -1435,7 +1681,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					n6 = e0.in(branches);
 				}
 
-				query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9)
+				query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10)
 				.groupBy(
 						c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"),c.get("mobileNo1"), c.get("isTaxExempted"), c.get("taxExemptedId"),
 						m.get("companyId"),m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
@@ -1523,7 +1769,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Predicate n4 = cb.equal(m.get("status"), status);
 				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), startDate);
 				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), startDate);
-
+				Predicate n10 = cb.isNull(m.get("endtTypeId"));
 
 				Predicate n5 = null;
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
@@ -1540,7 +1786,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					n6 = e0.in(branches);
 				}
 
-				query.where(n1,n2, n3, n4, n5, n6,n7,n8)
+				query.where(n1,n2, n3, n4, n5, n6,n7,n8,n10)
 						.groupBy(
 								c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"),c.get("mobileNo1"), c.get("isTaxExempted"), c.get("taxExemptedId"),
 								m.get("companyId"),m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),

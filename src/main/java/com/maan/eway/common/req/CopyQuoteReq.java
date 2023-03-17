@@ -1,5 +1,8 @@
 package com.maan.eway.common.req;
 
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Builder;
@@ -17,9 +20,6 @@ public class CopyQuoteReq {
 	@JsonProperty("TypeId")
 	private String typeId;
 	
-	@JsonProperty("EndtTypeId")
-	private String endtTypeId;
-
 	@JsonProperty("SearchKey")
 	private String searchKey;
 
@@ -47,6 +47,19 @@ public class CopyQuoteReq {
 	@JsonProperty("SearchValue")
 	private String searchValue;
 
+	
+	@JsonProperty("PolicyNo")
+	private String policyNo;
+	
+	@JsonProperty("EndtTypeId")
+	private String endtTypeId;
+	
+	@JsonProperty("EndtRemarks")
+	private String endtRemarks;
+	
+	@JsonProperty("EndtEffectiveDate")
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	private Date endtEffectiveDate;
 
 	
 }

@@ -164,6 +164,7 @@ public class EndorsementService {
 	
 	@PersistenceContext
 	private EntityManager em;
+	private EndtTypeMaster entMaster;
 	
 	
 	public List<EndorsementCriteriaRes> endorsementPendingData(Endorsment request) {
@@ -252,15 +253,13 @@ public class EndorsementService {
 	}
 	public CommonRes createEndorsment(Endorsment request) {
 		try {
-
+			EndtTypeMaster entTypeMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(request.getCompanyId(), request.getProductId().intValue(), "Y",Integer.parseInt(request.getEndtType()));
 			if("42".equals(request.getEndtType())) {
 				CommonRes cancelPolicy = cancelPolicy(request);	
 				return cancelPolicy;
-			}else if ("46".equals(request.getEndtType()) || "53".equals(request.getEndtType())|| "57".equals(request.getEndtType())) {
-
-
-				HomePositionMaster hp = hpmrepo.findByPolicyNoAndStatusAndCompanyIdAndProductId(request.getPolicyNo(),
-						"P", request.getCompanyId(), Integer.valueOf(request.getProductId().intValue()));
+			}else if ("1".equals(entTypeMaster.getEndtTypeCategoryId().toString()) ) {
+				HomePositionMaster hp = hpmrepo.findByPolicyNoAndStatusAndCompanyIdAndProductId(request.getPolicyNo(),"P", request.getCompanyId(), Integer.valueOf(request.getProductId().intValue()));
+				
 				CopyQuoteReq c = new CopyQuoteReq();
 				c.setRequestReferenceNo(hp.getRequestReferenceNo());
 				c.setLoginId(hp.getLoginId());
@@ -272,11 +271,18 @@ public class EndorsementService {
 				c.setEndtTypeId(request.getEndtType());
 				c.setTypeId("Endt");
 				c.setQuoteNo(hp.getQuoteNo());
+				c.setPolicyNo(request.getPolicyNo());
+				c.setEndtRemarks(request.getEndtRemarks());
+				c.setEndtEffectiveDate(request.getEndtEffectiveDate());
 
 				CopyQuoteSuccessRes copyQuote = copyquoteService.copyQuote(c);
-				
-			}
-			else {
+				CommonRes com=new CommonRes();
+				com.setCommonResponse(copyQuote);
+				com.setErroCode(0);
+				com.setIsError(false);
+				com.setMessage("Success");
+				return com;
+			}else {
 				List<EserviceMotorDetails> motorRaw = copyraw.copyMotorRaw(request);
 				CommonRes c=new CommonRes();
 				c.setCommonResponse(motorRaw);

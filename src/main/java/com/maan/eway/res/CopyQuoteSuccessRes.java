@@ -15,5 +15,8 @@ public class CopyQuoteSuccessRes {
 	
 	@JsonProperty("RequestReferenceNo")
 	private String requestReferenceNo;
+	
+	@JsonProperty("PolicyNo")
+	private String policyNo;
 
 }

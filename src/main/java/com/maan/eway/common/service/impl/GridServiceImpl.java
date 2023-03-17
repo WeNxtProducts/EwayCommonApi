@@ -720,7 +720,7 @@ public class GridServiceImpl implements GridService {
 	}
 
 
-
+	@Transactional
 	@Override
 	public CopyQuoteSuccessRes copyQuote(CopyQuoteReq req) {
 		CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
@@ -841,6 +841,7 @@ public class GridServiceImpl implements GridService {
 		return error;
 	}
 
+	
 	@Override
 	public List<GetAllMotorDetailsRes> getbyReqRefNo(CopyQuoteReq req) {
 
