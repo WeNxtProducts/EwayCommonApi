@@ -582,18 +582,36 @@ public class PaymentServiceImpl implements PaymentService {
 				
 				String pattern = "#####0.00" ;
 				DecimalFormat df = new DecimalFormat(pattern);
-				paymentinfo.setPremium(data.getOverallPremiumLc());
-				paymentinfo.setPremiumLc(data.getOverallPremiumLc() );
-				paymentinfo.setPremiumFc( new BigDecimal(df.format(data.getOverallPremiumFc())));
-				
 				if(StringUtils.isNotBlank(data.getEndtTypeId())) {
+					
+					// Endorsment Premium
 					paymentinfo.setPremium(data.getEndtPremium().add(data.getEndtPremiumTax()));
 					paymentinfo.setPremiumLc(data.getEndtPremium().add(data.getEndtPremiumTax()));
 					
-					BigDecimal premiumFc = paymentinfo.getPremiumLc().divide(data.getExchangeRate(), MathContext.DECIMAL128 );
-					
+					BigDecimal premiumFc = paymentinfo.getPremiumLc().multiply(data.getExchangeRate(), MathContext.DECIMAL128 );
 					paymentinfo.setPremiumFc( new BigDecimal(df.format(premiumFc)));
-				}
+					
+				} else if (StringUtils.isNotBlank(req.getEmiYn()) && req.getEmiYn().equalsIgnoreCase("Y") && StringUtils.isNotBlank(req.getInstallmentMonth()) 
+							&& StringUtils.isNotBlank(req.getInstallmentPeriod())  )  {
+					
+					// Emi Premium
+					EmiTransactionDetails  emiDetails = emiRepo.findByQuoteNoAndInstalmentAndInstallmentPeriod(req.getQuoteNo() ,req.getInstallmentMonth() , req.getInstallmentPeriod());
+					paymentinfo.setPremium(new BigDecimal( emiDetails.getPremiumWithTax()));
+					paymentinfo.setPremiumLc(new BigDecimal( emiDetails.getPremiumWithTax() ));
+					
+					BigDecimal premiumFc = paymentinfo.getPremiumLc().multiply(data.getExchangeRate(), MathContext.DECIMAL128 );
+					paymentinfo.setPremiumFc( new BigDecimal(df.format(premiumFc)));
+						
+				 } else {
+					 
+					// Overall Premium
+					paymentinfo.setPremium(data.getOverallPremiumLc());
+					paymentinfo.setPremiumLc(data.getOverallPremiumLc() );
+					paymentinfo.setPremiumFc( new BigDecimal(df.format(data.getOverallPremiumFc())));
+						 
+				 }
+				
+				
 				
 				//BigDecimal premium = new BigDecimal(req.getPremium()) ;
 				//BigDecimal premiumFc = premium.divide(data.getExchangeRate(), MathContext.DECIMAL128 );
