@@ -214,8 +214,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="INSTALLMENT_YN", length=1)
     private String     installmentYn ;
 
-    @Column(name="POLICY_PERIOD")
-    private BigDecimal policyPeriod ;
+    @Column(name="POLICY_PERIOD",length=100)
+    private String policyPeriod ;
 
     @Column(name="PRE_INSP_REQ_YN", length=1)
     private String     preInspReqYn ;
@@ -283,7 +283,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="QUOTATION_ISSUE_DT")
     private Date       quotationIssueDt ;
 
-    @Column(name="VALIDITY_PERIOD", length=10)
+    @Column(name="VALIDITY_PERIOD", length=100)
     private String     validityPeriod ;
 
     @Column(name="UW_ID", length=10)
