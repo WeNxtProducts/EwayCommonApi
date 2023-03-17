@@ -235,4 +235,8 @@ public class QuoteDetailsRes {
 	
 	@JsonProperty("EndtPremiumTax")
 	private BigDecimal endtPremiumTax;
+	
+	@JsonProperty("TotalEndtPremium")
+	private BigDecimal TotalEndtPremium;
+	
 }
