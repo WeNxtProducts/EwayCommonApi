@@ -1388,7 +1388,7 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentDetail.setPaymentId(req.getPaymentId());
 			paymentDetail.setCustomerEmail(personaldata.getEmail1());
 			paymentDetail.setCustomerId(personaldata.getCustomerId());
-			paymentDetail.setEmiYn(paymentInfo.getEmiYn() );
+			paymentDetail.setEmiYn(StringUtils.isBlank(paymentInfo.getEmiYn())?"N": paymentInfo.getEmiYn());
 			paymentDetail.setInstallmentMonth(paymentInfo.getInstallmentMonth());
 			paymentDetail.setInstallmentPeriod(paymentInfo.getInstallmentPeriod());
 			paymentDetail.setPaymentType(req.getPaymentType());
@@ -1521,10 +1521,13 @@ public class PaymentServiceImpl implements PaymentService {
 				data.setIntegrationStatus("S");
 				data.setEmiYn(paymentInfo.getEmiYn());
 				data.setInstallmentPeriod(paymentInfo.getInstallmentPeriod());
+				if(StringUtils.isNotBlank(data.getEndtTypeId()))
+					data.setEndtStatus("C");
+				
 				homerepo.saveAndFlush(data);
 				
 				// Update ProductWise
-				String msg = updateProductWisePolicyNo(paymentInfo.getProductId().toString() ,policyNo ,req.getQuoteNo() ); 
+				String msg = updateProductWisePolicyNo(paymentInfo.getProductId().toString() ,policyNo ,req.getQuoteNo(),data.getEndtTypeId() ); 
 						
 				res.setPolicyNo(policyNo);
 				res.setDebitNoteNo(debitNo);
@@ -1611,7 +1614,7 @@ public class PaymentServiceImpl implements PaymentService {
 		return itemDesc ;
 	}
 	
-	 public  String updateProductWisePolicyNo(String productId , String policyNo , String quoteNo ) {
+	 public  String updateProductWisePolicyNo(String productId , String policyNo , String quoteNo,String endttypeId ) {
 		 String res = "" ;
 	       try {
 	    	   if(productId.equalsIgnoreCase(motorProductId) ) {
@@ -1625,7 +1628,8 @@ public class PaymentServiceImpl implements PaymentService {
 					// set update and where clause
 					update.set("policyNo", policyNo);
 					update.set("status", "P");
-					
+					if(StringUtils.isNotBlank(endttypeId))
+						update.set("endtStatus","C");
 					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
 					update.where(n1);
 					// perform update

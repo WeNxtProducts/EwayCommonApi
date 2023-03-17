@@ -211,7 +211,7 @@ public class EndorsementService {
 				Predicate n2 = cb.equal(m.get("companyId"), request.getCompanyId());
 				Predicate n3 = cb.equal(m.get("productId"), request.getProductId());
 				Predicate n4 = cb.in(m.get("status")).value(Arrays.asList("E","P"));  // m.get("status").in("E","P"));
-				Predicate n5 = cb.equal(m.get("originalPolicyNo"), request.getPolicyNo());
+				Predicate n5 = cb.like(m.get("originalPolicyNo"), request.getPolicyNo());
 				//Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), endDate);
 				//Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
 
