@@ -64,15 +64,15 @@ public interface EServiceMotorDetailsRepository  extends JpaRepository<EserviceM
 	List<EserviceMotorDetails> findByRequestReferenceNoAndProductId(String requestReferenceNo, String productId);
 
 	List<EserviceMotorDetails> findByPolicyNoAndStatus(String policyNo, String string);
-
+	@Transactional
 	Integer countByOriginalPolicyNo(String policyNo);
-
+	@Transactional
 	List<EserviceMotorDetails> findByOriginalPolicyNo(String policyNo);
-
+	@Transactional
 	List<EserviceMotorDetails> findByQuoteNoOrderByRiskIdAsc(String prevQuoteNo);
-
+	@Transactional
 	Integer countByOriginalPolicyNoAndRiskId(String policyNo, Integer i);
-
+	@Transactional
 	List<EserviceMotorDetails> findByOriginalPolicyNoAndRiskId(String policyNo, Integer i);
 
 	

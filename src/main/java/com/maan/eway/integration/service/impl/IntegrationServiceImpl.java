@@ -92,8 +92,9 @@ public boolean push(PremiaConfigMaster configMas , List<String> params ) {
 							 String queryvalue = filterdmap.get(data.getInputColumn());
 							 
 							 if("Date".equals(data.getDataTypeDesc()) && !avoidd.containsKey(data.getInputColumn()) ) {
-								 queryvalue=(data.getDataFormatType()==null || StringUtils.isBlank(queryvalue) ) ?queryvalue:data.getDataFormatType().replaceAll("<>",queryvalue );
-								 avoidd.put(data.getInputColumn(), queryvalue);
+								// queryvalue=(data.getDataFormatType()==null || StringUtils.isBlank(queryvalue) ) ?queryvalue:data.getDataFormatType().replaceAll("<>",queryvalue );
+								// avoidd.put(data.getInputColumn(), queryvalue);
+								 maps.put(data.getInputColumn(), queryvalue); 
 							 }
 							 if("N".equals(data.getDefaultYn()) && "Y".equals(data.getCaseConditionYn()) ) {
 									maps.put(data.getInputColumn(), data.getCaseCondition()); 
