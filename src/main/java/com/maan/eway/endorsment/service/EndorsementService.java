@@ -256,7 +256,27 @@ public class EndorsementService {
 			if("42".equals(request.getEndtType())) {
 				CommonRes cancelPolicy = cancelPolicy(request);	
 				return cancelPolicy;
-			}else {
+			}else if ("46".equals(request.getEndtType()) || "53".equals(request.getEndtType())|| "57".equals(request.getEndtType())) {
+
+
+				HomePositionMaster hp = hpmrepo.findByPolicyNoAndStatusAndCompanyIdAndProductId(request.getPolicyNo(),
+						"P", request.getCompanyId(), Integer.valueOf(request.getProductId().intValue()));
+				CopyQuoteReq c = new CopyQuoteReq();
+				c.setRequestReferenceNo(hp.getRequestReferenceNo());
+				c.setLoginId(hp.getLoginId());
+				c.setApplicationId(hp.getApplicationId());
+				c.setInsuranceId(hp.getCompanyId());
+				c.setBranchCode(hp.getBranchCode());
+				c.setProductId(String.valueOf(hp.getProductId()));
+				c.setUserType("Broker");
+				c.setEndtTypeId(request.getEndtType());
+				c.setTypeId("Endt");
+				c.setQuoteNo(hp.getQuoteNo());
+
+				CopyQuoteSuccessRes copyQuote = copyquoteService.copyQuote(c);
+				
+			}
+			else {
 				List<EserviceMotorDetails> motorRaw = copyraw.copyMotorRaw(request);
 				CommonRes c=new CommonRes();
 				c.setCommonResponse(motorRaw);
