@@ -681,7 +681,8 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			master.setLpass4(pass4);
 			master.setLpass5(pass5);
 			master.setPassword(newpass);
-			master.setPwdCount(master.getPwdCount()+1);
+			Integer pwdCount =  Integer.valueOf(master.getPwdCount())+1 ;
+			master.setPwdCount(String.valueOf(pwdCount) );
 			
 			Instant now = Instant.now();
 			Instant after = now.plus(Duration.ofDays(45));
