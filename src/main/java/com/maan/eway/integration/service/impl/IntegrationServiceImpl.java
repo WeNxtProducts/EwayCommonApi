@@ -140,7 +140,7 @@ public boolean push(PremiaConfigMaster configMas , List<String> params ) {
 									SimpleDateFormat dbF = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 									value= dbF.format(new Date()) ;
 								} else {
-									value = " STR_TO_DATE(" + value + ","+ dateformatt+") " ;
+									value = " STR_TO_DATE(" +"'"+ value + ","+","+ "'"+ dateformatt+") " ;
 								}
 							
 									
@@ -158,7 +158,7 @@ public boolean push(PremiaConfigMaster configMas , List<String> params ) {
 							//	String dateformatt=StringUtils.isNotEmpty(data.getDataFormatType())?data.getDataFormatType().toUpperCase().replace("TO_CHAR", "TO_DATE"):null;
 								String dateformatt=  StringUtils.isNotEmpty(data.getDataFormatType())?data.getDataFormatType().toUpperCase() : "yyyy-MM-dd hh:mm:ss" ;
 								if(dateformatt!=null) 
-									value = " STR_TO_DATE(" + value + ","+ dateformatt+") " ;
+									value = " STR_TO_DATE(" +"'"+ value + "'"+","+ "'"+dateformatt+"'"+") " ;
 									//value=dateformatt.replaceAll("<>","'"+aliazval.toString()+"'" );
 							}
 							
