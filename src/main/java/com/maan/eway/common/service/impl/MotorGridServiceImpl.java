@@ -38,6 +38,7 @@ import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
 import com.maan.eway.admin.res.ReferalCriteriaRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.CityMaster;
+import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
@@ -46,6 +47,7 @@ import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MotorBodyTypeMaster;
 import com.maan.eway.bean.MotorDataDetails;
+import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PremiaCustomerDetails;
@@ -59,11 +61,13 @@ import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.service.MotorGridService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
+import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
+import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.SeqCustidRepository;
@@ -113,6 +117,12 @@ public class MotorGridServiceImpl implements MotorGridService {
 	
 	@Autowired
 	private EndtTypeMasterRepository endtTypeRepo;
+	
+	@Autowired
+	private MotorDriverDetailsRepository motordrivDetepo;
+	
+	@Autowired
+	private CoverDocumentUploadDetailsRepository coverDocUploadDetails;
 	// Exiting Motor Details
 
 	@Override
@@ -1064,11 +1074,14 @@ public class MotorGridServiceImpl implements MotorGridService {
 					res = motorDataDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId, prevQuoteNo,
 							prevPolicyNo, count);
 
-//				//Copy Quote Motor Driver Details
-//				res=motorDriverDetailsEndoCopyquote(req,refNo,quoteNo,customerId,loginId,prevQuoteNo,prevPolicyNo,count);
-//
-//				//Copy COVER_DOCUMENT_UPLOAD_DETAILS 
-//				res=coverDocumentUploadDetailsEndoCopyquote(req,refNo,quoteNo,customerId,loginId,prevQuoteNo,prevPolicyNo,count);
+					// Copy Quote Motor Driver Details
+					res = motorDriverDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId, prevQuoteNo,
+							prevPolicyNo, count);
+
+					// Copy COVER_DOCUMENT_UPLOAD_DETAILS
+					res = coverDocumentUploadDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId, prevQuoteNo,
+							prevPolicyNo, count);
+					
 					res.setResponse("Successfully Updated");
 					res.setRequestReferenceNo(newRequestNo);
 					res.setPolicyNo(prevPolicyNo);
@@ -1187,7 +1200,6 @@ public class MotorGridServiceImpl implements MotorGridService {
 			PolicyCoverData savedata = new PolicyCoverData();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
-				EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()));
 				List<PolicyCoverData> policyCoverData=policyCoverDataRepo.findByQuoteNo(req.getQuoteNo());
 				if (policyCoverData.size() > 0) {
 					for (PolicyCoverData data : policyCoverData) {
@@ -1264,23 +1276,22 @@ public class MotorGridServiceImpl implements MotorGridService {
 		public CopyQuoteSuccessRes motorDriverDetailsEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo,
 				String customerId, String loginId, String prevPolicyNo, String prevQuoteNo, Integer count) {
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
-			MotorDataDetails savedata = new MotorDataDetails();
+			MotorDriverDetails savedata = new MotorDriverDetails();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
 				EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(
 						req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 						Integer.parseInt(req.getEndtTypeId()));
-				List<MotorDataDetails> motorData = motorDataDetepo.findByQuoteNo(req.getQuoteNo());
-				if (motorData.size() > 0) {
-					for (MotorDataDetails data : motorData) {
-						savedata = dozerMapper.map(data, MotorDataDetails.class);
+				List<MotorDriverDetails> motorDriverData = motordrivDetepo.findByQuoteNo(req.getQuoteNo());
+				if (motorDriverData.size() > 0) {
+					for (MotorDriverDetails data : motorDriverData) {
+						savedata = dozerMapper.map(data, MotorDriverDetails.class);
 						savedata.setRequestReferenceNo(refNo);
-						savedata.setCustomerId(customerId);
 						savedata.setQuoteNo(quoteNo);
 						savedata.setEntryDate(new Date());
 						savedata.setCreatedBy(loginId);
-						savedata.setUpdatedBy(loginId);
-						savedata.setUpdatedDate(new Date());
+//						savedata.setUpdatedBy(loginId);
+//						savedata.setUpdatedDate(new Date());
 
 						savedata.setOriginalPolicyNo(req.getPolicyNo());
 						savedata.setEndorsementDate(new Date());
@@ -1295,8 +1306,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 						savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
 						savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
 						savedata.setStatus("E");
-						savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
-						motorDataDetepo.saveAndFlush(savedata);
+						//savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+						motordrivDetepo.saveAndFlush(savedata);
 					}
 				}
 				res.setResponse("Successfully Updated");
@@ -1316,23 +1327,22 @@ public class MotorGridServiceImpl implements MotorGridService {
 				String quoteNo, String customerId, String loginId, String prevPolicyNo, String prevQuoteNo,
 				Integer count) {
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
-			MotorDataDetails savedata = new MotorDataDetails();
+			CoverDocumentUploadDetails savedata = new CoverDocumentUploadDetails();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
 				EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(
 						req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 						Integer.parseInt(req.getEndtTypeId()));
-				List<MotorDataDetails> motorData = motorDataDetepo.findByQuoteNo(req.getQuoteNo());
+				List<CoverDocumentUploadDetails> motorData = coverDocUploadDetails.findByQuoteNo(req.getQuoteNo());
 				if (motorData.size() > 0) {
-					for (MotorDataDetails data : motorData) {
-						savedata = dozerMapper.map(data, MotorDataDetails.class);
+					for (CoverDocumentUploadDetails data : motorData) {
+						savedata = dozerMapper.map(data, CoverDocumentUploadDetails.class);
 						savedata.setRequestReferenceNo(refNo);
-						savedata.setCustomerId(customerId);
 						savedata.setQuoteNo(quoteNo);
 						savedata.setEntryDate(new Date());
 						savedata.setCreatedBy(loginId);
-						savedata.setUpdatedBy(loginId);
-						savedata.setUpdatedDate(new Date());
+//						savedata.setUpdatedBy(loginId);
+//						savedata.setUpdatedDate(new Date());
 
 						savedata.setOriginalPolicyNo(req.getPolicyNo());
 						savedata.setEndorsementDate(new Date());
@@ -1347,8 +1357,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 						savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
 						savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
 						savedata.setStatus("E");
-						savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
-						motorDataDetepo.saveAndFlush(savedata);
+						//savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+						coverDocUploadDetails.saveAndFlush(savedata);
 					}
 				}
 				res.setResponse("Successfully Updated");
