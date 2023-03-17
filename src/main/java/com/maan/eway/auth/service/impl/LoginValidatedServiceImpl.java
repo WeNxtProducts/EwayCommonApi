@@ -428,11 +428,20 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 					epass = passEnc.crypt(req.getNewPassword().trim());
 				}	
 				
-				if (req.getOldpassword() == null || StringUtils.isBlank(req.getOldpassword())) {
-					list.add(new Error("", "Old password", "Please enter Oldpassword"));
-				} else if (model.getPassword().equalsIgnoreCase(epass)) {
-					list.add(new Error("", "ChangePassword", "Oldpassword  and Newpassword should not match"));
+				if(StringUtils.isNotBlank(req.getType()) && req.getType().equalsIgnoreCase("ForgotPassword") ) {
+					if (req.getOldpassword() == null || StringUtils.isBlank(req.getOldpassword())) {
+						list.add(new Error("", "Old password", "Please enter Temporary Password"));
+					} else if (model.getPassword().equalsIgnoreCase(epass)) {
+						list.add(new Error("", "ChangePassword", "Temporary Password  and Newpassword should not match"));
+					}
+				} else {
+					if (req.getOldpassword() == null || StringUtils.isBlank(req.getOldpassword())) {
+						list.add(new Error("", "Old password", "Please enter Old Password"));
+					} else if (model.getPassword().equalsIgnoreCase(epass)) {
+						list.add(new Error("", "ChangePassword", "Old Password  and New Password should not match"));
+					}
 				}
+				
 				/*else if(model.getLpass1().equals(epass) || model.getLpass2().equals(epass) || model.getLpass3().equals(epass) || model.getLpass4().equals(epass) || model.getLpass5().equals(epass)) {
 					list.add(new Error("", "ChangePassword", "Newpassword should not be last 5 Password"));
 				} */

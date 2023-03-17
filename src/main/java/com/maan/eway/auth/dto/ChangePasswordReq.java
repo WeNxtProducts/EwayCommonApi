@@ -22,5 +22,6 @@ public class ChangePasswordReq {
 	@JsonProperty("NewPassword")
 	private String newPassword;
 
-	
+	@JsonProperty("Type")
+	private String type;
 }
