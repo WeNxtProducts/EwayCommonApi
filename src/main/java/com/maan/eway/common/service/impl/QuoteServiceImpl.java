@@ -669,14 +669,14 @@ private BuildingDetailsRepository BuildingRepo;
 			List<ProductGroupMasterDropDownRes> groupRes =	groupService.getProductGroupMasterDropdown(groupReq);
 			
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
-			EserviceTravelGetRes travelDetails = new  EserviceTravelGetRes()  ;
-			dozerMapper.map(travelDatas.get(0), travelDetails);
-			travelDetails.setRiskId("1");
-			travelDetails.setSectionId(travelDatas.get(0).getSectionId()==null?"":travelDatas.get(0).getSectionId().toString());
 			
 			List<EserviceTravelGetRes>   travelResList = new ArrayList<EserviceTravelGetRes>();
 			List<PassengerSectionDetails> secList = new ArrayList<PassengerSectionDetails>();
 			for (TravelPassengerDetails tra :  totalDatas) {
+				EserviceTravelGetRes travelDetails = new  EserviceTravelGetRes()  ;
+				dozerMapper.map(travelDatas.get(0), travelDetails);
+				travelDetails.setRiskId("1");
+				travelDetails.setSectionId(travelDatas.get(0).getSectionId()==null?"":travelDatas.get(0).getSectionId().toString());
 				
 				// Cover Details
 				List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(tra.getPassengerId()))).collect(Collectors.toList());
@@ -695,11 +695,11 @@ private BuildingDetailsRepository BuildingRepo;
 				traSec.setGroupDesc(groupRes.stream().filter( o -> o.getCode().equalsIgnoreCase(tra.getGroupId().toString()) ).collect(Collectors.toList()).get(0).getCodeDesc()) ;		
 				traSec.setGroupId(tra.getGroupId().toString());
 				secList.add(traSec);
-				
+				travelDetails.setSectionDetails(secList);
+				travelResList.add(travelDetails);
 				
 			}
-			travelDetails.setSectionDetails(secList);
-			travelResList.add(travelDetails);
+		
 			viewRes.setRiskDetails(travelResList);	
 			
 		} catch ( Exception e) {
