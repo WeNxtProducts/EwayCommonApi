@@ -110,7 +110,7 @@ public boolean push(PremiaConfigMaster configMas , List<String> params ) {
 				
 				String framedselecquery=frameselectfromMap(maps);
 				log.info("framedselecquery :: "+framedselecquery);
-				query="SELECT "+framedselecquery+" "+query.substring(query.indexOf("FROM"), query.length());
+				query="SELECT "+framedselecquery+" "+query.substring(query.indexOf(" FROM"), query.length());
 				
 				log.info("framedselecquery with Select :: "+query);
 				/*maps.get(0);

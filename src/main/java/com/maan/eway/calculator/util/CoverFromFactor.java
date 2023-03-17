@@ -21,7 +21,7 @@ public class CoverFromFactor implements Function<FactorRateRequestDetails,Cover>
 	public Cover apply(FactorRateRequestDetails t) {
 		try {
 			
-			 if(!("D".equalsIgnoreCase(t.getCoverageType()) || "L".equalsIgnoreCase(t.getCoverageType()) || "E".equalsIgnoreCase(t.getCoverageType())) &&  filterBy.equalsIgnoreCase(t.getSubCoverYn())) {
+			 if(!("D".equalsIgnoreCase(t.getCoverageType()) || "L".equalsIgnoreCase(t.getCoverageType()) || "E".equalsIgnoreCase(t.getCoverageType()) || "P".equalsIgnoreCase(t.getCoverageType())) &&  filterBy.equalsIgnoreCase(t.getSubCoverYn())) {
 				 String subc=t.getSubCoverYn()==null?"N":t.getSubCoverYn();
 				 
 				 // Referral 

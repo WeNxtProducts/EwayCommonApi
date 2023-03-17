@@ -438,7 +438,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 					
 					
 					//CoverFromPolicy
-					List<PolicyCoverData> basecovers=oldPolicyCovers.stream().filter( d -> !("T".equals(d.getCoverageType()) || "D".equals(d.getCoverageType()) || "L".equals(d.getCoverageType()) || "E".equals(d.getCoverageType()) ))
+					List<PolicyCoverData> basecovers=oldPolicyCovers.stream().filter( d -> !("T".equals(d.getCoverageType()) || "D".equals(d.getCoverageType()) || "L".equals(d.getCoverageType()) || "E".equals(d.getCoverageType()) || "P".equals(d.getCoverageType()) ))
 					.collect(Collectors.toList());
 				for (PolicyCoverData d : basecovers) {
 					List<Cover> operatedList=new ArrayList<Cover>();
