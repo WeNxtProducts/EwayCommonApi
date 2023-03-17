@@ -60,14 +60,14 @@ public class CopyRawTable  {
 					 newRequestNo=motor.get(0).getRequestReferenceNo();
 					 count--;
 				}else {
-					motor=motors;
+					motor=motors.stream().filter(m->m.getEndtStatus().equals("C")).collect(Collectors.toList());
 					
 					if(motors.size()>1) {
-						prevPolicyNo=motors.get(1).getPolicyNo();
-						prevQuoteNo =motors.get(1).getQuoteNo();
+						prevPolicyNo=motors.get(0).getPolicyNo();
+						prevQuoteNo =motors.get(0).getQuoteNo();
 					}else {
-						prevPolicyNo=ent.getPolicyNo();
-						prevQuoteNo =motor.get(0).getEndtPrevQuoteNo();
+						prevPolicyNo=motor.get(0).getPolicyNo();
+						prevQuoteNo =motor.get(0).getQuoteNo();
 					}
 				}
 				
