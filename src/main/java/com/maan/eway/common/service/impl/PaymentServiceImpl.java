@@ -579,13 +579,25 @@ public class PaymentServiceImpl implements PaymentService {
 				paymentinfo.setPaymentStatus("PENDING");			
 				paymentinfo.setPolicyEndDate(data.getExpiryDate());
 				paymentinfo.setPolicyStartDate(data.getInceptionDate() );
-				paymentinfo.setPremium(new BigDecimal(req.getPremium()));
-				paymentinfo.setPremiumLc(new BigDecimal(req.getPremium()) );
+				
 				String pattern = "#####0.00" ;
 				DecimalFormat df = new DecimalFormat(pattern);
-				BigDecimal premium = new BigDecimal(req.getPremium()) ;
-				BigDecimal premiumFc = premium.divide(data.getExchangeRate(), MathContext.DECIMAL128 );
-				paymentinfo.setPremiumFc( new BigDecimal(df.format(premiumFc)) );
+				paymentinfo.setPremium(data.getOverallPremiumLc());
+				paymentinfo.setPremiumLc(data.getOverallPremiumLc() );
+				paymentinfo.setPremiumFc( new BigDecimal(df.format(data.getOverallPremiumFc())));
+				
+				if(StringUtils.isNotBlank(data.getEndtTypeId())) {
+					paymentinfo.setPremium(data.getEndtPremium().add(data.getEndtPremiumTax()));
+					paymentinfo.setPremiumLc(data.getEndtPremium().add(data.getEndtPremiumTax()));
+					
+					BigDecimal premiumFc = paymentinfo.getPremiumLc().divide(data.getExchangeRate(), MathContext.DECIMAL128 );
+					
+					paymentinfo.setPremiumFc( new BigDecimal(df.format(premiumFc)));
+				}
+				
+				//BigDecimal premium = new BigDecimal(req.getPremium()) ;
+				//BigDecimal premiumFc = premium.divide(data.getExchangeRate(), MathContext.DECIMAL128 );
+				
 				paymentinfo.setCurrencyId(data.getCurrency());
 				paymentinfo.setExchangeRate(data.getExchangeRate() );
 				paymentinfo.setProductId(data.getProductId());
