@@ -28,6 +28,9 @@ public class PaccGetRes {
     private String    riskId;
 	@JsonProperty("DocumentsTitle")
     private String    documentsTitle;
+	
+	@JsonProperty("SectionId")
+	private  String sectionId;	
 
 	@JsonProperty("SectionDetails")
     private List<SectionDetails>    sectionDetails;

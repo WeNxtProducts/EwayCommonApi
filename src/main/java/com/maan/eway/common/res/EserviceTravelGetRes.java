@@ -58,6 +58,8 @@ public class EserviceTravelGetRes {
 		@JsonProperty("DestinationCountryDesc")
 		private String desctinationCountryDesc;
 		
+		@JsonProperty("SectionId")
+		private  String sectionId;	
 		 
 		@JsonProperty("SectionDetails")
 		private List<PassengerSectionDetails>    sectionDetails;

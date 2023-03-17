@@ -178,7 +178,9 @@ public class EserviceMotorDetailsRes implements Serializable {
 	@JsonProperty("DriverDetails")
     private List<DriverDetailsRes>   driverDetails;
 	
-
+	@JsonProperty("SectionId")
+	private  String sectionId;	
+	
 	 @JsonProperty("SectionDetails")
 	 private List<SectionDetails>    sectionDetails;
 	 

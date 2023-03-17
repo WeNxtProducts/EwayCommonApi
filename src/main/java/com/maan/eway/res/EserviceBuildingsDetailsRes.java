@@ -103,7 +103,8 @@ public class EserviceBuildingsDetailsRes implements Serializable {
     private String    domesticPackageYn;
 
 	
-	
+	@JsonProperty("SectionId")
+	private  String sectionId;	
 
     @JsonProperty("SectionDetails")
     private List<SectionDetails>    sectionDetails;

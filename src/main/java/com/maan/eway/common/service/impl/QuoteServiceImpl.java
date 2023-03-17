@@ -389,6 +389,7 @@ private BuildingDetailsRepository BuildingRepo;
 				driverResList.sort(Comparator.comparing(DriverDetailsRes :: getDriverId  ));
 				vehicleDetails.setDriverDetails(driverResList);
 				vehicleDetails.setDocumentsTitle(mot.getSectionName());			
+				vehicleDetails.setSectionId(mot.getSectionId()==null?"":mot.getSectionId().toString());
 				
 				// Section Details
 				SectionDetails sec = new SectionDetails(); 
@@ -457,6 +458,7 @@ private BuildingDetailsRepository BuildingRepo;
 						pacRes.setSuminsured(acc.getSumInsured()==null?"":acc.getSumInsured().toPlainString());
 						pacRes.setRiskId(acc.getRiskId().toString());
 						pacRes.setDocumentsTitle(acc.getSectionDesc() + "-" + acc.getOccupationDesc());
+						pacRes.setSectionId(acc.getSectionId()==null?"":acc.getSectionId().toString());
 						List<SectionDetails>  paSectionList = new ArrayList<SectionDetails>();
 						SectionDetails secData = new SectionDetails(); 
 						secData.setSectionId(acc.getSectionId()==null?"":acc.getSectionId().toString());
@@ -477,6 +479,7 @@ private BuildingDetailsRepository BuildingRepo;
 					// Build
 					SectionDetails buildSec = new SectionDetails(); 
 					buildSec.setSectionId(sec.getSectionId()==null?"":sec.getSectionId().toString());
+					buildingRes.setSectionId(StringUtils.isBlank(buildingRes.getSectionId() ) ? sec.getSectionId()==null?"":sec.getSectionId().toString() :buildingRes.getSectionId()  );
 					buildSec.setSectionName( sec.getSectionDesc());
 					buildSec.setCovers(coverListRes);
 					buildingSectionList.add(buildSec);
@@ -485,6 +488,7 @@ private BuildingDetailsRepository BuildingRepo;
 				
 			} 
 			buildingRes.setSectionDetails(buildingSectionList);
+			
 			buildList.add(buildingRes);
 			List<Object> totalList = new ArrayList<Object>(); 
 			totalList.addAll(buildList);
@@ -500,6 +504,7 @@ private BuildingDetailsRepository BuildingRepo;
 				loc.setLocationName(data.getLocationName());
 				loc.setRiskId(data.getRiskId().toString());
 				loc.setSuminsured(data.getBuildingSuminsured()==null?"" : data.getBuildingSuminsured().toPlainString());
+				loc.setSectionId("99999");
 				buildLocList.add(loc);
 				
 			}
@@ -667,6 +672,7 @@ private BuildingDetailsRepository BuildingRepo;
 			EserviceTravelGetRes travelDetails = new  EserviceTravelGetRes()  ;
 			dozerMapper.map(travelDatas.get(0), travelDetails);
 			travelDetails.setRiskId("1");
+			travelDetails.setSectionId(travelDatas.get(0).getSectionId()==null?"":travelDatas.get(0).getSectionId().toString());
 			
 			List<EserviceTravelGetRes>   travelResList = new ArrayList<EserviceTravelGetRes>();
 			List<PassengerSectionDetails> secList = new ArrayList<PassengerSectionDetails>();
@@ -727,6 +733,7 @@ private BuildingDetailsRepository BuildingRepo;
 				// Mot
 				EserviceCommonGetRes commonDetails = new  EserviceCommonGetRes()  ;
 				dozerMapper.map(com, commonDetails);
+				commonDetails.setSectionId(com.getSectionId()==null?"":com.getSectionId().toString());
 				// Section Details
 				SectionDetails sec = new SectionDetails(); 
 				sec.setSectionId(com.getSectionId()==null?"":com.getSectionId().toString());
