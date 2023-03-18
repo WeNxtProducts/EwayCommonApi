@@ -1637,7 +1637,19 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setBdmCode(travelData.getBdmCode());
 			home.setSourceType(travelData.getSourceType());
 			home.setApplicationId(travelData.getApplicationId());		
-				
+			home.setEndtTypeId(travelData.getEndorsementType()==null?null:String.valueOf(travelData.getEndorsementType()));
+			home.setEndtStatus(StringUtils.isBlank(travelData.getEndtStatus())?"":travelData.getEndtStatus());
+			home.setEndtDate(travelData.getEndorsementDate()==null?null:travelData.getEndorsementDate());
+			home.setEndtBy(StringUtils.isBlank(request.getCreatedBy())?"":request.getCreatedBy());
+			home.setPolicyNo(travelData.getEndorsementType()==null?null:travelData.getPolicyNo());
+			home.setEndtCategDesc(travelData.getEndtCategDesc()==null?null:travelData.getEndtCategDesc());
+			home.setEndorsementRemarks(travelData.getEndorsementRemarks()==null?null:travelData.getEndorsementRemarks());
+			home.setEndorsementEffdate(travelData.getEndorsementEffdate()==null?null:travelData.getEndorsementEffdate());
+			home.setEndtPrevPolicyNo(travelData.getEndtPrevPolicyNo()==null?null:travelData.getEndtPrevPolicyNo());
+			home.setEndtPrevQuoteNo(travelData.getEndtPrevQuoteNo()==null?null:travelData.getEndtPrevQuoteNo());
+			home.setEndtCount(travelData.getEndtCount()==null?0:travelData.getEndtCount().intValue());	
+			home.setEndtTypeDesc(travelData.getEndorsementTypeDesc()==null?"":travelData.getEndorsementTypeDesc());
+			home.setOriginalPolicyNo(travelData.getOriginalPolicyNo()==null?"":travelData.getOriginalPolicyNo());
 		}catch (Exception e) {
 			e.printStackTrace();
 			log.error("Exception is ---> " + e.getMessage());
@@ -1695,7 +1707,19 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setBdmCode(buildingData.getBdmCode());
 			home.setSourceType(buildingData.getSourceType());
 			home.setApplicationId(buildingData.getApplicationId());		
-				
+			home.setEndtTypeId(buildingData.getEndorsementType()==null?null:String.valueOf(buildingData.getEndorsementType()));
+			home.setEndtStatus(StringUtils.isBlank(buildingData.getEndtStatus())?"":buildingData.getEndtStatus());
+			home.setEndtDate(buildingData.getEndorsementDate()==null?null:buildingData.getEndorsementDate());
+			home.setEndtBy(StringUtils.isBlank(request.getCreatedBy())?"":request.getCreatedBy());
+			home.setPolicyNo(buildingData.getEndorsementType()==null?null:buildingData.getPolicyNo());
+			home.setEndtCategDesc(buildingData.getEndtCategDesc()==null?null:buildingData.getEndtCategDesc());
+			home.setEndorsementRemarks(buildingData.getEndorsementRemarks()==null?null:buildingData.getEndorsementRemarks());
+			home.setEndorsementEffdate(buildingData.getEndorsementEffdate()==null?null:buildingData.getEndorsementEffdate());
+			home.setEndtPrevPolicyNo(buildingData.getEndtPrevPolicyNo()==null?null:buildingData.getEndtPrevPolicyNo());
+			home.setEndtPrevQuoteNo(buildingData.getEndtPrevQuoteNo()==null?null:buildingData.getEndtPrevQuoteNo());
+			home.setEndtCount(buildingData.getEndtCount()==null?0:buildingData.getEndtCount().intValue());	
+			home.setEndtTypeDesc(buildingData.getEndorsementTypeDesc()==null?"":buildingData.getEndorsementTypeDesc());
+			home.setOriginalPolicyNo(buildingData.getOriginalPolicyNo()==null?"":buildingData.getOriginalPolicyNo());
 		}catch (Exception e) {
 			e.printStackTrace();
 			log.error("Exception is ---> " + e.getMessage());
@@ -1750,7 +1774,19 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setBdmCode(eserCommonData.getBdmCode());
 			home.setSourceType(eserCommonData.getSourceType());
 			home.setApplicationId(eserCommonData.getApplicationId());				
-				
+			home.setEndtTypeId(eserCommonData.getEndorsementType()==null?null:String.valueOf(eserCommonData.getEndorsementType()));
+			home.setEndtStatus(StringUtils.isBlank(eserCommonData.getEndtStatus())?"":eserCommonData.getEndtStatus());
+			home.setEndtDate(eserCommonData.getEndorsementDate()==null?null:eserCommonData.getEndorsementDate());
+			home.setEndtBy(StringUtils.isBlank(request.getCreatedBy())?"":request.getCreatedBy());
+			home.setPolicyNo(eserCommonData.getEndorsementType()==null?null:eserCommonData.getPolicyNo());
+			home.setEndtCategDesc(eserCommonData.getEndtCategDesc()==null?null:eserCommonData.getEndtCategDesc());
+			home.setEndorsementRemarks(eserCommonData.getEndorsementRemarks()==null?null:eserCommonData.getEndorsementRemarks());
+			home.setEndorsementEffdate(eserCommonData.getEndorsementEffdate()==null?null:eserCommonData.getEndorsementEffdate());
+			home.setEndtPrevPolicyNo(eserCommonData.getEndtPrevPolicyNo()==null?null:eserCommonData.getEndtPrevPolicyNo());
+			home.setEndtPrevQuoteNo(eserCommonData.getEndtPrevQuoteNo()==null?null:eserCommonData.getEndtPrevQuoteNo());
+			home.setEndtCount(eserCommonData.getEndtCount()==null?0:eserCommonData.getEndtCount().intValue());	
+			home.setEndtTypeDesc(eserCommonData.getEndorsementTypeDesc()==null?"":eserCommonData.getEndorsementTypeDesc());
+			home.setOriginalPolicyNo(eserCommonData.getOriginalPolicyNo()==null?"":eserCommonData.getOriginalPolicyNo());
 		}catch (Exception e) {
 			e.printStackTrace();
 			log.error("Exception is ---> " + e.getMessage());
