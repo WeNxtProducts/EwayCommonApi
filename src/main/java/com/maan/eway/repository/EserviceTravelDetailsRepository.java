@@ -15,6 +15,7 @@ package com.maan.eway.repository;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -44,5 +45,17 @@ public interface EserviceTravelDetailsRepository  extends JpaRepository<Eservice
 			String quoteNo, String productId, String companyId);
 
 	List<EserviceTravelDetails> findByRequestReferenceNoAndProductId(String requestReferenceNo, String productId);
+
+	Integer countByOriginalPolicyNo(String policyNo);
+
+	List<EserviceTravelDetails> findByOriginalPolicyNo(String policyNo);
+
+	Integer countByOriginalPolicyNoAndRiskId(String policyNo, int i);
+
+	List<EserviceTravelDetails> findByOriginalPolicyNoAndRiskId(String policyNo, int i);
+
+	List<EserviceTravelDetails> findByPolicyNoAndStatus(String policyNo, String string);
+
+	List<EserviceTravelDetails> findByQuoteNoOrderByRiskIdAsc(String prevQuoteNo);
 
 }

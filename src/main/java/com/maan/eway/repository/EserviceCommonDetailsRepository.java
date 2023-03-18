@@ -49,5 +49,13 @@ public interface EserviceCommonDetailsRepository  extends JpaRepository<Eservice
 
 	List<EserviceCommonDetails> findByRequestReferenceNoAndProductId(String requestReferenceNo, String productId);
 
+	Integer countByOriginalPolicyNoAndRiskId(String policyNo, int i);
+
+	List<EserviceCommonDetails> findByOriginalPolicyNoAndRiskId(String policyNo, int i);
+
+	List<EserviceCommonDetails> findByPolicyNoAndStatus(String policyNo, String string);
+
+	List<EserviceCommonDetails> findByQuoteNoOrderByRiskIdAsc(String prevQuoteNo);
+
 
 }

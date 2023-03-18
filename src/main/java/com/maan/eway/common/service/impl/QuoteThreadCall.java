@@ -456,31 +456,38 @@ public class QuoteThreadCall implements Callable<Object>  {
 			// Save Driver Details
 			EserviceCustomerDetails custData = eserCustRepo.findByCustomerReferenceNo(eserMotors.getCustomerReferenceNo() );
 
-			Long driverInfo = driverRepo.countByQuoteNoAndRiskId(request.getQuoteNo() , request.getVehicleId());
-			if (driverInfo <= 0  ) {
-				MotorDriverDetails saveDri = new MotorDriverDetails(); 		
-				Integer driId = 1 ;
-				saveDri.setCompanyId(motorData.getCompanyId());
-				saveDri.setCreatedBy(motorData.getUpdatedBy());
-				saveDri.setDriverDob(custData.getDobOrRegDate());
-				saveDri.setDriverId(driId);
-				saveDri.setDriverName(custData.getClientName());
-				saveDri.setPolicyHolderType(custData.getPolicyHolderType());
-				saveDri.setPolicyHolderTypeDesc(custData.getPolicyHolderTypeDesc());
-				saveDri.setIdType(pattern);
-				saveDri.setIdTypeDesc(pattern);
-				saveDri.setIdNumber(custData.getIdNumber());
-				saveDri.setDriverType("1");
-				List<ListItemValue> owerDesc = getListItem(motorData.getCompanyId() , motorData.getBranchCode() , "DRIVER_TYPES" , "1" );
-				saveDri.setDriverTypedesc(owerDesc.size()> 0 ? owerDesc.get(0).getItemValue() : "Owner" );
-				saveDri.setEntryDate(new Date());
-				saveDri.setProductId(motorData.getProductId());
-				saveDri.setQuoteNo(motorData.getQuoteNo() );
-				saveDri.setRequestReferenceNo(motorData.getRequestReferenceNo());
-				saveDri.setRiskId(Integer.valueOf(motorData.getVehicleId()));
-				saveDri.setStatus("Y");
-				driverRepo.saveAndFlush(saveDri);
-			}
+//			if( eserMotors.getEndtPrevQuoteNo() && eserMotors.getEndtPrevPolicyNo() ) {
+//				
+//				copyQuoteMotor();
+//				
+//			} else {
+				Long driverInfo = driverRepo.countByQuoteNoAndRiskId(request.getQuoteNo() , request.getVehicleId());
+				if (driverInfo <= 0  ) {
+					MotorDriverDetails saveDri = new MotorDriverDetails(); 		
+					Integer driId = 1 ;
+					saveDri.setCompanyId(motorData.getCompanyId());
+					saveDri.setCreatedBy(motorData.getUpdatedBy());
+					saveDri.setDriverDob(custData.getDobOrRegDate());
+					saveDri.setDriverId(driId);
+					saveDri.setDriverName(custData.getClientName());
+					saveDri.setPolicyHolderType(custData.getPolicyHolderType());
+					saveDri.setPolicyHolderTypeDesc(custData.getPolicyHolderTypeDesc());
+					saveDri.setIdType(pattern);
+					saveDri.setIdTypeDesc(pattern);
+					saveDri.setIdNumber(custData.getIdNumber());
+					saveDri.setDriverType("1");
+					List<ListItemValue> owerDesc = getListItem(motorData.getCompanyId() , motorData.getBranchCode() , "DRIVER_TYPES" , "1" );
+					saveDri.setDriverTypedesc(owerDesc.size()> 0 ? owerDesc.get(0).getItemValue() : "Owner" );
+					saveDri.setEntryDate(new Date());
+					saveDri.setProductId(motorData.getProductId());
+					saveDri.setQuoteNo(motorData.getQuoteNo() );
+					saveDri.setRequestReferenceNo(motorData.getRequestReferenceNo());
+					saveDri.setRiskId(Integer.valueOf(motorData.getVehicleId()));
+					saveDri.setStatus("Y");
+					driverRepo.saveAndFlush(saveDri);
+				}
+	//		}
+			
 			
 	
 			res.put("Response", "Success") ;
@@ -671,6 +678,40 @@ public class QuoteThreadCall implements Callable<Object>  {
 			return null;
 		}
 		return decimalFormat;
+	}
+	
+	
+	private synchronized  Map<String,Object>  copyQuoteDriverDetails(QuoteThreadReq  request , String oldQuoteNo , String newQuoteNo ) {
+		Map<String,Object> res= new HashMap<String,Object>() ;
+	 DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			
+//			// Motor Driver Details 
+//			List<MotorDriverDetails>   oldDriDetails = driverRepo.findByQuoteNoAndRiskId( oldQuoteNo ,  request.getVehicleId() , oldQuoteNo );
+//			
+//			Long driverInfo = driverRepo.countByQuoteNoAndRiskId(request.getQuoteNo() , request.getVehicleId());
+//			if (driverInfo <= 0  ) {
+//				MotorDriverDetails saveDri = new MotorDriverDetails(); 		
+//				Integer driId = 1 ;
+//				
+//				saveDri.setQuoteNo(motorData.getQuoteNo() );
+//				saveDri.setRequestReferenceNo(motorData.getRequestReferenceNo());
+//				saveDri.setStatus("Y");
+//				driverRepo.saveAndFlush(saveDri);
+//			}
+			
+			res.put("Response", "Success") ;
+			res.put("Errors", null) ;
+			
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.error("Exception is ---> " + e.getMessage());
+			res.put("Response", "Failed") ;
+			res.put("Errors", "Failed To Save Vehicle Id : " + request.getVehicleId() + " Details" ) ;
+		}
+	
+		return res;
 	}
 	
 	private synchronized  Map<String,Object>  call_BuildingSave(QuoteThreadReq  request  ) {
