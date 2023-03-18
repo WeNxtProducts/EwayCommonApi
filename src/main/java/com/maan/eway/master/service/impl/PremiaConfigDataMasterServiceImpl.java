@@ -113,10 +113,12 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			if (StringUtils.isBlank(req.getDefaultYn())) {
 				errorList.add(new Error("08", "DefaultYn", "Please Select DefaultYn"));
 			}
+
 			if(StringUtils.isNotBlank(req.getDefaultYn()) && req.getDefaultYn().equalsIgnoreCase("Y")) {
-				if (StringUtils.isBlank(req.getDefaultValue())) {
+			/*	if (StringUtils.isBlank(req.getDefaultValue())) {
 				errorList.add(new Error("09", "DefaultValue", "Please Select DefaultValue"));				
 			}
+			*/
 				if (StringUtils.isBlank(req.getDataTypeId())) {
 					errorList.add(new Error("10", "DataType", "Please Select DataType"));				
 				}

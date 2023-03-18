@@ -80,7 +80,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="BUSINESS_TYPE", length=12)
     private String     businessType ;
 
-    @Column(name="CUSTOMER", length=12)
+    @Column(name="CUSTOMER", length=100)
     private String     customer ;
 
     @Column(name="SOURCE_TYPE", length=12)
