@@ -32,8 +32,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.ui.ModelMap;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CommonDataDetails;
+import com.maan.eway.bean.ContentAndRisk;
 import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
@@ -51,6 +53,7 @@ import com.maan.eway.bean.LoginBranchMasterArch;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
+import com.maan.eway.bean.PersonalAccident;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.SectionDataDetails;
@@ -62,8 +65,10 @@ import com.maan.eway.common.req.VehicleIdsReq;
 import com.maan.eway.common.res.QuoteThreadRes;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
+import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.CommonDataDetailsRepository;
+import com.maan.eway.repository.ContentAndRiskRepository;
 import com.maan.eway.repository.CoverDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
@@ -76,6 +81,7 @@ import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
+import com.maan.eway.repository.PersonalAccidentRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
@@ -120,6 +126,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 	private BuildingRiskDetailsRepository buildRepo  ;
 	private EServiceSectionDetailsRepository eserSecRepo  ;
 	private SectionDataDetailsRepository secRepo ;
+	private BuildingDetailsRepository locRepo ;
+	private ContentAndRiskRepository  contentRepo ;
+	private PersonalAccidentRepository pacRepo ;   
 	
 	//Common
 	private EserviceCommonDetailsRepository eserCommonRepo;
@@ -138,7 +147,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			 CoverDetailsRepository coverRepo  , HomePositionMasterRepository homeRepo  ,EserviceTravelDetailsRepository eserTraRepo ,EserviceTravelGroupDetailsRepository eserGroupRepo ,
 			 TravelPassengerDetailsRepository    traPassRepo ,TravelPassengerHistoryRepository traPassHisRepo  , String motorProductId ,String travelProductId, String buildingProductId 
 			 , EserviceBuildingDetailsRepository eserBuildRepo , EServiceSectionDetailsRepository eserSecRepo,EserviceCommonDetailsRepository eserCommonRepo,CommonDataDetailsRepository commonDataRepo ,String smeProductId,
-			 SectionDataDetailsRepository secRepo,BuildingRiskDetailsRepository buildRepo , CoverDocumentUploadDetailsRepository docRepo ) {
+			 SectionDataDetailsRepository secRepo,BuildingRiskDetailsRepository buildRepo , CoverDocumentUploadDetailsRepository docRepo, BuildingDetailsRepository locRepo ,ContentAndRiskRepository  contentRepo  ,PersonalAccidentRepository pacRepo ) {
 		this.type = type;
 		this.request = request;
 		this.em=em;
@@ -165,6 +174,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 		this.secRepo = secRepo ;
 		this.buildRepo = buildRepo ;
 		this.docRepo = docRepo ;
+		this.locRepo = locRepo ;
+		this.contentRepo = contentRepo ;
+		this.pacRepo = pacRepo ;
 		
 	} 
 	
@@ -741,23 +753,26 @@ public class QuoteThreadCall implements Callable<Object>  {
 				List<Integer> ids = new ArrayList<Integer>();
 				ids.add( request.getVehicleId());
 				
-				// Other Doc
-				List<CoverDocumentUploadDetails>   oldDocDetails = docRepo.findByQuoteNoAndIdAndProductIdAndSectionId( oldQuoteNo , request.getVehicleId() ,
-						Integer.valueOf(request.getProductId()) , Integer.valueOf(request.getSectionId())   ) ; 
 				Long docInfo = docRepo.countByQuoteNoAndIdInAndProductIdAndSectionId(request.getQuoteNo() , ids,Integer.valueOf(request.getProductId()) , Integer.valueOf(request.getSectionId())  );
-				if( docInfo > 0  ) {
-					docRepo.deleteByQuoteNoAndIdInAndProductIdAndSectionId(request.getQuoteNo() , ids ,Integer.valueOf(request.getProductId()) , Integer.valueOf(request.getSectionId())  );
+				if( docInfo <= 0  ) {
+					// Other Doc
+					List<CoverDocumentUploadDetails>   oldDocDetails = docRepo.findByQuoteNoAndIdAndProductIdAndSectionId( oldQuoteNo , request.getVehicleId() ,
+							Integer.valueOf(request.getProductId()) , Integer.valueOf(request.getSectionId())   ) ; 
+					List<CoverDocumentUploadDetails> saveDocList = new ArrayList<CoverDocumentUploadDetails>(); 
+					if( oldDocDetails.size() > 0  ) {
+					
+						for ( CoverDocumentUploadDetails doc : oldDocDetails ) {
+							CoverDocumentUploadDetails saveDoc = new CoverDocumentUploadDetails(); 		
+							dozerMapper.map(doc , saveDoc);
+							saveDoc.setQuoteNo(request.getQuoteNo() );
+							saveDoc.setRequestReferenceNo(request.getRequestReferenceNo());
+							saveDocList.add(saveDoc) ;
+						}
+						docRepo.saveAllAndFlush(saveDocList);
+					}
 				}
 				
-				List<CoverDocumentUploadDetails> saveDocList = new ArrayList<CoverDocumentUploadDetails>(); 
-				for ( CoverDocumentUploadDetails doc : oldDocDetails ) {
-					CoverDocumentUploadDetails saveDoc = new CoverDocumentUploadDetails(); 		
-					dozerMapper.map(doc , saveDoc);
-					saveDoc.setQuoteNo(request.getQuoteNo() );
-					saveDoc.setRequestReferenceNo(request.getRequestReferenceNo());
-					saveDocList.add(saveDoc) ;
-				}
-				docRepo.saveAllAndFlush(saveDocList);
+			
 			}
 			
 			res.put("Response", "Success") ;
@@ -773,6 +788,87 @@ public class QuoteThreadCall implements Callable<Object>  {
 	
 		return res;
 	}
+	
+	private synchronized  Map<String,Object>  copyQuoteLocationDetails(QuoteThreadReq  request , String oldQuoteNo , String newQuoteNo ) {
+		Map<String,Object> res= new HashMap<String,Object>() ;
+	 DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			
+			// Locations
+			Long locCount = locRepo.countByQuoteNo(newQuoteNo );
+				
+			if( locCount <= 0  ) {
+				
+				List<BuildingDetails> oldLocDetails = locRepo.findByQuoteNoOrderByRiskIdAsc(oldQuoteNo );
+				List<BuildingDetails> saveLocList = new ArrayList<BuildingDetails>(); 
+				if( oldLocDetails.size() > 0  ) {
+					for ( BuildingDetails loc : oldLocDetails ) {
+						BuildingDetails saveDoc = new BuildingDetails(); 		
+						dozerMapper.map(loc , saveDoc);
+						saveDoc.setQuoteNo(request.getQuoteNo() );
+						saveDoc.setRequestReferenceNo(request.getRequestReferenceNo());
+						saveLocList.add(saveDoc) ;
+					}
+					locRepo.saveAllAndFlush(saveLocList);
+				}
+			}
+			
+					
+			// COntent And All Risk	
+			Long contentCount = contentRepo.countByQuoteNo(newQuoteNo );
+			
+			if( contentCount <= 0  ) {
+				
+				List<ContentAndRisk> oldContentDetails = contentRepo.findByQuoteNoOrderByRiskIdAsc(oldQuoteNo );
+				List<ContentAndRisk> saveConList = new ArrayList<ContentAndRisk>(); 
+				if( oldContentDetails.size() > 0  ) {
+					for ( ContentAndRisk con : oldContentDetails ) {
+						ContentAndRisk saveCon = new ContentAndRisk(); 		
+						dozerMapper.map(con , saveCon);
+						saveCon.setQuoteNo(request.getQuoteNo() );
+						saveCon.setRequestReferenceNo(request.getRequestReferenceNo());
+						saveConList.add(saveCon) ;
+					}
+					contentRepo.saveAllAndFlush(saveConList);
+				}
+			}
+			
+			
+			// Personal Accident
+			Long pacCount = pacRepo.countByQuoteNo(newQuoteNo );
+			
+			if( pacCount <= 0  ) {
+				
+				List<PersonalAccident> oldPacDetails = pacRepo.findByQuoteNoOrderByRiskIdAsc(oldQuoteNo );
+				List<PersonalAccident> savePacList = new ArrayList<PersonalAccident>(); 
+				
+				if( pacCount <= 0  ) {
+					for ( PersonalAccident pac : oldPacDetails ) {
+						PersonalAccident savePac = new PersonalAccident(); 		
+						dozerMapper.map(pac , savePac);
+						savePac.setQuoteNo(request.getQuoteNo() );
+						savePac.setRequestReferenceNo(request.getRequestReferenceNo());
+						savePacList.add(savePac) ;
+					}
+					pacRepo.saveAllAndFlush(savePacList);
+				}
+			}
+		
+			
+			res.put("Response", "Success") ;
+			res.put("Errors", null) ;
+			
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.error("Exception is ---> " + e.getMessage());
+			res.put("Response", "Failed") ;
+			res.put("Errors", "Failed To Copy Vehicle Id : " + request.getVehicleId() + " Document Details" ) ;
+		}
+	
+		return res;
+	}
+	
 	
 	private synchronized  Map<String,Object>  call_BuildingSave(QuoteThreadReq  request  ) {
 		Map<String,Object> res= new HashMap<String,Object>() ;
@@ -863,6 +959,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				
 				res =  copyQuoteDocumentDetails( request , request.getEndtPrevQuoteNo() , request.getQuoteNo()) ;
 				
+				res =  copyQuoteLocationDetails( request , request.getEndtPrevQuoteNo() , request.getQuoteNo()) ;
 			}
 			
 		}catch (Exception e) {
@@ -1165,7 +1262,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					
 					
 				} else if( req.getProductId().equalsIgnoreCase(travelProductId) ) {
-					// Delete Old Record
+					
 					Long travelInfo =  traPassRepo.countByQuoteNo(req.getQuoteNo());
 					if (travelInfo > 0  ) {
 						//Delete data
@@ -1187,8 +1284,36 @@ public class QuoteThreadCall implements Callable<Object>  {
 							traPassHisRepo.saveAndFlush(traHistorySave);
 						}
 						
+						
+					} else if(StringUtils.isNotBlank(req.getEndtPrevQuoteNo())) {
+						// Endorsement
+						travelInfo =  traPassRepo.countByQuoteNo(req.getEndtPrevQuoteNo());
+						if (travelInfo > 0  ) {
+							//Delete data
+							List<TravelPassengerDetails> oldPassDatas = 	traPassRepo.findByQuoteNo(req.getEndtPrevQuoteNo());
+							traPassRepo.deleteByQuoteNo(req.getQuoteNo());
+								
+							// Find History
+							for (TravelPassengerDetails passData :  oldPassDatas) {
+								Long travelHisInfo =  traPassHisRepo.countByQuoteNoAndPassengerId(req.getQuoteNo(),passData.getPassengerId());
+								if (travelHisInfo > 0 ) {
+									//Delete data
+									traPassHisRepo.deleteByQuoteNoAndPassengerId(req.getQuoteNo(),passData.getPassengerId());
+									
+								}
+								// Save New 
+								TravelPassengerHistory traHistorySave = new TravelPassengerHistory(); 
+								dozerMapper.map(passData, traHistorySave);
+								traHistorySave.setRequestReferenceNo(req.getRequestReferenceNo());
+								traHistorySave.setQuoteNo(req.getQuoteNo());
+								traHistorySave.setCustomerId(req.getCustomerId());
+								traHistorySave.setEntryDate(new Date());
+								traPassHisRepo.saveAndFlush(traHistorySave);
+							}
+						}
 					
-					}	
+					}
+				
 				} else if( req.getProductId().equalsIgnoreCase(buildingProductId)  ||  req.getProductId().equalsIgnoreCase(smeProductId)  ) {
 					Long buildInfo =  buildRepo.countByQuoteNo(req.getQuoteNo());
 					if (buildInfo > 0  ) {
@@ -1230,21 +1355,23 @@ public class QuoteThreadCall implements Callable<Object>  {
 					ids.add(1);
 					
 					Long docInfo = docRepo.countByQuoteNoAndIdInAndProductIdAndSectionId(req.getQuoteNo() , ids, Integer.valueOf(req.getProductId()) , 99999  );
-					if( docInfo > 0  ) {
-						docRepo.deleteByQuoteNoAndIdInAndProductIdAndSectionId(req.getQuoteNo() , ids, Integer.valueOf(req.getProductId()) , 99999  );
+					if( docInfo <= 0  ) {
+						List<CoverDocumentUploadDetails>   oldDocDetails = docRepo.findByQuoteNoAndIdInAndProductIdAndSectionId( req.getEndtPrevQuoteNo() , ids ,
+								Integer.valueOf(req.getProductId()) , 99999  ) ;
+						
+						List<CoverDocumentUploadDetails> saveDocList = new ArrayList<CoverDocumentUploadDetails>();
+						if( oldDocDetails.size() > 0  ) {
+							for ( CoverDocumentUploadDetails doc : oldDocDetails ) {
+								CoverDocumentUploadDetails saveDoc = new CoverDocumentUploadDetails(); 		
+								dozerMapper.map(doc , saveDoc);
+								saveDoc.setQuoteNo(req.getQuoteNo() );
+								saveDoc.setRequestReferenceNo(req.getRequestReferenceNo());
+								saveDocList.add(saveDoc) ;
+							}
+							docRepo.saveAllAndFlush(saveDocList);
+						}
 					}
-					List<CoverDocumentUploadDetails>   oldDocDetails = docRepo.findByQuoteNoAndIdInAndProductIdAndSectionId( req.getEndtPrevQuoteNo() , ids ,
-							Integer.valueOf(req.getProductId()) , 99999  ) ;
 					
-					List<CoverDocumentUploadDetails> saveDocList = new ArrayList<CoverDocumentUploadDetails>(); 
-					for ( CoverDocumentUploadDetails doc : oldDocDetails ) {
-						CoverDocumentUploadDetails saveDoc = new CoverDocumentUploadDetails(); 		
-						dozerMapper.map(doc , saveDoc);
-						saveDoc.setQuoteNo(req.getQuoteNo() );
-						saveDoc.setRequestReferenceNo(req.getRequestReferenceNo());
-						saveDocList.add(saveDoc) ;
-					}
-					docRepo.saveAllAndFlush(saveDocList);
 				
 				}
 				
