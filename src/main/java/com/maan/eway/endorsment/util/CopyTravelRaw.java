@@ -2,18 +2,31 @@ package com.maan.eway.endorsment.util;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.EndtTypeMaster;
+import com.maan.eway.bean.EserviceBuildingDetails;
+import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
+import com.maan.eway.common.res.EndorsementCriteriaRes;
 import com.maan.eway.common.res.EserviceSaveRes;
 import com.maan.eway.common.res.TravelCopyRes;
 import com.maan.eway.common.res.TravelGroupGetRes;
@@ -184,6 +197,93 @@ public class CopyTravelRaw {
 			return travelGroupList;
 		}catch (Exception e) {
 			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@PersistenceContext
+	private EntityManager em;
+	
+	public List<EndorsementCriteriaRes> endorsementTravelGrid(Endorsment request) {
+		 try {
+
+			 
+				// Get Datas
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<EndorsementCriteriaRes> query = cb.createQuery(EndorsementCriteriaRes.class);
+
+				// Find All
+				Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+				Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
+
+				// Select
+				query.multiselect(//cb.literal(Long.parseLong("1")).alias("idsCount"),
+						// Customer Info
+						c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
+						c.get("clientName").alias("clientName"),
+						// Vehicle Info
+						m.get("companyId").alias("companyId"), m.get("productId").alias("productId"),
+						m.get("branchCode").alias("branchCode"), m.get("requestReferenceNo").alias("requestReferenceNo"),
+						cb.selectCase().when(m.get("quoteNo").isNotNull(), m.get("quoteNo")).otherwise(m.get("quoteNo"))
+								.alias("quoteNo"),
+						cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId"))
+								.otherwise(m.get("customerId")).alias("customerId"),
+						m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
+						m.get("endorsementType").alias("endorsementTypeId"),
+						m.get("endorsementTypeDesc").alias("endorsementDesc"),
+						m.get("endtCategDesc").alias("endorsementCategoryDesc"),
+						m.get("endorsementEffdate").alias("effectiveDate"),
+						m.get("endtStatus").alias("endorsementStatus"),
+						m.get("policyNo").alias("policyNo"),
+						m.get("endorsementRemarks").alias("endorsementRemarks")
+						
+						);
+			 
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(m.get("endorsementDate")));
+
+				// Where
+				Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
+				Predicate n2 = cb.equal(m.get("companyId"), request.getCompanyId());
+				Predicate n3 = cb.equal(m.get("productId"), request.getProductId());
+				Predicate n4 = cb.in(m.get("status")).value(Arrays.asList("E","P"));  // m.get("status").in("E","P"));
+				Predicate n5 = cb.like(m.get("originalPolicyNo"), request.getPolicyNo());
+				//Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), endDate);
+				//Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
+
+			/*	Predicate n7 = null;
+				if (req.getApplicationId().equalsIgnoreCase("1")) {
+					n7 = cb.equal(m.get("loginId"), req.getLoginId());
+				} else {
+					n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
+				}*/
+
+				/*Predicate n8 = null;
+				if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
+					Expression<String> e0 = m.get("brokerBranchCode");
+					n8 = e0.in(branches);
+				} else {
+					Expression<String> e0 = m.get("branchCode");
+					n8 = e0.in(branches);
+				}*/
+
+				query.where(n1, n2, n3, n4, n5 )
+						/*.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
+								m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
+								m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"))*/
+						.orderBy(orderList);
+
+				// Get Result
+				TypedQuery<EndorsementCriteriaRes> result = em.createQuery(query);
+				////result.setFirstResult(500);
+				//result.setMaxResults(500);
+				  List<EndorsementCriteriaRes> grids = result.getResultList();
+				  
+				  return grids;
+			
+		 }catch (Exception e) {
+			 e.printStackTrace();
 		}
 		return null;
 	}

@@ -139,7 +139,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 			Predicate n4 = cb.equal(m.get("status"), "Y");
 			Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), endDate);
 			Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
-
+			Predicate n9 = cb.isNull(m.get("endorsementType"));
 			Predicate n7 = null;
 			if (req.getApplicationId().equalsIgnoreCase("1")) {
 				n7 = cb.equal(m.get("loginId"), req.getLoginId());
@@ -156,7 +156,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 				n8 = e0.in(branches);
 			}
 
-			query.where(n1, n2, n3, n4, n5, n6, n7, n8)
+			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), m.get("customerName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"))
@@ -379,8 +379,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 				Expression<String> e0 = m.get("branchCode");
 				n6 = e0.in(branches);
 			}
-
-			query.where(n1, n2, n3, n4, n5, n6)
+			Predicate n7 = cb.isNull(m.get("endorsementType"));
+			query.where(n1, n2, n3, n4, n5, n6,n7)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), m.get("customerName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
@@ -443,8 +443,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 
 			Expression<String> e0 = c.get("branchCode");
 			Predicate n6 = e0.in(branches);
-
-			query.where(n1, n2, n3, n4, n6)
+			Predicate n7 = cb.isNull(m.get("endorsementType"));
+			query.where(n1, n2, n3, n4, n6,n7)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), m.get("customerName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),

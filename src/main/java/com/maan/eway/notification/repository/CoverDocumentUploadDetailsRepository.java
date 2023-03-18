@@ -14,6 +14,8 @@ package com.maan.eway.notification.repository;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -46,6 +48,22 @@ public interface CoverDocumentUploadDetailsRepository extends JpaRepository<Cove
 			Integer valueOf2, Integer documentId);
 
 	List<CoverDocumentUploadDetails> findByQuoteNo(String quoteNo);
+
+	List<CoverDocumentUploadDetails> findByQuoteNoAndIdAndProductIdAndSectionId(String oldQuoteNo, int i,
+			Integer valueOf, int j);
+
+	Long countByQuoteNoAndId(String quoteNo, int i);
+
+	@Transactional
+	void deleteByQuoteNoAndId(String quoteNo, int i);
+
+	List<CoverDocumentUploadDetails> findByQuoteNoAndIdInAndProductIdAndSectionId(String oldQuoteNo, List<Integer> ids,
+			Integer valueOf, int i);
+
+	Long countByQuoteNoAndIdInAndProductIdAndSectionId(String quoteNo, List<Integer> ids, Integer valueOf, int i);
+
+	@Transactional
+	void deleteByQuoteNoAndIdInAndProductIdAndSectionId(String quoteNo, List<Integer> ids, Integer valueOf, int i);
 
 	
 }

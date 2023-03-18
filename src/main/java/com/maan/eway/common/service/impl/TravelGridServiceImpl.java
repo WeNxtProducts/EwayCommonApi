@@ -118,7 +118,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Predicate n4 = cb.equal(m.get("status"),"Y" );
 			Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), endDate);
 			Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
-			
+			Predicate n9 = cb.isNull(m.get("endorsementType"));
 			Predicate n7 =  null ;
 			if (req.getApplicationId().equalsIgnoreCase("1") ) {
 				n7 = cb.equal(  m.get("loginId"),  req.getLoginId());
@@ -134,7 +134,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				Expression<String>e0=m.get("branchCode");
 				n8 = e0.in(branches ) ;
 			}
-			query.where(n1,n2,n3,n4,n5,n6,n7,n8)
+			query.where(n1,n2,n3,n4,n5,n6,n7,n8,n9)
 			.orderBy(orderList) ;
 			
 			// Get Result
@@ -352,8 +352,8 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				Expression<String>e0=m.get("branchCode");
 				n6 = e0.in(branches ) ;
 			}
-			
-			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
+			Predicate n7 = cb.isNull(m.get("endorsementType"));
+			query.where(n1,n2,n3,n4,n5,n6,n7).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<ReferalGridCriteriaRes> result = em.createQuery(query);
@@ -417,8 +417,8 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			
 			Expression<String>e0=c.get("branchCode");
 			Predicate n6 = e0.in(branches ) ;
-			
-			query.where(n1,n2,n3,n4,n6).orderBy(orderList);
+			Predicate n7 = cb.isNull(m.get("endorsementType"));
+			query.where(n1,n2,n3,n4,n6,n7).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<ReferalGridCriteriaRes> result = em.createQuery(query);

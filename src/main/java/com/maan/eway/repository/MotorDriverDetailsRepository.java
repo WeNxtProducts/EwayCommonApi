@@ -35,6 +35,11 @@ public interface MotorDriverDetailsRepository  extends JpaRepository<MotorDriver
 
 	List<MotorDriverDetails> findByQuoteNo(String quoteNo);
 
+	@Transactional
+	void deleteByQuoteNoAndRiskId(String quoteNo, Integer vehicleId);
+
+	List<MotorDriverDetails> findByQuoteNoAndRiskId(String oldQuoteNo, Integer vehicleId);
+
 	
 
 

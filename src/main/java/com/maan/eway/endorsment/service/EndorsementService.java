@@ -201,6 +201,41 @@ public class EndorsementService {
 		 try {
 
 			 
+				  List<EndorsementCriteriaRes> grids = new ArrayList<EndorsementCriteriaRes>();
+				  
+				if( request.getProductId().equals(new BigDecimal(motorProductId))  ) {
+					 grids = endorsementMotorGrid(request);
+					
+					
+				} else if ( request.getProductId().equals(new BigDecimal(travelProductId))  ) {
+					grids = copyTravelraw.endorsementTravelGrid(request);
+				
+					
+				} else if ( request.getProductId().equals(new BigDecimal(buildingProductId)) || request.getProductId().equals(new BigDecimal(smeProductId))  ) {
+					grids = copyBuildingraw.endorsementBuildingGrid(request);
+				
+					
+				} else {
+					
+					grids = copyCommonraw.endorsementCommonGrid(request);
+				
+				
+				}
+					
+				  return grids;
+			
+		 }catch (Exception e) {
+			 e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
+	public List<EndorsementCriteriaRes> endorsementMotorGrid(Endorsment request) {
+
+		 try {
+
+			 
 				// Get Datas
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<EndorsementCriteriaRes> query = cb.createQuery(EndorsementCriteriaRes.class);
@@ -280,7 +315,6 @@ public class EndorsementService {
 		}
 		return null;
 	}
-	
 	public List<EndorsementCriteriaRes> endorsementGrid(Endorsment request) {
 
 		 try {
@@ -411,7 +445,7 @@ public class EndorsementService {
 					 List<BuildingCopyRes> buildingRaw = copyBuildingraw.copyBuildingRaw(request);
 					response = buildingRaw ;
 					
-				} else if ( request.getProductId().equals(new BigDecimal(buildingProductId)) || request.getProductId().equals(new BigDecimal(smeProductId))  ) {
+				} else {
 					
 					CommonCopyRes commonRaw = copyCommonraw.copyCommonRaw(request);
 					response = commonRaw ;

@@ -16,6 +16,9 @@ public class QuoteThreadReq {
 	@JsonProperty("QuoteNo")
 	private String    quoteNo ;
 
+	@JsonProperty("EndtPrevQuoteNo")
+	private String    endtPrevQuoteNo ;
+	
 	 @JsonProperty("CustomerId")
 	 private String    customerId ;
 	 

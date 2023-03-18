@@ -34,6 +34,7 @@ import org.springframework.ui.ModelMap;
 import com.google.gson.Gson;
 import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CommonDataDetails;
+import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
@@ -60,6 +61,7 @@ import com.maan.eway.common.req.QuoteThreadReq;
 import com.maan.eway.common.req.VehicleIdsReq;
 import com.maan.eway.common.res.QuoteThreadRes;
 import com.maan.eway.master.req.LovDropDownReq;
+import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
 import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.CoverDetailsRepository;
@@ -122,6 +124,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 	//Common
 	private EserviceCommonDetailsRepository eserCommonRepo;
 	private CommonDataDetailsRepository commonDataRepo;
+	private CoverDocumentUploadDetailsRepository docRepo ;
 	
 	// productId
 	private String motorProductId;
@@ -135,7 +138,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			 CoverDetailsRepository coverRepo  , HomePositionMasterRepository homeRepo  ,EserviceTravelDetailsRepository eserTraRepo ,EserviceTravelGroupDetailsRepository eserGroupRepo ,
 			 TravelPassengerDetailsRepository    traPassRepo ,TravelPassengerHistoryRepository traPassHisRepo  , String motorProductId ,String travelProductId, String buildingProductId 
 			 , EserviceBuildingDetailsRepository eserBuildRepo , EServiceSectionDetailsRepository eserSecRepo,EserviceCommonDetailsRepository eserCommonRepo,CommonDataDetailsRepository commonDataRepo ,String smeProductId,
-			 SectionDataDetailsRepository secRepo,BuildingRiskDetailsRepository buildRepo ) {
+			 SectionDataDetailsRepository secRepo,BuildingRiskDetailsRepository buildRepo , CoverDocumentUploadDetailsRepository docRepo ) {
 		this.type = type;
 		this.request = request;
 		this.em=em;
@@ -161,6 +164,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 		this.smeProductId = smeProductId;
 		this.secRepo = secRepo ;
 		this.buildRepo = buildRepo ;
+		this.docRepo = docRepo ;
+		
 	} 
 	
 	@Override
@@ -305,6 +310,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 			res.put("Response", "Success") ;
 			res.put("Errors", null) ;
 			
+			// Copy Old Quote Additional Details
+			if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
+				
+				res =  copyQuoteDocumentDetails( request , request.getEndtPrevQuoteNo() , request.getQuoteNo()) ;
+				
+			}
 			
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -452,15 +463,21 @@ public class QuoteThreadCall implements Callable<Object>  {
 			motorRepo.saveAndFlush(motorData);
 			log.error("Save Motor Info is ---> " + json.toJson(motorData));
 			
+			res.put("Response", "Success") ;
+			res.put("Errors", null) ;
+			
 			// Update Eservice Motor
 			// Save Driver Details
 			EserviceCustomerDetails custData = eserCustRepo.findByCustomerReferenceNo(eserMotors.getCustomerReferenceNo() );
 
-//			if( eserMotors.getEndtPrevQuoteNo() && eserMotors.getEndtPrevPolicyNo() ) {
-//				
-//				copyQuoteMotor();
-//				
-//			} else {
+			// Copy Old Quote Additional Details
+			if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
+				
+				res =   copyQuoteDriverDetails( request , request.getEndtPrevQuoteNo() , request.getQuoteNo()  );
+				
+				res =  copyQuoteDocumentDetails( request , request.getEndtPrevQuoteNo() , request.getQuoteNo()) ;
+				
+			} else {
 				Long driverInfo = driverRepo.countByQuoteNoAndRiskId(request.getQuoteNo() , request.getVehicleId());
 				if (driverInfo <= 0  ) {
 					MotorDriverDetails saveDri = new MotorDriverDetails(); 		
@@ -486,12 +503,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 					saveDri.setStatus("Y");
 					driverRepo.saveAndFlush(saveDri);
 				}
-	//		}
+			}
 			
 			
 	
-			res.put("Response", "Success") ;
-			res.put("Errors", null) ;
+			
 			
 			
 		}catch (Exception e) {
@@ -681,24 +697,68 @@ public class QuoteThreadCall implements Callable<Object>  {
 	}
 	
 	
+	
 	private synchronized  Map<String,Object>  copyQuoteDriverDetails(QuoteThreadReq  request , String oldQuoteNo , String newQuoteNo ) {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 	 DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			
-//			// Motor Driver Details 
-//			List<MotorDriverDetails>   oldDriDetails = driverRepo.findByQuoteNoAndRiskId( oldQuoteNo ,  request.getVehicleId() , oldQuoteNo );
-//			
-//			Long driverInfo = driverRepo.countByQuoteNoAndRiskId(request.getQuoteNo() , request.getVehicleId());
-//			if (driverInfo <= 0  ) {
-//				MotorDriverDetails saveDri = new MotorDriverDetails(); 		
-//				Integer driId = 1 ;
-//				
-//				saveDri.setQuoteNo(motorData.getQuoteNo() );
-//				saveDri.setRequestReferenceNo(motorData.getRequestReferenceNo());
-//				saveDri.setStatus("Y");
-//				driverRepo.saveAndFlush(saveDri);
-//			}
+			// Motor Driver Details 
+			List<MotorDriverDetails>   oldDriDetails = driverRepo.findByQuoteNoAndRiskId( oldQuoteNo ,  request.getVehicleId());
+			
+			Long driverInfo = driverRepo.countByQuoteNoAndRiskId(request.getQuoteNo() , request.getVehicleId());
+			if( driverInfo > 0  ) {
+				driverRepo.deleteByQuoteNoAndRiskId(request.getQuoteNo() , request.getVehicleId());
+			}
+			
+			for ( MotorDriverDetails dri : oldDriDetails ) {
+				MotorDriverDetails saveDri = new MotorDriverDetails(); 		
+				dozerMapper.map(dri , saveDri);
+				saveDri.setQuoteNo(request.getQuoteNo() );
+				saveDri.setRequestReferenceNo(request.getRequestReferenceNo());
+				driverRepo.saveAndFlush(saveDri);
+			}
+			res.put("Response", "Success") ;
+			res.put("Errors", null) ;
+			
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.error("Exception is ---> " + e.getMessage());
+			res.put("Response", "Failed") ;
+			res.put("Errors", "Failed To Copy Vehicle Id : " + request.getVehicleId() + " Driver Details" ) ;
+		}
+	
+		return res;
+	}
+	
+	private synchronized  Map<String,Object>  copyQuoteDocumentDetails(QuoteThreadReq  request , String oldQuoteNo , String newQuoteNo ) {
+		Map<String,Object> res= new HashMap<String,Object>() ;
+	 DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			
+			{
+				List<Integer> ids = new ArrayList<Integer>();
+				ids.add( request.getVehicleId());
+				
+				// Other Doc
+				List<CoverDocumentUploadDetails>   oldDocDetails = docRepo.findByQuoteNoAndIdAndProductIdAndSectionId( oldQuoteNo , request.getVehicleId() ,
+						Integer.valueOf(request.getProductId()) , Integer.valueOf(request.getSectionId())   ) ; 
+				Long docInfo = docRepo.countByQuoteNoAndIdInAndProductIdAndSectionId(request.getQuoteNo() , ids,Integer.valueOf(request.getProductId()) , Integer.valueOf(request.getSectionId())  );
+				if( docInfo > 0  ) {
+					docRepo.deleteByQuoteNoAndIdInAndProductIdAndSectionId(request.getQuoteNo() , ids ,Integer.valueOf(request.getProductId()) , Integer.valueOf(request.getSectionId())  );
+				}
+				
+				List<CoverDocumentUploadDetails> saveDocList = new ArrayList<CoverDocumentUploadDetails>(); 
+				for ( CoverDocumentUploadDetails doc : oldDocDetails ) {
+					CoverDocumentUploadDetails saveDoc = new CoverDocumentUploadDetails(); 		
+					dozerMapper.map(doc , saveDoc);
+					saveDoc.setQuoteNo(request.getQuoteNo() );
+					saveDoc.setRequestReferenceNo(request.getRequestReferenceNo());
+					saveDocList.add(saveDoc) ;
+				}
+				docRepo.saveAllAndFlush(saveDocList);
+			}
 			
 			res.put("Response", "Success") ;
 			res.put("Errors", null) ;
@@ -708,7 +768,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			e.printStackTrace();
 			log.error("Exception is ---> " + e.getMessage());
 			res.put("Response", "Failed") ;
-			res.put("Errors", "Failed To Save Vehicle Id : " + request.getVehicleId() + " Details" ) ;
+			res.put("Errors", "Failed To Copy Vehicle Id : " + request.getVehicleId() + " Document Details" ) ;
 		}
 	
 		return res;
@@ -798,6 +858,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 			res.put("Response", "Success") ;
 			res.put("Errors", null) ;
 			
+			// Copy Old Quote Additional Details
+			if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
+				
+				res =  copyQuoteDocumentDetails( request , request.getEndtPrevQuoteNo() , request.getQuoteNo()) ;
+				
+			}
 			
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -905,6 +971,13 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			res.put("Response", "Success") ;
 			res.put("Errors", null) ;
+			
+			// Copy Old Quote Additional Details
+			if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
+				
+				res =  copyQuoteDocumentDetails( request , request.getEndtPrevQuoteNo() , request.getQuoteNo()) ;
+				
+			}
 			
 			
 		}catch (Exception e) {
@@ -1150,6 +1223,30 @@ public class QuoteThreadCall implements Callable<Object>  {
 					secRepo.deleteByQuoteNo(req.getQuoteNo());
 				}
 				
+				// Common Doc
+				if(StringUtils.isNotBlank(req.getEndtPrevQuoteNo()) ) {
+					List<Integer> ids = new ArrayList<Integer>();
+					ids.add(0);
+					ids.add(1);
+					
+					Long docInfo = docRepo.countByQuoteNoAndIdInAndProductIdAndSectionId(req.getQuoteNo() , ids, Integer.valueOf(req.getProductId()) , 99999  );
+					if( docInfo > 0  ) {
+						docRepo.deleteByQuoteNoAndIdInAndProductIdAndSectionId(req.getQuoteNo() , ids, Integer.valueOf(req.getProductId()) , 99999  );
+					}
+					List<CoverDocumentUploadDetails>   oldDocDetails = docRepo.findByQuoteNoAndIdInAndProductIdAndSectionId( req.getEndtPrevQuoteNo() , ids ,
+							Integer.valueOf(req.getProductId()) , 99999  ) ;
+					
+					List<CoverDocumentUploadDetails> saveDocList = new ArrayList<CoverDocumentUploadDetails>(); 
+					for ( CoverDocumentUploadDetails doc : oldDocDetails ) {
+						CoverDocumentUploadDetails saveDoc = new CoverDocumentUploadDetails(); 		
+						dozerMapper.map(doc , saveDoc);
+						saveDoc.setQuoteNo(req.getQuoteNo() );
+						saveDoc.setRequestReferenceNo(req.getRequestReferenceNo());
+						saveDocList.add(saveDoc) ;
+					}
+					docRepo.saveAllAndFlush(saveDocList);
+				
+				}
 				
 	 			res.put("Response", "Success") ;
 				res.put("Errors", null) ;
