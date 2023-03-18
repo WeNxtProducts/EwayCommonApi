@@ -109,7 +109,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 							return o1.getEndtCount().compareTo(o2.getEndtCount());
 						}
 						 
-					});
+					}.reversed());
 					 //new premium-old prem
 					 Endorsement endorsement = t.getEndorsements().get(0);
 					 endorsement.setPremiumAfterDiscountLC(t.getPremiumAfterDiscountLC().subtract(endorsement.getPremiumAfterDiscountLC()));

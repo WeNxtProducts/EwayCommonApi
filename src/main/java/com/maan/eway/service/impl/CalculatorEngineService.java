@@ -458,7 +458,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 					if(endorsements!=null && endorsements.size()>0) {
 						for (Endorsement e : endorsements) {
 							 List<Tax> txx = oldPolicyCovers.stream().filter(r -> (d.getCoverId() ==r.getCoverId() 
-									 && d.getEndtCount().intValue()==e.getEndtCount().intValue()
+									 && "T".equals(r.getCoverageType()) && r.getEndtCount().intValue()==e.getEndtCount().intValue()
 									 &&  r.getCoverId() ==Integer.parseInt(e.getEndorsementforId())
 									 )  ).map(endttaxUtil).filter(dx->dx!=null).collect(Collectors.toList());
 							 e.setTaxes(txx);

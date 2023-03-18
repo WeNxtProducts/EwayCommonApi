@@ -20,7 +20,7 @@ public class EndtFromPolicy  implements Function<PolicyCoverData,Endorsement>{
 						 	.endorsementId(t.getDiscLoadId()==null?"":t.getDiscLoadId().toString())
 						 	.endorsementRate("F".equals(calctype)?"0": t.getRate()==null?"0":t.getRate().toString())
 						 	.endorsementCalcType(calctype)
-						 	.endorsementforId(t.getDependentCoverId()==null?"":t.getDependentCoverId().toString())
+						 	.endorsementforId(t.getDiscountCoverId()==null?"":t.getDiscountCoverId().toString())
 						 	.maxAmount(t.getMinimumPremium()==null?BigDecimal.ZERO:t.getMinimumPremium())
 						 	.factorTypeId(t.getFactorTypeId()==null?"":t.getFactorTypeId().toString())
 						 	.regulatoryCode(t.getRegulatoryCode()==null?"N/A":t.getRegulatoryCode())
