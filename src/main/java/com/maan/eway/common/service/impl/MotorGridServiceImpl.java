@@ -955,7 +955,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 						 prevPolicyNo=motor.get(0).getEndtPrevPolicyNo();
 						 prevQuoteNo=motor.get(0).getEndtPrevQuoteNo();
 						 newRequestNo=motor.get(0).getRequestReferenceNo();
-						 count--;
+						 //count--;
 					}else {
 						motor=motors;
 						
@@ -1023,7 +1023,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 						savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
 						savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
 						savedata.setStatus("E");
-						savedata.setPolicyNo(req.getPolicyNo());
+						savedata.setPolicyNo(req.getPolicyNo()+"-"+count);
 						repo.saveAndFlush(savedata);
 					}
 		
