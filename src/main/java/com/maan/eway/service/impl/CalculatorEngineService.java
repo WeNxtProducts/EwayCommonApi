@@ -428,7 +428,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 				
 				EndtTypeMaster endtmaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(engine.getInsuranceId(), Integer.parseInt(engine.getProductId()), "Y",  Integer.parseInt(endtTypeId));
 				
-				
+				retc.stream().forEach( i -> i.setEndtCount(endtCount) );
 				 
 				 
 				//find Prev Quote Data

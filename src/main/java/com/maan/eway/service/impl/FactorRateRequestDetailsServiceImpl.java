@@ -340,7 +340,7 @@ this.repository = repo;
 					saveCover.setCoverBasedOn(StringUtils.isBlank(coverData.getCoverBasedOn())?"sumInsured":coverData.getCoverBasedOn());
 					//Double b=coverData.getPremiumBeforeDiscountLC()==null ? 0D : Double.valueOf(df.format(coverData.getPremiumBeforeDiscountLC()));
 					saveCover.setRegulSumInsured(coverData.getTiraSumInsured()==null?null:new BigDecimal(df.format(coverData.getTiraSumInsured())));
-					
+					saveCover.setEndtCount(coverData.getEndtCount()==null?BigDecimal.ZERO:coverData.getEndtCount());
 //					if(coverData.getTaxes()!=null && coverData.getTaxes().size() > 0 ) {
 //						saveCover.setTax1(coverData.getTaxes().get(0).getTaxAmount()==null ? null : Double.valueOf(df.format(coverData.getTaxes().get(0).getTaxAmount())) );
 //						if(coverData.getTaxes().size() > 1  ) 
@@ -443,6 +443,8 @@ this.repository = repo;
 						//String userOpt=(!"D".equals(saveSubCover.getIsSelected()))?"N":(StringUtils.isBlank(coverData.getUserOpt())?"N":coverData.getUserOpt());						saveSubCover.setRegulatoryCode(subCoverData.getRegulatoryCode());
 						String userOpt=(!"D".equals(saveSubCover.getIsSelected()) )?(StringUtils.isBlank(coverData.getUserOpt())?"N":coverData.getUserOpt()):(StringUtils.isBlank(coverData.getUserOpt())?"N":coverData.getUserOpt());
 						saveSubCover.setMinimumPremiumYn(StringUtils.isBlank(subCoverData.getMinimumPremiumYn())?"N":subCoverData.getMinimumPremiumYn());
+						saveSubCover.setEndtCount(coverData.getEndtCount()==null?BigDecimal.ZERO:coverData.getEndtCount());
+						
 						/*if(coverIds!=null && !coverIds.isEmpty()) {
 							long count = coverIds.stream().filter(t-> (saveSubCover.getCoverId().equals(t.getCoverId()) && saveSubCover.getSubCoverId().equals(t.getSubCoverId()) )).count() ;
 							if(count>0) userOpt="Y";

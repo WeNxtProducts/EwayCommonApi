@@ -61,6 +61,7 @@ public class SplitSubCoverUtil implements Function<Tuple,Cover> {
 					.excessPercent(t.get("excessPercent")==null?BigDecimal.ZERO:new BigDecimal(t.get("excessPercent").toString()))
 					.minimumPremiumYn("N")
 					.proRataYn(t.get("proRataYn")==null?"N":t.get("proRataYn").toString())
+					.endtCount(BigDecimal.ZERO)
 					.build();
 				return c;
 			 }			

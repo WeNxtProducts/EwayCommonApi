@@ -168,6 +168,9 @@ public class Cover implements Serializable{
 			 
 			 @JsonProperty("Endorsements")
 			 private List<Endorsement> endorsements;
+			 
+			 @JsonProperty("EndtCount")
+			 private BigDecimal endtCount;
 }
 
 
