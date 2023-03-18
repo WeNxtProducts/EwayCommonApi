@@ -423,7 +423,7 @@ public class EndorsementService {
 				c.setEndtRemarks(request.getEndtRemarks());
 				c.setEndtEffectiveDate(request.getEndtEffectiveDate());
 
-				CopyQuoteSuccessRes copyQuote = copyquoteService.copyQuote(c);
+				EserviceMotorDetails copyQuote = (EserviceMotorDetails) copyquoteService.copyQuote(c).getCommonResponse();
 				CommonRes com=new CommonRes();
 				com.setCommonResponse(copyQuote);
 				com.setErroCode(0);

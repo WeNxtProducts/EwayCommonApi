@@ -16,12 +16,8 @@ public class CopyQuoteSuccessRes {
 	@JsonProperty("RequestReferenceNo")
 	private String requestReferenceNo;
 	
-	@JsonProperty("PolicyNo")
-	private String policyNo;
+	@JsonProperty("Eservice")
+	private Object commonResponse;
 	
-	@JsonProperty("EserviceMostorDetails")
-	private  List<GetAllMotorDetailsRes> motorRes;
-
-
-
+	
 }

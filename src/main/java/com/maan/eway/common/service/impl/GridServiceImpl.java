@@ -780,6 +780,7 @@ public class GridServiceImpl implements GridService {
 					res = commonService.commonCopyQuote(req, branches);
 
 				}
+				res.setRequestReferenceNo(res.getRequestReferenceNo());
 			}
 
 		}catch(

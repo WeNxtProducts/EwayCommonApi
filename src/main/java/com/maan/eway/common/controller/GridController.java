@@ -245,7 +245,7 @@ public class GridController {
 				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 
 			} else {
-				CopyQuoteSuccessRes res = entityService.copyQuote(req);
+				CopyQuoteSuccessRes res = entityService.copyQuote(req); 
 				data.setCommonResponse(res);
 				data.setIsError(false);
 				data.setErrorMessage(Collections.emptyList());
