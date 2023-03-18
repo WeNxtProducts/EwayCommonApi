@@ -547,14 +547,14 @@ public class CalculatorEngineService implements CalculatorEngine{
 		 try {
 			   List<Cover> retc=new ArrayList<Cover>();
 			   
-			   	loadOnetimetable(request);
+			  /* 	loadOnetimetable(request);
 				if((commontbl==null || commontbl.size()==0) || (vehicles==null || vehicles.size()==0) || (customers==null || customers.size()==0)) {
 					System.out.println("::: Exception :: ");
-					throw new Exception();
+					throw new Exception();*/
 					
 					 /*throw CoverException.builder().message("Exception :: onetime table not inserted")
 					 .isError(true).build();*/
-				}
+				//}
 				
 			   
 			 	List<String> dependedcovers=new ArrayList<String>();
@@ -784,7 +784,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 			*/
 			String oneProduct= ratingutil.collectProductType(engine);
 			 
-			vehicles=null;
+			/*vehicles=null;
 			while(vehicles==null) {
 				
 				
@@ -805,7 +805,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 			  System.out.println("Vehicle record "+engine.getVdRefNo()+", vehicles is "+((vehicles==null || vehicles.isEmpty())?"empty":"Not an empty"));
 			}
 		
-			
+			*/
 			
 		String search="msRefno:"+engine.getMsrefno()+";";
 		

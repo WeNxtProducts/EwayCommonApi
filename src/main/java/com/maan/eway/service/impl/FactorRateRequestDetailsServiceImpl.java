@@ -350,7 +350,7 @@ this.repository = repo;
 //						
 //					}
 					saveCover.setDiscountCoverId(0) ;
-					saveCover.setEndtCount(BigDecimal.ZERO );
+					//saveCover.setEndtCount(BigDecimal.ZERO );
 					repository.saveAndFlush(saveCover);
 					premiumLc = premiumLc + (saveCover.getPremiumExcludedTaxLc()==null ? 0D :Double.valueOf(saveCover.getPremiumExcludedTaxLc().toString()) );
 					premiumFc = premiumFc + (saveCover.getPremiumExcludedTaxFc()==null ? 0D :Double.valueOf(saveCover.getPremiumExcludedTaxFc().toString()) );
@@ -465,7 +465,7 @@ this.repository = repo;
 						overAllPremiumFc = overAllPremiumFc + (saveSubCover.getPremiumIncludedTaxFc()==null ? 0D :Double.valueOf(saveSubCover.getPremiumIncludedTaxFc().toString()));
 						
 						saveSubCover.setDiscountCoverId(0) ;
-						saveSubCover.setEndtCount(BigDecimal.ZERO );
+						//saveSubCover.setEndtCount(BigDecimal.ZERO );
 						repository.saveAndFlush(saveSubCover);
 						Map<String,Object>  primaryKeys = new HashMap<String,Object>();
 						primaryKeys.put("RefNo" , req.getRequestReferenceNo());

@@ -20,7 +20,7 @@ public class TaxFromPolicy  implements Function<PolicyCoverData,Tax>{
 						.taxId(t.getTaxId()==null?"":t.getTaxId().toString())
 						.taxRate(t.getTaxRate()==null?0D: t.getTaxRate().doubleValue() )				 	
 						.calcType(t.getCalcType()==null?"":t.getCalcType())
-						.endtTypeId(t.getTaxId().toString())
+						.endtTypeId(t.getDiscLoadId()==null?"0":t.getDiscLoadId().toString())
 						.endtTypeCount(t.getEndtCount())
 						.build();
 				return d;
