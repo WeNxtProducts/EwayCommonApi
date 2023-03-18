@@ -24,8 +24,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.EndtTypeMaster;
+import com.maan.eway.bean.EserviceBuildingDetails;
+import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.common.req.CopyQuoteReq;
@@ -440,16 +443,17 @@ public class EndorsementService {
 					response = motorRaw ;
 					
 				} else if ( request.getProductId().equals(new BigDecimal(travelProductId))  ) {
-					List<TravelCopyRes> travelRaw = new ArrayList<TravelCopyRes>(); 
+					List<EserviceTravelDetails> travelRaw = new ArrayList<EserviceTravelDetails>(); 
 					travelRaw.add(copyTravelraw.copyTravelRaw(request));
 					response = travelRaw ;
 					
 				} else if ( request.getProductId().equals(new BigDecimal(buildingProductId)) || request.getProductId().equals(new BigDecimal(smeProductId))  ) {
-					BuildingCopyRes buildingRaw = copyBuildingraw.copyBuildingRaw(request);
-					response = buildingRaw ;
+					List<EserviceBuildingDetails> buildRaw = new ArrayList<EserviceBuildingDetails>(); 
+					buildRaw.add( copyBuildingraw.copyBuildingRaw(request));
+					response = buildRaw ;
 					
 				} else {
-					List<CommonCopyRes> commonRaw = new ArrayList<CommonCopyRes>();
+					List<EserviceCommonDetails> commonRaw = new ArrayList<EserviceCommonDetails>();
 					 commonRaw.add(copyCommonraw.copyCommonRaw(request));
 					response = commonRaw ;
 				

@@ -44,14 +44,15 @@ public class CopyCommonRaw {
 	private EndtTypeMasterRepository endtTypeRepo;
 	
 	
-	public CommonCopyRes copyCommonRaw(Endorsment request) {
+	public EserviceCommonDetails copyCommonRaw(Endorsment request) {
 		try {
 			
 			// Risk
 			CommonCopyRes  riskRes =  copyCommonRiskTable(request);
 			
+			EserviceCommonDetails commonData = eCommonRepo.findByRequestReferenceNoAndRiskId(riskRes.getRequestReferenceNo(), 1 ); 
 			
-			return riskRes ;
+			return commonData ;
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

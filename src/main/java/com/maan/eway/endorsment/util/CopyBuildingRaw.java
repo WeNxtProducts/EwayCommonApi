@@ -62,8 +62,9 @@ public class CopyBuildingRaw {
 	private EserviceCommonDetailsRepository eserCommonRepo;
 
 	
-	public BuildingCopyRes copyBuildingRaw(Endorsment request) {
+	public EserviceBuildingDetails copyBuildingRaw(Endorsment request) {
 		try {
+			
 			
 			// Risk Copy
 			BuildingCopyRes  riskRes =  copyBuildingRiskTable(request);
@@ -76,8 +77,10 @@ public class CopyBuildingRaw {
 			// Personal Accident Copy
 			String res = copyPersonalAccident (riskRes.getRequestReferenceNo() ,	riskRes.getOldRequestReferenceNo() ,sectionIds ,  riskRes  ) ;
 			
+			EserviceBuildingDetails buildData = eBuildingRepo.findByRequestReferenceNoAndRiskId(riskRes.getRequestReferenceNo() , 1 ); 
 			
-			return riskRes ;
+			
+			return buildData ;
 			
 		}catch (Exception e) {
 			e.printStackTrace();

@@ -52,7 +52,7 @@ public class CopyTravelRaw {
 	@Autowired
 	private EserviceTravelGroupDetailsRepository groupRepo ;
 	
-	public TravelCopyRes copyTravelRaw(Endorsment request) {
+	public EserviceTravelDetails copyTravelRaw(Endorsment request) {
 		try {
 			
 			// Risk
@@ -62,7 +62,9 @@ public class CopyTravelRaw {
 			List<TravelGroupGetRes> travelGroupList = copyTravelRiskGroup(riskRes.getRequestReferenceNo() , riskRes.getOldRequestReferenceNo() );
 			riskRes.setGroupDetails(travelGroupList);
 			
-			return riskRes ;
+			EserviceTravelDetails travelData = etravelRepo.findByRequestReferenceNo(riskRes.getRequestReferenceNo() ); 
+			
+			return travelData  ;
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

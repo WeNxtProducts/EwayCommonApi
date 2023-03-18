@@ -33,14 +33,12 @@ import com.maan.eway.bean.EserviceCommonDetailsId;
  
 public interface EserviceCommonDetailsRepository  extends JpaRepository<EserviceCommonDetails,EserviceCommonDetailsId > , JpaSpecificationExecutor<EserviceCommonDetails> {
 
-	List<EserviceCommonDetails> findByRequestReferenceNo(String requestReferenceNo);
+	EserviceCommonDetails findByRequestReferenceNoAndRiskId(String requestReferenceNo , Integer riskId);
 
 	Long countByRequestReferenceNo(String refNo);
 
 	@Transactional
 	void deleteByRequestReferenceNo(String refNo);
-
-	EserviceCommonDetails findByRequestReferenceNoAndRiskId(String requestReferenceNo, Integer valueOf);
 
 	List<EserviceCommonDetails> findByRequestReferenceNoOrderByRiskIdAsc(String requestReferenceNo);
 
@@ -58,6 +56,8 @@ public interface EserviceCommonDetailsRepository  extends JpaRepository<Eservice
 	List<EserviceCommonDetails> findByQuoteNoOrderByRiskIdAsc(String prevQuoteNo);
 
 	List<EserviceCommonDetails> findByPolicyNoAndRiskId(String prevPolicyNo, int i);
+
+		List<EserviceCommonDetails> findByRequestReferenceNo(String requestReferenceNo);
 
 
 }
