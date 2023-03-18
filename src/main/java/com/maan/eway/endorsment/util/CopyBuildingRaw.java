@@ -62,23 +62,22 @@ public class CopyBuildingRaw {
 	private EserviceCommonDetailsRepository eserCommonRepo;
 
 	
-	public List<BuildingCopyRes> copyBuildingRaw(Endorsment request) {
+	public BuildingCopyRes copyBuildingRaw(Endorsment request) {
 		try {
 			
 			// Risk Copy
 			BuildingCopyRes  riskRes =  copyBuildingRiskTable(request);
 			
 			// Section Copy
-			List<BuildingCopyRes>  secRiskList = copyBuildingSections(riskRes.getRequestReferenceNo() ,
-					riskRes.getOldRequestReferenceNo() , riskRes ) ;
-
-			List<String> sectionIds = secRiskList.stream().map(BuildingCopyRes :: getSectionId  ).collect(Collectors.toList() ) ;
+			List<String> sectionIds = copyBuildingSections(riskRes.getRequestReferenceNo() ,riskRes.getOldRequestReferenceNo() , riskRes ) ;
+			riskRes.setSectionId(sectionIds);
+			riskRes.setLocationId(riskRes.getLocationId());
 			
 			// Personal Accident Copy
 			String res = copyPersonalAccident (riskRes.getRequestReferenceNo() ,	riskRes.getOldRequestReferenceNo() ,sectionIds ,  riskRes  ) ;
 			
 			
-			return secRiskList ;
+			return riskRes ;
 			
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -165,7 +164,7 @@ public class CopyBuildingRaw {
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			BuildingCopyRes res = dozerMapper.map(newBuildingList.get(0) , BuildingCopyRes.class);
 			
-			List<EserviceBuildingDetails> prevDatas = eBuildingRepo.findByOriginalPolicyNoAndRiskId(prevPolicyNo , 1 );
+			List<EserviceBuildingDetails> prevDatas = eBuildingRepo.findByPolicyNoAndRiskId(prevPolicyNo , 1 );
 			res.setOldRequestReferenceNo(prevDatas.get(0).getRequestReferenceNo() );
 			res.setPolicyNo(ent.getPolicyNo()+"-"+count) ;
 			;
@@ -176,7 +175,7 @@ public class CopyBuildingRaw {
 		return null;
 	}
 	
-	public List<BuildingCopyRes> copyBuildingSections(String newReqRefNo , String  oldReqRefNo , BuildingCopyRes buildingData ) {
+	public List<String> copyBuildingSections(String newReqRefNo , String  oldReqRefNo , BuildingCopyRes buildingData ) {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			List<EserviceSectionDetails>  oldSecDatas = eserSecRepo.findByRequestReferenceNoOrderBySectionIdAsc(oldReqRefNo) ;
@@ -187,7 +186,7 @@ public class CopyBuildingRaw {
 				eserSecRepo.deleteByRequestReferenceNoAndRiskId(newReqRefNo, 1);
 			}
 
-			List<BuildingCopyRes> resList = new ArrayList<BuildingCopyRes>(); 
+			List<String> secList = new ArrayList<String>(); 
 			for (EserviceSectionDetails section : oldSecDatas) {
 				EserviceSectionDetails secData = new EserviceSectionDetails();
 			
@@ -197,20 +196,10 @@ public class CopyBuildingRaw {
 				secData.setPolicyNo(buildingData.getPolicyNo());
 				secData.setQuoteNo(null);
 				eserSecRepo.saveAndFlush(secData);
-				
-				BuildingCopyRes res = new BuildingCopyRes();
-				res.setRequestReferenceNo(newReqRefNo);
-				res.setCustomerReferenceNo(secData.getCustomerReferenceNo());
-				res.setLocationId(secData.getRiskId().toString() );
-				res.setInsuranceId(secData.getCompanyId());
-				res.setRiskId(secData.getRiskId().toString() );
-				res.setCreatedBy(secData.getCreatedBy());
-				res.setProductId(secData.getProductId());
-				res.setSectionId(secData.getSectionId());
-				resList.add(res);
+				secList.add(secData.getSectionId());
 			}
 			
-			return resList;
+			return secList;
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -221,32 +210,36 @@ public class CopyBuildingRaw {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		String res = "" ;
 		try {
-			EserviceCommonDetails oldAccData = eserCommonRepo.findByRequestReferenceNoAndRiskId(oldReqRefNo, 1); 
+			List<EserviceCommonDetails> oldAccData = eserCommonRepo.findByRequestReferenceNo(oldReqRefNo); 
 			
-			EserviceCommonDetails accdata = new EserviceCommonDetails();
-			
-			List<String> sectionids = sectionIds ;
-			List<String> result = sectionids.stream().filter(sectionid -> "35".equalsIgnoreCase(sectionid))
-					.collect(Collectors.toList());
-			if(result!=null&& result.size()>0  ) {
-
-			if (result.get(0).equalsIgnoreCase("35")) {
-
-				Long count = eserCommonRepo.countByRequestReferenceNo(newReqRefNo);
-				if (count > 0) {
-					eserCommonRepo.deleteByRequestReferenceNo(newReqRefNo);
-				}
-
-				dozerMapper.map(oldAccData, accdata);
-				accdata.setPolicyNo(buildingData.getPolicyNo());
-				accdata.setQuoteNo(null);
-				eserCommonRepo.save(accdata);
-				res = "Saved Succefully" ;
-			}
-			res = "Not Data Available" ;
+			if( oldAccData !=null && oldAccData.size() > 0) {
+				EserviceCommonDetails accdata = new EserviceCommonDetails();
 				
-			
+				List<String> sectionids = sectionIds ;
+				List<String> result = sectionids.stream().filter(sectionid -> "35".equalsIgnoreCase(sectionid))
+						.collect(Collectors.toList());
+				if(result!=null&& result.size()>0  ) {
+
+				if (result.get(0).equalsIgnoreCase("35")) {
+
+					Long count = eserCommonRepo.countByRequestReferenceNo(newReqRefNo);
+					if (count > 0) {
+						eserCommonRepo.deleteByRequestReferenceNo(newReqRefNo);
+					}
+
+					dozerMapper.map(oldAccData.get(0) , accdata);
+					accdata.setRequestReferenceNo(newReqRefNo );
+					accdata.setPolicyNo(buildingData.getPolicyNo());
+					accdata.setQuoteNo(null);
+					eserCommonRepo.save(accdata);
+					res = "Saved Succefully" ;
+				}
+				res = "Not Data Available" ;
+					
+				
+				}
 			}
+			
 			return res;
 		}catch (Exception e) {
 			e.printStackTrace();

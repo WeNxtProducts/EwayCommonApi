@@ -442,7 +442,7 @@ public class EndorsementService {
 					response = travelRaw ;
 					
 				} else if ( request.getProductId().equals(new BigDecimal(buildingProductId)) || request.getProductId().equals(new BigDecimal(smeProductId))  ) {
-					 List<BuildingCopyRes> buildingRaw = copyBuildingraw.copyBuildingRaw(request);
+					BuildingCopyRes buildingRaw = copyBuildingraw.copyBuildingRaw(request);
 					response = buildingRaw ;
 					
 				} else {

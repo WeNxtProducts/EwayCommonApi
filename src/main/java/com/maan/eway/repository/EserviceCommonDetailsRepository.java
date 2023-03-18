@@ -57,5 +57,7 @@ public interface EserviceCommonDetailsRepository  extends JpaRepository<Eservice
 
 	List<EserviceCommonDetails> findByQuoteNoOrderByRiskIdAsc(String prevQuoteNo);
 
+	List<EserviceCommonDetails> findByPolicyNoAndRiskId(String prevPolicyNo, int i);
+
 
 }

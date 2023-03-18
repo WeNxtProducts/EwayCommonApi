@@ -137,7 +137,7 @@ public class CopyCommonRaw {
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			CommonCopyRes res = dozerMapper.map(newCommonList.get(0) , CommonCopyRes.class);
 			
-			List<EserviceCommonDetails> prevDatas = eCommonRepo.findByOriginalPolicyNoAndRiskId(prevPolicyNo , 1 );
+			List<EserviceCommonDetails> prevDatas = eCommonRepo.findByPolicyNoAndRiskId(prevPolicyNo , 1 );
 			res.setOldRequestReferenceNo(prevDatas.get(0).getRequestReferenceNo() );
 			
 			return res;

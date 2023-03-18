@@ -58,4 +58,6 @@ public interface EserviceTravelDetailsRepository  extends JpaRepository<Eservice
 
 	List<EserviceTravelDetails> findByQuoteNoOrderByRiskIdAsc(String prevQuoteNo);
 
+	List<EserviceTravelDetails> findByPolicyNoAndRiskId(String prevPolicyNo, int i);
+
 }

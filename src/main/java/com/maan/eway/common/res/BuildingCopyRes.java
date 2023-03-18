@@ -1,5 +1,7 @@
 package com.maan.eway.common.res;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -33,7 +35,7 @@ public class BuildingCopyRes {
 	private String productId;
 	
 	@JsonProperty("SectionId")
-	private String sectionId;
+	private List<String> sectionId;
 	
 	@JsonProperty("OldRequestReferenceNo")
 	private String oldRequestReferenceNo;

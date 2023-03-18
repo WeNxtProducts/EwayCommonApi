@@ -14,6 +14,8 @@ package com.maan.eway.repository;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -30,6 +32,7 @@ public interface EServiceSectionDetailsRepository  extends JpaRepository<Eservic
 
 	Long countByRequestReferenceNoAndRiskId(String requestReferenceNo, Integer locationId);
 
+	@Transactional
 	void deleteByRequestReferenceNoAndRiskId(String requestReferenceNo, Integer locationId);
 
 	List<EserviceSectionDetails> findByRequestReferenceNoOrderByRiskIdAsc(String requestReferenceNo);

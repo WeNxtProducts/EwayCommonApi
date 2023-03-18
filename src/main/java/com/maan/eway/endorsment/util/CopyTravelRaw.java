@@ -148,7 +148,7 @@ public class CopyTravelRaw {
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			TravelCopyRes res = dozerMapper.map(newtravelList.get(0) , TravelCopyRes.class);
 			
-			List<EserviceTravelDetails> prevDatas = etravelRepo.findByOriginalPolicyNoAndRiskId(prevPolicyNo , 1 );
+			List<EserviceTravelDetails> prevDatas = etravelRepo.findByPolicyNoAndRiskId(prevPolicyNo , 1 );
 			res.setOldRequestReferenceNo(prevDatas.get(0).getRequestReferenceNo() );
 			
 			return res;
