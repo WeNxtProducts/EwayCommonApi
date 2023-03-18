@@ -68,6 +68,7 @@ public class CoverFromPolicy implements Function<PolicyCoverData,Cover> {
 					 
 					.userOpt("Y")
 					.coverBasedOn(t.getCoverBasedOn())
+					.endtCount(t.getEndtCount())
 					//.exchangeRate(t.get("isSelectedYn")==null?0D:t.get("isSelectedYn").toString())
 					/*	.premiumBeforeDiscount(new BigDecimal(t.get("coverId").toString()))
 					.premiumAfterDiscount(new BigDecimal(t.get("coverId").toString()))
