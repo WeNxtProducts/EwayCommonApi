@@ -582,16 +582,8 @@ public class PaymentServiceImpl implements PaymentService {
 				
 				String pattern = "#####0.00" ;
 				DecimalFormat df = new DecimalFormat(pattern);
-				if(StringUtils.isNotBlank(data.getEndtTypeId())) {
-					
-					// Endorsment Premium
-					paymentinfo.setPremium(data.getEndtPremium().add(data.getEndtPremiumTax()));
-					paymentinfo.setPremiumLc(data.getEndtPremium().add(data.getEndtPremiumTax()));
-					
-					BigDecimal premiumFc = paymentinfo.getPremiumLc().multiply(data.getExchangeRate(), MathContext.DECIMAL128 );
-					paymentinfo.setPremiumFc( new BigDecimal(df.format(premiumFc)));
-					
-				} else if (StringUtils.isNotBlank(req.getEmiYn()) && req.getEmiYn().equalsIgnoreCase("Y") && StringUtils.isNotBlank(req.getInstallmentMonth()) 
+				
+				 if (StringUtils.isNotBlank(req.getEmiYn()) && req.getEmiYn().equalsIgnoreCase("Y") && StringUtils.isNotBlank(req.getInstallmentMonth()) 
 							&& StringUtils.isNotBlank(req.getInstallmentPeriod())  )  {
 					
 					// Emi Premium
@@ -610,6 +602,17 @@ public class PaymentServiceImpl implements PaymentService {
 					paymentinfo.setPremiumFc( new BigDecimal(df.format(data.getOverallPremiumFc())));
 						 
 				 }
+				 
+				if(StringUtils.isNotBlank(data.getEndtTypeId())) {
+					
+					// Endorsment Premium
+					paymentinfo.setPremium(data.getEndtPremium().add(data.getEndtPremiumTax()));
+					paymentinfo.setPremiumLc(data.getEndtPremium().add(data.getEndtPremiumTax()));
+					
+					BigDecimal premiumFc = paymentinfo.getPremiumLc().multiply(data.getExchangeRate(), MathContext.DECIMAL128 );
+					paymentinfo.setPremiumFc( new BigDecimal(df.format(premiumFc)));
+					
+				}
 				
 				
 				
