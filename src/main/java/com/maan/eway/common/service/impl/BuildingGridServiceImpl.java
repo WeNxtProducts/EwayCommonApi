@@ -633,7 +633,7 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 				}
 		
 			
-			res.setResponse("Successfully Updated");
+		//	res.setResponse("Successfully Updated");
 			res.setRequestReferenceNo(refNo);
 		} catch (Exception e) {
 			e.printStackTrace();

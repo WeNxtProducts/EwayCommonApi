@@ -1,13 +1,14 @@
 package com.maan.eway.common.res;
 
+import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 
 import lombok.Data;
 
@@ -15,21 +16,12 @@ import lombok.Data;
 public class GetAllMotorDetailsRes {
 
 
-		//VEHICLE RES
 	    @JsonProperty("CustomerReferenceNo")
 	    private String   customerReferenceNo ;
-	    
+	    @JsonProperty("BrokerBranchCode")
+	    private String     brokerBranchCode ;
 	    @JsonProperty("RequestReferenceNo")
 	    private String   requestReferenceNo ;
-	    
-	    @JsonProperty("ClientName")
-	    private String   clientName ;
-	    
-	    @JsonProperty("IdsCount")
-	    private String   idsCount ;
-	    
-	    @JsonProperty("OldRequestReferenceNo")
-	    private String   oldRequestReferenceNo ;
 		@JsonProperty("Idnumber")
 	    private String     idNumber     ;
 		@JsonProperty("Vehicleid")
@@ -47,6 +39,23 @@ public class GetAllMotorDetailsRes {
 	    private String     chassisNumber ;
 		@JsonProperty("Vehiclemake")
 	    private String     vehicleMake  ;
+		@JsonProperty("HavePromoCode")
+	    private String     havepromocode ;
+		
+		@JsonProperty("PolicyTypeDesc")
+	    private String     policyTypeDesc;
+		
+		@JsonProperty("AdminRemarks")
+	    private String     adminRemarks;
+		
+		@JsonProperty("ReferalRemarks")
+	    private String     referalRemarks ;
+		
+		@JsonProperty("PromoCode")
+	    private String     promocode    ;
+		@JsonProperty("BankCode")
+	    private String    bankCode;
+		
 		@JsonProperty("VehiclemakeDesc")
 	    private String     vehicleMakeDesc  ;
 		@JsonProperty("Vehcilemodel")
@@ -158,6 +167,59 @@ public class GetAllMotorDetailsRes {
 		@JsonProperty("CommissionType")
 		private String commissionType;
 		
+		@JsonProperty("EndorsementType")
+	    private String endorsementType;
+		
+		@JsonProperty("EndorsementTypeDesc")
+	    private String endorsementTypeDesc;
+		
+		
+
+		@JsonFormat(pattern="dd/MM/yyyy")
+		@JsonProperty("EndorsementDate")
+	    private Date       endorsementDate ;
+
+		@JsonProperty("EndorsmentRemarks")
+	    private String     endorsementRemarks ;
+
+	    @JsonFormat(pattern="dd/MM/yyyy")
+	    @JsonProperty("EndorsementEffectiveDate")
+	    private Date       endorsementEffdate ;
+
+	    @JsonProperty("OrginalPolicyNo")
+	    private String     originalPolicyNo ;
+
+	    @JsonProperty("EndtPrevPolicyNo")
+	    private String     endtPrevPolicyNo ;
+
+	    @JsonProperty("EndtPrevQuoteNo")
+	    private String     endtPrevQuoteNo ;
+
+	    @JsonProperty("EndtCount")
+	    private BigDecimal endtCount ;
+
+	    @JsonProperty("EndtStatus")
+	    private String  endtStatus ;
+	       
+	    
+	    @JsonProperty("IsFinanceYesNo")
+	    private String isFinaceYn ;
+	    
+	    
+	    @JsonProperty("EndtCategDesc")
+	    private String     endtCategDesc ;
+		
+//old
+	    
+	    @JsonProperty("ClientName")
+	    private String   clientName ;
+	    
+	    @JsonProperty("IdsCount")
+	    private String   idsCount ;
+	    
+	    @JsonProperty("OldRequestReferenceNo")
+	    private String   oldRequestReferenceNo ;
+	    
 		@JsonProperty("SectionName")
 	    private String     sectionName    ;
 		

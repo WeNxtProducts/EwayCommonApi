@@ -1,15 +1,15 @@
 package com.maan.eway.res;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maan.eway.common.res.GetAllMotorDetailsRes;
 
 import lombok.Data;
 
 @Data
 public class CopyQuoteSuccessRes {
 	
-	@JsonProperty("Response")
-	private String response;
-
 	@JsonProperty("QuoteNo")
 	private String quoteNo;
 	
@@ -18,5 +18,10 @@ public class CopyQuoteSuccessRes {
 	
 	@JsonProperty("PolicyNo")
 	private String policyNo;
+	
+	@JsonProperty("EserviceMostorDetails")
+	private  List<GetAllMotorDetailsRes> motorRes;
+
+
 
 }

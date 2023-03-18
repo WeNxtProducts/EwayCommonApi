@@ -57,6 +57,7 @@ import com.maan.eway.bean.SeqRefno;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
+import com.maan.eway.common.res.GetAllMotorDetailsRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.service.MotorGridService;
@@ -123,8 +124,9 @@ public class MotorGridServiceImpl implements MotorGridService {
 	
 	@Autowired
 	private CoverDocumentUploadDetailsRepository coverDocUploadDetails;
-	// Exiting Motor Details
 
+	
+	// Exiting Motor Details
 	@Override
 	public List<QuoteCriteriaRes> getMotorExistingQuoteDetails(ExistingQuoteReq req, List<String> branches,
 			Date startDate, Date endDate, Integer limit, Integer offset) {
@@ -736,8 +738,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					savedata.setQuoteNo("");
 					repo.saveAndFlush(savedata);
 				}
-				res.setResponse("Successfully Updated");
-				res.setRequestReferenceNo(refNo);
+			
 			}
 
 		} catch (Exception e) {
@@ -873,46 +874,35 @@ public class MotorGridServiceImpl implements MotorGridService {
 		@Override
 		public CopyQuoteSuccessRes motorEndt(CopyQuoteReq req, List<String> branches,String loginId) {
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
-//			SimpleDateFormat idf = new SimpleDateFormat("yyMMddmmssSSS");
+			DozerBeanMapper mapper = new DozerBeanMapper();
 			try {
-		
-				
-//				String customerId="";
-//				String quoteNo=req.getQuoteNo();
-				
-				//Generating
-//				Random rand = new Random();
-//				int random = rand.nextInt(90) + 10;
-//				refNo = "Mot-" + idf.format(new Date()) + random;
-//				customerId = "C-" + idf.format(new Date()) + random ;
-//				quoteNo  = "Q"+ idf.format(new Date()) + random ;
-				
 				String refShortCode = getListItem(req.getInsuranceId() ,req.getBranchCode(), "PRODUCT_SHORT_CODE",req.getProductId());
 				String refNo=refShortCode +seqNo.generateRefNo();
 				String quoteNo  = "Q"+ generateQuoteNo();
 				String customerId = "C-" + generateCustId();
 	            
-	            //Copy Quote Eservice Motor Details
+	            //Copy Quote E service Motor Details
 	            res=eserviceMotorCopyquote(req,refNo,branches,loginId,customerId,quoteNo);
 	            
-//				//Copy Quote Home Position Master
-//	            res=homeEndoCopyQuote(req,refNo,customerId,quoteNo,loginId);
-//				
-//				//Copy Quote Personal Info 
-//				res=personolInfoEndoCopyQuote(req,customerId);
-//				
-//				//Copy Quote Policy Cover Data
-//				res=policyCoverDataEndocopyQuote(req,refNo,quoteNo,loginId);
-//				
-//				
-//				//Copy Quote Motor Data Details
-//				res=motorDataDetailsEndoCopyquote(req,refNo,quoteNo,customerId,loginId);
+	            //Response Get All Motor Details
+	            List<GetAllMotorDetailsRes> reslist = new ArrayList<GetAllMotorDetailsRes>();
+	            List<EserviceMotorDetails> datas = repo.findByRequestReferenceNoOrderByRiskIdAsc(res.getRequestReferenceNo());
+				for (EserviceMotorDetails data : datas) {
+					GetAllMotorDetailsRes motorRes = new GetAllMotorDetailsRes();
+					motorRes = mapper.map(data, GetAllMotorDetailsRes.class);
+					motorRes.setVehicleId(data.getRiskId());
+					motorRes.setQuoteNo(data.getQuoteNo()!=null?data.getQuoteNo() :"" );
+					motorRes.setCustomerId(data.getCustomerId()!=null ? data.getCustomerId() : "" );
+					motorRes.setPolicyTypeDesc(data.getPolicyTypeDesc());
+					motorRes.setReferalRemarks(data.getReferalRemarks());	
+					motorRes.setActualPremiumLc(data.getActualPremiumLc()==null ? "" : data.getActualPremiumLc().toPlainString());	
+					motorRes.setActualPremiumFc(data.getActualPremiumFc()==null ? "" :data.getActualPremiumFc().toPlainString());	
+					motorRes.setOverallPremiumFc(data.getOverallPremiumFc()==null ? "" :data.getOverallPremiumFc().toPlainString());	
+					motorRes.setOverallPremiumLc(data.getOverallPremiumLc()==null ? "" :data.getOverallPremiumLc().toPlainString());	
+					reslist.add(motorRes);
+				}
+				res.setMotorRes(reslist);
 				
-				
-				res.setResponse("Successfully Updated");
-				res.setRequestReferenceNo(res.getRequestReferenceNo());
-				res.setQuoteNo(res.getQuoteNo());
-				res.setPolicyNo(res.getPolicyNo());
 				
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1042,7 +1032,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 						savedata.setEndorsementDate(new Date());
 						savedata.setEndorsementRemarks(req.getEndtRemarks());
 						savedata.setEndorsementEffdate(req.getEndtEffectiveDate());
-						savedata.setEndtPrevPolicyNo(prevPolicyNo);
+						//savedata.setEndtPrevPolicyNo(prevPolicyNo);
+						savedata.setEndtPrevPolicyNo(req.getPolicyNo()+"-"+count);
 						savedata.setEndtPrevQuoteNo(prevQuoteNo);
 						savedata.setEndtCount(new BigDecimal(count));
 						savedata.setEndtStatus("P");
@@ -1054,10 +1045,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 						savedata.setPolicyNo(req.getPolicyNo()+"-"+count);
 						repo.saveAndFlush(savedata);
 					}
-					res.setResponse("Successfully Updated");
-					res.setRequestReferenceNo(newRequestNo);
-					res.setPolicyNo(prevPolicyNo);
-					res.setQuoteNo(prevQuoteNo);
+		
 				}
 		
 				if (pendingcount == 0) {
@@ -1081,12 +1069,9 @@ public class MotorGridServiceImpl implements MotorGridService {
 					// Copy COVER_DOCUMENT_UPLOAD_DETAILS
 					res = coverDocumentUploadDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId, prevQuoteNo,
 							prevPolicyNo, count);
-					
-					res.setResponse("Successfully Updated");
-					res.setRequestReferenceNo(newRequestNo);
-					res.setPolicyNo(prevPolicyNo);
-					res.setQuoteNo(prevQuoteNo);
+				
 				}
+				res.setRequestReferenceNo(newRequestNo);
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.info("Exception is ---> " + e.getMessage());
@@ -1133,10 +1118,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			savedata.setPolicyNo(req.getPolicyNo()+"-"+count);
 
 			homePosistionRepo.saveAndFlush(savedata);
-			res.setResponse("Successfully Updated");
-			res.setRequestReferenceNo(refNo);
-			res.setQuoteNo(quoteNo);
-			res.setPolicyNo(prevPolicyNo);
+		
 			System.out.println("QUOTE NO:"+quoteNo);
 			System.out.println("Customer Id:"+customerId);
 			System.out.println("Reference No:"+refNo);
@@ -1183,7 +1165,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
 				savedata.setStatus("E");
 				personalInforepo.saveAndFlush(savedata);
-				res.setResponse("Successfully Updated");
+	
 				//res.setSuccessId(customerId);
 				
 			} catch (Exception e) {
@@ -1213,9 +1195,6 @@ public class MotorGridServiceImpl implements MotorGridService {
 						policyCoverDataRepo.saveAndFlush(savedata);
 					}
 				}
-				res.setResponse("Successfully Updated");
-				res.setRequestReferenceNo(refNo);
-				res.setPolicyNo(prevPolicyNo);
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.info("Exception is ---> " + e.getMessage());
@@ -1260,10 +1239,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 						motorDataDetepo.saveAndFlush(savedata);
 					}
 				}
-				res.setResponse("Successfully Updated");
-				res.setRequestReferenceNo(refNo);
-				res.setQuoteNo(quoteNo);
-				res.setPolicyNo(prevPolicyNo);
+		
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.info("Exception is ---> " + e.getMessage());
@@ -1310,10 +1286,6 @@ public class MotorGridServiceImpl implements MotorGridService {
 						motordrivDetepo.saveAndFlush(savedata);
 					}
 				}
-				res.setResponse("Successfully Updated");
-				res.setRequestReferenceNo(refNo);
-				res.setQuoteNo(quoteNo);
-				;
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.info("Exception is ---> " + e.getMessage());
@@ -1361,10 +1333,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 						coverDocUploadDetails.saveAndFlush(savedata);
 					}
 				}
-				res.setResponse("Successfully Updated");
-				res.setRequestReferenceNo(refNo);
-				res.setQuoteNo(quoteNo);
-				;
+			
+			
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.info("Exception is ---> " + e.getMessage());

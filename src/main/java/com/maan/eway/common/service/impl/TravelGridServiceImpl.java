@@ -478,7 +478,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				savedata.setOverallPremiumLc(BigDecimal.ZERO);
 				repo.saveAndFlush(savedata);
 				}	
-				res.setResponse("Successfully Updated");
+	//			res.setResponse("Successfully Updated");
 				res.setRequestReferenceNo(refNo);
 			}
 			

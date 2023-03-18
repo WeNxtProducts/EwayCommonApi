@@ -659,7 +659,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 							savedata.setQuoteNo("");
 							repo.saveAndFlush(savedata);
 						}
-					res.setResponse("Successfully Updated");
+//					res.setResponse("Successfully Updated");
 					res.setRequestReferenceNo(refNo);
 				//	res.setQuoteNo(quoteNo);
 					}
