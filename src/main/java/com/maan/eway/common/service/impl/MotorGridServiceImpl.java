@@ -1023,7 +1023,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 						savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
 						savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
 						savedata.setStatus("E");
-						savedata.setPolicyNo(req.getPolicyNo()+"-"+count);
+						savedata.setPolicyNo(req.getPolicyNo());
 						repo.saveAndFlush(savedata);
 					}
 		

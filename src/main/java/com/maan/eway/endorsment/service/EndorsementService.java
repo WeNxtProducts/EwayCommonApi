@@ -423,7 +423,9 @@ public class EndorsementService {
 				c.setEndtRemarks(request.getEndtRemarks());
 				c.setEndtEffectiveDate(request.getEndtEffectiveDate());
 
-				EserviceMotorDetails copyQuote = (EserviceMotorDetails) copyquoteService.copyQuote(c).getCommonResponse();
+				List<EserviceMotorDetails> copyQuote = new ArrayList<EserviceMotorDetails>(); 
+						
+				copyQuote .add((EserviceMotorDetails) copyquoteService.copyQuote(c).getCommonResponse());
 				CommonRes com=new CommonRes();
 				com.setCommonResponse(copyQuote);
 				com.setErroCode(0);
@@ -438,7 +440,8 @@ public class EndorsementService {
 					response = motorRaw ;
 					
 				} else if ( request.getProductId().equals(new BigDecimal(travelProductId))  ) {
-					TravelCopyRes travelRaw = copyTravelraw.copyTravelRaw(request);
+					List<TravelCopyRes> travelRaw = new ArrayList<TravelCopyRes>(); 
+					travelRaw.add(copyTravelraw.copyTravelRaw(request));
 					response = travelRaw ;
 					
 				} else if ( request.getProductId().equals(new BigDecimal(buildingProductId)) || request.getProductId().equals(new BigDecimal(smeProductId))  ) {
@@ -446,8 +449,8 @@ public class EndorsementService {
 					response = buildingRaw ;
 					
 				} else {
-					
-					CommonCopyRes commonRaw = copyCommonraw.copyCommonRaw(request);
+					List<CommonCopyRes> commonRaw = new ArrayList<CommonCopyRes>();
+					 commonRaw.add(copyCommonraw.copyCommonRaw(request));
 					response = commonRaw ;
 				
 				}
