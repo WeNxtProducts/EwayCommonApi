@@ -31,6 +31,7 @@ import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.PolicyCoverData;
+import com.maan.eway.common.req.ChangeEndoStatusReq;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.res.BuildingCopyRes;
 import com.maan.eway.common.res.CommonCopyRes;
@@ -472,5 +473,37 @@ public class EndorsementService {
 		}
 		return null;
 	}
-	 
+
+	public CommonRes changeEndtStatus(ChangeEndoStatusReq req) {
+
+		try {
+			Object res = null ;
+			
+				EserviceMotorDetails motorEndtStatus = copyraw.eserviceMotorEndtStatus(req);
+				res = motorEndtStatus ;
+
+//			else if (req.getProductId().equals(new BigDecimal(travelProductId))) {
+//				List<EserviceTravelDetails> travelRaw = new ArrayList<EserviceTravelDetails>();
+//
+//			} else if (req.getProductId().equals(new BigDecimal(buildingProductId))|| req.getProductId().equals(new BigDecimal(smeProductId))) {
+//				List<EserviceBuildingDetails> buildRaw = new ArrayList<EserviceBuildingDetails>();
+//
+//			} else {
+//				List<EserviceCommonDetails> commonRaw = new ArrayList<EserviceCommonDetails>();
+//
+//			}
+			CommonRes c=new CommonRes();
+			c.setCommonResponse(res);
+			c.setErroCode(0);
+			c.setIsError(false);
+			c.setMessage("Success");
+			return c;
+		} catch (
+
+		Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }
+

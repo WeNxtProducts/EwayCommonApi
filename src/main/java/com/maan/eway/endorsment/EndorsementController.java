@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.req.ChangeEndoStatusReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
 import com.maan.eway.endorsment.request.Endorsment;
@@ -61,6 +62,17 @@ public class EndorsementController {
 	@PostMapping("/create")
 	public ResponseEntity<CommonRes> createEndorsment(@RequestBody Endorsment request) {
 		CommonRes data = eservice.createEndorsment(request);
+	 	if (data != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/changeEndtStatus")
+	public ResponseEntity<CommonRes> changeEndtStatus(@RequestBody ChangeEndoStatusReq req) {
+		CommonRes data = eservice.changeEndtStatus(req);
 	 	if (data != null) {
 			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 		} else {
