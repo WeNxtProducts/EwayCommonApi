@@ -258,12 +258,12 @@ private BuildingDetailsRepository BuildingRepo;
 	@Override
 	public ViewQuoteRes viewQuoteDetails(ViewQuoteReq req) {
 		ViewQuoteRes viewRes = new ViewQuoteRes();
-		DozerBeanMapper dozerMappper = new DozerBeanMapper();
+		
 		try {
 			// Quote Details
 			HomePositionMaster homeData  =  homeRepo.findByQuoteNo(req.getQuoteNo());
 			QuoteDetailsRes quoteRes = new QuoteDetailsRes();
-			
+			DozerBeanMapper dozerMappper = new DozerBeanMapper();
 			quoteRes = dozerMappper.map(homeData, QuoteDetailsRes.class);
 			quoteRes.setOverAllPremiumFc(homeData.getOverallPremiumFc()==null?"":homeData.getOverallPremiumFc().toPlainString() );
 			quoteRes.setOverAllPremiumLc(homeData.getOverallPremiumLc()==null?"":homeData.getOverallPremiumLc().toPlainString());
