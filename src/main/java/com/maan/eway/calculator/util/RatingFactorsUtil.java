@@ -274,7 +274,8 @@ public class RatingFactorsUtil {
 	@Cacheable(cacheNames = {"loadProRata"},keyGenerator  = "loadProRataKeyGen",value = "loadProRata" )
 	public List<Tuple> loadProRataData(CalcEngine engine,String periodOfInsurance){
 		try {
-			String search="insuranceid:"+engine.getInsuranceId()+";productid:"+engine.getProductId()+";status:Y;"+periodOfInsurance+"~startfrom&endto";
+			String todayInString = DD_MM_YYYY.format(new Date());
+			String search="insuranceid:"+engine.getInsuranceId()+";productid:"+engine.getProductId()+";status:Y;"+periodOfInsurance+"~startfrom&endto;"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
 			SpecCriteria criteria = crservice.createCriteria(CompanyProrataMaster.class, search, "sno");
 			List<Tuple> prorata = crservice.getResult(criteria, 0, 50);
 			return prorata;

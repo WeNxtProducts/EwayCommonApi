@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -86,6 +85,24 @@ private static final long serialVersionUID = 1L;
     private Date       entryDate ;
 
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="Effective_Date_Start")
+    private Date       effectiveDateStart ;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="Effective_Date_End")
+    private Date       effectiveDateEnd ;
+    
+    
+    @Column(name="Created_By", length=100)
+    private String     createdBy ;
+    
+    @Column(name="Updated_By", length=100)
+    private String     updatedBy ;
+   
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="Updated_Date")
+    private Date updatedDate ;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 
