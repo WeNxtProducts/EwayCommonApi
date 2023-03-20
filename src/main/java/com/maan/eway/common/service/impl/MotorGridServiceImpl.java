@@ -1031,25 +1031,22 @@ public class MotorGridServiceImpl implements MotorGridService {
 		
 				if (pendingcount == 0) {
 					// Copy Quote Home Position Master
-					 homeEndoCopyQuote(req, refNo, customerId, quoteNo, loginId, prevQuoteNo, prevPolicyNo, count);
+					 homeEndoCopyQuote(req, refNo, customerId, quoteNo, loginId,prevPolicyNo,prevQuoteNo,count);
 
 					// Copy Quote Personal Info
-					 personolInfoEndoCopyQuote(req, customerId, prevQuoteNo, prevPolicyNo, count);
+					 personolInfoEndoCopyQuote(req, customerId, prevPolicyNo,prevQuoteNo, count);
 
 					// Copy Quote Policy Cover Data
-					 policyCoverDataEndocopyQuote(req, refNo, quoteNo, loginId, prevQuoteNo, prevPolicyNo, count);
+					 policyCoverDataEndocopyQuote(req, refNo, quoteNo, loginId, prevPolicyNo,prevQuoteNo, count);
 
 					// Copy Quote Motor Data Details
-					motorDataDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId, prevQuoteNo,
-							prevPolicyNo, count);
+					motorDataDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo, count);
 
 					// Copy Quote Motor Driver Details
-					 motorDriverDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId, prevQuoteNo,
-							prevPolicyNo, count);
+					 motorDriverDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo, count);
 
 					// Copy COVER_DOCUMENT_UPLOAD_DETAILS
-					coverDocumentUploadDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId, prevQuoteNo,
-							prevPolicyNo, count);
+					coverDocumentUploadDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count);
 				
 				}
 				//res.setRequestReferenceNo(newRequestNo);
