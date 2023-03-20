@@ -1520,17 +1520,21 @@ public class QuoteThreadCall implements Callable<Object>  {
 				String prevQuoteNo=home.getEndtPrevQuoteNo();
 				Integer currentEndtcount=home.getEndtCount().intValue();
 				HomePositionMaster oldHomeData = homeRepo.findByQuoteNo(prevQuoteNo);
+				BigDecimal endtPremium=BigDecimal.ZERO;
 				if(oldHomeData.getOverallPremiumLc().compareTo(home.getOverallPremiumLc())<0) {
 					endtChargeOrRefund="CHARGE";
+					endtPremium=home.getOverallPremiumLc().subtract(oldHomeData.getOverallPremiumLc());
 				}else {
 					endtChargeOrRefund="REFUND";
+					endtPremium=home.getOverallPremiumLc().subtract(oldHomeData.getOverallPremiumLc());
 				}
-				List<PolicyCoverData> totalcovers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(request.getQuoteNo());
+				/*List<PolicyCoverData> totalcovers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(request.getQuoteNo());
 				Double endtPremium = totalcovers.stream().filter(o ->(("E".equals(o.getCoverageType()) || "B".equalsIgnoreCase(o.getCoverageType()) || "O".equalsIgnoreCase(o.getCoverageType()))
 						&& o.getEndtCount().intValue()==currentEndtcount )).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()   ).sum();
-				home.setEndtPremium(new BigDecimal(endtPremium));
+				home.setEndtPremium(new BigDecimal(endtPremium));*/
 				Double endtPremiumTax = 0D;//totalcovers.stream().filter(i -> ( i.getDiscLoadId()!=0 && "T".equals(i.getCoverageType())  && i.getEndtCount().intValue()==currentEndtcount)).mapToDouble(o->o.getTaxAmount().doubleValue()).sum();
 				home.setEndtPremiumTax(new BigDecimal(endtPremiumTax));
+				home.setEndtPremium(endtPremium);
 				home.setIsChargRefund(endtChargeOrRefund);
 	
 			}
