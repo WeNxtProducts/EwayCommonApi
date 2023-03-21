@@ -437,7 +437,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 				 
 				 
 				//find Prev Quote Data
-					List<PolicyCoverData> oldPolicyCovers = coverDataRepo.findByQuoteNoAndVehicleIdOrderByCoverIdAsc(endtPrevQuoteNo,Integer.parseInt(engine.getVehicleId()));
+					List<PolicyCoverData> oldPolicyCovers = coverDataRepo.findByQuoteNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(endtPrevQuoteNo,Integer.parseInt(engine.getVehicleId()),engine.getInsuranceId(),Integer.parseInt(engine.getProductId()),Integer.parseInt(engine.getSectionId()));
 					List<Tuple> taxes = ratingutil.LoadTax(engine);
 					TaxUtils tzx=new TaxUtils(); 
 					

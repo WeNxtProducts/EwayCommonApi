@@ -37,6 +37,9 @@ public interface PolicyCoverDataRepository  extends JpaRepository<PolicyCoverDat
 
 	List<PolicyCoverData> findByQuoteNoAndVehicleIdOrderByCoverIdAsc(String quoteNo, Integer i);
 
+	List<PolicyCoverData> findByQuoteNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(
+			String endtPrevQuoteNo, Integer vehicleId, String insuranceId, Integer productId, Integer sectionId);
+
 //	List<PolicyCoverData> findByQuoteNoOrderByVehicleIdAsc(String quoteNo);
 //
 //	Long countByQuoteNo(String quoteNo);
