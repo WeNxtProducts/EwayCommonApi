@@ -15,12 +15,14 @@ import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.EndtTypeMaster;
+import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.common.req.ChangeEndoStatusReq;
+import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.common.service.impl.MotorGridServiceImpl;
 import com.maan.eway.endorsment.request.Endorsment;
@@ -36,6 +38,7 @@ import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.SeqCustidRepository;
 import com.maan.eway.repository.SeqQuotenoRepository;
 import com.maan.eway.repository.SeqRefnoRepository;
+import com.maan.eway.res.CopyQuoteSuccessRes;
 
 @Service
 public class CopyRawTable  {
@@ -175,6 +178,7 @@ public class CopyRawTable  {
 			motorDataDetailsEndtStatus(req);
 			motorDriverDetailsEndtStatus(req);
 			coverDocumentUploadDetailsEndtStatus(req);
+			eserviceCustDetailsChangeStatus(req);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -291,5 +295,28 @@ public class CopyRawTable  {
 		return savedata;
 
 	}
+	private EserviceCustomerDetails eserviceCustDetailsChangeStatus(ChangeEndoStatusReq req) {
+		EserviceCustomerDetails savedata = new EserviceCustomerDetails();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
+			String olsCustomerId=homeData.getCustomerId();
+			
+			PersonalInfo personalInfoData=personalInforepo.findByCustomerId(olsCustomerId);
+			EserviceCustomerDetails custData = custRepo.findByCustomerReferenceNo(personalInfoData.getCustomerReferenceNo());
+			if (custData!=null) 
+					savedata = dozerMapper.map(custData, EserviceCustomerDetails.class);
+					savedata.setEndtStatus("P");
+					custRepo.saveAndFlush(savedata);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return savedata;
+
+		
+	}
+
 
 }

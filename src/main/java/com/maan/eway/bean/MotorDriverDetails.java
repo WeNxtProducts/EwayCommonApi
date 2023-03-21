@@ -150,6 +150,8 @@ private static final long serialVersionUID = 1L;
    
    @Column(name="ENDT_CATEG_DESC", length=100)
    private String     endtCategDesc ;
+   
+   
 }
 
 

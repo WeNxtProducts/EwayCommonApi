@@ -295,6 +295,13 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="ENDT_CATEG_DESC", length=10)
     private String     endtCategDesc ;
+    
+
+    @Column(name="ENDORSEMENT_TYPE")
+    private Integer    endorsementType ;
+
+    @Column(name="ENDORSEMENT_TYPE_DESC", length=100)
+    private String     endorsementTypeDesc ;
 }
 
 

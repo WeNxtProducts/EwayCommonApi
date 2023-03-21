@@ -1055,6 +1055,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 					// Copy COVER_DOCUMENT_UPLOAD_DETAILS
 					coverDocumentUploadDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count);
 				
+					// Copy ESERVICE_CUSTOMER_DETAILS
+					eserviceCustDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count);
 				}
 				//res.setRequestReferenceNo(newRequestNo);
 			} catch (Exception e) {
@@ -1064,6 +1066,52 @@ public class MotorGridServiceImpl implements MotorGridService {
 			}
 			return savedata;
 		}
+		private CopyQuoteSuccessRes eserviceCustDetailsEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo, String customerId,String loginId, String prevPolicyNo, String prevQuoteNo, Integer count) {
+			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
+			EserviceCustomerDetails savedata = new EserviceCustomerDetails();
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			try {
+				EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(
+						req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
+						Integer.parseInt(req.getEndtTypeId()));
+				HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
+				String olsCustomerId=homeData.getCustomerId();
+				
+				PersonalInfo personalInfoData=personalInforepo.findByCustomerId(olsCustomerId);
+				EserviceCustomerDetails custData = custRepo.findByCustomerReferenceNo(personalInfoData.getCustomerReferenceNo());
+				if (custData!=null) 
+						savedata = dozerMapper.map(custData, EserviceCustomerDetails.class);
+						savedata.setEntryDate(new Date());
+						savedata.setCreatedBy(loginId);
+						savedata.setUpdatedBy(loginId);
+						savedata.setUpdatedDate(new Date());
+						savedata.setOriginalPolicyNo(req.getPolicyNo());
+						savedata.setEndorsementDate(new Date());
+						savedata.setEndorsementRemarks(req.getEndtRemarks());
+						savedata.setEndorsementEffdate(req.getEndtEffectiveDate());
+						savedata.setEndtPrevPolicyNo(prevPolicyNo);
+						savedata.setEndtPrevQuoteNo(prevQuoteNo);
+						savedata.setEndtCount(new BigDecimal(count));
+						savedata.setEndtStatus("P");
+						savedata.setIsFinaceYn(entMaster.getEndtTypeCategoryId() == 2 ? "Y" : "N");
+						savedata.setEndtCategDesc(entMaster.getEndtTypeCategory());
+						savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
+						savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
+						savedata.setStatus("E");
+						//savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+						custRepo.saveAndFlush(savedata);
+			
+			
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return res;
+
+			
+		}
+
 		//Home Position Master Endt Copy Quote
 		public CopyQuoteSuccessRes homeEndoCopyQuote(CopyQuoteReq req,String refNo,String customerId,String quoteNo,String loginId,	String prevPolicyNo,
 		String prevQuoteNo,Integer count) {
@@ -1855,166 +1903,4 @@ public class MotorGridServiceImpl implements MotorGridService {
 			String refNo = refShortCode + seqNo.generateRefNo();
 			return refNo;
 		} 
-		
-		
-		public  CopyQuoteSuccessRes changeEndtStatus(ChangeEndoStatusReq req) {
-			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
-			DozerBeanMapper mapper = new DozerBeanMapper();
-			try {
-			
-				EserviceMotorDetails savedata=eserviceMotorEndtStatus(req);
-			
-				
-				res.setCommonResponse(savedata);
-				res.setQuoteNo(req.getQuoteNo());
-			
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Exception is --->" + e.getMessage());
-				return null;
-			}
-			return res;
-		}
-
-		private EserviceMotorDetails eserviceMotorEndtStatus(ChangeEndoStatusReq req) {
-			DozerBeanMapper dozerMapper = new DozerBeanMapper();
-			EserviceMotorDetails savedata = new EserviceMotorDetails();
-			try {
-				//Motor 
-				List<EserviceMotorDetails> motors = repo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
-
-				if (motors.size() > 0) {
-					for (EserviceMotorDetails data : motors) {
-						savedata = dozerMapper.map(data, EserviceMotorDetails.class);
-						savedata.setEndtStatus("C");
-						repo.saveAndFlush(savedata);
-					}
-
-				}
-				// Update EndT Status
-				homeEndtStatus(req);
-				personolInfoEndtStatus(req);
-				motorDataDetailsEndtStatus(req);
-				motorDriverDetailsEndtStatus(req);
-				coverDocumentUploadDetailsEndtStatus(req);
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Exception is ---> " + e.getMessage());
-				return null;
-			}
-			return savedata;
-		}
-
-		private CoverDocumentUploadDetails coverDocumentUploadDetailsEndtStatus(ChangeEndoStatusReq req) {
-			CoverDocumentUploadDetails savedata = new CoverDocumentUploadDetails();
-			DozerBeanMapper dozerMapper = new DozerBeanMapper();
-			try {
-				EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(
-						req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
-						Integer.parseInt(req.getEndtTypeId()));
-				List<CoverDocumentUploadDetails> motorData = coverDocUploadDetails.findByQuoteNo(req.getQuoteNo());
-				if (motorData.size() > 0) {
-					for (CoverDocumentUploadDetails data : motorData) {
-						savedata = dozerMapper.map(data, CoverDocumentUploadDetails.class);
-						savedata.setEndtStatus("C");
-						coverDocUploadDetails.saveAndFlush(savedata);
-					}
-				}
-			
-			
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Exception is ---> " + e.getMessage());
-				return null;
-			}
-			return savedata;
-
-			
-		}
-
-		private MotorDriverDetails motorDriverDetailsEndtStatus(ChangeEndoStatusReq req) {
-			MotorDriverDetails savedata = new MotorDriverDetails();
-			DozerBeanMapper dozerMapper = new DozerBeanMapper();
-			try {
-				List<MotorDriverDetails> motorDriverData = motordrivDetepo.findByQuoteNo(req.getQuoteNo());
-				if (motorDriverData.size() > 0) {
-					for (MotorDriverDetails data : motorDriverData) {
-						savedata = dozerMapper.map(data, MotorDriverDetails.class);
-						savedata.setEndtStatus("C");
-						motordrivDetepo.saveAndFlush(savedata);
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Exception is ---> " + e.getMessage());
-				return null;
-			}
-			return savedata;
-
-			
-		}
-
-		private MotorDataDetails motorDataDetailsEndtStatus(ChangeEndoStatusReq req) {
-			MotorDataDetails savedata = new MotorDataDetails();
-			DozerBeanMapper dozerMapper = new DozerBeanMapper();
-			try {
-				List<MotorDataDetails> motorData=motorDataDetepo.findByQuoteNo(req.getQuoteNo());
-				if (motorData.size() > 0) {
-					for (MotorDataDetails data : motorData) {
-						savedata = dozerMapper.map(data, MotorDataDetails.class);
-						savedata.setEndtStatus("C");
-						motorDataDetepo.saveAndFlush(savedata);
-					}
-				}
-		
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Exception is ---> " + e.getMessage());
-				return null;
-			}
-			return savedata;
-	
-		}
-
-		private PersonalInfo personolInfoEndtStatus(ChangeEndoStatusReq req) {
-			PersonalInfo savedata = new PersonalInfo();
-			DozerBeanMapper dozerMapper = new DozerBeanMapper();
-			try {
-				HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
-				String customerId=homeData.getCustomerId();
-				PersonalInfo personalInfoData=personalInforepo.findByCustomerId(customerId);
-				savedata = dozerMapper.map(personalInfoData, PersonalInfo.class);
-				savedata.setEndtStatus("C");
-				personalInforepo.saveAndFlush(savedata);
-	
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Exception is --->" + e.getMessage());
-				return null;
-			}
-			return savedata;
-			
-		}
-
-		private HomePositionMaster homeEndtStatus(ChangeEndoStatusReq req) {
-			HomePositionMaster savedata = new HomePositionMaster();
-			DozerBeanMapper dozerMapper = new DozerBeanMapper();
-			try {
-				HomePositionMaster homeData = homePosistionRepo.findByQuoteNo(req.getQuoteNo());
-				if (homeData != null) {
-					savedata = dozerMapper.map(homeData, HomePositionMaster.class);
-					savedata.setEndtStatus("C");
-					homePosistionRepo.saveAndFlush(savedata);
-				}
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Exception is ---> " + e.getMessage());
-				return null;
-			}
-			return savedata;
-
-		}
-
 	}
