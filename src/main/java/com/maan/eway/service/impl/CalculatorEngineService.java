@@ -412,7 +412,12 @@ public class CalculatorEngineService implements CalculatorEngine{
 			
 			
 			if(StringUtils.isNotBlank(rawtable)) {
+				
 				 String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()+";riskId:"+engine.getVehicleId()+";status:E;requestReferenceNo:"+requestRefercenNo+";";
+				 if("3".equals(engine.getProductId())) {
+					 search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";riskId:"+engine.getVehicleId()+";status:E;requestReferenceNo:"+requestRefercenNo+";";
+				 }
+				 
 				//String search="riskId:"+engine.getVehicleId()+";requestReferenceNo:"+requestRefercenNo+";";
 				List<Tuple> result=null;
 				SpecCriteria criteria = crservice.createCriteria(Class.forName(rawtable), search, "requestReferenceNo"); 
