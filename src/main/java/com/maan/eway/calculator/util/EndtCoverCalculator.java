@@ -5,14 +5,15 @@ import java.math.RoundingMode;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
-
-import javax.persistence.Tuple;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
 import com.maan.eway.res.calc.Cover;
 import com.maan.eway.res.calc.CoverException;
 import com.maan.eway.res.calc.Endorsement;
+import com.maan.eway.res.calc.Tax;
 
 @Component
 public class EndtCoverCalculator  extends CommonCalculator implements Consumer<Cover> {
@@ -124,9 +125,25 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 
 					 totaltax=0D;
 					 if(endorsement.getTaxes()!=null && endorsement.getTaxes().size()>0) {
-						 TaxCalculator tcal=new TaxCalculator(endorsement.getPremiumExcluedTax(),t.getExchangeRate(),this,customers.get(0));
-						 endorsement.getTaxes().stream().forEach(tcal);
+						 
+						 
+						 String endtTypeId=vehicles.get(0).get("endtTypeId")==null?"":vehicles.get(0).get("endtTypeId").toString();
+						 
+						 List<Tax> notendtfees=endorsement.getTaxes().stream().filter(v -> !v.getTaxId().equals(endtTypeId)).collect(Collectors.toList());
+						 List<Tax> inendtfees=endorsement.getTaxes().stream().filter(v -> v.getTaxId().equals(endtTypeId)).collect(Collectors.toList());
+						 Double endtFee=0D;
+						 if(inendtfees.size()>0) {
+							 TaxCalculator tcal=new TaxCalculator(endorsement.getPremiumExcluedTax(),t.getExchangeRate(),this,customers.get(0));
+							 inendtfees.stream().forEach(tcal);
+							 endtFee= inendtfees.stream().mapToDouble(o -> o.getTaxAmount().doubleValue()).sum();
+						 }
+						 
+						 TaxCalculator tcal=new TaxCalculator(endorsement.getPremiumExcluedTax().add(new BigDecimal(endtFee)),t.getExchangeRate(),this,customers.get(0));
+						 notendtfees.stream().forEach(tcal);
 						 totaltax = endorsement.getTaxes().stream().mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
+					 
+					 
+					 
 					 }
 					/* t.setPremiumIncludedTax(t.getPremiumExcluedTax().add(new BigDecimal(totaltax,round)));				 
 					 t.setPremiumIncludedTaxLC(t.getPremiumIncludedTax().multiply(t.getExchangeRate()).round(round));

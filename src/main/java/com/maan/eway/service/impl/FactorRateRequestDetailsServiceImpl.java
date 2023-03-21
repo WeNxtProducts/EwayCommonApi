@@ -1523,9 +1523,22 @@ this.repository = repo;
 						// only for endrose we cannt use cover objs tax cover wontbe list.
 						 List<Tax> txx = totalCovers.stream().filter(r -> (r.getDiscLoadId()==Integer.parseInt(e.getEndorsementId())
 								 && r.getCoverId()==Integer.parseInt(e.getEndorsementforId())
-								 && r.getEndtCount().intValue()==e.getEndtCount().intValue())
+								 && r.getEndtCount().intValue()==e.getEndtCount().intValue()
+								 && r.getTaxId() != Integer.parseInt(e.getEndorsementId())
+								 )
+								 
 								  ).map(endttaxUtil).filter(dx->(dx!=null && !"0".equals(dx.getTaxId())) ).collect(Collectors.toList());
 						 e.setTaxes(txx);
+						 
+						 List<Tax> endtfees = totalCovers.stream().filter(r -> (r.getDiscLoadId()==Integer.parseInt(e.getEndorsementId())
+								 && r.getCoverId()==Integer.parseInt(e.getEndorsementforId())
+								 && r.getEndtCount().intValue()==e.getEndtCount().intValue()
+								 && r.getTaxId() == Integer.parseInt(e.getEndorsementId())
+								 )
+								 
+								  ).map(endttaxUtil).filter(dx->(dx!=null && !"0".equals(dx.getTaxId())) ).collect(Collectors.toList());
+						 	e.setEndtFees(endtfees);	
+						 
 					}
 				}
 			

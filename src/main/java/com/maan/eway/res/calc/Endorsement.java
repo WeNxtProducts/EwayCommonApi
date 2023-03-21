@@ -66,4 +66,8 @@ public class Endorsement implements Serializable {
     
     @JsonProperty("Taxes")
     private List<Tax> taxes;
+    
+
+    @JsonProperty("EndorsementFees")
+    private List<Tax> endtFees;
 }
