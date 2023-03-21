@@ -58,6 +58,7 @@ import com.maan.eway.common.req.ChangeEndoStatusReq;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
+import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
@@ -936,6 +937,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				String prevPolicyNo=null;
 				String prevQuoteNo=null;
 				String newRequestNo =null;
+				String newQuoteNo =null;
 				long pendingcount =0;
 				if(count>0) {
 					List<EserviceMotorDetails> motors=repo.findByOriginalPolicyNoAndRiskId(req.getPolicyNo(),1);
@@ -955,6 +957,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 						 prevPolicyNo=motor.get(0).getEndtPrevPolicyNo();
 						 prevQuoteNo=motor.get(0).getEndtPrevQuoteNo();
 						 newRequestNo=motor.get(0).getRequestReferenceNo();
+						 newQuoteNo=motor.get(0).getQuoteNo();
 						 count--;
 					}else {
 						motor=motors;
@@ -977,7 +980,6 @@ public class MotorGridServiceImpl implements MotorGridService {
 				if(pendingcount==0) 
 				{
 					newRequestNo=refNo;
-					prevQuoteNo=quoteNo;
 				}	
 				
 //				List<Tuple> list = copyQuoteSearchDetails(searchKey, searchValue, companyId, loginId, userType,
@@ -1009,11 +1011,11 @@ public class MotorGridServiceImpl implements MotorGridService {
 						savedata.setActualPremiumLc(BigDecimal.ZERO);
 						savedata.setOverallPremiumFc(BigDecimal.ZERO);
 						savedata.setOverallPremiumLc(BigDecimal.ZERO);
-//						if(pendingcount==0) {
-//						savedata.setQuoteNo(quoteNo);
-//						}else {
-						savedata.setQuoteNo(prevQuoteNo);
-						
+						if(pendingcount==0) {
+						savedata.setQuoteNo(quoteNo);
+						}else {
+						savedata.setQuoteNo(newQuoteNo);
+						}
 						savedata.setOriginalPolicyNo(req.getPolicyNo());
 						savedata.setEndorsementDate(new Date());
 						savedata.setEndorsementRemarks(req.getEndtRemarks());
