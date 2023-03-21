@@ -465,12 +465,13 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 			Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
 			Predicate a5 = cb.equal(ocpm1.get("sectionId"),b.get("sectionId"));
+			Predicate a6 = cb.equal(ocpm1.get("columnId"),b.get("columnId"));
 
-			amendId.where(a1, a2,a3,a4,a5);
+			amendId.where(a1, a2,a3,a4,a5,a6);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("premiaId")));
+			orderList.add(cb.asc(b.get("columnId")));
 
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
