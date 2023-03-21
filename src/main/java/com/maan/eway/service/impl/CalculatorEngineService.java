@@ -414,7 +414,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 			if(StringUtils.isNotBlank(rawtable)) {
 				
 				 String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()+";riskId:"+engine.getVehicleId()+";status:E;requestReferenceNo:"+requestRefercenNo+";";
-				 if("3".equals(engine.getProductId())) {
+				 if("3".equals(engine.getProductId()) || "19".equals(engine.getProductId())) {
 					 search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";riskId:"+engine.getVehicleId()+";status:E;requestReferenceNo:"+requestRefercenNo+";";
 				 }
 				 

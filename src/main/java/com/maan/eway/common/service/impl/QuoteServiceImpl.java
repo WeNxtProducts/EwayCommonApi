@@ -1883,6 +1883,7 @@ private BuildingDetailsRepository BuildingRepo;
 			res.setTpliabilityAnyoccuSuminsured(build.getTpliabilityAnyoccuSuminsured() == null?"0" :build.getTpliabilityAnyoccuSuminsured().toPlainString());
 			res.setEmpliabilityAnnualSuminsured(build.getEmpliabilityAnnualSuminsured() == null?"0" :build.getEmpliabilityAnnualSuminsured().toPlainString());
 			res.setEmpliabilityExcessSuminsured(build.getEmpliabilityExcessSuminsured() == null?"0" :build.getEmpliabilityExcessSuminsured().toPlainString());
+			res.setElecEquipSuminsured(build.getElecEquipSuminsured() == null?"0" :build.getElecEquipSuminsured().toPlainString());
 			res.setGoodsSinglecarrySuminsured(build.getGoodsSinglecarrySuminsured() == null?"0" :build.getGoodsSinglecarrySuminsured().toPlainString());
 			res.setGoodsTurnoverSuminsured(build.getGoodsTurnoverSuminsured() == null?"0" :build.getGoodsTurnoverSuminsured().toPlainString());
 			res.setRiskId(build.getRiskId().toString());
