@@ -79,11 +79,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="COVER_DESCRIPTION", length=500)
     private String     coverDescription ;
 
-    @Column(name="COVER_PREMIUM")
-    private Double     coverPremium ;
+    @Column(name="COVER_PREMIUM",length=100)
+    private String    coverPremium ;
 
-    @Column(name="SUM_INSURED")
-    private Double     sumInsured ;
+    @Column(name="SUM_INSURED",length=100)
+    private String   sumInsured ;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="REQUEST_TIME")

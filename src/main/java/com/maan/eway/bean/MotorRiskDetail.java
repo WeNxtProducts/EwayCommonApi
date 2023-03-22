@@ -58,10 +58,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="SERVICE_ID", length=40)
     private String     serviceId ;
 
-    @Column(name="QUOTATION_POLICY_NO", length=40)
+    @Column(name="QUOTATION_POLICY_NO", length=100)
     private String     quotationPolicyNo ;
 
-    @Column(name="SEC_CODE", length=12)
+    @Column(name="SEC_CODE",length=100)
     private String     secCode ;
 
     @Column(name="SERVICE_ACTION", length=10)
@@ -151,9 +151,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="DRIVING_LICENCE_ISSUED_ON")
     private Date       drivingLicenceIssuedOn ;
 
-    @Column(name="RISKID", length=20)
-    private String     riskid ;
-
+   
     @Column(name="ORANGE_CARD_YN", length=20)
     private String     orangeCardYn ;
 
@@ -212,8 +210,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="AMOUNT_CLAIMED_BEFORE")
     private Double     amountClaimedBefore ;
 
-    @Column(name="NO_OF_CLAIMS")
-    private Double     noOfClaims ;
+    @Column(name="NO_OF_CLAIMS",length=100)
+    private String     noOfClaims ;
 
     @Column(name="AAA_ROADSIDE_ASSISTANCE_NO", length=4000)
     private String     aaaRoadsideAssistanceNo ;
@@ -242,8 +240,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="P_WS_ERROR", length=500)
     private String     pWsError ;
 
-    @Column(name="QUOTE_NO")
-    private Double     quoteNo ;
+    @Column(name="QUOTE_NO",length=100)
+    private String  quoteNo ;
 
     @Column(name="PRODUCT_CODE", length=50)
     private String     productCode ;

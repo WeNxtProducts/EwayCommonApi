@@ -116,8 +116,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;
 
-    @Column(name="QUOTE_NO")
-    private Double     quoteNo ;
+    @Column(name="QUOTE_NO",length=100)
+    private String    quoteNo ;
 
     @Column(name="RENEWAL_POLICY_NO", length=100)
     private String     renewalPolicyNo ;
