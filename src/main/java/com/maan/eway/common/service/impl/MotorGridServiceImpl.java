@@ -52,6 +52,7 @@ import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PremiaCustomerDetails;
 import com.maan.eway.bean.SeqCustid;
+import com.maan.eway.bean.SeqCustrefno;
 import com.maan.eway.bean.SeqQuoteno;
 import com.maan.eway.bean.SeqRefno;
 import com.maan.eway.common.req.ChangeEndoStatusReq;
@@ -75,6 +76,7 @@ import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.SeqCustidRepository;
+import com.maan.eway.repository.SeqCustrefnoRepository;
 import com.maan.eway.repository.SeqQuotenoRepository;
 import com.maan.eway.repository.SeqRefnoRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
@@ -118,6 +120,9 @@ public class MotorGridServiceImpl implements MotorGridService {
 	
 	@Autowired
 	private GenerateSeqNoServiceImpl seqNo ;
+	
+	@Autowired
+	private SeqCustrefnoRepository custRefRepo  ;
 	
 	@Autowired
 	private EndtTypeMasterRepository endtTypeRepo;
@@ -884,9 +889,9 @@ public class MotorGridServiceImpl implements MotorGridService {
 				String refNo=refShortCode +seqNo.generateRefNo();
 				String quoteNo  = "Q"+ generateQuoteNo();
 				String customerId = "C-" + generateCustId();
-	            
+				String custRefNo = "Cust-" +   generateCustRefNo() ; 
 	            //Copy Quote E service Motor Details
-				EserviceMotorDetails savedata=eserviceMotorCopyquote(req,refNo,branches,loginId,customerId,quoteNo);
+				EserviceMotorDetails savedata=eserviceMotorCopyquote(req,refNo,branches,loginId,customerId,quoteNo,custRefNo);
 				res.setCommonResponse(savedata);
 				res.setQuoteNo(quoteNo);
 			
@@ -925,7 +930,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 		 }
 		
 		//Eservice Motor Copy Quote
-		public EserviceMotorDetails eserviceMotorCopyquote(CopyQuoteReq req, String refNo, List<String> branches,String loginId,String customerId,String quoteNo) {
+		public EserviceMotorDetails eserviceMotorCopyquote(CopyQuoteReq req, String refNo, List<String> branches,String loginId,String customerId,String quoteNo,String custRefNo) {
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			EserviceMotorDetails savedata = new EserviceMotorDetails();
 			try {
@@ -933,12 +938,28 @@ public class MotorGridServiceImpl implements MotorGridService {
 				String branchCode = "";
 
 				List<EserviceMotorDetails> motor=null;
-				Integer count=repo.countByOriginalPolicyNoAndRiskId(req.getPolicyNo(),1);
+				Integer count=0;
+				count=repo.countByOriginalPolicyNoAndRiskId(req.getPolicyNo(),1);
 				String prevPolicyNo=null;
 				String prevQuoteNo=null;
 				String newRequestNo =null;
 				String newQuoteNo =null;
+				String newCustRefNo=null;
+				String newCustId=null;
 				long pendingcount =0;
+				if (count > 0) {
+					List<EserviceMotorDetails> motors = repo.findByOriginalPolicyNoAndRiskId(req.getPolicyNo(), 1);
+					pendingcount = motors.stream().filter(m -> m.getEndtStatus().equals("P")).count();
+					if (pendingcount > 0) {
+						if (!motors.get(0).getEndorsementType().equals(Integer.valueOf(req.getEndtTypeId()))) {
+							deletePreviousEndo(req,motors);
+							count=repo.countByOriginalPolicyNoAndRiskId(req.getPolicyNo(),1);
+							count = 0;
+						//	pendingcount = motors.stream().filter(m -> m.getEndtStatus().equals("P")).count();
+							pendingcount=0;
+						}
+					}
+				}
 				if(count>0) {
 					List<EserviceMotorDetails> motors=repo.findByOriginalPolicyNoAndRiskId(req.getPolicyNo(),1);
 					//Compare
@@ -958,6 +979,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 						 prevQuoteNo=motor.get(0).getEndtPrevQuoteNo();
 						 newRequestNo=motor.get(0).getRequestReferenceNo();
 						 newQuoteNo=motor.get(0).getQuoteNo();
+						 newCustRefNo=motor.get(0).getCustomerReferenceNo();
+						 newCustId=motor.get(0).getCustomerId();
 						 count--;
 					}else {
 						motor=motors;
@@ -980,6 +1003,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 				if(pendingcount==0) 
 				{
 					newRequestNo=refNo;
+					newCustRefNo=custRefNo;
+					newCustId=customerId;
 				}	
 				
 //				List<Tuple> list = copyQuoteSearchDetails(searchKey, searchValue, companyId, loginId, userType,
@@ -995,6 +1020,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 						savedata.setUpdatedBy(req.getLoginId());
 						savedata.setUpdatedDate(new Date());
 						savedata.setRequestReferenceNo(newRequestNo);
+						savedata.setCustomerReferenceNo(newCustRefNo);
+						savedata.setCustomerId(newCustId);
 						savedata.setOldReqRefNo(req.getRequestReferenceNo());
 						if (req.getUserType().equalsIgnoreCase("Broker")|| (req.getUserType().equalsIgnoreCase("User"))) {
 							branchCode = req.getBranchCode();
@@ -1038,10 +1065,10 @@ public class MotorGridServiceImpl implements MotorGridService {
 		
 				if (pendingcount == 0) {
 					// Copy Quote Home Position Master
-					 homeEndoCopyQuote(req, refNo, customerId, quoteNo, loginId,prevPolicyNo,prevQuoteNo,count);
+					 homeEndoCopyQuote(req, refNo, customerId, quoteNo, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
 
 					// Copy Quote Personal Info
-					 personolInfoEndoCopyQuote(req, customerId, prevPolicyNo,prevQuoteNo, count);
+					 personolInfoEndoCopyQuote(req, customerId, prevPolicyNo,prevQuoteNo, count,custRefNo);
 
 					// Copy Quote Policy Cover Data
 					 policyCoverDataEndocopyQuote(req, refNo, quoteNo, loginId, prevPolicyNo,prevQuoteNo, count);
@@ -1056,7 +1083,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					coverDocumentUploadDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count);
 				
 					// Copy ESERVICE_CUSTOMER_DETAILS
-					eserviceCustDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count);
+					eserviceCustDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
 				}
 				//res.setRequestReferenceNo(newRequestNo);
 			} catch (Exception e) {
@@ -1066,7 +1093,65 @@ public class MotorGridServiceImpl implements MotorGridService {
 			}
 			return savedata;
 		}
-		private CopyQuoteSuccessRes eserviceCustDetailsEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo, String customerId,String loginId, String prevPolicyNo, String prevQuoteNo, Integer count) {
+
+		//Delete Previous Endo
+		private CopyQuoteSuccessRes deletePreviousEndo(CopyQuoteReq req, List<EserviceMotorDetails> motors) {
+			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
+			try {
+				String quoteNo=motors.get(0).getQuoteNo();
+				// Delete Old Record
+				
+				//E service Motor Details
+				if(motors.size()>0) {
+					repo.deleteAll(motors);
+				}
+				//E service Customer Details 
+				HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(quoteNo);
+				String customerId=homeData.getCustomerId();
+				
+				PersonalInfo personalInfoData=personalInforepo.findByCustomerId(customerId);
+				EserviceCustomerDetails custData = custRepo.findByCustomerReferenceNo(personalInfoData.getCustomerReferenceNo());
+				if (custData!=null) {
+					custRepo.delete(custData);
+				}
+				//Personal Info
+				if(personalInfoData!=null) {
+					personalInforepo.delete(personalInfoData);
+				}
+				//Home Position master
+				if(homeData!=null) {
+					homePosistionRepo.delete(homeData);				}
+				//Policy Cover Data
+				List<PolicyCoverData> policyCoverData = policyCoverDataRepo.findByQuoteNo(quoteNo);
+				if (policyCoverData.size() > 0) {
+					policyCoverDataRepo.deleteAll(policyCoverData);
+				}
+				//Motor Driver Details
+				List<MotorDriverDetails> motorDriverData = motordrivDetepo.findByQuoteNo(quoteNo);
+				if (motorDriverData.size() > 0) {
+					motordrivDetepo.deleteAll(motorDriverData);
+				}
+				//Cover Document Upload Details
+				List<CoverDocumentUploadDetails> coverDocList = coverDocUploadDetails.findByQuoteNo(quoteNo);
+				if (coverDocList.size() > 0) {
+					coverDocUploadDetails.deleteAll(coverDocList);
+				}
+				//Motor Data Details
+				List<MotorDataDetails> motorData = motorDataDetepo.findByQuoteNo(req.getQuoteNo());
+				if (motorData.size() > 0) {
+					motorDataDetepo.deleteAll(motorData);
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return res;
+
+		}
+
+		private CopyQuoteSuccessRes eserviceCustDetailsEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo, String customerId,String loginId, String prevPolicyNo, String prevQuoteNo, Integer count,String custRefNo) {
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 			EserviceCustomerDetails savedata = new EserviceCustomerDetails();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -1082,6 +1167,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				if (custData!=null) 
 						savedata = dozerMapper.map(custData, EserviceCustomerDetails.class);
 						savedata.setEntryDate(new Date());
+						savedata.setCustomerReferenceNo(custRefNo);
 						savedata.setCreatedBy(loginId);
 						savedata.setUpdatedBy(loginId);
 						savedata.setUpdatedDate(new Date());
@@ -1114,7 +1200,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 
 		//Home Position Master Endt Copy Quote
 		public CopyQuoteSuccessRes homeEndoCopyQuote(CopyQuoteReq req,String refNo,String customerId,String quoteNo,String loginId,	String prevPolicyNo,
-		String prevQuoteNo,Integer count) {
+		String prevQuoteNo,Integer count,String custRefNo) {
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 			HomePositionMaster savedata = new HomePositionMaster();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -1166,7 +1252,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 		
 		//Personal Info Endt Copy Quote
 		public CopyQuoteSuccessRes personolInfoEndoCopyQuote(CopyQuoteReq req,String customerId,String prevPolicyNo,
-				String prevQuoteNo,Integer count) {
+				String prevQuoteNo,Integer count,String custRefNo) {
 			CopyQuoteSuccessRes res =new CopyQuoteSuccessRes();
 			PersonalInfo savedata = new PersonalInfo();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -1178,6 +1264,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				PersonalInfo personalInfoData=personalInforepo.findByCustomerId(olsCustomerId);
 				savedata = dozerMapper.map(personalInfoData, PersonalInfo.class);
 				savedata.setCustomerId(customerId);
+				savedata.setCustomerReferenceNo(custRefNo);
 				savedata.setEntryDate(new Date());
 				savedata.setCreatedBy(req.getLoginId());
 				savedata.setUpdatedBy(req.getLoginId());
@@ -1299,9 +1386,6 @@ public class MotorGridServiceImpl implements MotorGridService {
 						savedata.setQuoteNo(quoteNo);
 						savedata.setEntryDate(new Date());
 						savedata.setCreatedBy(loginId);
-//						savedata.setUpdatedBy(loginId);
-//						savedata.setUpdatedDate(new Date());
-
 						savedata.setOriginalPolicyNo(req.getPolicyNo());
 						savedata.setEndorsementDate(new Date());
 						savedata.setEndorsementRemarks(req.getEndtRemarks());
@@ -1346,9 +1430,6 @@ public class MotorGridServiceImpl implements MotorGridService {
 						savedata.setQuoteNo(quoteNo);
 						savedata.setEntryDate(new Date());
 						savedata.setCreatedBy(loginId);
-//						savedata.setUpdatedBy(loginId);
-//						savedata.setUpdatedDate(new Date());
-
 						savedata.setOriginalPolicyNo(req.getPolicyNo());
 						savedata.setEndorsementDate(new Date());
 						savedata.setEndorsementRemarks(req.getEndtRemarks());
@@ -1902,5 +1983,18 @@ public class MotorGridServiceImpl implements MotorGridService {
 			String refShortCode = getListItem(companyId, branchcode, "PRODUCT_SHORT_CODE",productId);
 			String refNo = refShortCode + seqNo.generateRefNo();
 			return refNo;
-		} 
+		}
+		 public synchronized String generateCustRefNo() {
+		       try {
+		    	   SeqCustrefno entity;
+		            entity = custRefRepo.save(new SeqCustrefno());          
+		            return String.format("%05d",entity.getCustReferenceNo()) ;
+		        } catch (Exception e) {
+					e.printStackTrace();
+					log.info( "Exception is ---> " + e.getMessage());
+		            return null;
+		        }
+		       
+		 }
+		
 	}

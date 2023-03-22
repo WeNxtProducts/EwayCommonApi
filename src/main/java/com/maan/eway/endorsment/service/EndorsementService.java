@@ -3,6 +3,7 @@ package com.maan.eway.endorsment.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,6 +40,7 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
 import com.maan.eway.common.res.TravelCopyRes;
 import com.maan.eway.common.service.impl.GridServiceImpl;
+import com.maan.eway.common.service.impl.PaymentServiceImpl;
 import com.maan.eway.endorsment.request.EndorsementType;
 import com.maan.eway.endorsment.request.Endorsment;
 import com.maan.eway.endorsment.request.EndtMaster;
@@ -50,7 +52,9 @@ import com.maan.eway.endorsment.util.QuoteInfoUtil;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
+import com.maan.eway.req.calcengine.CalcCommission;
 import com.maan.eway.res.CopyQuoteSuccessRes;
+import com.maan.eway.res.calc.DebitAndCredit;
 
 @Service
 public class EndorsementService {
@@ -59,6 +63,8 @@ public class EndorsementService {
 	private HomePositionMasterRepository hpmrepo;
 	@Autowired
 	private GridServiceImpl copyquoteService;
+	@Autowired
+	private PaymentServiceImpl paymentServiceImpl;
 	
 	@Autowired
 	private QuoteInfoUtil quoteutil;
@@ -477,6 +483,20 @@ public class EndorsementService {
 	public CommonRes changeEndtStatus(ChangeEndoStatusReq req) {
 
 		try {
+			HomePositionMaster data=hpmrepo.findByQuoteNo(req.getQuoteNo());
+			if ("Financial".equalsIgnoreCase(data.getEndtCategDesc())) {
+
+				// Update Home Posion Master
+				if (StringUtils.isNotBlank(data.getEndtTypeId()))
+					data.setEndtStatus("C");
+
+				hpmrepo.saveAndFlush(data);
+
+				// Update ProductWise
+				paymentServiceImpl.updateProductWisePolicyNo(req.getProductId().toString(), req.getPolicyNo(),
+						req.getQuoteNo(), data.getEndtTypeId());
+
+			}
 			Object res = null ;
 			
 				EserviceMotorDetails motorEndtStatus = copyraw.eserviceMotorEndtStatus(req);
