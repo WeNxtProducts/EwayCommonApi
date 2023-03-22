@@ -719,17 +719,19 @@ public class QuoteThreadCall implements Callable<Object>  {
 			List<MotorDriverDetails>   oldDriDetails = driverRepo.findByQuoteNoAndRiskId( oldQuoteNo ,  request.getVehicleId());
 			
 			Long driverInfo = driverRepo.countByQuoteNoAndRiskId(request.getQuoteNo() , request.getVehicleId());
-			if( driverInfo > 0  ) {
-				driverRepo.deleteByQuoteNoAndRiskId(request.getQuoteNo() , request.getVehicleId());
+			if( driverInfo <= 0  ) {
+				if(oldDriDetails.size() > 0 ) {
+					for ( MotorDriverDetails dri : oldDriDetails ) {
+						MotorDriverDetails saveDri = new MotorDriverDetails(); 		
+						dozerMapper.map(dri , saveDri);
+						saveDri.setQuoteNo(request.getQuoteNo() );
+						saveDri.setRequestReferenceNo(request.getRequestReferenceNo());
+						driverRepo.saveAndFlush(saveDri);
+					}
+				}
+				
 			}
 			
-			for ( MotorDriverDetails dri : oldDriDetails ) {
-				MotorDriverDetails saveDri = new MotorDriverDetails(); 		
-				dozerMapper.map(dri , saveDri);
-				saveDri.setQuoteNo(request.getQuoteNo() );
-				saveDri.setRequestReferenceNo(request.getRequestReferenceNo());
-				driverRepo.saveAndFlush(saveDri);
-			}
 			res.put("Response", "Success") ;
 			res.put("Errors", null) ;
 			

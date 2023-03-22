@@ -1697,7 +1697,8 @@ public class PaymentServiceImpl implements PaymentService {
 					// set update and where clause
 					update.set("policyNo", policyNo);
 					update.set("status", "P");
-					
+					if(StringUtils.isNotBlank(endttypeId))
+						update.set("endtStatus","C");
 					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
 					update.where(n1);
 					// perform update
@@ -1732,7 +1733,8 @@ public class PaymentServiceImpl implements PaymentService {
 					// set update and where clause
 					update.set("policyNo", policyNo);
 					update.set("status", "P");
-					
+					if(StringUtils.isNotBlank(endttypeId))
+						update.set("endtStatus","C");
 					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
 					update.where(n1);
 					// perform update
@@ -1767,7 +1769,8 @@ public class PaymentServiceImpl implements PaymentService {
 					// set update and where clause
 					update.set("policyNo", policyNo);
 					update.set("status", "P");
-					
+					if(StringUtils.isNotBlank(endttypeId))
+						update.set("endtStatus","C");
 					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
 					update.where(n1);
 					// perform update
