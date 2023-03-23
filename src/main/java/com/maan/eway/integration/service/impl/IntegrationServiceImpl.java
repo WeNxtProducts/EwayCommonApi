@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.PremiaConfigDataMaster;
 import com.maan.eway.bean.PremiaConfigMaster;
 import com.maan.eway.integration.req.PremiaRequest;
@@ -357,7 +358,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(c.get("premiaId")));
 			
-			
+			/*
 			// Effective Date Start Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<PremiaConfigDataMaster> ocpm1 = effectiveDate.from(PremiaConfigDataMaster.class);
@@ -386,7 +387,26 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			Predicate n5 = cb.equal(c.get("productId"), productId);
 			Predicate n6 = cb.equal(c.get("premiaId"), premiaId);
 			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
+			*/
 			
+			
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<PremiaConfigDataMaster> ocpm1 = amendId.from(PremiaConfigDataMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("premiaId"), c.get("premiaId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), c.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("productId"),c.get("productId"));
+
+			amendId.where(a1, a2,a3);
+
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n2 = cb.equal(c.get("amendId"),amendId);	
+			Predicate n3 = cb.equal(c.get("companyId"), insuraceId);
+			Predicate n4 = cb.equal(c.get("productId"), productId);
+			Predicate n5 = cb.equal(c.get("premiaId"), premiaId);
+			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
 			// Get Result
 			TypedQuery<PremiaConfigDataMaster> result = em.createQuery(query);
 			list = result.getResultList();
