@@ -730,53 +730,53 @@ public class CommonGridServiceImpl implements CommonGridService {
 		}
 		
 		//Endrosment
-		@Transactional
-		@Override
-		public SuccessRes commonEndt(CopyQuoteReq req, List<String> branches) {
-			SuccessRes res = new SuccessRes();
-			SimpleDateFormat idf = new SimpleDateFormat("yyMMddmmssSSS");
-			try {
-		
-				
-				String refNo = req.getRequestReferenceNo();
-				String customerId="";
-				String quoteNo=req.getQuoteNo();
-				
-				//Generating
-				Random rand = new Random();
-				int random = rand.nextInt(90) + 10;
-				refNo = "Mot-" + idf.format(new Date()) + random;
-				customerId = "C-" + idf.format(new Date()) + random ;
-	            quoteNo  = "Q"+ idf.format(new Date()) + random ;
-	            
-	            //Copy Quote Eservice Motor Details
-	            res=eserviceCommonCopyquote(req,refNo,branches);
-	            
-				//Copy Quote Home Position Master
-
-	            res=homeEndoCopyQuote(req,refNo,customerId,quoteNo);
-				
-				//Copy Quote Personal Info 
-				res=personolInfoEndoCopyQuote(req,customerId);
-				
-				//Copy Quote Policy Cover Data
-				res=policyCoverDataEndocopyQuote(req,refNo,quoteNo);
-				
-				
-				//Copy Quote Motor Data Details
-				res=commonDataDetailsEndoCopyquote(req,refNo,quoteNo,customerId);
-				
-				
-				res.setResponse("Successfully Updated");
-				res.setSuccessId(refNo);
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Exception is --->" + e.getMessage());
-				return null;
-			}
-			return res;
-		}
+//		@Transactional
+//		@Override
+//		public CopyQuoteSuccessRes commonEndt(CopyQuoteReq req, List<String> branches, String loginId) {
+//			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
+//			SimpleDateFormat idf = new SimpleDateFormat("yyMMddmmssSSS");
+//			try {
+//		
+//				
+//				String refNo = req.getRequestReferenceNo();
+//				String customerId="";
+//				String quoteNo=req.getQuoteNo();
+//				
+//				//Generating
+//				Random rand = new Random();
+//				int random = rand.nextInt(90) + 10;
+//				refNo = "Mot-" + idf.format(new Date()) + random;
+//				customerId = "C-" + idf.format(new Date()) + random ;
+//	            quoteNo  = "Q"+ idf.format(new Date()) + random ;
+//	            
+//	            //Copy Quote Eservice Motor Details
+//	            res=eserviceCommonCopyquote(req,refNo,branches);
+//	            
+//				//Copy Quote Home Position Master
+//
+//	            res=homeEndoCopyQuote(req,refNo,customerId,quoteNo);
+//				
+//				//Copy Quote Personal Info 
+//				res=personolInfoEndoCopyQuote(req,customerId);
+//				
+//				//Copy Quote Policy Cover Data
+//				res=policyCoverDataEndocopyQuote(req,refNo,quoteNo);
+//				
+//				
+//				//Copy Quote Motor Data Details
+//				res=commonDataDetailsEndoCopyquote(req,refNo,quoteNo,customerId);
+//				
+//				
+//				res.setResponse("Successfully Updated");
+//				res.setSuccessId(refNo);
+//				
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//				log.info("Exception is --->" + e.getMessage());
+//				return null;
+//			}
+//			return res;
+//		}
 
 		//Eservice Motor Copy Quote
 		public SuccessRes eserviceCommonCopyquote(CopyQuoteReq req,String refNo,List<String> branches) {
@@ -1405,5 +1405,11 @@ public class CommonGridServiceImpl implements CommonGridService {
 			return null;
 		}
 		return portfolio;
+		}
+
+		@Override
+		public CopyQuoteSuccessRes commonEndt(CopyQuoteReq req, List<String> branches, String loginId) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 }

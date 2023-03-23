@@ -33,4 +33,6 @@ public interface BuildingGridService {
 	CopyQuoteSuccessRes buildingCopyQuote(CopyQuoteReq req, List<String> branches,String loginId);
 
 	List<ListItemValue> geBuildingCoptyQuotetListItem(CopyQuoteDropDownReq req,String itemType);
+
+	CopyQuoteSuccessRes buildingEndt(CopyQuoteReq req, List<String> branches, String loginId);
 }

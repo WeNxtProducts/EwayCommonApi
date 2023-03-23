@@ -36,8 +36,6 @@ public interface CommonGridService {
 
 	List<ListItemValue> geCommonCoptyQuotetListItem(CopyQuoteDropDownReq req,String itemType);
 
-	SuccessRes commonEndt(CopyQuoteReq req, List<String> branches);
-
 	List<Tuple> validateCommonEndt(String quoteNo);
 
 	List<PortfolioGridCriteriaRes> getCommonProtfolioActive(ExistingQuoteReq req, List<String> branches, Date startDate,int limit,
@@ -48,4 +46,6 @@ public interface CommonGridService {
 
 	List<PortfolioGridCriteriaRes> getCommonPortfolioCancelled(ExistingQuoteReq req, List<String> branches,Date startDate,  int limit,
 			int offset, String string);
+
+	CopyQuoteSuccessRes commonEndt(CopyQuoteReq req, List<String> branches, String loginId);
 }

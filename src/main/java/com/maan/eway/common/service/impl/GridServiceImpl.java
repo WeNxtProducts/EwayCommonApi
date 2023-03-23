@@ -759,13 +759,14 @@ public class GridServiceImpl implements GridService {
 				// Product Wise Get
 				if (req.getProductId().equalsIgnoreCase(motorProductId)) {
 					res = motService.motorEndt(req, branches,loginId);
+				}else if (req.getProductId().equalsIgnoreCase(travelProductId)) {
+					res = traService.travelEndt(req, branches,loginId);
+				} else if (req.getProductId().equalsIgnoreCase(buildingProductId)|| req.getProductId().equalsIgnoreCase(smeProductId)) {
+					res = buiService.buildingEndt(req, branches,loginId);
+				}else {
+					res = commonService.commonEndt(req, branches,loginId);
+
 				}
-//					else if (req.getProductId().equalsIgnoreCase(travelProductId)) {
-//					res = traService.travelCopyQuote(req, branches);
-//				} else if (req.getProductId().equalsIgnoreCase(buildingProductId)) {
-//					res = buiService.buildingCopyQuote(req, branches);
-//
-//				}
 			}else if (StringUtils.isBlank(req.getTypeId()) || req.getTypeId().equalsIgnoreCase("Normal")) {
 				// Product Wise Get
 				if (req.getProductId().equalsIgnoreCase(motorProductId)) {

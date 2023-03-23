@@ -39,6 +39,7 @@ import com.maan.eway.admin.res.ReferalCriteriaRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.CoverDocumentUploadDetails;
+import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
@@ -67,6 +68,7 @@ import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.service.MotorGridService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
+import com.maan.eway.repository.CoverMasterRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
@@ -133,6 +135,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 	@Autowired
 	private CoverDocumentUploadDetailsRepository coverDocUploadDetails;
 
+	@Autowired
+	private CoverMasterRepository coverMasterRepo;
 	
 	// Exiting Motor Details
 	@Override
@@ -1300,6 +1304,13 @@ public class MotorGridServiceImpl implements MotorGridService {
 			PolicyCoverData savedata = new PolicyCoverData();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
+				CoverMaster coverdata=null;
+				EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()));
+				String endTypeDesc=entMaster.getEndtTypeDesc();
+				String endtFeeYn=entMaster.getEndtFeeYn()	;
+				String coverDesc="";
+				String endtFee=entMaster.getEndtFeePercent();
+				
 				List<PolicyCoverData> policyCoverData=policyCoverDataRepo.findByQuoteNo(req.getQuoteNo());
 				if (policyCoverData.size() > 0) {
 					for (PolicyCoverData data : policyCoverData) {
@@ -1312,8 +1323,131 @@ public class MotorGridServiceImpl implements MotorGridService {
 						savedata.setStatus("E");
 						policyCoverDataRepo.saveAndFlush(savedata);
 					}
+				
+
+				List<PolicyCoverData> basecovers1 = policyCoverData.stream().filter(d -> ("B".equals(d.getCoverageType()))).collect(Collectors.toList());
+				for (PolicyCoverData data : basecovers1) {
+					coverDesc=basecovers1.get(0).getCoverDesc();
+					savedata = dozerMapper.map(data, PolicyCoverData.class);
+					savedata.setDiscLoadId(Integer.valueOf(req.getEndtTypeId()));
+					savedata.setCoverName(coverDesc+" "+endTypeDesc+" "+count);
+					savedata.setCoverDesc(coverDesc+" "+endTypeDesc+" "+count);
+					savedata.setCoverageType("E");
+					savedata.setRequestReferenceNo(refNo);
+					savedata.setQuoteNo(quoteNo);
+					savedata.setEntryDate(new Date());
+					savedata.setCreatedBy(loginId);
+					savedata.setPremiumAfterDiscountFc(data.getPremiumAfterDiscountFc());
+					savedata.setPremiumAfterDiscountLc(data.getPremiumAfterDiscountLc());
+					savedata.setPremiumBeforeDiscountFc(data.getPremiumBeforeDiscountFc());
+					savedata.setPremiumBeforeDiscountLc(data.getPremiumBeforeDiscountLc());
+					savedata.setPremiumExcludedTaxFc(data.getPremiumExcludedTaxFc());
+					savedata.setPremiumExcludedTaxLc(data.getPremiumExcludedTaxLc());
+					savedata.setPremiumIncludedTaxFc(data.getPremiumIncludedTaxFc());
+					savedata.setPremiumIncludedTaxLc(data.getPremiumIncludedTaxLc());
+					savedata.setDependentCoverYn("N");
+					savedata.setDependentCoverId(null);
+					savedata.setTaxId(0);
+					savedata.setTaxRate(BigDecimal.ZERO);
+					savedata.setTaxDesc("");
+					savedata.setEndtCount(new BigDecimal(count));
+					savedata.setDiscountCoverId(data.getCoverId());
+					policyCoverDataRepo.saveAndFlush(savedata);
+					}
+				List<PolicyCoverData> basecovers2 = policyCoverData.stream().filter(d -> ("T".equals(d.getCoverageType()))).collect(Collectors.toList());
+				for (PolicyCoverData data : basecovers2) {
+					coverDesc=data.getCoverName();
+					savedata = dozerMapper.map(data, PolicyCoverData.class);
+					savedata.setRequestReferenceNo(refNo);
+					savedata.setQuoteNo(quoteNo);
+					savedata.setEntryDate(new Date());
+					savedata.setCreatedBy(loginId);
+					savedata.setEndtCount(new BigDecimal(count));
+					savedata.setDiscLoadId(Integer.valueOf(req.getEndtTypeId()));
+					savedata.setCoverName(coverDesc+" "+endTypeDesc);
+					savedata.setCoverDesc(coverDesc+" "+endTypeDesc);
+					savedata.setPremiumAfterDiscountFc(data.getPremiumAfterDiscountFc());
+					savedata.setPremiumAfterDiscountLc(data.getPremiumAfterDiscountLc());
+					savedata.setPremiumBeforeDiscountFc(data.getPremiumBeforeDiscountFc());
+					savedata.setPremiumBeforeDiscountLc(data.getPremiumBeforeDiscountLc());
+					savedata.setPremiumExcludedTaxFc(data.getPremiumExcludedTaxFc());
+					savedata.setPremiumExcludedTaxLc(data.getPremiumExcludedTaxLc());
+					savedata.setPremiumIncludedTaxFc(data.getPremiumIncludedTaxFc());
+					savedata.setPremiumIncludedTaxLc(data.getPremiumIncludedTaxLc());
+					savedata.setDependentCoverYn("N");
+					savedata.setDependentCoverId(null);
+					savedata.setTaxId(data.getTaxId());
+					savedata.setTaxRate(data.getTaxRate());
+					savedata.setTaxCalcType(data.getTaxCalcType());
+					savedata.setTaxDesc(endTypeDesc+"VAT");
+					savedata.setEndtCount(new BigDecimal(count));
+					savedata.setDiscountCoverId(data.getCoverId());
+					policyCoverDataRepo.saveAndFlush(savedata);
 				}
-			} catch (Exception e) {
+				if ("Y".equals(endtFeeYn)) {
+					for (PolicyCoverData data : basecovers2) {
+						coverDesc = data.getCoverName();
+						savedata = dozerMapper.map(data, PolicyCoverData.class);
+						savedata.setRequestReferenceNo(refNo);
+						savedata.setQuoteNo(quoteNo);
+						savedata.setEntryDate(new Date());
+						savedata.setCreatedBy(loginId);
+						savedata.setDiscLoadId(Integer.valueOf(req.getEndtTypeId()));
+						savedata.setCoverName(coverDesc + " " + endTypeDesc + " Endorsement Fee" + count);
+						savedata.setCoverDesc(coverDesc + " " + endTypeDesc + " Endorsement Fee" + count);
+						savedata.setPremiumAfterDiscountFc(data.getPremiumAfterDiscountFc());
+						savedata.setPremiumAfterDiscountLc(data.getPremiumAfterDiscountLc());
+						savedata.setPremiumBeforeDiscountFc(data.getPremiumBeforeDiscountFc());
+						savedata.setPremiumBeforeDiscountLc(data.getPremiumBeforeDiscountLc());
+						savedata.setPremiumExcludedTaxFc(data.getPremiumExcludedTaxFc());
+						savedata.setPremiumExcludedTaxLc(data.getPremiumExcludedTaxLc());
+						savedata.setPremiumIncludedTaxFc(data.getPremiumIncludedTaxFc());
+						savedata.setPremiumIncludedTaxLc(data.getPremiumIncludedTaxLc());
+						savedata.setDependentCoverYn("N");
+						savedata.setDependentCoverId(null);
+						savedata.setTaxId(Integer.valueOf(req.getEndtTypeId()));
+						savedata.setTaxRate(new BigDecimal(endtFee));
+						savedata.setTaxCalcType(data.getTaxCalcType());
+						savedata.setTaxDesc(endTypeDesc + "Endorsement Fee");
+						savedata.setEndtCount(new BigDecimal(count));
+						savedata.setDiscountCoverId(data.getCoverId());
+						savedata.setCoverageType("T");
+						policyCoverDataRepo.saveAndFlush(savedata);
+					}
+				}
+		List<PolicyCoverData> basecovers3 = policyCoverData.stream().filter(d -> ("o".equals(d.getCoverageType()))).collect(Collectors.toList());
+		for (PolicyCoverData data : basecovers3) {
+			coverDesc = data.getCoverDesc();
+			savedata = dozerMapper.map(data, PolicyCoverData.class);
+			savedata.setRequestReferenceNo(refNo);
+			savedata.setQuoteNo(quoteNo);
+			savedata.setEntryDate(new Date());
+			savedata.setCreatedBy(loginId);
+			savedata.setCoverageType("T");
+			savedata.setDiscLoadId(Integer.valueOf(req.getEndtTypeId()));
+			savedata.setCoverName(coverDesc + " " + endTypeDesc + " " + count);
+			savedata.setCoverDesc(coverDesc + " " + endTypeDesc + " " + count);
+			savedata.setPremiumAfterDiscountFc(data.getPremiumAfterDiscountFc());
+			savedata.setPremiumAfterDiscountLc(data.getPremiumAfterDiscountLc());
+			savedata.setPremiumBeforeDiscountFc(data.getPremiumBeforeDiscountFc());
+			savedata.setPremiumBeforeDiscountLc(data.getPremiumBeforeDiscountLc());
+			savedata.setPremiumExcludedTaxFc(data.getPremiumExcludedTaxFc());
+			savedata.setPremiumExcludedTaxLc(data.getPremiumExcludedTaxLc());
+			savedata.setPremiumIncludedTaxFc(data.getPremiumIncludedTaxFc());
+			savedata.setPremiumIncludedTaxLc(data.getPremiumIncludedTaxLc());
+			savedata.setDependentCoverYn("N");
+			savedata.setDependentCoverId(null);
+			savedata.setTaxId(0);
+			savedata.setTaxRate(BigDecimal.ZERO);
+			savedata.setTaxCalcType(data.getTaxCalcType());
+			savedata.setTaxDesc(" ");
+			savedata.setEndtCount(new BigDecimal(count));
+			savedata.setDiscountCoverId(data.getCoverId());
+			policyCoverDataRepo.saveAndFlush(savedata);
+		}
+
+	}
+	} catch (Exception e) {
 				e.printStackTrace();
 				log.info("Exception is ---> " + e.getMessage());
 				return null;

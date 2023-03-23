@@ -34,4 +34,6 @@ public interface TravelGridService {
 
 	CopyQuoteSuccessRes travelCopyQuote(CopyQuoteReq req, List<String> branches,String loginId);
 
+	CopyQuoteSuccessRes travelEndt(CopyQuoteReq req, List<String> branches, String loginId);
+
 }
