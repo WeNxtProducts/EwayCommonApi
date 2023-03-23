@@ -28,4 +28,7 @@ public class ProductDropDownRes {
 	@JsonProperty("PackageYn")
 	private String packageYn;
 	
+	@JsonProperty("DisplayOrder")
+	private Integer displayOrder;
+	
 }

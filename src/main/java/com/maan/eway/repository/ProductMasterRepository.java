@@ -15,6 +15,7 @@ package com.maan.eway.repository;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.ProductMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -34,6 +35,7 @@ public interface ProductMasterRepository  extends JpaRepository<ProductMaster,Pr
 	List<ProductMaster> findByProductIdOrderByEffectiveDateStartDesc(Integer productId);
 
 	List<ProductMaster> findTopByProductIdOrderByAmendIdDesc(Integer valueOf);
+
 
 	
 

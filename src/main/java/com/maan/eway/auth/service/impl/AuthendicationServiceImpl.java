@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -87,6 +88,7 @@ import com.maan.eway.bean.SmsConfigMaster;
 import com.maan.eway.bean.SmsDataDetails;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CompanyProductMasterGetAllReq;
 import com.maan.eway.notification.bean.MailDataDetails;
 import com.maan.eway.notification.repository.MailDataDetailsRepository;
 import com.maan.eway.notification.req.JobCredentials;
@@ -103,6 +105,7 @@ import com.maan.eway.repository.ProductMasterRepository;
 import com.maan.eway.repository.SessionMasterRepository;
 import com.maan.eway.repository.SmsConfigMasterRepository;
 import com.maan.eway.repository.SmsDataDetailsRepository;
+import com.maan.eway.res.CompanyProductDropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 
@@ -137,6 +140,10 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 	
 	@Autowired
 	private ProductMasterRepository productRepo;
+	
+	@Autowired
+	private ProductMasterRepository companyProductRepo;
+	
 	
 	@Autowired
 	private MailMasterRepository mailRepo ;
@@ -405,11 +412,11 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			
 			Integer productId;
 			List<ProductDropDownRes> resList = new ArrayList<ProductDropDownRes>();
-
+			
 			for (LoginProductMaster products : loginproduct) {
 				productId = products.getProductId();
 
-				List<ProductMaster> product = productRepo.findByProductIdOrderByEffectiveDateStartDesc(productId);
+				List<CompanyProductMaster> product = getCompanyProductMaster(products.getCompanyId()   , productId  );
 				ProductDropDownRes res = new ProductDropDownRes();
 				res.setOldProductName(products.getProductName());
 				res.setNewProductName(product.get(0).getProductName());
@@ -417,9 +424,10 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				res.setProductIconName(product.get(0).getProductIconName());
 				res.setProductId(productId.toString());
 				res.setPackageYn(product.get(0).getPackageYn());
+				res.setDisplayOrder(product.get(0).getDisplayOrder()==null?999:product.get(0).getDisplayOrder());
 				resList.add(res);
 			}
-
+			resList.sort( Comparator.comparing(ProductDropDownRes :: getDisplayOrder) );
 			r.setCompanyProducts(resList);
 			
 
@@ -438,7 +446,68 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 		
 	}
 	
-	
+	public List<CompanyProductMaster> getCompanyProductMaster(String companyId , Integer productId ) {
+		List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyProductMaster> query=  cb.createQuery(CompanyProductMaster.class);
+		
+			// Find All
+			Root<CompanyProductMaster> c = query.from(CompanyProductMaster.class);
+			//Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("productName")));
+			
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId"));
+			Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2,a3);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(c.get("productId"),ocpm2.get("productId"));
+			Predicate a5 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a4,a5,a6);
+			
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+			Predicate n4 = cb.equal(c.get("companyId"),companyId);
+			Predicate n7 = cb.equal(c.get("productId"),productId);
+			Predicate n5 = cb.equal(c.get("status"),"R");
+			Predicate n6 = cb.or(n1,n5);
+			query.where(n6,n2,n3,n4,n7).orderBy(orderList);
+			// Get Result
+			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
+			list = result.getResultList();			
+		}
+			catch(Exception e) {
+				e.printStackTrace();
+				log.info("Exception is --->"+e.getMessage());
+				return null;
+				}
+			return list;
+		}
 
 	public List<BrokerProductCompaniesRes> getBrokerProducts(String loginId , List<String> companyIds  ) {
 		List<BrokerProductCompaniesRes> companyList = new ArrayList<BrokerProductCompaniesRes>();
