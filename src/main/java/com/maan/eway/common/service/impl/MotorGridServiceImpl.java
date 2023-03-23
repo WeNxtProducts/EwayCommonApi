@@ -953,9 +953,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					if (pendingcount > 0) {
 						if (!motors.get(0).getEndorsementType().equals(Integer.valueOf(req.getEndtTypeId()))) {
 							deletePreviousEndo(req,motors);
-							count=repo.countByOriginalPolicyNoAndRiskId(req.getPolicyNo(),1);
-							count = 0;
-						//	pendingcount = motors.stream().filter(m -> m.getEndtStatus().equals("P")).count();
+							count--;
 							pendingcount=0;
 						}
 					}
