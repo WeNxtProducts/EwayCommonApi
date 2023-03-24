@@ -41,12 +41,12 @@ public interface EndtTypeMasterRepository  extends JpaRepository<EndtTypeMaster,
 			String string, Integer parseInt);
 	*/
 
-	List<EndtTypeMaster> findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartAndEffectiveDateEnd(String companyId, Integer productId, String status, Date date, Date date2);
+	List<EndtTypeMaster> findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(String companyId, Integer productId, String status, Date date, Date date2);
 
-	List<EndtTypeMaster> findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartAndEffectiveDateEndOrderByPriorityAsc(
+	List<EndtTypeMaster> findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqualOrderByPriorityAsc(
 			String companyId, Integer productId, String status, Date date, Date date2);
 
-	EndtTypeMaster findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartAndEffectiveDateEnd(
+	EndtTypeMaster findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(
 			String companyId, Integer productId, String string,Integer parseInt, Date date, Date date2);
 
 }

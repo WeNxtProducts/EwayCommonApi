@@ -91,9 +91,10 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 				errorList.add(new Error("02", "CompanyId", "Please Enter CompanyId"));
 			}
 						
-			if (StringUtils.isBlank(req.getEndtTypeId())) {
+		/*	if (StringUtils.isBlank(req.getEndtTypeId())) {
 				errorList.add(new Error("03", "EndtTypeId", "Please Enter EndtTypeId"));
 			}
+			*/
 			if (StringUtils.isBlank(req.getRemarks())) {
 				errorList.add(new Error("04", "Remarks", "Please Enter Remarks "));
 			}else if (req.getRemarks().length() > 100){
@@ -156,7 +157,7 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			if (StringUtils.isBlank(dependantid)) {
 				errorList.add(new Error("14", "EndtDependantId", "Please Enter EndtDependantId"));
 			}
-
+			}
 			if (StringUtils.isBlank(req.getCalcTypeId())) {
 				errorList.add(new Error("15", "CalcTypeId", "Please Enter CalcTypeId"));
 			}
@@ -190,11 +191,11 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
 				errorList.add(new Error("20", "RegulatoryCode", "Please Enter RegulatoryCode"));
-			}else if (req.getRemarks().length() > 10){
+			}else if (req.getRegulatoryCode().length() > 10){
 				errorList.add(new Error("20","RegulatoryCode", "Please Enter RegulatoryCode within 10 Characters")); 
 			}
 			
-			}
+			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();

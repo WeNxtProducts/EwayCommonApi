@@ -865,7 +865,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			++count;
 			if (motors.size() > 0) {
 				for (EserviceTravelDetails data : motors) {
-					EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartAndEffectiveDateEnd(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+					EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 					savedata = dozerMapper.map(data, EserviceTravelDetails.class);
 					savedata.setEntryDate(new Date());
 					savedata.setCreatedBy(req.getLoginId());
@@ -994,7 +994,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 		EserviceCustomerDetails savedata = new EserviceCustomerDetails();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartAndEffectiveDateEnd(
+			EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(
 					req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 					Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 			HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
@@ -1044,7 +1044,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		
 	try {
-		EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartAndEffectiveDateEnd(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+		EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 		HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
 		savedata = dozerMapper.map(homeData, HomePositionMaster.class);
 		savedata.setRequestReferenceNo(refNo);
@@ -1095,7 +1095,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 		PersonalInfo savedata = new PersonalInfo();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartAndEffectiveDateEnd(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+			EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 			HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
 			String olsCustomerId=homeData.getCustomerId();
 			
@@ -1169,7 +1169,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 		CoverDocumentUploadDetails savedata = new CoverDocumentUploadDetails();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartAndEffectiveDateEnd(
+			EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(
 					req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 					Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 			List<CoverDocumentUploadDetails> motorData = coverDocUploadDetails.findByQuoteNo(req.getQuoteNo());
