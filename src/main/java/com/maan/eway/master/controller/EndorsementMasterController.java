@@ -51,7 +51,7 @@ private EndorsementMasterService service;
 private PrintReqService reqPrinter;
 
 //Save
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
 @PostMapping("/insertendorsement")
 @ApiOperation(value = "This Method is to save Endorsement Master")
 public ResponseEntity<CommonRes> saveEndorsement(@RequestBody EndorsementMasterSaveReq req) {
@@ -83,7 +83,7 @@ public ResponseEntity<CommonRes> saveEndorsement(@RequestBody EndorsementMasterS
 }
 
 //  Get All Endorsement Master
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
 @PostMapping("/getallendorsement")
 @ApiOperation("This method is getall Endorsement")
 public ResponseEntity<CommonRes> getallEndorsement(@RequestBody EndorsementMasterGetallReq req) {
@@ -104,7 +104,7 @@ public ResponseEntity<CommonRes> getallEndorsement(@RequestBody EndorsementMaste
 }
 
 //  Get Active Endorsement Master
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
 @PostMapping("/getactiveendorsement")
 @ApiOperation("This method is get Active Endorsement")
 public ResponseEntity<CommonRes> getActiveEndorsement(@RequestBody EndorsementMasterGetallReq req) {
@@ -125,7 +125,7 @@ public ResponseEntity<CommonRes> getActiveEndorsement(@RequestBody EndorsementMa
 }
 
 // Get By Endorsement Id
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
 @PostMapping("/getbyendorsementid")
 @ApiOperation("This Method is to get by Endorsement id")
 public ResponseEntity<CommonRes> getByEndorsementId(@RequestBody EndorsementMasterGetReq req) {
@@ -143,7 +143,7 @@ public ResponseEntity<CommonRes> getByEndorsementId(@RequestBody EndorsementMast
 		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	}
 }
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
 @PostMapping("/endorsement/changestatus")
 @ApiOperation(value = "This method is get Endorsement Change Status")
 public ResponseEntity<CommonRes> changeStatusOfEndorsement(@RequestBody EndorsementChangeStatusReq req) {
