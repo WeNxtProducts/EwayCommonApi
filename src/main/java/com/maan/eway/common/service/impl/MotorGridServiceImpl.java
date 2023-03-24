@@ -1305,7 +1305,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
 				CoverMaster coverdata=null;
-				EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()));
+				EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartAndEffectiveDateEnd(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());
 				String endTypeDesc=entMaster.getEndtTypeDesc();
 				String endtFeeYn=entMaster.getEndtFeeYn()	;
 				String coverDesc="";
