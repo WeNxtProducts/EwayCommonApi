@@ -913,7 +913,7 @@ public synchronized String generateCustRefNo() {
 					++count;
 					if (motors.size() > 0) {
 						for (EserviceBuildingDetails data : motors) {
-							EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()));
+							EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartAndEffectiveDateEnd(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 							savedata = dozerMapper.map(data, EserviceBuildingDetails.class);
 							savedata.setEntryDate(new Date());
 							savedata.setCreatedBy(req.getLoginId());
@@ -998,9 +998,9 @@ public synchronized String generateCustRefNo() {
 				EserviceCommonDetails savedata = new EserviceCommonDetails();
 				DozerBeanMapper dozerMapper = new DozerBeanMapper();
 				try {
-					EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(
+					EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartAndEffectiveDateEnd(
 							req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
-							Integer.parseInt(req.getEndtTypeId()));
+							Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 					
 					EserviceCommonDetails custData = eserCommonRepo.findByQuoteNo(req.getQuoteNo());
 					if (custData!=null) 
@@ -1092,9 +1092,9 @@ public synchronized String generateCustRefNo() {
 				EserviceCustomerDetails savedata = new EserviceCustomerDetails();
 				DozerBeanMapper dozerMapper = new DozerBeanMapper();
 				try {
-					EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(
+					EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartAndEffectiveDateEnd(
 							req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
-							Integer.parseInt(req.getEndtTypeId()));
+							Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 					HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
 					String olsCustomerId=homeData.getCustomerId();
 					
@@ -1142,7 +1142,7 @@ public synchronized String generateCustRefNo() {
 				DozerBeanMapper dozerMapper = new DozerBeanMapper();
 				
 			try {
-				EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()));
+				EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartAndEffectiveDateEnd(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 				HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
 				savedata = dozerMapper.map(homeData, HomePositionMaster.class);
 				savedata.setRequestReferenceNo(refNo);
@@ -1193,7 +1193,7 @@ public synchronized String generateCustRefNo() {
 				PersonalInfo savedata = new PersonalInfo();
 				DozerBeanMapper dozerMapper = new DozerBeanMapper();
 				try {
-					EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()));
+					EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartAndEffectiveDateEnd(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 					HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
 					String olsCustomerId=homeData.getCustomerId();
 					
@@ -1238,7 +1238,7 @@ public synchronized String generateCustRefNo() {
 				PolicyCoverData savedata = new PolicyCoverData();
 				DozerBeanMapper dozerMapper = new DozerBeanMapper();
 				try {
-					EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()));
+					EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartAndEffectiveDateEnd(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 					String endTypeDesc=entMaster.getEndtTypeDesc();
 					String endtFeeYn=entMaster.getEndtFeeYn()	;
 					String coverDesc="";
@@ -1396,9 +1396,9 @@ public synchronized String generateCustRefNo() {
 				CoverDocumentUploadDetails savedata = new CoverDocumentUploadDetails();
 				DozerBeanMapper dozerMapper = new DozerBeanMapper();
 				try {
-					EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(
+					EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartAndEffectiveDateEnd(
 							req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
-							Integer.parseInt(req.getEndtTypeId()));
+							Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 					List<CoverDocumentUploadDetails> motorData = coverDocUploadDetails.findByQuoteNo(req.getQuoteNo());
 					if (motorData.size() > 0) {
 						for (CoverDocumentUploadDetails data : motorData) {
