@@ -32,6 +32,7 @@ import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.PolicyCoverData;
+import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.ChangeEndoStatusReq;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.res.BuildingCopyRes;
@@ -166,7 +167,7 @@ public class EndorsementService {
 	public EndtMaster getEndorsementTypes(Endorsment request) {
 		try {
 			
-			List<EndtTypeMaster> m = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqualOrderByPriorityAsc(request.getCompanyId(),Integer.valueOf(request.getProductId().intValue()),"Y",new Date(),new Date());
+			List<EndtTypeMaster> m = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualOrderByPriorityAsc(request.getCompanyId(),Integer.valueOf(request.getProductId().intValue()),"Y",new Date(),new Date());
 			
 			List<EndorsementType> ets=new ArrayList<EndorsementType>(); 
 			for(EndtTypeMaster ent:m) {
@@ -409,9 +410,14 @@ public class EndorsementService {
 		}
 		return null;
 	}
+	
+	@Autowired 
+	private RatingFactorsUtil ratingutil;
+	
 	public CommonRes createEndorsment(Endorsment request) {
 		try {
-			EndtTypeMaster entTypeMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(request.getCompanyId(), request.getProductId().intValue(), "Y",Integer.parseInt(request.getEndtType()),new Date(), new Date());
+			//EndtTypeMaster entTypeMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(request.getCompanyId(), request.getProductId().intValue(), "Y",Integer.parseInt(request.getEndtType()),new Date(), new Date());
+			EndtTypeMaster entTypeMaster =ratingutil.getEndtMasterData(request.getCompanyId(),request.getProductId().toPlainString(), request.getEndtType());
 			if("42".equals(request.getEndtType())) {
 				CommonRes cancelPolicy = cancelPolicy(request);	
 				return cancelPolicy;
@@ -446,7 +452,7 @@ public class EndorsementService {
 				Object response = null ;
 				
 				if( request.getProductId().equals(new BigDecimal(motorProductId))  ) {
-					List<EserviceMotorDetails> motorRaw = copyraw.copyMotorRaw(request);
+					List<EserviceMotorDetails> motorRaw = copyraw.copyMotorRaw(request,entTypeMaster);
 					response = motorRaw ;
 					
 				} else if ( request.getProductId().equals(new BigDecimal(travelProductId))  ) {

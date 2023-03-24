@@ -398,12 +398,12 @@ public class CalculatorEngineService implements CalculatorEngine{
 		return null;
 	}
 	
-
+/*
 
 	@Autowired
 	private EndtTypeMasterRepository endtTypeRepo;
 	 
-	
+	*/
 	private void loadAndRemoveCoversForEndt(CalcEngine engine, List<Cover> retc) {
 		try {
 			
@@ -431,7 +431,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 				String endtTypeId=result.get(0).get("endorsementType").toString();
 				BigDecimal endtCount=new BigDecimal(result.get(0).get("endtCount").toString());
 				
-				EndtTypeMaster endtmaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(engine.getInsuranceId(), Integer.parseInt(engine.getProductId()), "Y",  Integer.parseInt(endtTypeId), new Date(), new Date());
+				EndtTypeMaster endtmaster = ratingutil.getEndtMasterData(engine.getInsuranceId(),engine.getProductId(), endtTypeId);
 				
 				retc.stream().forEach( i -> i.setEndtCount(endtCount) );
 				 
@@ -475,7 +475,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 					
 					
 					 Endorsement currentEndt=Endorsement.builder()
-							 	.endorsementDesc(d.getCoverDesc()+" "+endtDesc+" "+endtCount.intValue())
+							 	.endorsementDesc(d.getCoverDesc()+" "+endtDesc/*+" "+endtCount.intValue()*/)
 							 	.endorsementId(endtTypeId)
 							 	.endorsementRate(d.getRate().toPlainString())
 							 	.endorsementCalcType("A")
@@ -505,7 +505,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 										.isTaxExempted("N")
 										.regulatoryCode("N/A")
 										.taxAmount(BigDecimal.ZERO)
-										.taxDesc(endtDesc+" Endorsement Fee"+" "+endtCount.intValue())
+										.taxDesc(endtDesc+" Endorsement Fee"/*+" "+endtCount.intValue()*/)
 										.taxExemptCode(null)
 										.taxRate(Double.parseDouble(endtmaster.getEndtFeePercent()))
 										.taxId(endtTypeId+"")

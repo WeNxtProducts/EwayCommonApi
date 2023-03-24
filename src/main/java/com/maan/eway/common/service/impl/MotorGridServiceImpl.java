@@ -1015,7 +1015,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				++count;
 				if (motors.size() > 0) {
 					for (EserviceMotorDetails data : motors) {
-						EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());
+						EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());
 						savedata = dozerMapper.map(data, EserviceMotorDetails.class);
 						savedata.setEntryDate(new Date());
 						savedata.setCreatedBy(req.getLoginId());
@@ -1158,7 +1158,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			EserviceCustomerDetails savedata = new EserviceCustomerDetails();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
-				EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(
+				EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 						req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 						Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 				HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
@@ -1208,7 +1208,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			
 		try {
-			EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());
+			EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());
 			HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
 			savedata = dozerMapper.map(homeData, HomePositionMaster.class);
 			savedata.setRequestReferenceNo(refNo);
@@ -1259,7 +1259,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			PersonalInfo savedata = new PersonalInfo();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
-				EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+				EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 				HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
 				String olsCustomerId=homeData.getCustomerId();
 				
@@ -1305,7 +1305,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
 				CoverMaster coverdata=null;
-				EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());
+				EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());
 				String endTypeDesc=entMaster.getEndtTypeDesc();
 				String endtFeeYn=entMaster.getEndtFeeYn()	;
 				String coverDesc="";
@@ -1461,7 +1461,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			MotorDataDetails savedata = new MotorDataDetails();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
-				EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+				EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 				List<MotorDataDetails> motorData=motorDataDetepo.findByQuoteNo(req.getQuoteNo());
 				if (motorData.size() > 0) {
 					for (MotorDataDetails data : motorData) {
@@ -1507,7 +1507,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			MotorDriverDetails savedata = new MotorDriverDetails();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
-				EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(
+				EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 						req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 						Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 				List<MotorDriverDetails> motorDriverData = motordrivDetepo.findByQuoteNo(req.getQuoteNo());
@@ -1551,7 +1551,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			CoverDocumentUploadDetails savedata = new CoverDocumentUploadDetails();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
-				EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(
+				EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 						req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 						Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 				List<CoverDocumentUploadDetails> motorData = coverDocUploadDetails.findByQuoteNo(req.getQuoteNo());

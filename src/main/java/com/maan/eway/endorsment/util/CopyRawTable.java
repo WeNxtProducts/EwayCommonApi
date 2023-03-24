@@ -48,9 +48,9 @@ public class CopyRawTable  {
 	
 	@Autowired	 
 	private MotorGridServiceImpl numberGenerate ;
-	@Autowired
+/*	@Autowired
 	private EndtTypeMasterRepository endtTypeRepo;
-	 
+	 */
 	@Autowired
 	private HomePositionMasterRepository homePosistionRepo;
 	
@@ -75,7 +75,7 @@ public class CopyRawTable  {
 	
 	private Logger log = LogManager.getLogger(MotorGridServiceImpl.class);
 	
-	public List<EserviceMotorDetails> copyMotorRaw(Endorsment ent) {
+	public List<EserviceMotorDetails> copyMotorRaw(Endorsment ent, EndtTypeMaster entMaster) {
 		try {
 			List<EserviceMotorDetails> motor=null;
 			Integer count=emotorRepo.countByOriginalPolicyNoAndRiskId(ent.getPolicyNo(),1);
@@ -123,7 +123,7 @@ public class CopyRawTable  {
 			if(pendingcount==0)
 				newRequestNo=numberGenerate.generateRequestNo(ent.getCompanyId(), ent.getBranchCode(), String.valueOf(ent.getProductId()));
 			
-			EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(ent.getCompanyId(), ent.getProductId().intValue(), "Y",Integer.parseInt(ent.getEndtType()), new Date(), new Date());
+			//EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(ent.getCompanyId(), ent.getProductId().intValue(), "Y",Integer.parseInt(ent.getEndtType()), new Date(), new Date());
 			List<EserviceMotorDetails> motors=emotorRepo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
 			List<EserviceMotorDetails> newMotors=new ArrayList<EserviceMotorDetails>();
 			++count;
