@@ -39,7 +39,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 				 t.setCurrency(currecy);
 				 
 				 t.setProRata(new BigDecimal("1"));
-				 if(prorata!=null && prorata.size()>0 && "Y".equals(t.getProRataYn())) {
+				 if(prorata!=null && prorata.size()>0 && "Y".equals(t.getProRataYn()) && !"Y".equals(t.getUserOpt())) {
 					 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
 					 t.setProRata(percenat.divide(new BigDecimal("100")));
 				 }

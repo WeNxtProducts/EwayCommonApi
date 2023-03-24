@@ -147,8 +147,8 @@ public class CachingConfig   {
 	    			 public Object generate(Object target, Method method, Object... params) {
 	    				 //CalcEngine e=(CalcEngine)params[0]; 
 	    				 String string = new StringBuilder().append(params[0])
+	    						 .append(params[1])
 	    						 .append(params[2])
-	    						 .append(params[3])
 	    						 .append("EndtTable")
 	    						 .toString();
 	    				 return string;
