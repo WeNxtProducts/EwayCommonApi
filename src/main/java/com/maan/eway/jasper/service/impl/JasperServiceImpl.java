@@ -61,32 +61,34 @@ public class JasperServiceImpl implements JasperService {
 		JasperDocumentRes res = new JasperDocumentRes();
 		String getPdfOutFilePath = "";
 		try {
-			Map<String, Object> input = new HashMap<String, Object>();
-			input.put("QuoteNo", req.getQuoteNo());
-			input.put("imagePath", config.getImagePath());
-
+			
 			HomePositionMaster homeData = homeRepo.findByQuoteNo(req.getQuoteNo());
+			Map<String, Object> input = new HashMap<String, Object>();
+			
+			// String directoryname=null ;
+			// File Save Path
+			String filePath = null;
 
+			if (StringUtils.isNotBlank(homeData.getPolicyNo())) {
+				input.put("pvPolicyNo", homeData.getPolicyNo());
+				input.put("pvImagepath", config.getImagePath());
+
+				// directoryname=homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
+				filePath = config.getPolicyPath() + "pdf";
+				getPdfOutFilePath = filePath + "/" + homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")
+						+ ".pdf";
+
+			} else {
+				input.put("QuoteNo", req.getQuoteNo());
+				input.put("imagePath", config.getImagePath());
+
+				// directoryname=req.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
+				filePath = config.getDraftPath() + "pdf";
+				getPdfOutFilePath = filePath + "/" + req.getQuoteNo() + ".pdf";
+			}
+			
 			if (null != input && input.size() > 0) {
-
-				// String directoryname=null ;
-				// File Save Path
-				String filePath = null;
-
-				if (StringUtils.isNotBlank(homeData.getPolicyNo())) {
-
-					// directoryname=homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
-					filePath = config.getPolicyPath() + "pdf";
-					getPdfOutFilePath = filePath + "/" + homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")
-							+ ".pdf";
-
-				} else {
-
-					// directoryname=req.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
-					filePath = config.getDraftPath() + "pdf";
-					getPdfOutFilePath = filePath + "/" + req.getQuoteNo() + ".pdf";
-				}
-
+				
 				File theDir = new File(filePath);
 				if (!theDir.exists()) {
 					theDir.mkdirs();
@@ -98,9 +100,13 @@ public class JasperServiceImpl implements JasperService {
 
 				else if (travelProductId.equals(req.getProductId())) {
 					res = getJasperPdfFile("/report/jasper/TravelReport.jrxml", getPdfOutFilePath, input);
+					
+				} else if (motorProductId.equals(homeData.getProductId().toString())) {
+					res = getJasperPdfFile("/report/jasper/MotorPrivate.jrxml", getPdfOutFilePath, input);
 				}
-
+				
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
