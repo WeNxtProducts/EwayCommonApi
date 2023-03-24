@@ -147,4 +147,6 @@ public interface DropDownService {
 
 	List<DropDownRes> followupDetailsStatus(LovDropDownReq req);
 
+	List<DropDownRes> endtDependantFields(LovDropDownReq req);
+
 }

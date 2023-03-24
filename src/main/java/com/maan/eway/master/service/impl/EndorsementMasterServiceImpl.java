@@ -162,15 +162,28 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 				errorList.add(new Error("15", "CalcTypeId", "Please Enter CalcTypeId"));
 			}
 			
-			if((StringUtils.isNotBlank(req.getCalcTypeId())) && req.getCalcTypeId()=="A") {
-				errorList.add(new Error("17", "EndtFeePercent", "Please Enter EndtFeePercent"));
-							
+			if((StringUtils.isNotBlank(req.getCalcTypeId())) && req.getCalcTypeId().equalsIgnoreCase("A")) {
+				if (StringUtils.isBlank(req.getEndtFeePercent())) {				
+					errorList.add(new Error("16", "EndtFeePercent", "Please Enter EndtFeePercent"));
+					}
+				if ((StringUtils.isNotBlank(req.getEndtFeePercent()))
+						&& !req.getEndtFeePercent().matches("[0-9]+")){
+					errorList.add(new Error("19","EndtFeePercent", "Please Enter EndtFeePercent in correct format")); 
+					
+				}
 			}
-			else if((StringUtils.isNotBlank(req.getCalcTypeId())) && req.getCalcTypeId()=="P") {
+			if((StringUtils.isNotBlank(req.getCalcTypeId())) && req.getCalcTypeId().equalsIgnoreCase("P")) {
+				if (StringUtils.isBlank(req.getEndtFeePercent())) {				
 				errorList.add(new Error("17", "EndtFeePercent", "Please Enter EndtFeePercent"));
+				}
 				Double a =Double.valueOf(req.getEndtFeePercent());
-				if(a>100) {
+				if((StringUtils.isNotBlank(req.getEndtFeePercent()))&& a>100) {
 					errorList.add(new Error("17", "EndtFeePercent", "Please Enter EndtFeePercent below 100"));							
+				}
+				if ((StringUtils.isNotBlank(req.getEndtFeePercent()))
+						&& !req.getEndtFeePercent().matches("[0-9]+")){
+					errorList.add(new Error("19","EndtFeePercent", "Please Enter EndtFeePercent in correct format")); 
+					
 				}
 			}
 			if (StringUtils.isBlank(req.getEndtFeeYn())) {
@@ -183,11 +196,6 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 				errorList.add(new Error("18","Remarks", "Please Enter Remarks within 100 Characters")); 
 			}
 
-			if ((StringUtils.isNotBlank(req.getEndtFeePercent()))
-					&& !req.getEndtFeePercent().matches("[0-9]+")){
-				errorList.add(new Error("19","EndtFeePercent", "Please Enter EndtFeePercent in correct format")); 
-				
-			}
 			
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
 				errorList.add(new Error("20", "RegulatoryCode", "Please Enter RegulatoryCode"));
