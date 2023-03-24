@@ -32,9 +32,7 @@ public class EndtTypeMasterId implements Serializable {
     private Integer    endtTypeId ;
     
     private Integer    endtTypeCategoryId ;
-    
-    private String     status ;
-    
+        
     private Integer    productId ;
     
     private String     companyId ;

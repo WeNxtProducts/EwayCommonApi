@@ -20,6 +20,7 @@ import javax.persistence.Table;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import java.math.BigDecimal;
@@ -61,10 +62,6 @@ private static final long serialVersionUID = 1L;
     private Integer    endtTypeCategoryId ;
 
     @Id
-    @Column(name="STATUS", nullable=false, length=3)
-    private String     status ;
-
-    @Id
     @Column(name="PRODUCT_ID", nullable=false)
     private Integer    productId ;
 
@@ -82,25 +79,62 @@ private static final long serialVersionUID = 1L;
     @Column(name="ENDT_TYPE_CATEGORY", length=150)
     private String     endtTypeCategory ;
 
+    @Column(name="STATUS", nullable=false, length=3)
+    private String     status ;
+    
     @Column(name="PRIORITY")
     private Integer    priority ;
 
-    @Column(name="ENDT_DEPENDANT_FIELDS", length=300)
+    @Column(name="ENDT_DEPENDANT_IDS", length=100)
+    private String     endtDependantIds ;
+
+    @Column(name="ENDT_DEPENDANT_FIELDS", length=1000)
     private String     endtDependantFields ;
 
-    @Column(name="CORE_APP_CODE")
-    private BigDecimal coreAppCode ;
+    @Column(name="CORE_APP_CODE", length=10)
+    private String coreAppCode ;
 
+    @Column(name="REGULATORY_CODE", length=10)
+    private String regulatoryCode ;
+
+    
     @Column(name="ENDT_FEE_YN")
     private String endtFeeYn ;
+    
     @Column(name="ENDT_FEE_PERCENT")
     private String endtFeePercent ;
 
- 
-     
-    //--- ENTITY LINKS ( RELATIONSHIP )
+    @Column(name="REMARKS", length=100)
+    private String remarks;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ENTRY_DATE")
+    private Date entryDate;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_START")
+    private Date effectiveDateStart;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EFFECTIVE_DATE_END")
+    private Date effectiveDateEnd;
+
+    @Column(name="CREATED_BY", length=100)
+    private String createdBy;
+
+    @Column(name="UPDATED_BY", length=100)
+    private String updatedBy;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="UPDATED_DATE")
+    private Date updatedDate;
+
+    @Column(name="AMEND_ID")
+    private Integer amendId;
+
+    @Column(name="CALC_TYPE_ID", length=10)
+    private String calcTypeId;
+
+    
 }
 
 

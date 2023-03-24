@@ -166,7 +166,7 @@ public class EndorsementService {
 	public EndtMaster getEndorsementTypes(Endorsment request) {
 		try {
 			
-			List<EndtTypeMaster> m = endtTypeRepo.findByCompanyIdAndProductIdAndStatusOrderByPriorityAsc(request.getCompanyId(),Integer.valueOf(request.getProductId().intValue()),"Y");
+			List<EndtTypeMaster> m = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartAndEffectiveDateEndOrderByPriorityAsc(request.getCompanyId(),Integer.valueOf(request.getProductId().intValue()),"Y",new Date(),new Date());
 			
 			List<EndorsementType> ets=new ArrayList<EndorsementType>(); 
 			for(EndtTypeMaster ent:m) {
@@ -411,7 +411,7 @@ public class EndorsementService {
 	}
 	public CommonRes createEndorsment(Endorsment request) {
 		try {
-			EndtTypeMaster entTypeMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(request.getCompanyId(), request.getProductId().intValue(), "Y",Integer.parseInt(request.getEndtType()));
+			EndtTypeMaster entTypeMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartAndEffectiveDateEnd(request.getCompanyId(), request.getProductId().intValue(), "Y",Integer.parseInt(request.getEndtType()),new Date(), new Date());
 			if("42".equals(request.getEndtType())) {
 				CommonRes cancelPolicy = cancelPolicy(request);	
 				return cancelPolicy;

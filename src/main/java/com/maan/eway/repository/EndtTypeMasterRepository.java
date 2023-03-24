@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,12 +32,21 @@ import com.maan.eway.bean.EndtTypeMasterId;
  
  
 public interface EndtTypeMasterRepository  extends JpaRepository<EndtTypeMaster,EndtTypeMasterId > , JpaSpecificationExecutor<EndtTypeMaster> {
-
+	/*
 	List<EndtTypeMaster> findByCompanyIdAndProductIdAndStatus(String companyId, Integer productId, String status);
-
+	
 	List<EndtTypeMaster> findByCompanyIdAndProductIdAndStatusOrderByPriorityAsc(String companyId, Integer productId, String status);
 
 	EndtTypeMaster findByCompanyIdAndProductIdAndStatusAndEndtTypeId(String companyId, Integer productId,
 			String string, Integer parseInt);
+	*/
+
+	List<EndtTypeMaster> findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartAndEffectiveDateEnd(String companyId, Integer productId, String status, Date date, Date date2);
+
+	List<EndtTypeMaster> findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartAndEffectiveDateEndOrderByPriorityAsc(
+			String companyId, Integer productId, String status, Date date, Date date2);
+
+	EndtTypeMaster findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartAndEffectiveDateEnd(
+			String companyId, Integer productId, String string,Integer parseInt, Date date, Date date2);
 
 }

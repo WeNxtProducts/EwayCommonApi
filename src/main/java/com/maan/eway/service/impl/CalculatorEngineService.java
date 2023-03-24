@@ -431,7 +431,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 				String endtTypeId=result.get(0).get("endorsementType").toString();
 				BigDecimal endtCount=new BigDecimal(result.get(0).get("endtCount").toString());
 				
-				EndtTypeMaster endtmaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(engine.getInsuranceId(), Integer.parseInt(engine.getProductId()), "Y",  Integer.parseInt(endtTypeId));
+				EndtTypeMaster endtmaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartAndEffectiveDateEnd(engine.getInsuranceId(), Integer.parseInt(engine.getProductId()), "Y",  Integer.parseInt(endtTypeId), new Date(), new Date());
 				
 				retc.stream().forEach( i -> i.setEndtCount(endtCount) );
 				 
