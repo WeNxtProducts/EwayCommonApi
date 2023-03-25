@@ -1200,6 +1200,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 		}
 
 		//Home Position Master Endt Copy Quote
+		@Transactional
 		public CopyQuoteSuccessRes homeEndoCopyQuote(CopyQuoteReq req,String refNo,String customerId,String quoteNo,String loginId,	String prevPolicyNo,
 		String prevQuoteNo,Integer count,String custRefNo) {
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
@@ -1209,8 +1210,11 @@ public class MotorGridServiceImpl implements MotorGridService {
 		try {
 			EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());
 			String endtFeeYn=entMaster.getEndtFeeYn()	;
-			String endtFee=entMaster.getEndtFeePercent();
+			BigDecimal endtFee=new BigDecimal(entMaster.getEndtFeePercent());
 			HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
+			BigDecimal overAllPremiumFc=new BigDecimal(homeData.getOverallPremiumFc().toString());
+			BigDecimal endtPremium=overAllPremiumFc.multiply(endtFee);
+			BigDecimal divisor=new BigDecimal(100);
 			savedata = dozerMapper.map(homeData, HomePositionMaster.class);
 			savedata.setRequestReferenceNo(refNo);
 			savedata.setCustomerId(customerId);
@@ -1223,8 +1227,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 			savedata.setQuoteCreatedDate(new Date());
 			savedata.setEntryDate(new Date());
 			if("Y".equalsIgnoreCase(endtFeeYn)){
-				savedata.setEndtPremium(new BigDecimal(endtFee));
-			}else {
+				savedata.setEndtPremium(endtPremium.divide(divisor));
+				}else {
 				savedata.setEndtPremium(BigDecimal.ZERO);
 			}
 			savedata.setEndtPremiumTax(BigDecimal.ZERO);
@@ -1258,6 +1262,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 		}
 		
 		//Personal Info Endt Copy Quote
+		@Transactional
 		public CopyQuoteSuccessRes personolInfoEndoCopyQuote(CopyQuoteReq req,String customerId,String prevPolicyNo,
 				String prevQuoteNo,Integer count,String custRefNo) {
 			CopyQuoteSuccessRes res =new CopyQuoteSuccessRes();
