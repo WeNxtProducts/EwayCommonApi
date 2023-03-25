@@ -1227,6 +1227,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			}else {
 				savedata.setEndtPremium(BigDecimal.ZERO);
 			}
+			savedata.setEndtPremiumTax(BigDecimal.ZERO);
 				
 			savedata.setRequestReferenceNo(refNo);
 			savedata.setOriginalPolicyNo(req.getPolicyNo());
