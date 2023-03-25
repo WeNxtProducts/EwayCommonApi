@@ -1215,6 +1215,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			BigDecimal overAllPremiumFc=new BigDecimal(homeData.getOverallPremiumFc().toString());
 			BigDecimal endtPremium=overAllPremiumFc.multiply(endtFee);
 			BigDecimal divisor=new BigDecimal(100);
+			BigDecimal endtPre=endtPremium.divide(divisor);
 			savedata = dozerMapper.map(homeData, HomePositionMaster.class);
 			savedata.setRequestReferenceNo(refNo);
 			savedata.setCustomerId(customerId);
@@ -1227,12 +1228,13 @@ public class MotorGridServiceImpl implements MotorGridService {
 			savedata.setQuoteCreatedDate(new Date());
 			savedata.setEntryDate(new Date());
 			if("Y".equalsIgnoreCase(endtFeeYn)){
-				savedata.setEndtPremium(endtPremium.divide(divisor));
+				savedata.setEndtPremium(endtPre);
+				savedata.setIsChargRefund(endtPre.toString());
 				}else {
 				savedata.setEndtPremium(BigDecimal.ZERO);
+				savedata.setIsChargRefund("");
 			}
 			savedata.setEndtPremiumTax(BigDecimal.ZERO);
-				
 			savedata.setRequestReferenceNo(refNo);
 			savedata.setOriginalPolicyNo(req.getPolicyNo());
 			savedata.setEndorsementRemarks(req.getEndtRemarks());
@@ -1261,6 +1263,18 @@ public class MotorGridServiceImpl implements MotorGridService {
 		return res;
 		}
 		
+		protected BigDecimal domath(String calctype, Double rate,BigDecimal si,BigDecimal exchangeRate) {
+			BigDecimal d=BigDecimal.ZERO;
+			if("P".equals(calctype)) {
+			d = si.multiply(new BigDecimal(rate/100)/*, round*/);	
+			 }else if("A".equals(calctype)) {
+			d=(new BigDecimal(rate).divide(exchangeRate/*,round*/));// for foreign currency calculation we have to divide by exchange rate	
+			 }else if("M".equals(calctype)) {
+			 d = si.multiply(new BigDecimal(rate/1000)/*, round*/);	
+			 }
+			return d;
+			}
+
 		//Personal Info Endt Copy Quote
 		@Transactional
 		public CopyQuoteSuccessRes personolInfoEndoCopyQuote(CopyQuoteReq req,String customerId,String prevPolicyNo,
