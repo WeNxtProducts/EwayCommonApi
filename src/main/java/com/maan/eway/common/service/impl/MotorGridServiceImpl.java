@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -1209,6 +1208,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 			
 		try {
 			EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());
+			String endtFeeYn=entMaster.getEndtFeeYn()	;
+			String endtFee=entMaster.getEndtFeePercent();
 			HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
 			savedata = dozerMapper.map(homeData, HomePositionMaster.class);
 			savedata.setRequestReferenceNo(refNo);
@@ -1218,12 +1219,15 @@ public class MotorGridServiceImpl implements MotorGridService {
 			savedata.setEndtDate(new Date());
 			savedata.setEndtBy(loginId);
 			savedata.setEndtStatus("P");
-			savedata.setEndtPremium(BigDecimal.ZERO);
 			savedata.setEndtCommission(BigDecimal.valueOf(0));
-		//	savedata.setOriginalPolicyNo(homeData.getPolicyNo());
 			savedata.setQuoteCreatedDate(new Date());
 			savedata.setEntryDate(new Date());
-			
+			if("Y".equalsIgnoreCase(endtFeeYn)){
+				savedata.setEndtPremium(new BigDecimal(endtFee));
+			}else {
+				savedata.setEndtPremium(BigDecimal.ZERO);
+			}
+				
 			savedata.setRequestReferenceNo(refNo);
 			savedata.setOriginalPolicyNo(req.getPolicyNo());
 			savedata.setEndorsementRemarks(req.getEndtRemarks());
