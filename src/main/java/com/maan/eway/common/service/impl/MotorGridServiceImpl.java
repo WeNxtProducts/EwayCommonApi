@@ -1216,6 +1216,13 @@ public class MotorGridServiceImpl implements MotorGridService {
 			BigDecimal endtPremium=overAllPremiumFc.multiply(endtFee);
 			BigDecimal divisor=new BigDecimal(100);
 			BigDecimal endtPre=endtPremium.divide(divisor);
+			String txt="";
+			if(endtPre.intValue()<0) {
+				txt="CHARGE";
+				
+			}else {
+				txt="REFUND";
+			}
 			savedata = dozerMapper.map(homeData, HomePositionMaster.class);
 			savedata.setRequestReferenceNo(refNo);
 			savedata.setCustomerId(customerId);
@@ -1229,7 +1236,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			savedata.setEntryDate(new Date());
 			if("Y".equalsIgnoreCase(endtFeeYn)){
 				savedata.setEndtPremium(endtPre);
-				savedata.setIsChargRefund(endtPre.toString());
+				savedata.setIsChargRefund(txt);
 				}else {
 				savedata.setEndtPremium(BigDecimal.ZERO);
 				savedata.setIsChargRefund("");
