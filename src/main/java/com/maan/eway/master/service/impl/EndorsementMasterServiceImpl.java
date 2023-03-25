@@ -17,7 +17,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -32,31 +31,20 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.ClausesMaster;
+import com.maan.eway.bean.EndtDependantFieldMaster;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.WarrantyMaster;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.ClausesChangeStatusReq;
-import com.maan.eway.master.req.ClausesMasterDropdownReq;
-import com.maan.eway.master.req.ClausesMasterGetReq;
-import com.maan.eway.master.req.ClausesMasterGetallReq;
-import com.maan.eway.master.req.ClausesMasterListSaveReq;
-import com.maan.eway.master.req.ClausesMasterReq;
-import com.maan.eway.master.req.ClausesMasterSaveReq;
 import com.maan.eway.master.req.EndorsementChangeStatusReq;
 import com.maan.eway.master.req.EndorsementMasterDropdownReq;
 import com.maan.eway.master.req.EndorsementMasterGetReq;
 import com.maan.eway.master.req.EndorsementMasterGetallReq;
 import com.maan.eway.master.req.EndorsementMasterSaveReq;
-import com.maan.eway.master.req.NonSelectedClausesGetAllReq;
-import com.maan.eway.master.req.WarrantyMasterReq;
-import com.maan.eway.master.res.ClausesMasterRes;
 import com.maan.eway.master.res.EndorsementMasterGetallRes;
 import com.maan.eway.master.res.EndorsementMasterListRes;
 import com.maan.eway.master.res.EndorsementMasterRes;
-import com.maan.eway.master.service.ClausesMasterService;
 import com.maan.eway.master.service.EndorsementMasterService;
-import com.maan.eway.repository.ClausesMasterRepository;
+import com.maan.eway.repository.EndtDependantFieldsMasterRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.res.DropDownRes;
@@ -70,6 +58,10 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 	@Autowired
 	private EndtTypeMasterRepository repo;
 
+	@Autowired
+	private EndtDependantFieldsMasterRepository dependantrepo;
+
+	
 	@Autowired
 	private ListItemValueRepository listrepo;
 
@@ -202,7 +194,16 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			}else if (req.getRegulatoryCode().length() > 10){
 				errorList.add(new Error("20","RegulatoryCode", "Please Enter RegulatoryCode within 10 Characters")); 
 			}
-			
+			if((StringUtils.isNotBlank(req.getCalcTypeId())) && req.getCalcTypeId().equalsIgnoreCase("M")) {
+				if (StringUtils.isBlank(req.getEndtFeePercent())) {				
+					errorList.add(new Error("16", "EndtFeePercent", "Please Enter EndtFeePercent"));
+					}
+				if ((StringUtils.isNotBlank(req.getEndtFeePercent()))
+						&& !req.getEndtFeePercent().matches("[0-9]+")){
+					errorList.add(new Error("19","EndtFeePercent", "Please Enter EndtFeePercent in correct format")); 
+					
+				}
+			}
 			
 		} catch (Exception e) {
 			log.error(e);
@@ -256,8 +257,9 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 				Predicate n1 = cb.equal(b.get("endtTypeId"),req.getEndtTypeId());
 				Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId());
 				Predicate n3 = cb.equal(b.get("productId"),req.getProductId());
-				
-				query.where(n1,n2,n3).orderBy(orderList);
+				Predicate n4 = cb.equal(b.get("endtTypeCategoryId"),req.getEndtTypeCategoryId());
+
+				query.where(n1,n2,n3,n4).orderBy(orderList);
 				
 				// Get Result
 				TypedQuery<EndtTypeMaster> result = em.createQuery(query);
@@ -310,6 +312,8 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 		//	saveData.setCalcType(calc.getItemValue());
 			saveData.setEndtTypeId(endtTypeId);
 			saveData.setRegulatoryCode(req.getRegulatoryCode());
+			
+			/*
 			String id = "";
 			String desc = "";
 			List<String> ids = req.getEndtDependantIds();
@@ -318,6 +322,18 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 				id = id + "," + ids.get(i);
 				desc=desc+"," +data1.getItemValue();
 			}
+			*/
+
+			String id = "";
+			String desc = "";
+			List<String> ids = req.getEndtDependantIds();
+			for (int i = 0; i < ids.size(); i++) {
+			EndtDependantFieldMaster data1 = getDependantField(req.getCompanyId(),req.getProductId(),Integer.valueOf(ids.get(i)));				
+				id = id + "," + ids.get(i);
+				desc=desc+"," +data1.getDependantFieldName();
+			}
+
+			
 			id=id.substring(1);
 			desc=desc.substring(1);
 			saveData.setEndtDependantIds(id);
@@ -336,6 +352,51 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 		}
 	
 	
+	private EndtDependantFieldMaster getDependantField(String companyId, String productId, Integer dependantFieldId) {
+		// TODO Auto-generated method stub
+		List<EndtDependantFieldMaster> list = new ArrayList<EndtDependantFieldMaster>();
+		try {
+			Date today = new Date();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<EndtDependantFieldMaster> query = cb.createQuery(EndtDependantFieldMaster.class);
+
+			// Find All
+			Root<EndtDependantFieldMaster> b = query.from(EndtDependantFieldMaster.class);
+
+			// Select
+			query.select(b);
+
+			// Effective Date Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<EndtDependantFieldMaster> ocpm1 = amendId.from(EndtDependantFieldMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("dependantFieldId"), b.get("dependantFieldId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			
+			amendId.where(a1,a2,a3);
+
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("companyId"),companyId);
+			Predicate n3 = cb.equal(b.get("productId"),productId);
+			Predicate n4 = cb.equal(b.get("dependantFieldId"),dependantFieldId);
+				
+			query.where(n1,n2,n3,n4);
+			
+			// Get Result
+			TypedQuery<EndtDependantFieldMaster> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+
+		}
+		return list.get(0);
+	}
+
+
 	public Integer getMasterTableCount(String companyId,  String productId, String endtTypeCategoryId)	{
 
 		Integer data =0;
