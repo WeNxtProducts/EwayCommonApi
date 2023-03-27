@@ -1211,16 +1211,17 @@ public class MotorGridServiceImpl implements MotorGridService {
 			EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());
 			String endtFeeYn=entMaster.getEndtFeeYn()	;
 			BigDecimal endtPre=BigDecimal.ZERO;
+			BigDecimal endtPremiumtax=BigDecimal.ZERO;
 			Double endtPercent=0d;
 			HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
+			Double tax=Double.valueOf(homeData.getVatPercent().toString());
 			BigDecimal overAllPremiumFc=new BigDecimal(homeData.getOverallPremiumFc().toString());
 			if ("Y".equalsIgnoreCase(endtFeeYn)) {
 				endtPercent = Double.valueOf(entMaster.getEndtFeePercent());
 				endtPre = domath(entMaster.getCalcTypeId(), endtPercent, overAllPremiumFc);
+				endtPremiumtax=endtPre.multiply(new BigDecimal(tax/100));
 			}
-//			BigDecimal endtPremium=overAllPremiumFc.multiply(endtFee);
-//			BigDecimal divisor=new BigDecimal(100);
-//			BigDecimal endtPre=endtPremium.divide(divisor);
+			
 			
 			String txt="";
 			if(endtPre.intValue()>0) {
@@ -1242,11 +1243,12 @@ public class MotorGridServiceImpl implements MotorGridService {
 			if("Y".equalsIgnoreCase(endtFeeYn)){
 				savedata.setEndtPremium(endtPre);
 				savedata.setIsChargRefund(txt);
+				savedata.setEndtPremiumTax(endtPremiumtax);
 				}else {
 				savedata.setEndtPremium(endtPre);
 				savedata.setIsChargRefund("");
 			}
-			savedata.setEndtPremiumTax(BigDecimal.ZERO);
+			savedata.setEndtPremiumTax(endtPremiumtax);
 			savedata.setRequestReferenceNo(refNo);
 			savedata.setOriginalPolicyNo(req.getPolicyNo());
 			savedata.setEndorsementRemarks(req.getEndtRemarks());
