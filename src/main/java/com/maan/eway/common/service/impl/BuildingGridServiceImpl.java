@@ -800,7 +800,7 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 			String quoteNo  = "Q"+ generateQuoteNo();
 			String customerId = "C-" + generateCustId();
 			String custRefNo = "Cust-" +   generateCustRefNo() ; 
-            //Copy Quote E service Motor Details
+            //Copy Quote E service Building Details
 			EserviceBuildingDetails savedata=eserviceBuildingCopyquote(req,refNo,branches,loginId,customerId,quoteNo,custRefNo);
 			res.setCommonResponse(savedata);
 			res.setQuoteNo(quoteNo);
@@ -1007,8 +1007,8 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 					custRefNo);
 
 			// Copy ESERVICE_COMMON_DETAILS
-			eserviceCommonDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId, prevPolicyNo, prevQuoteNo,
-					count, custRefNo);
+//			eserviceCommonDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId, prevPolicyNo, prevQuoteNo,
+//					count, custRefNo);
 
 			// Copy ESERVICE_SECTION_DETAILS
 			eserviceSectionDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
@@ -1048,6 +1048,7 @@ private CopyQuoteSuccessRes buildingDetailsEndoCopyquote(CopyQuoteReq req, Strin
 				savedata = dozerMapper.map(data, BuildingDetails.class);
 				savedata.setEntryDate(new Date());
 				savedata.setRequestReferenceNo(refNo);
+				savedata.setCustomerId(customerId);
 				savedata.setQuoteNo(quoteNo);
 				savedata.setCreatedBy(loginId);
 				savedata.setUpdatedBy(loginId);
@@ -1234,6 +1235,9 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 					if (custData!=null) 
 							savedata = dozerMapper.map(custData, EserviceCommonDetails.class);
 							savedata.setEntryDate(new Date());
+							savedata.setQuoteNo(quoteNo);
+							savedata.setCustomerId(customerId);
+							savedata.setRequestReferenceNo(refNo);
 							savedata.setCustomerReferenceNo(custRefNo);
 							savedata.setCreatedBy(loginId);
 							savedata.setUpdatedBy(loginId);
@@ -1251,7 +1255,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 							savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
 							savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
 							savedata.setStatus("E");
-							//savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+							savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
 							eserCommonRepo.saveAndFlush(savedata);
 				
 				
@@ -1438,6 +1442,20 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 					savedata.setIsChargRefund("");
 				}
 				savedata.setEndtPremiumTax(BigDecimal.ZERO);
+				savedata.setRequestReferenceNo(refNo);
+				savedata.setOriginalPolicyNo(req.getPolicyNo());
+				savedata.setEndorsementRemarks(req.getEndtRemarks());
+				savedata.setEndorsementEffdate(req.getEndtEffectiveDate());
+				savedata.setEndtPrevPolicyNo(prevPolicyNo);
+				savedata.setEndtPrevQuoteNo(prevQuoteNo);
+				savedata.setEndtCount(count);
+				savedata.setEndtStatus("P");
+				savedata.setIsFinacialEndt("N");
+				savedata.setEndtCategDesc(entMaster.getEndtTypeCategory());
+				savedata.setEndtTypeDesc(entMaster.getEndtTypeDesc());
+				savedata.setStatus("E");
+				savedata.setPolicyNo(req.getPolicyNo()+"-"+count);
+
 				homePosistionRepo.saveAndFlush(savedata);
 			
 				System.out.println("QUOTE NO:"+quoteNo);

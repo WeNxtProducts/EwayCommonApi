@@ -422,8 +422,9 @@ public class EndorsementService {
 				CommonRes cancelPolicy = cancelPolicy(request);	
 				return cancelPolicy;
 			}else if ("1".equals(entTypeMaster.getEndtTypeCategoryId().toString()) ) {
+				Object response = null ;
 				HomePositionMaster hp = hpmrepo.findByPolicyNoAndStatusAndCompanyIdAndProductId(request.getPolicyNo(),"P", request.getCompanyId(), Integer.valueOf(request.getProductId().intValue()));
-				
+				if(hp!=null) {
 				CopyQuoteReq c = new CopyQuoteReq();
 				c.setRequestReferenceNo(hp.getRequestReferenceNo());
 				c.setLoginId(hp.getLoginId());
@@ -439,15 +440,34 @@ public class EndorsementService {
 				c.setEndtRemarks(request.getEndtRemarks());
 				c.setEndtEffectiveDate(request.getEndtEffectiveDate());
 
-				List<EserviceMotorDetails> copyQuote = new ArrayList<EserviceMotorDetails>(); 
-						
-				copyQuote .add((EserviceMotorDetails) copyquoteService.copyQuote(c).getCommonResponse());
+				if (request.getProductId().equals(new BigDecimal(motorProductId))) {
+					List<EserviceMotorDetails> copyQuote = new ArrayList<EserviceMotorDetails>();
+					copyQuote.add((EserviceMotorDetails) copyquoteService.copyQuote(c).getCommonResponse());
+					response = copyQuote;
+				}/* else if ( request.getProductId().equals(new BigDecimal(travelProductId))  ) {
+					List<EserviceTravelDetails> travelCopyQuote = new ArrayList<EserviceTravelDetails>(); 
+					travelCopyQuote.add(copyTravelraw.copyTravelRaw(request));
+					response = travelCopyQuote ;
+					
+				}*/ else if ( request.getProductId().equals(new BigDecimal(buildingProductId)) || request.getProductId().equals(new BigDecimal(smeProductId))  ) {
+					List<EserviceBuildingDetails> buildcopyquote = new ArrayList<EserviceBuildingDetails>(); 
+					buildcopyquote.add((EserviceBuildingDetails) copyquoteService.copyQuote(c).getCommonResponse());
+					response = buildcopyquote ;
+					
+				} /*else {
+					List<EserviceCommonDetails> commonCopyQuote = new ArrayList<EserviceCommonDetails>();
+					commonCopyQuote.add((EserviceCommonDetails) copyquoteService.copyQuote(c).getCommonResponse());
+					response = commonCopyQuote ;
+				
+				}*/
+				
 				CommonRes com=new CommonRes();
-				com.setCommonResponse(copyQuote);
+				com.setCommonResponse(response);
 				com.setErroCode(0);
 				com.setIsError(false);
 				com.setMessage("Success");
 				return com;
+				}
 			}else {
 				Object response = null ;
 				
