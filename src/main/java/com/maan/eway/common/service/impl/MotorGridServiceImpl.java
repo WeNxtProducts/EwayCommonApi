@@ -1248,7 +1248,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				savedata.setEndtPremium(endtPre);
 				savedata.setIsChargRefund("");
 			}
-			savedata.setEndtPremiumTax(endtPremiumtax);
+			savedata.setEndtPremiumTax(BigDecimal.ZERO);
 			savedata.setRequestReferenceNo(refNo);
 			savedata.setOriginalPolicyNo(req.getPolicyNo());
 			savedata.setEndorsementRemarks(req.getEndtRemarks());
@@ -1453,12 +1453,12 @@ public class MotorGridServiceImpl implements MotorGridService {
 						savedata.setPremiumExcludedTaxFc(BigDecimal.ZERO);
 						savedata.setPremiumExcludedTaxLc(BigDecimal.ZERO);
 						savedata.setPremiumIncludedTaxFc(BigDecimal.ZERO);
-						savedata.setPremiumIncludedTaxLc(BigDecimal.ZERO);
+						savedata.setPremiumIncludedTaxLc(endtAmt.add(endtFee));
 						savedata.setDependentCoverYn("N");
 						savedata.setDependentCoverId(null);
 						savedata.setTaxId(Integer.valueOf(req.getEndtTypeId()));
 						savedata.setTaxRate(endtFee);
-						savedata.setTaxAmount(endtAmt.add(endtFee));
+						savedata.setTaxAmount(endtFee);
 						savedata.setTaxCalcType(data.getTaxCalcType());
 						savedata.setTaxDesc(endTypeDesc + " Endorsement Fee");
 						savedata.setEndtCount(new BigDecimal(count));
