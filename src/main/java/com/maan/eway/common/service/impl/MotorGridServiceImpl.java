@@ -1210,16 +1210,21 @@ public class MotorGridServiceImpl implements MotorGridService {
 		try {
 			EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());
 			String endtFeeYn=entMaster.getEndtFeeYn()	;
-			BigDecimal endtFee=new BigDecimal(entMaster.getEndtFeePercent());
+			BigDecimal endtPre=BigDecimal.ZERO;
+			Double endtPercent=0d;
 			HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
 			BigDecimal overAllPremiumFc=new BigDecimal(homeData.getOverallPremiumFc().toString());
-			BigDecimal endtPremium=overAllPremiumFc.multiply(endtFee);
-			BigDecimal divisor=new BigDecimal(100);
-			BigDecimal endtPre=endtPremium.divide(divisor);
+			if ("Y".equalsIgnoreCase(endtFeeYn)) {
+				endtPercent = Double.valueOf(entMaster.getEndtFeePercent());
+				endtPre = domath(entMaster.getCalcTypeId(), endtPercent, overAllPremiumFc);
+			}
+//			BigDecimal endtPremium=overAllPremiumFc.multiply(endtFee);
+//			BigDecimal divisor=new BigDecimal(100);
+//			BigDecimal endtPre=endtPremium.divide(divisor);
+			
 			String txt="";
 			if(endtPre.intValue()<0) {
 				txt="CHARGE";
-				
 			}else {
 				txt="REFUND";
 			}
@@ -1238,7 +1243,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				savedata.setEndtPremium(endtPre);
 				savedata.setIsChargRefund(txt);
 				}else {
-				savedata.setEndtPremium(BigDecimal.ZERO);
+				savedata.setEndtPremium(endtPre);
 				savedata.setIsChargRefund("");
 			}
 			savedata.setEndtPremiumTax(BigDecimal.ZERO);
@@ -1270,12 +1275,12 @@ public class MotorGridServiceImpl implements MotorGridService {
 		return res;
 		}
 		
-		protected BigDecimal domath(String calctype, Double rate,BigDecimal si,BigDecimal exchangeRate) {
+		protected BigDecimal domath(String calctype, Double rate,BigDecimal si/*,BigDecimal exchangeRate*/) {
 			BigDecimal d=BigDecimal.ZERO;
 			if("P".equals(calctype)) {
 			d = si.multiply(new BigDecimal(rate/100)/*, round*/);	
 			 }else if("A".equals(calctype)) {
-			d=(new BigDecimal(rate).divide(exchangeRate/*,round*/));// for foreign currency calculation we have to divide by exchange rate	
+			d=(new BigDecimal(rate)/*.divide(exchangeRate/*,round*/);// for foreign currency calculation we have to divide by exchange rate	
 			 }else if("M".equals(calctype)) {
 			 d = si.multiply(new BigDecimal(rate/1000)/*, round*/);	
 			 }

@@ -21,4 +21,7 @@ public interface BuildingDetailsRepository extends JpaRepository<BuildingDetails
 
 	Long countByQuoteNo(String newQuoteNo);
 
+	List<BuildingDetails> findByQuoteNo(String quoteNo);
+
+
 }

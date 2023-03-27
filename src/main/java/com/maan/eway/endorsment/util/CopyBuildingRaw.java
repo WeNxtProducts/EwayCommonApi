@@ -17,10 +17,15 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.maan.eway.bean.BuildingDetails;
+import com.maan.eway.bean.ContentAndRisk;
+import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
@@ -28,7 +33,13 @@ import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
+import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.MotorDataDetails;
+import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.OccupationMaster;
+import com.maan.eway.bean.PersonalAccident;
+import com.maan.eway.bean.PersonalInfo;
+import com.maan.eway.common.req.ChangeEndoStatusReq;
 import com.maan.eway.common.res.BuildingCopyRes;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
 import com.maan.eway.common.res.EserviceBuildingSaveRes;
@@ -36,12 +47,22 @@ import com.maan.eway.common.res.EserviceSaveRes;
 import com.maan.eway.common.res.TravelGroupGetRes;
 import com.maan.eway.common.service.impl.MotorGridServiceImpl;
 import com.maan.eway.endorsment.request.Endorsment;
+import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
+import com.maan.eway.repository.BuildingDetailsRepository;
+import com.maan.eway.repository.ContentAndRiskRepository;
+import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
+import com.maan.eway.repository.EserviceCustomerDetailsRepository;
+import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
+import com.maan.eway.repository.MotorDataDetailsRepository;
+import com.maan.eway.repository.MotorDriverDetailsRepository;
+import com.maan.eway.repository.PersonalAccidentRepository;
+import com.maan.eway.repository.PersonalInfoRepository;
 
 @Service
 public class CopyBuildingRaw {
@@ -57,10 +78,31 @@ public class CopyBuildingRaw {
 	@Autowired
 	private EServiceSectionDetailsRepository eserSecRepo;
 
+	@Autowired
+	private HomePositionMasterRepository homePosistionRepo;
+	
+	@Autowired
+	private PersonalInfoRepository personalInforepo;
+	
+	@Autowired
+	private BuildingDetailsRepository buildingRepo;
+	
+	@Autowired
+	private EserviceCustomerDetailsRepository custRepo ;
+	
+	@Autowired
+	private PersonalAccidentRepository paRepo;
+	
+	@Autowired
+	private ContentAndRiskRepository contentAndRiskRepo;
+	
+	@Autowired
+	private CoverDocumentUploadDetailsRepository coverDocUploadDetails;
 
 	@Autowired
 	private EserviceCommonDetailsRepository eserCommonRepo;
 
+	private Logger log = LogManager.getLogger(MotorGridServiceImpl.class);
 	
 	public EserviceBuildingDetails copyBuildingRaw(Endorsment request) {
 		try {
@@ -337,5 +379,218 @@ public class CopyBuildingRaw {
 		}
 		return null;
 	}
+
+	public EserviceBuildingDetails buildingRawEndtStatus(ChangeEndoStatusReq req) {
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		EserviceBuildingDetails savedata = new EserviceBuildingDetails();
+		try {
+			//Motor 
+			List<EserviceBuildingDetails> build = eBuildingRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+
+			if (build.size() > 0) {
+				for (EserviceBuildingDetails data : build) {
+					savedata = dozerMapper.map(data, EserviceBuildingDetails.class);
+					savedata.setEndtStatus("C");
+					eBuildingRepo.saveAndFlush(savedata);
+				}
+
+			}
+			// Update EndT Status
+			homeEndtStatus(req);
+			personolInfoEndtStatus(req);
+			contentAndRiskEndtStatus(req);
+			buildingDetailsEndtStatus(req);
+			coverDocumentUploadDetailsEndtStatus(req);
+			eserviceCustDetailsChangeStatus(req);
+			personalAccident(req);
+			eserviceCommon(req);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return savedata;
+	}
+	
+	private PersonalAccident personalAccident(ChangeEndoStatusReq req) {
+		PersonalAccident savedata = new PersonalAccident();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			List<PersonalAccident> pa = paRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+			if (pa.size() > 0) {
+				for (PersonalAccident data : pa) {
+					savedata = dozerMapper.map(data, PersonalAccident.class);
+					savedata.setEndtStatus("C");
+					paRepo.saveAndFlush(savedata);
+				}
+			}
+		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return savedata;
+
+		
+	}
+
+	private EserviceCommonDetails eserviceCommon(ChangeEndoStatusReq req) {
+		EserviceCommonDetails savedata = new EserviceCommonDetails();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			List<EserviceCommonDetails> common = eserCommonRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+			if (common.size() > 0) {
+				for (EserviceCommonDetails data : common) {
+					savedata = dozerMapper.map(data, EserviceCommonDetails.class);
+					savedata.setEndtStatus("C");
+					eserCommonRepo.saveAndFlush(savedata);
+				}
+			}
+		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return savedata;
+
+		
+	}
+
+
+	private CoverDocumentUploadDetails coverDocumentUploadDetailsEndtStatus(ChangeEndoStatusReq req) {
+		CoverDocumentUploadDetails savedata = new CoverDocumentUploadDetails();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			List<CoverDocumentUploadDetails> motorData = coverDocUploadDetails.findByQuoteNo(req.getQuoteNo());
+			if (motorData.size() > 0) {
+				for (CoverDocumentUploadDetails data : motorData) {
+					savedata = dozerMapper.map(data, CoverDocumentUploadDetails.class);
+					savedata.setEndtStatus("C");
+					coverDocUploadDetails.saveAndFlush(savedata);
+				}
+			}
+		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return savedata;
+
+		
+	}
+
+	private BuildingDetails buildingDetailsEndtStatus(ChangeEndoStatusReq req) {
+		BuildingDetails savedata = new BuildingDetails();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			List<BuildingDetails> buildData = buildingRepo.findByQuoteNo(req.getQuoteNo());
+			if (buildData.size() > 0) {
+				for (BuildingDetails data : buildData) {
+					savedata = dozerMapper.map(data, BuildingDetails.class);
+					savedata.setEndtStatus("C");
+					buildingRepo.saveAndFlush(savedata);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return savedata;
+
+		
+	}
+
+	private ContentAndRisk contentAndRiskEndtStatus(ChangeEndoStatusReq req) {
+		ContentAndRisk savedata = new ContentAndRisk();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			List<ContentAndRisk> content=contentAndRiskRepo.findByQuoteNo(req.getQuoteNo());
+			if (content.size() > 0) {
+				for (ContentAndRisk data : content) {
+					savedata = dozerMapper.map(data, ContentAndRisk.class);
+					savedata.setEndtStatus("C");
+					contentAndRiskRepo.saveAndFlush(savedata);
+				}
+			}
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return savedata;
+
+	}
+
+	private PersonalInfo personolInfoEndtStatus(ChangeEndoStatusReq req) {
+		PersonalInfo savedata = new PersonalInfo();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
+			String customerId=homeData.getCustomerId();
+			PersonalInfo personalInfoData=personalInforepo.findByCustomerId(customerId);
+			savedata = dozerMapper.map(personalInfoData, PersonalInfo.class);
+			savedata.setEndtStatus("C");
+			personalInforepo.saveAndFlush(savedata);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return savedata;
+		
+	}
+
+	private HomePositionMaster homeEndtStatus(ChangeEndoStatusReq req) {
+		HomePositionMaster savedata = new HomePositionMaster();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			HomePositionMaster homeData = homePosistionRepo.findByQuoteNo(req.getQuoteNo());
+			if (homeData != null) {
+				savedata = dozerMapper.map(homeData, HomePositionMaster.class);
+				savedata.setEndtStatus("C");
+				homePosistionRepo.saveAndFlush(savedata);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return savedata;
+
+	}
+	private EserviceCustomerDetails eserviceCustDetailsChangeStatus(ChangeEndoStatusReq req) {
+		EserviceCustomerDetails savedata = new EserviceCustomerDetails();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
+			String olsCustomerId=homeData.getCustomerId();
+			
+			PersonalInfo personalInfoData=personalInforepo.findByCustomerId(olsCustomerId);
+			EserviceCustomerDetails custData = custRepo.findByCustomerReferenceNo(personalInfoData.getCustomerReferenceNo());
+			if (custData!=null) 
+					savedata = dozerMapper.map(custData, EserviceCustomerDetails.class);
+					savedata.setEndtStatus("P");
+					custRepo.saveAndFlush(savedata);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return savedata;
+
+		
+	}
+
 
 }

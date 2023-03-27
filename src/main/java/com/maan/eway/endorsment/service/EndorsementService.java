@@ -491,33 +491,23 @@ public class EndorsementService {
 		try {
 			HomePositionMaster data=hpmrepo.findByQuoteNo(req.getQuoteNo());
 			if ("Financial".equalsIgnoreCase(data.getEndtCategDesc())) {
-
 				// Update Home Posion Master
 				if (StringUtils.isNotBlank(data.getEndtTypeId()))
 					data.setEndtStatus("C");
-
-				hpmrepo.saveAndFlush(data);
-
-				// Update ProductWise
-				paymentServiceImpl.updateProductWisePolicyNo(req.getProductId().toString(), req.getPolicyNo(),
+					hpmrepo.saveAndFlush(data);
+					// Update ProductWise
+					paymentServiceImpl.updateProductWisePolicyNo(req.getProductId().toString(), req.getPolicyNo(),
 						req.getQuoteNo(), data.getEndtTypeId());
-
 			}
 			Object res = null ;
-			
+			if (req.getProductId().equals(motorProductId)) {
 				EserviceMotorDetails motorEndtStatus = copyraw.eserviceMotorEndtStatus(req);
 				res = motorEndtStatus ;
-
-//			else if (req.getProductId().equals(new BigDecimal(travelProductId))) {
-//				List<EserviceTravelDetails> travelRaw = new ArrayList<EserviceTravelDetails>();
-//
-//			} else if (req.getProductId().equals(new BigDecimal(buildingProductId))|| req.getProductId().equals(new BigDecimal(smeProductId))) {
-//				List<EserviceBuildingDetails> buildRaw = new ArrayList<EserviceBuildingDetails>();
-//
-//			} else {
-//				List<EserviceCommonDetails> commonRaw = new ArrayList<EserviceCommonDetails>();
-//
-//			}
+			} else if (req.getProductId().equals(buildingProductId)|| req.getProductId().equals(smeProductId)) {
+				List<EserviceBuildingDetails> buildEndtStatus = new ArrayList<EserviceBuildingDetails>();
+				buildEndtStatus.add( copyBuildingraw.buildingRawEndtStatus(req));
+				res = buildEndtStatus ;
+			}
 			CommonRes c=new CommonRes();
 			c.setCommonResponse(res);
 			c.setErroCode(0);
