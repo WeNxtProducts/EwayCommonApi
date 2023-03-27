@@ -1,7 +1,9 @@
 package com.maan.eway.common.req;
 
+import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.res.referal.MasterReferal;
 
@@ -35,5 +37,4 @@ public class NewQuoteReq {
 	private String referralRemarks;
 	
 
-	
 }

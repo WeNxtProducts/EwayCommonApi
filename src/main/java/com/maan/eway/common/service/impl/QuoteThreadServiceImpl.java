@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -55,6 +56,7 @@ import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MasterReferralDetails;
+import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.SeqCustid;
 import com.maan.eway.bean.SeqQuoteno;
@@ -100,6 +102,7 @@ import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.PersonalAccidentRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
+import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.ProductMasterRepository;
 import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.repository.SeqCustidRepository;
@@ -108,6 +111,7 @@ import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerHistoryRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
 import com.maan.eway.res.ReferalResponse;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.thread.MyTaskList;
 
 @Service
@@ -235,7 +239,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	private ContentAndRiskRepository  contentRepo ;
 	
 	@Autowired
-	private PersonalAccidentRepository pacRepo ;  
+	private PersonalAccidentRepository pacRepo ; 
 	
 	@Autowired
 	private QuoteService quoteService;
@@ -344,6 +348,15 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				}
 			}
 	
+			// Deactivate Old Covers 
+			if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
+				
+				commonRes = deactivateOldCovers(request); 
+				if( commonRes.getIsError() == true  ) {
+					return commonRes ; 
+				}
+			}
+		
 			// Cust Res
 			if( custRes.get("Response")!=null && custRes.get("Response").toString().equals("Failed") ) {
 				errors.add(new Error("01","Customer Save",custRes.get("Errors").toString()));
@@ -777,6 +790,144 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		}
 		return commonRes ;
 	}
+	
+	
+	public CommonRes deactivateOldCovers( QuoteThreadReq request ) {
+		CommonRes commonRes = new CommonRes();
+		List<Error> errors = new ArrayList<Error>();
+		String res = "" ;
+		try {
+			
+			// Deactivate Travel product covers
+			if ( request.getProductId().equalsIgnoreCase(travelProductId)) {
+				
+				res = deactivateTravelCovers(request);
+			// Deactivate Other Covers
+			} else {
+				res = deactivateOtherProductCovers(request);
+			}
+			
+			
+ 			
+	        commonRes.setCommonResponse(res);
+			commonRes.setIsError(false);
+			commonRes.setErrorMessage(Collections.emptyList());
+		 	commonRes.setMessage("Success");
+		 	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --> " +  e.getMessage());
+			errors.add(new Error("01","Common Error",e.getMessage()));
+			commonRes.setCommonResponse(null);
+			commonRes.setIsError(true);
+			commonRes.setErrorMessage(errors);
+			commonRes.setMessage("Failed");	
+		}
+		return commonRes ;
+	}
+	
+	
+	public String deactivateTravelCovers( QuoteThreadReq request ) {
+		String res = "";
+		try {
+			List<EserviceTravelGroupDetails> groupData = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(request.getRequestReferenceNo() );
+			List<PolicyCoverData>  OldPolicyCovers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(request.getEndtPrevQuoteNo());
+			List<PolicyCoverData>  deactivateOldCovers = OldPolicyCovers ; 
+			
+        	Integer passCount = 0;
+        	List<VehicleIdsReq>  filterAdult  = request.getVehicleIdsList().stream().filter( o ->  o.getVehicleId().equals(2) ).collect(Collectors.toList());
+        	List<VehicleIdsReq>  filterOthers = request.getVehicleIdsList().stream().filter( o -> ! o.getVehicleId().equals(2) ).collect(Collectors.toList());
+        	List<VehicleIdsReq>  totalGroup  = new ArrayList<VehicleIdsReq>();
+        	totalGroup.addAll(filterAdult)	;
+        	totalGroup.addAll(filterOthers);
+        	List<Integer> groupIds = totalGroup.stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
+//        	// Filte Count
+        	for (Integer vehId :  groupIds ) {
+//				 List<EserviceTravelGroupDetails> filterGroup = groupData.stream().filter( o -> o.getGroupId().equals(vehId) ).collect(Collectors.toList());				 
+//				 List<String> sectionId = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());	
+//				 for (int i=0 ; i < filterGroup.get(0).getGrouppMembers() ; i++) {
+//					 passCount = passCount + 1 ;
+//					
+//					 for (CoverIdsReq cov : vehId.getCoverIdList() ) {
+//						 
+//					 }
+//	            	 QuoteThreadReq request2 = new QuoteThreadReq();
+//	            	 request2.setVehicleId(passCount);
+//	            	 request2.setCustomerId(request.getCustomerId());
+//	            	 request2.setProductId(request.getProductId());
+//	            	 request2.setQuoteNo(request.getQuoteNo());
+//	            	 request2.setRequestReferenceNo(request.getRequestReferenceNo());
+//	            	 request2.setEndtPrevQuoteNo(request.getEndtPrevQuoteNo());
+//	            	 request2.setVehicleIdsList(request.getVehicleIdsList());
+//	            	 request2.setCreatedBy(request.getCreatedBy());
+//	            	 request2.setGroupId(filterGroup.get(0).getGroupId());
+//	            	 request2.setGroupCount(filterGroup.get(0).getGrouppMembers());
+//	            	 request2.setSectionId(sectionId.get(0));
+//	            	 request2.setPolicyStartDate(request.getPolicyStartDate());
+//		             request2.setPolicyEndDate(request.getPolicyEndDate());
+//		             request2.setNoOfDays(request.getNoOfDays());
+//		             resList.add(request2);	 
+//		             
+//		             if( cov.getSubCoverYn() ==null && cov.getSubCoverYn().equalsIgnoreCase("N") ) {
+//            			deactivateOldCovers.removeIf(  o -> o.getVehicleId().equals(vehId.getVehicleId() ) && o.getProductId().equals(Integer.valueOf(request.getProductId()))
+//            					&& o.getSectionId().equals(Integer.valueOf(sectionId)) && o.getCoverId().equals(cov.getCoverId())   );	            			
+//            		} else {
+//            			
+//            			deactivateOldCovers.removeIf(  o -> o.getVehicleId().equals(vehId.getVehicleId() ) && o.getProductId().equals(Integer.valueOf(request.getProductId()))
+//            					&& o.getSectionId().equals(Integer.valueOf(sectionId)) && o.getCoverId().equals(cov.getCoverId()) &&  o.getSubCoverId().equals(cov.getSubCoverId())  );	 
+//            		}
+//				 }					 
+	         } 
+        	res = "Success" ;
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --> " +  e.getMessage());
+			return null ;
+		}
+		return res ;
+	}
+	
+	public String deactivateOtherProductCovers( QuoteThreadReq request ) {
+		String res = "";
+		try {			
+			List<PolicyCoverData>  OldPolicyCovers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(request.getEndtPrevQuoteNo());
+			List<PolicyCoverData>  deactivateOldCovers = OldPolicyCovers ; 
+			
+			 for ( VehicleIdsReq vehId :  request.getVehicleIdsList() ) {
+	            	for (CoverIdsReq cov : vehId.getCoverIdList() ) {
+						
+	            		if( cov.getSubCoverYn() ==null || cov.getSubCoverYn().equalsIgnoreCase("N") ) {
+	            				deactivateOldCovers.removeIf(  o -> o.getVehicleId().equals(vehId.getVehicleId() ) && o.getProductId().equals(Integer.valueOf(request.getProductId()))
+	            					&& o.getSectionId().equals(Integer.valueOf(vehId.getSectionId())) && o.getCoverId().equals(cov.getCoverId())   );	            			
+	            		} else {
+	            			
+	            			deactivateOldCovers.removeIf(  o -> o.getVehicleId().equals(vehId.getVehicleId() ) && o.getProductId().equals(Integer.valueOf(request.getProductId()))
+	            					&& o.getSectionId().equals(Integer.valueOf(vehId.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) &&  o.getSubCoverId().equals(Integer.valueOf(cov.getSubCoverId()))  );	 
+	            			
+	            		}
+	            	}
+		            
+	            }
+			 
+			 Date endDate = new Date() ;
+			 Long diffInMillies = Math.abs(endDate.getTime() - request.getPolicyStartDate().getTime());
+			 String diff = String.valueOf(TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) );
+			 System.out.println("Difference in days: " + diff);
+			    
+			 deactivateOldCovers.forEach(  o  ->  o.setStatus("N")  );	
+			 deactivateOldCovers.forEach(  o  ->  o.setExpiryDate(endDate)  );
+			 deactivateOldCovers.forEach(  o  ->  o.setNoOfDays(new BigDecimal( diff))  );
+			 coverRepo.saveAllAndFlush(deactivateOldCovers);
+			 res = "Success" ;
+        	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --> " +  e.getMessage());
+			return null ;
+		}
+		return res ;
+	}
+	
 	//-------------------------------------------------------------Product Wise Multi Thread Call---------------------------------------------------------------------//
 	public CommonRes productWiseThreadCall(NewQuoteReq req , QuoteThreadReq request ) {
 		CommonRes commonRes = new CommonRes();
@@ -843,6 +994,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	            	request2.setCreatedBy(request.getCreatedBy());
 	            	request2.setVehicleId(vehId);
 	            	request2.setSectionId(sectionId.get(0));
+	            	request2.setPolicyStartDate(request.getPolicyStartDate());
+	            	request2.setPolicyEndDate(request.getPolicyEndDate());
+	            	request2.setNoOfDays(request.getNoOfDays());
 	            	
 	            	QuoteThreadCall motorSave = new QuoteThreadCall("MotorSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo  
 	                		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,smeProductId,secRepo,buildRepo, docRepo
@@ -901,7 +1055,11 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	            	 request2.setGroupId(filterGroup.get(0).getGroupId());
 	            	 request2.setGroupCount(filterGroup.get(0).getGrouppMembers());
 	            	 request2.setSectionId(sectionId.get(0));
-	            	 
+	            	 request2.setPolicyStartDate(request.getPolicyStartDate());
+		             request2.setPolicyEndDate(request.getPolicyEndDate());
+		             request2.setNoOfDays(request.getNoOfDays());
+		            	
+		            	
 	            	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
 	            			 , homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,smeProductId,secRepo,buildRepo, docRepo
 	            			 , locRepo , contentRepo , pacRepo );
@@ -952,7 +1110,12 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		            	request2.setVehicleIdsList(request.getVehicleIdsList());
 		            	request2.setCreatedBy(request.getCreatedBy());
 		            	request2.setVehicleId(vehId);
-		            	request2.setSectionId(sec);	 
+		            	request2.setSectionId(sec);	
+		            	request2.setPolicyStartDate(request.getPolicyStartDate());
+		            	request2.setPolicyEndDate(request.getPolicyEndDate());
+		            	request2.setNoOfDays(request.getNoOfDays());
+		            	
+		            	
 		            	QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
 			            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,smeProductId,secRepo,buildRepo, docRepo
 			            		, locRepo , contentRepo , pacRepo );
@@ -990,6 +1153,11 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					request2.setCreatedBy(request.getCreatedBy());
 					request2.setVehicleId(vehId);
 					request2.setSectionId(sec);
+					request2.setPolicyStartDate(request.getPolicyStartDate());
+	            	request2.setPolicyEndDate(request.getPolicyEndDate());
+	            	request2.setNoOfDays(request.getNoOfDays());
+	            	
+	            	
 					QuoteThreadCall commonDataSave = new QuoteThreadCall("CommonDataSave", request2, em,eserCustRepo, eserMotRepo, facRateRepo, perInfoRepo, motorRepo,driverRepo , coverRepo, homeRepo,
 							eserRepo, eserGroupRepo, traPassRepo, traPassHisRepo, motorProductId,travelProductId, buildingProductId, eserBuildRepo, eserSecRepo,eserCommonRepo,commonDataRepo,smeProductId,secRepo,buildRepo, docRepo
 							, locRepo , contentRepo , pacRepo );
@@ -1019,37 +1187,52 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			String quoteNo  = "" ;
 			String subUserType  = "" ;
 			String endtPrevQuoteNo  = "" ;
+			Date policyStartDate = null ;
+			Date policyEndDate = null ;
+			String noOfDays = "" ;
 			
 			// Find Old QuoteNo
 			if(req.getProductId().equalsIgnoreCase(motorProductId)) {
-				EserviceMotorDetails findMotor =  eserMotRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo() , req.getVehicleIdsList().get(0).getVehicleId());
-				customerId = findMotor.getCustomerId()==null?"":findMotor.getCustomerId();
-				quoteNo    = findMotor.getQuoteNo()==null?"":findMotor.getQuoteNo();
-				subUserType = findMotor.getSubUserType()==null?"":findMotor.getSubUserType() ;
-				endtPrevQuoteNo  = findMotor.getEndtPrevQuoteNo()==null?"":findMotor.getEndtPrevQuoteNo() ;
+				EserviceMotorDetails data =  eserMotRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo() , req.getVehicleIdsList().get(0).getVehicleId());
+				customerId = data.getCustomerId()==null?"":data.getCustomerId();
+				quoteNo    = data.getQuoteNo()==null?"":data.getQuoteNo();
+				subUserType = data.getSubUserType()==null?"":data.getSubUserType() ;
+				endtPrevQuoteNo  = data.getEndtPrevQuoteNo()==null?"":data.getEndtPrevQuoteNo() ;
+				policyStartDate  = data.getPolicyStartDate()==null?null: data.getPolicyStartDate() ;
+				policyEndDate    = data.getPolicyEndDate()==null?null: data.getPolicyEndDate() ;
+				noOfDays		 = data.getPeriodOfInsurance()==null?null: data.getPeriodOfInsurance() ;
+				
 			
 			} else if(req.getProductId().equalsIgnoreCase(travelProductId)) {
-				EserviceTravelDetails findTravel =  eserTraRepo.findByRequestReferenceNo(req.getRequestReferenceNo() );
-				customerId = findTravel.getCustomerId()==null?"":findTravel.getCustomerId();
-				quoteNo    = findTravel.getQuoteNo()==null?"":findTravel.getQuoteNo();
-				subUserType = findTravel.getSubUserType()==null?"":findTravel.getSubUserType() ;
-				endtPrevQuoteNo  = findTravel.getEndtPrevQuoteNo()==null?"":findTravel.getEndtPrevQuoteNo() ;
-			
-			}else if(req.getProductId().equalsIgnoreCase(buildingProductId) || (req.getProductId().equalsIgnoreCase(smeProductId)) ) {
-				List<EserviceBuildingDetails> findBuilds =  eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo() );
-				customerId = findBuilds.get(0).getCustomerId()==null?"": findBuilds.get(0).getCustomerId();
-				quoteNo    =  findBuilds.get(0).getQuoteNo()==null?"": findBuilds.get(0).getQuoteNo();
-				subUserType =  findBuilds.get(0).getSubUserType()==null?"": findBuilds.get(0).getSubUserType() ;
-				endtPrevQuoteNo  = findBuilds.get(0).getEndtPrevQuoteNo()==null?"":findBuilds.get(0).getEndtPrevQuoteNo() ;
-			
-			} else {
-				List<EserviceCommonDetails> findCommon =  eserCommonRepo.findByRequestReferenceNo(req.getRequestReferenceNo() );
-				customerId = findCommon.get(0).getCustomerId()==null?"": findCommon.get(0).getCustomerId();
-				quoteNo    =  findCommon.get(0).getQuoteNo()==null?"": findCommon.get(0).getQuoteNo();
-				LoginMaster loginData = loginRepo.findByLoginId(findCommon.get(0).getLoginId());
-				subUserType =  loginData.getSubUserType()==null?"": loginData.getSubUserType() ;
-				endtPrevQuoteNo  = findCommon.get(0).getEndtPrevQuoteNo()==null?"":findCommon.get(0).getEndtPrevQuoteNo() ;
+				EserviceTravelDetails data =  eserTraRepo.findByRequestReferenceNo(req.getRequestReferenceNo() );
+				customerId = data.getCustomerId()==null?"":data.getCustomerId();
+				quoteNo    = data.getQuoteNo()==null?"":data.getQuoteNo();
+				subUserType = data.getSubUserType()==null?"":data.getSubUserType() ;
+				endtPrevQuoteNo  = data.getEndtPrevQuoteNo()==null?"":data.getEndtPrevQuoteNo() ;
+				policyStartDate  = data.getTravelStartDate()==null?null: data.getTravelStartDate() ;
+				policyEndDate    = data.getTravelEndDate()==null?null: data.getTravelEndDate() ;
+				noOfDays		 = data.getTravelCoverDuration()==null?null: data.getTravelCoverDuration().toString();
 				
+			}else if(req.getProductId().equalsIgnoreCase(buildingProductId) || (req.getProductId().equalsIgnoreCase(smeProductId)) ) {
+				List<EserviceBuildingDetails> data =  eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo() );
+				customerId = data.get(0).getCustomerId()==null?"": data.get(0).getCustomerId();
+				quoteNo    =  data.get(0).getQuoteNo()==null?"": data.get(0).getQuoteNo();
+				subUserType =  data.get(0).getSubUserType()==null?"": data.get(0).getSubUserType() ;
+				endtPrevQuoteNo  = data.get(0).getEndtPrevQuoteNo()==null?"":data.get(0).getEndtPrevQuoteNo() ;
+				policyStartDate  = data.get(0).getPolicyStartDate()==null?null: data.get(0).getPolicyStartDate() ;
+				policyEndDate    = data.get(0).getPolicyEndDate()==null?null: data.get(0).getPolicyEndDate() ;
+				noOfDays		 = data.get(0).getPolicyPeriord()==null?null: data.get(0).getPolicyPeriord().toString() ;
+				
+			} else {
+				List<EserviceCommonDetails> data =  eserCommonRepo.findByRequestReferenceNo(req.getRequestReferenceNo() );
+				customerId = data.get(0).getCustomerId()==null?"": data.get(0).getCustomerId();
+				quoteNo    =  data.get(0).getQuoteNo()==null?"": data.get(0).getQuoteNo();
+				LoginMaster loginData = loginRepo.findByLoginId(data.get(0).getLoginId());
+				subUserType =  loginData.getSubUserType()==null?"": loginData.getSubUserType() ;
+				endtPrevQuoteNo  = data.get(0).getEndtPrevQuoteNo()==null?"":data.get(0).getEndtPrevQuoteNo() ;
+				policyStartDate  = data.get(0).getPolicyStartDate()==null?null: data.get(0).getPolicyStartDate() ;
+				policyEndDate    = data.get(0).getPolicyEndDate()==null?null: data.get(0).getPolicyEndDate() ;
+				noOfDays		 = data.get(0).getPolicyPeriod()==null?null: data.get(0).getPolicyPeriod().toString() ;
 			}
 			
 			
@@ -1074,6 +1257,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             request.setProductId(req.getProductId());
             request.setCreatedBy(req.getCreatedBy());
             request.setEndtPrevQuoteNo(endtPrevQuoteNo);
+            request.setPolicyStartDate(policyStartDate);
+            request.setPolicyEndDate(policyEndDate);
+            request.setNoOfDays(noOfDays);
             
 			commonRes.setCommonResponse(request);
 			commonRes.setIsError(false);

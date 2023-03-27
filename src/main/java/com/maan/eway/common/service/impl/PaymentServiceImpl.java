@@ -72,6 +72,7 @@ import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PaymentRefno;
 import com.maan.eway.bean.PersonalInfo;
+import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.SeqPaymentid;
 import com.maan.eway.bean.TinyurlMaster;
 import com.maan.eway.bean.TravelPassengerDetails;
@@ -1797,6 +1798,19 @@ public class PaymentServiceImpl implements PaymentService {
 	    	   }
 	    	   
 	    	   
+	    	   // Policy Cover Data 
+	    	   CriteriaBuilder cb = em.getCriteriaBuilder();
+				// create update
+				CriteriaUpdate<PolicyCoverData> update = cb.createCriteriaUpdate(PolicyCoverData.class);
+				// set the root class
+				Root<PolicyCoverData> m = update.from(PolicyCoverData.class);
+				// set update and where clause
+				update.set("policyNo", policyNo);
+				
+				Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
+				update.where(n1);
+				// perform update
+				em.createQuery(update).executeUpdate();
 	    	   
 	        } catch (Exception e) {
 				e.printStackTrace();

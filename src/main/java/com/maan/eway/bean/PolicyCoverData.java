@@ -257,7 +257,15 @@ private static final long serialVersionUID = 1L;
     @Column(name="PRO_RATA_YN")
     private String    proRataYn ;
  
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="EXPIRY_DATE")
+    private Date       expiryDate ;
     
+    @Column(name="NO_OF_DAYS")
+    private BigDecimal    noOfDays;
+ 
+    @Column(name="POLICY_NO")
+    private String    policyNo ;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

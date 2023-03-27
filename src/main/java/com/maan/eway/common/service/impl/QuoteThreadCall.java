@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -1095,6 +1096,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 	private synchronized  Map<String,Object>  call_CoverSave(QuoteThreadReq  request) {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		try {
+			
 			if( request.getProductId().equalsIgnoreCase(travelProductId)) {
 				List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndProductIdAndSectionIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()) , request.getGroupId());
 				List<FactorRateRequestDetails>  devidedCovers = new ArrayList<FactorRateRequestDetails>();
@@ -1120,12 +1122,30 @@ public class QuoteThreadCall implements Callable<Object>  {
 					devidedCovers.add(cover);
 				}
 				
-				res = CoverSavePoint(devidedCovers);
+				// Save Endt Covers
+				if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
+					res = EndtCoverSavePoint(request.getEndtPrevQuoteNo() , devidedCovers , request.getPolicyStartDate()  ,  request.getPolicyEndDate() , request.getNoOfDays());
+					
+				} else {
+					res = CoverSavePoint(devidedCovers , request.getPolicyStartDate()  ,  request.getPolicyEndDate() , request.getNoOfDays()) ;
+					
+				}
+				
 				
 			} else {
 				List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoAndProductIdAndSectionIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()) , request.getVehicleId());
-				res = CoverSavePoint(covers);
+				
+				// Save Endt Covers
+				if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
+					res = EndtCoverSavePoint(request.getEndtPrevQuoteNo() , covers , request.getPolicyStartDate()  ,  request.getPolicyEndDate() , request.getNoOfDays());
+				} else {
+					res = CoverSavePoint(covers , request.getPolicyStartDate()  ,  request.getPolicyEndDate() , request.getNoOfDays()) ;
+				}
+				
 			}
+			
+
+			
 				
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -1138,14 +1158,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 	}
 		
 	
-	private synchronized Map<String,Object>  CoverSavePoint(List<FactorRateRequestDetails>  covers) {
+	private synchronized Map<String,Object>  CoverSavePoint(List<FactorRateRequestDetails>  covers , Date policyStartDate ,Date policyEndDate , String noOfDays) {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		try {
 			// FindData 
 			List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o -> o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") ).collect(Collectors.toList() );
 			
 			// Insert Default Covers
-			res = InsertCoverDetails(defaultCovers);
+			res = InsertCoverDetails(defaultCovers , policyStartDate ,policyEndDate ,  noOfDays);
 			
 			List<VehicleIdsReq> VehicleList = new ArrayList<VehicleIdsReq>();
 			List<CoverIdsReq> coverReqList =new ArrayList<CoverIdsReq>();
@@ -1175,14 +1195,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 				
 				if(filterNonDefaultCovers != null && filterNonDefaultCovers.size()>0 ) {
 					if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
-						res = InsertCoverDetails(filterNonDefaultCovers);
+						res = InsertCoverDetails(filterNonDefaultCovers, policyStartDate ,policyEndDate ,  noOfDays);
 						
 						List<FactorRateRequestDetails> 	updateCovers1 = filterNonDefaultCovers.stream().filter( o ->o.getIsSelected()!=null &&  (o.getIsSelected().equalsIgnoreCase("N")) ).collect(Collectors.toList());
 						updateCovers.addAll(updateCovers1);
 						
 					}else {
 						List<FactorRateRequestDetails> filterNonDefaultSubCovers = filterNonDefaultCovers.stream().filter( o -> ! o.getIsSelected().equalsIgnoreCase("D") && o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId())) ).collect(Collectors.toList());
-						res = InsertCoverDetails(filterNonDefaultSubCovers);
+						res = InsertCoverDetails(filterNonDefaultSubCovers, policyStartDate ,policyEndDate ,  noOfDays);
 						List<FactorRateRequestDetails> 	updateCovers2 = filterNonDefaultSubCovers.stream().filter( o -> o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("N") ).collect(Collectors.toList());
 						updateCovers.addAll(updateCovers2);
 					}
@@ -1203,7 +1223,109 @@ public class QuoteThreadCall implements Callable<Object>  {
 	}
 	
 	
+	private synchronized Map<String,Object>  EndtCoverSavePoint(String PrevQuoteNo , List<FactorRateRequestDetails>  covers , Date policyStartDate ,Date policyEndDate , String noOfDays) {
+		Map<String,Object> res= new HashMap<String,Object>() ;
+		try {
+			// FindData 
+		//	List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o -> o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") ).collect(Collectors.toList() );
+			
+			// Insert Default Covers
+	//		res = InsertEndtCoverDetails(PrevQuoteNo , defaultCovers , policyStartDate ,policyEndDate ,  noOfDays);
+						
+			List<VehicleIdsReq> VehicleList = new ArrayList<VehicleIdsReq>();
+			List<CoverIdsReq> coverReqList =new ArrayList<CoverIdsReq>();
+			
+			// Insert Other Covers
+			if ( request.getProductId().equalsIgnoreCase(motorProductId)) {
+				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())). collect(Collectors.toList());
+				coverReqList = VehicleList.get(0).getCoverIdList();
+				
+			} else if( request.getProductId().equalsIgnoreCase(buildingProductId)  || request.getProductId().equalsIgnoreCase(smeProductId) ) {
+				
+				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())   &&  o.getSectionId().equalsIgnoreCase(request.getSectionId())). collect(Collectors.toList());
+				coverReqList = VehicleList.get(0).getCoverIdList();
+			
+			} else if( request.getProductId().equalsIgnoreCase(travelProductId)) {
+				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())). collect(Collectors.toList());
+				coverReqList = VehicleList.get(0).getCoverIdList();
+			} else   {
+				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())). collect(Collectors.toList());
+				coverReqList = VehicleList.get(0).getCoverIdList();
+			}
+			
+			List<FactorRateRequestDetails> updateCovers = new ArrayList<FactorRateRequestDetails>();
+			List<PolicyCoverData> oldPolicyCoverDatas =  coverRepo.findByQuoteNoAndVehicleIdAndProductIdAndSectionIdOrderByCoverIdAsc(PrevQuoteNo , request.getGroupId()==null?request.getVehicleId() :request.getGroupId() ,Integer.valueOf(request.getProductId()) , Integer.valueOf(request.getSectionId())  );
+			
+			for ( CoverIdsReq covReq :  coverReqList) {
+				
+				List<PolicyCoverData> filterOldCovers = oldPolicyCoverDatas.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId())).collect(Collectors.toList());
+						
+				Date today = new Date();
+				
+				// New Cover Insert
+				if( filterOldCovers.size() <=0   ) {
+					
+					Date startDate = policyStartDate.after(today) ? policyStartDate : today ;
+				    Long diffInMillies = Math.abs(policyEndDate.getTime() - startDate.getTime());
+				    String diff = policyStartDate.after(today) ?  noOfDays : String.valueOf(TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) );
+				    System.out.println("Difference in days: " + diff);
+					
+					List<FactorRateRequestDetails> filterCovers =  covers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId())).collect(Collectors.toList());				
+					
+					if(filterCovers != null && filterCovers.size()>0 ) {
+						if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
+							
+							res = InsertEndtCoverDetails(PrevQuoteNo , filterCovers, startDate ,policyEndDate ,  diff);
+							
+							List<FactorRateRequestDetails> 	updateCovers1 = filterCovers.stream().filter( o -> o.getIsSelected()!=null &&  (o.getIsSelected().equalsIgnoreCase("N")) ).collect(Collectors.toList());
+							updateCovers.addAll(updateCovers1);
+							
+						}else {
+							List<FactorRateRequestDetails> filterSubCovers = filterCovers.stream().filter(  o -> o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId())) ).collect(Collectors.toList());
+							res = InsertEndtCoverDetails(PrevQuoteNo , filterSubCovers, startDate ,policyEndDate ,  diff);
+							List<FactorRateRequestDetails> 	updateCovers2 = filterSubCovers.stream().filter( o -> o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("N") ).collect(Collectors.toList());
+							updateCovers.addAll(updateCovers2);
+						}
+					}
+				
+				// Old Cover Insert
+				} else {
+					Date startDate = policyStartDate ;
+					 String diff = noOfDays ;
+					List<FactorRateRequestDetails> filterCovers = covers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId())).collect(Collectors.toList());				
+					
+					if(filterCovers != null && filterCovers.size()>0 ) {
+						if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
+							
+							res = InsertEndtCoverDetails(PrevQuoteNo , filterCovers, startDate ,policyEndDate ,  diff);
+							
+							List<FactorRateRequestDetails> 	updateCovers1 = filterCovers.stream().filter( o -> o.getIsSelected()!=null &&  (o.getIsSelected().equalsIgnoreCase("N")) ).collect(Collectors.toList());
+							updateCovers.addAll(updateCovers1);
+							
+						}else {
+							List<FactorRateRequestDetails> filterSubCovers = filterCovers.stream().filter( o ->  o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId())) ).collect(Collectors.toList());
+							res = InsertEndtCoverDetails(PrevQuoteNo , filterSubCovers, startDate ,policyEndDate ,  diff);
+							List<FactorRateRequestDetails> 	updateCovers2 = filterSubCovers.stream().filter( o -> o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("N") ).collect(Collectors.toList());
+							updateCovers.addAll(updateCovers2);
+						}
+					}
+				}
+				
+				
+			}
+			
+			res.put("Response", "Success") ;
+			res.put("Errors", null) ;
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.error("Exception is ---> " + e.getMessage());
+			res.put("Response", "Failed") ;
+			res.put("Errors", "Failed To Save Vehicle Id : " + request.getVehicleId() + " Cover Details" ) ;
+		}
 	
+		return res;
+	}
 	
 	private synchronized BigDecimal getDevidedValue(BigDecimal inputValue ,Integer groupCount ) {
 		BigDecimal devidedValue = BigDecimal.ZERO ;
@@ -1220,7 +1342,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 	}
 
 	
-		private synchronized Map<String,Object>  InsertCoverDetails(List<FactorRateRequestDetails> covers) {
+		private synchronized Map<String,Object>  InsertCoverDetails(List<FactorRateRequestDetails> covers , Date policyStartDate ,Date policyEndDate , String noOfDays  ) {
 			Map<String,Object> res= new HashMap<String,Object>() ;
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
@@ -1228,7 +1350,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 				for ( FactorRateRequestDetails cov : covers) {
 					PolicyCoverData coverData  = new PolicyCoverData();
 					dozerMapper.map(cov, coverData);
-					coverData.setEntryDate(new Date());	
+					coverData.setEntryDate(policyStartDate);
+					coverData.setExpiryDate(policyEndDate);
+					coverData.setNoOfDays( noOfDays==null? null : new BigDecimal(noOfDays));
+					
 					coverData.setQuoteNo(request.getQuoteNo());
 					coverData.setIsSelected(cov.getIsSelected().equalsIgnoreCase("N") ? "Y" :cov.getIsSelected());
 					coverData.setCreatedBy(request.getCreatedBy());
@@ -1251,130 +1376,79 @@ public class QuoteThreadCall implements Callable<Object>  {
 			return res;
 		}
 		
+		
+		
+		private synchronized Map<String,Object>  InsertEndtCoverDetails(String prevQuoteNo , List<FactorRateRequestDetails> covers , Date policyStartDate ,Date policyEndDate , String diff  ) {
+			Map<String,Object> res= new HashMap<String,Object>() ;
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			try {
+						
+				// Save Cover Details
+				for ( FactorRateRequestDetails cov : covers) {
+					PolicyCoverData coverData  = new PolicyCoverData();
+					
+					dozerMapper.map(cov, coverData);
+						
+					coverData.setEntryDate(policyStartDate);
+					coverData.setExpiryDate(policyEndDate);
+					coverData.setNoOfDays( diff==null? null : new BigDecimal(diff));
+					coverData.setStatus("Y");
+					
+					coverData.setQuoteNo(request.getQuoteNo());
+					coverData.setIsSelected(cov.getIsSelected().equalsIgnoreCase("N") ? "Y" :cov.getIsSelected());
+					coverData.setCreatedBy(request.getCreatedBy());
+					coverData.setVehicleId(request.getVehicleId());
+					coverData.setDiscountCoverId(cov.getDiscountCoverId()==null?0 :cov.getDiscountCoverId());
+					
+					coverRepo.saveAndFlush(coverData);	
+					log.error("Save Cover Info is ---> " + json.toJson(coverData));
+					
+				}
+		
+				res.put("Response", "Success") ;
+				res.put("Errors", null) ;
+			}catch (Exception e) {
+				e.printStackTrace();
+				log.error("Exception is ---> " + e.getMessage());
+				res.put("Response", "Failed") ;
+				res.put("Errors", "Failed To Save Vehicle Id : " + request.getVehicleId() + " Cover Details" ) ;
+			}
+		
+			return res;
+		}
+
+//-------------------------------------------------------------------Delete Method Start -------------------------------------------------------//
+		
 		public synchronized Map<String,Object>  deleteOldQuoteRecords(QuoteThreadReq req) {
 			Map<String,Object> res= new HashMap<String,Object>() ;
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
+				
+				// Delete Risk Tables
 				if( req.getProductId().equalsIgnoreCase(motorProductId) ) {
-					
-					Long motorInfo =  motorRepo.countByQuoteNo(req.getQuoteNo());
-					if (motorInfo > 0  ) {
-						motorRepo.deleteByQuoteNo(req.getQuoteNo());
-					}
-					
+					res = deleteMotorRecords(req);
 					
 				} else if( req.getProductId().equalsIgnoreCase(travelProductId) ) {
+					res = deleteTravelRecords(req);
 					
-					Long travelInfo =  traPassRepo.countByQuoteNo(req.getQuoteNo());
-					if (travelInfo > 0  ) {
-						//Delete data
-						List<TravelPassengerDetails> oldPassDatas = 	traPassRepo.findByQuoteNo(req.getQuoteNo());
-						traPassRepo.deleteByQuoteNo(req.getQuoteNo());
-							
-						// Find History
-						for (TravelPassengerDetails passData :  oldPassDatas) {
-							Long travelHisInfo =  traPassHisRepo.countByQuoteNoAndPassengerId(req.getQuoteNo() ,passData.getPassengerId());
-							if (travelHisInfo > 0 ) {
-								//Delete data
-								traPassHisRepo.deleteByQuoteNoAndPassengerId(req.getQuoteNo(),passData.getPassengerId());
-								
-							}
-							// Save New 
-							TravelPassengerHistory traHistorySave = new TravelPassengerHistory(); 
-							dozerMapper.map(passData, traHistorySave);
-							traHistorySave.setEntryDate(new Date());
-							traPassHisRepo.saveAndFlush(traHistorySave);
-						}
-						
-						
-					} else if(StringUtils.isNotBlank(req.getEndtPrevQuoteNo())) {
-						// Endorsement
-						travelInfo =  traPassRepo.countByQuoteNo(req.getEndtPrevQuoteNo());
-						if (travelInfo > 0  ) {
-							//Delete data
-							List<TravelPassengerDetails> oldPassDatas = 	traPassRepo.findByQuoteNo(req.getEndtPrevQuoteNo());
-							traPassRepo.deleteByQuoteNo(req.getQuoteNo());
-								
-							// Find History
-							for (TravelPassengerDetails passData :  oldPassDatas) {
-								Long travelHisInfo =  traPassHisRepo.countByQuoteNoAndPassengerId(req.getQuoteNo(),passData.getPassengerId());
-								if (travelHisInfo > 0 ) {
-									//Delete data
-									traPassHisRepo.deleteByQuoteNoAndPassengerId(req.getQuoteNo(),passData.getPassengerId());
-									
-								}
-								// Save New 
-								TravelPassengerHistory traHistorySave = new TravelPassengerHistory(); 
-								dozerMapper.map(passData, traHistorySave);
-								traHistorySave.setRequestReferenceNo(req.getRequestReferenceNo());
-								traHistorySave.setQuoteNo(req.getQuoteNo());
-								traHistorySave.setCustomerId(req.getCustomerId());
-								traHistorySave.setEntryDate(new Date());
-								traPassHisRepo.saveAndFlush(traHistorySave);
-							}
-						}
-					
-					}
-				
 				} else if( req.getProductId().equalsIgnoreCase(buildingProductId)  ||  req.getProductId().equalsIgnoreCase(smeProductId)  ) {
-					Long buildInfo =  buildRepo.countByQuoteNo(req.getQuoteNo());
-					if (buildInfo > 0  ) {
-						buildRepo.deleteByQuoteNo(req.getQuoteNo());
-					}
-
-					Long pacInfo =  commonDataRepo.countByQuoteNo(req.getQuoteNo());
-					if (pacInfo > 0  ) {
-						commonDataRepo.deleteByQuoteNo(req.getQuoteNo());
-					}
+					res = deleteBuildingRecords(req);
 					
 				} else  {
-					
-					Long commonInfo =  commonDataRepo.countByQuoteNo(req.getQuoteNo());
-					if (commonInfo > 0  ) {
-						commonDataRepo.deleteByQuoteNo(req.getQuoteNo());
-					}
+					res = deleteCommonRecords(req);
 					
 				}
 				
-				// Remove Covers
-				Long coverInfo =  coverRepo.countByQuoteNo(req.getQuoteNo());
-	 			if (coverInfo >0 ) {
-	 				//Delete data
-	 				coverRepo.deleteByQuoteNo(req.getQuoteNo() );
-	 				
-	 			}
-	 			
+				// Delete Cover Table
+				res = deleteCoverRecords(req);
+				
 	 			// Section
-	 			Long secInfo =  secRepo.countByQuoteNo(req.getQuoteNo());
-				if (secInfo > 0  ) {
-					secRepo.deleteByQuoteNo(req.getQuoteNo());
-				}
-				
+				res = deleteSectionRecords(req);
+	 			
 				// Common Doc
 				if(StringUtils.isNotBlank(req.getEndtPrevQuoteNo()) ) {
-					List<Integer> ids = new ArrayList<Integer>();
-					ids.add(0);
-					ids.add(1);
-					
-					Long docInfo = docRepo.countByQuoteNoAndIdInAndProductIdAndSectionId(req.getQuoteNo() , ids, Integer.valueOf(req.getProductId()) , 99999  );
-					if( docInfo <= 0  ) {
-						List<CoverDocumentUploadDetails>   oldDocDetails = docRepo.findByQuoteNoAndIdInAndProductIdAndSectionId( req.getEndtPrevQuoteNo() , ids ,
-								Integer.valueOf(req.getProductId()) , 99999  ) ;
-						
-						List<CoverDocumentUploadDetails> saveDocList = new ArrayList<CoverDocumentUploadDetails>();
-						if( oldDocDetails.size() > 0  ) {
-							for ( CoverDocumentUploadDetails doc : oldDocDetails ) {
-								CoverDocumentUploadDetails saveDoc = new CoverDocumentUploadDetails(); 		
-								dozerMapper.map(doc , saveDoc);
-								saveDoc.setQuoteNo(req.getQuoteNo() );
-								saveDoc.setRequestReferenceNo(req.getRequestReferenceNo());
-								saveDocList.add(saveDoc) ;
-							}
-							docRepo.saveAllAndFlush(saveDocList);
-						}
-					}
-					
-				
+					// Copy Quote Doc
+					res = copyDocumentRecords(req);
 				}
 				
 	 			res.put("Response", "Success") ;
@@ -1388,7 +1462,228 @@ public class QuoteThreadCall implements Callable<Object>  {
 			}
 			return res;
 		}
+		
+		
+		
+		
+		public synchronized Map<String,Object>  deleteMotorRecords(QuoteThreadReq req) {
+			Map<String,Object> res= new HashMap<String,Object>() ;
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			try {
+				Long motorInfo =  motorRepo.countByQuoteNo(req.getQuoteNo());
+				if (motorInfo > 0  ) {
+					motorRepo.deleteByQuoteNo(req.getQuoteNo());
+				}
+				
+	 			res.put("Response", "Success") ;
+				res.put("Errors", null) ;
+				
+			} catch ( Exception e) {
+				e.printStackTrace();
+				log.error("Exception is ---> " + e.getMessage());
+			}
+			return res;
+		}
 	
+		
+		
+		public synchronized Map<String,Object>  deleteTravelRecords(QuoteThreadReq req) {
+			Map<String,Object> res= new HashMap<String,Object>() ;
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			try {
+				Long travelInfo =  traPassRepo.countByQuoteNo(req.getQuoteNo());
+				if (travelInfo > 0  ) {
+					//Delete data
+					List<TravelPassengerDetails> oldPassDatas = 	traPassRepo.findByQuoteNo(req.getQuoteNo());
+					traPassRepo.deleteByQuoteNo(req.getQuoteNo());
+						
+					// Find History
+					for (TravelPassengerDetails passData :  oldPassDatas) {
+						Long travelHisInfo =  traPassHisRepo.countByQuoteNoAndPassengerId(req.getQuoteNo() ,passData.getPassengerId());
+						if (travelHisInfo > 0 ) {
+							//Delete data
+							traPassHisRepo.deleteByQuoteNoAndPassengerId(req.getQuoteNo(),passData.getPassengerId());
+							
+						}
+						// Save New 
+						TravelPassengerHistory traHistorySave = new TravelPassengerHistory(); 
+						dozerMapper.map(passData, traHistorySave);
+						traHistorySave.setEntryDate(new Date());
+						traPassHisRepo.saveAndFlush(traHistorySave);
+					}
+					
+					
+				} else if(StringUtils.isNotBlank(req.getEndtPrevQuoteNo())) {
+					// Endorsement
+					travelInfo =  traPassRepo.countByQuoteNo(req.getEndtPrevQuoteNo());
+					if (travelInfo > 0  ) {
+						//Delete data
+						List<TravelPassengerDetails> oldPassDatas = 	traPassRepo.findByQuoteNo(req.getEndtPrevQuoteNo());
+						traPassRepo.deleteByQuoteNo(req.getQuoteNo());
+							
+						// Find History
+						for (TravelPassengerDetails passData :  oldPassDatas) {
+							Long travelHisInfo =  traPassHisRepo.countByQuoteNoAndPassengerId(req.getQuoteNo(),passData.getPassengerId());
+							if (travelHisInfo > 0 ) {
+								//Delete data
+								traPassHisRepo.deleteByQuoteNoAndPassengerId(req.getQuoteNo(),passData.getPassengerId());
+								
+							}
+							// Save New 
+							TravelPassengerHistory traHistorySave = new TravelPassengerHistory(); 
+							dozerMapper.map(passData, traHistorySave);
+							traHistorySave.setRequestReferenceNo(req.getRequestReferenceNo());
+							traHistorySave.setQuoteNo(req.getQuoteNo());
+							traHistorySave.setCustomerId(req.getCustomerId());
+							traHistorySave.setEntryDate(new Date());
+							traPassHisRepo.saveAndFlush(traHistorySave);
+						}
+					}
+				
+				}
+				
+	 			res.put("Response", "Success") ;
+				res.put("Errors", null) ;
+				
+			} catch ( Exception e) {
+				e.printStackTrace();
+				log.error("Exception is ---> " + e.getMessage());
+			}
+			return res;
+		}
+		
+		
+		
+		public synchronized Map<String,Object>  deleteBuildingRecords(QuoteThreadReq req) {
+			Map<String,Object> res= new HashMap<String,Object>() ;
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			try {
+				Long buildInfo =  buildRepo.countByQuoteNo(req.getQuoteNo());
+				if (buildInfo > 0  ) {
+					buildRepo.deleteByQuoteNo(req.getQuoteNo());
+				}
+
+				Long pacInfo =  commonDataRepo.countByQuoteNo(req.getQuoteNo());
+				if (pacInfo > 0  ) {
+					commonDataRepo.deleteByQuoteNo(req.getQuoteNo());
+				}
+				
+	 			res.put("Response", "Success") ;
+				res.put("Errors", null) ;
+				
+			} catch ( Exception e) {
+				e.printStackTrace();
+				log.error("Exception is ---> " + e.getMessage());
+			}
+			return res;
+		}
+		
+		
+		
+		public synchronized Map<String,Object>  deleteCommonRecords(QuoteThreadReq req) {
+			Map<String,Object> res= new HashMap<String,Object>() ;
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			try {
+				Long commonInfo =  commonDataRepo.countByQuoteNo(req.getQuoteNo());
+				if (commonInfo > 0  ) {
+					commonDataRepo.deleteByQuoteNo(req.getQuoteNo());
+				}
+				
+	 			res.put("Response", "Success") ;
+				res.put("Errors", null) ;
+				
+			} catch ( Exception e) {
+				e.printStackTrace();
+				log.error("Exception is ---> " + e.getMessage());
+			}
+			return res;
+		}
+		
+		
+		public synchronized Map<String,Object>  deleteCoverRecords(QuoteThreadReq req) {
+			Map<String,Object> res= new HashMap<String,Object>() ;
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			try {
+				// Remove Covers
+				Long coverInfo =  coverRepo.countByQuoteNo(req.getQuoteNo());
+	 			if (coverInfo >0 ) {
+	 				//Delete data
+	 				coverRepo.deleteByQuoteNo(req.getQuoteNo() );
+	 				
+	 			}
+		 		
+	 			res.put("Response", "Success") ;
+				res.put("Errors", null) ;
+				
+			} catch ( Exception e) {
+				e.printStackTrace();
+				log.error("Exception is ---> " + e.getMessage());
+			}
+			return res;
+		}
+		
+		
+		
+		public synchronized Map<String,Object>  deleteSectionRecords(QuoteThreadReq req) {
+			Map<String,Object> res= new HashMap<String,Object>() ;
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			try {
+				Long secInfo =  secRepo.countByQuoteNo(req.getQuoteNo());
+				if (secInfo > 0  ) {
+					secRepo.deleteByQuoteNo(req.getQuoteNo());
+				}
+				
+	 			res.put("Response", "Success") ;
+				res.put("Errors", null) ;
+				
+			} catch ( Exception e) {
+				e.printStackTrace();
+				log.error("Exception is ---> " + e.getMessage());
+			}
+			return res;
+		}
+		
+		public synchronized Map<String,Object>  copyDocumentRecords(QuoteThreadReq req) {
+			Map<String,Object> res= new HashMap<String,Object>() ;
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			try {
+
+				List<Integer> ids = new ArrayList<Integer>();
+				ids.add(0);
+				ids.add(1);
+				
+				Long docInfo = docRepo.countByQuoteNoAndIdInAndProductIdAndSectionId(req.getQuoteNo() , ids, Integer.valueOf(req.getProductId()) , 99999  );
+				if( docInfo <= 0  ) {
+					List<CoverDocumentUploadDetails>   oldDocDetails = docRepo.findByQuoteNoAndIdInAndProductIdAndSectionId( req.getEndtPrevQuoteNo() , ids ,
+							Integer.valueOf(req.getProductId()) , 99999  ) ;
+					
+					List<CoverDocumentUploadDetails> saveDocList = new ArrayList<CoverDocumentUploadDetails>();
+					if( oldDocDetails.size() > 0  ) {
+						for ( CoverDocumentUploadDetails doc : oldDocDetails ) {
+							CoverDocumentUploadDetails saveDoc = new CoverDocumentUploadDetails(); 		
+							dozerMapper.map(doc , saveDoc);
+							saveDoc.setQuoteNo(req.getQuoteNo() );
+							saveDoc.setRequestReferenceNo(req.getRequestReferenceNo());
+							saveDocList.add(saveDoc) ;
+						}
+						docRepo.saveAllAndFlush(saveDocList);
+					}
+				}
+				
+				
+	 			res.put("Response", "Success") ;
+				res.put("Errors", null) ;
+				
+			} catch ( Exception e) {
+				e.printStackTrace();
+				log.error("Exception is ---> " + e.getMessage());
+			}
+			return res;
+		}
+	
+//------------------------------------------------------------Delete Method End ----------------------------------------------------------//		
+		
+		
 	private synchronized QuoteThreadRes call_QuoteSave(QuoteThreadReq  request) {
 		QuoteThreadRes res= new QuoteThreadRes() ;
 		try {

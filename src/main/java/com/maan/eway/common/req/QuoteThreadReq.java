@@ -1,5 +1,6 @@
 package com.maan.eway.common.req;
 
+import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -44,6 +45,16 @@ public class QuoteThreadReq {
 	@JsonProperty("GroupCount")
 	private Integer groupCount;
 
+
+	@JsonProperty("PolicyStartDate")
+	private Date policyStartDate;
+	
+	@JsonProperty("PolicyEndDate")
+	private Date policyEndDate;
+	
+	@JsonProperty("NoOfDays")
+	private String noOfDays;
+	
 	@JsonProperty("Vehicles")
 	private List<VehicleIdsReq> VehicleIdsList;
 
