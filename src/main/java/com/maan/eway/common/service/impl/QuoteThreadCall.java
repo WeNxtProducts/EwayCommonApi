@@ -1350,8 +1350,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 				for ( FactorRateRequestDetails cov : covers) {
 					PolicyCoverData coverData  = new PolicyCoverData();
 					dozerMapper.map(cov, coverData);
-					coverData.setEntryDate(policyStartDate);
-					coverData.setExpiryDate(policyEndDate);
+					coverData.setEntryDate(new Date());
+					coverData.setCoverPeriodFrom(policyStartDate);
+					coverData.setCoverPeriodTo(policyEndDate);
 					coverData.setNoOfDays( noOfDays==null? null : new BigDecimal(noOfDays));
 					
 					coverData.setQuoteNo(request.getQuoteNo());
@@ -1390,7 +1391,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 					dozerMapper.map(cov, coverData);
 						
 					coverData.setEntryDate(policyStartDate);
-					coverData.setExpiryDate(policyEndDate);
+					coverData.setCoverPeriodFrom(policyStartDate);
+					coverData.setCoverPeriodTo(policyEndDate);
 					coverData.setNoOfDays( diff==null? null : new BigDecimal(diff));
 					coverData.setStatus("Y");
 					

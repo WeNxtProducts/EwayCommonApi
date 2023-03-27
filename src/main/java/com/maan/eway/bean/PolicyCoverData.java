@@ -256,10 +256,14 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="PRO_RATA_YN")
     private String    proRataYn ;
- 
+    
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="EXPIRY_DATE")
-    private Date       expiryDate ;
+    @Column(name="COVER_PERIOD_FROM")
+    private Date       coverPeriodFrom;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="COVER_PERIOD_TO")
+    private Date       coverPeriodTo;
     
     @Column(name="NO_OF_DAYS")
     private BigDecimal    noOfDays;

@@ -349,13 +349,13 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			}
 	
 			// Deactivate Old Covers 
-			if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
-				
-				commonRes = deactivateOldCovers(request); 
-				if( commonRes.getIsError() == true  ) {
-					return commonRes ; 
-				}
-			}
+//			if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
+//				
+//				commonRes = deactivateOldCovers(request); 
+//				if( commonRes.getIsError() == true  ) {
+//					return commonRes ; 
+//				}
+//			}
 		
 			// Cust Res
 			if( custRes.get("Response")!=null && custRes.get("Response").toString().equals("Failed") ) {
@@ -913,9 +913,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			 Long diffInMillies = Math.abs(endDate.getTime() - request.getPolicyStartDate().getTime());
 			 String diff = String.valueOf(TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) );
 			 System.out.println("Difference in days: " + diff);
-			    
-			 deactivateOldCovers.forEach(  o  ->  o.setStatus("N")  );	
-			 deactivateOldCovers.forEach(  o  ->  o.setExpiryDate(endDate)  );
+
+			 deactivateOldCovers.forEach( o  ->  o.setStatus("N")  );	
+			 deactivateOldCovers.forEach(  o  ->  o.setCoverPeriodTo(endDate)  );
 			 deactivateOldCovers.forEach(  o  ->  o.setNoOfDays(new BigDecimal( diff))  );
 			 coverRepo.saveAllAndFlush(deactivateOldCovers);
 			 res = "Success" ;
