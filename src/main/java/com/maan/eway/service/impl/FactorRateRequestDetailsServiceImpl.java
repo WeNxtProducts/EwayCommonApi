@@ -341,6 +341,9 @@ this.repository = repo;
 					//Double b=coverData.getPremiumBeforeDiscountLC()==null ? 0D : Double.valueOf(df.format(coverData.getPremiumBeforeDiscountLC()));
 					saveCover.setRegulSumInsured(coverData.getTiraSumInsured()==null?null:new BigDecimal(df.format(coverData.getTiraSumInsured())));
 					saveCover.setEndtCount(coverData.getEndtCount()==null?BigDecimal.ZERO:coverData.getEndtCount());
+					saveCover.setCoverPeriodFrom(coverData.getEffectiveDate());
+					saveCover.setCoverPeriodTo(coverData.getPolicyEndDate());
+					saveCover.setProRataPercent(coverData.getProRata().multiply(new BigDecimal("100")));
 //					if(coverData.getTaxes()!=null && coverData.getTaxes().size() > 0 ) {
 //						saveCover.setTax1(coverData.getTaxes().get(0).getTaxAmount()==null ? null : Double.valueOf(df.format(coverData.getTaxes().get(0).getTaxAmount())) );
 //						if(coverData.getTaxes().size() > 1  ) 
@@ -458,6 +461,9 @@ this.repository = repo;
 						saveSubCover.setRegulSumInsured(subCoverData.getTiraSumInsured()==null?null:new BigDecimal(df.format(subCoverData.getTiraSumInsured())));
 
 						saveSubCover.setCoverBasedOn(StringUtils.isBlank(coverData.getCoverBasedOn())?"sumInsured":coverData.getCoverBasedOn());
+						saveSubCover.setCoverPeriodFrom(coverData.getEffectiveDate());
+						saveSubCover.setCoverPeriodTo(coverData.getPolicyEndDate());
+						saveSubCover.setProRataPercent(coverData.getProRata().multiply(new BigDecimal("100")));
 						
 						premiumLc = premiumLc + (saveSubCover.getPremiumExcludedTaxLc()==null ? 0D :Double.valueOf(saveSubCover.getPremiumExcludedTaxLc().toString()));
 						premiumFc = premiumFc + (saveSubCover.getPremiumExcludedTaxFc()==null ? 0D :Double.valueOf(saveSubCover.getPremiumExcludedTaxFc().toString()));

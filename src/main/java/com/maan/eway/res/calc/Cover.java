@@ -2,10 +2,12 @@ package com.maan.eway.res.calc;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -171,6 +173,16 @@ public class Cover implements Serializable{
 			 
 			 @JsonProperty("EndtCount")
 			 private BigDecimal endtCount;
+			 
+			 @JsonFormat(pattern="dd/MM/yyyy")
+				@JsonProperty("EffectiveDate")
+			    private Date   effectiveDate ;
+				
+				@JsonFormat(pattern="dd/MM/yyyy")
+				@JsonProperty("PolicyEndDate")
+			    private Date   policyEndDate ;
+				 @JsonProperty("Status")
+				private String status;
 }
 
 

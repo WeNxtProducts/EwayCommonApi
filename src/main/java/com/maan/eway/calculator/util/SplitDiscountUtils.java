@@ -1,6 +1,7 @@
 package com.maan.eway.calculator.util;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.function.Function;
 
 import javax.persistence.Tuple;
@@ -8,6 +9,14 @@ import javax.persistence.Tuple;
 import com.maan.eway.res.calc.Discount;
 
 public class SplitDiscountUtils  implements Function<Tuple,Discount>{
+
+	private Date effectiveDate;
+	private Date policyEndDate;
+	public SplitDiscountUtils(Date effectiveDate, Date policyEndDate) {
+		this.effectiveDate=effectiveDate;
+		this.policyEndDate=policyEndDate;
+				
+	}
 
 	@Override
 	public Discount apply(Tuple t) {
@@ -24,6 +33,8 @@ public class SplitDiscountUtils  implements Function<Tuple,Discount>{
 						 	.factorTypeId(t.get("factorTypeId")==null?"":t.get("factorTypeId").toString())
 						 	.coverAgeType(t.get("coverageType").toString())
 						 	.regulatoryCode(t.get("regulatoryCode")==null?"N/A":t.get("regulatoryCode").toString())
+						 	.effectiveDate(effectiveDate)
+						 	.policyEndDate(policyEndDate)
 						 	.build();
 				 return d;
 			 }

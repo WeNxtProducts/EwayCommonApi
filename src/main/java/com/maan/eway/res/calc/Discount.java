@@ -2,7 +2,9 @@ package com.maan.eway.res.calc;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -37,6 +39,14 @@ public class Discount implements Serializable {
 
     @JsonProperty("RegulatoryCode")
     private String  regulatoryCode ;
+    
+    @JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("EffectiveDate")
+    private Date   effectiveDate ;
+	
+	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonProperty("PolicyEndDate")
+    private Date   policyEndDate ;
 
     
 }

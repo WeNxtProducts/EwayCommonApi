@@ -1,5 +1,8 @@
 package com.maan.eway.req.calcengine;
 
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.bean.MsVehicleDetails;
 
@@ -40,4 +43,13 @@ public class CalcEngine {
 		private String requestReferenceNo;
 		@JsonProperty("MsVehicleDetails")
 		private MsVehicleDetails msVehicleDetails;
+		
+		@JsonFormat(pattern="dd/MM/yyyy")
+		@JsonProperty("EffectiveDate")
+	    private Date   effectiveDate ;
+		
+		@JsonFormat(pattern="dd/MM/yyyy")
+		@JsonProperty("PolicyEndDate")
+	    private Date   policyEndDate ;
+
 }

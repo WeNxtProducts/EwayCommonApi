@@ -1,6 +1,7 @@
 package com.maan.eway.calculator.util;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.function.Function;
 
 import javax.persistence.Tuple;
@@ -11,10 +12,14 @@ public class SplitSubCoverUtil implements Function<Tuple,Cover> {
 
 	private String filterBy;
 	
+	private Date effectiveDate;
+	private Date policyEndDate;
 	
-	public SplitSubCoverUtil(String filterBy) {
+	public SplitSubCoverUtil(String filterBy, Date effectiveDate, Date policyEndDate) {
 		super();
 		this.filterBy = filterBy;
+		this.effectiveDate=effectiveDate;
+		this.policyEndDate=policyEndDate;
 	}
 
 
@@ -62,6 +67,9 @@ public class SplitSubCoverUtil implements Function<Tuple,Cover> {
 					.minimumPremiumYn("N")
 					.proRataYn(t.get("proRataYn")==null?"N":t.get("proRataYn").toString())
 					.endtCount(BigDecimal.ZERO)
+					.effectiveDate(effectiveDate)
+					.policyEndDate(policyEndDate)
+					.status("Y")
 					.build();
 				return c;
 			 }			

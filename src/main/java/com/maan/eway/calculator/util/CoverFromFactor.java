@@ -61,6 +61,7 @@ public class CoverFromFactor implements Function<FactorRateRequestDetails,Cover>
 					.minimumPremiumYn(t.getMinimumPremiumYn())
 					.proRataYn(t.getProRataYn())
 					.endtCount(t.getEndtCount())
+					.status(t.getStatus())
 					.build();
 				return c;
 			 }			

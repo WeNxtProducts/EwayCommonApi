@@ -211,7 +211,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 			dependedcovers.add("Y");
 			
 			List<Tuple> totalcoverstuple = LoadCover(engine);
-			
+			//effectiveDateStart&effectiveDateEnd
 			
 		 	for (String dependcover : dependedcovers) {
 		 		List<Cover> totalcovers=new ArrayList<Cover>();
@@ -219,14 +219,14 @@ public class CalculatorEngineService implements CalculatorEngine{
 		 		List<Discount> discounts=null;
 		 		List<Loading> loadings =null;
 		 		if(covers!=null && covers.size()>0) {
-		 			SplitDiscountUtils discountUtil=new  SplitDiscountUtils();				
+		 			SplitDiscountUtils discountUtil=new  SplitDiscountUtils(engine.getEffectiveDate(),engine.getPolicyEndDate());				
 		 			discounts = covers.stream().map(discountUtil).filter(d->d!=null).collect(Collectors.toList());
-
-		 			SplitLoadingUtils loadingtuils=new SplitLoadingUtils();
+		 			discounts.stream().forEach(t->t.setEffectiveDate(engine.getEffectiveDate()));
+		 			SplitLoadingUtils loadingtuils=new SplitLoadingUtils(engine.getEffectiveDate(),engine.getPolicyEndDate());
 		 			loadings = covers.stream().map(loadingtuils).filter(d->d!=null).collect(Collectors.toList());
 		 		}
 				
-				 SplitSubCoverUtil splitsub=new SplitSubCoverUtil("N");
+				 SplitSubCoverUtil splitsub=new SplitSubCoverUtil("N",engine.getEffectiveDate(),engine.getPolicyEndDate());
 				 Map<String, List<Cover>> nonSubcovers = covers.stream().map(splitsub).filter(d->d!=null).collect(Collectors.groupingBy(Cover::getIsSubCover));
 				 if(!nonSubcovers.isEmpty()) {
 					 List<Cover> noncovers = nonSubcovers.get("N");					 //noncovers
@@ -261,7 +261,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 				 
 				 
 				 
-				 splitsub=new SplitSubCoverUtil("Y");
+				 splitsub=new SplitSubCoverUtil("Y",engine.getEffectiveDate(),engine.getPolicyEndDate());
 				 Map<String, List<Cover>> subcovers = covers.stream().map(splitsub).filter(d->(d!=null && !"0".equals(d.getSubCoverId()))).collect(Collectors.groupingBy(Cover::getIsSubCover));
 				 if(!subcovers.isEmpty()) {
 					 List<Cover> noncovers = subcovers.get("Y");					 //noncovers
@@ -736,7 +736,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 					 EndtCoverCalculator calc=new EndtCoverCalculator();
 					 calc.setEngine(request,retc,commontbl,vehicles,customers,prorata,ratingutil);
 					 
-					 totalcovers.stream().forEach(calc);
+					 totalcovers.stream().filter(t-> "Y".equals(t.getStatus())) .forEach(calc);
 					 //remove error records
 					 totalcovers.removeIf(ll-> (ll.isNotsutable()));
 					 retc.addAll(totalcovers);

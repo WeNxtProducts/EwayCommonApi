@@ -1,14 +1,22 @@
 package com.maan.eway.calculator.util;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.function.Function;
 
 import javax.persistence.Tuple;
 
-import com.maan.eway.res.calc.Discount;
 import com.maan.eway.res.calc.Loading;
 
 public class SplitLoadingUtils  implements Function<Tuple,Loading>{
+
+	private Date effectiveDate;
+	private Date policyEndDate;
+	
+	public SplitLoadingUtils(Date effectiveDate, Date policyEndDate) {
+		this.effectiveDate=effectiveDate;
+		this.policyEndDate=policyEndDate;
+	}
 
 	@Override
 	public Loading apply(Tuple t) {
@@ -24,6 +32,8 @@ public class SplitLoadingUtils  implements Function<Tuple,Loading>{
 						 	.maxAmount(t.get("minPremium")==null?BigDecimal.ZERO:new BigDecimal(t.get("minPremium").toString()))
 						 	.factorTypeId(t.get("factorTypeId")==null?"":t.get("factorTypeId").toString())
 							.regulatoryCode(t.get("regulatoryCode")==null?"N/A":t.get("regulatoryCode").toString())
+							.effectiveDate(effectiveDate)
+							.policyEndDate(policyEndDate)
 						 	.build();
 				 return d;
 			 }
