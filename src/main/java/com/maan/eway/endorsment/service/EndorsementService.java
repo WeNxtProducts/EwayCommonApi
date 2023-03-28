@@ -444,12 +444,12 @@ public class EndorsementService {
 					List<EserviceMotorDetails> copyQuote = new ArrayList<EserviceMotorDetails>();
 					copyQuote.add((EserviceMotorDetails) copyquoteService.copyQuote(c).getCommonResponse());
 					response = copyQuote;
-				}/* else if ( request.getProductId().equals(new BigDecimal(travelProductId))  ) {
+				} else if ( request.getProductId().equals(new BigDecimal(travelProductId))  ) {
 					List<EserviceTravelDetails> travelCopyQuote = new ArrayList<EserviceTravelDetails>(); 
 					travelCopyQuote.add(copyTravelraw.copyTravelRaw(request));
 					response = travelCopyQuote ;
 					
-				}*/ else if ( request.getProductId().equals(new BigDecimal(buildingProductId)) || request.getProductId().equals(new BigDecimal(smeProductId))  ) {
+				}else if ( request.getProductId().equals(new BigDecimal(buildingProductId)) || request.getProductId().equals(new BigDecimal(smeProductId))  ) {
 					List<EserviceBuildingDetails> buildcopyquote = new ArrayList<EserviceBuildingDetails>(); 
 					buildcopyquote.add((EserviceBuildingDetails) copyquoteService.copyQuote(c).getCommonResponse());
 					response = buildcopyquote ;

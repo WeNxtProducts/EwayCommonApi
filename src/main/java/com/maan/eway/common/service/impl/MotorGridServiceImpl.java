@@ -1211,19 +1211,20 @@ public class MotorGridServiceImpl implements MotorGridService {
 			EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());
 			String endtFeeYn=entMaster.getEndtFeeYn()	;
 			BigDecimal endtPre=BigDecimal.ZERO;
+			BigDecimal endtPremiumtax=BigDecimal.ZERO;
 			Double endtPercent=0d;
 			HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
+			Double tax=Double.valueOf(homeData.getVatPercent().toString());
 			BigDecimal overAllPremiumFc=new BigDecimal(homeData.getOverallPremiumFc().toString());
 			if ("Y".equalsIgnoreCase(endtFeeYn)) {
 				endtPercent = Double.valueOf(entMaster.getEndtFeePercent());
 				endtPre = domath(entMaster.getCalcTypeId(), endtPercent, overAllPremiumFc);
+				endtPremiumtax=endtPre.multiply(new BigDecimal(tax/100));
 			}
-//			BigDecimal endtPremium=overAllPremiumFc.multiply(endtFee);
-//			BigDecimal divisor=new BigDecimal(100);
-//			BigDecimal endtPre=endtPremium.divide(divisor);
+			
 			
 			String txt="";
-			if(endtPre.intValue()<0) {
+			if(endtPre.intValue()>0) {
 				txt="CHARGE";
 			}else {
 				txt="REFUND";
@@ -1242,6 +1243,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			if("Y".equalsIgnoreCase(endtFeeYn)){
 				savedata.setEndtPremium(endtPre);
 				savedata.setIsChargRefund(txt);
+				savedata.setEndtPremiumTax(endtPremiumtax);
 				}else {
 				savedata.setEndtPremium(endtPre);
 				savedata.setIsChargRefund("");
@@ -1345,8 +1347,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 				String endTypeDesc=entMaster.getEndtTypeDesc();
 				String endtFeeYn=entMaster.getEndtFeeYn()	;
 				String coverDesc="";
-				String endtFee=entMaster.getEndtFeePercent();
-				
+				BigDecimal endtFee=new BigDecimal(entMaster.getEndtFeePercent());
+				BigDecimal endtAmt=BigDecimal.ZERO;
 				List<PolicyCoverData> policyCoverData=policyCoverDataRepo.findByQuoteNo(req.getQuoteNo());
 				if (policyCoverData.size() > 0) {
 					for (PolicyCoverData data : policyCoverData) {
@@ -1361,7 +1363,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					}
 				
 
-				List<PolicyCoverData> basecovers1 = policyCoverData.stream().filter(d -> ("B".equals(d.getCoverageType()))).collect(Collectors.toList());
+				List<PolicyCoverData> basecovers1 = policyCoverData.stream().filter(d -> ("B".equalsIgnoreCase(d.getCoverageType()))).collect(Collectors.toList());
 				for (PolicyCoverData data : basecovers1) {
 					coverDesc=basecovers1.get(0).getCoverDesc();
 					savedata = dozerMapper.map(data, PolicyCoverData.class);
@@ -1373,16 +1375,21 @@ public class MotorGridServiceImpl implements MotorGridService {
 					savedata.setQuoteNo(quoteNo);
 					savedata.setEntryDate(new Date());
 					savedata.setCreatedBy(loginId);
-					savedata.setPremiumAfterDiscountFc(data.getPremiumAfterDiscountFc());
-					savedata.setPremiumAfterDiscountLc(data.getPremiumAfterDiscountLc());
-					savedata.setPremiumBeforeDiscountFc(data.getPremiumBeforeDiscountFc());
-					savedata.setPremiumBeforeDiscountLc(data.getPremiumBeforeDiscountLc());
-					savedata.setPremiumExcludedTaxFc(data.getPremiumExcludedTaxFc());
-					savedata.setPremiumExcludedTaxLc(data.getPremiumExcludedTaxLc());
-					savedata.setPremiumIncludedTaxFc(data.getPremiumIncludedTaxFc());
-					savedata.setPremiumIncludedTaxLc(data.getPremiumIncludedTaxLc());
+					
+					savedata.setPremiumAfterDiscountFc(BigDecimal.ZERO);
+					savedata.setPremiumAfterDiscountLc(BigDecimal.ZERO);
+					savedata.setPremiumBeforeDiscountFc(BigDecimal.ZERO);
+					savedata.setPremiumBeforeDiscountLc(BigDecimal.ZERO);
+					savedata.setPremiumExcludedTaxFc(BigDecimal.ZERO);
+					savedata.setPremiumExcludedTaxLc(BigDecimal.ZERO);
+					savedata.setPremiumIncludedTaxFc(BigDecimal.ZERO);
+					savedata.setPremiumIncludedTaxLc(BigDecimal.ZERO);
+					
 					savedata.setDependentCoverYn("N");
 					savedata.setDependentCoverId(null);
+					
+					savedata.setMinimumPremium(BigDecimal.ZERO);
+					savedata.setIsTaxExtempted("N");
 					savedata.setTaxId(0);
 					savedata.setTaxRate(BigDecimal.ZERO);
 					savedata.setTaxDesc("");
@@ -1390,8 +1397,11 @@ public class MotorGridServiceImpl implements MotorGridService {
 					savedata.setDiscountCoverId(data.getCoverId());
 					policyCoverDataRepo.saveAndFlush(savedata);
 					}
-				List<PolicyCoverData> basecovers2 = policyCoverData.stream().filter(d -> ("T".equals(d.getCoverageType()))).collect(Collectors.toList());
+				List<PolicyCoverData> basecovers2 = policyCoverData.stream().filter(d -> ("T".equalsIgnoreCase(d.getCoverageType()))).collect(Collectors.toList());
 				for (PolicyCoverData data : basecovers2) {
+					BigDecimal divisor=new BigDecimal(100);
+					Double taxRate=Double.valueOf(data.getTaxRate().toString());
+					endtAmt=endtFee.multiply(new BigDecimal(taxRate/100));
 					coverDesc=data.getCoverName();
 					savedata = dozerMapper.map(data, PolicyCoverData.class);
 					savedata.setRequestReferenceNo(refNo);
@@ -1402,25 +1412,30 @@ public class MotorGridServiceImpl implements MotorGridService {
 					savedata.setDiscLoadId(Integer.valueOf(req.getEndtTypeId()));
 					savedata.setCoverName(coverDesc+" "+endTypeDesc);
 					savedata.setCoverDesc(coverDesc+" "+endTypeDesc);
-					savedata.setPremiumAfterDiscountFc(data.getPremiumAfterDiscountFc());
-					savedata.setPremiumAfterDiscountLc(data.getPremiumAfterDiscountLc());
-					savedata.setPremiumBeforeDiscountFc(data.getPremiumBeforeDiscountFc());
-					savedata.setPremiumBeforeDiscountLc(data.getPremiumBeforeDiscountLc());
-					savedata.setPremiumExcludedTaxFc(data.getPremiumExcludedTaxFc());
-					savedata.setPremiumExcludedTaxLc(data.getPremiumExcludedTaxLc());
-					savedata.setPremiumIncludedTaxFc(data.getPremiumIncludedTaxFc());
-					savedata.setPremiumIncludedTaxLc(data.getPremiumIncludedTaxLc());
+					savedata.setPremiumAfterDiscountFc(BigDecimal.ZERO);
+					savedata.setPremiumAfterDiscountLc(BigDecimal.ZERO);
+					savedata.setPremiumBeforeDiscountFc(BigDecimal.ZERO);
+					savedata.setPremiumBeforeDiscountLc(BigDecimal.ZERO);
+					savedata.setPremiumExcludedTaxFc(BigDecimal.ZERO);
+					savedata.setPremiumExcludedTaxLc(BigDecimal.ZERO);
+					savedata.setPremiumIncludedTaxFc(BigDecimal.ZERO);
+					savedata.setPremiumIncludedTaxLc(BigDecimal.ZERO);
 					savedata.setDependentCoverYn("N");
 					savedata.setDependentCoverId(null);
+					
+					savedata.setMinimumPremium(BigDecimal.ZERO);
 					savedata.setTaxId(data.getTaxId());
 					savedata.setTaxRate(data.getTaxRate());
 					savedata.setTaxCalcType(data.getTaxCalcType());
-					savedata.setTaxDesc(endTypeDesc+"VAT");
+					savedata.setTaxDesc(endTypeDesc+" VAT");
+					
+					savedata.setTaxAmount(endtAmt);				
+					savedata.setIsTaxExtempted("N");
 					savedata.setEndtCount(new BigDecimal(count));
 					savedata.setDiscountCoverId(data.getCoverId());
 					policyCoverDataRepo.saveAndFlush(savedata);
 				}
-				if ("Y".equals(endtFeeYn)) {
+				if ("Y".equalsIgnoreCase(endtFeeYn)) {
 					for (PolicyCoverData data : basecovers2) {
 						coverDesc = data.getCoverName();
 						savedata = dozerMapper.map(data, PolicyCoverData.class);
@@ -1431,27 +1446,29 @@ public class MotorGridServiceImpl implements MotorGridService {
 						savedata.setDiscLoadId(Integer.valueOf(req.getEndtTypeId()));
 						savedata.setCoverName(coverDesc + " " + endTypeDesc + " Endorsement Fee" + count);
 						savedata.setCoverDesc(coverDesc + " " + endTypeDesc + " Endorsement Fee" + count);
-						savedata.setPremiumAfterDiscountFc(data.getPremiumAfterDiscountFc());
-						savedata.setPremiumAfterDiscountLc(data.getPremiumAfterDiscountLc());
-						savedata.setPremiumBeforeDiscountFc(data.getPremiumBeforeDiscountFc());
-						savedata.setPremiumBeforeDiscountLc(data.getPremiumBeforeDiscountLc());
-						savedata.setPremiumExcludedTaxFc(data.getPremiumExcludedTaxFc());
-						savedata.setPremiumExcludedTaxLc(data.getPremiumExcludedTaxLc());
-						savedata.setPremiumIncludedTaxFc(data.getPremiumIncludedTaxFc());
-						savedata.setPremiumIncludedTaxLc(data.getPremiumIncludedTaxLc());
+						savedata.setPremiumAfterDiscountFc(BigDecimal.ZERO);
+						savedata.setPremiumAfterDiscountLc(BigDecimal.ZERO);
+						savedata.setPremiumBeforeDiscountFc(BigDecimal.ZERO);
+						savedata.setPremiumBeforeDiscountLc(BigDecimal.ZERO);
+						savedata.setPremiumExcludedTaxFc(BigDecimal.ZERO);
+						savedata.setPremiumExcludedTaxLc(BigDecimal.ZERO);
+						savedata.setPremiumIncludedTaxFc(BigDecimal.ZERO);
+						savedata.setPremiumIncludedTaxLc(endtAmt.add(endtFee));
 						savedata.setDependentCoverYn("N");
 						savedata.setDependentCoverId(null);
 						savedata.setTaxId(Integer.valueOf(req.getEndtTypeId()));
-						savedata.setTaxRate(new BigDecimal(endtFee));
+						savedata.setTaxRate(endtFee);
+						savedata.setTaxAmount(endtFee);
 						savedata.setTaxCalcType(data.getTaxCalcType());
-						savedata.setTaxDesc(endTypeDesc + "Endorsement Fee");
+						savedata.setTaxDesc(endTypeDesc + " Endorsement Fee");
 						savedata.setEndtCount(new BigDecimal(count));
 						savedata.setDiscountCoverId(data.getCoverId());
 						savedata.setCoverageType("T");
+						savedata.setIsTaxExtempted("N");
 						policyCoverDataRepo.saveAndFlush(savedata);
 					}
 				}
-		List<PolicyCoverData> basecovers3 = policyCoverData.stream().filter(d -> ("o".equals(d.getCoverageType()))).collect(Collectors.toList());
+		List<PolicyCoverData> basecovers3 = policyCoverData.stream().filter(d -> ("O".equalsIgnoreCase(d.getCoverageType()))).collect(Collectors.toList());
 		for (PolicyCoverData data : basecovers3) {
 			coverDesc = data.getCoverDesc();
 			savedata = dozerMapper.map(data, PolicyCoverData.class);
@@ -1463,20 +1480,21 @@ public class MotorGridServiceImpl implements MotorGridService {
 			savedata.setDiscLoadId(Integer.valueOf(req.getEndtTypeId()));
 			savedata.setCoverName(coverDesc + " " + endTypeDesc + " " + count);
 			savedata.setCoverDesc(coverDesc + " " + endTypeDesc + " " + count);
-			savedata.setPremiumAfterDiscountFc(data.getPremiumAfterDiscountFc());
-			savedata.setPremiumAfterDiscountLc(data.getPremiumAfterDiscountLc());
-			savedata.setPremiumBeforeDiscountFc(data.getPremiumBeforeDiscountFc());
-			savedata.setPremiumBeforeDiscountLc(data.getPremiumBeforeDiscountLc());
-			savedata.setPremiumExcludedTaxFc(data.getPremiumExcludedTaxFc());
-			savedata.setPremiumExcludedTaxLc(data.getPremiumExcludedTaxLc());
-			savedata.setPremiumIncludedTaxFc(data.getPremiumIncludedTaxFc());
-			savedata.setPremiumIncludedTaxLc(data.getPremiumIncludedTaxLc());
+			savedata.setPremiumAfterDiscountFc(BigDecimal.ZERO);
+			savedata.setPremiumAfterDiscountLc(BigDecimal.ZERO);
+			savedata.setPremiumBeforeDiscountFc(BigDecimal.ZERO);
+			savedata.setPremiumBeforeDiscountLc(BigDecimal.ZERO);
+			savedata.setPremiumExcludedTaxFc(BigDecimal.ZERO);
+			savedata.setPremiumExcludedTaxLc(BigDecimal.ZERO);
+			savedata.setPremiumIncludedTaxFc(BigDecimal.ZERO);
+			savedata.setPremiumIncludedTaxLc(BigDecimal.ZERO);
 			savedata.setDependentCoverYn("N");
 			savedata.setDependentCoverId(null);
 			savedata.setTaxId(0);
 			savedata.setTaxRate(BigDecimal.ZERO);
 			savedata.setTaxCalcType(data.getTaxCalcType());
 			savedata.setTaxDesc(" ");
+			savedata.setIsTaxExtempted("N");
 			savedata.setEndtCount(new BigDecimal(count));
 			savedata.setDiscountCoverId(data.getCoverId());
 			policyCoverDataRepo.saveAndFlush(savedata);
