@@ -730,8 +730,9 @@ this.repository = repo;
 				saveTax.setIsTaxExtempted(tax.getIsTaxExempted());
 				saveTax.setEndtCount(tax.getEndtTypeCount()==null?BigDecimal.ZERO:tax.getEndtTypeCount());
 				saveTax.setDiscountCoverId(0);
-
-				repository.saveAndFlush(saveTax);
+				saveTax.setCoverPeriodFrom(coverReq.getEffectiveDate());
+				saveTax.setCoverPeriodTo(coverReq.getPolicyEndDate());
+					repository.saveAndFlush(saveTax);
 				
 			}
 			res = "Success" ;
@@ -798,7 +799,8 @@ this.repository = repo;
 				saveLod.setPremiumExcludedTaxLc(lod.getPremiumExcluedTaxLC()==null ? null : new BigDecimal(df.format(lod.getPremiumExcluedTaxLC())));
 				saveLod.setPremiumIncludedTaxLc(lod.getPremiumIncludedTaxLC()==null ? null : new BigDecimal(df.format(lod.getPremiumIncludedTaxLC())));
 				saveLod.setDiscountCoverId(StringUtils.isBlank(lod.getEndorsementforId())?0:Integer.parseInt(lod.getEndorsementforId()));
-				 
+				saveLod.setCoverPeriodFrom(coverReq.getEffectiveDate());
+				saveLod.setCoverPeriodTo(coverReq.getPolicyEndDate());
 				
 				
 				repository.saveAndFlush(saveLod);
@@ -867,6 +869,8 @@ this.repository = repo;
 				saveLod.setPremiumIncludedTaxFc(lod.getLoadingAmount()==null ? null : new BigDecimal(df.format(lod.getLoadingAmount())));
 				saveLod.setDiscountCoverId(StringUtils.isBlank(lod.getLoadingforId())?0:Integer.parseInt(lod.getLoadingforId()));
 				saveLod.setEndtCount(BigDecimal.ZERO);
+				saveLod.setCoverPeriodFrom(coverReq.getEffectiveDate());
+				saveLod.setCoverPeriodTo(coverReq.getPolicyEndDate());
 				repository.saveAndFlush(saveLod);
 				
 			}
@@ -921,6 +925,8 @@ this.repository = repo;
 				saveDiscounts.setTaxId(0);
 				saveDiscounts.setDiscountCoverId(StringUtils.isBlank(disc.getDiscountforId())?0:Integer.parseInt(disc.getDiscountforId()));
 				saveDiscounts.setEndtCount(BigDecimal.ZERO );
+				saveDiscounts.setCoverPeriodFrom(coverReq.getEffectiveDate());
+				saveDiscounts.setCoverPeriodTo(coverReq.getPolicyEndDate());
 				repository.saveAndFlush(saveDiscounts);
 				
 			}

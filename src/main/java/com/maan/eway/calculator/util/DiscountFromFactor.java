@@ -23,6 +23,8 @@ public class DiscountFromFactor  implements Function<FactorRateRequestDetails,Di
 						 	.factorTypeId(t.getFactorTypeId()==null?"":t.getFactorTypeId().toString())
 						 	.regulatoryCode(t.getRegulatoryCode()==null?"N/A":t.getRegulatoryCode())
 						 	.coverAgeType(t.getCoverageType())
+						 	.effectiveDate(t.getCoverPeriodFrom())
+						 	.policyEndDate(t.getCoverPeriodTo())
 						 	.build();
 				 return d;
 			 }

@@ -62,6 +62,8 @@ public class CoverFromFactor implements Function<FactorRateRequestDetails,Cover>
 					.proRataYn(t.getProRataYn())
 					.endtCount(t.getEndtCount())
 					.status(t.getStatus())
+					.effectiveDate(t.getCoverPeriodFrom())
+					.policyEndDate(t.getCoverPeriodTo())
 					.build();
 				return c;
 			 }			

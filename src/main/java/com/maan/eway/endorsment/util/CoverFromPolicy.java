@@ -77,6 +77,8 @@ public class CoverFromPolicy implements Function<PolicyCoverData,Cover> {
 					.premiumExcluedTax(new BigDecimal(t.get("coverId").toString()))
 					.premiumIncludedTax(new BigDecimal(t.get("coverId").toString()))*/
 					//.regulatoryCode(t.getRegulatoryCode()==null?"N/A":t.getRegulatoryCode())
+					.effectiveDate(t.getCoverPeriodFrom())
+					.policyEndDate(t.getCoverPeriodTo())
 					.build();
 				return c;
 			 }			
