@@ -2,6 +2,9 @@ package com.maan.eway.common.service.impl;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -1258,42 +1261,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 			}
 			
 			List<FactorRateRequestDetails> updateCovers = new ArrayList<FactorRateRequestDetails>();
-		//	List<PolicyCoverData> oldPolicyCoverDatas =  coverRepo.findByQuoteNoAndVehicleIdAndProductIdAndSectionIdOrderByCoverIdAsc(PrevQuoteNo , request.getGroupId()==null?request.getVehicleId() :request.getGroupId() ,Integer.valueOf(request.getProductId()) , Integer.valueOf(request.getSectionId())  );
 			
 			for ( CoverIdsReq covReq :  coverReqList) {
 				
-			//	List<PolicyCoverData> filterOldCovers = oldPolicyCoverDatas.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId())).collect(Collectors.toList());
-						
-				Date today = new Date();
-				
-				// New Cover Insert
-//				if( filterOldCovers.size() <=0   ) {
-//					
-//					Date startDate = policyStartDate.after(today) ? policyStartDate : today ;
-//				    Long diffInMillies = Math.abs(policyEndDate.getTime() - startDate.getTime());
-//				    String diff = policyStartDate.after(today) ?  noOfDays : String.valueOf(TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) );
-//				    System.out.println("Difference in days: " + diff);
-//					
-//					List<FactorRateRequestDetails> filterCovers =  covers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId())).collect(Collectors.toList());				
-//					
-//					if(filterCovers != null && filterCovers.size()>0 ) {
-//						if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
-//							
-//							res = InsertEndtCoverDetails(PrevQuoteNo , filterCovers, startDate ,policyEndDate ,  diff);
-//							
-//							List<FactorRateRequestDetails> 	updateCovers1 = filterCovers.stream().filter( o -> o.getIsSelected()!=null &&  (o.getIsSelected().equalsIgnoreCase("N")) ).collect(Collectors.toList());
-//							updateCovers.addAll(updateCovers1);
-//							
-//						}else {
-//							List<FactorRateRequestDetails> filterSubCovers = filterCovers.stream().filter(  o -> o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId())) ).collect(Collectors.toList());
-//							res = InsertEndtCoverDetails(PrevQuoteNo , filterSubCovers, startDate ,policyEndDate ,  diff);
-//							List<FactorRateRequestDetails> 	updateCovers2 = filterSubCovers.stream().filter( o -> o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("N") ).collect(Collectors.toList());
-//							updateCovers.addAll(updateCovers2);
-//						}
-//					}
-//				
-//				// Old Cover Insert
-//				} else {
 					List<FactorRateRequestDetails> filterCovers = covers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId())).collect(Collectors.toList());				
 					
 					if(filterCovers != null && filterCovers.size()>0 ) {
@@ -1385,6 +1355,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			Map<String,Object> res= new HashMap<String,Object>() ;
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
+				List<PolicyCoverData>  OldPolicyCovers = coverRepo.findByQuoteNoAndStatusOrderByVehicleIdAsc(request.getEndtPrevQuoteNo() ,"Y" );
+				
 						
 				// Save Cover Details
 				for ( FactorRateRequestDetails cov : covers) {
@@ -1393,9 +1365,36 @@ public class QuoteThreadCall implements Callable<Object>  {
 					dozerMapper.map(cov, coverData);
 						
 					coverData.setEntryDate(new Date());
-				//	coverData.setCoverPeriodFrom(policyStartDate);
-				//	coverData.setCoverPeriodTo(policyEndDate);
-				//	coverData.setNoOfDays( diff==null? null : new BigDecimal(diff));
+					
+					// Date Differents
+					Date periodStart = cov.getCoverPeriodFrom();
+					Date periodEnd   = cov.getCoverPeriodTo();
+							
+					if( cov.getSubCoverYn() ==null || cov.getSubCoverYn().equalsIgnoreCase("N") ) {
+						List<PolicyCoverData> filterOldCover =  OldPolicyCovers.stream().filter(  o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId()) && o.getProductId().equals(request.getProductId())
+									&& o.getSectionId().equals(Integer.valueOf(request.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) ).collect(Collectors.toList());	            			
+						
+						periodStart = filterOldCover.size() > 0 ? filterOldCover.get(0).getCoverPeriodFrom() : cov.getCoverPeriodFrom();								
+					
+					} else {
+        				List<PolicyCoverData> filterOldSubCover =  OldPolicyCovers.stream().filter(  o ->  o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId()) && o.getProductId().equals(request.getProductId())
+									&& o.getSectionId().equals(Integer.valueOf(request.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) &&  o.getSubCoverId().equals(Integer.valueOf(cov.getSubCoverId()))  ).collect(Collectors.toList());
+						
+						periodStart = filterOldSubCover.size() > 0 ? filterOldSubCover.get(0).getCoverPeriodFrom() : cov.getCoverPeriodFrom();	
+        			}
+					
+					Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
+					Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
+					
+					// Check Leap Year
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+					boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
+					String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
+					System.out.println( "Policy Opted Cover :  "+ coverData.getCoverDesc() + " Difference in days: " + diff);
+					
+					coverData.setCoverPeriodFrom(periodStart);
+					coverData.setCoverPeriodTo(periodEnd);
+					coverData.setNoOfDays(new BigDecimal(diff));
 					coverData.setStatus("Y");
 					
 					coverData.setQuoteNo(request.getQuoteNo());
@@ -1670,12 +1669,26 @@ public class QuoteThreadCall implements Callable<Object>  {
 		
 		public String deactivateTravelCovers( QuoteThreadReq request ) {
 			String res = "";
+			DozerBeanMapper dozerMapper  = new DozerBeanMapper(); 
 			try {
 				List<EserviceTravelGroupDetails> groupData = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(request.getRequestReferenceNo() );
 				List<PolicyCoverData>  OldPolicyCovers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(request.getEndtPrevQuoteNo());
-				List<PolicyCoverData>  deactivateOldCovers = OldPolicyCovers ; 
 				
-	        	Integer passCount = 0;
+				// Deleted Records
+				List<PolicyCoverData>  fiterDeletedCovers = OldPolicyCovers.stream().filter( o ->  o.getStatus().equalsIgnoreCase("D") ).collect(Collectors.toList());
+				List<PolicyCoverData> rePopulateRecords = new ArrayList<PolicyCoverData>();
+				fiterDeletedCovers.forEach(ref ->  {
+					PolicyCoverData pc = new PolicyCoverData();
+					dozerMapper.map(ref , pc) ;
+					pc.setQuoteNo(request.getQuoteNo());
+					pc.setRequestReferenceNo(request.getRequestReferenceNo());
+					pc.setPolicyNo(null);
+					rePopulateRecords.add(pc) ;
+					
+				}) ;
+				
+				// Non Selected Records
+				List<PolicyCoverData>  deactivateOldCovers = OldPolicyCovers ; 
 	        	List<VehicleIdsReq>  filterAdult  = request.getVehicleIdsList().stream().filter( o ->  o.getVehicleId().equals(2) ).collect(Collectors.toList());
 	        	List<VehicleIdsReq>  filterOthers = request.getVehicleIdsList().stream().filter( o -> ! o.getVehicleId().equals(2) ).collect(Collectors.toList());
 	        	List<VehicleIdsReq>  totalGroup  = new ArrayList<VehicleIdsReq>();
@@ -1684,42 +1697,63 @@ public class QuoteThreadCall implements Callable<Object>  {
 	        	List<Integer> groupIds = totalGroup.stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
 //	        	// Filte Count
 	        	for (Integer vehId :  groupIds ) {
-//					 List<EserviceTravelGroupDetails> filterGroup = groupData.stream().filter( o -> o.getGroupId().equals(vehId) ).collect(Collectors.toList());				 
-//					 List<String> sectionId = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());	
-//					 for (int i=0 ; i < filterGroup.get(0).getGrouppMembers() ; i++) {
-//						 passCount = passCount + 1 ;
-//						
-//						 for (CoverIdsReq cov : vehId.getCoverIdList() ) {
-//							 
-//						 }
-//		            	 QuoteThreadReq request2 = new QuoteThreadReq();
-//		            	 request2.setVehicleId(passCount);
-//		            	 request2.setCustomerId(request.getCustomerId());
-//		            	 request2.setProductId(request.getProductId());
-//		            	 request2.setQuoteNo(request.getQuoteNo());
-//		            	 request2.setRequestReferenceNo(request.getRequestReferenceNo());
-//		            	 request2.setEndtPrevQuoteNo(request.getEndtPrevQuoteNo());
-//		            	 request2.setVehicleIdsList(request.getVehicleIdsList());
-//		            	 request2.setCreatedBy(request.getCreatedBy());
-//		            	 request2.setGroupId(filterGroup.get(0).getGroupId());
-//		            	 request2.setGroupCount(filterGroup.get(0).getGrouppMembers());
-//		            	 request2.setSectionId(sectionId.get(0));
-//		            	 request2.setPolicyStartDate(request.getPolicyStartDate());
-//			             request2.setPolicyEndDate(request.getPolicyEndDate());
-//			             request2.setNoOfDays(request.getNoOfDays());
-//			             resList.add(request2);	 
-//			             
-//			             if( cov.getSubCoverYn() ==null && cov.getSubCoverYn().equalsIgnoreCase("N") ) {
-//	            			deactivateOldCovers.removeIf(  o -> o.getVehicleId().equals(vehId.getVehicleId() ) && o.getProductId().equals(Integer.valueOf(request.getProductId()))
-//	            					&& o.getSectionId().equals(Integer.valueOf(sectionId)) && o.getCoverId().equals(cov.getCoverId())   );	            			
-//	            		} else {
-//	            			
-//	            			deactivateOldCovers.removeIf(  o -> o.getVehicleId().equals(vehId.getVehicleId() ) && o.getProductId().equals(Integer.valueOf(request.getProductId()))
-//	            					&& o.getSectionId().equals(Integer.valueOf(sectionId)) && o.getCoverId().equals(cov.getCoverId()) &&  o.getSubCoverId().equals(cov.getSubCoverId())  );	 
-//	            		}
-//					 }					 
+	        		 Integer passCount = 0;
+					 List<EserviceTravelGroupDetails> filterGroup = groupData.stream().filter( o -> o.getGroupId().equals(vehId) ).collect(Collectors.toList());				 
+					 List<String> sectionId = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());	
+					 List<CoverIdsReq> coverList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId)).collect(Collectors.toList()).get(0).getCoverIdList();
+					 for (int i=0 ; i < filterGroup.get(0).getGrouppMembers() ; i++) {
+						 Integer pass = passCount + 1 ;
+						 passCount = passCount + 1 ;
+						 
+						 for (CoverIdsReq cov : coverList ) {
+							  if( cov.getSubCoverYn() ==null && cov.getSubCoverYn().equalsIgnoreCase("N") ) {
+			            			deactivateOldCovers.removeIf(  o -> o.getVehicleId().equals(pass) && o.getProductId().equals(Integer.valueOf(request.getProductId()))
+			            					&& o.getSectionId().equals(Integer.valueOf(sectionId.get(0) )) && o.getCoverId().equals(cov.getCoverId())   );	            			
+			            		} else {
+			            			
+			            			deactivateOldCovers.removeIf(  o -> o.getVehicleId().equals(pass) && o.getProductId().equals(Integer.valueOf(request.getProductId()))
+			            					&& o.getSectionId().equals(Integer.valueOf(sectionId.get(0) )) && o.getCoverId().equals(cov.getCoverId()) &&  o.getSubCoverId().equals(cov.getSubCoverId())  );	 
+			            		}
+						 }
+		             }	
+					 
 		         } 
-	        	res = "Success" ;
+	        	
+	        	 // Save Differents
+				 deactivateOldCovers.forEach(ref ->  {
+						PolicyCoverData pc = new PolicyCoverData();
+						dozerMapper.map(ref , pc) ;	
+						pc.setQuoteNo(request.getQuoteNo());
+						pc.setRequestReferenceNo(request.getRequestReferenceNo());
+						pc.setPolicyNo(null);
+						
+						// End Date
+						Date today = new Date() ;
+						long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+						Date oldEndDate = new Date(today.getTime() - MILLIS_IN_A_DAY);
+						 
+						// Date Differents
+						Date periodStart =  ref.getCoverPeriodFrom() ;
+						Date periodEnd = oldEndDate ;
+						Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
+						Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
+						
+						// Check Leap Year
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+						boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
+						String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
+						System.out.println( "Deactivated Policy Cover :  "+ ref.getCoverDesc() + "  Difference in days: " + diff);
+						
+						pc.setCoverPeriodTo(oldEndDate)  ;
+						pc.setStatus("D");
+						pc.setNoOfDays(new BigDecimal( diff));
+						rePopulateRecords.add(pc) ;
+				}) ;
+				 
+				 if (rePopulateRecords.size() > 0 ) {
+					 coverRepo.saveAllAndFlush(rePopulateRecords);
+				 }
+				 res = "Success" ;
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.info("Exception is --> " +  e.getMessage());
@@ -1766,19 +1800,32 @@ public class QuoteThreadCall implements Callable<Object>  {
 			            
 		           }
 				 
-				 Date today = new Date() ;
-				 long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
-				Date oldEndDate = new Date(today.getTime() - MILLIS_IN_A_DAY);
-				 Long diffInMillies = Math.abs(oldEndDate.getTime() - request.getPolicyStartDate().getTime());
-				 String diff = String.valueOf(TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) );
-				 System.out.println("Difference in days: " + diff);
-
+				
+				 // Save Differents
 				 deactivateOldCovers.forEach(ref ->  {
 						PolicyCoverData pc = new PolicyCoverData();
 						dozerMapper.map(ref , pc) ;	
 						pc.setQuoteNo(request.getQuoteNo());
 						pc.setRequestReferenceNo(request.getRequestReferenceNo());
 						pc.setPolicyNo(null);
+						
+						// End Date
+						Date today = new Date() ;
+						long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+						Date oldEndDate = new Date(today.getTime() - MILLIS_IN_A_DAY);
+						 
+						// Date Differents
+						Date periodStart =  ref.getCoverPeriodFrom() ;
+						Date periodEnd = oldEndDate ;
+						Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
+						Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
+						
+						// Check Leap Year
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+						boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
+						String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
+						System.out.println( "Deactivated Policy Cover :  "+ ref.getCoverDesc() + "  Difference in days: " + diff);
+						
 						pc.setCoverPeriodTo(oldEndDate)  ;
 						pc.setStatus("D");
 						pc.setNoOfDays(new BigDecimal( diff));
@@ -1786,11 +1833,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 				}) ;
 				 
 				 if (rePopulateRecords.size() > 0 ) {
-			//		 coverRepo.deleteAll(rePopulateRecords);
 					 coverRepo.saveAllAndFlush(rePopulateRecords);
 				 }
-				// rePopulateRecords.forEach( o -> coverRepo.saveAndFlush(o) );
-				// coverRepo.saveAllAndFlush(rePopulateRecords);
 				 res = "Success" ;
 	        	
 			} catch (Exception e) {

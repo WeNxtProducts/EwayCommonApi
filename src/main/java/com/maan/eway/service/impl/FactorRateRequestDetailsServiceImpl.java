@@ -7,6 +7,8 @@ package com.maan.eway.service.impl;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -345,9 +347,19 @@ this.repository = repo;
 					saveCover.setCoverPeriodFrom(coverData.getEffectiveDate());
 					saveCover.setCoverPeriodTo(coverData.getPolicyEndDate());
 					saveCover.setProRataPercent(coverData.getProRata().multiply(new BigDecimal("100")));
-					Long diffInMillies = Math.abs(coverData.getPolicyEndDate().getTime() - coverData.getEffectiveDate().getTime());
-					String diff = String.valueOf(TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) );
-					System.out.println("Difference in days: " + diff);
+					
+					// Date Differents
+					Date periodStart =  coverData.getEffectiveDate();
+					Date periodEnd = coverData.getPolicyEndDate() ;
+					Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
+					Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
+					
+					// Check Leap Year
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+					boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
+					String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
+					System.out.println( "Calc Cover :  "+ coverData.getCoverDesc() + " Difference in days: " + diff);
+					
 					saveCover.setNoOfDays(new BigDecimal(diff));
 					
 //					if(coverData.getTaxes()!=null && coverData.getTaxes().size() > 0 ) {
@@ -382,21 +394,21 @@ this.repository = repo;
 					// Save Discount Or Promo Cover
 					if( coverData.getDiscounts()!=null && coverData.getDiscounts().size() > 0 ) {
 						
-						successRes  = 	saveDiscountOrPromoRates( primaryKeys ,coverData ,   coverData.getDiscounts() , df ) ;	
+						successRes  = 	saveDiscountOrPromoRates( primaryKeys ,coverData ,   coverData.getDiscounts() , df , diff) ;	
 					}
 					// Tax
 					if(coverData.getTaxes()!=null && coverData.getTaxes().size() > 0 ) {
-						successRes  =  saveTaxes(primaryKeys ,coverData ,   coverData.getTaxes() ,df ) ;
+						successRes  =  saveTaxes(primaryKeys ,coverData ,   coverData.getTaxes() ,df , diff) ;
 					}
 					
 					// Loginds
 					if(coverData.getLoadings()!=null && coverData.getLoadings().size() > 0 ) {
-						successRes  =  saveLoadings(primaryKeys ,coverData ,   coverData.getLoadings() ,df  ) ;
+						successRes  =  saveLoadings(primaryKeys ,coverData ,   coverData.getLoadings() ,df , diff ) ;
 					}
 					
 					//Endt
 					if(coverData.getEndorsements()!=null && coverData.getEndorsements().size() > 0 ) {
-						successRes  =  saveEndorsements(primaryKeys ,coverData ,   coverData.getEndorsements() ,df  ) ;
+						successRes  =  saveEndorsements(primaryKeys ,coverData ,   coverData.getEndorsements() ,df  , diff) ;
 					}
 					
 					
@@ -470,9 +482,19 @@ this.repository = repo;
 						saveSubCover.setCoverPeriodFrom(coverData.getEffectiveDate());
 						saveSubCover.setCoverPeriodTo(coverData.getPolicyEndDate());
 						saveSubCover.setProRataPercent(coverData.getProRata().multiply(new BigDecimal("100")));
-						Long diffInMillies = Math.abs(coverData.getPolicyEndDate().getTime() - coverData.getEffectiveDate().getTime());
-						String diff = String.valueOf(TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) );
-						System.out.println("Difference in days: " + diff);
+						
+						// Date Differents
+						Date periodStart =  coverData.getEffectiveDate();
+						Date periodEnd = coverData.getPolicyEndDate() ;
+						Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
+						Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
+						
+						// Check Leap Year
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+						boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
+						String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
+						System.out.println( "Calc Cover :  "+ coverData.getCoverDesc() + " Difference in days: " + diff);
+						
 						saveSubCover.setNoOfDays(new BigDecimal(diff));
 						premiumLc = premiumLc + (saveSubCover.getPremiumExcludedTaxLc()==null ? 0D :Double.valueOf(saveSubCover.getPremiumExcludedTaxLc().toString()));
 						premiumFc = premiumFc + (saveSubCover.getPremiumExcludedTaxFc()==null ? 0D :Double.valueOf(saveSubCover.getPremiumExcludedTaxFc().toString()));
@@ -495,22 +517,22 @@ this.repository = repo;
 						primaryKeys.put("MsRefNo" ,req.getMsrefno());	
 						// Save Discount Cover Or Promo Cover
 						if( subCoverData.getDiscounts()!=null && subCoverData.getDiscounts().size() > 0 ) {
-							successRes  = 	saveDiscountOrPromoRates( primaryKeys ,subCoverData ,   subCoverData.getDiscounts() ,df ) ;
+							successRes  = 	saveDiscountOrPromoRates( primaryKeys ,subCoverData ,   subCoverData.getDiscounts() ,df , diff) ;
 						}
 						
 						 
 						// Tax
 						if(subCoverData.getTaxes()!=null && subCoverData.getTaxes().size() > 0 ) {
-							successRes  =  saveTaxes(primaryKeys ,subCoverData ,   subCoverData.getTaxes() ,df ) ;
+							successRes  =  saveTaxes(primaryKeys ,subCoverData ,   subCoverData.getTaxes() ,df , diff) ;
 						}
 						
 						// Loginds
 						if(coverData.getLoadings()!=null && coverData.getLoadings().size() > 0 ) {
-							successRes  =  saveLoadings(primaryKeys ,subCoverData ,   subCoverData.getLoadings() ,df ) ;
+							successRes  =  saveLoadings(primaryKeys ,subCoverData ,   subCoverData.getLoadings() ,df , diff) ;
 						}	
 						//Endt
 						if(coverData.getEndorsements()!=null && coverData.getEndorsements().size() > 0 ) {
-							successRes  =  saveEndorsements(primaryKeys ,coverData ,   subCoverData.getEndorsements() ,df  ) ;
+							successRes  =  saveEndorsements(primaryKeys ,coverData ,   subCoverData.getEndorsements() ,df  , diff) ;
 						}
 						
 						
@@ -701,7 +723,7 @@ this.repository = repo;
 		return decimalFormat;
 	}
 
-	public String saveTaxes(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Tax> taxes , DecimalFormat df  ) {
+	public String saveTaxes(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Tax> taxes , DecimalFormat df ,String diff ) {
 		String res = "Saved Successfully";
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
@@ -741,9 +763,8 @@ this.repository = repo;
 				saveTax.setDiscountCoverId(0);
 				saveTax.setCoverPeriodFrom(coverReq.getEffectiveDate());
 				saveTax.setCoverPeriodTo(coverReq.getPolicyEndDate());
-				Long diffInMillies = Math.abs(coverReq.getPolicyEndDate().getTime() - coverReq.getEffectiveDate().getTime());
-				String diff = String.valueOf(TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) );
-				System.out.println("Difference in days: " + diff);
+
+				
 				saveTax.setNoOfDays(new BigDecimal(diff));
 					repository.saveAndFlush(saveTax);
 				
@@ -757,7 +778,7 @@ this.repository = repo;
 			
 		}return res;
 	}
-	public String saveEndorsements(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Endorsement> endorsements , DecimalFormat df ) {
+	public String saveEndorsements(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Endorsement> endorsements , DecimalFormat df ,String diff) {
 		String res = "Saved Successfully";
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
@@ -814,9 +835,7 @@ this.repository = repo;
 				saveLod.setDiscountCoverId(StringUtils.isBlank(lod.getEndorsementforId())?0:Integer.parseInt(lod.getEndorsementforId()));
 				saveLod.setCoverPeriodFrom(coverReq.getEffectiveDate());
 				saveLod.setCoverPeriodTo(coverReq.getPolicyEndDate());
-				Long diffInMillies = Math.abs(coverReq.getPolicyEndDate().getTime() - coverReq.getEffectiveDate().getTime());
-				String diff = String.valueOf(TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) );
-				System.out.println("Difference in days: " + diff);
+				
 				saveLod.setNoOfDays(new BigDecimal(diff));
 				
 				repository.saveAndFlush(saveLod);
@@ -824,7 +843,7 @@ this.repository = repo;
 				
 				// Tax
 				if(lod.getTaxes()!=null && lod.getTaxes().size() > 0 ) {
-					String successRes = saveTaxes(primaryKeys ,coverReq ,   lod.getTaxes() ,df ) ;
+					String successRes = saveTaxes(primaryKeys ,coverReq ,   lod.getTaxes() ,df , diff) ;
 				}
 				
 			}
@@ -837,7 +856,7 @@ this.repository = repo;
 			
 		}return res;
 	}
-	public String saveLoadings(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Loading> lodings , DecimalFormat df ) {
+	public String saveLoadings(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Loading> lodings , DecimalFormat df,String diff ) {
 		String res = "Saved Successfully";
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
@@ -887,9 +906,8 @@ this.repository = repo;
 				saveLod.setEndtCount(BigDecimal.ZERO);
 				saveLod.setCoverPeriodFrom(coverReq.getEffectiveDate());
 				saveLod.setCoverPeriodTo(coverReq.getPolicyEndDate());
-				Long diffInMillies = Math.abs(coverReq.getPolicyEndDate().getTime() - coverReq.getEffectiveDate().getTime());
-				String diff = String.valueOf(TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) );
-				System.out.println("Difference in days: " + diff);
+				
+				
 				saveLod.setNoOfDays(new BigDecimal(diff));
 				repository.saveAndFlush(saveLod);
 				
@@ -904,7 +922,7 @@ this.repository = repo;
 		}return res;
 	}
 	
-	public String saveDiscountOrPromoRates(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Discount> discounts , DecimalFormat df ) {
+	public String saveDiscountOrPromoRates(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Discount> discounts , DecimalFormat df ,String diff) {
 		String res = "Saved Successfully";
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
@@ -947,9 +965,8 @@ this.repository = repo;
 				saveDiscounts.setEndtCount(BigDecimal.ZERO );
 				saveDiscounts.setCoverPeriodFrom(coverReq.getEffectiveDate());
 				saveDiscounts.setCoverPeriodTo(coverReq.getPolicyEndDate());
-				Long diffInMillies = Math.abs(coverReq.getPolicyEndDate().getTime() - coverReq.getEffectiveDate().getTime());
-				String diff = String.valueOf(TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) );
-				System.out.println("Difference in days: " + diff);
+				
+				
 				saveDiscounts.setNoOfDays(new BigDecimal(diff));
 				repository.saveAndFlush(saveDiscounts);
 				
