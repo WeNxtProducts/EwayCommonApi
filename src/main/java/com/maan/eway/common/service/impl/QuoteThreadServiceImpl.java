@@ -38,6 +38,8 @@ import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dozer.DozerBeanMapper;
+import org.dozer.inject.DozerBeanContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -112,6 +114,7 @@ import com.maan.eway.repository.TravelPassengerHistoryRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
 import com.maan.eway.res.ReferalResponse;
 import com.maan.eway.res.SuccessRes;
+import com.maan.eway.res.referal.MasterReferal;
 import com.maan.eway.thread.MyTaskList;
 
 @Service
@@ -303,12 +306,23 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             int threadCount = 2 ;
             int success = 0;
             
+       
+            
          // Product Wise Thread Call
             commonRes = productWiseThreadCall( req , request ) ;
         	 if( commonRes.getErrorMessage() !=null && commonRes.getErrorMessage().size()>0 ) {
              	commonRes = frameQuoteReq ;
              	return commonRes ; 
              }
+        	 
+//        	  // Deactivate Old Covers 
+//	 			if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
+//	 				
+//	 				commonRes = deactivateOldCovers(request); 
+//	 				if( commonRes.getIsIsError() == true  ) {
+//	 					return commonRes ; 
+//	 				}
+//	 			}
             
         	 ProductThreadRes productThreads = (ProductThreadRes) commonRes.getCommonResponse();
         	 threadCount = threadCount + productThreads.getThreadCount();
@@ -348,14 +362,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				}
 			}
 	
-			// Deactivate Old Covers 
-//			if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
-//				
-//				commonRes = deactivateOldCovers(request); 
-//				if( commonRes.getIsError() == true  ) {
-//					return commonRes ; 
-//				}
-//			}
+			
 		
 			// Cust Res
 			if( custRes.get("Response")!=null && custRes.get("Response").toString().equals("Failed") ) {
@@ -792,141 +799,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	}
 	
 	
-	public CommonRes deactivateOldCovers( QuoteThreadReq request ) {
-		CommonRes commonRes = new CommonRes();
-		List<Error> errors = new ArrayList<Error>();
-		String res = "" ;
-		try {
-			
-			// Deactivate Travel product covers
-			if ( request.getProductId().equalsIgnoreCase(travelProductId)) {
-				
-				res = deactivateTravelCovers(request);
-			// Deactivate Other Covers
-			} else {
-				res = deactivateOtherProductCovers(request);
-			}
-			
-			
- 			
-	        commonRes.setCommonResponse(res);
-			commonRes.setIsError(false);
-			commonRes.setErrorMessage(Collections.emptyList());
-		 	commonRes.setMessage("Success");
-		 	
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.info("Exception is --> " +  e.getMessage());
-			errors.add(new Error("01","Common Error",e.getMessage()));
-			commonRes.setCommonResponse(null);
-			commonRes.setIsError(true);
-			commonRes.setErrorMessage(errors);
-			commonRes.setMessage("Failed");	
-		}
-		return commonRes ;
-	}
 	
-	
-	public String deactivateTravelCovers( QuoteThreadReq request ) {
-		String res = "";
-		try {
-			List<EserviceTravelGroupDetails> groupData = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(request.getRequestReferenceNo() );
-			List<PolicyCoverData>  OldPolicyCovers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(request.getEndtPrevQuoteNo());
-			List<PolicyCoverData>  deactivateOldCovers = OldPolicyCovers ; 
-			
-        	Integer passCount = 0;
-        	List<VehicleIdsReq>  filterAdult  = request.getVehicleIdsList().stream().filter( o ->  o.getVehicleId().equals(2) ).collect(Collectors.toList());
-        	List<VehicleIdsReq>  filterOthers = request.getVehicleIdsList().stream().filter( o -> ! o.getVehicleId().equals(2) ).collect(Collectors.toList());
-        	List<VehicleIdsReq>  totalGroup  = new ArrayList<VehicleIdsReq>();
-        	totalGroup.addAll(filterAdult)	;
-        	totalGroup.addAll(filterOthers);
-        	List<Integer> groupIds = totalGroup.stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
-//        	// Filte Count
-        	for (Integer vehId :  groupIds ) {
-//				 List<EserviceTravelGroupDetails> filterGroup = groupData.stream().filter( o -> o.getGroupId().equals(vehId) ).collect(Collectors.toList());				 
-//				 List<String> sectionId = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());	
-//				 for (int i=0 ; i < filterGroup.get(0).getGrouppMembers() ; i++) {
-//					 passCount = passCount + 1 ;
-//					
-//					 for (CoverIdsReq cov : vehId.getCoverIdList() ) {
-//						 
-//					 }
-//	            	 QuoteThreadReq request2 = new QuoteThreadReq();
-//	            	 request2.setVehicleId(passCount);
-//	            	 request2.setCustomerId(request.getCustomerId());
-//	            	 request2.setProductId(request.getProductId());
-//	            	 request2.setQuoteNo(request.getQuoteNo());
-//	            	 request2.setRequestReferenceNo(request.getRequestReferenceNo());
-//	            	 request2.setEndtPrevQuoteNo(request.getEndtPrevQuoteNo());
-//	            	 request2.setVehicleIdsList(request.getVehicleIdsList());
-//	            	 request2.setCreatedBy(request.getCreatedBy());
-//	            	 request2.setGroupId(filterGroup.get(0).getGroupId());
-//	            	 request2.setGroupCount(filterGroup.get(0).getGrouppMembers());
-//	            	 request2.setSectionId(sectionId.get(0));
-//	            	 request2.setPolicyStartDate(request.getPolicyStartDate());
-//		             request2.setPolicyEndDate(request.getPolicyEndDate());
-//		             request2.setNoOfDays(request.getNoOfDays());
-//		             resList.add(request2);	 
-//		             
-//		             if( cov.getSubCoverYn() ==null && cov.getSubCoverYn().equalsIgnoreCase("N") ) {
-//            			deactivateOldCovers.removeIf(  o -> o.getVehicleId().equals(vehId.getVehicleId() ) && o.getProductId().equals(Integer.valueOf(request.getProductId()))
-//            					&& o.getSectionId().equals(Integer.valueOf(sectionId)) && o.getCoverId().equals(cov.getCoverId())   );	            			
-//            		} else {
-//            			
-//            			deactivateOldCovers.removeIf(  o -> o.getVehicleId().equals(vehId.getVehicleId() ) && o.getProductId().equals(Integer.valueOf(request.getProductId()))
-//            					&& o.getSectionId().equals(Integer.valueOf(sectionId)) && o.getCoverId().equals(cov.getCoverId()) &&  o.getSubCoverId().equals(cov.getSubCoverId())  );	 
-//            		}
-//				 }					 
-	         } 
-        	res = "Success" ;
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.info("Exception is --> " +  e.getMessage());
-			return null ;
-		}
-		return res ;
-	}
-	
-	public String deactivateOtherProductCovers( QuoteThreadReq request ) {
-		String res = "";
-		try {			
-			List<PolicyCoverData>  OldPolicyCovers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(request.getEndtPrevQuoteNo());
-			List<PolicyCoverData>  deactivateOldCovers = OldPolicyCovers ; 
-			
-			 for ( VehicleIdsReq vehId :  request.getVehicleIdsList() ) {
-	            	for (CoverIdsReq cov : vehId.getCoverIdList() ) {
-						
-	            		if( cov.getSubCoverYn() ==null || cov.getSubCoverYn().equalsIgnoreCase("N") ) {
-	            				deactivateOldCovers.removeIf(  o -> o.getVehicleId().equals(vehId.getVehicleId() ) && o.getProductId().equals(Integer.valueOf(request.getProductId()))
-	            					&& o.getSectionId().equals(Integer.valueOf(vehId.getSectionId())) && o.getCoverId().equals(cov.getCoverId())   );	            			
-	            		} else {
-	            			
-	            			deactivateOldCovers.removeIf(  o -> o.getVehicleId().equals(vehId.getVehicleId() ) && o.getProductId().equals(Integer.valueOf(request.getProductId()))
-	            					&& o.getSectionId().equals(Integer.valueOf(vehId.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) &&  o.getSubCoverId().equals(Integer.valueOf(cov.getSubCoverId()))  );	 
-	            			
-	            		}
-	            	}
-		            
-	            }
-			 
-			 Date endDate = new Date() ;
-			 Long diffInMillies = Math.abs(endDate.getTime() - request.getPolicyStartDate().getTime());
-			 String diff = String.valueOf(TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) );
-			 System.out.println("Difference in days: " + diff);
-
-			 deactivateOldCovers.forEach( o  ->  o.setStatus("N")  );	
-			 deactivateOldCovers.forEach(  o  ->  o.setCoverPeriodTo(endDate)  );
-			 deactivateOldCovers.forEach(  o  ->  o.setNoOfDays(new BigDecimal( diff))  );
-			 coverRepo.saveAllAndFlush(deactivateOldCovers);
-			 res = "Success" ;
-        	
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.info("Exception is --> " +  e.getMessage());
-			return null ;
-		}
-		return res ;
-	}
 	
 	//-------------------------------------------------------------Product Wise Multi Thread Call---------------------------------------------------------------------//
 	public CommonRes productWiseThreadCall(NewQuoteReq req , QuoteThreadReq request ) {

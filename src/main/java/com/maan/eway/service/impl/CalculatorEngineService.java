@@ -501,7 +501,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 						 taxey.stream().forEach(t -> t.setTaxDesc(endtDesc +" "+t.getTaxDesc()));
 						 if("Y".equals(endtmaster.getEndtFeeYn())) {
 								Tax tax=Tax.builder()
-										.calcType("P")
+										.calcType(endtmaster.getCalcTypeId())
 										.isTaxExempted("N")
 										.regulatoryCode("N/A")
 										.taxAmount(BigDecimal.ZERO)

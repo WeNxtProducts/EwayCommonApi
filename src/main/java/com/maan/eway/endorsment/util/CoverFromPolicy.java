@@ -70,12 +70,15 @@ public class CoverFromPolicy implements Function<PolicyCoverData,Cover> {
 					.coverBasedOn(t.getCoverBasedOn())
 					.endtCount(t.getEndtCount())
 					.status(t.getStatus())
+					.proRata(t.getProRataPercent()==null?BigDecimal.ONE:t.getProRataPercent())
 					//.exchangeRate(t.get("isSelectedYn")==null?0D:t.get("isSelectedYn").toString())
 					/*	.premiumBeforeDiscount(new BigDecimal(t.get("coverId").toString()))
 					.premiumAfterDiscount(new BigDecimal(t.get("coverId").toString()))
 					.premiumExcluedTax(new BigDecimal(t.get("coverId").toString()))
 					.premiumIncludedTax(new BigDecimal(t.get("coverId").toString()))*/
 					//.regulatoryCode(t.getRegulatoryCode()==null?"N/A":t.getRegulatoryCode())
+					.effectiveDate(t.getCoverPeriodFrom())
+					.policyEndDate(t.getCoverPeriodTo())
 					.build();
 				return c;
 			 }			
