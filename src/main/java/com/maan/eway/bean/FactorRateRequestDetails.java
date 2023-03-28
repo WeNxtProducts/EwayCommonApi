@@ -256,6 +256,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="PRO_RATA_YN")
     private String    proRataYn ;
     
+    @Column(name="PRO_RATA_PERCENT")
+    private BigDecimal    proRataPercent ;
+
+    
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="COVER_PERIOD_FROM")
