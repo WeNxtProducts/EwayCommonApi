@@ -1363,7 +1363,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					}
 				
 
-				List<PolicyCoverData> basecovers1 = policyCoverData.stream().filter(d -> ("B".equals(d.getCoverageType()))).collect(Collectors.toList());
+				List<PolicyCoverData> basecovers1 = policyCoverData.stream().filter(d -> ("B".equalsIgnoreCase(d.getCoverageType()))).collect(Collectors.toList());
 				for (PolicyCoverData data : basecovers1) {
 					coverDesc=basecovers1.get(0).getCoverDesc();
 					savedata = dozerMapper.map(data, PolicyCoverData.class);
@@ -1397,7 +1397,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					savedata.setDiscountCoverId(data.getCoverId());
 					policyCoverDataRepo.saveAndFlush(savedata);
 					}
-				List<PolicyCoverData> basecovers2 = policyCoverData.stream().filter(d -> ("T".equals(d.getCoverageType()))).collect(Collectors.toList());
+				List<PolicyCoverData> basecovers2 = policyCoverData.stream().filter(d -> ("T".equalsIgnoreCase(d.getCoverageType()))).collect(Collectors.toList());
 				for (PolicyCoverData data : basecovers2) {
 					BigDecimal divisor=new BigDecimal(100);
 					Double taxRate=Double.valueOf(data.getTaxRate().toString());
@@ -1435,7 +1435,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					savedata.setDiscountCoverId(data.getCoverId());
 					policyCoverDataRepo.saveAndFlush(savedata);
 				}
-				if ("Y".equals(endtFeeYn)) {
+				if ("Y".equalsIgnoreCase(endtFeeYn)) {
 					for (PolicyCoverData data : basecovers2) {
 						coverDesc = data.getCoverName();
 						savedata = dozerMapper.map(data, PolicyCoverData.class);
@@ -1468,7 +1468,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 						policyCoverDataRepo.saveAndFlush(savedata);
 					}
 				}
-		List<PolicyCoverData> basecovers3 = policyCoverData.stream().filter(d -> ("o".equals(d.getCoverageType()))).collect(Collectors.toList());
+		List<PolicyCoverData> basecovers3 = policyCoverData.stream().filter(d -> ("O".equalsIgnoreCase(d.getCoverageType()))).collect(Collectors.toList());
 		for (PolicyCoverData data : basecovers3) {
 			coverDesc = data.getCoverDesc();
 			savedata = dozerMapper.map(data, PolicyCoverData.class);
