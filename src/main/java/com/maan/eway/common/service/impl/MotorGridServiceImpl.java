@@ -954,8 +954,9 @@ public class MotorGridServiceImpl implements MotorGridService {
 					List<EserviceMotorDetails> motors = repo.findByOriginalPolicyNoAndRiskId(req.getPolicyNo(), 1);
 					pendingcount = motors.stream().filter(m -> m.getEndtStatus().equals("P")).count();
 					if (pendingcount > 0) {
-						if (!motors.get(0).getEndorsementType().equals(Integer.valueOf(req.getEndtTypeId()))) {
-							deletePreviousEndo(req,motors);
+						 List<EserviceMotorDetails> pendingData = motors.stream().filter(m->m.getEndtStatus().equals("P")).collect(Collectors.toList());
+						if (!pendingData.get(0).getEndorsementType().equals(Integer.valueOf(req.getEndtTypeId()))) {
+							deletePreviousEndo(req,pendingData);
 							count--;
 							pendingcount=0;
 						}
@@ -1096,15 +1097,15 @@ public class MotorGridServiceImpl implements MotorGridService {
 		}
 
 		//Delete Previous Endo
-		private CopyQuoteSuccessRes deletePreviousEndo(CopyQuoteReq req, List<EserviceMotorDetails> motors) {
+		private CopyQuoteSuccessRes deletePreviousEndo(CopyQuoteReq req, List<EserviceMotorDetails> motorsPending) {
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 			try {
-				String quoteNo=motors.get(0).getQuoteNo();
+				String quoteNo=motorsPending.get(0).getQuoteNo();
 				// Delete Old Record
 				
 				//E service Motor Details
-				if(motors.size()>0) {
-					repo.deleteAll(motors);
+				if(motorsPending.size()>0) {
+					repo.deleteAll(motorsPending);
 				}
 				//E service Customer Details 
 				HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(quoteNo);

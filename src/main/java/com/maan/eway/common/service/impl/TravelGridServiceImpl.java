@@ -808,8 +808,9 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				List<EserviceTravelDetails> motors = repo.findByOriginalPolicyNoAndRiskId(req.getPolicyNo(), 1);
 				pendingcount = motors.stream().filter(m -> m.getEndtStatus().equals("P")).count();
 				if (pendingcount > 0) {
-					if (!motors.get(0).getEndorsementType().equals(Integer.valueOf(req.getEndtTypeId()))) {
-						deletePreviousEndo(req,motors);
+					 List<EserviceTravelDetails> pendingData = motors.stream().filter(m->m.getEndtStatus().equals("P")).collect(Collectors.toList());
+					if (!pendingData.get(0).getEndorsementType().equals(Integer.valueOf(req.getEndtTypeId()))) {
+						deletePreviousEndo(req,pendingData);
 						count--;
 						pendingcount=0;
 					}

@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.admin.res.ReferalCriteriaRes;
@@ -876,8 +877,9 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 			List<EserviceBuildingDetails> motors = repo.findByOriginalPolicyNoAndRiskId(req.getPolicyNo(), 1);
 			pendingcount = motors.stream().filter(m -> m.getEndtStatus().equals("P")).count();
 			if (pendingcount > 0) {
-				if (!motors.get(0).getEndorsementType().equals(Integer.valueOf(req.getEndtTypeId()))) {
-					deletePreviousEndo(req, motors);
+				 List<EserviceBuildingDetails> pendingData = motors.stream().filter(m->m.getEndtStatus().equals("P")).collect(Collectors.toList());
+				if (!pendingData.get(0).getEndorsementType().equals(Integer.valueOf(req.getEndtTypeId()))) {
+					deletePreviousEndo(req, pendingData);
 					count--;
 					pendingcount = 0;
 				}
