@@ -1445,7 +1445,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 						savedata.setEndtPremium(endtPre);
 						savedata.setIsChargRefund("");
 					}
-					savedata.setEndtPremiumTax(BigDecimal.ZERO);
+					savedata.setEndtPremiumTax(endtPremiumtax);
 					savedata.setRequestReferenceNo(refNo);
 					savedata.setOriginalPolicyNo(req.getPolicyNo());
 					savedata.setEndorsementRemarks(req.getEndtRemarks());

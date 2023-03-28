@@ -1244,12 +1244,11 @@ public class MotorGridServiceImpl implements MotorGridService {
 			if("Y".equalsIgnoreCase(endtFeeYn)){
 				savedata.setEndtPremium(endtPre);
 				savedata.setIsChargRefund(txt);
-				savedata.setEndtPremiumTax(endtPremiumtax);
 				}else {
 				savedata.setEndtPremium(endtPre);
 				savedata.setIsChargRefund("");
 			}
-			savedata.setEndtPremiumTax(BigDecimal.ZERO);
+			savedata.setEndtPremiumTax(endtPremiumtax);
 			savedata.setRequestReferenceNo(refNo);
 			savedata.setOriginalPolicyNo(req.getPolicyNo());
 			savedata.setEndorsementRemarks(req.getEndtRemarks());
