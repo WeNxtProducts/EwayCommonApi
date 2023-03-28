@@ -25,6 +25,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
@@ -83,6 +84,7 @@ import com.maan.eway.repository.SeqRefnoRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
+
 
 @Service
 @Transactional
@@ -1210,7 +1212,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			
 		try {
 			EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());
-			String endtFeeYn=entMaster.getEndtFeeYn()	;
+			String endtFeeYn=entMaster.getEndtFeeYn();
 			BigDecimal endtPre=BigDecimal.ZERO;
 			BigDecimal endtPremiumtax=BigDecimal.ZERO;
 			Double endtPercent=0d;
@@ -1218,7 +1220,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			Double tax=Double.valueOf(homeData.getVatPercent().toString());
 			BigDecimal exchangeRate=homeData.getExchangeRate();
 			BigDecimal overAllPremiumFc=new BigDecimal(homeData.getOverallPremiumFc().toString());
-			if ("Y".equalsIgnoreCase(endtFeeYn)) {
+			if ("Y".equalsIgnoreCase(endtFeeYn)&& StringUtils.isNotBlank(endtFeeYn)) {
 				endtPercent = Double.valueOf(entMaster.getEndtFeePercent());
 				endtPre = domath(entMaster.getCalcTypeId(), endtPercent, overAllPremiumFc,exchangeRate);
 				endtPremiumtax=endtPre.multiply(new BigDecimal(tax/100));
@@ -1242,7 +1244,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			savedata.setEndtCommission(BigDecimal.valueOf(0));
 			savedata.setQuoteCreatedDate(new Date());
 			savedata.setEntryDate(new Date());
-			if("Y".equalsIgnoreCase(endtFeeYn)){
+			if("Y".equalsIgnoreCase(endtFeeYn)&& StringUtils.isNotBlank(endtFeeYn)){
 				savedata.setEndtPremium(endtPre);
 				savedata.setIsChargRefund(txt);
 				}else {
@@ -1441,7 +1443,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 						savedata.setDiscountCoverId(data.getCoverId());
 						policyCoverDataRepo.saveAndFlush(savedata);
 					}
-					if ("Y".equalsIgnoreCase(endtFeeYn)) {
+					if ("Y".equalsIgnoreCase(endtFeeYn)&& StringUtils.isNotBlank(endtFeeYn)) {
 						for (PolicyCoverData data : basecovers2) {
 							coverDesc = data.getCoverName();
 							savedata = dozerMapper.map(data, PolicyCoverData.class);
