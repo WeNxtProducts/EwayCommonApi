@@ -136,7 +136,7 @@ public class BasicLoginValidationService {
 			Date today = new Date();
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
-			if (loginReq.getEffectiveDateStart().toString() == null ) {
+			if (loginReq.getEffectiveDateStart()==null) {
 				errors.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
 
 			} else if (loginReq.getEffectiveDateStart().before(today)) {
@@ -526,6 +526,9 @@ public class BasicLoginValidationService {
 			}
 			else if(brokerReq.getUserName().length()>50)   {
 				errors.add(new Error("31", "Broker Name", "Plese Enter Broker Name within 50 Characters" ));
+			}
+			if(StringUtils.isBlank(brokerReq.getUserMail())  ) {
+				errors.add(new Error("32", "User Mail", "Plese Enter User Mail" ));
 			}
 			
 		} catch (Exception e) {
