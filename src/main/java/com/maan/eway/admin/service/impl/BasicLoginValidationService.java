@@ -521,7 +521,12 @@ public class BasicLoginValidationService {
 			if(StringUtils.isBlank(brokerReq.getCityName())  ) {
 				errors.add(new Error("30", "City Name", "Plese Enter City Name" ));
 			}
-
+			if(StringUtils.isBlank(brokerReq.getUserName())  ) {
+				errors.add(new Error("31", "Broker Name", "Plese Enter Broker Name" ));
+			}
+			else if(brokerReq.getUserName().length()>50)   {
+				errors.add(new Error("31", "Broker Name", "Plese Enter Broker Name within 50 Characters" ));
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
