@@ -193,12 +193,16 @@ public class BasicLoginValidationService {
 				errors.add(new Error("08", "User Name ", "Please Enter Valid User Name"));
 			} 
 			 
-		
+			if( StringUtils.isBlank(personalReq.getCityName()) ) {
+				errors.add(new Error("09", "City Name", "Please Enter City Name"));
+			} else if (personalReq.getCityName().length() > 100 ) {
+				errors.add(new Error("09", "City Name ", "City Name Must Be Under 100 Characters Only Allowed"));
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
-			errors.add(new Error("09", "Common Error", e.getMessage() ));
+		//	errors.add(new Error("09", "Common Error", e.getMessage() ));
 		}
 		return errors;
 	}
@@ -514,10 +518,15 @@ public class BasicLoginValidationService {
 			}
 			
 			
+			if(StringUtils.isBlank(brokerReq.getCityName())  ) {
+				errors.add(new Error("30", "City Name", "Plese Enter City Name" ));
+			}
+
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
-			errors.add(new Error("09", "Common Error", e.getMessage() ));
+		//	errors.add(new Error("09", "Common Error", e.getMessage() ));
 		}
 		return errors;
 	}

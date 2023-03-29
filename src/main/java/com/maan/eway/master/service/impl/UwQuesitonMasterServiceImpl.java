@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.UWQuestionsMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.UwQuestionChangeStatusReq;
@@ -416,7 +417,12 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 		List<UwQuestionMasterRes> resList = new ArrayList<UwQuestionMasterRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
-			
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			today = cal.getTime();
+			Date todayEnd = cal.getTime();
+
 			 LoginMaster loginData =  loginRepo.findByLoginId(req.getLoginId());
 		
 			List<UWQuestionsMaster> list = new ArrayList<UWQuestionsMaster>();
@@ -430,7 +436,8 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 
 			// Select
 			query.select(b);
-
+			
+			/*
 			// Amend ID Max Filter
 			Subquery<Long> amendId = query.subquery(Long.class);
 			Root<UWQuestionsMaster> ocpm1 = amendId.from(UWQuestionsMaster.class);
@@ -458,6 +465,56 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			Predicate n9 = cb.or(n4,n8);
 				
 			query.where(n1,n2,n9,n6,n7).orderBy(orderList);
+			*/
+			
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<UWQuestionsMaster> ocpm1 = effectiveDate.from(UWQuestionsMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(b.get("uwQuestionId"),ocpm1.get("uwQuestionId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a3 = cb.equal(b.get("companyId"),ocpm1.get("companyId"));
+			Predicate a4 = cb.equal(b.get("branchCode"),ocpm1.get("branchCode"));
+			Predicate a5 = cb.equal(b.get("productId"),ocpm1.get("productId"));
+
+			effectiveDate.where(a1,a2,a3,a4,a5);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<UWQuestionsMaster> ocpm2 = effectiveDate2.from(UWQuestionsMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a6 = cb.equal(b.get("uwQuestionId"),ocpm2.get("uwQuestionId"));
+			Predicate a7 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a8 = cb.equal(b.get("companyId"),ocpm2.get("companyId"));
+			Predicate a9 = cb.equal(b.get("branchCode"),ocpm2.get("branchCode"));
+			Predicate a10 = cb.equal(b.get("productId"),ocpm2.get("productId"));
+
+			effectiveDate2.where(a6,a7,a8,a9,a10);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("branchCode")));
+
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+			Predicate n3 = cb.equal(b.get("branchCode"),  req.getBranchCode() );
+			Predicate n4 = cb.equal(b.get("status"), "Y");
+			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n6 = cb.or(n3,n5);
+			Predicate n7 = cb.equal(b.get("productId"), req.getProductId());
+			Predicate n8 = cb.equal(b.get("status"), "R");
+			Predicate n9 = cb.or(n4,n8);
+			Predicate n10 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
+				
+			query.where(n1,n2,n9,n6,n7,n10).orderBy(orderList);
+			
+			
+			
+			
+			
+			
+			
+			
 			
 			// Get Result
 			TypedQuery<UWQuestionsMaster> result = em.createQuery(query);
