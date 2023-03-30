@@ -87,7 +87,7 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
-			errors.add(new Error("07", "Common Error", e.getMessage() ));
+		//	errors.add(new Error("07", "Common Error", e.getMessage() ));
 			return errors;
 		}
 		return errors;
@@ -162,7 +162,7 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
-			errors.add(new Error("07", "Common Error", e.getMessage() ));
+	//		errors.add(new Error("07", "Common Error", e.getMessage() ));
 			return errors;
 		}
 		return errors;
@@ -206,7 +206,7 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
-			errors.add(new Error("07", "Common Error", e.getMessage() ));
+	//		errors.add(new Error("07", "Common Error", e.getMessage() ));
 			return errors;
 		}
 		return errors;
@@ -256,7 +256,7 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
-			errors.add(new Error("09", "Common Error", e.getMessage() ));
+		//	errors.add(new Error("09", "Common Error", e.getMessage() ));
 		}
 		return errors;
 	}
@@ -290,7 +290,7 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
-			errors.add(new Error("09", "Common Error", e.getMessage() ));
+		//	errors.add(new Error("09", "Common Error", e.getMessage() ));
 		}
 		return errors;
 	}
@@ -318,7 +318,7 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
-			errors.add(new Error("09", "Common Error", e.getMessage() ));
+		//	errors.add(new Error("09", "Common Error", e.getMessage() ));
 		}
 		return errors;
 	}
@@ -396,7 +396,7 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
-			errors.add(new Error("09", "Common Error", e.getMessage() ));
+		//	errors.add(new Error("09", "Common Error", e.getMessage() ));
 		}
 		return errors;
 	}
@@ -474,7 +474,7 @@ public List<Error> validateBrokerCompanyBranchReq(AttachBrokerBranchReq req) {
 	} catch (Exception e) {
 		e.printStackTrace();
 		log.info("Exception is --->" + e.getMessage());
-		errors.add(new Error("09", "Common Error", e.getMessage() ));
+	//	errors.add(new Error("09", "Common Error", e.getMessage() ));
 	}
 	return errors;
 }
@@ -501,7 +501,7 @@ public List<Error> validateLoginBranches(LoginBranchesSaveReq req) {
 	} catch (Exception e) {
 		e.printStackTrace();
 		log.info("Exception is --->" + e.getMessage());
-		errors.add(new Error("09", "Common Error", e.getMessage() ));
+	//	errors.add(new Error("09", "Common Error", e.getMessage() ));
 	}
 	return errors;
 }

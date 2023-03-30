@@ -136,7 +136,7 @@ public class BasicLoginValidationService {
 			Date today = new Date();
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
 			today = cal.getTime();
-			if (loginReq.getEffectiveDateStart().toString() == null ) {
+			if (loginReq.getEffectiveDateStart()==null) {
 				errors.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start "));
 
 			} else if (loginReq.getEffectiveDateStart().before(today)) {
@@ -193,12 +193,16 @@ public class BasicLoginValidationService {
 				errors.add(new Error("08", "User Name ", "Please Enter Valid User Name"));
 			} 
 			 
-		
+			if( StringUtils.isBlank(personalReq.getCityName()) ) {
+				errors.add(new Error("09", "City Name", "Please Enter City Name"));
+			} else if (personalReq.getCityName().length() > 100 ) {
+				errors.add(new Error("09", "City Name ", "City Name Must Be Under 100 Characters Only Allowed"));
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
-			errors.add(new Error("09", "Common Error", e.getMessage() ));
+		//	errors.add(new Error("09", "Common Error", e.getMessage() ));
 		}
 		return errors;
 	}
@@ -514,10 +518,23 @@ public class BasicLoginValidationService {
 			}
 			
 			
+			if(StringUtils.isBlank(brokerReq.getCityName())  ) {
+				errors.add(new Error("30", "City Name", "Plese Enter City Name" ));
+			}
+			if(StringUtils.isBlank(brokerReq.getUserName())  ) {
+				errors.add(new Error("31", "Broker Name", "Plese Enter Broker Name" ));
+			}
+			else if(brokerReq.getUserName().length()>50)   {
+				errors.add(new Error("31", "Broker Name", "Plese Enter Broker Name within 50 Characters" ));
+			}
+			if(StringUtils.isBlank(brokerReq.getUserMail())  ) {
+				errors.add(new Error("32", "User Mail", "Plese Enter User Mail" ));
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
-			errors.add(new Error("09", "Common Error", e.getMessage() ));
+		//	errors.add(new Error("09", "Common Error", e.getMessage() ));
 		}
 		return errors;
 	}

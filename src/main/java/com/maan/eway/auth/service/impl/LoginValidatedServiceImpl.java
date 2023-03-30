@@ -93,6 +93,17 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 				} 
 			}
 			
+			   // Guest Login Checking
+					if (StringUtils.isNotBlank(req.getLoginId()) && StringUtils.isNotBlank(req.getPassword())) {
+						LoginMaster loginData = loginRepo.findByLoginIdAndEffectiveDateStartLessThanEqual(req.getLoginId(), new Date());
+						if (loginData ==null ) {
+							list.add(new Error("", "UserId", "Your  Login Id Date is not started"));
+						} 
+						
+					}
+					
+
+			
 			// Other Login Checking
 			if(! loginId.equalsIgnoreCase("guest")  ) {
 //				if (req.getPassword() == null || StringUtils.isBlank(req.getPassword())) {

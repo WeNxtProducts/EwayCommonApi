@@ -144,16 +144,24 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			if (StringUtils.isBlank(req.getPriority())) {
 				errorList.add(new Error("13", "Priority", "Please Enter Priority"));
 			}
-
+			 else if (StringUtils.isNotBlank(req.getPriority())&& !req.getPriority().matches("[0-9]+")){
+					errorList.add(new Error("13", "Priority", "Please Enter Priority only in numbers"));
+				}
+				
 			for(String dependantid : req.getEndtDependantIds()) {
 			if (StringUtils.isBlank(dependantid)) {
 				errorList.add(new Error("14", "EndtDependantId", "Please Enter EndtDependantId"));
 			}
 			}
+			
+			if (req.getEndtDependantIds().isEmpty()){
+				errorList.add(new Error("14", "EndtDependantId", "Please Select EndtDependantId"));
+				}
+			if (StringUtils.isNotBlank(req.getEndtFeeYn()) && req.getEndtFeeYn().equalsIgnoreCase("Y")){		
 			if (StringUtils.isBlank(req.getCalcTypeId())) {
 				errorList.add(new Error("15", "CalcTypeId", "Please Enter CalcTypeId"));
 			}
-			
+			}
 			if((StringUtils.isNotBlank(req.getCalcTypeId())) && req.getCalcTypeId().equalsIgnoreCase("A")) {
 				if (StringUtils.isBlank(req.getEndtFeePercent())) {				
 					errorList.add(new Error("16", "EndtFeePercent", "Please Enter EndtFeePercent"));

@@ -71,6 +71,13 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			}
 			if (StringUtils.isNotBlank(req.getQuestionType()) &&req.getQuestionType().length() > 100) {
 				error.add(new Error("04", "QuestionType", "Please Enter QuestionType within 100 Characters"+row));
+			
+			if (StringUtils.isNotBlank(req.getQuestionType()) &&req.getQuestionType().equalsIgnoreCase("02") && StringUtils.isBlank(req.getValue())) {
+				error.add(new Error("04", "Value", "Please Enter Value"+row));
+			}
+			else if(StringUtils.isNotBlank(req.getValue()) && req.getValue().length()>100) {
+				error.add(new Error("04", "Value", "Please Enter Value within 100 Characters"+row));					
+			}
 			}
 			if (StringUtils.isNotBlank(req.getRemarks()) && req.getRemarks().length() > 100) {
 				error.add(new Error("05", "Remarks", "Please Enter Remarks within 100 Characters"+row));

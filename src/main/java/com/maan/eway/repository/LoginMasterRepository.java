@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import com.maan.eway.bean.LoginMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -41,6 +42,8 @@ public interface LoginMasterRepository  extends JpaRepository<LoginMaster,LoginM
 	LoginMaster findByCompanyIdAndLoginId(String companyId, String loginId);
 
 	LoginMaster findByLoginIdAndStatus(String loginId, String string);
+
+	LoginMaster findByLoginIdAndEffectiveDateStartLessThanEqual(String loginId, Date date);
 
 
 }

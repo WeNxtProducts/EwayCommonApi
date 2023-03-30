@@ -1,5 +1,6 @@
 package com.maan.eway.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,11 +14,11 @@ public interface ClausesMasterRepository  extends JpaRepository<ClausesMaster,Cl
 	ClausesMaster findTopByClausesIdOrderByAmendIdDesc(Integer integer);
 
 	
-	List<ClausesMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByClausesIdAscAmendIdDesc(
-			String companyId, String branchCode, String productId, String sectionId);
+	List<ClausesMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanEqualOrderByClausesIdAscAmendIdDesc(
+			String companyId, String branchCode, String productId, String sectionId, Date date);
 
 
-	List<ClausesMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByClausesIdAscAmendIdDesc(
-			String companyId, String branchCode, String productId, String sectionId, String string);
+	List<ClausesMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByClausesIdAscAmendIdDesc(
+			String companyId, String branchCode, String productId, String sectionId, String string, Date date);
 
 }

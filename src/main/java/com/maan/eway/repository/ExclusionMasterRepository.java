@@ -1,5 +1,6 @@
 package com.maan.eway.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,11 +17,11 @@ public interface ExclusionMasterRepository extends JpaRepository<ExclusionMaster
 	ExclusionMaster findTopByExclusionIdOrderByAmendIdDesc(Integer integer);
 
 	
-	List<ExclusionMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByExclusionIdAscAmendIdDesc(
-			String companyId, String branchCode, String productId, String sectionId);
+	List<ExclusionMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanEqualOrderByExclusionIdAscAmendIdDesc(
+			String companyId, String branchCode, String productId, String sectionId, Date date);
 
 
-	List<ExclusionMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByExclusionIdAscAmendIdDesc(
-			String companyId, String branchCode, String productId, String sectionId, String string);
+	List<ExclusionMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByExclusionIdAscAmendIdDesc(
+			String companyId, String branchCode, String productId, String sectionId, String string, Date date);
 
 }
