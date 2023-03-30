@@ -346,7 +346,7 @@ this.repository = repo;
 					saveCover.setEndtCount(coverData.getEndtCount()==null?BigDecimal.ZERO:coverData.getEndtCount());
 					saveCover.setCoverPeriodFrom(coverData.getEffectiveDate());
 					saveCover.setCoverPeriodTo(coverData.getPolicyEndDate());
-					saveCover.setProRataPercent(coverData.getProRata().multiply(new BigDecimal("100")));
+					saveCover.setProRataPercent(coverData.getProRata()!=null ? coverData.getProRata().multiply(new BigDecimal("100")) : new BigDecimal("100"));
 					
 					// Date Differents
 					Date periodStart =  coverData.getEffectiveDate();
@@ -481,7 +481,7 @@ this.repository = repo;
 						saveSubCover.setCoverBasedOn(StringUtils.isBlank(coverData.getCoverBasedOn())?"sumInsured":coverData.getCoverBasedOn());
 						saveSubCover.setCoverPeriodFrom(coverData.getEffectiveDate());
 						saveSubCover.setCoverPeriodTo(coverData.getPolicyEndDate());
-						saveSubCover.setProRataPercent(coverData.getProRata().multiply(new BigDecimal("100")));
+						saveSubCover.setProRataPercent(coverData.getProRata()!=null ? coverData.getProRata().multiply(new BigDecimal("100")) : new BigDecimal("100"));
 						
 						// Date Differents
 						Date periodStart =  coverData.getEffectiveDate();
