@@ -1273,14 +1273,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 					if(filterCovers != null && filterCovers.size()>0 ) {
 						if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
 							
-							res = InsertEndtCoverDetails(PrevQuoteNo , filterCovers);
+							res = InsertEndtCoverDetails(PrevQuoteNo , filterCovers,request.getPolicyEndDate());
 							
 							List<FactorRateRequestDetails> 	updateCovers1 = filterCovers.stream().filter( o -> o.getIsSelected()!=null &&  (o.getIsSelected().equalsIgnoreCase("N")) ).collect(Collectors.toList());
 							updateCovers.addAll(updateCovers1);
 							
 						}else {
 							List<FactorRateRequestDetails> filterSubCovers = filterCovers.stream().filter( o ->  o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId())) ).collect(Collectors.toList());
-							res = InsertEndtCoverDetails(PrevQuoteNo , filterSubCovers);
+							res = InsertEndtCoverDetails(PrevQuoteNo , filterSubCovers  ,request.getPolicyEndDate() );
 							List<FactorRateRequestDetails> 	updateCovers2 = filterSubCovers.stream().filter( o -> o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("N") ).collect(Collectors.toList());
 							updateCovers.addAll(updateCovers2);
 						}
@@ -1328,6 +1328,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
 				// Save Cover Details
+				List<PolicyCoverData>  saveCovers = new ArrayList<PolicyCoverData>();
 				for ( FactorRateRequestDetails cov : covers) {
 					PolicyCoverData coverData  = new PolicyCoverData();
 					dozerMapper.map(cov, coverData);
@@ -1341,11 +1342,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setCreatedBy(request.getCreatedBy());
 					coverData.setVehicleId(request.getVehicleId());
 					coverData.setDiscountCoverId(cov.getDiscountCoverId()==null?0 :cov.getDiscountCoverId());
-					coverRepo.saveAndFlush(coverData);	
-					log.error("Save Cover Info is ---> " + json.toJson(coverData));
+					saveCovers.add(coverData);
+				//	log.error("Save Cover Info is ---> " + json.toJson(coverData));
 					
 				}
-		
+				coverRepo.saveAllAndFlush(saveCovers);	
+				
 				res.put("Response", "Success") ;
 				res.put("Errors", null) ;
 			}catch (Exception e) {
@@ -1360,14 +1362,15 @@ public class QuoteThreadCall implements Callable<Object>  {
 		
 		
 		
-		private synchronized Map<String,Object>  InsertEndtCoverDetails(String prevQuoteNo , List<FactorRateRequestDetails> covers ) {
+		private synchronized Map<String,Object>  InsertEndtCoverDetails(String prevQuoteNo , List<FactorRateRequestDetails> covers ,Date PolicyEndDate ) {
 			Map<String,Object> res= new HashMap<String,Object>() ;
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
-			//	List<PolicyCoverData>  OldPolicyCovers = coverRepo.findByQuoteNoAndStatusOrderByVehicleIdAsc(request.getEndtPrevQuoteNo() ,"Y" );
+				List<PolicyCoverData>  OldPolicyCovers = coverRepo.findByQuoteNoAndStatusOrderByVehicleIdAsc(request.getEndtPrevQuoteNo() ,"Y" );
 				
 						
 				// Save Cover Details
+				List<PolicyCoverData> saveCovers = new ArrayList<PolicyCoverData>();
 				for ( FactorRateRequestDetails cov : covers) {
 					PolicyCoverData coverData  = new PolicyCoverData();
 					
@@ -1376,14 +1379,31 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setEntryDate(new Date());
 					
 					// Date Differents
-					Date periodStart = cov.getCoverPeriodFrom();
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+					Date periodStart =  cov.getCoverPeriodFrom();
 					Date periodEnd   = cov.getCoverPeriodTo();
+					Date sysDate   = cov.getCoverPeriodTo();
+					
+					if( cov.getSubCoverYn() ==null || cov.getSubCoverYn().equalsIgnoreCase("N") ) {
+						List<PolicyCoverData> filterOldCover =  OldPolicyCovers.stream().filter(  o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId()) && o.getProductId().equals(request.getProductId())
+									&& o.getSectionId().equals(Integer.valueOf(request.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) ).collect(Collectors.toList());	            			
+						
+						periodStart = filterOldCover.size() > 0 ? filterOldCover.get(0).getCoverPeriodFrom() : sysDate;
+						periodEnd = filterOldCover.size() > 0 ? filterOldCover.get(0).getCoverPeriodTo() : PolicyEndDate;
+					
+					} else {
+        				List<PolicyCoverData> filterOldSubCover =  OldPolicyCovers.stream().filter(  o ->  o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId()) && o.getProductId().equals(request.getProductId())
+									&& o.getSectionId().equals(Integer.valueOf(request.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) &&  o.getSubCoverId().equals(Integer.valueOf(cov.getSubCoverId()))  ).collect(Collectors.toList());
+						
+						periodStart = filterOldSubCover.size() > 0 ? filterOldSubCover.get(0).getCoverPeriodFrom() :  sysDate;	
+						periodEnd = filterOldSubCover.size() > 0 ? filterOldSubCover.get(0).getCoverPeriodTo() : PolicyEndDate;
+        			}
+					
+					
 					
 					Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
 					Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
-					
 					// Check Leap Year
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
 					boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
 					String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
 					System.out.println( "Policy Opted Cover :  "+ coverData.getCoverDesc() + " Difference in days: " + diff);
@@ -1391,7 +1411,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setCoverPeriodFrom(periodStart);
 					coverData.setCoverPeriodTo(periodEnd);
 					coverData.setNoOfDays(new BigDecimal(diff));
-					coverData.setStatus(cov.getStatus());
+					coverData.setStatus("Y");
 					
 					coverData.setQuoteNo(request.getQuoteNo());
 					coverData.setIsSelected(cov.getIsSelected().equalsIgnoreCase("N") ? "Y" :cov.getIsSelected());
@@ -1399,11 +1419,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setVehicleId(request.getVehicleId());
 					coverData.setDiscountCoverId(cov.getDiscountCoverId()==null?0 :cov.getDiscountCoverId());
 					
-					coverRepo.saveAndFlush(coverData);	
-					log.error("Save Cover Info is ---> " + json.toJson(coverData));
+					saveCovers.add(coverData);	
+				//	log.error("Save Cover Info is ---> " + json.toJson(coverData));
 					
 				}
-		
+				coverRepo.saveAllAndFlush(saveCovers);
+				
 				res.put("Response", "Success") ;
 				res.put("Errors", null) ;
 			}catch (Exception e) {
@@ -1797,7 +1818,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				}) ;
 				
 				// Non Selected Records
-				List<PolicyCoverData>  deactivateOldCovers = OldPolicyCovers ; 
+				List<PolicyCoverData>  deactivateOldCovers = OldPolicyCovers.stream().filter( o ->  ! o.getStatus().equalsIgnoreCase("D") ).collect(Collectors.toList());
 				 for ( VehicleIdsReq vehId :  request.getVehicleIdsList() ) {
 		            	for (CoverIdsReq cov : vehId.getCoverIdList() ) {
 							
