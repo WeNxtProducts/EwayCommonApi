@@ -344,6 +344,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				}
 				
 				
+				
 				///Newly Added		
 				List<TermsAndCondition> datas = termsRepo
 						.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRequestReferenceNoOrderBySnoAsc(req.getCompanyId(),

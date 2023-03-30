@@ -29,6 +29,7 @@ import com.maan.eway.bean.TermsAndConditionId;
  */
  
  
+
  
 public interface TermsAndConditionRepository  extends JpaRepository<TermsAndCondition,TermsAndConditionId > , JpaSpecificationExecutor<TermsAndCondition> {
 
