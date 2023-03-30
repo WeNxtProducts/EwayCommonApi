@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -1132,7 +1133,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				
 				// Save Endt Covers
 				if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
-					res = EndtCoverSavePoint(request.getEndtPrevQuoteNo() , devidedCovers , request.getPolicyStartDate()  ,  request.getPolicyEndDate() , request.getNoOfDays());
+					res = EndtCoverSavePoint(request.getEndtPrevQuoteNo() , devidedCovers );
 					
 				} else {
 					res = CoverSavePoint(devidedCovers ) ;
@@ -1145,7 +1146,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				
 				// Save Endt Covers
 				if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
-					res = EndtCoverSavePoint(request.getEndtPrevQuoteNo() , covers , request.getPolicyStartDate()  ,  request.getPolicyEndDate() , request.getNoOfDays());
+					res = EndtCoverSavePoint(request.getEndtPrevQuoteNo() , covers );
 				} else {
 					res = CoverSavePoint(covers ) ;
 				}
@@ -1231,7 +1232,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 	}
 	
 	
-	private synchronized Map<String,Object>  EndtCoverSavePoint(String PrevQuoteNo , List<FactorRateRequestDetails>  covers , Date policyStartDate ,Date policyEndDate , String noOfDays) {
+	private synchronized Map<String,Object>  EndtCoverSavePoint(String PrevQuoteNo , List<FactorRateRequestDetails>  covers ) {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		try {
 			// FindData 
@@ -1264,8 +1265,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 			List<FactorRateRequestDetails> updateCovers = new ArrayList<FactorRateRequestDetails>();
 			
 			for ( CoverIdsReq covReq :  coverReqList) {
-				
-					List<FactorRateRequestDetails> filterCovers = covers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getStatus().equalsIgnoreCase("Y") ).collect(Collectors.toList());				
+					covers.sort(Comparator.comparing(FactorRateRequestDetails :: getEndtCount).reversed()) ;
+					BigDecimal endtCount = covers.get(0).getEndtCount() ;
+					List<FactorRateRequestDetails> filterCovers = covers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) ).collect(Collectors.toList());
+					// List<FactorRateRequestDetails> filterCovers = covers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) &&  o.getEndtCount().equals(endtCount) ).collect(Collectors.toList());
 					
 					if(filterCovers != null && filterCovers.size()>0 ) {
 						if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
@@ -1298,6 +1301,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 		}
 	
 		return res;
+	}
+	
+	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
 	}
 	
 	private synchronized BigDecimal getDevidedValue(BigDecimal inputValue ,Integer groupCount ) {
@@ -1383,7 +1391,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setCoverPeriodFrom(periodStart);
 					coverData.setCoverPeriodTo(periodEnd);
 					coverData.setNoOfDays(new BigDecimal(diff));
-					coverData.setStatus("Y");
+					coverData.setStatus(cov.getStatus());
 					
 					coverData.setQuoteNo(request.getQuoteNo());
 					coverData.setIsSelected(cov.getIsSelected().equalsIgnoreCase("N") ? "Y" :cov.getIsSelected());
