@@ -1265,7 +1265,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			for ( CoverIdsReq covReq :  coverReqList) {
 				
-					List<FactorRateRequestDetails> filterCovers = covers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId())).collect(Collectors.toList());				
+					List<FactorRateRequestDetails> filterCovers = covers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getStatus().equalsIgnoreCase("Y") ).collect(Collectors.toList());				
 					
 					if(filterCovers != null && filterCovers.size()>0 ) {
 						if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
@@ -1356,7 +1356,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			Map<String,Object> res= new HashMap<String,Object>() ;
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
-				List<PolicyCoverData>  OldPolicyCovers = coverRepo.findByQuoteNoAndStatusOrderByVehicleIdAsc(request.getEndtPrevQuoteNo() ,"Y" );
+			//	List<PolicyCoverData>  OldPolicyCovers = coverRepo.findByQuoteNoAndStatusOrderByVehicleIdAsc(request.getEndtPrevQuoteNo() ,"Y" );
 				
 						
 				// Save Cover Details
@@ -1370,19 +1370,6 @@ public class QuoteThreadCall implements Callable<Object>  {
 					// Date Differents
 					Date periodStart = cov.getCoverPeriodFrom();
 					Date periodEnd   = cov.getCoverPeriodTo();
-							
-					if( cov.getSubCoverYn() ==null || cov.getSubCoverYn().equalsIgnoreCase("N") ) {
-						List<PolicyCoverData> filterOldCover =  OldPolicyCovers.stream().filter(  o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId()) && o.getProductId().equals(request.getProductId())
-									&& o.getSectionId().equals(Integer.valueOf(request.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) ).collect(Collectors.toList());	            			
-						
-						periodStart = filterOldCover.size() > 0 ? filterOldCover.get(0).getCoverPeriodFrom() : cov.getCoverPeriodFrom();								
-					
-					} else {
-        				List<PolicyCoverData> filterOldSubCover =  OldPolicyCovers.stream().filter(  o ->  o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId()) && o.getProductId().equals(request.getProductId())
-									&& o.getSectionId().equals(Integer.valueOf(request.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) &&  o.getSubCoverId().equals(Integer.valueOf(cov.getSubCoverId()))  ).collect(Collectors.toList());
-						
-						periodStart = filterOldSubCover.size() > 0 ? filterOldSubCover.get(0).getCoverPeriodFrom() : cov.getCoverPeriodFrom();	
-        			}
 					
 					Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
 					Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
@@ -1729,21 +1716,39 @@ public class QuoteThreadCall implements Callable<Object>  {
 						pc.setPolicyNo(null);
 						
 						// End Date
+						SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy"); 
 						Date today = new Date() ;
-						long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
-						Date oldEndDate = new Date(today.getTime() - MILLIS_IN_A_DAY);
+						Date oldEndDate = null ;
 						 
 						// Date Differents
-						Date periodStart =  ref.getCoverPeriodFrom() ;
-						Date periodEnd = oldEndDate ;
-						Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
-						Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
+						Date periodStart = null;
+						Date sysdate = null;
+						try {
+							periodStart = df.parse( df.format(ref.getCoverPeriodFrom()) );
+							sysdate = df.parse( df.format(today) );
+						} catch (ParseException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						
-						// Check Leap Year
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
-						boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
-						String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
-						System.out.println( "Deactivated Policy Cover :  "+ ref.getCoverDesc() + "  Difference in days: " + diff);
+						Long daysBetween = 0L ;
+						String diff = "" ;
+						
+						if(periodStart.equals(sysdate)  || periodStart.after(sysdate) ) {
+							oldEndDate = periodStart ;
+							daysBetween = 0L ;
+							diff = String.valueOf(daysBetween);
+							
+						} else {
+							Long diffInMillies = Math.abs(sysdate.getTime() - periodStart.getTime());
+							daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
+							
+							// Check Leap Year
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+							boolean leapYear = LocalDate.parse(sdf.format(sysdate) ).isLeapYear();
+							System.out.println( "Deactivated Policy Cover :  "+ ref.getCoverDesc() + "  Difference in days: " + diff);
+							diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
+						}
 						
 						pc.setCoverPeriodTo(oldEndDate)  ;
 						pc.setStatus("D");
