@@ -526,7 +526,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 					*/
 					List<Tax> taxey = taxes.stream().map(tzx).filter(t->t!=null).collect(Collectors.toList());
 					covers.forEach(c -> c.setTaxes(taxey));
-					
+					covers.forEach(c -> c.setEndtCount(endtCount));
 					covers.forEach(c ->c.setEndorsements(endorsements));// Existing Endorsement
 					covers.forEach(c -> c.setDiscounts(discounts));
 					covers.forEach(c -> c.setLoadings(loadings));
