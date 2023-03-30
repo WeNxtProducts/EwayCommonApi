@@ -1,5 +1,6 @@
 package com.maan.eway.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,10 +17,10 @@ public interface WarrantyMasterRepository  extends JpaRepository<WarrantyMaster,
 
 	WarrantyMaster findTopByWarrantyIdOrderByAmendIdDesc(Integer integer);
 
-	List<WarrantyMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdOrderByWarrantyIdAscAmendIdDesc(
-			String companyId, String branchCode, String productId, String sectionId);
+	List<WarrantyMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanEqualOrderByWarrantyIdAscAmendIdDesc(
+			String companyId, String branchCode, String productId, String sectionId, Date date);
 
-	List<WarrantyMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByWarrantyIdAscAmendIdDesc(
-			String companyId, String branchCode, String productId, String sectionId, String string);
+	List<WarrantyMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByWarrantyIdAscAmendIdDesc(
+			String companyId, String branchCode, String productId, String sectionId, String string, Date date);
 
 }

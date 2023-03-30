@@ -168,30 +168,30 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 					if (StringUtils.isNotBlank(req.getBranchCode())) {
 						warrantyList = warrantyRepo
-								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByWarrantyIdAscAmendIdDesc(
+								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByWarrantyIdAscAmendIdDesc(
 										req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
-										req.getTermsId());
+										req.getTermsId(), new Date());
 						exclusionList = exclusionRepo
-								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByExclusionIdAscAmendIdDesc(
+								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByExclusionIdAscAmendIdDesc(
 										req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
-										req.getTermsId());
+										req.getTermsId(), new Date());
 						clausesList = clausesRepo
-								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByClausesIdAscAmendIdDesc(
+								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByClausesIdAscAmendIdDesc(
 										req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
-										req.getTermsId());
+										req.getTermsId(), new Date());
 					} else {
 						warrantyList = warrantyRepo
-								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByWarrantyIdAscAmendIdDesc(
+								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByWarrantyIdAscAmendIdDesc(
 										req.getCompanyId(), "99999", req.getProductId(), req.getSectionId(),
-										req.getTermsId());
+										req.getTermsId(), new Date());
 						exclusionList = exclusionRepo
-								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByExclusionIdAscAmendIdDesc(
+								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByExclusionIdAscAmendIdDesc(
 										req.getCompanyId(), "99999", req.getProductId(), req.getSectionId(),
-										req.getTermsId());
+										req.getTermsId(),new Date());
 						clausesList = clausesRepo
-								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByClausesIdAscAmendIdDesc(
+								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByClausesIdAscAmendIdDesc(
 										req.getCompanyId(), "99999", req.getProductId(), req.getSectionId(),
-										req.getTermsId());
+										req.getTermsId(), new Date());
 
 					}
 
@@ -257,31 +257,31 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 				if (StringUtils.isNotBlank(req.getBranchCode())) {
 					warrantyList = warrantyRepo
-							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByWarrantyIdAscAmendIdDesc(
+							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByWarrantyIdAscAmendIdDesc(
 									req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
-									req.getTermsId());
+									req.getTermsId(), new Date());
 					exclusionList = exclusionRepo
-							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByExclusionIdAscAmendIdDesc(
+							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByExclusionIdAscAmendIdDesc(
 									req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
-									req.getTermsId());
+									req.getTermsId(), new Date());
 					clausesList = clausesRepo
-							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByClausesIdAscAmendIdDesc(
+							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByClausesIdAscAmendIdDesc(
 									req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
-									req.getTermsId());
+									req.getTermsId(), new Date());
 								
 				} else {
 					warrantyList = warrantyRepo
-							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByWarrantyIdAscAmendIdDesc(
+							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByWarrantyIdAscAmendIdDesc(
 									req.getCompanyId(), "99999", req.getProductId(), req.getSectionId(),
-									req.getTermsId());
+									req.getTermsId(), new Date());
 					exclusionList = exclusionRepo
-							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByExclusionIdAscAmendIdDesc(
+							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByExclusionIdAscAmendIdDesc(
 									req.getCompanyId(), "99999", req.getProductId(), req.getSectionId(),
-									req.getTermsId());
+									req.getTermsId(),new Date());
 					clausesList = clausesRepo
-							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdOrderByClausesIdAscAmendIdDesc(
+							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByClausesIdAscAmendIdDesc(
 									req.getCompanyId(), "99999", req.getProductId(), req.getSectionId(),
-									req.getTermsId());
+									req.getTermsId(), new Date());
 
 				}
 
