@@ -154,6 +154,9 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			}
 			}
 			
+			if (req.getEndtDependantIds().isEmpty()){
+				errorList.add(new Error("14", "EndtDependantId", "Please Select EndtDependantId"));
+				}
 			if (StringUtils.isNotBlank(req.getEndtFeeYn()) && req.getEndtFeeYn().equalsIgnoreCase("Y")){		
 			if (StringUtils.isBlank(req.getCalcTypeId())) {
 				errorList.add(new Error("15", "CalcTypeId", "Please Enter CalcTypeId"));
