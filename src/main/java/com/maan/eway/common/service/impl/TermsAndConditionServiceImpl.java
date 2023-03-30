@@ -260,15 +260,36 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByWarrantyIdAscAmendIdDesc(
 									req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
 									req.getTermsId(), new Date());
+					if(warrantyList.size()<=0) {
+						warrantyList = warrantyRepo
+								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByWarrantyIdAscAmendIdDesc(
+										req.getCompanyId(), "99999", req.getProductId(), "99999",
+										req.getTermsId(), new Date());						
+					}
 					exclusionList = exclusionRepo
 							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByExclusionIdAscAmendIdDesc(
 									req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
 									req.getTermsId(), new Date());
+					if(exclusionList.size()<=0) {
+						exclusionList = exclusionRepo
+								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByExclusionIdAscAmendIdDesc(
+										req.getCompanyId(), "99999", req.getProductId(), "99999",
+										req.getTermsId(),new Date());
+							
+					}
+					
 					clausesList = clausesRepo
 							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByClausesIdAscAmendIdDesc(
 									req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
 									req.getTermsId(), new Date());
-								
+						
+					if(clausesList.size()<=0) {
+						clausesList = clausesRepo
+								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByClausesIdAscAmendIdDesc(
+										req.getCompanyId(), "99999", req.getProductId(), "99999",
+										req.getTermsId(), new Date());
+		
+					}
 				} else {
 					warrantyList = warrantyRepo
 							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByWarrantyIdAscAmendIdDesc(

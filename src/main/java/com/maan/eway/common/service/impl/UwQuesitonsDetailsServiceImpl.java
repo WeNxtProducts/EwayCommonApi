@@ -109,6 +109,11 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			else if (req.getBranchCode().length() > 20) {
 				error.add(new Error("12", "BranchCode", "Please Enter BranchCode within 20 Characters"+row));
 			}
+			
+			if (StringUtils.isNotBlank(req.getMandatoryYn()) && req.getMandatoryYn().equalsIgnoreCase("Y") && StringUtils.isBlank(req.getValue())) {
+				error.add(new Error("13", "Value", "Please Enter Value  "+row));
+			}
+			
 			}
 		} catch (Exception e) {
 

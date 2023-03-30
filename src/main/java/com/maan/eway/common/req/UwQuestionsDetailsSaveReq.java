@@ -42,7 +42,11 @@ public class UwQuestionsDetailsSaveReq implements Serializable {
     
 	@JsonProperty("Value")
     private String   value;
-    
+
+	@JsonProperty("MandatoryYn")
+    private String  mandatoryYn;
+
+	
 	@JsonProperty("Remarks")
 	private String remarks;
 	
