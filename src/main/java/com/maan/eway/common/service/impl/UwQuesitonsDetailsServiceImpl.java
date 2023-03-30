@@ -111,7 +111,7 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			}
 			
 			if (StringUtils.isNotBlank(req.getMandatoryYn()) && req.getMandatoryYn().equalsIgnoreCase("Y") && StringUtils.isBlank(req.getValue())) {
-				error.add(new Error("13", "Value", "Please Enter Value  "+row));
+				error.add(new Error("13", "UW Question Value", "Please Enter Under Writer Question Value at row no  "+row));
 			}
 			
 			}
