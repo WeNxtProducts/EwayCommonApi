@@ -2,6 +2,7 @@ package com.maan.eway.common.service.impl;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -1810,21 +1811,40 @@ public class QuoteThreadCall implements Callable<Object>  {
 						pc.setPolicyNo(null);
 						
 						// End Date
+						SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy"); 
 						Date today = new Date() ;
-						long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
-						Date oldEndDate = new Date(today.getTime() - MILLIS_IN_A_DAY);
+						Date oldEndDate = null ;
 						 
 						// Date Differents
-						Date periodStart =  ref.getCoverPeriodFrom() ;
-						Date periodEnd = oldEndDate ;
-						Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
-						Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
+						Date periodStart = null;
+						Date sysdate = null;
+						try {
+							periodStart = df.parse( df.format(ref.getCoverPeriodFrom()) );
+							sysdate = df.parse( df.format(today) );
+						} catch (ParseException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						
-						// Check Leap Year
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
-						boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
-						String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
-						System.out.println( "Deactivated Policy Cover :  "+ ref.getCoverDesc() + "  Difference in days: " + diff);
+						Long daysBetween = 0L ;
+						String diff = "" ;
+						
+						if(periodStart.equals(sysdate)  || periodStart.after(sysdate) ) {
+							oldEndDate = periodStart ;
+							daysBetween = 0L ;
+							diff = String.valueOf(daysBetween);
+							
+						} else {
+							Long diffInMillies = Math.abs(sysdate.getTime() - periodStart.getTime());
+							daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
+							
+							// Check Leap Year
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+							boolean leapYear = LocalDate.parse(sdf.format(sysdate) ).isLeapYear();
+							System.out.println( "Deactivated Policy Cover :  "+ ref.getCoverDesc() + "  Difference in days: " + diff);
+							diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
+						}
+						
 						
 						pc.setCoverPeriodTo(oldEndDate)  ;
 						pc.setStatus("D");
