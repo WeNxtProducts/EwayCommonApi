@@ -8,7 +8,11 @@ import javax.persistence.Tuple;
 import com.maan.eway.res.calc.Tax;
 
 public class TaxUtils  implements Function<Tuple,Tax>{
-
+	private BigDecimal endtCount;
+	public TaxUtils(BigDecimal endtCount) {
+		super();
+		this.endtCount = endtCount;
+	}
 	@Override
 	public Tax apply(Tuple t) {
 		try {
@@ -22,6 +26,7 @@ public class TaxUtils  implements Function<Tuple,Tax>{
 				 	.taxRate(t.get("value")==null?0D:Double.parseDouble(t.get("value").toString()))
 				 	.calcType(t.get("calcType")==null?"":t.get("calcType").toString())
 					.regulatoryCode(t.get("taxCode")==null?"N/A":t.get("taxCode").toString())
+					.endtTypeCount(endtCount)
 				 	.build();
 			return d;
 		}catch (Exception e) {

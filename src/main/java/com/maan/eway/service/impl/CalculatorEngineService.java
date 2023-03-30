@@ -178,7 +178,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 	
 	public synchronized EserviceMotorDetailsSaveRes  calculator(CalcEngine engine,String token) {
 		// Referal Checking.
-		
+		BigDecimal endtCount=BigDecimal.ZERO;
 		List<UWReferrals> referr = referal.underwriterReferral(engine);
 		
 		List<MasterReferal> masterreferral=null;
@@ -204,7 +204,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 			}
 			
 			List<Tuple> taxes = ratingutil.LoadTax(engine);
-			TaxUtils tzx=new TaxUtils(); 
+			TaxUtils tzx=new TaxUtils(endtCount); 
 			
 			List<String> dependedcovers=new ArrayList<String>();
 			dependedcovers.add("N");
@@ -341,7 +341,20 @@ public class CalculatorEngineService implements CalculatorEngine{
 		 	try {
 		 		String endtTypeId=vehicles.get(0).get("endtTypeId")==null?"":vehicles.get(0).get("endtTypeId").toString();
 		 		if(StringUtils.isNotBlank(endtTypeId) && !"0".equals(endtTypeId)) {
-		 			loadAndRemoveCoversForEndt(engine,retc);
+		 			String requestRefercenNo=engine.getRequestReferenceNo();
+		 			String rawtable = ratingutil.getProductIdBasedRawTable(engine);
+		 			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()+";riskId:"+engine.getVehicleId()+";status:E;requestReferenceNo:"+requestRefercenNo+";";
+					 if("3".equals(engine.getProductId()) || "19".equals(engine.getProductId())) {
+						 search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";riskId:"+engine.getVehicleId()+";status:E;requestReferenceNo:"+requestRefercenNo+";";
+					 }
+					 
+					
+					List<Tuple> result=null;
+					SpecCriteria criteria = crservice.createCriteria(Class.forName(rawtable), search, "requestReferenceNo"); 
+					result=crservice.getResult(criteria, 0, 50);
+					  endtCount=new BigDecimal(result.get(0).get("endtCount").toString());
+					
+		 			loadAndRemoveCoversForEndt(engine,retc,result);
 		 		}		 	
 		 	}catch (Exception e) {
 		 		e.printStackTrace();
@@ -380,7 +393,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 		 		String endtTypeId=vehicles.get(0).get("endtTypeId")==null?"":vehicles.get(0).get("endtTypeId").toString();
 		 		if(StringUtils.isNotBlank(endtTypeId) && !"0".equals(endtTypeId)) {
 		 			// referalCalculator = referalCalculator(engine);
-		 			endorsementCalculator(engine);
+		 			endorsementCalculator(engine,endtCount);
 		 			
 		 		}		 	
 		 	}catch (Exception e) {
@@ -404,25 +417,14 @@ public class CalculatorEngineService implements CalculatorEngine{
 	private EndtTypeMasterRepository endtTypeRepo;
 	 
 	*/
-	private void loadAndRemoveCoversForEndt(CalcEngine engine, List<Cover> retc) {
+	private void loadAndRemoveCoversForEndt(CalcEngine engine, List<Cover> retc, List<Tuple> result) {
 		try {
 			
-			String requestRefercenNo=vehicles.get(0).get("requestReferenceNo").toString();
-			String rawtable = ratingutil.getProductIdBasedRawTable(engine);
+			 
 			
-			
-			if(StringUtils.isNotBlank(rawtable)) {
+			if(!result.isEmpty()) {
 				
-				 String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()+";riskId:"+engine.getVehicleId()+";status:E;requestReferenceNo:"+requestRefercenNo+";";
-				 if("3".equals(engine.getProductId()) || "19".equals(engine.getProductId())) {
-					 search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";riskId:"+engine.getVehicleId()+";status:E;requestReferenceNo:"+requestRefercenNo+";";
-				 }
 				 
-				//String search="riskId:"+engine.getVehicleId()+";requestReferenceNo:"+requestRefercenNo+";";
-				List<Tuple> result=null;
-				SpecCriteria criteria = crservice.createCriteria(Class.forName(rawtable), search, "requestReferenceNo"); 
-				result=crservice.getResult(criteria, 0, 50);
-				
 				
 				//String endtPrevPolicyNo=result.get(0).get("endtPrevPolicyNo").toString();
 				String endtPrevQuoteNo=result.get(0).get("endtPrevQuoteNo").toString();
@@ -439,7 +441,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 				//find Prev Quote Data
 					List<PolicyCoverData> oldPolicyCovers = coverDataRepo.findByQuoteNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(endtPrevQuoteNo,Integer.parseInt(engine.getVehicleId()),engine.getInsuranceId(),Integer.parseInt(engine.getProductId()),Integer.parseInt(engine.getSectionId()));
 					List<Tuple> taxes = ratingutil.LoadTax(engine);
-					TaxUtils tzx=new TaxUtils(); 
+					TaxUtils tzx=new TaxUtils(endtCount); 
 					
 					
 					//CoverFromPolicy
@@ -456,7 +458,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 					List<Loading> loadings = oldPolicyCovers.stream().filter(r -> d.getCoverId()==r.getCoverId()).map(loadingUtil).filter(dx->dx!=null).collect(Collectors.toList());
 					
 					
-					EndtFromPolicy endtUtils=new EndtFromPolicy();
+					/*EndtFromPolicy endtUtils=new EndtFromPolicy();
 					List<Endorsement> endorsements = oldPolicyCovers.stream().filter(r -> d.getCoverId()==r.getCoverId()).map(endtUtils).filter(dx->dx!=null).collect(Collectors.toList());
 					
 					TaxFromPolicy endttaxUtil=new TaxFromPolicy();
@@ -468,10 +470,10 @@ public class CalculatorEngineService implements CalculatorEngine{
 									 )  ).map(endttaxUtil).filter(dx->dx!=null).collect(Collectors.toList());
 							 e.setTaxes(txx);
 						}
-					}
+					}*/
 					 //CurrentEndorsement
 					
-					
+					List<Endorsement> endorsements=new ArrayList<Endorsement>();
 					
 					
 					 Endorsement currentEndt=Endorsement.builder()
@@ -498,14 +500,14 @@ public class CalculatorEngineService implements CalculatorEngine{
 						 List<Tax> taxey = taxes.stream().map(tzx).filter(t->t!=null).collect(Collectors.toList());
 						 taxey.stream().forEach(t ->t.setEndtTypeId(endtTypeId+""));
 						 taxey.stream().forEach(t ->t.setEndtTypeCount(endtCount));
-						 taxey.stream().forEach(t -> t.setTaxDesc(endtDesc +" "+t.getTaxDesc()));
+						 taxey.stream().forEach(t -> t.setTaxDesc(/*endtDesc +" "+*/t.getTaxDesc()));
 						 if("Y".equals(endtmaster.getEndtFeeYn())) {
 								Tax tax=Tax.builder()
 										.calcType(endtmaster.getCalcTypeId())
 										.isTaxExempted("N")
 										.regulatoryCode("N/A")
 										.taxAmount(BigDecimal.ZERO)
-										.taxDesc(endtDesc+" Endorsement Fee"/*+" "+endtCount.intValue()*/)
+										.taxDesc(/*endtDesc+*/" Endorsement Fee"/*+" "+endtCount.intValue()*/)
 										.taxExemptCode(null)
 										.taxRate(Double.parseDouble(endtmaster.getEndtFeePercent()))
 										.taxId(endtTypeId+"")
@@ -548,30 +550,20 @@ public class CalculatorEngineService implements CalculatorEngine{
 		
 	}
 
-	private EserviceMotorDetailsSaveRes endorsementCalculator(CalcEngine request) {
+	private EserviceMotorDetailsSaveRes endorsementCalculator(CalcEngine request, BigDecimal endtCount) {
 		 try {
 			   List<Cover> retc=new ArrayList<Cover>();
-			   
-			  /* 	loadOnetimetable(request);
-				if((commontbl==null || commontbl.size()==0) || (vehicles==null || vehicles.size()==0) || (customers==null || customers.size()==0)) {
-					System.out.println("::: Exception :: ");
-					throw new Exception();*/
-					
-					 /*throw CoverException.builder().message("Exception :: onetime table not inserted")
-					 .isError(true).build();*/
-				//}
-				
-			   
+			    
 			 	List<String> dependedcovers=new ArrayList<String>();
 			 	
 				dependedcovers.add("N");
 				dependedcovers.add("Y");
 				
 				List<FactorRateRequestDetails> factors = repository.findByRequestReferenceNoAndVehicleIdAndProductIdAndSectionIdOrderByCoverIdAsc(request.getRequestReferenceNo(), Integer.valueOf(request.getVehicleId()),Integer.valueOf(request.getProductId()),Integer.valueOf(request.getSectionId()));
-				
+				 
 				//TaxFromFactor tzx=new TaxFromFactor(); 
 				List<Tuple> taxes = ratingutil.LoadTax(request);
-				TaxUtils tzx=new TaxUtils(); 
+				TaxUtils tzx=new TaxUtils(endtCount); 
 				
 				for (String dependcover : dependedcovers) {
 					List<Cover> totalcovers=new ArrayList<Cover>();
@@ -892,7 +884,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 				
 				//TaxFromFactor tzx=new TaxFromFactor(); 
 				List<Tuple> taxes = ratingutil.LoadTax(request);
-				TaxUtils tzx=new TaxUtils(); 
+				TaxUtils tzx=new TaxUtils(BigDecimal.ZERO); 
 				
 				for (String dependcover : dependedcovers) {
 					List<Cover> totalcovers=new ArrayList<Cover>();
