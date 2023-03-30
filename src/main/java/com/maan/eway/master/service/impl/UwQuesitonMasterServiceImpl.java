@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.BankMaster;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.OccupationMaster;
@@ -139,7 +140,8 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 				errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
 			}else if (req.getCreatedBy().length() > 100){
 				errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
-			}		
+			}
+			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
@@ -235,8 +237,10 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 				Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId());
 				Predicate n3 = cb.equal(b.get("branchCode"),req.getBranchCode());
 				Predicate n4 = cb.equal(b.get("productId"),req.getProductId());
-				
-				query.where(n1,n2,n3,n4).orderBy(orderList);
+				Predicate n5 = cb.equal(b.get("branchCode"), "99999");
+				Predicate n6 = cb.or(n3,n5);
+			
+				query.where(n1,n2,n6,n4).orderBy(orderList);
 				
 				// Get Result
 				TypedQuery<UWQuestionsMaster> result = em.createQuery(query);
@@ -258,7 +262,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 						amendId = list.get(0).getAmendId();
 						entryDate = list.get(0).getEntryDate();
 						createdBy = list.get(0).getCreatedBy();
-						saveData = list.get(0);
+					//	saveData = list.get(0);
 						if(list.size()>1) {
 							UWQuestionsMaster lastRecord = list.get(1);	
 							lastRecord.setEffectiveDateEnd(oldEndDate);
@@ -278,7 +282,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setUpdatedDate(new Date());
 			saveData.setAmendId(amendId);
-			saveData.setBranchCode(req.getBranchCode()==null?"99999":req.getBranchCode());
+			saveData.setBranchCode(req.getBranchCode());
 			repo.saveAndFlush(saveData);	
 			log.info("Saved Details is --> " + json.toJson(saveData));	
 			}
