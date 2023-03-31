@@ -357,15 +357,16 @@ public class EndtDependantFieldMasterServiceImpl implements EndtDependantFieldMa
 			// Select
 			query.select(b);
 
-			/*
+			
 			// Amend ID Max Filter
 			Subquery<Long> amendId = query.subquery(Long.class);
 			Root<EndtDependantFieldMaster> ocpm1 = amendId.from(EndtDependantFieldMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-		
-			amendId.where(a1, a2);
+			Predicate a3 = cb.equal(ocpm1.get("dependantFieldId"),b.get("dependantFieldId"));
+
+			amendId.where(a1, a2,a3);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -375,11 +376,14 @@ public class EndtDependantFieldMasterServiceImpl implements EndtDependantFieldMa
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n3 = cb.equal(b.get("productId"),req.getProductId());
+			Predicate n4 = cb.equal(b.get("status"),"Y");
+			Predicate n5 = cb.equal(b.get("status"),"R");
+			Predicate n6 = cb.or(n4,n5);
 			
-			query.where(n1,n2,n3).orderBy(orderList);
-			*/
+			query.where(n1,n2,n3,n6).orderBy(orderList);
 			
 			
+			/*
 			// Effective Date Start Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<EndtDependantFieldMaster> ocpm1 = effectiveDate.from(EndtDependantFieldMaster.class);
@@ -417,7 +421,7 @@ public class EndtDependantFieldMasterServiceImpl implements EndtDependantFieldMa
 						Predicate n7 = cb.equal(b.get("productId"),req.getProductId());
 						
 						query.where(n3,n4,n5,n6,n7).orderBy(orderList);	
-			
+			*/
 			
 			
 			// Get Result
