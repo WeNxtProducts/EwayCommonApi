@@ -53,7 +53,7 @@ public class WarrantyMaster {
 //	private String policyType;
 	
 	
-	@Column(name="WARRANTY_DESCRIPTION",length=500)
+	@Column(name="WARRANTY_DESCRIPTION",length=5000)
 	private String warrantyDescription;
 	
 	@Temporal(TemporalType.TIMESTAMP)

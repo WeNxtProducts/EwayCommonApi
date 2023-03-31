@@ -76,8 +76,8 @@ public class WarrantyMasterServiceImpl implements WarrantyMasterService {
 		try {
 			if (StringUtils.isBlank(req.getWarrantyDescription())) {
 				errorList.add(new Error("02", "WarrantyDescription", "Please Select WarrantyDescription"));
-			}else if (req.getWarrantyDescription().length() > 100){
-				errorList.add(new Error("02","WarrantyDescription", "Please Enter WarrantyDescription 100 Characters")); 
+			}else if (req.getWarrantyDescription().length() > 5000){
+				errorList.add(new Error("02","WarrantyDescription", "Please Enter WarrantyDescription 5000 Characters")); 
 			}else if (StringUtils.isBlank(req.getWarrantyId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId())) {
 				List<WarrantyMaster> WarrantyList = getWarrantyDescriptionExistDetails(req.getWarrantyDescription() , req.getCompanyId() , req.getBranchCode(),req.getProductId(),req.getSectionId());
 				if (WarrantyList.size()>0 ) {
