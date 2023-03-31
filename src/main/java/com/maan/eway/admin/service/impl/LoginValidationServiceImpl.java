@@ -159,6 +159,13 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 				errors.add(new Error("29", "WhatsappNo", "WhatsappNo Must Be Under 20 Characters Only Allowed" ));
 			}
 			
+
+			if(StringUtils.isBlank(personalReq.getRemarks())  ) {
+				errors.add(new Error("30", "Remarks", "Plese Enter Remarks" ));
+			} 
+			else if(personalReq.getRemarks().length()>100  ) {
+				errors.add(new Error("30", "Remarks", "Remarks Must Be Under 100 Characters Only Allowed" ));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
