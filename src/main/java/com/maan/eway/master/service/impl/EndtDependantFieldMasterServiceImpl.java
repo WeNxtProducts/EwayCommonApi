@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.EndtDependantFieldMaster;
+import com.maan.eway.bean.WarrantyMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.EndtDependantFieldChangeStatusReq;
 import com.maan.eway.master.req.EndtDependantFieldMasterSaveReq;
@@ -341,10 +342,9 @@ public class EndtDependantFieldMasterServiceImpl implements EndtDependantFieldMa
 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
 			today = cal.getTime();
-
+			Date todayEnd = cal.getTime();
+			
 			List<EndtDependantFieldMaster> list = new ArrayList<EndtDependantFieldMaster>();
 		
 			// Find Latest Record
@@ -357,6 +357,7 @@ public class EndtDependantFieldMasterServiceImpl implements EndtDependantFieldMa
 			// Select
 			query.select(b);
 
+			/*
 			// Amend ID Max Filter
 			Subquery<Long> amendId = query.subquery(Long.class);
 			Root<EndtDependantFieldMaster> ocpm1 = amendId.from(EndtDependantFieldMaster.class);
@@ -376,6 +377,48 @@ public class EndtDependantFieldMasterServiceImpl implements EndtDependantFieldMa
 			Predicate n3 = cb.equal(b.get("productId"),req.getProductId());
 			
 			query.where(n1,n2,n3).orderBy(orderList);
+			*/
+			
+			
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<EndtDependantFieldMaster> ocpm1 = effectiveDate.from(EndtDependantFieldMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(b.get("dependantFieldId"),ocpm1.get("dependantFieldId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a3 = cb.equal(b.get("companyId"),ocpm1.get("companyId"));
+			Predicate a4 = cb.equal(b.get("productId"),ocpm1.get("productId"));
+
+			effectiveDate.where(a1,a2,a3,a4);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<EndtDependantFieldMaster> ocpm2 = effectiveDate2.from(EndtDependantFieldMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a5 = cb.equal(b.get("dependantFieldId"),ocpm2.get("dependantFieldId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a7 = cb.equal(b.get("companyId"),ocpm2.get("companyId"));
+			Predicate a8 = cb.equal(b.get("productId"),ocpm2.get("productId"));
+	
+			effectiveDate2.where(a5,a6,a7,a8);
+
+			
+			
+			// Order By
+						List<Order> orderList = new ArrayList<Order>();
+						orderList.add(cb.asc(b.get("dependantFieldId")));
+
+						// Where
+						Predicate n1 = cb.equal(b.get("status"),"Y");
+						Predicate n2 = cb.equal(b.get("status"),"R");
+						Predicate n3 = cb.or(n1,n2);
+						Predicate n4 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
+						Predicate n5 = cb.equal(b.get("effectiveDateEnd"),effectiveDate2);	
+						Predicate n6 = cb.equal(b.get("companyId"), req.getCompanyId());
+						Predicate n7 = cb.equal(b.get("productId"),req.getProductId());
+						
+						query.where(n3,n4,n5,n6,n7).orderBy(orderList);	
+			
+			
 			
 			// Get Result
 			TypedQuery<EndtDependantFieldMaster> result = em.createQuery(query);
