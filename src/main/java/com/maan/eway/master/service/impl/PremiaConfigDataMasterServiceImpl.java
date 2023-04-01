@@ -134,7 +134,7 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			}
 
 			if(StringUtils.isNotBlank(req.getDefaultYn()) && req.getDefaultYn().equalsIgnoreCase("Y")) {
-			/*	if (StringUtils.isBlank(req.getDefaultValue())) {
+				if (StringUtils.isBlank(req.getDefaultValue())) {
 				errorList.add(new Error("09", "DefaultValue", "Please Select DefaultValue"));				
 			}
 			
@@ -144,7 +144,7 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 				else if ( StringUtils.isNotBlank(req.getDataTypeId())&& req.getDataTypeId().equalsIgnoreCase("3") &&  StringUtils.isBlank(req.getDateFormatType())) {
 					errorList.add(new Error("11", "Date Format Type", "Please Enter Date Format Type"));				
 				}
-				*/
+				
 			}
 			
 			if (StringUtils.isBlank(req.getCaseConditionYn())) {
