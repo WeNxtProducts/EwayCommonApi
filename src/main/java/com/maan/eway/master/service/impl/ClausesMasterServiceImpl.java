@@ -417,7 +417,7 @@ public List<ClausesMasterRes> getallClauses(ClausesMasterGetallReq req) {
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
-		orderList.add(cb.asc(b.get("branchCode")));
+		orderList.add(cb.asc(b.get("sectionId")));
 
 		// Where
 				Predicate n1 = cb.equal(b.get("amendId"), amendId);
