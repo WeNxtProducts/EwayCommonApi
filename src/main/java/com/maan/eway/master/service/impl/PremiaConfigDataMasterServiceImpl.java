@@ -118,7 +118,11 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
 				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 			}
-
+			if((StringUtils.isNotBlank(req.getDefaultYn())) && (req.getDefaultYn().equalsIgnoreCase("N") )){	
+				if(StringUtils.isBlank(req.getInputColumn()) ) {
+					errorList.add(new Error("14", "InputColumn", "Please Enter Input Column Name"));
+				}
+				}
 			if (StringUtils.isBlank(req.getCreatedBy())) {
 				errorList.add(new Error("07", "CreatedBy", "Please Select CreatedBy"));
 			}else if (req.getCreatedBy().length() > 100){
@@ -152,11 +156,7 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 				errorList.add(new Error("13", "CaseCondition", "Please Enter CaseCondition"));				
 			}
 				
-			if((StringUtils.isNotBlank(req.getDefaultYn())) && (req.getDefaultYn().equalsIgnoreCase("N") )){	
-			if(StringUtils.isBlank(req.getInputColumn()) ) {
-				errorList.add(new Error("14", "InputColumn", "Please Enter Input Column Name"));
-			}
-			}
+			
 				
 						}
 		} catch (Exception e) {
