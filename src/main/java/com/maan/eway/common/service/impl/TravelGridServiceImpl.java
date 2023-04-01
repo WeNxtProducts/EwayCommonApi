@@ -415,8 +415,8 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				Expression<String>e0=m.get("branchCode");
 				n6 = e0.in(branches ) ;
 			}
-			Predicate n7 = cb.isNull(m.get("endorsementType"));
-			query.where(n1,n2,n3,n4,n5,n6,n7).orderBy(orderList);
+		//	Predicate n7 = cb.isNull(m.get("endorsementType"));
+			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<ReferalGridCriteriaRes> result = em.createQuery(query);
@@ -480,8 +480,8 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			
 			Expression<String>e0=c.get("branchCode");
 			Predicate n6 = e0.in(branches ) ;
-			Predicate n7 = cb.isNull(m.get("endorsementType"));
-			query.where(n1,n2,n3,n4,n6,n7).orderBy(orderList);
+		//	Predicate n7 = cb.isNull(m.get("endorsementType"));
+			query.where(n1,n2,n3,n4,n6).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<ReferalGridCriteriaRes> result = em.createQuery(query);

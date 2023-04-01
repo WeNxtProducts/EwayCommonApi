@@ -426,8 +426,8 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 				Expression<String> e0 = m.get("branchCode");
 				n6 = e0.in(branches);
 			}
-			Predicate n7 = cb.isNull(m.get("endorsementType"));
-			query.where(n1, n2, n3, n4, n5, n6,n7)
+		//	Predicate n7 = cb.isNull(m.get("endorsementType"));
+			query.where(n1, n2, n3, n4, n5, n6)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
@@ -491,8 +491,8 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 
 			Expression<String> e0 = c.get("branchCode");
 			Predicate n6 = e0.in(branches);
-			Predicate n7 = cb.isNull(m.get("endorsementType"));
-			query.where(n1, n2, n3, n4, n6,n7)
+		//	Predicate n7 = cb.isNull(m.get("endorsementType"));
+			query.where(n1, n2, n3, n4, n6)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
