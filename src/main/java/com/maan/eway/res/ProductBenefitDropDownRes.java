@@ -1,0 +1,22 @@
+package com.maan.eway.res;
+
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
+
+@Data
+public class ProductBenefitDropDownRes {
+
+	@JsonProperty("TypeId")
+	private String typeId;
+	
+	@JsonProperty("TypeDesc")
+	private String TypeDesc;
+	
+	
+	@JsonProperty("ProductBenefits")
+	private List<ProductBenefits> productBenefits;
+	
+}

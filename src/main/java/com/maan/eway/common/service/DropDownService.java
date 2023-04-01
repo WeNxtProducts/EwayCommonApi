@@ -149,4 +149,6 @@ public interface DropDownService {
 
 	List<DropDownRes> endtDependantFields(LovDropDownReq req);
 
+	List<DropDownRes> productBenefitsTypes(LovDropDownReq req);
+
 }

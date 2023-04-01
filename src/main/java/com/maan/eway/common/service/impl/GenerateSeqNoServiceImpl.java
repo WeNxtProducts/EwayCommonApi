@@ -12,11 +12,13 @@ import org.springframework.stereotype.Service;
 import com.maan.eway.bean.SeqCreditno;
 import com.maan.eway.bean.SeqDebitnote;
 import com.maan.eway.bean.SeqPolicyno;
+import com.maan.eway.bean.SeqProductbenefit;
 import com.maan.eway.bean.SeqRefno;
 import com.maan.eway.bean.SeqTinyrefno;
 import com.maan.eway.repository.SeqCreditnoRepository;
 import com.maan.eway.repository.SeqDebitnoteRepository;
 import com.maan.eway.repository.SeqPolicynoRepository;
+import com.maan.eway.repository.SeqProductbenefitRepository;
 import com.maan.eway.repository.SeqRefnoRepository;
 import com.maan.eway.repository.SeqTinyrefnoRepository;
 
@@ -39,6 +41,9 @@ public class GenerateSeqNoServiceImpl {
 	
 	@Autowired
 	private SeqTinyrefnoRepository tinyRefRepo;
+	
+	@Autowired
+	private SeqProductbenefitRepository benefitRepo ;
 
 	 public synchronized String generateRefNo() {
 	       try {
@@ -106,6 +111,20 @@ public class GenerateSeqNoServiceImpl {
 	    	    SeqTinyrefno entity;
 	            entity = tinyRefRepo.save(new SeqTinyrefno());          
 	            return String.format("%05d",entity.getTinyUrlRefNo()) ;
+	        } catch (Exception e) {
+				e.printStackTrace();
+				log.info( "Exception is ---> " + e.getMessage());
+	            return null;
+	        }
+	       
+	 
+	 }
+	 
+	 public synchronized String generateBenefitId() {
+	       try {
+	    	    SeqProductbenefit entity;
+	            entity = benefitRepo.save(new SeqProductbenefit());          
+	            return String.format("%05d",entity.getBenefitId()) ;
 	        } catch (Exception e) {
 				e.printStackTrace();
 				log.info( "Exception is ---> " + e.getMessage());

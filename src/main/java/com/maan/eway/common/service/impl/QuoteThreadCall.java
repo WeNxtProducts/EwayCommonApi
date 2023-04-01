@@ -1273,14 +1273,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 					if(filterCovers != null && filterCovers.size()>0 ) {
 						if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
 							
-							res = InsertEndtCoverDetails(PrevQuoteNo , filterCovers,request.getPolicyEndDate());
+							res = InsertEndtCoverDetails(PrevQuoteNo , filterCovers,request.getPolicyStartDate() ,  request.getPolicyEndDate());
 							
 							List<FactorRateRequestDetails> 	updateCovers1 = filterCovers.stream().filter( o -> o.getIsSelected()!=null &&  (o.getIsSelected().equalsIgnoreCase("N")) ).collect(Collectors.toList());
 							updateCovers.addAll(updateCovers1);
 							
 						}else {
 							List<FactorRateRequestDetails> filterSubCovers = filterCovers.stream().filter( o ->  o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId())) ).collect(Collectors.toList());
-							res = InsertEndtCoverDetails(PrevQuoteNo , filterSubCovers  ,request.getPolicyEndDate() );
+							res = InsertEndtCoverDetails(PrevQuoteNo , filterSubCovers  ,request.getPolicyStartDate() ,request.getPolicyEndDate() );
 							List<FactorRateRequestDetails> 	updateCovers2 = filterSubCovers.stream().filter( o -> o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("N") ).collect(Collectors.toList());
 							updateCovers.addAll(updateCovers2);
 						}
@@ -1362,7 +1362,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		
 		
 		
-		private synchronized Map<String,Object>  InsertEndtCoverDetails(String prevQuoteNo , List<FactorRateRequestDetails> covers ,Date PolicyEndDate ) {
+		private synchronized Map<String,Object>  InsertEndtCoverDetails(String prevQuoteNo , List<FactorRateRequestDetails> covers ,Date PolicyStartDate , Date PolicyEndDate ) {
 			Map<String,Object> res= new HashMap<String,Object>() ;
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
@@ -1382,24 +1382,33 @@ public class QuoteThreadCall implements Callable<Object>  {
 					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
 					Date periodStart =  cov.getCoverPeriodFrom();
 					Date periodEnd   = cov.getCoverPeriodTo();
-					Date sysDate   = cov.getCoverPeriodTo();
+					Date sysDate   = new Date();
 					
 					if( cov.getSubCoverYn() ==null || cov.getSubCoverYn().equalsIgnoreCase("N") ) {
 						List<PolicyCoverData> filterOldCover =  OldPolicyCovers.stream().filter(  o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId()) && o.getProductId().equals(request.getProductId())
 									&& o.getSectionId().equals(Integer.valueOf(request.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) ).collect(Collectors.toList());	            			
 						
-						periodStart = filterOldCover.size() > 0 ? filterOldCover.get(0).getCoverPeriodFrom() : sysDate;
-						periodEnd = filterOldCover.size() > 0 ? filterOldCover.get(0).getCoverPeriodTo() : PolicyEndDate;
+						if(filterOldCover.size() > 0 ) {
+							periodStart = filterOldCover.get(0).getCoverPeriodFrom().before(PolicyStartDate) ? PolicyStartDate : filterOldCover.get(0).getCoverPeriodFrom();
+							periodEnd   = filterOldCover.get(0).getCoverPeriodTo().before(PolicyEndDate) ? PolicyEndDate : filterOldCover.get(0).getCoverPeriodTo();
+						} else {
+							periodStart = sysDate.before(PolicyStartDate) ? PolicyStartDate : sysDate;
+							periodEnd   = cov.getCoverPeriodTo().before(PolicyEndDate) ? PolicyEndDate : cov.getCoverPeriodTo();
+						}
 					
 					} else {
         				List<PolicyCoverData> filterOldSubCover =  OldPolicyCovers.stream().filter(  o ->  o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId()) && o.getProductId().equals(request.getProductId())
 									&& o.getSectionId().equals(Integer.valueOf(request.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) &&  o.getSubCoverId().equals(Integer.valueOf(cov.getSubCoverId()))  ).collect(Collectors.toList());
 						
-						periodStart = filterOldSubCover.size() > 0 ? filterOldSubCover.get(0).getCoverPeriodFrom() :  sysDate;	
-						periodEnd = filterOldSubCover.size() > 0 ? filterOldSubCover.get(0).getCoverPeriodTo() : PolicyEndDate;
+        				if(filterOldSubCover.size() > 0 ) {
+							periodStart = filterOldSubCover.get(0).getCoverPeriodFrom().before(PolicyStartDate) ? PolicyStartDate : filterOldSubCover.get(0).getCoverPeriodFrom();
+							periodEnd   = filterOldSubCover.get(0).getCoverPeriodTo().before(PolicyEndDate) ? PolicyEndDate : filterOldSubCover.get(0).getCoverPeriodTo();
+						} else {
+							periodStart = sysDate.before(PolicyStartDate) ? PolicyStartDate : sysDate;
+							periodEnd   = cov.getCoverPeriodTo().before(PolicyEndDate) ? PolicyEndDate : cov.getCoverPeriodTo();
+						}
+						
         			}
-					
-					
 					
 					Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
 					Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
