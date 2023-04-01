@@ -251,7 +251,10 @@ public List<Error> validatePremiaConfig(PremiaConfigMasterSaveReq req) {
 			errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
 		}		
 	
-		 if (req.getQueryKey().length() > 100){
+		if (StringUtils.isBlank(req.getQueryKey())) {
+			errorList.add(new Error("10", "QueryKey", "Please Enter QueryKey"));
+		}
+		else if ((StringUtils.isNotBlank(req.getQueryKey())) && req.getQueryKey().length() > 100){
 				errorList.add(new Error("10","QueryKey", "Please Enter QueryKey within 100 Characters")); 
 			}		
 	} catch (Exception e) {
