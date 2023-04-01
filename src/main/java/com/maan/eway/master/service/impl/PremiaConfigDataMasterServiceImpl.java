@@ -135,12 +135,17 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 				if (StringUtils.isBlank(req.getCaseCondition())) {
 				errorList.add(new Error("13", "CaseCondition", "Please Enter CaseCondition"));				
 			}
-			/*	
+				
 			if(StringUtils.isNotBlank(req.getDefaultYn()) && (req.getDefaultYn().equalsIgnoreCase("N") )	
 					&&  StringUtils.isBlank(req.getInputColumn()) ) {
 				errorList.add(new Error("14", "InputColumn", "Please Enter Input Column Name"));
 			}
-			*/
+			
+				
+				if (StringUtils.isBlank(req.getColumnId())) {
+					errorList.add(new Error("14", "ColumnId", "Please Select Column"));
+				}
+				
 			}
 		} catch (Exception e) {
 			log.error(e);
