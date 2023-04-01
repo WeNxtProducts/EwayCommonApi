@@ -83,7 +83,22 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			if (StringUtils.isBlank(req.getSectionId())) {
 				errorList.add(new Error("04", "SectionId", "Please Select SectionId"));
 			}
-			
+			if (StringUtils.isBlank(req.getColumnId())) {
+				errorList.add(new Error("14", "ColumnId", "Please Select Column"));
+			}
+
+			if (StringUtils.isBlank(req.getRemarks())) {
+				errorList.add(new Error("15", "Remarks", "Please Enter Remarks"));
+			}
+			else if ((StringUtils.isNotBlank(req.getRemarks())) && req.getRemarks().length()>100) {
+				errorList.add(new Error("15", "Remarks", "Please Enter Remarks within 100 Characters"));
+			}
+			if (StringUtils.isBlank(req.getDataTypeId())) {
+				errorList.add(new Error("10", "DataType", "Please Select DataType"));				
+			}
+			else if ( StringUtils.isNotBlank(req.getDataTypeId())&& req.getDataTypeId().equalsIgnoreCase("3") &&  StringUtils.isBlank(req.getDateFormatType())) {
+				errorList.add(new Error("11", "Date Format Type", "Please Enter Date Format Type"));				
+			}
 			// Date Validation 
 			Calendar cal = new GregorianCalendar();
 			Date today = new Date();
@@ -118,13 +133,14 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 			/*	if (StringUtils.isBlank(req.getDefaultValue())) {
 				errorList.add(new Error("09", "DefaultValue", "Please Select DefaultValue"));				
 			}
-			*/
+			
 				if (StringUtils.isBlank(req.getDataTypeId())) {
 					errorList.add(new Error("10", "DataType", "Please Select DataType"));				
 				}
 				else if ( StringUtils.isNotBlank(req.getDataTypeId())&& req.getDataTypeId().equalsIgnoreCase("3") &&  StringUtils.isBlank(req.getDateFormatType())) {
 					errorList.add(new Error("11", "Date Format Type", "Please Enter Date Format Type"));				
 				}
+				*/
 			}
 			
 			if (StringUtils.isBlank(req.getCaseConditionYn())) {
@@ -136,17 +152,13 @@ public class PremiaConfigDataMasterServiceImpl implements PremiaConfigDataMaster
 				errorList.add(new Error("13", "CaseCondition", "Please Enter CaseCondition"));				
 			}
 				
-			if(StringUtils.isNotBlank(req.getDefaultYn()) && (req.getDefaultYn().equalsIgnoreCase("N") )	
-					&&  StringUtils.isBlank(req.getInputColumn()) ) {
+			if((StringUtils.isNotBlank(req.getDefaultYn())) && (req.getDefaultYn().equalsIgnoreCase("N") )){	
+			if(StringUtils.isBlank(req.getInputColumn()) ) {
 				errorList.add(new Error("14", "InputColumn", "Please Enter Input Column Name"));
 			}
-			
-				
-				if (StringUtils.isBlank(req.getColumnId())) {
-					errorList.add(new Error("14", "ColumnId", "Please Select Column"));
-				}
-				
 			}
+				
+						}
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
