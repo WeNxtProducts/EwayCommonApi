@@ -818,7 +818,8 @@ public class CalculatorEngineService implements CalculatorEngine{
 			String vdRefno=tuple.get("vdRefno").toString();
 			String cdRefno=tuple.get("cdRefno").toString();
 			  vehicles=null;
-				while(vehicles==null || vehicles.size()==0 ) {
+			  int counter=0;
+				while(vehicles==null || vehicles.size()==0 && counter<6 ) {
 					
 					 if(oneProduct.equals("M")){
 						   search="vdRefno:"+engine.getVdRefNo()+";vehicleId:"+engine.getVehicleId();
@@ -834,7 +835,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 						 vehicles = crservice.getResult(criteria, 0, 50);
 					 }
 				 
-				 
+				 counter++;
 				 
 				  System.out.println("Vehicle record "+vdRefno+", vehicles is "+((vehicles==null || vehicles.isEmpty())?"empty":"Not an empty"));
 				}
