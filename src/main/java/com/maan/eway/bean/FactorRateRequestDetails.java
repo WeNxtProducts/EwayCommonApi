@@ -271,6 +271,13 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="NO_OF_DAYS")
     private BigDecimal    noOfDays;
+    
+    
+    @Column(name="DIFF_PREMIUM_INCLUDED_TAX_LC")
+    private BigDecimal     diffPremiumIncludedTaxLc ;
+
+    @Column(name="DIFF_PREMIUM_INCLUDED_TAX_FC")
+    private BigDecimal     diffPremiumIncludedTaxFc ;
  
     
  

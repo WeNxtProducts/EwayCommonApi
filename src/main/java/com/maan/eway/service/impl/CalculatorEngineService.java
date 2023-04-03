@@ -726,7 +726,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 					 
 					 
 					 EndtCoverCalculator calc=new EndtCoverCalculator();
-					 calc.setEngine(request,retc,commontbl,vehicles,customers,prorata,ratingutil);
+					 calc.setEngine(request,retc,commontbl,vehicles,customers,prorata,ratingutil,request.getEffectiveDate());
 					 
 					 totalcovers.stream().filter(t-> "Y".equals(t.getStatus())) .forEach(calc);
 					 //remove error records
@@ -818,7 +818,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 			String vdRefno=tuple.get("vdRefno").toString();
 			String cdRefno=tuple.get("cdRefno").toString();
 			  vehicles=null;
-				while(vehicles==null) {
+				while(vehicles==null || vehicles.size()==0 ) {
 					
 					 if(oneProduct.equals("M")){
 						   search="vdRefno:"+engine.getVdRefNo()+";vehicleId:"+engine.getVehicleId();
@@ -846,7 +846,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 		//	}
 			
 			 
-			 if(vehicles!=null) {
+			 if(vehicles!=null && vehicles.size()>0) {
 				 String periodOfInsurance=(vehicles.get(0).get("periodOfInsurance")==null?"365":vehicles.get(0).get("periodOfInsurance").toString());
 				  prorata = ratingutil.loadProRataData(engine, periodOfInsurance);
 			  }

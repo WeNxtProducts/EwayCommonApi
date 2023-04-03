@@ -183,6 +183,11 @@ public class Cover implements Serializable{
 			    private Date   policyEndDate ;
 				 @JsonProperty("Status")
 				private String status;
+				 
+				  @JsonProperty("DiffPremiumIncludedTax") 
+				  private BigDecimal diffPremiumIncludedTax; 
+				  @JsonProperty("DiffPremiumIncludedTaxLC") 
+				  private BigDecimal diffPremiumIncludedTaxLC;
 }
 
 

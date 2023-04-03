@@ -373,6 +373,9 @@ this.repository = repo;
 //						
 //					}
 					saveCover.setDiscountCoverId(0) ;
+					saveCover.setDiffPremiumIncludedTaxFc(coverData.getDiffPremiumIncludedTax()==null?BigDecimal.ZERO:coverData.getDiffPremiumIncludedTax());
+					saveCover.setDiffPremiumIncludedTaxLc(coverData.getDiffPremiumIncludedTaxLC()==null?BigDecimal.ZERO:coverData.getDiffPremiumIncludedTaxLC());
+					
 					//saveCover.setEndtCount(BigDecimal.ZERO );
 					saveCoverList.add(saveCover);
 					premiumLc = premiumLc + (saveCover.getPremiumExcludedTaxLc()==null ? 0D :Double.valueOf(saveCover.getPremiumExcludedTaxLc().toString()) );
@@ -505,6 +508,8 @@ this.repository = repo;
 						overAllPremiumFc = overAllPremiumFc + (saveSubCover.getPremiumIncludedTaxFc()==null ? 0D :Double.valueOf(saveSubCover.getPremiumIncludedTaxFc().toString()));
 						
 						saveSubCover.setDiscountCoverId(0) ;
+						saveSubCover.setDiffPremiumIncludedTaxFc(coverData.getDiffPremiumIncludedTax()==null?BigDecimal.ZERO:coverData.getDiffPremiumIncludedTax());
+						saveSubCover.setDiffPremiumIncludedTaxLc(coverData.getDiffPremiumIncludedTaxLC()==null?BigDecimal.ZERO:coverData.getDiffPremiumIncludedTaxLC());
 						//saveSubCover.setEndtCount(BigDecimal.ZERO );
 						saveCoverList.add(saveSubCover);
 						// repository.saveAndFlush(saveSubCover);
@@ -1346,7 +1351,8 @@ this.repository = repo;
 					coverRes.setVdRefNo(filterCover.get(0).getVdRefno());
 					coverRes.setVehicleId(filterCover.get(0).getVehicleId()==null?"" :filterCover.get(0).getVehicleId().toString());
 					coverRes.setMultiSelectYn(filterCover.get(0).getMultiSelectYn()==null?"":filterCover.get(0).getMultiSelectYn());
-					
+					coverRes.setDiffPremiumIncludedTax(filterCover.get(0).getDiffPremiumIncludedTaxFc());
+					coverRes.setDiffPremiumIncludedTaxLC(filterCover.get(0).getDiffPremiumIncludedTaxLc());
 					// Discount Covers Or Promo Covers
 					List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) && (   o.getCoverageType().equalsIgnoreCase("D") || o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
 					
@@ -1435,7 +1441,8 @@ this.repository = repo;
 						subCoverRes.setSectionId(filterSubCover.get(0).getSectionId()==null?"" :filterSubCover.get(0).getSectionId().toString());
 						subCoverRes.setVdRefNo(filterSubCover.get(0).getVdRefno());
 						subCoverRes.setVehicleId(filterSubCover.get(0).getVehicleId()==null?"" :filterSubCover.get(0).getVehicleId().toString());
-						
+						subCoverRes.setDiffPremiumIncludedTax(filterCover.get(0).getDiffPremiumIncludedTaxFc());
+						subCoverRes.setDiffPremiumIncludedTaxLC(filterCover.get(0).getDiffPremiumIncludedTaxLc());
 						
 						// Discount Covers Or Promo Covers
 						List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) && ( ! o.getDiscLoadId().equals(0)) && (   o.getCoverageType().equalsIgnoreCase("D") || o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
