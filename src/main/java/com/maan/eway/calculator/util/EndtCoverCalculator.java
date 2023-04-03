@@ -75,7 +75,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					prorata =  crservice.loadProRataData(engine, diff);	
 					if(prorata.size()>0) {
 					 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
-					 t.setProRata(percenat.divide(new BigDecimal("100")));
+					 t.setProRata(new BigDecimal("100").subtract(percenat).divide(new BigDecimal("100")));
 					}else {
 						t.setProRata(new BigDecimal("1"));
 					}
@@ -93,7 +93,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 						prorata =  crservice.loadProRataData(engine, diff);
 						if(prorata.size()>0) {
 							 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
-							 t.setProRata(percenat.divide(new BigDecimal("100")));
+							 t.setProRata(new BigDecimal("100").subtract(percenat).divide(new BigDecimal("100")));
 							}else {
 								t.setProRata(new BigDecimal("1"));
 							}
