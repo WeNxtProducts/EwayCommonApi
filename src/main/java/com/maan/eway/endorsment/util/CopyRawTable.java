@@ -135,7 +135,7 @@ public class CopyRawTable  {
 				newRequestNo=numberGenerate.generateRequestNo(ent.getCompanyId(), ent.getBranchCode(), String.valueOf(ent.getProductId()));
 			
 			//EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(ent.getCompanyId(), ent.getProductId().intValue(), "Y",Integer.parseInt(ent.getEndtType()), new Date(), new Date());
-			List<EserviceMotorDetails> motors=emotorRepo.findByQuoteNoAndStatusOrderByRiskIdAsc(prevQuoteNo,"Y");
+			List<EserviceMotorDetails> motors=emotorRepo.findByQuoteNoAndStatusOrderByRiskIdAsc(prevQuoteNo,"P");
 			List<EserviceMotorDetails> newMotors=new ArrayList<EserviceMotorDetails>();
 			++count;
 			for(EserviceMotorDetails m :motors) {
@@ -166,6 +166,7 @@ public class CopyRawTable  {
 					newuw.setRequestReferenceNo(newRequestNo);
 					newuwquestions.add(newuw);
 				}
+				uwquestionRepo.deleteAllInBatch(newuwquestions);
 				uwquestionRepo.saveAllAndFlush(newuwquestions);
 			}
 			List<EserviceMotorDetails> save = emotorRepo.saveAllAndFlush(newMotors);
