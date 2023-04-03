@@ -395,9 +395,9 @@ public List<BankMasterRes> getallBankDetails(BankMasterGetAllReq req) {
 		Predicate n1 = cb.equal(b.get("amendId"), amendId);
 		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
-		Predicate n5 = cb.or(n3,n4);
-		query.where(n1,n2,n5).orderBy(orderList);
+//		Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+//		Predicate n5 = cb.or(n3,n4);
+		query.where(n1,n2,n3).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<BankMaster> result = em.createQuery(query);
