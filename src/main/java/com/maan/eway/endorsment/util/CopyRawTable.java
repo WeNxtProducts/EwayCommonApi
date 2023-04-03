@@ -21,6 +21,7 @@ import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.PersonalInfo;
+import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.common.req.ChangeEndoStatusReq;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
@@ -38,6 +39,7 @@ import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.SeqCustidRepository;
 import com.maan.eway.repository.SeqQuotenoRepository;
 import com.maan.eway.repository.SeqRefnoRepository;
+import com.maan.eway.repository.UwQuestionsDetailsRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 
 @Service
@@ -71,6 +73,9 @@ public class CopyRawTable  {
 	
 	@Autowired
 	private CoverDocumentUploadDetailsRepository coverDocUploadDetails;
+	
+	@Autowired
+	private UwQuestionsDetailsRepository uwquestionRepo;
 
 	
 	private Logger log = LogManager.getLogger(MotorGridServiceImpl.class);
@@ -81,6 +86,7 @@ public class CopyRawTable  {
 			Integer count=emotorRepo.countByOriginalPolicyNoAndRiskId(ent.getPolicyNo(),1);
 			String prevPolicyNo=null;
 			String prevQuoteNo=null;
+			String prevRequestRefNo=null;
 			String newRequestNo =null;
 			long pendingcount =0;
 			if(count>0) {
@@ -102,6 +108,7 @@ public class CopyRawTable  {
 					 prevPolicyNo=motor.get(0).getEndtPrevPolicyNo();
 					 prevQuoteNo=motor.get(0).getEndtPrevQuoteNo();
 					 newRequestNo=motor.get(0).getRequestReferenceNo();
+					 prevRequestRefNo=motor.get(0).getRequestReferenceNo();
 					 count--;
 				}else {
 					motor=motors.stream().filter(m->m.getEndtStatus().equals("C")).collect(Collectors.toList());
@@ -109,9 +116,11 @@ public class CopyRawTable  {
 					if(motors.size()>1) {
 						prevPolicyNo=motors.get(0).getPolicyNo();
 						prevQuoteNo =motors.get(0).getQuoteNo();
+						prevRequestRefNo=motor.get(0).getRequestReferenceNo();
 					}else {
 						prevPolicyNo=motor.get(0).getPolicyNo();
 						prevQuoteNo =motor.get(0).getQuoteNo();
+						prevRequestRefNo=motor.get(0).getRequestReferenceNo();
 					}
 				}
 				
@@ -119,12 +128,14 @@ public class CopyRawTable  {
 				motor=emotorRepo.findByPolicyNoAndStatus(ent.getPolicyNo(),"P");
 				prevPolicyNo=ent.getPolicyNo();
 				prevQuoteNo =motor.get(0).getQuoteNo();
+				prevRequestRefNo=motor.get(0).getRequestReferenceNo();
+
 			}
 			if(pendingcount==0)
 				newRequestNo=numberGenerate.generateRequestNo(ent.getCompanyId(), ent.getBranchCode(), String.valueOf(ent.getProductId()));
 			
 			//EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(ent.getCompanyId(), ent.getProductId().intValue(), "Y",Integer.parseInt(ent.getEndtType()), new Date(), new Date());
-			List<EserviceMotorDetails> motors=emotorRepo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
+			List<EserviceMotorDetails> motors=emotorRepo.findByQuoteNoAndStatusOrderByRiskIdAsc(prevQuoteNo,"Y");
 			List<EserviceMotorDetails> newMotors=new ArrayList<EserviceMotorDetails>();
 			++count;
 			for(EserviceMotorDetails m :motors) {
@@ -147,8 +158,19 @@ public class CopyRawTable  {
 				newObject.setPolicyNo(ent.getPolicyNo()+"-"+count);
 				newObject.setQuoteNo(null);
 				newMotors.add(newObject);
+				
+				List<UwQuestionsDetails> olduwquestion = uwquestionRepo.findByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleId(ent.getCompanyId(),ent.getProductId().intValue(),prevRequestRefNo,newObject.getRiskId());
+				List<UwQuestionsDetails> newuwquestions=new ArrayList<UwQuestionsDetails>();
+				for (UwQuestionsDetails ouw : olduwquestion) {
+					UwQuestionsDetails newuw = dozerMapper.map(ouw , UwQuestionsDetails.class);
+					newuw.setRequestReferenceNo(newRequestNo);
+					newuwquestions.add(newuw);
+				}
+				uwquestionRepo.saveAllAndFlush(newuwquestions);
 			}
 			List<EserviceMotorDetails> save = emotorRepo.saveAllAndFlush(newMotors);
+			
+					
 			return save;
 		}catch (Exception e) {
 			e.printStackTrace();
