@@ -1365,7 +1365,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 						savedata.setEntryDate(new Date());
 						savedata.setCreatedBy(loginId);
 						savedata.setEndtCount(new BigDecimal(count));
-						savedata.setStatus("E");
+					//	savedata.setStatus("E");
 						policyCoverDataRepo.saveAndFlush(savedata);
 					}
 
