@@ -313,7 +313,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			commonData.setQuoteNo(request.getQuoteNo());
 			commonData.setCustomerId(request.getCustomerId());
 			commonData.setRiskId(eserCommonData.getRiskId());
-			commonData.setStatus("Y");
+			commonData.setStatus(eserCommonData.getStatus());
 			List<FactorRateRequestDetails>  filterCover = covers.stream().filter( o -> o.getVehicleId().equals( eserCommonData.getRiskId())).collect(Collectors.toList());
 		//	commonData.setVdRefno(filterCover.get(0).getVdRefno());	
 		//	commonData.setMsRefno(filterCover.get(0).getMsRefno());		
@@ -473,7 +473,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			motorData.setQuoteNo(request.getQuoteNo());
 			motorData.setCustomerId(request.getCustomerId());
 			motorData.setVehicleId(eserMotors.getRiskId().toString());
-			motorData.setStatus("Y");
+			motorData.setStatus(eserMotors.getStatus());
 			List<FactorRateRequestDetails>  filterCover = covers.stream().filter( o -> o.getVehicleId().equals( eserMotors.getRiskId())).collect(Collectors.toList());
 			motorData.setVdRefno(filterCover.get(0).getVdRefno());	
 			motorData.setMsRefno(filterCover.get(0).getMsRefno());		
@@ -1066,7 +1066,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			travelData.setPassengerId( request.getVehicleId());
 			travelData.setGroupId(request.getGroupId());
 			travelData.setGroupCount(request.getGroupCount());
-			travelData.setStatus("Y");
+			travelData.setStatus(eserTravel.getStatus());
 			List<FactorRateRequestDetails>  filterCover = covers.stream().filter( o -> o.getVehicleId().equals( request.getGroupId())).collect(Collectors.toList());
 			travelData.setVdRefno(filterCover.get(0).getVdRefno());	
 			travelData.setMsRefno(filterCover.get(0).getMsRefno());		
