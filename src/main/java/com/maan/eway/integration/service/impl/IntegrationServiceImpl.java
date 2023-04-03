@@ -397,8 +397,9 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 			Predicate a1 = cb.equal(ocpm1.get("premiaId"), c.get("premiaId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), c.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("productId"),c.get("productId"));
+			Predicate a4 = cb.equal(ocpm1.get("columnId"),c.get("columnId"));
 
-			amendId.where(a1, a2,a3);
+			amendId.where(a1, a2,a3,a4);
 
 			// Where
 			Predicate n1 = cb.equal(c.get("status"),"Y");

@@ -76,8 +76,8 @@ public class ExclusionMasterServiceImpl implements ExclusionMasterService {
 		
 			if (StringUtils.isBlank(req.getExclusionDescription())) {
 				errorList.add(new Error("02", "ExclusionDescription", "Please Select ExclusionDescription"));
-			}else if (req.getExclusionDescription().length() > 100){
-				errorList.add(new Error("02","ExclusionDescription", "Please Enter ExclusionDescription 100 Characters")); 
+			}else if (req.getExclusionDescription().length() > 500){
+				errorList.add(new Error("02","ExclusionDescription", "Please Enter ExclusionDescription 500 Characters")); 
 			}else if (StringUtils.isBlank(req.getExclusionId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId())) {
 				List<ExclusionMaster> ExclusionList = getExclusionDescriptionExistDetails(req.getExclusionDescription() , req.getCompanyId() , req.getBranchCode(),req.getProductId(),req.getSectionId());
 				if (ExclusionList.size()>0 ) {

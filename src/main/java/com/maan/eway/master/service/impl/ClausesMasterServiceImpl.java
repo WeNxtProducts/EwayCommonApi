@@ -74,8 +74,8 @@ public class ClausesMasterServiceImpl implements ClausesMasterService {
 		
 			if (StringUtils.isBlank(req.getClausesDescription())) {
 				errorList.add(new Error("02", "ClausesDescription", "Please Select ClausesDescription"));
-			}else if (req.getClausesDescription().length() > 100){
-				errorList.add(new Error("02","ClausesDescription", "Please Enter ClausesDescription 100 Characters")); 
+			}else if (req.getClausesDescription().length() > 200){
+				errorList.add(new Error("02","ClausesDescription", "Please Enter ClausesDescription 200 Characters")); 
 			}else if (StringUtils.isBlank(req.getClausesId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getBranchCode())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId())) {
 				List<ClausesMaster> ClausesList = getClausesDescriptionExistDetails(req.getClausesDescription() , req.getCompanyId() , req.getBranchCode(), req.getProductId(),req.getSectionId());
 				if (ClausesList.size()>0 ) {
