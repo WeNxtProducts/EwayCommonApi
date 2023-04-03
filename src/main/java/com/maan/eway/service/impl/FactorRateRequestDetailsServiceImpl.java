@@ -284,6 +284,7 @@ this.repository = repo;
 			Double premiumFc = 0D;
 			Double overAllPremiumLc = 0D;
 			Double overAllPremiumFc = 0D;
+			List<FactorRateRequestDetails> saveCoverList = new ArrayList<FactorRateRequestDetails>(); 
 			for ( Cover coverData  : req.getCoverList()  ) {
 				
 				if( coverData.getIsSubCover().equalsIgnoreCase("N") ) {
@@ -342,6 +343,7 @@ this.repository = repo;
 						
 					saveCover.setCoverBasedOn(StringUtils.isBlank(coverData.getCoverBasedOn())?"sumInsured":coverData.getCoverBasedOn());
 					//Double b=coverData.getPremiumBeforeDiscountLC()==null ? 0D : Double.valueOf(df.format(coverData.getPremiumBeforeDiscountLC()));
+			//		saveCover.setSumInsured(coverData.getSumInsured()==null?BigDecimal.ZERO :coverData.getSumInsured());
 					saveCover.setRegulSumInsured(coverData.getTiraSumInsured()==null?null:new BigDecimal(df.format(coverData.getTiraSumInsured())));
 					saveCover.setEndtCount(coverData.getEndtCount()==null?BigDecimal.ZERO:coverData.getEndtCount());
 					saveCover.setCoverPeriodFrom(coverData.getEffectiveDate());
@@ -372,7 +374,7 @@ this.repository = repo;
 //					}
 					saveCover.setDiscountCoverId(0) ;
 					//saveCover.setEndtCount(BigDecimal.ZERO );
-					repository.saveAndFlush(saveCover);
+					saveCoverList.add(saveCover);
 					premiumLc = premiumLc + (saveCover.getPremiumExcludedTaxLc()==null ? 0D :Double.valueOf(saveCover.getPremiumExcludedTaxLc().toString()) );
 					premiumFc = premiumFc + (saveCover.getPremiumExcludedTaxFc()==null ? 0D :Double.valueOf(saveCover.getPremiumExcludedTaxFc().toString()) );
 					overAllPremiumLc = overAllPremiumLc + (saveCover.getPremiumIncludedTaxLc()==null ? 0D :Double.valueOf(saveCover.getPremiumIncludedTaxLc().toString() ));
@@ -476,6 +478,7 @@ this.repository = repo;
 							saveSubCover.setActualRate(new BigDecimal(subCoverData.getRate()));
 						}
 						///Double b=subCoverData.getPremiumBeforeDiscountLC()==null ? 0D : Double.valueOf(df.format(subCoverData.getPremiumBeforeDiscountLC()));
+					//	saveSubCover.setSumInsured(subCoverData.getSumInsured()==null?BigDecimal.ZERO :subCoverData.getSumInsured());
 						saveSubCover.setRegulSumInsured(subCoverData.getTiraSumInsured()==null?null:new BigDecimal(df.format(subCoverData.getTiraSumInsured())));
 
 						saveSubCover.setCoverBasedOn(StringUtils.isBlank(coverData.getCoverBasedOn())?"sumInsured":coverData.getCoverBasedOn());
@@ -503,7 +506,8 @@ this.repository = repo;
 						
 						saveSubCover.setDiscountCoverId(0) ;
 						//saveSubCover.setEndtCount(BigDecimal.ZERO );
-						repository.saveAndFlush(saveSubCover);
+						saveCoverList.add(saveSubCover);
+						// repository.saveAndFlush(saveSubCover);
 						Map<String,Object>  primaryKeys = new HashMap<String,Object>();
 						primaryKeys.put("RefNo" , req.getRequestReferenceNo());
 						primaryKeys.put("CreatedBy" , req.getCreatedBy() );
@@ -538,6 +542,8 @@ this.repository = repo;
 						
 					}
 				}
+				// Cover Save 
+				repository.saveAllAndFlush(saveCoverList);
 				
 				// Update Motor Premium
 				if(   req.getProductId().equalsIgnoreCase(motorProductId)) {
@@ -727,6 +733,7 @@ this.repository = repo;
 		String res = "Saved Successfully";
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
+			List<FactorRateRequestDetails> saveTaxList = new ArrayList<FactorRateRequestDetails>();
 			for (Tax tax :  taxes ) {
 				FactorRateRequestDetails saveTax = new FactorRateRequestDetails();
 				dozerMapper.map(coverReq, saveTax);
@@ -766,9 +773,11 @@ this.repository = repo;
 
 				
 				saveTax.setNoOfDays(new BigDecimal(diff));
-					repository.saveAndFlush(saveTax);
+				//	repository.saveAndFlush(saveTax);
+				saveTaxList.add(saveTax);
 				
 			}
+			repository.saveAllAndFlush(saveTaxList);
 			res = "Success" ;
 		} catch(Exception e){
 			e.printStackTrace();
@@ -782,6 +791,7 @@ this.repository = repo;
 		String res = "Saved Successfully";
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
+			List<FactorRateRequestDetails> saveEndt = new ArrayList<FactorRateRequestDetails>();
 			for (Endorsement lod :  endorsements ) {
 				FactorRateRequestDetails saveLod = new FactorRateRequestDetails();
 				dozerMapper.map(coverReq, saveLod);
@@ -838,8 +848,8 @@ this.repository = repo;
 				
 				saveLod.setNoOfDays(new BigDecimal(diff));
 				
-				repository.saveAndFlush(saveLod);
-				
+				//repository.saveAndFlush(saveLod);
+				saveEndt.add(saveLod);
 				
 				// Tax
 				if(lod.getTaxes()!=null && lod.getTaxes().size() > 0 ) {
@@ -847,6 +857,7 @@ this.repository = repo;
 				}
 				
 			}
+			repository.saveAllAndFlush(saveEndt);
 			res = "Success" ;
 		} catch(Exception e){
 			e.printStackTrace();
@@ -859,7 +870,9 @@ this.repository = repo;
 	public String saveLoadings(Map<String,Object>  primaryKeys ,  Cover coverReq , List<Loading> lodings , DecimalFormat df,String diff ) {
 		String res = "Saved Successfully";
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		
 		try {
+			List<FactorRateRequestDetails> saveLodings = new ArrayList<FactorRateRequestDetails>();
 			for (Loading lod :  lodings ) {
 				FactorRateRequestDetails saveLod = new FactorRateRequestDetails();
 				dozerMapper.map(coverReq, saveLod);
@@ -909,9 +922,10 @@ this.repository = repo;
 				
 				
 				saveLod.setNoOfDays(new BigDecimal(diff));
-				repository.saveAndFlush(saveLod);
-				
+			//	repository.saveAndFlush(saveLod);
+				saveLodings.add(saveLod)	;		
 			}
+			repository.saveAllAndFlush(saveLodings);
 			res = "Success" ;
 		} catch(Exception e){
 			e.printStackTrace();
@@ -926,6 +940,7 @@ this.repository = repo;
 		String res = "Saved Successfully";
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
+			List<FactorRateRequestDetails> saveDiscountList = new ArrayList<FactorRateRequestDetails>();
 			for (Discount disc :  discounts ) {
 				FactorRateRequestDetails saveDiscounts = new FactorRateRequestDetails();
 				dozerMapper.map(coverReq, saveDiscounts);
@@ -968,9 +983,11 @@ this.repository = repo;
 				
 				
 				saveDiscounts.setNoOfDays(new BigDecimal(diff));
-				repository.saveAndFlush(saveDiscounts);
+				//repository.saveAndFlush(saveDiscounts);
+				saveDiscountList.add(saveDiscounts);
 				
 			}
+			repository.saveAllAndFlush(saveDiscountList);
 			res = "Success" ;
 		} catch(Exception e){
 			e.printStackTrace();
@@ -1450,6 +1467,7 @@ this.repository = repo;
 				coverListRes.add(coverRes);
 			}
 			
+			System.out.print("cover sort");
 			coverListRes.sort(Comparator.comparing(Cover ::    getSumInsured ).reversed() );
 			
 		} catch(Exception e){
