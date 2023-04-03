@@ -64,8 +64,8 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 				 
 				 if("Y".equals(t.getProRataYn()) && "Y".equals(t.getUserOpt())) {
 				// Date Differents
-					Date periodStart =  t.getEffectiveDate();
-					Date periodEnd =  effectiveDate ;
+					 Date periodStart =  effectiveDate;
+						Date periodEnd = t.getPolicyEndDate() ;
 					Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
 					Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
 					// Check Leap Year
