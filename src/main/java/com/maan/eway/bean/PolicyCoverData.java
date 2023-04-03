@@ -277,6 +277,13 @@ private static final long serialVersionUID = 1L;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 
+    
+    @Column(name="DIFF_PREMIUM_INCLUDED_TAX_LC")
+    private BigDecimal     diffPremiumIncludedTaxLc ;
+
+    @Column(name="DIFF_PREMIUM_INCLUDED_TAX_FC")
+    private BigDecimal     diffPremiumIncludedTaxFc ;
+ 
 }
 
 
