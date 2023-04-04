@@ -1811,6 +1811,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			String res = "";
 			DozerBeanMapper dozerMapper  = new DozerBeanMapper(); 
 			try {			
+				List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoOrderByVehicleIdAsc(request.getRequestReferenceNo());
 				List<PolicyCoverData>  OldPolicyCovers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(request.getEndtPrevQuoteNo());
 				
 				// Deleted Records
@@ -1853,25 +1854,13 @@ public class QuoteThreadCall implements Callable<Object>  {
 						pc.setRequestReferenceNo(request.getRequestReferenceNo());
 						pc.setPolicyNo(null);
 						
-						// End Date
-						SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy"); 
-						Date today = new Date() ;
-						Date oldEndDate = null ;
-						 
-						// Date Differents
-						Date periodStart = null;
-						Date sysdate = null;
-						try {
-							periodStart = df.parse( df.format(ref.getCoverPeriodFrom()) );
-							sysdate = df.parse( df.format(today) );
-						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						
+						// Date Diffrence
+						Date periodStart = ref.getCoverPeriodFrom().before(request.getPolicyStartDate()) ? request.getPolicyStartDate() : ref.getCoverPeriodFrom();
+						Date sysdate =  new Date();
+						Date oldEndDate =  sysdate.after(request.getPolicyStartDate()) ? request.getPolicyStartDate() : sysdate ;
 						Long daysBetween = 0L ;
 						String diff = "" ;
-						
+							
 						if(periodStart.equals(sysdate)  || periodStart.after(sysdate) ) {
 							oldEndDate = periodStart ;
 							daysBetween = 0L ;
@@ -1880,7 +1869,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 						} else {
 							Long diffInMillies = Math.abs(sysdate.getTime() - periodStart.getTime());
 							daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
-							
+							oldEndDate  = sysdate ;
 							// Check Leap Year
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
 							boolean leapYear = LocalDate.parse(sdf.format(sysdate) ).isLeapYear();
@@ -1892,6 +1881,15 @@ public class QuoteThreadCall implements Callable<Object>  {
 						pc.setCoverPeriodTo(oldEndDate)  ;
 						pc.setStatus("D");
 						pc.setNoOfDays(new BigDecimal( diff));
+						
+						// Other fields
+						List<FactorRateRequestDetails> filterFactor = covers.stream().filter( o -> o.getVehicleId().equals(ref.getVehicleId() ) && o.getProductId().equals(Integer.valueOf(ref.getProductId()))
+		            					&& o.getSectionId().equals(Integer.valueOf(ref.getSectionId())) && o.getCoverId().equals(ref.getCoverId())   ).collect(Collectors.toList());
+						
+						if( filterFactor.size() > 0 ) {
+							pc.setDiffPremiumIncludedTaxLc(filterFactor.get(0).getDiffPremiumIncludedTaxLc());
+							pc.setDiffPremiumIncludedTaxFc(filterFactor.get(0).getDiffPremiumIncludedTaxFc());
+						}
 						rePopulateRecords.add(pc) ;
 				}) ;
 				 
