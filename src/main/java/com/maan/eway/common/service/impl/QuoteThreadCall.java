@@ -1883,7 +1883,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 						
 						// Other fields
 						List<FactorRateRequestDetails> filterFactor = covers.stream().filter( o -> o.getVehicleId().equals(ref.getVehicleId() ) && o.getProductId().equals(Integer.valueOf(ref.getProductId()))
-		            					&& o.getSectionId().equals(Integer.valueOf(ref.getSectionId())) && o.getCoverId().equals(ref.getCoverId())   ).collect(Collectors.toList());
+		            					&& o.getSectionId().equals(Integer.valueOf(ref.getSectionId())) && o.getCoverId().equals(ref.getCoverId()) 
+		            					&& ("O".equals(o.getCoverageType()) || "B".equals(o.getCoverageType()))  ).collect(Collectors.toList());
 						
 						if( filterFactor.size() > 0 ) {
 							pc.setDiffPremiumIncludedTaxLc(filterFactor.get(0).getDiffPremiumIncludedTaxLc());
@@ -2097,14 +2098,36 @@ public class QuoteThreadCall implements Callable<Object>  {
 			if(StringUtils.isNotBlank(home.getEndtTypeId())) {
 				String prevQuoteNo=home.getEndtPrevQuoteNo();
 				Integer currentEndtcount=home.getEndtCount().intValue();
-				HomePositionMaster oldHomeData = homeRepo.findByQuoteNo(prevQuoteNo);
-				BigDecimal endtPremium=BigDecimal.ZERO;
-				if(oldHomeData.getOverallPremiumLc().compareTo(home.getOverallPremiumLc())<0) {
+				 
+				Date effDate=home.getEndorsementEffdate();
+				 Double removedCoverPremium = -1 * (covers.stream().filter( o -> o.getDiscLoadId().equals(0)  &&  
+						 o.getTaxId().equals(0) && o.getDiffPremiumIncludedTaxLc()!=null && "D".equals(o.getStatus())
+						  )
+				 .mapToDouble( o ->   o.getDiffPremiumIncludedTaxLc().doubleValue()   ).sum());
+				 
+				 List<PolicyCoverData>  oldcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(prevQuoteNo ,0, 0);
+				 covers.removeIf(p-> {
+					 return oldcovers.stream().anyMatch(x-> ( x.getCoverId()==p.getCoverId()));
+				 });
+				 Double addedCoverPremium =covers.stream().filter( o -> o.getDiscLoadId().equals(0)  &&  
+						 o.getTaxId().equals(0) && o.getDiffPremiumIncludedTaxLc()!=null 
+						 && !"D".equals(o.getStatus())
+						 && effDate.compareTo(o.getCoverPeriodFrom())>=0
+						  )
+				 .mapToDouble( o ->   o.getDiffPremiumIncludedTaxLc().doubleValue()   ).sum();
+				
+				
+				BigDecimal endtPremium= new  BigDecimal(removedCoverPremium+addedCoverPremium);
+				/*if(oldHomeData.getOverallPremiumLc().compareTo(home.getOverallPremiumLc())<0) {
 					endtChargeOrRefund="CHARGE";
 					endtPremium=home.getOverallPremiumLc().subtract(oldHomeData.getOverallPremiumLc());
 				}else {
 					endtChargeOrRefund="REFUND";
 					endtPremium=home.getOverallPremiumLc().subtract(oldHomeData.getOverallPremiumLc());
+				}*/
+				endtChargeOrRefund="REFUND";
+				if(endtPremium.doubleValue()>=0) {
+					endtChargeOrRefund="CHARGE";
 				}
 				/*List<PolicyCoverData> totalcovers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(request.getQuoteNo());
 				Double endtPremium = totalcovers.stream().filter(o ->(("E".equals(o.getCoverageType()) || "B".equalsIgnoreCase(o.getCoverageType()) || "O".equalsIgnoreCase(o.getCoverageType()))
@@ -2115,6 +2138,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				home.setEndtPremium(endtPremium);
 				home.setIsChargRefund(endtChargeOrRefund);
 	
+			
 			}
 			
 			homeRepo.saveAndFlush(home);
