@@ -2105,6 +2105,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 						  )
 				 .mapToDouble( o ->   o.getDiffPremiumIncludedTaxLc().doubleValue()   ).sum());
 				 
+				 Double endtChangePremium=covers.stream().filter( o ->   
+						   o.getPremiumIncludedTaxLc()!=null && "E".equals(o.getStatus())
+						  )
+				 .mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()   ).sum();
+				 
 				 List<PolicyCoverData>  oldcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(prevQuoteNo ,0, 0);
 				 covers.removeIf(p-> {
 					 return oldcovers.stream().anyMatch(x-> ( x.getCoverId()==p.getCoverId()));
@@ -2117,7 +2122,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				 .mapToDouble( o ->   o.getDiffPremiumIncludedTaxLc().doubleValue()   ).sum();
 				
 				
-				BigDecimal endtPremium= new  BigDecimal(removedCoverPremium+addedCoverPremium);
+				BigDecimal endtPremium= new  BigDecimal(removedCoverPremium+addedCoverPremium+endtChangePremium);
 				/*if(oldHomeData.getOverallPremiumLc().compareTo(home.getOverallPremiumLc())<0) {
 					endtChargeOrRefund="CHARGE";
 					endtPremium=home.getOverallPremiumLc().subtract(oldHomeData.getOverallPremiumLc());
