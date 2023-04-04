@@ -14,6 +14,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -24,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.FollowUpDetails;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.error.Error;
@@ -62,6 +64,21 @@ public class FollowupDetailsServiceImpl  implements FollowupDetailsService{
 		List<Error> errorList = new ArrayList<Error>();
 
 		try {
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.DATE, -1);
+			Date yesterday = cal.getTime();
+			Date a=new Date();
+			Date startDate=new Date();
+			Date endDate=new Date();
+			if(StringUtils.isNotBlank(req.getStartDate())) {
+			a = sdf.parse(req.getStartDate());
+			startDate = sdf.parse(req.getStartDate());
+
+			}
+			if(StringUtils.isNotBlank(req.getEndDate())) {
+				
+			endDate = sdf.parse(req.getEndDate());
+			}
 			if (StringUtils.isBlank(req.getCompanyId())) {
 				errorList.add(new Error("01", "Insurance Id", "Please Select Insurance Id"));
 			}
@@ -95,30 +112,23 @@ public class FollowupDetailsServiceImpl  implements FollowupDetailsService{
 			if (StringUtils.isBlank(req.getStatus())) {
 				errorList.add(new Error("06", "Status", "Please Select Status"));
 			}
-			Calendar cal = Calendar.getInstance();
-			cal.add(Calendar.DATE, -1);
-			Date yesterday = cal.getTime();
-			Date a = sdf.parse(req.getStartDate());
-
 			if (StringUtils.isBlank(req.getStartDate())) {
 				errorList.add(new Error("07", "Start Date", "Please Enter Start Date"));
-			} else if (!req.getStartDate().matches("([0-9]{2})/([0-9]{2})/([0-9]{4})")) {
+			} else if ((StringUtils.isNotBlank(req.getStartDate()))&&  !req.getStartDate().matches("([0-9]{2})/([0-9]{2})/([0-9]{4})")) {
 				errorList.add(new Error("07", "Start Date",
 						"StartDate format should be dd/MM/yyyy only allowed . Example :- 07/10/2023"));
 			}
-			else if (a.before(yesterday)) {
+			else if ((StringUtils.isNotBlank(req.getStartDate())) && a.before(yesterday)) {
 				errorList.add(new Error("07", "Start Date", "Please Enter Future Date as Start Date"));
 				} 
-			Date endDate = sdf.parse(req.getEndDate());
-			Date startDate = sdf.parse(req.getStartDate());
 
 			if (StringUtils.isBlank(req.getEndDate())) {
 				errorList.add(new Error("08", "End Date", "Please Enter EndDate"));
-			} else if (!req.getEndDate().toString().matches("([0-9]{2})/([0-9]{2})/([0-9]{4})")) {
+			} else if ((StringUtils.isNotBlank(req.getEndDate())) &&!req.getEndDate().toString().matches("([0-9]{2})/([0-9]{2})/([0-9]{4})")) {
 				errorList.add(new Error("08", "End Date",
 						"End Date format should be dd/MM/yyyy only allowed . Example :- 07/10/2023"));
 			}
-			else if (endDate.before(startDate)) {
+			else if ((StringUtils.isNotBlank(req.getEndDate()))&&  endDate.before(startDate)) {
 				errorList.add(new Error("08", "End Date", "End Date not before Start Date"));
 				}
 
@@ -167,7 +177,10 @@ public class FollowupDetailsServiceImpl  implements FollowupDetailsService{
 			//Insert
 			if(StringUtils.isBlank(req.getFollowupId().toString())) {
 			
-				Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getProductId(),"99999");
+			//	Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getProductId(),"99999");
+				Long count = repository.countByCompanyIdAndProductId(req.getCompanyId(),req.getProductId()); 
+				String a = count.toString();
+				Integer totalCount =Integer.valueOf(a);
 				followupid = totalCount+1;
 				saveData.setEntryDate(new Date());
 				saveData.setFollowupId(followupid.toString());
@@ -246,7 +259,17 @@ public class FollowupDetailsServiceImpl  implements FollowupDetailsService{
 			// Select
 			query.select(b);
 			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<FollowUpDetails> ocpm1 = effectiveDate.from(FollowUpDetails.class);
+			effectiveDate.select(cb.max(ocpm1.get("startDate")));
+			Predicate a1 = cb.equal(ocpm1.get("followupId"),b.get("followupId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+			Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
 			
+			effectiveDate.where(a1,a2,a3,a4);
+
 			//OrderBy
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.desc(b.get("followupId")));
@@ -254,10 +277,11 @@ public class FollowupDetailsServiceImpl  implements FollowupDetailsService{
 			Predicate n1 = cb.equal(b.get("companyId"),companyId);
 			Predicate n2 = cb.equal(b.get("productId"),productId);
 			Predicate n3 = cb.equal(b.get("branchCode"),"99999");
+			Predicate n4 = cb.equal(b.get("startDate"),effectiveDate);
+
 			
 			
-			
-			query.where(n1,n2,n3).orderBy(orderList);
+			query.where(n1,n2,n3,n4).orderBy(orderList);
 					
 			
 			// Get Result
@@ -324,6 +348,10 @@ public class FollowupDetailsServiceImpl  implements FollowupDetailsService{
 			list = result.getResultList();
 			if(list!=null&& list.size()>0) {
 			res = mapper.map(list.get(0), FollowUpDetailsRes.class);
+			res.setEndDate(list.get(0).getEndDate());
+			res.setStartDate(list.get(0).getStartDate());
+			res.setEntryDate(list.get(0).getEntryDate());
+		
 			}
 		}
 		catch(Exception e) {
@@ -375,6 +403,9 @@ public class FollowupDetailsServiceImpl  implements FollowupDetailsService{
 			for (FollowUpDetails followUpDetails : list) {
 				ModelMapper mapper = new ModelMapper();
 				FollowUpDetailsListRes res1 = mapper.map(followUpDetails, FollowUpDetailsListRes.class);
+				res1.setEndDate(followUpDetails.getEndDate());
+				res1.setStartDate(followUpDetails.getStartDate());
+				res1.setEntryDate(followUpDetails.getEntryDate());
 				reslist.add(res1);
 			}
 			
@@ -383,7 +414,9 @@ public class FollowupDetailsServiceImpl  implements FollowupDetailsService{
 			res.setProductId(req.getProductId());
 			res.setStatus(req.getStatus());
 			res.setStatusDesc(list.get(0).getStatusDesc());
+			
 			res.setFollowupDetailsRes(reslist);
+			
 			}
 		}catch (Exception e) {
 			e.printStackTrace();

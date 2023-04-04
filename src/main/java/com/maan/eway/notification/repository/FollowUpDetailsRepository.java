@@ -28,4 +28,6 @@ public interface FollowUpDetailsRepository  extends JpaRepository<FollowUpDetail
 
 	List<FollowUpDetails> findByCompanyIdAndRequestReferenceNo(String companyId, String requestReferenceNo);
 
+	Long countByCompanyIdAndProductId(String companyId, String productId);
+
 }
