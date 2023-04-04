@@ -77,19 +77,22 @@ public class FollowupDetailsServiceImpl  implements FollowupDetailsService{
 			else if(!req.getRequestReferenceNo().matches("[0-9a-zA-Z-]+")) {
 				errorList.add(new Error("03", "RequestReferenceNo", "Please Enter RequestReferenceNo in Correct Format"));										
 			}			
-			if (req.getLoginId() == null || StringUtils.isBlank(req.getLoginId())) {
+			if (StringUtils.isBlank(req.getLoginId())) {
 				errorList.add(new Error("04", "Login Id", "Please Enter Login Id"));
 			}
 			else if((StringUtils.isNotBlank(req.getLoginId())&&req.getLoginId().length()>100)){
 				errorList.add(new Error("04", "Login Id", "Please Enter Login Id within 100 Characters"));			
 			}
-			if((StringUtils.isNotBlank(req.getFollowupDesc())&&req.getFollowupDesc().length()>1000)){
+			if(StringUtils.isBlank(req.getFollowupDesc())){
+				errorList.add(new Error("05", "FollowupDesc", "Please Enter FollowupDesc"));			
+			}
+			else if((StringUtils.isNotBlank(req.getFollowupDesc())&&req.getFollowupDesc().length()>1000)){
 				errorList.add(new Error("05", "FollowupDesc", "Please Enter FollowupDesc within 1000 Characters"));			
 			}
 			else if(!req.getFollowupDesc().matches("[a-zA-Z ]+")) {
 				errorList.add(new Error("05", "FollowupDesc", "Please Enter FollowupDesc in Alphabets"));										
 			}			
-			if (req.getStatus() == null || StringUtils.isBlank(req.getStatus())) {
+			if (StringUtils.isBlank(req.getStatus())) {
 				errorList.add(new Error("06", "Status", "Please Select Status"));
 			}
 			Calendar cal = Calendar.getInstance();
@@ -97,7 +100,7 @@ public class FollowupDetailsServiceImpl  implements FollowupDetailsService{
 			Date yesterday = cal.getTime();
 			Date a = sdf.parse(req.getStartDate());
 
-			if (req.getStartDate() == null || StringUtils.isBlank(req.getStartDate().toString())) {
+			if (StringUtils.isBlank(req.getStartDate())) {
 				errorList.add(new Error("07", "Start Date", "Please Enter Start Date"));
 			} else if (!req.getStartDate().matches("([0-9]{2})/([0-9]{2})/([0-9]{4})")) {
 				errorList.add(new Error("07", "Start Date",
@@ -109,7 +112,7 @@ public class FollowupDetailsServiceImpl  implements FollowupDetailsService{
 			Date endDate = sdf.parse(req.getEndDate());
 			Date startDate = sdf.parse(req.getStartDate());
 
-			if (req.getEndDate() == null || StringUtils.isBlank(req.getEndDate().toString())) {
+			if (StringUtils.isBlank(req.getEndDate())) {
 				errorList.add(new Error("08", "End Date", "Please Enter EndDate"));
 			} else if (!req.getEndDate().toString().matches("([0-9]{2})/([0-9]{2})/([0-9]{4})")) {
 				errorList.add(new Error("08", "End Date",
@@ -119,18 +122,24 @@ public class FollowupDetailsServiceImpl  implements FollowupDetailsService{
 				errorList.add(new Error("08", "End Date", "End Date not before Start Date"));
 				}
 
-			if (req.getStartTime() == null || StringUtils.isBlank(req.getStartTime().toString())) {
+			if (StringUtils.isBlank(req.getStartTime())) {
 				errorList.add(new Error("09", "Start Time", "Please Enter Start Time"));
 			} else if (!req.getStartTime().toString().matches("([0-9]{2}):([0-9]{2})")) {
 				errorList.add(new Error("09", "Start Time",
 						"Start Time format should be 00:00 only allowed . Example :- 00:00"));
 			}
 
-			if (req.getEndTime() == null || StringUtils.isBlank(req.getEndTime().toString())) {
+			if (StringUtils.isBlank(req.getEndTime())) {
 				errorList.add(new Error("10", "End Time", "Please Enter End Time"));
 			} else if (!req.getEndTime().toString().matches("([0-9]{2}):([0-9]{2})")) {
 				errorList.add(new Error("10", "End Time",
 						"End Time format should be 00:00 only allowed . Example :- 00:00"));
+			}
+			if (StringUtils.isBlank(req.getRemarks())) {
+				errorList.add(new Error("11", "Remarks", "Please Enter Remarks"));
+			}
+			else if((StringUtils.isNotBlank(req.getRemarks())&&req.getRemarks().length()>100)){
+				errorList.add(new Error("11", "Remarks", "Please Enter Remarks within 100 Characters"));			
 			}
 			
 	} catch (Exception e) {

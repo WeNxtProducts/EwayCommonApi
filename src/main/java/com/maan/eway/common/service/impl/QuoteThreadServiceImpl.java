@@ -869,6 +869,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	            	request2.setSectionId(sectionId.get(0));
 	            	request2.setPolicyStartDate(request.getPolicyStartDate());
 	            	request2.setPolicyEndDate(request.getPolicyEndDate());
+	            	request2.setEffetiveDate(request.getEffetiveDate());
 	            	request2.setNoOfDays(request.getNoOfDays());
 	            	
 	            	QuoteThreadCall motorSave = new QuoteThreadCall("MotorSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo  
@@ -930,6 +931,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	            	 request2.setSectionId(sectionId.get(0));
 	            	 request2.setPolicyStartDate(request.getPolicyStartDate());
 		             request2.setPolicyEndDate(request.getPolicyEndDate());
+		             request2.setEffetiveDate(request.getEffetiveDate());
 		             request2.setNoOfDays(request.getNoOfDays());
 		            	
 		            	
@@ -986,6 +988,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		            	request2.setSectionId(sec);	
 		            	request2.setPolicyStartDate(request.getPolicyStartDate());
 		            	request2.setPolicyEndDate(request.getPolicyEndDate());
+		            	request2.setEffetiveDate(request.getEffetiveDate());
 		            	request2.setNoOfDays(request.getNoOfDays());
 		            	
 		            	
@@ -1028,6 +1031,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					request2.setSectionId(sec);
 					request2.setPolicyStartDate(request.getPolicyStartDate());
 	            	request2.setPolicyEndDate(request.getPolicyEndDate());
+	            	request2.setEffetiveDate(request.getEffetiveDate());
 	            	request2.setNoOfDays(request.getNoOfDays());
 	            	
 	            	
@@ -1062,6 +1066,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			String endtPrevQuoteNo  = "" ;
 			Date policyStartDate = null ;
 			Date policyEndDate = null ;
+			Date effectiveDate = null ;
 			String noOfDays = "" ;
 			
 			// Find Old QuoteNo
@@ -1073,6 +1078,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				endtPrevQuoteNo  = data.getEndtPrevQuoteNo()==null?"":data.getEndtPrevQuoteNo() ;
 				policyStartDate  = data.getPolicyStartDate()==null?null: data.getPolicyStartDate() ;
 				policyEndDate    = data.getPolicyEndDate()==null?null: data.getPolicyEndDate() ;
+				effectiveDate    = data.getEndorsementEffdate()==null?null: data.getEndorsementEffdate() ;
 				noOfDays		 = data.getPeriodOfInsurance()==null?null: data.getPeriodOfInsurance() ;
 				
 			
@@ -1084,6 +1090,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				endtPrevQuoteNo  = data.getEndtPrevQuoteNo()==null?"":data.getEndtPrevQuoteNo() ;
 				policyStartDate  = data.getTravelStartDate()==null?null: data.getTravelStartDate() ;
 				policyEndDate    = data.getTravelEndDate()==null?null: data.getTravelEndDate() ;
+				effectiveDate    = data.getEndorsementEffdate()==null?null: data.getEndorsementEffdate() ;
 				noOfDays		 = data.getTravelCoverDuration()==null?null: data.getTravelCoverDuration().toString();
 				
 			}else if(req.getProductId().equalsIgnoreCase(buildingProductId) || (req.getProductId().equalsIgnoreCase(smeProductId)) ) {
@@ -1094,6 +1101,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				endtPrevQuoteNo  = data.get(0).getEndtPrevQuoteNo()==null?"":data.get(0).getEndtPrevQuoteNo() ;
 				policyStartDate  = data.get(0).getPolicyStartDate()==null?null: data.get(0).getPolicyStartDate() ;
 				policyEndDate    = data.get(0).getPolicyEndDate()==null?null: data.get(0).getPolicyEndDate() ;
+				effectiveDate    = data.get(0).getEndorsementEffdate()==null?null : data.get(0).getEndorsementEffdate() ;
 				noOfDays		 = data.get(0).getPolicyPeriord()==null?null: data.get(0).getPolicyPeriord().toString() ;
 				
 			} else {
@@ -1105,6 +1113,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				endtPrevQuoteNo  = data.get(0).getEndtPrevQuoteNo()==null?"":data.get(0).getEndtPrevQuoteNo() ;
 				policyStartDate  = data.get(0).getPolicyStartDate()==null?null: data.get(0).getPolicyStartDate() ;
 				policyEndDate    = data.get(0).getPolicyEndDate()==null?null: data.get(0).getPolicyEndDate() ;
+				policyEndDate    = data.get(0).getPolicyEndDate()==null?null: data.get(0).getPolicyEndDate() ;
+				effectiveDate    = data.get(0).getEndorsementEffdate()==null?null : data.get(0).getEndorsementEffdate() ;
 				noOfDays		 = data.get(0).getPolicyPeriod()==null?null: data.get(0).getPolicyPeriod().toString() ;
 			}
 			
@@ -1132,6 +1142,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             request.setEndtPrevQuoteNo(endtPrevQuoteNo);
             request.setPolicyStartDate(policyStartDate);
             request.setPolicyEndDate(policyEndDate);
+            request.setEffetiveDate(effectiveDate);
             request.setNoOfDays(noOfDays);
             
 			commonRes.setCommonResponse(request);

@@ -99,7 +99,8 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 							}
 						
 				 }
-				 
+				 if(t.getProRata().doubleValue()==0D) 
+					 t.setProRata(new BigDecimal("1"));
 				 t.setDiffPremiumIncludedTax(t.getPremiumExcluedTax().multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
 				 t.setDiffPremiumIncludedTaxLC(t.getPremiumExcluedTaxLC().multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
 				 

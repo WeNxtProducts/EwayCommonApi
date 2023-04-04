@@ -52,6 +52,9 @@ public class QuoteThreadReq {
 	@JsonProperty("PolicyEndDate")
 	private Date policyEndDate;
 	
+	@JsonProperty("EffectiveDate")
+	private Date effetiveDate;
+	
 	@JsonProperty("NoOfDays")
 	private String noOfDays;
 	
