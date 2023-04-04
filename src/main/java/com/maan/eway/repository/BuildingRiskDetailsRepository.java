@@ -41,6 +41,8 @@ public interface BuildingRiskDetailsRepository  extends JpaRepository<BuildingRi
 	@Transactional
 	void deleteByQuoteNo(String quoteNo);
 
+	List<BuildingRiskDetails> findByQuoteNoOrderByRiskIdAsc(String quoteNo);
+
 
 
 }

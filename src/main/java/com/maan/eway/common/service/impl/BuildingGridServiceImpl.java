@@ -40,6 +40,7 @@ import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.admin.res.ReferalCriteriaRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.BuildingDetails;
+import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.ContentAndRisk;
 import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.CoverMaster;
@@ -61,6 +62,7 @@ import com.maan.eway.common.service.BuildingGridService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
 import com.maan.eway.repository.BuildingDetailsRepository;
+import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.ContentAndRiskRepository;
 import com.maan.eway.repository.CoverMasterRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
@@ -144,6 +146,8 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 	@Autowired
 	private ContentAndRiskRepository contentRiskRepo;
 
+	@Autowired
+	private BuildingRiskDetailsRepository buildRiskRepo;
 	
 	// Exiting Motor Details
 
@@ -1024,7 +1028,8 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 		
 			// Copy CONDENT_AND_ALLRISK
 			contentAndRiskEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
-
+			// Copy BUILDING_RISK_DETAILS
+			buildingRiskDetailsCopyQuote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
 
 		}
 		// res.setRequestReferenceNo(newRequestNo);
@@ -1035,6 +1040,54 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 	}
 	return savedata;
 }
+
+//Building Risk Details
+private CopyQuoteSuccessRes buildingRiskDetailsCopyQuote(CopyQuoteReq req, String refNo, String quoteNo, String customerId,String loginId, String prevPolicyNo, String prevQuoteNo, Integer count, String custRefNo) {
+	CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
+	BuildingRiskDetails savedata = new BuildingRiskDetails();
+	DozerBeanMapper dozerMapper = new DozerBeanMapper();
+	try {
+		EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+				req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
+				Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+		List<BuildingRiskDetails> buildingRiskData=buildRiskRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+		if (buildingRiskData!=null) {
+			for(BuildingRiskDetails data :buildingRiskData) {
+				savedata = dozerMapper.map(data, BuildingRiskDetails.class);
+				savedata.setEntryDate(new Date());
+				savedata.setRequestReferenceNo(refNo);
+				savedata.setCustomerId(customerId);
+				savedata.setQuoteNo(quoteNo);
+				savedata.setCreatedBy(loginId);
+				savedata.setUpdatedBy(loginId);
+				savedata.setUpdatedDate(new Date());
+				savedata.setOriginalPolicyNo(req.getPolicyNo());
+				savedata.setEndorsementDate(new Date());
+				savedata.setEndorsementRemarks(req.getEndtRemarks());
+				savedata.setEndorsementEffdate(req.getEndtEffectiveDate());
+				savedata.setEndtPrevPolicyNo(prevPolicyNo);
+				savedata.setEndtPrevQuoteNo(prevQuoteNo);
+				savedata.setEndtCount(new BigDecimal(count));
+				savedata.setEndtStatus("P");
+				savedata.setIsFinaceYn(entMaster.getEndtTypeCategoryId() == 2 ? "Y" : "N");
+				savedata.setEndtCategDesc(entMaster.getEndtTypeCategory());
+				savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
+				savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
+				savedata.setStatus("E");
+				savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+				buildRiskRepo.saveAndFlush(savedata);
+			}
+		}
+	
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return res;
+	
+}
+
 
 //Building Details
 private CopyQuoteSuccessRes buildingDetailsEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo, String customerId,String loginId, String prevPolicyNo, String prevQuoteNo, Integer count, String custRefNo) {
@@ -1338,6 +1391,12 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 					if (contentandrisk.size() > 0) {
 						contentRiskRepo.deleteAll(contentandrisk);
 					}
+					//Building And Risk
+					BuildingRiskDetails buildingRiskDetails = buildRiskRepo.findByQuoteNo(quoteNo);
+					if (buildingRiskDetails!= null) {
+						buildRiskRepo.delete(buildingRiskDetails);
+					}
+					
 					
 					
 				} catch (Exception e) {
