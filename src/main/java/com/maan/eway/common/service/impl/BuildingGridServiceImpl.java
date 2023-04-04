@@ -26,6 +26,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
@@ -1620,7 +1621,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 							savedata.setEntryDate(new Date());
 							savedata.setCreatedBy(loginId);
 							savedata.setEndtCount(new BigDecimal(count));
-							savedata.setStatus("E");
+						//	savedata.setStatus("E");
 							policyCoverDataRepo.saveAndFlush(savedata);
 						}
 
@@ -1698,7 +1699,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 							savedata.setDiscountCoverId(data.getCoverId());
 							policyCoverDataRepo.saveAndFlush(savedata);
 						}
-						if ("Y".equalsIgnoreCase(endtFeeYn)) {
+						if ("Y".equalsIgnoreCase(endtFeeYn)&& StringUtils.isNotBlank(endtFeeYn)) {
 							for (PolicyCoverData data : basecovers2) {
 								coverDesc = data.getCoverName();
 								savedata = dozerMapper.map(data, PolicyCoverData.class);
