@@ -1855,9 +1855,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 						pc.setPolicyNo(null);
 						
 						// Date Diffrence
-						Date periodStart = ref.getCoverPeriodFrom().after(request.getPolicyStartDate()) ? request.getPolicyStartDate() : ref.getCoverPeriodFrom();
+						Date periodStart = ref.getCoverPeriodFrom();
 						Date sysdate =  new Date();
-						Date oldEndDate =  sysdate.after(request.getPolicyStartDate()) ? request.getPolicyStartDate() : sysdate ;
+						Date oldEndDate = null ;
 						Long daysBetween = 0L ;
 						String diff = "" ;
 							
