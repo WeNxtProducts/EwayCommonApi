@@ -135,7 +135,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 										List<Tuple> prorata =  crservice.loadProRataData(engine, diff);	
 										if(prorata.size()>0) {
 										 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
-										 t.setProRata(percenat.divide(new BigDecimal("100")).multiply(new BigDecimal("-1")));
+										 t.setProRata(percenat.divide(new BigDecimal("100"))/*.multiply(new BigDecimal("-1"))*/);
 										}else {
 											t.setProRata(new BigDecimal("1"));
 										}
