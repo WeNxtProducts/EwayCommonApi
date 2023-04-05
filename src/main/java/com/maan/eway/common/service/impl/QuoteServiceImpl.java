@@ -880,26 +880,26 @@ private BuildingDetailsRepository BuildingRepo;
 				//Mail Push Notification
 					motorPushNotification(req);
 				//Tracking Details
-					trackingDetails(req);
+				//	trackingDetails(req);
 					
 			} else if( req.getProductId().equalsIgnoreCase(travelProductId)) {
 				updateRes = travelReferalUpdate(req);
 				//Mail Push Notification
 				 travelPushNotification(req);
 				//Tracking Details
-					trackingDetails(req);
+				//	trackingDetails(req);
 				
 			} else if( req.getProductId().equalsIgnoreCase(buildingProductId)) {
 				updateRes = buildingReferalUpdate(req);
 				//Mail Push Notification
 				 buildingPushNotification(req);
 				//Tracking Details
-					trackingDetails(req);
+				//	trackingDetails(req);
 			}  else {
 				updateRes = commonReferalUpdate(req);
 				commonPushNotification(req);
 				//Tracking Details
-				trackingDetails(req);
+			//	trackingDetails(req);
 			} 
 			
 		

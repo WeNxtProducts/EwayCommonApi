@@ -281,7 +281,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			req.setReferralRemarks(((ReferalResponse) commonRes.getCommonResponse()).getReferalRemarks());
 			 updateReferralStatus(req);
 			 //Tracking Details
-			 trackingDetailsBuyPolicy(req);
+		//	 trackingDetailsBuyPolicy(req);
 			 return  commonRes ;
 		} else {
 			// Thread Call Setup
