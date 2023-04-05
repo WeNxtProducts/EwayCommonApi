@@ -2100,13 +2100,13 @@ public class QuoteThreadCall implements Callable<Object>  {
 				List<PolicyCoverData>  totalcovers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(request.getQuoteNo());
 				 
 				Date effDate=home.getEndorsementEffdate();
-				 Double removedCoverPremium = -1 * (covers.stream().filter( o -> o.getDiscLoadId().equals(0)  &&  
-						 o.getTaxId().equals(0) && o.getDiffPremiumIncludedTaxLc()!=null && "D".equals(o.getStatus())
+				 Double removedCoverPremium = -1 * (totalcovers.stream().filter( o ->  o.getPremiumIncludedTaxLc()!=null 
+						 && "D".equals(o.getStatus()) && "E".equals(o.getCoverageType())
 						  )
-				 .mapToDouble( o ->   o.getDiffPremiumIncludedTaxLc().doubleValue()   ).sum());
+				 .mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()   ).sum());
 				 
 				 Double endtChangePremium=totalcovers.stream().filter( o ->   
-						   o.getPremiumIncludedTaxLc()!=null && "E".equals(o.getCoverageType())
+						   o.getPremiumIncludedTaxLc()!=null && "E".equals(o.getCoverageType()) && !"D".equals(o.getStatus())
 						  )
 				 .mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()   ).sum();
 				 
@@ -2115,11 +2115,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 					 return oldcovers.stream().anyMatch(x-> ( x.getCoverId()==p.getCoverId()));
 				 });
 				 Double addedCoverPremium =covers.stream().filter( o -> o.getDiscLoadId().equals(0)  &&  
-						 o.getTaxId().equals(0) && o.getDiffPremiumIncludedTaxLc()!=null 
+						 o.getTaxId().equals(0) && o.getPremiumIncludedTaxLc()!=null 
 						 && !"D".equals(o.getStatus())
 						 && effDate.compareTo(o.getCoverPeriodFrom())>=0
 						  )
-				 .mapToDouble( o ->   o.getDiffPremiumIncludedTaxLc().doubleValue()   ).sum();
+				 .mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()   ).sum();
 				
 				
 				BigDecimal endtPremium= new  BigDecimal(removedCoverPremium+addedCoverPremium+endtChangePremium);
