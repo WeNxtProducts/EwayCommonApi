@@ -148,7 +148,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 		 
 		 BigDecimal domath = domath(t.getCalcType(), t.getRate(), si,t.getExchangeRate());
 		 t.setPremiumBeforeDiscount(domath);
-		 t.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate()).round(round)) ;
+		 t.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP)) ;
 	 
 		 
 		 Double totaldiscount=0D;
@@ -177,7 +177,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 		 // Minimium Premium setup.
 		 t.setMinimumPremiumYn("N");
 		 if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0) {
-			 t.setPremiumExcluedTax(t.getMinimumPremium().divide(t.getExchangeRate()).round(round)); 
+			 t.setPremiumExcluedTax(t.getMinimumPremium().divide(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP)); 
 			 t.setPremiumExcluedTaxLC(t.getMinimumPremium());
 			 t.setMinimumPremiumYn("Y");
 		 }
