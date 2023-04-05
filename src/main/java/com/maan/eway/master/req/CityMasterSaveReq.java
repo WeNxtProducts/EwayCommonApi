@@ -50,6 +50,9 @@ public class CityMasterSaveReq implements Serializable {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
+	@JsonProperty("CoreAppCode")
+	private String coreAppCode;
+	
 	
 
 }
