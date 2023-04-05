@@ -178,6 +178,7 @@ public class CityMasterServiceImpl implements CityMasterService {
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setUpdatedDate(new Date());
 			saveData.setTiraCode(req.getRegulatoryCode());
+			saveData.setCoreAppCode(req.getCoreAppCode());
 			repo.saveAndFlush(saveData);
 
 			log.info("Saved Details is ---> " + json.toJson(saveData));
@@ -252,6 +253,19 @@ public class CityMasterServiceImpl implements CityMasterService {
 			} else if (req.getRegulatoryCode().length() > 20) {
 				errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters"));
 			}
+			
+			if(StringUtils.isBlank(req.getCoreAppCode())) {
+				errorList.add(new Error("11","CoreAppCode","Please Enter core app code"));
+			}
+			
+			if(StringUtils.isBlank(req.getRegionId())) {
+				errorList.add(new Error("12","RegionId","Please select Region"));
+			}
+			
+			if(StringUtils.isBlank(req.getRemarks())) {
+				errorList.add(new Error("13","Remarks","Please Enter the Remarks"));
+			}
+			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
