@@ -18,11 +18,11 @@ public interface WarrantyMasterRepository  extends JpaRepository<WarrantyMaster,
 
 	WarrantyMaster findTopByWarrantyIdOrderByAmendIdDesc(Integer integer);
 
-	List<WarrantyMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanEqualOrderByWarrantyIdAscAmendIdDesc(
-			String companyId, String branchCode, String productId, String sectionId, Date date);
+	List<WarrantyMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
+			String companyId, String branchCode, String productId, String sectionId, Date date, Date date2, String string);
 
-	List<WarrantyMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByWarrantyIdAscAmendIdDesc(
-			String companyId, String branchCode, String productId, String sectionId, String string, Date date);
+	List<WarrantyMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
+			String companyId, String branchCode, String productId, String sectionId, String string, Date date, Date date2, String string2);
 
 
 	

@@ -19,11 +19,11 @@ public interface ExclusionMasterRepository extends JpaRepository<ExclusionMaster
 	ExclusionMaster findTopByExclusionIdOrderByAmendIdDesc(Integer integer);
 
 	
-	List<ExclusionMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanEqualOrderByExclusionIdAscAmendIdDesc(
-			String companyId, String branchCode, String productId, String sectionId, Date date);
+	List<ExclusionMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
+			String companyId, String branchCode, String productId, String sectionId, Date date, Date date2, String string);
 
 
-	List<ExclusionMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByExclusionIdAscAmendIdDesc(
-			String companyId, String branchCode, String productId, String sectionId, String string, Date date);
+	List<ExclusionMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
+			String companyId, String branchCode, String productId, String sectionId, String string, Date date, Date date2, String string2);
 
 }

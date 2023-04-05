@@ -15,8 +15,8 @@ public interface ClausesMasterRepository  extends JpaRepository<ClausesMaster,Cl
 	ClausesMaster findTopByClausesIdOrderByAmendIdDesc(Integer integer);
 
 	
-	List<ClausesMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanOrderByClausesIdAscAmendIdDesc(
-			String companyId, String branchCode, String productId, String sectionId, Date date);
+	List<ClausesMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
+			String companyId, String branchCode, String productId, String sectionId, Date date, Date date2, String string);
 
 
 	List<ClausesMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
