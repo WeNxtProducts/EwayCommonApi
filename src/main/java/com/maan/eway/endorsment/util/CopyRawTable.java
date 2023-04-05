@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.CoverDocumentUploadDetails;
@@ -101,14 +102,17 @@ public class CopyRawTable  {
 					}
 				}.reversed());
 				
-				pendingcount = motors.stream().filter(m->m.getEndtStatus().equals("P")).count();
-				if(pendingcount>0) {
-					 List<EserviceMotorDetails> pendingData = motors.stream().filter(m->m.getEndtStatus().equals("P")).collect(Collectors.toList());
+				pendingcount = motors.stream().filter(m->(m.getEndtStatus().equals("P") && m.getEndorsementType()==Integer.parseInt(ent.getEndtType())) ).count();
+				if(pendingcount>0) {					  
+					 List<EserviceMotorDetails> pendingData = motors.stream().filter(m->(m.getEndtStatus().equals("P") && m.getEndorsementType()==Integer.parseInt(ent.getEndtType())) ).collect(Collectors.toList());
 					 motor= pendingData;
 					 prevPolicyNo=motor.get(0).getEndtPrevPolicyNo();
 					 prevQuoteNo=motor.get(0).getEndtPrevQuoteNo();
 					 newRequestNo=motor.get(0).getRequestReferenceNo();
 					 prevRequestRefNo=motor.get(0).getRequestReferenceNo();
+					 List<EserviceMotorDetails> rows = emotorRepo.findByRequestReferenceNo(prevRequestRefNo);
+						emotorRepo.deleteAllInBatch(rows);
+						emotorRepo.flush();
 					 count--;
 				}else {
 					motor=motors.stream().filter(m->m.getEndtStatus().equals("C")).collect(Collectors.toList());
@@ -133,52 +137,56 @@ public class CopyRawTable  {
 			}
 			if(pendingcount==0)
 				newRequestNo=numberGenerate.generateRequestNo(ent.getCompanyId(), ent.getBranchCode(), String.valueOf(ent.getProductId()));
-			
-			//EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(ent.getCompanyId(), ent.getProductId().intValue(), "Y",Integer.parseInt(ent.getEndtType()), new Date(), new Date());
-			List<EserviceMotorDetails> motors=emotorRepo.findByQuoteNoAndStatusOrderByRiskIdAsc(prevQuoteNo,"P");
-			List<EserviceMotorDetails> newMotors=new ArrayList<EserviceMotorDetails>();
-			++count;
-			for(EserviceMotorDetails m :motors) {
-				DozerBeanMapper dozerMapper = new DozerBeanMapper();
-				EserviceMotorDetails newObject = dozerMapper.map(m , EserviceMotorDetails.class);
-				newObject.setRequestReferenceNo(newRequestNo);
-				newObject.setOriginalPolicyNo(ent.getPolicyNo());
-				newObject.setEndorsementDate(new Date());
-				newObject.setEndorsementRemarks(ent.getEndtRemarks());
-				newObject.setEndorsementEffdate(ent.getEndtEffectiveDate());
-				newObject.setEndtPrevPolicyNo(prevPolicyNo);
-				newObject.setEndtPrevQuoteNo(prevQuoteNo);
-				newObject.setEndtCount(new BigDecimal(count));
-				newObject.setEndtStatus("P");
-				newObject.setIsFinaceYn(entMaster.getEndtTypeCategoryId()==2?"Y":"N");
-				newObject.setEndtCategDesc(entMaster.getEndtTypeCategory());
-				newObject.setEndorsementType(Integer.parseInt(ent.getEndtType()));
-				newObject.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
-				newObject.setStatus("E");
-				newObject.setPolicyNo(ent.getPolicyNo()+"-"+count);
-				newObject.setQuoteNo(null);
-				newMotors.add(newObject);
-				
-				List<UwQuestionsDetails> olduwquestion = uwquestionRepo.findByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleId(ent.getCompanyId(),ent.getProductId().intValue(),prevRequestRefNo,newObject.getRiskId());
-				List<UwQuestionsDetails> newuwquestions=new ArrayList<UwQuestionsDetails>();
-				for (UwQuestionsDetails ouw : olduwquestion) {
-					UwQuestionsDetails newuw = dozerMapper.map(ouw , UwQuestionsDetails.class);
-					newuw.setRequestReferenceNo(newRequestNo);
-					newuwquestions.add(newuw);
-				}
-				uwquestionRepo.deleteAllInBatch(newuwquestions);
-				uwquestionRepo.saveAllAndFlush(newuwquestions);
-			}
-			List<EserviceMotorDetails> save = emotorRepo.saveAllAndFlush(newMotors);
-			
-					
+			 
+			List<EserviceMotorDetails> save=savemotor(ent, entMaster, prevQuoteNo, count, newRequestNo, prevPolicyNo, prevRequestRefNo);
 			return save;
+		}catch(ObjectOptimisticLockingFailureException ex ) {
+			return copyMotorRaw(ent, entMaster);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
+	private List<EserviceMotorDetails> savemotor(Endorsment ent, EndtTypeMaster entMaster,String prevQuoteNo,Integer count,String newRequestNo,String prevPolicyNo,String prevRequestRefNo){
+		//EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(ent.getCompanyId(), ent.getProductId().intValue(), "Y",Integer.parseInt(ent.getEndtType()), new Date(), new Date());
+		List<EserviceMotorDetails> motors=emotorRepo.findByQuoteNoAndStatusOrderByRiskIdAsc(prevQuoteNo,"P");
+		List<EserviceMotorDetails> newMotors=new ArrayList<EserviceMotorDetails>();
+		++count;
+		for(EserviceMotorDetails m :motors) {
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			EserviceMotorDetails newObject = dozerMapper.map(m , EserviceMotorDetails.class);
+			newObject.setRequestReferenceNo(newRequestNo);
+			newObject.setOriginalPolicyNo(ent.getPolicyNo());
+			newObject.setEndorsementDate(new Date());
+			newObject.setEndorsementRemarks(ent.getEndtRemarks());
+			newObject.setEndorsementEffdate(ent.getEndtEffectiveDate());
+			newObject.setEndtPrevPolicyNo(prevPolicyNo);
+			newObject.setEndtPrevQuoteNo(prevQuoteNo);
+			newObject.setEndtCount(new BigDecimal(count));
+			newObject.setEndtStatus("P");
+			newObject.setIsFinaceYn(entMaster.getEndtTypeCategoryId()==2?"Y":"N");
+			newObject.setEndtCategDesc(entMaster.getEndtTypeCategory());
+			newObject.setEndorsementType(Integer.parseInt(ent.getEndtType()));
+			newObject.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
+			newObject.setStatus("E");
+			newObject.setPolicyNo(ent.getPolicyNo()+"-"+count);
+			newObject.setQuoteNo(null);
+			newMotors.add(newObject);
+			
+			List<UwQuestionsDetails> olduwquestion = uwquestionRepo.findByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleId(ent.getCompanyId(),ent.getProductId().intValue(),prevRequestRefNo,newObject.getRiskId());
+			List<UwQuestionsDetails> newuwquestions=new ArrayList<UwQuestionsDetails>();
+			for (UwQuestionsDetails ouw : olduwquestion) {
+				UwQuestionsDetails newuw = dozerMapper.map(ouw , UwQuestionsDetails.class);
+				newuw.setRequestReferenceNo(newRequestNo);
+				newuwquestions.add(newuw);
+			}
+			uwquestionRepo.deleteAllInBatch(newuwquestions);
+			uwquestionRepo.saveAllAndFlush(newuwquestions);
+		}
+		List<EserviceMotorDetails> save = emotorRepo.saveAllAndFlush(newMotors);
+		return save;
+				
+	}
 	
 	public EserviceMotorDetails eserviceMotorEndtStatus(ChangeEndoStatusReq req) {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
