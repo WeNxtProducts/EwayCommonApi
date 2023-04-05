@@ -72,6 +72,7 @@ import com.maan.eway.common.service.TravelGridService;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.master.req.LovDropDownReq;
+import com.maan.eway.master.service.TrackingDetailsService;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
@@ -134,6 +135,7 @@ public class GridServiceImpl implements GridService {
 	@Autowired
 	private HomePositionMasterRepository homeRepo;
 	
+
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -389,6 +391,7 @@ public class GridServiceImpl implements GridService {
 				
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				referralPendingList = traService.getTravelReferalDetails(req  , branches, limit , offset, "RP" );
+				
 			}
 			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) ) {
 				referralPendingList = buiService.getBuildingReferalDetails(req  , branches, limit , offset, "RP" );

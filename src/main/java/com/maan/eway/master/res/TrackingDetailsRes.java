@@ -62,13 +62,7 @@ public class TrackingDetailsRes {
     private String branchCode   ;
 	@JsonProperty("ProductId")
     private String productId   ;
-	@JsonProperty("SectionId")
-    private String sectionId   ;
-	@JsonProperty("UpdatedBy")
-	private String     UpdatedBy;
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("UpdatedDate")
-	private Date updatedDate;
+
 
 	  
 	  

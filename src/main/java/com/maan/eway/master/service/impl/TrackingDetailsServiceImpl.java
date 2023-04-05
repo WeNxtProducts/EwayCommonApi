@@ -40,6 +40,7 @@ import com.maan.eway.bean.SeqTrackingId;
 import com.maan.eway.bean.TrackingDetails;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.TrackingDetailsSaveReq;
+import com.maan.eway.master.res.TrackingDetailsRes;
 import com.maan.eway.master.service.TrackingDetailsService;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.SeqTrackingRepository;
@@ -65,9 +66,7 @@ private SeqTrackingRepository seqTracRepo;
 private Logger log=LogManager.getLogger(TrackingDetailsServiceImpl.class);
 Gson json = new Gson();
 
-SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss a");
-SimpleDateFormat sdfFormat = new SimpleDateFormat("dd/MM/yyyy  hh:mm:ss aa");
-SimpleDateFormat sdfFormat2 = new SimpleDateFormat("dd/MM/yyyy");
+SimpleDateFormat sdfFormat = new SimpleDateFormat("ddMMyyyyhhmmss");
 
 //SAVE
 	@Override
@@ -108,14 +107,11 @@ SimpleDateFormat sdfFormat2 = new SimpleDateFormat("dd/MM/yyyy");
 	}
 
 	public synchronized String generateTrackingId() {
-		 SimpleDateFormat sdf = new SimpleDateFormat("yyyy"); 
 	       try {
 	    	   SeqTrackingId entity;
 	            entity = seqTracRepo.save(new SeqTrackingId());    
-	            Date currentDate = Calendar.getInstance().getTime();
-	            String year =  sdf.format(new Date()) ;
-	            
-	            return currentDate+year+String.format("%05d",entity.getTrackingId()) ;
+	            String year =  sdfFormat.format(new Date()) ;
+	            return year+String.format("%05d",entity.getTrackingId()) ;
 	        } catch (Exception e) {
 				e.printStackTrace();
 				log.info( "Exception is ---> " + e.getMessage());
@@ -129,6 +125,28 @@ public List<Error> validateTrackingDetails(TrackingDetailsSaveReq req) {
 	// TODO Auto-generated method stub
 	return null;
 }
+
+@Override
+public List<TrackingDetailsRes> getalltracking() {
+	List<TrackingDetailsRes> resList = new ArrayList<TrackingDetailsRes>();
+	ModelMapper mapper = new ModelMapper();
+	try {
+		List<TrackingDetails> trackingdetails = repo.OrderByEntryDateDesc();
+		for(TrackingDetails data : trackingdetails) {
+			TrackingDetailsRes res = new TrackingDetailsRes();
+			res = mapper.map(data, TrackingDetailsRes.class);
+			resList.add(res);
+		}
+	}
+	catch(Exception e) {
+		e.printStackTrace();
+		log.info("Log Details"+e.getMessage());
+		return null;
+	}
+	return resList;
+
+}
+
 
 /*
 	@Override
