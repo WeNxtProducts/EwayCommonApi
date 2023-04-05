@@ -184,6 +184,7 @@ public class EserviceMotorDetailsRes implements Serializable {
 	 @JsonProperty("SectionDetails")
 	 private List<SectionDetails>    sectionDetails;
 	 
-	
+	@JsonProperty("EndorsementYn")
+    private String     endorsementYn;	
 
 }

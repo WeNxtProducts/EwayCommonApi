@@ -24,4 +24,7 @@ public class BuildingLocationDetails {
     
 	@JsonProperty("SectionId")
 	private  String sectionId;	
+	
+	@JsonProperty("EndorsementYn")
+    private String     endorsementYn;
 }

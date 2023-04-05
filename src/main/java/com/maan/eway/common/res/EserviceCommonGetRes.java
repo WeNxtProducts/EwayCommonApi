@@ -48,6 +48,9 @@ public class EserviceCommonGetRes {
 	
 	@JsonProperty("EthicalWorkInvolved")
     private String    ethicalWorkInvolved;
+
+	@JsonProperty("EndorsementYn")
+    private String     endorsementYn;
 	
 	@JsonProperty("SectionId")
 	private  String sectionId;	
