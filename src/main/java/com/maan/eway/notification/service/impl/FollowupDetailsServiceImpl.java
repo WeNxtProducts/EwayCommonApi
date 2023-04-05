@@ -348,10 +348,10 @@ public class FollowupDetailsServiceImpl  implements FollowupDetailsService{
 			list = result.getResultList();
 			if(list!=null&& list.size()>0) {
 			res = mapper.map(list.get(0), FollowUpDetailsRes.class);
-			res.setEndDate(list.get(0).getEndDate());
-			res.setStartDate(list.get(0).getStartDate());
-			res.setEntryDate(list.get(0).getEntryDate());
-		
+			res.setEndDate(list.get(0).getEndDate().toString());
+			res.setStartDate(list.get(0).getStartDate().toString());
+			res.setEntryDate(list.get(0).getEntryDate().toString());
+			res.setUpdatedDate(list.get(0).getUpdatedDate().toString());
 			}
 		}
 		catch(Exception e) {
@@ -403,9 +403,9 @@ public class FollowupDetailsServiceImpl  implements FollowupDetailsService{
 			for (FollowUpDetails followUpDetails : list) {
 				ModelMapper mapper = new ModelMapper();
 				FollowUpDetailsListRes res1 = mapper.map(followUpDetails, FollowUpDetailsListRes.class);
-				res1.setEndDate(followUpDetails.getEndDate());
-				res1.setStartDate(followUpDetails.getStartDate());
-				res1.setEntryDate(followUpDetails.getEntryDate());
+				res1.setEndDate(followUpDetails.getEndDate().toString());
+				res1.setStartDate(followUpDetails.getStartDate().toString());
+				res1.setEntryDate(followUpDetails.getEntryDate().toString());
 				reslist.add(res1);
 			}
 			

@@ -35,7 +35,7 @@ public class FollowUpDetailsRes {
     
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("StartDate")
-    private Date startDate;
+    private String startDate;
 	
 	@JsonProperty("StartTime")
     private String startTime;
@@ -43,7 +43,7 @@ public class FollowUpDetailsRes {
 	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EndDate")
-    private Date endDate;
+    private String endDate;
 	
 	@JsonProperty("EndTime")
     private String endTime;
@@ -55,11 +55,11 @@ public class FollowUpDetailsRes {
     
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EntryDate")
-    private Date entryDate;
+    private String entryDate;
 	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("UpdatedDate")
-    private Date updatedDate;
+    private String updatedDate;
 	
 	@JsonProperty("Status")
     private String status;
