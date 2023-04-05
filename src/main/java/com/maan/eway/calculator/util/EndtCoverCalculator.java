@@ -174,8 +174,9 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 		 endorsement.setPremiumExcluedTax(t.getPremiumExcluedTax().multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
 							 endorsement.setPremiumExcluedTaxLC(t.getPremiumExcluedTaxLC().multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
 							 
-					 		 
-					 		 
+							 t.setDiffPremiumIncludedTax(BigDecimal.ZERO);
+							 t.setDiffPremiumIncludedTaxLC(BigDecimal.ZERO);
+							 
 					 		 
 					 	}else {
 					 		 endorsement.setPremiumAfterDiscountLC(t.getPremiumAfterDiscountLC().subtract(endorsement.getPremiumAfterDiscountLC()));
@@ -221,12 +222,16 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 
 					 
 					// Temp Prev Premium
-					 endorsement.setPremiumAfterDiscountLC(endorsement.getPremiumIncludedTaxLC());
-					 endorsement.setPremiumAfterDiscount(endorsement.getPremiumIncludedTax());
+					 endorsement.setPremiumAfterDiscountLC(endorsement.getPremiumExcluedTaxLC());
+					 endorsement.setPremiumAfterDiscount(endorsement.getPremiumExcluedTax());
 					 
 					 
 					 endorsement.setPremiumIncludedTax(totalWithTax);
 					 endorsement.setPremiumIncludedTaxLC(totalWithTaxLC);
+					 if("Y".equals(t.getProRataYn()) && "Y".equals(t.getUserOpt())) {
+						 t.setDiffPremiumIncludedTax(endorsement.getPremiumIncludedTax());
+						 t.setDiffPremiumIncludedTaxLC(endorsement.getPremiumIncludedTaxLC());
+					 }
 					 
 				 } 
 				 
@@ -236,8 +241,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 				 
 				
 				
-				 t.setDiffPremiumIncludedTax(BigDecimal.ZERO);
-				 t.setDiffPremiumIncludedTaxLC(BigDecimal.ZERO);
+				
 				 
 				 
 				 
