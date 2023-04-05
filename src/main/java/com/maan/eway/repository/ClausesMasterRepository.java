@@ -15,11 +15,12 @@ public interface ClausesMasterRepository  extends JpaRepository<ClausesMaster,Cl
 	ClausesMaster findTopByClausesIdOrderByAmendIdDesc(Integer integer);
 
 	
-	List<ClausesMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanEqualOrderByClausesIdAscAmendIdDesc(
+	List<ClausesMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanOrderByClausesIdAscAmendIdDesc(
 			String companyId, String branchCode, String productId, String sectionId, Date date);
 
 
-	List<ClausesMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByClausesIdAscAmendIdDesc(
-			String companyId, String branchCode, String productId, String sectionId, String string, Date date);
+	List<ClausesMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
+			String companyId, String branchCode, String productId, String sectionId, String string, Date date, Date date2, String string2);
+
 
 }
