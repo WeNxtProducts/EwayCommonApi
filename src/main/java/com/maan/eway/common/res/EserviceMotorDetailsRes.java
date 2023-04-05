@@ -6,6 +6,7 @@
 package com.maan.eway.common.res;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -186,5 +187,13 @@ public class EserviceMotorDetailsRes implements Serializable {
 	 
 	@JsonProperty("EndorsementYn")
     private String     endorsementYn;	
+	
+	@JsonProperty("EndtCount")
+	 private BigDecimal endtCount;
+	 
+	 @JsonFormat(pattern="dd/MM/yyyy")
+	 @JsonProperty("EffectiveDate")
+	 private Date   effectiveDate ;
+		
 
 }

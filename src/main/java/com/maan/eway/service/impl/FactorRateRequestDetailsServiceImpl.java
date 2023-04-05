@@ -1126,6 +1126,7 @@ this.repository = repo;
 				res.setGroupMember(0);
 				res.setSectionId(mot.getSectionId() );
 				res.setSectionName(mot.getSectionName());	
+				res.setEffectiveDate(mot.getEndorsementEffdate()==null?null:mot.getEndorsementEffdate() );
 				
 				Object riskDetails = new Object();
 				EserviceMotorDetailsRes  motorRes = new EserviceMotorDetailsRes();
@@ -1173,6 +1174,7 @@ this.repository = repo;
 				res.setActualPremiumLc(travelData.getActualPremiumLc()==null?"0":travelData.getActualPremiumLc().toPlainString());
 				res.setSectionId(travelData.getSectionId() );
 				res.setSectionName(travelData.getSectionName());
+				res.setEffectiveDate(travelData.getEndorsementEffdate()==null?null:travelData.getEndorsementEffdate() );
 				
 				Object riskDetails = new Object();
 				EserviceTravelGetRes  travelRes = new EserviceTravelGetRes();
@@ -1225,6 +1227,8 @@ this.repository = repo;
 						res.setOverallPremiumLc(acc.getOverallPremiumLc()==null?"0":acc.getOverallPremiumLc().toPlainString());
 						res.setActualPremiumFc(acc.getActualPremiumFc()==null?"0":acc.getActualPremiumFc().toPlainString());
 						res.setActualPremiumLc(acc.getActualPremiumLc()==null?"0":acc.getActualPremiumLc().toPlainString());
+						res.setEffectiveDate(acc.getEndorsementEffdate()==null?null:acc.getEndorsementEffdate() );
+						
 						Object riskDetails = new Object();
 						EserviceBuildingsDetailsRes  buildRes = new EserviceBuildingsDetailsRes();
 						dozerMapper.map(acc, buildRes);
@@ -1253,6 +1257,8 @@ this.repository = repo;
 						res.setPromocode(buildData.getPromocode());
 						res.setSectionName( sec.getSectionDesc() );
 						res.setGroupId(buildData.getRiskId()==null?null:buildData.getRiskId());
+						res.setEffectiveDate(buildData.getEndorsementEffdate()==null?null:buildData.getEndorsementEffdate() );
+						
 						Object riskDetails = new Object();
 						EserviceBuildingsDetailsRes  buildRes = new EserviceBuildingsDetailsRes();
 						dozerMapper.map(buildData, buildRes);
@@ -1293,6 +1299,7 @@ this.repository = repo;
 				res.setActualPremiumLc(comData.getActualPremiumLc()==null?"0":comData.getActualPremiumLc().toPlainString());
 				res.setSectionId(comData.getSectionId() );
 				res.setSectionName(comData.getSectionDesc());
+				res.setEffectiveDate(comData.getEndorsementEffdate()==null?null:comData.getEndorsementEffdate() );
 				
 				Object riskDetails = new Object();
 				EserviceCommonGetRes comRes = new EserviceCommonGetRes();
@@ -1352,7 +1359,11 @@ this.repository = repo;
 					coverRes.setVehicleId(filterCover.get(0).getVehicleId()==null?"" :filterCover.get(0).getVehicleId().toString());
 					coverRes.setMultiSelectYn(filterCover.get(0).getMultiSelectYn()==null?"":filterCover.get(0).getMultiSelectYn());
 					coverRes.setDiffPremiumIncludedTax(filterCover.get(0).getDiffPremiumIncludedTaxFc());
-					coverRes.setDiffPremiumIncludedTaxLC(filterCover.get(0).getDiffPremiumIncludedTaxLc());
+					coverRes.setEffectiveDate(filterCover.get(0).getCoverPeriodFrom());
+					coverRes.setPolicyEndDate(filterCover.get(0).getCoverPeriodTo());
+					coverRes.setProRata(filterCover.get(0).getProRataPercent());
+					coverRes.setProRataYn(filterCover.get(0).getProRataYn());
+					
 					// Discount Covers Or Promo Covers
 					List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) && (   o.getCoverageType().equalsIgnoreCase("D") || o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
 					
@@ -1411,6 +1422,10 @@ this.repository = repo;
 					coverRes.setPremiumIncludedTaxLC(filterCover.get(0).getPremiumIncludedTaxLc()==null?BigDecimal.ZERO :filterCover.get(0).getPremiumIncludedTaxLc());
 					coverRes.setMultiSelectYn(filterCover.get(0).getMultiSelectYn()==null?"":filterCover.get(0).getMultiSelectYn());		
 					coverRes.setSectionId(filterCover.get(0).getSectionId()==null?"":filterCover.get(0).getSectionId().toString());
+					coverRes.setEffectiveDate(filterCover.get(0).getCoverPeriodFrom());
+					coverRes.setPolicyEndDate(filterCover.get(0).getCoverPeriodTo());
+					coverRes.setProRata(filterCover.get(0).getProRataPercent());
+					coverRes.setProRataYn(filterCover.get(0).getProRataYn());
 						
 					List<Cover>  subCoverListRes = new ArrayList<Cover>();
 					List<FactorRateRequestDetails> filterSubCover = covers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());
@@ -1441,8 +1456,13 @@ this.repository = repo;
 						subCoverRes.setSectionId(filterSubCover.get(0).getSectionId()==null?"" :filterSubCover.get(0).getSectionId().toString());
 						subCoverRes.setVdRefNo(filterSubCover.get(0).getVdRefno());
 						subCoverRes.setVehicleId(filterSubCover.get(0).getVehicleId()==null?"" :filterSubCover.get(0).getVehicleId().toString());
-						subCoverRes.setDiffPremiumIncludedTax(filterCover.get(0).getDiffPremiumIncludedTaxFc());
-						subCoverRes.setDiffPremiumIncludedTaxLC(filterCover.get(0).getDiffPremiumIncludedTaxLc());
+						subCoverRes.setDiffPremiumIncludedTax(filterSubCover.get(0).getDiffPremiumIncludedTaxFc());
+						subCoverRes.setDiffPremiumIncludedTaxLC(filterSubCover.get(0).getDiffPremiumIncludedTaxLc());
+						subCoverRes.setEffectiveDate(filterSubCover.get(0).getCoverPeriodFrom());
+						subCoverRes.setPolicyEndDate(filterSubCover.get(0).getCoverPeriodTo());
+						subCoverRes.setProRata(filterSubCover.get(0).getProRataPercent());
+						subCoverRes.setProRataYn(filterSubCover.get(0).getProRataYn());
+						
 						
 						// Discount Covers Or Promo Covers
 						List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) && ( ! o.getDiscLoadId().equals(0)) && (   o.getCoverageType().equalsIgnoreCase("D") || o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
