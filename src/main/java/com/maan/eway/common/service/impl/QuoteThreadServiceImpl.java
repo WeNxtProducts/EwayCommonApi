@@ -501,7 +501,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			}
 			
 				notiService.motorQuotationNotification(req);
-				trackingDetailsQuote(req);
+			//	trackingDetailsQuote(req);
 				
 		}	
 		} catch (Exception e) {
