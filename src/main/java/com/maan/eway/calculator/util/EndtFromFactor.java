@@ -31,7 +31,8 @@ public class EndtFromFactor  implements Function<FactorRateRequestDetails,Endors
 						    .premiumIncludedTax(t.getPremiumIncludedTaxFc())
 						    .premiumIncludedTaxLC(t.getPremiumIncludedTaxLc())	 
 						    .endtCount(t.getEndtCount())
-						     
+						     .proRata(BigDecimal.ZERO)
+						     .proRataYn("N")
 						 	.build();
 				 return d;
 			 }

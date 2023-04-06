@@ -63,15 +63,16 @@ public class Endorsement implements Serializable {
     
     @JsonProperty("EndtCount") 
     private BigDecimal endtCount;
-    
+   
+    @JsonProperty("ProRata")
+    private BigDecimal proRata;
+    @JsonProperty("ProRataApplicable")
+	 private String proRataYn;
     @JsonProperty("Taxes")
     private List<Tax> taxes;
     
 
     @JsonProperty("EndorsementFees")
     private List<Tax> endtFees;
-    @JsonProperty("ProRata")
-    private BigDecimal proRata;
-    @JsonProperty("ProRataApplicable")
-	 private String proRataYn;
+   
 }

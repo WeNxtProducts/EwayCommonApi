@@ -137,7 +137,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 										endorsement.setProRataYn("Y");
 										if(prorata.size()>0) {
 										 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
-										 t.setProRata(percenat.divide(new BigDecimal("100")).multiply(new BigDecimal("-1")));
+										 t.setProRata(percenat.divide(new BigDecimal("100"))/*.multiply(new BigDecimal("-1"))*/);
 										 endorsement.setProRata(t.getProRata());
 										}else {
 											t.setProRata(new BigDecimal("1"));
@@ -241,7 +241,11 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 
 					 endorsement.setPremiumIncludedTax(totalWithTax);
 					 endorsement.setPremiumIncludedTaxLC(totalWithTaxLC);
-					 if("Y".equals(t.getProRataYn()) && "Y".equals(t.getUserOpt())) {
+					 if("Y".equals(engine.getCoverModification()) && "Y".equals(t.getProRataYn()) && "Y".equals(t.getUserOpt())) {
+						 
+						 endorsement.setPremiumIncludedTax(totalWithTax.multiply(new BigDecimal("-1")));
+						 endorsement.setPremiumIncludedTaxLC(totalWithTaxLC.multiply(new BigDecimal("-1")));
+				 		 
 						 t.setDiffPremiumIncludedTax(endorsement.getPremiumIncludedTax());
 						 t.setDiffPremiumIncludedTaxLC(endorsement.getPremiumIncludedTaxLC());
 					 }

@@ -1887,8 +1887,18 @@ public class QuoteThreadCall implements Callable<Object>  {
 		            					&& ("O".equals(o.getCoverageType()) || "B".equals(o.getCoverageType()))  ).collect(Collectors.toList());
 						
 						if( filterFactor.size() > 0 ) {
-							pc.setDiffPremiumIncludedTaxLc(filterFactor.get(0).getDiffPremiumIncludedTaxLc());
-							pc.setDiffPremiumIncludedTaxFc(filterFactor.get(0).getDiffPremiumIncludedTaxFc());
+							FactorRateRequestDetails f = filterFactor.get(0);
+							pc.setDiffPremiumIncludedTaxLc(f.getDiffPremiumIncludedTaxLc());
+							pc.setDiffPremiumIncludedTaxFc(f.getDiffPremiumIncludedTaxFc());
+							pc.setPremiumBeforeDiscountFc(f.getPremiumBeforeDiscountFc());
+							pc.setPremiumBeforeDiscountLc(f.getPremiumBeforeDiscountLc());
+							pc.setPremiumAfterDiscountFc(f.getPremiumAfterDiscountFc());
+							pc.setPremiumAfterDiscountLc(f.getPremiumAfterDiscountLc());
+							pc.setPremiumExcludedTaxFc(f.getPremiumExcludedTaxFc());
+							pc.setPremiumExcludedTaxLc(f.getPremiumExcludedTaxLc());
+							pc.setPremiumIncludedTaxFc(f.getPremiumIncludedTaxFc());
+							pc.setPremiumIncludedTaxLc(f.getPremiumIncludedTaxLc());
+							
 						}
 						rePopulateRecords.add(pc) ;
 				}) ;
@@ -2101,7 +2111,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				 
 				Date effDate=home.getEndorsementEffdate();
 				 Double removedCoverPremium =  (totalcovers.stream().filter( o ->  o.getPremiumIncludedTaxLc()!=null 
-						 && "D".equals(o.getStatus()) && "E".equals(o.getCoverageType())
+						 && "D".equals(o.getStatus()) 
 						  )
 				 .mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()   ).sum());
 				 
