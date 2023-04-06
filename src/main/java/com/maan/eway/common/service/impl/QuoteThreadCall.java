@@ -2100,7 +2100,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				List<PolicyCoverData>  totalcovers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(request.getQuoteNo());
 				 
 				Date effDate=home.getEndorsementEffdate();
-				 Double removedCoverPremium = -1 * (totalcovers.stream().filter( o ->  o.getPremiumIncludedTaxLc()!=null 
+				 Double removedCoverPremium =  (totalcovers.stream().filter( o ->  o.getPremiumIncludedTaxLc()!=null 
 						 && "D".equals(o.getStatus()) && "E".equals(o.getCoverageType())
 						  )
 				 .mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()   ).sum());
