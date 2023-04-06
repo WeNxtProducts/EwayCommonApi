@@ -164,8 +164,12 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 								 t.setProRata(new BigDecimal("1"));
 					 		 
 					 		 
-					 		 endorsement.setPremiumAfterDiscountLC(t.getPremiumAfterDiscountLC().multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
-							 endorsement.setPremiumAfterDiscount(t.getPremiumAfterDiscount().multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
+					 		 //endorsement.setPremiumAfterDiscountLC(t.getPremiumAfterDiscountLC().multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
+							 //endorsement.setPremiumAfterDiscount(t.getPremiumAfterDiscount().multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
+					 	
+					 		 // Temp Prev Premium
+							 endorsement.setPremiumAfterDiscountLC(endorsement.getPremiumExcluedTaxLC());
+							 endorsement.setPremiumAfterDiscount(endorsement.getPremiumExcluedTax());
 							 
 							 endorsement.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscountLC().multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
 							 endorsement.setPremiumBeforeDiscount(t.getPremiumBeforeDiscount().multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
