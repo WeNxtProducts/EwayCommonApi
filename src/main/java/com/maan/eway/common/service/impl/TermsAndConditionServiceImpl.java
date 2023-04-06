@@ -176,8 +176,8 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 										req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
 										req.getTermsId(), new Date(), new Date(), "Y");
 						clausesList = clausesRepo
-								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
-										req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
+								.findByCompanyIdAndBranchCodeOrBranchCodeAndProductIdAndSectionIdOrSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
+										req.getCompanyId(), req.getBranchCode(),"99999", req.getProductId(), req.getSectionId(),"99999",
 										req.getTermsId(), new Date(), new Date(), "Y");
 					} else {
 						warrantyList = warrantyRepo
@@ -279,8 +279,8 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 					}
 					
 					clausesList = clausesRepo
-							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
-									req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
+							.findByCompanyIdAndBranchCodeOrBranchCodeAndProductIdAndSectionIdOrSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
+									req.getCompanyId(), req.getBranchCode(),"99999", req.getProductId(), req.getSectionId(),"99999",
 									req.getTermsId(), new Date(), new Date(),"Y");
 						
 					if(clausesList.size()<=0) {
