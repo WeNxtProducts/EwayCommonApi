@@ -59,61 +59,204 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
 					 t.setProRata(percenat.divide(new BigDecimal("100")));
 				 }
-				 calculate(t);
-				 
-				 
-				 if("Y".equals(t.getProRataYn()) && "Y".equals(t.getUserOpt())) {
-				// Date Differents
-					 Date periodStart =  effectiveDate;
-						Date periodEnd = t.getPolicyEndDate() ;
-					Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
-					Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
-					// Check Leap Year
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
-					boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
-					String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
-					prorata =  crservice.loadProRataData(engine, diff);	
-					if(prorata.size()>0) {
-					 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
-					 t.setProRata(new BigDecimal("100").subtract(percenat).divide(new BigDecimal("100")));
-					}else {
-						t.setProRata(new BigDecimal("1"));
+ 				 BigDecimal si=vehicles.get(0).get(t.getCoverBasedOn())==null?BigDecimal.ZERO:new BigDecimal(vehicles.get(0).get(t.getCoverBasedOn()).toString());
+				 if("Y".equals(t.getDependentCoveryn())) {
+					 if(calculatedcover!=null) {
+						Cover ct = calculatedcover.stream().filter(c->c.getCoverId().equals(t.getDependentCoverId())).findAny().orElse(null);
+						si=ct!=null?ct.getPremiumExcluedTax():BigDecimal.ZERO;
 					}
-					
-				 }else if("Y".equals(t.getProRataYn()) && !"Y".equals(t.getUserOpt())) {
-						// Date Differents
-						Date periodStart =  effectiveDate;
-						Date periodEnd = t.getPolicyEndDate() ;
-						Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
-						Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;						
-						// Check Leap Year
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
-						boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
-						String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
-						prorata =  crservice.loadProRataData(engine, diff);
-						if(prorata.size()>0) {
-							 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
-							 t.setProRata(new BigDecimal("100").subtract(percenat).divide(new BigDecimal("100")));
-							}else {
-								t.setProRata(new BigDecimal("1"));
-							}
-						
+				 }				 
+				 t.setSumInsured(si);
+ 				 BigDecimal domath = domath(t.getCalcType(), t.getRate(), si,t.getExchangeRate());
+				 t.setPremiumBeforeDiscount(domath);
+				 t.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP)) ;
+ 
+				 Double totaldiscount=0D;
+				 if(t.getDiscounts()!=null && t.getDiscounts().size()>0) {
+					 AdminDiscountCalculator dcal=new AdminDiscountCalculator(t.getPremiumBeforeDiscount(),t.getExchangeRate(),this);					 
+					 t.getDiscounts().stream().forEach(dcal);
+					 totaldiscount= t.getDiscounts().stream().mapToDouble(i->i.getDiscountAmount().doubleValue()).sum();
 				 }
-				 if(t.getProRata().doubleValue()==0D) 
-					 t.setProRata(new BigDecimal("1"));
-				 t.setDiffPremiumIncludedTax(t.getPremiumExcluedTax().multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
-				 t.setDiffPremiumIncludedTaxLC(t.getPremiumExcluedTaxLC().multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
 				 
 				 
+				 Double totalloading=0D;
+				 if(t.getLoadings()!=null && t.getLoadings().size()>0) {
+					 AdminLoadingCalculator dcal=new AdminLoadingCalculator(t.getPremiumBeforeDiscount(),t.getExchangeRate(),this);					 
+					 t.getLoadings().stream().forEach(dcal);
+					 totalloading= t.getLoadings().stream().mapToDouble(i->i.getLoadingAmount().doubleValue()).sum();
+				 } 
+				 
+				 t.setPremiumAfterDiscount( t.getPremiumBeforeDiscount().subtract(new BigDecimal(totaldiscount)).add(new BigDecimal(totalloading)).multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
+				 t.setPremiumAfterDiscountLC(t.getPremiumAfterDiscount().multiply(t.getExchangeRate()).multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
+				  
+				 t.setPremiumExcluedTax(t.getPremiumAfterDiscount());
+				 t.setPremiumExcluedTaxLC(t.getPremiumExcluedTax().multiply(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
+				 // Minimium Premium setup.
+				 t.setMinimumPremiumYn("N");
+				 if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0) {
+					 t.setPremiumExcluedTax(t.getMinimumPremium().divide(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP)); 
+					 t.setPremiumExcluedTaxLC(t.getMinimumPremium());
+					 t.setMinimumPremiumYn("Y");
+				 }		 
 				 Double totaltax=0D;
 				 if(t.getTaxes()!=null && t.getTaxes().size()>0) {
-					 TaxCalculator tcal=new TaxCalculator(t.getDiffPremiumIncludedTax(),t.getExchangeRate(),this,customers.get(0));
+					 TaxCalculator tcal=new TaxCalculator(t.getPremiumExcluedTax(),t.getExchangeRate(),this,customers.get(0));
 					 t.getTaxes().stream().forEach(tcal);
 					 totaltax = t.getTaxes().stream().mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
-				 }
+				 }		 
+				 t.setPremiumIncludedTax(t.getPremiumExcluedTax().add(new BigDecimal(totaltax)));				 
+				 t.setPremiumIncludedTaxLC(t.getPremiumIncludedTax().multiply(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
 				 
-				 t.setDiffPremiumIncludedTax(t.getDiffPremiumIncludedTax().add(new BigDecimal(totaltax)));				 
-				 t.setDiffPremiumIncludedTaxLC(t.getDiffPremiumIncludedTax().multiply(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
+				 
+				 if(t.getEndorsements()!=null && t.getEndorsements().size()>0) {
+					 t.getEndorsements().sort(new Comparator<Endorsement>() {
+						@Override
+						public int compare(Endorsement o1, Endorsement o2) {
+							// TODO Auto-generated method stub
+							return o1.getEndtCount().compareTo(o2.getEndtCount());
+						}
+						 
+					}.reversed());
+					 //new premium-old prem
+					 Endorsement endorsement = t.getEndorsements().get(0);
+					
+					 	if("Y".equals(engine.getCoverModification())) {
+					 		
+					 		 if("Y".equals(t.getProRataYn()) && "Y".equals(t.getUserOpt())) {
+									// Date Differents
+										 Date periodStart =  effectiveDate;
+											Date periodEnd = t.getPolicyEndDate() ;
+										Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
+										Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
+										// Check Leap Year
+										SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+										boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
+										String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
+										List<Tuple> prorata =  crservice.loadProRataData(engine, diff);
+										
+										endorsement.setProRataYn("Y");
+										if(prorata.size()>0) {
+										 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
+										 t.setProRata(percenat.divide(new BigDecimal("100")).multiply(new BigDecimal("-1")));
+										 endorsement.setProRata(t.getProRata());
+										}else {
+											t.setProRata(new BigDecimal("1"));
+											 endorsement.setProRata(t.getProRata());
+										}
+										
+									 }else if("Y".equals(t.getProRataYn()) && !"Y".equals(t.getUserOpt())) {
+											// Date Differents
+											Date periodStart =  effectiveDate;
+											Date periodEnd = t.getPolicyEndDate() ;
+											Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
+											Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;						
+											// Check Leap Year
+											SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+											boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
+											String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
+											List<Tuple> prorata =  crservice.loadProRataData(engine, diff);
+											if(prorata.size()>0) {
+												 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
+												 t.setProRata(new BigDecimal("100").subtract(percenat).divide(new BigDecimal("100")));
+												 endorsement.setProRata(t.getProRata());
+												}else {
+													t.setProRata(new BigDecimal("1"));
+													 endorsement.setProRata(t.getProRata());
+												}
+											
+									 }
+					 		 
+					 		 if(t.getProRata().doubleValue()==0D) 
+								 t.setProRata(new BigDecimal("1"));
+					 		 
+					 		 
+					 		 //endorsement.setPremiumAfterDiscountLC(t.getPremiumAfterDiscountLC().multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
+							 //endorsement.setPremiumAfterDiscount(t.getPremiumAfterDiscount().multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
+					 	
+					 		 // Temp Prev Premium
+							 endorsement.setPremiumAfterDiscountLC(endorsement.getPremiumExcluedTaxLC());
+							 endorsement.setPremiumAfterDiscount(endorsement.getPremiumExcluedTax());
+							 
+							 endorsement.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscountLC().multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
+							 endorsement.setPremiumBeforeDiscount(t.getPremiumBeforeDiscount().multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
+							
+							 
+					 		 endorsement.setPremiumExcluedTax(t.getPremiumExcluedTax().multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
+							 endorsement.setPremiumExcluedTaxLC(t.getPremiumExcluedTaxLC().multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
+							 
+							 t.setDiffPremiumIncludedTax(BigDecimal.ZERO);
+							 t.setDiffPremiumIncludedTaxLC(BigDecimal.ZERO);
+							 
+					 		 
+					 	}else {
+					 		// endorsement.setPremiumAfterDiscountLC(t.getPremiumAfterDiscountLC().subtract(endorsement.getPremiumAfterDiscountLC()));
+							// endorsement.setPremiumAfterDiscount(t.getPremiumAfterDiscount().subtract(endorsement.getPremiumAfterDiscount()));
+							 
+							 
+							// Temp Prev Premium
+							 endorsement.setPremiumAfterDiscountLC(endorsement.getPremiumExcluedTaxLC());
+							 endorsement.setPremiumAfterDiscount(endorsement.getPremiumExcluedTax());
+							 
+							 endorsement.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscountLC().subtract(endorsement.getPremiumBeforeDiscountLC()));
+							 endorsement.setPremiumBeforeDiscount(t.getPremiumBeforeDiscount().subtract(endorsement.getPremiumBeforeDiscount()));
+							 
+							 endorsement.setPremiumExcluedTax(t.getPremiumExcluedTax().subtract(endorsement.getPremiumExcluedTax()));
+							 endorsement.setPremiumExcluedTaxLC(t.getPremiumExcluedTaxLC().subtract(endorsement.getPremiumExcluedTaxLC()));
+							 
+					 	}
+					 
+					
+					 
+					 totaltax=0D;
+					 if(endorsement.getTaxes()!=null && endorsement.getTaxes().size()>0) {
+						 
+						 
+						 String endtTypeId=vehicles.get(0).get("endtTypeId")==null?"":vehicles.get(0).get("endtTypeId").toString();
+						 
+						 List<Tax> notendtfees=endorsement.getTaxes().stream().filter(v -> !v.getTaxId().equals(endtTypeId)).collect(Collectors.toList());
+						 List<Tax> inendtfees=endorsement.getTaxes().stream().filter(v -> v.getTaxId().equals(endtTypeId)).collect(Collectors.toList());
+						 Double endtFee=0D;
+						 if(inendtfees.size()>0) {
+							 TaxCalculator tcal=new TaxCalculator(endorsement.getPremiumExcluedTax(),t.getExchangeRate(),this,customers.get(0));
+							 inendtfees.stream().forEach(tcal);
+							 endtFee= inendtfees.stream().mapToDouble(o -> o.getTaxAmount().doubleValue()).sum();
+						 }
+						 
+						 TaxCalculator tcal=new TaxCalculator(endorsement.getPremiumExcluedTax().add(new BigDecimal(endtFee)),t.getExchangeRate(),this,customers.get(0));
+						 notendtfees.stream().forEach(tcal);
+						 totaltax = endorsement.getTaxes().stream().mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
+					 
+					 
+					 
+					 }
+					/* t.setPremiumIncludedTax(t.getPremiumExcluedTax().add(new BigDecimal(totaltax,round)));				 
+					 t.setPremiumIncludedTaxLC(t.getPremiumIncludedTax().multiply(t.getExchangeRate()).round(round));
+					*/
+					 BigDecimal totalWithTax=endorsement.getPremiumExcluedTax().add(new BigDecimal(totaltax));
+					 BigDecimal totalWithTaxLC=totalWithTax.multiply(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP);
+					 
+					 
+					
+					 
+					 
+					 endorsement.setPremiumIncludedTax(totalWithTax);
+					 endorsement.setPremiumIncludedTaxLC(totalWithTaxLC);
+					 if("Y".equals(t.getProRataYn()) && "Y".equals(t.getUserOpt())) {
+						 t.setDiffPremiumIncludedTax(endorsement.getPremiumIncludedTax());
+						 t.setDiffPremiumIncludedTaxLC(endorsement.getPremiumIncludedTaxLC());
+					 }
+					 
+				 } 
+				 
+			
+				 
+				 
+				 
+				
+				
+				
+				 
+				 
 				 
 				 
 				
@@ -131,130 +274,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 		
 	}
 	
-	private void calculate(Cover t) {
-		 
-		 
-		 
-		 BigDecimal si=vehicles.get(0).get(t.getCoverBasedOn())==null?BigDecimal.ZERO:new BigDecimal(vehicles.get(0).get(t.getCoverBasedOn()).toString());
-		 if("Y".equals(t.getDependentCoveryn())) {
-			 if(calculatedcover!=null) {
-				Cover ct = calculatedcover.stream().filter(c->c.getCoverId().equals(t.getDependentCoverId())).findAny().orElse(null);
-				si=ct!=null?ct.getPremiumExcluedTax():BigDecimal.ZERO;
-			}
-		 }				 
-		 t.setSumInsured(si);
-	
-		 
-		 
-		 BigDecimal domath = domath(t.getCalcType(), t.getRate(), si,t.getExchangeRate());
-		 t.setPremiumBeforeDiscount(domath);
-		 t.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate()).round(round)) ;
 	 
-		 
-		 Double totaldiscount=0D;
-		 if(t.getDiscounts()!=null && t.getDiscounts().size()>0) {
-			 AdminDiscountCalculator dcal=new AdminDiscountCalculator(t.getPremiumBeforeDiscount(),t.getExchangeRate(),this);					 
-			 t.getDiscounts().stream().forEach(dcal);
-			 totaldiscount= t.getDiscounts().stream().mapToDouble(i->i.getDiscountAmount().doubleValue()).sum();
-		 }
-		 
-		 
-		 Double totalloading=0D;
-		 if(t.getLoadings()!=null && t.getLoadings().size()>0) {
-			 AdminLoadingCalculator dcal=new AdminLoadingCalculator(t.getPremiumBeforeDiscount(),t.getExchangeRate(),this);					 
-			 t.getLoadings().stream().forEach(dcal);
-			 totalloading= t.getLoadings().stream().mapToDouble(i->i.getLoadingAmount().doubleValue()).sum();
-		 }
-		 
-		 
-		 
-		 t.setPremiumAfterDiscount( t.getPremiumBeforeDiscount().subtract(new BigDecimal(totaldiscount)).add(new BigDecimal(totalloading)).multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
-		 t.setPremiumAfterDiscountLC(t.getPremiumAfterDiscount().multiply(t.getExchangeRate()).multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
-		 
-		 t.setPremiumExcluedTax(t.getPremiumAfterDiscount());
-		 t.setPremiumExcluedTaxLC(t.getPremiumExcluedTax().multiply(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
-		 
-		 // Minimium Premium setup.
-		 t.setMinimumPremiumYn("N");
-		 if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0) {
-			 t.setPremiumExcluedTax(t.getMinimumPremium().divide(t.getExchangeRate()).round(round)); 
-			 t.setPremiumExcluedTaxLC(t.getMinimumPremium());
-			 t.setMinimumPremiumYn("Y");
-		 }
-		 
-		 Double totaltax=0D;
-		 if(t.getTaxes()!=null && t.getTaxes().size()>0) {
-			 TaxCalculator tcal=new TaxCalculator(t.getPremiumExcluedTax(),t.getExchangeRate(),this,customers.get(0));
-			 t.getTaxes().stream().forEach(tcal);
-			 totaltax = t.getTaxes().stream().mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
-		 }
-		 
-		 t.setPremiumIncludedTax(t.getPremiumExcluedTax().add(new BigDecimal(totaltax)));				 
-		 t.setPremiumIncludedTaxLC(t.getPremiumIncludedTax().multiply(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
-		 
-		 
-		 if(t.getEndorsements()!=null && t.getEndorsements().size()>0) {
-			 t.getEndorsements().sort(new Comparator<Endorsement>() {
-				@Override
-				public int compare(Endorsement o1, Endorsement o2) {
-					// TODO Auto-generated method stub
-					return o1.getEndtCount().compareTo(o2.getEndtCount());
-				}
-				 
-			}.reversed());
-			 //new premium-old prem
-			 Endorsement endorsement = t.getEndorsements().get(0);
-			 endorsement.setPremiumAfterDiscountLC(t.getPremiumAfterDiscountLC().subtract(endorsement.getPremiumAfterDiscountLC()));
-			 endorsement.setPremiumAfterDiscount(t.getPremiumAfterDiscount().subtract(endorsement.getPremiumAfterDiscount()));
-			 
-			 endorsement.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscountLC().subtract(endorsement.getPremiumBeforeDiscountLC()));
-			 endorsement.setPremiumBeforeDiscount(t.getPremiumBeforeDiscount().subtract(endorsement.getPremiumBeforeDiscount()));
-			 
-			 endorsement.setPremiumExcluedTax(t.getPremiumExcluedTax().subtract(endorsement.getPremiumExcluedTax()));
-			 endorsement.setPremiumExcluedTaxLC(t.getPremiumExcluedTaxLC().subtract(endorsement.getPremiumExcluedTaxLC()));
-			 
-			 
-			 totaltax=0D;
-			 if(endorsement.getTaxes()!=null && endorsement.getTaxes().size()>0) {
-				 
-				 
-				 String endtTypeId=vehicles.get(0).get("endtTypeId")==null?"":vehicles.get(0).get("endtTypeId").toString();
-				 
-				 List<Tax> notendtfees=endorsement.getTaxes().stream().filter(v -> !v.getTaxId().equals(endtTypeId)).collect(Collectors.toList());
-				 List<Tax> inendtfees=endorsement.getTaxes().stream().filter(v -> v.getTaxId().equals(endtTypeId)).collect(Collectors.toList());
-				 Double endtFee=0D;
-				 if(inendtfees.size()>0) {
-					 TaxCalculator tcal=new TaxCalculator(endorsement.getPremiumExcluedTax(),t.getExchangeRate(),this,customers.get(0));
-					 inendtfees.stream().forEach(tcal);
-					 endtFee= inendtfees.stream().mapToDouble(o -> o.getTaxAmount().doubleValue()).sum();
-				 }
-				 
-				 TaxCalculator tcal=new TaxCalculator(endorsement.getPremiumExcluedTax().add(new BigDecimal(endtFee)),t.getExchangeRate(),this,customers.get(0));
-				 notendtfees.stream().forEach(tcal);
-				 totaltax = endorsement.getTaxes().stream().mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
-			 
-			 
-			 
-			 }
-			/* t.setPremiumIncludedTax(t.getPremiumExcluedTax().add(new BigDecimal(totaltax,round)));				 
-			 t.setPremiumIncludedTaxLC(t.getPremiumIncludedTax().multiply(t.getExchangeRate()).round(round));
-			*/
-			 BigDecimal totalWithTax=endorsement.getPremiumExcluedTax().add(new BigDecimal(totaltax));
-			 BigDecimal totalWithTaxLC=totalWithTax.multiply(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP);
-			 
-			 
-			// Temp Prev Premium
-			 endorsement.setPremiumAfterDiscountLC(endorsement.getPremiumIncludedTaxLC());
-			 endorsement.setPremiumAfterDiscount(endorsement.getPremiumIncludedTax());
-			 
-			 
-			 endorsement.setPremiumIncludedTax(totalWithTax);
-			 endorsement.setPremiumIncludedTaxLC(totalWithTaxLC);
-			 
-		 }
-		 
-		 
-	}
 	
 	
 

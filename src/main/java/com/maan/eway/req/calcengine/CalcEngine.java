@@ -51,5 +51,8 @@ public class CalcEngine {
 		@JsonFormat(pattern="dd/MM/yyyy")
 		@JsonProperty("PolicyEndDate")
 	    private Date   policyEndDate ;
-
+		
+		@JsonProperty("CoverModification")
+		private String coverModification;
+		
 }

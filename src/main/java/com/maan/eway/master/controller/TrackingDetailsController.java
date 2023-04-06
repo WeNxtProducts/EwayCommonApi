@@ -22,6 +22,7 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.StateMasterSaveReq;
 import com.maan.eway.master.req.TrackingDetailsSaveReq;
+import com.maan.eway.master.res.TrackingDetailsRes;
 import com.maan.eway.master.service.TrackingDetailsService;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -42,27 +43,26 @@ public class TrackingDetailsController {
 	@Autowired
 	private  PrintReqService reqPrinter;
 	
-/*
-	@PostMapping(value = "/trackingdetails")
-	public ResponseEntity<TrackingDetails> createTrackingMaster(@RequestBody  TrackingDetails model) {
-
-		dateformat.reqPrint(model);
+	//GetAll
+	@GetMapping("/getalltracking")
+	@ApiOperation(value = "This Method is to display all tracking")
+	public ResponseEntity<CommonRes> getalltracking() {
+		CommonRes data = new CommonRes();
 		
-		TrackingDetails data = entityService.create(model);
-    		if (data != null) {
-    			return new ResponseEntity<>(data,HttpStatus.CREATED);
-  			  } else {
-    			return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
-   			 }
-    }
-
-    @GetMapping(value = "/trackingdetails")
-    public ResponseEntity<List<TrackingDetails>> getAllTrackingMaster() {
-        List<TrackingDetails> lst = entityService.getAll();
-
-        return new ResponseEntity<>(lst,HttpStatus.OK);
-    }
-   */ 
+		List<TrackingDetailsRes> res = service.getalltracking();
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+	
+		if(res!=null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+		
+	}
     
  // save
  	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")

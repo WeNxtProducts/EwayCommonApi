@@ -83,8 +83,10 @@ import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.common.service.QuoteThreadService;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.controller.ProductGroupDropDownReq;
+import com.maan.eway.master.req.TrackingDetailsSaveReq;
 import com.maan.eway.master.res.ProductGroupMasterDropDownRes;
 import com.maan.eway.master.service.ProductGroupMasterService;
+import com.maan.eway.master.service.TrackingDetailsService;
 import com.maan.eway.notification.req.Broker;
 import com.maan.eway.notification.req.Customer;
 import com.maan.eway.notification.req.Notification;
@@ -243,7 +245,8 @@ private BuildingDetailsRepository BuildingRepo;
 
 	private ProductMasterRepository productRepo;
 	
-
+	@Autowired
+	private TrackingDetailsService trackingService;
 	
 	
 	private Logger log = LogManager.getLogger(QuoteServiceImpl.class);
@@ -876,19 +879,27 @@ private BuildingDetailsRepository BuildingRepo;
 				updateRes = motorReferalUpdate(req);
 				//Mail Push Notification
 					motorPushNotification(req);
-
+				//Tracking Details
+				//	trackingDetails(req);
+					
 			} else if( req.getProductId().equalsIgnoreCase(travelProductId)) {
 				updateRes = travelReferalUpdate(req);
 				//Mail Push Notification
 				 travelPushNotification(req);
+				//Tracking Details
+				//	trackingDetails(req);
 				
 			} else if( req.getProductId().equalsIgnoreCase(buildingProductId)) {
 				updateRes = buildingReferalUpdate(req);
 				//Mail Push Notification
 				 buildingPushNotification(req);
+				//Tracking Details
+				//	trackingDetails(req);
 			}  else {
 				updateRes = commonReferalUpdate(req);
 				commonPushNotification(req);
+				//Tracking Details
+			//	trackingDetails(req);
 			} 
 			
 		
@@ -899,7 +910,73 @@ private BuildingDetailsRepository BuildingRepo;
 		}
 		return updateRes;
 	}
-	
+	//Tracking Details
+	private QuoteUpdateRes trackingDetails(AdminReferalStatusReq req) {
+		QuoteUpdateRes res=new QuoteUpdateRes();
+	try {
+		String quoteNo="";
+		String policyNo="";
+		String branchcode="";
+		String companyId="";
+		if( req.getProductId().equalsIgnoreCase(motorProductId)) {
+			List<EserviceMotorDetails> cusRefNo = eserMotRepo
+					.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
+
+			cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
+					.collect(Collectors.toList());
+			 
+			quoteNo=cusRefNo.get(0).getQuoteNo()==null?"":cusRefNo.get(0).getQuoteNo().toString();
+			branchcode=cusRefNo.get(0).getBranchCode();
+			companyId=cusRefNo.get(0).getCompanyId();
+			policyNo=cusRefNo.get(0).getPolicyNo()==null?"":cusRefNo.get(0).getPolicyNo().toString();
+		} else if( req.getProductId().equalsIgnoreCase(travelProductId)) {
+			List<EserviceTravelDetails> cusRefNo = eserTraRepo
+					.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
+
+			cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
+					.collect(Collectors.toList());
+			quoteNo=cusRefNo.get(0).getQuoteNo();
+			policyNo=cusRefNo.get(0).getPolicyNo();
+			branchcode=cusRefNo.get(0).getBranchCode();
+			companyId=cusRefNo.get(0).getCompanyId();
+		} else if( req.getProductId().equalsIgnoreCase(buildingProductId)) {
+			List<EserviceBuildingDetails> cusRefNo = eserviceBuildingRepo
+					.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
+
+			cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
+					.collect(Collectors.toList());
+			quoteNo=cusRefNo.get(0).getQuoteNo();
+			policyNo=cusRefNo.get(0).getPolicyNo();
+			branchcode=cusRefNo.get(0).getBranchCode();
+			companyId=cusRefNo.get(0).getCompanyId();
+		} else {
+			List<EserviceCommonDetails> cusRefNo = eserCommonRepo
+					.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
+
+			cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
+					.collect(Collectors.toList());
+			quoteNo=cusRefNo.get(0).getQuoteNo();
+			policyNo=cusRefNo.get(0).getPolicyNo();
+			branchcode=cusRefNo.get(0).getBranchCode();
+			companyId=cusRefNo.get(0).getCompanyId();
+		}
+		TrackingDetailsSaveReq trackingReq=new TrackingDetailsSaveReq();
+		trackingReq.setProductId(req.getProductId());
+		trackingReq.setStatus(req.getStatus());
+		trackingReq.setBranchCode(branchcode.toString());
+		trackingReq.setQuoteNo(quoteNo.toString());
+		trackingReq.setCompanyId(companyId);
+		trackingReq.setPolicyNo(policyNo.toString());
+		trackingReq.setCreatedby(req.getAdminLoginId());
+		trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());				
+		trackingService.insertTrackingDetails(trackingReq);
+	} catch ( Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return res;
+}
 	// --------------------------------------MOTOR UPDATE REFERRAL STATUS----------------------------------------------------------------------//	
 	private QuoteUpdateRes motorPushNotification(AdminReferalStatusReq req) {
 
@@ -2015,20 +2092,28 @@ private BuildingDetailsRepository BuildingRepo;
 				updateRes = updateMotorPorductStatus(req) ;
 				// Notification Trigger
 				motorNotiReferralStatus(req);
+				//Tracking Details
+				trackingDetailsupdateQuoteStatus(req);
 				
 			} else if( req.getProductId().equalsIgnoreCase(travelProductId)) {
 				updateRes = updateTravelPorductStatus(req);
 				// Notification Trigger
 				travelNotiReferralStatus(req);
+				//Tracking Details
+				trackingDetailsupdateQuoteStatus(req);
 				
 			} else if( req.getProductId().equalsIgnoreCase(buildingProductId)) {
 				updateRes = updateBuildingPorductStatus(req);
 				// Notification Trigger
 				buildingNotiReferralStatus(req);
+				//Tracking Details
+				trackingDetailsupdateQuoteStatus(req);
 			} else {
 				updateRes = updateCommonPorductStatus(req);
 				// Notification Trigger
 				commonNotiReferralStatus(req);
+				//Tracking Details
+				trackingDetailsupdateQuoteStatus(req);
 			}
 			
 		
@@ -2039,7 +2124,73 @@ private BuildingDetailsRepository BuildingRepo;
 		}
 		return updateRes ;
 	}
-	
+	//Tracking Details
+		private QuoteUpdateRes trackingDetailsupdateQuoteStatus(UpdateQuoteStatusReq req) {
+			QuoteUpdateRes res=new QuoteUpdateRes();
+		try {
+			String quoteNo="";
+			String policyNo="";
+			String branchcode="";
+			String companyId="";
+			if( req.getProductId().equalsIgnoreCase(motorProductId)) {
+				List<EserviceMotorDetails> cusRefNo = eserMotRepo
+						.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
+
+				cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
+						.collect(Collectors.toList());
+				 
+				quoteNo=cusRefNo.get(0).getQuoteNo()==null?"":cusRefNo.get(0).getQuoteNo().toString();
+				branchcode=cusRefNo.get(0).getBranchCode();
+				companyId=cusRefNo.get(0).getCompanyId();
+				policyNo=cusRefNo.get(0).getPolicyNo()==null?"":cusRefNo.get(0).getPolicyNo().toString();
+			} else if( req.getProductId().equalsIgnoreCase(travelProductId)) {
+				List<EserviceTravelDetails> cusRefNo = eserTraRepo
+						.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
+
+				cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
+						.collect(Collectors.toList());
+				quoteNo=cusRefNo.get(0).getQuoteNo();
+				policyNo=cusRefNo.get(0).getPolicyNo();
+				branchcode=cusRefNo.get(0).getBranchCode();
+				companyId=cusRefNo.get(0).getCompanyId();
+			} else if( req.getProductId().equalsIgnoreCase(buildingProductId)) {
+				List<EserviceBuildingDetails> cusRefNo = eserviceBuildingRepo
+						.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
+
+				cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
+						.collect(Collectors.toList());
+				quoteNo=cusRefNo.get(0).getQuoteNo();
+				policyNo=cusRefNo.get(0).getPolicyNo();
+				branchcode=cusRefNo.get(0).getBranchCode();
+				companyId=cusRefNo.get(0).getCompanyId();
+			} else {
+				List<EserviceCommonDetails> cusRefNo = eserCommonRepo
+						.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
+
+				cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
+						.collect(Collectors.toList());
+				quoteNo=cusRefNo.get(0).getQuoteNo();
+				policyNo=cusRefNo.get(0).getPolicyNo();
+				branchcode=cusRefNo.get(0).getBranchCode();
+				companyId=cusRefNo.get(0).getCompanyId();
+			}
+			TrackingDetailsSaveReq trackingReq=new TrackingDetailsSaveReq();
+			trackingReq.setProductId(req.getProductId());
+			trackingReq.setStatus(req.getStatus());
+			trackingReq.setBranchCode(branchcode.toString());
+			trackingReq.setQuoteNo(quoteNo.toString());
+			trackingReq.setCompanyId(companyId);
+			trackingReq.setPolicyNo(policyNo.toString());
+			trackingReq.setCreatedby(req.getLoginId());
+			trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());			
+			trackingService.insertTrackingDetails(trackingReq);
+		} catch ( Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+	}
 	
 	 public  QuoteUpdateRes updateMotorPorductStatus(UpdateQuoteStatusReq req  ) {
 		 QuoteUpdateRes res = new QuoteUpdateRes() ;

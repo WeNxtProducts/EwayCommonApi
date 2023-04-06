@@ -1,5 +1,6 @@
 package com.maan.eway.common.req;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -129,6 +130,15 @@ public class EservieMotorDetailsViewRes {
     private String     manualReferalYn;
 	@JsonProperty("SectionName")
     private String     sectionName;
+	@JsonProperty("EndorsementYn")
+    private String     endorsementYn;
 	
+	 @JsonProperty("EndtCount")
+	 private BigDecimal endtCount;
+	 
+	 @JsonFormat(pattern="dd/MM/yyyy")
+	 @JsonProperty("EffectiveDate")
+	 private Date   effectiveDate ;
+		
 	
 }

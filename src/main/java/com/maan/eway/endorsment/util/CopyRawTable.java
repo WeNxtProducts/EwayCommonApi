@@ -102,9 +102,9 @@ public class CopyRawTable  {
 					}
 				}.reversed());
 				
-				pendingcount = motors.stream().filter(m->(m.getEndtStatus().equals("P") && m.getEndorsementType()==Integer.parseInt(ent.getEndtType())) ).count();
+				pendingcount = motors.stream().filter(m->(m.getEndtStatus().equals("P")) ).count();
 				if(pendingcount>0) {					  
-					 List<EserviceMotorDetails> pendingData = motors.stream().filter(m->(m.getEndtStatus().equals("P") && m.getEndorsementType()==Integer.parseInt(ent.getEndtType())) ).collect(Collectors.toList());
+					 List<EserviceMotorDetails> pendingData = motors.stream().filter(m->(m.getEndtStatus().equals("P")) ).collect(Collectors.toList());
 					 motor= pendingData;
 					 prevPolicyNo=motor.get(0).getEndtPrevPolicyNo();
 					 prevQuoteNo=motor.get(0).getEndtPrevQuoteNo();

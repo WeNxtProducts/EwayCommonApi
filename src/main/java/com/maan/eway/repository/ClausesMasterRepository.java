@@ -15,11 +15,17 @@ public interface ClausesMasterRepository  extends JpaRepository<ClausesMaster,Cl
 	ClausesMaster findTopByClausesIdOrderByAmendIdDesc(Integer integer);
 
 	
-	List<ClausesMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanEqualOrderByClausesIdAscAmendIdDesc(
-			String companyId, String branchCode, String productId, String sectionId, Date date);
+	List<ClausesMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndEffectiveDateStartLessThanAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
+			String companyId, String branchCode, String productId, String sectionId, Date date, Date date2, String string);
 
 
-	List<ClausesMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualOrderByClausesIdAscAmendIdDesc(
-			String companyId, String branchCode, String productId, String sectionId, String string, Date date);
+	List<ClausesMaster> findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
+			String companyId, String branchCode, String productId, String sectionId, String string, Date date, Date date2, String string2);
+
+
+	List<ClausesMaster> findByCompanyIdAndBranchCodeOrBranchCodeAndProductIdAndSectionIdOrSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
+			String companyId, String branchCode, String string, String productId, String sectionId,String string3, String termsId,
+			Date date, Date date2, String string2);
+
 
 }

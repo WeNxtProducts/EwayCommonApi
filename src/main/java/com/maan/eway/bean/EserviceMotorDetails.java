@@ -504,7 +504,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="ENDT_CATEG_DESC", length=10)
     private String     endtCategDesc ;
     
-    
+    @Column(name="ENDORSEMENT_YN", length=10)
+    private String     endorsementYn ; 
 }
 
 

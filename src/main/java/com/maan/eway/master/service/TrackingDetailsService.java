@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.TrackingDetailsSaveReq;
+import com.maan.eway.master.res.TrackingDetailsRes;
 import com.maan.eway.res.SuccessRes;
 
 
@@ -19,6 +20,8 @@ public interface TrackingDetailsService  {
 	List<Error> validateTrackingDetails(TrackingDetailsSaveReq req);
 
 	SuccessRes insertTrackingDetails(TrackingDetailsSaveReq req);
+
+	List<TrackingDetailsRes> getalltracking();
 
 
 
