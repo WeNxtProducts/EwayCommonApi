@@ -662,15 +662,15 @@ public class MotorGridServiceImpl implements MotorGridService {
 					}
 				}
 				n5 = cb.equal(cus.get("customerReferenceNo"), c.get("customerReferenceNo"));
-				Predicate n6 = cb.isNull(c.get("endtTypeId"));
-				query.where(n1,n2,n3,n4,n5,n6)
+			//	Predicate n6 = cb.isNull(c.get("endtTypeId"));
+				query.where(n1,n2,n3,n4,n5)
 				.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
 						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
 						c.get("rejectReason"),c.get("riskId"),c.get("insuranceType"))
 				.orderBy(orderList);
 				if (searchKey.equalsIgnoreCase("ClientName")) {
-					query.where(n1, n2,n4,n5,n6)
+					query.where(n1, n2,n4,n5)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
 							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
@@ -678,7 +678,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					.orderBy(orderList);
 				}
 				if (searchKey.equalsIgnoreCase("EntryDate")) {
-					query.where(n1,n2,n3,n4,n6)
+					query.where(n1,n2,n3,n4)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
 							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
