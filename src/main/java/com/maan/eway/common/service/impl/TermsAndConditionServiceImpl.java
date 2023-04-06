@@ -3,16 +3,25 @@ package com.maan.eway.common.service.impl;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -30,17 +39,12 @@ import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.bean.TermsAndCondition;
-import com.maan.eway.bean.WarRateMaster;
 import com.maan.eway.bean.WarrantyMaster;
-import com.maan.eway.common.req.ClausesTermsReq;
-import com.maan.eway.common.req.ExclusionTermsReq;
 import com.maan.eway.common.req.TermsAndConditionGetBySubIdReq;
 import com.maan.eway.common.req.TermsAndConditionGetReq;
 import com.maan.eway.common.req.TermsAndConditionInsertReq;
 import com.maan.eway.common.req.TermsAndConditionListReq;
 import com.maan.eway.common.req.TermsAndConditionReq;
-import com.maan.eway.common.req.WarrantyTermsReq;
-import com.maan.eway.common.req.WarrateTermsReq;
 import com.maan.eway.common.res.ClausesRes;
 import com.maan.eway.common.res.ExclusionRes;
 import com.maan.eway.common.res.TermsAndConditionGetBySubIdRes;
@@ -48,9 +52,10 @@ import com.maan.eway.common.res.TermsAndConditionGetRes;
 import com.maan.eway.common.res.TermsAndConditionListRes;
 import com.maan.eway.common.res.TermsAndConditionRes;
 import com.maan.eway.common.res.WarrantyRes;
-import com.maan.eway.common.res.WarrateRes;
 import com.maan.eway.common.service.TermsAndConditionService;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.res.ClausesMasterRes;
+import com.maan.eway.master.res.WarrantyMasterRes;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.ClausesMasterRepository;
 import com.maan.eway.repository.ExclusionMasterRepository;
@@ -67,10 +72,10 @@ import com.maan.eway.res.SuccessRes;
 @Transactional
 public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
+	private Logger log = LogManager.getLogger(TermsAndConditionServiceImpl.class);
+
 	@PersistenceContext
 	private EntityManager em;
-
-	private Logger log = LogManager.getLogger(TermsAndConditionServiceImpl.class);
 
 	@Autowired
 	private WarrantyMasterRepository warrantyRepo;
@@ -107,6 +112,12 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 		TermsAndConditionRes res = new TermsAndConditionRes();
 
 		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			today = cal.getTime();
+			Date todayEnd = cal.getTime();
+
 			List<WarrantyRes> warrantyresList = new ArrayList<WarrantyRes>();
 			List<ExclusionRes> exclusionresList = new ArrayList<ExclusionRes>();
 			List<ClausesRes> clausesresList = new ArrayList<ClausesRes>();
@@ -163,180 +174,75 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						}
 					}
 				}
-
-				else {
-
-					if (StringUtils.isNotBlank(req.getBranchCode())) {
-						warrantyList = warrantyRepo
-								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
-										req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
-										req.getTermsId(), new Date(), new Date(), "Y");
-						exclusionList = exclusionRepo
-								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
-										req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
-										req.getTermsId(), new Date(), new Date(), "Y");
-						clausesList = clausesRepo
-								.findByCompanyIdAndBranchCodeOrBranchCodeAndProductIdAndSectionIdOrSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
-										req.getCompanyId(), req.getBranchCode(),"99999", req.getProductId(), req.getSectionId(),"99999",
-										req.getTermsId(), new Date(), new Date(), "Y");
-					} else {
-						warrantyList = warrantyRepo
-								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
-										req.getCompanyId(), "99999", req.getProductId(), req.getSectionId(),
-										req.getTermsId(), new Date(), new Date(), "Y");
-						exclusionList = exclusionRepo
-								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
-										req.getCompanyId(), "99999", req.getProductId(), req.getSectionId(),
-										req.getTermsId(),new Date(), new Date(),"Y");
-						clausesList = clausesRepo
-								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
-										req.getCompanyId(), "99999", req.getProductId(), req.getSectionId(),
-										req.getTermsId(), new Date(), new Date(), "Y");
-
-					}
-
-					warrantyList = warrantyList.stream().filter(distinctByKey(o -> Arrays.asList(o.getWarrantyId())))
-							.collect(Collectors.toList());
-					exclusionList = exclusionList.stream().filter(distinctByKey(o -> Arrays.asList(o.getExclusionId())))
-							.collect(Collectors.toList());
-					clausesList = clausesList.stream().filter(distinctByKey(o -> Arrays.asList(o.getClausesId())))
-							.collect(Collectors.toList());
-
-					if (warrantyList.size() > 0 && !warrantyList.isEmpty()) {
-						res.setProductId(warrantyList.get(0).getProductId());
-						res.setSectionId(warrantyList.get(0).getSectionId());
-						res.setCompanyId(warrantyList.get(0).getCompanyId());
-						res.setBranchCode(warrantyList.get(0).getBranchCode());
-
-						for (WarrantyMaster warranties : warrantyList) {
-							WarrantyRes warrantyres = new WarrantyRes();
-							warrantyres.setId("4");
-
-							warrantyres.setSubId(warranties.getWarrantyId().toString());
-							warrantyres.setSubIdDesc(warranties.getWarrantyDescription());
-							warrantyres.setDocRefNo(warranties.getDocRefNo());
-							warrantyres.setDocumentId("16");
-							warrantyresList.add(warrantyres);
-							res.setWarrantyRes(warrantyresList);
-						}
-					}
-
-					if (clausesList.size() > 0 && !clausesList.isEmpty()) {
-
-						for (ClausesMaster clauses : clausesList) {
-							ClausesRes clausesres = new ClausesRes();
-							clausesres.setId("6");
-
-							clausesres.setSubId(clauses.getClausesId().toString());
-							clausesres.setSubIdDesc(clauses.getClausesDescription());
-							clausesres.setDocRefNo(clauses.getDocRefNo());
-							clausesres.setDocumentId("18");
-							clausesresList.add(clausesres);
-							res.setClausesRes(clausesresList);
-
-						}
-					}
-					if (exclusionList.size() > 0 && !exclusionList.isEmpty()) {
-						for (ExclusionMaster exclusions : exclusionList) {
-							ExclusionRes exclusionres = new ExclusionRes();
-							exclusionres.setId("7");
-
-							exclusionres.setSubId(exclusions.getExclusionId().toString());
-							exclusionres.setSubIdDesc(exclusions.getExclusionDescription());
-							exclusionres.setDocRefNo(exclusions.getDocRefNo());
-							exclusionres.setDocumentId("19");
-							exclusionresList.add(exclusionres);
-							res.setExclusionRes(exclusionresList);
-
-						}
-					}
-				}
 			}
 
 			else {
 
-				if (StringUtils.isNotBlank(req.getBranchCode())) {
-					warrantyList = warrantyRepo
-							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
-									req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
-									req.getTermsId(), new Date(), new Date(), "Y");
-					if(warrantyList.size()<=0) {
-						warrantyList = warrantyRepo
-								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
-										req.getCompanyId(), "99999", req.getProductId(), "99999",
-										req.getTermsId(), new Date(), new Date(),"Y");						
-					}
-					exclusionList = exclusionRepo
-							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
-									req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
-									req.getTermsId(), new Date(), new Date(), "Y");
-					if(exclusionList.size()<=0) {
-						exclusionList = exclusionRepo
-								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
-										req.getCompanyId(), "99999", req.getProductId(), "99999",
-										req.getTermsId(),new Date(), new Date(), "Y");
-							
-					}
-					
-					clausesList = clausesRepo
-							.findByCompanyIdAndBranchCodeOrBranchCodeAndProductIdAndSectionIdOrSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
-									req.getCompanyId(), req.getBranchCode(),"99999", req.getProductId(), req.getSectionId(),"99999",
-									req.getTermsId(), new Date(), new Date(),"Y");
-						
-					if(clausesList.size()<=0) {
-						clausesList = clausesRepo
-								.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
-										req.getCompanyId(), "99999", req.getProductId(), "99999",
-										req.getTermsId(), new Date(), new Date(),"Y");
-		
-					}
-				} else {
-					warrantyList = warrantyRepo
-							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
-									req.getCompanyId(), "99999", req.getProductId(), req.getSectionId(),
-									req.getTermsId(), new Date(), new Date(), "Y");
-					exclusionList = exclusionRepo
-							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
-									req.getCompanyId(), "99999", req.getProductId(), req.getSectionId(),
-									req.getTermsId(),new Date(), new Date(),"Y");
-					clausesList = clausesRepo
-							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndStatusOrderByAmendIdDesc(
-									req.getCompanyId(), "99999", req.getProductId(), req.getSectionId(),
-									req.getTermsId(), new Date(), new Date(),"Y");
+				List<ClausesMaster> list = new ArrayList<ClausesMaster>();
 
-				}
+				// Find Latest Record
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<ClausesMaster> query = cb.createQuery(ClausesMaster.class);
 
-				
-				
-				
-				warrantyList = warrantyList.stream().filter(distinctByKey(o -> Arrays.asList(o.getWarrantyId())))
+				// Find All
+				Root<ClausesMaster> b = query.from(ClausesMaster.class);
+
+				// Select
+				query.select(b);
+
+				// Effective Date Start Max Filter
+				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Root<ClausesMaster> ocpm1 = effectiveDate.from(ClausesMaster.class);
+				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				Predicate a1 = cb.equal(b.get("clausesId"), ocpm1.get("clausesId"));
+				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+				Predicate a3 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+				Predicate a4 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+				Predicate a5 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+				Predicate a6 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+
+				effectiveDate.where(a1, a2, a3, a4, a5, a6);
+				// Effective Date End Max Filter
+				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+				Root<ClausesMaster> ocpm2 = effectiveDate2.from(ClausesMaster.class);
+				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+				Predicate a7 = cb.equal(b.get("clausesId"), ocpm2.get("clausesId"));
+				Predicate a8 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+				Predicate a9 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
+				Predicate a10 = cb.equal(ocpm2.get("branchCode"), b.get("branchCode"));
+				Predicate a11 = cb.equal(ocpm2.get("productId"), b.get("productId"));
+				Predicate a12 = cb.equal(ocpm2.get("sectionId"), b.get("sectionId"));
+
+				effectiveDate2.where(a7, a8, a9, a10, a11, a12);
+
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.asc(b.get("sectionId")));
+
+				// Where
+				Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+				Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+				Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+				Predicate n5 = cb.or(n3, n4);
+				Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
+				Predicate n9 = cb.equal(b.get("sectionId"), req.getSectionId());
+				Predicate n10 = cb.equal(b.get("sectionId"), "99999");
+				Predicate n11 = cb.or(n9, n10);
+				Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+				Predicate n12 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
+				Predicate n13 = cb.equal(b.get("status"), "Y");
+
+				query.where(n1, n12, n2, n5, n6, n11, n13).orderBy(orderList);
+				// Get Result
+				TypedQuery<ClausesMaster> result = em.createQuery(query);
+				list = result.getResultList();
+				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getClausesId())))
 						.collect(Collectors.toList());
-				exclusionList = exclusionList.stream().filter(distinctByKey(o -> Arrays.asList(o.getExclusionId())))
-						.collect(Collectors.toList());
-				clausesList = clausesList.stream().filter(distinctByKey(o -> Arrays.asList(o.getClausesId())))
-						.collect(Collectors.toList());
+				list.sort(Comparator.comparing(ClausesMaster::getClausesDescription));
 
-				if (warrantyList.size() > 0 && !warrantyList.isEmpty()) {
-					res.setProductId(warrantyList.get(0).getProductId());
-					res.setSectionId(warrantyList.get(0).getSectionId());
-					res.setCompanyId(warrantyList.get(0).getCompanyId());
-					res.setBranchCode(warrantyList.get(0).getBranchCode());
+				if (list.size() > 0 && !list.isEmpty()) {
 
-					for (WarrantyMaster warranties : warrantyList) {
-						WarrantyRes warrantyres = new WarrantyRes();
-						warrantyres.setId("4");
-
-						warrantyres.setSubId(warranties.getWarrantyId().toString());
-						warrantyres.setSubIdDesc(warranties.getWarrantyDescription());
-						warrantyres.setDocRefNo(warranties.getDocRefNo());
-						warrantyres.setDocumentId("16");
-						warrantyresList.add(warrantyres);
-						res.setWarrantyRes(warrantyresList);
-					}
-				}
-				if (clausesList.size() > 0 && !clausesList.isEmpty()) {
-
-					for (ClausesMaster clauses : clausesList) {
+					for (ClausesMaster clauses : list) {
 						ClausesRes clausesres = new ClausesRes();
 						clausesres.setId("6");
 
@@ -349,8 +255,71 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 					}
 				}
-				if (exclusionList.size() > 0 && !exclusionList.isEmpty()) {
-					for (ExclusionMaster exclusions : exclusionList) {
+
+				List<ExclusionMaster> list2 = new ArrayList<ExclusionMaster>();
+
+				// Find Latest Record
+				CriteriaBuilder cb1 = em.getCriteriaBuilder();
+				CriteriaQuery<ExclusionMaster> query2 = cb1.createQuery(ExclusionMaster.class);
+
+				// Find All
+				Root<ExclusionMaster> b2 = query2.from(ExclusionMaster.class);
+
+				// Select
+				query2.select(b2);
+
+				// Effective Date Start Max Filter
+				Subquery<Long> effectiveDate3 = query2.subquery(Long.class);
+				Root<ExclusionMaster> ocpm3 = effectiveDate3.from(ExclusionMaster.class);
+				effectiveDate3.select(cb.max(ocpm3.get("effectiveDateStart")));
+				Predicate a21 = cb1.equal(b2.get("exclusionId"), ocpm3.get("exclusionId"));
+				Predicate a22 = cb1.lessThanOrEqualTo(ocpm3.get("effectiveDateStart"), today);
+				Predicate a23 = cb1.equal(ocpm3.get("companyId"), b2.get("companyId"));
+				Predicate a24 = cb1.equal(ocpm3.get("branchCode"), b2.get("branchCode"));
+				Predicate a25 = cb1.equal(ocpm3.get("productId"), b2.get("productId"));
+				Predicate a26 = cb1.equal(ocpm3.get("sectionId"), b2.get("sectionId"));
+
+				effectiveDate3.where(a21, a22, a23, a24, a25, a26);
+				// Effective Date End Max Filter
+				Subquery<Long> effectiveDate4 = query.subquery(Long.class);
+				Root<ExclusionMaster> ocpm4 = effectiveDate4.from(ExclusionMaster.class);
+				effectiveDate4.select(cb1.max(ocpm4.get("effectiveDateEnd")));
+				Predicate a27 = cb1.equal(b2.get("exclusionId"), ocpm4.get("exclusionId"));
+				Predicate a28 = cb1.greaterThanOrEqualTo(ocpm4.get("effectiveDateEnd"), todayEnd);
+				Predicate a29 = cb1.equal(ocpm4.get("companyId"), b2.get("companyId"));
+				Predicate a30 = cb1.equal(ocpm4.get("branchCode"), b2.get("branchCode"));
+				Predicate a31 = cb1.equal(ocpm4.get("productId"), b2.get("productId"));
+				Predicate a32 = cb1.equal(ocpm4.get("sectionId"), b2.get("sectionId"));
+
+				effectiveDate4.where(a27, a28, a29, a30, a31, a32);
+				// Order By
+				List<Order> orderList2 = new ArrayList<Order>();
+				orderList2.add(cb1.asc(b2.get("sectionId")));
+
+				// Where
+				Predicate n22 = cb1.equal(b2.get("companyId"), req.getCompanyId());
+				Predicate n23 = cb1.equal(b2.get("branchCode"), req.getBranchCode());
+				Predicate n24 = cb1.equal(b2.get("branchCode"), "99999");
+				Predicate n25 = cb1.or(n23, n24);
+				Predicate n26 = cb1.equal(b2.get("productId"), req.getProductId());
+				Predicate n27 = cb1.equal(b2.get("sectionId"), req.getSectionId());
+				Predicate n28 = cb1.equal(b2.get("sectionId"), "99999");
+				Predicate n29 = cb1.or(n27, n28);
+				Predicate n21 = cb1.equal(b2.get("effectiveDateStart"), effectiveDate3);
+				Predicate n30 = cb1.equal(b2.get("effectiveDateEnd"), effectiveDate4);
+				Predicate n31 = cb1.equal(b2.get("status"), "Y");
+
+				query2.where(n21, n22, n25, n26, n29, n30, n31).orderBy(orderList);
+
+				// Get Result
+				TypedQuery<ExclusionMaster> result2 = em.createQuery(query2);
+				list2 = result2.getResultList();
+				list2 = list2.stream().filter(distinctByKey(o -> Arrays.asList(o.getExclusionId())))
+						.collect(Collectors.toList());
+				list2.sort(Comparator.comparing(ExclusionMaster::getExclusionDescription));
+
+				if (list2.size() > 0 && !list2.isEmpty()) {
+					for (ExclusionMaster exclusions : list2) {
 						ExclusionRes exclusionres = new ExclusionRes();
 						exclusionres.setId("7");
 
@@ -363,59 +332,91 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 					}
 				}
-				
-				
-				
-				///Newly Added		
-				List<TermsAndCondition> datas = termsRepo
-						.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRequestReferenceNoOrderBySnoAsc(req.getCompanyId(),
-								req.getBranchCode(), req.getProductId(), req.getSectionId(), req.getRequestReferenceNo());
-				if (datas.size() > 0 && !datas.isEmpty()) {
-					if (datas.size() > 0) {
-						for (TermsAndCondition data : datas) {
-							if (data.getId() == 4) {
-								WarrantyRes warrantyres = new WarrantyRes();
-								warrantyres.setId(data.getId().toString());
-								warrantyres.setSubId(data.getSubId().toString());
-								warrantyres.setSubIdDesc(data.getSubIdDesc());
-								warrantyres.setDocRefNo(data.getDocRefNo());
-								warrantyres.setDocumentId("16");
-								warrantyresList.add(warrantyres);
-								res.setWarrantyRes(warrantyresList);
 
-							}
-							if (data.getId() == 6) {
-								ClausesRes clausesres = new ClausesRes();
-								clausesres.setId(data.getId().toString());
-								clausesres.setSubId(data.getSubId().toString());
-								clausesres.setSubIdDesc(data.getSubIdDesc());
-								clausesres.setDocRefNo(data.getDocRefNo());
-								clausesres.setDocumentId("18");
-								clausesresList.add(clausesres);
-								res.setClausesRes(clausesresList);
+				List<WarrantyMaster> list3 = new ArrayList<WarrantyMaster>();
 
-							}
-							if (data.getId() == 7) {
-								ExclusionRes exclusionres = new ExclusionRes();
-								exclusionres.setId(data.getId().toString());
+				// Find Latest Record
+				CriteriaBuilder cb3 = em.getCriteriaBuilder();
+				CriteriaQuery<WarrantyMaster> query3 = cb3.createQuery(WarrantyMaster.class);
 
-								exclusionres.setSubId(data.getSubId().toString());
-								exclusionres.setSubIdDesc(data.getSubIdDesc());
-								exclusionres.setDocRefNo(data.getDocRefNo());
-								exclusionres.setDocumentId("19");
-								exclusionresList.add(exclusionres);
-								res.setExclusionRes(exclusionresList);
+				// Find All
+				Root<WarrantyMaster> b3 = query3.from(WarrantyMaster.class);
 
-							}
-						}
+				// Select
+				query3.select(b3);
+
+				// Effective Date Start Max Filter
+				Subquery<Long> effectiveDate5 = query.subquery(Long.class);
+				Root<WarrantyMaster> ocpm5 = effectiveDate5.from(WarrantyMaster.class);
+				effectiveDate5.select(cb3.max(ocpm5.get("effectiveDateStart")));
+				Predicate a33 = cb3.equal(b3.get("warrantyId"), ocpm5.get("warrantyId"));
+				Predicate a34 = cb3.lessThanOrEqualTo(ocpm5.get("effectiveDateStart"), today);
+				Predicate a35 = cb3.equal(ocpm5.get("companyId"), b3.get("companyId"));
+				Predicate a36 = cb3.equal(ocpm5.get("branchCode"), b3.get("branchCode"));
+				Predicate a37 = cb3.equal(ocpm5.get("productId"), b3.get("productId"));
+				Predicate a38 = cb3.equal(ocpm5.get("sectionId"), b3.get("sectionId"));
+
+				effectiveDate5.where(a33, a34, a35, a36, a37, a38);
+				// Effective Date End Max Filter
+				Subquery<Long> effectiveDate6 = query3.subquery(Long.class);
+				Root<WarrantyMaster> ocpm6 = effectiveDate6.from(WarrantyMaster.class);
+				effectiveDate6.select(cb3.max(ocpm6.get("effectiveDateEnd")));
+				Predicate a39 = cb3.equal(b3.get("warrantyId"), ocpm6.get("warrantyId"));
+				Predicate a40 = cb3.greaterThanOrEqualTo(ocpm6.get("effectiveDateEnd"), todayEnd);
+				Predicate a41 = cb3.equal(ocpm6.get("companyId"), b3.get("companyId"));
+				Predicate a42 = cb3.equal(ocpm6.get("branchCode"), b3.get("branchCode"));
+				Predicate a43 = cb3.equal(ocpm6.get("productId"), b3.get("productId"));
+				Predicate a44 = cb3.equal(ocpm6.get("sectionId"), b3.get("sectionId"));
+				effectiveDate6.where(a39, a40, a41, a42, a43, a44);
+
+				// Order By
+				List<Order> orderList3 = new ArrayList<Order>();
+				orderList3.add(cb3.asc(b3.get("sectionId")));
+
+				// Where
+				Predicate n40 = cb3.equal(b3.get("effectiveDateStart"), effectiveDate5);
+				Predicate n32 = cb3.equal(b3.get("companyId"), req.getCompanyId());
+				Predicate n33 = cb3.equal(b3.get("branchCode"), req.getBranchCode());
+				Predicate n34 = cb3.equal(b3.get("branchCode"), "99999");
+				Predicate n35 = cb3.or(n33, n34);
+				Predicate n36 = cb3.equal(b3.get("productId"), req.getProductId());
+				Predicate n37 = cb3.equal(b3.get("sectionId"), req.getSectionId());
+				Predicate n38 = cb3.equal(b3.get("sectionId"), "99999");
+				Predicate n39 = cb3.or(n37, n38);
+				Predicate n41 = cb3.equal(b3.get("effectiveDateEnd"), effectiveDate6);
+				Predicate n42 = cb3.equal(b3.get("status"), "Y");
+
+				query3.where(n32, n35, n36, n39, n40, n41, n42).orderBy(orderList);
+
+				// Get Result
+				TypedQuery<WarrantyMaster> result3 = em.createQuery(query3);
+				list3 = result3.getResultList();
+				list3 = list3.stream().filter(distinctByKey(o -> Arrays.asList(o.getWarrantyId())))
+						.collect(Collectors.toList());
+				list3.sort(Comparator.comparing(WarrantyMaster::getWarrantyDescription));
+
+				if (list3.size() > 0 && !list3.isEmpty()) {
+					res.setProductId(list3.get(0).getProductId());
+					res.setSectionId(list3.get(0).getSectionId());
+					res.setCompanyId(list3.get(0).getCompanyId());
+					res.setBranchCode(list3.get(0).getBranchCode());
+
+					for (WarrantyMaster warranties : list3) {
+						WarrantyRes warrantyres = new WarrantyRes();
+						warrantyres.setId("4");
+
+						warrantyres.setSubId(warranties.getWarrantyId().toString());
+						warrantyres.setSubIdDesc(warranties.getWarrantyDescription());
+						warrantyres.setDocRefNo(warranties.getDocRefNo());
+						warrantyres.setDocumentId("16");
+						warrantyresList.add(warrantyres);
+						res.setWarrantyRes(warrantyresList);
 					}
 				}
 
 			}
 
-		}
-
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --> " + e.getMessage());
 			return null;
@@ -423,8 +424,8 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 		return res;
 	}
 
-	// Fiter Details By Key
-	private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+	private static <T> java.util.function.Predicate<T> distinctByKey(
+			java.util.function.Function<? super T, ?> keyExtractor) {
 		Map<Object, Boolean> seen = new ConcurrentHashMap<>();
 		return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
 	}
@@ -472,21 +473,20 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 		try {
 			List<TermsAndCondition> data = new ArrayList<TermsAndCondition>();
-			if(req.getQuoteNo()==null && StringUtils.isNotBlank(req.getQuoteNo())) {
-				data = termsRepo.findByQuoteNoAndRiskIdAndProductIdAndSectionId(req.getQuoteNo(),
-					req.getRiskId(), req.getProductId(), req.getSectionId());
-			}
-			else {
+			if (req.getQuoteNo() == null && StringUtils.isNotBlank(req.getQuoteNo())) {
+				data = termsRepo.findByQuoteNoAndRiskIdAndProductIdAndSectionId(req.getQuoteNo(), req.getRiskId(),
+						req.getProductId(), req.getSectionId());
+			} else {
 				data = termsRepo.findByRequestReferenceNoAndRiskIdAndProductIdAndSectionId(req.getRequestReferenceNo(),
 						req.getRiskId(), req.getProductId(), req.getSectionId());
-					
+
 			}
 			if (data.size() > 0 && data != null) {
 				termsRepo.deleteAll();
 			}
 			Long count = termsRepo.count();
 			Integer count1 = count.intValue();
-			Integer a =1000;
+			Integer a = 1000;
 			TermsAndCondition saveData = new TermsAndCondition();
 			List<InsuranceCompanyMaster> insurance = inuranceRepo
 					.findTopByCompanyIdOrderByAmendIdDesc(req.getCompanyId());
@@ -522,15 +522,15 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				saveData.setId(Integer.valueOf(req1.getId()));
 				saveData.setIdDesc(id.getItemValue());
 				saveData.setDocRefNo(req1.getDocRefNo());
-				
-				if(StringUtils.isNotBlank(req1.getSubId())) {
-				saveData.setSubId(Integer.valueOf(req1.getSubId()));
-				saveData.setSubIdDesc(req1.getSubIdDesc());
+
+				if (StringUtils.isNotBlank(req1.getSubId())) {
+					saveData.setSubId(Integer.valueOf(req1.getSubId()));
+					saveData.setSubIdDesc(req1.getSubIdDesc());
 				}
-				
+
 				else {
 					saveData.setSubId(a++);
-					saveData.setSubIdDesc(req1.getSubIdDesc());								
+					saveData.setSubIdDesc(req1.getSubIdDesc());
 				}
 				termsRepo.saveAndFlush(saveData);
 				count1++;
@@ -556,21 +556,21 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 		try {
 			TermsAndCondition savedata = new TermsAndCondition();
 			List<TermsAndCondition> datas = new ArrayList<TermsAndCondition>();
-			if(req.getQuoteNo()==null &&  StringUtils.isNotBlank(req.getQuoteNo())) {
-			 datas = termsRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRiskIdAndQuoteNoAndId(req.getCompanyId(),
-							req.getBranchCode(), req.getProductId(), req.getSectionId(), req.getRiskId(),
-							req.getQuoteNo(), Integer.valueOf(req.getId()));
+			if (req.getQuoteNo() == null && StringUtils.isNotBlank(req.getQuoteNo())) {
+				datas = termsRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRiskIdAndQuoteNoAndId(
+						req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
+						req.getRiskId(), req.getQuoteNo(), Integer.valueOf(req.getId()));
 			}
-			
+
 			else {
-	
-				 datas = termsRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRiskIdAndRequestReferenceNoAndId(req.getCompanyId(),
-							req.getBranchCode(), req.getProductId(), req.getSectionId(), req.getRiskId(),
-							req.getRequestReferenceNo(), Integer.valueOf(req.getId()));
-	
+
+				datas = termsRepo
+						.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRiskIdAndRequestReferenceNoAndId(
+								req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
+								req.getRiskId(), req.getRequestReferenceNo(), Integer.valueOf(req.getId()));
+
 			}
-			
-			
+
 			if (datas.size() > 0 && datas != null) {
 				res = dozermapper.map(datas.get(0), TermsAndConditionGetRes.class);
 				List<TermsAndConditionListRes> resList = new ArrayList<TermsAndConditionListRes>();
@@ -597,18 +597,18 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 		try {
 			TermsAndCondition savedata = new TermsAndCondition();
 			TermsAndCondition data = new TermsAndCondition();
-			if(req.getQuoteNo()==null && StringUtils.isNotBlank(req.getQuoteNo())) {
-				 data = termsRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRiskIdAndQuoteNoAndIdAndSubId(
-							req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
-							req.getRiskId(), req.getQuoteNo(), Integer.valueOf(req.getId()),
-							Integer.valueOf(req.getSubId()));
-			}
-			else {
-				 data = termsRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRiskIdAndRequestReferenceNoAndIdAndSubId(
+			if (req.getQuoteNo() == null && StringUtils.isNotBlank(req.getQuoteNo())) {
+				data = termsRepo.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRiskIdAndQuoteNoAndIdAndSubId(
 						req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
-						req.getRiskId(), req.getRequestReferenceNo(), Integer.valueOf(req.getId()),
+						req.getRiskId(), req.getQuoteNo(), Integer.valueOf(req.getId()),
 						Integer.valueOf(req.getSubId()));
-			
+			} else {
+				data = termsRepo
+						.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRiskIdAndRequestReferenceNoAndIdAndSubId(
+								req.getCompanyId(), req.getBranchCode(), req.getProductId(), req.getSectionId(),
+								req.getRiskId(), req.getRequestReferenceNo(), Integer.valueOf(req.getId()),
+								Integer.valueOf(req.getSubId()));
+
 			}
 			res = dozermapper.map(data, TermsAndConditionGetBySubIdRes.class);
 			res.setId(data.getId().toString());
