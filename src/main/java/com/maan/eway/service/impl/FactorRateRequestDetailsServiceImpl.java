@@ -852,7 +852,8 @@ this.repository = repo;
 				saveLod.setCoverPeriodTo(coverReq.getPolicyEndDate());
 				
 				saveLod.setNoOfDays(new BigDecimal(diff));
-				
+				saveLod.setProRataYn(lod.getProRataYn()==null?"N":lod.getProRataYn());
+				saveLod.setProRataPercent(lod.getProRata()==null?new BigDecimal("100"):lod.getProRata());
 				//repository.saveAndFlush(saveLod);
 				saveEndt.add(saveLod);
 				

@@ -132,12 +132,16 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 										SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
 										boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
 										String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
-										List<Tuple> prorata =  crservice.loadProRataData(engine, diff);	
+										List<Tuple> prorata =  crservice.loadProRataData(engine, diff);
+										
+										endorsement.setProRataYn("Y");
 										if(prorata.size()>0) {
 										 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
 										 t.setProRata(percenat.divide(new BigDecimal("100"))/*.multiply(new BigDecimal("-1"))*/);
+										 endorsement.setProRata(t.getProRata());
 										}else {
 											t.setProRata(new BigDecimal("1"));
+											 endorsement.setProRata(t.getProRata());
 										}
 										
 									 }else if("Y".equals(t.getProRataYn()) && !"Y".equals(t.getUserOpt())) {
@@ -154,8 +158,10 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 											if(prorata.size()>0) {
 												 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
 												 t.setProRata(new BigDecimal("100").subtract(percenat).divide(new BigDecimal("100")));
+												 endorsement.setProRata(t.getProRata());
 												}else {
 													t.setProRata(new BigDecimal("1"));
+													 endorsement.setProRata(t.getProRata());
 												}
 											
 									 }
