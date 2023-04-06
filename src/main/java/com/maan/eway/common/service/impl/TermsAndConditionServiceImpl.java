@@ -231,12 +231,15 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 				Predicate n12 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
 				Predicate n13 = cb.equal(b.get("status"), "Y");
-
-				query.where(n1, n12, n2, n5, n6, n11, n13).orderBy(orderList);
+				Predicate n14 = cb.equal(b.get("status"), "R");
+				Predicate n15 = cb.or(n13, n14);
+		
+				query.where(n1, n12, n2, n5, n6, n11, n15).orderBy(orderList);
 				// Get Result
 				TypedQuery<ClausesMaster> result = em.createQuery(query);
 				list = result.getResultList();
 				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getClausesId())))
+						.filter(distinctByKey(o -> Arrays.asList(o.getClausesDescription())))					
 						.collect(Collectors.toList());
 				list.sort(Comparator.comparing(ClausesMaster::getClausesDescription));
 
@@ -308,13 +311,16 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				Predicate n21 = cb1.equal(b2.get("effectiveDateStart"), effectiveDate3);
 				Predicate n30 = cb1.equal(b2.get("effectiveDateEnd"), effectiveDate4);
 				Predicate n31 = cb1.equal(b2.get("status"), "Y");
-
-				query2.where(n21, n22, n25, n26, n29, n30, n31).orderBy(orderList);
+				Predicate n32 = cb.equal(b.get("status"), "R");
+				Predicate n33 = cb.or(n31, n32);
+		
+				query2.where(n21, n22, n25, n26, n29, n30, n33).orderBy(orderList);
 
 				// Get Result
 				TypedQuery<ExclusionMaster> result2 = em.createQuery(query2);
 				list2 = result2.getResultList();
 				list2 = list2.stream().filter(distinctByKey(o -> Arrays.asList(o.getExclusionId())))
+						.filter(distinctByKey(o -> Arrays.asList(o.getExclusionDescription())))					
 						.collect(Collectors.toList());
 				list2.sort(Comparator.comparing(ExclusionMaster::getExclusionDescription));
 
@@ -375,23 +381,26 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 				// Where
 				Predicate n40 = cb3.equal(b3.get("effectiveDateStart"), effectiveDate5);
-				Predicate n32 = cb3.equal(b3.get("companyId"), req.getCompanyId());
-				Predicate n33 = cb3.equal(b3.get("branchCode"), req.getBranchCode());
+				Predicate n43 = cb3.equal(b3.get("companyId"), req.getCompanyId());
+				Predicate n44 = cb3.equal(b3.get("branchCode"), req.getBranchCode());
 				Predicate n34 = cb3.equal(b3.get("branchCode"), "99999");
-				Predicate n35 = cb3.or(n33, n34);
+				Predicate n35 = cb3.or(n44, n34);
 				Predicate n36 = cb3.equal(b3.get("productId"), req.getProductId());
 				Predicate n37 = cb3.equal(b3.get("sectionId"), req.getSectionId());
 				Predicate n38 = cb3.equal(b3.get("sectionId"), "99999");
 				Predicate n39 = cb3.or(n37, n38);
 				Predicate n41 = cb3.equal(b3.get("effectiveDateEnd"), effectiveDate6);
 				Predicate n42 = cb3.equal(b3.get("status"), "Y");
-
-				query3.where(n32, n35, n36, n39, n40, n41, n42).orderBy(orderList);
+				Predicate n45 = cb.equal(b.get("status"), "R");
+				Predicate n46 = cb.or(n42, n45);
+		
+				query3.where(n43, n35, n36, n39, n40, n41, n46).orderBy(orderList);
 
 				// Get Result
 				TypedQuery<WarrantyMaster> result3 = em.createQuery(query3);
 				list3 = result3.getResultList();
 				list3 = list3.stream().filter(distinctByKey(o -> Arrays.asList(o.getWarrantyId())))
+						.filter(distinctByKey(o -> Arrays.asList(o.getWarrantyDescription())))					
 						.collect(Collectors.toList());
 				list3.sort(Comparator.comparing(WarrantyMaster::getWarrantyDescription));
 
