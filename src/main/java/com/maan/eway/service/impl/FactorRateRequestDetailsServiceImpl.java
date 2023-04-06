@@ -1605,7 +1605,8 @@ this.repository = repo;
 						    .premiumIncludedTax(t.getPremiumIncludedTaxFc())
 						    .premiumIncludedTaxLC(t.getPremiumIncludedTaxLc())	 
 						    .endtCount(t.getEndtCount())
-						     
+						     .proRata(t.getProRataPercent())
+						     .proRataYn(t.getProRataYn())
 						 	.build();
 				 
 				
