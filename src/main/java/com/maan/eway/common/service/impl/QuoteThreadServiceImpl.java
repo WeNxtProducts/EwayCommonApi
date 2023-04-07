@@ -42,10 +42,13 @@ import org.dozer.DozerBeanMapper;
 import org.dozer.inject.DozerBeanContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.CityMaster;
+import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
@@ -115,10 +118,12 @@ import com.maan.eway.repository.SeqQuotenoRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerHistoryRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.ReferalResponse;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.res.referal.MasterReferal;
 import com.maan.eway.thread.MyTaskList;
+import com.maan.eway.upgrade.criteria.SpecCriteria;
 
 @Service
 @Transactional
@@ -885,6 +890,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	            	request2.setPolicyEndDate(request.getPolicyEndDate());
 	            	request2.setEffetiveDate(request.getEffetiveDate());
 	            	request2.setNoOfDays(request.getNoOfDays());
+	            	request2.setEndtType(request.getEndtType());
+	            	request2.setEndtCount(request.getEndtCount());
+	            	request2.setEndtFields(request.getEndtFields());
 	            	
 	            	QuoteThreadCall motorSave = new QuoteThreadCall("MotorSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo  
 	                		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,smeProductId,secRepo,buildRepo, docRepo
@@ -947,7 +955,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		             request2.setPolicyEndDate(request.getPolicyEndDate());
 		             request2.setEffetiveDate(request.getEffetiveDate());
 		             request2.setNoOfDays(request.getNoOfDays());
-		            	
+		         	 request2.setEndtType(request.getEndtType());
+	            	 request2.setEndtCount(request.getEndtCount());
+	            	 request2.setEndtFields(request.getEndtFields());	
 		            	
 	            	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
 	            			 , homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,smeProductId,secRepo,buildRepo, docRepo
@@ -1004,7 +1014,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		            	request2.setPolicyEndDate(request.getPolicyEndDate());
 		            	request2.setEffetiveDate(request.getEffetiveDate());
 		            	request2.setNoOfDays(request.getNoOfDays());
-		            	
+		            	request2.setEndtType(request.getEndtType());
+		            	request2.setEndtCount(request.getEndtCount());
+		            	request2.setEndtFields(request.getEndtFields());
 		            	
 		            	QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
 			            		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo,motorProductId , travelProductId,buildingProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,smeProductId,secRepo,buildRepo, docRepo
@@ -1047,7 +1059,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	            	request2.setPolicyEndDate(request.getPolicyEndDate());
 	            	request2.setEffetiveDate(request.getEffetiveDate());
 	            	request2.setNoOfDays(request.getNoOfDays());
-	            	
+	            	request2.setEndtType(request.getEndtType());
+	            	request2.setEndtCount(request.getEndtCount());
+	            	request2.setEndtFields(request.getEndtFields());
 	            	
 					QuoteThreadCall commonDataSave = new QuoteThreadCall("CommonDataSave", request2, em,eserCustRepo, eserMotRepo, facRateRepo, perInfoRepo, motorRepo,driverRepo , coverRepo, homeRepo,
 							eserRepo, eserGroupRepo, traPassRepo, traPassHisRepo, motorProductId,travelProductId, buildingProductId, eserBuildRepo, eserSecRepo,eserCommonRepo,commonDataRepo,smeProductId,secRepo,buildRepo, docRepo
@@ -1075,6 +1089,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		try {
 			// Id Generate
 			String customerId = "" ;
+			String companyId = "" ;
 			String quoteNo  = "" ;
 			String subUserType  = "" ;
 			String endtPrevQuoteNo  = "" ;
@@ -1082,11 +1097,16 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			Date policyEndDate = null ;
 			Date effectiveDate = null ;
 			String noOfDays = "" ;
+			String endtType = "" ;
+			String endtCount = "" ;
+			String endtFields = "" ;
+			
 			
 			// Find Old QuoteNo
 			if(req.getProductId().equalsIgnoreCase(motorProductId)) {
 				EserviceMotorDetails data =  eserMotRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo() , req.getVehicleIdsList().get(0).getVehicleId());
 				customerId = data.getCustomerId()==null?"":data.getCustomerId();
+				companyId    = data.getCompanyId()==null?"":data.getCompanyId();
 				quoteNo    = data.getQuoteNo()==null?"":data.getQuoteNo();
 				subUserType = data.getSubUserType()==null?"":data.getSubUserType() ;
 				endtPrevQuoteNo  = data.getEndtPrevQuoteNo()==null?"":data.getEndtPrevQuoteNo() ;
@@ -1094,11 +1114,13 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				policyEndDate    = data.getPolicyEndDate()==null?null: data.getPolicyEndDate() ;
 				effectiveDate    = data.getEndorsementEffdate()==null?null: data.getEndorsementEffdate() ;
 				noOfDays		 = data.getPeriodOfInsurance()==null?null: data.getPeriodOfInsurance() ;
-				
+				endtType		 = data.getEndorsementType()==null?"": data.getEndorsementType().toString() ;
+				endtCount		 = data.getEndtCount()==null?"": data.getEndtCount().toString() ;
 			
 			} else if(req.getProductId().equalsIgnoreCase(travelProductId)) {
 				EserviceTravelDetails data =  eserTraRepo.findByRequestReferenceNo(req.getRequestReferenceNo() );
 				customerId = data.getCustomerId()==null?"":data.getCustomerId();
+				companyId    = data.getCompanyId()==null?"":data.getCompanyId();
 				quoteNo    = data.getQuoteNo()==null?"":data.getQuoteNo();
 				subUserType = data.getSubUserType()==null?"":data.getSubUserType() ;
 				endtPrevQuoteNo  = data.getEndtPrevQuoteNo()==null?"":data.getEndtPrevQuoteNo() ;
@@ -1106,32 +1128,50 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				policyEndDate    = data.getTravelEndDate()==null?null: data.getTravelEndDate() ;
 				effectiveDate    = data.getEndorsementEffdate()==null?null: data.getEndorsementEffdate() ;
 				noOfDays		 = data.getTravelCoverDuration()==null?null: data.getTravelCoverDuration().toString();
+				endtType		 = data.getEndorsementType()==null?"": data.getEndorsementType().toString() ;
+				endtCount		 = data.getEndtCount()==null?"": data.getEndtCount().toString() ;
 				
 			}else if(req.getProductId().equalsIgnoreCase(buildingProductId) || (req.getProductId().equalsIgnoreCase(smeProductId)) ) {
-				List<EserviceBuildingDetails> data =  eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo() );
-				customerId = data.get(0).getCustomerId()==null?"": data.get(0).getCustomerId();
-				quoteNo    =  data.get(0).getQuoteNo()==null?"": data.get(0).getQuoteNo();
-				subUserType =  data.get(0).getSubUserType()==null?"": data.get(0).getSubUserType() ;
-				endtPrevQuoteNo  = data.get(0).getEndtPrevQuoteNo()==null?"":data.get(0).getEndtPrevQuoteNo() ;
-				policyStartDate  = data.get(0).getPolicyStartDate()==null?null: data.get(0).getPolicyStartDate() ;
-				policyEndDate    = data.get(0).getPolicyEndDate()==null?null: data.get(0).getPolicyEndDate() ;
-				effectiveDate    = data.get(0).getEndorsementEffdate()==null?null : data.get(0).getEndorsementEffdate() ;
-				noOfDays		 = data.get(0).getPolicyPeriord()==null?null: data.get(0).getPolicyPeriord().toString() ;
+				List<EserviceBuildingDetails> datas =  eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo() );
+				EserviceBuildingDetails data = datas.get(0);
+				customerId = data.getCustomerId()==null?"": data.getCustomerId();
+				companyId    = data.getCompanyId()==null?"":data.getCompanyId();
+				quoteNo    =  data.getQuoteNo()==null?"": data.getQuoteNo();
+				subUserType =  data.getSubUserType()==null?"": data.getSubUserType() ;
+				endtPrevQuoteNo  = data.getEndtPrevQuoteNo()==null?"":data.getEndtPrevQuoteNo() ;
+				policyStartDate  = data.getPolicyStartDate()==null?null: data.getPolicyStartDate() ;
+				policyEndDate    = data.getPolicyEndDate()==null?null: data.getPolicyEndDate() ;
+				effectiveDate    = data.getEndorsementEffdate()==null?null : data.getEndorsementEffdate() ;
+				noOfDays		 = data.getPolicyPeriord()==null?null: data.getPolicyPeriord().toString() ;
+				endtType		 = data.getEndorsementType()==null?"": data.getEndorsementType().toString() ;
+				endtCount		 = data.getEndtCount()==null?"": data.getEndtCount().toString() ;
 				
 			} else {
-				List<EserviceCommonDetails> data =  eserCommonRepo.findByRequestReferenceNo(req.getRequestReferenceNo() );
-				customerId = data.get(0).getCustomerId()==null?"": data.get(0).getCustomerId();
-				quoteNo    =  data.get(0).getQuoteNo()==null?"": data.get(0).getQuoteNo();
-				LoginMaster loginData = loginRepo.findByLoginId(data.get(0).getLoginId());
+				List<EserviceCommonDetails> datas =  eserCommonRepo.findByRequestReferenceNo(req.getRequestReferenceNo() );
+				EserviceCommonDetails data = datas.get(0) ;
+				customerId = data.getCustomerId()==null?"": data.getCustomerId();
+				companyId    = data.getCompanyId()==null?"":data.getCompanyId();
+				quoteNo    =  data.getQuoteNo()==null?"": data.getQuoteNo();
+				LoginMaster loginData = loginRepo.findByLoginId(data.getLoginId());
 				subUserType =  loginData.getSubUserType()==null?"": loginData.getSubUserType() ;
-				endtPrevQuoteNo  = data.get(0).getEndtPrevQuoteNo()==null?"":data.get(0).getEndtPrevQuoteNo() ;
-				policyStartDate  = data.get(0).getPolicyStartDate()==null?null: data.get(0).getPolicyStartDate() ;
-				policyEndDate    = data.get(0).getPolicyEndDate()==null?null: data.get(0).getPolicyEndDate() ;
-				policyEndDate    = data.get(0).getPolicyEndDate()==null?null: data.get(0).getPolicyEndDate() ;
-				effectiveDate    = data.get(0).getEndorsementEffdate()==null?null : data.get(0).getEndorsementEffdate() ;
-				noOfDays		 = data.get(0).getPolicyPeriod()==null?null: data.get(0).getPolicyPeriod().toString() ;
+				endtPrevQuoteNo  = data.getEndtPrevQuoteNo()==null?"":data.getEndtPrevQuoteNo() ;
+				policyStartDate  = data.getPolicyStartDate()==null?null: data.getPolicyStartDate() ;
+				policyEndDate    = data.getPolicyEndDate()==null?null: data.getPolicyEndDate() ;
+				policyEndDate    = data.getPolicyEndDate()==null?null: data.getPolicyEndDate() ;
+				effectiveDate    = data.getEndorsementEffdate()==null?null : data.getEndorsementEffdate() ;
+				noOfDays		 = data.getPolicyPeriod()==null?null: data.getPolicyPeriod().toString() ;
+				endtType		 = data.getEndorsementType()==null?"": data.getEndorsementType().toString() ;
+				endtCount		 = data.getEndtCount()==null?"": data.getEndtCount().toString() ;
 			}
 			
+			// Get Endt Fields
+			if(StringUtils.isNotBlank(endtType) ) {
+				List<EndtTypeMaster> endtList =  getEndtMasterData(companyId ,  req.getProductId() ,  endtType ) ;
+				if(endtList.size() > 0 ) {
+					endtFields = endtList.get(0).getEndtDependantFields() ;						
+				}
+				
+			}
 			
 			// Quote No Generate
 			if(StringUtils.isNotBlank( quoteNo) && (subUserType.equalsIgnoreCase("b2c")) ) {
@@ -1158,6 +1198,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             request.setPolicyEndDate(policyEndDate);
             request.setEffetiveDate(effectiveDate);
             request.setNoOfDays(noOfDays);
+            request.setEndtType(endtType);
+            request.setEndtCount(endtCount);
+            request.setEndtFields(endtFields);
             
 			commonRes.setCommonResponse(request);
 			commonRes.setIsError(false);
@@ -1238,8 +1281,77 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		return commonRes ;
 }
 	
-	
-	
+	public List<EndtTypeMaster> getEndtMasterData(String insuranceId, String productId, String endtTypeId ) {
+		List<EndtTypeMaster> list = new ArrayList<EndtTypeMaster>();
+				try {
+					Date today = new Date();
+					Calendar cal = new GregorianCalendar();
+					cal.setTime(today);
+					cal.set(Calendar.HOUR_OF_DAY, 23);
+					cal.set(Calendar.MINUTE, 1);
+					today = cal.getTime();
+					cal.set(Calendar.HOUR_OF_DAY, 1);
+					cal.set(Calendar.MINUTE, 1);
+					Date todayEnd = cal.getTime();
+
+					// Criteria
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<EndtTypeMaster> query = cb.createQuery(EndtTypeMaster.class);
+					
+					// Find All
+					Root<EndtTypeMaster> c = query.from(EndtTypeMaster.class);
+
+					// Select
+					query.select(c);
+
+					// Order By
+					List<Order> orderList = new ArrayList<Order>();
+					orderList.add(cb.asc(c.get("endtTypeId")));
+
+					// Effective Date Max Filter
+					Subquery<Long> effectiveDate = query.subquery(Long.class);
+					Root<EndtTypeMaster> ocpm1 = effectiveDate.from(EndtTypeMaster.class);
+					effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+					javax.persistence.criteria.Predicate a1 = cb.equal(c.get("endtTypeId"), ocpm1.get("endtTypeId"));
+					javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+					javax.persistence.criteria.Predicate a3 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+					javax.persistence.criteria.Predicate a4 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+
+					effectiveDate.where(a1, a2, a3, a4);
+					// Effective Date End Max Filter
+					Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+					Root<EndtTypeMaster> ocpm2 = effectiveDate2.from(EndtTypeMaster.class);
+					effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+					javax.persistence.criteria.Predicate a6 = cb.equal(c.get("endtTypeId"), ocpm2.get("endtTypeId"));
+					javax.persistence.criteria.Predicate a7 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+					javax.persistence.criteria.Predicate a8 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+					javax.persistence.criteria.Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+					effectiveDate2.where(a6, a7, a8, a10);
+
+					// Where
+
+					Predicate n1 = cb.equal(c.get("status"),"Y");
+					Predicate n11 = cb.equal(c.get("status"),"R");
+					Predicate n12 = cb.or(n1,n11);
+					javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+					javax.persistence.criteria.Predicate n3 = cb.equal(c.get("endtTypeId"), endtTypeId);
+					javax.persistence.criteria.Predicate n5 = cb.equal(c.get("productId"), productId);
+					javax.persistence.criteria.Predicate n6 = cb.equal(c.get("companyId"), insuranceId);
+					javax.persistence.criteria.Predicate n7 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+
+					query.where(n12, n2, n3, n5, n6,n7).orderBy(orderList);
+
+					// Get Result
+					TypedQuery<EndtTypeMaster> result = em.createQuery(query);
+					list = result.getResultList();
+
+				} catch (Exception e) {
+					e.printStackTrace();
+					log.info("Exception is ---> " + e.getMessage());
+					return null;
+				}
+				return list;
+			}
 	
 	public synchronized String generateQuoteNo() {
 	       try {
