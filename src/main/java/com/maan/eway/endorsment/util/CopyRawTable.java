@@ -103,6 +103,10 @@ public class CopyRawTable  {
 				}.reversed());
 				
 				pendingcount = motors.stream().filter(m->(m.getEndtStatus().equals("P")) ).count();
+				
+				if(motors.stream().filter(m->(m.getEndtStatus().equals("P") && (Integer.parseInt(ent.getEndtType())==m.getEndorsementType()))).count()>0) {
+					return motors;
+				}
 				if(pendingcount>0) {					  
 					 List<EserviceMotorDetails> pendingData = motors.stream().filter(m->(m.getEndtStatus().equals("P")) ).collect(Collectors.toList());
 					 motor= pendingData;
@@ -110,6 +114,7 @@ public class CopyRawTable  {
 					 prevQuoteNo=motor.get(0).getEndtPrevQuoteNo();
 					 newRequestNo=motor.get(0).getRequestReferenceNo();
 					 prevRequestRefNo=motor.get(0).getRequestReferenceNo();
+					 
 					 List<EserviceMotorDetails> rows = emotorRepo.findByRequestReferenceNo(prevRequestRefNo);
 						emotorRepo.deleteAllInBatch(rows);
 						emotorRepo.flush();
