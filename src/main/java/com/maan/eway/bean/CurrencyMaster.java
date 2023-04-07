@@ -133,6 +133,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="DECIMAL_DIGIT")
     private Integer    decimalDigit;
     
+    @Column(name="REGULATORY_CODE")
+    private String regulatoryCode;
+    
 }
 
 

@@ -86,4 +86,7 @@ public class CurrencyMasterRes implements Serializable {
 	@JsonProperty("DecimalDigit")
 	private String decimalDigit;
 	
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
+	
 }

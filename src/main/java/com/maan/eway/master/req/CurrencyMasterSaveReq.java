@@ -32,8 +32,8 @@ public class CurrencyMasterSaveReq implements Serializable {
 	@JsonProperty("CurrencyShortName")
 	private String currencyShortName;
 	
-/*	@JsonProperty("Rfactor")
-	private String rfactor; */
+//    @JsonProperty("Rfactor")
+//	private String rfactor;
 
 	@JsonProperty("SubCurrency")
 	private String subCurrency;
@@ -78,5 +78,10 @@ public class CurrencyMasterSaveReq implements Serializable {
 	
 	@JsonProperty("Rfactor")
 	private String rfactor;
+	
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
+	
+	
 	
 }

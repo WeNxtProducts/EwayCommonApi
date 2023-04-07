@@ -187,6 +187,7 @@ public SuccessRes insertCurrency(CurrencyMasterSaveReq req) {
 			saveData.setDecimalDigit(Integer.valueOf(req.getDecimalDigit()));
 			saveData.setShortName(req.getShortName()==null?"":req.getShortName());
 			saveData.setRfactor((req.getRfactor())==null?0:Integer.valueOf(req.getRfactor()));
+			saveData.setRegulatoryCode((req.getRegulatoryCode()));
 			repo.saveAndFlush(saveData);
 			
 			log.info("Saved Details is ---> " + json.toJson(saveData));
