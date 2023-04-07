@@ -77,6 +77,13 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 		List<Error> errorList = new ArrayList<Error>();
 
 		try {
+			
+			if (StringUtils.isBlank(req.getCurrencyId())) {
+				errorList.add(new Error("07", "CurrencyId", "Please Enter CurrencyId"));
+			}
+			else if (req.getCurrencyId().length() > 20) {
+				errorList.add(new Error("07", "CurrencyId", "Please Enter CurrencyId within 20 Characters"));
+			}
 			if (StringUtils.isBlank(req.getRemarks())) {
 				errorList.add(new Error("03", "Remark", "Please Select Remark "));
 			} else if (req.getRemarks().length() > 100) {
@@ -109,13 +116,9 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			if (StringUtils.isBlank(req.getExchangeRate())) {
 				errorList.add(new Error("06", "ExchangeRate", "Please Enter ExchangeRate"));
 			}
-			if (StringUtils.isBlank(req.getCurrencyId())) {
-				errorList.add(new Error("07", "CurrencyId", "Please Enter CurrencyId"));
-			}
-			else if (req.getCurrencyId().length() > 20) {
-				errorList.add(new Error("07", "CurrencyId", "Please Enter CurrencyId within 20 Characters"));
-			}
-		
+			
+			
+
 			
 			if (StringUtils.isBlank(req.getCompanyId())) {
 				errorList.add(new Error("08", "CompanyId", "Please Enter CompanyId"));
