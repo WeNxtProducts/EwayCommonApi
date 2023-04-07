@@ -87,7 +87,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 				 } 
 				 
 				 t.setPremiumAfterDiscount( t.getPremiumBeforeDiscount().subtract(new BigDecimal(totaldiscount)).add(new BigDecimal(totalloading)).multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
-				 t.setPremiumAfterDiscountLC(t.getPremiumAfterDiscount().multiply(t.getExchangeRate()).multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
+				 t.setPremiumAfterDiscountLC(t.getPremiumAfterDiscount().multiply(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
 				  
 				 t.setPremiumExcluedTax(t.getPremiumAfterDiscount());
 				 t.setPremiumExcluedTaxLC(t.getPremiumExcluedTax().multiply(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
@@ -132,12 +132,17 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 										SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
 										boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
 										String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
+										
+										String periodOfInsurance=(vehicles.get(0).get("periodOfInsurance")==null?"365":vehicles.get(0).get("periodOfInsurance").toString());
+										//Removal Logic
+										diff= String.valueOf(Integer.parseInt(periodOfInsurance)-Integer.parseInt(diff));
+										
 										List<Tuple> prorata =  crservice.loadProRataData(engine, diff);
 										
 										endorsement.setProRataYn("Y");
 										if(prorata.size()>0) {
 										 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());
-										 BigDecimal p=percenat.divide(new BigDecimal("100"))/*.multiply(new BigDecimal("-1"))*/;
+										 BigDecimal p=new BigDecimal("100").subtract(percenat).divide(new BigDecimal("100"));
 										 t.setProRata(p);
 										 endorsement.setProRata(p);
 										}else {
