@@ -93,7 +93,7 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			query.select(c);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("branchCode")));
+			orderList.add(cb.asc(c.get("categoryId")));
 			
 			// Effective Date Start Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
@@ -104,9 +104,9 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 			Predicate a6 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
 			Predicate a9 = cb.equal(c.get("productId"),ocpm1.get("productId"));
-			Predicate a10 = cb.equal(c.get("industryId"),ocpm1.get("industryId"));
+		//	Predicate a10 = cb.equal(c.get("industryId"),ocpm1.get("industryId"));
 
-			effectiveDate.where(a1,a2,a5,a6,a9,a10);
+			effectiveDate.where(a1,a2,a5,a6,a9);
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<IndustryMaster> ocpm2 = effectiveDate2.from(IndustryMaster.class);
@@ -116,9 +116,9 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
 			Predicate a8 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
 			Predicate a11 = cb.equal(c.get("productId"),ocpm2.get("productId"));
-			Predicate a12 = cb.equal(c.get("industryId"),ocpm2.get("industryId"));
+		//	Predicate a12 = cb.equal(c.get("industryId"),ocpm2.get("industryId"));
 
-			effectiveDate2.where(a3,a4,a7,a8,a11,a12);
+			effectiveDate2.where(a3,a4,a7,a8,a11);
 			// Where
 			Predicate n1 = cb.equal(c.get("status"),"Y");
 			Predicate n11 = cb.equal(c.get("status"),"R");
@@ -519,9 +519,9 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 			Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a9 = cb.equal(ocpm1.get("industryId"),b.get("industryId"));
+		//	Predicate a9 = cb.equal(ocpm1.get("industryId"),b.get("industryId"));
 
-			effectiveDate.where(a1,a2,a3,a4,a9);
+			effectiveDate.where(a1,a2,a3,a4);
 
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<IndustryMaster> ocpm2 = effectiveDate.from(IndustryMaster.class);
@@ -530,13 +530,13 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate a6 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
 			Predicate a7 = cb.equal(ocpm2.get("branchCode"), b.get("branchCode"));
 			Predicate a8 = cb.equal(ocpm2.get("productId"), b.get("productId"));
-			Predicate a10 = cb.equal(ocpm2.get("industryId"),b.get("industryId"));
+		//	Predicate a10 = cb.equal(ocpm2.get("industryId"),b.get("industryId"));
 
-			effectiveDate2.where(a5,a6,a7,a8,a10);
+			effectiveDate2.where(a5,a6,a7,a8);
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("branchCode")));
+			orderList.add(cb.asc(b.get("categoryId")));
 
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -628,7 +628,7 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("branchCode")));
+			orderList.add(cb.asc(b.get("categoryId")));
 
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -719,7 +719,7 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("branchCode")));
+			orderList.add(cb.asc(b.get("industryId")));
 
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -775,9 +775,6 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 				//Select 
 				query.select(b);
 //				
-				// Order By
-				List<Order> orderList = new ArrayList<Order>();
-				orderList.add(cb.desc(b.get("effectiveDateStart")));
 				
 				// Where
 			//	Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -787,7 +784,15 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 				Predicate n5 = cb.equal(b.get("productId"), req.getProductId());
 				Predicate n6 = cb.equal(b.get("industryId"),req.getIndustryId());
 
+				
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(b.get("effectiveDateStart")));
+
+				
 				query.where(n2,n3,n4,n5,n6).orderBy(orderList);
+
+				
 				
 				// Get Result 
 				TypedQuery<IndustryMaster> result = em.createQuery(query);
