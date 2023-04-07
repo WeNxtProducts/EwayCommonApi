@@ -448,10 +448,10 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
 			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-//			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
-//			Predicate n5 = cb.or(n3,n4);
+			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n5 = cb.or(n3,n4);
 			Predicate n6 = cb.equal(b.get("makeId"), req.getMakeId());
-			query.where(n1,n2,n3,n6).orderBy(orderList);
+			query.where(n1,n2,n5,n6).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<MotorMakeModelMaster> result = em.createQuery(query);
