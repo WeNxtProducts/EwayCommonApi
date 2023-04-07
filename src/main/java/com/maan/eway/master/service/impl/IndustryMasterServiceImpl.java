@@ -498,7 +498,7 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			
 			// Select 
 			query.select(b);
-			
+			/*
 			//Amend Id Max
 			Subquery<Long> amendId = query.subquery(Long.class);
 			Root<IndustryMaster> ocpm1 = amendId.from(IndustryMaster.class);
@@ -507,24 +507,47 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 			Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
-
+			
 			amendId.where(a1, a2,a3,a4);
+			*/
+			
+			//Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<IndustryMaster> ocpm1 = effectiveDate.from(IndustryMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("categoryId"), b.get("categoryId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 
+			effectiveDate.where(a1,a2,a3,a4);
+
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<IndustryMaster> ocpm2 = effectiveDate.from(IndustryMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a5 = cb.equal(ocpm2.get("categoryId"), b.get("categoryId"));
+			Predicate a6 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
+			Predicate a7 = cb.equal(ocpm2.get("branchCode"), b.get("branchCode"));
+			Predicate a8 = cb.equal(ocpm2.get("productId"), b.get("productId"));
+
+			effectiveDate2.where(a5,a6,a7,a8);
+			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("branchCode")));
 
 			// Where
-			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n5 = cb.or(n3,n4);
+			//Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+			//Predicate n5 = cb.or(n3,n4);
 			Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n7 = cb.equal(b.get("categoryId"),req.getCategoryId());
+			Predicate n8 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
 
 			
-			query.where(n1,n2,n5,n6,n7).orderBy(orderList);
+			query.where(n1,n2,n3,n6,n7,n8).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<IndustryMaster> result = em.createQuery(query);
@@ -567,7 +590,7 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			
 			// Select 
 			query.select(b);
-			
+			/*
 			//Amend Id Max
 			Subquery<Long> amendId = query.subquery(Long.class);
 			Root<IndustryMaster> ocpm1 = amendId.from(IndustryMaster.class);
@@ -578,13 +601,35 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
 
 			amendId.where(a1, a2,a3,a4);
+			*/
+			
+			
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<IndustryMaster> ocpm1 = effectiveDate.from(IndustryMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("categoryId"), b.get("categoryId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+
+			effectiveDate.where(a1,a2,a3,a4);
+
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<IndustryMaster> ocpm2 = effectiveDate.from(IndustryMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a5 = cb.equal(ocpm2.get("categoryId"), b.get("categoryId"));
+			Predicate a6 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
+			Predicate a7 = cb.equal(ocpm2.get("branchCode"), b.get("branchCode"));
+			Predicate a8 = cb.equal(ocpm2.get("productId"), b.get("productId"));
+
+			effectiveDate2.where(a5,a6,a7,a8);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("branchCode")));
 
 			// Where
-			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
 			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
@@ -592,8 +637,9 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate n6 = cb.equal(b.get("productId"), req.getProductId());			
 			Predicate n7 = cb.equal(b.get("status"),"Y");
 			Predicate n8 = cb.equal(b.get("categoryId"),req.getCategoryId());
+			Predicate n9 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
 
-			query.where(n1,n2,n5,n6,n7,n8).orderBy(orderList);
+			query.where(n1,n2,n5,n6,n7,n8,n9).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<IndustryMaster> result = em.createQuery(query);
@@ -634,7 +680,7 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			
 			// Select 
 			query.select(b);
-			
+			/*
 			//Amend Id Max
 			Subquery<Long> amendId = query.subquery(Long.class);
 			Root<IndustryMaster> ocpm1 = amendId.from(IndustryMaster.class);
@@ -645,13 +691,36 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
 
 			amendId.where(a1, a2,a3,a4);
+			 */
+			
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<IndustryMaster> ocpm1 = effectiveDate.from(IndustryMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("categoryId"), b.get("categoryId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
+			Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a9 = cb.equal(ocpm1.get("industryId"), b.get("industryId"));
 
+			effectiveDate.where(a1,a2,a3,a4,a9);
+
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<IndustryMaster> ocpm2 = effectiveDate.from(IndustryMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a5 = cb.equal(ocpm2.get("categoryId"), b.get("categoryId"));
+			Predicate a6 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
+			Predicate a7 = cb.equal(ocpm2.get("branchCode"), b.get("branchCode"));
+			Predicate a8 = cb.equal(ocpm2.get("productId"), b.get("productId"));
+			Predicate a10 = cb.equal(ocpm2.get("industryId"), b.get("industryId"));
+
+			effectiveDate2.where(a5,a6,a7,a8,a10);
+			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("branchCode")));
 
 			// Where
-			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
 			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
@@ -659,8 +728,9 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate n6 = cb.equal(b.get("productId"), req.getProductId());			
 			Predicate n7 = cb.equal(b.get("categoryId"),req.getCategoryId());
 			Predicate n8 = cb.equal(b.get("industryId"),req.getIndustryId());
+			Predicate n10 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
 
-			query.where(n1,n2,n5,n6,n7,n8).orderBy(orderList);
+			query.where(n1,n2,n5,n6,n7,n8,n10).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<IndustryMaster> result = em.createQuery(query);
