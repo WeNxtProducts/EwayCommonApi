@@ -49,6 +49,7 @@ import com.maan.eway.master.service.CityMasterService;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.CountryMaster;
+import com.maan.eway.bean.StateMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.CityMasterRepository;
 import com.maan.eway.res.DropDownRes;
@@ -124,10 +125,10 @@ public class CityMasterServiceImpl implements CityMasterService {
 				Predicate n1 = cb.equal(b.get("status"), "Y");
 				Predicate n3 = cb.equal(b.get("cityId"), req.getCityId());
 				Predicate n4 = cb.equal(b.get("countryId"), req.getCountryId());
-				Predicate n5 = cb.equal(b.get("regionId"), req.getRegionId());
+//				Predicate n5 = cb.equal(b.get("regionId"), req.getRegionId());
 				Predicate n6 = cb.equal(b.get("stateId"), req.getStateId());
 
-				query.where(n1, n3, n4, n5, n6);// .orderBy(orderList);
+				query.where(n1, n3, n4,  n6);// .orderBy(orderList);
 
 				// Get Result
 				TypedQuery<CityMaster> result = em.createQuery(query);
@@ -197,20 +198,60 @@ public class CityMasterServiceImpl implements CityMasterService {
 		List<Error> errorList = new ArrayList<Error>();
 
 		try {
-
+			
+//			if(StringUtils.isBlank(req.getCityName())&&StringUtils.isBlank(req.getCountryId())
+//				||req.getEffectiveDateStart() == null && StringUtils.isBlank(req.getStatus())
+//				&& StringUtils.isBlank(req.getStateId())&&StringUtils.isBlank(req.getRegulatoryCode())
+//				&& StringUtils.isBlank(req.getCreatedBy())&&StringUtils.isBlank(req.getCoreAppCode())
+//				&&StringUtils.isBlank(req.getRegionId())&&StringUtils.isBlank(req.getRemarks()))
+//			{
+//				errorList.add(new Error("02", "", "every status is empty"));
+//
+//			}
+//			if (StringUtils.isBlank(req.getCityName()) && req.getCityName()==null) {
+//				errorList.add(new Error("02", "CityName", "Please Select City  Name "));
+//			} else if (req.getCityName().length() > 100) {
+//				errorList.add(new Error("02", "CityName", "Please Enter City  Name within 100 Characters"));
+//			} else if (StringUtils.isBlank(req.getCityId().toString())) {
+//				Long CityCount = repo.countByCityNameOrderByEntryDateDesc(req.getCityName());
+//				if (CityCount > 0) {
+//					errorList.add(new Error("01", "CityName", "This City Name Alrady Exist "));
+//				}
+//				else {
+//					
+//				}
+//			}
+			
+			
+			
 			if (StringUtils.isBlank(req.getCityName())) {
-				errorList.add(new Error("02", "CityName", "Please Select City  Name "));
-			} else if (req.getCityName().length() > 100) {
-				errorList.add(new Error("02", "CityName", "Please Enter City  Name within 100 Characters"));
-			} else if (StringUtils.isBlank(req.getCityId().toString())) {
-				Long CityCount = repo.countByCityNameOrderByEntryDateDesc(req.getCityName());
-				if (CityCount > 0) {
-					errorList.add(new Error("01", "CityName", "This City Name Alrady Exist "));
+				errorList.add(new Error("01", "CityName", "Please City State  Name "));
+			}else if (req.getCityName().length() > 100){
+				errorList.add(new Error("01","CityName", "Please Enter City Name within 100 Characters")); 
+			}else if (StringUtils.isBlank(req.getCityId()) && StringUtils.isNotBlank(req.getCountryId())) {
+				List<CityMaster> CityList = getCityNameExistDetails(req.getCityName() , req.getCountryId());
+				if (CityList.size()>0 ) {
+					errorList.add(new Error("01", "CityName", "This City Name Already Exist "));
 				}
 			}
-
+//			else if (req.getCityName().length() > 100) {
+//				errorList.add(new Error("02", "CityName", "Please Enter City  Name within 100 Characters"));
+//			}
+//
+//				else if (StringUtils.isBlank(req.getCityId().toString())) {
+//				Long CityCount = repo.countByCityNameOrderByEntryDateDesc(req.getCityName());
+//					if (CityCount > 1) {
+//					errorList.add(new Error("01", "CityName", "This City Name Alrady Exist "));
+//				}
+//				
+//				
+//				
 			if (StringUtils.isBlank(req.getCountryId()) || req.getCountryId() == null) {
 				errorList.add(new Error("03", "CountryId", "Please Select Country Id "));
+			}
+			else if(req.getCountryId().length()>20) {
+				errorList.add(new Error("03","CountryId","Pleaser enter the country between 20 characters"));
+				
 			}
 
 			// Date Validation
@@ -230,13 +271,22 @@ public class CityMasterServiceImpl implements CityMasterService {
 			}
 
 			//Status Validation
+//			if (StringUtils.isBlank(req.getStatus())) {
+//				errorList.add(new Error("05", "Status", "Please Select Status  "));
+//			} else if (req.getStatus().length() > 1) {
+//				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
+//			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
+//				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
+//			}
+			
+			
 			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Select Status  "));
-			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed"));
-			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
+				errorList.add(new Error("05", "Status", "Please Enter Status"));
+				} else if (req.getStatus().length() > 1) {
+				errorList.add(new Error("05", "Status", "Enter Status in One Character Only"));
+				} else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
 				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
-			}
+				}
 
 			if (StringUtils.isBlank(req.getStateId()) || req.getStateId() == null) {
 				errorList.add(new Error("06", "StateId", "Please Select State Id "));
@@ -257,13 +307,22 @@ public class CityMasterServiceImpl implements CityMasterService {
 			if(StringUtils.isBlank(req.getCoreAppCode())) {
 				errorList.add(new Error("11","CoreAppCode","Please Enter core app code"));
 			}
-			
-			if(StringUtils.isBlank(req.getRegionId())) {
-				errorList.add(new Error("12","RegionId","Please select Region"));
+			else if(req.getCoreAppCode().length()>10) {
+				errorList.add(new Error("11","CoreAppCode","Please Enter CoreAppCode within 10 characters"));
 			}
+			
+//			if(StringUtils.isBlank(req.getRegionId())) {
+//				errorList.add(new Error("12","RegionId","Please select Region"));
+//			}
+//			else if(req.getRegionId().length()>9) {
+//				errorList.add(new Error("12","RegionId","Please Enter RegionId within 10 characters"));
+//			}
 			
 			if(StringUtils.isBlank(req.getRemarks())) {
 				errorList.add(new Error("13","Remarks","Please Enter the Remarks"));
+			}
+			else if(req.getRemarks().length()>100) {
+				errorList.add(new Error("13","Remarks","Please Enter RegionId within 10 characters"));
 			}
 			
 		} catch (Exception e) {
@@ -271,6 +330,11 @@ public class CityMasterServiceImpl implements CityMasterService {
 			e.printStackTrace();
 		}
 		return errorList;
+	}
+
+	private List<CityMaster> getCityNameExistDetails(String cityName, String countryId) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	public Long getMasterTableCount() {
@@ -340,10 +404,10 @@ public class CityMasterServiceImpl implements CityMasterService {
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("cityId"), b.get("cityId"));
 			Predicate a2 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
-			Predicate a3 = cb.equal(ocpm1.get("regionId"), b.get("regionId"));
+//			Predicate a3 = cb.equal(ocpm1.get("regionId"), b.get("regionId"));
 			Predicate a4 = cb.equal(ocpm1.get("stateId"), b.get("stateId"));
 
-			amendId.where(a1, a2, a3, a4);
+			amendId.where(a1, a2, a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -415,10 +479,10 @@ public class CityMasterServiceImpl implements CityMasterService {
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(c.get("cityId"), ocpm1.get("cityId"));
 			Predicate a2 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
-			Predicate a3 = cb.equal(c.get("regionId"), ocpm1.get("regionId"));
+//			Predicate a3 = cb.equal(c.get("regionId"), ocpm1.get("regionId"));
 			Predicate a4 = cb.equal(c.get("stateId"), ocpm1.get("stateId"));
 
-			amendId.where(a1, a2, a3, a4);
+			amendId.where(a1, a2, a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -505,20 +569,20 @@ public class CityMasterServiceImpl implements CityMasterService {
 			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("cityId"), ocpm1.get("cityId"));
 			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
-			javax.persistence.criteria.Predicate a4 = cb.equal(c.get("regionId"), ocpm1.get("regionId"));
+//			javax.persistence.criteria.Predicate a4 = cb.equal(c.get("regionId"), ocpm1.get("regionId"));
 			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("stateId"), ocpm1.get("stateId"));
 
-			effectiveDate.where(a1, a2, a3, a4, a5);
+			effectiveDate.where(a1, a2, a3, a5);
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<CityMaster> ocpm2 = effectiveDate2.from(CityMaster.class);
 			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
 			javax.persistence.criteria.Predicate a6 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
-			javax.persistence.criteria.Predicate a7 = cb.equal(c.get("regionId"), ocpm2.get("regionId"));
+//			javax.persistence.criteria.Predicate a7 = cb.equal(c.get("regionId"), ocpm2.get("regionId"));
 			javax.persistence.criteria.Predicate a8 = cb.equal(c.get("stateId"), ocpm2.get("stateId"));
 			javax.persistence.criteria.Predicate a9 = cb.equal(c.get("cityId"), ocpm2.get("cityId"));
 			javax.persistence.criteria.Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-			effectiveDate2.where(a6, a7, a8, a9, a10);
+			effectiveDate2.where(a6,  a8, a9, a10);
 
 			// Where
 
@@ -573,10 +637,10 @@ public class CityMasterServiceImpl implements CityMasterService {
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("cityId"), b.get("cityId"));
 			Predicate a2 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
-			Predicate a3 = cb.equal(ocpm1.get("regionId"), b.get("regionId"));
+//			Predicate a3 = cb.equal(ocpm1.get("regionId"), b.get("regionId"));
 			Predicate a4 = cb.equal(ocpm1.get("stateId"), b.get("stateId"));
 
-			amendId.where(a1, a2, a3, a4);
+			amendId.where(a1, a2, a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();

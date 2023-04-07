@@ -1,6 +1,7 @@
 package com.maan.eway.master.req;
 
 import java.io.Serializable;
+
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -35,8 +36,8 @@ public class CityMasterSaveReq implements Serializable {
 	private String countryId;
 	
 
-	@JsonProperty("RegionId")
-	private String regionId;
+//	@JsonProperty("RegionId")
+//	private String regionId;
 	
 	@JsonProperty("Status")
 	private String status;
@@ -53,6 +54,7 @@ public class CityMasterSaveReq implements Serializable {
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
 	
+    
 	
 
 }
