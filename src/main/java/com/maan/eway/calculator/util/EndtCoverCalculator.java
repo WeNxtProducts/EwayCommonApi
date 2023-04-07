@@ -136,35 +136,39 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 										
 										endorsement.setProRataYn("Y");
 										if(prorata.size()>0) {
-										 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
-										 t.setProRata(percenat.divide(new BigDecimal("100"))/*.multiply(new BigDecimal("-1"))*/);
-										 endorsement.setProRata(t.getProRata());
+										 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());
+										 BigDecimal p=percenat.divide(new BigDecimal("100"))/*.multiply(new BigDecimal("-1"))*/;
+										 t.setProRata(p);
+										 endorsement.setProRata(p);
 										}else {
-											t.setProRata(new BigDecimal("1"));
-											 endorsement.setProRata(t.getProRata());
+											 BigDecimal p=new BigDecimal("1");
+											t.setProRata(p);
+											 endorsement.setProRata(p);
 										}
 										
-									 }else if("Y".equals(t.getProRataYn()) && !"Y".equals(t.getUserOpt())) {
-											// Date Differents
-											Date periodStart =  effectiveDate;
-											Date periodEnd = t.getPolicyEndDate() ;
-											Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
-											Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;						
-											// Check Leap Year
-											SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
-											boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
-											String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
-											List<Tuple> prorata =  crservice.loadProRataData(engine, diff);
-											if(prorata.size()>0) {
-												 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
-												 t.setProRata(new BigDecimal("100").subtract(percenat).divide(new BigDecimal("100")));
-												 endorsement.setProRata(t.getProRata());
-												}else {
-													t.setProRata(new BigDecimal("1"));
-													 endorsement.setProRata(t.getProRata());
-												}
-											
-									 }
+					 		 }else if("Y".equals(t.getProRataYn()) && !"Y".equals(t.getUserOpt())) {
+					 			 // Date Differents
+					 			 Date periodStart =  effectiveDate;
+					 			 Date periodEnd = t.getPolicyEndDate() ;
+					 			 Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
+					 			 Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;						
+					 			 // Check Leap Year
+					 			 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+					 			 boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
+					 			 String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
+					 			 List<Tuple> prorata =  crservice.loadProRataData(engine, diff);
+					 			 if(prorata.size()>0) {
+					 				 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());
+					 				 BigDecimal p=new BigDecimal("100").subtract(percenat).divide(new BigDecimal("100"));
+					 				 t.setProRata(p);
+					 				 endorsement.setProRata(p);
+					 			 }else {
+					 				 BigDecimal p=new BigDecimal("1");
+					 				 t.setProRata(p);
+					 				 endorsement.setProRata(p);
+					 			 }
+
+					 		 }
 					 		 
 					 		 if(t.getProRata().doubleValue()==0D) 
 								 t.setProRata(new BigDecimal("1"));
