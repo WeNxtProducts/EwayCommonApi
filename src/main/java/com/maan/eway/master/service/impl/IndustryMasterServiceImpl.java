@@ -127,17 +127,17 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
 			Predicate n4 = cb.equal(c.get("companyId"),req.getCompanyId());
 			Predicate n5 = cb.equal(c.get("branchCode"),req.getBranchCode());
-		//	Predicate n6 = cb.equal(c.get("branchCode"),"99999");
-		//	Predicate n7 = cb.or(n5,n6);
+			Predicate n6 = cb.equal(c.get("branchCode"),"99999");
+			Predicate n7 = cb.or(n5,n6);
 			Predicate n8 = cb.equal(c.get("productId"),req.getProductId());
 			Predicate n9 = cb.equal(c.get("categoryId"),req.getCategoryId());
 			
 			if(StringUtils.isBlank(req.getProductId())) {
-				query.where(n12,n2,n3,n4,n5,n9).orderBy(orderList);
+				query.where(n12,n2,n3,n4,n7,n9).orderBy(orderList);
 				
 			}
 			else {
-			query.where(n12,n2,n3,n4,n5,n8,n9).orderBy(orderList);
+			query.where(n12,n2,n3,n4,n7,n8,n9).orderBy(orderList);
 			}
 			// Get Result
 			TypedQuery<IndustryMaster> result = em.createQuery(query);
@@ -542,14 +542,14 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-			//Predicate n4 = cb.equal(b.get("branchCode"), "99999");
-			//Predicate n5 = cb.or(n3,n4);
+			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n5 = cb.or(n3,n4);
 			Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n7 = cb.equal(b.get("categoryId"),req.getCategoryId());
 			Predicate n8 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
 
 			
-			query.where(n1,n2,n3,n6,n7,n8).orderBy(orderList);
+			query.where(n1,n2,n5,n6,n7,n8).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<IndustryMaster> result = em.createQuery(query);
