@@ -53,4 +53,7 @@ public interface CoverDetailsRepository  extends JpaRepository<PolicyCoverData,P
 
 	List<PolicyCoverData> findByQuoteNoAndStatusOrderByVehicleIdAsc(String endtPrevQuoteNo, String string);
 
+	List<PolicyCoverData> findByQuoteNoAndDiscLoadIdAndTaxIdAndStatusNotOrderByVehicleIdAsc(String prevQuoteNo, int i,
+			int j, String string);
+
 }
