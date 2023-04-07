@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
+import org.hibernate.cfg.beanvalidation.IntegrationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -309,7 +310,23 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setAmendId(amendId);
 			saveData.setCoreAppCode(req.getCoreAppCode());
-			repo.saveAndFlush(saveData);
+			saveData.setVehiclemodelcode(req.getVehicleModelCode()==null?0:Integer.valueOf(req.getVehicleModelCode()));
+	        saveData.setRegulatoryCode(req.getRegulatoryCode());
+	        saveData.setBatchId(req.getBatchId()==null?0:Integer.valueOf(req.getBatchId()));
+	        saveData.setNetrate(req.getNetRate()==null?0:Integer.valueOf(req.getNetRate()));
+	        saveData.setOthrBodyId1(req.getOtherBodyId1());
+	        saveData.setOthrBodyId2(req.getOtherBodyId2());
+	        saveData.setOthrMakeId1(req.getOtherMakeId1());
+	        saveData.setOthrMakeId2(req.getOtherMakeId2());
+	        saveData.setOthrModelId1(req.getOtherModelId1());
+	        saveData.setOthrModelId2(req.getOtherModelId2());
+	        saveData.setPremiaCode(req.getPrimaCode()==null?0:Integer.valueOf(req.getPrimaCode()));
+	        saveData.setTplrate(req.getTplRate()==null?0:Integer.valueOf(req.getTplRate()));
+	        saveData.setVehCc(req.getVehCc()==null?0:Integer.valueOf(req.getVehCc()));
+	        saveData.setVehFueltype(req.getVehFueltype()==null?0:Integer.valueOf(req.getVehFueltype()));
+	        saveData.setRemarks(req.getRemarks());
+	        saveData.setBaserate(req.getBaseRate()==null?0:Integer.valueOf(req.getBaseRate()));
+	        repo.saveAndFlush(saveData);
 			log.info("Saved Details is --> " + json.toJson(saveData));
 			
 			}
@@ -324,6 +341,7 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 	@Override
 	public MotorMakeModelGetRes getMotorMakeModel(MotorMakeModelGetReq req) {
 		MotorMakeModelGetRes res = new MotorMakeModelGetRes();
+
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
 			List<MotorMakeModelMaster> list = new ArrayList<MotorMakeModelMaster>();
@@ -366,8 +384,26 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 			// Get Result
 			TypedQuery<MotorMakeModelMaster> result = em.createQuery(query);
 			list = result.getResultList();
+				// Response
 			// Map
 			res = mapper.map(list.get(0) , MotorMakeModelGetRes.class);
+			res.setRegulatoryCode(list.get(0).getRegulatoryCode());
+			res.setBatchId(list.get(0).getBatchId().toString());
+			res.setOtherBodyId1(list.get(0).getOthrBodyId1());
+			res.setOtherBodyId2(list.get(0).getOthrBodyId2());
+			res.setOtherMakeId1(list.get(0).getOthrMakeId1());
+			res.setOtherMakeId2(list.get(0).getOthrMakeId2());
+			res.setOtherModelId1(list.get(0).getOthrModelId1());
+			res.setOtherModelId2(list.get(0).getOthrModelId2());
+			res.setPrimaCode(list.get(0).getPremiaCode().toString());
+			res.setRefNo(list.get(0).getRefNo().toString());
+			res.setTplRate(list.get(0).getTplrate().toString());
+			res.setVehCc(list.get(0).getVehCc().toString());
+			res.setVehFueltype(list.get(0).getVehFueltype().toString());
+			res.setBaseRate(list.get(0).getBaserate().toString());
+			res.setNetRate(list.get(0).getNetrate().toString());		
+			res.setStatus(list.get(0).getStatus());
+			res.setRemarks(list.get(0).getRemarks());		
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info(e.getMessage());
@@ -412,10 +448,10 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getInsuranceId());
 			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n5 = cb.or(n3,n4);
+//			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+//			Predicate n5 = cb.or(n3,n4);
 			Predicate n6 = cb.equal(b.get("makeId"), req.getMakeId());
-			query.where(n1,n2,n5,n6).orderBy(orderList);
+			query.where(n1,n2,n3,n6).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<MotorMakeModelMaster> result = em.createQuery(query);

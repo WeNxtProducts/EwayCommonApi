@@ -81,6 +81,7 @@ public class MotorMakeModelSaveReq {
 	
 	@JsonProperty("InsuranceId")
 	private String insuranceId;
+	
 	@JsonProperty("BranchCode")
 	private String branchCode;
 	
