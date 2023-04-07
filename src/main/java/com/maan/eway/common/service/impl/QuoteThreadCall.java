@@ -2179,7 +2179,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				 
 				 List<PolicyCoverData>  oldcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdAndStatusNotOrderByVehicleIdAsc(prevQuoteNo ,0, 0 ,"D");
 				 covers.removeIf(p-> {
-					 return oldcovers.stream().anyMatch(x-> ( x.getCoverId()==p.getCoverId()));
+					 return oldcovers.stream().anyMatch(x-> (x.getVehicleId()==p.getVehicleId() && x.getSectionId() ==p.getSectionId() && x.getProductId()==p.getProductId() && x.getCoverId()==p.getCoverId()));
 				 });
 				 Double addedCoverPremium =covers.stream().filter( o -> o.getDiscLoadId().equals(0)  &&  
 						 o.getTaxId().equals(0) && o.getPremiumIncludedTaxLc()!=null 
