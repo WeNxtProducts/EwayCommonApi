@@ -1375,7 +1375,6 @@ public class QuoteThreadCall implements Callable<Object>  {
 					PolicyCoverData coverData  = new PolicyCoverData();
 					
 					dozerMapper.map(cov, coverData);
-						
 					coverData.setEntryDate(new Date());
 					
 					// Date Differents
@@ -1384,13 +1383,24 @@ public class QuoteThreadCall implements Callable<Object>  {
 					Date periodEnd   = cov.getCoverPeriodTo();
 					Date effDate   = request.getEffetiveDate();
 					
+					// Endt Type
+					boolean oldCover = false ;
+					boolean endtCovModify = false ; 
+					if( StringUtils.isNotBlank(request.getEndtFields())  &&  request.getEndtFields().equalsIgnoreCase("Covers") ) {
+							endtCovModify = true  ;
+					}
+					
+					// Filter Old Cover
 					if( cov.getSubCoverYn() ==null || cov.getSubCoverYn().equalsIgnoreCase("N") ) {
 						List<PolicyCoverData> filterOldCover =  OldPolicyCovers.stream().filter(  o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId()) && o.getProductId().equals(Integer.valueOf(request.getProductId()))
 									&& o.getSectionId().equals(Integer.valueOf(request.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) ).collect(Collectors.toList());	            			
 						
 						if(filterOldCover.size() > 0 ) {
-							periodStart = filterOldCover.get(0).getCoverPeriodFrom().before(request.getPolicyStartDate()) ? request.getPolicyStartDate() : filterOldCover.get(0).getCoverPeriodFrom();
-							periodEnd   = filterOldCover.get(0).getCoverPeriodTo().before(request.getPolicyEndDate()) ? request.getPolicyEndDate() : filterOldCover.get(0).getCoverPeriodTo();
+							PolicyCoverData oldCoverData = filterOldCover.get(0) ;
+							periodStart = oldCoverData.getCoverPeriodFrom().before(request.getPolicyStartDate()) ? request.getPolicyStartDate() : oldCoverData.getCoverPeriodFrom();
+							periodEnd   = oldCoverData.getCoverPeriodTo().before(request.getPolicyEndDate()) ? request.getPolicyEndDate() : oldCoverData.getCoverPeriodTo();
+							oldCover = true ;
+							
 						} else {
 							periodStart = effDate.before(request.getPolicyStartDate()) ? request.getPolicyStartDate() : effDate;
 							periodEnd   = cov.getCoverPeriodTo().before(request.getPolicyEndDate()) ? request.getPolicyEndDate() : cov.getCoverPeriodTo();
@@ -1401,8 +1411,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 									&& o.getSectionId().equals(Integer.valueOf(request.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) &&  o.getSubCoverId().equals(Integer.valueOf(cov.getSubCoverId()))  ).collect(Collectors.toList());
 						
         				if(filterOldSubCover.size() > 0 ) {
-							periodStart = filterOldSubCover.get(0).getCoverPeriodFrom().before(request.getPolicyStartDate()) ? request.getPolicyStartDate() : filterOldSubCover.get(0).getCoverPeriodFrom();
-							periodEnd   = filterOldSubCover.get(0).getCoverPeriodTo().before(request.getPolicyEndDate()) ? request.getPolicyEndDate() : filterOldSubCover.get(0).getCoverPeriodTo();
+        					PolicyCoverData oldSubCoverData = filterOldSubCover.get(0) ;
+							periodStart = oldSubCoverData.getCoverPeriodFrom().before(request.getPolicyStartDate()) ? request.getPolicyStartDate() : oldSubCoverData.getCoverPeriodFrom();
+							periodEnd   = oldSubCoverData.getCoverPeriodTo().before(request.getPolicyEndDate()) ? request.getPolicyEndDate() : oldSubCoverData.getCoverPeriodTo();
+							oldCover = true ;
+							
 						} else {
 							periodStart = effDate.before(request.getPolicyStartDate()) ? request.getPolicyStartDate() : effDate;
 							periodEnd   = cov.getCoverPeriodTo().before(request.getPolicyEndDate()) ? request.getPolicyEndDate() : cov.getCoverPeriodTo();
@@ -1421,6 +1434,36 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setCoverPeriodTo(periodEnd);
 					coverData.setNoOfDays(new BigDecimal(diff));
 					coverData.setStatus("Y");
+					
+					// Premium
+					if(endtCovModify == true && oldCover==true   ) {
+						
+						coverData.setDiffPremiumIncludedTaxLc(BigDecimal.ZERO);
+						coverData.setDiffPremiumIncludedTaxFc(BigDecimal.ZERO);
+						coverData.setPremiumBeforeDiscountFc(BigDecimal.ZERO);
+						coverData.setPremiumBeforeDiscountLc(BigDecimal.ZERO);
+						coverData.setPremiumAfterDiscountFc(BigDecimal.ZERO);
+						coverData.setPremiumAfterDiscountLc(BigDecimal.ZERO);
+						coverData.setPremiumExcludedTaxFc(BigDecimal.ZERO);
+						coverData.setPremiumExcludedTaxLc(BigDecimal.ZERO);
+						coverData.setPremiumIncludedTaxFc(BigDecimal.ZERO);
+						coverData.setPremiumIncludedTaxLc(BigDecimal.ZERO);
+						
+					} else {
+						
+						coverData.setDiffPremiumIncludedTaxLc(cov.getDiffPremiumIncludedTaxLc() != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
+						coverData.setDiffPremiumIncludedTaxFc(cov.getDiffPremiumIncludedTaxFc() != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
+						coverData.setPremiumBeforeDiscountFc(cov.getPremiumBeforeDiscountFc() != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
+						coverData.setPremiumBeforeDiscountLc(cov.getPremiumBeforeDiscountLc() != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
+						coverData.setPremiumAfterDiscountFc(cov.getPremiumAfterDiscountFc() != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
+						coverData.setPremiumAfterDiscountLc(cov.getPremiumAfterDiscountLc() != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
+						coverData.setPremiumExcludedTaxFc(cov.getPremiumExcludedTaxFc() != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
+						coverData.setPremiumExcludedTaxLc(cov.getPremiumExcludedTaxLc() != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
+						coverData.setPremiumIncludedTaxFc(cov.getPremiumIncludedTaxFc()  != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
+						coverData.setPremiumIncludedTaxLc(cov.getPremiumIncludedTaxLc() != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
+						
+					}
+					
 					
 					coverData.setQuoteNo(request.getQuoteNo());
 					coverData.setIsSelected(cov.getIsSelected().equalsIgnoreCase("N") ? "Y" :cov.getIsSelected());
@@ -1446,6 +1489,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			return res;
 		}
 
+		
+	
 //-------------------------------------------------------------------Delete Method Start -------------------------------------------------------//
 		
 		public synchronized Map<String,Object>  deleteOldQuoteRecords(QuoteThreadReq req) {

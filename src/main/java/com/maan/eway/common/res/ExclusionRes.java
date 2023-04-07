@@ -38,4 +38,7 @@ private String docRefNo;
 @JsonProperty("DocumentId")
 private String documentId;
 
+@JsonProperty("TypeId")
+private String typeId;
+
 }

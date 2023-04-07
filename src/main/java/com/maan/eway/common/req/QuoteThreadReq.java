@@ -58,6 +58,15 @@ public class QuoteThreadReq {
 	@JsonProperty("NoOfDays")
 	private String noOfDays;
 	
+	@JsonProperty("EndtType")
+	private String endtType;
+	
+	@JsonProperty("EndtCount")
+	private String endtCount;
+	
+	@JsonProperty("EndtFields")
+	private String endtFields;
+	
 	@JsonProperty("Vehicles")
 	private List<VehicleIdsReq> VehicleIdsList;
 
