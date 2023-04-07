@@ -253,6 +253,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						clausesres.setSubIdDesc(clauses.getClausesDescription());
 						clausesres.setDocRefNo(clauses.getDocRefNo());
 						clausesres.setDocumentId("18");
+						clausesres.setTypeId(clauses.getTypeId());
 						clausesresList.add(clausesres);
 						res.setClausesRes(clausesresList);
 
@@ -333,6 +334,8 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						exclusionres.setSubIdDesc(exclusions.getExclusionDescription());
 						exclusionres.setDocRefNo(exclusions.getDocRefNo());
 						exclusionres.setDocumentId("19");
+						exclusionres.setTypeId(exclusions.getTypeId());
+
 						exclusionresList.add(exclusionres);
 						res.setExclusionRes(exclusionresList);
 
@@ -418,6 +421,8 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						warrantyres.setSubIdDesc(warranties.getWarrantyDescription());
 						warrantyres.setDocRefNo(warranties.getDocRefNo());
 						warrantyres.setDocumentId("16");
+						warrantyres.setTypeId(warranties.getTypeId());
+
 						warrantyresList.add(warrantyres);
 						res.setWarrantyRes(warrantyresList);
 					}
