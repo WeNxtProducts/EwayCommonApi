@@ -1393,7 +1393,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					// Filter Old Cover
 					if( cov.getSubCoverYn() ==null || cov.getSubCoverYn().equalsIgnoreCase("N") ) {
 						List<PolicyCoverData> filterOldCover =  OldPolicyCovers.stream().filter(  o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId()) && o.getProductId().equals(Integer.valueOf(request.getProductId()))
-									&& o.getSectionId().equals(Integer.valueOf(request.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) ).collect(Collectors.toList());	            			
+									&& o.getSectionId().equals(Integer.valueOf(request.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) && o.getTaxId().equals(cov.getTaxId()) &&  o.getDiscLoadId().equals(cov.getDiscLoadId()) ).collect(Collectors.toList());	            			
 						
 						if(filterOldCover.size() > 0 ) {
 							PolicyCoverData oldCoverData = filterOldCover.get(0) ;
@@ -1408,7 +1408,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					
 					} else {
         				List<PolicyCoverData> filterOldSubCover =  OldPolicyCovers.stream().filter(  o ->  o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId()) && o.getProductId().equals(Integer.valueOf(request.getProductId()))
-									&& o.getSectionId().equals(Integer.valueOf(request.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) &&  o.getSubCoverId().equals(Integer.valueOf(cov.getSubCoverId()))  ).collect(Collectors.toList());
+									&& o.getSectionId().equals(Integer.valueOf(request.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) &&  o.getSubCoverId().equals(Integer.valueOf(cov.getSubCoverId()))  && o.getTaxId().equals(cov.getTaxId()) &&  o.getDiscLoadId().equals(cov.getDiscLoadId())   ).collect(Collectors.toList());
 						
         				if(filterOldSubCover.size() > 0 ) {
         					PolicyCoverData oldSubCoverData = filterOldSubCover.get(0) ;
@@ -1453,14 +1453,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 						
 						coverData.setDiffPremiumIncludedTaxLc(cov.getDiffPremiumIncludedTaxLc() != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
 						coverData.setDiffPremiumIncludedTaxFc(cov.getDiffPremiumIncludedTaxFc() != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
-						coverData.setPremiumBeforeDiscountFc(cov.getPremiumBeforeDiscountFc() != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
-						coverData.setPremiumBeforeDiscountLc(cov.getPremiumBeforeDiscountLc() != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
-						coverData.setPremiumAfterDiscountFc(cov.getPremiumAfterDiscountFc() != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
-						coverData.setPremiumAfterDiscountLc(cov.getPremiumAfterDiscountLc() != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
-						coverData.setPremiumExcludedTaxFc(cov.getPremiumExcludedTaxFc() != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
-						coverData.setPremiumExcludedTaxLc(cov.getPremiumExcludedTaxLc() != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
-						coverData.setPremiumIncludedTaxFc(cov.getPremiumIncludedTaxFc()  != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
-						coverData.setPremiumIncludedTaxLc(cov.getPremiumIncludedTaxLc() != null ? cov.getDiffPremiumIncludedTaxLc() : BigDecimal.ZERO );
+						coverData.setPremiumBeforeDiscountFc(cov.getPremiumBeforeDiscountFc() != null ? cov.getPremiumBeforeDiscountFc() : BigDecimal.ZERO );
+						coverData.setPremiumBeforeDiscountLc(cov.getPremiumBeforeDiscountLc() != null ? cov.getPremiumBeforeDiscountLc() : BigDecimal.ZERO );
+						coverData.setPremiumAfterDiscountFc(cov.getPremiumAfterDiscountFc() != null ? cov.getPremiumAfterDiscountFc() : BigDecimal.ZERO );
+						coverData.setPremiumAfterDiscountLc(cov.getPremiumAfterDiscountLc() != null ? cov.getPremiumAfterDiscountLc() : BigDecimal.ZERO );
+						coverData.setPremiumExcludedTaxFc(cov.getPremiumExcludedTaxFc() != null ? cov.getPremiumExcludedTaxFc() : BigDecimal.ZERO );
+						coverData.setPremiumExcludedTaxLc(cov.getPremiumExcludedTaxLc() != null ? cov.getPremiumExcludedTaxLc() : BigDecimal.ZERO );
+						coverData.setPremiumIncludedTaxFc(cov.getPremiumIncludedTaxFc()  != null ? cov.getPremiumIncludedTaxFc() : BigDecimal.ZERO );
+						coverData.setPremiumIncludedTaxLc(cov.getPremiumIncludedTaxLc() != null ? cov.getPremiumIncludedTaxLc() : BigDecimal.ZERO );
 						
 					}
 					
