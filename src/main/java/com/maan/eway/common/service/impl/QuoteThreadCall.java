@@ -1384,7 +1384,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					Date effDate   = request.getEffetiveDate();
 					
 					// Endt Type
-					boolean oldCover = false ;
+					boolean alreadyOptCover = false ;
 					boolean endtCovModify = false ; 
 					if( StringUtils.isNotBlank(request.getEndtFields())  &&  request.getEndtFields().equalsIgnoreCase("Covers") ) {
 							endtCovModify = true  ;
@@ -1399,7 +1399,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 							PolicyCoverData oldCoverData = filterOldCover.get(0) ;
 							periodStart = oldCoverData.getCoverPeriodFrom().before(request.getPolicyStartDate()) ? request.getPolicyStartDate() : oldCoverData.getCoverPeriodFrom();
 							periodEnd   = oldCoverData.getCoverPeriodTo().before(request.getPolicyEndDate()) ? request.getPolicyEndDate() : oldCoverData.getCoverPeriodTo();
-							oldCover = true ;
+							alreadyOptCover = true ;
 							
 						} else {
 							periodStart = effDate.before(request.getPolicyStartDate()) ? request.getPolicyStartDate() : effDate;
@@ -1414,7 +1414,7 @@ public class QuoteThreadCall implements Callable<Object>  {
         					PolicyCoverData oldSubCoverData = filterOldSubCover.get(0) ;
 							periodStart = oldSubCoverData.getCoverPeriodFrom().before(request.getPolicyStartDate()) ? request.getPolicyStartDate() : oldSubCoverData.getCoverPeriodFrom();
 							periodEnd   = oldSubCoverData.getCoverPeriodTo().before(request.getPolicyEndDate()) ? request.getPolicyEndDate() : oldSubCoverData.getCoverPeriodTo();
-							oldCover = true ;
+							alreadyOptCover = true ;
 							
 						} else {
 							periodStart = effDate.before(request.getPolicyStartDate()) ? request.getPolicyStartDate() : effDate;
@@ -1436,7 +1436,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setStatus("Y");
 					
 					// Premium
-					if(endtCovModify == true && oldCover==true   ) {
+					if(endtCovModify == true && alreadyOptCover==true && ( cov.getCoverageType().equalsIgnoreCase("E") || cov.getCoverageType().equalsIgnoreCase("T") && cov.getDiscLoadId() > 0 ) ) {
 						
 						coverData.setDiffPremiumIncludedTaxLc(BigDecimal.ZERO);
 						coverData.setDiffPremiumIncludedTaxFc(BigDecimal.ZERO);
