@@ -393,7 +393,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 		 		String endtTypeId=vehicles.get(0).get("endtTypeId")==null?"":vehicles.get(0).get("endtTypeId").toString();
 		 		if(StringUtils.isNotBlank(endtTypeId) && !"0".equals(endtTypeId)) {
 		 			// referalCalculator = referalCalculator(engine);
-		 			endorsementCalculator(engine,endtCount);
+		 			return endorsementCalculator(engine,endtCount);
 		 			
 		 		}		 	
 		 	}catch (Exception e) {
@@ -493,7 +493,9 @@ public class CalculatorEngineService implements CalculatorEngine{
 							    .premiumExcluedTax(d.getPremiumExcludedTaxFc())
 							    .premiumExcluedTaxLC(d.getPremiumExcludedTaxLc())
 							    .premiumIncludedTax(d.getPremiumIncludedTaxFc())
-							    .premiumIncludedTaxLC(d.getPremiumIncludedTaxLc())							    
+							    .premiumIncludedTaxLC(d.getPremiumIncludedTaxLc())
+							    .proRata(BigDecimal.ZERO)
+							    .proRataYn("N")
 							 	.build();
 					 
 					 {

@@ -19,6 +19,10 @@ import lombok.Setter;
 @Builder
 public class Endorsement implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@JsonProperty("EndorsementId") 
     private String endorsementId;
     @JsonProperty("EndorsementDesc") 

@@ -60,9 +60,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATE_ID", nullable=false)
     private Integer    stateId ;
 
-    @Id
-    @Column(name="REGION_ID", nullable=false)
-    private Integer    regionId ;
+//    @Id
+//    @Column(name="REGION_ID", nullable=false)
+//    private Integer    regionId ;
 
     @Id
     @Column(name="COUNTRY_ID", nullable=false)

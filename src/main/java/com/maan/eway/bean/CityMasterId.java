@@ -33,7 +33,7 @@ public class CityMasterId implements Serializable {
     
     private Integer    stateId ;
     
-    private Integer    regionId ;
+//    private Integer    regionId ;
     
     private String    countryId ;
     
