@@ -519,8 +519,9 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 			Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a9 = cb.equal(ocpm1.get("industryId"),b.get("industryId"));
 
-			effectiveDate.where(a1,a2,a3,a4);
+			effectiveDate.where(a1,a2,a3,a4,a9);
 
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<IndustryMaster> ocpm2 = effectiveDate.from(IndustryMaster.class);
@@ -529,8 +530,9 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate a6 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
 			Predicate a7 = cb.equal(ocpm2.get("branchCode"), b.get("branchCode"));
 			Predicate a8 = cb.equal(ocpm2.get("productId"), b.get("productId"));
+			Predicate a10 = cb.equal(ocpm2.get("industryId"),b.get("industryId"));
 
-			effectiveDate2.where(a5,a6,a7,a8);
+			effectiveDate2.where(a5,a6,a7,a8,a10);
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
