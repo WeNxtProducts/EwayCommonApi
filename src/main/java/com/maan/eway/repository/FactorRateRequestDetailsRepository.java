@@ -15,6 +15,8 @@ package com.maan.eway.repository;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import com.maan.eway.bean.FactorRateRequestDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -54,7 +56,7 @@ public interface FactorRateRequestDetailsRepository  extends JpaRepository<Facto
 
 	List<FactorRateRequestDetails> findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(
 			String requestReferenceNo, Integer valueOf, String insuranceId, Integer valueOf2, Integer valueOf3);
-
+	@Transactional
 	void deleteByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionId(String requestReferenceNo,
 			Integer valueOf, String insuranceId, Integer valueOf2, Integer valueOf3);
 
