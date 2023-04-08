@@ -353,16 +353,20 @@ this.repository = repo;
 					// Date Differents
 					Date periodStart =  coverData.getEffectiveDate();
 					Date periodEnd = coverData.getPolicyEndDate() ;
-					Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
-					Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
-					
-					// Check Leap Year
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
-					boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
-					String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
-					System.out.println( "Calc Cover :  "+ coverData.getCoverDesc() + " Difference in days: " + diff);
-					
-					saveCover.setNoOfDays(new BigDecimal(diff));
+					String diff = "0";
+					if(periodStart!=null && periodEnd!=null ) {
+						Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
+						Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
+						
+						// Check Leap Year
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+						boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
+						diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
+						System.out.println( "Calc Cover :  "+ coverData.getCoverDesc() + " Difference in days: " + diff);
+						
+						saveCover.setNoOfDays(new BigDecimal(diff));
+						
+					}
 					
 //					if(coverData.getTaxes()!=null && coverData.getTaxes().size() > 0 ) {
 //						saveCover.setTax1(coverData.getTaxes().get(0).getTaxAmount()==null ? null : Double.valueOf(df.format(coverData.getTaxes().get(0).getTaxAmount())) );
@@ -492,16 +496,20 @@ this.repository = repo;
 						// Date Differents
 						Date periodStart =  coverData.getEffectiveDate();
 						Date periodEnd = coverData.getPolicyEndDate() ;
-						Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
-						Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
-						
-						// Check Leap Year
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
-						boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
-						String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
-						System.out.println( "Calc Cover :  "+ coverData.getCoverDesc() + " Difference in days: " + diff);
-						
-						saveSubCover.setNoOfDays(new BigDecimal(diff));
+						String diff = "0";
+						if(periodStart!=null && periodEnd!=null ) {
+							Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
+							Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
+							
+							// Check Leap Year
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+							boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
+							diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
+							System.out.println( "Calc Cover :  "+ coverData.getCoverDesc() + " Difference in days: " + diff);
+							
+							saveSubCover.setNoOfDays(new BigDecimal(diff));
+							
+						}
 						premiumLc = premiumLc + (saveSubCover.getPremiumExcludedTaxLc()==null ? 0D :Double.valueOf(saveSubCover.getPremiumExcludedTaxLc().toString()));
 						premiumFc = premiumFc + (saveSubCover.getPremiumExcludedTaxFc()==null ? 0D :Double.valueOf(saveSubCover.getPremiumExcludedTaxFc().toString()));
 						overAllPremiumLc = overAllPremiumLc + (saveSubCover.getPremiumIncludedTaxLc()==null ? 0D :Double.valueOf(saveSubCover.getPremiumIncludedTaxLc().toString()));
