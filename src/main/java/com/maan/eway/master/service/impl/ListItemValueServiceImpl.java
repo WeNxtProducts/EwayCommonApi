@@ -38,6 +38,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.error.Error;
@@ -154,12 +155,20 @@ this.repository = repo;
 
 		try {
 		
-			if (StringUtils.isBlank(req.getItemType())) {
-				errorList.add(new Error("02", "ItemType", "Please Enter ItemType"));
-			}else if (req.getItemType().length() > 100){
-				errorList.add(new Error("02","ItemType", "Please Enter ItemType Under 100 Characters")); 
-			}
+//			if (StringUtils.isBlank(req.getItemType())) {
+//				errorList.add(new Error("02", "ItemType", "Please Enter ItemType"));
+//			}else if (req.getItemType().length() > 100){
+//				errorList.add(new Error("02","ItemType", "Please Enter ItemType Under 100 Characters")); 
+//			}
 			
+			
+//	
+
+			if (StringUtils.isBlank(req.getItemValue())) {
+				errorList.add(new Error("02", "ItemValue", "Please Enter Description"));
+			}else if (req.getItemCode().length() > 20){
+				errorList.add(new Error("02","ItemValue", "Please Enter Description Under 20 Characters")); 
+			}
 			if (StringUtils.isBlank(req.getItemCode())) {
 				errorList.add(new Error("02", "ItemCode", "Please Enter ItemCode"));
 			}else if (req.getItemCode().length() > 20){
@@ -177,11 +186,6 @@ this.repository = repo;
 //				}
 //			}
 			
-			if (StringUtils.isBlank(req.getItemValue())) {
-				errorList.add(new Error("02", "ItemCode", "Please Enter ItemCode"));
-			}else if (req.getItemCode().length() > 20){
-				errorList.add(new Error("02","ItemCode", "Please Enter ItemCode Under 20 Characters")); 
-			}
 //			else if (StringUtils.isBlank(req.getItemId()) && StringUtils.isNotBlank(req.getItemValue()) && StringUtils.isNotBlank(req.getItemType()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
 //				List<ListItemValue> lovList = getItemValueExistDetails(req.getItemCode() , req.getItemValue() ,req.getItemType() , req.getInsuranceId() , req.getBranchCode());
 //				if (lovList.size()>0 && lovList.get(0).getItemCode().equalsIgnoreCase(req.getItemCode())   ) {

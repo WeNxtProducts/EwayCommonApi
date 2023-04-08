@@ -21,5 +21,6 @@ public class FollowupDetailsGetallReq {
 	@JsonProperty("Status")
 	private String status;
 
-	    
+	@JsonProperty("LoginId")
+	private String loginId;    
 }
