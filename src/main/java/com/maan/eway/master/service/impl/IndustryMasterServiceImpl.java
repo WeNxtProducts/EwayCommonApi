@@ -634,7 +634,7 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			effectiveDate.where(a1,a2,a3,a4,a10);
 
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
-			Root<IndustryMaster> ocpm2 = effectiveDate.from(IndustryMaster.class);
+			Root<IndustryMaster> ocpm2 = effectiveDate2.from(IndustryMaster.class);
 			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
 			Predicate a5 = cb.equal(ocpm2.get("categoryId"), b.get("categoryId"));
 			Predicate a6 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
