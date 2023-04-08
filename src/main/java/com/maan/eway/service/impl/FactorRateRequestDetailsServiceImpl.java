@@ -366,9 +366,9 @@ this.repository = repo;
 						diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
 						System.out.println( "Calc Cover :  "+ coverData.getCoverDesc() + " Difference in days: " + diff);
 						NoOfDays = new BigDecimal(diff);
-						saveCover.setNoOfDays(NoOfDays);
 						
 					}
+					saveCover.setNoOfDays(NoOfDays);
 					
 //					if(coverData.getTaxes()!=null && coverData.getTaxes().size() > 0 ) {
 //						saveCover.setTax1(coverData.getTaxes().get(0).getTaxAmount()==null ? null : Double.valueOf(df.format(coverData.getTaxes().get(0).getTaxAmount())) );
@@ -511,9 +511,9 @@ this.repository = repo;
 							diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
 							System.out.println( "Calc Cover :  "+ coverData.getCoverDesc() + " Difference in days: " + diff);
 							NoOfDays = new BigDecimal(diff);
-							saveSubCover.setNoOfDays(NoOfDays);
 							
 						}
+						saveSubCover.setNoOfDays(NoOfDays);
 						
 						premiumLc = premiumLc + (saveSubCover.getPremiumExcludedTaxLc()==null ? 0D :Double.valueOf(saveSubCover.getPremiumExcludedTaxLc().toString()));
 						premiumFc = premiumFc + (saveSubCover.getPremiumExcludedTaxFc()==null ? 0D :Double.valueOf(saveSubCover.getPremiumExcludedTaxFc().toString()));
