@@ -78,17 +78,17 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 
 		try {
 			
-			if (StringUtils.isBlank(req.getCurrencyId())) {
-				errorList.add(new Error("07", "CurrencyId", "Please Enter CurrencyId"));
-			}
-			else if (req.getCurrencyId().length() > 20) {
-				errorList.add(new Error("07", "CurrencyId", "Please Enter CurrencyId within 20 Characters"));
-			}
-			if (StringUtils.isBlank(req.getRemarks())) {
+						if (StringUtils.isBlank(req.getRemarks())) {
 				errorList.add(new Error("03", "Remark", "Please Select Remark "));
 			} else if (req.getRemarks().length() > 100) {
 				errorList.add(new Error("03", "Remark", "Please Enter Remark within 100 Characters"));
 			}
+						if (StringUtils.isBlank(req.getCurrencyId())) {
+							errorList.add(new Error("07", "CurrencyId", "Please Enter CurrencyId"));
+						}
+						else if (req.getCurrencyId().length() > 20) {
+							errorList.add(new Error("07", "CurrencyId", "Please Enter CurrencyId within 20 Characters"));
+						}
 
 			// Date Validation
 			Calendar cal = new GregorianCalendar();
