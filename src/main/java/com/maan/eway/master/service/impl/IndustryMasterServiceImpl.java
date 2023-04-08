@@ -555,14 +555,14 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
-			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n5 = cb.or(n3,n4);
+			//Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+			//Predicate n5 = cb.or(n3,n4);
 			Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n7 = cb.equal(b.get("categoryId"),req.getCategoryId());
 			Predicate n8 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
 
 			
-			query.where(n1,n2,n5,n6,n7,n8).orderBy(orderList);
+			query.where(n1,n2,n3,n6,n7,n8).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<IndustryMaster> result = em.createQuery(query);
