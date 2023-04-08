@@ -91,9 +91,6 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Root<IndustryMaster> c = query.from(IndustryMaster.class);
 			//Select
 			query.select(c);
-			// Order By
-			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("industryName")));
 			
 			// Effective Date Start Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
@@ -107,7 +104,7 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate a10 = cb.equal(c.get("industryId"),ocpm1.get("industryId"));
 		//	Predicate a10 = cb.lessThanOrEqualTo(c.get("effectiveDateStart"),today);
 
-			effectiveDate.where(a1,a2,a5,a6,a10);
+			effectiveDate.where(a1,a2,a5,a6,a9,a10);
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<IndustryMaster> ocpm2 = effectiveDate2.from(IndustryMaster.class);
@@ -133,6 +130,11 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate n7 = cb.or(n5,n6);
 			Predicate n8 = cb.equal(c.get("productId"),req.getProductId());
 			Predicate n9 = cb.equal(c.get("categoryId"),req.getCategoryId());
+			
+			// Order By
+						List<Order> orderList = new ArrayList<Order>();
+						orderList.add(cb.asc(c.get("industryName")));
+						
 			
 			if(StringUtils.isBlank(req.getProductId())) {
 				query.where(n12,n2,n3,n4,n7,n9).orderBy(orderList);
@@ -448,12 +450,13 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 			Predicate a4 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a5 = cb.equal(ocpm1.get("industryId"), b.get("industryId"));
 
-			effectiveDate.where(a1,a2,a3,a4);
+			effectiveDate.where(a1,a2,a3,a4,a5);
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("categoryId")));
+			orderList.add(cb.desc(b.get("industryId")));
 			
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("companyId"), companyId);
