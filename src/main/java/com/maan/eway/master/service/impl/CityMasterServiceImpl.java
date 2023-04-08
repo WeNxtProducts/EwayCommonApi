@@ -224,16 +224,7 @@ public class CityMasterServiceImpl implements CityMasterService {
 			
 			
 			
-			if (StringUtils.isBlank(req.getCityName())) {
-				errorList.add(new Error("01", "CityName", "Please City   Name "));
-			}else if (req.getCityName().length() > 100){
-				errorList.add(new Error("01","CityName", "Please Enter City Name within 100 Characters")); 
-			}else if (StringUtils.isBlank(req.getCityId()) && StringUtils.isNotBlank(req.getCountryId())) {
-				List<CityMaster> CityList = getCityNameExistDetails(req.getCityName() , req.getCountryId());
-				if (CityList.size()>0 ) {
-					errorList.add(new Error("01", "CityName", "This City Name Already Exist "));
-				}
-			}
+			
 //			else if (req.getCityName().length() > 100) {
 //				errorList.add(new Error("02", "CityName", "Please Enter City  Name within 100 Characters"));
 //			}
@@ -246,13 +237,31 @@ public class CityMasterServiceImpl implements CityMasterService {
 //				
 //				
 //				
-			if (StringUtils.isBlank(req.getCountryId()) || req.getCountryId() == null) {
+			if (StringUtils.isBlank(req.getCountryId()) ) {
 				errorList.add(new Error("03", "CountryId", "Please Select Country Id "));
 			}
 			else if(req.getCountryId().length()>20) {
 				errorList.add(new Error("03","CountryId","Pleaser enter the country between 20 characters"));
 				
 			}
+			
+			if (StringUtils.isBlank(req.getStateId()) || req.getStateId() == null) {
+				errorList.add(new Error("06", "StateId", "Please Select State Id "));
+			}
+			
+			if(StringUtils.isBlank(req.getCoreAppCode())) {
+				errorList.add(new Error("11","CoreAppCode","Please Enter core app code"));
+			}
+			else if(req.getCoreAppCode().length()>10) {
+				errorList.add(new Error("11","CoreAppCode","Please Enter CoreAppCode within 10 characters"));
+			}
+
+			if (StringUtils.isBlank(req.getCreatedBy())) {
+				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy"));
+			} else if (req.getCreatedBy().length() > 100) {
+				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+			}
+
 
 			// Date Validation
 			Calendar cal = new GregorianCalendar();
@@ -288,15 +297,7 @@ public class CityMasterServiceImpl implements CityMasterService {
 				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 				}
 
-			if (StringUtils.isBlank(req.getStateId()) || req.getStateId() == null) {
-				errorList.add(new Error("06", "StateId", "Please Select State Id "));
-			}
-			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy"));
-			} else if (req.getCreatedBy().length() > 100) {
-				errorList.add(new Error("07", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
-			}
-
+			
 			
 			if (StringUtils.isBlank(req.getRegulatoryCode())) {
 				errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode"));
@@ -304,13 +305,7 @@ public class CityMasterServiceImpl implements CityMasterService {
 				errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters"));
 			}
 			
-			if(StringUtils.isBlank(req.getCoreAppCode())) {
-				errorList.add(new Error("11","CoreAppCode","Please Enter core app code"));
-			}
-			else if(req.getCoreAppCode().length()>10) {
-				errorList.add(new Error("11","CoreAppCode","Please Enter CoreAppCode within 10 characters"));
-			}
-			
+						
 //			if(StringUtils.isBlank(req.getRegionId())) {
 //				errorList.add(new Error("12","RegionId","Please select Region"));
 //			}
@@ -323,6 +318,24 @@ public class CityMasterServiceImpl implements CityMasterService {
 			}
 			else if(req.getRemarks().length()>100) {
 				errorList.add(new Error("13","Remarks","Please Enter RegionId within 10 characters"));
+			}
+			
+			if (StringUtils.isBlank(req.getCityName())) {
+				errorList.add(new Error("01", "CityName", "Please City   Name "));
+			}else if (req.getCityName().length() > 100){
+				errorList.add(new Error("01","CityName", "Please Enter City Name within 100 Characters")); 
+			}else if (StringUtils.isBlank(req.getCityId()) && StringUtils.isNotBlank(req.getCountryId())) {
+				List<CityMaster> CityList = getCityNameExistDetails(req.getCityName() , req.getCountryId());
+				if (CityList.size()>0 ) {
+					errorList.add(new Error("01", "CityName", "This City Name Already Exist "));
+				}
+			}
+			else if(  StringUtils.isNotBlank(req.getCountryId())) {
+				List<CityMaster> CityList =  getCityNameExistDetails(req.getCityName() ,req.getCountryId() );
+				if (CityList.size()>0 &&  (! req.getCityId().equalsIgnoreCase(CityList.get(0).getCityId().toString())) ) {
+					errorList.add(new Error("01", "CityName", "This City Name Already Exist "));
+				}
+
 			}
 			
 		} catch (Exception e) {
