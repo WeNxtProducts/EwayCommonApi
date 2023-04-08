@@ -354,6 +354,8 @@ this.repository = repo;
 					Date periodStart =  coverData.getEffectiveDate();
 					Date periodEnd = coverData.getPolicyEndDate() ;
 					String diff = "0";
+					BigDecimal NoOfDays = new BigDecimal(0);
+					
 					if(periodStart!=null && periodEnd!=null ) {
 						Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
 						Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
@@ -363,8 +365,8 @@ this.repository = repo;
 						boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
 						diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
 						System.out.println( "Calc Cover :  "+ coverData.getCoverDesc() + " Difference in days: " + diff);
-						
-						saveCover.setNoOfDays(new BigDecimal(diff));
+						NoOfDays = new BigDecimal(diff);
+						saveCover.setNoOfDays(NoOfDays);
 						
 					}
 					
@@ -497,6 +499,8 @@ this.repository = repo;
 						Date periodStart =  coverData.getEffectiveDate();
 						Date periodEnd = coverData.getPolicyEndDate() ;
 						String diff = "0";
+						BigDecimal NoOfDays = new BigDecimal(0);
+						
 						if(periodStart!=null && periodEnd!=null ) {
 							Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
 							Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
@@ -506,10 +510,11 @@ this.repository = repo;
 							boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
 							diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
 							System.out.println( "Calc Cover :  "+ coverData.getCoverDesc() + " Difference in days: " + diff);
-							
-							saveSubCover.setNoOfDays(new BigDecimal(diff));
+							NoOfDays = new BigDecimal(diff);
+							saveSubCover.setNoOfDays(NoOfDays);
 							
 						}
+						
 						premiumLc = premiumLc + (saveSubCover.getPremiumExcludedTaxLc()==null ? 0D :Double.valueOf(saveSubCover.getPremiumExcludedTaxLc().toString()));
 						premiumFc = premiumFc + (saveSubCover.getPremiumExcludedTaxFc()==null ? 0D :Double.valueOf(saveSubCover.getPremiumExcludedTaxFc().toString()));
 						overAllPremiumLc = overAllPremiumLc + (saveSubCover.getPremiumIncludedTaxLc()==null ? 0D :Double.valueOf(saveSubCover.getPremiumIncludedTaxLc().toString()));
