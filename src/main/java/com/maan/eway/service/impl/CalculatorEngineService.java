@@ -343,9 +343,9 @@ public class CalculatorEngineService implements CalculatorEngine{
 		 		if(StringUtils.isNotBlank(endtTypeId) && !"0".equals(endtTypeId)) {
 		 			String requestRefercenNo=engine.getRequestReferenceNo();
 		 			String rawtable = ratingutil.getProductIdBasedRawTable(engine);
-		 			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()+";riskId:"+engine.getVehicleId()+";status:E;requestReferenceNo:"+requestRefercenNo+";";
+		 			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()+";riskId:"+engine.getVehicleId()+";status:{E,D};requestReferenceNo:"+requestRefercenNo+";";
 					 if("3".equals(engine.getProductId()) || "19".equals(engine.getProductId())) {
-						 search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";riskId:"+engine.getVehicleId()+";status:E;requestReferenceNo:"+requestRefercenNo+";";
+						 search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";riskId:"+engine.getVehicleId()+";status:{E,D};requestReferenceNo:"+requestRefercenNo+";";
 					 }
 					 
 					
