@@ -79,7 +79,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATUS_DESC", length=100)
     private String     statusDesc;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;
 
@@ -88,14 +88,7 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="REMARKS", length=500)
     private String     remarks ;
-
-    @Temporal(TemporalType.DATE)
-    @Column(name="UPDATED_DATE")
-    private Date       updatedDate ;
-
-    @Column(name="UPDATED_BY", length=100)
-    private String     updatedBy ;
-    
+ 
     @Column(name="POLICY_NO", length=100)
     private String     policyNo ;
 
