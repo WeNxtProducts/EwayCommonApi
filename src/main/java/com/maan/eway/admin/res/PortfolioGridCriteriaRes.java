@@ -61,5 +61,6 @@ public class PortfolioGridCriteriaRes {
 	private Date effectiveDate;
 	
 	private String currency;
+	private String originalPolicyNo;
 }
 

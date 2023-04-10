@@ -465,6 +465,9 @@ this.repository = repo;
 						saveSubCover.setExcessDesc(subCoverData.getExcessDesc()==null ? null : subCoverData.getExcessDesc());
 						saveSubCover.setExcessPercent(subCoverData.getExcessPercent()==null ? null : subCoverData.getExcessPercent());
 						saveSubCover.setProRataYn(subCoverData.getProRataYn()==null ? "N" : subCoverData.getProRataYn());
+						saveSubCover.setIsSelected(subCoverData.getIsselected());
+						saveSubCover.setCoverageType(subCoverData.getCoverageType());
+						
 //						if(subCoverData.getTaxes()!=null && subCoverData.getTaxes().size() > 0 ) {
 //							saveSubCover.setTax1(subCoverData.getTaxes().get(0).getTaxAmount()==null ? null : Double.valueOf(df.format(subCoverData.getTaxes().get(0).getTaxAmount())) );
 //							if(coverData.getTaxes().size() > 1  ) 
@@ -1442,6 +1445,8 @@ this.repository = repo;
 					coverRes.setPolicyEndDate(filterCover.get(0).getCoverPeriodTo());
 					coverRes.setProRata(filterCover.get(0).getProRataPercent());
 					coverRes.setProRataYn(filterCover.get(0).getProRataYn());
+					coverRes.setCoverageType(filterCover.get(0).getCoverageType());
+					coverRes.setIsselected(filterCover.get(0).getIsSelected());
 						
 					List<Cover>  subCoverListRes = new ArrayList<Cover>();
 					List<FactorRateRequestDetails> filterSubCover = covers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());

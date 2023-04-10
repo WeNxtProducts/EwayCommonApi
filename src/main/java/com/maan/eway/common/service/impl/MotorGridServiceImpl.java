@@ -1837,7 +1837,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 						m.get("emiYn").alias("emiYn"),
 						m.get("installmentPeriod").alias("installmentPeriod"),
 						m.get("effectiveDate").alias("effectiveDate"),
-						m.get("currency").alias("currency")
+						m.get("currency").alias("currency"),
+						m.get("originalPolicyNo").alias("originalPolicyNo")
 
 						);
 
@@ -1862,8 +1863,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Predicate n9 = cb.equal(m.get("integrationStatus"), "S");
 				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), startDate);
 				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), startDate);
-			//	Predicate n10 = cb.equal(m.get("endtCount"), endtCount);
-				Predicate n10 = cb.isNull(m.get("endtTypeId"));
+				Predicate n10 = cb.equal(m.get("endtCount"), endtCount);
+			//	Predicate n10 = cb.isNull(m.get("endtTypeId"));
 
 				Predicate n5 = null;
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
@@ -1886,7 +1887,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 						m.get("companyId"),m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 						m.get("customerId"), m.get("entryDate"), m.get("expiryDate"),m.get("inceptionDate"), m.get("overallPremiumLc"), m.get("overallPremiumFc"),
 						m.get("policyNo"), m.get("debitAcNo"), m.get("debitTo"),m.get("debitToId"), m.get("debitNoteNo"), m.get("debitNoteDate"),
-						m.get("creditTo"), m.get("creditToId"), m.get("creditNo"),m.get("creditDate"), m.get("emiYn"), m.get("installmentPeriod"),m.get("effectiveDate"),m.get("currency")
+						m.get("creditTo"), m.get("creditToId"), m.get("creditNo"),m.get("creditDate"), m.get("emiYn"), m.get("installmentPeriod"),m.get("effectiveDate")
+						,m.get("currency"),m.get("originalPolicyNo")
 						)
 						.orderBy(orderList);
 
@@ -1954,7 +1956,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 						m.get("emiYn").alias("emiYn"),
 						m.get("installmentPeriod").alias("installmentPeriod"),
 						m.get("effectiveDate").alias("effectiveDate"),
-						m.get("currency").alias("currency")
+						m.get("currency").alias("currency"),
+						m.get("originalPolicyNo").alias("originalPolicyNo")
 						);
 
 				// Order By
@@ -1978,8 +1981,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Predicate n9 = cb.equal(m.get("integrationStatus"), "P");
 				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), startDate);
 				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), startDate);
-		//		Predicate n10 = cb.equal(m.get("endtCount"), endtCount);
-				Predicate n10 = cb.isNull(m.get("endtTypeId"));
+				Predicate n10 = cb.equal(m.get("endtCount"), endtCount);
+		//		Predicate n10 = cb.isNull(m.get("endtTypeId"));
 
 				Predicate n5 = null;
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
@@ -2002,7 +2005,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 						m.get("companyId"),m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 						m.get("customerId"), m.get("entryDate"), m.get("expiryDate"),m.get("inceptionDate"), m.get("overallPremiumLc"), m.get("overallPremiumFc"),
 						m.get("policyNo"), m.get("debitAcNo"), m.get("debitTo"),m.get("debitToId"), m.get("debitNoteNo"), m.get("debitNoteDate"),
-						m.get("creditTo"), m.get("creditToId"), m.get("creditNo"),m.get("creditDate"), m.get("emiYn"), m.get("installmentPeriod"),m.get("effectiveDate")
+						m.get("creditTo"), m.get("creditToId"), m.get("creditNo"),m.get("creditDate"), m.get("emiYn"), m.get("installmentPeriod"),m.get("effectiveDate"),
+						m.get("currency"),m.get("originalPolicyNo")
 						)
 						.orderBy(orderList);
 
@@ -2070,7 +2074,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 						m.get("emiYn").alias("emiYn"),
 						m.get("installmentPeriod").alias("installmentPeriod"),
 						m.get("effectiveDate").alias("effectiveDate"),
-						m.get("currency").alias("currency")
+						m.get("currency").alias("currency"),
+						m.get("originalPolicyNo").alias("originalPolicyNo")
 						);
 
 				// Order By
@@ -2093,8 +2098,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Predicate n4 = cb.equal(m.get("status"), status);
 				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), startDate);
 				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), startDate);
-			//	Predicate n10 = cb.equal(m.get("endtCount"), endtCount);
-				Predicate n10 = cb.isNull(m.get("endtTypeId"));
+				Predicate n10 = cb.equal(m.get("endtCount"), endtCount);
+			//	Predicate n10 = cb.isNull(m.get("endtTypeId"));
 				
 				Predicate n5 = null;
 				if (req.getApplicationId().equalsIgnoreCase("1")) {

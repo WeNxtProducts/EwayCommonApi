@@ -1138,7 +1138,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 						m.get("emiYn").alias("emiYn"),
 						m.get("installmentPeriod").alias("installmentPeriod"),
 						m.get("effectiveDate").alias("effectiveDate"),
-						m.get("currency").alias("currency")
+						m.get("currency").alias("currency"),
+						m.get("originalPolicyNo").alias("originalPolicyNo")
 
 						);
 
@@ -1187,7 +1188,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 						m.get("companyId"),m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 						m.get("customerId"), m.get("entryDate"), m.get("expiryDate"),m.get("inceptionDate"), m.get("overallPremiumLc"), m.get("overallPremiumFc"),
 						m.get("policyNo"), m.get("debitAcNo"), m.get("debitTo"),m.get("debitToId"), m.get("debitNoteNo"), m.get("debitNoteDate"),
-						m.get("creditTo"), m.get("creditToId"), m.get("creditNo"),m.get("creditDate"), m.get("emiYn"), m.get("installmentPeriod"),m.get("effectiveDate"),m.get("currency")
+						m.get("creditTo"), m.get("creditToId"), m.get("creditNo"),m.get("creditDate"), m.get("emiYn"), m.get("installmentPeriod"),m.get("effectiveDate"),
+						m.get("currency"),m.get("originalPolicyNo")
 						)
 						.orderBy(orderList);
 
@@ -1255,7 +1257,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 						m.get("emiYn").alias("emiYn"),
 						m.get("installmentPeriod").alias("installmentPeriod"),
 						m.get("effectiveDate").alias("effectiveDate"),
-						m.get("currency").alias("currency")
+						m.get("currency").alias("currency"),
+						m.get("originalPolicyNo").alias("originalPolicyNo")
 						);
 
 				// Order By
@@ -1303,7 +1306,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 						m.get("companyId"),m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 						m.get("customerId"), m.get("entryDate"), m.get("expiryDate"),m.get("inceptionDate"), m.get("overallPremiumLc"), m.get("overallPremiumFc"),
 						m.get("policyNo"), m.get("debitAcNo"), m.get("debitTo"),m.get("debitToId"), m.get("debitNoteNo"), m.get("debitNoteDate"),
-						m.get("creditTo"), m.get("creditToId"), m.get("creditNo"),m.get("creditDate"), m.get("emiYn"), m.get("installmentPeriod"),m.get("effectiveDate")
+						m.get("creditTo"), m.get("creditToId"), m.get("creditNo"),m.get("creditDate"), m.get("emiYn"), m.get("installmentPeriod"),m.get("effectiveDate"),
+						m.get("currency"),m.get("originalPolicyNo")
 						)
 						.orderBy(orderList);
 
@@ -1371,7 +1375,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 						m.get("emiYn").alias("emiYn"),
 						m.get("installmentPeriod").alias("installmentPeriod"),
 						m.get("effectiveDate").alias("effectiveDate"),
-						m.get("currency").alias("currency")
+						m.get("currency").alias("currency"),
+						m.get("originalPolicyNo").alias("originalPolicyNo")
 						);
 
 				// Order By
@@ -1418,7 +1423,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 								m.get("companyId"),m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 								m.get("customerId"), m.get("entryDate"), m.get("expiryDate"),m.get("inceptionDate"), m.get("overallPremiumLc"), m.get("overallPremiumFc"),
 								m.get("policyNo"), m.get("debitAcNo"), m.get("debitTo"),m.get("debitToId"), m.get("debitNoteNo"), m.get("debitNoteDate"),
-								m.get("creditTo"), m.get("creditToId"), m.get("creditNo"),m.get("creditDate"), m.get("emiYn"), m.get("installmentPeriod"),m.get("effectiveDate")
+								m.get("creditTo"), m.get("creditToId"), m.get("creditNo"),m.get("creditDate"), m.get("emiYn"), m.get("installmentPeriod"),m.get("effectiveDate"),
+								m.get("currency"),m.get("originalPolicyNo")
 								)
 						.orderBy(orderList);
 

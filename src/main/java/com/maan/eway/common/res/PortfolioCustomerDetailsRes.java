@@ -101,5 +101,8 @@ public class PortfolioCustomerDetailsRes {
 	@JsonProperty("Count")
 	private String   count ;
 	
+	@JsonProperty("OriginalPolicyNo")
+	private String   originalPolicyNo;
+	
 	
 }
