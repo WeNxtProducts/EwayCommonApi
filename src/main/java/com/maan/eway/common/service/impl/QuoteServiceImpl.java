@@ -357,8 +357,8 @@ private BuildingDetailsRepository BuildingRepo;
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			// Find Motor Data
-			List<MotorDataDetails> motorDatas =  motorRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
-			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
+			List<MotorDataDetails> motorDatas =  motorRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(),"D");
+			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(),"D");
 			
 			List<MotorDriverDetails> driverList = driverRepo.findByQuoteNo(req.getQuoteNo() );
 			List<EserviceMotorDetailsRes>   motorResList = new ArrayList<EserviceMotorDetailsRes>();
@@ -1532,7 +1532,7 @@ private BuildingDetailsRepository BuildingRepo;
 	public QuoteUpdateRes motorReferalUpdate(AdminReferalStatusReq req) {
 		QuoteUpdateRes  updateRes = new QuoteUpdateRes(); 
 		try {
-			List<EserviceMotorDetails> motorDatas = eserMotRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
+			List<EserviceMotorDetails> motorDatas = eserMotRepo.findByRequestReferenceNoAndStatusNotOrderByRiskIdAsc(req.getRequestReferenceNo() , "D");
 			
 			// Referal Approve & Create New Quote
 			if (req.getStatus().equalsIgnoreCase("RA") ) {

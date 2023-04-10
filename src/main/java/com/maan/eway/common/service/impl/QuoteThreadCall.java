@@ -1550,6 +1550,61 @@ public class QuoteThreadCall implements Callable<Object>  {
 					motorRepo.deleteByQuoteNo(req.getQuoteNo());
 				}
 				
+				// update 
+				
+				// Find Motor
+				// Deactivate Old Record
+				if(StringUtils.isNotBlank(req.getEndtPrevQuoteNo()) ) {
+					// Copy Quote Doc
+					List<EserviceMotorDetails> eserMotors = eserMotRepo.findByRequestReferenceNoAndStatusOrderByRiskIdAsc(request.getRequestReferenceNo() ,"D");
+					
+					List<MotorDataDetails> motorDatas  = new ArrayList<MotorDataDetails>();
+				
+					eserMotors.forEach(ref ->  {
+						// Save Motro Details
+						MotorDataDetails motorData  = new MotorDataDetails();
+						dozerMapper.map(ref, motorData);
+						motorData.setEntryDate(new Date());	
+						motorData.setCreatedBy(request.getCreatedBy());
+						motorData.setQuoteNo(request.getQuoteNo());
+						motorData.setCustomerId(request.getCustomerId());
+						motorData.setVehicleId(ref.getRiskId().toString());
+						motorData.setStatus(ref.getStatus());
+								
+						// Date Diffrence
+						Date periodStart = ref.getPolicyStartDate();
+						Date effDate =  request.getEffetiveDate();
+						Date oldEndDate = null ;
+						Long daysBetween = 0L ;
+						String diff = "" ;
+							
+						if(periodStart.equals(effDate)  || periodStart.after(effDate) ) {
+							oldEndDate = periodStart ;
+							daysBetween = 0L ;
+							diff = String.valueOf(daysBetween);
+							
+						} else {
+							Long diffInMillies = Math.abs(effDate.getTime() - periodStart.getTime());
+							daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
+							oldEndDate  = effDate ;
+							// Check Leap Year
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+							boolean leapYear = LocalDate.parse(sdf.format(effDate) ).isLeapYear();
+							diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
+						}
+						
+						motorData.setPolicyEndDate(oldEndDate);
+						motorData.setStatus("D");
+						motorData.setPeriodOfInsurance(diff);
+						
+						motorDatas.add(motorData);
+						
+					}) ;
+
+					motorRepo.saveAllAndFlush(motorDatas);
+					
+				}
+				
 	 			res.put("Response", "Success") ;
 				res.put("Errors", null) ;
 				
