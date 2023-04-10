@@ -1447,6 +1447,7 @@ this.repository = repo;
 					coverRes.setProRataYn(filterCover.get(0).getProRataYn());
 					coverRes.setCoverageType(filterCover.get(0).getCoverageType());
 					coverRes.setIsselected(filterCover.get(0).getIsSelected());
+					coverRes.setCurrency(filterCover.get(0).getCurrency());
 						
 					List<Cover>  subCoverListRes = new ArrayList<Cover>();
 					List<FactorRateRequestDetails> filterSubCover = covers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());
