@@ -106,9 +106,9 @@ public class FollowupDetailsServiceImpl  implements FollowupDetailsService{
 			else if((StringUtils.isNotBlank(req.getFollowupDesc())&&req.getFollowupDesc().length()>1000)){
 				errorList.add(new Error("05", "FollowupDesc", "Please Enter FollowupDesc within 1000 Characters"));			
 			}
-			else if(!req.getFollowupDesc().matches("[a-zA-Z ]+")) {
+			/*else if(!req.getFollowupDesc().matches("[a-zA-Z ]+")) {
 				errorList.add(new Error("05", "FollowupDesc", "Please Enter FollowupDesc in Alphabets"));										
-			}			
+			}*/			
 			if (StringUtils.isBlank(req.getStatus())) {
 				errorList.add(new Error("06", "Status", "Please Select Status"));
 			}
