@@ -1151,7 +1151,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 				Root<HomePositionMaster> ocpm1 = endtCount.from(HomePositionMaster.class);
 				endtCount.select(cb.max(ocpm1.get("endtCount")));
 				Predicate a1 = cb.equal(ocpm1.get("originalPolicyNo"), m.get("originalPolicyNo"));
-				endtCount.where(a1);
+				Predicate a2 = cb.equal(ocpm1.get("status"),m.get("status"));
+				endtCount.where(a1,a2);
 				
 				 
 				// Where
@@ -1266,7 +1267,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 				Root<HomePositionMaster> ocpm1 = endtCount.from(HomePositionMaster.class);
 				endtCount.select(cb.max(ocpm1.get("endtCount")));
 				Predicate a1 = cb.equal(ocpm1.get("originalPolicyNo"), m.get("originalPolicyNo"));
-				endtCount.where(a1);
+				Predicate a2 = cb.equal(ocpm1.get("status"),m.get("status"));
+				endtCount.where(a1,a2);
 				
 				 
 				// Where
@@ -1381,7 +1383,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 				Root<HomePositionMaster> ocpm1 = endtCount.from(HomePositionMaster.class);
 				endtCount.select(cb.max(ocpm1.get("endtCount")));
 				Predicate a1 = cb.equal(ocpm1.get("originalPolicyNo"), m.get("originalPolicyNo"));
-				endtCount.where(a1);
+				Predicate a2 = cb.equal(ocpm1.get("status"),m.get("status"));
+				endtCount.where(a1,a2);
 				
 				 
 				// Where
