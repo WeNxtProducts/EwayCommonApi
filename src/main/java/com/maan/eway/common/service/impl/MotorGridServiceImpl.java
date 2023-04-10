@@ -1863,6 +1863,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), startDate);
 				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), startDate);
 			//	Predicate n10 = cb.equal(m.get("endtCount"), endtCount);
+				Predicate n10 = cb.isNull(m.get("endtTypeId"));
 
 				Predicate n5 = null;
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
@@ -1879,7 +1880,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					n6 = e0.in(branches);
 				}
 
-				query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9)
+				query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10)
 				.groupBy(
 						c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"),c.get("mobileNo1"), c.get("isTaxExempted"), c.get("taxExemptedId"),
 						m.get("companyId"),m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
@@ -1978,6 +1979,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), startDate);
 				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), startDate);
 		//		Predicate n10 = cb.equal(m.get("endtCount"), endtCount);
+				Predicate n10 = cb.isNull(m.get("endtTypeId"));
 
 				Predicate n5 = null;
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
@@ -1994,7 +1996,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					n6 = e0.in(branches);
 				}
 
-				query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9)
+				query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10)
 				.groupBy(
 						c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"),c.get("mobileNo1"), c.get("isTaxExempted"), c.get("taxExemptedId"),
 						m.get("companyId"),m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
@@ -2092,7 +2094,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), startDate);
 				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), startDate);
 			//	Predicate n10 = cb.equal(m.get("endtCount"), endtCount);
-
+				Predicate n10 = cb.isNull(m.get("endtTypeId"));
+				
 				Predicate n5 = null;
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
 					n5 = cb.equal(m.get("loginId"), req.getLoginId());
@@ -2108,7 +2111,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					n6 = e0.in(branches);
 				}
 
-				query.where(n1,n2, n3, n4, n5, n6,n7,n8)
+				query.where(n1,n2, n3, n4, n5, n6,n7,n8,n10)
 						.groupBy(
 								c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"),c.get("mobileNo1"), c.get("isTaxExempted"), c.get("taxExemptedId"),
 								m.get("companyId"),m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
