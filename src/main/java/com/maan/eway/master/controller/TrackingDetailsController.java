@@ -68,7 +68,7 @@ public class TrackingDetailsController {
  	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
  		@PostMapping("/inserttrackingdetails")
  		@ApiOperation(value = "This method is Insert Tracking Details")
- 		public ResponseEntity<CommonRes> insertTrackingDetails(@RequestBody TrackingDetailsSaveReq req) {
+ 		public ResponseEntity<CommonRes> insertTrackingDetails(@RequestBody List<TrackingDetailsSaveReq> req) {
 
  			reqPrinter.reqPrint(req);
  			CommonRes data = new CommonRes();

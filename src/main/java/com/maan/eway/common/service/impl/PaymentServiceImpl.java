@@ -91,6 +91,7 @@ import com.maan.eway.common.req.PaymentResUrlReq;
 import com.maan.eway.common.req.SendSmsReq;
 import com.maan.eway.common.req.TinyUrlGenerateReq;
 import com.maan.eway.common.req.TinyUrlGetReq;
+import com.maan.eway.common.req.UpdateQuoteStatusReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.LoginEncryptResponse;
 import com.maan.eway.common.res.PaymentDetailGetRes;
@@ -100,6 +101,8 @@ import com.maan.eway.common.res.TinyUrlGetRes;
 import com.maan.eway.common.res.TravelPassDetailsRes;
 import com.maan.eway.common.service.PaymentService;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.TrackingDetailsSaveReq;
+import com.maan.eway.master.service.TrackingDetailsService;
 import com.maan.eway.master.service.impl.ClausesMasterServiceImpl;
 import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
 import com.maan.eway.notification.req.Broker;
@@ -113,7 +116,9 @@ import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EmiTransactionDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
+import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
+import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
@@ -164,6 +169,18 @@ public class PaymentServiceImpl implements PaymentService {
 	
 	@Autowired
 	private CalculatorEngine calcService;
+	
+	@Autowired
+	private EserviceTravelDetailsRepository eserTraRepo;
+	
+	@Autowired
+	private TrackingDetailsService trackingService;
+	
+	@Autowired
+	private EserviceCommonDetailsRepository eserCommonRepo ;
+	
+	@Autowired
+	private EserviceBuildingDetailsRepository eserviceBuildingRepo;
 	
 	@Autowired
 	private EServiceSectionDetailsRepository eserSecRepo ;
@@ -1581,6 +1598,9 @@ public class PaymentServiceImpl implements PaymentService {
 			res.setPaymentId(paymentDetail.getPaymentId().toString());
 			res.setQuoteNo(req.getQuoteNo());
 			res.setMerchantReference(refno);
+			//Tracking Details
+			
+			trackingDetailsPayment(data, req.getCreatedBy());
 			}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -1590,6 +1610,97 @@ public class PaymentServiceImpl implements PaymentService {
 		return res;
 	}
 	
+	//Tracking Details
+	private QuoteUpdateRes trackingDetailsPayment(HomePositionMaster data,String createdBy) {
+		QuoteUpdateRes res=new QuoteUpdateRes();
+	try {
+
+		String riskId="";
+		List<TrackingDetailsSaveReq> trackingReq1 = new ArrayList<TrackingDetailsSaveReq>();
+		if (!data.getStatus().equalsIgnoreCase("D")) {
+		if( data.getProductId().toString().equalsIgnoreCase(motorProductId)) {
+			List<EserviceMotorDetails> cusRefNo = eserMotRepo
+					.findByRequestReferenceNoAndProductId(data.getRequestReferenceNo().toString(), data.getProductId().toString());
+
+			riskId=cusRefNo.get(0).getRiskId().toString();
+			for(EserviceMotorDetails motor:cusRefNo ) {
+				TrackingDetailsSaveReq trackingReq = new TrackingDetailsSaveReq();
+				trackingReq.setProductId(data.getProductId().toString());
+				trackingReq.setRiskId(riskId);
+				trackingReq.setStatus("Policy");
+				trackingReq.setBranchCode(data.getBranchCode().toString());
+				trackingReq.setQuoteNo(data.getQuoteNo().toString());
+				trackingReq.setCompanyId(data.getCompanyId());
+				trackingReq.setPolicyNo(data.getPolicyNo().toString());
+				trackingReq.setCreatedby(createdBy);
+				trackingReq.setRequestReferenceNo(data.getRequestReferenceNo());
+				trackingReq1.add(trackingReq);
+			}
+			} else if( data.getProductId().toString().equalsIgnoreCase(travelProductId)) {
+			List<EserviceTravelDetails> cusRefNo = eserTraRepo
+					.findByRequestReferenceNoAndProductId(data.getRequestReferenceNo().toString(), data.getProductId().toString());
+
+			riskId=cusRefNo.get(0).getRiskId().toString();
+			for (EserviceTravelDetails motor : cusRefNo) {
+				TrackingDetailsSaveReq trackingReq = new TrackingDetailsSaveReq();
+				trackingReq.setProductId(data.getProductId().toString());
+				trackingReq.setRiskId(riskId);
+				trackingReq.setStatus("Policy");
+				trackingReq.setBranchCode(data.getBranchCode().toString());
+				trackingReq.setQuoteNo(data.getQuoteNo().toString());
+				trackingReq.setCompanyId(data.getCompanyId());
+				trackingReq.setPolicyNo(data.getPolicyNo().toString());
+				trackingReq.setCreatedby(createdBy);
+				trackingReq.setRequestReferenceNo(data.getRequestReferenceNo());
+				trackingReq1.add(trackingReq);
+			}
+		} else if( data.getProductId().toString().equalsIgnoreCase(buildingProductId)) {
+			List<EserviceBuildingDetails> cusRefNo = eserviceBuildingRepo
+					.findByRequestReferenceNoAndProductId(data.getRequestReferenceNo().toString(), data.getProductId().toString());
+			riskId=cusRefNo.get(0).getRiskId().toString();
+			for (EserviceBuildingDetails motor : cusRefNo) {
+				TrackingDetailsSaveReq trackingReq = new TrackingDetailsSaveReq();
+				trackingReq.setProductId(data.getProductId().toString());
+				trackingReq.setRiskId(riskId);
+				trackingReq.setStatus("Policy");
+				trackingReq.setBranchCode(data.getBranchCode().toString());
+				trackingReq.setQuoteNo(data.getQuoteNo().toString());
+				trackingReq.setCompanyId(data.getCompanyId());
+				trackingReq.setPolicyNo(data.getPolicyNo().toString());
+				trackingReq.setCreatedby(createdBy);
+				trackingReq.setRequestReferenceNo(data.getRequestReferenceNo());
+				trackingReq1.add(trackingReq);
+			}
+		} else {
+			List<EserviceCommonDetails> cusRefNo = eserCommonRepo
+					.findByRequestReferenceNoAndProductId(data.getRequestReferenceNo().toString(), data.getProductId().toString());
+
+
+			riskId = cusRefNo.get(0).getRiskId().toString();
+			for (EserviceCommonDetails motor : cusRefNo) {
+				TrackingDetailsSaveReq trackingReq = new TrackingDetailsSaveReq();
+				trackingReq.setProductId(data.getProductId().toString());
+				trackingReq.setRiskId(riskId);
+				trackingReq.setStatus("Policy");
+				trackingReq.setBranchCode(data.getBranchCode().toString());
+				trackingReq.setQuoteNo(data.getQuoteNo().toString());
+				trackingReq.setCompanyId(data.getCompanyId());
+				trackingReq.setPolicyNo(data.getPolicyNo().toString());
+				trackingReq.setCreatedby(createdBy);
+				trackingReq.setRequestReferenceNo(data.getRequestReferenceNo());
+				trackingReq1.add(trackingReq);
+			}
+		}			
+		
+		trackingService.insertTrackingDetails(trackingReq1);
+		}
+	} catch ( Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return res;
+	}
 	public synchronized String getListItem(String insuranceId , String branchCode, String itemType, String itemCode) {
 		String itemDesc = "" ;
 		List<ListItemValue> list = new ArrayList<ListItemValue>();

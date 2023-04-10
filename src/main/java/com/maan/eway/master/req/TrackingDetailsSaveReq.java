@@ -47,8 +47,8 @@ public class TrackingDetailsSaveReq {
     private String     policyNo     ;
 	@JsonProperty("Status")
     private String     status       ;
-	@JsonProperty("Statusdescription")
-    private String     statusDesc ;
+	@JsonProperty("RiskId")
+    private String     riskId ;
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("Entrydate")
     private Date       entryDate    ;

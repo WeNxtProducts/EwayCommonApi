@@ -58,6 +58,10 @@ private static final long serialVersionUID = 1L;
     private String     trackingId ;
 
     @Id
+    @Column(name="RISK_ID", nullable=false,length=100)
+    private String     riskId ;
+    
+    @Id
     @Column(name="COMPANY_ID", nullable=false, length=100)
     private String     companyId ;
 
@@ -69,7 +73,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="REQUEST_REFERENCE_NO", length=100)
     private String     requestReferenceNo ;
 
-    @Column(name="STATUS", length=2)
+    @Column(name="STATUS", length=20)
     private String     status ;
 
     @Column(name="STATUS_DESC", length=100)

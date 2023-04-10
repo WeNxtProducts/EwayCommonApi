@@ -880,26 +880,26 @@ private BuildingDetailsRepository BuildingRepo;
 				//Mail Push Notification
 					motorPushNotification(req);
 				//Tracking Details
-				//	trackingDetails(req);
+					trackingDetails(req);
 					
 			} else if( req.getProductId().equalsIgnoreCase(travelProductId)) {
 				updateRes = travelReferalUpdate(req);
 				//Mail Push Notification
 				 travelPushNotification(req);
 				//Tracking Details
-				//	trackingDetails(req);
+					trackingDetails(req);
 				
 			} else if( req.getProductId().equalsIgnoreCase(buildingProductId)) {
 				updateRes = buildingReferalUpdate(req);
 				//Mail Push Notification
 				 buildingPushNotification(req);
 				//Tracking Details
-				//	trackingDetails(req);
+					trackingDetails(req);
 			}  else {
 				updateRes = commonReferalUpdate(req);
 				commonPushNotification(req);
 				//Tracking Details
-			//	trackingDetails(req);
+				trackingDetails(req);
 			} 
 			
 		
@@ -918,58 +918,110 @@ private BuildingDetailsRepository BuildingRepo;
 		String policyNo="";
 		String branchcode="";
 		String companyId="";
+		String riskId="";
+		List<TrackingDetailsSaveReq> trackingReq1 = new ArrayList<TrackingDetailsSaveReq>();
 		if( req.getProductId().equalsIgnoreCase(motorProductId)) {
 			List<EserviceMotorDetails> cusRefNo = eserMotRepo
 					.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
+			
+			for(EserviceMotorDetails motor:cusRefNo ) {
+				quoteNo=motor.getQuoteNo()==null?"":motor.getQuoteNo().toString();
+				branchcode=motor.getBranchCode();
+				companyId=motor.getCompanyId();
+				policyNo=motor.getPolicyNo()==null?"":motor.getPolicyNo().toString();
+				riskId=motor.getRiskId().toString();
+				TrackingDetailsSaveReq trackingReq = new TrackingDetailsSaveReq();
+				trackingReq.setProductId(req.getProductId());
+				trackingReq.setRiskId(riskId);
 
-			cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
-					.collect(Collectors.toList());
-			 
-			quoteNo=cusRefNo.get(0).getQuoteNo()==null?"":cusRefNo.get(0).getQuoteNo().toString();
-			branchcode=cusRefNo.get(0).getBranchCode();
-			companyId=cusRefNo.get(0).getCompanyId();
-			policyNo=cusRefNo.get(0).getPolicyNo()==null?"":cusRefNo.get(0).getPolicyNo().toString();
-		} else if( req.getProductId().equalsIgnoreCase(travelProductId)) {
+				trackingReq.setStatus(req.getStatus());
+				trackingReq.setBranchCode(branchcode.toString());
+				trackingReq.setQuoteNo(quoteNo.toString());
+				trackingReq.setCompanyId(companyId);
+				trackingReq.setPolicyNo(policyNo.toString());
+				trackingReq.setCreatedby(req.getAdminLoginId());
+				trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());				
+
+				trackingReq1.add(trackingReq);
+				}
+				
+			} else if( req.getProductId().equalsIgnoreCase(travelProductId)) {
 			List<EserviceTravelDetails> cusRefNo = eserTraRepo
 					.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
 
 			cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
 					.collect(Collectors.toList());
-			quoteNo=cusRefNo.get(0).getQuoteNo();
-			policyNo=cusRefNo.get(0).getPolicyNo();
-			branchcode=cusRefNo.get(0).getBranchCode();
-			companyId=cusRefNo.get(0).getCompanyId();
+			for(EserviceTravelDetails motor:cusRefNo ) {
+				quoteNo=motor.getQuoteNo()==null?"":motor.getQuoteNo().toString();
+				branchcode=motor.getBranchCode();
+				companyId=motor.getCompanyId();
+				policyNo=motor.getPolicyNo()==null?"":motor.getPolicyNo().toString();
+				riskId=motor.getRiskId().toString();
+				TrackingDetailsSaveReq trackingReq = new TrackingDetailsSaveReq();
+				trackingReq.setProductId(req.getProductId());
+				trackingReq.setRiskId(riskId);
+
+				trackingReq.setStatus(req.getStatus());
+				trackingReq.setBranchCode(branchcode.toString());
+				trackingReq.setQuoteNo(quoteNo.toString());
+				trackingReq.setCompanyId(companyId);
+				trackingReq.setPolicyNo(policyNo.toString());
+				trackingReq.setCreatedby(req.getAdminLoginId());
+				trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());				
+
+				trackingReq1.add(trackingReq);
+				}
 		} else if( req.getProductId().equalsIgnoreCase(buildingProductId)) {
 			List<EserviceBuildingDetails> cusRefNo = eserviceBuildingRepo
 					.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
 
-			cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
-					.collect(Collectors.toList());
-			quoteNo=cusRefNo.get(0).getQuoteNo();
-			policyNo=cusRefNo.get(0).getPolicyNo();
-			branchcode=cusRefNo.get(0).getBranchCode();
-			companyId=cusRefNo.get(0).getCompanyId();
+			for(EserviceBuildingDetails motor:cusRefNo ) {
+				quoteNo=motor.getQuoteNo()==null?"":motor.getQuoteNo().toString();
+				branchcode=motor.getBranchCode();
+				companyId=motor.getCompanyId();
+				policyNo=motor.getPolicyNo()==null?"":motor.getPolicyNo().toString();
+				riskId=motor.getRiskId().toString();
+				TrackingDetailsSaveReq trackingReq = new TrackingDetailsSaveReq();
+				trackingReq.setProductId(req.getProductId());
+				trackingReq.setRiskId(riskId);
+
+				trackingReq.setStatus(req.getStatus());
+				trackingReq.setBranchCode(branchcode.toString());
+				trackingReq.setQuoteNo(quoteNo.toString());
+				trackingReq.setCompanyId(companyId);
+				trackingReq.setPolicyNo(policyNo.toString());
+				trackingReq.setCreatedby(req.getAdminLoginId());
+				trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());				
+
+				trackingReq1.add(trackingReq);
+				}
 		} else {
 			List<EserviceCommonDetails> cusRefNo = eserCommonRepo
 					.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
 
-			cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
-					.collect(Collectors.toList());
-			quoteNo=cusRefNo.get(0).getQuoteNo();
-			policyNo=cusRefNo.get(0).getPolicyNo();
-			branchcode=cusRefNo.get(0).getBranchCode();
-			companyId=cusRefNo.get(0).getCompanyId();
-		}
-		TrackingDetailsSaveReq trackingReq=new TrackingDetailsSaveReq();
-		trackingReq.setProductId(req.getProductId());
-		trackingReq.setStatus(req.getStatus());
-		trackingReq.setBranchCode(branchcode.toString());
-		trackingReq.setQuoteNo(quoteNo.toString());
-		trackingReq.setCompanyId(companyId);
-		trackingReq.setPolicyNo(policyNo.toString());
-		trackingReq.setCreatedby(req.getAdminLoginId());
-		trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());				
-		trackingService.insertTrackingDetails(trackingReq);
+			for(EserviceCommonDetails motor:cusRefNo ) {
+				quoteNo=motor.getQuoteNo()==null?"":motor.getQuoteNo().toString();
+				branchcode=motor.getBranchCode();
+				companyId=motor.getCompanyId();
+				policyNo=motor.getPolicyNo()==null?"":motor.getPolicyNo().toString();
+				riskId=motor.getRiskId().toString();
+				TrackingDetailsSaveReq trackingReq = new TrackingDetailsSaveReq();
+				trackingReq.setProductId(req.getProductId());
+				trackingReq.setRiskId(riskId);
+
+				trackingReq.setStatus(req.getStatus());
+				trackingReq.setBranchCode(branchcode.toString());
+				trackingReq.setQuoteNo(quoteNo.toString());
+				trackingReq.setCompanyId(companyId);
+				trackingReq.setPolicyNo(policyNo.toString());
+				trackingReq.setCreatedby(req.getAdminLoginId());
+				trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());				
+
+				trackingReq1.add(trackingReq);
+				}
+		}			
+		
+		trackingService.insertTrackingDetails(trackingReq1);
 	} catch ( Exception e) {
 		e.printStackTrace();
 		log.info("Exception is ---> " + e.getMessage());
@@ -2132,58 +2184,108 @@ private BuildingDetailsRepository BuildingRepo;
 			String policyNo="";
 			String branchcode="";
 			String companyId="";
+			String riskId="";
+			List<TrackingDetailsSaveReq> trackingReq1 = new ArrayList<TrackingDetailsSaveReq>();
 			if( req.getProductId().equalsIgnoreCase(motorProductId)) {
 				List<EserviceMotorDetails> cusRefNo = eserMotRepo
 						.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
+				
+				for(EserviceMotorDetails motor:cusRefNo ) {
+					quoteNo=motor.getQuoteNo()==null?"":motor.getQuoteNo().toString();
+					branchcode=motor.getBranchCode();
+					companyId=motor.getCompanyId();
+					policyNo=motor.getPolicyNo()==null?"":motor.getPolicyNo().toString();
+					riskId=motor.getRiskId().toString();
+					TrackingDetailsSaveReq trackingReq = new TrackingDetailsSaveReq();
+					trackingReq.setProductId(req.getProductId());
+					trackingReq.setRiskId(riskId);
 
-				cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
-						.collect(Collectors.toList());
-				 
-				quoteNo=cusRefNo.get(0).getQuoteNo()==null?"":cusRefNo.get(0).getQuoteNo().toString();
-				branchcode=cusRefNo.get(0).getBranchCode();
-				companyId=cusRefNo.get(0).getCompanyId();
-				policyNo=cusRefNo.get(0).getPolicyNo()==null?"":cusRefNo.get(0).getPolicyNo().toString();
-			} else if( req.getProductId().equalsIgnoreCase(travelProductId)) {
+					trackingReq.setStatus(req.getStatus());
+					trackingReq.setBranchCode(branchcode.toString());
+					trackingReq.setQuoteNo(quoteNo.toString());
+					trackingReq.setCompanyId(companyId);
+					trackingReq.setPolicyNo(policyNo.toString());
+					trackingReq.setCreatedby(req.getLoginId());
+					trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());
+					trackingReq1.add(trackingReq);
+					}
+					
+				} else if( req.getProductId().equalsIgnoreCase(travelProductId)) {
 				List<EserviceTravelDetails> cusRefNo = eserTraRepo
 						.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
 
-				cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
-						.collect(Collectors.toList());
-				quoteNo=cusRefNo.get(0).getQuoteNo();
-				policyNo=cusRefNo.get(0).getPolicyNo();
-				branchcode=cusRefNo.get(0).getBranchCode();
-				companyId=cusRefNo.get(0).getCompanyId();
+				for(EserviceTravelDetails motor:cusRefNo ) {
+					quoteNo=motor.getQuoteNo()==null?"":motor.getQuoteNo().toString();
+					branchcode=motor.getBranchCode();
+					companyId=motor.getCompanyId();
+					policyNo=motor.getPolicyNo()==null?"":motor.getPolicyNo().toString();
+					riskId=motor.getRiskId().toString();
+					TrackingDetailsSaveReq trackingReq = new TrackingDetailsSaveReq();
+					trackingReq.setProductId(req.getProductId());
+					trackingReq.setRiskId(riskId);
+
+					trackingReq.setStatus(req.getStatus());
+					trackingReq.setBranchCode(branchcode.toString());
+					trackingReq.setQuoteNo(quoteNo.toString());
+					trackingReq.setCompanyId(companyId);
+					trackingReq.setPolicyNo(policyNo.toString());
+					trackingReq.setCreatedby(req.getLoginId());
+					trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());				
+
+					trackingReq1.add(trackingReq);
+					}
 			} else if( req.getProductId().equalsIgnoreCase(buildingProductId)) {
 				List<EserviceBuildingDetails> cusRefNo = eserviceBuildingRepo
 						.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
 
-				cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
-						.collect(Collectors.toList());
-				quoteNo=cusRefNo.get(0).getQuoteNo();
-				policyNo=cusRefNo.get(0).getPolicyNo();
-				branchcode=cusRefNo.get(0).getBranchCode();
-				companyId=cusRefNo.get(0).getCompanyId();
+				for(EserviceBuildingDetails motor:cusRefNo ) {
+					quoteNo=motor.getQuoteNo()==null?"":motor.getQuoteNo().toString();
+					branchcode=motor.getBranchCode();
+					companyId=motor.getCompanyId();
+					policyNo=motor.getPolicyNo()==null?"":motor.getPolicyNo().toString();
+					riskId=motor.getRiskId().toString();
+					TrackingDetailsSaveReq trackingReq = new TrackingDetailsSaveReq();
+					trackingReq.setProductId(req.getProductId());
+					trackingReq.setRiskId(riskId);
+
+					trackingReq.setStatus(req.getStatus());
+					trackingReq.setBranchCode(branchcode.toString());
+					trackingReq.setQuoteNo(quoteNo.toString());
+					trackingReq.setCompanyId(companyId);
+					trackingReq.setPolicyNo(policyNo.toString());
+					trackingReq.setCreatedby(req.getLoginId());
+					trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());				
+
+					trackingReq1.add(trackingReq);
+					}
 			} else {
 				List<EserviceCommonDetails> cusRefNo = eserCommonRepo
 						.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
 
-				cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
-						.collect(Collectors.toList());
-				quoteNo=cusRefNo.get(0).getQuoteNo();
-				policyNo=cusRefNo.get(0).getPolicyNo();
-				branchcode=cusRefNo.get(0).getBranchCode();
-				companyId=cusRefNo.get(0).getCompanyId();
-			}
-			TrackingDetailsSaveReq trackingReq=new TrackingDetailsSaveReq();
-			trackingReq.setProductId(req.getProductId());
-			trackingReq.setStatus(req.getStatus());
-			trackingReq.setBranchCode(branchcode.toString());
-			trackingReq.setQuoteNo(quoteNo.toString());
-			trackingReq.setCompanyId(companyId);
-			trackingReq.setPolicyNo(policyNo.toString());
-			trackingReq.setCreatedby(req.getLoginId());
-			trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());			
-			trackingService.insertTrackingDetails(trackingReq);
+				for(EserviceCommonDetails motor:cusRefNo ) {
+					quoteNo=motor.getQuoteNo()==null?"":motor.getQuoteNo().toString();
+					branchcode=motor.getBranchCode();
+					companyId=motor.getCompanyId();
+					policyNo=motor.getPolicyNo()==null?"":motor.getPolicyNo().toString();
+					riskId=motor.getRiskId().toString();
+					TrackingDetailsSaveReq trackingReq = new TrackingDetailsSaveReq();
+					trackingReq.setProductId(req.getProductId());
+					trackingReq.setRiskId(riskId);
+
+					trackingReq.setStatus(req.getStatus());
+					trackingReq.setBranchCode(branchcode.toString());
+					trackingReq.setQuoteNo(quoteNo.toString());
+					trackingReq.setCompanyId(companyId);
+					trackingReq.setPolicyNo(policyNo.toString());
+					trackingReq.setCreatedby(req.getLoginId());
+					trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());				
+
+					trackingReq1.add(trackingReq);
+					}
+			}			
+			
+			trackingService.insertTrackingDetails(trackingReq1);
+
 		} catch ( Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());

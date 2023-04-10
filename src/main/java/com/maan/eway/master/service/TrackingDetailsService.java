@@ -17,9 +17,9 @@ import com.maan.eway.res.SuccessRes;
 */
 public interface TrackingDetailsService  {
 
-	List<Error> validateTrackingDetails(TrackingDetailsSaveReq req);
+	List<Error> validateTrackingDetails(List<TrackingDetailsSaveReq> req);
 
-	SuccessRes insertTrackingDetails(TrackingDetailsSaveReq req);
+	SuccessRes insertTrackingDetails(List<TrackingDetailsSaveReq> req);
 
 	List<TrackingDetailsRes> getalltracking();
 
