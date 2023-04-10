@@ -145,16 +145,16 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 //					errorList.add(new Error("12", "PreferredNotification", "Please select Preferred Notification"));
 //				}
 				
-				if(StringUtils.isNotBlank(req.getAppointmentDate().toString())) {
-				cal.add(Calendar.DATE, -1);
-				Date yesterday = cal.getTime();
-				String a1 = sdf.format(req.getAppointmentDate());
-				Date a = sdf.parse(a1);
-
-				if (a.before(yesterday)) {
-					errorList.add(new Error("07", "Appointment Date", "Please Enter Appointment Date as Future Date"));
-					} 
-				}
+//				if(StringUtils.isNotBlank(req.getAppointmentDate().toString())) {
+//				cal.add(Calendar.DATE, -1);
+//				Date yesterday = cal.getTime();
+//				String a1 = sdf.format(req.getAppointmentDate());
+//				Date a = sdf.parse(a1);
+//
+//				if (a.before(yesterday)) {
+//					errorList.add(new Error("07", "Appointment Date", "Please Enter Appointment Date as Future Date"));
+//					} 
+//				}
 				//				Date today2 = new Date();
 //				cal.setTime(today2);
 //				cal.set(Calendar.HOUR_OF_DAY, 1);
