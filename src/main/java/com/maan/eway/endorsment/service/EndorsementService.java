@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.BrokerEndtSetupMaster;
+import com.maan.eway.bean.EndtDependantFieldMaster;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
@@ -52,6 +53,7 @@ import com.maan.eway.endorsment.util.CopyRawTable;
 import com.maan.eway.endorsment.util.CopyTravelRaw;
 import com.maan.eway.endorsment.util.QuoteInfoUtil;
 import com.maan.eway.repository.BrokerEndtSetupMasterRepository;
+import com.maan.eway.repository.EndtDependantFieldsMasterRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
@@ -90,6 +92,8 @@ public class EndorsementService {
 	@Autowired
 	private BrokerEndtSetupMasterRepository brokerEndtRepo;
 
+	@Autowired
+	private EndtDependantFieldsMasterRepository dependantRepo;
 	
 	@Value(value = "${motor.productId}")
 	private String motorProductId;
@@ -192,8 +196,17 @@ public class EndorsementService {
 					res1.setEndorsementDesc(data1.getEndtTypeDesc());
 				}
 				String dependentid = data.getEndtTypes();
+				String dependantdesc="";
 				List<String> dependentids = new ArrayList<String>(Arrays.asList(dependentid.split(",")));
-				res1.setFieldsAllowed(dependentids);
+				for(String a :dependentids ) {
+					List<EndtDependantFieldMaster> a1 = dependantRepo.findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndDependantFieldIdOrderByAmendIdDesc(request.getCompanyId(), request.getProductId().toString(),"Y", new Date(), new Date(),Integer.valueOf(a));
+					
+					dependantdesc = dependantdesc+","+a1.get(0).getDependantFieldName();
+				}
+				dependantdesc=dependantdesc.substring(1);
+				List<String> dependantdescs = new ArrayList<String>(Arrays.asList(dependantdesc.split(",")));
+				
+				res1.setFieldsAllowed(dependantdescs);
 				resList.add(res1);
 				res.setEndorsementTypes(resList);
 			}

@@ -1,6 +1,7 @@
 package com.maan.eway.bean;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -86,5 +87,7 @@ public class EndtDependantFieldMaster {
 
 	@Column(name="REMARKS", length=100)
 	private String remarks;
+
+
 
 }
