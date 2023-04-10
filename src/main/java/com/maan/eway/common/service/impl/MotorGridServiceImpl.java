@@ -20,6 +20,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -1843,7 +1844,15 @@ public class MotorGridServiceImpl implements MotorGridService {
 				// Order By
 				List<Order> orderList = new ArrayList<Order>();
 				orderList.add(cb.desc(m.get("entryDate")));
-
+					
+				// Endt Count Max Filter
+				Subquery<Long> endtCount = query.subquery(Long.class);
+				Root<HomePositionMaster> ocpm1 = endtCount.from(HomePositionMaster.class);
+				endtCount.select(cb.max(ocpm1.get("endtCount")));
+				Predicate a1 = cb.equal(ocpm1.get("originalPolicyNo"), m.get("originalPolicyNo"));
+				endtCount.where(a1);
+				
+				 
 				// Where
 				Predicate n1 = cb.equal(c.get("customerId"), m.get("customerId"));
 				Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
@@ -1852,7 +1861,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Predicate n9 = cb.equal(m.get("integrationStatus"), "S");
 				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), startDate);
 				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), startDate);
-				Predicate n10 = cb.isNull(m.get("endtTypeId"));
+				Predicate n10 = cb.equal(m.get("endtCount"), endtCount);
 
 				Predicate n5 = null;
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
@@ -1950,15 +1959,23 @@ public class MotorGridServiceImpl implements MotorGridService {
 				List<Order> orderList = new ArrayList<Order>();
 				orderList.add(cb.desc(m.get("entryDate")));
 
+				// Endt Count Max Filter
+				Subquery<Long> endtCount = query.subquery(Long.class);
+				Root<HomePositionMaster> ocpm1 = endtCount.from(HomePositionMaster.class);
+				endtCount.select(cb.max(ocpm1.get("endtCount")));
+				Predicate a1 = cb.equal(ocpm1.get("originalPolicyNo"), m.get("originalPolicyNo"));
+				endtCount.where(a1);
+				
+				 
 				// Where
 				Predicate n1 = cb.equal(c.get("customerId"), m.get("customerId"));
 				Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
 				Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
 				Predicate n4 = cb.equal(m.get("status"), status);
-				Predicate n9 = cb.notEqual(m.get("integrationStatus"),"S");
+				Predicate n9 = cb.equal(m.get("integrationStatus"), "P");
 				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), startDate);
 				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), startDate);
-				Predicate n10 = cb.isNull(m.get("endtTypeId"));
+				Predicate n10 = cb.equal(m.get("endtCount"), endtCount);
 
 				Predicate n5 = null;
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
@@ -2056,14 +2073,23 @@ public class MotorGridServiceImpl implements MotorGridService {
 				List<Order> orderList = new ArrayList<Order>();
 				orderList.add(cb.desc(m.get("entryDate")));
 
+				// Endt Count Max Filter
+				Subquery<Long> endtCount = query.subquery(Long.class);
+				Root<HomePositionMaster> ocpm1 = endtCount.from(HomePositionMaster.class);
+				endtCount.select(cb.max(ocpm1.get("endtCount")));
+				Predicate a1 = cb.equal(ocpm1.get("originalPolicyNo"), m.get("originalPolicyNo"));
+				endtCount.where(a1);
+				
+				 
 				// Where
 				Predicate n1 = cb.equal(c.get("customerId"), m.get("customerId"));
 				Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
 				Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
 				Predicate n4 = cb.equal(m.get("status"), status);
+				Predicate n9 = cb.equal(m.get("integrationStatus"), "S");
 				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), startDate);
 				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), startDate);
-				Predicate n10 = cb.isNull(m.get("endtTypeId"));
+				Predicate n10 = cb.equal(m.get("endtCount"), endtCount);
 
 				Predicate n5 = null;
 				if (req.getApplicationId().equalsIgnoreCase("1")) {

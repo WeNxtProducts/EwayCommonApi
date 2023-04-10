@@ -1551,12 +1551,18 @@ public class PaymentServiceImpl implements PaymentService {
 				data.setPaymentType(  paymentMode);
 				data.setPaymentStatus(paymentInfo.getEmiYn().equalsIgnoreCase("N") ? paymentStatus :"Pending");
 				data.setPolicyNo(policyNo);
+				
 				data.setStatus("P");
 				data.setIntegrationStatus("S");
 				data.setEmiYn(paymentInfo.getEmiYn());
 				data.setInstallmentPeriod(paymentInfo.getInstallmentPeriod());
-				if(StringUtils.isNotBlank(data.getEndtTypeId()))
+				if(StringUtils.isNotBlank(data.getEndtTypeId())) {
 					data.setEndtStatus("C");
+					
+				} else {
+					data.setOriginalPolicyNo(policyNo);
+				}
+					
 				
 				homerepo.saveAndFlush(data);
 				
