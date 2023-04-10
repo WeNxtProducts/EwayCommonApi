@@ -1555,6 +1555,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 				// Find Motor
 				// Deactivate Old Record
 				if(StringUtils.isNotBlank(req.getEndtPrevQuoteNo()) ) {
+					List<MotorDataDetails> oldMotors = motorRepo.findByQuoteNo(request.getEndtPrevQuoteNo() );
+					
 					// Copy Quote Doc
 					List<EserviceMotorDetails> eserMotors = eserMotRepo.findByRequestReferenceNoAndStatusOrderByRiskIdAsc(request.getRequestReferenceNo() ,"D");
 					
@@ -1563,10 +1565,18 @@ public class QuoteThreadCall implements Callable<Object>  {
 					eserMotors.forEach(ref ->  {
 						// Save Motro Details
 						MotorDataDetails motorData  = new MotorDataDetails();
-						dozerMapper.map(ref, motorData);
+						
+						List<MotorDataDetails> filterOldMotors  = oldMotors.stream().filter( o -> o.getVehicleId().equals(ref.getRiskId().toString()) ).collect(Collectors.toList())	;			
+						MotorDataDetails old = filterOldMotors.get(0);
+						
+						dozerMapper.map(ref , motorData);
 						motorData.setEntryDate(new Date());	
 						motorData.setCreatedBy(request.getCreatedBy());
 						motorData.setQuoteNo(request.getQuoteNo());
+						motorData.setCdRefno(old.getCdRefno());
+						motorData.setVdRefno(old.getVdRefno());
+						motorData.setMsRefno(old.getMsRefno());
+						
 						motorData.setCustomerId(request.getCustomerId());
 						motorData.setVehicleId(ref.getRiskId().toString());
 						motorData.setStatus(ref.getStatus());
