@@ -123,7 +123,7 @@ public class RatingFactorsUtil {
 		return null;
 	}
 	
-	
+	@Cacheable(cacheNames= {"loadfactorOnlyquery"},keyGenerator  = "loadfactorOnlyqueryKeyGen",value = "loadfactorOnlyquery")
 	protected List<Tuple> loadfactorOnlyquery(CalcEngine engine,String condtion,String coverId, String subCoverId) {
 		try{
 			String todayInString = DD_MM_YYYY.format(new Date());
@@ -184,18 +184,15 @@ public class RatingFactorsUtil {
 		}
 		return null;
 	}
+	
+	
 	public List<RatingInfo> LoadRatingField(CalcEngine engine,List<RatingInfo> infos){
 		
 		
 		for (RatingInfo info : infos) {
 			try {
-				String todayInString = DD_MM_YYYY.format(new Date());
-				String search="productId:"+engine.getProductId()+";status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;ratingId:"+info.getRatingFieldId()+";";
-				List<Tuple> result=null;
-				SpecCriteria criteria = crservice.createCriteria(RatingFieldMaster.class, search, "ratingId"); 
-				result=crservice.getResult(criteria, 0, 50);
-				if(result!=null && result.size()>0) {
-					
+				List<Tuple> result=this.getCachedRatingFields(engine,info);
+				if(result!=null && result.size()>0) {					
 					Tuple t = result.get(0);
 					info.setRatingFieldId(t.get("ratingId")==null?"":t.get("ratingId").toString());
 					info.setRatingField(t.get("ratingField")==null?"":t.get("ratingField").toString());
@@ -210,7 +207,20 @@ public class RatingFactorsUtil {
 		
 		return infos;
 	}
-	 
+	@Cacheable(cacheNames = {"getCachedRatingFields"},keyGenerator  = "getCachedRatingFieldsKeyGen",value = "getCachedRatingFields" )
+	public List<Tuple> getCachedRatingFields(CalcEngine engine,RatingInfo info){
+		try {
+			String todayInString = DD_MM_YYYY.format(new Date());
+			String search="productId:"+engine.getProductId()+";status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;ratingId:"+info.getRatingFieldId()+";";
+			List<Tuple> result=null;
+			SpecCriteria criteria = crservice.createCriteria(RatingFieldMaster.class, search, "ratingId"); 
+			result=crservice.getResult(criteria, 0, 50);
+			return result;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	@Cacheable(cacheNames = {"RatingType"},keyGenerator  = "ratingTypeKeyGen",value = "RatingType" )
 	public synchronized   List<RatingInfo> LoadRatingType(CalcEngine engine,String factorTypeId){
 		try {
@@ -224,7 +234,7 @@ public class RatingFactorsUtil {
 				RatingTypeUtil rate=new RatingTypeUtil();
 				List<RatingInfo> collect = result.stream().map(rate).filter(d->d!=null).collect(Collectors.toList());
 				 
-				LoadRatingField(engine, collect);
+				this.LoadRatingField(engine, collect);
 				 return collect;
 			}
 		}catch (Exception e) {
