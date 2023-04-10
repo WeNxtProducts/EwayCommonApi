@@ -23,4 +23,8 @@ public class FollowupDetailsGetallReq {
 
 	@JsonProperty("LoginId")
 	private String loginId;    
+	
+	@JsonProperty("RequestReferenceNo")
+	private String requestReferenceNo;    
+	
 }

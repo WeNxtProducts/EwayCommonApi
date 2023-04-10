@@ -389,8 +389,9 @@ public class FollowupDetailsServiceImpl  implements FollowupDetailsService{
 			Predicate n3 = cb.equal(b.get("productId"),req.getProductId());			
 			Predicate n4 = cb.equal(b.get("status"),req.getStatus());
 			Predicate n5 = cb.equal(b.get("loginId"),req.getLoginId());
+			Predicate n6 = cb.equal(b.get("requestReferenceNo"),req.getRequestReferenceNo());
 
-			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<FollowUpDetails> result = em.createQuery(query);
