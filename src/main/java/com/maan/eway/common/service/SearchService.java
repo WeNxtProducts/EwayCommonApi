@@ -19,6 +19,8 @@ import com.maan.eway.common.res.UpdateLapsedQuoteRes;
 
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.SearchCustomerDetailsRes;
+import com.maan.eway.common.res.SearchPremiumDetailsRes;
+import com.maan.eway.common.res.SearchROPDetailsRes;
 import com.maan.eway.common.res.SearchRes;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.res.CopyQuoteSuccessRes;
@@ -36,6 +38,10 @@ public interface SearchService {
 	List<SearchCustomerDetailsRes> adminCustomerSearch(SearchReq req);
 
 	List<SearchEservieMotorDetailsViewRatingRes> adminViewRatingDetails(SearchReq req);
+
+	List<SearchROPDetailsRes> adminROPSearch(SearchReq req);
+
+	List<SearchPremiumDetailsRes> adminPremiumSearch(SearchReq req);
 
 
 

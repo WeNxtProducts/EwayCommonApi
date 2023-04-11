@@ -81,9 +81,15 @@ import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.QuoteDetailsRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
+import com.maan.eway.common.res.SearchCoverDetails;
 import com.maan.eway.common.res.SearchCustomerDetailsRes;
+import com.maan.eway.common.res.SearchDiscount;
 import com.maan.eway.common.res.SearchEserviceMotorDetailsRes;
+import com.maan.eway.common.res.SearchLoading;
+import com.maan.eway.common.res.SearchPremiumDetailsRes;
+import com.maan.eway.common.res.SearchROPDetailsRes;
 import com.maan.eway.common.res.SearchRes;
+import com.maan.eway.common.res.SearchTax;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.BuildingGridService;
@@ -448,9 +454,6 @@ public class SearchServiceImpl implements SearchService {
 		try {
 			// Find Motor Data
 			List<MotorDataDetails> motorDatas =  motorRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
-			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
-			
-			List<MotorDriverDetails> driverList = driverRepo.findByQuoteNo(req.getQuoteNo() );
 			List<SearchEserviceMotorDetailsRes>   motorResList = new ArrayList<SearchEserviceMotorDetailsRes>();
 			
 						
@@ -459,41 +462,7 @@ public class SearchServiceImpl implements SearchService {
 				
 				// Mot
 				dozerMapper.map(mot, vehicleDetails);
-				
-				// Cover Details
-				List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(mot.getVehicleId()))).collect(Collectors.toList());
-				
-				Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
-				
-				List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
-				
-				// Driver Details
-				List<DriverDetailsRes>   driverResList = new ArrayList<DriverDetailsRes>();
-				List<MotorDriverDetails> filterDriverList = driverList.stream().filter( o -> o.getRiskId().equals(Integer.valueOf(mot.getVehicleId()))).collect(Collectors.toList());
-				for (MotorDriverDetails dri :  filterDriverList) {
-					DriverDetailsRes driverRes  = new DriverDetailsRes();  
-					dozerMapper.map(dri, driverRes);
-					driverRes.setLicenseNo(dri.getIdNumber());
 					
-					driverResList.add(driverRes);
-					
-				}
-				vehicleDetails.setRiskId(mot.getVehicleId());
-				driverResList.sort(Comparator.comparing(DriverDetailsRes :: getDriverId  ));
-				vehicleDetails.setDriverDetails(driverResList);
-				vehicleDetails.setDocumentsTitle(mot.getSectionName());			
-				vehicleDetails.setSectionId(mot.getSectionId()==null?"":mot.getSectionId().toString());
-				
-				// Section Details
-				SectionDetails sec = new SectionDetails(); 
-				sec.setSectionId(mot.getSectionId()==null?"":mot.getSectionId().toString());
-				sec.setSectionName( mot.getSectionName());
-				sec.setCovers(coverListRes);
-				
-				List<SectionDetails>  sectionList = new ArrayList<SectionDetails>();
-				sectionList.add(sec);
-				vehicleDetails.setSectionDetails(sectionList);
-				
 				// Response
 				motorResList.add(vehicleDetails);		
 			}
@@ -507,61 +476,25 @@ public class SearchServiceImpl implements SearchService {
 		return viewRes;
 	}
 	
-	public List<CoverRes> getCoverDetails(Map<Integer,List<PolicyCoverData>> groupByCover  ) {
-		List<CoverRes>  coverListRes = new ArrayList<CoverRes>();
+	public List<SearchPremiumDetailsRes> getCoverDetails(Map<Integer,List<PolicyCoverData>> groupByCover  ) {
+		List<SearchPremiumDetailsRes>  coverListRes = new ArrayList<SearchPremiumDetailsRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			for ( Integer coverId : groupByCover.keySet() ) {
 				List<PolicyCoverData>  coverGroups  = groupByCover.get(coverId);
-				CoverRes coverRes = new CoverRes();
+				SearchPremiumDetailsRes coverRes = new SearchPremiumDetailsRes();
 				
 				if (coverGroups.get(0).getSubCoverYn().equalsIgnoreCase("N") ) {
 					// Get Covers
 					List<PolicyCoverData> filterCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0)).collect(Collectors.toList());
-					coverRes = dozerMapper.map(filterCover.get(0), CoverRes.class);
+					coverRes = dozerMapper.map(filterCover.get(0), SearchPremiumDetailsRes.class);
 					coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
-					coverRes.setDependentCoveryn(filterCover.get(0).getDependentCoverYn());
-					coverRes.setDependentCoverId(filterCover.get(0).getDependentCoverId()==null?"":filterCover.get(0).getDependentCoverId().toString());
-					coverRes.setIsselected(filterCover.get(0).getIsSelected());
-					coverRes.setDependentCoveryn(filterCover.get(0).getDependentCoverYn());
-					coverRes.setDependentCoverId(filterCover.get(0).getDependentCoverId()==null?"": filterCover.get(0).getDependentCoverId().toString());
-					coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc());
-					coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc());
 					coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc());
 					coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc());
-					coverRes.setPremiumAfterDiscountLC(filterCover.get(0).getPremiumAfterDiscountLc());
-					coverRes.setPremiumBeforeDiscountLC(filterCover.get(0).getPremiumBeforeDiscountLc());
 					coverRes.setPremiumExcluedTaxLC(filterCover.get(0).getPremiumExcludedTaxLc());
 					coverRes.setPremiumIncludedTaxLC(filterCover.get(0).getPremiumIncludedTaxLc());
-					coverRes.setRegulatoryCode(filterCover.get(0).getRegulatoryCode());
 					coverRes.setCoverageType(filterCover.get(0).getCoverageType());
-					coverRes.setExcessAmount(filterCover.get(0).getExcessAmount()==null ? "" :filterCover.get(0).getExcessAmount().toPlainString() );
-					coverRes.setExcessPercent(filterCover.get(0).getExcessPercent()==null ? "" :filterCover.get(0).getExcessPercent().toPlainString() );
-					coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());
 									
-//					// Discount Covers Or Promo Covers
-//					List<PolicyCoverData> filterDiscountCover = coverGroups.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) && ( o.getCoverageType().equalsIgnoreCase("D") ||  o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
-//					
-//					if ( filterDiscountCover.size() > 0 ) {
-//						 List<Discount> discounts =  getDiscountRates(filterDiscountCover);
-//						 coverRes.setDiscounts(discounts);	
-//					}
-//					
-//					// Tax Covers
-//					List<PolicyCoverData> filterTaxCover = coverGroups.stream().filter( o -> (! o.getTaxId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("T")).collect(Collectors.toList());
-//					
-//					if( filterTaxCover.size() > 0 ) {
-//						 List<Tax> taxes = getTaxRates(filterTaxCover) ;
-//						 coverRes.setTaxes(taxes);	
-//					}
-//					
-//					// Loginds Covers
-//					List<PolicyCoverData> filterLodingCover = coverGroups.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("L") ).collect(Collectors.toList());
-//					
-//					if( filterLodingCover.size() > 0 ) {
-//						 List<Loading> lodings =  getLodingCovers(filterLodingCover) ;
-//						 coverRes.setLoadings(lodings);	
-//					}
 										
 				} else {
 					
@@ -574,10 +507,6 @@ public class SearchServiceImpl implements SearchService {
 					 coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
 					 coverRes.setSumInsured(filterCover.get(0).getSumInsured()==null ? null : new BigDecimal(filterCover.get(0).getSumInsured().toString()));
 					 coverRes.setRate(filterCover.get(0).getRate()==null?null : Double.valueOf(filterCover.get(0).getRate().toString()));
-					coverRes.setExcessAmount(filterCover.get(0).getExcessAmount()==null ? "" :filterCover.get(0).getExcessAmount().toPlainString() );
-					coverRes.setExcessPercent(filterCover.get(0).getExcessPercent()==null ? "" :filterCover.get(0).getExcessPercent().toPlainString() );
-					coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());
-					
 					List<SubCoverRes>  subCoverListRes = new ArrayList<SubCoverRes>();
 					List<PolicyCoverData> filterSubCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0)).collect(Collectors.toList());
 					for ( PolicyCoverData subCovers : filterSubCover) {
@@ -593,32 +522,7 @@ public class SearchServiceImpl implements SearchService {
 						subCoverRes.setPremiumExcluedTaxLC(filterSubCover.get(0).getPremiumExcludedTaxLc());
 						subCoverRes.setPremiumIncludedTaxLC(filterSubCover.get(0).getPremiumIncludedTaxLc());
 						subCoverRes.setRegulatoryCode(filterCover.get(0).getRegulatoryCode());
-						coverRes.setExcessAmount(filterCover.get(0).getExcessAmount()==null ? "" :filterCover.get(0).getExcessAmount().toPlainString() );
-						coverRes.setExcessPercent(filterCover.get(0).getExcessPercent()==null ? "" :filterCover.get(0).getExcessPercent().toPlainString() );
-						coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());
-//						// Discount Covers Or Promo Covers
-//						List<PolicyCoverData> filterDiscountCover = coverGroups.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) &&  ( ! o.getDiscLoadId().equals(0)) && ( o.getCoverageType().equalsIgnoreCase("D") ||  o.getCoverageType().equalsIgnoreCase("P") )  ).collect(Collectors.toList());
-//						
-//						if ( filterDiscountCover.size() > 0 ) {
-//							 List<Discount> discounts =  getDiscountRates(filterDiscountCover);
-//							 subCoverRes.setDiscounts(discounts);	
-//						}
-//						
-//						// Tax Covers
-//						List<PolicyCoverData> filterTaxCover = coverGroups.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) &&  (! o.getTaxId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("T")).collect(Collectors.toList());
-//						
-//						if( filterTaxCover.size() > 0 ) {
-//							 List<Tax> taxes = getTaxRates(filterTaxCover) ;
-//							 subCoverRes.setTaxes(taxes);	
-//						}
-//						
-//						// Loginds Covers
-//						List<PolicyCoverData> filterLodingCover = coverGroups.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) &&  ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("L") ).collect(Collectors.toList());
-//						
-//						if( filterLodingCover.size() > 0 ) {
-//							 List<Loading> lodings =  getLodingCovers(filterLodingCover) ;
-//							 subCoverRes.setLoadings(lodings);	
-//						}
+						
 						subCoverListRes.add(subCoverRes);
 					}
 					coverRes.setSubcovers(subCoverListRes);
@@ -626,7 +530,7 @@ public class SearchServiceImpl implements SearchService {
 				coverListRes.add(coverRes);
 			}
 	
-			coverListRes.sort(Comparator.comparing(CoverRes :: getCoverId));;
+			coverListRes.sort(Comparator.comparing(SearchPremiumDetailsRes :: getCoverId));;
 		
 		} catch ( Exception e) {
 			e.printStackTrace();
@@ -636,28 +540,23 @@ public class SearchServiceImpl implements SearchService {
 		return coverListRes;
 	}
 	
-	public synchronized List<Cover> getCoversList(Map<Integer,List<FactorRateRequestDetails>> groupByCover) {
-		List<Cover>  coverListRes = new ArrayList<Cover>();
+	public synchronized List<SearchCoverDetails> getCoversList(Map<Integer,List<FactorRateRequestDetails>> groupByCover) {
+		List<SearchCoverDetails>  coverListRes = new ArrayList<SearchCoverDetails>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			for ( Integer coverId : groupByCover.keySet() ) {
 				List<FactorRateRequestDetails>  covers  = groupByCover.get(coverId);
-				Cover coverRes = new Cover();
+				SearchCoverDetails coverRes = new SearchCoverDetails();
 				
 				if (covers.get(0).getSubCoverYn().equalsIgnoreCase("N") ) {
 					// Get Covers
 					List<FactorRateRequestDetails> filterCover = covers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) ).collect(Collectors.toList());
-					coverRes = dozerMapper.map(filterCover.get(0), Cover.class);
+					coverRes = dozerMapper.map(filterCover.get(0), SearchCoverDetails.class);
 					coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
-					coverRes.setDependentCoveryn(filterCover.get(0).getDependentCoverYn());
-					coverRes.setDependentCoverId(filterCover.get(0).getDependentCoverId()==null?"":filterCover.get(0).getDependentCoverId().toString());
 					coverRes.setIsselected(filterCover.get(0).getIsSelected());
-					coverRes.setDependentCoveryn(filterCover.get(0).getDependentCoverYn());
-					coverRes.setDependentCoverId(filterCover.get(0).getDependentCoverId()==null?"": filterCover.get(0).getDependentCoverId().toString());
 					coverRes.setSubCoverId(null);
 					coverRes.setSubCoverDesc(null);
 					coverRes.setSubCoverName(null);
-					coverRes.setSectionId(filterCover.get(0).getSectionId()==null?"":filterCover.get(0).getSectionId().toString());
 					coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc()==null?BigDecimal.ZERO :filterCover.get(0).getPremiumAfterDiscountFc());
 					coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc()==null?BigDecimal.ZERO :filterCover.get(0).getPremiumBeforeDiscountFc());
 					coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc()==null?BigDecimal.ZERO :filterCover.get(0).getPremiumExcludedTaxFc());
@@ -666,28 +565,17 @@ public class SearchServiceImpl implements SearchService {
 					coverRes.setPremiumBeforeDiscountLC(filterCover.get(0).getPremiumBeforeDiscountLc()==null?BigDecimal.ZERO :filterCover.get(0).getPremiumBeforeDiscountLc());
 					coverRes.setPremiumExcluedTaxLC(filterCover.get(0).getPremiumExcludedTaxLc()==null?BigDecimal.ZERO :filterCover.get(0).getPremiumExcludedTaxLc());
 					coverRes.setPremiumIncludedTaxLC(filterCover.get(0).getPremiumIncludedTaxLc()==null?BigDecimal.ZERO :filterCover.get(0).getPremiumIncludedTaxLc());
-					coverRes.setExchangeRate(filterCover.get(0).getExchangeRate());	
-					coverRes.setCdRefNo(filterCover.get(0).getCdRefno());
-					coverRes.setCreatedBy(filterCover.get(0).getCreatedBy());
-					coverRes.setInsuranceId(filterCover.get(0).getCompanyId());
-					coverRes.setMsrefno(filterCover.get(0).getMsRefno());
-					coverRes.setProductId(filterCover.get(0).getProductId().toString() );
 					coverRes.setRequestReferenceNo(filterCover.get(0).getRequestReferenceNo());
-					coverRes.setSectionId(filterCover.get(0).getSectionId()==null?"" :filterCover.get(0).getSectionId().toString());
-					coverRes.setVdRefNo(filterCover.get(0).getVdRefno());
 					coverRes.setVehicleId(filterCover.get(0).getVehicleId()==null?"" :filterCover.get(0).getVehicleId().toString());
-					coverRes.setMultiSelectYn(filterCover.get(0).getMultiSelectYn()==null?"":filterCover.get(0).getMultiSelectYn());
 					coverRes.setDiffPremiumIncludedTax(filterCover.get(0).getDiffPremiumIncludedTaxFc());
-					coverRes.setEffectiveDate(filterCover.get(0).getCoverPeriodFrom());
 					coverRes.setPolicyEndDate(filterCover.get(0).getCoverPeriodTo());
 					coverRes.setProRata(filterCover.get(0).getProRataPercent());
-					coverRes.setProRataYn(filterCover.get(0).getProRataYn());
 					
 					// Discount Covers Or Promo Covers
 					List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) && (   o.getCoverageType().equalsIgnoreCase("D") || o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
 					
 					if ( filterDiscountCover.size() > 0 ) {
-						 List<Discount> discounts =  getDiscountRates(filterDiscountCover);
+						 List<SearchDiscount> discounts =  getDiscountRates(filterDiscountCover);
 						 coverRes.setDiscounts(discounts);	
 					}
 					
@@ -696,25 +584,15 @@ public class SearchServiceImpl implements SearchService {
 					(! o.getTaxId().equals(0)) && o.getDiscLoadId()==0 &&   o.getCoverageType().equalsIgnoreCase("T")).collect(Collectors.toList());
 					
 					if( filterTaxCover.size() > 0 ) {
-						 List<Tax> taxes = getTaxRates(filterTaxCover) ;
+						 List<SearchTax> taxes = getTaxRates(filterTaxCover) ;
 						 coverRes.setTaxes(taxes);	
 					}
 
-					//Endorsement
-					List<FactorRateRequestDetails> filterEndtCover = covers.stream().filter(o -> (o.getDiscLoadId()!=0 &&   o.getCoverageType().equalsIgnoreCase("E"))).collect(Collectors.toList());
-					
-					if(filterEndtCover.size() > 0 ) {
-						List<Endorsement> endorsment  =   getEndorsementRates(filterEndtCover,covers);
-						coverRes.setEndorsements(endorsment);
-					}
-						
-					
-					
 					// Loginds Covers
 					List<FactorRateRequestDetails> filterLodingCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) &&  o.getCoverageType().equalsIgnoreCase("L") ).collect(Collectors.toList());
 					
 					if( filterLodingCover.size() > 0 ) {
-						 List<Loading> lodings =  getLodingCovers(filterLodingCover) ;
+						 List<SearchLoading> lodings =  getLodingCovers(filterLodingCover) ;
 						 coverRes.setLoadings(lodings);	
 					}
 										
@@ -727,7 +605,6 @@ public class SearchServiceImpl implements SearchService {
 					 coverRes.setCalcType(filterCover.get(0).getCalcType());
 					 coverRes.setCoverName(filterCover.get(0).getCoverName());
 					 coverRes.setCoverDesc(filterCover.get(0).getCoverDesc());
-					 coverRes.setMinimumPremium(filterCover.get(0).getMinimumPremium()==null ? null : new BigDecimal(filterCover.get(0).getMinimumPremium().toString()));
 					 coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
 					 coverRes.setSumInsured(filterCover.get(0).getSumInsured()==null ? BigDecimal.ZERO : new BigDecimal(filterCover.get(0).getSumInsured().toString()));
 					 coverRes.setRate(filterCover.get(0).getRate()==null?null:Double.valueOf(filterCover.get(0).getRate().toString()));
@@ -739,24 +616,16 @@ public class SearchServiceImpl implements SearchService {
 					coverRes.setPremiumBeforeDiscountLC(filterCover.get(0).getPremiumBeforeDiscountLc()==null?BigDecimal.ZERO :filterCover.get(0).getPremiumBeforeDiscountLc());
 					coverRes.setPremiumExcluedTaxLC(filterCover.get(0).getPremiumExcludedTaxLc()==null?BigDecimal.ZERO :filterCover.get(0).getPremiumExcludedTaxLc());
 					coverRes.setPremiumIncludedTaxLC(filterCover.get(0).getPremiumIncludedTaxLc()==null?BigDecimal.ZERO :filterCover.get(0).getPremiumIncludedTaxLc());
-					coverRes.setMultiSelectYn(filterCover.get(0).getMultiSelectYn()==null?"":filterCover.get(0).getMultiSelectYn());		
-					coverRes.setSectionId(filterCover.get(0).getSectionId()==null?"":filterCover.get(0).getSectionId().toString());
-					coverRes.setEffectiveDate(filterCover.get(0).getCoverPeriodFrom());
 					coverRes.setPolicyEndDate(filterCover.get(0).getCoverPeriodTo());
 					coverRes.setProRata(filterCover.get(0).getProRataPercent());
-					coverRes.setProRataYn(filterCover.get(0).getProRataYn());
 						
-					List<Cover>  subCoverListRes = new ArrayList<Cover>();
+					List<SearchCoverDetails>  subCoverListRes = new ArrayList<SearchCoverDetails>();
 					List<FactorRateRequestDetails> filterSubCover = covers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());
 					for ( FactorRateRequestDetails subCovers : filterSubCover) {
-						Cover subCoverRes = new Cover();
-						subCoverRes = dozerMapper.map(subCovers, Cover.class);
+						SearchCoverDetails subCoverRes =new SearchCoverDetails();
+						subCoverRes = dozerMapper.map(subCovers, SearchCoverDetails.class);
 						subCoverRes.setIsSubCover(filterSubCover.get(0).getSubCoverYn());
-						subCoverRes.setDependentCoveryn(filterSubCover.get(0).getDependentCoverYn());
-						subCoverRes.setDependentCoverId(filterSubCover.get(0).getDependentCoverId()==null?"":filterSubCover.get(0).getDependentCoverId().toString());
 						subCoverRes.setIsselected(filterSubCover.get(0).getIsSelected());
-						subCoverRes.setExchangeRate(filterSubCover.get(0).getExchangeRate());	
-						subCoverRes.setSectionId(filterSubCover.get(0).getSectionId()==null?"":filterSubCover.get(0).getSectionId().toString());
 
 						subCoverRes.setPremiumAfterDiscount(filterSubCover.get(0).getPremiumAfterDiscountFc());
 						subCoverRes.setPremiumBeforeDiscount(filterSubCover.get(0).getPremiumBeforeDiscountFc());
@@ -766,28 +635,19 @@ public class SearchServiceImpl implements SearchService {
 						subCoverRes.setPremiumBeforeDiscountLC( filterSubCover.get(0).getPremiumBeforeDiscountLc());
 						subCoverRes.setPremiumExcluedTaxLC(filterSubCover.get(0).getPremiumExcludedTaxLc());
 						subCoverRes.setPremiumIncludedTaxLC(filterSubCover.get(0).getPremiumIncludedTaxLc());
-						subCoverRes.setCdRefNo(filterSubCover.get(0).getCdRefno());
-						subCoverRes.setCreatedBy(filterSubCover.get(0).getCreatedBy());
-						subCoverRes.setInsuranceId(filterSubCover.get(0).getCompanyId());
-						subCoverRes.setMsrefno(filterSubCover.get(0).getMsRefno());
-						subCoverRes.setProductId(filterSubCover.get(0).getProductId().toString() );
 						subCoverRes.setRequestReferenceNo(filterSubCover.get(0).getRequestReferenceNo());
-						subCoverRes.setSectionId(filterSubCover.get(0).getSectionId()==null?"" :filterSubCover.get(0).getSectionId().toString());
-						subCoverRes.setVdRefNo(filterSubCover.get(0).getVdRefno());
 						subCoverRes.setVehicleId(filterSubCover.get(0).getVehicleId()==null?"" :filterSubCover.get(0).getVehicleId().toString());
 						subCoverRes.setDiffPremiumIncludedTax(filterSubCover.get(0).getDiffPremiumIncludedTaxFc());
 						subCoverRes.setDiffPremiumIncludedTaxLC(filterSubCover.get(0).getDiffPremiumIncludedTaxLc());
-						subCoverRes.setEffectiveDate(filterSubCover.get(0).getCoverPeriodFrom());
 						subCoverRes.setPolicyEndDate(filterSubCover.get(0).getCoverPeriodTo());
 						subCoverRes.setProRata(filterSubCover.get(0).getProRataPercent());
-						subCoverRes.setProRataYn(filterSubCover.get(0).getProRataYn());
 						
 						
 						// Discount Covers Or Promo Covers
 						List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) && ( ! o.getDiscLoadId().equals(0)) && (   o.getCoverageType().equalsIgnoreCase("D") || o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
 						
 						if ( filterDiscountCover.size() > 0 ) {
-							 List<Discount> discounts =  getDiscountRates(filterDiscountCover);
+							 List<SearchDiscount> discounts =  getDiscountRates(filterDiscountCover);
 							 subCoverRes.setDiscounts(discounts);	
 						}
 						
@@ -795,7 +655,7 @@ public class SearchServiceImpl implements SearchService {
 						List<FactorRateRequestDetails> filterTaxCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) && (! o.getTaxId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("T")).collect(Collectors.toList());
 						
 						if( filterTaxCover.size() > 0 ) {
-							 List<Tax> taxes = getTaxRates(filterTaxCover) ;
+							 List<SearchTax> taxes = getTaxRates(filterTaxCover) ;
 							 subCoverRes.setTaxes(taxes);	
 						}
 						
@@ -803,7 +663,7 @@ public class SearchServiceImpl implements SearchService {
 						List<FactorRateRequestDetails> filterLodingCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) &&  ( ! o.getDiscLoadId().equals(0)) &&  o.getIsSelected().equalsIgnoreCase("L") ).collect(Collectors.toList());
 						
 						if( filterLodingCover.size() > 0 ) {
-							 List<Loading> lodings =  getLodingCovers(filterLodingCover) ;
+							 List<SearchLoading> lodings =  getLodingCovers(filterLodingCover) ;
 							 subCoverRes.setLoadings(lodings);	
 						}
 						subCoverListRes.add(subCoverRes);
@@ -814,29 +674,25 @@ public class SearchServiceImpl implements SearchService {
 			}
 			
 			System.out.print("cover sort");
-			coverListRes.sort(Comparator.comparing(Cover ::    getSumInsured ).reversed() );
+			coverListRes.sort(Comparator.comparing(SearchCoverDetails ::    getSumInsured ).reversed() );
 			
 		} catch(Exception e){
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
 			return null;
 			
-		}return coverListRes;
+		}
+		return coverListRes;
 	}
-	public List<Discount> getDiscountRates(List<FactorRateRequestDetails> filterDiscountCover) {
-		List<Discount> DiscountList = new  ArrayList<Discount>();
+	public List<SearchDiscount> getDiscountRates(List<FactorRateRequestDetails> filterDiscountCover) {
+		List<SearchDiscount> DiscountList = new  ArrayList<SearchDiscount>();
 		try {
 			for (FactorRateRequestDetails disc :  filterDiscountCover ) {
-				Discount discount = new Discount();
+				SearchDiscount discount = new SearchDiscount();
 				discount.setDiscountAmount(disc.getPremiumIncludedTaxFc());
-				discount.setDiscountCalcType(disc.getCalcType());
 				discount.setDiscountId(disc.getDiscLoadId().toString());
 				discount.setDiscountDesc(disc.getCoverName());	
 				discount.setDiscountRate(disc.getRate()==null?"0.0" :disc.getRate().toString());
-				discount.setFactorTypeId(disc.getFactorTypeId()==null?"" : disc.getFactorTypeId().toString());
-				discount.setMaxAmount(disc.getMinimumPremium());
-				discount.setSubCoverId(disc.getSubCoverId().toString());
-				discount.setDiscountforId(disc.getDependentCoverId()==null?null:disc.getDependentCoverId().toString());
 				
 				DiscountList.add(discount);
 				
@@ -851,19 +707,15 @@ public class SearchServiceImpl implements SearchService {
 	}
 	
 	
-	public List<Loading> getLodingCovers(List<FactorRateRequestDetails> filterLodingCover) {
-		List<Loading> LodingList = new  ArrayList<Loading>();
+	public List<SearchLoading> getLodingCovers(List<FactorRateRequestDetails> filterLodingCover) {
+		List<SearchLoading> LodingList = new  ArrayList<SearchLoading>();
 		try {
 			for (FactorRateRequestDetails lod :  filterLodingCover ) {
-				Loading loding = new Loading();
-				loding.setFactorTypeId(lod.getFactorTypeId()==null?null:lod.getFactorTypeId().toString());
+				SearchLoading loding = new SearchLoading();
 				loding.setLoadingAmount(lod.getMinimumPremium());
-				loding.setLoadingCalcType(lod.getCalcType());
 				loding.setLoadingDesc(lod.getCoverName());
-				loding.setLoadingforId(lod.getDependentCoverId()==null?null:lod.getDependentCoverId().toString());
 				loding.setLoadingId(lod.getDiscLoadId()==null?null:lod.getDiscLoadId().toString());
 				loding.setLoadingRate(lod.getRate()==null?null:lod.getRate().toString());
-				loding.setMaxAmount(lod.getPremiumIncludedTaxFc());
 				//loding.setSubCoverId(lod.getLodingSubcoverId()==null?null:lod.getLodingSubcoverId().toString());	
 				LodingList.add(loding);
 			}
@@ -876,17 +728,14 @@ public class SearchServiceImpl implements SearchService {
 		}return LodingList;
 	}
 	
-	public List<Tax> getTaxRates(List<FactorRateRequestDetails> filterTaxCover) {
-		List<Tax> TaxList = new  ArrayList<Tax>();
+	public List<SearchTax> getTaxRates(List<FactorRateRequestDetails> filterTaxCover) {
+		List<SearchTax> TaxList = new  ArrayList<SearchTax>();
 		try {
 			for (FactorRateRequestDetails tax :  filterTaxCover ) {
-				Tax taxes = new Tax();
-				taxes.setCalcType(tax.getCalcType());
-				taxes.setIsTaxExempted(tax.getIsTaxExtempted());
+				SearchTax taxes = new SearchTax();
+			
 				taxes.setTaxAmount(tax.getTaxAmount());
 				taxes.setTaxDesc(tax.getTaxDesc());
-				taxes.setTaxExemptCode(tax.getTaxExemptCode());
-				taxes.setTaxExemptType(tax.getTaxExemptType());
 				taxes.setTaxId(tax.getTaxId()==null?null:tax.getTaxId().toString()) ;
 				taxes.setTaxRate( tax.getTaxRate()==null?null : Double.valueOf(tax.getTaxRate().toString()));
 				TaxList.add(taxes);
@@ -1062,27 +911,41 @@ public class SearchServiceImpl implements SearchService {
 	public List<SearchEservieMotorDetailsViewRatingRes> adminViewRatingDetails(SearchReq req) {
 		List<SearchEservieMotorDetailsViewRatingRes>  resList = new ArrayList<SearchEservieMotorDetailsViewRatingRes>();
 		try {
-			if(StringUtils.isNotBlank(req.getRequestReferenceNo())){
-			// Find Risk Datas
-			resList = getRiskDetails(req);
-			
-			// Find Covers
-			List<FactorRateRequestDetails> findCovers = factorrepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
-			
-			//Response 
-			for (SearchEservieMotorDetailsViewRatingRes res : resList ) {
-				
-				// Set Covers
-				List<FactorRateRequestDetails> filterVehicleCovers =  findCovers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(res.getVehicleId())) &&
-						o.getCompanyId().equals(res.getInsuranceId()) && o.getProductId().toString().equals(res.getProductId()) && o.getSectionId().toString().equals(res.getSectionId()) ).collect(Collectors.toList());
-				
-				Map<Integer,List<FactorRateRequestDetails>> groupByCover = filterVehicleCovers.stream().collect(Collectors.groupingBy(FactorRateRequestDetails :: getCoverId));			
-				List<Cover> coverListRes = 	getCoversList(groupByCover);
-				coverListRes.forEach(cov ->  cov.setSectionName(res.getSectionName())) ;
-				
+			if (StringUtils.isNotBlank(req.getRequestReferenceNo())) {
+				if (req.getProductId().equals(motorProductId)) {
+					// Find Risk Datas
+					List<EserviceMotorDetails> motorDatas = repo.findByRequestReferenceNo(req.getRequestReferenceNo());
+					// Find Covers
+					List<FactorRateRequestDetails> findCovers = factorrepo
+							.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
+
+					// Response
+					for (EserviceMotorDetails res : motorDatas) {
+						SearchEservieMotorDetailsViewRatingRes response = new SearchEservieMotorDetailsViewRatingRes();
+						
+						// Set Covers
+						List<FactorRateRequestDetails> filterVehicleCovers = findCovers.stream()
+								.filter(o -> o.getVehicleId().equals(Integer.valueOf(res.getRiskId()))
+										&& o.getCompanyId().equals(res.getCompanyId())
+										&& o.getProductId().toString().equals(res.getProductId())
+										&& o.getSectionId().toString().equals(res.getSectionId()))
+								.collect(Collectors.toList());
+
+						Map<Integer, List<FactorRateRequestDetails>> groupByCover = filterVehicleCovers.stream()
+								.collect(Collectors.groupingBy(FactorRateRequestDetails::getCoverId));
+						List<SearchCoverDetails> coverListRes = getCoversList(groupByCover);
+						//coverListRes.forEach(cov -> cov.setSectionName(res.getSectionName()));
+						response.setCoverList(coverListRes);
+						response.setVehicleId(res.getRiskId().toString());
+						response.setRequestReferenceNo(res.getRequestReferenceNo());
+						response.setOverallPremiumFc(res.getOverallPremiumFc()==null?"0": res.getOverallPremiumFc().toPlainString());
+						response.setOverallPremiumLc(res.getOverallPremiumLc()==null?"0":res.getOverallPremiumLc().toPlainString());
+						response.setActualPremiumFc(res.getActualPremiumFc()==null?"0":res.getActualPremiumFc().toPlainString());
+						response.setActualPremiumLc(res.getActualPremiumLc()==null?"0":res.getActualPremiumLc().toPlainString());
+						resList.add(response);
+					}
 				}
 			}
-			
 		} catch(Exception e){
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -1091,68 +954,39 @@ public class SearchServiceImpl implements SearchService {
 		}return resList;
 	}
 
-	public  List<SearchEservieMotorDetailsViewRatingRes> getRiskDetails(SearchReq req) {
-		 List<SearchEservieMotorDetailsViewRatingRes> viewDetailsList  = new ArrayList<SearchEservieMotorDetailsViewRatingRes>() ;
-		try {
-			if(req.getProductId().equalsIgnoreCase(motorProductId)) {
-				viewDetailsList = getMotorDetails(req) ;
-				
-			}
-//			else if(req.getProductId().equalsIgnoreCase(travelProductId)) {
-//				viewDetailsList = getTravelDetails(req) ;
-//				
-//			} else if(req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)) {
-//				viewDetailsList = getBuildingDetails(req) ;
-//				
-//			} else {
-//				viewDetailsList = getCommonDetails(req) ;
-//			}
-			
-			
-			
-		} catch(Exception e) {
-			log.info("Log Details" + e.getMessage());
-			return null;
-			
-		}return viewDetailsList;
+
+	@Override
+	public List<SearchROPDetailsRes> adminROPSearch(SearchReq req) {
+		// TODO Auto-generated method stub
+		return null;
 	}
-	public  List<SearchEservieMotorDetailsViewRatingRes> getMotorDetails(SearchReq req   ) {
-		 List<SearchEservieMotorDetailsViewRatingRes> motorDetailsList  = new ArrayList<SearchEservieMotorDetailsViewRatingRes>() ;
-		 DozerBeanMapper dozerMapper = new DozerBeanMapper() ;
+
+
+
+	@Override
+	public List<SearchPremiumDetailsRes> adminPremiumSearch(SearchReq req) {
+		List<SearchPremiumDetailsRes> viewRes = new ArrayList<SearchPremiumDetailsRes>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			// Motor Product Details
-			List<EserviceMotorDetails>    motorDatas = repo.findByRequestReferenceNo(req.getRequestReferenceNo());
-					
-			for (EserviceMotorDetails mot :  motorDatas) {
-				// Response 
-				SearchEservieMotorDetailsViewRatingRes res = new SearchEservieMotorDetailsViewRatingRes();
-				
-				dozerMapper.map(mot,res);
-				res.setInsuranceId(mot.getCompanyId());
-				res.setOverallPremiumFc(mot.getOverallPremiumFc()==null?"0": mot.getOverallPremiumFc().toPlainString());
-				res.setOverallPremiumLc(mot.getOverallPremiumLc()==null?"0":mot.getOverallPremiumLc().toPlainString());
-				res.setActualPremiumFc(mot.getActualPremiumFc()==null?"0":mot.getActualPremiumFc().toPlainString());
-				res.setActualPremiumLc(mot.getActualPremiumLc()==null?"0":mot.getActualPremiumLc().toPlainString());
-				res.setVehicleId(mot.getRiskId().toString());
-				res.setGroupId(1);
-				res.setGroupMember(0);
-				res.setSectionId(mot.getSectionId() );
-				res.setSectionName(mot.getSectionName());	
-				res.setEffectiveDate(mot.getEndorsementEffdate()==null?null:mot.getEndorsementEffdate() );
-				
-				Object riskDetails = new Object();
-				EserviceMotorDetailsRes  motorRes = new EserviceMotorDetailsRes();
-				dozerMapper.map(mot, motorRes);
-				//motorRes.setSectionName(mot.getSectionName());
-				riskDetails = motorRes ;
-				res.setRiskDetails(riskDetails);
-				motorDetailsList.add(res);
-			}
+		
+			// Find Motor Data
+			List<MotorDataDetails> motorDatas =  motorRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(),"D");
+			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(),"D");	
+		for (MotorDataDetails mot :  motorDatas) {
+			// Cover Details
+			List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(mot.getVehicleId()))).collect(Collectors.toList());
 			
-		} catch(Exception e) {
-			log.info("Log Details" + e.getMessage());
+			Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
+			
+			List<SearchPremiumDetailsRes>  coverListRes = getCoverDetails(groupByCover);
+			
+		} 
+		
+		}catch ( Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
 			return null;
-			
-		}return motorDetailsList;
-	}
+		}
+		return viewRes;
+}
 }
