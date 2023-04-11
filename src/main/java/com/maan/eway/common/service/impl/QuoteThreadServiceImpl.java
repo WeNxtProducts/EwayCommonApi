@@ -267,6 +267,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		NewQuoteRes response = new NewQuoteRes();
 		List<Error> errors = new ArrayList<Error>();
 		SimpleDateFormat idf = new SimpleDateFormat("yyMMddhhmmssSS");
+		QuoteThreadReq request = new QuoteThreadReq(); 
 		try {
 		boolean referal = false ;
 		if( StringUtils.isBlank(req.getAdminLoginId())) {
@@ -301,7 +302,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             }
             
             // Frame Request 
-            QuoteThreadReq request = (QuoteThreadReq) frameQuoteReq.getCommonResponse() ;
+            request = (QuoteThreadReq) frameQuoteReq.getCommonResponse() ;
            
             // Delete Same Quote Old Records
             commonRes =  oldQuoteRecordsDeleteThreadCall(request);
@@ -506,7 +507,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			}
 			
 				notiService.motorQuotationNotification(req);
-				trackingDetailsQuote(req);
+				trackingDetailsQuote(request);
 				
 		}	
 		} catch (Exception e) {
@@ -2092,7 +2093,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	}
 
 	// Tracking Details
-	private QuoteUpdateRes trackingDetailsQuote(NewQuoteReq req) {
+	private QuoteUpdateRes trackingDetailsQuote(QuoteThreadReq req) {
 		QuoteUpdateRes res = new QuoteUpdateRes();
 		try {
 			
@@ -2109,7 +2110,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						trackingReq.setStatus( "Q");
 						trackingReq.setBranchCode(motor.getBranchCode());
 						trackingReq.setCompanyId(motor.getCompanyId());
-						trackingReq.setQuoteNo(motor.getQuoteNo()==null?"":motor.getQuoteNo().toString());
+						trackingReq.setQuoteNo(req.getQuoteNo()==null?"":req.getQuoteNo().toString());
 						trackingReq.setPolicyNo(motor.getPolicyNo()==null?"":motor.getPolicyNo().toString());
 						trackingReq.setOriginalPolicyNo(motor.getOriginalPolicyNo()==null?"":motor.getOriginalPolicyNo().toString());
 						trackingReq.setCreatedby(req.getCreatedBy());
@@ -2131,7 +2132,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						trackingReq.setStatus( "Q");
 						trackingReq.setBranchCode(motor.getBranchCode());
 						trackingReq.setCompanyId(motor.getCompanyId());
-						trackingReq.setQuoteNo(motor.getQuoteNo()==null?"":motor.getQuoteNo().toString());
+						trackingReq.setQuoteNo(req.getQuoteNo()==null?"":req.getQuoteNo().toString());
 						trackingReq.setPolicyNo(motor.getPolicyNo()==null?"":motor.getPolicyNo().toString());
 						trackingReq.setOriginalPolicyNo(motor.getOriginalPolicyNo()==null?"":motor.getOriginalPolicyNo().toString());
 						trackingReq.setCreatedby(req.getCreatedBy());
@@ -2151,7 +2152,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						trackingReq.setStatus( "Q");
 						trackingReq.setBranchCode(motor.getBranchCode());
 						trackingReq.setCompanyId(motor.getCompanyId());
-						trackingReq.setQuoteNo(motor.getQuoteNo()==null?"":motor.getQuoteNo().toString());
+						trackingReq.setQuoteNo(req.getQuoteNo()==null?"":req.getQuoteNo().toString());
 						trackingReq.setPolicyNo(motor.getPolicyNo()==null?"":motor.getPolicyNo().toString());
 						trackingReq.setOriginalPolicyNo(motor.getOriginalPolicyNo()==null?"":motor.getOriginalPolicyNo().toString());
 						trackingReq.setCreatedby(req.getCreatedBy());
@@ -2171,7 +2172,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						trackingReq.setStatus( "Q");
 						trackingReq.setBranchCode(motor.getBranchCode());
 						trackingReq.setCompanyId(motor.getCompanyId());
-						trackingReq.setQuoteNo(motor.getQuoteNo()==null?"":motor.getQuoteNo().toString());
+						trackingReq.setQuoteNo(req.getQuoteNo()==null?"":req.getQuoteNo().toString());
 						trackingReq.setPolicyNo(motor.getPolicyNo()==null?"":motor.getPolicyNo().toString());
 						trackingReq.setOriginalPolicyNo(motor.getOriginalPolicyNo()==null?"":motor.getOriginalPolicyNo().toString());
 						trackingReq.setCreatedby(req.getCreatedBy());
