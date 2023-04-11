@@ -176,39 +176,37 @@ public class EndorsementService {
 	
 	public EndtMaster getEndorsementTypes(Endorsment request) {
 		try {
+			String a ="";
+			EndtMaster res = new EndtMaster();
+			List<EndorsementType> resList = new ArrayList<EndorsementType>();
+			
 		
 			// For Broker Setup
 		if((StringUtils.isNotBlank(request.getLoginId())) && (StringUtils.isNotBlank(request.getUserType())) &&(request.getUserType().equalsIgnoreCase("broker"))){
 
-			List<BrokerEndtSetupMaster> m = brokerEndtRepo.findByCompanyIdAndProductIdAndLoginIdAndUserTypeAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(request.getCompanyId(),request.getProductId().toString(),request.getLoginId(),request.getUserType(),"Y",new Date(),new Date());
-			List<EndtTypeMaster> m1 = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualOrderByPriorityAsc(request.getCompanyId(),Integer.valueOf(request.getProductId().intValue()),"Y",new Date(),new Date());
-						
-			EndtMaster res = new EndtMaster();
-			List<EndorsementType> resList = new ArrayList<EndorsementType>();
-			
-			EndorsementType res1 = new EndorsementType();
-			
-			for(BrokerEndtSetupMaster data :m) {
-				for(EndtTypeMaster data1 :m1) {
-					res1.setEndorsementCategory(new BigDecimal(data1.getEndtTypeCategoryId()));
-					res1.setEndorsementCategoryDesc(data1.getEndtTypeCategory());
-					res1.setEndtType(new BigDecimal(data1.getEndtTypeId()));
-					res1.setEndorsementDesc(data1.getEndtTypeDesc());
+			List<BrokerEndtSetupMaster> m = brokerEndtRepo.findByCompanyIdAndProductIdAndLoginIdAndUserTypeAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualOrderByAmendIdDesc(request.getCompanyId(),request.getProductId().toString(),request.getLoginId(),request.getUserType(),"Y",new Date(),new Date());
+			for(BrokerEndtSetupMaster data : m) {
+				a = data.getEndtTypes();
+				List<String> as = new ArrayList<String>(Arrays.asList(a.split(",")));
+				for(String a1 : as) {				
+				List<EndtTypeMaster> m1 = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndEndtTypeIdOrderByPriorityAsc(request.getCompanyId(),Integer.valueOf(request.getProductId().intValue()),"Y",new Date(),new Date(), Integer.valueOf(a1));
+				for(EndtTypeMaster datas : m1) {
+					EndorsementType res1 = new EndorsementType();
+
+					res1.setEndorsementCategory(new BigDecimal(datas.getEndtTypeCategoryId()));
+					res1.setEndorsementCategoryDesc(datas.getEndtTypeCategory());
+					res1.setEndtType(new BigDecimal(datas.getEndtTypeId()));
+					res1.setEndorsementDesc(datas.getEndtTypeDesc());
+					String fieldname = datas.getEndtDependantFields();
+					List<String> fieldnames = new ArrayList<String>(Arrays.asList(fieldname.split(",")));
+					res1.setFieldsAllowed(fieldnames);
+					resList.add(res1);
+				;
 				}
-				String dependentid = data.getEndtTypes();
-				String dependantdesc="";
-				List<String> dependentids = new ArrayList<String>(Arrays.asList(dependentid.split(",")));
-				for(String a :dependentids ) {
-					List<EndtDependantFieldMaster> a1 = dependantRepo.findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndDependantFieldIdOrderByAmendIdDesc(request.getCompanyId(), request.getProductId().toString(),"Y", new Date(), new Date(),Integer.valueOf(a));
-					
-					dependantdesc = dependantdesc+","+a1.get(0).getDependantFieldName();
-				}
-				dependantdesc=dependantdesc.substring(1);
-				List<String> dependantdescs = new ArrayList<String>(Arrays.asList(dependantdesc.split(",")));
-				
-				res1.setFieldsAllowed(dependantdescs);
-				resList.add(res1);
+
+			}
 				res.setEndorsementTypes(resList);
+
 			}
 				return res;
 		}

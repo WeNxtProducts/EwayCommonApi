@@ -25,8 +25,12 @@ import com.maan.eway.bean.BrokerEndtSetupMasterId;
  
 public interface BrokerEndtSetupMasterRepository  extends JpaRepository<BrokerEndtSetupMaster,BrokerEndtSetupMasterId > , JpaSpecificationExecutor<BrokerEndtSetupMaster> {
 
+	/*
 	List<BrokerEndtSetupMaster> findByCompanyIdAndProductIdAndLoginIdAndUserTypeAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 			String companyId, String productId, String loginId, String userType, String string, Date date,
 			Date date2);
+	*/
+	List<BrokerEndtSetupMaster> findByCompanyIdAndProductIdAndLoginIdAndUserTypeAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualOrderByAmendIdDesc(
+			String companyId, String string, String loginId, String userType, String string2, Date date, Date date2);
 
 }
