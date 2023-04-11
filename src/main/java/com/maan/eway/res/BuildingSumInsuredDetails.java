@@ -84,4 +84,6 @@ public class BuildingSumInsuredDetails {
 	@JsonProperty("GoodsTurnoverSuminsured")
     private String   goodsTurnoverSuminsured ;
 	
+	@JsonProperty("CurrencyId")
+    private String   currencyId ;
 }

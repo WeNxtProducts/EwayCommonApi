@@ -1999,6 +1999,7 @@ private BuildingDetailsRepository BuildingRepo;
 			res.setElecEquipSuminsured(build.getElecEquipSuminsured() == null?"0" :build.getElecEquipSuminsured().toPlainString());
 			res.setGoodsSinglecarrySuminsured(build.getGoodsSinglecarrySuminsured() == null?"0" :build.getGoodsSinglecarrySuminsured().toPlainString());
 			res.setGoodsTurnoverSuminsured(build.getGoodsTurnoverSuminsured() == null?"0" :build.getGoodsTurnoverSuminsured().toPlainString());
+			res.setCurrencyId(build.getCurrency());
 			res.setRiskId(build.getRiskId().toString());
 			res.setSectionId(sectionIds);		
 			
