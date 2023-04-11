@@ -2019,6 +2019,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					trackingReq.setOriginalPolicyNo(motor.getOriginalPolicyNo()==null?"":motor.getOriginalPolicyNo().toString());
 					trackingReq.setCreatedby(req.getCreatedBy());
 					trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());
+					trackingReq.setRemarks(motor.getReferalRemarks());
 					trackingReq1.add(trackingReq);
 					}
 					
@@ -2038,6 +2039,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					trackingReq.setOriginalPolicyNo(motor.getOriginalPolicyNo()==null?"":motor.getOriginalPolicyNo().toString());
 					trackingReq.setCreatedby(req.getCreatedBy());
 					trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());
+					trackingReq.setRemarks(motor.getReferalRemarks());
 					trackingReq1.add(trackingReq);
 				}
 			} else if( req.getProductId().equalsIgnoreCase(buildingProductId)) {
@@ -2056,6 +2058,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					trackingReq.setOriginalPolicyNo(motor.getOriginalPolicyNo()==null?"":motor.getOriginalPolicyNo().toString());
 					trackingReq.setCreatedby(req.getCreatedBy());
 					trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());
+					trackingReq.setRemarks(motor.getReferalRemarks());
 					trackingReq1.add(trackingReq);
 				}
 			} else {
@@ -2074,6 +2077,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					trackingReq.setOriginalPolicyNo(motor.getOriginalPolicyNo()==null?"":motor.getOriginalPolicyNo().toString());
 					trackingReq.setCreatedby(req.getCreatedBy());
 					trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());
+					trackingReq.setRemarks(motor.getReferalRemarks());
 					trackingReq1.add(trackingReq);
 				}
 			}			

@@ -933,6 +933,7 @@ private BuildingDetailsRepository BuildingRepo;
 					trackingReq.setOriginalPolicyNo(motor.getOriginalPolicyNo()==null?"":motor.getOriginalPolicyNo().toString());
 					trackingReq.setCreatedby(req.getAdminLoginId());
 					trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());
+					trackingReq.setRemarks(motor.getAdminRemarks());
 					trackingReq1.add(trackingReq);
 				}
 				}
@@ -956,6 +957,7 @@ private BuildingDetailsRepository BuildingRepo;
 					trackingReq.setOriginalPolicyNo(motor.getOriginalPolicyNo()==null?"":motor.getOriginalPolicyNo().toString());
 					trackingReq.setCreatedby(req.getAdminLoginId());
 					trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());
+					trackingReq.setRemarks(motor.getAdminRemarks());
 					trackingReq1.add(trackingReq);
 				}
 				}
@@ -976,6 +978,7 @@ private BuildingDetailsRepository BuildingRepo;
 					trackingReq.setOriginalPolicyNo(motor.getOriginalPolicyNo()==null?"":motor.getOriginalPolicyNo().toString());
 					trackingReq.setCreatedby(req.getAdminLoginId());
 					trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());
+					trackingReq.setRemarks(motor.getAdminRemarks());
 					trackingReq1.add(trackingReq);
 				}
 				}
@@ -996,6 +999,7 @@ private BuildingDetailsRepository BuildingRepo;
 					trackingReq.setOriginalPolicyNo(motor.getOriginalPolicyNo()==null?"":motor.getOriginalPolicyNo().toString());
 					trackingReq.setCreatedby(req.getAdminLoginId());
 					trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());
+					trackingReq.setRemarks(motor.getAdminRemarks());
 					trackingReq1.add(trackingReq);
 				}
 				}
@@ -2178,6 +2182,7 @@ private BuildingDetailsRepository BuildingRepo;
 						trackingReq.setOriginalPolicyNo(motor.getOriginalPolicyNo()==null?"":motor.getOriginalPolicyNo().toString());
 						trackingReq.setCreatedby(req.getLoginId());
 						trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());
+						trackingReq.setRemarks(motor.getReferalRemarks());
 						trackingReq1.add(trackingReq);
 					
 					}
@@ -2198,6 +2203,7 @@ private BuildingDetailsRepository BuildingRepo;
 						trackingReq.setOriginalPolicyNo(motor.getOriginalPolicyNo()==null?"":motor.getOriginalPolicyNo().toString());
 						trackingReq.setCreatedby(req.getLoginId());
 						trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());
+						trackingReq.setRemarks(motor.getReferalRemarks());
 						trackingReq1.add(trackingReq);
 					
 					}
@@ -2217,6 +2223,7 @@ private BuildingDetailsRepository BuildingRepo;
 						trackingReq.setOriginalPolicyNo(motor.getOriginalPolicyNo()==null?"":motor.getOriginalPolicyNo().toString());
 						trackingReq.setCreatedby(req.getLoginId());
 						trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());
+						trackingReq.setRemarks(motor.getReferalRemarks());
 						trackingReq1.add(trackingReq);
 					
 					}
@@ -2236,6 +2243,7 @@ private BuildingDetailsRepository BuildingRepo;
 						trackingReq.setOriginalPolicyNo(motor.getOriginalPolicyNo()==null?"":motor.getOriginalPolicyNo().toString());
 						trackingReq.setCreatedby(req.getLoginId());
 						trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());
+						trackingReq.setRemarks(motor.getReferalRemarks());
 						trackingReq1.add(trackingReq);
 					
 					}
