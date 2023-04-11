@@ -25,13 +25,24 @@ import com.maan.eway.res.SectionDetails;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class EserviceMotorDetailsRes implements Serializable {
+public class SearchEserviceMotorDetailsRes implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @JsonProperty("RequestReferenceNo")
+   	private  String requestReferenceNo;
+    @JsonProperty("QuoteNo")
+   	private  String quoteNo;
+    @JsonProperty("PolicyNo")
+   	private  String policyNo;
+    @JsonProperty("CustomerId")
+   	private  String customerId;
+    @JsonProperty("PromocodeYn")
+   	private  String promocodeYn;
+    @JsonProperty("Promocode")
+   	private  String promocode;
     @JsonProperty("RiskId")
- 	private  String riskId;	
-  
+ 	private  String riskId;	 
 	@JsonProperty("Accident")
     private String     accident     ;
 	@JsonProperty("Gpstrackinginstalled")

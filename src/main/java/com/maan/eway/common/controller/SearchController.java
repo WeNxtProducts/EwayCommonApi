@@ -1,0 +1,144 @@
+package com.maan.eway.common.controller;
+
+import java.util.Collections;
+import java.util.List;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.maan.eway.common.req.CopyQuoteReq;
+import com.maan.eway.common.req.ExistingQuoteReq;
+import com.maan.eway.common.req.IssuerQuoteReq;
+import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
+import com.maan.eway.common.req.SearchReq;
+import com.maan.eway.common.req.UpdateLapsedQuoteReq;
+import com.maan.eway.common.req.ViewQuoteReq;
+import com.maan.eway.common.res.AdminViewQuoteRes;
+import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.EserviceCustomerDetailsRes;
+import com.maan.eway.common.res.GetAllMotorDetailsRes;
+import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
+import com.maan.eway.common.res.SearchCustomerDetailsRes;
+import com.maan.eway.common.res.SearchRes;
+import com.maan.eway.common.res.UpdateLapsedQuoteRes;
+import com.maan.eway.common.res.ViewQuoteRes;
+import com.maan.eway.common.service.GridService;
+import com.maan.eway.common.service.SearchService;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CopyQuoteDropDownReq;
+import com.maan.eway.res.CopyQuoteSuccessRes;
+import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
+import com.maan.eway.service.PrintReqService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
+@RestController
+@RequestMapping("/api")
+@Api(tags = "SEARCH DETAILS", description = "API's")
+public class SearchController {
+
+	@Autowired
+	private PrintReqService reqPrinter;
+	
+	@Autowired
+	private  SearchService entityService;
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/dropdown/adminsearch")
+	public ResponseEntity<CommonRes> searchDropdown(@RequestBody CopyQuoteDropDownReq req) {
+		CommonRes data = new CommonRes();
+		List<DropDownRes> res = entityService.searchDropdown(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/adminsearchdetails")
+	public ResponseEntity<CommonRes> adminSearchOrderByEntryDate(@RequestBody SearchReq req) {
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		List<SearchRes> res = entityService.adminSearchOrderByEntryDate(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/adminviewriskdetails")
+	@ApiOperation(value = "This method is Get Quote Details")
+	public ResponseEntity<CommonRes> adminViewQuoteDetails(@RequestBody SearchReq req) {
+		CommonRes commonRes = new CommonRes();
+		reqPrinter.reqPrint(req);
+
+		// Save
+		AdminViewQuoteRes res = entityService.adminViewQuoteDetails(req);
+		commonRes.setCommonResponse(res);
+		commonRes.setIsError(false);
+		commonRes.setErrorMessage(null);
+		commonRes.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(commonRes, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/adminviewratingdetails")
+	@ApiOperation(value = "This method is Get Rating Details")
+	public ResponseEntity<CommonRes> adminViewRatingDetails(@RequestBody SearchReq req) {
+		CommonRes commonRes = new CommonRes();
+		reqPrinter.reqPrint(req);
+
+		// Save
+		List<SearchEservieMotorDetailsViewRatingRes> res = entityService.adminViewRatingDetails(req);
+		commonRes.setCommonResponse(res);
+		commonRes.setIsError(false);
+		commonRes.setErrorMessage(null);
+		commonRes.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(commonRes, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/adminviewcustomerdetails")
+	public ResponseEntity<CommonRes> adminCustomerSearch(@RequestBody SearchReq req) {
+		CommonRes data = new CommonRes();
+		List<SearchCustomerDetailsRes> res = entityService.adminCustomerSearch(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+}

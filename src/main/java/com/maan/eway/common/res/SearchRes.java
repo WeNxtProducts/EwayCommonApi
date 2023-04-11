@@ -1,11 +1,8 @@
 package com.maan.eway.common.res;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -13,15 +10,63 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class GetAllMotorDetailsRes {
+public class SearchRes {
 
+	@JsonProperty("RequestReferenceNo")
+	private String requestReferenceNo;
 
-	    @JsonProperty("CustomerReferenceNo")
+	@JsonProperty("QuoteNo")
+	private String quoteNo;
+
+	@JsonProperty("PolicyNo")
+	private String policyNo;
+
+	@JsonProperty("CustomerName")
+	private String clientName;
+
+	@JsonProperty("BranchName")
+	private String branchName;
+
+	@JsonProperty("LoginId")
+	private String loginId;
+
+	@JsonProperty("Status")
+	private String status;
+
+	@JsonProperty("MobileNumber")
+	private String mobileNumber;
+
+	@JsonProperty("PolicyType")
+	private String policyTypeDesc;
+
+	@JsonProperty("VehicleType")
+	private String vehicleTypeDesc;
+
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("PolicyStartDate")
+	private Date policyStartDate;
+
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("PolicyEndDate")
+	private Date policyEndDate;
+
+	@JsonProperty("OverallPremiumLc")
+	private String overallPremiumLc;
+
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("QuoteDate")
+	private Date entryDate;
+
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDate")
+	private Date effectiveStartDate;
+	    
+/*	    
+	@JsonProperty("CustomerReferenceNo")
 	    private String   customerReferenceNo ;
 	    @JsonProperty("BrokerBranchCode")
 	    private String     brokerBranchCode ;
-	    @JsonProperty("RequestReferenceNo")
-	    private String   requestReferenceNo ;
+	  
 		@JsonProperty("Idnumber")
 	    private String     idNumber     ;
 		@JsonProperty("Vehicleid")
@@ -42,8 +87,7 @@ public class GetAllMotorDetailsRes {
 		@JsonProperty("HavePromoCode")
 	    private String     havepromocode ;
 		
-		@JsonProperty("PolicyTypeDesc")
-	    private String     policyTypeDesc;
+	
 		
 		@JsonProperty("AdminRemarks")
 	    private String     adminRemarks;
@@ -62,8 +106,7 @@ public class GetAllMotorDetailsRes {
 	    private String     vehcileModel ;
 		@JsonProperty("VehcilemodelDesc")
 	    private String     vehcileModelDesc ;
-		@JsonProperty("VehicleType")
-	    private String     vehicleType  ;
+	
 		@JsonProperty("VehicleTypeDesc")
 	    private String     vehicleTypeDesc  ;
 		@JsonProperty("ModelNumber")
@@ -90,8 +133,7 @@ public class GetAllMotorDetailsRes {
 		@JsonProperty("ManufactureYear")
 	    private Date manufactureYear;
 
-		@JsonProperty("Status")
-	    private String   status;
+
 
 		@JsonFormat(pattern="dd/MM/yyyy")
 		@JsonProperty("UpdatedDate")
@@ -103,35 +145,18 @@ public class GetAllMotorDetailsRes {
 		@JsonProperty("CreatedBy")
 	    private String  createdBy;
 		
-		@JsonFormat(pattern="dd/MM/yyyy")
-		@JsonProperty("PolicyStartDate")
-	    private Date policyStartDate;
 
-		@JsonFormat(pattern="dd/MM/yyyy")
-		@JsonProperty("PolicyEndDate")
-	    private Date policyEndDate;
 		
 		@JsonProperty("SavedFrom")
 	    private String  savedFrom;
 
-		@JsonProperty("ActualPremiumLc")
-		private String actualPremiumLc;
-		
-		@JsonProperty("AcctualPremiumFc")
-		private String actualPremiumFc ;
-		
-		@JsonProperty("OverallPremiumLc")
-		private String overallPremiumLc ;
-		
-		@JsonProperty("OverallPremiumFc")
-		private String    overallPremiumFc ;
+
 		
 
 		@JsonProperty("BrokerCode")
 		private String brokerCode;
 		
-		@JsonProperty("LoginId")
-		private String loginId;
+	
 		
 		@JsonProperty("AcExecutiveId")
 		private String acExecutiveId;
@@ -147,9 +172,7 @@ public class GetAllMotorDetailsRes {
 		
 		@JsonProperty("ExchangeRate")
 	    private String  exchangeRate;
-		
-		@JsonProperty("QuoteNo")
-		private String quoteNo;
+	
 		  
 		@JsonProperty("CustomerId")
 		private String customerId;
@@ -181,15 +204,7 @@ public class GetAllMotorDetailsRes {
 
 		@JsonProperty("EndorsmentRemarks")
 	    private String     endorsementRemarks ;
-
-	    @JsonFormat(pattern="dd/MM/yyyy")
-	    @JsonProperty("EndorsementEffectiveDate")
-	    private Date       endorsementEffdate ;
 	    
-	    @JsonProperty("PolicyNo")
-	    private String   policyNo ;
-
-
 	    @JsonProperty("OrginalPolicyNo")
 	    private String     originalPolicyNo ;
 
@@ -215,8 +230,7 @@ public class GetAllMotorDetailsRes {
 		
 //old
 	    
-	    @JsonProperty("ClientName")
-	    private String   clientName ;
+	   
 	    
 	    @JsonProperty("IdsCount")
 	    private String   idsCount ;
@@ -299,5 +313,5 @@ public class GetAllMotorDetailsRes {
 //		private String desctinationCountryDesc;
 //
 ////		@JsonProperty("GroupDetails")
-////		private List<TravelGroupGetRes> groupDetails;
+////		private List<TravelGroupGetRes> groupDetails;*/
 }
