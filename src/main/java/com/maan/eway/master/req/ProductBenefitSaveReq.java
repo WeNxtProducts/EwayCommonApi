@@ -2,6 +2,8 @@ package com.maan.eway.master.req;
 
 import java.util.Date;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -47,8 +49,8 @@ public class ProductBenefitSaveReq {
 	@JsonProperty("TypeId")
 	private String typeId;
 
-	@JsonProperty("File")
-	private String file;
+	@JsonProperty("ImageFile")
+	private Object imageFile;
 
 
 }

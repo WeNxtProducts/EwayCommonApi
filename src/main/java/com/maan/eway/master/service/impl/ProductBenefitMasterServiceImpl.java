@@ -1,72 +1,67 @@
 package com.maan.eway.master.service.impl;
 
-import java.text.DecimalFormat;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Random;
 import java.util.stream.Collectors;
 
+import javax.imageio.ImageIO;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
-import com.maan.eway.auth.dto.BrokerProductCompaniesRes;
-import com.maan.eway.auth.dto.BrokerProductsGetRes;
-import com.maan.eway.auth.dto.LoginProductCriteriaRes;
 import com.maan.eway.bean.CompanyProductMaster;
-import com.maan.eway.bean.ExclusionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.ProductBenefitMaster;
 import com.maan.eway.bean.ProductSectionMaster;
-import com.maan.eway.common.req.ExclusionMasterDropdownReq;
 import com.maan.eway.common.req.ProductBenefitDropDownReq;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.ExclusionChangeStatusReq;
-import com.maan.eway.master.req.ExclusionMasterGetReq;
-import com.maan.eway.master.req.ExclusionMasterGetallReq;
-import com.maan.eway.master.req.ExclusionMasterReq;
-import com.maan.eway.master.req.ExclusionMasterSaveReq;
-import com.maan.eway.master.req.LovDropDownReq;
-import com.maan.eway.master.req.NonSelectedClausesGetAllReq;
 import com.maan.eway.master.req.ProductBenefitChangeStatusReq;
 import com.maan.eway.master.req.ProductBenefitGetAllReq;
 import com.maan.eway.master.req.ProductBenefitGetReq;
 import com.maan.eway.master.req.ProductBenefitSaveReq;
-import com.maan.eway.master.res.ExclusionMasterRes;
 import com.maan.eway.master.res.ProductBenefitGetRes;
 import com.maan.eway.master.service.ProductBenefitMasterService;
-import com.maan.eway.repository.ExclusionMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.ProductBenefitMasterRepository;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.ProductBenefitDropDownRes;
 import com.maan.eway.res.ProductBenefits;
 import com.maan.eway.res.SuccessRes;
+import com.maan.eway.thread.GetFileFromPath;
+
+import net.coobird.thumbnailator.Thumbnails;
 @Service
 public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterService {
 
@@ -83,6 +78,13 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 	private GenerateSeqNoServiceImpl seqService;
 
 	Gson json = new Gson();
+	
+//	@Value("${file.upload-dir}")
+//	private String directoryPath;
+//	
+//	@Value("${common.file.path}")
+//	private String orginalPath;
+
 	
 	private Logger log = LogManager.getLogger(ProductBenefitMasterServiceImpl.class);
 //	
@@ -1299,14 +1301,13 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("benefitId"), b.get("benefitId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-			Predicate a6 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a7 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
-			Predicate a8 = cb.equal(ocpm1.get("typeId"), b.get("typeId"));
-			amendId.where(a1,a2,a3,a6,a7,a8);
+			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a4 = cb.equal(ocpm1.get("sectionId"), b.get("sectionId"));
+			Predicate a5 = cb.equal(ocpm1.get("typeId"), b.get("typeId"));
+			amendId.where(a1,a2,a3,a4,a5);
 
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
-			Predicate n2 = cb.equal(cb.lower( b.get("description")), description.toLowerCase());
+			Predicate n2 = cb.equal(cb.lower( b.get("description")), description.trim().toLowerCase());
 			Predicate n3 = cb.equal(b.get("companyId"),InsuranceId);
 			Predicate n4 = cb.equal(b.get("productId"),productId);
 			Predicate n5 = cb.equal(b.get("sectionId"),sectionId);
@@ -1423,6 +1424,34 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			saveData.setSectionDesc(sectionName);
 			saveData.setTypeDesc(typeDesc);
 			
+			if(req.getImageFile() != null ) {
+				MultipartFile imageFile = (MultipartFile) req.getImageFile() ; 
+				// File Upload 
+				Random random = new Random();
+				
+				//CompressImage
+				Path destination =null; //Paths.get(directoryPath) ; //this.root.resolve(file.getOriginalFilename())
+				String newfilename= random.nextInt(100) + generateFileName()+"."+FilenameUtils.getExtension(imageFile.getOriginalFilename());
+				Files.copy(imageFile.getInputStream(),destination.resolve(newfilename));
+				
+				//OrginalImg
+				String fileextension = FilenameUtils.getExtension(imageFile.getOriginalFilename());
+				String newfilename1= "";
+				System.out.println(fileextension);
+				
+				if(fileextension.equals("bmp") || fileextension.equals("jpg") || fileextension.equals("jpeg")) {
+			//		newfilename1= orginalPath + random.nextInt(100) + generateFileName()+"."+FilenameUtils.getExtension(req.getImageFile().getOriginalFilename());
+			//		File file1 = new File(directoryPath+newfilename);
+			//		CompressImage(file1,newfilename1);
+				}else {
+			//		newfilename1 = directoryPath+newfilename;
+				}
+				
+				saveData.setIconPath(newfilename);
+				saveData.setOriginalImagePath(newfilename1);
+				
+			}
+			
 			repo.saveAndFlush(saveData);	
 			log.info("Saved Details is --> " + json.toJson(saveData));	
 			}
@@ -1433,6 +1462,37 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 		}
 		return res;
 		}
+	
+	
+	private String generateFileName() {
+		SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyyhmmssSSSSSSa");
+		Calendar cal = Calendar.getInstance();
+		String date = sdf.format(cal.getTime());	
+		return date;
+	}
+	
+	public void CompressImage(File uploadFile, String documentPath) {
+
+		try {
+			String extension = FilenameUtils.getExtension(documentPath);
+			File jpgoutput = new File("thumbnail." + extension);
+			BufferedImage originalImage = ImageIO.read(uploadFile);
+			Thumbnails.of(originalImage).size(750, 750).outputFormat(extension).toFile(jpgoutput);
+			FileUtils.copyFile(jpgoutput, new File(documentPath));
+			if(jpgoutput.exists()) {
+				System.out.println("Thumbnail File Deleted after conversion");
+				FileUtils.deleteQuietly(jpgoutput);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			try {
+				FileUtils.copyFile(uploadFile, new File(documentPath));
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
+
+	}
 	
 	public  String getTypeDesc(String insuranceId , String branchCode , String itemType , String itemCode ) {
 		String typeDesc = "" ;
@@ -1900,7 +1960,9 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			
 //			// Map
 			res = dozerMapper.map(list.get(0) , ProductBenefitGetRes.class);
-			
+			if(StringUtils.isNotBlank(list.get(0).getIconPath()) && new File(list.get(0).getIconPath()).exists()) {
+				res.setImageFile(new GetFileFromPath(list.get(0).getIconPath()).call().getImgUrl());
+			}
 	
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2057,7 +2119,9 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 					ProductBenefits befit = new ProductBenefits();
 					befit.setCode(data.getBenefitId().toString()  );
 					befit.setCodeDesc(data.getDescription());
-					befit.setImage(data.getIconPath());
+					if(StringUtils.isNotBlank(list.get(0).getIconPath()) && new File(list.get(0).getIconPath()).exists()) {
+				//		befit.setImageFile(new GetFileFromPath(list.get(0).getIconPath()).call().getImgUrl());
+					}befit.setImage(data.getIconPath());
 					productBenefits.add(befit);
 					
 				}
