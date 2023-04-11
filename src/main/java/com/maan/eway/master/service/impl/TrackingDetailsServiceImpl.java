@@ -71,7 +71,7 @@ SimpleDateFormat sdfFormat = new SimpleDateFormat("ddMMyyyyhhmmss");
 
 //SAVE
 	@Override
-	public	SuccessRes insertTrackingDetails(List<TrackingDetailsSaveReq> reqList) {
+	public	synchronized SuccessRes insertTrackingDetails(List<TrackingDetailsSaveReq> reqList) {
 		SuccessRes res = new SuccessRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		 try {

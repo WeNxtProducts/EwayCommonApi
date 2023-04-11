@@ -45,6 +45,8 @@ public class TrackingDetailsSaveReq {
     private String     quoteNo   ;
 	@JsonProperty("PolicyNo")
     private String     policyNo     ;
+	@JsonProperty("OriginalPolicyNo")
+    private String     originalPolicyNo     ;
 	@JsonProperty("Status")
     private String     status       ;
 	@JsonProperty("RiskId")

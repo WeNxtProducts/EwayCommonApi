@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -97,6 +96,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="PRODUCT_ID", length=100)
     private String     productId ;
+    
+    @Column(name="ORIGINAL_POLICY_NO", length=100)
+    private String     originalPolicyNo;
 
 
 }

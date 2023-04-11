@@ -65,4 +65,7 @@ public class ProductBenefitGetRes {
 	
 	@JsonProperty("TypeDesc")
 	private String typeDesc;
+	
+	@JsonProperty("ImageFile")
+	private String imageFile;
 }
