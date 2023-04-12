@@ -39,10 +39,5 @@ public class Endorsment {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	private Date endtEffectiveDate;
 	
-	@JsonProperty("LoginId")
-	private String loginId;
-
-	@JsonProperty("UserType")
-	private String userType;
 
 }

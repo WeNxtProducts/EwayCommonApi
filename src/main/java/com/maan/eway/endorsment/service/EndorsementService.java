@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.maan.eway.bean.BrokerEndtSetupMaster;
 import com.maan.eway.bean.EndtDependantFieldMaster;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
@@ -52,7 +51,6 @@ import com.maan.eway.endorsment.util.CopyCommonRaw;
 import com.maan.eway.endorsment.util.CopyRawTable;
 import com.maan.eway.endorsment.util.CopyTravelRaw;
 import com.maan.eway.endorsment.util.QuoteInfoUtil;
-import com.maan.eway.repository.BrokerEndtSetupMasterRepository;
 import com.maan.eway.repository.EndtDependantFieldsMasterRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
@@ -89,8 +87,6 @@ public class EndorsementService {
 	@Autowired
 	private CopyCommonRaw copyCommonraw;
 
-	@Autowired
-	private BrokerEndtSetupMasterRepository brokerEndtRepo;
 
 	@Autowired
 	private EndtDependantFieldsMasterRepository dependantRepo;
@@ -176,42 +172,7 @@ public class EndorsementService {
 	
 	public EndtMaster getEndorsementTypes(Endorsment request) {
 		try {
-			String a ="";
-			EndtMaster res = new EndtMaster();
-			List<EndorsementType> resList = new ArrayList<EndorsementType>();
 			
-		
-			// For Broker Setup
-		if((StringUtils.isNotBlank(request.getLoginId())) && (StringUtils.isNotBlank(request.getUserType())) &&(request.getUserType().equalsIgnoreCase("broker"))){
-
-			List<BrokerEndtSetupMaster> m = brokerEndtRepo.findByCompanyIdAndProductIdAndLoginIdAndUserTypeAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualOrderByAmendIdDesc(request.getCompanyId(),request.getProductId().toString(),request.getLoginId(),request.getUserType(),"Y",new Date(),new Date());
-			for(BrokerEndtSetupMaster data : m) {
-				a = data.getEndtTypes();
-				List<String> as = new ArrayList<String>(Arrays.asList(a.split(",")));
-				for(String a1 : as) {				
-				List<EndtTypeMaster> m1 = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndEndtTypeIdOrderByPriorityAsc(request.getCompanyId(),Integer.valueOf(request.getProductId().intValue()),"Y",new Date(),new Date(), Integer.valueOf(a1));
-				for(EndtTypeMaster datas : m1) {
-					EndorsementType res1 = new EndorsementType();
-
-					res1.setEndorsementCategory(new BigDecimal(datas.getEndtTypeCategoryId()));
-					res1.setEndorsementCategoryDesc(datas.getEndtTypeCategory());
-					res1.setEndtType(new BigDecimal(datas.getEndtTypeId()));
-					res1.setEndorsementDesc(datas.getEndtTypeDesc());
-					String fieldname = datas.getEndtDependantFields();
-					List<String> fieldnames = new ArrayList<String>(Arrays.asList(fieldname.split(",")));
-					res1.setFieldsAllowed(fieldnames);
-					resList.add(res1);
-				;
-				}
-
-			}
-				res.setEndorsementTypes(resList);
-
-			}
-				return res;
-		}
-			
-		else {
 			
 			List<EndtTypeMaster> m = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualOrderByPriorityAsc(request.getCompanyId(),Integer.valueOf(request.getProductId().intValue()),"Y",new Date(),new Date());
 			
@@ -242,7 +203,6 @@ public class EndorsementService {
 			}
 			EndtMaster endt=EndtMaster.builder().endorsementTypes(ets).build();
 			return endt;
-		}
 			
 			
 		}catch (Exception e) {
