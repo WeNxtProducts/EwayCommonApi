@@ -7,38 +7,30 @@ package com.maan.eway.master.controller;
 
 import java.util.Collections;
 import java.util.List;
-import com.maan.eway.error.Error;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.maan.eway.common.req.ExclusionMasterDropdownReq;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maan.eway.common.req.ProductBenefitDropDownReq;
-import com.maan.eway.master.req.ExclusionChangeStatusReq;
-import com.maan.eway.master.req.ExclusionMasterGetReq;
-import com.maan.eway.master.req.ExclusionMasterGetallReq;
-import com.maan.eway.master.req.ExclusionMasterListSaveReq;
-import com.maan.eway.master.req.ExclusionMasterReq;
-import com.maan.eway.master.req.ExclusionMasterSaveReq;
-import com.maan.eway.master.req.NonSelectedClausesGetAllReq;
+import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.error.CommonValidationException;
+import com.maan.eway.error.Error;
 import com.maan.eway.master.req.ProductBenefitChangeStatusReq;
 import com.maan.eway.master.req.ProductBenefitGetAllReq;
 import com.maan.eway.master.req.ProductBenefitGetReq;
 import com.maan.eway.master.req.ProductBenefitSaveReq;
-import com.maan.eway.master.res.ExclusionMasterRes;
 import com.maan.eway.master.res.ProductBenefitGetRes;
-import com.maan.eway.master.res.WarrantyMasterRes;
-import com.maan.eway.master.service.ExclusionMasterService;
 import com.maan.eway.master.service.ProductBenefitMasterService;
-import com.maan.eway.common.res.CommonRes;
-import com.maan.eway.common.res.DropdownCommonRes;
-import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.ProductBenefitDropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -64,9 +56,12 @@ public class ProductBenefitMasterController {
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/insertproductbenefit")
 	@ApiOperation(value="This Method is to save Product Benefit Master")
-	public ResponseEntity<CommonRes> saveExclusion(@RequestBody ProductBenefitSaveReq req){
+	public ResponseEntity<CommonRes> saveExclusion(@RequestParam("File") Object file, @RequestParam("Req") String jsonString ) throws CommonValidationException, JsonMappingException, JsonProcessingException{
+	//	ProductBenefitSaveReq
+		ProductBenefitSaveReq req =  new ObjectMapper().readValue(jsonString, ProductBenefitSaveReq.class);
 		CommonRes data = new CommonRes();
 		reqPrinter.reqPrint(req);
+	//	req.setImageFile(file)	;
 		
 	List<Error> validation = service.validateProductBenefit(req);
 	//validation
@@ -78,7 +73,7 @@ public class ProductBenefitMasterController {
 		return new ResponseEntity<CommonRes>(data,HttpStatus.OK);
 	} else {
 		//save
-		SuccessRes res = service.saveProductBenefit(req);
+		SuccessRes res = service.saveProductBenefit(req , file);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());

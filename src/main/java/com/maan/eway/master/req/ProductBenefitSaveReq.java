@@ -48,9 +48,12 @@ public class ProductBenefitSaveReq {
 
 	@JsonProperty("TypeId")
 	private String typeId;
+	
+	@JsonProperty("DisplayOrder")
+	private String displayOrder;
 
-	@JsonProperty("ImageFile")
-	private Object imageFile;
+//	@JsonProperty("ImageFile")
+//	private Object imageFile;
 
 
 }
