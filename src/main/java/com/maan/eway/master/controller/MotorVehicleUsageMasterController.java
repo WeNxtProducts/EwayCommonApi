@@ -50,7 +50,7 @@ public class MotorVehicleUsageMasterController {
 	
 	@Autowired
 	private PrintReqService reqPrinter;
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/savemotorvehicleusagedetails")
 	public ResponseEntity<CommonRes> saveMotorVehicleUsageDetails(@RequestBody  MotorVehicleUsageMasterSaveReq req) {
 		reqPrinter.reqPrint(req);
@@ -81,7 +81,7 @@ public class MotorVehicleUsageMasterController {
 
 	
 	// Get
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/getmotorvehicleusagedetails")
 		public ResponseEntity<CommonRes> getMotorVehicleDetails(@RequestBody MotorVehicleUsageMasterGetReq req) {
 			CommonRes data = new CommonRes();
@@ -99,7 +99,7 @@ public class MotorVehicleUsageMasterController {
 		}
 
 		// Getall
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/getallmotorvehicleusagedetails")
 		public ResponseEntity<CommonRes> getallMotorVehicleDetails(@RequestBody MotorVehicleUsageMasterGetallReq req) {
 			CommonRes data = new CommonRes();
@@ -117,7 +117,7 @@ public class MotorVehicleUsageMasterController {
 		}
 
 		// Getactive
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 				@PostMapping("/getactivemotorvehicleusagedetails")
 				public ResponseEntity<CommonRes> getactiveMotorVehicleDetails(@RequestBody MotorVehicleUsageMasterGetallReq req) {
 					CommonRes data = new CommonRes();
@@ -182,7 +182,7 @@ public class MotorVehicleUsageMasterController {
 
 				}
 				
-				@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+				@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 				@PostMapping("/vehicleusage/changestatus")
 				@ApiOperation(value = "This method is get Vehicle Usage Change Status")
 				public ResponseEntity<CommonRes> changeStatusOfVehicleUsage(@RequestBody MotorVehicleUsageChangeStatusReq req) {
