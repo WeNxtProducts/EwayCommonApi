@@ -247,6 +247,8 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			Date entryDate = null;
 			String createdBy ="";
 			Integer benefitId = 0;
+			String iconPath = "";
+			String filePath = "";
 			
 			String productName =  getCompanyProductMasterDropdown(req.getCompanyId() , req.getProductId()); 
 			String sectionName =  req.getSectionId().equalsIgnoreCase("99999") ? "All" : getProductSectionDropdown(req.getCompanyId() , req.getProductId(), req.getSectionId()); 
@@ -293,6 +295,8 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 						amendId = list.get(0).getAmendId()+1;
 						entryDate = new Date();
 						createdBy = req.getCreatedBy();
+						iconPath = list.get(0).getIconPath();
+						filePath = list.get(0).getOriginalImagePath();
 						ProductBenefitMaster lastRecord = list.get(0);
 						lastRecord.setEffectiveDateEnd(oldEndDate);
 						repo.saveAndFlush(lastRecord);
@@ -301,6 +305,8 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 						amendId = list.get(0).getAmendId();
 						entryDate = list.get(0).getEntryDate();
 						createdBy = list.get(0).getCreatedBy();
+						iconPath = list.get(0).getIconPath();
+						filePath = list.get(0).getOriginalImagePath();
 						saveData = list.get(0);
 						if(list.size()>1) {
 							ProductBenefitMaster lastRecord = list.get(1);	
@@ -325,6 +331,8 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			saveData.setCompanyName(companyName);
 			saveData.setProductDesc(productName);
 			saveData.setSectionDesc(sectionName);
+			saveData.setIconPath(iconPath);
+			saveData.setOriginalImagePath(filePath);
 			saveData.setTypeDesc(typeDesc);
 			
 			if(file != null  ) {
