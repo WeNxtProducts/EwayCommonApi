@@ -13,29 +13,9 @@ import lombok.Data;
 @Data
 public class SearchROPVehicleDetailsRes {
 	
-	@JsonProperty("RegistrationNo")
-	private String resRegNumber;
 
-	@JsonProperty("ChassisNumber")
-	private String resChassisNumber;
-
-	@JsonProperty("Make")
-	private String resMake;
-
-	@JsonProperty("Model")
-	private String resModel;
-
-	@JsonProperty("VehicleType")
-	private String resBodyType;
-
-	@JsonProperty("Color")
-	private String resColor;
-
-	@JsonProperty("YearOfManufacture")
-	private Integer resYearOfManufacture;
-
-	@JsonProperty("EngineNumber")
-	private String resEngineNumber;
+	@JsonProperty("VehicleDetails")
+	private List<SearchROPVehicleRes> vehDetails;
 
 }
 

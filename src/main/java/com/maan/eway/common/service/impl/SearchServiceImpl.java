@@ -92,6 +92,7 @@ import com.maan.eway.common.res.SearchPremiumCoverDetailsRes;
 import com.maan.eway.common.res.SearchPremiumDetailsRes;
 import com.maan.eway.common.res.SearchROPDetailsRes;
 import com.maan.eway.common.res.SearchROPVehicleDetailsRes;
+import com.maan.eway.common.res.SearchROPVehicleRes;
 import com.maan.eway.common.res.SearchRes;
 import com.maan.eway.common.res.SearchTax;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
@@ -1063,18 +1064,22 @@ public class SearchServiceImpl implements SearchService {
 			 }else if (StringUtils.isNotBlank(req.getQuoteNo())) {
 			 motorDatas = repo.findByRequestReferenceNoAndStatusNotOrderByRiskIdAsc(req.getRequestReferenceNo(), "D");
 		}
+		List<SearchROPVehicleRes> resList=new ArrayList<SearchROPVehicleRes>();
 		for (EserviceMotorDetails data : motorDatas) {
-			chassisNo=motorDatas.get(0).getChassisNumber();
+			chassisNo=data.getChassisNumber();
 			MotorVehicleInfo vehInfo = motVehInfoRepo.findByResChassisNumber(chassisNo);
-			viewRes.setResRegNumber(vehInfo.getResRegNumber());
-			viewRes.setResChassisNumber(vehInfo.getReqChassisNumber());
-			viewRes.setResEngineNumber(vehInfo.getResEngineNumber());
-			viewRes.setResMake(vehInfo.getResMake());
-			viewRes.setResModel(vehInfo.getResModel());
-			viewRes.setResColor(vehInfo.getResColor());
-			viewRes.setResBodyType(vehInfo.getResBodyType());
-			viewRes.setResYearOfManufacture(vehInfo.getResYearOfManufacture());
+			SearchROPVehicleRes res =new SearchROPVehicleRes();
+			res.setResRegNumber(vehInfo.getResRegNumber());
+			res.setResChassisNumber(vehInfo.getReqChassisNumber());
+			res.setResEngineNumber(vehInfo.getResEngineNumber());
+			res.setResMake(vehInfo.getResMake());
+			res.setResModel(vehInfo.getResModel());
+			res.setResColor(vehInfo.getResColor());
+			res.setResBodyType(vehInfo.getResBodyType());
+			res.setResYearOfManufacture(vehInfo.getResYearOfManufacture());
+			resList.add(res);
 		}
+		viewRes.setVehDetails(resList);		
 		} catch (Exception e) {
 		e.printStackTrace();
 		log.info("Exception is ---> " + e.getMessage());
