@@ -46,12 +46,6 @@ public class SearchCoverDetails implements Serializable{
 	    
 	    @JsonProperty("SubCovers") 
 	    public List<SearchCoverDetails> subcovers;
-	    
-	    @JsonProperty("FactorTypeId")
-	    private String factorTypeId;
-	  	    
-	    @JsonProperty("Exception")
-	    private SearchCoverException error;
 
 	    @JsonProperty("Loadings") 
 	    public List<SearchLoading> loadings;

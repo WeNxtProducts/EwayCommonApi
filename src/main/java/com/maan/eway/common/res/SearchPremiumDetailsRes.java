@@ -22,36 +22,6 @@ import lombok.Data;
 public class SearchPremiumDetailsRes {
 
 	@JsonProperty("CoverId") 
-    public String coverId;
-	@JsonProperty("Rate") 
-    public Double rate;
-	
-    @JsonProperty("CoverName") 
-    public String coverName;
-    @JsonProperty("CoverDesc") 
-    public String coverDesc;
-    @JsonProperty("IsSubCover") 
-    public String isSubCover;
-    @JsonProperty("SumInsured") 
-    public BigDecimal sumInsured;
- 
-    @JsonProperty("SubCovers") 
-    public List<SubCoverRes> subcovers;
-   
-    @JsonProperty("CoverageType") 
-    private String coverageType;
-    
-    @JsonProperty("PremiumExcluedTaxLC") 
-    private BigDecimal premiumExcluedTaxLC;
-    @JsonProperty("PremiumIncludedTaxLC") 
-    private BigDecimal premiumIncludedTaxLC;
-    
-    @JsonProperty("PremiumExcluedTax") 
-    private BigDecimal premiumExcluedTax;
-    @JsonProperty("PremiumIncludedTax") 
-    private BigDecimal premiumIncludedTax;
-    
+    public List<SearchPremiumCoverDetailsRes> SearchPremiumCoverDetailsRes;
 
-    @JsonProperty("TaxRate")
-    private BigDecimal     taxRate ;
 }

@@ -52,4 +52,7 @@ public interface MotorDataDetailsRepository  extends JpaRepository<MotorDataDeta
 
 	List<MotorDataDetails> findByQuoteNoAndStatusNotOrderByVehicleIdAsc(String quoteNo, String string);
 
+	List<MotorDataDetails> findByRequestReferenceNoAndStatusNotOrderByVehicleIdAsc(String requestReferenceNo,
+			String string);
+
 }

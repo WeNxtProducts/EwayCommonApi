@@ -41,7 +41,7 @@ public interface SearchService {
 
 	List<SearchROPDetailsRes> adminROPSearch(SearchReq req);
 
-	List<SearchPremiumDetailsRes> adminPremiumSearch(SearchReq req);
+	SearchPremiumDetailsRes adminPremiumSearch(SearchReq req);
 
 
 

@@ -86,6 +86,7 @@ import com.maan.eway.common.res.SearchCustomerDetailsRes;
 import com.maan.eway.common.res.SearchDiscount;
 import com.maan.eway.common.res.SearchEserviceMotorDetailsRes;
 import com.maan.eway.common.res.SearchLoading;
+import com.maan.eway.common.res.SearchPremiumCoverDetailsRes;
 import com.maan.eway.common.res.SearchPremiumDetailsRes;
 import com.maan.eway.common.res.SearchROPDetailsRes;
 import com.maan.eway.common.res.SearchRes;
@@ -476,18 +477,18 @@ public class SearchServiceImpl implements SearchService {
 		return viewRes;
 	}
 	
-	public List<SearchPremiumDetailsRes> getCoverDetails(Map<Integer,List<PolicyCoverData>> groupByCover  ) {
-		List<SearchPremiumDetailsRes>  coverListRes = new ArrayList<SearchPremiumDetailsRes>();
+	public List<SearchPremiumCoverDetailsRes> getCoverDetails(Map<Integer,List<PolicyCoverData>> groupByCover  ) {
+		List<SearchPremiumCoverDetailsRes>  coverListRes = new ArrayList<SearchPremiumCoverDetailsRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			for ( Integer coverId : groupByCover.keySet() ) {
 				List<PolicyCoverData>  coverGroups  = groupByCover.get(coverId);
-				SearchPremiumDetailsRes coverRes = new SearchPremiumDetailsRes();
+				SearchPremiumCoverDetailsRes coverRes = new SearchPremiumCoverDetailsRes();
 				
 				if (coverGroups.get(0).getSubCoverYn().equalsIgnoreCase("N") ) {
 					// Get Covers
 					List<PolicyCoverData> filterCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0)).collect(Collectors.toList());
-					coverRes = dozerMapper.map(filterCover.get(0), SearchPremiumDetailsRes.class);
+					coverRes = dozerMapper.map(filterCover.get(0), SearchPremiumCoverDetailsRes.class);
 					coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
 					coverRes.setPremiumExcluedTax(filterCover.get(0).getPremiumExcludedTaxFc());
 					coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc());
@@ -530,7 +531,7 @@ public class SearchServiceImpl implements SearchService {
 				coverListRes.add(coverRes);
 			}
 	
-			coverListRes.sort(Comparator.comparing(SearchPremiumDetailsRes :: getCoverId));;
+			coverListRes.sort(Comparator.comparing(SearchPremiumCoverDetailsRes :: getCoverId));;
 		
 		} catch ( Exception e) {
 			e.printStackTrace();
@@ -964,29 +965,42 @@ public class SearchServiceImpl implements SearchService {
 
 
 	@Override
-	public List<SearchPremiumDetailsRes> adminPremiumSearch(SearchReq req) {
-		List<SearchPremiumDetailsRes> viewRes = new ArrayList<SearchPremiumDetailsRes>();
+	public SearchPremiumDetailsRes adminPremiumSearch(SearchReq req) {
+		SearchPremiumDetailsRes viewRes = new SearchPremiumDetailsRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-		
-			// Find Motor Data
-			List<MotorDataDetails> motorDatas =  motorRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(),"D");
-			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(),"D");	
-		for (MotorDataDetails mot :  motorDatas) {
-			// Cover Details
-			List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(mot.getVehicleId()))).collect(Collectors.toList());
-			
-			Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
-			
-			List<SearchPremiumDetailsRes>  coverListRes = getCoverDetails(groupByCover);
-			
-		} 
-		
-		}catch ( Exception e) {
+			List<MotorDataDetails> motorDatas=null;
+			List<PolicyCoverData> covers=null;
+			if (StringUtils.isNotBlank(req.getQuoteNo())) {
+				// Find Motor Data
+				 motorDatas = motorRepo
+						.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(), "D");
+				 covers = coverRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(),
+						"D");
+			}else if (StringUtils.isNotBlank(req.getQuoteNo())) {
+				 motorDatas = motorRepo.findByRequestReferenceNoAndStatusNotOrderByVehicleIdAsc(req.getRequestReferenceNo(), "D");
+					 covers = coverRepo.findByRequestReferenceNoAndStatusNotOrderByVehicleId(req.getRequestReferenceNo(),"D");
+			}
+				for (MotorDataDetails mot : motorDatas) {
+					// Cover Details
+					List<PolicyCoverData> filterCovers = covers.stream()
+							.filter(o -> o.getVehicleId().equals(Integer.valueOf(mot.getVehicleId())))
+							.collect(Collectors.toList());
+
+					Map<Integer, List<PolicyCoverData>> groupByCover = filterCovers.stream()
+							.collect(Collectors.groupingBy(PolicyCoverData::getCoverId));
+
+					List<SearchPremiumCoverDetailsRes> coverListRes = getCoverDetails(groupByCover);
+
+					viewRes.setSearchPremiumCoverDetailsRes(coverListRes);
+
+				}
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
 			return null;
 		}
 		return viewRes;
-}
+	}
 }

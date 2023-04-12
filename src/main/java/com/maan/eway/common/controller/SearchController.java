@@ -165,7 +165,7 @@ public ResponseEntity<CommonRes> adminROPSearch(@RequestBody SearchReq req) {
 @PostMapping("/adminviewpremiumdetails")
 public ResponseEntity<CommonRes> adminPremiumSearch(@RequestBody SearchReq req) {
 	CommonRes data = new CommonRes();
-	List<SearchPremiumDetailsRes> res = entityService.adminPremiumSearch(req);
+	SearchPremiumDetailsRes res = entityService.adminPremiumSearch(req);
 	data.setCommonResponse(res);
 	data.setErrorMessage(Collections.emptyList());
 	data.setIsError(false);
