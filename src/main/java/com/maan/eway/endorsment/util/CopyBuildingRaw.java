@@ -177,10 +177,10 @@ public class CopyBuildingRaw {
 					BuildingDatas=BuildingList;
 					
 					if(BuildingList.size()>1) {
-						prevPolicyNo=BuildingList.get(1).getPolicyNo();
-						prevQuoteNo =BuildingList.get(1).getQuoteNo();
+						prevPolicyNo=BuildingList.get(0).getPolicyNo();
+						prevQuoteNo =BuildingList.get(0).getQuoteNo();
 					}else {
-						prevPolicyNo=ent.getPolicyNo();
+						prevPolicyNo=BuildingList.get(0).getPolicyNo();
 						prevQuoteNo =BuildingDatas.get(0).getQuoteNo();
 					}
 				}
