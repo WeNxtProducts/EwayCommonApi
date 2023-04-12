@@ -117,9 +117,14 @@ public class CommonCalculator {
 							String condtion=r.getDiscretCol()+":"+r.getInputColumValue()+";";
 							if(condtions.size()>0)
 								condtion=condtion.concat(StringUtils.join(condtions,';'));
-							List<Tuple> onlyquery =  crservice.loadfactorOnlyquery(engine,condtion, coverId,subCoverId);
-							Long count=0L;
-							if(onlyquery==null || onlyquery.size()==0) {
+							List<Long> onlyquery =null;
+							try {
+								onlyquery =	crservice.countfactorOnlyquery(engine,condtion, coverId,subCoverId);
+							}catch (Exception e) {
+								e.printStackTrace();
+							}	
+							Long count=onlyquery.get(0);
+							if(count<=0) {
 								r.setInputColumValue("99999");
 							} 	
 						}

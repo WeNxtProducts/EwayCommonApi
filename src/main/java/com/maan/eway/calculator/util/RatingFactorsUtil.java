@@ -123,36 +123,40 @@ public class RatingFactorsUtil {
 		return null;
 	}
 	
+	private Map<Integer,String>  commonQueries(CalcEngine engine,String condtion,String coverId, String subCoverId) {
+		String todayInString = DD_MM_YYYY.format(new Date());
+		String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+
+				engine.getSectionId()+";status:{Y,R};coverId:"+coverId+";subCoverId:"+subCoverId+";"
+				+todayInString+"~effectiveDateStart&effectiveDateEnd;agencyCode:"+engine.getAgencyCode()
+				+";branchCode:"+engine.getBranchCode()+";"+condtion;
+
+
+		String search2="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+
+				engine.getSectionId()+";status:{Y,R};coverId:"+coverId+";subCoverId:"+subCoverId+";"
+				+todayInString+"~effectiveDateStart&effectiveDateEnd;agencyCode:"+engine.getAgencyCode()
+				+";branchCode:99999;"+condtion;
+
+		String search3="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+
+				engine.getSectionId()+";status:{Y,R};coverId:"+coverId+";subCoverId:"+subCoverId+";"
+				+todayInString+"~effectiveDateStart&effectiveDateEnd;agencyCode:99999"
+				+";branchCode:"+engine.getBranchCode()+";"+condtion;
+
+		String search4="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+
+				engine.getSectionId()+";status:{Y,R};coverId:"+coverId+";subCoverId:"+subCoverId+";"
+				+todayInString+"~effectiveDateStart&effectiveDateEnd;agencyCode:99999"
+				+";branchCode:99999;"+condtion;
+
+		Map<Integer,String> hsmap=new TreeMap<Integer,String>();
+		hsmap.put(1, search);
+		hsmap.put(2, search2);
+		hsmap.put(3, search3);
+		hsmap.put(4, search4);
+		return hsmap;
+	}
 	@Cacheable(cacheNames= {"loadfactorOnlyquery"},keyGenerator  = "loadfactorOnlyqueryKeyGen",value = "loadfactorOnlyquery")
 	public List<Tuple> loadfactorOnlyquery(CalcEngine engine,String condtion,String coverId, String subCoverId) {
 		try{
-			String todayInString = DD_MM_YYYY.format(new Date());
-			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+
-					engine.getSectionId()+";status:{Y,R};coverId:"+coverId+";subCoverId:"+subCoverId+";"
-					+todayInString+"~effectiveDateStart&effectiveDateEnd;agencyCode:"+engine.getAgencyCode()
-					+";branchCode:"+engine.getBranchCode()+";"+condtion;
-
-
-			String search2="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+
-					engine.getSectionId()+";status:{Y,R};coverId:"+coverId+";subCoverId:"+subCoverId+";"
-					+todayInString+"~effectiveDateStart&effectiveDateEnd;agencyCode:"+engine.getAgencyCode()
-					+";branchCode:99999;"+condtion;
-
-			String search3="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+
-					engine.getSectionId()+";status:{Y,R};coverId:"+coverId+";subCoverId:"+subCoverId+";"
-					+todayInString+"~effectiveDateStart&effectiveDateEnd;agencyCode:99999"
-					+";branchCode:"+engine.getBranchCode()+";"+condtion;
-
-			String search4="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+
-					engine.getSectionId()+";status:{Y,R};coverId:"+coverId+";subCoverId:"+subCoverId+";"
-					+todayInString+"~effectiveDateStart&effectiveDateEnd;agencyCode:99999"
-					+";branchCode:99999;"+condtion;
-
-			Map<Integer,String> hsmap=new TreeMap<Integer,String>();
-			hsmap.put(1, search);
-			hsmap.put(2, search2);
-			hsmap.put(3, search3);
-			hsmap.put(4, search4);
+			Map<Integer, String> hsmap = commonQueries(engine, condtion, coverId, subCoverId);
 			//1.Priorty both s pecifi agencycode & branchcode
 			//2.priorty both specifi agencycode
 			//3.priorty both specifi branchcode
@@ -177,8 +181,41 @@ public class RatingFactorsUtil {
 			if(criteria!=null) {
 				List<Tuple> result=null;
 				result=crservice.getResult(criteria, 0, 50);
-				return result;
+				return result.size()>0?result:null;
 			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@Cacheable(cacheNames= {"countfactorOnlyquery"},keyGenerator  = "countfactorOnlyqueryKeyGen",value = "countfactorOnlyquery")
+	public List<Long> countfactorOnlyquery(CalcEngine engine,String condtion,String coverId, String subCoverId) {
+		try{
+			Map<Integer, String> hsmap = commonQueries(engine, condtion, coverId, subCoverId);
+			//1.Priorty both s pecifi agencycode & branchcode
+			//2.priorty both specifi agencycode
+			//3.priorty both specifi branchcode
+			//4.priorty both common
+			SpecCriteria criteria = null;
+			List<Long> count=null;
+			for(int i=1;i<=hsmap.size();i++) {
+				String dataquery = hsmap.get(i);
+
+
+				criteria = crservice.createCriteria(FactorRateMaster.class, dataquery, "factorTypeId"); 
+
+				  count = crservice.getCount(criteria, 0, 50);
+				if(!count.isEmpty()) { 
+					Long countrec = count.get(0);				
+					if(countrec>0) 
+						break;
+				}
+
+			}
+
+			 
+			return count;
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -274,6 +311,7 @@ public class RatingFactorsUtil {
 				search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:Y;branchCode:99999;"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
 				criteria = crservice.createCriteria(CompanyTaxSetup.class, search, "taxId"); 
 				result=crservice.getResult(criteria, 0, 50);
+				return result.size()>0?result:null;
 			}
 			return result;
 		}catch (Exception e) {
@@ -289,7 +327,7 @@ public class RatingFactorsUtil {
 			String search="insuranceid:"+engine.getInsuranceId()+";productid:"+engine.getProductId()+";status:Y;"+periodOfInsurance+"~startfrom&endto;"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
 			SpecCriteria criteria = crservice.createCriteria(CompanyProrataMaster.class, search, "sno");
 			List<Tuple> prorata = crservice.getResult(criteria, 0, 50);
-			return prorata;
+			return prorata.size()>0?prorata:null;
 		}catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();

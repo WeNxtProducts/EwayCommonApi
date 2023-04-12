@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.persistence.Tuple;
@@ -42,7 +43,6 @@ import com.maan.eway.calculator.util.SplitLoadingUtils;
 import com.maan.eway.calculator.util.SplitSubCoverUtil;
 import com.maan.eway.calculator.util.SubCoverCreationUtil;
 import com.maan.eway.calculator.util.TaxFromFactor;
-import com.maan.eway.calculator.util.TaxFromPolicy;
 import com.maan.eway.calculator.util.TaxUtils;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.ViewQuoteReq;
@@ -51,9 +51,7 @@ import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.endorsment.util.CoverFromPolicy;
 import com.maan.eway.endorsment.util.DiscountFromPolicy;
-import com.maan.eway.endorsment.util.EndtFromPolicy;
 import com.maan.eway.endorsment.util.LoadingFromPolicy;
-import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.LoginProductMasterRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
@@ -145,29 +143,47 @@ public class CalculatorEngineService implements CalculatorEngine{
 	public List<Tuple> LoadCover(CalcEngine engine) {
 		try {
 			String todayInString = DD_MM_YYYY.format(new Date());
-			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()+";status:{Y,R};"+todayInString+"~effectiveDateStart&effectiveDateEnd;"
+			String search1="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()+";status:{Y,R};"+todayInString+"~effectiveDateStart&effectiveDateEnd;"
 					+ "agencyCode:"+engine.getAgencyCode()+";branchCode:"+engine.getBranchCode()+";";
-			List<Tuple> result=null;
-			SpecCriteria criteria = crservice.createCriteria(SectionCoverMaster.class, search, "coverId"); 
-			result=crservice.getResult(criteria, 0, 50);
 
-			if(result==null || result.size()==0) {
-				search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()+";status:{Y,R};"+todayInString+"~effectiveDateStart&effectiveDateEnd;"
-						+ "agencyCode:"+engine.getAgencyCode()+";branchCode:99999;";
+			String search2="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()+";status:{Y,R};"+todayInString+"~effectiveDateStart&effectiveDateEnd;"
+					+ "agencyCode:"+engine.getAgencyCode()+";branchCode:99999;";
+			
+			String search3="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()+";status:{Y,R};"+todayInString+"~effectiveDateStart&effectiveDateEnd;"
+					+ "agencyCode:"+engine.getAgencyCode()+";branchCode:99999;";
+			
+			String search4="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()+";status:{Y,R};"+todayInString+"~effectiveDateStart&effectiveDateEnd;"
+					+ "agencyCode:99999;branchCode:99999;";
 
-				criteria = crservice.createCriteria(SectionCoverMaster.class, search, "coverId"); 
-				result=crservice.getResult(criteria, 0, 50);
-				if(result==null || result.size()==0) {
-					search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";sectionId:"+engine.getSectionId()+";status:{Y,R};"+todayInString+"~effectiveDateStart&effectiveDateEnd;"
-							+ "agencyCode:99999;branchCode:99999;";
+			Map<Integer,String> hsmap=new TreeMap<Integer,String>();
+			hsmap.put(1, search1);
+			hsmap.put(2, search2);
+			hsmap.put(3, search3);
+			hsmap.put(4, search4);
+			
+			
+			SpecCriteria criteria = null;
 
-					criteria = crservice.createCriteria(SectionCoverMaster.class, search, "coverId"); 
-					result=crservice.getResult(criteria, 0, 50);
+			for(int i=1;i<=hsmap.size();i++) {
+				String dataquery = hsmap.get(i);
+
+
+				criteria = crservice.createCriteria(SectionCoverMaster.class, dataquery, "coverId"); 
+
+				List<Long> count = crservice.getCount(criteria, 0, 50);
+				if(!count.isEmpty()) { 
+					Long countrec = count.get(0);				
+					if(countrec>0) 
+						break;
 				}
 
 			}
-
-			return result;
+			
+			if(criteria!=null) {
+				List<Tuple> result=null;
+				result=crservice.getResult(criteria, 0, 50);
+				return result;
+			} 
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

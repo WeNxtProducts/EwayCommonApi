@@ -1749,6 +1749,7 @@ this.repository = repo;
 			String agencyCode = "";
 			String branchCode = "";
 			String currencyId = "" ;
+			CalcEngine engine= new CalcEngine();
 			
 			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(req.getRequestReferenceNo() , req.getVehicleId() ,
 					req.getCompanyId() , Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;	
@@ -1758,6 +1759,13 @@ this.repository = repo;
 				agencyCode = findMot.getAgencyCode();
 				branchCode = findMot.getBranchCode();
 				currencyId = findMot.getCurrency();
+				if(findMot.getEndorsementType() == null ) {
+					engine.setEffectiveDate(findMot.getPolicyStartDate());
+					engine.setPolicyEndDate(findMot.getPolicyEndDate());
+				}else if(findMot.getEndorsementType() !=null) {
+					engine.setEffectiveDate(findMot.getEndorsementEffdate());
+					engine.setPolicyEndDate(findMot.getPolicyEndDate());
+				}
 			
 			} else if(   req.getProductId().equalsIgnoreCase(travelProductId)) {
 				EserviceTravelDetails  findTra = eserTraRepo.findByRequestReferenceNoAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() ,
@@ -1823,7 +1831,7 @@ this.repository = repo;
 			}
 			
 			
-			CalcEngine engine= new CalcEngine();
+			
 			engine.setAgencyCode(agencyCode);
 			engine.setBranchCode(branchCode);
 			engine.setCdRefNo(findCovers.get(0).getCdRefno());
@@ -1836,6 +1844,7 @@ this.repository = repo;
 			engine.setVehicleId(findCovers.get(0).getVehicleId()+"");
 			engine.setCreatedBy(findCovers.get(0).getCreatedBy());
 			engine.setMsVehicleDetails(null);
+			//engine.setEffectiveDate(null);
 			
 			EserviceMotorDetailsSaveRes resp=calcEngine.referalCalculator(engine);
 			

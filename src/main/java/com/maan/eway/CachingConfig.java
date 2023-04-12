@@ -32,7 +32,8 @@ public class CachingConfig   {
 	        b->b.name("ProductToRawtable").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
 	        b->b.name("EndtMasterData").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
 	        b->b.name("getCachedRatingFields").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
-	        b->b.name("loadfactorOnlyquery").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false)
+	        b->b.name("loadfactorOnlyquery").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
+	        b->b.name("countfactorOnlyquery").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false)
 	        
 	        );
 		
@@ -208,6 +209,31 @@ public class CachingConfig   {
 
 		    		};
 		    	}
-		    	
+	    	 @Bean
+		    	public KeyGenerator countfactorOnlyqueryKeyGen() {
+		    		return new KeyGenerator() {
+		    			@Override
+		    			public Object generate(Object target, Method method, Object... params) {
+		    				CalcEngine e=(CalcEngine)params[0];
+		    				 
+
+		    				String r=(String)params[1];
+		    				String r1=(String)params[2];
+		    				String r2=(String)params[3];
+		    				String string = new StringBuilder().append(e.getInsuranceId())
+		    						.append(e.getProductId())
+		    						.append(e.getBranchCode())
+		    						.append(e.getSectionId())
+		    						.append(e.getAgencyCode())
+		    						.append(r)
+		    						.append(r1)
+		    						.append(r2)
+		    						.append(DD_MM_YYYY.format(new Date()))
+		    						.toString();
+		    				return string;
+		    			}
+
+		    		};
+		    	}
 	    	 
 }
