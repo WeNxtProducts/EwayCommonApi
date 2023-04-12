@@ -146,10 +146,10 @@ public class SearchController {
 
 
 @PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-@PostMapping("/adminviewropdetails")
+@PostMapping("/adminviewropdriverdetails")
 public ResponseEntity<CommonRes> adminROPSearch(@RequestBody SearchReq req) {
 	CommonRes data = new CommonRes();
-	List<SearchROPDetailsRes> res = entityService.adminROPSearch(req);
+	SearchROPDetailsRes res = entityService.adminROPDriverSearch(req);
 	data.setCommonResponse(res);
 	data.setErrorMessage(Collections.emptyList());
 	data.setIsError(false);

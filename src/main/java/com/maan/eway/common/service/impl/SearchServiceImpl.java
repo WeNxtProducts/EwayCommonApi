@@ -957,14 +957,6 @@ public class SearchServiceImpl implements SearchService {
 
 
 	@Override
-	public List<SearchROPDetailsRes> adminROPSearch(SearchReq req) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-
-	@Override
 	public SearchPremiumDetailsRes adminPremiumSearch(SearchReq req) {
 		SearchPremiumDetailsRes viewRes = new SearchPremiumDetailsRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -1002,5 +994,51 @@ public class SearchServiceImpl implements SearchService {
 			return null;
 		}
 		return viewRes;
+	}
+	
+	//ROP Driver Details
+	@Override
+	public SearchROPDetailsRes adminROPDriverSearch(SearchReq req) {
+		SearchROPDetailsRes viewRes = new SearchROPDetailsRes();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			List<MotorDataDetails> motorDatas=null;
+			List<MotorDriverDetails> driverList =null;
+			if (StringUtils.isNotBlank(req.getQuoteNo())) {
+				// Find Motor Data
+				 motorDatas = motorRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(), "D");
+				 driverList = driverRepo.findByQuoteNo(req.getQuoteNo() );
+			}else if (StringUtils.isNotBlank(req.getQuoteNo())) {
+				 motorDatas = motorRepo.findByRequestReferenceNoAndStatusNotOrderByVehicleIdAsc(req.getRequestReferenceNo(), "D");
+				 driverList = driverRepo.findByRequestReferenceNo(req.getRequestReferenceNo() );
+			}
+			for (MotorDataDetails mot : motorDatas) {
+			List<DriverDetailsRes>   driverResList = new ArrayList<DriverDetailsRes>();
+			List<MotorDriverDetails> filterDriverList = driverList.stream().filter( o -> o.getRiskId().equals(Integer.valueOf(mot.getVehicleId()))).collect(Collectors.toList());
+			for (MotorDriverDetails dri :  filterDriverList) {
+				DriverDetailsRes driverRes  = new DriverDetailsRes();  
+				dozerMapper.map(dri, driverRes);
+				driverRes.setLicenseNo(dri.getIdNumber());
+				
+				driverResList.add(driverRes);
+				
+			}
+			driverResList.sort(Comparator.comparing(DriverDetailsRes :: getDriverId  ));
+			viewRes.setDriverDetails(driverResList);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return viewRes;
+	}
+
+
+
+	@Override
+	public SearchROPDetailsRes adminROPVehicleSearch(SearchReq req) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

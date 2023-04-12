@@ -40,6 +40,8 @@ public interface MotorDriverDetailsRepository  extends JpaRepository<MotorDriver
 
 	List<MotorDriverDetails> findByQuoteNoAndRiskId(String oldQuoteNo, Integer vehicleId);
 
+	List<MotorDriverDetails> findByRequestReferenceNo(String requestReferenceNo);
+
 	
 
 

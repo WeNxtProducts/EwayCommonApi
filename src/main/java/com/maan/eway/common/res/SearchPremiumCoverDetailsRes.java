@@ -51,6 +51,12 @@ public class SearchPremiumCoverDetailsRes {
     @JsonProperty("PremiumIncludedTax") 
     private BigDecimal premiumIncludedTax;
     
+	 @JsonProperty("ExcessPercent") 
+	 private BigDecimal excessPercent;
+	 @JsonProperty("ExcessAmount") 
+	 private BigDecimal excessAmount;
+	 @JsonProperty("ExcessDesc") 
+	 private String excessDesc;
 
 //    @JsonProperty("TaxRate")
 //    private BigDecimal   taxRate ;

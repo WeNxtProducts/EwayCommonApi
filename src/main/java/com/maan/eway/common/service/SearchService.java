@@ -39,9 +39,11 @@ public interface SearchService {
 
 	List<SearchEservieMotorDetailsViewRatingRes> adminViewRatingDetails(SearchReq req);
 
-	List<SearchROPDetailsRes> adminROPSearch(SearchReq req);
-
 	SearchPremiumDetailsRes adminPremiumSearch(SearchReq req);
+
+	SearchROPDetailsRes adminROPDriverSearch(SearchReq req);
+
+	SearchROPDetailsRes adminROPVehicleSearch(SearchReq req);
 
 
 
