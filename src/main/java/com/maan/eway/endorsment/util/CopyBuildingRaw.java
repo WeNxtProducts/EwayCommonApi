@@ -273,7 +273,7 @@ public class CopyBuildingRaw {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		String res = "" ;
 		try {
-			List<EserviceCommonDetails> oldAccData = eserCommonRepo.findByRequestReferenceNo(oldReqRefNo); 
+			List<EserviceCommonDetails> oldAccData = eserCommonRepo.findByQuoteNoOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo()); 
 			
 			if( oldAccData !=null && oldAccData.size() > 0) {
 				EserviceCommonDetails accdata = new EserviceCommonDetails();
