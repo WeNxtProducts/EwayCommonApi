@@ -21,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.BuildingDetails;
@@ -138,6 +139,8 @@ public class CopyBuildingRaw {
 			String prevQuoteNo=null;
 			String newRequestNo =null;
 			long pendingcount =0;
+			// Response 
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			if(count>0) {
 				List<EserviceBuildingDetails> BuildingList=eBuildingRepo.findByOriginalPolicyNoAndRiskId(ent.getPolicyNo(),1);
 				//Compar
@@ -151,12 +154,24 @@ public class CopyBuildingRaw {
 				}.reversed());
 				
 				pendingcount = BuildingList.stream().filter(m->m.getEndtStatus().equals("P")).count();
+				if(BuildingList.stream().filter(m->(m.getEndtStatus().equals("P") && (Integer.parseInt(ent.getEndtType())==m.getEndorsementType()))).count()>0) {
+					BuildingCopyRes res = dozerMapper.map(BuildingList.get(0) , BuildingCopyRes.class);
+					
+					//List<EserviceBuildingDetails> prevDatas = eBuildingRepo.findByPolicyNoAndRiskId(prevPolicyNo , 1 );
+					//res.setOldRequestReferenceNo(prevDatas.get(0).getRequestReferenceNo() );
+					//res.setPolicyNo(ent.getPolicyNo()+"-"+count) ;
+					return res;
+				}
 				if(pendingcount>0) {
 					 List<EserviceBuildingDetails> pendingData = BuildingList.stream().filter(m->m.getEndtStatus().equals("P")).collect(Collectors.toList());
 					 BuildingDatas= pendingData;
 					 prevPolicyNo=BuildingDatas.get(0).getEndtPrevPolicyNo();
 					 prevQuoteNo=BuildingDatas.get(0).getEndtPrevQuoteNo();
 					 newRequestNo=BuildingDatas.get(0).getRequestReferenceNo();
+					 String prevRequestRefNo=BuildingDatas.get(0).getRequestReferenceNo();
+					 List<EserviceBuildingDetails> rows = eBuildingRepo.findByRequestReferenceNoAndProductId(prevRequestRefNo,ent.getProductId().toPlainString());
+					 eBuildingRepo.deleteAllInBatch(rows);
+					 eBuildingRepo.flush();
 					 count--;
 				}else {
 					BuildingDatas=BuildingList;
@@ -166,7 +181,7 @@ public class CopyBuildingRaw {
 						prevQuoteNo =BuildingList.get(1).getQuoteNo();
 					}else {
 						prevPolicyNo=ent.getPolicyNo();
-						prevQuoteNo =BuildingDatas.get(0).getEndtPrevQuoteNo();
+						prevQuoteNo =BuildingDatas.get(0).getQuoteNo();
 					}
 				}
 				
@@ -183,7 +198,7 @@ public class CopyBuildingRaw {
 			List<EserviceBuildingDetails> newBuildingList=new ArrayList<EserviceBuildingDetails>();
 			++count;
 			for(EserviceBuildingDetails m :BuildingList) {
-				DozerBeanMapper dozerMapper = new DozerBeanMapper();
+				 
 				EserviceBuildingDetails newObject = dozerMapper.map(m , EserviceBuildingDetails.class);
 				newObject.setRequestReferenceNo(newRequestNo);
 				newObject.setOriginalPolicyNo(ent.getPolicyNo());
@@ -205,15 +220,16 @@ public class CopyBuildingRaw {
 			}
 			eBuildingRepo.saveAllAndFlush(newBuildingList);
 			
-			// Response 
-			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			
 			BuildingCopyRes res = dozerMapper.map(newBuildingList.get(0) , BuildingCopyRes.class);
 			
 			List<EserviceBuildingDetails> prevDatas = eBuildingRepo.findByPolicyNoAndRiskId(prevPolicyNo , 1 );
 			res.setOldRequestReferenceNo(prevDatas.get(0).getRequestReferenceNo() );
 			res.setPolicyNo(ent.getPolicyNo()+"-"+count) ;
-			;
+			 
 			return res;
+		}catch(ObjectOptimisticLockingFailureException ex ) {
+			return copyBuildingRiskTable(ent);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
