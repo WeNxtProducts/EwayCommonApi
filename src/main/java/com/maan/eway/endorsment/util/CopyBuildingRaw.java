@@ -113,7 +113,7 @@ public class CopyBuildingRaw {
 			BuildingCopyRes  riskRes =  copyBuildingRiskTable(request);
 			
 			// Section Copy
-			List<String> sectionIds = copyBuildingSections(riskRes.getRequestReferenceNo() ,riskRes.getOldRequestReferenceNo() , riskRes ) ;
+			List<String> sectionIds = copyBuildingSections( riskRes ) ;
 			riskRes.setSectionId(sectionIds);
 			riskRes.setLocationId(riskRes.getLocationId());
 			
@@ -236,10 +236,12 @@ public class CopyBuildingRaw {
 		return null;
 	}
 	
-	public List<String> copyBuildingSections(String newReqRefNo , String  oldReqRefNo , BuildingCopyRes buildingData ) {
+	public List<String> copyBuildingSections( BuildingCopyRes buildingData ) {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			List<EserviceSectionDetails>  oldSecDatas = eserSecRepo.findByRequestReferenceNoOrderBySectionIdAsc(oldReqRefNo) ;
+			String newReqRefNo=buildingData.getRequestReferenceNo() ;
+		//	String  oldReqRefNo=buildingData.getOldRequestReferenceNo() ;
+			List<EserviceSectionDetails>  oldSecDatas = eserSecRepo.findByQuoteNoOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo()) ;
 			
 			// Building Section Insert
 			Long buildSecCount = eserSecRepo.countByRequestReferenceNoAndRiskId(newReqRefNo, 1);

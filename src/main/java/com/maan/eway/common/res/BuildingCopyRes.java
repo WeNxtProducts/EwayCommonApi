@@ -42,4 +42,7 @@ public class BuildingCopyRes {
 	
 	@JsonProperty("PolicyNo")
 	private String policyNo;
+	
+	@JsonProperty("EndtPrevQuoteNo")
+	private String endtPrevQuoteNo;
 }
