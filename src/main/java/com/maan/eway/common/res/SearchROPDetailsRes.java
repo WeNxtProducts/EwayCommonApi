@@ -14,6 +14,6 @@ import lombok.Data;
 public class SearchROPDetailsRes {
 	
 	@JsonProperty("DriverDetails")
-    private List<DriverDetailsRes>   driverDetails;
+    private List<SearchDriverDetailsRes>   driverDetails;
 }
 

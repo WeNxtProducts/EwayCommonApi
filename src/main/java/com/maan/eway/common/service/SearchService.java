@@ -21,6 +21,7 @@ import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.SearchCustomerDetailsRes;
 import com.maan.eway.common.res.SearchPremiumDetailsRes;
 import com.maan.eway.common.res.SearchROPDetailsRes;
+import com.maan.eway.common.res.SearchROPVehicleDetailsRes;
 import com.maan.eway.common.res.SearchRes;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.res.CopyQuoteSuccessRes;
@@ -43,7 +44,7 @@ public interface SearchService {
 
 	SearchROPDetailsRes adminROPDriverSearch(SearchReq req);
 
-	SearchROPDetailsRes adminROPVehicleSearch(SearchReq req);
+	SearchROPVehicleDetailsRes adminROPVehicleSearch(SearchReq req);
 
 
 

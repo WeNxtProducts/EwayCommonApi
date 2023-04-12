@@ -56,6 +56,7 @@ import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.MasterReferralDetails;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
+import com.maan.eway.bean.MotorVehicleInfo;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.UwQuestionsDetails;
@@ -84,11 +85,13 @@ import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.res.SearchCoverDetails;
 import com.maan.eway.common.res.SearchCustomerDetailsRes;
 import com.maan.eway.common.res.SearchDiscount;
+import com.maan.eway.common.res.SearchDriverDetailsRes;
 import com.maan.eway.common.res.SearchEserviceMotorDetailsRes;
 import com.maan.eway.common.res.SearchLoading;
 import com.maan.eway.common.res.SearchPremiumCoverDetailsRes;
 import com.maan.eway.common.res.SearchPremiumDetailsRes;
 import com.maan.eway.common.res.SearchROPDetailsRes;
+import com.maan.eway.common.res.SearchROPVehicleDetailsRes;
 import com.maan.eway.common.res.SearchRes;
 import com.maan.eway.common.res.SearchTax;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
@@ -118,6 +121,7 @@ import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
+import com.maan.eway.repository.MotorVehicleInfoRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.req.FactorRateDetailsGetReq;
 import com.maan.eway.res.CopyQuoteSuccessRes;
@@ -183,7 +187,8 @@ public class SearchServiceImpl implements SearchService {
 	@Autowired
 	private PersonalInfoRepository perRepo ;
 	
-
+	@Autowired
+	private MotorVehicleInfoRepository motVehInfoRepo ;
 	@Autowired
 	private EmiTransactionDetailsRepository emiRepo ;
 	
@@ -495,7 +500,9 @@ public class SearchServiceImpl implements SearchService {
 					coverRes.setPremiumExcluedTaxLC(filterCover.get(0).getPremiumExcludedTaxLc());
 					coverRes.setPremiumIncludedTaxLC(filterCover.get(0).getPremiumIncludedTaxLc());
 					coverRes.setCoverageType(filterCover.get(0).getCoverageType());
-									
+					coverRes.setExcessAmount(filterCover.get(0).getExcessAmount()==null ? "" :filterCover.get(0).getExcessAmount().toPlainString() );
+					coverRes.setExcessPercent(filterCover.get(0).getExcessPercent()==null ? "" :filterCover.get(0).getExcessPercent().toPlainString() );
+					coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());				
 										
 				} else {
 					
@@ -508,6 +515,9 @@ public class SearchServiceImpl implements SearchService {
 					 coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
 					 coverRes.setSumInsured(filterCover.get(0).getSumInsured()==null ? null : new BigDecimal(filterCover.get(0).getSumInsured().toString()));
 					 coverRes.setRate(filterCover.get(0).getRate()==null?null : Double.valueOf(filterCover.get(0).getRate().toString()));
+						coverRes.setExcessAmount(filterCover.get(0).getExcessAmount()==null ? "" :filterCover.get(0).getExcessAmount().toPlainString() );
+						coverRes.setExcessPercent(filterCover.get(0).getExcessPercent()==null ? "" :filterCover.get(0).getExcessPercent().toPlainString() );
+						coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());	
 					List<SubCoverRes>  subCoverListRes = new ArrayList<SubCoverRes>();
 					List<PolicyCoverData> filterSubCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0)).collect(Collectors.toList());
 					for ( PolicyCoverData subCovers : filterSubCover) {
@@ -523,7 +533,9 @@ public class SearchServiceImpl implements SearchService {
 						subCoverRes.setPremiumExcluedTaxLC(filterSubCover.get(0).getPremiumExcludedTaxLc());
 						subCoverRes.setPremiumIncludedTaxLC(filterSubCover.get(0).getPremiumIncludedTaxLc());
 						subCoverRes.setRegulatoryCode(filterCover.get(0).getRegulatoryCode());
-						
+						coverRes.setExcessAmount(filterCover.get(0).getExcessAmount()==null ? "" :filterCover.get(0).getExcessAmount().toPlainString() );
+						coverRes.setExcessPercent(filterCover.get(0).getExcessPercent()==null ? "" :filterCover.get(0).getExcessPercent().toPlainString() );
+						coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());
 						subCoverListRes.add(subCoverRes);
 					}
 					coverRes.setSubcovers(subCoverListRes);
@@ -935,7 +947,7 @@ public class SearchServiceImpl implements SearchService {
 						Map<Integer, List<FactorRateRequestDetails>> groupByCover = filterVehicleCovers.stream()
 								.collect(Collectors.groupingBy(FactorRateRequestDetails::getCoverId));
 						List<SearchCoverDetails> coverListRes = getCoversList(groupByCover);
-						//coverListRes.forEach(cov -> cov.setSectionName(res.getSectionName()));
+						coverListRes.forEach(cov -> cov.setSectionName(res.getSectionName()));
 						response.setCoverList(coverListRes);
 						response.setVehicleId(res.getRiskId().toString());
 						response.setRequestReferenceNo(res.getRequestReferenceNo());
@@ -943,6 +955,7 @@ public class SearchServiceImpl implements SearchService {
 						response.setOverallPremiumLc(res.getOverallPremiumLc()==null?"0":res.getOverallPremiumLc().toPlainString());
 						response.setActualPremiumFc(res.getActualPremiumFc()==null?"0":res.getActualPremiumFc().toPlainString());
 						response.setActualPremiumLc(res.getActualPremiumLc()==null?"0":res.getActualPremiumLc().toPlainString());
+						
 						resList.add(response);
 					}
 				}
@@ -1013,17 +1026,17 @@ public class SearchServiceImpl implements SearchService {
 				 driverList = driverRepo.findByRequestReferenceNo(req.getRequestReferenceNo() );
 			}
 			for (MotorDataDetails mot : motorDatas) {
-			List<DriverDetailsRes>   driverResList = new ArrayList<DriverDetailsRes>();
+			List<SearchDriverDetailsRes>   driverResList = new ArrayList<SearchDriverDetailsRes>();
 			List<MotorDriverDetails> filterDriverList = driverList.stream().filter( o -> o.getRiskId().equals(Integer.valueOf(mot.getVehicleId()))).collect(Collectors.toList());
 			for (MotorDriverDetails dri :  filterDriverList) {
-				DriverDetailsRes driverRes  = new DriverDetailsRes();  
+				SearchDriverDetailsRes driverRes  = new SearchDriverDetailsRes();  
 				dozerMapper.map(dri, driverRes);
 				driverRes.setLicenseNo(dri.getIdNumber());
 				
 				driverResList.add(driverRes);
 				
 			}
-			driverResList.sort(Comparator.comparing(DriverDetailsRes :: getDriverId  ));
+			driverResList.sort(Comparator.comparing(SearchDriverDetailsRes :: getDriverId  ));
 			viewRes.setDriverDetails(driverResList);
 			}
 		} catch (Exception e) {
@@ -1037,8 +1050,36 @@ public class SearchServiceImpl implements SearchService {
 
 
 	@Override
-	public SearchROPDetailsRes adminROPVehicleSearch(SearchReq req) {
-		// TODO Auto-generated method stub
+	public SearchROPVehicleDetailsRes adminROPVehicleSearch(SearchReq req) {
+		SearchROPVehicleDetailsRes viewRes = new SearchROPVehicleDetailsRes();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+		List<EserviceMotorDetails> motorDatas=null;
+		String chassisNo="";
+		if (StringUtils.isNotBlank(req.getQuoteNo())) {
+			// Find Motor Data
+			 motorDatas = repo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(req.getQuoteNo(), "D");
+			
+			 }else if (StringUtils.isNotBlank(req.getQuoteNo())) {
+			 motorDatas = repo.findByRequestReferenceNoAndStatusNotOrderByRiskIdAsc(req.getRequestReferenceNo(), "D");
+		}
+		for (EserviceMotorDetails data : motorDatas) {
+			chassisNo=motorDatas.get(0).getChassisNumber();
+			MotorVehicleInfo vehInfo = motVehInfoRepo.findByResChassisNumber(chassisNo);
+			viewRes.setResRegNumber(vehInfo.getResRegNumber());
+			viewRes.setResChassisNumber(vehInfo.getReqChassisNumber());
+			viewRes.setResEngineNumber(vehInfo.getResEngineNumber());
+			viewRes.setResMake(vehInfo.getResMake());
+			viewRes.setResModel(vehInfo.getResModel());
+			viewRes.setResColor(vehInfo.getResColor());
+			viewRes.setResBodyType(vehInfo.getResBodyType());
+			viewRes.setResYearOfManufacture(vehInfo.getResYearOfManufacture());
+		}
+		} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
 		return null;
+	}
+	return viewRes;
 	}
 }

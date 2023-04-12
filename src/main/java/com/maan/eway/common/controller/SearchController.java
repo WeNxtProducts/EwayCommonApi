@@ -26,6 +26,7 @@ import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.SearchCustomerDetailsRes;
 import com.maan.eway.common.res.SearchPremiumDetailsRes;
 import com.maan.eway.common.res.SearchROPDetailsRes;
+import com.maan.eway.common.res.SearchROPVehicleDetailsRes;
 import com.maan.eway.common.res.SearchRes;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
 import com.maan.eway.common.res.ViewQuoteRes;
@@ -86,6 +87,22 @@ public class SearchController {
 	}
 
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/adminviewcustomerdetails")
+	public ResponseEntity<CommonRes> adminCustomerSearch(@RequestBody SearchReq req) {
+		CommonRes data = new CommonRes();
+		List<SearchCustomerDetailsRes> res = entityService.adminCustomerSearch(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/adminviewriskdetails")
 	@ApiOperation(value = "This method is Get Quote Details")
 	public ResponseEntity<CommonRes> adminViewQuoteDetails(@RequestBody SearchReq req) {
@@ -128,11 +145,12 @@ public class SearchController {
 		}
 
 	}
+	
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-	@PostMapping("/adminviewcustomerdetails")
-	public ResponseEntity<CommonRes> adminCustomerSearch(@RequestBody SearchReq req) {
+	@PostMapping("/adminviewpremiumdetails")
+	public ResponseEntity<CommonRes> adminPremiumSearch(@RequestBody SearchReq req) {
 		CommonRes data = new CommonRes();
-		List<SearchCustomerDetailsRes> res = entityService.adminCustomerSearch(req);
+		SearchPremiumDetailsRes res = entityService.adminPremiumSearch(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);
@@ -143,7 +161,7 @@ public class SearchController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	
 
 @PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 @PostMapping("/adminviewropdriverdetails")
@@ -162,10 +180,10 @@ public ResponseEntity<CommonRes> adminROPSearch(@RequestBody SearchReq req) {
 }
 
 @PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-@PostMapping("/adminviewpremiumdetails")
-public ResponseEntity<CommonRes> adminPremiumSearch(@RequestBody SearchReq req) {
+@PostMapping("/adminviewropvehicledetails")
+public ResponseEntity<CommonRes> adminROPVehicleSearch(@RequestBody SearchReq req) {
 	CommonRes data = new CommonRes();
-	SearchPremiumDetailsRes res = entityService.adminPremiumSearch(req);
+	SearchROPVehicleDetailsRes res = entityService.adminROPVehicleSearch(req);
 	data.setCommonResponse(res);
 	data.setErrorMessage(Collections.emptyList());
 	data.setIsError(false);
@@ -176,4 +194,6 @@ public ResponseEntity<CommonRes> adminPremiumSearch(@RequestBody SearchReq req) 
 		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	}
 }
+
+
 }

@@ -19,6 +19,9 @@ public class SearchEservieMotorDetailsViewRatingRes {
 	@JsonProperty("VehicleId")
 	private String vehicleId ;
 	
+	 @JsonProperty("SectionName") 
+	 private String sectionName;
+	
 	@JsonProperty("RequestReferenceNo")
 	private String requestReferenceNo;
 
@@ -44,6 +47,5 @@ public class SearchEservieMotorDetailsViewRatingRes {
 	
 	@JsonProperty("CoverList")
 	private List<SearchCoverDetails> coverList ;
-	
-	
+
 }

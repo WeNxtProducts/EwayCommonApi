@@ -35,6 +35,8 @@ public class SearchPremiumCoverDetailsRes {
     @JsonProperty("SumInsured") 
     public BigDecimal sumInsured;
  
+	 @JsonProperty("SectionName") 
+	 private String sectionName;
     @JsonProperty("SubCovers") 
     public List<SubCoverRes> subcovers;
    
@@ -52,9 +54,9 @@ public class SearchPremiumCoverDetailsRes {
     private BigDecimal premiumIncludedTax;
     
 	 @JsonProperty("ExcessPercent") 
-	 private BigDecimal excessPercent;
+	 private String excessPercent;
 	 @JsonProperty("ExcessAmount") 
-	 private BigDecimal excessAmount;
+	 private String excessAmount;
 	 @JsonProperty("ExcessDesc") 
 	 private String excessDesc;
 
