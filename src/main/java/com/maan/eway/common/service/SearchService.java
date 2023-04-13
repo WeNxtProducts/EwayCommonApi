@@ -3,7 +3,7 @@ package com.maan.eway.common.service;
 import java.util.List;
 import com.maan.eway.error.Error;
 import com.maan.eway.common.req.CopyQuoteReq;
-
+import com.maan.eway.common.req.DocumentReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.PaymentInformationGetReq;
@@ -13,6 +13,7 @@ import com.maan.eway.common.req.UpdateLapsedQuoteReq;
 import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.AdminViewQuoteRes;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DocumentRes;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
 import com.maan.eway.common.res.SearchPaymentInfoRes;
@@ -48,6 +49,8 @@ public interface SearchService {
 	SearchROPVehicleDetailsRes adminROPVehicleSearch(SearchReq req);
 
 	List<SearchPaymentInfoRes> viewPaymentInfo(SearchReq req);
+
+	List<DocumentRes> viewDocumentDetails(SearchReq req);
 
 
 

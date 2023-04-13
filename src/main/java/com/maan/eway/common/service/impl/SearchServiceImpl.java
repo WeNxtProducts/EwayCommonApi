@@ -42,6 +42,7 @@ import com.maan.eway.admin.res.ReferalCriteriaRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CityMaster;
+import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
@@ -63,6 +64,7 @@ import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.calculator.util.TaxFromFactor;
 import com.maan.eway.common.req.CopyQuoteReq;
+import com.maan.eway.common.req.DocumentReq;
 import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
 import com.maan.eway.common.req.EservieMotorDetailsViewRes;
 import com.maan.eway.common.req.ExistingQuoteReq;
@@ -76,6 +78,8 @@ import com.maan.eway.common.res.AdminViewQuoteRes;
 import com.maan.eway.common.res.CriteriaCustomerRes;
 import com.maan.eway.common.res.CustomerDetailsGetRes;
 import com.maan.eway.common.res.CustomerDetailsRes;
+import com.maan.eway.common.res.DocumentRes;
+import com.maan.eway.common.res.DocumentTypeDescComRes;
 import com.maan.eway.common.res.DriverDetailsRes;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.EserviceMotorDetailsRes;
@@ -113,6 +117,7 @@ import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.res.BranchMasterRes;
 import com.maan.eway.master.service.TrackingDetailsService;
+import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
 import com.maan.eway.repository.CoverDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EmiTransactionDetailsRepository;
@@ -194,6 +199,9 @@ public class SearchServiceImpl implements SearchService {
 	
 	@Autowired
 	private PersonalInfoRepository perRepo ;
+	@Autowired
+	CoverDocumentUploadDetailsRepository coverdocumentuploaddetailsrepository;
+	
 	
 	@Autowired
 	private MotorVehicleInfoRepository motVehInfoRepo ;
@@ -1128,5 +1136,39 @@ public class SearchServiceImpl implements SearchService {
 
 		return paylist;
 
+	}
+
+
+
+	@Override
+	public List<DocumentRes> viewDocumentDetails(SearchReq req) {
+		// TODO Auto-generated method stub
+		DocumentTypeDescComRes dComRes = new DocumentTypeDescComRes();
+		List<DocumentRes> reslist = new ArrayList<DocumentRes>();
+
+		try {
+
+			DocumentRes dres = new DocumentRes();
+
+			List<CoverDocumentUploadDetails> getList = null;
+
+			if (StringUtils.isNotBlank(req.getQuoteNo())) {
+
+				getList = coverdocumentuploaddetailsrepository.findByQuoteNo(req.getQuoteNo());
+			} else if (StringUtils.isNotBlank(req.getRequestReferenceNo())) {
+				getList = coverdocumentuploaddetailsrepository.findByRequestReferenceNo(req.getRequestReferenceNo());
+			}
+
+			for (CoverDocumentUploadDetails cd : getList) {
+
+				dres = new DozerBeanMapper().map(cd, DocumentRes.class);
+				reslist.add(dres);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return reslist;
 	}
 }

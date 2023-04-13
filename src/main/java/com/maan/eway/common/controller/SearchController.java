@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.req.CopyQuoteReq;
+import com.maan.eway.common.req.DocumentReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.PaymentInformationGetReq;
@@ -22,6 +23,7 @@ import com.maan.eway.common.req.UpdateLapsedQuoteReq;
 import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.AdminViewQuoteRes;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DocumentRes;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
 import com.maan.eway.common.res.SearchPaymentInfoRes;
@@ -215,5 +217,22 @@ public ResponseEntity<CommonRes> viewPaymentInfo(@RequestBody SearchReq req) {
 	}
 
 }
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+@PostMapping("/viewdocumentdetails")
+@ApiOperation(value = "This method is Get Document Details")
+public ResponseEntity<CommonRes> viewDocumentDetails(@RequestBody SearchReq req) {
+	CommonRes data = new CommonRes();
+	List<DocumentRes> res = entityService.viewDocumentDetails(req);
+	data.setCommonResponse(res);
+	data.setErrorMessage(Collections.emptyList());
+	data.setIsError(false);
+	data.setMessage("Success");
+	if (res != null) {
+		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+	} else {
+		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+	}
+}
+
 
 }
