@@ -59,7 +59,7 @@ public class ListItemValueController {
 */
 	
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 			@PostMapping("/insertlovdetails")
 			@ApiOperation(value = "This method is Lov Master")
 			public ResponseEntity<CommonRes> insertLovDetails(@RequestBody ListItemValueSaveReq req) {
@@ -95,7 +95,7 @@ public class ListItemValueController {
 			}
 			
 			//  Get All Occupation Master
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 			@PostMapping("/getalllovdetails")
 			@ApiOperation("This method is getall Occupation")
 			public ResponseEntity<CommonRes> getallLovDetails(@RequestBody LovGetAllReq req)
@@ -118,7 +118,7 @@ public class ListItemValueController {
 			}
 			
 		//  Get Active Occupation Master
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 				@PostMapping("/getactivelovdetails")
 				@ApiOperation("This method is get Active Lov Details")
 				public ResponseEntity<CommonRes> getActiveLovDetails(@RequestBody LovGetAllReq req)
@@ -141,7 +141,7 @@ public class ListItemValueController {
 				}
 			
 			// Get By Occupation Id
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 			@PostMapping("/getbyidlovdetails")
 			@ApiOperation("This Method is to get by  id Lov Details")
 			public ResponseEntity<CommonRes> getByIdLovDetails(@RequestBody LovGetReq req)
@@ -211,7 +211,7 @@ public class ListItemValueController {
 
 			*/
 
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 			@PostMapping("/lovdetails/changestatus")
 			@ApiOperation(value = "This method is get Lov Details Change Status")
 			public ResponseEntity<CommonRes> changeStatusOfOccupation(@RequestBody LovChangeStatusReq req) {

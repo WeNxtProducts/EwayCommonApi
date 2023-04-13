@@ -48,7 +48,7 @@ public class OccupationMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/insertoccupation")
 		@ApiOperation(value = "This method is Occupation Master")
 		public ResponseEntity<CommonRes> insertOccupation(@RequestBody OccupationMasterSaveReq req) {
@@ -84,7 +84,7 @@ public class OccupationMasterController {
 		}
 		
 		//  Get All Occupation Master
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/getalloccupation")
 		@ApiOperation("This method is getall Occupation")
 		public ResponseEntity<CommonRes> getallOccupation(@RequestBody OccupationMasterGetAllReq req)
@@ -107,7 +107,7 @@ public class OccupationMasterController {
 		}
 		
 	//  Get Active Occupation Master
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 			@PostMapping("/getactiveoccupation")
 			@ApiOperation("This method is get Active Occupation")
 			public ResponseEntity<CommonRes> getActiveOccupation(@RequestBody OccupationMasterGetAllReq req)
@@ -130,7 +130,7 @@ public class OccupationMasterController {
 			}
 		
 		// Get By Occupation Id
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/getbyoccupationid")
 		@ApiOperation("This Method is to get by Occupation id")
 		public ResponseEntity<CommonRes> getByOccupationId(@RequestBody OccupationMasterGetReq req)
@@ -223,7 +223,7 @@ public class OccupationMasterController {
 
 		*/
 
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/occupation/changestatus")
 		@ApiOperation(value = "This method is get Occupation Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfOccupation(@RequestBody OccupationChangeStatusReq req) {

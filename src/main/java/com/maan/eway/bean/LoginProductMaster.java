@@ -141,8 +141,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="BACK_DAYS")
     private Integer     backDays;
     
-    //--- ENTITY LINKS ( RELATIONSHIP )
-
+    @Column(name="FINANCIAL_ENDT_IDS", length=500)
+    private String    financialEndtIds;
+    
+    @Column(name="NON_FINANCIAL_ENDT_IDS", length=500)
+    private String    nonFinancialEndtIds;
 
 }
 

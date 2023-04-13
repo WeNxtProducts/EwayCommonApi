@@ -52,7 +52,7 @@ public class ExclusionMasterController {
 	
 	@Autowired
 	private  PrintReqService reqPrinter;
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/insertexclusion")
 	@ApiOperation(value="This Method is to save Exclusion Master")
 	public ResponseEntity<CommonRes> saveExclusion(@RequestBody ExclusionMasterSaveReq req){
@@ -85,7 +85,7 @@ public class ExclusionMasterController {
 	}
 
 	//  Get All Exclusion Master
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getallexclusion")
 	@ApiOperation("This method is getall Exclusion")
 	public ResponseEntity<CommonRes> getallExclusion(@RequestBody ExclusionMasterGetallReq req)
@@ -108,7 +108,7 @@ public class ExclusionMasterController {
 	}
 
 	//  Get Active Exclusion Master
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/getactiveexclusion")
 		@ApiOperation("This method is get Active Exclusion")
 		public ResponseEntity<CommonRes> getActiveExclusion(@RequestBody ExclusionMasterGetallReq req)
@@ -131,7 +131,7 @@ public class ExclusionMasterController {
 		}
 
 	// Get By Exclusion Id
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getbyexclusionid")
 	@ApiOperation("This Method is to get by Exclusion id")
 	public ResponseEntity<CommonRes> getByExclusionId(@RequestBody ExclusionMasterGetReq req)
@@ -151,7 +151,7 @@ public class ExclusionMasterController {
 	}
 	}
 		
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/exclusion/changestatus")
 	@ApiOperation(value = "This method is get Exclusion Change Status")
 	public ResponseEntity<CommonRes> changeStatusOfExclusion(@RequestBody ExclusionChangeStatusReq req) {
@@ -198,7 +198,7 @@ public class ExclusionMasterController {
 
 
 	// List Save
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/insertexclusionlist")
 	@ApiOperation(value="This Method is to save Exclusion Master List")
 	public ResponseEntity<CommonRes> saveExclusion(@RequestBody List<ExclusionMasterReq> req){
@@ -229,7 +229,7 @@ public class ExclusionMasterController {
 		}
 	}
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getallnonselectedexclusion")
 	@ApiOperation("This method is getall Exclusion Master")
 	public ResponseEntity<CommonRes> getallNonSelectedExclusion(@RequestBody NonSelectedClausesGetAllReq req)

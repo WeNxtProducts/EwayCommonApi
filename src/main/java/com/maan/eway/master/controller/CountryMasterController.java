@@ -51,7 +51,7 @@ public class CountryMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/insertcountry")
 		@ApiOperation(value = "This method is Insert Country Details")
 		public ResponseEntity<CommonRes> insertCountry(@RequestBody CountryMasterSaveReq req) {
@@ -87,7 +87,7 @@ public class CountryMasterController {
 		}
 		
 		//  Get All Country Master
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/getallcountrydetails")
 		@ApiOperation("This method is getall Country Details")
 		public ResponseEntity<CommonRes> getallCountryDetails(@RequestBody CountryGetAllReq req )
@@ -108,7 +108,7 @@ public class CountryMasterController {
 		}
 		
 	//  Get Active Country Master
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/getactivecountry")
 			@ApiOperation("This method is get Active Country Details")
 			public ResponseEntity<CommonRes> getActiveCountryDetails(@RequestBody CountryGetAllReq req )
@@ -130,7 +130,7 @@ public class CountryMasterController {
 			}
 		
 		// Get By Country Id
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/getbycountryid")
 		@ApiOperation("This Method is to get by Country id")
 		public ResponseEntity<CommonRes> getByCountryId(@RequestBody CountryMasterGetReq req)

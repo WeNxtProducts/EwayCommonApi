@@ -42,7 +42,7 @@ public class ExchangeMasterController {
 	private PrintReqService reqPrinter;
 
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/insertexchangemaster")
 	@ApiOperation(value = "This method is to Insert Exchange Master")
 	public ResponseEntity<CommonRes> insertExchangeMaster(@RequestBody ExchangeMasterSaveReq req) {
@@ -76,7 +76,7 @@ public class ExchangeMasterController {
 	}
 
 	// Get
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getexchangemaster")
 	public ResponseEntity<CommonRes> getExchangeMaster(@RequestBody ExchangeMasterGetReq req) {
 		CommonRes data = new CommonRes();
@@ -94,7 +94,7 @@ public class ExchangeMasterController {
 	}
 
 	// Getall
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getallexchangemaster")
 	public ResponseEntity<CommonRes> getallExchangeMaster(@RequestBody ExchangeMasterGetallReq req) {
 		CommonRes data = new CommonRes();
@@ -112,7 +112,7 @@ public class ExchangeMasterController {
 	}
 
 	// Active
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getactiveexchange")
 	public ResponseEntity<CommonRes> getActiveExchange(@RequestBody ExchangeMasterGetallReq req) {
 		CommonRes data = new CommonRes();
@@ -151,7 +151,7 @@ public class ExchangeMasterController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 		}
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/exchange/changestatus")
 	@ApiOperation(value = "This method is get Exchange Change Status")
 	public ResponseEntity<CommonRes> changeStatusOfExchange(@RequestBody ExchangeChangeStatusReq req) {
