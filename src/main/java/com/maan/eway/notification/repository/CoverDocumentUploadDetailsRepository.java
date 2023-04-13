@@ -11,7 +11,6 @@
 
 package com.maan.eway.notification.repository;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -65,5 +64,10 @@ public interface CoverDocumentUploadDetailsRepository extends JpaRepository<Cove
 	@Transactional
 	void deleteByQuoteNoAndIdInAndProductIdAndSectionId(String quoteNo, List<Integer> ids, Integer valueOf, int i);
 
-	
+
+//	List<CoverDocumentUploadDetails> findByProductId(Integer productId);
+
+	List<CoverDocumentUploadDetails> findByRequestReferenceNo(String requestReferenceNo);
+
+
 }
