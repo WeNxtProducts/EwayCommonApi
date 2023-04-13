@@ -33,5 +33,6 @@ public class PaymentInfoId implements Serializable {
     
     private String     paymentId ;
     
+    private Integer productId;
      
 }
