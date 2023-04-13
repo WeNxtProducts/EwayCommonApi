@@ -3,6 +3,8 @@ package com.maan.eway.common.res;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -15,7 +17,7 @@ import lombok.ToString;
 
 @Data
 
-public class PaymentInformationGetRes {
+public class SearchPaymentInfoRes {
 	
 	@JsonProperty("CustomerName")
 	private String customerName;
@@ -35,12 +37,8 @@ public class PaymentInformationGetRes {
 	@JsonProperty("PaymentStatus")
 	private String paymentStatus;
 	
+	@JsonProperty("Premium")
+    private String premium ;
 	
-	
-	
-	
-	
-
-    
 
 }

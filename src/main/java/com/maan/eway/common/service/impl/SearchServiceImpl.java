@@ -57,6 +57,7 @@ import com.maan.eway.bean.MasterReferralDetails;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.MotorVehicleInfo;
+import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.UwQuestionsDetails;
@@ -66,6 +67,7 @@ import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
 import com.maan.eway.common.req.EservieMotorDetailsViewRes;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
+import com.maan.eway.common.req.PaymentInformationGetReq;
 import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
 import com.maan.eway.common.req.UpdateLapsedQuoteReq;
@@ -78,6 +80,7 @@ import com.maan.eway.common.res.DriverDetailsRes;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.EserviceMotorDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
+import com.maan.eway.common.res.SearchPaymentInfoRes;
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.QuoteDetailsRes;
@@ -123,6 +126,7 @@ import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.MotorVehicleInfoRepository;
+import com.maan.eway.repository.PaymentInfoRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.req.FactorRateDetailsGetReq;
 import com.maan.eway.res.CopyQuoteSuccessRes;
@@ -181,6 +185,9 @@ public class SearchServiceImpl implements SearchService {
 	
 	@Autowired
 	private CommonGridService commonService ;
+	
+	@Autowired
+	 private PaymentInfoRepository paymentrepo;
 	
 	@Autowired
 	private EserviceTravelDetailsRepository travelRepo;
@@ -1086,5 +1093,37 @@ public class SearchServiceImpl implements SearchService {
 		return null;
 	}
 	return viewRes;
+	}
+
+
+//Payment Info
+	@Override
+	public List<SearchPaymentInfoRes> viewPaymentInfo(SearchReq req) {
+		SearchPaymentInfoRes paymentgetres = new SearchPaymentInfoRes();
+		List<SearchPaymentInfoRes> paylist = new ArrayList<SearchPaymentInfoRes>();
+		DozerBeanMapper dozermapper = new DozerBeanMapper();
+
+		try {
+			List<PaymentInfo> paymentinfo = null;
+			if (StringUtils.isNotBlank(req.getQuoteNo())) {
+				paymentinfo = paymentrepo.findByQuoteNoAndProductId(req.getQuoteNo(),req.getProductId());
+			}  
+
+			for (PaymentInfo pi : paymentinfo) {
+
+				paymentgetres = new DozerBeanMapper().map(pi, SearchPaymentInfoRes.class);
+				paylist.add(paymentgetres);
+
+			}
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+
+		return paylist;
+
 	}
 }

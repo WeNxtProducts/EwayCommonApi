@@ -1,5 +1,6 @@
 package com.maan.eway.common.controller;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
+import com.maan.eway.common.req.PaymentInformationGetReq;
 import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
 import com.maan.eway.common.req.UpdateLapsedQuoteReq;
@@ -22,6 +24,7 @@ import com.maan.eway.common.res.AdminViewQuoteRes;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
+import com.maan.eway.common.res.SearchPaymentInfoRes;
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.SearchCustomerDetailsRes;
 import com.maan.eway.common.res.SearchPremiumDetailsRes;
@@ -194,6 +197,23 @@ public ResponseEntity<CommonRes> adminROPVehicleSearch(@RequestBody SearchReq re
 		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	}
 }
+@PostMapping("/viewpaymentinfo")
+public ResponseEntity<CommonRes> viewPaymentInfo(@RequestBody SearchReq req) {
+	CommonRes data = new CommonRes();
+	List<SearchPaymentInfoRes> paymentgetres = new ArrayList<SearchPaymentInfoRes>();
+	paymentgetres = entityService.viewPaymentInfo(req);
+	data.setCommonResponse(paymentgetres);
+	data.setErrorMessage(Collections.emptyList());
+	data.setIsError(false);
+	data.setMessage("Success");
 
+	if (paymentgetres != null) {
+		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+
+	} else {
+		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+	}
+
+}
 
 }
