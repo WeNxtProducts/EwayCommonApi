@@ -1,6 +1,7 @@
 package com.maan.eway.common.service.impl;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -26,6 +27,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.query.internal.NativeQueryImpl;
@@ -35,17 +37,20 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.bean.CompanyCityMaster;
+import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CompanyRegionMaster;
 import com.maan.eway.bean.CompanyStateMaster;
 import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.common.req.NcdDetailsGetReq;
 import com.maan.eway.common.service.DropDownService;
 import com.maan.eway.integration.req.PremiaRequest;
 import com.maan.eway.integration.req.QueryKeyReq;
 import com.maan.eway.integration.service.impl.OracleQuery;
+import com.maan.eway.master.req.BrokerSumInsuredRefReq;
 import com.maan.eway.master.req.BuildingUsageDropDownReq;
 import com.maan.eway.master.req.CityDropDownReq;
 import com.maan.eway.master.req.LovDropDownReq;
@@ -1897,5 +1902,132 @@ public class DropDownServiceImpl  implements DropDownService{
 		return resList;
 	}
 
+
+	@Override
+	public List<DropDownRes> brokerSumInsuredRefrral(BrokerSumInsuredRefReq req) {
+		// TODO Auto-generated method stub
+				List<DropDownRes> resList = new ArrayList<DropDownRes>();
+				try {
+					DropDownRes res = new DropDownRes();
+				//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
+					LoginProductMaster loginProduct  = getBrokerProduct(req.getInsuranceId() ,req.getProductId() ,req.getLoginId() );
+					
+					if(loginProduct !=null ) {
+						BigDecimal suminsured = StringUtils.isNotBlank(req.getSumInsured()) ? new BigDecimal(req.getSumInsured()) : BigDecimal.ZERO ;
+						BigDecimal suminsuredStart = loginProduct.getSumInsuredStart();
+						BigDecimal suminsuredEnd = loginProduct.getSumInsuredEnd();
+						boolean referal = false ;
+						String desc = "" ;
+						
+						// Comparision
+						if (suminsured.compareTo(suminsuredStart) < 0 ) {
+							referal = true ;
+							desc  = "Sum Insured Referral - " +  "Suminsured = " +  suminsured + " Less Than Broker SumInsured Start"   ; 
+							
+						} else if (suminsuredEnd.compareTo(suminsured) < 0  ) {
+							referal = true ;
+							desc  = "Sum Insured Referral - " +  "Suminsured = " +  suminsured + " Greater Than Broker SumInsured End"   ; 
+						}
+						
+						// Refral block
+						if(referal == true  ) {
+							res.setCode("Suminsured = " +  suminsured + " , Start = " +suminsuredStart + " , End = " + suminsuredEnd );
+							res.setCodeDesc(desc);
+							res.setStatus("R");
+								
+						} else {
+							res.setCode("Suminsured = " +  suminsured + " , Start = " +suminsuredStart + " , End = " + suminsuredEnd );
+							res.setCodeDesc("Between Broker SumInsured ");
+							res.setStatus("Y");
+						}
+						
+					} else {
+						res.setCode("Not Available" );
+						res.setCodeDesc("Not Available");
+						res.setStatus("Y");
+					}
+					resList.add(res);
+				} catch (Exception e) {
+					e.printStackTrace();
+					log.info("Exception is ---> " + e.getMessage());
+					return null;
+				}
+				return resList;
+			}
+
+	public synchronized LoginProductMaster getBrokerProduct(String insuranceId , String productId , String loginId) {
+		LoginProductMaster loginProduct = new LoginProductMaster(); 
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd   = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<LoginProductMaster> query = cb.createQuery(LoginProductMaster.class);
+			List<LoginProductMaster> list = new ArrayList<LoginProductMaster>();
+			
+			// Find All
+			Root<LoginProductMaster>    c = query.from(LoginProductMaster.class);		
+			
+			// Select
+			query.select(c );
+			
+		
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("productName")));
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<LoginProductMaster> ocpm1 = effectiveDate.from(LoginProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
+			Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a4 = cb.equal(c.get("loginId"),ocpm1.get("loginId") );
+			effectiveDate.where(a1,a2,a3,a4);
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<LoginProductMaster> ocpm2 = effectiveDate2.from(LoginProductMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a5 = cb.equal(c.get("productId"),ocpm2.get("productId") );
+			Predicate a6 = cb.equal(c.get("companyId"),ocpm2.get("companyId") );
+			Predicate a7 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a8 = cb.equal(c.get("loginId"),ocpm2.get("loginId") );
+			effectiveDate2.where(a5,a6,a7,a8);
+			
+			
+		    // Where	
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n11 = cb.equal(c.get("status"),"R");
+			Predicate n12 = cb.or(n1,n11);
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"), insuranceId);
+			Predicate n5 = cb.equal(c.get("loginId"), loginId );
+			Predicate n7 = cb.equal(c.get("productId"), productId );
+			query.where(n12,n2,n3,n4,n5,n7).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<LoginProductMaster> result = em.createQuery(query);			
+			list =  result.getResultList(); 
+			loginProduct = list.size()>0 ? list.get(0) : null ; 
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return loginProduct ;
+	}
 	
 }
