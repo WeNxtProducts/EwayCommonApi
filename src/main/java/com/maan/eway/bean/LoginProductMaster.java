@@ -147,6 +147,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="NON_FINANCIAL_ENDT_IDS", length=500)
     private String    nonFinancialEndtIds;
 
+    @Column(name="POLICY_TYPE_ID", length=100)
+    private String    policyTypeId;
+
+    @Column(name="POLICY_TYPE_DESC", length=500)
+    private String    policyTypeDesc;
+
 }
 
 

@@ -1,6 +1,7 @@
 package com.maan.eway.master.req;
 
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -84,4 +85,16 @@ public class BrokerCompanyProductReq {
 	@JsonProperty("BackDays")
 	private String backDays;
 	
+	@JsonProperty("FinanceIds")
+	private List<String> financeIds;
+
+	@JsonProperty("NonFinanceIds")
+	private List<String> nonFinanceIds;
+
+	@JsonProperty("PolicyTypeId")
+	private String policyTypeId;
+
+	@JsonProperty("PolicyTypeDesc")
+	private String policyTypeDesc;
+
 }

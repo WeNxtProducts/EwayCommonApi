@@ -20,4 +20,6 @@ public class AttachCompnayProductRequest {
 	
 	@JsonProperty("ProductIds")
 	private List<String> productIds ;
+	
+	
 }

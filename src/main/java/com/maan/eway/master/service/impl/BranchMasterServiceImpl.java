@@ -66,6 +66,7 @@ import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CompanyRegionMaster;
 
 import com.maan.eway.bean.CountryMaster;
+import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginBranchMasterArch;
 import com.maan.eway.bean.LoginProductMaster;
@@ -1358,6 +1359,24 @@ public SuccessRes changeStatusOfBranch(BranchChangeStatusReq req) {
 				save.setUserType(savedLBReq.getUserType());
 				save.setSubUserType(savedLBReq.getSubUserType());
 				
+				String financeid = "";
+				String nonfinanceid = "";
+				List<EndtTypeMaster> endtids = getEndtId(savedLBReq.getCompanyId(), data.getProductId()); 								
+				for(EndtTypeMaster endtid :endtids) {				
+					if(endtid.getEndtTypeCategoryId().toString().equalsIgnoreCase("1")) {						
+						financeid = financeid+","+endtid.getEndtTypeId().toString();
+					}
+					else {
+						nonfinanceid = nonfinanceid+","+endtid.getEndtTypeId().toString();						
+					}					
+				}
+				financeid=financeid.substring(1);
+				nonfinanceid=nonfinanceid.substring(1);
+				save.setFinancialEndtIds(financeid);
+				save.setNonFinancialEndtIds(nonfinanceid);
+				
+				
+				
 				saveList.add(save);
 				log.info("Saved Details is ---> " + json.toJson(save));
 				
@@ -1372,6 +1391,66 @@ public SuccessRes changeStatusOfBranch(BranchChangeStatusReq req) {
 		}
 		return res;
 	}
+	
+	private List<EndtTypeMaster> getEndtId(String insuranceId, Integer productId) {
+		// TODO Auto-generated method stub
+		List<EndtTypeMaster> list = new ArrayList<EndtTypeMaster>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			today = cal.getTime();
+			Date todayEnd = cal.getTime();
+
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<EndtTypeMaster> query = cb.createQuery(EndtTypeMaster.class);
+
+			// Find All
+			Root<EndtTypeMaster> b = query.from(EndtTypeMaster.class);
+
+			// Select
+			query.select(b);
+
+			//Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<EndtTypeMaster> ocpm1 = effectiveDate.from(EndtTypeMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a2 = cb.equal(b.get("companyId"),ocpm1.get("companyId"));
+			Predicate a3 = cb.equal(b.get("productId"),ocpm1.get("productId"));
+			Predicate a4 = cb.equal(ocpm1.get("endtTypeId"), b.get("endtTypeId"));
+			
+			effectiveDate.where(a1,a2,a3,a4);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<EndtTypeMaster> ocpm2 = effectiveDate2.from(EndtTypeMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a6 = cb.equal(b.get("endtTypeId"),ocpm2.get("endtTypeId"));
+			Predicate a7 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a8 = cb.equal(b.get("companyId"),ocpm2.get("companyId"));
+			Predicate a9 = cb.equal(b.get("productId"),ocpm2.get("productId"));
+			
+			effectiveDate2.where(a6,a7,a8,a9);
+			Predicate n1 = cb.equal(b.get("companyId"),insuranceId);
+			Predicate n2 = cb.equal(b.get("productId"),productId);
+			Predicate n3 = cb.equal(b.get("status"),"Y");
+			Predicate n4 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
+			Predicate n5 = cb.equal(b.get("effectiveDateEnd"),effectiveDate2);	
+			query.where(n1,n2,n3,n4,n5);
+			
+			// Get Result
+			TypedQuery<EndtTypeMaster> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+
+		}
+		return list;
+	}
+
 	
 	// Update Old Login Products
 	public Integer upadateOldLoginProduct(LoginBranchMaster savedLBReq ) {

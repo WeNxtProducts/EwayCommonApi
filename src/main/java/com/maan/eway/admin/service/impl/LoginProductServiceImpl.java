@@ -3,6 +3,7 @@ package com.maan.eway.admin.service.impl;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -40,6 +41,8 @@ import com.maan.eway.admin.res.ProductCriteriaRes;
 import com.maan.eway.admin.service.LoginProductService;
 import com.maan.eway.auth.dto.LoginProductCriteriaRes;
 import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.EndtDependantFieldMaster;
+import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
@@ -49,6 +52,7 @@ import com.maan.eway.master.req.BrokerCompanyProductReq;
 import com.maan.eway.master.req.BrokerProductChangeReq;
 import com.maan.eway.master.req.BrokerProductReq;
 import com.maan.eway.master.res.CompanyProductMasterRes;
+import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginProductMasterRepository;
@@ -70,6 +74,9 @@ public class LoginProductServiceImpl  implements LoginProductService {
 	@Autowired
 	private ListItemValueRepository listRepo ;
 
+	@Autowired
+	private EndtTypeMasterRepository endtRepo;
+	
 	Gson json = new Gson();
 
 
@@ -168,6 +175,22 @@ public class LoginProductServiceImpl  implements LoginProductService {
 				save.setAgencyCode(Integer.valueOf(loginData.getAgencyCode()));
 				save.setOaCode(loginData.getOaCode());
 				save.setCommissionPercent(15);
+				String financeid = "";
+				String nonfinanceid = "";
+				List<EndtTypeMaster> endtids = getEndtId(req.getInsuranceId(), data.getProductId()); 								
+				for(EndtTypeMaster endtid :endtids) {				
+					if(endtid.getEndtTypeCategoryId().toString().equalsIgnoreCase("1")) {						
+						financeid = financeid+","+endtid.getEndtTypeId().toString();
+					}
+					else {
+						nonfinanceid = nonfinanceid+","+endtid.getEndtTypeId().toString();						
+					}					
+				}
+				financeid=financeid.substring(1);
+				nonfinanceid=nonfinanceid.substring(1);
+				save.setFinancialEndtIds(financeid);
+				save.setNonFinancialEndtIds(nonfinanceid);
+				
 				loginProductRepo.saveAndFlush(save);
 				log.info("Saved Details is ---> " + json.toJson(save));
 				
@@ -183,8 +206,73 @@ public class LoginProductServiceImpl  implements LoginProductService {
 		return res;
 	}
 
+	
+	
 //*************************************** Get Products Apis Methods **********************************************************//
 	
+	private List<EndtTypeMaster> getEndtId(String insuranceId, Integer productId) {
+		// TODO Auto-generated method stub
+		List<EndtTypeMaster> list = new ArrayList<EndtTypeMaster>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			today = cal.getTime();
+			Date todayEnd = cal.getTime();
+
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<EndtTypeMaster> query = cb.createQuery(EndtTypeMaster.class);
+
+			// Find All
+			Root<EndtTypeMaster> b = query.from(EndtTypeMaster.class);
+
+			// Select
+			query.select(b);
+
+			//Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<EndtTypeMaster> ocpm1 = effectiveDate.from(EndtTypeMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a2 = cb.equal(b.get("companyId"),ocpm1.get("companyId"));
+			Predicate a3 = cb.equal(b.get("productId"),ocpm1.get("productId"));
+			Predicate a4 = cb.equal(ocpm1.get("endtTypeId"), b.get("endtTypeId"));
+			
+			effectiveDate.where(a1,a2,a3,a4);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<EndtTypeMaster> ocpm2 = effectiveDate2.from(EndtTypeMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a6 = cb.equal(b.get("endtTypeId"),ocpm2.get("endtTypeId"));
+			Predicate a7 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a8 = cb.equal(b.get("companyId"),ocpm2.get("companyId"));
+			Predicate a9 = cb.equal(b.get("productId"),ocpm2.get("productId"));
+			
+			effectiveDate2.where(a6,a7,a8,a9);
+			Predicate n1 = cb.equal(b.get("companyId"),insuranceId);
+			Predicate n2 = cb.equal(b.get("productId"),productId);
+			Predicate n3 = cb.equal(b.get("status"),"Y");
+			Predicate n4 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
+			Predicate n5 = cb.equal(b.get("effectiveDateEnd"),effectiveDate2);	
+			query.where(n1,n2,n3,n4,n5);
+			
+			// Get Result
+			TypedQuery<EndtTypeMaster> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+
+		}
+		return list;
+	}
+
+	
+
+
+
 	@Override
 	public BrokerProductGetRes getBrokerProducts(BrokerProductGetReq req) {
 		BrokerProductGetRes res = new BrokerProductGetRes();
@@ -233,9 +321,18 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			// Get Result
 			TypedQuery<LoginProductMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			
+			String financeid = list.get(0).getFinancialEndtIds();
+			String nonFinanceid = list.get(0).getNonFinancialEndtIds();
+
+	        ArrayList<String> financeids = new ArrayList<String>(Arrays.asList(financeid));
+	        ArrayList<String> nonfinanceids = new ArrayList<String>(Arrays.asList(nonFinanceid));
+	  	
 			dozerMapper.map(list.get(0), res);
-			res.setBackDays(list.get(0).getBackDays().toString());;
+			res.setBackDays(list.get(0).getBackDays().toString());
+			
+			res.setFinanceIds(financeids);
+			res.setNonFinanceIds(nonfinanceids);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
@@ -679,9 +776,28 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			saveData.setUserType(login.getUserType());
 			saveData.setSubUserType(login.getSubUserType());
 			saveData.setBackDays(Integer.valueOf(req.getBackDays()));
-			loginProductRepo.saveAndFlush(saveData);
 			
-				
+			String financeId = "";
+			String nonFinanceId = "";
+
+			List<String> ids = req.getFinanceIds();
+			for (int i = 0; i < ids.size(); i++) {
+				financeId = financeId + "," + ids.get(i);
+			}
+
+			List<String> idss = req.getNonFinanceIds();
+			for (int i = 0; i < idss.size(); i++) {
+				nonFinanceId = nonFinanceId + "," + idss.get(i);
+			}
+			
+			financeId=financeId.substring(1);
+			nonFinanceId=nonFinanceId.substring(1);
+			
+			saveData.setFinancialEndtIds(financeId);
+			saveData.setNonFinancialEndtIds(nonFinanceId);
+			
+			loginProductRepo.saveAndFlush(saveData);
+							
 			log.info("Saved Details is ---> " + json.toJson(saveData));
 				
 		} catch (Exception e) {
