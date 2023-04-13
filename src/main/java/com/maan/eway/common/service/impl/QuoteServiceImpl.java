@@ -889,7 +889,7 @@ private BuildingDetailsRepository BuildingRepo;
 				//Tracking Details
 					trackingDetails(req);
 				
-			} else if( req.getProductId().equalsIgnoreCase(buildingProductId)) {
+			} else if( (req.getProductId().equalsIgnoreCase(buildingProductId)) || (req.getProductId().equalsIgnoreCase(smeProductId))) {
 				updateRes = buildingReferalUpdate(req);
 				//Mail Push Notification
 				 buildingPushNotification(req);
