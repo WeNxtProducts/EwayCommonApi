@@ -1106,7 +1106,7 @@ public class SearchServiceImpl implements SearchService {
 		try {
 			List<PaymentInfo> paymentinfo = null;
 			if (StringUtils.isNotBlank(req.getQuoteNo())) {
-				paymentinfo = paymentrepo.findByQuoteNoAndProductId(req.getQuoteNo(),req.getProductId());
+				paymentinfo = paymentrepo.findByQuoteNoAndProductId(req.getQuoteNo(),Integer.valueOf(req.getProductId()));
 			}  
 
 			for (PaymentInfo pi : paymentinfo) {

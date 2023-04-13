@@ -35,7 +35,7 @@ public interface PaymentInfoRepository  extends JpaRepository<PaymentInfo,Paymen
 
 	PaymentInfo findByQuoteNoAndPaymentId(String quoteNo, String paymentId);
 	
-	List<PaymentInfo> findByQuoteNoAndProductId(String quoteNo,String productId);
+	List<PaymentInfo> findByQuoteNoAndProductId(String quoteNo,Integer productId);
 
 	List<PaymentInfo> findByQuoteNo(String quoteNo);
 

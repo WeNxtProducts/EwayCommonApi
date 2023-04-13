@@ -36,9 +36,17 @@ public class SearchPaymentInfoRes {
 	
 	@JsonProperty("PaymentStatus")
 	private String paymentStatus;
-	
+
+	@JsonProperty("EmiYn")
+	private String emiYn;
+	@JsonProperty("InstallmentMonth")
+	private String installmentMonth;
+
+	@JsonProperty("InstallmentPeriod")
+	private String installmentPeriod;
+
 	@JsonProperty("Premium")
-    private String premium ;
+	private String premium;
 	
 
 }

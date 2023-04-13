@@ -197,7 +197,7 @@ public ResponseEntity<CommonRes> adminROPVehicleSearch(@RequestBody SearchReq re
 		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	}
 }
-@PostMapping("/viewpaymentinfo")
+@PostMapping("/adminviewpaymentinfo")
 public ResponseEntity<CommonRes> viewPaymentInfo(@RequestBody SearchReq req) {
 	CommonRes data = new CommonRes();
 	List<SearchPaymentInfoRes> paymentgetres = new ArrayList<SearchPaymentInfoRes>();
