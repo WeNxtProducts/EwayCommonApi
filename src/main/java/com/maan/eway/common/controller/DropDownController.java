@@ -1217,8 +1217,12 @@ public class DropDownController {
 		}
 	}
 	
+
 	/*@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-	@PostMapping("/suminsuredreferral")
+	@PostMapping("/suminsuredreferral") */
+
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping(value = "/suminsuredreferral",produces = "application/json")
 	public ResponseEntity<CommonRes> brokerSumInsured(@RequestBody BrokerSumInsuredRefReq req) {
 		CommonRes data = new CommonRes();
 		List<DropDownRes> res = dropDownService.brokerSumInsuredRefrral(req);
@@ -1231,5 +1235,5 @@ public class DropDownController {
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-	}*/
+	}
 }

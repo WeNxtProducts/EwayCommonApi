@@ -35,13 +35,13 @@ import com.maan.eway.bean.MsVehicleDetailsId;
  
 public interface MasterReferralDetailsRepository  extends JpaRepository<MasterReferralDetails,MasterReferralDetailsId > , JpaSpecificationExecutor<MasterReferralDetails> {
 
-	Long findByRequestReferenceNoAndRiskIdAndProductIdAndSectionIdAndCompanyId(String requestReferenceNo,
-			Integer valueOf, Integer valueOf2, Integer valueOf3, String insuranceId);
-
 	@Transactional
 	void deleteByRequestReferenceNoAndRiskIdAndProductIdAndSectionIdAndCompanyId(String requestReferenceNo,
 			Integer valueOf, Integer valueOf2, Integer valueOf3, String insuranceId);
 
 	List<MasterReferralDetails> findByRequestReferenceNoOrderByRiskIdAsc(String requestReferenceNo);
+
+	Long countByRequestReferenceNoAndRiskIdAndProductIdAndSectionIdAndCompanyId(String requestReferenceNo,
+			Integer valueOf, Integer valueOf2, Integer valueOf3, String insuranceId);
 
 }

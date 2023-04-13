@@ -1922,21 +1922,21 @@ public class DropDownServiceImpl  implements DropDownService{
 						// Comparision
 						if (suminsured.compareTo(suminsuredStart) < 0 ) {
 							referal = true ;
-							desc  = "Sum Insured Referral - " +  "Suminsured = " +  suminsured + " Less Than Broker SumInsured Start"   ; 
+							desc  = "Sum Insured - " +  "Suminsured = " +  suminsured.toPlainString() + " Less Than Broker SumInsured Start"   ; 
 							
 						} else if (suminsuredEnd.compareTo(suminsured) < 0  ) {
 							referal = true ;
-							desc  = "Sum Insured Referral - " +  "Suminsured = " +  suminsured + " Greater Than Broker SumInsured End"   ; 
+							desc  = "Sum Insured - " +  "Suminsured = " +  suminsured.toPlainString() + " Greater Than Broker SumInsured End"   ; 
 						}
 						
 						// Refral block
 						if(referal == true  ) {
-							res.setCode("Suminsured = " +  suminsured + " , Start = " +suminsuredStart + " , End = " + suminsuredEnd );
+							res.setCode(suminsured.toString());
 							res.setCodeDesc(desc);
 							res.setStatus("R");
 								
 						} else {
-							res.setCode("Suminsured = " +  suminsured + " , Start = " +suminsuredStart + " , End = " + suminsuredEnd );
+							res.setCode(suminsured.toString());
 							res.setCodeDesc("Between Broker SumInsured ");
 							res.setStatus("Y");
 						}

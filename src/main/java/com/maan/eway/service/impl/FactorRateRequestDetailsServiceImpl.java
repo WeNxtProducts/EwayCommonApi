@@ -636,7 +636,7 @@ this.repository = repo;
 			
 			// Save Master Referals
 			if(req.getReferals()!=null && req.getReferals().size()>0 ) {
-				Long refCount  = masReferralRepo.findByRequestReferenceNoAndRiskIdAndProductIdAndSectionIdAndCompanyId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()) ,
+				Long refCount  = masReferralRepo.countByRequestReferenceNoAndRiskIdAndProductIdAndSectionIdAndCompanyId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()) ,
 						                      Integer.valueOf(req.getProductId()),Integer.valueOf(req.getSectionId()),req.getInsuranceId() );
 				if(refCount!=null && refCount > 0 ) {
 					masReferralRepo.deleteByRequestReferenceNoAndRiskIdAndProductIdAndSectionIdAndCompanyId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()) ,
