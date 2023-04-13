@@ -915,7 +915,10 @@ public class SearchServiceImpl implements SearchService {
 				res = dozerMapper.map(data.get(0),SearchCustomerDetailsRes.class);	
 				res.setLoginId(loginId);
 				res.setApplicationId(req.getApplicationId());
-				 reslist.add(res);
+				res.setCustomerCode(list.get(0).get("customerCode").toString());
+				res.setSourceType(list.get(0).get("sourceType").toString());
+				res.setBranchCode(list.get(0).get("branchCode").toString());
+				reslist.add(res);
 			}
 
 		} catch (Exception e) {

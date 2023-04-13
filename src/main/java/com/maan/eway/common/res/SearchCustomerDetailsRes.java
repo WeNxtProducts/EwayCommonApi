@@ -48,7 +48,7 @@ public class SearchCustomerDetailsRes {
 	private String nationality;
 	
 	@JsonProperty("Division")
-	private String division;
+	private String branchCode;
 
 	@JsonProperty("CustomerCode")
 	private String customerCode;
@@ -59,17 +59,17 @@ public class SearchCustomerDetailsRes {
 	@JsonProperty("IdNumber")
 	private String idNumber;
 
-	@JsonProperty("CustomerCodeName")
-	private String customerCodeName;
+//	@JsonProperty("CustomerCodeName")
+//	private String customerCodeName;
 
 	@JsonProperty("Gender")
 	private String genderDesc;
 	
 	@JsonProperty("SourceType")
 	private String sourceType;
-
-	@JsonProperty("Source")
-	private String Source;
+//
+//	@JsonProperty("Source")
+//	private String Source;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("DobOrRegDate")

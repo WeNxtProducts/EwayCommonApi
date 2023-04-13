@@ -244,14 +244,14 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 			n5 = cb.equal(cus.get("customerReferenceNo"), c.get("customerReferenceNo"));
 		//	Predicate n6 = cb.isNull(c.get("endtTypeId"));
 			query.where(n1,n2,n3,n4,n5)
-			.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
+			.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"),cus.get("mobileNo1"), c.get("companyId"),
 					c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 					c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
 					c.get("rejectReason"),c.get("riskId"),c.get("insuranceType"))
 			.orderBy(orderList);
 			if (searchKey.equalsIgnoreCase("CustomerName")) {
 				query.where(n1, n2,n4,n5)
-				.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
+				.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"),cus.get("mobileNo1"), c.get("companyId"),
 						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
 						c.get("rejectReason"),c.get("riskId"),c.get("insuranceType"))
@@ -259,7 +259,7 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 			}
 			if (searchKey.equalsIgnoreCase("MobileNumber")) {
 				query.where(n1,n2,n3,n4)
-				.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
+				.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"),cus.get("mobileNo1"), c.get("companyId"),
 						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
 						c.get("rejectReason"),c.get("riskId"),c.get("insuranceType"))
@@ -293,7 +293,7 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 				Root<EserviceMotorDetails> c = query.from(EserviceMotorDetails.class);
 				Root<PersonalInfo> cus = query.from(PersonalInfo.class);
 				
-				query.multiselect(
+				query.multiselect(c.get("branchCode").alias("branchCode"),c.get("customerCode").alias("customerCode"),c.get("sourceType").alias("sourceType"),
 						cus.alias("customerDetails"),cb.count(c).alias("idsCount"));
 
 
@@ -352,14 +352,19 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 				n5 = cb.equal(cus.get("customerReferenceNo"), c.get("customerReferenceNo"));
 			//	Predicate n6 = cb.isNull(c.get("endtTypeId"));
 				query.where(n1,n2,n3,n4,n5)
-				.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
-						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
+				.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("companyId"),
+						cus.get("clientName"), cus.get("customerReferenceNo"),
+						cus.get("customerId"),c.get("companyId"),
+						c.get("productId"), c.get("branchCode"), 
+						c.get("requestReferenceNo"), c.get("quoteNo"),
 						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
 						c.get("rejectReason"),c.get("riskId"),c.get("insuranceType"))
 				.orderBy(orderList);
 				if (searchKey.equalsIgnoreCase("CustomerName")) {
 					query.where(n1, n2,n4,n5)
-					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
+					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"),cus.get("companyId"),
+							cus.get("clientName"), cus.get("customerReferenceNo"),
+							cus.get("customerId"),c.get("companyId"),
 							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
 							c.get("rejectReason"),c.get("riskId"),c.get("insuranceType"))
@@ -367,7 +372,11 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 				}
 				if (searchKey.equalsIgnoreCase("MobileNumber")) {
 					query.where(n1,n2,n3,n4,n8)
-					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
+					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"),
+							cus.get("companyId"),
+							cus.get("clientName"), cus.get("customerReferenceNo"),
+							cus.get("customerId"), 
+							c.get("companyId"),
 							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
 							c.get("rejectReason"),c.get("riskId"),c.get("insuranceType"))
