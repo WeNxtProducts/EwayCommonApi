@@ -64,7 +64,6 @@ import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.calculator.util.TaxFromFactor;
 import com.maan.eway.common.req.CopyQuoteReq;
-import com.maan.eway.common.req.DocumentReq;
 import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
 import com.maan.eway.common.req.EservieMotorDetailsViewRes;
 import com.maan.eway.common.req.ExistingQuoteReq;
@@ -79,7 +78,6 @@ import com.maan.eway.common.res.CriteriaCustomerRes;
 import com.maan.eway.common.res.CustomerDetailsGetRes;
 import com.maan.eway.common.res.CustomerDetailsRes;
 import com.maan.eway.common.res.DocumentRes;
-import com.maan.eway.common.res.DocumentTypeDescComRes;
 import com.maan.eway.common.res.DriverDetailsRes;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.EserviceMotorDetailsRes;
@@ -923,9 +921,9 @@ public class SearchServiceImpl implements SearchService {
 				res = dozerMapper.map(data.get(0),SearchCustomerDetailsRes.class);	
 				res.setLoginId(loginId);
 				res.setApplicationId(req.getApplicationId());
-				res.setCustomerCode(list.get(0).get("customerCode").toString());
-				res.setSourceType(list.get(0).get("sourceType").toString());
-				res.setBranchCode(list.get(0).get("branchCode").toString());
+//				res.setCustomerCode(list.get(0).get("customerCode").toString());
+//				res.setSourceType(list.get(0).get("sourceType").toString());
+//				res.setBranchCode(list.get(0).get("branchCode").toString());
 				reslist.add(res);
 			}
 
@@ -1143,7 +1141,6 @@ public class SearchServiceImpl implements SearchService {
 	@Override
 	public List<DocumentRes> viewDocumentDetails(SearchReq req) {
 		// TODO Auto-generated method stub
-		DocumentTypeDescComRes dComRes = new DocumentTypeDescComRes();
 		List<DocumentRes> reslist = new ArrayList<DocumentRes>();
 
 		try {
