@@ -5,6 +5,7 @@ import java.util.List;
 import com.maan.eway.common.req.NcdDetailsGetReq;
 import com.maan.eway.integration.req.PremiaRequest;
 import com.maan.eway.integration.req.QueryKeyReq;
+import com.maan.eway.master.req.BrokerSumInsuredRefReq;
 import com.maan.eway.master.req.BuildingUsageDropDownReq;
 import com.maan.eway.master.req.CityDropDownReq;
 import com.maan.eway.master.req.LovDropDownReq;
@@ -150,5 +151,7 @@ public interface DropDownService {
 	List<DropDownRes> endtDependantFields(LovDropDownReq req);
 
 	List<DropDownRes> productBenefitsTypes(LovDropDownReq req);
+
+	List<DropDownRes> brokerSumInsuredRefrral(BrokerSumInsuredRefReq req);
 
 }

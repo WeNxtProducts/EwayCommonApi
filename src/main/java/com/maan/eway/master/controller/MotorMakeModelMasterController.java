@@ -37,7 +37,7 @@ public class MotorMakeModelMasterController {
 	@Autowired
 	private PrintReqService reqPrinter;
 	// Insert
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/savemakemodel")
 	@ApiOperation(value = "This method is Save Motor Make Model")
 
@@ -71,7 +71,7 @@ public class MotorMakeModelMasterController {
 	}
 
 	// Get By Make Id
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getmotormakemodel")
 	@ApiOperation(value = "This method is get by Motor Model")
 
@@ -92,7 +92,7 @@ public class MotorMakeModelMasterController {
 	}
 
 	// Get All
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getallmotormakemodel")
 	@ApiOperation(value = "This method is Get all Motor Make Model ")
 
@@ -115,7 +115,7 @@ public class MotorMakeModelMasterController {
 	}
 
 	// Get All
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getactivemotormakemodel")
 	@ApiOperation(value = "This method is Get Active Motor Make MOdel ")
 
@@ -158,7 +158,7 @@ public class MotorMakeModelMasterController {
 		}
 
 	}
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/motormakemodel/changestatus")
 	@ApiOperation(value = "This method is get MakeModel Change Status")
 	public ResponseEntity<CommonRes> changeStatusOfMakeModel(@RequestBody MakeModelChangeStatusReq req) {

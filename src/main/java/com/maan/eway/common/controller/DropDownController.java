@@ -18,6 +18,7 @@ import com.maan.eway.common.service.DropDownService;
 import com.maan.eway.integration.req.PremiaRequest;
 import com.maan.eway.integration.req.QueryKeyReq;
 import com.maan.eway.integration.res.PremiaResponse;
+import com.maan.eway.master.req.BrokerSumInsuredRefReq;
 import com.maan.eway.master.req.BuildingUsageDropDownReq;
 import com.maan.eway.master.req.CityDropDownReq;
 import com.maan.eway.master.req.LovDropDownReq;
@@ -1205,6 +1206,22 @@ public class DropDownController {
 	public ResponseEntity<CommonRes> productBenefitsTypes(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
 		List<DropDownRes> res = dropDownService.productBenefitsTypes(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/suminsuredreferral")
+	public ResponseEntity<CommonRes> brokerSumInsured(@RequestBody BrokerSumInsuredRefReq req) {
+		CommonRes data = new CommonRes();
+		List<DropDownRes> res = dropDownService.brokerSumInsuredRefrral(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);

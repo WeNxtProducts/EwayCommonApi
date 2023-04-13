@@ -39,7 +39,7 @@ public class MotorBodyTypeMasterController {
 	private PrintReqService reqPrinter;
 	
 	// Insert
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/savemotorbodytype")
 	@ApiOperation(value = "This method is Save Make Motor ")
 
@@ -73,7 +73,7 @@ public class MotorBodyTypeMasterController {
 	}
 
 	// Get By Make Id
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getmotorbody")
 	@ApiOperation(value = "This method is get by Make Id ")
 
@@ -94,7 +94,7 @@ public class MotorBodyTypeMasterController {
 	}
 
 	// Get All
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getallmotorbody")
 	@ApiOperation(value = "This method is Get all Motor Make ")
 
@@ -118,7 +118,7 @@ public class MotorBodyTypeMasterController {
 
 	
 	// Get All Active
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/getactivemotorbody")
 		@ApiOperation(value = "This method is Get Active Motor Body ")
 
@@ -142,7 +142,7 @@ public class MotorBodyTypeMasterController {
 
 	
 		
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/bodytype/changestatus")
 		@ApiOperation(value = "This method is get Body Type Change Status")
 		public ResponseEntity<CommonRes> changeStatusOfBodyType(@RequestBody BodyTypeChangeStatusReq req) {

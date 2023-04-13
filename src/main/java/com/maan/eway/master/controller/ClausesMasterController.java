@@ -43,7 +43,7 @@ private ClausesMasterService service;
 private PrintReqService reqPrinter;
 
 //Save
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 @PostMapping("/insertclauses")
 @ApiOperation(value = "This Method is to save Waranty Master")
 public ResponseEntity<CommonRes> saveClauses(@RequestBody ClausesMasterSaveReq req) {
@@ -75,7 +75,7 @@ public ResponseEntity<CommonRes> saveClauses(@RequestBody ClausesMasterSaveReq r
 }
 
 //  Get All Clauses Master
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 @PostMapping("/getallclauses")
 @ApiOperation("This method is getall Clauses")
 public ResponseEntity<CommonRes> getallClauses(@RequestBody ClausesMasterGetallReq req) {
@@ -96,7 +96,7 @@ public ResponseEntity<CommonRes> getallClauses(@RequestBody ClausesMasterGetallR
 }
 
 //  Get Active Clauses Master
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 @PostMapping("/getactiveclauses")
 @ApiOperation("This method is get Active Clauses")
 public ResponseEntity<CommonRes> getActiveClauses(@RequestBody ClausesMasterGetallReq req) {
@@ -117,7 +117,7 @@ public ResponseEntity<CommonRes> getActiveClauses(@RequestBody ClausesMasterGeta
 }
 
 // Get By Clauses Id
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 @PostMapping("/getbyclausesid")
 @ApiOperation("This Method is to get by Clauses id")
 public ResponseEntity<CommonRes> getByClausesId(@RequestBody ClausesMasterGetReq req) {
@@ -135,7 +135,7 @@ public ResponseEntity<CommonRes> getByClausesId(@RequestBody ClausesMasterGetReq
 		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	}
 }
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 @PostMapping("/clauses/changestatus")
 @ApiOperation(value = "This method is get Clauses Change Status")
 public ResponseEntity<CommonRes> changeStatusOfClauses(@RequestBody ClausesChangeStatusReq req) {

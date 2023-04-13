@@ -44,7 +44,7 @@ private WarrantyMasterService service;
 private PrintReqService reqPrinter;
 
 //Save
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 @PostMapping("/insertwarranty")
 @ApiOperation(value="This Method is to save Waranty Master")
 public ResponseEntity<CommonRes> saveWarranty(@RequestBody WarrantyMasterSaveReq req){
@@ -77,7 +77,7 @@ if(validation !=null && validation.size()!=0) {
 }
 
 //  Get All Warranty Master
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 @PostMapping("/getallwarranty")
 @ApiOperation("This method is getall Warranty")
 public ResponseEntity<CommonRes> getallWarranty(@RequestBody WarrantyMasterGetallReq req)
@@ -100,7 +100,7 @@ public ResponseEntity<CommonRes> getallWarranty(@RequestBody WarrantyMasterGetal
 }
 
 //  Get Active Warranty Master
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getactivewarranty")
 	@ApiOperation("This method is get Active Warranty")
 	public ResponseEntity<CommonRes> getActiveWarranty(@RequestBody WarrantyMasterGetallReq req)
@@ -123,7 +123,7 @@ public ResponseEntity<CommonRes> getallWarranty(@RequestBody WarrantyMasterGetal
 	}
 
 // Get By Warranty Id
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 @PostMapping("/getbywarrantyid")
 @ApiOperation("This Method is to get by Warranty id")
 public ResponseEntity<CommonRes> getByWarrantyId(@RequestBody WarrantyMasterGetReq req)
@@ -143,7 +143,7 @@ if (res != null) {
 }
 }
 	
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 @PostMapping("/warranty/changestatus")
 @ApiOperation(value = "This method is get Warranty Change Status")
 public ResponseEntity<CommonRes> changeStatusOfWarranty(@RequestBody WarrantyChangeStatusReq req) {
