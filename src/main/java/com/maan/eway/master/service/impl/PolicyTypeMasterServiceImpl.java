@@ -1,5 +1,6 @@
 package com.maan.eway.master.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -17,17 +18,26 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.common.service.impl.DropDownServiceImpl;
+import com.maan.eway.master.req.PolicyTypeMasterGetAllReq;
+import com.maan.eway.master.req.PolicyTypeMasterGetReq;
+import com.maan.eway.master.req.PolicyTypeMasterSaveReq;
+import com.maan.eway.master.res.PolicyTypeMasterGetRes;
 import com.maan.eway.master.service.PolicyTypeMasterService;
 import com.maan.eway.repository.PolicyTypeMasterRepository;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
+import com.maan.eway.error.Error;
+
 @Service
 @Transactional
 public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
@@ -44,9 +54,9 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 	Gson json = new Gson();
 	
 	private Logger log = LogManager.getLogger(PolicyTypeMasterServiceImpl.class);
-	/*
+	
 	@Override
-	public List<Error> validatePolicyType(PolicyTypeMasterSaveReq req) {
+	public List<com.maan.eway.error.Error> validatePolicyType(PolicyTypeMasterSaveReq req) {
 		List<Error> error = new ArrayList<Error>();
 		try {
 			if (StringUtils.isBlank(req.getPolicyTypeName())) {
@@ -65,7 +75,8 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			if (req.getEffectiveDateStart() == null) {
 				error.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start "));
 
-			} else if (req.getEffectiveDateStart().before(today)) {
+			} 
+			else if (req.getEffectiveDateStart().before(today)) {
 				error
 						.add(new Error("02", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
 			} else if (req.getEffectiveDateEnd() == null) {
@@ -428,7 +439,7 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 		}
 		return resList;
 	}
-*/
+
 	@Override
 	public List<DropDownRes> getPolicyTypeMasterDropdown() {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();

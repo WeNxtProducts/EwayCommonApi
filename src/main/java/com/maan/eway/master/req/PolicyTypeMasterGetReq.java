@@ -15,7 +15,13 @@ public class PolicyTypeMasterGetReq implements Serializable {
 
     @JsonProperty("PolicyTypeId")
     private String policyTypeId;
-   
+    
+//    @JsonProperty("InsuranceId")
+//    private String companyId;
+//
+//    @JsonProperty("ProductId")
+//    private String productId;
+
     
 
 }

@@ -6,14 +6,20 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.maan.eway.master.service.PolicyTypeMasterService;
 import com.maan.eway.common.res.CommonRes;
-import com.maan.eway.res.DropDownRes;
+import com.maan.eway.master.req.PolicyTypeMasterGetAllReq;
+import com.maan.eway.master.req.PolicyTypeMasterGetReq;
+import com.maan.eway.master.req.PolicyTypeMasterSaveReq;
+import com.maan.eway.master.res.PolicyTypeMasterGetRes;
+import com.maan.eway.master.service.PolicyTypeMasterService;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
+import com.maan.eway.error.Error;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,14 +34,14 @@ public class PolicyTypeMasterController {
 	
 	@Autowired
 	private PrintReqService reqPrinter;
-	/*
+	
 	@PostMapping("/insertpolicytype")
 	@ApiOperation("This method is to save Policy Type Master")
 	public ResponseEntity<CommonRes> insertPolicyType(@RequestBody PolicyTypeMasterSaveReq req){
 		CommonRes data = new CommonRes();
 		reqPrinter.reqPrint(req);
 		
-		List<com.maan.eway.error.Error> validation = service.validatePolicyType(req);
+		List<Error> validation = service.validatePolicyType(req);
 		//Validation
 		if(validation!=null && validation.size()!=0) {
 		data.setCommonResponse(null);
@@ -101,7 +107,8 @@ public class PolicyTypeMasterController {
 	
 	@PostMapping("/getactivepolicytype")
 	@ApiOperation("This method is to get all Active Policy Type Master")
-	public ResponseEntity<CommonRes>getallactivePolicyType(@RequestBody PolicyTypeMasterGetAllReq req){
+	public ResponseEntity<CommonRes>getallactivePolicyType(@RequestBody PolicyTypeMasterGetAllReq req)
+	{
 		CommonRes data = new CommonRes();
 		reqPrinter.reqPrint(req);
 		List<PolicyTypeMasterGetRes> res = service.getallactivePolicyType(req);
@@ -117,7 +124,7 @@ public class PolicyTypeMasterController {
 		}
 	}
 	
-	*/
+	
 	// Policy Type Master Drop Down Type
 //	@GetMapping("/dropdown/policytype")
 //	@ApiOperation(value = "This method is get Policy Type Master Drop Down")
