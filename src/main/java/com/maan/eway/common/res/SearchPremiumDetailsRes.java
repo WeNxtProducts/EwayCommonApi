@@ -23,5 +23,10 @@ public class SearchPremiumDetailsRes {
 
 	@JsonProperty("CoverId") 
     public List<SearchPremiumCoverDetailsRes> SearchPremiumCoverDetailsRes;
-
+	
+	@JsonProperty("SectionId")
+	private  String sectionId;	
+	
+	@JsonProperty("SectionName")
+	private  String sectionName;
 }

@@ -513,10 +513,15 @@ public class SearchServiceImpl implements SearchService {
 					coverRes.setPremiumIncludedTax(filterCover.get(0).getPremiumIncludedTaxFc());
 					coverRes.setPremiumExcluedTaxLC(filterCover.get(0).getPremiumExcludedTaxLc());
 					coverRes.setPremiumIncludedTaxLC(filterCover.get(0).getPremiumIncludedTaxLc());
+					coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc()==null?BigDecimal.ZERO :filterCover.get(0).getPremiumAfterDiscountFc());
+					coverRes.setPremiumBeforeDiscount(filterCover.get(0).getPremiumBeforeDiscountFc()==null?BigDecimal.ZERO :filterCover.get(0).getPremiumBeforeDiscountFc());
 					coverRes.setCoverageType(filterCover.get(0).getCoverageType());
+					coverRes.setPremiumAfterDiscountLC(filterCover.get(0).getPremiumAfterDiscountLc()==null?BigDecimal.ZERO :filterCover.get(0).getPremiumAfterDiscountLc());
+					coverRes.setPremiumBeforeDiscountLC(filterCover.get(0).getPremiumBeforeDiscountLc()==null?BigDecimal.ZERO :filterCover.get(0).getPremiumBeforeDiscountLc());
 					coverRes.setExcessAmount(filterCover.get(0).getExcessAmount()==null ? "" :filterCover.get(0).getExcessAmount().toPlainString() );
 					coverRes.setExcessPercent(filterCover.get(0).getExcessPercent()==null ? "" :filterCover.get(0).getExcessPercent().toPlainString() );
-					coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());				
+					coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());	
+					
 										
 				} else {
 					
@@ -850,82 +855,68 @@ public class SearchServiceImpl implements SearchService {
 		List<SearchCustomerDetailsRes> reslist = new ArrayList<SearchCustomerDetailsRes>();
 		DozerBeanMapper dozerMapper  = new DozerBeanMapper(); 
 		try {
-			String searchKey = req.getSearchKey();
-			String searchValue = req.getSearchValue();
-			String companyId = req.getInsuranceId();
-			String loginId = req.getLoginId();
-			String userType = req.getUserType();
-			List<String> branches = new ArrayList<String>();
-			if (req.getApplicationId().equalsIgnoreCase("1") ) {
-				loginId = req.getLoginId();
-			} else {
-				loginId = req.getApplicationId();
-			}
-			// Branch Res
-
-			List<LoginBranchMaster> loginBranch = loginBranchRepo.findByLoginId(loginId);
-
-			branches = loginBranch.stream().filter(o -> !o.getBrokerBranchCode().equalsIgnoreCase("None"))
-					.map(LoginBranchMaster::getBrokerBranchCode).collect(Collectors.toList());
-			if (branches.size() <= 0) {
-				branches = loginBranch.stream().map(LoginBranchMaster::getBranchCode).collect(Collectors.toList());
-
-			}
-
-			branches.add(req.getBranchCode());
-			List<Tuple> list = null;
-
 			String customerId="";
+			String loginId = "";
+			String appId = "";
+			String sourceType="";
+			String coustomerCode="";
+			PersonalInfo list =null;
+		
 			// Product Wise Get
 			if (req.getProductId().equalsIgnoreCase(motorProductId)) {
-				if ("RequestReferenceNo".equalsIgnoreCase(searchKey)) {
-					List<HomePositionMaster> homelist = homeRepo.findByRequestReferenceNo(searchValue);
+				if (StringUtils.isNotBlank(req.getRequestReferenceNo())) {
+					List<HomePositionMaster> homelist = homeRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+					if(homelist.size()>0) {
 					customerId = homelist.get(0).getCustomerId();
-					list = motService.searchCutomerDetails(searchKey, searchValue, companyId, loginId, userType,
-							branches, customerId);
-				} 
-				else if ("PolicyNumber".equalsIgnoreCase(searchKey)) {
-					HomePositionMaster homelist = homeRepo.findByPolicyNoAndStatusAndCompanyIdAndProductId(searchValue,
-							"Y", companyId, Integer.valueOf(req.getProductId()));
-					customerId = homelist.getCustomerId();
-					list = motService.searchCutomerDetails(searchKey, searchValue, companyId, loginId, userType,
-							branches, customerId);
-				} 
-				else if ("CustomerName".equalsIgnoreCase(searchKey)) {
-					list = motService.searchCutomerDetails(searchKey, searchValue, companyId, loginId, userType,
-							branches, customerId);
-				}
-				else if ("QuoteNumber".equalsIgnoreCase(searchKey)) {
-					HomePositionMaster homeData = homeRepo.findByQuoteNo(searchValue);
+					}
+					List<EserviceMotorDetails> motor=repo.findByCustomerId(customerId);
+					if(motor.size()>0) {
+					 sourceType=motor.get(0).getSourceType();
+					 coustomerCode=motor.get(0).getCustomerCode();
+					 loginId=motor.get(0).getLoginId();
+					 appId=motor.get(0).getApplicationId();
+					}
+					 list = perRepo.findByCustomerId(customerId);
+					 
+//					list = motService.searchCutomerDetails(searchKey, searchValue, companyId, loginId, userType,
+//							branches, customerId);
+		} 
+
+				else if (StringUtils.isNotBlank(req.getQuoteNo())) {
+					HomePositionMaster homeData = homeRepo.findByQuoteNo(req.getQuoteNo());
 					customerId = homeData.getCustomerId();
-//					PersonalInfo custData = perRepo.findByCustomerId(homeData.getCustomerId());
-//					SearchCustomerDetailsRes custRes = new SearchCustomerDetailsRes();
-//					custRes = dozerMapper.map(custData, SearchCustomerDetailsRes.class);
-					list = motService.searchCutomerDetails(searchKey, searchValue, companyId, loginId, userType,
-							branches, customerId);
+					if (homeData != null) {
+						customerId = homeData.getCustomerId();
+					}
+						List<EserviceMotorDetails> motor=repo.findByCustomerId(customerId);
+						if(motor.size()>0) {
+							 sourceType=motor.get(0).getSourceType();
+							 coustomerCode=motor.get(0).getCustomerCode();
+							 loginId=motor.get(0).getLoginId();
+							 appId=motor.get(0).getApplicationId();
+						}
+					 list = perRepo.findByCustomerId(homeData.getCustomerId());
+				//	SearchCustomerDetailsRes custRes = new SearchCustomerDetailsRes();
+				//	custRes = dozerMapper.map(list, SearchCustomerDetailsRes.class);
+//					list = motService.searchCutomerDetails(searchKey, searchValue, companyId, loginId, userType,
+//							branches, customerId);
 
 				} 
-				else if ("ChassisNumber".equalsIgnoreCase(searchKey)) {
-					list = motService.searchCutomerDetails(searchKey, searchValue, companyId, loginId, userType,
-							branches, customerId);
-
-				} else if ("MobileNumber".equalsIgnoreCase(searchKey)) {
-					list = motService.searchCutomerDetails(searchKey, searchValue, companyId, loginId, userType,
-							branches, customerId);
-
-				}
+			
 			}
 
-			for (Tuple data : list) {
+//			for (PersonalInfo data : list) {
 				SearchCustomerDetailsRes res = new SearchCustomerDetailsRes();
-				res = dozerMapper.map(data.get(0),SearchCustomerDetailsRes.class);	
+				res = dozerMapper.map(list,SearchCustomerDetailsRes.class);	
 				res.setLoginId(loginId);
 				res.setApplicationId(req.getApplicationId());
-//				res.setCustomerCode(list.get(0).get("customerCode").toString());
-//				res.setSourceType(list.get(0).get("sourceType").toString());
-//				res.setBranchCode(list.get(0).get("branchCode").toString());
+				res.setCustomerCode(coustomerCode);
+				res.setSourceType(sourceType);
+				res.setApplicationId(appId);
+				res.setLoginId(loginId);
+				res.setBranchCode(list.getBranchCode().toString());
 				reslist.add(res);
-			}
+//			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -972,7 +963,11 @@ public class SearchServiceImpl implements SearchService {
 						response.setOverallPremiumLc(res.getOverallPremiumLc()==null?"0":res.getOverallPremiumLc().toPlainString());
 						response.setActualPremiumFc(res.getActualPremiumFc()==null?"0":res.getActualPremiumFc().toPlainString());
 						response.setActualPremiumLc(res.getActualPremiumLc()==null?"0":res.getActualPremiumLc().toPlainString());
-						
+						response.setCurrency(res.getCurrency());
+						response.setSectionName(res.getSectionName());
+						response.setExchangeRate(res.getExchangeRate());
+						response.setPolicyEndDate(res.getPolicyEndDate());
+						response.setPolicyStartDate(res.getPolicyStartDate());
 						resList.add(response);
 					}
 				}
@@ -1014,6 +1009,9 @@ public class SearchServiceImpl implements SearchService {
 
 					List<SearchPremiumCoverDetailsRes> coverListRes = getCoverDetails(groupByCover);
 
+					// Section Details
+					viewRes.setSectionId(mot.getSectionId()==null?"":mot.getSectionId().toString());
+					viewRes.setSectionName( mot.getSectionName());
 					viewRes.setSearchPremiumCoverDetailsRes(coverListRes);
 
 				}

@@ -21,7 +21,7 @@ public class DocumentRes {
 	@JsonProperty("DocumentReferenceNumber")
 	private Integer documentReferenceNo;
 	
-	@JsonProperty("Original path")
+	@JsonProperty("Originalpath")
 	private String filePathOrginal;
 
 	@JsonProperty("Compressed")
@@ -29,4 +29,10 @@ public class DocumentRes {
 	
 	@JsonProperty("DocumentTypeDesc")
 	private String documentTypeDesc;
+	
+	@JsonProperty("DocumentId")
+	private String documentId;
+	
+	@JsonProperty("Id")
+	private String id;
 }

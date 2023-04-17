@@ -47,5 +47,11 @@ public class SearchEservieMotorDetailsViewRatingRes {
 	
 	@JsonProperty("CoverList")
 	private List<SearchCoverDetails> coverList ;
+	
+    
+    @JsonProperty("ExchangeRate")
+    private BigDecimal exchangeRate;
+    @JsonProperty("Currency")
+    private String currency;
 
 }

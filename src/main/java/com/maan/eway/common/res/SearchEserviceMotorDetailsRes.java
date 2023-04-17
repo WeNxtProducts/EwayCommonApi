@@ -110,7 +110,8 @@ public class SearchEserviceMotorDetailsRes implements Serializable {
 	@JsonProperty("PolicyTypeDesc")
     private String     policyTypeDesc   ;	
 
-
+	@JsonProperty("Currency")
+    private String     currency   ;	
 		
 
 }
