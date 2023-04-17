@@ -69,7 +69,11 @@ public class SearchPremiumCoverDetailsRes {
 	 private String excessDesc;
 	 @JsonProperty("Currency") 
 	 private String Currency;
-	 
+		@JsonProperty("SectionId")
+		private  String sectionId;	
+		
+		@JsonProperty("SectionName")
+		private  String sectionName;
 
 
 

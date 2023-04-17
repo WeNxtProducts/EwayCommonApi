@@ -61,6 +61,7 @@ import com.maan.eway.bean.MotorVehicleInfo;
 import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
+import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.calculator.util.TaxFromFactor;
 import com.maan.eway.common.req.CopyQuoteReq;
@@ -113,6 +114,7 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.BranchMasterGetReq;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.master.req.LovDropDownReq;
+import com.maan.eway.master.req.SectionMasterGetReq;
 import com.maan.eway.master.res.BranchMasterRes;
 import com.maan.eway.master.service.TrackingDetailsService;
 import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
@@ -500,6 +502,7 @@ public class SearchServiceImpl implements SearchService {
 		List<SearchPremiumCoverDetailsRes>  coverListRes = new ArrayList<SearchPremiumCoverDetailsRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
+			String sectionName="";
 			for ( Integer coverId : groupByCover.keySet() ) {
 				List<PolicyCoverData>  coverGroups  = groupByCover.get(coverId);
 				SearchPremiumCoverDetailsRes coverRes = new SearchPremiumCoverDetailsRes();
@@ -521,7 +524,11 @@ public class SearchServiceImpl implements SearchService {
 					coverRes.setExcessAmount(filterCover.get(0).getExcessAmount()==null ? "" :filterCover.get(0).getExcessAmount().toPlainString() );
 					coverRes.setExcessPercent(filterCover.get(0).getExcessPercent()==null ? "" :filterCover.get(0).getExcessPercent().toPlainString() );
 					coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());	
-					
+					if(!StringUtils.isBlank(filterCover.get(0).getSectionId().toString())){
+						List<SectionMaster> sectiondata=getBySectionId(filterCover.get(0).getSectionId().toString());
+						sectionName=sectiondata.get(0).getSectionName();
+					}
+					coverRes.setSectionName(sectionName);
 										
 				} else {
 					
@@ -555,6 +562,11 @@ public class SearchServiceImpl implements SearchService {
 						coverRes.setExcessAmount(filterCover.get(0).getExcessAmount()==null ? "" :filterCover.get(0).getExcessAmount().toPlainString() );
 						coverRes.setExcessPercent(filterCover.get(0).getExcessPercent()==null ? "" :filterCover.get(0).getExcessPercent().toPlainString() );
 						coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());
+						if(!StringUtils.isBlank(filterCover.get(0).getSectionId().toString())){
+							List<SectionMaster> sectiondata=getBySectionId(filterCover.get(0).getSectionId().toString());
+							sectionName=sectiondata.get(0).getSectionName();
+						}
+						coverRes.setSectionName(sectionName);
 						subCoverListRes.add(subCoverRes);
 					}
 					coverRes.setSubcovers(subCoverListRes);
@@ -570,6 +582,56 @@ public class SearchServiceImpl implements SearchService {
 			return null;
 		}
 		return coverListRes;
+	}
+	
+	public List<SectionMaster> getBySectionId(String sectionid) {
+		List<SectionMaster> list = new ArrayList<SectionMaster>();
+		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+	
+		try {
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<SectionMaster> query = cb.createQuery(SectionMaster.class);
+	
+			
+			// Find All
+			Root<SectionMaster>    c = query.from(SectionMaster.class);		
+			
+			// Select
+			query.select(c );
+			
+			// AmendId Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<SectionMaster> ocpm1 = amendId.from(SectionMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId") );
+			amendId.where(a1);
+			
+			
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(c.get("effectiveDateStart")));
+			
+		    // Where	
+		
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("amendId"), amendId);		
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("sectionId"),sectionid) ;
+			query.where(n1 ,n2).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<SectionMaster> result = em.createQuery(query);			
+			list =  result.getResultList();  
+			
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return list;
 	}
 	
 	public synchronized List<SearchCoverDetails> getCoversList(Map<Integer,List<FactorRateRequestDetails>> groupByCover) {
@@ -1008,10 +1070,6 @@ public class SearchServiceImpl implements SearchService {
 							.collect(Collectors.groupingBy(PolicyCoverData::getCoverId));
 
 					List<SearchPremiumCoverDetailsRes> coverListRes = getCoverDetails(groupByCover);
-
-					// Section Details
-					viewRes.setSectionId(mot.getSectionId()==null?"":mot.getSectionId().toString());
-					viewRes.setSectionName( mot.getSectionName());
 					viewRes.setSearchPremiumCoverDetailsRes(coverListRes);
 
 				}
