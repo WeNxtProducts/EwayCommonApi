@@ -141,6 +141,7 @@ public class CachingConfig   {
 	    				 String string = new StringBuilder().append(e.getInsuranceId())
 	    						 .append(e.getProductId())
 	    						 .append("rawtable")
+	    						 .append(e.getSectionId())
 	    						 .toString();
 	    				 return string;
 	    			 }
