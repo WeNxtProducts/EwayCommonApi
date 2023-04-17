@@ -57,9 +57,12 @@ public class SearchRes {
 	@JsonProperty("QuoteDate")
 	private Date entryDate;
 
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("EffectiveDate")
-	private Date effectiveStartDate;
+	
+	@JsonProperty("Currency")
+    private String  currency;
+	
+	@JsonProperty("ExchangeRate")
+    private String  exchangeRate;
 	    
 /*	    
 	@JsonProperty("CustomerReferenceNo")
@@ -166,12 +169,6 @@ public class SearchRes {
 		
 		@JsonProperty("ApplicationId")
 		private String applicationId;
-		
-		@JsonProperty("Currency")
-	    private String  currency;
-		
-		@JsonProperty("ExchangeRate")
-	    private String  exchangeRate;
 	
 		  
 		@JsonProperty("CustomerId")
