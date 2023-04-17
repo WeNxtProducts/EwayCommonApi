@@ -53,5 +53,7 @@ public class SearchEservieMotorDetailsViewRatingRes {
     private BigDecimal exchangeRate;
     @JsonProperty("Currency")
     private String currency;
+    
+
 
 }

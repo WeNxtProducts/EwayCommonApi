@@ -107,6 +107,13 @@ public class SearchCoverDetails implements Serializable{
 	private BigDecimal diffPremiumIncludedTax;
 	@JsonProperty("DiffPremiumIncludedTaxLC")
 	private BigDecimal diffPremiumIncludedTaxLC;
+	
+	 @JsonProperty("ExcessPercent") 
+	 private BigDecimal excessPercent;
+	 @JsonProperty("ExcessAmount") 
+	 private BigDecimal excessAmount;
+	 @JsonProperty("ExcessDesc") 
+	 private String excessDesc;
 
 
 }

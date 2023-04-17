@@ -104,6 +104,7 @@ import com.maan.eway.common.res.SearchTax;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.BuildingGridService;
+import com.maan.eway.common.service.BuildingSearchService;
 import com.maan.eway.common.service.CommonGridService;
 import com.maan.eway.common.service.GridService;
 import com.maan.eway.common.service.MotorGridService;
@@ -186,7 +187,7 @@ public class SearchServiceImpl implements SearchService {
 	private TravelGridService traService ;
 	
 	@Autowired
-	private BuildingGridService buiService ;
+	private BuildingSearchService buiService ;
 	
 	@Autowired
 	private CommonGridService commonService ;
@@ -345,10 +346,11 @@ public class SearchServiceImpl implements SearchService {
 //			else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 //				list = traService.searchTravelQuote(req, branches);
 //			}
-//			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)) {
-//				list = buiService.searchBuildingQuote(req, branches);
-//
-//			} else {
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)) {
+				list = buiService.searchBuilding(req, branches);
+
+			} 
+//				else {
 //				list = commonService.searchCommonQuote(req, branches);
 //			}
 
@@ -664,7 +666,9 @@ public class SearchServiceImpl implements SearchService {
 					coverRes.setDiffPremiumIncludedTax(filterCover.get(0).getDiffPremiumIncludedTaxFc());
 					coverRes.setPolicyEndDate(filterCover.get(0).getCoverPeriodTo());
 					coverRes.setProRata(filterCover.get(0).getProRataPercent());
-					
+					coverRes.setExcessPercent(filterCover.get(0).getExcessPercent());
+					coverRes.setExcessAmount(filterCover.get(0).getExcessAmount());
+					coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());
 					// Discount Covers Or Promo Covers
 					List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) && (   o.getCoverageType().equalsIgnoreCase("D") || o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
 					
@@ -712,7 +716,9 @@ public class SearchServiceImpl implements SearchService {
 					coverRes.setPremiumIncludedTaxLC(filterCover.get(0).getPremiumIncludedTaxLc()==null?BigDecimal.ZERO :filterCover.get(0).getPremiumIncludedTaxLc());
 					coverRes.setPolicyEndDate(filterCover.get(0).getCoverPeriodTo());
 					coverRes.setProRata(filterCover.get(0).getProRataPercent());
-						
+					coverRes.setExcessPercent(filterCover.get(0).getExcessPercent());
+					coverRes.setExcessAmount(filterCover.get(0).getExcessAmount());
+					coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());
 					List<SearchCoverDetails>  subCoverListRes = new ArrayList<SearchCoverDetails>();
 					List<FactorRateRequestDetails> filterSubCover = covers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());
 					for ( FactorRateRequestDetails subCovers : filterSubCover) {
@@ -735,7 +741,9 @@ public class SearchServiceImpl implements SearchService {
 						subCoverRes.setDiffPremiumIncludedTaxLC(filterSubCover.get(0).getDiffPremiumIncludedTaxLc());
 						subCoverRes.setPolicyEndDate(filterSubCover.get(0).getCoverPeriodTo());
 						subCoverRes.setProRata(filterSubCover.get(0).getProRataPercent());
-						
+						subCoverRes.setExcessPercent(filterSubCover.get(0).getExcessPercent());
+						subCoverRes.setExcessAmount(filterSubCover.get(0).getExcessAmount());
+						subCoverRes.setExcessDesc(filterSubCover.get(0).getExcessDesc());
 						
 						// Discount Covers Or Promo Covers
 						List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> o.getCoverId().equals(subCovers.getCoverId()) && o.getSubCoverId().equals(subCovers.getSubCoverId()) && ( ! o.getDiscLoadId().equals(0)) && (   o.getCoverageType().equalsIgnoreCase("D") || o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
@@ -1196,7 +1204,6 @@ public class SearchServiceImpl implements SearchService {
 
 	@Override
 	public List<DocumentRes> viewDocumentDetails(SearchReq req) {
-		// TODO Auto-generated method stub
 		List<DocumentRes> reslist = new ArrayList<DocumentRes>();
 
 		try {
