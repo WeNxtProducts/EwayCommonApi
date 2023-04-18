@@ -63,6 +63,15 @@ public class SearchRes {
 	
 	@JsonProperty("ExchangeRate")
     private String  exchangeRate;
+	
+	@JsonProperty("GpsTrackingInstalled")
+	private String     gpsTrackingInstalled ;
+
+	@JsonProperty("WindScreenCoverRequired")
+    private String     windScreenCoverRequired ;
+	
+	@JsonProperty("NoOfClaims")
+	 private String    noOfClaims ;
 	    
 /*	    
 	@JsonProperty("CustomerReferenceNo")

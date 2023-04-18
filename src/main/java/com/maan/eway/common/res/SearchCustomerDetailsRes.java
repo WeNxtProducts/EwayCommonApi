@@ -53,6 +53,9 @@ public class SearchCustomerDetailsRes {
 	@JsonProperty("CustomerCode")
 	private String customerCode;
 	
+	@JsonProperty("CustomerCodeName")
+	private String customerName;
+	
 	@JsonProperty("IdType")
 	private String idType;
 
@@ -67,9 +70,9 @@ public class SearchCustomerDetailsRes {
 	
 	@JsonProperty("SourceType")
 	private String sourceType;
-//
-//	@JsonProperty("Source")
-//	private String Source;
+
+	@JsonProperty("Source")
+	private String Source;
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("DobOrRegDate")

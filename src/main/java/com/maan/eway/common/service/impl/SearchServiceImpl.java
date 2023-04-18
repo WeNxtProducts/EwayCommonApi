@@ -61,6 +61,7 @@ import com.maan.eway.bean.MotorVehicleInfo;
 import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
+import com.maan.eway.bean.PremiaCustomerDetails;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.calculator.util.TaxFromFactor;
@@ -134,6 +135,7 @@ import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.MotorVehicleInfoRepository;
 import com.maan.eway.repository.PaymentInfoRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
+import com.maan.eway.repository.PremiaCustomerDetailsRepository;
 import com.maan.eway.req.FactorRateDetailsGetReq;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.CoverRes;
@@ -194,6 +196,9 @@ public class SearchServiceImpl implements SearchService {
 	
 	@Autowired
 	 private PaymentInfoRepository paymentrepo;
+	
+	@Autowired
+	private PremiaCustomerDetailsRepository premiaRepo;
 	
 	@Autowired
 	private EserviceTravelDetailsRepository travelRepo;
@@ -358,11 +363,10 @@ public class SearchServiceImpl implements SearchService {
 			for (Tuple data : list) {
 				SearchRes res = new SearchRes();
 				res = dozermapper.map(data.get(0) , SearchRes.class);	
-//				res.setRequestReferenceNo(data.get(0).get("requestReferenceNo"));
-//				res.setQuoteNo(data.get(0).get("requestReferenceNo"));
 				res.setClientName((data.get("clientName").toString()));
-//				res.setMobileNumber((data.get("mobileNumber").toString()));
-				res.setBranchName(branchName);		
+				res.setMobileNo1((data.get("mobileNumber").toString()));
+				res.setBranchName(branchName);	
+				res.setLoginId(req.getLoginId());
 				//res.setIdsCount(data.get("idsCount")==null?"":data.get("idsCount").toString() );
 				 reslist.add(res);
 			}
@@ -931,8 +935,10 @@ public class SearchServiceImpl implements SearchService {
 			String appId = "";
 			String sourceType="";
 			String coustomerCode="";
+			String customerCodeName="";
+			String source=""; 
 			PersonalInfo list =null;
-		
+			List<PremiaCustomerDetails> premiadata =null;
 			// Product Wise Get
 			if (req.getProductId().equalsIgnoreCase(motorProductId)) {
 				if (StringUtils.isNotBlank(req.getRequestReferenceNo())) {
@@ -941,12 +947,19 @@ public class SearchServiceImpl implements SearchService {
 					customerId = homelist.get(0).getCustomerId();
 					}
 					List<EserviceMotorDetails> motor=repo.findByCustomerId(customerId);
-					if(motor.size()>0) {
-					 sourceType=motor.get(0).getSourceType();
-					 coustomerCode=motor.get(0).getCustomerCode();
-					 loginId=motor.get(0).getLoginId();
-					 appId=motor.get(0).getApplicationId();
+					if (motor.size() > 0) {
+						sourceType = motor.get(0).getSourceType();
+						coustomerCode = motor.get(0).getCustomerCode();
+						loginId = motor.get(0).getLoginId();
+						appId = motor.get(0).getApplicationId();
+						//if ("Agent".equalsIgnoreCase( motor.get(0).getSourceType())||"Direct".equalsIgnoreCase( motor.get(0).getSourceType())) {
+						source= motor.get(0).getLoginId();
+						premiadata = premiaRepo.findByCustomerCode(coustomerCode);
+						if (premiadata.size() > 0) {
+							customerCodeName=premiadata.get(0).getCustomerName();
+						}
 					}
+					
 					 list = perRepo.findByCustomerId(customerId);
 					 
 //					list = motService.searchCutomerDetails(searchKey, searchValue, companyId, loginId, userType,
@@ -965,6 +978,11 @@ public class SearchServiceImpl implements SearchService {
 							 coustomerCode=motor.get(0).getCustomerCode();
 							 loginId=motor.get(0).getLoginId();
 							 appId=motor.get(0).getApplicationId();
+							 source= motor.get(0).getLoginId();
+							 premiadata = premiaRepo.findByCustomerCode(coustomerCode);
+							 if (premiadata.size() > 0) {
+									customerCodeName=premiadata.get(0).getCustomerName();
+								}
 						}
 					 list = perRepo.findByCustomerId(homeData.getCustomerId());
 				//	SearchCustomerDetailsRes custRes = new SearchCustomerDetailsRes();
@@ -979,14 +997,15 @@ public class SearchServiceImpl implements SearchService {
 //			for (PersonalInfo data : list) {
 				SearchCustomerDetailsRes res = new SearchCustomerDetailsRes();
 				res = dozerMapper.map(list,SearchCustomerDetailsRes.class);	
-				res.setLoginId(loginId);
+				res.setLoginId(req.getLoginId());
 				res.setApplicationId(req.getApplicationId());
 				res.setCustomerCode(coustomerCode);
+				res.setCustomerName(customerCodeName);	
 				res.setSourceType(sourceType);
-				res.setApplicationId(appId);
-				res.setLoginId(loginId);
 				res.setBranchCode(list.getBranchCode().toString());
+				res.setSource(source);
 				reslist.add(res);
+				
 //			}
 
 		} catch (Exception e) {

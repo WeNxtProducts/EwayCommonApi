@@ -230,7 +230,7 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 				Expression<String> e0 = c.get("brokerBranchCode");
 				n4 = e0.in(branches);
 			}
-			if (searchKey.equalsIgnoreCase("ClientName")) {
+			if (searchKey.equalsIgnoreCase("CustomerName")) {
 				if ("issuer".equalsIgnoreCase(userType)) {
 
 					Expression<String> e0 = cus.get("branchCode");
