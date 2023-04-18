@@ -210,8 +210,8 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 							 endorsement.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscountLC().subtract(endorsement.getPremiumBeforeDiscountLC()));
 							 endorsement.setPremiumBeforeDiscount(t.getPremiumBeforeDiscount().subtract(endorsement.getPremiumBeforeDiscount()));
 							 
-							 endorsement.setPremiumExcluedTax(t.getPremiumExcluedTax().subtract(endorsement.getPremiumExcluedTax()));
-							 endorsement.setPremiumExcluedTaxLC(t.getPremiumExcluedTaxLC().subtract(endorsement.getPremiumExcluedTaxLC()));
+							 endorsement.setPremiumExcluedTax(t.getPremiumExcluedTax().subtract(endorsement.getPremiumExcluedTax()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
+							 endorsement.setPremiumExcluedTaxLC(t.getPremiumExcluedTaxLC().subtract(endorsement.getPremiumExcluedTaxLC()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
 							 
 					 	}
 					 
