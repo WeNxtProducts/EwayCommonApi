@@ -34,7 +34,7 @@ public class SearchRes {
 	private String status;
 
 	@JsonProperty("MobileNumber")
-	private String mobileNumber;
+	private String mobileNo1;
 
 	@JsonProperty("PolicyType")
 	private String policyTypeDesc;

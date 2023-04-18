@@ -34,7 +34,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
+import com.maan.eway.bean.EserviceBuildingDetails;
+import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.common.req.SearchReq;
 
 import com.maan.eway.common.service.BuildingSearchService;
@@ -113,8 +115,154 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 
 	@Override
 	public List<Tuple> searchBuilding(SearchReq req, List<String> branches) {
-		// TODO Auto-generated method stub
-		return null;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		List<Tuple> searchQuote = new ArrayList<Tuple>();
+		try {
+			// Search
+			String searchKey = req.getSearchKey();
+			String searchValue = req.getSearchValue();
+			String companyId = req.getInsuranceId();
+			String loginId = req.getLoginId();
+			String userType = req.getUserType();
+
+			if ("RequestReferenceNo".equalsIgnoreCase(searchKey)) {
+				searchQuote = searchBuildingDetails(searchKey, searchValue, companyId, loginId, userType, branches);
+			} else if ("CustomerReferenceNo".equalsIgnoreCase(searchKey)) {
+				searchQuote = searchBuildingDetails(searchKey, searchValue, companyId, loginId, userType, branches);
+			} else if ("ClientName".equalsIgnoreCase(searchKey)) {
+				searchQuote = searchBuildingDetails(searchKey, searchValue, companyId, loginId, userType, branches);
+			} else if ("QuoteNumber".equalsIgnoreCase(searchKey)) {
+				searchQuote = searchBuildingDetails(searchKey, searchValue, companyId, loginId, userType, branches);
+			} else if ("RegistrationNumber".equalsIgnoreCase(searchKey)) {
+				searchQuote = searchBuildingDetails(searchKey, searchValue, companyId, loginId, userType, branches);
+			} else if ("EntryDate".equalsIgnoreCase(searchKey)) {
+			//	Date entryDate = sdf.parse(searchValue);
+			//	searchValue = sdf.format(entryDate);
+				searchQuote = searchBuildingDetails(searchKey, searchValue, companyId, loginId, userType, branches);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return searchQuote;
 	}
 
+	@Override
+	public List<Tuple> searchBuildingDetails(String searchKey, String searchValue, String companyId, String loginId,
+			String userType, List<String> branches) {
+		// TODO Auto-generated method stub
+		List<Tuple> customerDetailsList = new ArrayList<Tuple>();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		try {
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+			Root<EserviceBuildingDetails> c = query.from(EserviceBuildingDetails.class);
+			Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
+			
+			query.multiselect(c.alias("c"),
+					cus.get("clientName").alias("clientName"),cb.count(c).alias("idsCount"));
+
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("customerReferenceNo")));
+
+			Predicate n1 = null;
+			Predicate n3 = null;
+			Predicate n4 = null;
+			Predicate n5 = null;
+	
+
+			// Where
+			if (searchKey.equalsIgnoreCase("RequestReferenceNo")) {
+				n1 = cb.equal(cb.lower(c.get("requestReferenceNo")), searchValue);
+			} else if (searchKey.equalsIgnoreCase("CustomerReferenceNo")) {
+				n1 = cb.equal(cb.lower(c.get("customerReferenceNo")), searchValue);
+			} else if (searchKey.equalsIgnoreCase("RegistrationNumber")) {
+				n1 = cb.equal(cb.lower(c.get("registrationNumber")), searchValue);
+			} else if (searchKey.equalsIgnoreCase("QuoteNumber")) {
+				n1 = cb.equal(cb.lower(c.get("quoteNo")), searchValue);
+			} else if (searchKey.equalsIgnoreCase("EntryDate")) {
+				Date entryDate = sdf.parse(searchValue);
+				Calendar cal = new GregorianCalendar();
+				cal.setTime(entryDate);
+				//cal.add(Calendar.HOUR , -1);
+				cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
+				Date startDate = cal.getTime() ;
+				cal.setTime(entryDate);
+			//	cal.add(Calendar.HOUR , +23);
+				cal.add(Calendar.DAY_OF_MONTH, 0);cal.set(Calendar.HOUR_OF_DAY,23 );cal.set(Calendar.MINUTE, 59);
+				Date endDate = cal.getTime() ;
+				n1=cb.between(c.get("entryDate"), startDate, endDate);
+				
+			}
+			
+			else if (searchKey.equalsIgnoreCase("ClientName")) {
+				n1 = cb.like(cb.lower(cus.get("clientName")), "%" + searchValue + "%");
+				n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
+			}
+
+			Predicate n2 = cb.equal(c.get("companyId"), companyId);
+
+			if ("issuer".equalsIgnoreCase(userType)) {
+				n3 = cb.equal(c.get("applicationId"), loginId);
+				Expression<String> e0 = c.get("branchCode");
+				n4 = e0.in(branches);
+			} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
+				n3 = cb.equal(c.get("loginId"), loginId);
+				Expression<String> e0 = c.get("brokerBranchCode");
+				n4 = e0.in(branches);
+			}
+			if (searchKey.equalsIgnoreCase("ClientName")) {
+				if ("issuer".equalsIgnoreCase(userType)) {
+
+					Expression<String> e0 = cus.get("branchCode");
+					n4 = e0.in(branches);
+				} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
+
+					Expression<String> e0 = cus.get("brokerBranchCode");
+					n4 = e0.in(branches);
+				}
+			}
+			n5 = cb.equal(cus.get("customerReferenceNo"), c.get("customerReferenceNo"));
+		//	Predicate n6 = cb.isNull(c.get("endtTypeId"));
+			query.where(n1,n2,n3,n4,n5)
+			.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),
+					c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
+					c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
+					c.get("rejectReason"),c.get("riskId"),c.get("insuranceType"))
+			.orderBy(orderList);
+			if (searchKey.equalsIgnoreCase("ClientName")) {
+				query.where(n1, n2,n4,n5)
+				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),
+						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
+						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
+						c.get("rejectReason"),c.get("riskId"),c.get("insuranceType"))
+				.orderBy(orderList);
+			}
+			if (searchKey.equalsIgnoreCase("EntryDate")) {
+				query.where(n1,n2,n3,n4)
+				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),
+						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
+						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
+						c.get("rejectReason"),c.get("riskId"),c.get("insuranceType"))
+				.orderBy(orderList);
+			}
+
+			// Get Result
+			TypedQuery<Tuple> result = em.createQuery(query);
+			customerDetailsList = result.getResultList();
+			customerDetailsList = customerDetailsList.stream().filter(o -> !o.get("idsCount").equals(0L))
+					.collect(Collectors.toList());
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
 		}
+		return customerDetailsList;
+	}
+	}
+		

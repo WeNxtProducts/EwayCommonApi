@@ -342,14 +342,15 @@ public class SearchServiceImpl implements SearchService {
 			if (req.getProductId().equalsIgnoreCase(motorProductId)) {
 				list = motService.adminSearchMotorQuote(req, branches);
 
-			}
+		}
 //			else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 //				list = traService.searchTravelQuote(req, branches);
 //			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)) {
-				list = buiService.searchBuilding(req, branches);
-
-			} 
+		    else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)) {
+			list = buiService.searchBuilding(req, branches);
+		}
+//
+	//		} 
 //				else {
 //				list = commonService.searchCommonQuote(req, branches);
 //			}
@@ -360,7 +361,7 @@ public class SearchServiceImpl implements SearchService {
 //				res.setRequestReferenceNo(data.get(0).get("requestReferenceNo"));
 //				res.setQuoteNo(data.get(0).get("requestReferenceNo"));
 				res.setClientName((data.get("clientName").toString()));
-				res.setMobileNumber((data.get("mobileNumber").toString()));
+//				res.setMobileNumber((data.get("mobileNumber").toString()));
 				res.setBranchName(branchName);		
 				//res.setIdsCount(data.get("idsCount")==null?"":data.get("idsCount").toString() );
 				 reslist.add(res);
