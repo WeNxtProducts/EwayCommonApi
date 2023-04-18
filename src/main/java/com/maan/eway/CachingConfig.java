@@ -33,7 +33,8 @@ public class CachingConfig   {
 	        b->b.name("EndtMasterData").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
 	        b->b.name("getCachedRatingFields").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
 	        b->b.name("loadfactorOnlyquery").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
-	        b->b.name("countfactorOnlyquery").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false)
+	        b->b.name("countfactorOnlyquery").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
+	        b->b.name("currencyDecimalFormat").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false)
 	        
 	        );
 		
@@ -159,6 +160,7 @@ public class CachingConfig   {
 	    						 .append(params[1])
 	    						 .append(params[2])
 	    						 .append("EndtTable")
+	    						 .append(DD_MM_YYYY.format(new Date()))
 	    						 .toString();
 	    				 return string;
 	    			 }
@@ -236,5 +238,23 @@ public class CachingConfig   {
 
 		    		};
 		    	}
-	    	 
+	    	 	@Bean
+		    	public KeyGenerator currencyDecimalFormatKeyGen() {
+
+		    		return new KeyGenerator() {
+		    			@Override
+		    			public Object generate(Object target, Method method, Object... params) {
+		    				String e=(String)params[0];
+		    				String r=(String)params[1];
+		    				
+		    				String string = new StringBuilder().append(e)
+		    						.append(r)		    						
+		    						.append(DD_MM_YYYY.format(new Date()))
+		    						.toString();
+		    				return string;
+		    			}
+
+		    		};
+		    	
+	    	 	}
 }

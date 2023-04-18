@@ -47,7 +47,7 @@ public class TaxCalculator   implements Consumer<Tax> {
 		 	
 		 if(t.getIsTaxExempted().equals("N"))
 				 domath= calc.domath(calctype, t.getTaxRate(), premium,exchangeRate);
-		 t.setTaxAmount(domath.setScale(calc.round.getPrecision(),RoundingMode.HALF_UP));
+		 t.setTaxAmount(domath);
 		  
 	 }catch (Exception e) {
 		 e.printStackTrace();

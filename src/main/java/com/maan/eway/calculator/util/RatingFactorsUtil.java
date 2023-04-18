@@ -2,7 +2,9 @@ package com.maan.eway.calculator.util;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +13,13 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.persistence.Tuple;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.tomcat.util.buf.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +30,7 @@ import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CompanyProrataMaster;
 import com.maan.eway.bean.CompanyTaxSetup;
 import com.maan.eway.bean.ConstantTableDetails;
+import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.DropdownTableDetails;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.FactorRateMaster;
@@ -412,5 +422,25 @@ public class RatingFactorsUtil {
 			 e.printStackTrace();
 		 }
 		return null;
+	}
+	@Cacheable(cacheNames= {"currencyDecimalFormat"},keyGenerator  = "currencyDecimalFormatKeyGen",value = "currencyDecimalFormat")
+	public String currencyDecimalFormat(String insuranceId, String currencyId) {
+
+		String decimalFormat = "0" ;
+		try {
+			
+			String todayInString = DD_MM_YYYY.format(new Date());
+			String search="companyId:"+insuranceId+";currencyId:"+currencyId+";status=Y;"+todayInString+"effectiveDateStart&effectiveDateEnd;";
+			SpecCriteria criteria = crservice.createCriteria(CurrencyMaster.class, search, "amendId");
+			List<Tuple> currencies = crservice.getResult(criteria, 0, 50);
+			if(currencies!=null && currencies.size()>0) {
+				decimalFormat = currencies.get(0).get("decimalDigit")==null?"0":currencies.get(0).get("decimalDigit").toString();
+			}		 		
+			
+		} catch (Exception e) {
+			e.printStackTrace(); 			
+		}
+		return decimalFormat;
+	
 	}
 }

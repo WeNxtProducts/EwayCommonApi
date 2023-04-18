@@ -3,6 +3,8 @@ package com.maan.eway.calculator.util;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,7 +42,7 @@ public class CommonCalculator {
 	
 	protected SimpleDateFormat DD_MM_YYYY = new SimpleDateFormat("dd/MM/yyyy")  ;
 	
-	protected MathContext round=new MathContext(3, RoundingMode.HALF_UP);
+	//protected MathContext round=new MathContext(3, RoundingMode.HALF_UP);
 	protected CalcEngine engine;
 	
 	protected String cdRefno;
@@ -51,14 +53,15 @@ public class CommonCalculator {
 	protected List<Tuple> customers =null;
 	protected List<Cover> calculatedcover=null;
 	protected List<Tuple> prorata=null;
-	 
+	
+	protected DecimalFormat decimalFormat = null;
 
 	/*public void setEngine(CalcEngine engine,List<Cover> c) {
 		this.engine = engine;
 		this.calculatedcover=c;
 	}
 	*/
-	public void setEngine(CalcEngine engine,List<Cover> c,List<Tuple> result,List<Tuple> vehicles,List<Tuple> customers,List<Tuple> prorata, RatingFactorsUtil crservice) {
+	public void setEngine(CalcEngine engine,List<Cover> c,List<Tuple> result,List<Tuple> vehicles,List<Tuple> customers,List<Tuple> prorata, RatingFactorsUtil crservice,DecimalFormat decimalFormat) {
 		this.engine = engine;
 		this.calculatedcover=c;
 		this.result=result;
@@ -66,6 +69,9 @@ public class CommonCalculator {
 		this.customers=customers;
 		this.prorata=prorata;
 		this.crservice=crservice;
+		this.decimalFormat=decimalFormat;
+		this.decimalFormat.setParseBigDecimal(true);
+		
 	}
 	
 	public List<Tuple> LoadFactorRates(CalcEngine engine,String coverId,String factorid,String vehicleId, String subCoverId){
@@ -148,28 +154,31 @@ public class CommonCalculator {
 		return null;
 	}
 
-	protected BigDecimal domath(String calctype, Double rate,BigDecimal si,BigDecimal exchangeRate) {
+	protected BigDecimal domath(String calctype, Double rate,BigDecimal si,BigDecimal exchangeRate) throws ParseException {
 		BigDecimal d=BigDecimal.ZERO;
 		if("P".equals(calctype)) {
 			d = si.multiply(new BigDecimal(rate/100)/*, round*/);			
 		 }else if("A".equals(calctype)) {
-			d=(new BigDecimal(rate).divide(exchangeRate,round));// for foreign currency calculation we have to divide by exchange rate			
+			d=(new BigDecimal(rate).divide(exchangeRate));// for foreign currency calculation we have to divide by exchange rate			
 		 }else if("M".equals(calctype)) {
 			 d = si.multiply(new BigDecimal(rate/1000)/*, round*/);			
 		 }
+		d = (BigDecimal) decimalFormat.parse(decimalFormat.format(d));
 		return d;
 	}
 	
-	protected BigDecimal domathTira(String calctype, Double rate,BigDecimal premium,BigDecimal exchangeRate) {
+	protected BigDecimal domathTira(String calctype, Double rate,BigDecimal premium,BigDecimal exchangeRate) throws ParseException {
 		BigDecimal d=BigDecimal.ZERO;
 		//(3500/4)*100
 		if("P".equals(calctype)) {
-			d = premium.divide(new BigDecimal(rate) , round).multiply(new BigDecimal(100), round); ///multiply(new BigDecimal(rate/100), round);			
+			d = premium.divide(new BigDecimal(rate),3, RoundingMode.HALF_UP ).multiply(new BigDecimal(100)); ///multiply(new BigDecimal(rate/100), round);			
 		 }else if("A".equals(calctype)) {
 			d=(new BigDecimal(rate));			
 		 }else if("M".equals(calctype)) {
-			 d = premium.divide(new BigDecimal(rate), round).multiply(new BigDecimal(1000), round);			
+			 d = premium.divide(new BigDecimal(rate)).multiply(new BigDecimal(1000));			
 		 }
+		
+		d = (BigDecimal) decimalFormat.parse(decimalFormat.format(d));
 		return d;
 	}
 }

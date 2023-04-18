@@ -2,6 +2,7 @@ package com.maan.eway.service.impl;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -120,7 +121,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 	@Autowired
 	private GenerateSeqNoServiceImpl genNo;
 	
-	
+	DecimalFormat decimalFormat=null;
 	@Autowired
 	private PolicyCoverDataRepository coverDataRepo;
 	/*public void LoadSection(CalcEngine engine) {
@@ -345,7 +346,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 				 } */
 				 
 				 CoverCalculator calc=new CoverCalculator();
-				 calc.setEngine(engine,retc,commontbl,vehicles,customers,prorata,ratingutil);
+				 calc.setEngine(engine,retc,commontbl,vehicles,customers,prorata,ratingutil,decimalFormat);
 				 
 				 totalcovers.stream().forEach(calc);
 				 //remove error records
@@ -746,7 +747,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 					 
 					 
 					 EndtCoverCalculator calc=new EndtCoverCalculator();
-					 calc.setEngine(request,retc,commontbl,vehicles,customers,prorata,ratingutil,request.getEffectiveDate());
+					 calc.setEngine(request,retc,commontbl,vehicles,customers,prorata,ratingutil,request.getEffectiveDate(),decimalFormat);
 					 
 					 totalcovers.stream().filter(t-> "Y".equals(t.getStatus())) .forEach(calc);
 					 //remove error records
@@ -870,7 +871,18 @@ public class CalculatorEngineService implements CalculatorEngine{
 			 if(vehicles!=null && vehicles.size()>0) {
 				 String periodOfInsurance=(vehicles.get(0).get("periodOfInsurance")==null?"365":vehicles.get(0).get("periodOfInsurance").toString());
 				  prorata = ratingutil.loadProRataData(engine, periodOfInsurance);
+				  
+				  
+				    String currencyId =vehicles.get(0).get("currency")==null?"TTT":vehicles.get(0).get("currency").toString();	
+					String decimalDigits = ratingutil.currencyDecimalFormat(engine.getInsuranceId() , currencyId );
+					String stringFormat = "%0"+decimalDigits+"d" ;
+					String decimalLength = decimalDigits.equals("0") ?"" : String.format(stringFormat ,0L)  ;
+					String pattern = StringUtils. isBlank(decimalLength) ?  "#####0" :   "#####0." + decimalLength;
+					decimalFormat=new DecimalFormat(pattern);
 			  }
+			 
+			 
+			 
 		}
 		
 		
@@ -1011,7 +1023,7 @@ public class CalculatorEngineService implements CalculatorEngine{
 					 
 					// CoverCalculator calc=new CoverCalculator();
 					 AdminCoverCalculator calc=new AdminCoverCalculator();
-					 calc.setEngine(request,retc,commontbl,vehicles,customers,prorata,ratingutil);
+					 calc.setEngine(request,retc,commontbl,vehicles,customers,prorata,ratingutil,decimalFormat);
 					 
 					 totalcovers.stream().forEach(calc);
 					 //remove error records
