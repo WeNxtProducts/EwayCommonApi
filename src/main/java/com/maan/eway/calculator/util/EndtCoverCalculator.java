@@ -92,12 +92,13 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 				 t.setPremiumExcluedTax(t.getPremiumAfterDiscount());
 				 t.setPremiumExcluedTaxLC(t.getPremiumExcluedTax().multiply(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
 				 // Minimium Premium setup.
-				 /*t.setMinimumPremiumYn("N");
+				 
+				 t.setMinimumPremiumYn("N");
 				 if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0) {
 					 t.setPremiumExcluedTax(t.getMinimumPremium().divide(t.getExchangeRate()).setScale(round.getPrecision(),RoundingMode.HALF_UP)); 
 					 t.setPremiumExcluedTaxLC(t.getMinimumPremium());
 					 t.setMinimumPremiumYn("Y");
-				 }	*/	 
+				 }		 
 				 Double totaltax=0D;
 				 if(t.getTaxes()!=null && t.getTaxes().size()>0) {
 					 TaxCalculator tcal=new TaxCalculator(t.getPremiumExcluedTax(),t.getExchangeRate(),this,customers.get(0));
