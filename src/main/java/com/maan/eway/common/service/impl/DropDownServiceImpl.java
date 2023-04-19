@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.CompanyCityMaster;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CompanyRegionMaster;
@@ -1910,12 +1911,12 @@ public class DropDownServiceImpl  implements DropDownService{
 				try {
 					DropDownRes res = new DropDownRes();
 				//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
-					LoginProductMaster loginProduct  = getBrokerProduct(req.getInsuranceId() ,req.getProductId() ,req.getLoginId() );
+					BrokerCommissionDetails loginProduct  = getBrokerProduct(req.getInsuranceId() ,req.getProductId() ,req.getLoginId() );
 					
 					if(loginProduct !=null ) {
 						BigDecimal suminsured = StringUtils.isNotBlank(req.getSumInsured()) ? new BigDecimal(req.getSumInsured()) : BigDecimal.ZERO ;
-						BigDecimal suminsuredStart = loginProduct.getSumInsuredStart();
-						BigDecimal suminsuredEnd = loginProduct.getSumInsuredEnd();
+						BigDecimal suminsuredStart = loginProduct.getSuminsuredStart();
+						BigDecimal suminsuredEnd = loginProduct.getSuminsuredEnd();
 						boolean referal = false ;
 						String desc = "" ;
 						
@@ -1955,8 +1956,8 @@ public class DropDownServiceImpl  implements DropDownService{
 				return resList;
 			}
 
-	public synchronized LoginProductMaster getBrokerProduct(String insuranceId , String productId , String loginId) {
-		LoginProductMaster loginProduct = new LoginProductMaster(); 
+	public synchronized BrokerCommissionDetails getBrokerProduct(String insuranceId , String productId , String loginId) {
+		BrokerCommissionDetails loginProduct = new BrokerCommissionDetails(); 
 		try {
 			Date today  = new Date();
 			Calendar cal = new GregorianCalendar(); 
@@ -1971,11 +1972,11 @@ public class DropDownServiceImpl  implements DropDownService{
 			
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<LoginProductMaster> query = cb.createQuery(LoginProductMaster.class);
-			List<LoginProductMaster> list = new ArrayList<LoginProductMaster>();
+			CriteriaQuery<BrokerCommissionDetails> query = cb.createQuery(BrokerCommissionDetails.class);
+			List<BrokerCommissionDetails> list = new ArrayList<BrokerCommissionDetails>();
 			
 			// Find All
-			Root<LoginProductMaster>    c = query.from(LoginProductMaster.class);		
+			Root<BrokerCommissionDetails>    c = query.from(BrokerCommissionDetails.class);		
 			
 			// Select
 			query.select(c );
@@ -1983,11 +1984,11 @@ public class DropDownServiceImpl  implements DropDownService{
 		
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("productName")));
+			orderList.add(cb.asc(c.get("productId")));
 			
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<LoginProductMaster> ocpm1 = effectiveDate.from(LoginProductMaster.class);
+			Root<BrokerCommissionDetails> ocpm1 = effectiveDate.from(BrokerCommissionDetails.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
 			Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
@@ -1997,7 +1998,7 @@ public class DropDownServiceImpl  implements DropDownService{
 			
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
-			Root<LoginProductMaster> ocpm2 = effectiveDate2.from(LoginProductMaster.class);
+			Root<BrokerCommissionDetails> ocpm2 = effectiveDate2.from(BrokerCommissionDetails.class);
 			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
 			Predicate a5 = cb.equal(c.get("productId"),ocpm2.get("productId") );
 			Predicate a6 = cb.equal(c.get("companyId"),ocpm2.get("companyId") );
@@ -2018,7 +2019,7 @@ public class DropDownServiceImpl  implements DropDownService{
 			query.where(n12,n2,n3,n4,n5,n7).orderBy(orderList);
 			
 			// Get Result
-			TypedQuery<LoginProductMaster> result = em.createQuery(query);			
+			TypedQuery<BrokerCommissionDetails> result = em.createQuery(query);			
 			list =  result.getResultList(); 
 			loginProduct = list.size()>0 ? list.get(0) : null ; 
 			
