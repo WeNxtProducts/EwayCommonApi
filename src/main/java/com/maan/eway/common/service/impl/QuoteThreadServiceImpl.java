@@ -576,7 +576,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							List<FactorRateRequestDetails> filterReferalCovers = filterCovers.stream().filter( o ->  o.getVehicleId().equals(veh.getVehicleId()) && o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) && o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&  o.getIsReferral()!=null && o.getIsReferral().equalsIgnoreCase("Y") ).collect(Collectors.toList());
 							if(filterReferalCovers.size()>0 ) { 
 							
-								referrals = StringUtils.isBlank(referrals)? filterReferalCovers.get(0).getCoverName() : referrals +"~" +filterReferalCovers.get(0).getCoverName() ;
+								referrals = StringUtils.isBlank(referrals)? filterReferalCovers.get(0).getCoverName()  : referrals ;// +"~" +filterReferalCovers.get(0).getCoverName() ;
 								referral = true ;
 							}
 						
@@ -585,7 +585,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							userOptCovers.addAll(filterSubCovers);
 							List<FactorRateRequestDetails> filterReferalSubCovers = filterSubCovers.stream().filter( o ->  o.getVehicleId().equals(veh.getVehicleId()) &&  o.getCoverId().equals(cov.getCoverId()) &&  o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0) &&   o.getIsReferral()!=null && o.getIsReferral().equalsIgnoreCase("Y")  ).collect(Collectors.toList());
 							if(filterReferalSubCovers.size()>0  ) { 
-								referrals = StringUtils.isBlank(referrals)? filterReferalSubCovers.get(0).getCoverName() : referrals +"~" +filterReferalSubCovers.get(0).getCoverName() ;
+								referrals = StringUtils.isBlank(referrals)? filterReferalSubCovers.get(0).getCoverName() : referrals ;// +"~" +filterReferalSubCovers.get(0).getCoverName() ;
 								referral = true ;
 							}
 						}
@@ -599,7 +599,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					if (  filterMasterReferals!=null && filterMasterReferals.size()>0 ) {
 						for ( MasterReferralDetails masRef : filterMasterReferals) {
 							if(! masRef.getReferralDesc().contains("Exception")) {
-								referrals = StringUtils.isBlank(referrals)? masRef.getReferralDesc() : referrals +"~" +masRef.getReferralDesc() ;
+								referrals = StringUtils.isBlank(referrals)? masRef.getReferralDesc() : referrals ;// +"~" +masRef.getReferralDesc() ;
 								referral = true ;	
 							}
 							
@@ -638,7 +638,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			
 			if (  referral == true ) {
 					String otherReferals  =  StringUtils.isBlank(manualRemarks) ? "" : manualRemarks ;
-					otherReferals = StringUtils.isBlank(uwRemarks) ? otherReferals : uwRemarks + ( StringUtils.isNotBlank(otherReferals) ?  "~" +otherReferals :"")  ;
+					otherReferals = StringUtils.isBlank(uwRemarks) ? otherReferals : uwRemarks ;//+ ( StringUtils.isNotBlank(otherReferals) ?  "~" +otherReferals :"")  ;
 					referralRemarks = otherReferals ;
 					
 					if ( req.getProductId().equalsIgnoreCase(motorProductId)) {
@@ -648,8 +648,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							mot.setStatus("RP");
 							List<IndividualReferalReq> filterInduRef = induRefs.stream().filter( o -> o.getRiskId().equals(mot.getRiskId()) ).collect(Collectors.toList()) ;
 							String induRefDesc  = filterInduRef.size()> 0 ?  filterInduRef.get(0).getReferals() : "" ;
-							String induRefDesc3  = StringUtils.isBlank(otherReferals) ? induRefDesc : otherReferals + ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"")  ;
-							referralRemarks = StringUtils.isBlank(referralRemarks) ? induRefDesc : referralRemarks + ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"") ;
+							String induRefDesc3  = StringUtils.isBlank(otherReferals) ? induRefDesc : otherReferals;// + ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"")  ;
+							referralRemarks = StringUtils.isBlank(referralRemarks) ? induRefDesc : referralRemarks;// + ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"") ;
 							
 							mot.setReferalRemarks(induRefDesc3) ;
 							mot.setUpdatedDate(new Date());
@@ -662,8 +662,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						EserviceTravelDetails travelData = eserTraRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
 						List<IndividualReferalReq> filterInduRef = induRefs.stream().filter( o -> o.getRiskId().equals(travelData.getRiskId()) ).collect(Collectors.toList()) ;
 						String induRefDesc  = filterInduRef.size()> 0 ?  filterInduRef.get(0).getReferals() : "" ;
-						String induRefDesc3  = StringUtils.isBlank(otherReferals) ? induRefDesc : otherReferals + ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"")  ;
-						referralRemarks = StringUtils.isBlank(referralRemarks) ? induRefDesc : referralRemarks + ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"") ;
+						String induRefDesc3  = StringUtils.isBlank(otherReferals) ? induRefDesc : otherReferals;// + ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"")  ;
+						referralRemarks = StringUtils.isBlank(referralRemarks) ? induRefDesc : referralRemarks ;//+ ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"") ;
 						
 						travelData.setReferalRemarks(induRefDesc3) ;
 						travelData.setStatus("RP");
@@ -678,8 +678,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						for (EserviceBuildingDetails build : buildingDatas ) {
 							List<IndividualReferalReq> filterInduRef = induRefs.stream().filter( o -> o.getRiskId().equals(build.getRiskId()) &&   StringUtils.isNotBlank(o.getReferals())   ).collect(Collectors.toList()) ;
 							String induRefDesc  = filterInduRef.size()> 0 ?  filterInduRef.get(0).getReferals() : "" ;
-							String induRefDesc3  = StringUtils.isBlank(otherReferals) ? induRefDesc : otherReferals + ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"")  ;
-							referralRemarks = StringUtils.isBlank(referralRemarks) ? induRefDesc : referralRemarks + ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"") ;
+							String induRefDesc3  = StringUtils.isBlank(otherReferals) ? induRefDesc : otherReferals ;//+ ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"")  ;
+							referralRemarks = StringUtils.isBlank(referralRemarks) ? induRefDesc : referralRemarks;// + ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"") ;
 							
 							build.setReferalRemarks(induRefDesc3) ;
 							build.setStatus("RP");
@@ -695,8 +695,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						for (EserviceCommonDetails commonData : commonDatas ) {
 							List<IndividualReferalReq> filterInduRef = induRefs.stream().filter( o -> o.getRiskId().equals(commonData.getRiskId()) ).collect(Collectors.toList()) ;
 							String induRefDesc  = filterInduRef.size()> 0 ?  filterInduRef.get(0).getReferals() : "" ;
-							String induRefDesc3  = StringUtils.isBlank(otherReferals) ? induRefDesc : otherReferals + ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"")  ;
-							referralRemarks = StringUtils.isBlank(referralRemarks) ? induRefDesc : referralRemarks + ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"") ;
+							String induRefDesc3  = StringUtils.isBlank(otherReferals) ? induRefDesc : otherReferals ;//+ ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"")  ;
+							referralRemarks = StringUtils.isBlank(referralRemarks) ? induRefDesc : referralRemarks;// + ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"") ;
 							
 							commonData.setStatus("RP");
 							commonData.setReferalRemarks(induRefDesc3) ;

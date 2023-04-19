@@ -44,4 +44,11 @@ public interface MasterReferralDetailsRepository  extends JpaRepository<MasterRe
 	Long countByRequestReferenceNoAndRiskIdAndProductIdAndSectionIdAndCompanyId(String requestReferenceNo,
 			Integer valueOf, Integer valueOf2, Integer valueOf3, String insuranceId);
 
+
+	Long countByRequestReferenceNoAndRiskIdAndProductIdAndSectionIdNotIn(String requestReferenceNo, Integer valueOf,
+			Integer productId, List<Integer> sectionIds);
+
+	void deleteByRequestReferenceNoAndRiskIdAndProductIdAndSectionIdNotIn(String requestReferenceNo, Integer valueOf,
+			Integer productId, List<Integer> sectionIds);
+
 }

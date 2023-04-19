@@ -120,6 +120,8 @@ private MasterReferralDetailsRepository masReferralRepo;
 @Autowired
 private UwQuestionsDetailsRepository uwReferalRepo;
 
+
+
 @Value(value = "${motor.productId}")
 private String motorProductId;
 
@@ -636,12 +638,25 @@ this.repository = repo;
 			
 			// Save Master Referals
 			if(req.getReferals()!=null && req.getReferals().size()>0 ) {
+				
 				Long refCount  = masReferralRepo.countByRequestReferenceNoAndRiskIdAndProductIdAndSectionIdAndCompanyId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()) ,
-						                      Integer.valueOf(req.getProductId()),Integer.valueOf(req.getSectionId()),req.getInsuranceId() );
+	                      Integer.valueOf(req.getProductId()),Integer.valueOf(req.getSectionId()),req.getInsuranceId() );
 				if(refCount!=null && refCount > 0 ) {
 					masReferralRepo.deleteByRequestReferenceNoAndRiskIdAndProductIdAndSectionIdAndCompanyId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()) ,
-		                      Integer.valueOf(req.getProductId()),Integer.valueOf(req.getSectionId()),req.getInsuranceId() );
+				            Integer.valueOf(req.getProductId()),Integer.valueOf(req.getSectionId()),req.getInsuranceId() );
 				}
+				
+				// Remove non selected Section Master Referal		
+				List<EserviceSectionDetails> sectionDetails = eserSecRepo.findByRequestReferenceNoAndRiskIdAndProductIdOrderBySectionIdAsc(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()) , req.getProductId());
+				
+				List<Integer> sectionIds = new ArrayList<Integer>();
+				sectionDetails.forEach( o -> sectionIds.add(Integer.valueOf(o.getSectionId())) );
+				
+				refCount  = masReferralRepo.countByRequestReferenceNoAndRiskIdAndProductIdAndSectionIdNotIn(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()) , Integer.valueOf(req.getProductId()),sectionIds);
+				if(refCount!=null && refCount > 0 ) {
+					masReferralRepo.deleteByRequestReferenceNoAndRiskIdAndProductIdAndSectionIdNotIn(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()) , Integer.valueOf(req.getProductId()),sectionIds);
+				}
+				
 				Integer row = 0 ;		
 				for ( MasterReferal referal : req.getReferals() ){
 					MasterReferralDetails saveRef = new MasterReferralDetails();
