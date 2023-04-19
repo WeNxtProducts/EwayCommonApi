@@ -104,15 +104,15 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				
 				
 				if (StringUtils.isBlank(req.getAddress1())) {
-					errorList.add(new Error("02", "Address1", "Please Enter Address1 "));
+					errorList.add(new Error("02", "Address1", "Please Enter Address "));
 				} else if (req.getAddress1().length() > 100) {
-					errorList.add(new Error("02", "Address1", "Please Enter Address1 within 100 Characters"));
+					errorList.add(new Error("02", "Address1", "Please Enter Address within 100 Characters"));
 				}
-				if (StringUtils.isBlank(req.getAddress2())) {
+				/*if (StringUtils.isBlank(req.getAddress2())) {
 					errorList.add(new Error("02", "Address2", "Please Enter Address2 "));
 				} else if (req.getAddress2().length() > 100) {
 					errorList.add(new Error("03", "Address2", "Please Enter Address2 within 100 Characters"));
-				}
+				}*/
 				if (StringUtils.isBlank(req.getTitle())) {
 					errorList.add(new Error("04", "Title", "Please Select Title"));
 				}
@@ -138,7 +138,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					errorList.add(new Error("11", "IdNumber", "Please Enter IdNumber within 100 Characters"));
 				}
 				if (StringUtils.isBlank(req.getNationality())) {
-					errorList.add(new Error("12", "Nationality", "Please select Natinality"));
+					errorList.add(new Error("12", "Country", "Please select Country"));
 				}
 				
 //				if (StringUtils.isBlank(req.getPreferredNotification())) {
@@ -192,22 +192,22 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				} else if (req.getRegionCode().length() > 20) {
 					errorList.add(new Error("18", "RegionCode", "Please Enter RegionCode within 20 Characters"));
 				}
-				if (StringUtils.isBlank(req.getStreet())) {
+				/*if (StringUtils.isBlank(req.getStreet())) {
 					errorList.add(new Error("19", "Street", "Please Enter Street"));
 				}
 				else if (StringUtils.isNotBlank(req.getStreet()) && req.getStreet().length() > 100) {
 					errorList.add(new Error("19", "Street", "Please Enter Street within 100 Characters"));
-				}
+				}*/
 				if (StringUtils.isNotBlank(req.getFax()) && req.getFax().length() > 20) {
 					errorList.add(new Error("20", "Fax", "Please Enter Fax within 20 Characters"));
 				}
-				if (StringUtils.isBlank(req.getTelephoneNo1())) {
+				/*if (StringUtils.isBlank(req.getTelephoneNo1())) {
 					errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo1"));
 				}
-				else if (StringUtils.isNotBlank(req.getTelephoneNo1()) && req.getTelephoneNo1().length() > 20) {
-					errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo1 within 20 Characters"));
+				else */if (StringUtils.isNotBlank(req.getTelephoneNo1()) && req.getTelephoneNo1().length() > 20) {
+					errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo within 20 Characters"));
 				} else if (!req.getTelephoneNo1().matches("\\d+")) {
-					errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo1 only in numbers"));
+					errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo only in numbers"));
 				}
 				if (StringUtils.isNotBlank(req.getTelephoneNo2()) && req.getTelephoneNo2().length() > 20) {
 
@@ -223,11 +223,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				}
 
 				if (StringUtils.isBlank(req.getMobileNo1())) {
-					errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo1"));
+					errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo"));
 				} else if (req.getMobileNo1().length() > 20) {
-					errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo1 within 20 Characters"));
+					errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo within 20 Characters"));
 				} else if (!req.getMobileNo1().matches("\\d+")) {
-					errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo1 only in numbers"));
+					errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo only in numbers"));
 				}
 
 				if (StringUtils.isNotBlank(req.getMobileNo2()) && req.getMobileNo2().length() > 20) {
@@ -241,9 +241,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					errorList.add(new Error("26", "MobileNo3", "Please Enter MobileNo3 only in numbers"));
 				}
 				if (StringUtils.isBlank(req.getEmail1())) {
-					errorList.add(new Error("27", "Email1", "Please Enter Email1"));
+					errorList.add(new Error("27", "Email1", "Please Enter Email"));
 				} else if (req.getEmail1().length() > 100) {
-					errorList.add(new Error("27", "Email1", "Please Enter Email1 within 100 Characters"));
+					errorList.add(new Error("27", "Email1", "Please Enter Email within 100 Characters"));
 				} else {
 					boolean b = isValidMail(req.getEmail1());
 					if (b == false) {
@@ -274,11 +274,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 
 				if (StringUtils.isNotBlank(req.getEmail1()) && StringUtils.isNotBlank(req.getEmail2())
 						&& req.getEmail1().equalsIgnoreCase(req.getEmail2())) {
-					errorList.add(new Error("28", "Email2", "Email2 Is Already Available In Email1"));
+					errorList.add(new Error("28", "Email2", "Email2 Is Already Available In Email"));
 				}
 				if (StringUtils.isNotBlank(req.getEmail1()) && StringUtils.isNotBlank(req.getEmail3())
 						&& req.getEmail1().equalsIgnoreCase(req.getEmail3())) {
-					errorList.add(new Error("28", "Email2", "Email3 Is Already Available In Email1"));
+					errorList.add(new Error("28", "Email2", "Email3 Is Already Available In Email"));
 				}
 				if (StringUtils.isNotBlank(req.getEmail2()) && StringUtils.isNotBlank(req.getEmail3())
 						&& req.getEmail2().equalsIgnoreCase(req.getEmail3())) {
@@ -287,11 +287,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 
 				if (StringUtils.isNotBlank(req.getTelephoneNo1()) && StringUtils.isNotBlank(req.getTelephoneNo2())
 						&& req.getTelephoneNo1().equalsIgnoreCase(req.getTelephoneNo2())) {
-					errorList.add(new Error("28", "TelephoneNo2", "TelephoneNo2 Is Already Available In TelephoneNo1"));
+					errorList.add(new Error("28", "TelephoneNo2", "TelephoneNo2 Is Already Available In TelephoneNo"));
 				}
 				if (StringUtils.isNotBlank(req.getTelephoneNo1()) && StringUtils.isNotBlank(req.getTelephoneNo3())
 						&& req.getTelephoneNo1().equalsIgnoreCase(req.getTelephoneNo3())) {
-					errorList.add(new Error("28", "TelephoneNo2", "TelephoneNo2 Is Already Available In TelephoneNo1"));
+					errorList.add(new Error("28", "TelephoneNo2", "TelephoneNo2 Is Already Available In TelephoneNo"));
 				}
 				if (StringUtils.isNotBlank(req.getTelephoneNo2()) && StringUtils.isNotBlank(req.getTelephoneNo3())
 						&& req.getTelephoneNo2().equalsIgnoreCase(req.getTelephoneNo3())) {
@@ -300,11 +300,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 
 				if (StringUtils.isNotBlank(req.getMobileNo1()) && StringUtils.isNotBlank(req.getMobileNo2())
 						&& req.getMobileNo1().equalsIgnoreCase(req.getMobileNo2())) {
-					errorList.add(new Error("28", "MobileNo2", "MobileNo2 Is Already Available In MobileNo1"));
+					errorList.add(new Error("28", "MobileNo2", "MobileNo2 Is Already Available In MobileNo"));
 				}
 				if (StringUtils.isNotBlank(req.getMobileNo1()) && StringUtils.isNotBlank(req.getMobileNo3())
 						&& req.getMobileNo1().equalsIgnoreCase(req.getMobileNo3())) {
-					errorList.add(new Error("28", "MobileNo2", "MobileNo3 Is Already Available In MobileNo1"));
+					errorList.add(new Error("28", "MobileNo2", "MobileNo3 Is Already Available In MobileNo"));
 				}
 				if (StringUtils.isNotBlank(req.getMobileNo2()) && StringUtils.isNotBlank(req.getMobileNo3())
 						&& req.getMobileNo2().equalsIgnoreCase(req.getMobileNo3())) {
@@ -313,7 +313,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 
 				if (StringUtils.isNotBlank(req.getAddress1()) && StringUtils.isNotBlank(req.getAddress2())
 						&& req.getAddress1().equalsIgnoreCase(req.getAddress2())) {
-					errorList.add(new Error("28", "Address2", "Address2 Is Already Available In Address1"));
+					errorList.add(new Error("28", "Address2", "Address2 Is Already Available In Address"));
 				}
 
 				if (StringUtils.isBlank(req.getIsTaxExempted())) {
@@ -424,9 +424,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 //			}
 				
 				if (StringUtils.isBlank(req.getCityName())) {
-					errorList.add(new Error("43", "CityName", "Please Select CityName "));
+					errorList.add(new Error("43", "District", "Please Select District "));
 				} else if (req.getCityName().length() > 100) {
-					errorList.add(new Error("43", "CityName", "Please Enter CityName within 100 Characters"));
+					errorList.add(new Error("43", "District", "Please Enter District within 100 Characters"));
 				}
 
 				if (StringUtils.isBlank(req.getStreet())) {
@@ -439,7 +439,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					errorList.add(new Error("45", "StateCode", "Please Enter StateCode "));
 				}
 				if (StringUtils.isBlank(req.getMobileCode1())) {
-					errorList.add(new Error("46", "MobileCode1", "Please Select MobileCode1 "));
+					errorList.add(new Error("46", "MobileCode1", "Please Select MobileCode "));
 				}
 				
 				if (StringUtils.isBlank(req.getWhatsappCode())) {
