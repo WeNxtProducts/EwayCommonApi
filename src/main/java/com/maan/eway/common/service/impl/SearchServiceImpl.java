@@ -315,11 +315,11 @@ public class SearchServiceImpl implements SearchService {
 	
 	@Override
 	public List<SearchRes> adminSearchOrderByEntryDate(SearchReq req) {
-
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		List<SearchRes> reslist = new ArrayList<SearchRes>();
 		DozerBeanMapper dozermapper = new DozerBeanMapper();
 		try {
-		
+			Date effectiveDate=null;
 			 List<BranchMaster> branchlist= getByBranchCode(req.getBranchCode());
 			 String branchName=branchlist.get(0).getBranchName();
 			 String loginId = "" ;
@@ -346,8 +346,8 @@ public class SearchServiceImpl implements SearchService {
 			// Product Wise Get
 			if (req.getProductId().equalsIgnoreCase(motorProductId)) {
 				list = motService.adminSearchMotorQuote(req, branches);
-
-		}
+			}
+				
 //			else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 //				list = traService.searchTravelQuote(req, branches);
 //			}
@@ -367,6 +367,7 @@ public class SearchServiceImpl implements SearchService {
 				res.setMobileNo1((data.get("mobileNumber").toString()));
 				res.setBranchName(branchName);	
 				res.setLoginId(req.getLoginId());
+				res.setEffectiveDate(effectiveDate);
 				//res.setIdsCount(data.get("idsCount")==null?"":data.get("idsCount").toString() );
 				 reslist.add(res);
 			}
@@ -1171,7 +1172,7 @@ public class SearchServiceImpl implements SearchService {
 			if(vehInfo!=null) {
 			SearchROPVehicleRes res =new SearchROPVehicleRes();
 			res.setResRegNumber(vehInfo.getResRegNumber());
-			res.setResChassisNumber(vehInfo.getReqChassisNumber());
+			res.setResChassisNumber(vehInfo.getResChassisNumber());
 			res.setResEngineNumber(vehInfo.getResEngineNumber());
 			res.setResMake(vehInfo.getResMake());
 			res.setResModel(vehInfo.getResModel());

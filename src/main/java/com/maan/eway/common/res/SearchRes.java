@@ -72,6 +72,10 @@ public class SearchRes {
 	
 	@JsonProperty("NoOfClaims")
 	 private String    noOfClaims ;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EffectiveDate")
+	private Date effectiveDate;
 	    
 /*	    
 	@JsonProperty("CustomerReferenceNo")
