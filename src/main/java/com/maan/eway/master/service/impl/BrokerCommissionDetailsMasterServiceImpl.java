@@ -199,16 +199,16 @@ public class BrokerCommissionDetailsMasterServiceImpl implements BrokerCommissio
 				}
 		}
 			if((StringUtils.isNotBlank(req.getCompanyId())) && (StringUtils.isNotBlank(req.getProductId()))
-					&&(StringUtils.isNotBlank(req.getPolicyType()))){
+					&&(StringUtils.isNotBlank(req.getPolicyType()))&&(StringUtils.isNotBlank(req.getLoginId()))){
 				String policytype = policyName(req.getCompanyId(),req.getProductId(),req.getPolicyType());	
 				
-				if (StringUtils.isBlank(req.getId()) &&  StringUtils.isNotBlank(req.getCompanyId())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getPolicyType())) {
-					List<BrokerCommissionDetails> policylist = getPolicyName(policytype , req.getCompanyId() , req.getProductId());
+				if (StringUtils.isBlank(req.getId()) &&  StringUtils.isNotBlank(req.getCompanyId())&& StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getPolicyType())&& StringUtils.isNotBlank(req.getLoginId())) {
+					List<BrokerCommissionDetails> policylist = getPolicyName(policytype , req.getCompanyId() , req.getProductId(), req.getLoginId());
 					if (policylist.size()>0 ) {
 						errorList.add(new Error("13", "Policy Type", "This Policy Type Already Exist "));
 					}
-				}else if (StringUtils.isNotBlank(req.getId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getPolicyType())) {
-					List<BrokerCommissionDetails> policyList = getPolicyName(policytype , req.getCompanyId() , req.getProductId());
+				}else if (StringUtils.isNotBlank(req.getId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getPolicyType())&& StringUtils.isNotBlank(req.getLoginId())) {
+					List<BrokerCommissionDetails> policyList = getPolicyName(policytype , req.getCompanyId() , req.getProductId(),req.getLoginId());
 					
 					if (policyList.size()>0 &&  (! req.getId().equalsIgnoreCase(policyList.get(0).getId().toString())) ) {
 						errorList.add(new Error("13", "Policy Type", "This Policy Type Already Exist "));
@@ -226,7 +226,7 @@ public class BrokerCommissionDetailsMasterServiceImpl implements BrokerCommissio
 	
 	
 
-	private List<BrokerCommissionDetails> getPolicyName(String policytype, String companyId, String productId) {
+	private List<BrokerCommissionDetails> getPolicyName(String policytype, String companyId, String productId, String loginId) {
 		// TODO Auto-generated method stub
 		List<BrokerCommissionDetails> list = new ArrayList<BrokerCommissionDetails>();
 		try {
@@ -249,15 +249,17 @@ public class BrokerCommissionDetailsMasterServiceImpl implements BrokerCommissio
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a4 = cb.equal(ocpm1.get("policyType"), b.get("policyType"));
+			Predicate a5 = cb.equal(ocpm1.get("loginId"), b.get("loginId"));
 			
-			amendId.where(a1,a2,a3,a4);
+			amendId.where(a1,a2,a3,a4,a5);
 
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(cb.lower( b.get("policyTypeDesc")), policytype.toLowerCase());
 			Predicate n3 = cb.equal(b.get("companyId"),companyId);
 			Predicate n4 = cb.equal(b.get("productId"),productId);
+			Predicate n5 = cb.equal(b.get("loginId"),loginId);
 			
-			query.where(n1,n2,n3,n4);
+			query.where(n1,n2,n3,n4,n5);
 			
 			// Get Result
 			TypedQuery<BrokerCommissionDetails> result = em.createQuery(query);
