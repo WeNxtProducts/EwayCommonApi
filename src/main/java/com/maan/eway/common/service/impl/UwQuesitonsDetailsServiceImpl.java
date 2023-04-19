@@ -168,14 +168,14 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			else {
 			saveData = dozerMapper.map(data,UwQuestionsDetails.class);
 			saveData.setEntryDate(new Date());
-			saveData.setStatus("Y");
+			saveData.setStatus(data.getStatus());
 			saveData.setUpdatedDate(data.getUpdatedDate());
 			
 			res.setResponse("Inserted Successfully");
 			
 			}
-			saveData.setStatus(StringUtils.isNotBlank(data.getStatus())? data.getStatus() : "Y" );
-			if(StringUtils.isNotBlank(data.getStatus()) && data.getStatus().equalsIgnoreCase("R") && data.getValue().equalsIgnoreCase("Y")) {
+			saveData.setStatus(data.getStatus());
+			if(StringUtils.isNotBlank(data.getStatus()) && data.getStatus().equalsIgnoreCase("R")) {
 				saveData.setIsReferral("Y");
 				
 			}
