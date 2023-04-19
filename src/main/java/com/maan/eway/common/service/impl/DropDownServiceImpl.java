@@ -1911,7 +1911,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				try {
 					DropDownRes res = new DropDownRes();
 				//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
-					BrokerCommissionDetails loginProduct  = getBrokerProduct(req.getInsuranceId() ,req.getProductId() ,req.getLoginId() );
+					BrokerCommissionDetails loginProduct  = getBrokerProduct(req.getInsuranceId() ,req.getProductId() ,req.getLoginId(),req.getPolicyTypeId());
 					
 					if(loginProduct !=null ) {
 						BigDecimal suminsured = StringUtils.isNotBlank(req.getSumInsured()) ? new BigDecimal(req.getSumInsured()) : BigDecimal.ZERO ;
@@ -1956,7 +1956,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				return resList;
 			}
 
-	public synchronized BrokerCommissionDetails getBrokerProduct(String insuranceId , String productId , String loginId) {
+	public synchronized BrokerCommissionDetails getBrokerProduct(String insuranceId , String productId , String loginId, String policyTypeId) {
 		BrokerCommissionDetails loginProduct = new BrokerCommissionDetails(); 
 		try {
 			Date today  = new Date();
@@ -1994,7 +1994,8 @@ public class DropDownServiceImpl  implements DropDownService{
 			Predicate a2 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a4 = cb.equal(c.get("loginId"),ocpm1.get("loginId") );
-			effectiveDate.where(a1,a2,a3,a4);
+			Predicate a9 = cb.equal(c.get("policyType"),ocpm1.get("policyType") );
+			effectiveDate.where(a1,a2,a3,a4,a9);
 			
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
@@ -2004,7 +2005,8 @@ public class DropDownServiceImpl  implements DropDownService{
 			Predicate a6 = cb.equal(c.get("companyId"),ocpm2.get("companyId") );
 			Predicate a7 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a8 = cb.equal(c.get("loginId"),ocpm2.get("loginId") );
-			effectiveDate2.where(a5,a6,a7,a8);
+			Predicate a10 = cb.equal(c.get("policyType"),ocpm2.get("policyType") );
+			effectiveDate2.where(a5,a6,a7,a8,a10);
 			
 			
 		    // Where	
@@ -2016,7 +2018,8 @@ public class DropDownServiceImpl  implements DropDownService{
 			Predicate n4 = cb.equal(c.get("companyId"), insuranceId);
 			Predicate n5 = cb.equal(c.get("loginId"), loginId );
 			Predicate n7 = cb.equal(c.get("productId"), productId );
-			query.where(n12,n2,n3,n4,n5,n7).orderBy(orderList);
+			Predicate n8 = cb.equal(c.get("policyType"), policyTypeId );
+			query.where(n12,n2,n3,n4,n5,n7,n8).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<BrokerCommissionDetails> result = em.createQuery(query);			
