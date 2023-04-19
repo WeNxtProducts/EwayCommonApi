@@ -1159,15 +1159,16 @@ public class SearchServiceImpl implements SearchService {
 		String chassisNo="";
 		if (StringUtils.isNotBlank(req.getQuoteNo())) {
 			// Find Motor Data
-			 motorDatas = repo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(req.getQuoteNo(), "D");
+			 motorDatas = repo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
 			
-			 }else if (StringUtils.isNotBlank(req.getQuoteNo())) {
-			 motorDatas = repo.findByRequestReferenceNoAndStatusNotOrderByRiskIdAsc(req.getRequestReferenceNo(), "D");
+			 }else if (StringUtils.isNotBlank(req.getRequestReferenceNo())) {
+			 motorDatas = repo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 		}
 		List<SearchROPVehicleRes> resList=new ArrayList<SearchROPVehicleRes>();
 		for (EserviceMotorDetails data : motorDatas) {
 			chassisNo=data.getChassisNumber();
 			MotorVehicleInfo vehInfo = motVehInfoRepo.findByResChassisNumber(chassisNo);
+			if(vehInfo!=null) {
 			SearchROPVehicleRes res =new SearchROPVehicleRes();
 			res.setResRegNumber(vehInfo.getResRegNumber());
 			res.setResChassisNumber(vehInfo.getReqChassisNumber());
@@ -1178,6 +1179,7 @@ public class SearchServiceImpl implements SearchService {
 			res.setResBodyType(vehInfo.getResBodyType());
 			res.setResYearOfManufacture(vehInfo.getResYearOfManufacture());
 			resList.add(res);
+			}
 		}
 		viewRes.setVehDetails(resList);		
 		} catch (Exception e) {

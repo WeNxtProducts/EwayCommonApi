@@ -20,6 +20,7 @@ import javax.persistence.Table;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -87,7 +88,7 @@ private static final long serialVersionUID = 1L;
     private String     createdBy ;
 
     @Column(name="RES_RESPONSE_ID")
-    private Integer    resResponseId ;
+    private BigDecimal    resResponseId ;
 
     @Column(name="RES_REQUEST_ID", length=20)
     private String     resRequestId ;
@@ -104,7 +105,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="RES_REG_NUMBER", length=20)
     private String     resRegNumber ;
 
-    @Column(name="RES_CHASSIS_NUMBER", length=20)
+    @Column(name="RES_CHASSIS_NUMBER", length=100)
     private String     resChassisNumber ;
 
     @Column(name="RES_MAKE", length=20)
