@@ -204,11 +204,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				/*if (StringUtils.isBlank(req.getTelephoneNo1())) {
 					errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo1"));
 				}
-				else */if (StringUtils.isNotBlank(req.getTelephoneNo1()) && req.getTelephoneNo1().length() > 20) {
+				else if (StringUtils.isNotBlank(req.getTelephoneNo1()) && req.getTelephoneNo1().length() > 20) {
 					errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo within 20 Characters"));
 				} else if (!req.getTelephoneNo1().matches("\\d+")) {
 					errorList.add(new Error("21", "TelephoneNo1", "Please Enter TelephoneNo only in numbers"));
-				}
+				} */
 				if (StringUtils.isNotBlank(req.getTelephoneNo2()) && req.getTelephoneNo2().length() > 20) {
 
 					errorList.add(new Error("22", "TelephoneNo2", "Please Enter TelephoneNo2 within 20 Characters"));
@@ -223,11 +223,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				}
 
 				if (StringUtils.isBlank(req.getMobileNo1())) {
-					errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo"));
+					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo"));
 				} else if (req.getMobileNo1().length() > 20) {
-					errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo within 20 Characters"));
+					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo within 20 Characters"));
 				} else if (!req.getMobileNo1().matches("\\d+")) {
-					errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo only in numbers"));
+					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo only in numbers"));
 				}
 
 				if (StringUtils.isNotBlank(req.getMobileNo2()) && req.getMobileNo2().length() > 20) {
@@ -429,17 +429,17 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					errorList.add(new Error("43", "District", "Please Enter District within 100 Characters"));
 				}
 
-				if (StringUtils.isBlank(req.getStreet())) {
+				/*if (StringUtils.isBlank(req.getStreet())) {
 					errorList.add(new Error("44", "Street", "Please Enter Street "));
 				} else if (req.getStreet().length() > 100) {
 					errorList.add(new Error("44", "Street", "Please Enter Street within 100 Characters"));
-				}
+				}*/
 				
 				if (StringUtils.isBlank(req.getStateCode())) {
 					errorList.add(new Error("45", "StateCode", "Please Enter StateCode "));
 				}
 				if (StringUtils.isBlank(req.getMobileCode1())) {
-					errorList.add(new Error("46", "MobileCode1", "Please Select MobileCode "));
+					errorList.add(new Error("46", "MobileCode", "Please Select MobileCode "));
 				}
 				
 				if (StringUtils.isBlank(req.getWhatsappCode())) {
