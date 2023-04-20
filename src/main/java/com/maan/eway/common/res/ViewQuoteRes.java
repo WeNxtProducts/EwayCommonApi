@@ -17,4 +17,10 @@ public class ViewQuoteRes {
 	
 	@JsonProperty("RiskDetails")
 	private Object  riskDetails ;
+	
+	@JsonProperty("DocumentDetails")
+	private List<DocumentDetails> documentDetails ;
+	
+	
+	
 }

@@ -69,6 +69,7 @@ import com.maan.eway.common.req.VehicleIdsReq;
 import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.CustomerDetailsRes;
+import com.maan.eway.common.res.DocumentDetails;
 import com.maan.eway.common.res.DriverDetailsRes;
 import com.maan.eway.common.res.EserviceCommonGetRes;
 import com.maan.eway.common.res.EserviceMotorDetailsRes;
@@ -363,7 +364,7 @@ private BuildingDetailsRepository BuildingRepo;
 			List<MotorDriverDetails> driverList = driverRepo.findByQuoteNo(req.getQuoteNo() );
 			List<EserviceMotorDetailsRes>   motorResList = new ArrayList<EserviceMotorDetailsRes>();
 			
-						
+			List<DocumentDetails> documentDetails = new ArrayList<DocumentDetails>();			
 			for (MotorDataDetails mot :  motorDatas) {
 				EserviceMotorDetailsRes vehicleDetails = new  EserviceMotorDetailsRes()  ;
 				
@@ -404,11 +405,18 @@ private BuildingDetailsRepository BuildingRepo;
 				sectionList.add(sec);
 				vehicleDetails.setSectionDetails(sectionList);
 				
+				// Document 
+				DocumentDetails  document = new DocumentDetails();
+				document.setDocumentTitle(mot.getChassisNumber() + "~" + mot.getVehicleMakeDesc() + "~" + mot.getVehcileModelDesc()) ;
+				document.setRiskId(mot.getVehicleId());
+				document.setSectionId(mot.getSectionId().toString());
+				documentDetails.add(document);
+				
 				// Response
 				motorResList.add(vehicleDetails);		
 			}
 			viewRes.setRiskDetails(motorResList);
-			
+			viewRes.setDocumentDetails(documentDetails);
 		} catch ( Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -433,6 +441,8 @@ private BuildingDetailsRepository BuildingRepo;
 			// Building Details 
 			// Build
 			// Section Details
+			// Document
+			List<DocumentDetails> documentDetails = new ArrayList<DocumentDetails>();			
 			
 			List<PaccGetRes> paccGetResList = new ArrayList<PaccGetRes>(); 
 			List<EserviceBuildingsDetailsRes>   buildList = new ArrayList<EserviceBuildingsDetailsRes>();
@@ -510,10 +520,18 @@ private BuildingDetailsRepository BuildingRepo;
 				loc.setSectionId("99999");
 				buildLocList.add(loc);
 				
+				// Document 
+				DocumentDetails  document = new DocumentDetails();
+				document.setDocumentTitle( "Location - " +  data.getLocationName());
+				document.setRiskId(data.getRiskId().toString());
+				document.setSectionId("99999");
+				documentDetails.add(document);
+				
 			}
 			totalList.addAll(buildLocList);
 			
-			viewRes.setRiskDetails(totalList);	
+			viewRes.setRiskDetails(totalList);
+			viewRes.setDocumentDetails(documentDetails);
 			
 		} catch ( Exception e) {
 			e.printStackTrace();
@@ -674,6 +692,7 @@ private BuildingDetailsRepository BuildingRepo;
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 			
 			List<EserviceTravelGetRes>   travelResList = new ArrayList<EserviceTravelGetRes>();
+			List<DocumentDetails> documentDetails = new ArrayList<DocumentDetails>();
 			
 			for (TravelPassengerDetails tra :  totalDatas) {
 				EserviceTravelGetRes travelDetails = new  EserviceTravelGetRes()  ;
@@ -690,7 +709,9 @@ private BuildingDetailsRepository BuildingRepo;
 							
 				// Response
 				List<PassengerSectionDetails> secList = new ArrayList<PassengerSectionDetails>();
+				// Passenger
 				PassengerSectionDetails traSec = new PassengerSectionDetails(); 
+				
 				traSec.setSectionId(tra.getSectionId()==null?"":tra.getSectionId().toString());
 				traSec.setSectionName( tra.getSectionName());
 				traSec.setCovers(coverListRes);
@@ -700,11 +721,20 @@ private BuildingDetailsRepository BuildingRepo;
 				traSec.setGroupId(tra.getGroupId().toString());
 				secList.add(traSec);
 				travelDetails.setSectionDetails(secList);
+				
+				// Document 
+				DocumentDetails  document = new DocumentDetails();
+				document.setDocumentTitle(tra.getPassengerName());
+				document.setRiskId(tra.getPassengerId().toString());
+				document.setSectionId(tra.getSectionId().toString());
+				documentDetails.add(document);
+				
 				travelResList.add(travelDetails);
 				
 			}
 		
 			viewRes.setRiskDetails(travelResList);	
+			viewRes.setDocumentDetails(documentDetails);
 			
 		} catch ( Exception e) {
 			e.printStackTrace();
@@ -725,6 +755,7 @@ private BuildingDetailsRepository BuildingRepo;
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 			
 			List<EserviceCommonGetRes>   commonResList = new ArrayList<EserviceCommonGetRes>();
+			List<DocumentDetails> documentDetails = new ArrayList<DocumentDetails>();
 			for (CommonDataDetails com :  commonDatas) {
 				
 				// Cover Details
@@ -747,9 +778,17 @@ private BuildingDetailsRepository BuildingRepo;
 				List<SectionDetails>  sectionList = new ArrayList<SectionDetails>();
 				sectionList.add(sec);
 				commonDetails.setSectionDetails(sectionList);
-				commonResList.add(commonDetails);				
+				commonResList.add(commonDetails);
+				
+				// Document 
+				DocumentDetails  document = new DocumentDetails();
+				document.setDocumentTitle(com.getCustomerName());
+				document.setRiskId(com.getRiskId().toString());
+				document.setSectionId(com.getSectionId());
+				documentDetails.add(document);
 			}
 			viewRes.setRiskDetails(commonResList);	
+			viewRes.setDocumentDetails(documentDetails);
 			
 		} catch ( Exception e) {
 			e.printStackTrace();
