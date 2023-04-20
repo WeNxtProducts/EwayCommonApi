@@ -207,11 +207,6 @@ public class SearchServiceImpl implements SearchService {
 	private PersonalInfoRepository perRepo ;
 	@Autowired
 	CoverDocumentUploadDetailsRepository coverdocumentuploaddetailsrepository;
-	@Autowired
-	TravelSearchService travelsearch;
-	
-	@Autowired
-	CommonSearchService comSerService;
 	
 	
 	@Autowired
@@ -320,11 +315,11 @@ public class SearchServiceImpl implements SearchService {
 	
 	@Override
 	public List<SearchRes> adminSearchOrderByEntryDate(SearchReq req) {
-
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		List<SearchRes> reslist = new ArrayList<SearchRes>();
 		DozerBeanMapper dozermapper = new DozerBeanMapper();
 		try {
-		
+			Date effectiveDate=null;
 			 List<BranchMaster> branchlist= getByBranchCode(req.getBranchCode());
 			 String branchName=branchlist.get(0).getBranchName();
 			 String loginId = "" ;
@@ -351,17 +346,14 @@ public class SearchServiceImpl implements SearchService {
 			// Product Wise Get
 			if (req.getProductId().equalsIgnoreCase(motorProductId)) {
 				list = motService.adminSearchMotorQuote(req, branches);
-
-		    }
-			else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
-			list = travelsearch.searchTravel(req, branches);
 			}
+				
+//			else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+//				list = traService.searchTravelQuote(req, branches);
+//			}
 		    else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)) {
 			list = buiService.searchBuilding(req, branches);
-		    }
-			else {
-			list = comSerService.searchCommon(req, branches);
-		    }
+		}
 //
 	//		} 
 //				else {
@@ -375,6 +367,7 @@ public class SearchServiceImpl implements SearchService {
 				res.setMobileNo1((data.get("mobileNumber").toString()));
 				res.setBranchName(branchName);	
 				res.setLoginId(req.getLoginId());
+				res.setEffectiveDate(effectiveDate);
 				//res.setIdsCount(data.get("idsCount")==null?"":data.get("idsCount").toString() );
 				 reslist.add(res);
 			}
@@ -1089,12 +1082,11 @@ public class SearchServiceImpl implements SearchService {
 			if (StringUtils.isNotBlank(req.getQuoteNo())) {
 				// Find Motor Data
 				 motorDatas = motorRepo
-						.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(), "D");
-				 covers = coverRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(),
-						"D");
-			}else if (StringUtils.isNotBlank(req.getQuoteNo())) {
-				 motorDatas = motorRepo.findByRequestReferenceNoAndStatusNotOrderByVehicleIdAsc(req.getRequestReferenceNo(), "D");
-					 covers = coverRepo.findByRequestReferenceNoAndStatusNotOrderByVehicleId(req.getRequestReferenceNo(),"D");
+						.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
+				 covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
+			}else if (StringUtils.isNotBlank(req.getRequestReferenceNo())) {
+				 motorDatas = motorRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
+					 covers = coverRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo());
 			}
 				for (MotorDataDetails mot : motorDatas) {
 					// Cover Details

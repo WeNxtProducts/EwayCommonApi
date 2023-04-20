@@ -21,6 +21,7 @@ import lombok.Data;
 @Data
 public class SearchPremiumDetailsRes {
 
+
 	@JsonProperty("CoverId") 
     public List<SearchPremiumCoverDetailsRes> SearchPremiumCoverDetailsRes;
 	
