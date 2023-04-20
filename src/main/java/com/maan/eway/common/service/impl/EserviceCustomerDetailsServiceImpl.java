@@ -352,7 +352,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				cal.set(Calendar.HOUR_OF_DAY, 23);
 				cal.set(Calendar.MINUTE, 50);
 				today = cal.getTime();
-				if (req.getPolicyHolderType().equalsIgnoreCase("1")) {
+				if (StringUtils.isNotBlank(req.getPolicyHolderType()) && req.getPolicyHolderType().equalsIgnoreCase("1")) {
 
 					if (req.getDobOrRegDate() == null) {
 						errorList.add(new Error("38", "DobOrRegDate", "Please Enter Dob "));
@@ -413,11 +413,16 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				} else if (req.getCompanyId().length() > 20) {
 					errorList.add(new Error("41", "CompanyId", "Please Enter CompanyId within 20 Characters"));
 				}
-				if (StringUtils.isBlank(req.getVrTinNo())) {
-					errorList.add(new Error("42", "VrTinNo", "Please Enter VrTinNo"));
-				} else if (req.getVrTinNo().length() > 20) {
-					errorList.add(new Error("42", "VrTinNo", "Please Enter VrTinNo within 20 Characters"));
+				
+				if( StringUtils.isNotBlank(req.getPolicyHolderType()) && req.getPolicyHolderType().equalsIgnoreCase("2") ) {
+					if (StringUtils.isBlank(req.getVrTinNo())) {
+						errorList.add(new Error("42", "VrTinNo", "Please Enter VrTinNo"));
+					} else if (req.getVrTinNo().length() > 20) {
+						errorList.add(new Error("42", "VrTinNo", "Please Enter VrTinNo within 20 Characters"));
+					}
+					
 				}
+				
 
 //			if (StringUtils.isBlank(req.getStateName())) {
 //				errorList.add(new Error("43", "StateName", "Please Select StateName"));
