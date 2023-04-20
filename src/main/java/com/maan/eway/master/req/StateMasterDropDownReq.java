@@ -16,5 +16,6 @@ public class StateMasterDropDownReq implements Serializable {
 	@JsonProperty("CountryId")
     private String    countryId     ;
 
-    
+	@JsonProperty("RegionCode")
+    private String    regionCode;
 }

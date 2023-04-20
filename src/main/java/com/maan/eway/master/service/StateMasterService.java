@@ -37,6 +37,8 @@ public interface StateMasterService  {
 
 	SuccessRes changeStatusOfStateMaster(StateMasterChangeStatusReq req);
 
+	List<DropDownRes> getRegionStateMasterDropdown(StateMasterDropDownReq req);
+
 	
 	
 

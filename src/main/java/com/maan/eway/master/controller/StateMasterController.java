@@ -178,6 +178,29 @@ public class StateMasterController {
 			}
 
 		}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping(value="/dropdown/regionstate",produces = "application/json")
+	@ApiOperation(value = "This method is get State Master Drop Down")
+
+	public ResponseEntity<DropdownCommonRes> getRegionStateMasterDropdown(@RequestBody StateMasterDropDownReq req) {
+
+		DropdownCommonRes data = new DropdownCommonRes();
+
+		// Save
+		List<DropDownRes> res = stateService.getRegionStateMasterDropdown(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
 
 		//Change Status
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")

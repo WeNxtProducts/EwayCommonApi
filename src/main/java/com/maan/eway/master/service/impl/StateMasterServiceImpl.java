@@ -620,4 +620,89 @@ public class StateMasterServiceImpl implements StateMasterService {
 		return res;
 	}
 
+	@Override
+	public List<DropDownRes> getRegionStateMasterDropdown(StateMasterDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			String countryId=null;
+		
+			if (StringUtils.isBlank(req.getCountryId())) {
+				countryId="TZA";
+			}else {
+				countryId=req.getCountryId();
+			}
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<StateMaster> query = cb.createQuery(StateMaster.class);
+			List<StateMaster> list = new ArrayList<StateMaster>();
+
+			// Find All
+			Root<StateMaster> c = query.from(StateMaster.class);
+
+			// Select
+			query.select(c);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("stateName")));
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<StateMaster> ocpm1 = effectiveDate.from(StateMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("stateId"), ocpm1.get("stateId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a3 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
+			Predicate a7 = cb.equal(c.get("regionCode"), ocpm1.get("regionCode"));
+			effectiveDate.where(a1, a2,a3,a7);
+
+			// Effective Date End
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<StateMaster> ocpm2 = effectiveDate2.from(StateMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("stateId"), ocpm2.get("stateId"));
+			javax.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a4 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
+			Predicate a8 = cb.equal(c.get("regionCode"), ocpm2.get("regionCode"));
+			effectiveDate2.where(a5,a6, a4,a8);
+			
+			
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n11 = cb.equal(c.get("status"),"R");
+			Predicate n12 = cb.or(n1,n11);
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("countryId"), countryId);
+			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("countryId"), req.getRegionCode());
+	
+			query.where(n12, n2,n3,n4,n5).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<StateMaster> result = em.createQuery(query);
+			list = result.getResultList();
+
+			for (StateMaster data : list) {
+				// Response
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getStateId().toString());
+				res.setCodeDesc(data.getStateName());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
 }
