@@ -108,9 +108,22 @@ public class EserviceBuildingsDetailsRes implements Serializable {
 	@JsonProperty("SectionId")
 	private  String sectionId;	
 
-    @JsonProperty("SectionDetails")
-    private List<SectionDetails>    sectionDetails;
+	@JsonProperty("Suminsured")
+    private String     suminsured ;
 	
+	@JsonProperty("OccupationType")
+    private String    occupationType;
+
+	@JsonProperty("OccupationTypeDesc")
+    private String    occupationTypeDesc;
+
+	@JsonProperty("CategoryId")
+    private String    categoryId;
+	
+
+	@JsonProperty("SectionDetails")
+    private List<SectionDetails>    sectionDetails;
+
 
 	  
 }

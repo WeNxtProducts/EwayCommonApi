@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maan.eway.res.CoverRes;
 import com.maan.eway.res.PassengerSectionDetails;
 import com.maan.eway.res.SectionDetails;
 
@@ -61,11 +62,27 @@ public class EserviceTravelGetRes {
 		@JsonProperty("EndorsementYn")
 	    private String     endorsementYn;
 		
+		
 		@JsonProperty("SectionId")
 		private  String sectionId;	
-		 
-		@JsonProperty("SectionDetails")
-		private List<PassengerSectionDetails>    sectionDetails;
 		
+		@JsonProperty("SectionName")
+		private  String sectionName;	
+		
+		@JsonProperty("PassengerId")
+		private  String passengerId;	
+		
+		@JsonProperty("PassengerName")
+		private  String passengerName;	
+		
+		@JsonProperty("GroupDesc")
+		private  String groupDesc;
+		
+		@JsonProperty("GroupId")
+		private  String groupId;
+		
+		@JsonProperty("Covers")
+		private  List<CoverRes> covers ;
+	}
 		
 }

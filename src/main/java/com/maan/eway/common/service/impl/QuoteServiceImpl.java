@@ -464,22 +464,28 @@ private BuildingDetailsRepository BuildingRepo;
 						List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
 						
 						// Accident
-						PaccGetRes pacRes = new  PaccGetRes()  ;
-						dozerMapper.map(acc, pacRes);
-						pacRes.setOccupationType(acc.getRiskId().toString() );
-						pacRes.setOccupationTypeDesc(acc.getOccupationDesc());
-						pacRes.setSuminsured(acc.getSumInsured()==null?"":acc.getSumInsured().toPlainString());
-						pacRes.setRiskId(acc.getRiskId().toString());
-						pacRes.setDocumentsTitle(acc.getSectionDesc() + "-" + acc.getOccupationDesc());
-						pacRes.setSectionId(acc.getSectionId()==null?"":acc.getSectionId().toString());
-						List<SectionDetails>  paSectionList = new ArrayList<SectionDetails>();
-						SectionDetails secData = new SectionDetails(); 
-						secData.setSectionId(acc.getSectionId()==null?"":acc.getSectionId().toString());
-						secData.setSectionName( acc.getSectionDesc());
-						secData.setCovers(coverListRes);
-						paSectionList.add(secData);
-						pacRes.setSectionDetails(paSectionList);
-						paccGetResList.add(pacRes);
+//						PaccGetRes pacRes = new  PaccGetRes()  ;
+//						dozerMapper.map(acc, pacRes);
+//						pacRes.setOccupationType(acc.getRiskId().toString() );
+//						pacRes.setOccupationTypeDesc(acc.getOccupationDesc());
+//						pacRes.setSuminsured(acc.getSumInsured()==null?"":acc.getSumInsured().toPlainString());
+//						pacRes.setRiskId(acc.getRiskId().toString());
+//						pacRes.setDocumentsTitle(acc.getSectionDesc() + "-" + acc.getOccupationDesc());
+//						pacRes.setSectionId(acc.getSectionId()==null?"":acc.getSectionId().toString());
+//						List<SectionDetails>  paSectionList = new ArrayList<SectionDetails>();
+//						SectionDetails secData = new SectionDetails(); 
+//						secData.setSectionId(acc.getSectionId()==null?"":acc.getSectionId().toString());
+//						secData.setSectionName( acc.getSectionDesc());
+//						secData.setCovers(coverListRes);
+//						paSectionList.add(secData);
+//						pacRes.setSectionDetails(paSectionList);
+//						paccGetResList.add(pacRes);
+						SectionDetails buildSec = new SectionDetails(); 
+						buildSec.setSectionId(acc.getSectionId()==null?"":acc.getSectionId().toString());
+						buildSec.setSectionName( acc.getSectionDesc());
+						buildSec.setCovers(coverListRes);
+						buildingSectionList.add(buildSec);
+						
 					}
 					
 				} else {
@@ -511,14 +517,14 @@ private BuildingDetailsRepository BuildingRepo;
 			List<BuildingDetails> buildingRiskDatas = BuildingRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
 			List<BuildingLocationDetails> buildLocList = new ArrayList<BuildingLocationDetails>();
 			for(BuildingDetails data : buildingRiskDatas) {
-				BuildingLocationDetails loc = new BuildingLocationDetails();
-				loc.setDocumentsTitle( "Location - " +  data.getLocationName());
-				loc.setLocationId(data.getRiskId().toString());
-				loc.setLocationName(data.getLocationName());
-				loc.setRiskId(data.getRiskId().toString());
-				loc.setSuminsured(data.getBuildingSuminsured()==null?"" : data.getBuildingSuminsured().toPlainString());
-				loc.setSectionId("99999");
-				buildLocList.add(loc);
+//				BuildingLocationDetails loc = new BuildingLocationDetails();
+//				loc.setDocumentsTitle( "Location - " +  data.getLocationName());
+//				loc.setLocationId(data.getRiskId().toString());
+//				loc.setLocationName(data.getLocationName());
+//				loc.setRiskId(data.getRiskId().toString());
+//				loc.setSuminsured(data.getBuildingSuminsured()==null?"" : data.getBuildingSuminsured().toPlainString());
+//				loc.setSectionId("99999");
+//				buildLocList.add(loc);
 				
 				// Document 
 				DocumentDetails  document = new DocumentDetails();
@@ -707,20 +713,20 @@ private BuildingDetailsRepository BuildingRepo;
 				
 				List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
 							
-				// Response
-				List<PassengerSectionDetails> secList = new ArrayList<PassengerSectionDetails>();
-				// Passenger
-				PassengerSectionDetails traSec = new PassengerSectionDetails(); 
-				
-				traSec.setSectionId(tra.getSectionId()==null?"":tra.getSectionId().toString());
-				traSec.setSectionName( tra.getSectionName());
-				traSec.setCovers(coverListRes);
-				traSec.setPassengerId(tra.getPassengerId().toString() );
-				traSec.setPassengerName(tra.getPassengerName());
-				traSec.setGroupDesc(groupRes.stream().filter( o -> o.getCode().equalsIgnoreCase(tra.getGroupId().toString()) ).collect(Collectors.toList()).get(0).getCodeDesc()) ;		
-				traSec.setGroupId(tra.getGroupId().toString());
-				secList.add(traSec);
-				travelDetails.setSectionDetails(secList);
+//				// Response
+//				List<PassengerSectionDetails> secList = new ArrayList<PassengerSectionDetails>();
+//				// Passenger
+//				PassengerSectionDetails traSec = new PassengerSectionDetails(); 
+//				
+//				traSec.setSectionId(tra.getSectionId()==null?"":tra.getSectionId().toString());
+//				traSec.setSectionName( tra.getSectionName());
+//				traSec.setCovers(coverListRes);
+//				traSec.setPassengerId(tra.getPassengerId().toString() );
+//				traSec.setPassengerName(tra.getPassengerName());
+//				traSec.setGroupDesc(groupRes.stream().filter( o -> o.getCode().equalsIgnoreCase(tra.getGroupId().toString()) ).collect(Collectors.toList()).get(0).getCodeDesc()) ;		
+//				traSec.setGroupId(tra.getGroupId().toString());
+//				secList.add(traSec);
+//				travelDetails.setSectionDetails(secList);
 				
 				// Document 
 				DocumentDetails  document = new DocumentDetails();
@@ -728,6 +734,14 @@ private BuildingDetailsRepository BuildingRepo;
 				document.setRiskId(tra.getPassengerId().toString());
 				document.setSectionId(tra.getSectionId().toString());
 				documentDetails.add(document);
+				
+				travelDetails.setSectionId(tra.getSectionId()==null?"":tra.getSectionId().toString());
+				travelDetails.setSectionName( tra.getSectionName());
+				travelDetails.setCovers(coverListRes);
+				travelDetails.setPassengerId(tra.getPassengerId().toString() );
+				travelDetails.setPassengerName(tra.getPassengerName());
+				travelDetails.setGroupDesc(groupRes.stream().filter( o -> o.getCode().equalsIgnoreCase(tra.getGroupId().toString()) ).collect(Collectors.toList()).get(0).getCodeDesc()) ;		
+				travelDetails.setGroupId(tra.getGroupId().toString());
 				
 				travelResList.add(travelDetails);
 				
