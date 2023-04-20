@@ -1,16 +1,11 @@
 package com.maan.eway.common.service.impl;
 
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -20,101 +15,37 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dozer.DozerBeanMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.maan.eway.bean.EserviceBuildingDetails;
+import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.SearchReq;
-
-import com.maan.eway.common.service.BuildingSearchService;
-
-import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
-import com.maan.eway.repository.CoverMasterRepository;
-import com.maan.eway.repository.EServiceMotorDetailsRepository;
-import com.maan.eway.repository.EndtTypeMasterRepository;
-import com.maan.eway.repository.EserviceCustomerDetailsRepository;
-import com.maan.eway.repository.HomePositionMasterRepository;
-import com.maan.eway.repository.MotorDataDetailsRepository;
-import com.maan.eway.repository.MotorDriverDetailsRepository;
-import com.maan.eway.repository.PersonalInfoRepository;
-import com.maan.eway.repository.PolicyCoverDataRepository;
-import com.maan.eway.repository.SeqCustidRepository;
-import com.maan.eway.repository.SeqCustrefnoRepository;
-import com.maan.eway.repository.SeqQuotenoRepository;
-import com.maan.eway.repository.SeqRefnoRepository;
-import com.maan.eway.res.CopyQuoteSuccessRes;
-import com.maan.eway.res.DropDownRes;
-import com.maan.eway.res.SuccessRes;
-
+import com.maan.eway.common.service.CommonSearchService;
 
 @Service
-@Transactional
-public class BuildingSearchServiceImpl implements BuildingSearchService {
+public class CommonSearchServiceImpl implements CommonSearchService{
+	
+	
 	@PersistenceContext
 	private EntityManager em;
+	
+	
+	private Logger log = LogManager.getLogger(CommonSearchServiceImpl.class);
 
-	private Logger log = LogManager.getLogger(BuildingSearchServiceImpl.class);
 
-	@Autowired
-	private HomePositionMasterRepository homePosistionRepo;
-	
-	@Autowired
-	private PersonalInfoRepository personalInforepo;
-	
-	@Autowired
-	private PolicyCoverDataRepository policyCoverDataRepo;
-	
-	@Autowired
-	private MotorDataDetailsRepository motorDataDetepo;
-	
-	@Autowired
-	private EServiceMotorDetailsRepository repo;
-	
-	@Autowired
-	private EserviceCustomerDetailsRepository custRepo ;
-	
-	@Autowired
-	private SeqQuotenoRepository quoteNoRepo ;
-	
-	@Autowired
-	private SeqCustidRepository custIdRepo ;
-
-	@Autowired
-	private SeqRefnoRepository refNoRepo ;
-	
-	@Autowired
-	private GenerateSeqNoServiceImpl seqNo ;
-	
-	@Autowired
-	private SeqCustrefnoRepository custRefRepo  ;
-	
-	@Autowired
-	private EndtTypeMasterRepository endtTypeRepo;
-	
-	@Autowired
-	private MotorDriverDetailsRepository motordrivDetepo;
-	
-	@Autowired
-	private CoverDocumentUploadDetailsRepository coverDocUploadDetails;
-
-	@Autowired
-	private CoverMasterRepository coverMasterRepo;
 
 	@Override
-	public List<Tuple> searchBuilding(SearchReq req, List<String> branches) {
+	public List<Tuple> searchCommon(SearchReq req, List<String> branches) {
+		// TODO Auto-generated method stub
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		List<Tuple> searchQuote = new ArrayList<Tuple>();
 		try {
@@ -125,19 +56,20 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 			String loginId = req.getLoginId();
 			String userType = req.getUserType();
 			String productId=req.getProductId();
+
 			if ("RequestReferenceNo".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchBuildingDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+				searchQuote = commonDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			} else if ("CustomerReferenceNo".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchBuildingDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+				searchQuote = commonDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			} else if ("CustomerName".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchBuildingDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+				searchQuote = commonDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			} else if ("QuoteNumber".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchBuildingDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+				searchQuote = commonDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			} 
 			else if ("MobileNumber".equalsIgnoreCase(searchKey)) {
-				searchQuote = searchBuildingDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+				searchQuote = commonDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			}
-		} catch (Exception e) {
+			} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
 			return null;
@@ -146,7 +78,7 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 	}
 
 	@Override
-	public List<Tuple> searchBuildingDetails(String searchKey, String searchValue, String companyId, String loginId,
+	public List<Tuple> commonDetails(String searchKey, String searchValue, String companyId, String loginId,
 			String userType, List<String> branches,String productId) {
 		// TODO Auto-generated method stub
 		List<Tuple> customerDetailsList = new ArrayList<Tuple>();
@@ -156,12 +88,12 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
 
-			Root<EserviceBuildingDetails> c = query.from(EserviceBuildingDetails.class);
+			Root<EserviceCommonDetails> c = query.from(EserviceCommonDetails.class);
 			Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
 			
 			query.multiselect(c.alias("c"),
 					cus.get("clientName").alias("clientName"),
-					cb.count(c).alias("idsCount"),cus.get("mobileNo1").alias("mobileNumber"));
+					cus.get("mobileNo1").alias("mobileNumber"),cb.count(c).alias("idsCount"));
 
 
 			// Order By
@@ -172,21 +104,20 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 			Predicate n3 = null;
 			Predicate n4 = null;
 			Predicate n5 = null;
+	
+
 			// Where
 			if (searchKey.equalsIgnoreCase("RequestReferenceNo")) {
 				n1 = cb.equal(cb.lower(c.get("requestReferenceNo")), searchValue);
 			} else if (searchKey.equalsIgnoreCase("CustomerReferenceNo")) {
 				n1 = cb.equal(cb.lower(c.get("customerReferenceNo")), searchValue);
-			
 			} else if (searchKey.equalsIgnoreCase("QuoteNumber")) {
 				n1 = cb.equal(cb.lower(c.get("quoteNo")), searchValue);
-				
 			}
-			 else if (searchKey.equalsIgnoreCase("MobileNumber")) {
+				else if (searchKey.equalsIgnoreCase("MobileNumber")) {
 					n1 = cb.equal(cb.lower(cus.get("mobileNo1")), searchValue);
 			 }
-			
-			else if (searchKey.equalsIgnoreCase("CustomerName")) {
+			 else if (searchKey.equalsIgnoreCase("CustomerName")) {
 				n1 = cb.like(cb.lower(cus.get("clientName")), "%" + searchValue + "%");
 				n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
 			}
@@ -194,7 +125,6 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 			Predicate n2 = cb.equal(c.get("companyId"), companyId);
 			Predicate n6 = cb.equal(c.get("productId"), productId);
 
-			
 
 			if ("issuer".equalsIgnoreCase(userType)) {
 				n3 = cb.equal(c.get("applicationId"), loginId);
@@ -221,15 +151,15 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 			query.where(n1,n2,n3,n4,n5,n6)
 			.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),cus.get("mobileNo1"),
 					c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
-					c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
-					c.get("rejectReason"),c.get("riskId"),c.get("insuranceType"))
+					c.get("customerId"), c.get("policyStartDate"), c.get("occupationType"),c.get("policyEndDate"),
+					c.get("rejectReason"),c.get("riskId"))
 			.orderBy(orderList);
 			if (searchKey.equalsIgnoreCase("CustomerName")) {
 				query.where(n1, n2,n4,n5,n6)
-				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),cus.get("mobileNo1"),
+				.groupBy(c.get("customerReferenceNo"),cus.get("clientName"), c.get("companyId"),cus.get("mobileNo1"),
 						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
-						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
-						c.get("rejectReason"),c.get("riskId"),c.get("insuranceType"))
+						c.get("customerId"), c.get("policyStartDate"), c.get("occupationType"),c.get("policyEndDate"),
+						c.get("rejectReason"),c.get("riskId"))
 				.orderBy(orderList);
 			}
 			
@@ -245,6 +175,8 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 			return null;
 		}
 		return customerDetailsList;
-	}
-	}
-		
+
+}
+
+
+}
