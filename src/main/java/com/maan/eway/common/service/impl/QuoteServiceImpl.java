@@ -700,12 +700,13 @@ private BuildingDetailsRepository BuildingRepo;
 			List<EserviceTravelGetRes>   travelResList = new ArrayList<EserviceTravelGetRes>();
 			List<DocumentDetails> documentDetails = new ArrayList<DocumentDetails>();
 			
+			
 			for (TravelPassengerDetails tra :  totalDatas) {
 				EserviceTravelGetRes travelDetails = new  EserviceTravelGetRes()  ;
 				dozerMapper.map(tra, travelDetails);
-				travelDetails.setRiskId("1");
+				travelDetails.setRiskId(tra.getPassengerId().toString());
 				travelDetails.setSectionId(tra.getSectionId()==null?"":tra.getSectionId().toString());
-				
+				List<PassengerSectionDetails>  SectionList = new ArrayList<PassengerSectionDetails>();	
 				// Cover Details
 				List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(tra.getPassengerId()))).collect(Collectors.toList());
 				
@@ -735,16 +736,18 @@ private BuildingDetailsRepository BuildingRepo;
 				document.setSectionId(tra.getSectionId().toString());
 				documentDetails.add(document);
 				
-				travelDetails.setSectionId(tra.getSectionId()==null?"":tra.getSectionId().toString());
-				travelDetails.setSectionName( tra.getSectionName());
-				travelDetails.setCovers(coverListRes);
-				travelDetails.setPassengerId(tra.getPassengerId().toString() );
-				travelDetails.setPassengerName(tra.getPassengerName());
-				travelDetails.setGroupDesc(groupRes.stream().filter( o -> o.getCode().equalsIgnoreCase(tra.getGroupId().toString()) ).collect(Collectors.toList()).get(0).getCodeDesc()) ;		
-				travelDetails.setGroupId(tra.getGroupId().toString());
 				
-				travelResList.add(travelDetails);
+				PassengerSectionDetails sec = new PassengerSectionDetails();
+				sec.setSectionId(tra.getSectionId()==null?"":tra.getSectionId().toString());
+				sec.setSectionName( tra.getSectionName());
+				sec.setCovers(coverListRes);
+				sec.setPassengerId(tra.getPassengerId().toString() );
+				sec.setPassengerName(tra.getPassengerName());
+				sec.setGroupDesc(groupRes.stream().filter( o -> o.getCode().equalsIgnoreCase(tra.getGroupId().toString()) ).collect(Collectors.toList()).get(0).getCodeDesc()) ;		
+				sec.setGroupId(tra.getGroupId().toString());
 				
+				SectionList.add(sec);
+				travelDetails.setSectionDetails(SectionList);			
 			}
 		
 			viewRes.setRiskDetails(travelResList);	
