@@ -69,6 +69,11 @@ public class EserviceTravelGetRes {
 		@JsonProperty("SectionName")
 		private  String sectionName;	
 		
+		@JsonProperty("PassengerId")
+		private  String passengerId;	
+		
+		@JsonProperty("PassengerName")
+		private  String passengerName;	
 		
 		 @JsonProperty("SectionDetails")
 		 private List<PassengerSectionDetails>    sectionDetails;

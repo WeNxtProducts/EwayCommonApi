@@ -706,6 +706,9 @@ private BuildingDetailsRepository BuildingRepo;
 				dozerMapper.map(tra, travelDetails);
 				travelDetails.setRiskId(tra.getPassengerId().toString());
 				travelDetails.setSectionId(tra.getSectionId()==null?"":tra.getSectionId().toString());
+				travelDetails.setPassengerId(tra.getPassengerId().toString());
+				travelDetails.setPassengerName(tra.getPassengerName());
+				
 				List<PassengerSectionDetails>  SectionList = new ArrayList<PassengerSectionDetails>();	
 				// Cover Details
 				List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(tra.getPassengerId()))).collect(Collectors.toList());
