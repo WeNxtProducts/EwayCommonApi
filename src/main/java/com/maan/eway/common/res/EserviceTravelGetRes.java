@@ -83,6 +83,6 @@ public class EserviceTravelGetRes {
 		
 		@JsonProperty("Covers")
 		private  List<CoverRes> covers ;
-	}
+	
 		
 }
