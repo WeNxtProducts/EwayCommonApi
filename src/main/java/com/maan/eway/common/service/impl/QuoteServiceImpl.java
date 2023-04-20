@@ -750,7 +750,8 @@ private BuildingDetailsRepository BuildingRepo;
 				sec.setGroupId(tra.getGroupId().toString());
 				
 				SectionList.add(sec);
-				travelDetails.setSectionDetails(SectionList);			
+				travelDetails.setSectionDetails(SectionList);	
+				travelResList.add(travelDetails);
 			}
 		
 			viewRes.setRiskDetails(travelResList);	
