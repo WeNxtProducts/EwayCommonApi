@@ -26,6 +26,7 @@ import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
+import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
 import com.maan.eway.common.res.EserviceSaveRes;
 import com.maan.eway.common.res.TravelCopyRes;
@@ -217,7 +218,7 @@ public class CopyTravelRaw {
 				// Find All
 				Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 				Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
-
+				Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
 				// Select
 				query.multiselect(//cb.literal(Long.parseLong("1")).alias("idsCount"),
 						// Customer Info
@@ -230,14 +231,17 @@ public class CopyTravelRaw {
 								.alias("quoteNo"),
 						cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId"))
 								.otherwise(m.get("customerId")).alias("customerId"),
-						m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
+						m.get("travelStartDate").alias("policyStartDate"), m.get("travelEndDate").alias("policyEndDate"),
 						m.get("endorsementType").alias("endorsementTypeId"),
 						m.get("endorsementTypeDesc").alias("endorsementDesc"),
 						m.get("endtCategDesc").alias("endorsementCategoryDesc"),
 						m.get("endorsementEffdate").alias("effectiveDate"),
 						m.get("endtStatus").alias("endorsementStatus"),
 						m.get("policyNo").alias("policyNo"),
-						m.get("endorsementRemarks").alias("endorsementRemarks")
+						m.get("endorsementRemarks").alias("endorsementRemarks"),
+						//Home Position Master
+						h.get("overallPremiumLc").alias("overallPremiumLc"), h.get("overallPremiumFc").alias("overallPremiumFc"),
+						h.get("endtPremium").alias("endtPremium"), h.get("currency").alias("currency")
 						
 						);
 			 
@@ -251,6 +255,7 @@ public class CopyTravelRaw {
 				Predicate n3 = cb.equal(m.get("productId"), request.getProductId());
 				Predicate n4 = cb.in(m.get("status")).value(Arrays.asList("E","P"));  // m.get("status").in("E","P"));
 				Predicate n5 = cb.like(m.get("originalPolicyNo"), request.getPolicyNo());
+				Predicate n7 = cb.like(h.get("quoteNo"), m.get("quoteNo"));
 				//Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), endDate);
 				//Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
 
@@ -270,7 +275,7 @@ public class CopyTravelRaw {
 					n8 = e0.in(branches);
 				}*/
 
-				query.where(n1, n2, n3, n4, n5 )
+				query.where(n1, n2, n3, n4, n5,n7)
 						/*.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 								m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 								m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"))*/

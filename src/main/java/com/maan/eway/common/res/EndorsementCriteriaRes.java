@@ -1,5 +1,6 @@
 package com.maan.eway.common.res;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -46,4 +47,9 @@ public class EndorsementCriteriaRes {
 		private String policyNo;
 		private String endorsementRemarks;
 
+		
+		private BigDecimal     overallPremiumLc ;
+		private BigDecimal     overallPremiumFc ;
+		private BigDecimal       endtPremium ;
+		private String     currency ;
 }

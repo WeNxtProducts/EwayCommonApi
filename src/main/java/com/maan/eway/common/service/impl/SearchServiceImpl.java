@@ -1075,7 +1075,6 @@ public class SearchServiceImpl implements SearchService {
 	@Override
 	public SearchPremiumDetailsRes adminPremiumSearch(SearchReq req) {
 		SearchPremiumDetailsRes viewRes = new SearchPremiumDetailsRes();
-		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			List<MotorDataDetails> motorDatas=null;
 			List<PolicyCoverData> covers=null;
