@@ -19,7 +19,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -38,16 +37,12 @@ import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dozer.DozerBeanMapper;
-import org.dozer.inject.DozerBeanContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
@@ -61,12 +56,10 @@ import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MasterReferralDetails;
-import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.SeqCustid;
 import com.maan.eway.bean.SeqQuoteno;
 import com.maan.eway.bean.UwQuestionsDetails;
-import com.maan.eway.common.req.AdminReferalStatusReq;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.IndividualReferalReq;
 import com.maan.eway.common.req.NewQuoteReq;
@@ -110,7 +103,6 @@ import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.PersonalAccidentRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
-import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.ProductMasterRepository;
 import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.repository.SeqCustidRepository;
@@ -118,12 +110,10 @@ import com.maan.eway.repository.SeqQuotenoRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerHistoryRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
-import com.maan.eway.res.DropDownRes;
+import com.maan.eway.req.calcengine.ReferralApi;
 import com.maan.eway.res.ReferalResponse;
-import com.maan.eway.res.SuccessRes;
-import com.maan.eway.res.referal.MasterReferal;
+import com.maan.eway.service.CalculatorEngine;
 import com.maan.eway.thread.MyTaskList;
-import com.maan.eway.upgrade.criteria.SpecCriteria;
 
 @Service
 @Transactional
@@ -260,6 +250,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	
 	@Autowired
 	private TrackingDetailsService trackingService;
+	
+	@Autowired
+	private CalculatorEngine calcEngine;
 	
 	@Override
 	public CommonRes call_OT_Insert(NewQuoteReq req) {
@@ -1455,8 +1448,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
 				}
 
-				// UnderWriter Info
-				List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),cusRefNo.get(0).getLoginId());
+				// UnderWriter Info Old Setup.
+				/*List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),cusRefNo.get(0).getLoginId());
 				List<UnderWriter> underWrite = new ArrayList<UnderWriter>();
 				if (underWriterList != null) {
 					for (Tuple underWriterData : underWriterList) {
@@ -1469,8 +1462,17 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
 						underWrite.add(underWriterReq);
 					}
-				}
-				n.setUnderwriters(underWrite);
+				}*/
+				ReferralApi r=ReferralApi.builder()
+								.branchCode(cusRefNo.get(0).getBranchCode())
+								.insuranceId(cusRefNo.get(0).getCompanyId())
+								.productId(cusRefNo.get(0).getProductId())
+								//.suminsured(req. )
+								
+								.build();
+						
+				calcEngine.getReferalList(null);
+				//n.setUnderwriters(underWrite);
 				//Company Info
 				n.setCompanyid(cusRefNo.get(0).getCompanyId());
 				n.setCompanyName(cusRefNo.get(0).getCompanyName());

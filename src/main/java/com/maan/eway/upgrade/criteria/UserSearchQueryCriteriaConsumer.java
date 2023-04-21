@@ -33,12 +33,14 @@ public class UserSearchQueryCriteriaConsumer implements Consumer<SearchCriteria>
             predicate = builder.and(predicate, builder.greaterThanOrEqualTo(r.get(param.getKey()), param.getValue().toString()));
         } else if (param.getOperation().equalsIgnoreCase("<")) {
             predicate = builder.and(predicate, builder.lessThanOrEqualTo(r.get(param.getKey()), param.getValue().toString()));
-        } else if (param.getOperation().equalsIgnoreCase(":")) {
+        } else if (param.getOperation().equalsIgnoreCase("%")) {
+        	 predicate = builder.and(predicate, builder.like(builder.upper(r.get(param.getKey())),"%"+param.getValue().toString().toUpperCase()+"%"));
+        }else if (param.getOperation().equalsIgnoreCase(":")) {
         	 if (param.getKey().indexOf(".")==-1 &&  r.get(param.getKey()).getJavaType() == String.class) {
         		 if(param.getValues()!=null && param.getValues().size()>0) {
         			 predicate = builder.and(predicate,r.get(param.getKey()).in(param.getValues()));
             	 }else       		 
-            		 predicate = builder.and(predicate, builder.equal(r.get(param.getKey()),  param.getValue()));
+            		 predicate = builder.and(predicate, builder.equal(builder.upper(r.get(param.getKey())),param.getValue().toString().toUpperCase()));
         	 }else if(param.getKey().indexOf(".")!=-1 ) {
              	String[] embd = param.getKey().split("\\.");
              	if(r.get(embd[0]).get(embd[1]).getJavaType()==String.class) {

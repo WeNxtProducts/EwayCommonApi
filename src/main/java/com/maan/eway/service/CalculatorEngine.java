@@ -7,6 +7,8 @@ import javax.persistence.Tuple;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.req.calcengine.CalcCommission;
 import com.maan.eway.req.calcengine.CalcEngine;
+import com.maan.eway.req.calcengine.ReferralApi;
+import com.maan.eway.res.calc.AdminReferral;
 import com.maan.eway.res.calc.DebitAndCredit;
 
 public interface CalculatorEngine {
@@ -16,4 +18,6 @@ public interface CalculatorEngine {
 	EserviceMotorDetailsSaveRes  calculator(CalcEngine engine,String token);
 	EserviceMotorDetailsSaveRes referalCalculator(CalcEngine request);
 	 List<DebitAndCredit> commissionCalc(CalcCommission request);
+
+	 List<AdminReferral> getReferalList(ReferralApi request);
 }

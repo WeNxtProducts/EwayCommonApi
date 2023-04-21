@@ -12,11 +12,10 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
-
-import com.maan.eway.bean.LoginReferalMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+import com.maan.eway.bean.LoginReferalMaster;
 import com.maan.eway.bean.LoginReferalMasterId;
 /**
  * <h2>LoginReferalMasterRepository</h2>

@@ -12,4 +12,6 @@ public class SpecCriteria {
 	private List<String> columns;
 	private List<SearchCriteria> wheres;
 	private List<String> orderby;
+	private List<JoinCriteria> joins;
+	
 }

@@ -1,8 +1,9 @@
 package com.maan.eway.common.controller;
 
 import java.util.List;
-import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -13,6 +14,8 @@ import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.service.SeqQuotenoService;
 import com.maan.eway.req.calcengine.CalcCommission;
 import com.maan.eway.req.calcengine.CalcEngine;
+import com.maan.eway.req.calcengine.ReferralApi;
+import com.maan.eway.res.calc.AdminReferral;
 import com.maan.eway.res.calc.DebitAndCredit;
 import com.maan.eway.res.referal.MasterReferal;
 import com.maan.eway.service.CalculatorEngine;
@@ -81,14 +84,30 @@ public class RatingCalculatorController {
 			e.printStackTrace();
 		} 
 		return response;
-	} 
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	}
+
+    @PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/sequence")
 	@ApiOperation("This Method is to get by id")
 	public String getsequence() {
 		return seq.create();
 	}
 	 
+    @PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/referallist")
+	@ApiOperation("This Method is to get by id")
+	public List<AdminReferral> getReferalList(@RequestBody ReferralApi request) {
+
+    	List<AdminReferral> response=null;
+		try {
+			
+			response = service.getReferalList(request);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		return response;
 	
+	}
+
 	
 }
