@@ -125,5 +125,23 @@ public class EserviceBuildingsDetailsRes implements Serializable {
     private List<SectionDetails>    sectionDetails;
 
 
+	@JsonProperty("PremiumLc")
+    private Double premiumLc;	
+
+	@JsonProperty("PremiumFc")
+    private Double premiumFc;	
+
+	@JsonProperty("OverAllPremiumFc")
+    private Double overAllPremiumFc;	
+
+	@JsonProperty("OverAllPremiumLc")
+    private Double overAllPremiumLc;	
+
+	@JsonProperty("CommissionAmount")
+    private String commissionAmount;	
+
+	@JsonProperty("CommissionPercentage")
+    private String commissionPercentage;	
+
 	  
 }

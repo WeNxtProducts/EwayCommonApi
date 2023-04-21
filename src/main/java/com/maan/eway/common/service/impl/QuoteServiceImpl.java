@@ -1,6 +1,8 @@
 package com.maan.eway.common.service.impl;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -34,6 +36,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CommonDataDetails;
@@ -352,7 +355,54 @@ private BuildingDetailsRepository BuildingRepo;
 	}
 
 
-	
+	private List<BrokerCommissionDetails> getPolicyName( String companyId, String productId, String loginId, String agencyCode, String policyType) {
+		// TODO Auto-generated method stub
+		List<BrokerCommissionDetails> list = new ArrayList<BrokerCommissionDetails>();
+		try {
+			Date today = new Date();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<BrokerCommissionDetails> query = cb.createQuery(BrokerCommissionDetails.class);
+
+			// Find All
+			Root<BrokerCommissionDetails> b = query.from(BrokerCommissionDetails.class);
+
+			// Select
+			query.select(b);
+
+			// Effective Date Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<BrokerCommissionDetails> ocpm1 = amendId.from(BrokerCommissionDetails.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("id"), b.get("id"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a4 = cb.equal(ocpm1.get("policyType"), b.get("policyType"));
+			Predicate a5 = cb.equal(ocpm1.get("loginId"), b.get("loginId"));
+			Predicate a6 = cb.equal(ocpm1.get("agencyCode"), b.get("agencyCode"));
+			
+			amendId.where(a1,a2,a3,a4,a5,a6);
+
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("policyType"), policyType);
+			Predicate n3 = cb.equal(b.get("companyId"),companyId);
+			Predicate n4 = cb.equal(b.get("productId"),productId);
+			Predicate n5 = cb.equal(b.get("loginId"),loginId);
+			Predicate n6 = cb.equal(b.get("agencyCode"),agencyCode);
+			
+			query.where(n1,n2,n3,n4,n5,n6);
+			
+			// Get Result
+			TypedQuery<BrokerCommissionDetails> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		}
+		return list;
+	}
+
 	public ViewQuoteRes getMotorProductDetails(ViewQuoteReq req) {
 		ViewQuoteRes viewRes = new ViewQuoteRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -367,10 +417,32 @@ private BuildingDetailsRepository BuildingRepo;
 			List<DocumentDetails> documentDetails = new ArrayList<DocumentDetails>();			
 			for (MotorDataDetails mot :  motorDatas) {
 				EserviceMotorDetailsRes vehicleDetails = new  EserviceMotorDetailsRes()  ;
-				
+				 List<BrokerCommissionDetails> policylist = getPolicyName(mot.getCompanyId() , mot.getProductId().toString(), mot.getCreatedBy(),mot.getAgencyCode(), mot.getPolicyType());
+				 Double commissionPercent =0.0;
+			
+				 if(policylist.size()>0 && policylist!=null) {
+
+				 commissionPercent = policylist.get(0).getCommissionPercentage().toString()==null?0: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
+				 }
+				 else {
+					 commissionPercent =5.0;
+				 }
+				 String premiumFc = mot.getOverallPremiumFc().toString();
+				 String vatPremiumFc =	mot.getOverallPremiumFc().toString();
+				 BigDecimal commission=	new BigDecimal(premiumFc)
+			 				.multiply(new BigDecimal(commissionPercent))
+	 						.divide(BigDecimal.valueOf(100D))
+	 						.setScale(new MathContext(3, RoundingMode.HALF_UP)
+	 						.getPrecision(),RoundingMode.HALF_UP);
+	
 				// Mot
 				dozerMapper.map(mot, vehicleDetails);
-				
+				vehicleDetails.setOverAllPremiumFc(mot.getOverallPremiumFc()==null?0: mot.getOverallPremiumFc() );
+				vehicleDetails.setOverAllPremiumLc(mot.getOverallPremiumLc()==null?0:mot.getOverallPremiumLc());
+				vehicleDetails.setPremiumFc(mot.getActualPremiumFc()==null?0:mot.getActualPremiumFc() );
+				vehicleDetails.setPremiumLc(mot.getActualPremiumLc()==null?0:mot.getActualPremiumLc());
+				vehicleDetails.setCommissionAmount(commission.toString()==null?"":commission.toString());
+				vehicleDetails.setCommissionPercentage(commissionPercent.toString()==null?"":commissionPercent.toString());
 				// Cover Details
 				List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(mot.getVehicleId()))).collect(Collectors.toList());
 				
@@ -394,7 +466,7 @@ private BuildingDetailsRepository BuildingRepo;
 				vehicleDetails.setDriverDetails(driverResList);
 				vehicleDetails.setDocumentsTitle(mot.getSectionName());			
 				vehicleDetails.setSectionId(mot.getSectionId()==null?"":mot.getSectionId().toString());
-				
+			
 				// Section Details
 				SectionDetails sec = new SectionDetails(); 
 				sec.setSectionId(mot.getSectionId()==null?"":mot.getSectionId().toString());
@@ -450,6 +522,32 @@ private BuildingDetailsRepository BuildingRepo;
 			dozerMapper.map(buildData, buildingRes);
 			buildingRes.setDocumentsTitle(buildData.getProductDesc());	
 			
+			
+			//Broker Commission 
+			List<BrokerCommissionDetails> policylist = getPolicyName(buildData.getCompanyId() , buildData.getProductId().toString(), buildData.getCreatedBy(),buildData.getAgencyCode(),"99999");
+			 Double commissionPercent = 0.0;
+			if(policylist.size()>0 && policylist!=null) {
+			commissionPercent = policylist.get(0).getCommissionPercentage().toString()==null?0: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
+			 	}
+			else {
+			 commissionPercent = 5.0; 
+			}
+			 String premiumFc = buildData.getOverallPremiumFc().toString();
+			 String vatPremiumFc =	buildData.getOverallPremiumFc().toString();
+			 BigDecimal commission=	new BigDecimal(premiumFc)
+		 				.multiply(new BigDecimal(commissionPercent))
+ 						.divide(BigDecimal.valueOf(100D))
+ 						.setScale(new MathContext(3, RoundingMode.HALF_UP)
+ 						.getPrecision(),RoundingMode.HALF_UP);
+			 buildingRes.setOverAllPremiumFc(buildData.getOverallPremiumFc().toString()==null?0D: Double.valueOf(buildData.getOverallPremiumFc().toString()));
+			 buildingRes.setOverAllPremiumLc(buildData.getOverallPremiumLc().toString()==null?0D:Double.valueOf(buildData.getOverallPremiumLc().toString()));
+			 buildingRes.setPremiumFc(buildData.getActualPremiumFc().toString()==null?0:Double.valueOf(buildData.getActualPremiumFc().toString()));
+			 buildingRes.setPremiumLc(buildData.getActualPremiumLc().toString()==null?0:Double.valueOf(buildData.getActualPremiumLc().toString()));
+			 buildingRes.setCommissionAmount(commission.toString()==null?"":commission.toString());
+			 buildingRes.setCommissionPercentage(commissionPercent.toString()==null?"":commissionPercent.toString());
+
+			
+			
 			List<SectionDetails>  buildingSectionList = new ArrayList<SectionDetails>();
 			for (EserviceSectionDetails sec :  secDatas) {
 				if( sec.getSectionId().equalsIgnoreCase("35") ) {
@@ -462,7 +560,8 @@ private BuildingDetailsRepository BuildingRepo;
 						Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
 						
 						List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
-						
+
+
 						// Accident
 //						PaccGetRes pacRes = new  PaccGetRes()  ;
 //						dozerMapper.map(acc, pacRes);
@@ -532,6 +631,7 @@ private BuildingDetailsRepository BuildingRepo;
 				document.setRiskId(data.getRiskId().toString());
 				document.setSectionId("99999");
 				documentDetails.add(document);
+				
 				
 			}
 			totalList.addAll(buildLocList);
@@ -710,6 +810,30 @@ private BuildingDetailsRepository BuildingRepo;
 				travelDetails.setPassengerName(tra.getPassengerName());
 				
 				List<PassengerSectionDetails>  SectionList = new ArrayList<PassengerSectionDetails>();	
+				 List<BrokerCommissionDetails> policylist = getPolicyName(tra.getCompanyId() , tra.getProductId().toString(), tra.getCreatedBy(),tra.getBrokerCode(), tra.getSectionId().toString());
+				 Double commissionPercent =0.0;
+				 if(policylist.size()>0 && policylist!=null) {
+				 commissionPercent = policylist.get(0).getCommissionPercentage().toString()==null?0: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
+				 }
+				 else {
+				 commissionPercent =5.0;
+				 }
+				 String premiumFc = tra.getOverallPremiumFc().toString();
+				 String vatPremiumFc =	tra.getOverallPremiumFc().toString();
+				 BigDecimal commission=	new BigDecimal(premiumFc)
+			 				.multiply(new BigDecimal(commissionPercent))
+	 						.divide(BigDecimal.valueOf(100D))
+	 						.setScale(new MathContext(3, RoundingMode.HALF_UP)
+	 						.getPrecision(),RoundingMode.HALF_UP);
+	
+				 travelDetails.setOverAllPremiumFc(tra.getOverallPremiumFc()==null?0: tra.getOverallPremiumFc() );
+				 travelDetails.setOverAllPremiumLc(tra.getOverallPremiumLc()==null?0:tra.getOverallPremiumLc());
+				 travelDetails.setPremiumFc(tra.getActualPremiumFc()==null?0:tra.getActualPremiumFc() );
+				 travelDetails.setPremiumLc(tra.getActualPremiumLc()==null?0:tra.getActualPremiumLc());
+				 travelDetails.setCommissionAmount(commission.toString()==null?"":commission.toString());
+				 travelDetails.setCommissionPercentage(commissionPercent.toString()==null?"":commissionPercent.toString());
+
+				
 				// Cover Details
 				List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(tra.getPassengerId()))).collect(Collectors.toList());
 				
@@ -787,9 +911,35 @@ private BuildingDetailsRepository BuildingRepo;
 				List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
 				// Response
 				// Mot
+				 List<BrokerCommissionDetails> policylist = getPolicyName(com.getCompanyId() , com.getProductId().toString(), com.getCreatedBy(),com.getAgencyCode(),"99999");
+			
+				 Double commissionPercent = 0.0;
+					if(policylist.size()>0 && policylist!=null) {
+					
+				 commissionPercent = policylist.get(0).getCommissionPercentage().toString()==null?0: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
+					}
+					else {
+						commissionPercent =5.0;
+					}
+				 String premiumFc = com.getOverallPremiumFc().toString();
+				 String vatPremiumFc =	com.getOverallPremiumFc().toString();
+				 BigDecimal commission=	new BigDecimal(premiumFc)
+			 				.multiply(new BigDecimal(commissionPercent))
+	 						.divide(BigDecimal.valueOf(100D))
+	 						.setScale(new MathContext(3, RoundingMode.HALF_UP)
+	 						.getPrecision(),RoundingMode.HALF_UP);
+
+				
 				EserviceCommonGetRes commonDetails = new  EserviceCommonGetRes()  ;
 				dozerMapper.map(com, commonDetails);
 				commonDetails.setSectionId(com.getSectionId()==null?"":com.getSectionId().toString());
+				commonDetails.setOverAllPremiumFc(com.getOverallPremiumFc()==null?0D:Double.valueOf(com.getOverallPremiumFc().toString()));
+				commonDetails.setOverAllPremiumLc(com.getOverallPremiumLc()==null?0D:Double.valueOf(com.getOverallPremiumLc().toString()));
+				commonDetails.setPremiumFc(com.getActualPremiumFc()==null?0D:Double.valueOf(com.getActualPremiumFc().toString()));
+				commonDetails.setPremiumLc(com.getActualPremiumLc()==null?0D:Double.valueOf(com.getActualPremiumLc().toString()));
+				commonDetails.setCommissionAmount(commission.toString()==null?"":commission.toString());
+				commonDetails.setCommissionPercentage(commissionPercent.toString()==null?"":commissionPercent.toString());
+
 				// Section Details
 				SectionDetails sec = new SectionDetails(); 
 				sec.setSectionId(com.getSectionId()==null?"":com.getSectionId().toString());
