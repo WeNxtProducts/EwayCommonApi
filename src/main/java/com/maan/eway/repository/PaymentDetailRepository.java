@@ -42,5 +42,6 @@ public interface PaymentDetailRepository  extends JpaRepository<PaymentDetail,Pa
 
 	List<PaymentDetail> findByQuoteNoAndPaymentStatusOrderByEntryDateDesc(String quoteNo, String string);
 
+
 	
 }

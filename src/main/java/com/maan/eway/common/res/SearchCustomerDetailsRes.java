@@ -79,7 +79,7 @@ public class SearchCustomerDetailsRes {
 	private Date dobOrRegDate;
 
 	@JsonProperty("WhatsappcodeDesc")
-    private String     whatsappcodeDesc ;
+	private String     whatsappcodeDesc ;
 	
 	@JsonProperty("WhatsappNo")
     private String     whatsappNo ;

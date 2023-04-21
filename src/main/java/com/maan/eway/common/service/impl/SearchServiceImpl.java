@@ -58,6 +58,7 @@ import com.maan.eway.bean.MasterReferralDetails;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.MotorVehicleInfo;
+import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
@@ -133,6 +134,7 @@ import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.MotorVehicleInfoRepository;
+import com.maan.eway.repository.PaymentDetailRepository;
 import com.maan.eway.repository.PaymentInfoRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PremiaCustomerDetailsRepository;
@@ -195,7 +197,7 @@ public class SearchServiceImpl implements SearchService {
 	private CommonGridService commonService ;
 	
 	@Autowired
-	 private PaymentInfoRepository paymentrepo;
+	 private PaymentDetailRepository paymentrepo;
 	
 	@Autowired
 	private PremiaCustomerDetailsRepository premiaRepo;
@@ -452,7 +454,7 @@ public class SearchServiceImpl implements SearchService {
 			}
 			// Motor Product Details
 			if( homeData.getProductId().equals(Integer.valueOf(motorProductId))) {
-				viewRes =  getMotorProductDetails( req);
+				viewRes =  getMotorProductDetails( req,homeData);
 				
 			}
 //			else if( homeData.getProductId().equals(Integer.valueOf(travelProductId))) {
@@ -478,7 +480,7 @@ public class SearchServiceImpl implements SearchService {
 		return viewRes;
 	}
 
-	public AdminViewQuoteRes getMotorProductDetails(SearchReq req) {
+	public AdminViewQuoteRes getMotorProductDetails(SearchReq req,HomePositionMaster homeData) {
 		AdminViewQuoteRes viewRes = new AdminViewQuoteRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
@@ -489,13 +491,22 @@ public class SearchServiceImpl implements SearchService {
 						
 			for (MotorDataDetails mot :  motorDatas) {
 				SearchEserviceMotorDetailsRes vehicleDetails = new  SearchEserviceMotorDetailsRes()  ;
+				EserviceMotorDetails emotordetails=repo.findByQuoteNoAndChassisNumber(mot.getQuoteNo(),mot.getChassisNumber());
 				
 				// Mot
 				dozerMapper.map(mot, vehicleDetails);
-					
-				// Response
+				vehicleDetails.setTppdIncreaeLimit(emotordetails.getTppdIncreaeLimit().toString());
+				vehicleDetails.setAcccessoriesSumInsured(emotordetails.getAcccessoriesSumInsured().toString());
+				vehicleDetails.setWindScreenSumInsured(emotordetails.getWindScreenSumInsured().toString());		
+				vehicleDetails.setCollateralYn(emotordetails.getCollateralYn());
+				vehicleDetails.setCollateralName(emotordetails.getCollateralName());
+				vehicleDetails.setFirstLossPayee(emotordetails.getFirstLossPayee());
 				motorResList.add(vehicleDetails);		
 			}
+			viewRes.setRenewalDateYn(homeData.getRenewalDateYn());
+			viewRes.setRenewalOldExpDate(homeData.getRenewalOldExpDate());
+			viewRes.setRenewalOldPolicy(homeData.getRenewalOldPolicy());
+			viewRes.setRenewalStatus(homeData.getRenewalStatus());
 			viewRes.setRiskDetails(motorResList);
 			
 		} catch ( Exception e) {
@@ -532,6 +543,14 @@ public class SearchServiceImpl implements SearchService {
 					coverRes.setExcessAmount(filterCover.get(0).getExcessAmount()==null ? "" :filterCover.get(0).getExcessAmount().toPlainString() );
 					coverRes.setExcessPercent(filterCover.get(0).getExcessPercent()==null ? "" :filterCover.get(0).getExcessPercent().toPlainString() );
 					coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());	
+					coverRes.setTaxCalcType(filterCover.get(0).getTaxCalcType());
+					coverRes.setTaxDesc(filterCover.get(0).getTaxDesc());
+					coverRes.setTaxExemptCode(filterCover.get(0).getTaxExemptCode());
+					coverRes.setTaxExemptType(filterCover.get(0).getTaxExemptType());
+					coverRes.setIsTaxExtempted(filterCover.get(0).getIsTaxExtempted());
+					coverRes.setTaxRate(filterCover.get(0).getTaxRate());
+					coverRes.setTaxAmount(filterCover.get(0).getTaxAmount());
+					coverRes.setTaxId(Integer.valueOf(filterCover.get(0).getTaxId().toString()));
 					if(!StringUtils.isBlank(filterCover.get(0).getSectionId().toString())){
 						List<SectionMaster> sectiondata=getBySectionId(filterCover.get(0).getSectionId().toString());
 						sectionName=sectiondata.get(0).getSectionName();
@@ -544,14 +563,26 @@ public class SearchServiceImpl implements SearchService {
 			
 					List<PolicyCoverData> filterCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0)).collect(Collectors.toList());
 					coverRes.setCoverId(filterCover.get(0).getCoverId().toString());
-					 coverRes.setCoverName(filterCover.get(0).getCoverName());
-					 coverRes.setCoverDesc(filterCover.get(0).getCoverDesc());
-					 coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
-					 coverRes.setSumInsured(filterCover.get(0).getSumInsured()==null ? null : new BigDecimal(filterCover.get(0).getSumInsured().toString()));
-					 coverRes.setRate(filterCover.get(0).getRate()==null?null : Double.valueOf(filterCover.get(0).getRate().toString()));
-						coverRes.setExcessAmount(filterCover.get(0).getExcessAmount()==null ? "" :filterCover.get(0).getExcessAmount().toPlainString() );
-						coverRes.setExcessPercent(filterCover.get(0).getExcessPercent()==null ? "" :filterCover.get(0).getExcessPercent().toPlainString() );
-						coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());	
+					coverRes.setCoverName(filterCover.get(0).getCoverName());
+					coverRes.setCoverDesc(filterCover.get(0).getCoverDesc());
+					coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
+					coverRes.setSumInsured(filterCover.get(0).getSumInsured() == null ? null
+							: new BigDecimal(filterCover.get(0).getSumInsured().toString()));
+					coverRes.setRate(filterCover.get(0).getRate() == null ? null
+							: Double.valueOf(filterCover.get(0).getRate().toString()));
+					coverRes.setExcessAmount(filterCover.get(0).getExcessAmount() == null ? ""
+							: filterCover.get(0).getExcessAmount().toPlainString());
+					coverRes.setExcessPercent(filterCover.get(0).getExcessPercent() == null ? ""
+							: filterCover.get(0).getExcessPercent().toPlainString());
+					coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());
+					coverRes.setTaxCalcType(filterCover.get(0).getTaxCalcType());
+					coverRes.setTaxDesc(filterCover.get(0).getTaxDesc());
+					coverRes.setTaxExemptCode(filterCover.get(0).getTaxExemptCode());
+					coverRes.setTaxExemptType(filterCover.get(0).getTaxExemptType());
+					coverRes.setIsTaxExtempted(filterCover.get(0).getIsTaxExtempted());
+					coverRes.setTaxRate(filterCover.get(0).getTaxRate());
+					coverRes.setTaxAmount(filterCover.get(0).getTaxAmount());
+					coverRes.setTaxId(Integer.valueOf(filterCover.get(0).getTaxId().toString()));
 					List<SubCoverRes>  subCoverListRes = new ArrayList<SubCoverRes>();
 					List<PolicyCoverData> filterSubCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0)).collect(Collectors.toList());
 					for ( PolicyCoverData subCovers : filterSubCover) {
@@ -570,6 +601,7 @@ public class SearchServiceImpl implements SearchService {
 						coverRes.setExcessAmount(filterCover.get(0).getExcessAmount()==null ? "" :filterCover.get(0).getExcessAmount().toPlainString() );
 						coverRes.setExcessPercent(filterCover.get(0).getExcessPercent()==null ? "" :filterCover.get(0).getExcessPercent().toPlainString() );
 						coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());
+						
 						if(!StringUtils.isBlank(filterCover.get(0).getSectionId().toString())){
 							List<SectionMaster> sectiondata=getBySectionId(filterCover.get(0).getSectionId().toString());
 							sectionName=sectiondata.get(0).getSectionName();
@@ -962,9 +994,6 @@ public class SearchServiceImpl implements SearchService {
 					}
 					
 					 list = perRepo.findByCustomerId(customerId);
-					 
-//					list = motService.searchCutomerDetails(searchKey, searchValue, companyId, loginId, userType,
-//							branches, customerId);
 		} 
 
 				else if (StringUtils.isNotBlank(req.getQuoteNo())) {
@@ -986,11 +1015,6 @@ public class SearchServiceImpl implements SearchService {
 								}
 						}
 					 list = perRepo.findByCustomerId(homeData.getCustomerId());
-				//	SearchCustomerDetailsRes custRes = new SearchCustomerDetailsRes();
-				//	custRes = dozerMapper.map(list, SearchCustomerDetailsRes.class);
-//					list = motService.searchCutomerDetails(searchKey, searchValue, companyId, loginId, userType,
-//							branches, customerId);
-
 				} 
 			
 			}
@@ -1005,6 +1029,7 @@ public class SearchServiceImpl implements SearchService {
 				res.setSourceType(sourceType);
 				res.setBranchCode(list.getBranchCode().toString());
 				res.setSource(source);
+				res.setWhatsappcodeDesc(list.getWhatsappcodeDesc());
 				reslist.add(res);
 				
 //			}
@@ -1193,19 +1218,22 @@ public class SearchServiceImpl implements SearchService {
 //Payment Info
 	@Override
 	public List<SearchPaymentInfoRes> viewPaymentInfo(SearchReq req) {
-		SearchPaymentInfoRes paymentgetres = new SearchPaymentInfoRes();
 		List<SearchPaymentInfoRes> paylist = new ArrayList<SearchPaymentInfoRes>();
 		DozerBeanMapper dozermapper = new DozerBeanMapper();
 
 		try {
-			List<PaymentInfo> paymentinfo = null;
+			List<PaymentDetail> paymentinfo = null;
 			if (StringUtils.isNotBlank(req.getQuoteNo())) {
-				paymentinfo = paymentrepo.findByQuoteNoAndProductId(req.getQuoteNo(),Integer.valueOf(req.getProductId()));
+				paymentinfo = paymentrepo.findByQuoteNo(req.getQuoteNo());
 			}  
 
-			for (PaymentInfo pi : paymentinfo) {
-
+			for (PaymentDetail pi : paymentinfo) {
+				SearchPaymentInfoRes paymentgetres = new SearchPaymentInfoRes();
 				paymentgetres = new DozerBeanMapper().map(pi, SearchPaymentInfoRes.class);
+				if("Y".equalsIgnoreCase(pi.getEmiYn())) {
+					paymentgetres.setInstallmentPeriod(pi.getInstallmentPeriod()+"Months");
+					paymentgetres.setInstallmentMonth(pi.getInstallmentMonth()+"Months");
+				}
 				paylist.add(paymentgetres);
 
 			}

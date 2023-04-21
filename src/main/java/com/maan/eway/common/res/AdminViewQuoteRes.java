@@ -17,6 +17,17 @@ public class AdminViewQuoteRes {
 	@JsonProperty("RiskDetails")
 	private Object  riskDetails ;
 	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("RenewalOldExpDate")
+	private Date renewalOldExpDate;
 
+	@JsonProperty("RenewalDateYn")
+	private String renewalDateYn;
+
+	@JsonProperty("RenewalStatus")
+	private String renewalStatus;
+
+	@JsonProperty("RenewalOldPolicy")
+	private String renewalOldPolicy;
 	 
 }
