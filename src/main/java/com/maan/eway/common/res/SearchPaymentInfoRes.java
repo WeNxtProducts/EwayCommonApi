@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -48,5 +50,19 @@ public class SearchPaymentInfoRes {
 	@JsonProperty("Premium")
 	private String premium;
 	
+    @JsonProperty("PaymentTypedesc")
+    private String  paymentTypedesc ;
+    
+    @JsonProperty("BankName")
+    private String     bankName ;
+    
+    @JsonProperty("ChequeNo")
+    private String     chequeNo;
+
+    @JsonFormat(pattern="dd/MM/yyyy")
+    @JsonProperty("ChequeDate")
+    private Date       chequeDate ;
+
+   
 
 }

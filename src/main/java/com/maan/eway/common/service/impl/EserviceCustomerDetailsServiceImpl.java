@@ -763,12 +763,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
 			saveData.setMobileCode3(req.getMobileCode3()==null?"":req.getMobileCode3());
 			saveData.setWhatsappCode(req.getWhatsappCode());
-					
-			if((StringUtils.isNotBlank(req.getNationality()))&&(StringUtils.isNotBlank(req.getStateCode()))){
-			List<StateMaster> stateCityNames = getStateAndCityName(req.getNationality(), req.getStateCode());
-			saveData.setStateName(stateCityNames.get(0).getStateName() == null ? "" : stateCityNames.get(0).getStateName().toString());
 			saveData.setCityName(req.getCityName());
-			}
+//			if((StringUtils.isNotBlank(req.getNationality()))&&(StringUtils.isNotBlank(req.getStateCode()))){
+//			List<StateMaster> stateCityNames = getStateAndCityName(req.getNationality(), req.getStateCode());
+//			saveData.setStateName(stateCityNames.get(0).getStateName() == null ? "" : stateCityNames.get(0).getStateName().toString());
+//			saveData.setCityName(req.getCityName());
+//			}
 			repository.save(saveData);
 
 			// Response

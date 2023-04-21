@@ -112,6 +112,23 @@ public class SearchEserviceMotorDetailsRes implements Serializable {
 
 	@JsonProperty("Currency")
     private String     currency   ;	
-		
+	
+	@JsonProperty("AcccessoriesSumInsured")
+    private String     acccessoriesSumInsured ;
+	@JsonProperty("WindScreenSumInsured")
+	private String     windScreenSumInsured ;
+	@JsonProperty("TppdIncreaeLimit")
+	private String     tppdIncreaeLimit ;
+	
+	@JsonProperty("CollateralYn")
+	private String     collateralYn ;
+	
+	@JsonProperty("CollateralName")
+	private String     collateralName ;
+	
+	@JsonProperty("FirstLossPayee")
+	private String     firstLossPayee ;
+
+	
 
 }
