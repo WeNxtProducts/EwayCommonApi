@@ -10,17 +10,14 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -35,67 +32,33 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.maan.eway.admin.res.MotorGridCriteriaRes;
-import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
-import com.maan.eway.admin.res.ReferalCommonCriteriaRes;
-import com.maan.eway.admin.res.ReferalCriteriaRes;
-import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.BranchMaster;
-import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.CoverDocumentUploadDetails;
-import com.maan.eway.bean.EmiTransactionDetails;
-import com.maan.eway.bean.EserviceBuildingDetails;
-import com.maan.eway.bean.EserviceCommonDetails;
-import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
-import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.LoginBranchMaster;
-import com.maan.eway.bean.LoginMaster;
-import com.maan.eway.bean.MasterReferralDetails;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.MotorVehicleInfo;
 import com.maan.eway.bean.PaymentDetail;
-import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PremiaCustomerDetails;
+import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.SectionMaster;
-import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.calculator.util.TaxFromFactor;
-import com.maan.eway.common.req.CopyQuoteReq;
-import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
-import com.maan.eway.common.req.EservieMotorDetailsViewRes;
-import com.maan.eway.common.req.ExistingQuoteReq;
-import com.maan.eway.common.req.IssuerQuoteReq;
-import com.maan.eway.common.req.PaymentInformationGetReq;
 import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
-import com.maan.eway.common.req.UpdateLapsedQuoteReq;
-import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.AdminViewQuoteRes;
-import com.maan.eway.common.res.CriteriaCustomerRes;
-import com.maan.eway.common.res.CustomerDetailsGetRes;
-import com.maan.eway.common.res.CustomerDetailsRes;
 import com.maan.eway.common.res.DocumentRes;
-import com.maan.eway.common.res.DriverDetailsRes;
-import com.maan.eway.common.res.EserviceCustomerDetailsRes;
-import com.maan.eway.common.res.EserviceMotorDetailsRes;
-import com.maan.eway.common.res.GetAllMotorDetailsRes;
-import com.maan.eway.common.res.SearchPaymentInfoRes;
-import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
-import com.maan.eway.common.res.QuoteCriteriaRes;
-import com.maan.eway.common.res.QuoteDetailsRes;
-import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.res.SearchCoverDetails;
 import com.maan.eway.common.res.SearchCustomerDetailsRes;
 import com.maan.eway.common.res.SearchDiscount;
 import com.maan.eway.common.res.SearchDriverDetailsRes;
 import com.maan.eway.common.res.SearchEserviceMotorDetailsRes;
 import com.maan.eway.common.res.SearchLoading;
+import com.maan.eway.common.res.SearchPaymentInfoRes;
 import com.maan.eway.common.res.SearchPremiumCoverDetailsRes;
 import com.maan.eway.common.res.SearchPremiumDetailsRes;
 import com.maan.eway.common.res.SearchROPDetailsRes;
@@ -103,23 +66,14 @@ import com.maan.eway.common.res.SearchROPVehicleDetailsRes;
 import com.maan.eway.common.res.SearchROPVehicleRes;
 import com.maan.eway.common.res.SearchRes;
 import com.maan.eway.common.res.SearchTax;
-import com.maan.eway.common.res.UpdateLapsedQuoteRes;
-import com.maan.eway.common.res.ViewQuoteRes;
-import com.maan.eway.common.service.BuildingGridService;
 import com.maan.eway.common.service.BuildingSearchService;
 import com.maan.eway.common.service.CommonGridService;
-import com.maan.eway.common.service.GridService;
-import com.maan.eway.common.service.MotorGridService;
+import com.maan.eway.common.service.CommonSearchService;
 import com.maan.eway.common.service.MotorSearchService;
 import com.maan.eway.common.service.SearchService;
 import com.maan.eway.common.service.TravelGridService;
-import com.maan.eway.error.Error;
-import com.maan.eway.master.req.BranchMasterGetReq;
+import com.maan.eway.common.service.TravelSearchService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
-import com.maan.eway.master.req.LovDropDownReq;
-import com.maan.eway.master.req.SectionMasterGetReq;
-import com.maan.eway.master.res.BranchMasterRes;
-import com.maan.eway.master.service.TrackingDetailsService;
 import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
 import com.maan.eway.repository.CoverDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
@@ -135,23 +89,13 @@ import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.MotorVehicleInfoRepository;
 import com.maan.eway.repository.PaymentDetailRepository;
-import com.maan.eway.repository.PaymentInfoRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PremiaCustomerDetailsRepository;
-import com.maan.eway.req.FactorRateDetailsGetReq;
-import com.maan.eway.res.CopyQuoteSuccessRes;
-import com.maan.eway.res.CoverRes;
 import com.maan.eway.res.DropDownRes;
-import com.maan.eway.res.SectionDetails;
 import com.maan.eway.res.SubCoverRes;
-import com.maan.eway.res.SuccessRes;
-import com.maan.eway.res.calc.Cover;
-import com.maan.eway.res.calc.Discount;
 import com.maan.eway.res.calc.Endorsement;
-import com.maan.eway.res.calc.Loading;
 import com.maan.eway.res.calc.Tax;
-import com.maan.eway.res.calc.UWReferrals;
-import com.maan.eway.res.referal.MasterReferal;
+import javax.persistence.Tuple;
 
 @Service
 @Transactional
@@ -218,7 +162,11 @@ public class SearchServiceImpl implements SearchService {
 	
 	@Autowired
 	private EserviceBuildingDetailsRepository buildingRepo;
+	@Autowired
+	private TravelSearchService travelSearch;
 	
+	@Autowired 
+	private CommonSearchService commonSearch;
 
 	@Autowired
 	private HomePositionMasterRepository homeRepo;
@@ -315,18 +263,19 @@ public class SearchServiceImpl implements SearchService {
 
 	
 	
-	@Override
+
+@Override
 	public List<SearchRes> adminSearchOrderByEntryDate(SearchReq req) {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		List<SearchRes> reslist = new ArrayList<SearchRes>();
 		DozerBeanMapper dozermapper = new DozerBeanMapper();
 		try {
-			Date effectiveDate=null;
-			 List<BranchMaster> branchlist= getByBranchCode(req.getBranchCode());
-			 String branchName=branchlist.get(0).getBranchName();
-			 String loginId = "" ;
+			Date effectiveDate = null;
+			List<BranchMaster> branchlist = getByBranchCode(req.getBranchCode());
+			String branchName = branchlist.get(0).getBranchName();
+			String loginId = "";
 			List<String> branches = new ArrayList<String>();
-			if (req.getApplicationId().equalsIgnoreCase("1") ) {
+			if (req.getApplicationId().equalsIgnoreCase("1")) {
 				loginId = req.getLoginId();
 			} else {
 				loginId = req.getApplicationId();
@@ -349,29 +298,27 @@ public class SearchServiceImpl implements SearchService {
 			if (req.getProductId().equalsIgnoreCase(motorProductId)) {
 				list = motService.adminSearchMotorQuote(req, branches);
 			}
-				
-//			else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
-//				list = traService.searchTravelQuote(req, branches);
-//			}
-		    else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)) {
-			list = buiService.searchBuilding(req, branches);
-		}
-//
-	//		} 
-//				else {
-//				list = commonService.searchCommonQuote(req, branches);
-//			}
+
+			else if (req.getProductId().equalsIgnoreCase(travelProductId)) {
+				list = travelSearch.searchTravel(req, branches);
+			} else if (req.getProductId().equalsIgnoreCase(buildingProductId)
+					|| req.getProductId().equalsIgnoreCase(smeProductId)) {
+				list = buiService.searchBuilding(req, branches);
+			} else {
+				list = commonSearch.searchCommon(req, branches);
+			}
 
 			for (Tuple data : list) {
 				SearchRes res = new SearchRes();
-				res = dozermapper.map(data.get(0) , SearchRes.class);	
+				res = dozermapper.map(data.get(0), SearchRes.class);
 				res.setClientName((data.get("clientName").toString()));
 				res.setMobileNo1((data.get("mobileNumber").toString()));
-				res.setBranchName(branchName);	
+				res.setBranchName(branchName);
 				res.setLoginId(req.getLoginId());
 				res.setEffectiveDate(effectiveDate);
-				//res.setIdsCount(data.get("idsCount")==null?"":data.get("idsCount").toString() );
-				 reslist.add(res);
+				// res.setIdsCount(data.get("idsCount")==null?"":data.get("idsCount").toString()
+				// );
+				reslist.add(res);
 			}
 
 		} catch (Exception e) {
@@ -380,7 +327,7 @@ public class SearchServiceImpl implements SearchService {
 			return null;
 		}
 		return reslist;
-	}
+}
 
 	//BranchName
 	public List<BranchMaster> getByBranchCode(String branchCode) {
