@@ -32,7 +32,7 @@ public class CachingConfig   {
 	        b->b.name("ProductToRawtable").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
 	        b->b.name("EndtMasterData").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
 	        b->b.name("getCachedRatingFields").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
-	        b->b.name("loadfactorOnlyquery").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
+	        b->b.name("loadfactorOnlyquery").expireAfterWrite(15, TimeUnit.SECONDS).entryCapacity(1000L).permitNullValues(false),
 	        b->b.name("countfactorOnlyquery").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
 	        b->b.name("currencyDecimalFormat").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false)
 	        
