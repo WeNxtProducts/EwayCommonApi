@@ -265,7 +265,7 @@ public List<Tuple> getResult(SpecCriteria cr,String amendIdCol,Integer limit,Int
 		List<SearchCriteria> params = new ArrayList<SearchCriteria>();
 		if (search != null) {
 			//Pattern pattern = Pattern.compile("(\\w+?)(:|<|>|~)(\\w+|[a-zA-Z0-9_&.*]+);");
-			Pattern pattern = Pattern.compile("(\\w+?||[a-zA-Z0-9_&\\/.*]+)(:|<|>|~)([^%';=?$\\x22]+);");
+			Pattern pattern = Pattern.compile("(\\w+?||[a-zA-Z0-9_&\\/.*-]+)(:|<|>|~)([^%';=?$\\x22]+);");
 			Matcher matcher = pattern.matcher(search+ ";");
 			while (matcher.find()) {	            	
 				if(matcher.group(3).indexOf("&")!=-1) {
