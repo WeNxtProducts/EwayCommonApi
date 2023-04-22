@@ -123,65 +123,65 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 Endorsement endorsement = t.getEndorsements().get(0);
 					
 
-			 		 if("Y".equals(t.getProRataYn()) && "Y".equals(t.getUserOpt())) {
-							// Date Differents
-								 Date periodStart =  effectiveDate;
-									Date periodEnd = t.getPolicyEndDate() ;
-								Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
-								Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
-								// Check Leap Year
-								SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
-								boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
-								String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
-								
-								String periodOfInsurance=(vehicles.get(0).get("periodOfInsurance")==null?"365":vehicles.get(0).get("periodOfInsurance").toString());
-								//Removal Logic
-								diff= String.valueOf(Integer.parseInt(periodOfInsurance)-Integer.parseInt(diff));
-								
-								List<Tuple> prorata =  crservice.loadProRataData(engine, diff);
-								
-								endorsement.setProRataYn("Y");
-								if(prorata.size()>0) {
-								 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());
-								 BigDecimal p=new BigDecimal("100").subtract(percenat).divide(new BigDecimal("100"));
-								 t.setProRata(p);
-								 endorsement.setProRata(p);
-								}else {
-									 BigDecimal p=new BigDecimal("1");
-									t.setProRata(p);
-									 endorsement.setProRata(p);
-								}
-								
-			 		 }else if("Y".equals(t.getProRataYn()) && !"Y".equals(t.getUserOpt())) {
-			 			 // Date Differents
-			 			 Date periodStart =  effectiveDate;
-			 			 Date periodEnd = t.getPolicyEndDate() ;
-			 			 Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
-			 			 Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;						
-			 			 // Check Leap Year
-			 			 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
-			 			 boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
-			 			 String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
-			 			 List<Tuple> prorata =  crservice.loadProRataData(engine, diff);
-			 			 if(prorata.size()>0) {
-			 				 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());
-			 				 BigDecimal p=new BigDecimal("100").subtract(percenat).divide(new BigDecimal("100"));
-			 				 t.setProRata(p);
-			 				 endorsement.setProRata(p);
-			 			 }else {
-			 				 BigDecimal p=new BigDecimal("1");
-			 				 t.setProRata(p);
-			 				 endorsement.setProRata(p);
-			 			 }
-
-			 		 }
-			 		 
-			 		 if(t.getProRata().doubleValue()==0D) 
-						 t.setProRata(new BigDecimal("1"));
+			 		
 			 		 
 					 	if("Y".equals(engine.getCoverModification())) {
 					 		
+					 		 if("Y".equals(t.getProRataYn()) && "Y".equals(t.getUserOpt())) {
+									// Date Differents
+										 Date periodStart =  effectiveDate;
+											Date periodEnd = t.getPolicyEndDate() ;
+										Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
+										Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
+										// Check Leap Year
+										SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+										boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
+										String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
+										
+										String periodOfInsurance=(vehicles.get(0).get("periodOfInsurance")==null?"365":vehicles.get(0).get("periodOfInsurance").toString());
+										//Removal Logic
+										diff= String.valueOf(Integer.parseInt(periodOfInsurance)-Integer.parseInt(diff));
+										
+										List<Tuple> prorata =  crservice.loadProRataData(engine, diff);
+										
+										endorsement.setProRataYn("Y");
+										if(prorata.size()>0) {
+										 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());
+										 BigDecimal p=new BigDecimal("100").subtract(percenat).divide(new BigDecimal("100"));
+										 t.setProRata(p);
+										 endorsement.setProRata(p);
+										}else {
+											 BigDecimal p=new BigDecimal("1");
+											t.setProRata(p);
+											 endorsement.setProRata(p);
+										}
+										
+					 		 }else if("Y".equals(t.getProRataYn()) && !"Y".equals(t.getUserOpt())) {
+					 			 // Date Differents
+					 			 Date periodStart =  effectiveDate;
+					 			 Date periodEnd = t.getPolicyEndDate() ;
+					 			 Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
+					 			 Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;						
+					 			 // Check Leap Year
+					 			 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+					 			 boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
+					 			 String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
+					 			 List<Tuple> prorata =  crservice.loadProRataData(engine, diff);
+					 			 if(prorata.size()>0) {
+					 				 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());
+					 				 BigDecimal p=new BigDecimal("100").subtract(percenat).divide(new BigDecimal("100"));
+					 				 t.setProRata(p);
+					 				 endorsement.setProRata(p);
+					 			 }else {
+					 				 BigDecimal p=new BigDecimal("1");
+					 				 t.setProRata(p);
+					 				 endorsement.setProRata(p);
+					 			 }
+
+					 		 }
 					 		 
+					 		 if(t.getProRata().doubleValue()==0D) 
+								 t.setProRata(new BigDecimal("1"));
 					 		 
 					 		 //endorsement.setPremiumAfterDiscountLC(t.getPremiumAfterDiscountLC().multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
 							 //endorsement.setPremiumAfterDiscount(t.getPremiumAfterDiscount().multiply(t.getProRata()).setScale(round.getPrecision(),RoundingMode.HALF_UP));
@@ -205,7 +205,62 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 		// endorsement.setPremiumAfterDiscountLC(t.getPremiumAfterDiscountLC().subtract(endorsement.getPremiumAfterDiscountLC()));
 							// endorsement.setPremiumAfterDiscount(t.getPremiumAfterDiscount().subtract(endorsement.getPremiumAfterDiscount()));
 							 
-							 
+					 	/*	 if("Y".equals(t.getProRataYn()) && "Y".equals(t.getUserOpt())) {
+									// Date Differents
+										 Date periodStart =  effectiveDate;
+											Date periodEnd = t.getPolicyEndDate() ;
+										Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
+										Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
+										// Check Leap Year
+										SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+										boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
+										String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
+										
+										String periodOfInsurance=(vehicles.get(0).get("periodOfInsurance")==null?"365":vehicles.get(0).get("periodOfInsurance").toString());
+										//Removal Logic
+										diff= String.valueOf(Integer.parseInt(periodOfInsurance)-Integer.parseInt(diff));
+										
+										List<Tuple> prorata =  crservice.loadProRataData(engine, diff);
+										
+										endorsement.setProRataYn("Y");
+										if(prorata.size()>0) {
+										 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());
+										 BigDecimal p=new BigDecimal("100").subtract(percenat).divide(new BigDecimal("100"));
+										 t.setProRata(p);
+										 endorsement.setProRata(p);
+										}else {
+											 BigDecimal p=new BigDecimal("1");
+											t.setProRata(p);
+											 endorsement.setProRata(p);
+										}
+										
+					 		 }else if("Y".equals(t.getProRataYn()) && !"Y".equals(t.getUserOpt()))*/{
+					 			 // Date Differents
+					 			 Date periodStart =  effectiveDate;
+					 			 Date periodEnd = t.getPolicyEndDate() ;
+					 			 Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
+					 			 Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;						
+					 			 // Check Leap Year
+					 			 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+					 			 boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
+					 			 String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
+					 			 List<Tuple> prorata =  crservice.loadProRataData(engine, diff);
+					 			 if(prorata.size()>0) {
+					 				 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());
+					 				 BigDecimal p=new BigDecimal("100").subtract(percenat).divide(new BigDecimal("100"));
+					 				 t.setProRata(p);
+					 				 endorsement.setProRata(p);
+					 			 }else {
+					 				 BigDecimal p=new BigDecimal("1");
+					 				 t.setProRata(p);
+					 				 endorsement.setProRata(p);
+					 			 }
+
+					 		 }
+					 		 
+					 		 if(t.getProRata().doubleValue()==0D) 
+								 t.setProRata(new BigDecimal("1"));
+					 		 
 							// Temp Prev Premium
 							 endorsement.setPremiumAfterDiscountLC(endorsement.getPremiumExcluedTaxLC());
 							 endorsement.setPremiumAfterDiscount(endorsement.getPremiumExcluedTax());
