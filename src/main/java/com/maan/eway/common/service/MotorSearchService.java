@@ -22,6 +22,7 @@ import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.res.CopyQuoteSuccessRes;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 public interface MotorSearchService {
@@ -29,6 +30,7 @@ public interface MotorSearchService {
 	
 
 	List<Tuple> adminSearchMotorQuote(SearchReq req, List<String> branches);
+	List<ListItemValue> searchDropdownMotor(CopyQuoteDropDownReq req);
 
 	
 

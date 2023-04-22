@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -38,14 +39,14 @@ import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.MotorVehicleInfo;
-import com.maan.eway.bean.PaymentDetail;
+import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PremiaCustomerDetails;
-import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.calculator.util.TaxFromFactor;
 import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
@@ -88,14 +89,13 @@ import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.MotorVehicleInfoRepository;
-import com.maan.eway.repository.PaymentDetailRepository;
+import com.maan.eway.repository.PaymentInfoRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PremiaCustomerDetailsRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SubCoverRes;
 import com.maan.eway.res.calc.Endorsement;
 import com.maan.eway.res.calc.Tax;
-import javax.persistence.Tuple;
 
 @Service
 @Transactional
@@ -141,7 +141,7 @@ public class SearchServiceImpl implements SearchService {
 	private CommonGridService commonService ;
 	
 	@Autowired
-	 private PaymentDetailRepository paymentrepo;
+	 private PaymentInfoRepository paymentrepo;
 	
 	@Autowired
 	private PremiaCustomerDetailsRepository premiaRepo;
@@ -162,12 +162,12 @@ public class SearchServiceImpl implements SearchService {
 	
 	@Autowired
 	private EserviceBuildingDetailsRepository buildingRepo;
-	@Autowired
-	private TravelSearchService travelSearch;
-	
-	@Autowired 
-	private CommonSearchService commonSearch;
-
+	 	
+      
+    @Autowired
+    private CommonSearchService commonSearch;
+    @Autowired
+    private TravelSearchService travelSearch;
 	@Autowired
 	private HomePositionMasterRepository homeRepo;
 	
@@ -187,72 +187,33 @@ public class SearchServiceImpl implements SearchService {
 
 	//Dropdown
 	//CopyQuote Dropdown 
+	
 	@Override
-	public List<DropDownRes> searchDropdown(CopyQuoteDropDownReq req) { 
+	public List<DropDownRes> searchDropdown(CopyQuoteDropDownReq req) {
+		// TODO Auto-generated method stub
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-			List<ListItemValue> list = new ArrayList<ListItemValue>();
-			String itemType = "ADMIN_SEARCH";
-			Date today = new Date();
-			Calendar cal = new GregorianCalendar();
-			cal.setTime(today);
-			today = cal.getTime();
-			Date todayEnd = cal.getTime();
 
-			// Criteria
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<ListItemValue> query = cb.createQuery(ListItemValue.class);
-			// Find All
-			Root<ListItemValue> c = query.from(ListItemValue.class);
+			List<ListItemValue> getList = new ArrayList<ListItemValue>();
+			if (req.getProductId().equalsIgnoreCase(motorProductId)) {
+				getList = motService.searchDropdownMotor(req);
+			} else if (req.getProductId().equalsIgnoreCase(travelProductId)) {
+				getList = travelSearch.searchDropdownTravel(req);
+			} else if (req.getProductId().equalsIgnoreCase(buildingProductId)
+					|| req.getProductId().equalsIgnoreCase(smeProductId)) {
+				getList = buiService.searchDropdownBuilding(req);
+			} else {
+				getList = commonSearch.searchDropdownCommon(req);
+			}
 
-			// Select
-			query.select(c);
-			// Order By
-			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("branchCode")));
-
-			// Effective Date Start Max Filter
-			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
-			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate a1 = cb.equal(c.get("itemId"), ocpm1.get("itemId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1, a2);
-			// Effective Date End Max Filter
-			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
-			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
-			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-			Predicate a3 = cb.equal(c.get("itemId"), ocpm2.get("itemId"));
-			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-			effectiveDate2.where(a3, a4);
-
-			// Where
-			Predicate n1 = cb.equal(c.get("status"), "Y");
-			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
-			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			Predicate n4 = cb.equal(c.get("companyId"), req.getInsuranceId());
-			Predicate n5 = cb.equal(c.get("companyId"), "99999");
-			Predicate n6 = cb.equal(c.get("branchCode"), req.getBranchCode());
-			Predicate n7 = cb.equal(c.get("branchCode"), "99999");
-			Predicate n8 = cb.or(n4, n5);
-			Predicate n9 = cb.or(n6, n7);
-			Predicate n10 = cb.equal(c.get("itemType"), itemType);
-			query.where(n1, n2, n3, n8, n9, n10).orderBy(orderList);
-			// Get Result
-			TypedQuery<ListItemValue> result = em.createQuery(query);
-			list = result.getResultList();
-
-			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getItemCode())))
-					.collect(Collectors.toList());
-			list.sort(Comparator.comparing(ListItemValue::getItemValue));
-			
-			for (ListItemValue data : list) {
+			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
 				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -261,10 +222,7 @@ public class SearchServiceImpl implements SearchService {
 		return resList;
 	}
 
-	
-	
-
-@Override
+	@Override
 	public List<SearchRes> adminSearchOrderByEntryDate(SearchReq req) {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		List<SearchRes> reslist = new ArrayList<SearchRes>();
@@ -301,8 +259,7 @@ public class SearchServiceImpl implements SearchService {
 
 			else if (req.getProductId().equalsIgnoreCase(travelProductId)) {
 				list = travelSearch.searchTravel(req, branches);
-			} else if (req.getProductId().equalsIgnoreCase(buildingProductId)
-					|| req.getProductId().equalsIgnoreCase(smeProductId)) {
+			} else if (req.getProductId().equalsIgnoreCase(buildingProductId)|| req.getProductId().equalsIgnoreCase(smeProductId)) {
 				list = buiService.searchBuilding(req, branches);
 			} else {
 				list = commonSearch.searchCommon(req, branches);
@@ -327,7 +284,7 @@ public class SearchServiceImpl implements SearchService {
 			return null;
 		}
 		return reslist;
-}
+	}
 
 	//BranchName
 	public List<BranchMaster> getByBranchCode(String branchCode) {
@@ -401,7 +358,7 @@ public class SearchServiceImpl implements SearchService {
 			}
 			// Motor Product Details
 			if( homeData.getProductId().equals(Integer.valueOf(motorProductId))) {
-				viewRes =  getMotorProductDetails( req,homeData);
+				viewRes =  getMotorProductDetails( req);
 				
 			}
 //			else if( homeData.getProductId().equals(Integer.valueOf(travelProductId))) {
@@ -427,7 +384,7 @@ public class SearchServiceImpl implements SearchService {
 		return viewRes;
 	}
 
-	public AdminViewQuoteRes getMotorProductDetails(SearchReq req,HomePositionMaster homeData) {
+	public AdminViewQuoteRes getMotorProductDetails(SearchReq req) {
 		AdminViewQuoteRes viewRes = new AdminViewQuoteRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
@@ -438,22 +395,13 @@ public class SearchServiceImpl implements SearchService {
 						
 			for (MotorDataDetails mot :  motorDatas) {
 				SearchEserviceMotorDetailsRes vehicleDetails = new  SearchEserviceMotorDetailsRes()  ;
-				EserviceMotorDetails emotordetails=repo.findByQuoteNoAndChassisNumber(mot.getQuoteNo(),mot.getChassisNumber());
 				
 				// Mot
 				dozerMapper.map(mot, vehicleDetails);
-				vehicleDetails.setTppdIncreaeLimit(emotordetails.getTppdIncreaeLimit().toString());
-				vehicleDetails.setAcccessoriesSumInsured(emotordetails.getAcccessoriesSumInsured().toString());
-				vehicleDetails.setWindScreenSumInsured(emotordetails.getWindScreenSumInsured().toString());		
-				vehicleDetails.setCollateralYn(emotordetails.getCollateralYn());
-				vehicleDetails.setCollateralName(emotordetails.getCollateralName());
-				vehicleDetails.setFirstLossPayee(emotordetails.getFirstLossPayee());
+					
+				// Response
 				motorResList.add(vehicleDetails);		
 			}
-			viewRes.setRenewalDateYn(homeData.getRenewalDateYn());
-			viewRes.setRenewalOldExpDate(homeData.getRenewalOldExpDate());
-			viewRes.setRenewalOldPolicy(homeData.getRenewalOldPolicy());
-			viewRes.setRenewalStatus(homeData.getRenewalStatus());
 			viewRes.setRiskDetails(motorResList);
 			
 		} catch ( Exception e) {
@@ -490,14 +438,6 @@ public class SearchServiceImpl implements SearchService {
 					coverRes.setExcessAmount(filterCover.get(0).getExcessAmount()==null ? "" :filterCover.get(0).getExcessAmount().toPlainString() );
 					coverRes.setExcessPercent(filterCover.get(0).getExcessPercent()==null ? "" :filterCover.get(0).getExcessPercent().toPlainString() );
 					coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());	
-					coverRes.setTaxCalcType(filterCover.get(0).getTaxCalcType());
-					coverRes.setTaxDesc(filterCover.get(0).getTaxDesc());
-					coverRes.setTaxExemptCode(filterCover.get(0).getTaxExemptCode());
-					coverRes.setTaxExemptType(filterCover.get(0).getTaxExemptType());
-					coverRes.setIsTaxExtempted(filterCover.get(0).getIsTaxExtempted());
-					coverRes.setTaxRate(filterCover.get(0).getTaxRate());
-					coverRes.setTaxAmount(filterCover.get(0).getTaxAmount());
-					coverRes.setTaxId(Integer.valueOf(filterCover.get(0).getTaxId().toString()));
 					if(!StringUtils.isBlank(filterCover.get(0).getSectionId().toString())){
 						List<SectionMaster> sectiondata=getBySectionId(filterCover.get(0).getSectionId().toString());
 						sectionName=sectiondata.get(0).getSectionName();
@@ -510,26 +450,14 @@ public class SearchServiceImpl implements SearchService {
 			
 					List<PolicyCoverData> filterCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0) &&  o.getTaxId().equals(0)).collect(Collectors.toList());
 					coverRes.setCoverId(filterCover.get(0).getCoverId().toString());
-					coverRes.setCoverName(filterCover.get(0).getCoverName());
-					coverRes.setCoverDesc(filterCover.get(0).getCoverDesc());
-					coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
-					coverRes.setSumInsured(filterCover.get(0).getSumInsured() == null ? null
-							: new BigDecimal(filterCover.get(0).getSumInsured().toString()));
-					coverRes.setRate(filterCover.get(0).getRate() == null ? null
-							: Double.valueOf(filterCover.get(0).getRate().toString()));
-					coverRes.setExcessAmount(filterCover.get(0).getExcessAmount() == null ? ""
-							: filterCover.get(0).getExcessAmount().toPlainString());
-					coverRes.setExcessPercent(filterCover.get(0).getExcessPercent() == null ? ""
-							: filterCover.get(0).getExcessPercent().toPlainString());
-					coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());
-					coverRes.setTaxCalcType(filterCover.get(0).getTaxCalcType());
-					coverRes.setTaxDesc(filterCover.get(0).getTaxDesc());
-					coverRes.setTaxExemptCode(filterCover.get(0).getTaxExemptCode());
-					coverRes.setTaxExemptType(filterCover.get(0).getTaxExemptType());
-					coverRes.setIsTaxExtempted(filterCover.get(0).getIsTaxExtempted());
-					coverRes.setTaxRate(filterCover.get(0).getTaxRate());
-					coverRes.setTaxAmount(filterCover.get(0).getTaxAmount());
-					coverRes.setTaxId(Integer.valueOf(filterCover.get(0).getTaxId().toString()));
+					 coverRes.setCoverName(filterCover.get(0).getCoverName());
+					 coverRes.setCoverDesc(filterCover.get(0).getCoverDesc());
+					 coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
+					 coverRes.setSumInsured(filterCover.get(0).getSumInsured()==null ? null : new BigDecimal(filterCover.get(0).getSumInsured().toString()));
+					 coverRes.setRate(filterCover.get(0).getRate()==null?null : Double.valueOf(filterCover.get(0).getRate().toString()));
+						coverRes.setExcessAmount(filterCover.get(0).getExcessAmount()==null ? "" :filterCover.get(0).getExcessAmount().toPlainString() );
+						coverRes.setExcessPercent(filterCover.get(0).getExcessPercent()==null ? "" :filterCover.get(0).getExcessPercent().toPlainString() );
+						coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());	
 					List<SubCoverRes>  subCoverListRes = new ArrayList<SubCoverRes>();
 					List<PolicyCoverData> filterSubCover = coverGroups.stream().filter( o -> o.getDiscLoadId().equals(0)).collect(Collectors.toList());
 					for ( PolicyCoverData subCovers : filterSubCover) {
@@ -548,7 +476,6 @@ public class SearchServiceImpl implements SearchService {
 						coverRes.setExcessAmount(filterCover.get(0).getExcessAmount()==null ? "" :filterCover.get(0).getExcessAmount().toPlainString() );
 						coverRes.setExcessPercent(filterCover.get(0).getExcessPercent()==null ? "" :filterCover.get(0).getExcessPercent().toPlainString() );
 						coverRes.setExcessDesc(filterCover.get(0).getExcessDesc());
-						
 						if(!StringUtils.isBlank(filterCover.get(0).getSectionId().toString())){
 							List<SectionMaster> sectiondata=getBySectionId(filterCover.get(0).getSectionId().toString());
 							sectionName=sectiondata.get(0).getSectionName();
@@ -941,6 +868,9 @@ public class SearchServiceImpl implements SearchService {
 					}
 					
 					 list = perRepo.findByCustomerId(customerId);
+					 
+//					list = motService.searchCutomerDetails(searchKey, searchValue, companyId, loginId, userType,
+//							branches, customerId);
 		} 
 
 				else if (StringUtils.isNotBlank(req.getQuoteNo())) {
@@ -962,6 +892,11 @@ public class SearchServiceImpl implements SearchService {
 								}
 						}
 					 list = perRepo.findByCustomerId(homeData.getCustomerId());
+				//	SearchCustomerDetailsRes custRes = new SearchCustomerDetailsRes();
+				//	custRes = dozerMapper.map(list, SearchCustomerDetailsRes.class);
+//					list = motService.searchCutomerDetails(searchKey, searchValue, companyId, loginId, userType,
+//							branches, customerId);
+
 				} 
 			
 			}
@@ -976,7 +911,6 @@ public class SearchServiceImpl implements SearchService {
 				res.setSourceType(sourceType);
 				res.setBranchCode(list.getBranchCode().toString());
 				res.setSource(source);
-				res.setWhatsappcodeDesc(list.getWhatsappcodeDesc());
 				reslist.add(res);
 				
 //			}
@@ -1165,22 +1099,19 @@ public class SearchServiceImpl implements SearchService {
 //Payment Info
 	@Override
 	public List<SearchPaymentInfoRes> viewPaymentInfo(SearchReq req) {
+		SearchPaymentInfoRes paymentgetres = new SearchPaymentInfoRes();
 		List<SearchPaymentInfoRes> paylist = new ArrayList<SearchPaymentInfoRes>();
 		DozerBeanMapper dozermapper = new DozerBeanMapper();
 
 		try {
-			List<PaymentDetail> paymentinfo = null;
+			List<PaymentInfo> paymentinfo = null;
 			if (StringUtils.isNotBlank(req.getQuoteNo())) {
-				paymentinfo = paymentrepo.findByQuoteNo(req.getQuoteNo());
+				paymentinfo = paymentrepo.findByQuoteNoAndProductId(req.getQuoteNo(),Integer.valueOf(req.getProductId()));
 			}  
 
-			for (PaymentDetail pi : paymentinfo) {
-				SearchPaymentInfoRes paymentgetres = new SearchPaymentInfoRes();
+			for (PaymentInfo pi : paymentinfo) {
+
 				paymentgetres = new DozerBeanMapper().map(pi, SearchPaymentInfoRes.class);
-				if("Y".equalsIgnoreCase(pi.getEmiYn())) {
-					paymentgetres.setInstallmentPeriod(pi.getInstallmentPeriod()+"Months");
-					paymentgetres.setInstallmentMonth(pi.getInstallmentMonth()+"Months");
-				}
 				paylist.add(paymentgetres);
 
 			}
@@ -1227,4 +1158,9 @@ public class SearchServiceImpl implements SearchService {
 		}
 		return reslist;
 	}
+
+
+	
+
+
 }

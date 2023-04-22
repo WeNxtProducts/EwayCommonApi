@@ -4,9 +4,9 @@ import java.util.List;
 
 import javax.persistence.Tuple;
 
-import com.maan.eway.common.req.CopyQuoteReq;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.req.SearchReq;
-import com.maan.eway.res.CopyQuoteSuccessRes;
+import com.maan.eway.master.req.CopyQuoteDropDownReq;
 
 public interface CommonSearchService {
 
@@ -18,6 +18,8 @@ public interface CommonSearchService {
 	
 	List<Tuple> commonDetails(String searchKey, String searchValue, String companyId, String loginId,
 			String userType, List<String> branches,String productId) ;
+
+	List<ListItemValue> searchDropdownCommon(CopyQuoteDropDownReq req);
 
 
 }
