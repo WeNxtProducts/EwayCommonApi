@@ -4,10 +4,12 @@ import java.util.List;
 
 import javax.persistence.Tuple;
 
+import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
 import com.maan.eway.common.res.AdminViewQuoteRes;
+import com.maan.eway.common.res.SearchCustomerDetailsRes;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.res.DropDownRes;
 
@@ -23,5 +25,8 @@ List<Tuple> searchTravel(SearchReq req, List<String> branches);
 	AdminViewQuoteRes getTravelProductDetails(SearchReq req);
 
 	List<SearchEservieMotorDetailsViewRatingRes> travelRating(SearchReq req);
+
+	List<SearchCustomerDetailsRes> travelCustSearch(SearchReq req, List<HomePositionMaster> homeData);
+
 
 }

@@ -4,10 +4,12 @@ import java.util.List;
 
 import javax.persistence.Tuple;
 
+import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
 import com.maan.eway.common.res.AdminViewQuoteRes;
+import com.maan.eway.common.res.SearchCustomerDetailsRes;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 
 public interface CommonSearchService {
@@ -26,6 +28,8 @@ public interface CommonSearchService {
 	AdminViewQuoteRes getCommonProductDetails(SearchReq req);
 
 	List<SearchEservieMotorDetailsViewRatingRes> commonRating(SearchReq req);
+
+	List<SearchCustomerDetailsRes> commonCustSearch(SearchReq req, List<HomePositionMaster> homeData);
 
 
 }

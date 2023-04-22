@@ -43,10 +43,14 @@ import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
+import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.PersonalInfo;
+import com.maan.eway.bean.PremiaCustomerDetails;
 import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
 import com.maan.eway.common.res.AdminViewQuoteRes;
+import com.maan.eway.common.res.SearchCustomerDetailsRes;
 import com.maan.eway.common.service.BuildingSearchService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
@@ -56,12 +60,15 @@ import com.maan.eway.repository.CoverMasterRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
+import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
+import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
+import com.maan.eway.repository.PremiaCustomerDetailsRepository;
 import com.maan.eway.repository.SeqCustidRepository;
 import com.maan.eway.repository.SeqCustrefnoRepository;
 import com.maan.eway.repository.SeqQuotenoRepository;
@@ -81,51 +88,19 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 
 	private Logger log = LogManager.getLogger(BuildingSearchServiceImpl.class);
 
-	@Autowired
-	private HomePositionMasterRepository homePosistionRepo;
 	
 	@Autowired
-	private PersonalInfoRepository personalInforepo;
-	
-	@Autowired
-	private PolicyCoverDataRepository policyCoverDataRepo;
-	
-	@Autowired
-	private MotorDataDetailsRepository motorDataDetepo;
-	
-	@Autowired
-	private EServiceMotorDetailsRepository repo;
-	
-	@Autowired
-	private EserviceCustomerDetailsRepository custRepo ;
-	
-	@Autowired
-	private SeqQuotenoRepository quoteNoRepo ;
-	
-	@Autowired
-	private SeqCustidRepository custIdRepo ;
+	private EserviceBuildingDetailsRepository repo;
 
 	@Autowired
-	private SeqRefnoRepository refNoRepo ;
-	
-	@Autowired
-	private GenerateSeqNoServiceImpl seqNo ;
-	
-	@Autowired
-	private SeqCustrefnoRepository custRefRepo  ;
-	
-	@Autowired
-	private EndtTypeMasterRepository endtTypeRepo;
-	
-	@Autowired
-	private MotorDriverDetailsRepository motordrivDetepo;
-	
-	@Autowired
-	private CoverDocumentUploadDetailsRepository coverDocUploadDetails;
+	private PremiaCustomerDetailsRepository premiaRepo;
 
 	@Autowired
-	private CoverMasterRepository coverMasterRepo;
+	private PersonalInfoRepository perRepo;
 	
+	@Autowired
+	private HomePositionMasterRepository homeRepo;
+
 	@Autowired
 	private EServiceSectionDetailsRepository eserSecRepo  ;
 	
@@ -498,6 +473,53 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	
+	//Customer Search
+	@Override
+	public List<SearchCustomerDetailsRes> buildingCustSearch(SearchReq req,List<HomePositionMaster> homeData) {
+			List<SearchCustomerDetailsRes> reslist = new ArrayList<SearchCustomerDetailsRes>();
+			DozerBeanMapper dozerMapper  = new DozerBeanMapper(); 
+			try {
+				String customerId=homeData.get(0).getCustomerId();
+				String loginId = "";
+				String appId = "";
+				String sourceType="";
+				String coustomerCode="";
+				String customerCodeName="";
+				String source=""; 
+				PersonalInfo list =new PersonalInfo();
+				List<PremiaCustomerDetails> premiadata =null;
+				List<EserviceBuildingDetails> motor = repo.findByCustomerId(customerId);
+				if (motor.size() > 0) {
+					sourceType = motor.get(0).getSourceType();
+					coustomerCode = motor.get(0).getCustomerCode();
+					loginId = motor.get(0).getLoginId();
+					appId = motor.get(0).getApplicationId();
+					source = motor.get(0).getLoginId();
+					premiadata = premiaRepo.findByCustomerCode(coustomerCode);
+					if (premiadata.size() > 0) {
+						customerCodeName = premiadata.get(0).getCustomerName();
+					}
+				}
+				list = perRepo.findByCustomerId(homeData.get(0).getCustomerId());
+				
+				SearchCustomerDetailsRes res = new SearchCustomerDetailsRes();
+				res = dozerMapper.map(list,SearchCustomerDetailsRes.class);	
+				res.setLoginId(req.getLoginId());
+				res.setApplicationId(req.getApplicationId());
+				res.setCustomerCode(coustomerCode);
+				res.setCustomerName(customerCodeName);	
+				res.setSourceType(sourceType);
+				res.setBranchCode(list.getBranchCode().toString());
+				res.setSource(source);
+				reslist.add(res);
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return reslist;
+		}
 	}
 		

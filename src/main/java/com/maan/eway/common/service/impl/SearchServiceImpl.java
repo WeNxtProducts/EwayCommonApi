@@ -37,7 +37,6 @@ import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
-import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginBranchMaster;
@@ -46,11 +45,8 @@ import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.MotorVehicleInfo;
 import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PersonalAccident;
-import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
-import com.maan.eway.bean.PremiaCustomerDetails;
 import com.maan.eway.bean.SectionMaster;
-import com.maan.eway.calculator.util.TaxFromFactor;
 
 import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
@@ -58,11 +54,8 @@ import com.maan.eway.common.res.AdminViewQuoteRes;
 import com.maan.eway.common.res.BuildingSearchRes;
 import com.maan.eway.common.res.DocumentRes;
 import com.maan.eway.common.res.PersonalAccidentRes;
-import com.maan.eway.common.res.SearchCoverDetails;
 import com.maan.eway.common.res.SearchCustomerDetailsRes;
-import com.maan.eway.common.res.SearchDiscount;
 import com.maan.eway.common.res.SearchDriverDetailsRes;
-import com.maan.eway.common.res.SearchLoading;
 import com.maan.eway.common.res.SearchPaymentInfoRes;
 import com.maan.eway.common.res.SearchPremiumCoverDetailsRes;
 import com.maan.eway.common.res.SearchPremiumDetailsRes;
@@ -70,7 +63,6 @@ import com.maan.eway.common.res.SearchROPDetailsRes;
 import com.maan.eway.common.res.SearchROPVehicleDetailsRes;
 import com.maan.eway.common.res.SearchROPVehicleRes;
 import com.maan.eway.common.res.SearchRes;
-import com.maan.eway.common.res.SearchTax;
 import com.maan.eway.common.service.BuildingSearchService;
 import com.maan.eway.common.service.CommonSearchService;
 import com.maan.eway.common.service.MotorSearchService;
@@ -93,8 +85,6 @@ import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PremiaCustomerDetailsRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SubCoverRes;
-import com.maan.eway.res.calc.Endorsement;
-import com.maan.eway.res.calc.Tax;
 
 @Service
 @Transactional
@@ -111,9 +101,6 @@ public class SearchServiceImpl implements SearchService {
 
 	@Value(value = "${sme.productId}")
 	private String smeProductId;
-
-	@Autowired
-	private FactorRateRequestDetailsRepository factorrepo;
 
 	@Autowired
 	private EServiceMotorDetailsRepository repo;
@@ -403,6 +390,7 @@ public class SearchServiceImpl implements SearchService {
 			if(StringUtils.isNotBlank(req.getQuoteNo())){
 				homeData  =  homeRepo.findByQuoteNo(req.getQuoteNo());	
 			}
+			if(homeData!=null) {
 			// Motor Product Details
 			if( homeData.getProductId().equals(Integer.valueOf(motorProductId))) {
 				viewRes =motService.getMotorProductDetails( req);
@@ -421,7 +409,7 @@ public class SearchServiceImpl implements SearchService {
 				viewRes =commonSearch.getCommonProductDetails( req);
 				
 			}
-
+			}
 			
 		} catch ( Exception e) {
 			e.printStackTrace();
@@ -569,90 +557,29 @@ public class SearchServiceImpl implements SearchService {
 	
 	
 
-//Get Customer Details -Search
+// Customer Details -Search
 	@Override
 	public List<SearchCustomerDetailsRes> adminCustomerSearch(SearchReq req) {
 		List<SearchCustomerDetailsRes> reslist = new ArrayList<SearchCustomerDetailsRes>();
-		DozerBeanMapper dozerMapper  = new DozerBeanMapper(); 
 		try {
-			String customerId="";
-			String loginId = "";
-			String appId = "";
-			String sourceType="";
-			String coustomerCode="";
-			String customerCodeName="";
-			String source=""; 
-			PersonalInfo list =null;
-			List<PremiaCustomerDetails> premiadata =null;
+			List<HomePositionMaster> homeData = null;
 			// Product Wise Get
-			if (req.getProductId().equalsIgnoreCase(motorProductId)) {
-				if (StringUtils.isNotBlank(req.getRequestReferenceNo())) {
-					List<HomePositionMaster> homelist = homeRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
-					if(homelist.size()>0) {
-					customerId = homelist.get(0).getCustomerId();
-					}
-					List<EserviceMotorDetails> motor=repo.findByCustomerId(customerId);
-					if (motor.size() > 0) {
-						sourceType = motor.get(0).getSourceType();
-						coustomerCode = motor.get(0).getCustomerCode();
-						loginId = motor.get(0).getLoginId();
-						appId = motor.get(0).getApplicationId();
-						//if ("Agent".equalsIgnoreCase( motor.get(0).getSourceType())||"Direct".equalsIgnoreCase( motor.get(0).getSourceType())) {
-						source= motor.get(0).getLoginId();
-						premiadata = premiaRepo.findByCustomerCode(coustomerCode);
-						if (premiadata.size() > 0) {
-							customerCodeName=premiadata.get(0).getCustomerName();
-						}
-					}
-					
-					 list = perRepo.findByCustomerId(customerId);
-					 
-//					list = motService.searchCutomerDetails(searchKey, searchValue, companyId, loginId, userType,
-//							branches, customerId);
-		} 
-
-				else if (StringUtils.isNotBlank(req.getQuoteNo())) {
-					HomePositionMaster homeData = homeRepo.findByQuoteNo(req.getQuoteNo());
-					customerId = homeData.getCustomerId();
-					if (homeData != null) {
-						customerId = homeData.getCustomerId();
-					}
-						List<EserviceMotorDetails> motor=repo.findByCustomerId(customerId);
-						if(motor.size()>0) {
-							 sourceType=motor.get(0).getSourceType();
-							 coustomerCode=motor.get(0).getCustomerCode();
-							 loginId=motor.get(0).getLoginId();
-							 appId=motor.get(0).getApplicationId();
-							 source= motor.get(0).getLoginId();
-							 premiadata = premiaRepo.findByCustomerCode(coustomerCode);
-							 if (premiadata.size() > 0) {
-									customerCodeName=premiadata.get(0).getCustomerName();
-								}
-						}
-					 list = perRepo.findByCustomerId(homeData.getCustomerId());
-				//	SearchCustomerDetailsRes custRes = new SearchCustomerDetailsRes();
-				//	custRes = dozerMapper.map(list, SearchCustomerDetailsRes.class);
-//					list = motService.searchCutomerDetails(searchKey, searchValue, companyId, loginId, userType,
-//							branches, customerId);
-
-				} 
-			
+			if (StringUtils.isNotBlank(req.getRequestReferenceNo())) {
+				homeData = homeRepo.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(),Integer.valueOf(req.getProductId()));
+			} else if (StringUtils.isNotBlank(req.getQuoteNo())) {
+				homeData = homeRepo.findByQuoteNoAndProductId(req.getQuoteNo(),Integer.valueOf(req.getProductId()));
 			}
-
-//			for (PersonalInfo data : list) {
-				SearchCustomerDetailsRes res = new SearchCustomerDetailsRes();
-				res = dozerMapper.map(list,SearchCustomerDetailsRes.class);	
-				res.setLoginId(req.getLoginId());
-				res.setApplicationId(req.getApplicationId());
-				res.setCustomerCode(coustomerCode);
-				res.setCustomerName(customerCodeName);	
-				res.setSourceType(sourceType);
-				res.setBranchCode(list.getBranchCode().toString());
-				res.setSource(source);
-				reslist.add(res);
-				
-//			}
-
+			if (homeData.size() > 0 && homeData!=null ) {
+				if (req.getProductId().equalsIgnoreCase(motorProductId)) {
+					reslist = motService.motorCustSearch(req, homeData);
+				} else if (req.getProductId().equalsIgnoreCase(travelProductId)) {
+					reslist = travelSearch.travelCustSearch(req, homeData);
+				} else if (req.getProductId().equalsIgnoreCase(buildingProductId)|| req.getProductId().equalsIgnoreCase(smeProductId)) {
+					reslist = buiService.buildingCustSearch(req, homeData);
+				} else {
+					reslist = commonSearch.commonCustSearch(req, homeData);
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -663,6 +590,7 @@ public class SearchServiceImpl implements SearchService {
 
 
 
+	//Rating Details
 	@Override
 	public List<SearchEservieMotorDetailsViewRatingRes> adminViewRatingDetails(SearchReq req) {
 		List<SearchEservieMotorDetailsViewRatingRes>  resList = new ArrayList<SearchEservieMotorDetailsViewRatingRes>();
@@ -673,8 +601,7 @@ public class SearchServiceImpl implements SearchService {
 				resList = motService.motorRating(req);
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId)) {
 				resList = travelSearch.travelRating(req);
-			} else if (req.getProductId().equalsIgnoreCase(buildingProductId)
-					|| req.getProductId().equalsIgnoreCase(smeProductId)) {
+			} else if (req.getProductId().equalsIgnoreCase(buildingProductId)|| req.getProductId().equalsIgnoreCase(smeProductId)) {
 				resList = buiService.buildingRating();
 			} else {
 				resList = commonSearch.commonRating(req);
@@ -688,7 +615,7 @@ public class SearchServiceImpl implements SearchService {
 		}return resList;
 	}
 
-
+	//Premium Details
 	@Override
 	public SearchPremiumDetailsRes adminPremiumSearch(SearchReq req) {
 		SearchPremiumDetailsRes viewRes = new SearchPremiumDetailsRes();
@@ -765,7 +692,7 @@ public class SearchServiceImpl implements SearchService {
 	}
 
 
-
+	//ROP Vehicle Details
 	@Override
 	public SearchROPVehicleDetailsRes adminROPVehicleSearch(SearchReq req) {
 		SearchROPVehicleDetailsRes viewRes = new SearchROPVehicleDetailsRes();

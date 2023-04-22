@@ -61,5 +61,7 @@ public interface EserviceCommonDetailsRepository  extends JpaRepository<Eservice
 
 		EserviceCommonDetails findByQuoteNo(String quoteNo);
 
+		List<EserviceCommonDetails> findByCustomerId(String customerId);
+
 
 }

@@ -117,7 +117,7 @@ public class SearchEserviceMotorDetailsRes implements Serializable {
     private String     acccessoriesSumInsured ;
 	@JsonProperty("WindScreenSumInsured")
 	private String     windScreenSumInsured ;
-	@JsonProperty("TppdIncreaeLimit")
+	@JsonProperty("ExtendedTPPDSumInsured")
 	private String     tppdIncreaeLimit ;
 	
 	@JsonProperty("CollateralYn")

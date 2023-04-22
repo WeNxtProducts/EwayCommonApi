@@ -72,6 +72,7 @@ import com.maan.eway.common.res.GetAllMotorDetailsRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.res.SearchCoverDetails;
+import com.maan.eway.common.res.SearchCustomerDetailsRes;
 import com.maan.eway.common.res.SearchDiscount;
 import com.maan.eway.common.res.SearchEserviceMotorDetailsRes;
 import com.maan.eway.common.res.SearchLoading;
@@ -84,12 +85,14 @@ import com.maan.eway.repository.CoverMasterRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
+import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
+import com.maan.eway.repository.PremiaCustomerDetailsRepository;
 import com.maan.eway.repository.SeqCustidRepository;
 import com.maan.eway.repository.SeqCustrefnoRepository;
 import com.maan.eway.repository.SeqQuotenoRepository;
@@ -120,6 +123,18 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 	
 	@Autowired
 	private MotorDataDetailsRepository motorRepo;
+	
+
+	@Autowired
+	private PremiaCustomerDetailsRepository premiaRepo;
+
+	@Autowired
+	private PersonalInfoRepository perRepo;
+	
+	@Autowired
+	private HomePositionMasterRepository homeRepo;
+	
+
 	
 	@Override
 	public List<ListItemValue> searchDropdownMotor(CopyQuoteDropDownReq req) { 
@@ -699,4 +714,50 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 		}return endtList;
 	}
 
+	//Customer Search
+	@Override
+	public List<SearchCustomerDetailsRes> motorCustSearch(SearchReq req,List<HomePositionMaster> homeData) {
+		List<SearchCustomerDetailsRes> reslist = new ArrayList<SearchCustomerDetailsRes>();
+		DozerBeanMapper dozerMapper  = new DozerBeanMapper(); 
+		try {
+			String customerId=homeData.get(0).getCustomerId();
+			String loginId = "";
+			String appId = "";
+			String sourceType="";
+			String coustomerCode="";
+			String customerCodeName="";
+			String source=""; 
+			PersonalInfo list =new PersonalInfo();
+			List<PremiaCustomerDetails> premiadata =null;
+			List<EserviceMotorDetails> motor = repo.findByCustomerId(customerId);
+			if (motor.size() > 0) {
+				sourceType = motor.get(0).getSourceType();
+				coustomerCode = motor.get(0).getCustomerCode();
+				loginId = motor.get(0).getLoginId();
+				appId = motor.get(0).getApplicationId();
+				source = motor.get(0).getLoginId();
+				premiadata = premiaRepo.findByCustomerCode(coustomerCode);
+				if (premiadata.size() > 0) {
+					customerCodeName = premiadata.get(0).getCustomerName();
+				}
+			}
+			list = perRepo.findByCustomerId(homeData.get(0).getCustomerId());
+			
+			SearchCustomerDetailsRes res = new SearchCustomerDetailsRes();
+			res = dozerMapper.map(list,SearchCustomerDetailsRes.class);	
+			res.setLoginId(req.getLoginId());
+			res.setApplicationId(req.getApplicationId());
+			res.setCustomerCode(coustomerCode);
+			res.setCustomerName(customerCodeName);	
+			res.setSourceType(sourceType);
+			res.setBranchCode(list.getBranchCode().toString());
+			res.setSource(source);
+			reslist.add(res);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return reslist;
+	}
 }

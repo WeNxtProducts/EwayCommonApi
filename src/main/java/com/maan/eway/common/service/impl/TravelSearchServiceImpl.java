@@ -36,17 +36,25 @@ import org.springframework.stereotype.Service;
 import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
+import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.PersonalInfo;
+import com.maan.eway.bean.PremiaCustomerDetails;
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
 import com.maan.eway.common.res.AdminViewQuoteRes;
 import com.maan.eway.common.res.EserviceTravelGetRes;
+import com.maan.eway.common.res.SearchCustomerDetailsRes;
 import com.maan.eway.common.service.TravelSearchService;
 import com.maan.eway.master.controller.ProductGroupDropDownReq;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.master.res.ProductGroupMasterDropDownRes;
 import com.maan.eway.master.service.ProductGroupMasterService;
+import com.maan.eway.repository.EserviceTravelDetailsRepository;
+import com.maan.eway.repository.HomePositionMasterRepository;
+import com.maan.eway.repository.PersonalInfoRepository;
+import com.maan.eway.repository.PremiaCustomerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.PassengerSectionDetails;
@@ -61,6 +69,20 @@ public class TravelSearchServiceImpl implements TravelSearchService {
 	private ProductGroupMasterService groupService;
 	@Autowired
 	private TravelPassengerDetailsRepository traPassRepo  ;
+	
+
+	@Autowired
+	private PremiaCustomerDetailsRepository premiaRepo;
+
+	@Autowired
+	private PersonalInfoRepository perRepo;
+	
+	@Autowired
+	private HomePositionMasterRepository homeRepo;
+	
+	@Autowired
+	private EserviceTravelDetailsRepository eTravelRepo;
+	
 	private Logger log = LogManager.getLogger(TravelSearchServiceImpl.class);
 
 
@@ -278,6 +300,55 @@ public class TravelSearchServiceImpl implements TravelSearchService {
 		return list;
 	}
 	
+	@Override
+	public List<SearchCustomerDetailsRes> travelCustSearch(SearchReq req,List<HomePositionMaster> homeData) {
+		List<SearchCustomerDetailsRes> reslist = new ArrayList<SearchCustomerDetailsRes>();
+		DozerBeanMapper dozerMapper  = new DozerBeanMapper(); 
+		try {
+			String customerId = homeData.get(0).getCustomerId();
+			String loginId = "";
+			String appId = "";
+			String sourceType="";
+			String coustomerCode="";
+			String customerCodeName="";
+			String source=""; 
+			PersonalInfo list =new PersonalInfo();
+			List<PremiaCustomerDetails> premiadata =null;
+			
+			List<EserviceTravelDetails> motor = eTravelRepo.findByCustomerId(customerId);
+			if (motor.size() > 0) {
+				sourceType = motor.get(0).getSourceType();
+				coustomerCode = motor.get(0).getCustomerCode();
+				loginId = motor.get(0).getLoginId();
+				appId = motor.get(0).getApplicationId();
+				source = motor.get(0).getLoginId();
+				premiadata = premiaRepo.findByCustomerCode(coustomerCode);
+				if (premiadata.size() > 0) {
+					customerCodeName = premiadata.get(0).getCustomerName();
+				}
+			}
+			list = perRepo.findByCustomerId(homeData.get(0).getCustomerId());
+			
+			//Response
+		//	for (PersonalInfo data : list) {
+			SearchCustomerDetailsRes res = new SearchCustomerDetailsRes();
+			res = dozerMapper.map(list,SearchCustomerDetailsRes.class);	
+			res.setLoginId(req.getLoginId());
+			res.setApplicationId(req.getApplicationId());
+			res.setCustomerCode(coustomerCode);
+			res.setCustomerName(customerCodeName);	
+			res.setSourceType(sourceType);
+			res.setBranchCode(list.getBranchCode().toString());
+			res.setSource(source);
+			reslist.add(res);
+		//	}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return reslist;
+	}
 	private List<BrokerCommissionDetails> getPolicyName( String companyId, String productId, String loginId, String agencyCode, String policyType) {
 		// TODO Auto-generated method stub
 		List<BrokerCommissionDetails> list = new ArrayList<BrokerCommissionDetails>();

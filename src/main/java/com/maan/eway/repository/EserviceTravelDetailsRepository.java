@@ -60,4 +60,6 @@ public interface EserviceTravelDetailsRepository  extends JpaRepository<Eservice
 
 	List<EserviceTravelDetails> findByPolicyNoAndRiskId(String prevPolicyNo, int i);
 
+	List<EserviceTravelDetails> findByCustomerId(String customerId);
+
 }
