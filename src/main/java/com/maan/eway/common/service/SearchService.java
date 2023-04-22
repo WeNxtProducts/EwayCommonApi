@@ -3,8 +3,7 @@ package com.maan.eway.common.service;
 import java.util.List;
 
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.common.req.BuildingSearchReq;
-import com.maan.eway.common.req.PersonalAccidentReq;
+
 import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
 import com.maan.eway.common.res.AdminViewQuoteRes;

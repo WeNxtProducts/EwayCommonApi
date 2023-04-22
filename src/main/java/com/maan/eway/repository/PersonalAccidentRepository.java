@@ -31,4 +31,6 @@ public interface PersonalAccidentRepository
 
 	List<PersonalAccident> findByQuoteNo(String quoteNo);
 
+	List<PersonalAccident> findByRequestReferenceNoOrderByRiskIdAsc(String requestReferenceNo);
+
 }

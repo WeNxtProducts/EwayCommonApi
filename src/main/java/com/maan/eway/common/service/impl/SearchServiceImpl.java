@@ -51,8 +51,7 @@ import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PremiaCustomerDetails;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.calculator.util.TaxFromFactor;
-import com.maan.eway.common.req.BuildingSearchReq;
-import com.maan.eway.common.req.PersonalAccidentReq;
+
 import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
 import com.maan.eway.common.res.AdminViewQuoteRes;

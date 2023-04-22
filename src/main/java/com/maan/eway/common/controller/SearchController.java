@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.maan.eway.common.req.BuildingSearchReq;
-import com.maan.eway.common.req.PersonalAccidentReq;
 import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
 import com.maan.eway.common.res.AdminViewQuoteRes;
@@ -28,8 +26,7 @@ import com.maan.eway.common.res.SearchPremiumDetailsRes;
 import com.maan.eway.common.res.SearchROPDetailsRes;
 import com.maan.eway.common.res.SearchROPVehicleDetailsRes;
 import com.maan.eway.common.res.SearchRes;
-import com.maan.eway.common.service.AdminBuildingSearchService;
-import com.maan.eway.common.service.PersonalAccidentService;
+
 import com.maan.eway.common.service.SearchService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.res.DropDownRes;
