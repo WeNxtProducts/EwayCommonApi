@@ -50,6 +50,6 @@ public class EndorsementCriteriaRes {
 		
 		private BigDecimal     overallPremiumLc ;
 		private BigDecimal     overallPremiumFc ;
-		private BigDecimal       endtPremium ;
+		//private BigDecimal       endtPremium ;
 		private String     currency ;
 }

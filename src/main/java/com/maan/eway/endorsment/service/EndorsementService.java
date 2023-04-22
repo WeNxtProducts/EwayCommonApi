@@ -266,7 +266,7 @@ public class EndorsementService {
 				// Find All
 				Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 				Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
-				Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+				//Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
 				// Select
 				query.multiselect(//cb.literal(Long.parseLong("1")).alias("idsCount"),
 						
@@ -289,8 +289,8 @@ public class EndorsementService {
 						m.get("policyNo").alias("policyNo"),
 						m.get("endorsementRemarks").alias("endorsementRemarks"),
 						//Home Position Master
-						h.get("overallPremiumLc").alias("overallPremiumLc"), h.get("overallPremiumFc").alias("overallPremiumFc"),
-						h.get("endtPremium").alias("endtPremium"), h.get("currency").alias("currency")
+						m.get("overallPremiumLc").alias("overallPremiumLc"), m.get("overallPremiumFc").alias("overallPremiumFc"),
+					/*m.get("overallPremiumFc").alias("endtPremium"),*/m.get("currency").alias("currency")
 						);
 			 
 				// Order By
@@ -303,9 +303,9 @@ public class EndorsementService {
 				Predicate n2 = cb.equal(m.get("companyId"), request.getCompanyId());
 				Predicate n3 = cb.equal(m.get("productId"), request.getProductId());
 				Predicate n4 = cb.in(m.get("status")).value(Arrays.asList("E","P"));  // m.get("status").in("E","P"));
-				Predicate n5 = cb.or(cb.like(m.get("originalPolicyNo"), request.getPolicyNo()),cb.like(m.get("PolicyNo"), request.getPolicyNo()));
+				Predicate n5 = cb.or(cb.like(m.get("originalPolicyNo"), request.getPolicyNo()),cb.like(m.get("policyNo"), request.getPolicyNo()));
 				Predicate n6 = cb.equal(m.get("riskId"), "1");
-				Predicate n7 = cb.like(h.get("quoteNo"), m.get("quoteNo"));
+				//Predicate n7 = cb.like(h.get("quoteNo"), m.get("quoteNo"));
 				//Predicate n8 = cb.like(m.get("PolicyNo"), request.getPolicyNo());
 				//Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), endDate);
 				//Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
@@ -326,7 +326,7 @@ public class EndorsementService {
 					n8 = e0.in(branches);
 				}*/
 
-				query.where(n1, n2, n3, n4, n5,n6,n7 )
+				query.where(n1, n2, n3, n4, n5,n6 )
 						/*.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 								m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 								m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"))*/
