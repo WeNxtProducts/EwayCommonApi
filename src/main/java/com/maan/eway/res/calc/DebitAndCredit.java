@@ -52,8 +52,12 @@ public class DebitAndCredit {
 	
 	@JsonProperty("Status")
     private String status;
-	@JsonProperty("TotalCommission")
-    private BigDecimal totalCommission      ;
+	
+	@JsonProperty("RiskId")
+    private String riskId;
+	
+	/*@JsonProperty("TotalCommission")
+    private BigDecimal totalCommission      ;*/
 	
 	@JsonProperty("ViewQuoteInfo")
 	private ViewQuoteRes quoteInfo;

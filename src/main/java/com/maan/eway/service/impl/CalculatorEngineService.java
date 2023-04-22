@@ -1157,8 +1157,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			ViewQuoteReq q = new ViewQuoteReq();
 			q.setQuoteNo(request.getQuoteno());
 			ViewQuoteRes v1 = quoteservice.viewQuoteDetails(q);
-			BigDecimal totalcommission = new BigDecimal(0);
-			// Motor Product
+
 			if (request.getProductId().equalsIgnoreCase(motorProductId)) {
  				List<EserviceMotorDetailsRes> motors = (List<EserviceMotorDetailsRes>) v1.getRiskDetails();
 				for (EserviceMotorDetailsRes v : motors) {
@@ -1185,8 +1184,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					BigDecimal commission = new BigDecimal(premiumFc).multiply(new BigDecimal(commissionPercent))
 							.divide(BigDecimal.valueOf(100D))
 							.setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP);
-					v1.getQuoteDetails().getVatPercent();
-					totalcommission = totalcommission.add(commission);
+					//totalcommission = totalcommission.add(commission);
 
 					String endttypeid = v1.getQuoteDetails().getEndtTypeId();
 					List<Map<String, Object>> rules = new ArrayList<Map<String, Object>>();
@@ -1268,7 +1266,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							for (Map<String, Object> s : dd) {
 							 	 DebitAndCredit res =new  DebitAndCredit();
 								String doctype = m.getValue().equals("<CUSTOMER>") ? "C" : "B";
-								res.setTotalCommission(totalcommission);
+								
 								res.setAmountFc(new BigDecimal(s.get("CHARGE_CODE_VALUE").toString()));
 								res.setAmountLc(new BigDecimal(s.get("CHARGE_CODE_VALUE").toString()));
 								res.setChargeCode(new BigDecimal(s.get("CHARGE_CODE").toString()));
@@ -1285,6 +1283,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 								res.setProductId(request.getProductId());
 								res.setQuoteNo(request.getQuoteno());
 								res.setStatus("Y");
+								res.setRiskId(v.getRiskId());
 								res.setQuoteInfo(v1);
 								res.setSectionId(request.getSectionId());
 								resList.add(res);
@@ -1324,8 +1323,6 @@ public class CalculatorEngineService implements CalculatorEngine {
 							.divide(BigDecimal.valueOf(100D))
 							.setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP);
 					v1.getQuoteDetails().getVatPercent();
-					totalcommission = totalcommission.add(commission);
-
 					String endttypeid = v1.getQuoteDetails().getEndtTypeId();
 					List<Map<String, Object>> rules = new ArrayList<Map<String, Object>>();
 
@@ -1406,7 +1403,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							for (Map<String, Object> s : dd) {
 							 	 DebitAndCredit res =new  DebitAndCredit();
 								String doctype = m.getValue().equals("<CUSTOMER>") ? "C" : "B";
-								res.setTotalCommission(totalcommission);
+								
 								res.setAmountFc(new BigDecimal(s.get("CHARGE_CODE_VALUE").toString()));
 								res.setAmountLc(new BigDecimal(s.get("CHARGE_CODE_VALUE").toString()));
 								res.setChargeCode(new BigDecimal(s.get("CHARGE_CODE").toString()));
@@ -1462,9 +1459,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							.divide(BigDecimal.valueOf(100D))
 							.setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP);
 					v1.getQuoteDetails().getVatPercent();
-					totalcommission = totalcommission.add(commission);
-
-					String endttypeid = v1.getQuoteDetails().getEndtTypeId();
+				   String endttypeid = v1.getQuoteDetails().getEndtTypeId();
 					List<Map<String, Object>> rules = new ArrayList<Map<String, Object>>();
 
 					// Setup
@@ -1544,7 +1539,6 @@ public class CalculatorEngineService implements CalculatorEngine {
 							for (Map<String, Object> s : dd) {
 							 	 DebitAndCredit res =new  DebitAndCredit();
 								String doctype = m.getValue().equals("<CUSTOMER>") ? "C" : "B";
-								res.setTotalCommission(totalcommission);
 								res.setAmountFc(new BigDecimal(s.get("CHARGE_CODE_VALUE").toString()));
 								res.setAmountLc(new BigDecimal(s.get("CHARGE_CODE_VALUE").toString()));
 								res.setChargeCode(new BigDecimal(s.get("CHARGE_CODE").toString()));
@@ -1600,8 +1594,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							.divide(BigDecimal.valueOf(100D))
 							.setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP);
 					v1.getQuoteDetails().getVatPercent();
-					totalcommission = totalcommission.add(commission);
-
+				
 					String endttypeid = v1.getQuoteDetails().getEndtTypeId();
 					List<Map<String, Object>> rules = new ArrayList<Map<String, Object>>();
 
@@ -1682,8 +1675,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							for (Map<String, Object> s : dd) {
 							 	 DebitAndCredit res =new  DebitAndCredit();
 								String doctype = m.getValue().equals("<CUSTOMER>") ? "C" : "B";
-								res.setTotalCommission(totalcommission);
-								res.setAmountFc(new BigDecimal(s.get("CHARGE_CODE_VALUE").toString()));
+															res.setAmountFc(new BigDecimal(s.get("CHARGE_CODE_VALUE").toString()));
 								res.setAmountLc(new BigDecimal(s.get("CHARGE_CODE_VALUE").toString()));
 								res.setChargeCode(new BigDecimal(s.get("CHARGE_CODE").toString()));
 								res.setBranchCode(request.getBranchCode());
