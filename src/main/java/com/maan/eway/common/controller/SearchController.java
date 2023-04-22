@@ -46,15 +46,12 @@ public class SearchController {
 	@Autowired
 	private PrintReqService reqPrinter;
 	
-	@Autowired
-	PersonalAccidentService personalService;
+	
 	
 	@Autowired
 	private  SearchService entityService;
 	
 	
-	@Autowired
-	private AdminBuildingSearchService bulSerService;
 	
 	
 	
@@ -238,9 +235,9 @@ public ResponseEntity<CommonRes> viewDocumentDetails(@RequestBody SearchReq req)
 
 @PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 @PostMapping("/viewpersonalaccidentdetails")
-public ResponseEntity<CommonRes> viewPersonalAccidentDetails(@RequestBody PersonalAccidentReq req) {
+public ResponseEntity<CommonRes> viewPersonalAccidentDetails(@RequestBody SearchReq req) {
 	CommonRes data = new CommonRes();
-	List<PersonalAccidentRes> res = personalService.viewPersonalAccidentDetails(req);
+	List<PersonalAccidentRes> res = entityService.viewPersonalAccidentDetails(req);
 	data.setCommonResponse(res);
 	data.setErrorMessage(Collections.emptyList());
 	data.setIsError(false);
@@ -255,10 +252,10 @@ public ResponseEntity<CommonRes> viewPersonalAccidentDetails(@RequestBody Person
 
 @PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 @PostMapping("/adminbuildingsearchdetails")
-public ResponseEntity<CommonRes> adminSearchBuildingDeatails(@RequestBody BuildingSearchReq req) {
+public ResponseEntity<CommonRes> adminSearchBuildingDeatails(@RequestBody SearchReq req) {
 	CommonRes data = new CommonRes();
 	reqPrinter.reqPrint(req);
-	List<BuildingSearchRes> res = bulSerService.adminSearchBuildingDeatails(req);
+	List<BuildingSearchRes> res = entityService.adminSearchBuildingDeatails(req);
 	data.setCommonResponse(res);
 	data.setErrorMessage(Collections.emptyList());
 	data.setIsError(false);

@@ -3,10 +3,14 @@ package com.maan.eway.common.service;
 import java.util.List;
 
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.common.req.BuildingSearchReq;
+import com.maan.eway.common.req.PersonalAccidentReq;
 import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
 import com.maan.eway.common.res.AdminViewQuoteRes;
+import com.maan.eway.common.res.BuildingSearchRes;
 import com.maan.eway.common.res.DocumentRes;
+import com.maan.eway.common.res.PersonalAccidentRes;
 import com.maan.eway.common.res.SearchCustomerDetailsRes;
 import com.maan.eway.common.res.SearchPaymentInfoRes;
 import com.maan.eway.common.res.SearchPremiumDetailsRes;
@@ -38,8 +42,8 @@ public interface SearchService {
 
 	List<DocumentRes> viewDocumentDetails(SearchReq req);
 
-
-
+	List<PersonalAccidentRes> viewPersonalAccidentDetails(SearchReq req);
+	List<BuildingSearchRes> adminSearchBuildingDeatails(SearchReq req);
 
 
 }

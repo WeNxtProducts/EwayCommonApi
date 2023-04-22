@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
@@ -44,15 +45,20 @@ import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.MotorVehicleInfo;
 import com.maan.eway.bean.PaymentInfo;
+import com.maan.eway.bean.PersonalAccident;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PremiaCustomerDetails;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.calculator.util.TaxFromFactor;
+import com.maan.eway.common.req.BuildingSearchReq;
+import com.maan.eway.common.req.PersonalAccidentReq;
 import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
 import com.maan.eway.common.res.AdminViewQuoteRes;
+import com.maan.eway.common.res.BuildingSearchRes;
 import com.maan.eway.common.res.DocumentRes;
+import com.maan.eway.common.res.PersonalAccidentRes;
 import com.maan.eway.common.res.SearchCoverDetails;
 import com.maan.eway.common.res.SearchCustomerDetailsRes;
 import com.maan.eway.common.res.SearchDiscount;
@@ -76,6 +82,7 @@ import com.maan.eway.common.service.TravelGridService;
 import com.maan.eway.common.service.TravelSearchService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
+import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.CoverDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EmiTransactionDetailsRepository;
@@ -90,6 +97,7 @@ import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.MotorVehicleInfoRepository;
 import com.maan.eway.repository.PaymentInfoRepository;
+import com.maan.eway.repository.PersonalAccidentRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PremiaCustomerDetailsRepository;
 import com.maan.eway.res.DropDownRes;
@@ -180,6 +188,12 @@ public class SearchServiceImpl implements SearchService {
 	@Autowired
 	private CoverDetailsRepository coverRepo;
 	
+	@Autowired
+	BuildingDetailsRepository buildingrepo;
+	
+	@Autowired
+	PersonalAccidentRepository personalRepository;
+	
 	@PersistenceContext
 	private EntityManager em;
 	
@@ -187,6 +201,78 @@ public class SearchServiceImpl implements SearchService {
 
 	//Dropdown
 	//CopyQuote Dropdown 
+	
+
+	@Override
+	public List<BuildingSearchRes> adminSearchBuildingDeatails(SearchReq req) {
+		// TODO Auto-generated method stub
+		List<BuildingSearchRes> builLisRes=new ArrayList<BuildingSearchRes>();
+		try {
+			
+			
+			BuildingSearchRes bulRes=new BuildingSearchRes();
+			List<BuildingDetails> buldingListDt = new ArrayList<BuildingDetails>();
+			
+			if (req.getProductId().equalsIgnoreCase(buildingProductId)) 
+			{
+				
+				buldingListDt=buildingrepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
+			}
+			
+            if(buldingListDt!=null && buldingListDt.size()>0)
+
+            {
+            	for(BuildingDetails data:buldingListDt)
+            	{
+            		bulRes = new DozerBeanMapper().map(data, BuildingSearchRes.class);
+            		builLisRes.add(bulRes);
+
+            	}
+            }
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		
+		return builLisRes;
+	}
+	
+	@Override
+	public List<PersonalAccidentRes> viewPersonalAccidentDetails(SearchReq req) {
+		
+		List<PersonalAccidentRes> preslist = new ArrayList<PersonalAccidentRes>();
+
+		try {
+
+			PersonalAccidentRes pres = new PersonalAccidentRes();
+
+			List<PersonalAccident> personalList = new ArrayList<PersonalAccident>();
+
+			if (req.getProductId().equalsIgnoreCase(buildingProductId)) 
+			{
+			 if (StringUtils.isNotBlank(req.getRequestReferenceNo())) {
+				 personalList = personalRepository.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
+			}
+			}
+            if(personalList!=null && personalList.size()>0)
+            {
+			for (PersonalAccident data : personalList) {
+
+				pres = new DozerBeanMapper().map(data, PersonalAccidentRes.class);
+				preslist.add(pres);
+			}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return preslist;
+	}	
+
 	
 	@Override
 	public List<DropDownRes> searchDropdown(CopyQuoteDropDownReq req) {
