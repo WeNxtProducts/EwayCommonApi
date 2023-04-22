@@ -1158,6 +1158,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			q.setQuoteNo(request.getQuoteno());
 			ViewQuoteRes v1 = quoteservice.viewQuoteDetails(q);
 			BigDecimal totalcommission = new BigDecimal(0);
+			// Motor Product
 			if (request.getProductId().equalsIgnoreCase(motorProductId)) {
  				List<EserviceMotorDetailsRes> motors = (List<EserviceMotorDetailsRes>) v1.getRiskDetails();
 				for (EserviceMotorDetailsRes v : motors) {
@@ -1294,7 +1295,420 @@ public class CalculatorEngineService implements CalculatorEngine {
 				}
 				
 			}
- 
+
+			// Travel Product
+			else if (request.getProductId().equalsIgnoreCase(travelProductId)) {
+ 				List<EserviceTravelGetRes> motors = (List<EserviceTravelGetRes>) v1.getRiskDetails();
+				for (EserviceTravelGetRes v : motors) {
+
+					List<BrokerCommissionDetails> policylist = getPolicyName(request.getInsuranceId(),
+							request.getProductId(), request.getCreatedBy(), request.getAgencyCode(), v.getSectionId());
+					 Double commissionPercent = 0.0;
+						if(policylist.size()>0 && policylist!=null) {
+						
+					commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
+							: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());
+						}
+						else {
+							commissionPercent=5.0;
+						}
+					String premiumFc = v.getOverAllPremiumFc().toString();
+					String vatPremiumFc = v.getOverAllPremiumFc().toString();
+
+					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
+						premiumFc = v1.getQuoteDetails().getEndtPremium().toPlainString();
+						vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax().toPlainString();
+					}
+
+					BigDecimal commission = new BigDecimal(premiumFc).multiply(new BigDecimal(commissionPercent))
+							.divide(BigDecimal.valueOf(100D))
+							.setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP);
+					v1.getQuoteDetails().getVatPercent();
+					totalcommission = totalcommission.add(commission);
+
+					String endttypeid = v1.getQuoteDetails().getEndtTypeId();
+					List<Map<String, Object>> rules = new ArrayList<Map<String, Object>>();
+
+					// Setup
+					Map<String, Object> setup = new HashMap<String, Object>();
+
+					List<Map<String, Object>> csubsets = new ArrayList<Map<String, Object>>();
+					{
+						Map<String, Object> subset = new HashMap<String, Object>();
+						subset.put("CHARGE_CODE", "1001");
+						subset.put("CHARGE_CODE_DESC", "Premium");
+						subset.put("CHARGE_CODE_VALUE", premiumFc);
+						csubsets.add(subset);
+					}
+					{
+						Map<String, Object> subset = new HashMap<String, Object>();
+						subset.put("CHARGE_CODE", "1012");
+						subset.put("CHARGE_CODE_DESC", "VAT");
+						subset.put("CHARGE_CODE_VALUE", vatPremiumFc);
+						csubsets.add(subset);
+					}
+
+					List<Map<String, Object>> bsubsets = new ArrayList<Map<String, Object>>();
+					{
+						Map<String, Object> subset = new HashMap<String, Object>();
+						subset.put("CHARGE_CODE", "1005");
+						subset.put("CHARGE_CODE_DESC", "Commission");
+						subset.put("CHARGE_CODE_VALUE", commission);
+						bsubsets.add(subset);
+					}
+
+					{
+						Map<String, Object> subset = new HashMap<String, Object>();
+						subset.put("CHARGE_CODE", "1007");
+						subset.put("CHARGE_CODE_DESC", "Commission%");
+						subset.put("CHARGE_CODE_VALUE", commissionPercent);
+						bsubsets.add(subset);
+					}
+					/*
+					 * if(commissionVatYn.equals("Y")) { commissionVat=commission .multiply(new
+					 * BigDecimal(v1.getQuoteDetails().getVatPercent()))
+					 * .divide(BigDecimal.valueOf(100D)) .setScale(new MathContext(3,
+					 * RoundingMode.HALF_UP) .getPrecision(),RoundingMode.HALF_UP);
+					 * 
+					 * 
+					 * Map<String,Object> subset=new HashMap<String, Object>();
+					 * subset.put("CHARGE_CODE", "1012"); subset.put("CHARGE_CODE_DESC",
+					 * "COMMISSON_VAT"); subset.put("CHARGE_CODE_VALUE",commissionVat);
+					 * bsubsets.add(subset); }
+					 * 
+					 */
+					setup.put("<CUSTOMER>", csubsets);
+					setup.put("<BROKER>", bsubsets);
+
+					// Rule
+					Map<String, Object> rule1 = new HashMap<String, Object>();
+					rule1.put("DEBIT", "<CUSTOMER>");
+					rule1.put("CREDIT", "<BROKER>");
+					rules.add(rule1);
+
+					String crnumber = "CN-" + genNo.generateCreditNo(); // ThreadLocalRandom.current().ints(1001,
+																		// 4999).distinct().limit(5).findAny().toString();
+					String drnumber = "DN-" + genNo.generateDebitNo(); // ThreadLocalRandom.current().ints(4999,
+																		// 9999).distinct().limit(5).findAny().toString();
+
+					if (StringUtils.isBlank(endttypeid)) {
+						String policyNo = genNo.generatePolicyNo();
+						request.setPolicyNo(policyNo);
+					} else {
+						request.setPolicyNo(v1.getQuoteDetails().getPolicyNo());
+					}
+					int rownum = 1;
+
+					for (Map<String, Object> map : rules) {
+						for (Entry<String, Object> m : map.entrySet()) {
+
+							List<Map<String, Object>> dd = (List<Map<String, Object>>) setup.get(m.getValue());
+							for (Map<String, Object> s : dd) {
+							 	 DebitAndCredit res =new  DebitAndCredit();
+								String doctype = m.getValue().equals("<CUSTOMER>") ? "C" : "B";
+								res.setTotalCommission(totalcommission);
+								res.setAmountFc(new BigDecimal(s.get("CHARGE_CODE_VALUE").toString()));
+								res.setAmountLc(new BigDecimal(s.get("CHARGE_CODE_VALUE").toString()));
+								res.setChargeCode(new BigDecimal(s.get("CHARGE_CODE").toString()));
+								res.setBranchCode(request.getBranchCode());
+								res.setChgId(new BigDecimal(rownum++));
+								res.setCompanyId(request.getInsuranceId());
+								res.setDocId(doctype.equals("C") ? v1.getCustomerDetails().getCustomerId()
+										: v1.getQuoteDetails().getLoginId());
+								res.setDocNo(m.getKey().equals("DEBIT") ? drnumber : crnumber);
+								res.setDocType(doctype);
+								res.setDrcrFlag(m.getKey().equals("DEBIT") ? "DR" : "CR");
+								res.setEntryDate(new Date());
+								res.setPolicyNo(request.getPolicyNo());
+								res.setProductId(request.getProductId());
+								res.setQuoteNo(request.getQuoteno());
+								res.setStatus("Y");
+								res.setQuoteInfo(v1);
+								res.setSectionId(request.getSectionId());
+								resList.add(res);
+							}
+						}
+					}
+					crdrservice.insertDRCR(resList, request.getQuoteno());
+				}
+				
+			}
+
+			// Building and SME Product
+			else if ((request.getProductId().equalsIgnoreCase(buildingProductId))|| (request.getProductId().equalsIgnoreCase(smeProductId))) {
+ 				List<EserviceBuildingsDetailsRes> motors = (List<EserviceBuildingsDetailsRes>) v1.getRiskDetails();
+				for (EserviceBuildingsDetailsRes v : motors) {
+
+					List<BrokerCommissionDetails> policylist = getPolicyName(request.getInsuranceId(),
+							request.getProductId(), request.getCreatedBy(), request.getAgencyCode(),"99999");
+					 Double commissionPercent = 0.0;
+						if(policylist.size()>0 && policylist!=null) {
+						
+					commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
+							: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());
+						}
+						else {
+							commissionPercent=5.0;
+						}
+					String premiumFc = v.getOverAllPremiumFc().toString();
+					String vatPremiumFc = v.getOverAllPremiumFc().toString();
+
+					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
+						premiumFc = v1.getQuoteDetails().getEndtPremium().toPlainString();
+						vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax().toPlainString();
+					}
+
+					BigDecimal commission = new BigDecimal(premiumFc).multiply(new BigDecimal(commissionPercent))
+							.divide(BigDecimal.valueOf(100D))
+							.setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP);
+					v1.getQuoteDetails().getVatPercent();
+					totalcommission = totalcommission.add(commission);
+
+					String endttypeid = v1.getQuoteDetails().getEndtTypeId();
+					List<Map<String, Object>> rules = new ArrayList<Map<String, Object>>();
+
+					// Setup
+					Map<String, Object> setup = new HashMap<String, Object>();
+
+					List<Map<String, Object>> csubsets = new ArrayList<Map<String, Object>>();
+					{
+						Map<String, Object> subset = new HashMap<String, Object>();
+						subset.put("CHARGE_CODE", "1001");
+						subset.put("CHARGE_CODE_DESC", "Premium");
+						subset.put("CHARGE_CODE_VALUE", premiumFc);
+						csubsets.add(subset);
+					}
+					{
+						Map<String, Object> subset = new HashMap<String, Object>();
+						subset.put("CHARGE_CODE", "1012");
+						subset.put("CHARGE_CODE_DESC", "VAT");
+						subset.put("CHARGE_CODE_VALUE", vatPremiumFc);
+						csubsets.add(subset);
+					}
+
+					List<Map<String, Object>> bsubsets = new ArrayList<Map<String, Object>>();
+					{
+						Map<String, Object> subset = new HashMap<String, Object>();
+						subset.put("CHARGE_CODE", "1005");
+						subset.put("CHARGE_CODE_DESC", "Commission");
+						subset.put("CHARGE_CODE_VALUE", commission);
+						bsubsets.add(subset);
+					}
+
+					{
+						Map<String, Object> subset = new HashMap<String, Object>();
+						subset.put("CHARGE_CODE", "1007");
+						subset.put("CHARGE_CODE_DESC", "Commission%");
+						subset.put("CHARGE_CODE_VALUE", commissionPercent);
+						bsubsets.add(subset);
+					}
+					/*
+					 * if(commissionVatYn.equals("Y")) { commissionVat=commission .multiply(new
+					 * BigDecimal(v1.getQuoteDetails().getVatPercent()))
+					 * .divide(BigDecimal.valueOf(100D)) .setScale(new MathContext(3,
+					 * RoundingMode.HALF_UP) .getPrecision(),RoundingMode.HALF_UP);
+					 * 
+					 * 
+					 * Map<String,Object> subset=new HashMap<String, Object>();
+					 * subset.put("CHARGE_CODE", "1012"); subset.put("CHARGE_CODE_DESC",
+					 * "COMMISSON_VAT"); subset.put("CHARGE_CODE_VALUE",commissionVat);
+					 * bsubsets.add(subset); }
+					 * 
+					 */
+					setup.put("<CUSTOMER>", csubsets);
+					setup.put("<BROKER>", bsubsets);
+
+					// Rule
+					Map<String, Object> rule1 = new HashMap<String, Object>();
+					rule1.put("DEBIT", "<CUSTOMER>");
+					rule1.put("CREDIT", "<BROKER>");
+					rules.add(rule1);
+
+					String crnumber = "CN-" + genNo.generateCreditNo(); // ThreadLocalRandom.current().ints(1001,
+																		// 4999).distinct().limit(5).findAny().toString();
+					String drnumber = "DN-" + genNo.generateDebitNo(); // ThreadLocalRandom.current().ints(4999,
+																		// 9999).distinct().limit(5).findAny().toString();
+
+					if (StringUtils.isBlank(endttypeid)) {
+						String policyNo = genNo.generatePolicyNo();
+						request.setPolicyNo(policyNo);
+					} else {
+						request.setPolicyNo(v1.getQuoteDetails().getPolicyNo());
+					}
+					int rownum = 1;
+
+					for (Map<String, Object> map : rules) {
+						for (Entry<String, Object> m : map.entrySet()) {
+
+							List<Map<String, Object>> dd = (List<Map<String, Object>>) setup.get(m.getValue());
+							for (Map<String, Object> s : dd) {
+							 	 DebitAndCredit res =new  DebitAndCredit();
+								String doctype = m.getValue().equals("<CUSTOMER>") ? "C" : "B";
+								res.setTotalCommission(totalcommission);
+								res.setAmountFc(new BigDecimal(s.get("CHARGE_CODE_VALUE").toString()));
+								res.setAmountLc(new BigDecimal(s.get("CHARGE_CODE_VALUE").toString()));
+								res.setChargeCode(new BigDecimal(s.get("CHARGE_CODE").toString()));
+								res.setBranchCode(request.getBranchCode());
+								res.setChgId(new BigDecimal(rownum++));
+								res.setCompanyId(request.getInsuranceId());
+								res.setDocId(doctype.equals("C") ? v1.getCustomerDetails().getCustomerId()
+										: v1.getQuoteDetails().getLoginId());
+								res.setDocNo(m.getKey().equals("DEBIT") ? drnumber : crnumber);
+								res.setDocType(doctype);
+								res.setDrcrFlag(m.getKey().equals("DEBIT") ? "DR" : "CR");
+								res.setEntryDate(new Date());
+								res.setPolicyNo(request.getPolicyNo());
+								res.setProductId(request.getProductId());
+								res.setQuoteNo(request.getQuoteno());
+								res.setStatus("Y");
+								res.setQuoteInfo(v1);
+								res.setSectionId(request.getSectionId());
+								resList.add(res);
+							}
+						}
+					}
+					crdrservice.insertDRCR(resList, request.getQuoteno());
+				}
+				
+			}
+			
+			// Common Product
+			else {
+ 				List<EserviceCommonGetRes> motors = (List<EserviceCommonGetRes>) v1.getRiskDetails();
+				for (EserviceCommonGetRes v : motors) {
+
+					List<BrokerCommissionDetails> policylist = getPolicyName(request.getInsuranceId(),
+							request.getProductId(), request.getCreatedBy(), request.getAgencyCode(),"99999");
+					 Double commissionPercent = 0.0;
+						if(policylist.size()>0 && policylist!=null) {
+						
+					commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
+							: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());
+						}
+						else {
+							commissionPercent=5.0;
+						}
+					String premiumFc = v.getOverAllPremiumFc().toString();
+					String vatPremiumFc = v.getOverAllPremiumFc().toString();
+
+					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
+						premiumFc = v1.getQuoteDetails().getEndtPremium().toPlainString();
+						vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax().toPlainString();
+					}
+
+					BigDecimal commission = new BigDecimal(premiumFc).multiply(new BigDecimal(commissionPercent))
+							.divide(BigDecimal.valueOf(100D))
+							.setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP);
+					v1.getQuoteDetails().getVatPercent();
+					totalcommission = totalcommission.add(commission);
+
+					String endttypeid = v1.getQuoteDetails().getEndtTypeId();
+					List<Map<String, Object>> rules = new ArrayList<Map<String, Object>>();
+
+					// Setup
+					Map<String, Object> setup = new HashMap<String, Object>();
+
+					List<Map<String, Object>> csubsets = new ArrayList<Map<String, Object>>();
+					{
+						Map<String, Object> subset = new HashMap<String, Object>();
+						subset.put("CHARGE_CODE", "1001");
+						subset.put("CHARGE_CODE_DESC", "Premium");
+						subset.put("CHARGE_CODE_VALUE", premiumFc);
+						csubsets.add(subset);
+					}
+					{
+						Map<String, Object> subset = new HashMap<String, Object>();
+						subset.put("CHARGE_CODE", "1012");
+						subset.put("CHARGE_CODE_DESC", "VAT");
+						subset.put("CHARGE_CODE_VALUE", vatPremiumFc);
+						csubsets.add(subset);
+					}
+
+					List<Map<String, Object>> bsubsets = new ArrayList<Map<String, Object>>();
+					{
+						Map<String, Object> subset = new HashMap<String, Object>();
+						subset.put("CHARGE_CODE", "1005");
+						subset.put("CHARGE_CODE_DESC", "Commission");
+						subset.put("CHARGE_CODE_VALUE", commission);
+						bsubsets.add(subset);
+					}
+
+					{
+						Map<String, Object> subset = new HashMap<String, Object>();
+						subset.put("CHARGE_CODE", "1007");
+						subset.put("CHARGE_CODE_DESC", "Commission%");
+						subset.put("CHARGE_CODE_VALUE", commissionPercent);
+						bsubsets.add(subset);
+					}
+					/*
+					 * if(commissionVatYn.equals("Y")) { commissionVat=commission .multiply(new
+					 * BigDecimal(v1.getQuoteDetails().getVatPercent()))
+					 * .divide(BigDecimal.valueOf(100D)) .setScale(new MathContext(3,
+					 * RoundingMode.HALF_UP) .getPrecision(),RoundingMode.HALF_UP);
+					 * 
+					 * 
+					 * Map<String,Object> subset=new HashMap<String, Object>();
+					 * subset.put("CHARGE_CODE", "1012"); subset.put("CHARGE_CODE_DESC",
+					 * "COMMISSON_VAT"); subset.put("CHARGE_CODE_VALUE",commissionVat);
+					 * bsubsets.add(subset); }
+					 * 
+					 */
+					setup.put("<CUSTOMER>", csubsets);
+					setup.put("<BROKER>", bsubsets);
+
+					// Rule
+					Map<String, Object> rule1 = new HashMap<String, Object>();
+					rule1.put("DEBIT", "<CUSTOMER>");
+					rule1.put("CREDIT", "<BROKER>");
+					rules.add(rule1);
+
+					String crnumber = "CN-" + genNo.generateCreditNo(); // ThreadLocalRandom.current().ints(1001,
+																		// 4999).distinct().limit(5).findAny().toString();
+					String drnumber = "DN-" + genNo.generateDebitNo(); // ThreadLocalRandom.current().ints(4999,
+																		// 9999).distinct().limit(5).findAny().toString();
+
+					if (StringUtils.isBlank(endttypeid)) {
+						String policyNo = genNo.generatePolicyNo();
+						request.setPolicyNo(policyNo);
+					} else {
+						request.setPolicyNo(v1.getQuoteDetails().getPolicyNo());
+					}
+					int rownum = 1;
+
+					for (Map<String, Object> map : rules) {
+						for (Entry<String, Object> m : map.entrySet()) {
+
+							List<Map<String, Object>> dd = (List<Map<String, Object>>) setup.get(m.getValue());
+							for (Map<String, Object> s : dd) {
+							 	 DebitAndCredit res =new  DebitAndCredit();
+								String doctype = m.getValue().equals("<CUSTOMER>") ? "C" : "B";
+								res.setTotalCommission(totalcommission);
+								res.setAmountFc(new BigDecimal(s.get("CHARGE_CODE_VALUE").toString()));
+								res.setAmountLc(new BigDecimal(s.get("CHARGE_CODE_VALUE").toString()));
+								res.setChargeCode(new BigDecimal(s.get("CHARGE_CODE").toString()));
+								res.setBranchCode(request.getBranchCode());
+								res.setChgId(new BigDecimal(rownum++));
+								res.setCompanyId(request.getInsuranceId());
+								res.setDocId(doctype.equals("C") ? v1.getCustomerDetails().getCustomerId()
+										: v1.getQuoteDetails().getLoginId());
+								res.setDocNo(m.getKey().equals("DEBIT") ? drnumber : crnumber);
+								res.setDocType(doctype);
+								res.setDrcrFlag(m.getKey().equals("DEBIT") ? "DR" : "CR");
+								res.setEntryDate(new Date());
+								res.setPolicyNo(request.getPolicyNo());
+								res.setProductId(request.getProductId());
+								res.setQuoteNo(request.getQuoteno());
+								res.setStatus("Y");
+								res.setQuoteInfo(v1);
+								res.setSectionId(request.getSectionId());
+								resList.add(res);
+							}
+						}
+					}
+					crdrservice.insertDRCR(resList, request.getQuoteno());
+				}
+				
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
