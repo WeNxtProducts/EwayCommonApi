@@ -5,7 +5,9 @@ import java.util.List;
 import javax.persistence.Tuple;
 
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
+import com.maan.eway.common.res.AdminViewQuoteRes;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 
 public interface CommonSearchService {
@@ -20,6 +22,10 @@ public interface CommonSearchService {
 			String userType, List<String> branches,String productId) ;
 
 	List<ListItemValue> searchDropdownCommon(CopyQuoteDropDownReq req);
+
+	AdminViewQuoteRes getCommonProductDetails(SearchReq req);
+
+	List<SearchEservieMotorDetailsViewRatingRes> commonRating(SearchReq req);
 
 
 }

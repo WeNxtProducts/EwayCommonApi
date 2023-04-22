@@ -15,6 +15,7 @@ import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.EservieMotorDetailsViewRes;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
+import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
 import com.maan.eway.common.res.AdminViewQuoteRes;
 import com.maan.eway.common.res.CommonRes;
@@ -31,11 +32,8 @@ public interface MotorSearchService {
 
 	List<Tuple> adminSearchMotorQuote(SearchReq req, List<String> branches);
 	List<ListItemValue> searchDropdownMotor(CopyQuoteDropDownReq req);
-
-	
-
-	List<Tuple> searchCutomerDetails(String searchKey, String searchValue, String companyId, String loginId,
-			String userType, List<String> branches,String customerId);
+	AdminViewQuoteRes getMotorProductDetails(SearchReq req);
+	List<SearchEservieMotorDetailsViewRatingRes> motorRating(SearchReq req);
 
 	
 }

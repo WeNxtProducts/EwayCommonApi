@@ -5,7 +5,9 @@ import java.util.List;
 import javax.persistence.Tuple;
 
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
+import com.maan.eway.common.res.AdminViewQuoteRes;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.res.DropDownRes;
 
@@ -17,5 +19,9 @@ List<Tuple> searchTravel(SearchReq req, List<String> branches);
 			String userType, List<String> branches,String productId) ;
 
 	List<ListItemValue> searchDropdownTravel(CopyQuoteDropDownReq req);
+
+	AdminViewQuoteRes getTravelProductDetails(SearchReq req);
+
+	List<SearchEservieMotorDetailsViewRatingRes> travelRating(SearchReq req);
 
 }

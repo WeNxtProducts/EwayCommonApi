@@ -1,5 +1,8 @@
 package com.maan.eway.common.service.impl;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,22 +29,33 @@ import javax.persistence.criteria.Subquery;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dozer.DozerBeanMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.maan.eway.bean.BrokerCommissionDetails;
+import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.req.CopyQuoteReq;
+import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
+import com.maan.eway.common.res.AdminViewQuoteRes;
+import com.maan.eway.common.res.EserviceCommonGetRes;
 import com.maan.eway.common.service.CommonSearchService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
+import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SectionDetails;
 
 @Service
 public class CommonSearchServiceImpl implements CommonSearchService{
 	
+	@Autowired
+	private CommonDataDetailsRepository commonDataRepo ;
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -75,6 +89,8 @@ public class CommonSearchServiceImpl implements CommonSearchService{
 				searchQuote = commonDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			} 
 			else if ("MobileNumber".equalsIgnoreCase(searchKey)) {
+				searchQuote = commonDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
+			}else if ("PolicyNumber".equalsIgnoreCase(searchKey)) {
 				searchQuote = commonDetails(searchKey, searchValue, companyId, loginId, userType, branches,productId);
 			}
 			} catch (Exception e) {
@@ -128,6 +144,8 @@ public class CommonSearchServiceImpl implements CommonSearchService{
 			 else if (searchKey.equalsIgnoreCase("CustomerName")) {
 				n1 = cb.like(cb.lower(cus.get("clientName")), "%" + searchValue + "%");
 				n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
+			}else if (searchKey.equalsIgnoreCase("PolicyNumber")) {
+				n1 = cb.equal(cb.lower(c.get("policyNo")), searchValue);
 			}
 
 			Predicate n2 = cb.equal(c.get("companyId"), companyId);
@@ -265,7 +283,121 @@ public class CommonSearchServiceImpl implements CommonSearchService{
 			return null;
 		}
 		return list;
-		}	
+		}
+	
+	@Override
+	public AdminViewQuoteRes getCommonProductDetails(SearchReq req) {
+		AdminViewQuoteRes viewRes = new AdminViewQuoteRes();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			// Find Motor Data
+			List<CommonDataDetails> commonDatas =  commonDataRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+			
+			List<EserviceCommonGetRes>   commonResList = new ArrayList<EserviceCommonGetRes>();
+			for (CommonDataDetails com :  commonDatas) {
+				// Response
+				// Mot
+				 List<BrokerCommissionDetails> policylist = getPolicyName(com.getCompanyId() , com.getProductId().toString(), com.getCreatedBy(),com.getAgencyCode(),"99999");
+			
+				 Double commissionPercent = 0.0;
+					if(policylist.size()>0 && policylist!=null) {
+					
+				 commissionPercent = policylist.get(0).getCommissionPercentage().toString()==null?0: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
+					}
+					else {
+						commissionPercent =5.0;
+					}
+				 String premiumFc = com.getOverallPremiumFc().toString();
+				 String vatPremiumFc =	com.getOverallPremiumFc().toString();
+				 BigDecimal commission=	new BigDecimal(premiumFc)
+			 				.multiply(new BigDecimal(commissionPercent))
+	 						.divide(BigDecimal.valueOf(100D))
+	 						.setScale(new MathContext(3, RoundingMode.HALF_UP)
+	 						.getPrecision(),RoundingMode.HALF_UP);
+
+				
+				EserviceCommonGetRes commonDetails = new  EserviceCommonGetRes()  ;
+				dozerMapper.map(com, commonDetails);
+				commonDetails.setSectionId(com.getSectionId()==null?"":com.getSectionId().toString());
+				commonDetails.setOverAllPremiumFc(com.getOverallPremiumFc()==null?0D:Double.valueOf(com.getOverallPremiumFc().toString()));
+				commonDetails.setOverAllPremiumLc(com.getOverallPremiumLc()==null?0D:Double.valueOf(com.getOverallPremiumLc().toString()));
+				commonDetails.setPremiumFc(com.getActualPremiumFc()==null?0D:Double.valueOf(com.getActualPremiumFc().toString()));
+				commonDetails.setPremiumLc(com.getActualPremiumLc()==null?0D:Double.valueOf(com.getActualPremiumLc().toString()));
+				commonDetails.setCommissionAmount(commission.toString()==null?"":commission.toString());
+				commonDetails.setCommissionPercentage(commissionPercent.toString()==null?"":commissionPercent.toString());
+
+				// Section Details
+				SectionDetails sec = new SectionDetails(); 
+				sec.setSectionId(com.getSectionId()==null?"":com.getSectionId().toString());
+				sec.setSectionName( com.getSectionDesc());
+				
+				List<SectionDetails>  sectionList = new ArrayList<SectionDetails>();
+				sectionList.add(sec);
+				commonDetails.setSectionDetails(sectionList);
+				commonResList.add(commonDetails);
+			}
+			viewRes.setRiskDetails(commonResList);	
+			
+		} catch ( Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return viewRes;
+	}
+
+	private List<BrokerCommissionDetails> getPolicyName( String companyId, String productId, String loginId, String agencyCode, String policyType) {
+		List<BrokerCommissionDetails> list = new ArrayList<BrokerCommissionDetails>();
+		try {
+			Date today = new Date();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<BrokerCommissionDetails> query = cb.createQuery(BrokerCommissionDetails.class);
+
+			// Find All
+			Root<BrokerCommissionDetails> b = query.from(BrokerCommissionDetails.class);
+
+			// Select
+			query.select(b);
+
+			// Effective Date Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<BrokerCommissionDetails> ocpm1 = amendId.from(BrokerCommissionDetails.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("id"), b.get("id"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a4 = cb.equal(ocpm1.get("policyType"), b.get("policyType"));
+			Predicate a5 = cb.equal(ocpm1.get("loginId"), b.get("loginId"));
+			Predicate a6 = cb.equal(ocpm1.get("agencyCode"), b.get("agencyCode"));
+			
+			amendId.where(a1,a2,a3,a4,a5,a6);
+
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("policyType"), policyType);
+			Predicate n3 = cb.equal(b.get("companyId"),companyId);
+			Predicate n4 = cb.equal(b.get("productId"),productId);
+			Predicate n5 = cb.equal(b.get("loginId"),loginId);
+			Predicate n6 = cb.equal(b.get("agencyCode"),agencyCode);
+			
+			query.where(n1,n2,n3,n4,n5,n6);
+			
+			// Get Result
+			TypedQuery<BrokerCommissionDetails> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		}
+		return list;
+	}
+//Rating
+	@Override
+	public List<SearchEservieMotorDetailsViewRatingRes> commonRating(SearchReq req) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	}
 
 
