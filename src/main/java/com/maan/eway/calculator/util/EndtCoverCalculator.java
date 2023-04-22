@@ -214,7 +214,8 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 							 
 							 endorsement.setPremiumExcluedTax((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumExcluedTax().subtract(endorsement.getPremiumExcluedTax()))));
 							 endorsement.setPremiumExcluedTaxLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumExcluedTaxLC().subtract(endorsement.getPremiumExcluedTaxLC()))));
-							 
+							 endorsement.setProRata(t.getProRata());
+
 					 	}
 					 
 					
