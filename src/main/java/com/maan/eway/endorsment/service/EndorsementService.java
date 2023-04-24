@@ -257,8 +257,8 @@ public class EndorsementService {
 	public List<EndorsementCriteriaRes> endorsementMotorGrid(Endorsment request) {
 
 		 try {
-				Double overAllPremiumLc = 0D;
-				Double overAllPremiumFc = 0D;
+
+			 
 				// Get Datas
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<EndorsementCriteriaRes> query = cb.createQuery(EndorsementCriteriaRes.class);
@@ -269,7 +269,7 @@ public class EndorsementService {
 				//Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
 				// Select
 				query.multiselect(//cb.literal(Long.parseLong("1")).alias("idsCount"),
-					//	cb.count(m).alias("idsCount"),
+						
 						// Customer Info
 						c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
 						c.get("clientName").alias("clientName"),
@@ -288,9 +288,9 @@ public class EndorsementService {
 						m.get("endtStatus").alias("endorsementStatus"),
 						m.get("policyNo").alias("policyNo"),
 						m.get("endorsementRemarks").alias("endorsementRemarks"),
-						cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"),cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
-						m.get("endtPremium").alias("endtPremium"),m.get("currency").alias("currency")
-						);
+						cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
+						/*m.get("overallPremiumFc").alias("endtPremium"),*/  m.get("currency").alias("currency")
+							);
 			 
 				// Order By
 				List<Order> orderList = new ArrayList<Order>();
@@ -303,7 +303,7 @@ public class EndorsementService {
 				Predicate n3 = cb.equal(m.get("productId"), request.getProductId());
 				Predicate n4 = cb.in(m.get("status")).value(Arrays.asList("E","P"));  // m.get("status").in("E","P"));
 				Predicate n5 = cb.or(cb.like(m.get("originalPolicyNo"), request.getPolicyNo()),cb.like(m.get("policyNo"), request.getPolicyNo()));
-				Predicate n6 = cb.equal(m.get("riskId"), "1");
+			//	Predicate n6 = cb.equal(m.get("riskId"), "1");
 				//Predicate n7 = cb.like(h.get("quoteNo"), m.get("quoteNo"));
 				//Predicate n8 = cb.like(m.get("PolicyNo"), request.getPolicyNo());
 				//Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), endDate);
@@ -324,14 +324,13 @@ public class EndorsementService {
 					Expression<String> e0 = m.get("branchCode");
 					n8 = e0.in(branches);
 				}*/
-				query.where(n1, n2, n3, n4, n5,n6)
-						.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
+
+				query.where(n1, n2, n3, n4, n5)
+						/*.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 								m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
-								m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
-								m.get("endorsementType"),m.get("endorsementTypeDesc"),m.get("endorsementType"),m.get("endorsementEffdate"),
-								m.get("overallPremiumLc"),m.get("overallPremiumFc"),m.get("endtPremium"),
-								m.get("endtCategDesc"),m.get("endorsementDate"),m.get("endtStatus"),
-								m.get("endorsementRemarks"),m.get("policyNo"),m.get("currency"))
+								m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"))*/
+				
+				.groupBy(m.get("overallPremiumLc"),m.get("overallPremiumFc"))
 						.orderBy(orderList);
 
 				// Get Result
@@ -339,14 +338,9 @@ public class EndorsementService {
 				////result.setFirstResult(500);
 				//result.setMaxResults(500);
 				  List<EndorsementCriteriaRes> grids = result.getResultList();
-//				  grids = grids.stream().filter(o -> !o.getIdsCount().equals(0L))
-//							.collect(Collectors.toList());
-//				  overAllPremiumFc = grids.stream().filter( o -> o.getOverallPremiumFc()!=null && o.getOverallPremiumFc().doubleValue() > 0D ).mapToDouble( o ->   o.getOverallPremiumFc().doubleValue()  ).sum();
-//				  overAllPremiumLc = grids.stream().filter( o -> o.getOverallPremiumLc()!=null && o.getOverallPremiumLc().doubleValue() > 0D ).mapToDouble( o ->   o.getOverallPremiumLc().doubleValue()  ).sum();
-//					
+				  
 				  return grids;
 			
-		 
 		 }catch (Exception e) {
 			 e.printStackTrace();
 		}
