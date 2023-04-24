@@ -273,7 +273,7 @@ this.repository = repo;
 		String successRes = "Saved Successfully" ;
 		DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
 		
-		List<EserviceSectionDetails> sectionList =  eserSecRepo.findByRequestReferenceNoAndRiskIdAndProductIdOrderBySectionIdAsc(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()), req.getProductId() );
+		List<EserviceSectionDetails> sectionList =  eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo() );
 		String currencyId =sectionList.size()> 0 ? sectionList.get(0).getCurrencyId() : "" ;	
 		String decimalDigits = currencyDecimalFormat(req.getInsuranceId() , currencyId ).toString();
 		String stringFormat = "%0"+decimalDigits+"d" ;
