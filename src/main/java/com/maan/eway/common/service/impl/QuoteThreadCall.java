@@ -1552,6 +1552,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					// Copy Quote Doc
 					List<EserviceMotorDetails> eserMotors = eserMotRepo.findByRequestReferenceNoAndStatusOrderByRiskIdAsc(request.getRequestReferenceNo() ,"D");
 					eserMotors.stream().forEach(i->i.setQuoteNo(request.getQuoteNo()));
+					eserMotRepo.saveAll(eserMotors);
 					List<MotorDataDetails> motorDatas  = new ArrayList<MotorDataDetails>();
 				
 					eserMotors.forEach(ref ->  {
