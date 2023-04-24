@@ -258,6 +258,7 @@ public class EndorsementService {
 
 		 try {
 
+
 			 
 				// Get Datas
 				CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -289,8 +290,8 @@ public class EndorsementService {
 						m.get("policyNo").alias("policyNo"),
 						m.get("endorsementRemarks").alias("endorsementRemarks"),
 						//Home Position Master
-						m.get("overallPremiumLc").alias("overallPremiumLc"), m.get("overallPremiumFc").alias("overallPremiumFc"),
-					/*m.get("overallPremiumFc").alias("endtPremium"),*/m.get("currency").alias("currency")
+						cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
+					/*m.get("overallPremiumFc").alias("endtPremium"),*/  m.get("currency").alias("currency")
 						);
 			 
 				// Order By
@@ -304,7 +305,7 @@ public class EndorsementService {
 				Predicate n3 = cb.equal(m.get("productId"), request.getProductId());
 				Predicate n4 = cb.in(m.get("status")).value(Arrays.asList("E","P"));  // m.get("status").in("E","P"));
 				Predicate n5 = cb.or(cb.like(m.get("originalPolicyNo"), request.getPolicyNo()),cb.like(m.get("policyNo"), request.getPolicyNo()));
-				Predicate n6 = cb.equal(m.get("riskId"), "1");
+				//Predicate n6 = cb.equal(m.get("riskId"), "1");
 				//Predicate n7 = cb.like(h.get("quoteNo"), m.get("quoteNo"));
 				//Predicate n8 = cb.like(m.get("PolicyNo"), request.getPolicyNo());
 				//Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), endDate);
@@ -326,10 +327,8 @@ public class EndorsementService {
 					n8 = e0.in(branches);
 				}*/
 
-				query.where(n1, n2, n3, n4, n5,n6 )
-						/*.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
-								m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
-								m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"))*/
+				query.where(n1, n2, n3, n4, n5 )
+						.groupBy(m.get("overallPremiumLc"),m.get("overallPremiumFc"))
 						.orderBy(orderList);
 
 				// Get Result
@@ -340,6 +339,7 @@ public class EndorsementService {
 				  
 				  return grids;
 			
+		 
 		 }catch (Exception e) {
 			 e.printStackTrace();
 		}
