@@ -20,12 +20,13 @@ import lombok.Setter;
 public class EndorsementCriteriaRes {
 
 		// Customer Info
-		//private Long   idsCount ;
-	    
+	
+	//private Long   idsCount ;   
 		private String   customerReferenceNo ;
 	    private String idNumber;
 		private String clientName;
 		// Vehicle Info
+	//	private Long   idsCount ;
 		private String     companyId ;
 		private String     productId ;
 		private String     branchCode ;
@@ -50,6 +51,6 @@ public class EndorsementCriteriaRes {
 		
 		private BigDecimal     overallPremiumLc ;
 		private BigDecimal     overallPremiumFc ;
-		//private BigDecimal       endtPremium ;
+		private Double       endtPremium ;
 		private String     currency ;
 }
