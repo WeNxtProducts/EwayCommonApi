@@ -1785,14 +1785,31 @@ public class PaymentServiceImpl implements PaymentService {
 					// set update and where clause
 					update.set("policyNo", policyNo);
 					update.set("status", "P");
-					if(StringUtils.isNotBlank(endttypeId))
-						update.set("endtStatus","C");
+					/*if(StringUtils.isNotBlank(endttypeId))
+						update.set("endtStatus","C");*/
 					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
 					Predicate n2 = cb.notEqual(m.get("status"),"D" );
 					update.where(n1,n2);
 					// perform update
 					em.createQuery(update).executeUpdate();
 					
+	    		   }
+	    		   if(StringUtils.isNotBlank(endttypeId)){
+	    			 
+	   	    		    CriteriaBuilder cb = em.getCriteriaBuilder();
+	   					// create update
+	   					CriteriaUpdate<EserviceMotorDetails> update = cb.createCriteriaUpdate(EserviceMotorDetails.class);
+	   					// set the root class
+	   					Root<EserviceMotorDetails> m = update.from(EserviceMotorDetails.class);
+	   					if(StringUtils.isNotBlank(endttypeId))
+	   						update.set("endtStatus","C");
+	   					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
+	   					 
+	   					update.where(n1);
+	   					// perform update
+	   					em.createQuery(update).executeUpdate();
+	   					
+	   	    		   
 	    		   }
 	    		   // Motor Data Details Update
 	    		   {
@@ -1832,6 +1849,24 @@ public class PaymentServiceImpl implements PaymentService {
 					em.createQuery(update).executeUpdate();
 					
 	    		   }
+	    		   
+	    		   if(StringUtils.isNotBlank(endttypeId)){
+		    			 
+	   	    		    CriteriaBuilder cb = em.getCriteriaBuilder();
+	   					// create update
+	   					CriteriaUpdate<EserviceTravelDetails> update = cb.createCriteriaUpdate(EserviceTravelDetails.class);
+	   					// set the root class
+	   					Root<EserviceTravelDetails> m = update.from(EserviceTravelDetails.class);
+	   					if(StringUtils.isNotBlank(endttypeId))
+	   						update.set("endtStatus","C");
+	   					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
+	   					 
+	   					update.where(n1);
+	   					// perform update
+	   					em.createQuery(update).executeUpdate();
+	   					
+	   	    		   
+	    		   }
 	    		   // Travel Data Details Update
 	    		   {
 		    		    CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -1870,6 +1905,25 @@ public class PaymentServiceImpl implements PaymentService {
 					em.createQuery(update).executeUpdate();
 					
 	    		   }
+	    		   
+	    		   if(StringUtils.isNotBlank(endttypeId)){
+		    			 
+	   	    		    CriteriaBuilder cb = em.getCriteriaBuilder();
+	   					// create update
+	   					CriteriaUpdate<EserviceBuildingDetails> update = cb.createCriteriaUpdate(EserviceBuildingDetails.class);
+	   					// set the root class
+	   					Root<EserviceBuildingDetails> m = update.from(EserviceBuildingDetails.class);
+	   					if(StringUtils.isNotBlank(endttypeId))
+	   						update.set("endtStatus","C");
+	   					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
+	   					 
+	   					update.where(n1);
+	   					// perform update
+	   					em.createQuery(update).executeUpdate();
+	   					
+	   	    		   
+	    		   }
+	    		   
 	    		   // Building Data Details Update
 //	    		   {
 //		    		    CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -1906,6 +1960,23 @@ public class PaymentServiceImpl implements PaymentService {
 					// perform update
 					em.createQuery(update).executeUpdate();
 					
+	    		   }
+	    		   if(StringUtils.isNotBlank(endttypeId)){
+		    			 
+	   	    		    CriteriaBuilder cb = em.getCriteriaBuilder();
+	   					// create update
+	   					CriteriaUpdate<EserviceCommonDetails> update = cb.createCriteriaUpdate(EserviceCommonDetails.class);
+	   					// set the root class
+	   					Root<EserviceCommonDetails> m = update.from(EserviceCommonDetails.class);
+	   					if(StringUtils.isNotBlank(endttypeId))
+	   						update.set("endtStatus","C");
+	   					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
+	   					 
+	   					update.where(n1);
+	   					// perform update
+	   					em.createQuery(update).executeUpdate();
+	   					
+	   	    		   
 	    		   }
 	    		   // Common Data Details Update
 	    		   {
