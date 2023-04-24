@@ -70,10 +70,7 @@ public interface EServiceMotorDetailsRepository  extends JpaRepository<EserviceM
 	List<EserviceMotorDetails> findByOriginalPolicyNo(String policyNo);
 	@Transactional
 	List<EserviceMotorDetails> findByQuoteNoOrderByRiskIdAsc(String prevQuoteNo);
-	@Transactional
-	Integer countByOriginalPolicyNoAndRiskId(String policyNo, Integer i);
-	@Transactional
-	List<EserviceMotorDetails> findByOriginalPolicyNoAndRiskId(String policyNo, Integer i);
+	  
 
 	//List<EserviceMotorDetails> findByQuoteNoAndStatusNotInOrderByRiskIdAsc(String prevQuoteNo, String string);
 

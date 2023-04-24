@@ -945,7 +945,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 
 				List<EserviceMotorDetails> motor=null;
 				Integer count=0;
-				count=repo.countByOriginalPolicyNoAndRiskId(req.getPolicyNo(),1);
+				count=repo.countByOriginalPolicyNo(req.getPolicyNo());
 				String prevPolicyNo=null;
 				String prevQuoteNo=null;
 				String newRequestNo =null;
@@ -954,7 +954,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				String newCustId=null;
 				long pendingcount =0;
 				if (count > 0) {
-					List<EserviceMotorDetails> motors = repo.findByOriginalPolicyNoAndRiskId(req.getPolicyNo(), 1);
+					List<EserviceMotorDetails> motors = repo.findByOriginalPolicyNo(req.getPolicyNo());
 					pendingcount = motors.stream().filter(m -> m.getEndtStatus().equals("P")).count();
 					if (pendingcount > 0) {
 						 List<EserviceMotorDetails> pendingData = motors.stream().filter(m->m.getEndtStatus().equals("P")).collect(Collectors.toList());
@@ -966,7 +966,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					}
 				}
 				if(count>0) {
-					List<EserviceMotorDetails> motors=repo.findByOriginalPolicyNoAndRiskId(req.getPolicyNo(),1);
+					List<EserviceMotorDetails> motors=repo.findByOriginalPolicyNo(req.getPolicyNo());
 					//Compare
 					motors.sort(new Comparator<EserviceMotorDetails>() {
 						@Override

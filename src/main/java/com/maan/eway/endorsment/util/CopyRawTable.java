@@ -84,21 +84,21 @@ public class CopyRawTable  {
 	public List<EserviceMotorDetails> copyMotorRaw(Endorsment ent, EndtTypeMaster entMaster) {
 		try {
 			List<EserviceMotorDetails> motor=null;
-			Integer count=emotorRepo.countByOriginalPolicyNoAndRiskId(ent.getPolicyNo(),1);
+			Integer count=emotorRepo.countByOriginalPolicyNo(ent.getPolicyNo());
 			String prevPolicyNo=null;
 			String prevQuoteNo=null;
 			String prevRequestRefNo=null;
 			String newRequestNo =null;
 			long pendingcount =0;
 			if(count>0) {
-				List<EserviceMotorDetails> motors=emotorRepo.findByOriginalPolicyNoAndRiskId(ent.getPolicyNo(),1);
+				List<EserviceMotorDetails> motors=emotorRepo.findByOriginalPolicyNo(ent.getPolicyNo());
 				//Compar
 				motors.sort(new Comparator<EserviceMotorDetails>() {
 
 					@Override
 					public int compare(EserviceMotorDetails o1, EserviceMotorDetails o2) {
 						// TODO Auto-generated method stub
-						return o1.getEndtCount().compareTo(o2.getEndtCount());
+						return (o1.getEndtCount().compareTo(o2.getEndtCount()));
 					}
 				}.reversed());
 				
