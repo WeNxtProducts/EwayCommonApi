@@ -303,8 +303,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="ENDORSEMENT_TYPE_DESC", length=100)
     private String     endorsementTypeDesc ;
     
-    @Column(name="ENDT_PREMIUM")
-    private Double       endtPremium ;
+
     
     
 }
