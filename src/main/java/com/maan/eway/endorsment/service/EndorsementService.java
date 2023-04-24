@@ -330,7 +330,7 @@ public class EndorsementService {
 								m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 								m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"))*/
 				
-				.groupBy(m.get("overallPremiumLc"),m.get("overallPremiumFc"),m.get("policyNo"))
+				.groupBy(/*m.get("overallPremiumLc"),m.get("overallPremiumFc"),*/m.get("policyNo"))
 						.orderBy(orderList);
 
 				// Get Result
