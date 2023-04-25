@@ -213,6 +213,7 @@ public class CopyRawTable  {
 				for (EserviceMotorDetails data : motors) {
 					savedata = dozerMapper.map(data, EserviceMotorDetails.class);
 					savedata.setEndtStatus("C");
+					savedata.setStatus("P");
 					repo.saveAndFlush(savedata);
 				}
 
@@ -242,6 +243,7 @@ public class CopyRawTable  {
 				for (CoverDocumentUploadDetails data : motorData) {
 					savedata = dozerMapper.map(data, CoverDocumentUploadDetails.class);
 					savedata.setEndtStatus("C");
+					savedata.setStatus("P");
 					coverDocUploadDetails.saveAndFlush(savedata);
 				}
 			}
@@ -266,6 +268,7 @@ public class CopyRawTable  {
 				for (MotorDriverDetails data : motorDriverData) {
 					savedata = dozerMapper.map(data, MotorDriverDetails.class);
 					savedata.setEndtStatus("C");
+					savedata.setStatus("P");
 					motordrivDetepo.saveAndFlush(savedata);
 				}
 			}
@@ -288,6 +291,7 @@ public class CopyRawTable  {
 				for (MotorDataDetails data : motorData) {
 					savedata = dozerMapper.map(data, MotorDataDetails.class);
 					savedata.setEndtStatus("C");
+					savedata.setStatus("P");
 					motorDataDetepo.saveAndFlush(savedata);
 				}
 			}
@@ -310,6 +314,7 @@ public class CopyRawTable  {
 			PersonalInfo personalInfoData=personalInforepo.findByCustomerId(customerId);
 			savedata = dozerMapper.map(personalInfoData, PersonalInfo.class);
 			savedata.setEndtStatus("C");
+			savedata.setStatus("P");
 			personalInforepo.saveAndFlush(savedata);
 
 		} catch (Exception e) {
@@ -329,6 +334,7 @@ public class CopyRawTable  {
 			if (homeData != null) {
 				savedata = dozerMapper.map(homeData, HomePositionMaster.class);
 				savedata.setEndtStatus("C");
+				savedata.setStatus("P");
 				homePosistionRepo.saveAndFlush(savedata);
 			}
 
@@ -352,6 +358,7 @@ public class CopyRawTable  {
 			if (custData!=null) 
 					savedata = dozerMapper.map(custData, EserviceCustomerDetails.class);
 					savedata.setEndtStatus("P");
+					savedata.setStatus("P");
 					custRepo.saveAndFlush(savedata);
 		} catch (Exception e) {
 			e.printStackTrace();
