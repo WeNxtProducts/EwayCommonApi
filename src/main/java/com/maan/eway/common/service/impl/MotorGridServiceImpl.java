@@ -38,12 +38,12 @@ import com.maan.eway.admin.res.MotorGridCriteriaRes;
 import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
 import com.maan.eway.admin.res.ReferalCriteriaRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
+import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceCustomerDetails;
-import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginUserInfo;
@@ -945,8 +945,11 @@ public class MotorGridServiceImpl implements MotorGridService {
 
 				List<EserviceMotorDetails> motor=null;
 				Integer count=0;
-				count=repo.countByOriginalPolicyNo(req.getPolicyNo());
-				String prevPolicyNo=null;
+				List<EserviceMotorDetails> list=getMasterTableCount(req.getPolicyNo());
+				if (list.size() > 0) {
+					count = list.size();
+				}
+				String prevPolicyNo=null; 
 				String prevQuoteNo=null;
 				String newRequestNo =null;
 				String newQuoteNo =null;
@@ -960,6 +963,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 						 List<EserviceMotorDetails> pendingData = motors.stream().filter(m->m.getEndtStatus().equals("P")).collect(Collectors.toList());
 						if (!pendingData.get(0).getEndorsementType().equals(Integer.valueOf(req.getEndtTypeId()))) {
 							deletePreviousEndo(req,pendingData);
+						
 							count--;
 							pendingcount=0;
 						}
@@ -967,6 +971,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				}
 				if(count>0) {
 					List<EserviceMotorDetails> motors=repo.findByOriginalPolicyNo(req.getPolicyNo());
+					//motors=motors.stream().filter(distinctByKey(m ->m.getPolicyNo())).collect(Collectors.toList());
 					//Compare
 					motors.sort(new Comparator<EserviceMotorDetails>() {
 						@Override
@@ -977,6 +982,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					}.reversed());
 					
 					pendingcount = motors.stream().filter(m->m.getEndtStatus().equals("P")).count();
+				
 					if(pendingcount>0) {
 						 List<EserviceMotorDetails> pendingData = motors.stream().filter(m->m.getEndtStatus().equals("P")).collect(Collectors.toList());
 						 motor= pendingData;
@@ -1098,7 +1104,33 @@ public class MotorGridServiceImpl implements MotorGridService {
 			}
 			return savedata;
 		}
-
+//Count
+		public List<EserviceMotorDetails> getMasterTableCount(String policyNo) {
+			List<EserviceMotorDetails> list = new ArrayList<EserviceMotorDetails>();
+			try {
+				//List<EserviceMotorDetails> list = new ArrayList<EserviceMotorDetails>();
+				// Find Latest Record
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<EserviceMotorDetails> query = cb.createQuery(EserviceMotorDetails.class);
+				//Find all
+				Root<EserviceMotorDetails> b = query.from(EserviceMotorDetails.class);
+				// Select
+				query.select(b);
+							
+				Predicate n1 = cb.equal(b.get("originalPolicyNo"),policyNo);
+				query.where(n1).groupBy(b.get("policyNo"));
+				
+				// Get Result
+				TypedQuery<EserviceMotorDetails> result = em.createQuery(query);
+				list = result.getResultList();
+				
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+				log.info(e.getMessage());
+			}
+			return list;
+		}
 		//Delete Previous Endo
 		private CopyQuoteSuccessRes deletePreviousEndo(CopyQuoteReq req, List<EserviceMotorDetails> motorsPending) {
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
