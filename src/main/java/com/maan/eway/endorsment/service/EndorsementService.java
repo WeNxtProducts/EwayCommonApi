@@ -19,14 +19,12 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.maan.eway.bean.EndtDependantFieldMaster;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
@@ -34,16 +32,16 @@ import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.HomePositionMaster;
-import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.ChangeEndoStatusReq;
 import com.maan.eway.common.req.CopyQuoteReq;
-import com.maan.eway.common.res.BuildingCopyRes;
-import com.maan.eway.common.res.CommonCopyRes;
+import com.maan.eway.common.req.CoverIdsReq;
+import com.maan.eway.common.req.EservieMotorDetailsViewRes;
+import com.maan.eway.common.req.NewQuoteReq;
+import com.maan.eway.common.req.VehicleIdsReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
-import com.maan.eway.common.res.TravelCopyRes;
+import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.common.service.impl.GridServiceImpl;
 import com.maan.eway.common.service.impl.PaymentServiceImpl;
 import com.maan.eway.endorsment.request.EndorsementType;
@@ -58,9 +56,9 @@ import com.maan.eway.repository.EndtDependantFieldsMasterRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
-import com.maan.eway.req.calcengine.CalcCommission;
-import com.maan.eway.res.CopyQuoteSuccessRes;
-import com.maan.eway.res.calc.DebitAndCredit;
+import com.maan.eway.req.FactorRateDetailsGetReq;
+import com.maan.eway.res.calc.Cover;
+import com.maan.eway.service.FactorRateRequestDetailsService;
 
 @Service
 public class EndorsementService {
@@ -106,11 +104,19 @@ public class EndorsementService {
 	@Value(value = "${sme.productId}")
 	private String smeProductId;
 	
-	
+	@Autowired
+	private  FactorRateRequestDetailsService factorService;
+	@Autowired
+	private  QuoteService entityService ;
 	public CommonRes cancelPolicy(Endorsment request) {
 		try {
 
-			HomePositionMaster hp=hpmrepo.findByPolicyNoAndStatusAndCompanyIdAndProductId(request.getPolicyNo(),"P",request.getCompanyId(),Integer.valueOf(request.getProductId().intValue()));
+			/*HomePositionMaster hp=hpmrepo.findByPolicyNoAndStatusAndCompanyIdAndProductId(
+			 * request.getPolicyNo(),
+			 * "P",
+			 * request.getCompanyId(),
+			 * Integer.valueOf(request.getProductId().intValue())
+			 * );
 
 			CopyQuoteReq c= new CopyQuoteReq();
 					c.setRequestReferenceNo(hp.getRequestReferenceNo());
@@ -158,7 +164,67 @@ public class EndorsementService {
 					covers.add(basecov.get(0));
 				}
 			}
-			pcdRepo.saveAllAndFlush(covers);
+			pcdRepo.saveAllAndFlush(covers);*/
+			FactorRateDetailsGetReq viewCalcReq=new FactorRateDetailsGetReq();
+			viewCalcReq.setProductId(request.getProductId().toPlainString());
+			viewCalcReq.setRequestReferenceNo(request.getRequestReferenceNo());
+			List<EservieMotorDetailsViewRes> viewCalc = factorService.getFactorRateRequestDetails(viewCalcReq, "");
+			
+			List<VehicleIdsReq> vehicles=new ArrayList<VehicleIdsReq>();
+			for (EservieMotorDetailsViewRes motors : viewCalc) {
+				
+				VehicleIdsReq v=new VehicleIdsReq();
+				
+				v.setVehicleId(Integer.parseInt(motors.getVehicleId()));
+				
+				
+				List<Cover> coverList = motors.getCoverList();
+				List<Cover> distinctSections = coverList.stream().filter(distinctByKey(c->c.getSectionId())).collect(Collectors.toList());
+				
+				for (Cover ds : distinctSections) {
+					v.setSectionId(ds.getSectionId());
+					List<CoverIdsReq> covers=new ArrayList<CoverIdsReq>();				
+					for (Cover cover : coverList) {
+
+						if("Y".equals(cover.getUserOpt()) && ds.getSectionId().equals(cover.getSectionId())) {
+							String isSubCover = cover.getIsSubCover();
+							
+							if("Y".equals(isSubCover)) {
+								List<Cover> subcovers = cover.getSubcovers().stream().filter(f-> "Y".equals(f.getUserOpt())).collect(Collectors.toList());
+								for (Cover c : subcovers) {
+									CoverIdsReq r=new CoverIdsReq();
+									r.setSubCoverYn(isSubCover);
+									r.setCoverId(Integer.parseInt(c.getCoverId()));
+									r.setSubCoverId(c.getSubCoverId());
+									covers.add(r);
+								}
+							}else {
+								CoverIdsReq r=new CoverIdsReq();						
+								
+								r.setSubCoverYn(isSubCover);
+								r.setCoverId(Integer.parseInt(cover.getCoverId()));
+								r.setSubCoverId(null);
+								covers.add(r);
+							}
+							
+						}
+					}
+				}
+				vehicles.add(v);
+				
+				
+			}  
+			NewQuoteReq newq=new NewQuoteReq();
+			 
+			newq.setCreatedBy(request.getCreatedBy());
+			newq.setManualReferralYn("N");
+			newq.setProductId(request.getProductId().toPlainString());
+			newq.setReferralRemarks("");
+			newq.setRequestReferenceNo(request.getRequestReferenceNo());
+			newq.setSectionId(null);
+			newq.setVehicleIdsList(vehicles);
+			CommonRes generateNewQuote = entityService.generateNewQuote(newq);
+			return generateNewQuote;
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

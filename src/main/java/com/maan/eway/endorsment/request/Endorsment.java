@@ -39,5 +39,11 @@ public class Endorsment {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	private Date endtEffectiveDate;
 	
+	
+	@JsonProperty("RequestReferenceNo")
+	private String requestReferenceNo;
+	
+	@JsonProperty("CreatedBy")
+	private String createdBy;
 
 }
