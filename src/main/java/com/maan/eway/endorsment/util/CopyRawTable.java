@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -92,6 +95,7 @@ public class CopyRawTable  {
 			long pendingcount =0;
 			if(count>0) {
 				List<EserviceMotorDetails> motors=emotorRepo.findByOriginalPolicyNo(ent.getPolicyNo());
+				motors=motors.stream().filter(distinctByKey(m ->m.getPolicyNo())).collect(Collectors.toList());
 				//Compar
 				motors.sort(new Comparator<EserviceMotorDetails>() {
 
@@ -102,7 +106,7 @@ public class CopyRawTable  {
 					}
 				}.reversed());
 				
-				pendingcount = motors.stream().filter(m->(m.getEndtStatus().equals("P")) ).count();
+				pendingcount = motors.stream().filter(m->(m.getEndtStatus().equals("P") )).count();
 				
 				if(motors.stream().filter(m->(m.getEndtStatus().equals("P") && (Integer.parseInt(ent.getEndtType())==m.getEndorsementType()))).count()>0) {
 					return motors;
@@ -151,6 +155,11 @@ public class CopyRawTable  {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public  <T> java.util.function.Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
+		Map<Object, Boolean> uniqueMap = new ConcurrentHashMap<>();
+		return t -> uniqueMap.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
 	}
 	private List<EserviceMotorDetails> savemotor(Endorsment ent, EndtTypeMaster entMaster,String prevQuoteNo,Integer count,String newRequestNo,String prevPolicyNo,String prevRequestRefNo){
 		//EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(ent.getCompanyId(), ent.getProductId().intValue(), "Y",Integer.parseInt(ent.getEndtType()), new Date(), new Date());
