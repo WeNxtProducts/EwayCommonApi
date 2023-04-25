@@ -10,6 +10,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
@@ -81,13 +89,16 @@ public class CopyRawTable  {
 	@Autowired
 	private UwQuestionsDetailsRepository uwquestionRepo;
 
-	
+	@PersistenceContext
+	private EntityManager em;
 	private Logger log = LogManager.getLogger(MotorGridServiceImpl.class);
 	
 	public List<EserviceMotorDetails> copyMotorRaw(Endorsment ent, EndtTypeMaster entMaster) {
 		try {
 			List<EserviceMotorDetails> motor=null;
-			Integer count=emotorRepo.countByOriginalPolicyNo(ent.getPolicyNo());
+			//Integer count=emotorRepo.countByOriginalPolicyNo(ent.getPolicyNo());
+			List<EserviceMotorDetails> list=getMasterTableCount(ent.getPolicyNo());
+			Integer	count = list.size();
 			String prevPolicyNo=null;
 			String prevQuoteNo=null;
 			String prevRequestRefNo=null;
@@ -161,6 +172,34 @@ public class CopyRawTable  {
 		Map<Object, Boolean> uniqueMap = new ConcurrentHashMap<>();
 		return t -> uniqueMap.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
 	}
+	
+	//Count
+			public List<EserviceMotorDetails> getMasterTableCount(String policyNo) {
+				List<EserviceMotorDetails> list = new ArrayList<EserviceMotorDetails>();
+				try {
+					//List<EserviceMotorDetails> list = new ArrayList<EserviceMotorDetails>();
+					// Find Latest Record
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<EserviceMotorDetails> query = cb.createQuery(EserviceMotorDetails.class);
+					//Find all
+					Root<EserviceMotorDetails> b = query.from(EserviceMotorDetails.class);
+					// Select
+					query.select(b);
+								
+					Predicate n1 = cb.equal(b.get("originalPolicyNo"),policyNo);
+					query.where(n1).groupBy(b.get("policyNo"));
+					
+					// Get Result
+					TypedQuery<EserviceMotorDetails> result = em.createQuery(query);
+					list = result.getResultList();
+					
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+					log.info(e.getMessage());
+				}
+				return list;
+			}
 	private List<EserviceMotorDetails> savemotor(Endorsment ent, EndtTypeMaster entMaster,String prevQuoteNo,Integer count,String newRequestNo,String prevPolicyNo,String prevRequestRefNo){
 		//EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartGreaterThanEqualAndEffectiveDateEndLessThanEqual(ent.getCompanyId(), ent.getProductId().intValue(), "Y",Integer.parseInt(ent.getEndtType()), new Date(), new Date());
 		List<EserviceMotorDetails> motors=emotorRepo.findByQuoteNoAndStatusOrderByRiskIdAsc(prevQuoteNo,"P");
