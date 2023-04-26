@@ -602,7 +602,7 @@ public class EndorsementService {
 					data.setEndtStatus("C");
 					hpmrepo.saveAndFlush(data);
 					// Update ProductWise
-					paymentServiceImpl.updateProductWisePolicyNo(req.getProductId().toString(), req.getPolicyNo(),
+					paymentServiceImpl.updateProductWisePolicyNo(req.getProductId().toString(), data.getPolicyNo(),
 						req.getQuoteNo(), data.getEndtTypeId());
 			}
 			Object res = null ;
