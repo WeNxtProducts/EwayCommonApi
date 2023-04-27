@@ -268,9 +268,9 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 			Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
-			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+//			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 
-			effectiveDate.where(a1, a2);
+			effectiveDate.where(a1);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
