@@ -209,6 +209,7 @@ public class EndorsementService {
 							
 						}
 					}
+					v.setCoverIdList(covers);
 				}
 				vehicles.add(v);
 				
