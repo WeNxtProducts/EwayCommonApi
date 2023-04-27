@@ -39,8 +39,11 @@ import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.EservieMotorDetailsViewRes;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.VehicleIdsReq;
+import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
+import com.maan.eway.common.res.NewQuoteRes;
+import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.common.service.impl.GridServiceImpl;
 import com.maan.eway.common.service.impl.PaymentServiceImpl;
@@ -225,6 +228,14 @@ public class EndorsementService {
 			newq.setSectionId(null);
 			newq.setVehicleIdsList(vehicles);
 			CommonRes generateNewQuote = entityService.generateNewQuote(newq);
+			
+			if(!generateNewQuote.getIsError()) {
+				NewQuoteRes view=(NewQuoteRes) generateNewQuote.getCommonResponse();
+				ViewQuoteReq requestView=new ViewQuoteReq();
+				requestView.setQuoteNo(view.getQuoteNo());
+				ViewQuoteRes viewQuoteDetails = entityService.viewQuoteDetails(requestView);
+				generateNewQuote.setCommonResponse(viewQuoteDetails);
+			}
 			return generateNewQuote;
 		}catch (Exception e) {
 			e.printStackTrace();
