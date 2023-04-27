@@ -270,7 +270,7 @@ public class PaymentServiceImpl implements PaymentService {
 			// Premium Validation
 			if(StringUtils.isBlank(req.getPremium())) {
 				error.add(new Error("01","Premium","Please Enter Premium"));
-			} else if (! req.getPremium().matches("^-?[0-9]\\d*(\\.\\d+)?$") )  {
+			} else if (req.getPremium().matches("^-?[0-9]\\d*(\\.\\d+)?$") )  {
 				error.add(new Error("01","Premium","Please Enter Valid Premium"));
 				
 			} else if (StringUtils.isNotBlank(req.getEmiYn()) && req.getEmiYn().equalsIgnoreCase("Y") && StringUtils.isNotBlank(req.getInstallmentMonth()) 
