@@ -37,6 +37,7 @@ import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
+import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MsAssetDetails;
 import com.maan.eway.bean.MsCommonDetails;
 import com.maan.eway.bean.MsCustomerDetails;
@@ -71,6 +72,7 @@ import com.maan.eway.endorsment.util.DiscountFromPolicy;
 import com.maan.eway.endorsment.util.LoadingFromPolicy;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.LoginProductMasterRepository;
+import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.req.calcengine.CalcCommission;
 import com.maan.eway.req.calcengine.CalcEngine;
@@ -1149,6 +1151,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 		return null;
 	}
 
+	@Autowired
+	private MotorDataDetailsRepository motorRepo;
+	
 	@Override
 	public List<DebitAndCredit> commissionCalc(CalcCommission request) {
 		List<DebitAndCredit> resList = new ArrayList<DebitAndCredit>();
@@ -1159,8 +1164,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 			ViewQuoteRes v1 = quoteservice.viewQuoteDetails(q);
 
 			if (request.getProductId().equalsIgnoreCase(motorProductId)) {
- 				List<EserviceMotorDetailsRes> motors = (List<EserviceMotorDetailsRes>) v1.getRiskDetails();
-				for (EserviceMotorDetailsRes v : motors) {
+				List<MotorDataDetails> motors = motorRepo.findByQuoteNoOrderByVehicleIdAsc(request.getQuoteno());
+ 				//List<EserviceMotorDetailsRes> motors = (List<EserviceMotorDetailsRes>) v1.getRiskDetails();
+				for (MotorDataDetails v : motors) {
 
 					List<BrokerCommissionDetails> policylist = getPolicyName(request.getInsuranceId(),
 							request.getProductId(), request.getCreatedBy(), request.getAgencyCode(), v.getPolicyType());
@@ -1173,8 +1179,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 						else {
 							commissionPercent=5.0;
 						}
-					String premiumFc = v.getOverAllPremiumFc().toString();
-					String vatPremiumFc = v.getOverAllPremiumFc().toString();
+					String premiumFc = v.getOverallPremiumFc().toString();
+					String vatPremiumFc = v.getOverallPremiumFc().toString();
 
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
 						premiumFc = v1.getQuoteDetails().getEndtPremium().toPlainString();
@@ -1283,7 +1289,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 								res.setProductId(request.getProductId());
 								res.setQuoteNo(request.getQuoteno());
 								res.setStatus("Y");
-								res.setRiskId(v.getRiskId());
+								res.setRiskId(v.getVehicleId());
 								res.setQuoteInfo(v1);
 								res.setSectionId(request.getSectionId());
 								resList.add(res);
