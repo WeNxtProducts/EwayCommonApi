@@ -270,7 +270,7 @@ public class PaymentServiceImpl implements PaymentService {
 			// Premium Validation
 			if(StringUtils.isBlank(req.getPremium())) {
 				error.add(new Error("01","Premium","Please Enter Premium"));
-			} else if (req.getPremium().matches("^-?[0-9]\\d*(\\.\\d+)?$") )  {
+			} else if (!req.getPremium().matches("^-?[0-9]\\d*(\\.\\d+)?$") )  {
 				error.add(new Error("01","Premium","Please Enter Valid Premium"));
 				
 			} else if (StringUtils.isNotBlank(req.getEmiYn()) && req.getEmiYn().equalsIgnoreCase("Y") && StringUtils.isNotBlank(req.getInstallmentMonth()) 
@@ -289,7 +289,7 @@ public class PaymentServiceImpl implements PaymentService {
 			 	DecimalFormat decimalFormat = new DecimalFormat(pattern);
 			 	Double premium =  Double.valueOf (decimalFormat.format( Double.valueOf (req.getPremium())));
 			 	Double overall =  Double.valueOf (decimalFormat.format(findQuote.getOverallPremiumLc()));
-			 	if(! premium.equals(overall)  ) {
+			 	if(! premium.equals(overall) &&  StringUtils.isBlank(findQuote.getEndtTypeId())) {
 					error.add(new Error("01","Premium","Premium Mismatched. Given Premium : " + premium + " Policy Premium :" +  overall));
 				}
 				
@@ -1543,9 +1543,17 @@ public class PaymentServiceImpl implements PaymentService {
 				Date creditDate = filterCredit.get(0).getEntryDate();
 				String creditTo = filterCredit.get(0).getDocType();
 				// Commision
-				BigDecimal commission =  policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") && o.getChargeCode().equals(new BigDecimal(1005)) ).collect(Collectors.toList()).get(0).getAmountFc();
-				BigDecimal commissionPercent = 		policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") && o.getChargeCode().equals(new BigDecimal(1007)) ).collect(Collectors.toList()).get(0).getAmountFc();
-				List<DebitAndCredit> filtercommissionVat = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")&& o.getChargeCode().equals(new BigDecimal(1012))).collect(Collectors.toList());
+				BigDecimal commission =  policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") 
+						&& (o.getChargeCode().equals(new BigDecimal(1005)) || o.getChargeCode().equals(new BigDecimal(1001)) )
+								).collect(Collectors.toList()).get(0).getAmountFc();
+				BigDecimal commissionPercent = 		policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")
+						&& (o.getChargeCode().equals(new BigDecimal(1007))
+								||
+								o.getChargeCode().equals(new BigDecimal(1012))
+						)
+						).collect(Collectors.toList()).get(0).getAmountFc();
+				List<DebitAndCredit> filtercommissionVat = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")
+						&& o.getChargeCode().equals(new BigDecimal(1012))).collect(Collectors.toList());
 				BigDecimal commissionVat = BigDecimal.ZERO;
 				if (filtercommissionVat.size()>0 ) {
 					commissionVat =  filtercommissionVat.get(0).getAmountFc();

@@ -1248,8 +1248,14 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 					// Rule
 					Map<String, Object> rule1 = new HashMap<String, Object>();
-					rule1.put("DEBIT", "<CUSTOMER>");
-					rule1.put("CREDIT", "<BROKER>");
+					
+					if("D".equals(v.getStatus())){
+						rule1.put("DEBIT", "<BROKER>");
+						rule1.put("CREDIT", "<CUSTOMER>");
+					}else {
+							rule1.put("DEBIT", "<CUSTOMER>");
+							rule1.put("CREDIT", "<BROKER>");
+					}
 					rules.add(rule1);
 
 					String crnumber = "CN-" + genNo.generateCreditNo(); // ThreadLocalRandom.current().ints(1001,
