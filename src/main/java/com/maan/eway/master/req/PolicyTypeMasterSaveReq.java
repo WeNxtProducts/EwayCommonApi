@@ -26,4 +26,14 @@ public class PolicyTypeMasterSaveReq {
 	 
 	@JsonProperty("Remarks")
 	private String remarks;
+	
+	@JsonProperty("InsuranceId")
+	private String companyId;
+	
+	@JsonProperty("ProductId")
+	private String productId;
+	
+	
+	
+	
 }
