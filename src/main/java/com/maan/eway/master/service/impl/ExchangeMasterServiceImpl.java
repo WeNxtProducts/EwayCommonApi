@@ -77,67 +77,76 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 		List<Error> errorList = new ArrayList<Error>();
 
 		try {
-			
-						if (StringUtils.isBlank(req.getRemarks())) {
+
+			if (StringUtils.isBlank(req.getRemarks())) {
 				errorList.add(new Error("03", "Remark", "Please Select Remark "));
 			} else if (req.getRemarks().length() > 100) {
 				errorList.add(new Error("03", "Remark", "Please Enter Remark within 100 Characters"));
 			}
-						if (StringUtils.isBlank(req.getCurrencyId())) {
-							errorList.add(new Error("07", "CurrencyId", "Please Enter CurrencyId"));
-						}
-						else if (req.getCurrencyId().length() > 20) {
-							errorList.add(new Error("07", "CurrencyId", "Please Enter CurrencyId within 20 Characters"));
-						}
+			if (StringUtils.isBlank(req.getCurrencyId())) {
+				errorList.add(new Error("07", "CurrencyId", "Please Enter CurrencyId"));
+			}
+			else if (req.getCurrencyId().length() > 20) {
+				errorList.add(new Error("07", "CurrencyId", "Please Enter CurrencyId within 20 Characters"));
+			}
 
-			// Date Validation
-			Calendar cal = new GregorianCalendar();
-			Date today = new Date();
-			cal.setTime(today);
-			cal.add(Calendar.DAY_OF_MONTH, -1);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 50);
-			today = cal.getTime();
-			if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
-				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start"));
+			ExchangeMaster currencyName =   getCurrencyNameRes(req.getCurrencyId(),req.getCompanyId());
+			if(StringUtils.isNotBlank(req.getCurrencyId()) &&  currencyName !=null ) {
+				errorList.add(new Error("08", "Currency", "This Currency Id Already Exist"));
+			} else if( currencyName !=null  && StringUtils.isNotBlank(req.getCurrencyId()) ) {
+				if(! currencyName.getCurrencyId().equalsIgnoreCase(req.getCurrencyId()) ) {
+					errorList.add(new Error("08", "Currency", "This Currency Id Already Exist"));	
+				}		
+				// Date Validation
+				Calendar cal = new GregorianCalendar();
+				Date today = new Date();
+				cal.setTime(today);
+				cal.add(Calendar.DAY_OF_MONTH, -1);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 50);
+				today = cal.getTime();
+				if (req.getEffectiveDateStart() == null || StringUtils.isBlank(req.getEffectiveDateStart().toString())) {
+					errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start"));
 
-			} else if (req.getEffectiveDateStart().before(today)) {
-				errorList
-						.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
-			}
-			// Status Validation
-			if (StringUtils.isBlank(req.getStatus())) {
-				errorList.add(new Error("05", "Status", "Please Enter Status"));
-			} else if (req.getStatus().length() > 1) {
-				errorList.add(new Error("05", "Status", "Enter Status in One Character Only"));
-			} else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
-				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
-			}
-			if (StringUtils.isBlank(req.getExchangeRate())) {
-				errorList.add(new Error("06", "ExchangeRate", "Please Enter ExchangeRate"));
-			}
-			
-			
-
-			
-			if (StringUtils.isBlank(req.getCompanyId())) {
-				errorList.add(new Error("08", "CompanyId", "Please Enter CompanyId"));
-			}
-			else if (StringUtils.isBlank(req.getCoreAppCode())) {
-				errorList.add(new Error("02", "CoreAppCode", "Please Enter getCoreAppCode"));
-			} else if (req.getCoreAppCode().length() > 20) {
-				errorList.add(new Error("02", "CoreAppCode", "getCoreAppCode under 20 Characters only allowed"));
-			}else if (req.getCoreAppCode().equalsIgnoreCase("99999")||   StringUtils.isBlank(req.getExchangeId())||req.getExchangeId()==null) {
-				List<ExchangeMaster> CompanyList = getCoreAppCodeExistDetails(req.getCoreAppCode() , req.getEffectiveDateStart() , req.getEffectiveDateEnd());
-				if (CompanyList.size()>0 ) {
-					errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+				} else if (req.getEffectiveDateStart().before(today)) {
+					errorList
+					.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date"));
 				}
-			}else  {
-				List<ExchangeMaster> CompanyList =  getCoreAppCodeExistDetails(req.getCoreAppCode()  , req.getEffectiveDateStart() , req.getEffectiveDateEnd());
-				if (CompanyList.size()>0 &&  (! req.getExchangeId().equalsIgnoreCase(CompanyList.get(0).getExchangeId().toString())) ) {
-					errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+				// Status Validation
+				if (StringUtils.isBlank(req.getStatus())) {
+					errorList.add(new Error("05", "Status", "Please Enter Status"));
+				} else if (req.getStatus().length() > 1) {
+					errorList.add(new Error("05", "Status", "Enter Status in One Character Only"));
+				} else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
+					errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 				}
-				
+				if (StringUtils.isBlank(req.getExchangeRate())) {
+					errorList.add(new Error("06", "ExchangeRate", "Please Enter ExchangeRate"));
+				}
+
+
+
+
+				if (StringUtils.isBlank(req.getCompanyId())) {
+					errorList.add(new Error("08", "CompanyId", "Please Enter CompanyId"));
+				}
+				else if (StringUtils.isBlank(req.getCoreAppCode())) {
+					errorList.add(new Error("02", "CoreAppCode", "Please Enter getCoreAppCode"));
+				} else if (req.getCoreAppCode().length() > 20) {
+					errorList.add(new Error("02", "CoreAppCode", "getCoreAppCode under 20 Characters only allowed"));
+				}else if (req.getCoreAppCode().equalsIgnoreCase("99999")||   StringUtils.isBlank(req.getExchangeId())||req.getExchangeId()==null) {
+					List<ExchangeMaster> CompanyList = getCoreAppCodeExistDetails(req.getCoreAppCode() , req.getEffectiveDateStart() , req.getEffectiveDateEnd());
+					if (CompanyList.size()>0 ) {
+						errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+					}
+				}else  {
+					List<ExchangeMaster> CompanyList =  getCoreAppCodeExistDetails(req.getCoreAppCode()  , req.getEffectiveDateStart() , req.getEffectiveDateEnd());
+					if (CompanyList.size()>0 &&  (! req.getExchangeId().equalsIgnoreCase(CompanyList.get(0).getExchangeId().toString())) ) {
+						errorList.add(new Error("02", "Core App Code", "This Core App Code Already Exist "));
+					}
+
+				}
+
 			}
 		} catch (Exception e) {
 			log.error(e);
@@ -156,17 +165,17 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			cal.set(Calendar.HOUR_OF_DAY, 1);
 			cal.set(Calendar.MINUTE, 1);
 			effEndDate = cal.getTime() ;
-			
+
 			// Find Latest Record
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<ExchangeMaster> query = cb.createQuery(ExchangeMaster.class);
-	
+
 			// Find All
 			Root<ExchangeMaster> b = query.from(ExchangeMaster.class);
-	
+
 			// Select
 			query.select(b);
-	
+
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<ExchangeMaster> ocpm1 = effectiveDate.from(ExchangeMaster.class);
@@ -175,7 +184,7 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			Predicate a2 = cb.equal(ocpm1.get("coreAppCode"), b.get("coreAppCode"));
 			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), effStartDate );
 			effectiveDate.where(a1,a2,a3);
-			
+
 
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
@@ -185,20 +194,20 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 			Predicate a5 = cb.equal(ocpm2.get("coreAppCode"), b.get("coreAppCode"));
 			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), effEndDate );
 			effectiveDate2.where(a4,a5,a6);
-	
+
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
 			Predicate n3 = cb.equal(b.get("coreAppCode"), coreAppCode );	
-	//		Predicate n4 = cb.equal(b.get("exchangeId"), exchangeId);
+			//		Predicate n4 = cb.equal(b.get("exchangeId"), exchangeId);
 			query.where(n1,n2,n3);
 			// Get Result
 			TypedQuery<ExchangeMaster> result = em.createQuery(query);
 			list = result.getResultList();		
-		
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info(e.getMessage());
-	
+
 		}
 		return list;
 	}
@@ -795,4 +804,51 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 		}
 		return resList;
 	}
+	
+
+public ExchangeMaster getCurrencyNameRes(String currencyId, String companyId) {
+	ExchangeMaster currencyRes =null;
+	try {
+		Date today = new Date();
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ExchangeMaster> query = cb.createQuery(ExchangeMaster.class);
+
+		// Find All
+		Root<ExchangeMaster> s = query.from(ExchangeMaster.class);
+		
+		// State Effective Date Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<ExchangeMaster> ocpm1 = effectiveDate.from(ExchangeMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate c1 = cb.equal(ocpm1.get("currencyId"), s.get("currencyId"));
+		Predicate c2 = cb.equal(ocpm1.get("status"),s.get("status"));
+		Predicate c3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		Predicate c5 = cb.equal(ocpm1.get("companyId"),s.get("companyId"));
+		
+		effectiveDate.where(c1,c2,c3,c5);
+		
+		Predicate n1 = cb.equal(s.get("effectiveDateStart"), effectiveDate);
+		Predicate n2 = cb.equal(s.get("currencyId"), currencyId);
+		Predicate n3 = cb.equal(s.get("status"), "Y");
+		Predicate n4 = cb.equal(s.get("companyId"), companyId);
+		
+		// Select
+		query.select( s );
+		
+		query.where(n1,n2,n3,n4);
+		// Get Result
+		TypedQuery<ExchangeMaster> result = em.createQuery(query);
+		List<ExchangeMaster> list = result.getResultList();
+		if( list.size()>0) {
+			currencyRes = list.get(0);
+		}
+		
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info(e.getMessage());
+		return null;
+	}
+	return currencyRes;
+}
 }
