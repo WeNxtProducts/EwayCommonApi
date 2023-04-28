@@ -395,10 +395,16 @@ private static final long serialVersionUID = 1L;
       
       @Column(name="ENDT_CATEG_DESC", length=10)
       private String     endtCategDesc ;
-      
-      
+
       @Column(name="ENDT_PREMIUM")
       private Double       endtPremium ;
+
+      @Column(name="LIABILITY_OCCUPATION_ID", length=10)
+      private String     liabilityOccupationId ;
+      
+      @Column(name="LIABILITY_OCCUPATION_DESC", length=10)
+      private String     liabilityOccupationDesc ;
+
 }
 
 

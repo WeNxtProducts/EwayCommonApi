@@ -24,8 +24,16 @@ public class BuildingSumInsuredDetails {
 	
 	@JsonProperty("OccupationType")
     private String    occupationType;
-
 	
+	@JsonProperty("OccupationTypeDesc")
+    private String    occupationTypeDesc;
+
+	@JsonProperty("LiabilityOccupationId") 
+    private String     liabilityOccupationId ;
+   
+   @JsonProperty("LiabilityOccupationDesc") 
+    private String     liabilityOccupationDesc;
+   
 	@JsonProperty("PersonalAccSuminsured")
     private String    personalAccSuminsured;
 

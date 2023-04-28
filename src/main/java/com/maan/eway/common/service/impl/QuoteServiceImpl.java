@@ -2276,6 +2276,9 @@ private BuildingDetailsRepository BuildingRepo;
 //				 
 //			}
 			res.setOccupationType(paccDatas.size()> 0 ? paccDatas.get(0).getOccupationType().toString() : "");
+			res.setOccupationTypeDesc(build.getOccupationTypeDesc());
+			res.setLiabilityOccupationId(build.getLiabilityOccupationId());
+			res.setLiabilityOccupationDesc(build.getLiabilityOccupationDesc());
 			res.setPersonalAccSuminsured(paccDatas.size()> 0 ? paccDatas.get(0).getSumInsured().toString() : "");
 			res.setCount(paccDatas.size()> 0 ? paccDatas.get(0).getCount().toString() : "");
 			
