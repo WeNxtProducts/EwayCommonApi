@@ -305,6 +305,8 @@ private static final long serialVersionUID = 1L;
     
 
     
+    @Column(name="ENDT_PREMIUM")
+    private Double       endtPremium ;
     
 }
 
