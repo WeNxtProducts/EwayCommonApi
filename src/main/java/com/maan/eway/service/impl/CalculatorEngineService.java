@@ -32,6 +32,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.BrokerCommissionDetails;
+import com.maan.eway.bean.BuildingRiskDetails;
+import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.LoginMaster;
@@ -45,6 +47,7 @@ import com.maan.eway.bean.MsHumanDetails;
 import com.maan.eway.bean.MsVehicleDetails;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.SectionCoverMaster;
+import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.calculator.util.AdminCoverCalculator;
 import com.maan.eway.calculator.util.CoverCalculator;
 import com.maan.eway.calculator.util.CoverFromFactor;
@@ -70,10 +73,13 @@ import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.endorsment.util.CoverFromPolicy;
 import com.maan.eway.endorsment.util.DiscountFromPolicy;
 import com.maan.eway.endorsment.util.LoadingFromPolicy;
+import com.maan.eway.repository.BuildingRiskDetailsRepository;
+import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.LoginProductMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
+import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.req.calcengine.CalcCommission;
 import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.req.calcengine.ReferralApi;
@@ -156,6 +162,16 @@ public class CalculatorEngineService implements CalculatorEngine {
 	DecimalFormat decimalFormat = null;
 	@Autowired
 	private PolicyCoverDataRepository coverDataRepo;
+	
+	@Autowired
+	private TravelPassengerDetailsRepository travelRepo;
+
+	@Autowired
+	private BuildingRiskDetailsRepository buildingRepo;
+	
+	@Autowired
+	private CommonDataDetailsRepository commonRepo;
+	
 	/*
 	 * public void LoadSection(CalcEngine engine) {
 	 * 
@@ -1309,11 +1325,13 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 			// Travel Product
 			else if (request.getProductId().equalsIgnoreCase(travelProductId)) {
- 				List<EserviceTravelGetRes> motors = (List<EserviceTravelGetRes>) v1.getRiskDetails();
-				for (EserviceTravelGetRes v : motors) {
+ 				//List<EserviceTravelGetRes> motors = (List<EserviceTravelGetRes>) v1.getRiskDetails();
+				List<TravelPassengerDetails> motors = travelRepo.findByQuoteNoOrderByTravelIdAsc(request.getQuoteno());
+
+ 				for (TravelPassengerDetails v : motors) {
 
 					List<BrokerCommissionDetails> policylist = getPolicyName(request.getInsuranceId(),
-							request.getProductId(), request.getCreatedBy(), request.getAgencyCode(), v.getSectionId());
+							request.getProductId(), request.getCreatedBy(), request.getAgencyCode(), v.getSectionId().toString());
 					 Double commissionPercent = 0.0;
 						if(policylist.size()>0 && policylist!=null) {
 						
@@ -1323,8 +1341,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 						else {
 							commissionPercent=5.0;
 						}
-					String premiumFc = v.getOverAllPremiumFc().toString();
-					String vatPremiumFc = v.getOverAllPremiumFc().toString();
+					String premiumFc = v.getOverallPremiumFc().toString();
+					String vatPremiumFc = v.getOverallPremiumFc().toString();
 
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
 						premiumFc = v1.getQuoteDetails().getEndtPremium().toPlainString();
@@ -1434,6 +1452,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 								res.setStatus("Y");
 								res.setQuoteInfo(v1);
 								res.setSectionId(request.getSectionId());
+								res.setRiskId(v.getTravelId().toString());
 								resList.add(res);
 							}
 						}
@@ -1445,8 +1464,10 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 			// Building and SME Product
 			else if ((request.getProductId().equalsIgnoreCase(buildingProductId))|| (request.getProductId().equalsIgnoreCase(smeProductId))) {
- 				List<EserviceBuildingsDetailsRes> motors = (List<EserviceBuildingsDetailsRes>) v1.getRiskDetails();
-				for (EserviceBuildingsDetailsRes v : motors) {
+// 				List<EserviceBuildingsDetailsRes> motors = (List<EserviceBuildingsDetailsRes>) v1.getRiskDetails();
+				List<BuildingRiskDetails> motors = buildingRepo.findByQuoteNoOrderByRiskIdAsc(request.getQuoteno());
+
+ 				for (BuildingRiskDetails v : motors) {
 
 					List<BrokerCommissionDetails> policylist = getPolicyName(request.getInsuranceId(),
 							request.getProductId(), request.getCreatedBy(), request.getAgencyCode(),"99999");
@@ -1459,8 +1480,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 						else {
 							commissionPercent=5.0;
 						}
-					String premiumFc = v.getOverAllPremiumFc().toString();
-					String vatPremiumFc = v.getOverAllPremiumFc().toString();
+					String premiumFc = v.getOverallPremiumFc().toString();
+					String vatPremiumFc = v.getOverallPremiumFc().toString();
 
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
 						premiumFc = v1.getQuoteDetails().getEndtPremium().toPlainString();
@@ -1569,6 +1590,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 								res.setStatus("Y");
 								res.setQuoteInfo(v1);
 								res.setSectionId(request.getSectionId());
+								res.setRiskId(v.getRiskId().toString());
 								resList.add(res);
 							}
 						}
@@ -1580,8 +1602,10 @@ public class CalculatorEngineService implements CalculatorEngine {
 			
 			// Common Product
 			else {
- 				List<EserviceCommonGetRes> motors = (List<EserviceCommonGetRes>) v1.getRiskDetails();
-				for (EserviceCommonGetRes v : motors) {
+// 				List<EserviceCommonGetRes> motors = (List<EserviceCommonGetRes>) v1.getRiskDetails();
+ 				List<CommonDataDetails> motors = commonRepo.findByQuoteNoOrderByRiskIdAsc(request.getQuoteno());
+
+ 				for (CommonDataDetails v : motors) {
 
 					List<BrokerCommissionDetails> policylist = getPolicyName(request.getInsuranceId(),
 							request.getProductId(), request.getCreatedBy(), request.getAgencyCode(),"99999");
@@ -1594,8 +1618,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 						else {
 							commissionPercent=5.0;
 						}
-					String premiumFc = v.getOverAllPremiumFc().toString();
-					String vatPremiumFc = v.getOverAllPremiumFc().toString();
+					String premiumFc = v.getOverallPremiumFc().toString();
+					String vatPremiumFc = v.getOverallPremiumFc().toString();
 
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
 						premiumFc = v1.getQuoteDetails().getEndtPremium().toPlainString();
@@ -1705,6 +1729,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 								res.setStatus("Y");
 								res.setQuoteInfo(v1);
 								res.setSectionId(request.getSectionId());
+								res.setRiskId(v.getRiskId().toString());
 								resList.add(res);
 							}
 						}
