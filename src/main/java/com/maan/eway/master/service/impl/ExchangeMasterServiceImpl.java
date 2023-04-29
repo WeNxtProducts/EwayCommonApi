@@ -90,13 +90,16 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 				errorList.add(new Error("07", "CurrencyId", "Please Enter CurrencyId within 20 Characters"));
 			}
 
-			ExchangeMaster currencyName =   getCurrencyNameRes(req.getCurrencyId(),req.getCompanyId());
-			if(StringUtils.isNotBlank(req.getCurrencyId()) &&  currencyName !=null ) {
+			ExchangeMaster currencyId =   getCurrencyNameRes(req.getCurrencyId(),req.getCompanyId());
+			
+			if(StringUtils.isBlank(req.getExchangeId()) &&  currencyId !=null ) {
 				errorList.add(new Error("08", "Currency", "This Currency Id Already Exist"));
-			} else if( currencyName !=null  && StringUtils.isNotBlank(req.getCurrencyId()) ) {
-				if(! currencyName.getCurrencyId().equalsIgnoreCase(req.getCurrencyId()) ) {
+			} 
+			else if( currencyId !=null  && StringUtils.isNotBlank(req.getExchangeId()) ) 
+			{
+				if(! currencyId.getCurrencyId().equalsIgnoreCase(req.getCurrencyId()) ) {
 					errorList.add(new Error("08", "Currency", "This Currency Id Already Exist"));	
-				}		
+			}		
 				// Date Validation
 				Calendar cal = new GregorianCalendar();
 				Date today = new Date();
