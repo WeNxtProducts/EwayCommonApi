@@ -427,10 +427,10 @@ public List<ClausesMasterRes> getallClauses(ClausesMasterGetallReq req) {
 			//	Predicate n5 = cb.or(n3,n4);
 				Predicate n6 = cb.equal(b.get("productId"), req.getProductId());
 				Predicate n9 = cb.equal(b.get("sectionId"), req.getSectionId());
-				Predicate n10 = cb.equal(b.get("sectionId"),"99999");
-				Predicate n11 = cb.or(n9,n10);
+			//	Predicate n10 = cb.equal(b.get("sectionId"),"99999");
+			//	Predicate n11 = cb.or(n9,n10);
 				
-				query.where(n1,n2,n3,n6,n11).orderBy(orderList);
+				query.where(n1,n2,n3,n6,n9).orderBy(orderList);
 		// Get Result
 		TypedQuery<ClausesMaster> result = em.createQuery(query);
 		list = result.getResultList();
@@ -578,12 +578,12 @@ public ClausesMasterRes getByClausesId(ClausesMasterGetReq req) {
 		Predicate n4 = cb.equal(b.get("clausesId"), req.getClausesId());
 		Predicate n8 = cb.equal(b.get("productId"),req.getProductId());
 		Predicate n11 = cb.equal(b.get("sectionId"),req.getSectionId());
-		Predicate n12 = cb.equal(b.get("sectionId"), "99999");
-		Predicate n13 = cb.or(n12,n11);
-		Predicate n14 = cb.equal(b.get("branchCode"), "99999");
-		Predicate n15 = cb.or(n3,n14);
+	//	Predicate n12 = cb.equal(b.get("sectionId"), "99999");
+	//	Predicate n13 = cb.or(n12,n11);
+	//	Predicate n14 = cb.equal(b.get("branchCode"), "99999");
+	//	Predicate n15 = cb.or(n3,n14);
 
-		query.where(n1,n2,n4,n15,n8,n13).orderBy(orderList);
+		query.where(n1,n2,n4,n11,n8,n3).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<ClausesMaster> result = em.createQuery(query);
