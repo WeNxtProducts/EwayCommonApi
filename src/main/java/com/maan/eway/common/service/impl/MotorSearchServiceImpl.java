@@ -235,7 +235,17 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 				searchQuote = adminsearch(searchKey, searchValue, companyId, loginId, userType, branches);
 			} else if ("PolicyNumber".equalsIgnoreCase(searchKey)) {
 				searchQuote = adminsearch(searchKey, searchValue, companyId, loginId, userType, branches);
-			} 
+			} else if ("MotorCategory".equalsIgnoreCase(searchKey)) {
+				searchQuote = adminsearch(searchKey, searchValue, companyId, loginId, userType, branches);
+			} else if ("VehicleType".equalsIgnoreCase(searchKey)) {
+				searchQuote = adminsearch(searchKey, searchValue, companyId, loginId, userType, branches);
+			} else if ("CustomerCode".equalsIgnoreCase(searchKey)) {
+				searchQuote = adminsearch(searchKey, searchValue, companyId, loginId, userType, branches);
+			} else if ("VehicleModel".equalsIgnoreCase(searchKey)) {
+				searchQuote = adminsearch(searchKey, searchValue, companyId, loginId, userType, branches);
+			} else if ("VehicleMake".equalsIgnoreCase(searchKey)) {
+				searchQuote = adminsearch(searchKey, searchValue, companyId, loginId, userType, branches);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -281,11 +291,21 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 			} else if (searchKey.equalsIgnoreCase("PolicyNumber")) {
 				n1 = cb.equal(cb.lower(c.get("policyNo")), searchValue);
 			} else if (searchKey.equalsIgnoreCase("ChassisNumber")) {
-				n1 = cb.equal(cb.lower(c.get("chassisNumber")), searchValue);
-			} else if (searchKey.equalsIgnoreCase("CustomerName")) {
+				n1 = cb.equal(cb.lower(c.get("chassisNumber")), searchValue);	
+			} else if (searchKey.equalsIgnoreCase("MotorCategory")) {
+				n1 = cb.equal(cb.lower(c.get("motorCategory")), searchValue);	
+			} else if (searchKey.equalsIgnoreCase("VehicleType")) {
+				n1 = cb.equal(cb.lower(c.get("vehicleType")), searchValue);	
+			} else if (searchKey.equalsIgnoreCase("CustomerCode")) {
+				n1 = cb.equal(cb.lower(c.get("customerCode")), searchValue);	
+			}  else if (searchKey.equalsIgnoreCase("VehicleMake")) {
+				n1 = cb.equal(cb.lower(c.get("vehicleMake")), searchValue);	
+			}  else if (searchKey.equalsIgnoreCase("VehicleModel")) {
+				n1 = cb.equal(cb.lower(c.get("vehcileModel")), searchValue);	
+			}  else if (searchKey.equalsIgnoreCase("CustomerName")) {
 				n1 = cb.like(cb.lower(cus.get("clientName")), "%" + searchValue + "%");
 				n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
-			}
+		    }
 
 			Predicate n2 = cb.equal(c.get("companyId"), companyId);
 

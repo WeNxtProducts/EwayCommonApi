@@ -41,4 +41,22 @@ public class SearchReq {
 	@JsonProperty("RequestReferenceNo")
 	private String requestReferenceNo;
 	
+	@JsonProperty("MotorCategory")	
+	private String motorCategory;
+	
+	@JsonProperty("VehicleMake")
+	private String vehicleMake;
+	
+	@JsonProperty("VehicleModel")
+	private String vehcileModel;
+	
+	@JsonProperty("CustomerCode")
+	private String customerCode;
+	
+	@JsonProperty("VehicleType")
+	private String vehicleType;
+	
+//	@JsonProperty("PlateNumber")
+//	private String plateNo;
+	
 }
