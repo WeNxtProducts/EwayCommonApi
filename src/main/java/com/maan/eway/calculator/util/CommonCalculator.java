@@ -1,39 +1,22 @@
 package com.maan.eway.calculator.util;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import javax.persistence.Tuple;
 
 import org.apache.tomcat.util.buf.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Component;
 
-import com.maan.eway.bean.FactorRateMaster;
-import com.maan.eway.bean.FactorTypeDetails;
-import com.maan.eway.bean.MsCommonDetails;
-import com.maan.eway.bean.MsCustomerDetails;
-import com.maan.eway.bean.MsVehicleDetails;
-import com.maan.eway.bean.RatingFieldMaster;
 import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.res.calc.Cover;
 import com.maan.eway.res.calc.RatingInfo;
-import com.maan.eway.upgrade.criteria.CriteriaService;
-import com.maan.eway.upgrade.criteria.SpecCriteria;
 //@Component
 //@CacheConfig(cacheNames = {"RatingType"})
 public class CommonCalculator {
@@ -159,7 +142,7 @@ public class CommonCalculator {
 		if("P".equals(calctype)) {
 			d = si.multiply(new BigDecimal(rate/100)/*, round*/);			
 		 }else if("A".equals(calctype)) {
-			d=(new BigDecimal(rate).divide(exchangeRate));// for foreign currency calculation we have to divide by exchange rate			
+			d=(new BigDecimal(rate).divide(exchangeRate,3,RoundingMode.HALF_UP));// for foreign currency calculation we have to divide by exchange rate			
 		 }else if("M".equals(calctype)) {
 			 d = si.multiply(new BigDecimal(rate/1000)/*, round*/);			
 		 }

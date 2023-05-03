@@ -13,17 +13,27 @@
 package com.maan.eway.bean;
 
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import lombok.*;
-import javax.persistence.*;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.List;
-
-import java.util.Date;
-import javax.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 
 
@@ -392,11 +402,16 @@ private static final long serialVersionUID = 1L;
       @Column(name="ENDT_CATEG_DESC", length=100)
       private String     endtCategDesc ;
       
+
       @Column(name="LIABILITY_OCCUPATION_ID", length=10)
       private String     liabilityOccupationId ;
       
       @Column(name="LIABILITY_OCCUPATION_DESC", length=10)
       private String     liabilityOccupationDesc ;
+
+      @Column(name="ENDT_PREMIUM")
+      private Double       endtPremium ;
+
 }
 
 
