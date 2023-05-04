@@ -349,25 +349,25 @@ public class EndorsementService {
 				query.multiselect(//cb.literal(Long.parseLong("1")).alias("idsCount"),
 						
 						// Customer Info
-						c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
-						c.get("clientName").alias("clientName"),
+						cb.max(c.get("customerReferenceNo")).alias("customerReferenceNo"), cb.max(c.get("idNumber")).alias("idNumber"),
+						cb.max(c.get("clientName")).alias("clientName"),
 						// Vehicle Info
-						m.get("companyId").alias("companyId"), m.get("productId").alias("productId"),
-						m.get("branchCode").alias("branchCode"), m.get("requestReferenceNo").alias("requestReferenceNo"),
-						cb.selectCase().when(m.get("quoteNo").isNotNull(), m.get("quoteNo")).otherwise(m.get("quoteNo"))
+						cb.max(m.get("companyId")).alias("companyId"), cb.max(m.get("productId")).alias("productId"),
+						cb.max(m.get("branchCode")).alias("branchCode"), cb.max(m.get("requestReferenceNo")).alias("requestReferenceNo"),
+						cb.selectCase().when(m.get("quoteNo").isNotNull(), cb.max(m.get("quoteNo"))).otherwise(cb.max(m.get("quoteNo")))
 								.alias("quoteNo"),
-						cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId"))
-								.otherwise(m.get("customerId")).alias("customerId"),
-						m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
-						m.get("endorsementType").alias("endorsementTypeId"),
-						m.get("endorsementTypeDesc").alias("endorsementDesc"),
-						m.get("endtCategDesc").alias("endorsementCategoryDesc"),
-						m.get("endorsementEffdate").alias("effectiveDate"),
-						m.get("endtStatus").alias("endorsementStatus"),
-						m.get("policyNo").alias("policyNo"),
-						m.get("endorsementRemarks").alias("endorsementRemarks"),
+						cb.selectCase().when(m.get("customerId").isNotNull(), cb.max(m.get("customerId")))
+								.otherwise(cb.max(m.get("customerId"))).alias("customerId"),
+						cb.max(m.get("policyStartDate")).alias("policyStartDate"), cb.max(m.get("policyEndDate")).alias("policyEndDate"),
+						cb.max(m.get("endorsementType")).alias("endorsementTypeId"),
+						cb.max(m.get("endorsementTypeDesc")).alias("endorsementDesc"),
+						cb.max(m.get("endtCategDesc")).alias("endorsementCategoryDesc"),
+						cb.max(m.get("endorsementEffdate")).alias("effectiveDate"),
+						cb.max(m.get("endtStatus")).alias("endorsementStatus"),
+						cb.max(m.get("policyNo")).alias("policyNo"),
+						cb.max(m.get("endorsementRemarks")).alias("endorsementRemarks"),
 						cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
-						/*m.get("overallPremiumFc").alias("endtPremium"),*/  m.get("currency").alias("currency")
+						/*m.get("overallPremiumFc").alias("endtPremium"),*/ cb.max( m.get("currency")).alias("currency")
 							);
 			 
 				// Order By
