@@ -136,6 +136,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					errorList.add(new Error("11", "IdNumber", "Please Enter IdNumber"));
 				} else if (req.getIdNumber().length() > 100) {
 					errorList.add(new Error("11", "IdNumber", "Please Enter IdNumber within 100 Characters"));
+				} else if (! req.getIdNumber().matches("[A-Za-z0-9]+") ) {
+					errorList.add(new Error("11", "IdNumber", "Please Enter Valid IdNumber "));
 				}
 				if (StringUtils.isBlank(req.getNationality())) {
 					errorList.add(new Error("12", "Country", "Please select Country"));

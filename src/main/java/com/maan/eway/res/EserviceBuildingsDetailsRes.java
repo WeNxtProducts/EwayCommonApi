@@ -141,7 +141,19 @@ public class EserviceBuildingsDetailsRes implements Serializable {
     private String commissionAmount;	
 
 	@JsonProperty("CommissionPercentage")
-    private String commissionPercentage;	
+    private String commissionPercentage;
+	
+	@JsonProperty("WallType")
+    private String    wallType;
+	
+	@JsonProperty("WallTypeDesc")
+    private String    wallTypeDesc;
+	
+	@JsonProperty("RoofType")
+    private String    roofType;
+	
+	@JsonProperty("RoofTypeDesc")
+    private String    roofTypeDesc;
 
 	  
 }
