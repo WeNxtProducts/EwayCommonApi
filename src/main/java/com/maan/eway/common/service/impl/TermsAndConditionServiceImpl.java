@@ -174,6 +174,54 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						}
 					}
 				}
+				
+				
+				else {
+					List<TermsAndCondition> datas1 = termsRepo
+							.findByCompanyIdAndBranchCodeAndProductIdAndSectionIdAndRequestReferenceNoOrderBySnoAsc(req.getCompanyId(),
+									req.getBranchCode(), req.getProductId(), req.getSectionId(), req.getRequestReferenceNo());
+					
+					if (datas1.size() > 0 && !datas1.isEmpty()) {
+						if (datas1.size() > 0) {
+							for (TermsAndCondition data : datas1) {
+								if (data.getId() == 4) {
+									WarrantyRes warrantyres = new WarrantyRes();
+									warrantyres.setId(data.getId().toString());
+									warrantyres.setSubId(data.getSubId().toString());
+									warrantyres.setSubIdDesc(data.getSubIdDesc());
+									warrantyres.setDocRefNo(data.getDocRefNo());
+									warrantyres.setDocumentId("16");
+									warrantyresList.add(warrantyres);
+									res.setWarrantyRes(warrantyresList);
+
+								}
+								if (data.getId() == 6) {
+									ClausesRes clausesres = new ClausesRes();
+									clausesres.setId(data.getId().toString());
+									clausesres.setSubId(data.getSubId().toString());
+									clausesres.setSubIdDesc(data.getSubIdDesc());
+									clausesres.setDocRefNo(data.getDocRefNo());
+									clausesres.setDocumentId("18");
+									clausesresList.add(clausesres);
+									res.setClausesRes(clausesresList);
+
+								}
+								if (data.getId() == 7) {
+									ExclusionRes exclusionres = new ExclusionRes();
+									exclusionres.setId(data.getId().toString());
+
+									exclusionres.setSubId(data.getSubId().toString());
+									exclusionres.setSubIdDesc(data.getSubIdDesc());
+									exclusionres.setDocRefNo(data.getDocRefNo());
+									exclusionres.setDocumentId("19");
+									exclusionresList.add(exclusionres);
+									res.setExclusionRes(exclusionresList);
+
+								}
+							}
+						}
+					}
+				}
 			}
 
 			else {
