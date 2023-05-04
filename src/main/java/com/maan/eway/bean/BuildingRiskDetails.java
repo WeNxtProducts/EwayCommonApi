@@ -411,6 +411,19 @@ private static final long serialVersionUID = 1L;
 
       @Column(name="ENDT_PREMIUM")
       private Double       endtPremium ;
+      
+      
+      @Column(name="WALL_TYPE", length=10)
+      private String     wallType ;
+      
+      @Column(name="WALL_TYPE_DESC", length=10)
+      private String     wallTypeDesc;
+      
+      @Column(name="ROOF_TYPE", length=10)
+      private String     roofType;
+      
+      @Column(name="ROOF_TYPE_DESC", length=10)
+      private String     roofTypeDesc ;
 
 }
 

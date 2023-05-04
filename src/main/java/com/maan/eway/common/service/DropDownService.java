@@ -154,4 +154,8 @@ public interface DropDownService {
 
 	List<DropDownRes> brokerSumInsuredRefrral(BrokerSumInsuredRefReq req);
 
+	List<DropDownRes> getWallTypes(LovDropDownReq req);
+
+	List<DropDownRes> getRoofTypes(LovDropDownReq req);
+
 }

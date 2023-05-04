@@ -136,6 +136,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					errorList.add(new Error("11", "IdNumber", "Please Enter IdNumber"));
 				} else if (req.getIdNumber().length() > 100) {
 					errorList.add(new Error("11", "IdNumber", "Please Enter IdNumber within 100 Characters"));
+				} else if (! req.getIdNumber().matches("[A-Za-z0-9]+") ) {
+					errorList.add(new Error("11", "IdNumber", "Please Enter Valid IdNumber "));
 				}
 				if (StringUtils.isBlank(req.getNationality())) {
 					errorList.add(new Error("12", "Country", "Please select Country"));
@@ -310,11 +312,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 						&& req.getMobileNo2().equalsIgnoreCase(req.getMobileNo3())) {
 					errorList.add(new Error("28", "MobileNo3", "MobileNo3 Is Already Available In MobileNo2"));
 				}
-
-				if (StringUtils.isNotBlank(req.getAddress1()) && StringUtils.isNotBlank(req.getAddress2())
-						&& req.getAddress1().equalsIgnoreCase(req.getAddress2())) {
-					errorList.add(new Error("28", "Address2", "Address2 Is Already Available In Address"));
-				}
+//
+//				if (StringUtils.isNotBlank(req.getAddress1()) && StringUtils.isNotBlank(req.getAddress2())
+//						&& req.getAddress1().equalsIgnoreCase(req.getAddress2())) {
+//					errorList.add(new Error("28", "Address2", "Address2 Is Already Available In Address"));
+//				}
 
 				if (StringUtils.isBlank(req.getIsTaxExempted())) {
 					errorList.add(new Error("31", "IsTaxExempted", "Please Select IsTaxExempted"));
