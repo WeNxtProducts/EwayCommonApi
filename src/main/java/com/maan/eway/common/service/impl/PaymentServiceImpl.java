@@ -1300,9 +1300,23 @@ public class PaymentServiceImpl implements PaymentService {
 					} else if (req.getChequeDate().before(today)) {
 						error.add(new Error("04", "ChequeDate", "Please Enter ChequeDate as Future Date"));
 					}
+					
+					if(StringUtils.isBlank(req.getMicrNo())) {
+						error.add(new Error("01","MicrNo","Please Enter MicrNo"));
+					}else if (req.getMicrNo().matches("^[a-zA-Z0-9 ]*$")) {
+						error.add(new Error("01","MicrNo","Please Enter valid MicrNo"));
+					}
+					
 				}
+				
 					
 			
+			}else if("1".equals(req.getPaymentType())) {
+				if(StringUtils.isBlank(req.getPayeeName())) {
+					error.add(new Error("01","PayeeName","Please Enter PayeeName"));
+				}else if(req.getPayeeName().matches("^[a-zA-Z ]*$") ) {
+					error.add(new Error("01","PayeeName","Please Enter Valid PayeeName"));
+				}
 			}
 			
 			// Check Paymetn Info
@@ -1377,6 +1391,12 @@ public class PaymentServiceImpl implements PaymentService {
 				
 			}
 			
+			if(error.isEmpty()) {
+				HomePositionMaster data = homerepo.findByQuoteNo(req.getQuoteNo());
+				if(data.getOverallPremiumFc().compareTo(req.getPremium())<0) {
+					error.add(new Error("01","Premium","Required Premium Should Not be Lesser than "+data.getOverallPremiumFc()));
+				}
+			}
 			
 		} catch (Exception e) {
 			log.error(e);
@@ -1462,6 +1482,8 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentDetail.setAccountNumber( req.getAccountNumber()  ); 
 			paymentDetail.setIbanNumber(req.getIbanNumber()  ); 
 			paymentDetail.setPayments( StringUtils.isBlank(req.getPayments() ) ? "Charge" : req.getPayments()  ); 
+			paymentDetail.setPayeeName(req.getPayeeName());
+			paymentDetail.setMicrNo(req.getMicrNo());
 			
 			if("2".equals(req.getPaymentType())) {
 				paymentDetail.setBankName(req.getBankName());

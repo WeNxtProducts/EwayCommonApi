@@ -241,6 +241,13 @@ private static final long serialVersionUID = 1L;
     @Column(name="IBAN_NUMBER")
     private String       ibanNumber ;
     
+    
+    @Column(name="MICRNO")
+    private String micrNo;
+    @Column(name="PAYEENAME")
+    private String payeeName;
+    
+    
 }
 
 

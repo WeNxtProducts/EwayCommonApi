@@ -312,7 +312,7 @@ public class CopyBuildingRaw {
 				// Find All
 				Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 				Root<EserviceBuildingDetails> m = query.from(EserviceBuildingDetails.class);
-				Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+			//	Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
 				// Select
 				query.multiselect(//cb.literal(Long.parseLong("1")).alias("idsCount"),
 						// Customer Info
@@ -335,7 +335,7 @@ public class CopyBuildingRaw {
 						cb.max(m.get("endorsementRemarks")).alias("endorsementRemarks"),
 						//Home Position Master
 						cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
-						cb.max( m.get("currency")).alias("currency")
+						cb.sum(m.get("endtPremium")).alias("endtPremium"),cb.max( m.get("currency")).alias("currency")
 						
 						);
 			 
@@ -347,29 +347,12 @@ public class CopyBuildingRaw {
 				Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
 				Predicate n2 = cb.equal(m.get("companyId"), request.getCompanyId());
 				Predicate n3 = cb.equal(m.get("productId"), request.getProductId());
-				Predicate n4 = cb.in(m.get("status")).value(Arrays.asList("E","P"));  // m.get("status").in("E","P"));
-				Predicate n5 = cb.like(m.get("originalPolicyNo"), request.getPolicyNo());
-				Predicate n7 = cb.like(h.get("quoteNo"), m.get("quoteNo"));
-				//Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), endDate);
-				//Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
+				Predicate n4 = cb.in(m.get("status")).value(Arrays.asList("E","P","D"));  // m.get("status").in("E","P"));
+				Predicate n5 = cb.or(cb.like(m.get("originalPolicyNo"), request.getPolicyNo()),cb.like(m.get("policyNo"), request.getPolicyNo()));
 
-			/*	Predicate n7 = null;
-				if (req.getApplicationId().equalsIgnoreCase("1")) {
-					n7 = cb.equal(m.get("loginId"), req.getLoginId());
-				} else {
-					n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
-				}*/
 
-				/*Predicate n8 = null;
-				if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
-					Expression<String> e0 = m.get("brokerBranchCode");
-					n8 = e0.in(branches);
-				} else {
-					Expression<String> e0 = m.get("branchCode");
-					n8 = e0.in(branches);
-				}*/
-
-				query.where(n1, n2, n3, n4, n5,n7)
+			 
+				query.where(n1, n2, n3, n4, n5)
 						/*.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 								m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 								m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"))*/

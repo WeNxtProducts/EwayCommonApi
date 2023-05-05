@@ -1,5 +1,6 @@
 package com.maan.eway.common.req;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -55,4 +56,13 @@ public class PaymentDetailsSaveReq {
 	
 	@JsonProperty("IbanNumber")
 	private String ibanNumber;
+	
+	@JsonProperty("MICRNo")
+	private String micrNo;
+	@JsonProperty("PayeeName")
+	private String payeeName;
+	
+	
+	@JsonProperty("Premium")
+	private BigDecimal premium;
 }

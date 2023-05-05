@@ -367,7 +367,7 @@ public class EndorsementService {
 						cb.max(m.get("policyNo")).alias("policyNo"),
 						cb.max(m.get("endorsementRemarks")).alias("endorsementRemarks"),
 						cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
-						/*m.get("overallPremiumFc").alias("endtPremium"),*/ cb.max( m.get("currency")).alias("currency")
+						cb.sum(m.get("endtPremium")).alias("endtPremium"), cb.max( m.get("currency")).alias("currency")
 							);
 			 
 				// Order By
