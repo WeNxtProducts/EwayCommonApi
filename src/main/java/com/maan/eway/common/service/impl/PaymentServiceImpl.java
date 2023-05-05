@@ -1314,7 +1314,7 @@ public class PaymentServiceImpl implements PaymentService {
 			}else if("1".equals(req.getPaymentType())) {
 				if(StringUtils.isBlank(req.getPayeeName())) {
 					error.add(new Error("01","PayeeName","Please Enter PayeeName"));
-				}else if(req.getPayeeName().matches("^[a-zA-Z ]*$") ) {
+				}else if(!req.getPayeeName().matches("[a-zA-Z ]*$") ) {
 					error.add(new Error("01","PayeeName","Please Enter Valid PayeeName"));
 				}
 			}
