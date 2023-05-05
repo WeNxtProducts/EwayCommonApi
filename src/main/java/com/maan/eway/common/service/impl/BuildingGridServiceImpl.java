@@ -658,8 +658,8 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 			// Get Result
 			TypedQuery<Tuple> result = em.createQuery(query);
 			customerDetailsList = result.getResultList();
-//			customerDetailsList = customerDetailsList.stream().filter(o -> !o.get("idsCount").equals(0L))
-//					.collect(Collectors.toList());
+			customerDetailsList = customerDetailsList.stream().filter(o -> !o.get("idsCount").equals(0L))
+					.collect(Collectors.toList());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
