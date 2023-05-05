@@ -1394,7 +1394,7 @@ public class PaymentServiceImpl implements PaymentService {
 			if(error.isEmpty())
 			{
 				HomePositionMaster data = homerepo.findByQuoteNo(req.getQuoteNo());
-				if(data.getOverallPremiumFc().compareTo(req.getPremium())>0) {
+				if(data.getOverallPremiumFc().compareTo(req.getPremium())>0 && StringUtils.isBlank(data.getEndtTypeId())) {
 					error.add(new Error("01","Premium","Required Premium Should Not be Lesser than "+data.getOverallPremiumFc()));
 				}
 			}
