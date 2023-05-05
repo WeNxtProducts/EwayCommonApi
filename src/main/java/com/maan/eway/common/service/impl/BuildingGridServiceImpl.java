@@ -701,17 +701,31 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 								|| (req.getUserType().equalsIgnoreCase("User"))) {
 							branchCode = req.getBranchCode();
 							savedata.setApplicationId("1");
+						//	savedata.setBrokerBranchCode(branchCode);
 
 						} else if ("issuer".equalsIgnoreCase(userType)) {
 							savedata.setApplicationId(req.getLoginId());
 							branchCode = req.getBranchCode();
+						//	savedata.setBranchCode(branchCode);
 						}
-						savedata.setBranchCode(branchCode);
-						savedata.setActualPremiumFc(BigDecimal.ZERO );
+
+						savedata.setActualPremiumFc(BigDecimal.ZERO);
 						savedata.setActualPremiumLc(BigDecimal.ZERO);
 						savedata.setOverallPremiumFc(BigDecimal.ZERO);
 						savedata.setOverallPremiumLc(BigDecimal.ZERO);
 						savedata.setQuoteNo("");
+						savedata.setStatus("Y");
+						savedata.setEndorsementDate(null);
+						savedata.setEndorsementEffdate(null);
+						savedata.setEndorsementRemarks(null);
+						savedata.setEndorsementType(null);
+						savedata.setEndorsementTypeDesc(null);
+						savedata.setEndtCategDesc(null);
+						savedata.setEndtCount(null);
+						savedata.setEndtPremium(null);
+						savedata.setEndtPrevPolicyNo(null);
+						savedata.setEndtPrevQuoteNo(null);
+						savedata.setEndtStatus(null);					
 						repo.saveAndFlush(savedata);
 					}
 				}

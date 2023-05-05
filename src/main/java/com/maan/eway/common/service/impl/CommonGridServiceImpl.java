@@ -626,45 +626,55 @@ public class CommonGridServiceImpl implements CommonGridService {
 
 				String refNo = req.getRequestReferenceNo();
 
-				String refShortCode = motorService.getListItem(companyId, req.getBranchCode(), "PRODUCT_SHORT_CODE",req.getProductId());
-		        refNo = refShortCode + seqNo.generateRefNo() ; 
-		        
 				if (list.size() > 0) {
+					String refShortCode = motorService.getListItem(companyId, req.getBranchCode(), "PRODUCT_SHORT_CODE",
+							req.getProductId());
+					refNo = refShortCode + seqNo.generateRefNo();
 					for (Tuple data : list) {
-		
-							savedata = dozerMapper.map(data.get(0), EserviceCommonDetails.class);
 
-							savedata.setEntryDate(new Date());
-							savedata.setCreatedBy(req.getLoginId());
-							savedata.setUpdatedBy(req.getLoginId());
-							savedata.setUpdatedDate(new Date());
-							savedata.setRequestReferenceNo(refNo);
-							savedata.setOldReqRefNo(req.getRequestReferenceNo());
-							if (req.getUserType().equalsIgnoreCase("Broker")
-									|| (req.getUserType().equalsIgnoreCase("User"))) {
-								branchCode = req.getBranchCode();
-								savedata.setApplicationId("1");
-								savedata.setBrokerBranchCode(branchCode);
+						savedata = dozerMapper.map(data.get(0), EserviceCommonDetails.class);
 
-							} else if ("issuer".equalsIgnoreCase(userType)) {
-								savedata.setApplicationId(req.getLoginId());
-								branchCode = req.getBranchCode();
-								savedata.setBranchCode(branchCode);
-							}
-							
-							savedata.setActualPremiumFc(BigDecimal.ZERO);
-							savedata.setActualPremiumLc(BigDecimal.ZERO);
-							savedata.setOverallPremiumFc(BigDecimal.ZERO);
-							savedata.setOverallPremiumLc(BigDecimal.ZERO);
-							savedata.setQuoteNo("");
-							repo.saveAndFlush(savedata);
+						savedata.setEntryDate(new Date());
+						savedata.setCreatedBy(req.getLoginId());
+						savedata.setUpdatedBy(req.getLoginId());
+						savedata.setUpdatedDate(new Date());
+						savedata.setRequestReferenceNo(refNo);
+						savedata.setOldReqRefNo(req.getRequestReferenceNo());
+						if (req.getUserType().equalsIgnoreCase("Broker")
+								|| (req.getUserType().equalsIgnoreCase("User"))) {
+							branchCode = req.getBranchCode();
+							savedata.setApplicationId("1");
+							// savedata.setBrokerBranchCode(branchCode);
+
+						} else if ("issuer".equalsIgnoreCase(userType)) {
+							savedata.setApplicationId(req.getLoginId());
+							branchCode = req.getBranchCode();
+							// savedata.setBranchCode(branchCode);
 						}
+
+						savedata.setActualPremiumFc(BigDecimal.ZERO);
+						savedata.setActualPremiumLc(BigDecimal.ZERO);
+						savedata.setOverallPremiumFc(BigDecimal.ZERO);
+						savedata.setOverallPremiumLc(BigDecimal.ZERO);
+						savedata.setQuoteNo("");
+						savedata.setStatus("Y");
+						savedata.setEndorsementDate(null);
+						savedata.setEndorsementEffdate(null);
+						savedata.setEndorsementRemarks(null);
+						savedata.setEndorsementType(null);
+						savedata.setEndorsementTypeDesc(null);
+						savedata.setEndtCategDesc(null);
+						savedata.setEndtCount(null);
+						savedata.setEndtPremium(null);
+						savedata.setEndtPrevPolicyNo(null);
+						savedata.setEndtPrevQuoteNo(null);
+						savedata.setEndtStatus(null);
+						repo.saveAndFlush(savedata);
+					}
 //					res.setResponse("Successfully Updated");
 					res.setRequestReferenceNo(refNo);
-				//	res.setQuoteNo(quoteNo);
-					}
-			
-				
+					// res.setQuoteNo(quoteNo);
+				}				
 				
 			} catch (Exception e) {
 				e.printStackTrace();
