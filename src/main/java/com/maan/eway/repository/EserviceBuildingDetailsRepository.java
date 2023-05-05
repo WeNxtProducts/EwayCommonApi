@@ -56,5 +56,6 @@ public interface EserviceBuildingDetailsRepository  extends JpaRepository<Eservi
 	List<EserviceBuildingDetails> findByPolicyNoAndStatus(String policyNo, String string);
 	List<EserviceBuildingDetails> findByPolicyNoAndRiskId(String prevPolicyNo, int i);
 	List<EserviceBuildingDetails> findByCustomerId(String customerId);
+	List<EserviceBuildingDetails> findByRequestReferenceNo(String requestReferenceNo);
 
 }

@@ -728,29 +728,17 @@ public class GridServiceImpl implements GridService {
 	public CopyQuoteSuccessRes copyQuote(CopyQuoteReq req) {
 		CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 		try {
-			// Branch Res
-			
-
-		/*	if (req.getBranchCode().equalsIgnoreCase("99999")) {
-
-				List<LoginBranchMaster> loginBranch = loginBranchRepo.findByLoginId(loginId);
-
-				branches = loginBranch.stream().filter(o -> !o.getBrokerBranchCode().equalsIgnoreCase("None"))
-						.map(LoginBranchMaster::getBrokerBranchCode).collect(Collectors.toList());
-				if (branches.size() <= 0) {
-					branches = loginBranch.stream().map(LoginBranchMaster::getBranchCode).collect(Collectors.toList());
-
-				}
-
-			} else if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
-				branches.add(req.getBrokerBranchCode());
-			} else {
-				branches.add(req.getBranchCode());
-			}*/
-			HomePositionMaster  homeData=homeRepo.findByQuoteNo(req.getQuoteNo());
+			String appId="";
+			if(req.getProductId().equalsIgnoreCase(motorProductId)) {
+				List<EserviceMotorDetails> motorList=repo.findByRequestReferenceNo(req.getRequestReferenceNo());
+				appId=motorList.get(0).getApplicationId();
+			}else if(req.getProductId().equalsIgnoreCase(buildingProductId)) {
+				List<EserviceBuildingDetails> buildingList=buildingRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+				appId=buildingList.get(0).getApplicationId();
+			}
 			String loginId = "" ;
 			List<String> branches = new ArrayList<String>();
-			if (homeData.getApplicationId().equalsIgnoreCase("1") ) {
+			if (appId.equalsIgnoreCase("1") ) {
 				loginId = req.getLoginId();
 			} else {
 				loginId = req.getApplicationId();

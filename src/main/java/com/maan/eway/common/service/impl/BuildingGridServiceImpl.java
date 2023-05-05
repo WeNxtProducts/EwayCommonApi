@@ -556,6 +556,7 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 		return searchQuote;
 	}
 
+
 	public List<Tuple> searchDetails(String searchKey, String searchValue, String companyId, String loginId,
 			String userType, List<String> branches) {
 		List<Tuple> customerDetailsList = new ArrayList<Tuple>();
@@ -679,14 +680,13 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 			String companyId = req.getInsuranceId();
 			String userType = req.getUserType();
 			String branchCode = "";
-			List<Tuple> list = searchDetails(searchKey, searchValue, companyId, loginId, userType, branches);
+			List<Tuple> list = copyQuoteSearchDetails(searchKey, searchValue, companyId, loginId, userType, branches);
 
 			String refNo = req.getRequestReferenceNo();
 
-			String refShortCode = motorService.getListItem(companyId, req.getBranchCode(), "PRODUCT_SHORT_CODE",req.getProductId());
-	        refNo = refShortCode + seqNo.generateRefNo() ; 
-
 			if (list.size() > 0) {
+				String refShortCode = motorService.getListItem(companyId, req.getBranchCode(), "PRODUCT_SHORT_CODE",req.getProductId());
+		        refNo = refShortCode + seqNo.generateRefNo() ; 
 				for (Tuple data : list) {
 	
 						savedata = dozerMapper.map(data.get(0), EserviceBuildingDetails.class);
@@ -796,7 +796,62 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 		Map<Object, Boolean> seen = new ConcurrentHashMap<>();
 		return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
 	}
+	public List<Tuple> copyQuoteSearchDetails(String searchKey, String searchValue, String companyId, String loginId,
+			String userType, List<String> branches) {
+		List<Tuple> customerDetailsList = new ArrayList<Tuple>();
+		try {
 
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+				Root<EserviceBuildingDetails> c = query.from(EserviceBuildingDetails.class);
+				Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
+				
+				query.multiselect(c,
+						cus.get("clientName").alias("clientName"));
+
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.asc(c.get("customerReferenceNo")));
+
+				Predicate n1 = null;
+				Predicate n3 = null;
+				Predicate n4 = null;
+				Predicate n5 = null;
+
+				// Where
+				if (searchKey.equalsIgnoreCase("RequestReferenceNo")) {
+					n1 = cb.equal(cb.lower(c.get("requestReferenceNo")), searchValue);
+				}
+
+				Predicate n2 = cb.equal(c.get("companyId"), companyId);
+
+				if ("issuer".equalsIgnoreCase(userType)) {
+					n3 = cb.equal(c.get("applicationId"), loginId);
+					Expression<String> e0 = c.get("branchCode");
+					n4 = e0.in(branches);
+				} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
+					n3 = cb.equal(c.get("loginId"), loginId);
+				//	Expression<String> e0 = c.get("brokerBranchCode");
+				Expression<String> e0 = c.get("branchCode");
+					n4 = e0.in(branches);
+				}
+				
+				n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
+				query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+		
+
+				// Get Result
+				TypedQuery<Tuple> result = em.createQuery(query);
+				customerDetailsList = result.getResultList();
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is --->" + e.getMessage());
+				return null;
+			}
+			return customerDetailsList;
+		}
 	@Override
 	public CopyQuoteSuccessRes buildingEndt(CopyQuoteReq req, List<String> branches, String loginId) {
 		CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
