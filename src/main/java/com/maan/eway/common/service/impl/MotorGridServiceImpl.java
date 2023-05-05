@@ -1174,7 +1174,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					coverDocUploadDetails.deleteAll(coverDocList);
 				}
 				//Motor Data Details
-				List<MotorDataDetails> motorData = motorDataDetepo.findByQuoteNo(req.getQuoteNo());
+				List<MotorDataDetails> motorData = motorDataDetepo.findByQuoteNo(quoteNo);
 				if (motorData.size() > 0) {
 					motorDataDetepo.deleteAll(motorData);
 				}
@@ -1249,7 +1249,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			BigDecimal endtPre=BigDecimal.ZERO;
 			BigDecimal endtPremiumtax=BigDecimal.ZERO;
 			Double endtPercent=0d;
-			HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
+			HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(prevQuoteNo);
 			Double tax=Double.valueOf(homeData.getVatPercent().toString());
 			BigDecimal exchangeRate=homeData.getExchangeRate();
 			BigDecimal overAllPremiumFc=new BigDecimal(homeData.getOverallPremiumFc().toString());
@@ -1334,7 +1334,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
 				EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
-				HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
+				HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(prevQuoteNo);
 				String olsCustomerId=homeData.getCustomerId();
 				
 				PersonalInfo personalInfoData=personalInforepo.findByCustomerId(olsCustomerId);
@@ -1389,7 +1389,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				String coverDesc = "";
 				BigDecimal endtFee = new BigDecimal(entMaster.getEndtFeePercent());
 				BigDecimal endtAmt = BigDecimal.ZERO;
-				List<PolicyCoverData> policyCoverData = policyCoverDataRepo.findByQuoteNo(req.getQuoteNo());
+				List<PolicyCoverData> policyCoverData = policyCoverDataRepo.findByQuoteNo(prevQuoteNo);
 				if (policyCoverData.size() > 0) {
 					for (PolicyCoverData data : policyCoverData) {
 						savedata = dozerMapper.map(data, PolicyCoverData.class);
@@ -1559,7 +1559,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
 				EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
-				List<MotorDataDetails> motorData=motorDataDetepo.findByQuoteNo(req.getQuoteNo());
+				List<MotorDataDetails> motorData=motorDataDetepo.findByQuoteNo(prevQuoteNo);
 				if (motorData.size() > 0) {
 					for (MotorDataDetails data : motorData) {
 						savedata = dozerMapper.map(data, MotorDataDetails.class);
@@ -1607,7 +1607,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 						req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 						Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
-				List<MotorDriverDetails> motorDriverData = motordrivDetepo.findByQuoteNo(req.getQuoteNo());
+				List<MotorDriverDetails> motorDriverData = motordrivDetepo.findByQuoteNo(prevQuoteNo);
 				if (motorDriverData.size() > 0) {
 					for (MotorDriverDetails data : motorDriverData) {
 						savedata = dozerMapper.map(data, MotorDriverDetails.class);
@@ -1651,7 +1651,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 						req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 						Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
-				List<CoverDocumentUploadDetails> motorData = coverDocUploadDetails.findByQuoteNo(req.getQuoteNo());
+				List<CoverDocumentUploadDetails> motorData = coverDocUploadDetails.findByQuoteNo(prevQuoteNo);
 				if (motorData.size() > 0) {
 					for (CoverDocumentUploadDetails data : motorData) {
 						savedata = dozerMapper.map(data, CoverDocumentUploadDetails.class);

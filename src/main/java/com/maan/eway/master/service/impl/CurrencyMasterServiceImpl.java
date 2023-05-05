@@ -236,6 +236,8 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 			errorList.add(new Error("05", "CurrencyShortCode", "Please Enter CurrencyShortCode"));
 		} else if (req.getCurrencyShortCode().length() > 5) {
 			errorList.add(new Error("08", "Currency", "Please Enter CurrencyShortCode within 5 Characters"));	
+		}else if (!StringUtils.isAlpha(req.getCurrencyShortCode())) {
+			errorList.add(new Error("08", "Currency", "Please Enter CurrencyShortCode In Alphabets"));	
 		} else {
 			CurrencyMaster currencyShortCode =   getCurrencyShortCodeRes(req.getCurrencyShortCode(),req.getCompanyId());
 			if(StringUtils.isBlank(req.getCurrencyId()) &&  currencyShortCode !=null ) {
@@ -251,6 +253,8 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 			errorList.add(new Error("05", "CurrencyName", "Please Enter CurrencyName"));
 		} else if (req.getCurrencyName().length() > 25) {
 			errorList.add(new Error("08", "Currency Name", "Please Enter Currency Name within 25 Characters"));
+		}else if (!StringUtils.isAlpha(req.getCurrencyName())) {
+			errorList.add(new Error("08", "CurrencyName", "Please Enter getCurrencyName In Alphabets"));	
 		} else {
 			CurrencyMaster currencyName =   getCurrencyNameRes(req.getCurrencyName(),req.getCompanyId());
 			if(StringUtils.isBlank(req.getCurrencyId()) &&  currencyName !=null ) {
