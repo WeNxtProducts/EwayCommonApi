@@ -92,8 +92,21 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 				 t.setPremiumExcluedTaxLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumExcluedTax().multiply(t.getExchangeRate()))));
 				 // Minimium Premium setup.
 				 
+				 boolean isCancellation=false;
+				 if(t.getEndorsements()!=null && t.getEndorsements().size()>0) {
+					 t.getEndorsements().sort(new Comparator<Endorsement>() {
+						@Override
+						public int compare(Endorsement o1, Endorsement o2) {
+							// TODO Auto-generated method stub
+							return o1.getEndtCount().compareTo(o2.getEndtCount());
+						}
+						 
+					}.reversed());
+					 Endorsement endorsement = t.getEndorsements().get(0);
+					 	isCancellation=endorsement.getEndorsementId().equals("842");
+				 }
 				 t.setMinimumPremiumYn("N");
-				 if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0) {
+				 if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0 && !isCancellation) {
 					 
 					 t.setPremiumExcluedTax((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getMinimumPremium().divide(t.getExchangeRate())))); 
 					 t.setPremiumExcluedTaxLC(t.getMinimumPremium());
@@ -111,14 +124,14 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 				 
 				 
 				 if(t.getEndorsements()!=null && t.getEndorsements().size()>0) {
-					 t.getEndorsements().sort(new Comparator<Endorsement>() {
+					/* t.getEndorsements().sort(new Comparator<Endorsement>() {
 						@Override
 						public int compare(Endorsement o1, Endorsement o2) {
 							// TODO Auto-generated method stub
 							return o1.getEndtCount().compareTo(o2.getEndtCount());
 						}
 						 
-					}.reversed());
+					}.reversed());*/
 					 //new premium-old prem
 					 Endorsement endorsement = t.getEndorsements().get(0);
 					
