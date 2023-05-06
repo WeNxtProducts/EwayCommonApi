@@ -70,7 +70,7 @@ public class JasperServiceImpl implements JasperService {
 			String filePath = null;
 
 			if (StringUtils.isNotBlank(homeData.getPolicyNo())) {
-				input.put("pvpolicyNo", homeData.getPolicyNo());
+				input.put("pvPolicyNo", homeData.getPolicyNo());
 				input.put("pvImagepath", config.getImagePath());
 
 				// directoryname=homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
