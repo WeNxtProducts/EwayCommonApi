@@ -516,6 +516,7 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			
 			save.setUserType(loginData.getUserType());
 			save.setSubUserType(loginData.getSubUserType());
+			save.setBrokerBranchName(req.getBrokerBranchName());
 			loginBrokerRepo.save(save);
 
 			log.info("Login Master Updated Details ---> " + json.toJson(save));
