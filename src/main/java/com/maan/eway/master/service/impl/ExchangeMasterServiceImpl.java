@@ -127,9 +127,6 @@ public class ExchangeMasterServiceImpl implements ExchangeMasterService {
 					errorList.add(new Error("06", "ExchangeRate", "Please Enter ExchangeRate"));
 				}
 
-
-
-
 				if (StringUtils.isBlank(req.getCompanyId())) {
 					errorList.add(new Error("08", "CompanyId", "Please Enter CompanyId"));
 				}
