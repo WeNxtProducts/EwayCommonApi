@@ -26,7 +26,7 @@ public class JasperConfiguration {
 	private String datasourcebyjndi; 
 	 
 	// Enable This Value For run in Jndi Server
-/*	@Value("${spring.datasource.jndi-name}") */ 
+	//@Value("${spring.datasource.jndi-name}")  
 	private String jndiDatasource;
 	
 	public String getDraftPath() {
@@ -46,7 +46,7 @@ public class JasperConfiguration {
 		classpathof=(JasperConfiguration.class).getProtectionDomain().getCodeSource().getLocation().getPath();
 	}
 	public String getImagePath() {
-		return classpathof+"/report/images/";
+		return (classpathof+"report/images/").replaceAll("%20", " ");
 	} 
 	
 	private DataSource getDataSourceFromJNDI()  { 
