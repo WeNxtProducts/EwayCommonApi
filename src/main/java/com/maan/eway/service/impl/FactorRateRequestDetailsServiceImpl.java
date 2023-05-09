@@ -1161,7 +1161,7 @@ this.repository = repo;
 				res.setSectionId(mot.getSectionId() );
 				res.setSectionName(mot.getSectionName());	
 				res.setEffectiveDate(mot.getEndorsementEffdate()==null?null:mot.getEndorsementEffdate() );
-				
+				res.setEndorsementYn(mot.getEndorsementType()==null?"N":"Y");
 				Object riskDetails = new Object();
 				EserviceMotorDetailsRes  motorRes = new EserviceMotorDetailsRes();
 				dozerMapper.map(mot, motorRes);
@@ -1209,7 +1209,7 @@ this.repository = repo;
 				res.setSectionId(travelData.getSectionId() );
 				res.setSectionName(travelData.getSectionName());
 				res.setEffectiveDate(travelData.getEndorsementEffdate()==null?null:travelData.getEndorsementEffdate() );
-				
+				res.setEndorsementYn(travelData.getEndorsementType()==null?"N":"Y");
 				Object riskDetails = new Object();
 				EserviceTravelGetRes  travelRes = new EserviceTravelGetRes();
 				dozerMapper.map(travelData, travelRes);
@@ -1269,7 +1269,8 @@ this.repository = repo;
 					//	buildRes.setSectionName(sec.getSectionDesc());
 						riskDetails = buildRes ;
 						res.setRiskDetails(riskDetails); 
-						
+						res.setEndorsementYn(acc.getEndorsementType()==null?"N":"Y");
+
 						viewBuildingList.add(res);
 					}
 					
@@ -1334,7 +1335,7 @@ this.repository = repo;
 				res.setSectionId(comData.getSectionId() );
 				res.setSectionName(comData.getSectionDesc());
 				res.setEffectiveDate(comData.getEndorsementEffdate()==null?null:comData.getEndorsementEffdate() );
-				
+				res.setEndorsementYn(comData.getEndorsementType()==null?"N":"Y");
 				Object riskDetails = new Object();
 				EserviceCommonGetRes comRes = new EserviceCommonGetRes();
 				dozerMapper.map(comData, comRes);
