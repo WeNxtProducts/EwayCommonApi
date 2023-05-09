@@ -1679,7 +1679,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 					String endTypeDesc = entMaster.getEndtTypeDesc();
 					String endtFeeYn = entMaster.getEndtFeeYn();
 					String coverDesc = "";
-					BigDecimal endtFee = new BigDecimal(entMaster.getEndtFeePercent());
+					BigDecimal endtFee = entMaster.getEndtFeePercent() == null ? BigDecimal.ZERO: new BigDecimal(entMaster.getEndtFeePercent().toString());
 					BigDecimal endtAmt = BigDecimal.ZERO;
 					List<PolicyCoverData> policyCoverData = policyCoverDataRepo.findByQuoteNo(prevQuoteNo);
 					if (policyCoverData.size() > 0) {
