@@ -26,6 +26,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
@@ -1129,7 +1130,12 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			String endTypeDesc = entMaster.getEndtTypeDesc();
 			String endtFeeYn = entMaster.getEndtFeeYn();
 			String coverDesc = "";
-			BigDecimal endtFee = new BigDecimal(entMaster.getEndtFeePercent());
+			BigDecimal endtFee = BigDecimal.ZERO;
+			if(StringUtils.isBlank(entMaster.getEndtFeePercent())|entMaster.getEndtFeePercent()==null) {
+				endtFee = BigDecimal.ZERO;
+			}else {
+				endtFee =new BigDecimal(entMaster.getEndtFeePercent());
+			}
 			BigDecimal endtAmt = BigDecimal.ZERO;
 			List<PolicyCoverData> policyCoverData = policyCoverDataRepo.findByQuoteNo(req.getQuoteNo());
 			if (policyCoverData.size() > 0) {

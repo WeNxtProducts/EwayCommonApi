@@ -1398,7 +1398,12 @@ public class MotorGridServiceImpl implements MotorGridService {
 				String endTypeDesc = entMaster.getEndtTypeDesc();
 				String endtFeeYn = entMaster.getEndtFeeYn();
 				String coverDesc = "";
-				BigDecimal endtFee = new BigDecimal(entMaster.getEndtFeePercent());
+				BigDecimal endtFee = BigDecimal.ZERO;
+				if(StringUtils.isBlank(entMaster.getEndtFeePercent())|entMaster.getEndtFeePercent()==null) {
+					endtFee = BigDecimal.ZERO;
+				}else {
+					endtFee =new BigDecimal(entMaster.getEndtFeePercent());
+				}
 				BigDecimal endtAmt = BigDecimal.ZERO;
 				List<PolicyCoverData> policyCoverData = policyCoverDataRepo.findByQuoteNo(prevQuoteNo);
 				if (policyCoverData.size() > 0) {
