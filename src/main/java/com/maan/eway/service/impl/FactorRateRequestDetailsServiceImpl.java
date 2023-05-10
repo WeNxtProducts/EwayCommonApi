@@ -41,6 +41,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.bean.CurrencyMaster;
+import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
@@ -52,10 +53,10 @@ import com.maan.eway.bean.MasterReferralDetails;
 import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.calculator.util.TaxFromFactor;
 import com.maan.eway.common.req.CoverIdReq2;
-import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.EservieMotorDetailsViewRes;
 import com.maan.eway.common.req.UpdateFactorRateReq;
+import com.maan.eway.common.res.EndtTypeMasterDto;
 import com.maan.eway.common.res.EserviceCommonGetRes;
 import com.maan.eway.common.res.EserviceMotorDetailsRes;
 import com.maan.eway.common.res.EserviceTravelGetRes;
@@ -64,6 +65,7 @@ import com.maan.eway.error.Error;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EmiTransactionDetailsRepository;
+import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
@@ -1137,6 +1139,8 @@ this.repository = repo;
 		}return viewDetailsList;
 	}
 	
+	@Autowired
+	private EndtTypeMasterRepository endtTypeRepo;
 	
 	public  List<EservieMotorDetailsViewRes> getMotorDetails(FactorRateDetailsGetReq req   ) {
 		 List<EservieMotorDetailsViewRes> motorDetailsList  = new ArrayList<EservieMotorDetailsViewRes>() ;
@@ -1162,6 +1166,13 @@ this.repository = repo;
 				res.setSectionName(mot.getSectionName());	
 				res.setEffectiveDate(mot.getEndorsementEffdate()==null?null:mot.getEndorsementEffdate() );
 				res.setEndorsementYn(mot.getEndorsementType()==null?"N":"Y");
+				if(mot.getEndorsementType()!=null) {
+					EndtTypeMaster endtmaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+							mot.getCompanyId(),Integer.parseInt(mot.getProductId()),"Y",mot.getEndorsementType(),new Date(),new Date());
+					EndtTypeMasterDto ddto=new EndtTypeMasterDto();
+					dozerMapper.map(endtmaster,ddto);
+					res.setEndtType(ddto);
+				}
 				Object riskDetails = new Object();
 				EserviceMotorDetailsRes  motorRes = new EserviceMotorDetailsRes();
 				dozerMapper.map(mot, motorRes);
@@ -1218,7 +1229,13 @@ this.repository = repo;
 				//travelRes.setSectionName(travelData.getSectionName());
 				riskDetails = travelRes ;
 				res.setRiskDetails(riskDetails);
-				
+				if(travelData.getEndorsementType()!=null) {
+					EndtTypeMaster endtmaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+							travelData.getCompanyId(),Integer.parseInt(travelData.getProductId()),"Y",travelData.getEndorsementType(),new Date(),new Date());
+					EndtTypeMasterDto ddto=new EndtTypeMasterDto();
+					dozerMapper.map(endtmaster,ddto);
+					res.setEndtType(ddto);
+				}
 				
 				travelDetailsList.add(res);
 			}
@@ -1270,7 +1287,13 @@ this.repository = repo;
 						riskDetails = buildRes ;
 						res.setRiskDetails(riskDetails); 
 						res.setEndorsementYn(acc.getEndorsementType()==null?"N":"Y");
-
+						if(acc.getEndorsementType()!=null) {
+							EndtTypeMaster endtmaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+									acc.getCompanyId(),Integer.parseInt(acc.getProductId()),"Y",acc.getEndorsementType(),new Date(),new Date());
+							EndtTypeMasterDto ddto=new EndtTypeMasterDto();
+							dozerMapper.map(endtmaster,ddto);
+							res.setEndtType(ddto);
+						}
 						viewBuildingList.add(res);
 					}
 					
@@ -1300,7 +1323,13 @@ this.repository = repo;
 					//	buildRes.setSectionName(sec.getSectionDesc());
 						riskDetails = buildRes ;
 						res.setRiskDetails(riskDetails); 
-						
+						if(buildData.getEndorsementType()!=null) {
+							EndtTypeMaster endtmaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+									buildData.getCompanyId(),Integer.parseInt(buildData.getProductId()),"Y",buildData.getEndorsementType(),new Date(),new Date());
+							EndtTypeMasterDto ddto=new EndtTypeMasterDto();
+							dozerMapper.map(endtmaster,ddto);
+							res.setEndtType(ddto);
+						}
 						viewBuildingList.add(res);
 					}
 			}	
@@ -1343,6 +1372,13 @@ this.repository = repo;
 				riskDetails = comRes ;
 				res.setRiskDetails(riskDetails);	
 				viewCommonList.add(res);
+				if(comData.getEndorsementType()!=null) {
+					EndtTypeMaster endtmaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+							comData.getCompanyId(),Integer.parseInt(comData.getProductId()),"Y",comData.getEndorsementType(),new Date(),new Date());
+					EndtTypeMasterDto ddto=new EndtTypeMasterDto();
+					dozerMapper.map(endtmaster,ddto);
+					res.setEndtType(ddto);
+				}
 			}
 			
 		} catch(Exception e) {

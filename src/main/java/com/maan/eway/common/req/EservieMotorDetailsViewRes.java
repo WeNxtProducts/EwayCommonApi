@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maan.eway.common.res.EndtTypeMasterDto;
 import com.maan.eway.res.calc.Cover;
 import com.maan.eway.res.calc.UWReferrals;
 import com.maan.eway.res.referal.MasterReferal;
@@ -139,6 +140,9 @@ public class EservieMotorDetailsViewRes {
 	 @JsonFormat(pattern="dd/MM/yyyy")
 	 @JsonProperty("EffectiveDate")
 	 private Date   effectiveDate ;
+	 
+	 @JsonProperty("EndtTypeMaster")
+	 private EndtTypeMasterDto endtType;
 		
 	
 }
