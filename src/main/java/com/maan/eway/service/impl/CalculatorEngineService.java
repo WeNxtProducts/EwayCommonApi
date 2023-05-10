@@ -635,7 +635,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 	}
 
-	private EserviceMotorDetailsSaveRes endorsementCalculator(CalcEngine request, BigDecimal endtCount) {
+	public EserviceMotorDetailsSaveRes endorsementCalculator(CalcEngine request, BigDecimal endtCount) {
 		try {
 			List<Cover> retc = new ArrayList<Cover>();
 
@@ -1126,6 +1126,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 				}
 
 				// CoverCalculator calc=new CoverCalculator();
+				
+				
 				AdminCoverCalculator calc = new AdminCoverCalculator();
 				calc.setEngine(request, retc, commontbl, vehicles, customers, prorata, ratingutil, decimalFormat);
 

@@ -1801,6 +1801,8 @@ this.repository = repo;
 			String agencyCode = "";
 			String branchCode = "";
 			String currencyId = "" ;
+			String endtTypdId="";
+			BigDecimal endtCount=BigDecimal.ZERO;
 			CalcEngine engine= new CalcEngine();
 			
 			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(req.getRequestReferenceNo() , req.getVehicleId() ,
@@ -1811,6 +1813,9 @@ this.repository = repo;
 				agencyCode = findMot.getAgencyCode();
 				branchCode = findMot.getBranchCode();
 				currencyId = findMot.getCurrency();
+				endtTypdId= findMot.getEndorsementType()!=null?findMot.getEndorsementType().toString():"";
+				endtCount=findMot.getEndtCount();
+				
 				if(findMot.getEndorsementType() == null ) {
 					engine.setEffectiveDate(findMot.getPolicyStartDate());
 					engine.setPolicyEndDate(findMot.getPolicyEndDate());
@@ -1825,6 +1830,8 @@ this.repository = repo;
 				agencyCode = findTra.getBrokerCode();
 				branchCode = findTra.getBranchCode();
 				currencyId = findTra.getCurrency();
+				endtTypdId= findTra.getEndorsementType()!=null?findTra.getEndorsementType().toString():"";
+				endtCount=findTra.getEndtCount();
 			//	EserviceTravelGroupDetails  findGroup = eserGroupRepo.findByRequestReferenceNoAndTravelIdAndGroupIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,Integer.valueOf(req.getGroupId()) ,
 			//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
 				
@@ -1834,6 +1841,8 @@ this.repository = repo;
 				agencyCode = findBuild.getBrokerCode();
 				branchCode = findBuild.getBranchCode();
 				currencyId = findBuild.getCurrency();
+				endtTypdId= findBuild.getEndorsementType()!=null?findBuild.getEndorsementType().toString():"";
+				endtCount=findBuild.getEndtCount();
 			//	EserviceBuildingSectionDetails  findBuildSec = eserBuildSecRepo.findByRequestReferenceNoAndLocationIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,
 			//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
 			} else  {
@@ -1841,6 +1850,8 @@ this.repository = repo;
 				agencyCode = findCommon.getBrokerCode();
 				branchCode = findCommon.getBranchCode();
 				currencyId = findCommon.getCurrency();
+				endtTypdId= findCommon.getEndorsementType()!=null?findCommon.getEndorsementType().toString():"";
+				endtCount=findCommon.getEndtCount();
 			//	EserviceBuildingSectionDetails  findBuildSec = eserBuildSecRepo.findByRequestReferenceNoAndLocationIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,
 			//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
 			}
@@ -1859,6 +1870,7 @@ this.repository = repo;
 					if(filterCover.size()>0 ) {
 						FactorRateRequestDetails  updateCover = filterCover.get(0);
 						updateCover.setMinimumPremium(new BigDecimal(df.format(Double.valueOf(covReq.getMinimumPremium()))));
+						updateCover.setActualRate(updateCover.getRate());
 						updateCover.setRate(new BigDecimal(covReq.getRate()));
 						updateCover.setExcessAmount(new BigDecimal(covReq.getExcessAmount()));
 						updateCover.setExcessPercent(new BigDecimal(covReq.getExcessPercent()));
@@ -1871,6 +1883,7 @@ this.repository = repo;
 					if(filterSubCover.size()>0 ) {
 						FactorRateRequestDetails  updateSubCover = filterSubCover.get(0);
 						updateSubCover.setMinimumPremium(new BigDecimal(df.format(Double.valueOf(covReq.getMinimumPremium()))));
+						updateSubCover.setActualRate(updateSubCover.getRate());
 						updateSubCover.setRate(new BigDecimal(covReq.getRate()));
 						updateSubCover.setExcessAmount(new BigDecimal(covReq.getExcessAmount()));
 						updateSubCover.setExcessPercent(new BigDecimal(covReq.getExcessPercent()));
@@ -1897,9 +1910,12 @@ this.repository = repo;
 			engine.setCreatedBy(findCovers.get(0).getCreatedBy());
 			engine.setMsVehicleDetails(null);
 			//engine.setEffectiveDate(null);
-			
-			EserviceMotorDetailsSaveRes resp=calcEngine.referalCalculator(engine);
-			
+			EserviceMotorDetailsSaveRes resp=null;
+			if(StringUtils.isBlank(endtTypdId)) {
+				resp=calcEngine.referalCalculator(engine);
+			}else {
+				resp=calcEngine.endorsementCalculator(engine,endtCount);
+			}
 			 
 		
 			 

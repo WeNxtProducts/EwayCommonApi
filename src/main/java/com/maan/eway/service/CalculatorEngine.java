@@ -1,5 +1,6 @@
 package com.maan.eway.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.persistence.Tuple;
@@ -20,4 +21,5 @@ public interface CalculatorEngine {
 	 List<DebitAndCredit> commissionCalc(CalcCommission request);
 
 	 List<AdminReferral> getReferalList(ReferralApi request);
+	 EserviceMotorDetailsSaveRes endorsementCalculator(CalcEngine request, BigDecimal endtCount);
 }
