@@ -106,7 +106,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 	isCancellation=endorsement.getEndorsementId().equals("842");
 				 }
 				 t.setMinimumPremiumYn("N");
-				 if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0 && !isCancellation) {
+				 if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0 /*&& !isCancellation*/) {
 					 
 					 t.setPremiumExcluedTax((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getMinimumPremium().divide(t.getExchangeRate())))); 
 					 t.setPremiumExcluedTaxLC(t.getMinimumPremium());
@@ -154,7 +154,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 										String periodOfInsurance=(vehicles.get(0).get("periodOfInsurance")==null?"365":vehicles.get(0).get("periodOfInsurance").toString());
 										//Removal Logic
 										diff= String.valueOf(Integer.parseInt(periodOfInsurance)-Integer.parseInt(diff));
-										
+										if(Integer.parseInt(diff)<0) diff="0";
 										List<Tuple> prorata =  crservice.loadProRataData(engine, diff);
 										
 										endorsement.setProRataYn("Y");
@@ -179,6 +179,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 			 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
 					 			 boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
 					 			 String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
+					 			 if(Integer.parseInt(diff)<0) diff="0";
 					 			 List<Tuple> prorata =  crservice.loadProRataData(engine, diff);
 					 			 if(prorata.size()>0) {
 					 				 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());
@@ -256,6 +257,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 			 // Check Leap Year
 					 			 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
 					 			 boolean leapYear = LocalDate.parse(sdf.format(periodEnd) ).isLeapYear();
+					 			 if(daysBetween>366) daysBetween=365L;
 					 			 String diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
 					 			 List<Tuple> prorata =  crservice.loadProRataData(engine, diff);
 					 			 if(prorata.size()>0) {
