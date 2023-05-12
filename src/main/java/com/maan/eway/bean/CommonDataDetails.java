@@ -239,7 +239,30 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="ENDT_PREMIUM")
     private Double       endtPremium ;
+
+    @Column(name="NATURE_OF_BUSINESS_ID")
+    private Integer       natureOfBusinessId ;
     
+    @Column(name="NATURE_OF_BUSINESS_DESC")
+    private String natureOfBusinessDesc ;
+    
+    @Column(name="TOTAL_NO_OF_EMPLOYEES")
+    private Long       totalNoOfEmployees;
+    
+    @Column(name="TOTAL_EXCLUDED_EMPLOYEES")
+    private Long       totoalExcludedEmployees ;
+    
+    @Column(name="TOTAL_REJOINED_EMPLOYEES")
+    private Long       totalRejoinedEmployees ;
+    
+    @Column(name="ACCOUNT_OUTSTANDING_EMPLOYEES")
+    private Long       accountOutstandingEmployees;
+    
+    @Column(name="ACCOUNT_AUDITENT_TYPE")
+    private Integer       accountAuditentType ;
+    
+    @Column(name="AUDITENT_TYPE_DESC")
+    private String       auditentTypeDesc;
 }
 
 
