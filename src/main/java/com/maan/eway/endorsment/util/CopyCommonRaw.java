@@ -155,7 +155,6 @@ public class CopyCommonRaw {
 	public List<EndorsementCriteriaRes> endorsementCommonGrid(Endorsment request) {
 		 try {
 
-			 
 				// Get Datas
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<EndorsementCriteriaRes> query = cb.createQuery(EndorsementCriteriaRes.class);
@@ -164,18 +163,20 @@ public class CopyCommonRaw {
 				Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 				Root<EserviceCommonDetails> m = query.from(EserviceCommonDetails.class);
 				// Select
-				query.multiselect(//cb.literal(Long.parseLong("1")).alias("idsCount"),
+				query.multiselect(// cb.literal(Long.parseLong("1")).alias("idsCount"),
 						// Customer Info
-						cb.max(c.get("customerReferenceNo")).alias("customerReferenceNo"), cb.max(c.get("idNumber")).alias("idNumber"),
-						cb.max(c.get("clientName")).alias("clientName"),
+						cb.max(c.get("customerReferenceNo")).alias("customerReferenceNo"),
+						cb.max(c.get("idNumber")).alias("idNumber"), cb.max(c.get("clientName")).alias("clientName"),
 						// Vehicle Info
 						cb.max(m.get("companyId")).alias("companyId"), cb.max(m.get("productId")).alias("productId"),
-						cb.max(m.get("branchCode")).alias("branchCode"), cb.max(m.get("requestReferenceNo")).alias("requestReferenceNo"),
-						cb.selectCase().when(cb.max(m.get("quoteNo")).isNotNull(), cb.max(m.get("quoteNo"))).otherwise(cb.max(m.get("quoteNo")))
-								.alias("quoteNo"),
+						cb.max(m.get("branchCode")).alias("branchCode"),
+						cb.max(m.get("requestReferenceNo")).alias("requestReferenceNo"),
+						cb.selectCase().when(cb.max(m.get("quoteNo")).isNotNull(), cb.max(m.get("quoteNo")))
+								.otherwise(cb.max(m.get("quoteNo"))).alias("quoteNo"),
 						cb.selectCase().when(cb.max(m.get("customerId")).isNotNull(), cb.max(m.get("customerId")))
 								.otherwise(cb.max(m.get("customerId"))).alias("customerId"),
-						cb.max(m.get("policyStartDate")).alias("policyStartDate"), cb.max(m.get("policyEndDate")).alias("policyEndDate"),
+						cb.max(m.get("policyStartDate")).alias("policyStartDate"),
+						cb.max(m.get("policyEndDate")).alias("policyEndDate"),
 						cb.max(m.get("endorsementType")).alias("endorsementTypeId"),
 						cb.max(m.get("endorsementTypeDesc")).alias("endorsementDesc"),
 						cb.max(m.get("endtCategDesc")).alias("endorsementCategoryDesc"),
@@ -184,12 +185,13 @@ public class CopyCommonRaw {
 						cb.max(m.get("policyNo")).alias("policyNo"),
 						cb.max(m.get("endorsementRemarks")).alias("endorsementRemarks"),
 						cb.max(m.get("endorsementDate")).alias("endorsementDate"),
-						//Home Position Master
-						cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
-						cb.sum(m.get("endtPremium")).alias("endtPremium"),cb.max( m.get("currency")).alias("currency")
-						
-						);
-			 
+						// Home Position Master
+						cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"),
+						cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
+						cb.sum(m.get("endtPremium")).alias("endtPremium"), cb.max(m.get("currency")).alias("currency")
+
+				);
+
 				// Order By
 				List<Order> orderList = new ArrayList<Order>();
 				orderList.add(cb.desc(cb.max(m.get("endorsementDate"))));
@@ -198,40 +200,46 @@ public class CopyCommonRaw {
 				Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
 				Predicate n2 = cb.equal(m.get("companyId"), request.getCompanyId());
 				Predicate n3 = cb.equal(m.get("productId"), request.getProductId());
-				Predicate n4 = cb.in(m.get("status")).value(Arrays.asList("E","P","D"));  // m.get("status").in("E","P"));
-				Predicate n5 = cb.like(m.get("originalPolicyNo"), request.getPolicyNo());
-				//Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), endDate);
-				//Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
+				// Predicate n4 = cb.in(m.get("status")).value(Arrays.asList("E","P","D")); //
+				// m.get("status").in("E","P"));
+				Predicate n5 = cb.or(cb.like(m.get("originalPolicyNo"), request.getPolicyNo()),
+						cb.like(m.get("policyNo"), request.getPolicyNo()));
+				// Predicate n6 = cb.equal(m.get("riskId"), "1");
+				// Predicate n7 = cb.like(h.get("quoteNo"), m.get("quoteNo"));
+				// Predicate n8 = cb.like(m.get("PolicyNo"), request.getPolicyNo());
+				// Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), endDate);
+				// Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
 
-			/*	Predicate n7 = null;
-				if (req.getApplicationId().equalsIgnoreCase("1")) {
-					n7 = cb.equal(m.get("loginId"), req.getLoginId());
-				} else {
-					n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
-				}*/
+				/*
+				 * Predicate n7 = null; if (req.getApplicationId().equalsIgnoreCase("1")) { n7 =
+				 * cb.equal(m.get("loginId"), req.getLoginId()); } else { n7 =
+				 * cb.equal(m.get("applicationId"), req.getApplicationId()); }
+				 */
 
-				/*Predicate n8 = null;
-				if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
-					Expression<String> e0 = m.get("brokerBranchCode");
-					n8 = e0.in(branches);
-				} else {
-					Expression<String> e0 = m.get("branchCode");
-					n8 = e0.in(branches);
-				}*/
+				/*
+				 * Predicate n8 = null; if (req.getUserType().equalsIgnoreCase("Broker") ||
+				 * req.getUserType().equalsIgnoreCase("User")) { Expression<String> e0 =
+				 * m.get("brokerBranchCode"); n8 = e0.in(branches); } else { Expression<String>
+				 * e0 = m.get("branchCode"); n8 = e0.in(branches); }
+				 */
 
-				query.where(n1, n2, n3, n4, n5)
-						.groupBy(/*c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
-								m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
-								m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate")*/ m.get("policyNo"))
+				query.where(n1, n2, n3, /* n4, */ n5)
+						/*
+						 * .groupBy(c.get("customerReferenceNo"), c.get("idNumber"),
+						 * c.get("clientName"), m.get("companyId"), m.get("productId"),
+						 * m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
+						 * m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"))
+						 */
+
+						.groupBy(/* m.get("overallPremiumLc"),m.get("overallPremiumFc"), */m.get("policyNo"))
 						.orderBy(orderList);
 
 				// Get Result
 				TypedQuery<EndorsementCriteriaRes> result = em.createQuery(query);
-				////result.setFirstResult(500);
-				//result.setMaxResults(500);
-				  List<EndorsementCriteriaRes> grids = result.getResultList();
-				  
-				  return grids;
+				//// result.setFirstResult(500);
+				// result.setMaxResults(500);
+				List<EndorsementCriteriaRes> grids = result.getResultList();
+				return grids;
 			
 		 }catch (Exception e) {
 			 e.printStackTrace();
