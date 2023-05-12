@@ -554,12 +554,12 @@ public class EndorsementService {
 					buildcopyquote.add((EserviceBuildingDetails) copyquoteService.copyQuote(c).getCommonResponse());
 					response = buildcopyquote ;
 					
-				} /*else {
+				} else {
 					List<EserviceCommonDetails> commonCopyQuote = new ArrayList<EserviceCommonDetails>();
 					commonCopyQuote.add((EserviceCommonDetails) copyquoteService.copyQuote(c).getCommonResponse());
 					response = commonCopyQuote ;
 				
-				}*/
+				}
 				
 				CommonRes com=new CommonRes();
 				com.setCommonResponse(response);
