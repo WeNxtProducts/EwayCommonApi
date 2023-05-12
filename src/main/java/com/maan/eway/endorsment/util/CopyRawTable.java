@@ -97,7 +97,7 @@ public class CopyRawTable  {
 		try {
 			List<EserviceMotorDetails> motor=null;
 			//Integer count=emotorRepo.countByOriginalPolicyNo(ent.getPolicyNo());
-			List<EserviceMotorDetails> list=getMasterTableCount(ent.getPolicyNo());
+			List<Object> list=getMasterTableCount(ent.getPolicyNo());
 			Integer	count = list.size();
 			String prevPolicyNo=null;
 			String prevQuoteNo=null;
@@ -174,13 +174,13 @@ public class CopyRawTable  {
 	}
 	
 	//Count
-			public List<EserviceMotorDetails> getMasterTableCount(String policyNo) {
-				List<EserviceMotorDetails> list = new ArrayList<EserviceMotorDetails>();
+			public List<Object> getMasterTableCount(String policyNo) {
+				List<Object> list = new ArrayList<Object>();
 				try {
 					//List<EserviceMotorDetails> list = new ArrayList<EserviceMotorDetails>();
 					// Find Latest Record
 					CriteriaBuilder cb = em.getCriteriaBuilder();
-					CriteriaQuery<EserviceMotorDetails> query = cb.createQuery(EserviceMotorDetails.class);
+					CriteriaQuery<Object> query = cb.createQuery(Object.class);
 					//Find all
 					Root<EserviceMotorDetails> b = query.from(EserviceMotorDetails.class);
 					// Select
@@ -190,7 +190,7 @@ public class CopyRawTable  {
 					query.where(n1).groupBy(b.get("policyNo"));
 					
 					// Get Result
-					TypedQuery<EserviceMotorDetails> result = em.createQuery(query);
+					TypedQuery<Object> result = em.createQuery(query);
 					list = result.getResultList();
 					
 				}
