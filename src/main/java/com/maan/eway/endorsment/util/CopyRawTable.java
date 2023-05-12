@@ -184,7 +184,7 @@ public class CopyRawTable  {
 					//Find all
 					Root<EserviceMotorDetails> b = query.from(EserviceMotorDetails.class);
 					// Select
-					query.select(b);
+					query.multiselect(b.get("policyNo").alias("policyNo"));
 								
 					Predicate n1 = cb.equal(b.get("originalPolicyNo"),policyNo);
 					query.where(n1).groupBy(b.get("policyNo"));
