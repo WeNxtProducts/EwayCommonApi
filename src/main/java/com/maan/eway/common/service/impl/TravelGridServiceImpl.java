@@ -811,7 +811,10 @@ public class TravelGridServiceImpl implements  TravelGridService {
 
 			List<EserviceTravelDetails> motor=null;
 			Integer count=0;
-			count=repo.countByOriginalPolicyNoAndRiskId(req.getPolicyNo(),1);
+			List<Object> list=getMasterTableCount(req.getPolicyNo());
+			if (list.size() > 0) {
+				count = list.size();
+			}
 			String prevPolicyNo=null;
 			String prevQuoteNo=null;
 			String newRequestNo =null;
@@ -961,6 +964,33 @@ public class TravelGridServiceImpl implements  TravelGridService {
 		}
 		return savedata;
 	}
+	//Count
+			public List<Object> getMasterTableCount(String policyNo) {
+				List<Object> list = new ArrayList<Object>();
+				try {
+					//List<EserviceMotorDetails> list = new ArrayList<EserviceMotorDetails>();
+					// Find Latest Record
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<Object> query = cb.createQuery(Object.class);
+					//Find all
+					Root<EserviceMotorDetails> b = query.from(EserviceMotorDetails.class);
+					// Select
+					query.multiselect(b.get("policyNo").alias("policyNo"));
+								
+					Predicate n1 = cb.equal(b.get("originalPolicyNo"),policyNo);
+					query.where(n1).groupBy(b.get("policyNo"));
+					
+					// Get Result
+					TypedQuery<Object> result = em.createQuery(query);
+					list = result.getResultList();
+					
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+					log.info(e.getMessage());
+				}
+				return list;
+			}
 
 	//Delete Previous Endo
 	private CopyQuoteSuccessRes deletePreviousEndo(CopyQuoteReq req, List<EserviceTravelDetails> motors) {
@@ -1025,7 +1055,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 					Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 			
-			List<TravelPassengerDetails> traData = traPassDetailsRepo.findByQuoteNo(req.getQuoteNo());
+			List<TravelPassengerDetails> traData = traPassDetailsRepo.findByQuoteNo(prevQuoteNo);
 			if (traData.size()>0) { 
 				for(TravelPassengerDetails data:traData) {
 					savedata = dozerMapper.map(data, TravelPassengerDetails.class);
@@ -1075,7 +1105,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 					req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 					Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
-			HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
+			HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(prevQuoteNo);
 			String olsCustomerId=homeData.getCustomerId();
 			
 			PersonalInfo personalInfoData=personalInforepo.findByCustomerId(olsCustomerId);
@@ -1137,7 +1167,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				endtFee =new BigDecimal(entMaster.getEndtFeePercent());
 			}
 			BigDecimal endtAmt = BigDecimal.ZERO;
-			List<PolicyCoverData> policyCoverData = policyCoverDataRepo.findByQuoteNo(req.getQuoteNo());
+			List<PolicyCoverData> policyCoverData = policyCoverDataRepo.findByQuoteNo(prevQuoteNo);
 			if (policyCoverData.size() > 0) {
 				for (PolicyCoverData data : policyCoverData) {
 					savedata = dozerMapper.map(data, PolicyCoverData.class);
@@ -1314,7 +1344,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					BigDecimal endtPre=BigDecimal.ZERO;
 					BigDecimal endtPremiumtax=BigDecimal.ZERO;
 					Double endtPercent=0d;
-					HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
+					HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(prevQuoteNo);
 					Double tax=Double.valueOf(homeData.getVatPercent().toString());
 					BigDecimal exchangeRate=homeData.getExchangeRate();
 					BigDecimal overAllPremiumFc=new BigDecimal(homeData.getOverallPremiumFc().toString());
@@ -1401,7 +1431,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
-			HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
+			HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(prevQuoteNo);
 			String olsCustomerId=homeData.getCustomerId();
 			
 			PersonalInfo personalInfoData=personalInforepo.findByCustomerId(olsCustomerId);
@@ -1450,7 +1480,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 					req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 					Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
-			List<CoverDocumentUploadDetails> motorData = coverDocUploadDetails.findByQuoteNo(req.getQuoteNo());
+			List<CoverDocumentUploadDetails> motorData = coverDocUploadDetails.findByQuoteNo(prevQuoteNo);
 			if (motorData.size() > 0) {
 				for (CoverDocumentUploadDetails data : motorData) {
 					savedata = dozerMapper.map(data, CoverDocumentUploadDetails.class);

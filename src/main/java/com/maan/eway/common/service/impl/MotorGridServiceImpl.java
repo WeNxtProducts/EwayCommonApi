@@ -956,7 +956,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 
 				List<EserviceMotorDetails> motor=null;
 				Integer count=0;
-				List<EserviceMotorDetails> list=getMasterTableCount(req.getPolicyNo());
+				List<Object> list=getMasterTableCount(req.getPolicyNo());
 				if (list.size() > 0) {
 					count = list.size();
 				}
@@ -1115,33 +1115,34 @@ public class MotorGridServiceImpl implements MotorGridService {
 			}
 			return savedata;
 		}
+
 //Count
-		public List<EserviceMotorDetails> getMasterTableCount(String policyNo) {
-			List<EserviceMotorDetails> list = new ArrayList<EserviceMotorDetails>();
+		public List<Object> getMasterTableCount(String policyNo) {
+			List<Object> list = new ArrayList<Object>();
 			try {
-				//List<EserviceMotorDetails> list = new ArrayList<EserviceMotorDetails>();
+				// List<EserviceMotorDetails> list = new ArrayList<EserviceMotorDetails>();
 				// Find Latest Record
 				CriteriaBuilder cb = em.getCriteriaBuilder();
-				CriteriaQuery<EserviceMotorDetails> query = cb.createQuery(EserviceMotorDetails.class);
-				//Find all
+				CriteriaQuery<Object> query = cb.createQuery(Object.class);
+				// Find all
 				Root<EserviceMotorDetails> b = query.from(EserviceMotorDetails.class);
 				// Select
-				query.select(b);
-							
-				Predicate n1 = cb.equal(b.get("originalPolicyNo"),policyNo);
+				query.multiselect(b.get("policyNo").alias("policyNo"));
+
+				Predicate n1 = cb.equal(b.get("originalPolicyNo"), policyNo);
 				query.where(n1).groupBy(b.get("policyNo"));
-				
+
 				// Get Result
-				TypedQuery<EserviceMotorDetails> result = em.createQuery(query);
+				TypedQuery<Object> result = em.createQuery(query);
 				list = result.getResultList();
-				
-			}
-			catch(Exception e) {
+
+			} catch (Exception e) {
 				e.printStackTrace();
 				log.info(e.getMessage());
 			}
 			return list;
 		}
+
 		//Delete Previous Endo
 		private CopyQuoteSuccessRes deletePreviousEndo(CopyQuoteReq req, List<EserviceMotorDetails> motorsPending) {
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();

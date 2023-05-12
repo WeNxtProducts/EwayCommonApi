@@ -938,8 +938,11 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 		String branchCode = "";
 
 		List<EserviceBuildingDetails> motor = null;
-		Integer count = 0;
-		count = repo.countByOriginalPolicyNoAndRiskId(req.getPolicyNo(), 1);
+		Integer count=0;
+		List<Object> list=getMasterTableCount(req.getPolicyNo());
+		if (list.size() > 0) {
+			count = list.size();
+		}
 		String prevPolicyNo = null;
 		String prevQuoteNo = null;
 		String newRequestNo = null;
@@ -1110,6 +1113,33 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 	}
 	return savedata;
 }
+//Count
+		public List<Object> getMasterTableCount(String policyNo) {
+			List<Object> list = new ArrayList<Object>();
+			try {
+				//List<EserviceMotorDetails> list = new ArrayList<EserviceMotorDetails>();
+				// Find Latest Record
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Object> query = cb.createQuery(Object.class);
+				//Find all
+				Root<EserviceBuildingDetails> b = query.from(EserviceBuildingDetails.class);
+				// Select
+				query.multiselect(b.get("policyNo").alias("policyNo"));
+							
+				Predicate n1 = cb.equal(b.get("originalPolicyNo"),policyNo);
+				query.where(n1).groupBy(b.get("policyNo"));
+				
+				// Get Result
+				TypedQuery<Object> result = em.createQuery(query);
+				list = result.getResultList();
+				
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+				log.info(e.getMessage());
+			}
+			return list;
+		}
 
 //Building Risk Details
 private CopyQuoteSuccessRes buildingRiskDetailsCopyQuote(CopyQuoteReq req, String refNo, String quoteNo, String customerId,String loginId, String prevPolicyNo, String prevQuoteNo, Integer count, String custRefNo) {
