@@ -47,7 +47,7 @@ public class EndorsementCriteriaRes {
 		private String endorsementStatus;
 		private String policyNo;
 		private String endorsementRemarks;
-
+		private Date endorsementDate;
 		
 		private BigDecimal     overallPremiumLc ;
 		private BigDecimal     overallPremiumFc ;
