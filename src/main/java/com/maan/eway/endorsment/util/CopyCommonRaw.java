@@ -171,27 +171,28 @@ public class CopyCommonRaw {
 						// Vehicle Info
 						cb.max(m.get("companyId")).alias("companyId"), cb.max(m.get("productId")).alias("productId"),
 						cb.max(m.get("branchCode")).alias("branchCode"), cb.max(m.get("requestReferenceNo")).alias("requestReferenceNo"),
-						cb.selectCase().when(m.get("quoteNo").isNotNull(), cb.max(m.get("quoteNo"))).otherwise(cb.max(m.get("quoteNo")))
+						cb.selectCase().when(cb.max(m.get("quoteNo")).isNotNull(), cb.max(m.get("quoteNo"))).otherwise(cb.max(m.get("quoteNo")))
 								.alias("quoteNo"),
-						cb.selectCase().when(m.get("customerId").isNotNull(), cb.max(m.get("customerId")))
+						cb.selectCase().when(cb.max(m.get("customerId")).isNotNull(), cb.max(m.get("customerId")))
 								.otherwise(cb.max(m.get("customerId"))).alias("customerId"),
-								cb.max(m.get("policyStartDate")).alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
-								cb.max(m.get("endorsementType")).alias("endorsementTypeId"),
-								cb.max(m.get("endorsementTypeDesc")).alias("endorsementDesc"),
-								cb.max(m.get("endtCategDesc")).alias("endorsementCategoryDesc"),
-								cb.max(m.get("endorsementEffdate")).alias("effectiveDate"),
-								cb.max(m.get("endtStatus")).alias("endorsementStatus"),
-								cb.max(m.get("policyNo")).alias("policyNo"),
-								cb.max(m.get("endorsementRemarks")).alias("endorsementRemarks"),
-								//Home Position Master
-								cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
-								cb.sum(m.get("endtPremium")).alias("endtPremium"),cb.max( m.get("currency")).alias("currency")
+						cb.max(m.get("policyStartDate")).alias("policyStartDate"), cb.max(m.get("policyEndDate")).alias("policyEndDate"),
+						cb.max(m.get("endorsementType")).alias("endorsementTypeId"),
+						cb.max(m.get("endorsementTypeDesc")).alias("endorsementDesc"),
+						cb.max(m.get("endtCategDesc")).alias("endorsementCategoryDesc"),
+						cb.max(m.get("endorsementEffdate")).alias("effectiveDate"),
+						cb.max(m.get("endtStatus")).alias("endorsementStatus"),
+						cb.max(m.get("policyNo")).alias("policyNo"),
+						cb.max(m.get("endorsementRemarks")).alias("endorsementRemarks"),
+						cb.max(m.get("endorsementDate")).alias("endorsementDate"),
+						//Home Position Master
+						cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
+						cb.sum(m.get("endtPremium")).alias("endtPremium"),cb.max( m.get("currency")).alias("currency")
 						
 						);
 			 
 				// Order By
 				List<Order> orderList = new ArrayList<Order>();
-				orderList.add(cb.desc(m.get("endorsementDate")));
+				orderList.add(cb.desc(cb.max(m.get("endorsementDate"))));
 
 				// Where
 				Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
