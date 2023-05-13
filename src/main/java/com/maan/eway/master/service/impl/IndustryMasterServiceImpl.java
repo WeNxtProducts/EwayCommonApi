@@ -129,11 +129,16 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate n6 = cb.equal(c.get("branchCode"),"99999");
 			Predicate n7 = cb.or(n5,n6);
 			Predicate n8 = cb.equal(c.get("productId"),req.getProductId());
-			Predicate n9 = cb.equal(c.get("categoryId"),req.getCategoryId());
+			Predicate n9 = null ;
+			if(StringUtils.isNotBlank(req.getCategoryId()) ) {
+				n9 = cb.equal(c.get("categoryId"),req.getCategoryId());	
+			} else {
+				n9 = cb.equal(c.get("categoryId"),"99999");
+			}
 			
 			// Order By
-						List<Order> orderList = new ArrayList<Order>();
-						orderList.add(cb.asc(c.get("industryName")));
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("industryName")));
 						
 			
 			if(StringUtils.isBlank(req.getProductId())) {

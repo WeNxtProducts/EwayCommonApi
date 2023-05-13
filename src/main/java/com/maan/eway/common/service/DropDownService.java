@@ -158,4 +158,7 @@ public interface DropDownService {
 
 	List<DropDownRes> getRoofTypes(LovDropDownReq req);
 
+	List<DropDownRes> getAuditentType(LovDropDownReq req);
+
+
 }

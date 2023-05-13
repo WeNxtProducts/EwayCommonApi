@@ -74,7 +74,36 @@ public class EserviceCommonGetRes {
     private String commissionAmount;	
 
 	@JsonProperty("CommissionPercentage")
-    private String commissionPercentage;	
-
+    private String commissionPercentage;
 	
+	 
+    @JsonProperty("IndustryName")
+	private String       industryName;
+	
+	@JsonProperty("NatureOfBusinessId")
+	private String       natureOfBusinessId ;
+	    
+	@JsonProperty("NatureOfBusinessDesc")
+	private String       natureOfBusinessDesc;
+	    
+	@JsonProperty("TotalNoOfEmployees")
+	private String       totalNoOfEmployees;
+	    
+	@JsonProperty("TotalExcludedEmployees")
+	private String       totalExcludedEmployees ;
+	    
+	@JsonProperty("TotalRejoinedEmployees")
+	private String       totalRejoinedEmployees ;
+	    
+	@JsonProperty("AccountOutstandingEmployees")
+	private String       accountOutstandingEmployees;
+	    
+	@JsonProperty("AccountAuditentType")
+	private String       accountAuditentType ;
+	    
+	@JsonProperty("AuditentTypeDesc")
+	private String       auditentTypeDesc ;
+
+	@JsonProperty("TotalOutstandingAmount")
+	private String       totalOutstandingAmount;
 }
