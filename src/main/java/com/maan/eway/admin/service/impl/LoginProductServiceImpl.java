@@ -186,8 +186,12 @@ public class LoginProductServiceImpl  implements LoginProductService {
 						nonfinanceid = nonfinanceid+","+endtid.getEndtTypeId().toString();						
 					}					
 				}
+				if(StringUtils.isNotBlank(financeid)) {
 				financeid=financeid.substring(1);
+				}
+				if(StringUtils.isNotBlank(nonfinanceid)) {
 				nonfinanceid=nonfinanceid.substring(1);
+				}
 				save.setFinancialEndtIds(financeid);
 				save.setNonFinancialEndtIds(nonfinanceid);
 				
