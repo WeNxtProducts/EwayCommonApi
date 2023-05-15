@@ -112,6 +112,7 @@ import com.maan.eway.repository.TravelPassengerHistoryRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
 import com.maan.eway.req.calcengine.ReferralApi;
 import com.maan.eway.res.ReferalResponse;
+import com.maan.eway.res.calc.AdminReferral;
 import com.maan.eway.service.CalculatorEngine;
 import com.maan.eway.thread.MyTaskList;
 
@@ -1470,9 +1471,19 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 								//.suminsured(req. )
 								
 								.build();
-						
-				calcEngine.getReferalList(null);
-				//n.setUnderwriters(underWrite);
+				List<UnderWriter> underWrite = new ArrayList<UnderWriter>();
+				List<AdminReferral> referalList = calcEngine.getReferalList(r);
+				for(AdminReferral ref:referalList) {
+					UnderWriter underWriterReq = new UnderWriter();
+					underWriterReq.setUwMailid(ref.getMailId());
+					underWriterReq.setUwMessengerCode(Integer.parseInt(ref.getMobileCode()));
+					underWriterReq.setUwMessengerPhone(new BigDecimal(ref.getMobileNo()));
+					underWriterReq.setUwPhonecode(Integer.parseInt(ref.getMobileCode()));
+					underWriterReq.setUwPhoneNo(new BigDecimal(ref.getMobileNo()));
+					underWriterReq.setUwName(ref.getInsuranceId());
+					underWrite.add(underWriterReq);
+				}				 
+				n.setUnderwriters(underWrite);
 				//Company Info
 				n.setCompanyid(cusRefNo.get(0).getCompanyId());
 				n.setCompanyName(cusRefNo.get(0).getCompanyName());
