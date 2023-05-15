@@ -160,5 +160,9 @@ public interface DropDownService {
 
 	List<DropDownRes> getAuditentType(LovDropDownReq req);
 
+	List<DropDownRes> getFidelityEmployeeCount(LovDropDownReq req);
+
+	List<DropDownRes> getFidelitySuminsured(LovDropDownReq req);
+
 
 }
