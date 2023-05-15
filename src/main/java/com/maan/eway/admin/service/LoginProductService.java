@@ -41,5 +41,7 @@ public interface LoginProductService {
 
 	List<CompanyProductMasterRes> getallNonSelectedUserCompanyProducts(UserCompanyProductGetReq req);
 
+	LoginCreationRes saveIssuerProductDetails(AttachCompnayProductRequest req);
+
 	
 }

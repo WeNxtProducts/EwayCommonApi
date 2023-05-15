@@ -5,9 +5,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -343,6 +347,221 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			return null;
 		}
 		return res;
+	}
+	
+	@Transactional
+	@Override
+	public LoginCreationRes saveIssuerProductDetails(AttachCompnayProductRequest req) {
+		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
+		LoginCreationRes res = new LoginCreationRes();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
+		try { 
+			Calendar cal = new GregorianCalendar();
+			Date today = new Date();
+			cal.setTime(new Date() );  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
+			cal.set(Calendar.SECOND, today.getSeconds());
+			Date effDate = cal.getTime();
+			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+			Date oldEndDate = new Date(effDate.getTime() - MILLIS_IN_A_DAY);
+			Date endDate = sdformat.parse("12/12/2050") ;
+			cal.setTime(sdformat.parse("12/12/2050"));  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
+			endDate = cal.getTime() ;
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd   = cal.getTime();
+			List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
+		{
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyProductMaster> query = cb.createQuery(CompanyProductMaster.class);
+			
+			// Find All
+			Root<CompanyProductMaster>    c = query.from(CompanyProductMaster.class);		
+			
+			// Select
+			query.select(c );
+			
+		
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("productName")));
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a3 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
+			effectiveDate.where(a1,a2,a3);
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(c.get("productId"),ocpm2.get("productId") );
+			Predicate a5 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a6 = cb.equal(c.get("companyId"),ocpm2.get("companyId") );
+			effectiveDate2.where(a4,a5,a6);
+			
+			//In 
+			Expression<String>e0=c.get("productId");
+			
+		    // Where	
+			Predicate n1 = cb.equal(c.get("status"), "Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 =e0.in( req.getProductIds());
+			Predicate n5 =cb.equal(c.get("companyId"), req.getInsuranceId());
+			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<CompanyProductMaster> result = em.createQuery(query);			
+			list =  result.getResultList();  
+		}
+		 List<LoginProductMaster> oldlist = new ArrayList<LoginProductMaster>();
+			{// Find Old 
+				// Criteria
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<LoginProductMaster> query = cb.createQuery(LoginProductMaster.class);
+			
+				
+				// Find All
+				Root<LoginProductMaster>    c = query.from(LoginProductMaster.class);		
+				
+				// Select
+				query.select(c );
+				
+			
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(c.get("amendId")));
+				orderList.add(cb.desc(c.get("productId")));
+				
+				//In 
+		//		Expression<String>e0=c.get("productId");
+				
+			    // Where	
+			//	Predicate n4 =e0.in( req.getProductIds());
+				Predicate n5 =cb.equal(c.get("companyId"), req.getInsuranceId());
+				Predicate n6 = cb.equal(c.get("loginId"),req.getLoginId() );
+				query.where(n5,n6).orderBy(orderList);
+				
+				// Get Result
+				TypedQuery<LoginProductMaster> result = em.createQuery(query);	
+				int limit = 0 , offset = 100 ;
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
+				oldlist =  result.getResultList();  	
+				
+			}
+			 List<LoginProductMaster> nonSelectedFromList = oldlist ;
+			LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());
+			
+			for ( CompanyProductMaster data : list  ) {
+				LoginProductMaster save = new LoginProductMaster();
+				
+				Integer amendId = 0;
+				Date entryDate  = new Date();
+				String createdBy = req.getCreatedBy();
+				
+				
+				 List<LoginProductMaster> filterOldData = oldlist.stream().filter( o -> o.getCompanyId().equalsIgnoreCase(data.getCompanyId()) &&
+						 o.getProductId().equals(data.getProductId()) ).collect(Collectors.toList());  
+				 filterOldData.sort(Comparator.comparing(LoginProductMaster :: getAmendId).reversed() );
+				 
+				  
+				if (filterOldData.size() > 0) {
+					nonSelectedFromList.removeIf(o -> o.getCompanyId().equalsIgnoreCase(data.getCompanyId()) &&  o.getProductId().equals(data.getProductId()) ) ;
+					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+					
+					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+						amendId = list.get(0).getAmendId() + 1 ;
+						entryDate = new Date() ;
+						createdBy = req.getCreatedBy();
+						LoginProductMaster lastRecord = filterOldData.get(0);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							loginProductRepo.saveAndFlush(lastRecord);
+						
+					} else {
+						amendId = list.get(0).getAmendId() ;
+						entryDate = list.get(0).getEntryDate() ;
+						createdBy = list.get(0).getCreatedBy();
+						save = filterOldData.get(0) ;
+						if (list.size()>1 ) {
+							LoginProductMaster lastRecord = filterOldData.get(1);
+							lastRecord.setEffectiveDateEnd(oldEndDate);
+							loginProductRepo.saveAndFlush(lastRecord);
+						}
+					
+				    }
+				}
+				
+				dozerMapper.map(data, save);
+				save.setCompanyId(req.getInsuranceId());
+				save.setCreatedBy(createdBy);
+				save.setEffectiveDateStart(effDate);
+				save.setEffectiveDateEnd(endDate);
+				save.setEntryDate(entryDate);
+				save.setAmendId(amendId);
+				save.setLoginId(req.getLoginId());
+				save.setBackDays(0);
+				save.setAgencyCode(Integer.valueOf(loginData.getAgencyCode()));
+				save.setOaCode(loginData.getOaCode());
+				save.setCommissionPercent(15);
+				String financeid = "";
+				String nonfinanceid = "";
+				List<EndtTypeMaster> endtids = getEndtId(req.getInsuranceId(), data.getProductId()); 								
+				for(EndtTypeMaster endtid :endtids) {				
+					if(endtid.getEndtTypeCategoryId().toString().equalsIgnoreCase("1")) {						
+						financeid = financeid+","+endtid.getEndtTypeId().toString();
+					}
+					else {
+						nonfinanceid = nonfinanceid+","+endtid.getEndtTypeId().toString();						
+					}					
+				}
+				if(StringUtils.isNotBlank(financeid)) {
+				financeid=financeid.substring(1);
+				}
+				if(StringUtils.isNotBlank(nonfinanceid)) {
+				nonfinanceid=nonfinanceid.substring(1);
+				}
+				save.setFinancialEndtIds(financeid);
+				save.setNonFinancialEndtIds(nonfinanceid);
+				
+				loginProductRepo.saveAndFlush(save);
+				log.info("Saved Details is ---> " + json.toJson(save));
+				
+			}	
+			
+			nonSelectedFromList.sort(Comparator.comparing(LoginProductMaster :: getAmendId ).reversed());
+			nonSelectedFromList = nonSelectedFromList.stream().filter(distinctByKey(o -> Arrays.asList(o.getProductId() , o.getCompanyId()))).collect(Collectors.toList());
+			// Deactive old Records 
+			for ( LoginProductMaster data : nonSelectedFromList  ) { 
+				LoginProductMaster lastRecord = data;
+				lastRecord.setEffectiveDateEnd(today);
+				lastRecord.setStatus("N");
+				loginProductRepo.saveAndFlush(lastRecord);
+			}
+			
+			res.setResponse("Products Added Successfully");
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
+	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
 	}
 	
 	public List<ProductCriteriaRes> getProductDetails(List<String> companyIds , Date today ) {

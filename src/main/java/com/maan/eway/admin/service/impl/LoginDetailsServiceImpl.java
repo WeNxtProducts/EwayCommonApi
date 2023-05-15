@@ -329,7 +329,7 @@ this.repository = repo;
 			productReq.setLoginId(req.getLoginInformation().getLoginId());
 			productReq.setProductIds(req.getLoginInformation().getProductIds());
 			
-			LoginCreationRes productRes = loginProductService.saveBrokerProductDetails(productReq) ;
+			LoginCreationRes productRes = loginProductService.saveIssuerProductDetails(productReq) ;
 			
 			// Branch Insert 
 			for (String branch :   req.getLoginInformation().getAttachedBranches() ) {
