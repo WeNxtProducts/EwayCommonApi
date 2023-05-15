@@ -12,19 +12,21 @@ public class SplitDiscountUtils  implements Function<Tuple,Discount>{
 
 	private Date effectiveDate;
 	private Date policyEndDate;
-	public SplitDiscountUtils(Date effectiveDate, Date policyEndDate) {
+	private String promoCode;
+	public SplitDiscountUtils(Date effectiveDate, Date policyEndDate,String promoCode) {
 		this.effectiveDate=effectiveDate;
 		this.policyEndDate=policyEndDate;
+		this.promoCode=promoCode;
 				
 	}
 
 	@Override
 	public Discount apply(Tuple t) {
 		try {
-			 if(t.get("coverageType")!=null && ("D".equalsIgnoreCase(t.get("coverageType").toString()) || "P".equalsIgnoreCase(t.get("coverageType").toString())  )) {
+			 if(t.get("coverageType")!=null && ("D".equalsIgnoreCase(t.get("coverageType").toString()) || ("P".equalsIgnoreCase(t.get("coverageType").toString()) && promoCode.equals(t.get("coverName")==null?"":t.get("coverName").toString()) ) )) {
 				 String calctype=t.get("calcType")==null?"":t.get("calcType").toString();
 				 Discount d=Discount.builder()
-						 	.discountDesc(t.get("coverName")==null?"":t.get("coverName").toString())
+						 	.discountDesc(t.get("coverDesc")==null?"":t.get("coverDesc").toString())
 						 	.discountId(t.get("coverId")==null?"":t.get("coverId").toString())
 						 	.discountRate("F".equals(calctype)?"0": t.get("baseRate")==null?"0":t.get("baseRate").toString())
 						 	.discountCalcType(calctype)

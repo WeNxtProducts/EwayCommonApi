@@ -271,7 +271,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				 * .isError(true).build();
 				 */
 			}
-
+			String promocode=vehicles.get(0).get("promocode")==null?"":vehicles.get(0).get("promocode").toString();
 			List<Tuple> taxes = ratingutil.LoadTax(engine);
 			TaxUtils tzx = new TaxUtils(endtCount);
 
@@ -291,7 +291,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				List<Loading> loadings = null;
 				if (covers != null && covers.size() > 0) {
 					SplitDiscountUtils discountUtil = new SplitDiscountUtils(engine.getEffectiveDate(),
-							engine.getPolicyEndDate());
+							engine.getPolicyEndDate() ,promocode);
 					discounts = covers.stream().map(discountUtil).filter(d -> d != null).collect(Collectors.toList());
 					discounts.stream().forEach(t -> t.setEffectiveDate(engine.getEffectiveDate()));
 					SplitLoadingUtils loadingtuils = new SplitLoadingUtils(engine.getEffectiveDate(),
