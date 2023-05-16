@@ -1,5 +1,6 @@
 package com.maan.eway.admin.service.impl;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,11 +36,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.admin.req.AttachCompnayProductRequest;
+import com.maan.eway.admin.req.AttachIssuerProductRequest;
 import com.maan.eway.admin.req.BrokerCompanyProductGetReq;
 import com.maan.eway.admin.req.BrokerCompanyProductsGetRes;
 import com.maan.eway.admin.req.BrokerProductGetReq;
+import com.maan.eway.admin.req.IssuerProductListReq;
 import com.maan.eway.admin.req.UserCompanyProductGetReq;
 import com.maan.eway.admin.res.BrokerProductGetRes;
+import com.maan.eway.admin.res.IssuerProductGetRes;
 import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.res.ProductCriteriaRes;
 import com.maan.eway.admin.service.LoginProductService;
@@ -1630,6 +1634,220 @@ List<Error> errorList = new ArrayList<Error>();
 		}
 		return resList;
 	}
+
+
+
+	@Override
+	public LoginCreationRes saveIssuerProducts(AttachIssuerProductRequest req1) {
+		// TODO Auto-generated method stub
+		SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
+		LoginCreationRes res = new LoginCreationRes();
+		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
+		try { 
+			Calendar cal = new GregorianCalendar();
+			Date today = new Date();
+			cal.setTime(new Date() );  cal.set(Calendar.HOUR_OF_DAY, today.getHours()); cal.set(Calendar.MINUTE, today.getMinutes()) ;
+			cal.set(Calendar.SECOND, today.getSeconds());
+			Date effDate = cal.getTime();
+			Date endDate = sdformat.parse("12/12/2050") ;
+			cal.setTime(sdformat.parse("12/12/2050"));  cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 50) ;
+			endDate = cal.getTime() ;
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd   = cal.getTime();
+			
+			for(IssuerProductListReq req : req1.getIssuerProductReq()) {
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyProductMaster> query = cb.createQuery(CompanyProductMaster.class);
+			List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
+			
+			// Find All
+			Root<CompanyProductMaster>    c = query.from(CompanyProductMaster.class);		
+			
+			// Select
+			query.select(c );
+			
+		
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("productName")));
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a3 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
+			effectiveDate.where(a1,a2,a3);
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(c.get("productId"),ocpm2.get("productId") );
+			Predicate a5 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a6 = cb.equal(c.get("companyId"),ocpm2.get("companyId") );
+			effectiveDate2.where(a4,a5,a6);
+			
+			//In 
+			Expression<String>e0=c.get("productId");
+			
+		    // Where	
+			Predicate n1 = cb.equal(c.get("status"), "Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 =e0.in( req.getProductId());
+			Predicate n5 =cb.equal(c.get("companyId"), req1.getInsuranceId());
+			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<CompanyProductMaster> result = em.createQuery(query);			
+			list =  result.getResultList();  
+			
+			LoginMaster loginData = loginRepo.findByLoginId(req1.getLoginId());
+			
+			for ( CompanyProductMaster data : list  ) {
+				
+			
+				LoginProductMaster save = new LoginProductMaster();
+				dozerMapper.map(data, save);
+				save.setCompanyId(req1.getInsuranceId());
+				save.setCreatedBy(req1.getCreatedBy());
+				save.setEffectiveDateStart(effDate);
+				save.setEffectiveDateEnd(endDate);
+				save.setEntryDate(new Date());
+				save.setAmendId(0);
+				save.setLoginId(req1.getLoginId());
+				save.setBackDays(0);
+				save.setAgencyCode(Integer.valueOf(loginData.getAgencyCode()));
+				save.setOaCode(loginData.getOaCode());
+				save.setCommissionPercent(15);
+				save.setSumInsuredStart(new BigDecimal(req.getSuminsuredStart()));
+				save.setSumInsuredEnd(new BigDecimal(req.getSuminsuredEnd()));
+				
+				String financeid = "";
+				String nonfinanceid = "";
+				List<EndtTypeMaster> endtids = getEndtId(req1.getInsuranceId(), data.getProductId()); 								
+				for(EndtTypeMaster endtid :endtids) {				
+					if(endtid.getEndtTypeCategoryId().toString().equalsIgnoreCase("1")) {						
+						financeid = financeid+","+endtid.getEndtTypeId().toString();
+					}
+					else {
+						nonfinanceid = nonfinanceid+","+endtid.getEndtTypeId().toString();						
+					}					
+				}
+				if(StringUtils.isNotBlank(financeid)) {
+				financeid=financeid.substring(1);
+				}
+				if(StringUtils.isNotBlank(nonfinanceid)) {
+				nonfinanceid=nonfinanceid.substring(1);
+				}
+				save.setFinancialEndtIds(financeid);
+				save.setNonFinancialEndtIds(nonfinanceid);
+				
+				String referralids="";
+				List<String> keys = req.getReferralIds();
+				for (int i = 0; i < keys.size(); i++) {
+				referralids = referralids + "," + keys.get(i);				
+				}
+				referralids=referralids.substring(1);
+				save.setReferralId(referralids);
+				loginProductRepo.saveAndFlush(save);
+				log.info("Saved Details is ---> " + json.toJson(save));
+				
+			}		
+			
+			res.setResponse("Products Added Successfully");
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
+
+
+	@Override
+	public IssuerProductGetRes getIssuerProducts(BrokerProductGetReq req) {
+		// TODO Auto-generated method stub
+		IssuerProductGetRes res = new IssuerProductGetRes();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			LoginProductMaster saveData = new LoginProductMaster();
+			List<LoginProductMaster> list = new ArrayList<LoginProductMaster>();
+			
+			
+			String productId="";
+			
+			// Update
+			// Get Less than Equal Today Record 
+			// Criteria
+			productId=req.getProductId().toString();
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<LoginProductMaster> query = cb.createQuery(LoginProductMaster.class);
+
+			// Find All
+			Root<LoginProductMaster> b = query.from(LoginProductMaster.class);
+
+			// Select
+			query.select(b);
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<LoginProductMaster> ocpm1 = effectiveDate.from(LoginProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("loginId"), b.get("loginId"));
+			effectiveDate.where(a1,a2,a3);
+
+			// Order By
+		//	List<Order> orderList = new ArrayList<Order>();
+		//	orderList.add(cb.asc(b.get("branchName")));
+			
+			// Where
+			Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 =  cb.equal(b.get("productId"), req.getProductId() );
+			Predicate n4 =  cb.equal(b.get("companyId"), req.getInsuranceId() );
+			Predicate n5 =  cb.equal(b.get("loginId"), req.getLoginId() );
+
+			query.where( n2, n3,n4,n5);//.orderBy(orderList);
+
+			// Get Result
+			TypedQuery<LoginProductMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			String financeid = list.get(0).getFinancialEndtIds();
+			String nonFinanceid = list.get(0).getNonFinancialEndtIds();
+			String referralid = list.get(0).getReferralId();
+	        ArrayList<String> financeids = new ArrayList<String>(Arrays.asList(financeid));
+	        ArrayList<String> nonfinanceids = new ArrayList<String>(Arrays.asList(nonFinanceid));
+	        ArrayList<String> referralids = new ArrayList<String>(Arrays.asList(referralid));
+		  	
+			dozerMapper.map(list.get(0), res);
+			res.setBackDays(list.get(0).getBackDays().toString());
+			
+			res.setFinanceIds(financeids);
+			res.setNonFinanceIds(nonfinanceids);
+			res.setReferralIds(referralids);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
 
 	
 }
