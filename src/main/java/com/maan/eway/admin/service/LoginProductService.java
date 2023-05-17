@@ -8,6 +8,7 @@ import com.maan.eway.admin.req.AttachIssuerProductRequest;
 import com.maan.eway.admin.req.BrokerCompanyProductGetReq;
 import com.maan.eway.admin.req.BrokerCompanyProductsGetRes;
 import com.maan.eway.admin.req.BrokerProductGetReq;
+import com.maan.eway.admin.req.IssuerProductGetReq;
 import com.maan.eway.admin.req.UserCompanyProductGetReq;
 import com.maan.eway.admin.res.BrokerProductGetRes;
 import com.maan.eway.admin.res.IssuerProductGetRes;
@@ -47,7 +48,7 @@ public interface LoginProductService {
 
 	LoginCreationRes saveIssuerProducts(AttachIssuerProductRequest req);
 
-	IssuerProductGetRes getIssuerProducts(BrokerProductGetReq req);
+	List<IssuerProductGetRes> getIssuerProducts(IssuerProductGetReq req);
 
 
 	

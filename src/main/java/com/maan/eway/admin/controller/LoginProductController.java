@@ -17,6 +17,7 @@ import com.maan.eway.admin.req.AttachIssuerProductRequest;
 import com.maan.eway.admin.req.BrokerCompanyProductGetReq;
 import com.maan.eway.admin.req.BrokerCompanyProductsGetRes;
 import com.maan.eway.admin.req.BrokerProductGetReq;
+import com.maan.eway.admin.req.IssuerProductGetReq;
 import com.maan.eway.admin.req.UserCompanyProductGetReq;
 import com.maan.eway.admin.res.BrokerProductGetRes;
 import com.maan.eway.admin.res.IssuerProductGetRes;
@@ -288,12 +289,12 @@ public class LoginProductController {
 
 	@PostMapping("/getissuerproductbyid")
 	@ApiOperation(value="This method is to Get Broker Products")
-	public ResponseEntity<CommonRes> getIssuerProducts(@RequestBody  BrokerProductGetReq req) {
+	public ResponseEntity<CommonRes> getIssuerProducts(@RequestBody  IssuerProductGetReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 		
 		/////// get
-		IssuerProductGetRes res = entityService.getIssuerProducts(req);
+		List<IssuerProductGetRes> res = entityService.getIssuerProducts(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());

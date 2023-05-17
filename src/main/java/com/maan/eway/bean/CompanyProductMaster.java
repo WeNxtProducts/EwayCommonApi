@@ -153,6 +153,17 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="PACKAGE_YN", length=20)
     private String     packageYn;
+    
+    @Column(name="FINANCIAL_ENDT_IDS", length=500)
+    private String    financialEndtIds;
+    
+    @Column(name="NON_FINANCIAL_ENDT_IDS", length=500)
+    private String    nonFinancialEndtIds;
+    
+    @Column(name="REFERRAL_ID", length=500)
+    private String    referralId;
+
+
 }
 
 

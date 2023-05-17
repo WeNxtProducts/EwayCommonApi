@@ -29,21 +29,8 @@ public class IssuerProductGetRes {
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
 
-	
-	@JsonProperty("CommissionPercent")
-	private String commissionPercent;
-	
 	@JsonProperty("ProductName")
 	private String productName;
-
-	@JsonProperty("PaymentYn")
-	private String paymentYn;
-
-	@JsonProperty("PaymentRedirUrl")
-	private String paymentRedirUrl;
-
-	@JsonProperty("AppLoginUrl")
-	private String appLoginUrl;
 
 	@JsonProperty("Status")
 	private String status;
@@ -51,46 +38,19 @@ public class IssuerProductGetRes {
 	@JsonProperty("ProductDesc")
 	private String productDesc;
 
-	@JsonProperty("CoreAppCode")
-	private String coreAppCode;
-	
-	@JsonProperty("RegulatoryCode")
-	private String regulatoryCode;
-
-	@JsonProperty("Remarks")
-	private String remarks;
-	
 	@JsonProperty("SumInsuredStart")
 	private String sumInsuredStart;
 	
 	@JsonProperty("SumInsuredEnd")
 	private String sumInsuredEnd;
 	
-	@JsonProperty("CommissionVatYn")
-	private String commissionVatYn;
+	@JsonProperty("EndorsementIds")
+	private List<String> endorsementIds;
 	
-	@JsonProperty("CheckerYn")
-	private String checkerYn;
-	
-	@JsonProperty("MakerYn")
-	private String makerYn;
-	
-	@JsonProperty("CustConfirmYn")
-	private String custConfirmYn;
-	
-	@JsonProperty("CreatedBy")
-	private String createdBy;
-	
-	@JsonProperty("BackDays")
-	private String backDays;
-
-	@JsonProperty("FinanceIds")
-	private List<String> financeIds;
-	
-	@JsonProperty("NonFinanceIds")
-	private List<String> nonFinanceIds;
-
 	@JsonProperty("ReferralIds")
 	private List<String> referralIds;
+
+	@JsonProperty("IsOptedYn")
+	private String isOptedYn;	
 
 }

@@ -40,6 +40,7 @@ import com.maan.eway.admin.req.AttachIssuerProductRequest;
 import com.maan.eway.admin.req.BrokerCompanyProductGetReq;
 import com.maan.eway.admin.req.BrokerCompanyProductsGetRes;
 import com.maan.eway.admin.req.BrokerProductGetReq;
+import com.maan.eway.admin.req.IssuerProductGetReq;
 import com.maan.eway.admin.req.IssuerProductListReq;
 import com.maan.eway.admin.req.UserCompanyProductGetReq;
 import com.maan.eway.admin.res.BrokerProductGetRes;
@@ -1728,29 +1729,8 @@ List<Error> errorList = new ArrayList<Error>();
 				save.setBackDays(0);
 				save.setAgencyCode(Integer.valueOf(loginData.getAgencyCode()));
 				save.setOaCode(loginData.getOaCode());
-				save.setCommissionPercent(15);
 				save.setSumInsuredStart(new BigDecimal(req.getSuminsuredStart()));
 				save.setSumInsuredEnd(new BigDecimal(req.getSuminsuredEnd()));
-				
-				String financeid = "";
-				String nonfinanceid = "";
-				List<EndtTypeMaster> endtids = getEndtId(req1.getInsuranceId(), data.getProductId()); 								
-				for(EndtTypeMaster endtid :endtids) {				
-					if(endtid.getEndtTypeCategoryId().toString().equalsIgnoreCase("1")) {						
-						financeid = financeid+","+endtid.getEndtTypeId().toString();
-					}
-					else {
-						nonfinanceid = nonfinanceid+","+endtid.getEndtTypeId().toString();						
-					}					
-				}
-				if(StringUtils.isNotBlank(financeid)) {
-				financeid=financeid.substring(1);
-				}
-				if(StringUtils.isNotBlank(nonfinanceid)) {
-				nonfinanceid=nonfinanceid.substring(1);
-				}
-				save.setFinancialEndtIds(financeid);
-				save.setNonFinancialEndtIds(nonfinanceid);
 				
 				String referralids="";
 				List<String> keys = req.getReferralIds();
@@ -1759,6 +1739,15 @@ List<Error> errorList = new ArrayList<Error>();
 				}
 				referralids=referralids.substring(1);
 				save.setReferralId(referralids);
+			
+				String endorsementids="";
+				List<String> keys1 = req.getEndorsementIds();
+				for (int i = 0; i < keys1.size(); i++) {
+					endorsementids = endorsementids + "," + keys1.get(i);				
+				}
+				endorsementids=endorsementids.substring(1);
+				save.setFinancialEndtIds(endorsementids);
+			
 				loginProductRepo.saveAndFlush(save);
 				log.info("Saved Details is ---> " + json.toJson(save));
 				
@@ -1778,74 +1767,121 @@ List<Error> errorList = new ArrayList<Error>();
 
 
 	@Override
-	public IssuerProductGetRes getIssuerProducts(BrokerProductGetReq req) {
+	public List<IssuerProductGetRes> getIssuerProducts(IssuerProductGetReq req) {
 		// TODO Auto-generated method stub
-		IssuerProductGetRes res = new IssuerProductGetRes();
+		List<IssuerProductGetRes> resList = new ArrayList<IssuerProductGetRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			LoginProductMaster saveData = new LoginProductMaster();
-			List<LoginProductMaster> list = new ArrayList<LoginProductMaster>();
-			
-			
-			String productId="";
-			
-			// Update
-			// Get Less than Equal Today Record 
-			// Criteria
-			productId=req.getProductId().toString();
+
+			List<CompanyProductMaster> companylist = new ArrayList<CompanyProductMaster>();
+
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<LoginProductMaster> query = cb.createQuery(LoginProductMaster.class);
+			CriteriaQuery<CompanyProductMaster> query = cb.createQuery(CompanyProductMaster.class);
 
 			// Find All
-			Root<LoginProductMaster> b = query.from(LoginProductMaster.class);
+			Root<CompanyProductMaster> b = query.from(CompanyProductMaster.class);
 
 			// Select
 			query.select(b);
-
+	
 			// Effective Date Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
-			Root<LoginProductMaster> ocpm1 = effectiveDate.from(LoginProductMaster.class);
+			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
-			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a3 = cb.equal(ocpm1.get("loginId"), b.get("loginId"));
-			effectiveDate.where(a1,a2,a3);
+					
+			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 
-			// Order By
-		//	List<Order> orderList = new ArrayList<Order>();
-		//	orderList.add(cb.asc(b.get("branchName")));
-			
+			effectiveDate.where(a1,a2);
+
 			// Where
-			Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
-			Predicate n3 =  cb.equal(b.get("productId"), req.getProductId() );
-			Predicate n4 =  cb.equal(b.get("companyId"), req.getInsuranceId() );
-			Predicate n5 =  cb.equal(b.get("loginId"), req.getLoginId() );
-
-			query.where( n2, n3,n4,n5);//.orderBy(orderList);
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 =  cb.equal(b.get("companyId"), req.getInsuranceId() );
+		
+			query.where(n1, n2);
 
 			// Get Result
-			TypedQuery<LoginProductMaster> result = em.createQuery(query);
-			list = result.getResultList();
-			String financeid = list.get(0).getFinancialEndtIds();
-			String nonFinanceid = list.get(0).getNonFinancialEndtIds();
-			String referralid = list.get(0).getReferralId();
-	        ArrayList<String> financeids = new ArrayList<String>(Arrays.asList(financeid));
-	        ArrayList<String> nonfinanceids = new ArrayList<String>(Arrays.asList(nonFinanceid));
-	        ArrayList<String> referralids = new ArrayList<String>(Arrays.asList(referralid));
-		  	
-			dozerMapper.map(list.get(0), res);
-			res.setBackDays(list.get(0).getBackDays().toString());
+			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
+			companylist = result.getResultList();
+		
+		
+			List<LoginProductMaster> loginlist = new ArrayList<LoginProductMaster>();
+
+			CriteriaBuilder cb2 = em.getCriteriaBuilder();
+			CriteriaQuery<LoginProductMaster> query2 = cb2.createQuery(LoginProductMaster.class);
+
+			// Find All
+			Root<LoginProductMaster> b2 = query2.from(LoginProductMaster.class);
+
+			// Select
+			query2.select(b2);
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query2.subquery(Long.class);
+			Root<LoginProductMaster> ocpm2 = effectiveDate2.from(LoginProductMaster.class);
+			effectiveDate2.select(cb2.max(ocpm2.get("effectiveDateStart")));
+			Predicate a11 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
+			Predicate a12 = cb2.equal(ocpm2.get("loginId"), b2.get("loginId"));
+			Predicate a13 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
 			
-			res.setFinanceIds(financeids);
-			res.setNonFinanceIds(nonfinanceids);
-			res.setReferralIds(referralids);
+			effectiveDate2.where(a11,a12,a13);
+
 			
-		} catch (Exception e) {
+			// Where
+			Predicate n11 = cb2.equal(b2.get("effectiveDateStart"), effectiveDate2);
+			Predicate n12 = cb2.equal(b2.get("companyId"), req.getInsuranceId() );
+			Predicate n13 = cb2.equal(b2.get("loginId"), req.getLoginId() );
+
+			query2.where( n11,n12,n13);
+
+			// Get Result
+			TypedQuery<LoginProductMaster> result2 = em.createQuery(query2);
+			loginlist = result2.getResultList();
+
+
+			
+			
+			for(CompanyProductMaster data : companylist) {
+	        
+				List<LoginProductMaster> filterUser = loginlist.stream().
+						filter( o ->  o.getProductId().toString().
+								equalsIgnoreCase(data.getProductId().toString())).collect(Collectors.toList());
+
+		        IssuerProductGetRes res = new IssuerProductGetRes();
+		        String endorsementid ="";
+		        String referralid = "";
+		        if(filterUser.size()>0) {
+		        	dozerMapper.map(filterUser.get(0), res);
+		        	endorsementid = filterUser.get(0).getFinancialEndtIds()==null?"":filterUser.get(0).getFinancialEndtIds();
+					referralid = filterUser.get(0).getReferralId()==null?"":filterUser.get(0).getReferralId();
+					ArrayList<String> endorsementids = new ArrayList<String>(Arrays.asList(endorsementid));
+			        ArrayList<String> referralids = new ArrayList<String>(Arrays.asList(referralid));
+			        res.setEndorsementIds(endorsementids);
+					res.setReferralIds(referralids);
+					res.setIsOptedYn("Y");
+					resList.add(res);
+				}
+		        else {
+		        	dozerMapper.map(data, res);
+		        	endorsementid = data.getFinancialEndtIds()==null?"":data.getFinancialEndtIds();
+					referralid = data.getReferralId()==null?"":data.getReferralId();
+					ArrayList<String> endorsementids = new ArrayList<String>(Arrays.asList(endorsementid));
+			        ArrayList<String> referralids = new ArrayList<String>(Arrays.asList(referralid));
+			        res.setEndorsementIds(endorsementids);
+					res.setReferralIds(referralids);
+					res.setIsOptedYn("N");
+					resList.add(res);
+		        }
+	        }
+
+		}
+		
+		catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
 			return null;
 		}
-		return res;
+		return resList;
 	}
 
 

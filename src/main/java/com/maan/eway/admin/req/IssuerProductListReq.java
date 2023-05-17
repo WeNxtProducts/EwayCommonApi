@@ -21,5 +21,7 @@ public class IssuerProductListReq {
 	@JsonProperty("ReferralIds")
 	private List<String> referralIds ;
 	
+	@JsonProperty("EndorsementIds")
+	private List<String> endorsementIds ;
 	
 }
