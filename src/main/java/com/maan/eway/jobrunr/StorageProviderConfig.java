@@ -17,12 +17,12 @@ import com.maan.eway.notification.service.JobRunrService;
 @Configuration
 public class StorageProviderConfig {
 
-    @Bean
+  /*  @Bean
     public StorageProvider storageProvider(JobMapper jobMapper) {
         InMemoryStorageProvider storageProvider = new InMemoryStorageProvider();
         storageProvider.setJobMapper(jobMapper);
         return storageProvider;
-    }
+    }*/
     @Autowired
 	private JobScheduler jobScheduler;
 	
@@ -35,6 +35,7 @@ public class StorageProviderConfig {
 	public void jobScheduleForTracking() {
 	//log.info("Job Runner Started...");
 //		scheduler.scheduleRecurrently(Cron.minutely() , () -> integService.pushClaimTrackings() );
+		
 		jobScheduler.scheduleRecurrently(Cron.minutely() ,() -> ourservice.jobProcess() );
 	}
 }

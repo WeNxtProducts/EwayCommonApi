@@ -1,7 +1,17 @@
 package com.maan.eway;
 
+import java.time.Duration;
 import java.util.concurrent.Executor;
 
+import javax.sql.DataSource;
+
+import org.jobrunr.configuration.JobRunr;
+import org.jobrunr.scheduling.JobScheduler;
+import org.jobrunr.server.BackgroundJobServerConfiguration;
+import org.jobrunr.server.JobActivator;
+import org.jobrunr.server.configuration.BackgroundJobServerWorkerPolicy;
+import org.jobrunr.server.configuration.FixedSizeBackgroundJobServerWorkerPolicy;
+import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
@@ -27,4 +37,16 @@ public class EwayCommonApiApplication {
 	  		t.initialize();	  		
 	        return t;
 	    }
+	  	
+	    @Bean
+	    public JobScheduler initJobRunr(DataSource dataSource, JobActivator jobActivator) {
+	        return JobRunr.configure()
+	                .useJobActivator(jobActivator)
+	                .useStorageProvider(SqlStorageProviderFactory
+	                          .using(dataSource))
+	                .useBackgroundJobServer()
+	                .useDashboard(9879)	                
+	                .initialize();
+	    }
+
 }
