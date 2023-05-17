@@ -4,11 +4,14 @@ import java.util.Date;
 import java.util.List;
 
 import com.maan.eway.admin.req.AttachCompnayProductRequest;
+import com.maan.eway.admin.req.AttachIssuerProductRequest;
 import com.maan.eway.admin.req.BrokerCompanyProductGetReq;
 import com.maan.eway.admin.req.BrokerCompanyProductsGetRes;
 import com.maan.eway.admin.req.BrokerProductGetReq;
+import com.maan.eway.admin.req.IssuerProductGetReq;
 import com.maan.eway.admin.req.UserCompanyProductGetReq;
 import com.maan.eway.admin.res.BrokerProductGetRes;
+import com.maan.eway.admin.res.IssuerProductGetRes;
 import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.auth.dto.LoginProductCriteriaRes;
 import com.maan.eway.error.Error;
@@ -42,6 +45,11 @@ public interface LoginProductService {
 	List<CompanyProductMasterRes> getallNonSelectedUserCompanyProducts(UserCompanyProductGetReq req);
 
 	LoginCreationRes saveIssuerProductDetails(AttachCompnayProductRequest req);
+
+	LoginCreationRes saveIssuerProducts(AttachIssuerProductRequest req);
+
+	List<IssuerProductGetRes> getIssuerProducts(IssuerProductGetReq req);
+
 
 	
 }

@@ -13,11 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.admin.req.AttachCompnayProductRequest;
+import com.maan.eway.admin.req.AttachIssuerProductRequest;
 import com.maan.eway.admin.req.BrokerCompanyProductGetReq;
 import com.maan.eway.admin.req.BrokerCompanyProductsGetRes;
 import com.maan.eway.admin.req.BrokerProductGetReq;
+import com.maan.eway.admin.req.IssuerProductGetReq;
 import com.maan.eway.admin.req.UserCompanyProductGetReq;
 import com.maan.eway.admin.res.BrokerProductGetRes;
+import com.maan.eway.admin.res.IssuerProductGetRes;
 import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.service.LoginProductService;
 import com.maan.eway.admin.service.LoginValidationService;
@@ -252,4 +255,56 @@ public class LoginProductController {
 		}
 
 	}
+	
+	
+	@PostMapping("/attachissuerproducts")
+	@ApiOperation(value="This method is to Attach Issuer Products")
+	public ResponseEntity<CommonRes> attachIssuerProducts(@RequestBody  AttachIssuerProductRequest req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<Error> validation = validationService.validateIssuerProductReq(req);
+		//// validation
+		if (validation != null && validation.size() != 0) 	{
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else {
+			/////// save
+			LoginCreationRes res = entityService.saveIssuerProducts(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+	}
+
+	@PostMapping("/getissuerproductbyid")
+	@ApiOperation(value="This method is to Get Broker Products")
+	public ResponseEntity<CommonRes> getIssuerProducts(@RequestBody  IssuerProductGetReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		
+		/////// get
+		List<IssuerProductGetRes> res = entityService.getIssuerProducts(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	
 }
