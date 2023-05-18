@@ -247,7 +247,7 @@ HPM.POLICY_NO= $P{pvPolicyNo}]]>
   CM.STATUS = 'Y' AND
   (CM.BRANCH_CODE=HPM.BRANCH_CODE OR CM.BRANCH_CODE='99999'))X]]>
 		</queryString>
-		<field name="ROW_NUM" class="java.math.BigInteger">
+		<field name="ROW_NUM" class="java.lang.String">
 			<property name="com.jaspersoft.studio.field.name" value="ROW_NUM"/>
 			<property name="com.jaspersoft.studio.field.label" value="ROW_NUM"/>
 		</field>
@@ -423,7 +423,7 @@ HPM.POLICY_NO=$P{pvPolicyNo}]]>
 	<background>
 		<band height="802">
 			<frame>
-				<reportElement x="0" y="1" width="555" height="801" uuid="20af8b71-3c3e-4acf-8638-8e3f14cfa7dc">
+				<reportElement x="0" y="0" width="555" height="802" uuid="20af8b71-3c3e-4acf-8638-8e3f14cfa7dc">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 				</reportElement>
@@ -1482,9 +1482,9 @@ HPM.POLICY_NO=$P{pvPolicyNo}]]>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="20">
+		<band height="17">
 			<componentElement>
-				<reportElement x="20" y="0" width="519" height="16" uuid="0587d94f-571b-4065-8a90-b83fbade3c77">
+				<reportElement x="20" y="0" width="519" height="17" uuid="0587d94f-571b-4065-8a90-b83fbade3c77">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 3_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 3_CH"/>
@@ -1498,11 +1498,11 @@ HPM.POLICY_NO=$P{pvPolicyNo}]]>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
 					<jr:column width="519" uuid="c24ad7be-66ba-4999-9075-4e7e06844d2d">
-						<jr:detailCell height="16">
-							<textField>
-								<reportElement x="0" y="0" width="519" height="16" uuid="18e7b7a2-a6cd-40c3-b063-1229915ca1ad"/>
+						<jr:detailCell height="17">
+							<textField textAdjust="StretchHeight">
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="519" height="17" uuid="516008ec-5e0e-46ef-b7a6-6b8a1ebe9161"/>
 								<box leftPadding="2"/>
-								<textElement textAlignment="Left" verticalAlignment="Middle">
+								<textElement verticalAlignment="Middle">
 									<font fontName="Arial" size="9"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{ROW_NUM}+". "+$F{terms}]]></textFieldExpression>
