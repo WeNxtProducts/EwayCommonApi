@@ -123,6 +123,7 @@ import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerHistoryRepository;
 import com.maan.eway.res.BuildingLocationDetails;
 import com.maan.eway.res.BuildingSumInsuredDetails;
+import com.maan.eway.res.CommonSumInsuredDetails;
 import com.maan.eway.res.CoverRes;
 import com.maan.eway.res.EserviceBuildingsDetailsRes;
 import com.maan.eway.res.OccupationReqClass;
@@ -151,6 +152,10 @@ public class QuoteServiceImpl implements QuoteService {
 	
 	@Value(value = "${sme.productId}")
 	private String smeProductId;
+	
+	@Value(value = "${burglary.productId}")
+	private String burglaryProductId;
+	
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -333,7 +338,8 @@ private BuildingDetailsRepository BuildingRepo;
 				// Travel Product Details
 				viewRes =	getTravelProductDetails( req);
 				
-			} else if( homeData.getProductId().equals(Integer.valueOf(buildingProductId)) || homeData.getProductId().equals(Integer.valueOf(smeProductId)) ) {
+			} else if( homeData.getProductId().equals(Integer.valueOf(buildingProductId)) ||
+					homeData.getProductId().equals(Integer.valueOf(smeProductId)) || homeData.getProductId().equals(Integer.valueOf(burglaryProductId)) ) {
 				// Travel Product Details
 				viewRes =	getBuildingProductDetails( req);
 				
@@ -562,7 +568,7 @@ private BuildingDetailsRepository BuildingRepo;
 			 buildingRes.setPremiumLc(buildData.getActualPremiumLc()==null?0:Double.valueOf(buildData.getActualPremiumLc().toString()));
 			 buildingRes.setCommissionAmount(commission==null?"":commission.toString());
 			 buildingRes.setCommissionPercentage(commissionPercent==null?"":commissionPercent.toString());
-
+			 buildingRes.setInsuranceForId(buildData.getInsuranceForId()!=null ? Arrays.asList(buildData.getInsuranceForId().split(",")) : null )  ;
 			
 			
 			List<SectionDetails>  buildingSectionList = new ArrayList<SectionDetails>();
@@ -1185,7 +1191,8 @@ private BuildingDetailsRepository BuildingRepo;
 				//Tracking Details
 					trackingDetails(req);
 				
-			} else if( (req.getProductId().equalsIgnoreCase(buildingProductId)) || (req.getProductId().equalsIgnoreCase(smeProductId))) {
+			} else if( (req.getProductId().equalsIgnoreCase(buildingProductId)) || (req.getProductId().equalsIgnoreCase(smeProductId))
+					|| (req.getProductId().equalsIgnoreCase(burglaryProductId))) {
 				updateRes = buildingReferalUpdate(req);
 				//Mail Push Notification
 				 buildingPushNotification(req);
@@ -2242,6 +2249,10 @@ private BuildingDetailsRepository BuildingRepo;
 			 if(req.getProductId().equalsIgnoreCase(buildingProductId ) || req.getProductId().equalsIgnoreCase(smeProductId )) {
 				 BuildingSumInsuredDetails builSum  = buildingSuminsuredDetails(req);
 				 res.setProductSuminsuredDetails(builSum);	
+			} else {
+				
+				CommonSumInsuredDetails Sum  = commonSuminsuredDetails(req);
+				res.setProductSuminsuredDetails(Sum);
 			}
 			res.setQuoteNo(req.getQuoteNo());
 			
@@ -2255,7 +2266,6 @@ private BuildingDetailsRepository BuildingRepo;
 		}
 		return res;
 	}
-	
 	
 	public BuildingSumInsuredDetails buildingSuminsuredDetails(SectionSumInsuredGetReq req) {
 		BuildingSumInsuredDetails res = new BuildingSumInsuredDetails();
@@ -2302,6 +2312,23 @@ private BuildingDetailsRepository BuildingRepo;
 			res.setRiskId(build.getRiskId().toString());
 			res.setSectionId(sectionIds);		
 			
+			
+		} catch ( Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+	
+	public CommonSumInsuredDetails commonSuminsuredDetails(SectionSumInsuredGetReq req) {
+		CommonSumInsuredDetails res = new CommonSumInsuredDetails();
+		try {
+			List<CommonDataDetails> paccDatas = commonDataRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+			CommonDataDetails pacc = paccDatas.get(0) ;
+			res.setCurrencyId(pacc.getCurrency());
+			res.setRiskId(pacc.getRiskId().toString());
+			res.setSumInsured(pacc.getSumInsured() == null?"0" :pacc.getSumInsured().toPlainString());
 			
 		} catch ( Exception e) {
 			e.printStackTrace();

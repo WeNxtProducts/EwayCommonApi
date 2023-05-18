@@ -145,6 +145,10 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	@Value(value = "${sme.productId}")
 	private String smeProductId;
 
+
+	@Value(value="${burglary.productId}")
+	private String burglaryProductId;
+
 	Gson json = new Gson();
 	
 	@PersistenceContext
@@ -828,7 +832,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	        	ProductThreadRes =  motorProductThreadCall(req , request )  ;
 					
 			// Multiple Bulding Thread Call	 
-			} else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) ) {
+			} else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) 
+					||  req.getProductId().equalsIgnoreCase(burglaryProductId) ) {
 				ProductThreadRes =  buildingProductThreadCall(req , request )  ;
 					
 			// Multiple Travel Thread Call	 
@@ -1126,7 +1131,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				endtType		 = data.getEndorsementType()==null?"": data.getEndorsementType().toString() ;
 				endtCount		 = data.getEndtCount()==null?"": data.getEndtCount().toString() ;
 				
-			}else if(req.getProductId().equalsIgnoreCase(buildingProductId) || (req.getProductId().equalsIgnoreCase(smeProductId)) ) {
+			}else if(req.getProductId().equalsIgnoreCase(buildingProductId) || (req.getProductId().equalsIgnoreCase(smeProductId))
+					|| (req.getProductId().equalsIgnoreCase(burglaryProductId))  ) {
 				List<EserviceBuildingDetails> datas =  eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo() );
 				EserviceBuildingDetails data = datas.get(0);
 				customerId = data.getCustomerId()==null?"": data.getCustomerId();

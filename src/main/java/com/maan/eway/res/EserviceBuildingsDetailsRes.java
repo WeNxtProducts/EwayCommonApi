@@ -164,7 +164,7 @@ public class EserviceBuildingsDetailsRes implements Serializable {
      private String     natureOfTradeDesc ;
     
      @JsonProperty("InsuranceForId")
-     private String insuranceForId ;
+     private Object insuranceForId ;
     
      @JsonProperty("InsuranceForDesc")
      private String     insuranceForDesc ;

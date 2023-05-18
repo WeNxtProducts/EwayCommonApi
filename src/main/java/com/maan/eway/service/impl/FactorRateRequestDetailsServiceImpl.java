@@ -140,6 +140,9 @@ private String smeProductId;
 private String personalaccidentProductId;
 
 
+@Value(value="${burglary.productId}")
+private String burglaryProductId;
+
 @Autowired
 private CalculatorEngine calcEngine;
 
@@ -1123,7 +1126,8 @@ this.repository = repo;
 			} else if(req.getProductId().equalsIgnoreCase(travelProductId)) {
 				viewDetailsList = getTravelDetails(req) ;
 				
-			} else if(req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)) {
+			} else if(req.getProductId().equalsIgnoreCase(buildingProductId) ||
+					req.getProductId().equalsIgnoreCase(smeProductId) || req.getProductId().equalsIgnoreCase(burglaryProductId )) {
 				viewDetailsList = getBuildingDetails(req) ;
 				
 			} else {

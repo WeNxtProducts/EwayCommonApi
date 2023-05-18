@@ -94,4 +94,20 @@ public class BuildingSumInsuredDetails {
 	
 	@JsonProperty("CurrencyId")
     private String   currencyId ;
+	
+	   
+    @JsonProperty("StockInTradeSi")
+    private String stockInTradeSi ;
+   
+    @JsonProperty("GoodsSi")
+    private String goodsSi;
+   
+    @JsonProperty("FurnitureSi")
+    private String furnitureSi;
+   
+    @JsonProperty("ApplianceSi")
+    private String applianceSi;
+   
+    @JsonProperty("CashValueablesSi")
+    private String cashValueablesSi;
 }

@@ -1605,7 +1605,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 				} else if( req.getProductId().equalsIgnoreCase(travelProductId) ) {
 					res = deleteTravelRecords(req);
 					
-				} else if( req.getProductId().equalsIgnoreCase(buildingProductId)  ||  req.getProductId().equalsIgnoreCase(smeProductId)  ) {
+				} else if( req.getProductId().equalsIgnoreCase(buildingProductId)  || 
+						req.getProductId().equalsIgnoreCase(smeProductId) ||  req.getProductId().equalsIgnoreCase("1") ) {
 					res = deleteBuildingRecords(req);
 					
 				} else  {
