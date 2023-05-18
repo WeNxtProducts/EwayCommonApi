@@ -449,14 +449,14 @@ private BuildingDetailsRepository BuildingRepo;
 				Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
 				
 				List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
-				BigDecimal PremiumAfterDiscount = (coverListRes.stream().map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
-				BigDecimal PremiumAfterDiscountLc = (coverListRes.stream().map(CoverRes:: getPremiumAfterDiscountLC ).reduce((x, y) -> x.add(y)).get());
-				BigDecimal PremiumBeforeDiscount = (coverListRes.stream().map(CoverRes:: getPremiumBeforeDiscount ).reduce((x, y) -> x.add(y)).get());
-				BigDecimal PremiumBeforeDiscountLc = (coverListRes.stream().map(CoverRes:: getPremiumBeforeDiscountLC ).reduce((x, y) -> x.add(y)).get());
-				BigDecimal PremiumExcluedTax = (coverListRes.stream().map(CoverRes:: getPremiumExcluedTax ).reduce((x, y) -> x.add(y)).get());
-				BigDecimal PremiumExcluedTaxLc = (coverListRes.stream().map(CoverRes:: getPremiumExcluedTaxLC ).reduce((x, y) -> x.add(y)).get());
-				BigDecimal PremiumIncludedTax = (coverListRes.stream().map(CoverRes:: getPremiumIncludedTax ).reduce((x, y) -> x.add(y)).get());
-				BigDecimal PremiumIncludedTaxLc = (coverListRes.stream().map(CoverRes:: getPremiumIncludedTaxLC ).reduce((x, y) -> x.add(y)).get());
+				BigDecimal PremiumAfterDiscount = (coverListRes.stream().filter(o -> o.getPremiumAfterDiscount()!=null ).map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
+				BigDecimal PremiumAfterDiscountLc = (coverListRes.stream().filter(o -> o.getPremiumAfterDiscountLC()!=null ).map(CoverRes:: getPremiumAfterDiscountLC ).reduce((x, y) -> x.add(y)).get());
+				BigDecimal PremiumBeforeDiscount = (coverListRes.stream().filter(o -> o.getPremiumBeforeDiscount()!=null ).map(CoverRes:: getPremiumBeforeDiscount ).reduce((x, y) -> x.add(y)).get());
+				BigDecimal PremiumBeforeDiscountLc = (coverListRes.stream().filter(o -> o.getPremiumBeforeDiscountLC()!=null ).map(CoverRes:: getPremiumBeforeDiscountLC ).reduce((x, y) -> x.add(y)).get());
+				BigDecimal PremiumExcluedTax = (coverListRes.stream().filter(o -> o.getPremiumExcluedTax()!=null ).map(CoverRes:: getPremiumExcluedTax ).reduce((x, y) -> x.add(y)).get());
+				BigDecimal PremiumExcluedTaxLc = (coverListRes.stream().filter(o -> o.getPremiumExcluedTaxLC()!=null ).map(CoverRes:: getPremiumExcluedTaxLC ).reduce((x, y) -> x.add(y)).get());
+				BigDecimal PremiumIncludedTax = (coverListRes.stream().filter(o -> o.getPremiumIncludedTax()!=null ).map(CoverRes:: getPremiumIncludedTax ).reduce((x, y) -> x.add(y)).get());
+				BigDecimal PremiumIncludedTaxLc = (coverListRes.stream().filter(o -> o.getPremiumIncludedTaxLC()!=null ).map(CoverRes:: getPremiumIncludedTaxLC ).reduce((x, y) -> x.add(y)).get());
 				
 				// Driver Details
 				List<DriverDetailsRes>   driverResList = new ArrayList<DriverDetailsRes>();
@@ -556,12 +556,12 @@ private BuildingDetailsRepository BuildingRepo;
  						.divide(BigDecimal.valueOf(100D))
  						.setScale(new MathContext(3, RoundingMode.HALF_UP)
  						.getPrecision(),RoundingMode.HALF_UP);
-			 buildingRes.setOverAllPremiumFc(buildData.getOverallPremiumFc().toString()==null?0D: Double.valueOf(buildData.getOverallPremiumFc().toString()));
-			 buildingRes.setOverAllPremiumLc(buildData.getOverallPremiumLc().toString()==null?0D:Double.valueOf(buildData.getOverallPremiumLc().toString()));
-			 buildingRes.setPremiumFc(buildData.getActualPremiumFc().toString()==null?0:Double.valueOf(buildData.getActualPremiumFc().toString()));
-			 buildingRes.setPremiumLc(buildData.getActualPremiumLc().toString()==null?0:Double.valueOf(buildData.getActualPremiumLc().toString()));
-			 buildingRes.setCommissionAmount(commission.toString()==null?"":commission.toString());
-			 buildingRes.setCommissionPercentage(commissionPercent.toString()==null?"":commissionPercent.toString());
+			 buildingRes.setOverAllPremiumFc(buildData.getOverallPremiumFc()==null?0D: Double.valueOf(buildData.getOverallPremiumFc().toString()));
+			 buildingRes.setOverAllPremiumLc(buildData.getOverallPremiumLc()==null?0D:Double.valueOf(buildData.getOverallPremiumLc().toString()));
+			 buildingRes.setPremiumFc(buildData.getActualPremiumFc()==null?0:Double.valueOf(buildData.getActualPremiumFc().toString()));
+			 buildingRes.setPremiumLc(buildData.getActualPremiumLc()==null?0:Double.valueOf(buildData.getActualPremiumLc().toString()));
+			 buildingRes.setCommissionAmount(commission==null?"":commission.toString());
+			 buildingRes.setCommissionPercentage(commissionPercent==null?"":commissionPercent.toString());
 
 			
 			
@@ -578,14 +578,14 @@ private BuildingDetailsRepository BuildingRepo;
 						
 						List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
 
-						BigDecimal PremiumAfterDiscount = (coverListRes.stream().map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
-						BigDecimal PremiumAfterDiscountLc = (coverListRes.stream().map(CoverRes:: getPremiumAfterDiscountLC ).reduce((x, y) -> x.add(y)).get());
-						BigDecimal PremiumBeforeDiscount = (coverListRes.stream().map(CoverRes:: getPremiumBeforeDiscount ).reduce((x, y) -> x.add(y)).get());
-						BigDecimal PremiumBeforeDiscountLc = (coverListRes.stream().map(CoverRes:: getPremiumBeforeDiscountLC ).reduce((x, y) -> x.add(y)).get());
-						BigDecimal PremiumExcluedTax = (coverListRes.stream().map(CoverRes:: getPremiumExcluedTax ).reduce((x, y) -> x.add(y)).get());
-						BigDecimal PremiumExcluedTaxLc = (coverListRes.stream().map(CoverRes:: getPremiumExcluedTaxLC ).reduce((x, y) -> x.add(y)).get());
-						BigDecimal PremiumIncludedTax = (coverListRes.stream().map(CoverRes:: getPremiumIncludedTax ).reduce((x, y) -> x.add(y)).get());
-						BigDecimal PremiumIncludedTaxLc = (coverListRes.stream().map(CoverRes:: getPremiumIncludedTaxLC ).reduce((x, y) -> x.add(y)).get());
+						BigDecimal PremiumAfterDiscount = (coverListRes.stream().filter(o -> o.getPremiumAfterDiscount()!=null ) .map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
+						BigDecimal PremiumAfterDiscountLc = (coverListRes.stream().filter(o -> o.getPremiumAfterDiscountLC()!=null ).map(CoverRes:: getPremiumAfterDiscountLC ).reduce((x, y) -> x.add(y)).get());
+						BigDecimal PremiumBeforeDiscount = (coverListRes.stream().filter(o -> o.getPremiumBeforeDiscount()!=null ).map(CoverRes:: getPremiumBeforeDiscount ).reduce((x, y) -> x.add(y)).get());
+						BigDecimal PremiumBeforeDiscountLc = (coverListRes.stream().filter(o -> o.getPremiumBeforeDiscountLC()!=null ).map(CoverRes:: getPremiumBeforeDiscountLC ).reduce((x, y) -> x.add(y)).get());
+						BigDecimal PremiumExcluedTax = (coverListRes.stream().filter(o -> o.getPremiumExcluedTax()!=null ).map(CoverRes:: getPremiumExcluedTax ).reduce((x, y) -> x.add(y)).get());
+						BigDecimal PremiumExcluedTaxLc = (coverListRes.stream().filter(o -> o.getPremiumExcluedTaxLC()!=null ).map(CoverRes:: getPremiumExcluedTaxLC ).reduce((x, y) -> x.add(y)).get());
+						BigDecimal PremiumIncludedTax = (coverListRes.stream().filter(o -> o.getPremiumIncludedTax()!=null ).map(CoverRes:: getPremiumIncludedTax ).reduce((x, y) -> x.add(y)).get());
+						BigDecimal PremiumIncludedTaxLc = (coverListRes.stream().filter(o -> o.getPremiumIncludedTaxLC()!=null ).map(CoverRes:: getPremiumIncludedTaxLC ).reduce((x, y) -> x.add(y)).get());
 
 						// Accident
 //						PaccGetRes pacRes = new  PaccGetRes()  ;
@@ -608,7 +608,7 @@ private BuildingDetailsRepository BuildingRepo;
 						buildSec.setSectionId(acc.getSectionId()==null?"":acc.getSectionId().toString());
 						buildSec.setSectionName( acc.getSectionDesc());
 
-						buildSec.setPremiumAfterDiscount(PremiumAfterDiscount.toString()==null?"":PremiumAfterDiscount.toString());
+						buildSec.setPremiumAfterDiscount(PremiumAfterDiscount==null?"":PremiumAfterDiscount.toString());
 						buildSec.setPremiumAfterDiscountLc(PremiumAfterDiscountLc.toString()==null?"":PremiumAfterDiscountLc.toString());
 						buildSec.setPremiumBeforeDiscount(PremiumBeforeDiscount.toString()==null?"":PremiumBeforeDiscount.toString());
 						buildSec.setPremiumBeforeDiscountLc(PremiumBeforeDiscountLc.toString()==null?"":PremiumBeforeDiscountLc.toString());
