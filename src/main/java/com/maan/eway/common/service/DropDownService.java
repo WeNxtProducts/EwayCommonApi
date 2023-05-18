@@ -178,6 +178,8 @@ public interface DropDownService {
 
 	List<DropDownRes> getBuildingOccupied(LovDropDownReq req);
 
+	List<DropDownRes> getOpenoption(LovDropDownReq req);
+
 
 
 }
