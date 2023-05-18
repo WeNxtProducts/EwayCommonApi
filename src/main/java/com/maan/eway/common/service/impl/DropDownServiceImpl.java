@@ -69,8 +69,8 @@ import com.maan.eway.res.ColummnDropRes;
 import com.maan.eway.res.DropDownRes;
 
 @Service
-public class DropDownServiceImpl  implements DropDownService{
- 
+public class DropDownServiceImpl  implements DropDownService{ 
+  
 
 	private Logger log = LogManager.getLogger(DropDownServiceImpl.class);
 
@@ -2086,36 +2086,10 @@ public class DropDownServiceImpl  implements DropDownService{
 	@Override
 	public List<DropDownRes> getAuditentType(LovDropDownReq req) {
 		// TODO Auto-generated method stub
-				List<DropDownRes> resList = new ArrayList<DropDownRes>();
-				try {
-				//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
-					String itemType = "AUDITENT_TYPE" ;
-					List<ListItemValue> getList  = getListItem(req , itemType);
-					getList.sort(Comparator.comparing(ListItemValue :: getItemCode ) );
-					
-					for (ListItemValue data : getList) {
-						DropDownRes res = new DropDownRes();
-						res.setCode(data.getItemCode());
-						res.setCodeDesc(data.getItemValue());
-						res.setStatus(data.getStatus());
-						resList.add(res);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-					log.info("Exception is ---> " + e.getMessage());
-					return null;
-				}
-				return resList;
-			}
-
-
-	@Override
-	public List<DropDownRes> getFidelityEmployeeCount(LovDropDownReq req) {
-		// TODO Auto-generated method stub
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
-			String itemType = "FIDELITY_EMPLOYEE_COUNT" ;
+			String itemType = "AUDITENT_TYPE" ;
 			List<ListItemValue> getList  = getListItem(req , itemType);
 			getList.sort(Comparator.comparing(ListItemValue :: getItemCode ) );
 			
@@ -2136,6 +2110,56 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
+	public List<DropDownRes> getFidelityEmployeeCount(LovDropDownReq req) {
+	List<DropDownRes> resList = new ArrayList<DropDownRes>();
+	try {
+	//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
+
+		String itemType = "FIDELITY_EMPLOYEE_COUNT" ;
+		List<ListItemValue> getList  = getListItem(req , itemType);
+		getList.sort(Comparator.comparing(ListItemValue :: getItemCode ) );
+		for (ListItemValue data : getList) {
+			DropDownRes res = new DropDownRes();
+			res.setCode(data.getItemCode());
+			res.setCodeDesc(data.getItemValue());
+			res.setStatus(data.getStatus());
+			resList.add(res);
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return resList;
+}
+
+
+	@Override
+	public List<DropDownRes> getNatureOfTrade(LovDropDownReq req) {
+		// TODO Auto-generated method stub
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
+
+			String itemType = "NATURE_OF_TRADE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
+
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+	
+	@Override
 	public List<DropDownRes> getFidelitySuminsured(LovDropDownReq req) {
 		// TODO Auto-generated method stub
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -2144,7 +2168,150 @@ public class DropDownServiceImpl  implements DropDownService{
 			String itemType = "FIDELITY_SUMINSURED" ;
 			List<ListItemValue> getList  = getListItem(req , itemType);
 			getList.sort(Comparator.comparing(ListItemValue :: getItemCode ) );
-			
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+	@Override
+	public List<DropDownRes> getBurglaryInsuranceFor(LovDropDownReq req) {
+		// TODO Auto-generated method stub
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
+			String itemType = "BURGLARY_INSURANCE_FOR" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+	@Override
+	public List<DropDownRes> getCeilingType(LovDropDownReq req) {
+		// TODO Auto-generated method stub
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
+			String itemType = "CEILING_TYPE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+	@Override
+	public List<DropDownRes> getWindowsMaterials(LovDropDownReq req) {
+		// TODO Auto-generated method stub
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
+			String itemType = "WINDOWS_MATERIAL" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+	@Override
+	public List<DropDownRes> getDoorsMaterials(LovDropDownReq req) {
+		// TODO Auto-generated method stub
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
+			String itemType = "DOORS_MATERIAL" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+	@Override
+	public List<DropDownRes> getNightLeftDoor(LovDropDownReq req) {
+		// TODO Auto-generated method stub
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
+			String itemType = "NIGHT_LEFT_DOOR" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+	@Override
+	public List<DropDownRes> getBuildingOccupied(LovDropDownReq req) {
+		// TODO Auto-generated method stub
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
+			String itemType = "BUILDING_OCCUPIED" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());

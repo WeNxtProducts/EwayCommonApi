@@ -164,5 +164,20 @@ public interface DropDownService {
 
 	List<DropDownRes> getFidelitySuminsured(LovDropDownReq req);
 
+	List<DropDownRes> getNatureOfTrade(LovDropDownReq req);
+
+	List<DropDownRes> getBurglaryInsuranceFor(LovDropDownReq req);
+
+	List<DropDownRes> getCeilingType(LovDropDownReq req);
+
+	List<DropDownRes> getWindowsMaterials(LovDropDownReq req);
+
+	List<DropDownRes> getDoorsMaterials(LovDropDownReq req);
+
+	List<DropDownRes> getNightLeftDoor(LovDropDownReq req);
+
+	List<DropDownRes> getBuildingOccupied(LovDropDownReq req);
+
+
 
 }

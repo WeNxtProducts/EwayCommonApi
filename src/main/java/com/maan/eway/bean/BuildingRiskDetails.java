@@ -425,6 +425,107 @@ private static final long serialVersionUID = 1L;
       @Column(name="ROOF_TYPE_DESC", length=10)
       private String     roofTypeDesc ;
 
+      @Column(name="NATURE_OF_TRADE_ID")
+      private Integer natureOfTradeId;
+      
+      @Column(name="NATURE_OF_TRADE_DESC")
+      private String     natureOfTradeDesc ;
+      
+      @Column(name="INSURANCE_FOR_ID")
+      private String insuranceForId ;
+      
+      @Column(name="INSURANCE_FOR_DESC")
+      private String     insuranceForDesc ;
+      
+      @Column(name="INTERNAL_WALL_TYPE")
+      private Integer internalWallType;
+      
+      @Column(name="INTERNAL_WALL_DESC")
+      private String     internalWallDesc ;
+      
+      @Column(name="CEILING_TYPE")
+      private Integer ceilingType;
+      
+      @Column(name="CEILING_TYPE_DESC")
+      private String     ceilingTypeDesc ;
+      
+      @Column(name="STOCK_IN_TRADE_SI")
+      private BigDecimal stockInTradeSi ;
+      
+      @Column(name="GOODS_SI")
+      private BigDecimal goodsSi;
+      
+      @Column(name="FURNITURE_SI")
+      private BigDecimal furnitureSi;
+      
+      @Column(name="APPLIANCE_SI")
+      private BigDecimal applianceSi;
+      
+      @Column(name="CASH_VALUEABLES_SI")
+      private BigDecimal cashValueablesSi;
+      
+      @Column(name="ADDRESS")
+      private String address;
+      
+      @Column(name="REGION_CODE")
+      private String regionCode;
+      
+      @Column(name="REGION_DESC")
+      private String     regionDesc ;
+      
+      @Column(name="DISTRICT_CODE")
+      private String districtCode ;
+      
+      @Column(name="DISTRICT_DESC")
+      private String     districtDesc ;
+      
+      @Column(name="OCCUPIED_YEAR")
+      private Integer occupiedYear;
+      
+      @Column(name="SHOW_WINDOWS")
+      private Integer showWindow;
+      
+      @Column(name="FRONT_DOORS")
+      private Integer frontDoors;
+      
+      @Column(name="BACK_DOORS")
+      private Integer backDoors;
+      
+      @Column(name="WINDOWS_MATERIAL_ID")
+      private Integer windowsMaterialId;
+      
+      @Column(name="WINDOWS_MATERIAL_DESC")
+      private String     windowsMaterialDesc;
+      
+      @Column(name="DOORS_MATERIAL_ID")
+      private Integer doorsMaterialId; 
+      
+      @Column(name="DOORS_MATERIAL_DESC")
+      private String     doorsMaterialDesc;
+      
+      @Column(name="NIGHT_LEFT_DOOR")
+      private Integer nightLeftDoor; 
+      
+      @Column(name="NIGHT_LEFT_DOOR_DESC")
+      private String     nightLeftDoorDesc ;
+      
+      @Column(name="BUILDING_OCCUPIED")
+      private Integer buildingOccupied; 
+      
+      @Column(name="BUILDING_OCCUPIED_DESC")
+      private String     buildingOccupiedDesc;
+      
+      @Column(name="WATCHMAN_GUARD_HOURS")
+      private Integer watchmanGuardHours;
+      
+      @Column(name="ACCESSIBLE_WINDOWS")
+      private Integer accessibleWindows;
+      
+      @Column(name="ACCESSIBLE_WINDOWS_DESC")
+     private String accessibleWindowsDesc;
+      
+      @Column(name="TRAP_DOORS")
+      private Integer trapDoors;
 }
 
 

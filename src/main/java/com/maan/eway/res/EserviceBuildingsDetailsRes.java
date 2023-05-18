@@ -155,5 +155,105 @@ public class EserviceBuildingsDetailsRes implements Serializable {
 	@JsonProperty("RoofTypeDesc")
     private String    roofTypeDesc;
 
+	// Burglary Changes
+
+    @JsonProperty("NatureOfTradeId")
+    private String natureOfTradeId;
+    
+     @JsonProperty("NatureOfTradeDesc")
+     private String     natureOfTradeDesc ;
+    
+     @JsonProperty("InsuranceForId")
+     private String insuranceForId ;
+    
+     @JsonProperty("InsuranceForDesc")
+     private String     insuranceForDesc ;
+    
+     @JsonProperty("InternalWallType")
+     private String internalWallType;
+    
+     @JsonProperty("InternalWallDesc")
+     private String     internalWallDesc ;
+    
+     @JsonProperty("CeilingType")
+     private String ceilingType;
+    
+     @JsonProperty("CeilingTypeDesc")
+     private String     ceilingTypeDesc ;
+    
+     @JsonProperty("StockInTradeSi")
+     private String stockInTradeSi ;
+    
+     @JsonProperty("GoodsSi")
+     private String goodsSi;
+    
+     @JsonProperty("FurnitureSi")
+     private String furnitureSi;
+    
+     @JsonProperty("ApplianceSi")
+     private String applianceSi;
+    
+     @JsonProperty("CashValueablesSi")
+     private String cashValueablesSi;
+    
+     @JsonProperty("Address")
+     private String address;
+    
+     @JsonProperty("RegionCode")
+     private String regionCode;
+    
+     @JsonProperty("RegionDesc")
+     private String     regionDesc ;
+    
+     @JsonProperty("DistrictCode")
+     private String districtCode ;
+    
+     @JsonProperty("DistrictDesc")
+     private String     districtDesc ;
+    
+     @JsonProperty("OccupiedYear")
+     private String occupiedYear;
+    
+     @JsonProperty("showWindow")
+     private String showWindow;
+    
+     @JsonProperty("FRONT_DOORS")
+     private String frontDoors;
+    
+     @JsonProperty("BACK_DOORS")
+     private String backDoors;
+    
+     @JsonProperty("WindowsMaterialId")
+     private String windowsMaterialId;
+    
+     @JsonProperty("WindowsMaterialDesc")
+     private String     windowsMaterialDesc;
+    
+     @JsonProperty("DoorsMaterialId")
+     private String doorsMaterialId; 
+    
+     @JsonProperty("DoorsMaterialDesc")
+     private String     doorsMaterialDesc;
+    
+     @JsonProperty("NightLeftDoor")
+     private String nightLeftDoor; 
+    
+     @JsonProperty("NightLeftDoorDesc")
+     private String     nightLeftDoorDesc ;
+    
+     @JsonProperty("BuildingOccupied")
+     private String buildingOccupied; 
+    
+     @JsonProperty("BuildingOccupiedDesc")
+     private String     buildingOccupiedDesc;
+    
+     @JsonProperty("WatchmanGuardHours")
+     private String watchmanGuardHours;
+    
+     @JsonProperty("AccessibleWindows")
+     private String accessibleWindows;
+     
+     @JsonProperty("TrapDoors")
+     private String trapDoors;
 	  
 }

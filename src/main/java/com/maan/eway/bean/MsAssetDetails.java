@@ -208,6 +208,66 @@ private static final long serialVersionUID = 1L;
     @Column(name="INDUSTRY_ID")
     private Integer  industryId ;
 
+
+    @Column(name="NATURE_OF_TRADE_ID")
+    private Integer natureOfTradeId;
+    
+    @Column(name="INSURANCE_FOR_ID")
+    private String insuranceForId ;
+    
+    @Column(name="INTERNAL_WALL_TYPE")
+    private Integer internalWallType;
+    
+    @Column(name="CEILING_TYPE")
+    private Integer ceilingType;
+    
+    @Column(name="STOCK_IN_TRADE_SI")
+    private BigDecimal stockInTradeSi ;
+    
+    @Column(name="GOODS_SI")
+    private BigDecimal goodsSi;
+    
+    @Column(name="FURNITURE_SI")
+    private BigDecimal furnitureSi;
+    
+    @Column(name="APPLIANCE_SI")
+    private BigDecimal applianceSi;
+    
+    @Column(name="CASH_VALUEABLES_SI")
+    private BigDecimal cashValueablesSi;
+    
+    @Column(name="OCCUPIED_YEAR")
+    private Integer occupiedYear;
+    
+    @Column(name="SHOW_WINDOWS")
+    private Integer showWindow;
+    
+    @Column(name="FRONT_DOORS")
+    private Integer frontDoors;
+    
+    @Column(name="BACK_DOORS")
+    private Integer backDoors;
+    
+    @Column(name="WINDOWS_MATERIAL_ID")
+    private Integer windowsMaterialId;
+    
+    @Column(name="DOORS_MATERIAL_ID")
+    private Integer doorsMaterialId; 
+    
+    @Column(name="NIGHT_LEFT_DOOR")
+    private Integer nightLeftDoor; 
+    
+    @Column(name="BUILDING_OCCUPIED")
+    private Integer buildingOccupied; 
+    
+    @Column(name="WATCHMAN_GUARD_HOURS")
+    private Integer watchmanGuardHours;
+    
+    @Column(name="ACCESSIBLE_WINDOWS")
+    private Integer accessibleWindows;
+    
+    @Column(name="TRAP_DOORS")
+    private Integer trapDoors;
     
 }
 
