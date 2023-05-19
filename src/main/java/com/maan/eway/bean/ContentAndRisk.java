@@ -161,4 +161,7 @@ public class ContentAndRisk implements Serializable {
 
    @Column(name="CONTENT_RISK_DESC", length=100)
    private String     contentRiskDesc;
+   
+   @Column(name="SERIAL_NO_DESC", length=100)
+   private String     serialNoDesc;
 }

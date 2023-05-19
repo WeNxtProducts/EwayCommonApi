@@ -616,7 +616,8 @@ this.repository = repo;
 				traData.setOverallPremiumFc(overAllPremiumFc ==null ? null :new BigDecimal(df.format(overAllPremiumFc)));
 				eserTraRepo.save(traData);
 				
-			} else if(   req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) ) {
+			} else if(   req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)
+					|| req.getProductId().equalsIgnoreCase(burglaryProductId)) {
 				
 				// Update Group Premium
 				EserviceBuildingDetails findData = eserBuildRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo() ,1 ); 
