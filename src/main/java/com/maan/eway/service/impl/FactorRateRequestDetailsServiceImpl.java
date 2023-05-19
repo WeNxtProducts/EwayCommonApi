@@ -1169,7 +1169,7 @@ this.repository = repo;
 				res.setSectionId(mot.getSectionId() );
 				res.setSectionName(mot.getSectionName());	
 				res.setEffectiveDate(mot.getEndorsementEffdate()==null?null:mot.getEndorsementEffdate() );
-				res.setEndorsementYn(mot.getEndorsementType()==null?"N":"Y");
+				//res.setEndorsementYn(mot.getEndorsementType()==null?"N":"Y");
 				if(mot.getEndorsementType()!=null) {
 					EndtTypeMaster endtmaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 							mot.getCompanyId(),Integer.parseInt(mot.getProductId()),"Y",mot.getEndorsementType(),new Date(),new Date());
@@ -1224,7 +1224,7 @@ this.repository = repo;
 				res.setSectionId(travelData.getSectionId() );
 				res.setSectionName(travelData.getSectionName());
 				res.setEffectiveDate(travelData.getEndorsementEffdate()==null?null:travelData.getEndorsementEffdate() );
-				res.setEndorsementYn(travelData.getEndorsementType()==null?"N":"Y");
+				//res.setEndorsementYn(travelData.getEndorsementType()==null?"N":"Y");
 				Object riskDetails = new Object();
 				EserviceTravelGetRes  travelRes = new EserviceTravelGetRes();
 				dozerMapper.map(travelData, travelRes);
@@ -1290,7 +1290,7 @@ this.repository = repo;
 					//	buildRes.setSectionName(sec.getSectionDesc());
 						riskDetails = buildRes ;
 						res.setRiskDetails(riskDetails); 
-						res.setEndorsementYn(acc.getEndorsementType()==null?"N":"Y");
+						//res.setEndorsementYn(acc.getEndorsementType()==null?"N":"Y");
 						if(acc.getEndorsementType()!=null) {
 							EndtTypeMaster endtmaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 									acc.getCompanyId(),Integer.parseInt(acc.getProductId()),"Y",acc.getEndorsementType(),new Date(),new Date());
@@ -1368,7 +1368,7 @@ this.repository = repo;
 				res.setSectionId(comData.getSectionId() );
 				res.setSectionName(comData.getSectionDesc());
 				res.setEffectiveDate(comData.getEndorsementEffdate()==null?null:comData.getEndorsementEffdate() );
-				res.setEndorsementYn(comData.getEndorsementType()==null?"N":"Y");
+				//res.setEndorsementYn(comData.getEndorsementType()==null?"N":"Y");
 				Object riskDetails = new Object();
 				EserviceCommonGetRes comRes = new EserviceCommonGetRes();
 				dozerMapper.map(comData, comRes);

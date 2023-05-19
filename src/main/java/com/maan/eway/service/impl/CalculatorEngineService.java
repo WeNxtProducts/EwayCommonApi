@@ -127,6 +127,10 @@ public class CalculatorEngineService implements CalculatorEngine {
 	@Value(value = "${sme.productId}")
 	private String smeProductId;
 
+	
+	@Value(value = "${burglary.productId}")
+	private String burglaryProductId;
+	
 	protected List<Tuple> commontbl = null;
 	protected List<Tuple> vehicles = null;
 	protected List<Tuple> customers = null;
@@ -1465,7 +1469,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			}
 
 			// Building and SME Product
-			else if ((request.getProductId().equalsIgnoreCase(buildingProductId))|| (request.getProductId().equalsIgnoreCase(smeProductId))) {
+			else if ((request.getProductId().equalsIgnoreCase(buildingProductId))|| (request.getProductId().equalsIgnoreCase(smeProductId)) || request.getProductId().equalsIgnoreCase(burglaryProductId)) {
 // 				List<EserviceBuildingsDetailsRes> motors = (List<EserviceBuildingsDetailsRes>) v1.getRiskDetails();
 				List<BuildingRiskDetails> motors = buildingRepo.findByQuoteNoOrderByRiskIdAsc(request.getQuoteno());
 
