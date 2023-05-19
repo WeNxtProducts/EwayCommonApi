@@ -517,7 +517,8 @@ private static final long serialVersionUID = 1L;
       @Column(name="ACCESSIBLE_WINDOWS")
       private Integer accessibleWindows;
      
-
+      @Column(name="SECTION_ID", length=100)
+      private String  sectionId;
 }
 
 

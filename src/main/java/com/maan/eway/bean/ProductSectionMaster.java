@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -52,25 +51,21 @@ public class ProductSectionMaster implements Serializable {
 private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
-    @Id
-    @Column(name="SECTION_ID", nullable=false)
-    private Integer    sectionId ;
-
-    @Id
-    @Column(name="PRODUCT_ID", nullable=false)
-    private Integer    productId ;
-
-    @Id
-    @Column(name="COMPANY_ID", nullable=false, length=100)
-    private String     companyId ;
-
-    @Id
-    @Column(name="BRANCH_CODE", nullable=false, length=20)
-    private String     branchCode ;
-
-    @Id
-    @Column(name="AMEND_ID", nullable=false)
-    private Integer    amendId ;
+	@Id
+	@Column(name="SECTION_ID", nullable=false)
+	private Integer    sectionId ;
+	
+	@Id
+	@Column(name="PRODUCT_ID", nullable=false)
+	private Integer    productId ;
+	
+	@Id
+	@Column(name="COMPANY_ID", nullable=false, length=100)
+	private String     companyId ;
+	
+	@Id
+	@Column(name="AMEND_ID", nullable=false)
+	private Integer    amendId ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="SECTION_NAME", length=100)

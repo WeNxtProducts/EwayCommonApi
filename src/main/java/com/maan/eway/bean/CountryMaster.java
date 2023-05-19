@@ -115,6 +115,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="UPDATED_DATE")
     private Date       updatedDate ;
 
+    @Column(name="PLAN_ID", length=100)
+    private String     planId;
+
+    @Column(name="PLAN_DESC", length=100)
+    private String     planDesc;
+
 }
 
 

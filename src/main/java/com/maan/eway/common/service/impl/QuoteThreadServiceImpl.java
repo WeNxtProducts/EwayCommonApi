@@ -671,7 +671,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						travelData.setManualReferalYn(req.getManualReferralYn());
 						eserTraRepo.save(travelData);
 						
-					} else if ( req.getProductId().equalsIgnoreCase(buildingProductId) ||  req.getProductId().equalsIgnoreCase(smeProductId)) {
+					} else if ( req.getProductId().equalsIgnoreCase(buildingProductId) ||  req.getProductId().equalsIgnoreCase(smeProductId)
+							||  req.getProductId().equalsIgnoreCase(burglaryProductId)) {
 						List<EserviceBuildingDetails> buildingDatas = eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 						for (EserviceBuildingDetails build : buildingDatas ) {
 							List<IndividualReferalReq> filterInduRef = induRefs.stream().filter( o -> o.getRiskId().equals(build.getRiskId()) &&   StringUtils.isNotBlank(o.getReferals())   ).collect(Collectors.toList()) ;

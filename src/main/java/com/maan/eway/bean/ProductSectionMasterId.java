@@ -35,8 +35,6 @@ public class ProductSectionMasterId implements Serializable {
     
     private String     companyId ;
     
-    private String     branchCode ;
-    
     private Integer    amendId ;
     
      

@@ -422,7 +422,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			} else if(request.getProductId().equalsIgnoreCase(travelProductId) ) {
 				EserviceTravelDetails travelData = eserTraRepo.findByRequestReferenceNo(request.getRequestReferenceNo());
 				customerRefNo = travelData.getCustomerReferenceNo();
-			}else if(request.getProductId().equalsIgnoreCase(buildingProductId) || request.getProductId().equalsIgnoreCase(smeProductId) ) {
+			}else if(request.getProductId().equalsIgnoreCase(buildingProductId) || request.getProductId().equalsIgnoreCase(smeProductId) 
+					||  request.getProductId().equalsIgnoreCase("1") ) {
 				EserviceBuildingDetails buldingData = eserBuildRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo(),1 );
 				customerRefNo = buldingData.getCustomerReferenceNo();
 			}else {
@@ -2223,7 +2224,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 				
 				home = setTravelDetails(request);
 				
-			}  else if(request.getProductId().equalsIgnoreCase(buildingProductId) || request.getProductId().equalsIgnoreCase(smeProductId)) {
+			}  else if(request.getProductId().equalsIgnoreCase(buildingProductId) || request.getProductId().equalsIgnoreCase(smeProductId)
+					||  request.getProductId().equalsIgnoreCase("1")) {
 				
 				home = setBuildingDetails(request);
 				
@@ -2271,7 +2273,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 				for ( CoverIdsReq covReq :  coverReqList) { 
 					List<PolicyCoverData> filterNonDefaultCovers  = new ArrayList<PolicyCoverData>();
 					
-					 if( request.getProductId().equalsIgnoreCase(buildingProductId)  || request.getProductId().equalsIgnoreCase(smeProductId)    ) {
+					 if( request.getProductId().equalsIgnoreCase(buildingProductId)  || request.getProductId().equalsIgnoreCase(smeProductId) 
+							 || request.getProductId().equalsIgnoreCase("1") ) {
 						 
 						 filterNonDefaultCovers = covers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(vehReq.getSectionId())) && o.getVehicleId().equals(vehReq.getVehicleId()) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());				
 					

@@ -37,11 +37,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.CountryMaster;
+import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CountryChangeStatusReq;
 import com.maan.eway.master.req.CountryGetAllReq;
 import com.maan.eway.master.req.CountryMasterGetReq;
 import com.maan.eway.master.req.CountryMasterSaveReq;
+import com.maan.eway.master.req.CountryPlansReq;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.res.CountryMasterRes;
 import com.maan.eway.master.service.CountryMasterService;
@@ -841,5 +843,181 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			return null;
 		}
 		return resList;
+	}
+
+	@Override
+	public List<DropDownRes> getCountryPlansDropdown(CountryPlansReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			// Plan List
+			List<ProductSectionMaster> sectionlist = getPlansList(req.getCompanyId() , req.getProductId() ) ;
+			
+			// Country 
+			CountryMaster countryRes =  getCountryDetails(req.getCountryId()  ) ;
+			
+			List<String> planIds = countryRes.getPlanId() !=null ? Arrays.asList(countryRes.getPlanId().split(",") ) : new ArrayList<String>() ;  
+			
+			for(String id : planIds ) {
+				// Response
+				List<ProductSectionMaster> filterSection = sectionlist.stream().filter( o -> o.getSectionId()!=null && o.getSectionId().toString().equals( id) ).collect(Collectors.toList()); 
+				if( filterSection.size()> 0 ) {
+					ProductSectionMaster section = filterSection.get(0);
+					DropDownRes res = new DropDownRes();
+					res.setCode(section.getSectionId().toString());
+					res.setCodeDesc(section.getSectionName());
+					res.setStatus(section.getStatus());
+					resList.add(res);
+				}
+			
+			}	
+			resList.sort( Comparator.comparing(DropDownRes :: getCodeDesc )) ;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return resList;
+		}
+		return resList;
+	}
+	
+	
+	public List<ProductSectionMaster> getPlansList(String insuranceId , String productId) {
+		List<ProductSectionMaster> sectionlist = new ArrayList<ProductSectionMaster>();
+		try {
+			Date today  = new Date();
+			Calendar cal = new GregorianCalendar(); 
+			cal.setTime(today);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 1);
+			today   = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ProductSectionMaster> query = cb.createQuery(ProductSectionMaster.class);
+			
+			
+			// Find All
+			Root<ProductSectionMaster>    c = query.from(ProductSectionMaster.class);		
+			
+			// Select
+			query.select(c );
+			
+		
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(c.get("amendId")));
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ProductSectionMaster> ocpm1 = effectiveDate.from(ProductSectionMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId") );
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId") );
+			Predicate a3 = cb.equal(c.get("productId"), ocpm1.get("productId") );
+			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2,a3,a4);
+			
+			// Effective Date End
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<ProductSectionMaster> ocpm2 = effectiveDate2.from(ProductSectionMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("sectionId"), ocpm2.get("sectionId"));
+			Predicate a7 = cb.equal(c.get("companyId"), ocpm2.get("companyId") );
+			Predicate a8 = cb.equal(c.get("productId"), ocpm2.get("productId") );
+			
+			javax.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a5, a6,a7,a8);
+
+		    // Where	
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"), insuranceId);
+			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("productId"), productId);
+			Predicate n6 = cb.equal(c.get("status"),"R");
+			Predicate n7 = cb.or(n1,n6);
+			query.where(n7,n2,n3,n4,n5).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<ProductSectionMaster> result = em.createQuery(query);			
+			sectionlist =  result.getResultList();  
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return sectionlist;
+	}
+	
+
+	public CountryMaster getCountryDetails(String countryId ) {
+		CountryMaster countryRes = new CountryMaster();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CountryMaster> query = cb.createQuery(CountryMaster.class);
+			List<CountryMaster> list = new ArrayList<CountryMaster>();
+
+			// Find All
+			Root<CountryMaster> c = query.from(CountryMaster.class);
+
+			// Select
+			query.select(c);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("countryName")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CountryMaster> ocpm1 = effectiveDate.from(CountryMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
+			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			effectiveDate.where(a1, a2,a5);
+			
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CountryMaster> ocpm2 = effectiveDate2.from(CountryMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
+			javax.persistence.criteria.Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			javax.persistence.criteria.Predicate a6 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			effectiveDate2.where(a3,a4,a6);
+
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n11 = cb.equal(c.get("status"),"R");
+			Predicate n12 = cb.or(n1,n11);
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"), "99999");
+			Predicate n5 = cb.equal(c.get("countryId"), countryId);
+			
+			query.where(n12, n2,n3,n4 ,n5).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<CountryMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			countryRes =  list.size() > 0 ? list.get(0) : null ;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return countryRes;
 	}
 }

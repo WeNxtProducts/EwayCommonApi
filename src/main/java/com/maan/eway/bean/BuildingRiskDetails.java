@@ -526,6 +526,9 @@ private static final long serialVersionUID = 1L;
       
       @Column(name="TRAP_DOORS")
       private Integer trapDoors;
+      
+      @Column(name="SECTION_ID", length=100)
+      private String  sectionId;
 }
 
 
