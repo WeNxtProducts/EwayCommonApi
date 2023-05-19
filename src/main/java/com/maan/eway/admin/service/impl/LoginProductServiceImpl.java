@@ -1772,7 +1772,117 @@ List<Error> errorList = new ArrayList<Error>();
 		List<IssuerProductGetRes> resList = new ArrayList<IssuerProductGetRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
+			
+			if(req.getUserType().equalsIgnoreCase("User"))  {
+				
+			LoginMaster login = loginRepo.findByLoginId(req.getLoginId());
+			Integer oaCode = login.getOaCode();
+			
+			LoginMaster loginid =  loginRepo.findByAgencyCodeAndOaCode(oaCode.toString(),oaCode);
+			List<CompanyProductMaster> companylist = new ArrayList<CompanyProductMaster>();
 
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyProductMaster> query = cb.createQuery(CompanyProductMaster.class);
+
+			// Find All
+			Root<CompanyProductMaster> b = query.from(CompanyProductMaster.class);
+
+			// Select
+			query.select(b);
+	
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+					
+			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+
+			effectiveDate.where(a1,a2);
+
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 =  cb.equal(b.get("companyId"), req.getInsuranceId() );
+		
+			query.where(n1, n2);
+
+			// Get Result
+			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
+			companylist = result.getResultList();
+		
+		
+			List<LoginProductMaster> loginlist = new ArrayList<LoginProductMaster>();
+
+			CriteriaBuilder cb2 = em.getCriteriaBuilder();
+			CriteriaQuery<LoginProductMaster> query2 = cb2.createQuery(LoginProductMaster.class);
+
+			// Find All
+			Root<LoginProductMaster> b2 = query2.from(LoginProductMaster.class);
+
+			// Select
+			query2.select(b2);
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query2.subquery(Long.class);
+			Root<LoginProductMaster> ocpm2 = effectiveDate2.from(LoginProductMaster.class);
+			effectiveDate2.select(cb2.max(ocpm2.get("effectiveDateStart")));
+			Predicate a11 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
+			Predicate a12 = cb2.equal(ocpm2.get("loginId"), b2.get("loginId"));
+			Predicate a13 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
+			
+			effectiveDate2.where(a11,a12,a13);
+
+			
+			// Where
+			Predicate n11 = cb2.equal(b2.get("effectiveDateStart"), effectiveDate2);
+			Predicate n12 = cb2.equal(b2.get("companyId"), req.getInsuranceId() );
+			Predicate n13 = cb2.equal(b2.get("loginId"), loginid.getLoginId());
+
+			query2.where( n11,n12,n13);
+
+			// Get Result
+			TypedQuery<LoginProductMaster> result2 = em.createQuery(query2);
+			loginlist = result2.getResultList();
+
+
+			
+			
+			for(CompanyProductMaster data : companylist) {
+	        
+				List<LoginProductMaster> filterUser = loginlist.stream().
+						filter( o ->  o.getProductId().toString().
+								equalsIgnoreCase(data.getProductId().toString())).collect(Collectors.toList());
+
+		        IssuerProductGetRes res = new IssuerProductGetRes();
+		        String endorsementid ="";
+		        String referralid = "";
+		        if(filterUser.size()>0) {
+		        	dozerMapper.map(filterUser.get(0), res);
+		        	endorsementid = filterUser.get(0).getFinancialEndtIds()==null?"":filterUser.get(0).getFinancialEndtIds();
+					referralid = filterUser.get(0).getReferralId()==null?"":filterUser.get(0).getReferralId();
+					ArrayList<String> endorsementids = new ArrayList<String>(Arrays.asList(endorsementid));
+			        ArrayList<String> referralids = new ArrayList<String>(Arrays.asList(referralid));
+			        res.setEndorsementIds(endorsementids);
+					res.setReferralIds(referralids);
+					res.setIsOptedYn("Y");
+					resList.add(res);
+				}
+		        else {
+		        	dozerMapper.map(data, res);
+		        	endorsementid = data.getFinancialEndtIds()==null?"":data.getFinancialEndtIds();
+					referralid = data.getReferralId()==null?"":data.getReferralId();
+					ArrayList<String> endorsementids = new ArrayList<String>(Arrays.asList(endorsementid));
+			        ArrayList<String> referralids = new ArrayList<String>(Arrays.asList(referralid));
+			        res.setEndorsementIds(endorsementids);
+					res.setReferralIds(referralids);
+					res.setIsOptedYn("N");
+					resList.add(res);
+		        }
+	        }
+			}
+			
+			
+			else {
 			List<CompanyProductMaster> companylist = new ArrayList<CompanyProductMaster>();
 
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -1873,7 +1983,11 @@ List<Error> errorList = new ArrayList<Error>();
 					resList.add(res);
 		        }
 	        }
-
+			}
+			
+			
+			
+			
 		}
 		
 		catch (Exception e) {
