@@ -850,27 +850,30 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			// Plan List
-			List<ProductSectionMaster> sectionlist = getPlansList(req.getCompanyId() , req.getProductId() ) ;
+			if(StringUtils.isNotBlank(req.getCountryId())  ) {
+				List<ProductSectionMaster> sectionlist = getPlansList(req.getCompanyId() , req.getProductId() ) ;
+				
+				// Country 
+				CountryMaster countryRes =  getCountryDetails(req.getCountryId()  ) ;
+				
+				List<String> planIds = countryRes.getPlanId() !=null ? Arrays.asList(countryRes.getPlanId().split(",") ) : new ArrayList<String>() ;  
+				
+				for(String id : planIds ) {
+					// Response
+					List<ProductSectionMaster> filterSection = sectionlist.stream().filter( o -> o.getSectionId()!=null && o.getSectionId().toString().equals( id) ).collect(Collectors.toList()); 
+					if( filterSection.size()> 0 ) {
+						ProductSectionMaster section = filterSection.get(0);
+						DropDownRes res = new DropDownRes();
+						res.setCode(section.getSectionId().toString());
+						res.setCodeDesc(section.getSectionName());
+						res.setStatus(section.getStatus());
+						resList.add(res);
+					}
+				
+				}	
+				resList.sort( Comparator.comparing(DropDownRes :: getCodeDesc )) ;
+			}
 			
-			// Country 
-			CountryMaster countryRes =  getCountryDetails(req.getCountryId()  ) ;
-			
-			List<String> planIds = countryRes.getPlanId() !=null ? Arrays.asList(countryRes.getPlanId().split(",") ) : new ArrayList<String>() ;  
-			
-			for(String id : planIds ) {
-				// Response
-				List<ProductSectionMaster> filterSection = sectionlist.stream().filter( o -> o.getSectionId()!=null && o.getSectionId().toString().equals( id) ).collect(Collectors.toList()); 
-				if( filterSection.size()> 0 ) {
-					ProductSectionMaster section = filterSection.get(0);
-					DropDownRes res = new DropDownRes();
-					res.setCode(section.getSectionId().toString());
-					res.setCodeDesc(section.getSectionName());
-					res.setStatus(section.getStatus());
-					resList.add(res);
-				}
-			
-			}	
-			resList.sort( Comparator.comparing(DropDownRes :: getCodeDesc )) ;
 			
 		} catch (Exception e) {
 			e.printStackTrace();
