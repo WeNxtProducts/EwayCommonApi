@@ -99,6 +99,10 @@ public class GridServiceImpl implements GridService {
 	
 	@Value(value = "${sme.productId}")
 	private String smeProductId;
+
+	@Value(value = "${burglary.productId}")
+	private String burglaryproductId;
+
 	
 	@Autowired
 	private EServiceMotorDetailsRepository repo;
@@ -192,7 +196,7 @@ public class GridServiceImpl implements GridService {
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				extingQuoteList = traService.getTravelExistingQuoteDetails(req  , branches , before30 , today , limit , offset );
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)) {
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)  || req.getProductId().equalsIgnoreCase(burglaryproductId)) {
 				extingQuoteList = buiService.getBuildingExistingQuoteDetails(req  , branches , before30 , today , limit , offset );
 				// Common
 			}else { // (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
@@ -265,7 +269,7 @@ public class GridServiceImpl implements GridService {
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				lapsedQuoteList = traService.getTravelLapsedQuoteDetails(req  , branches, before30 , limit , offset );
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) ) {
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) || req.getProductId().equalsIgnoreCase(burglaryproductId)) {
 				lapsedQuoteList = buiService.getBuildingLapsedQuoteDetails(req  , branches, before30 , limit , offset );
 			}else {
 				lapsedQuoteList = commonService.getCommonLapsedQuoteDetails(req  , branches, before30 , limit , offset );
@@ -324,7 +328,7 @@ public class GridServiceImpl implements GridService {
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				rejectedQuoteList = traService.getTravelRejectedQuoteDetails(req  , branches, limit , offset );
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) ) {
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) || req.getProductId().equalsIgnoreCase(burglaryproductId)) {
 				rejectedQuoteList = buiService.getBuildingRejectedQuoteDetails(req  , branches, limit , offset );
 			}else  {
 				rejectedQuoteList = commonService.getCommonRejectedQuoteDetails(req  , branches, limit , offset );
@@ -393,7 +397,7 @@ public class GridServiceImpl implements GridService {
 				referralPendingList = traService.getTravelReferalDetails(req  , branches, limit , offset, "RP" );
 				
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) ) {
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) || req.getProductId().equalsIgnoreCase(burglaryproductId)) {
 				referralPendingList = buiService.getBuildingReferalDetails(req  , branches, limit , offset, "RP" );
 			}else  {
 				List<ReferalCommonCriteriaRes> referralPendingList2 = commonService.getCommonReferalDetails(req  , branches, limit , offset, "RP" );
@@ -466,7 +470,7 @@ public class GridServiceImpl implements GridService {
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				referralApprovedList = traService.getTravelReferalDetails(req  , branches, limit , offset, "RA" );
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) ) {
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) || req.getProductId().equalsIgnoreCase(burglaryproductId)) {
 				referralApprovedList = buiService.getBuildingReferalDetails(req  , branches, limit , offset, "RA" );
 			} else  {
 				List<ReferalCommonCriteriaRes> referralPendingList2 = commonService.getCommonReferalDetails(req  , branches, limit , offset, "RA" );
@@ -538,7 +542,7 @@ public class GridServiceImpl implements GridService {
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				referralRejectedList = traService.getTravelReferalDetails(req  , branches, limit , offset, "RR" );
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) ) {
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) || req.getProductId().equalsIgnoreCase(burglaryproductId)) {
 				referralRejectedList = buiService.getBuildingReferalDetails(req  , branches, limit , offset, "RR" );
 			} else {
 				List<ReferalCommonCriteriaRes> referralPendingList2  = commonService.getCommonReferalDetails(req  , branches, limit , offset, "RR" );
@@ -591,7 +595,7 @@ public class GridServiceImpl implements GridService {
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				adminReferralPendingList = traService.getTravelAdminReferalDetails(req  , branches, limit , offset,"RP" );
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) ) {
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) || req.getProductId().equalsIgnoreCase(burglaryproductId)) {
 				adminReferralPendingList = buiService.getBuildingAdminReferalDetails(req  , branches, limit , offset,"RP" );
 			} else  {
 				List<ReferalCommonCriteriaRes> adminReferralPendingList2 = commonService.getCommonAdminReferalDetails(req  , branches, limit , offset,"RP" );
@@ -643,7 +647,7 @@ public class GridServiceImpl implements GridService {
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				adminReferralApprovedList = traService.getTravelAdminReferalDetails(req  , branches, limit , offset,"RA" );
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) ) {
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) || req.getProductId().equalsIgnoreCase(burglaryproductId)) {
 				adminReferralApprovedList = buiService.getBuildingAdminReferalDetails(req  , branches, limit , offset,"RA" );
 			}else  {
 				List<ReferalCommonCriteriaRes> adminReferralApprovedList2 = commonService.getCommonAdminReferalDetails(req  , branches, limit , offset,"RA" );
@@ -695,7 +699,7 @@ public class GridServiceImpl implements GridService {
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				adminReferralRejectedList = traService.getTravelAdminReferalDetails(req  , branches, limit , offset,"RR" );
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId)  || req.getProductId().equalsIgnoreCase(smeProductId)) {
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId)  || req.getProductId().equalsIgnoreCase(smeProductId)|| req.getProductId().equalsIgnoreCase(burglaryproductId)) {
 				adminReferralRejectedList = buiService.getBuildingAdminReferalDetails(req  , branches, limit , offset,"RR" );
 			}else {
 				List<ReferalCommonCriteriaRes>	adminReferralRejectedList2 = commonService.getCommonAdminReferalDetails(req  , branches, limit , offset,"RR" );
@@ -752,7 +756,7 @@ public class GridServiceImpl implements GridService {
 					res = motService.motorEndt(req, branches,loginId);
 				}else if (req.getProductId().equalsIgnoreCase(travelProductId)) {
 					res = traService.travelEndt(req, branches,loginId);
-				} else if (req.getProductId().equalsIgnoreCase(buildingProductId)|| req.getProductId().equalsIgnoreCase(smeProductId)) {
+				} else if (req.getProductId().equalsIgnoreCase(buildingProductId)|| req.getProductId().equalsIgnoreCase(smeProductId)|| req.getProductId().equalsIgnoreCase(burglaryproductId)) {
 					res = buiService.buildingEndt(req, branches,loginId);
 				}else {
 					res = commonService.commonEndt(req, branches,loginId);
@@ -765,7 +769,7 @@ public class GridServiceImpl implements GridService {
 
 				} else if (req.getProductId().equalsIgnoreCase(travelProductId)) {
 					res = traService.travelCopyQuote(req, branches,loginId);
-				} else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)) {
+				} else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)|| req.getProductId().equalsIgnoreCase(burglaryproductId)) {
 					res = buiService.buildingCopyQuote(req, branches,loginId);
 
 				} else {
@@ -891,7 +895,7 @@ public class GridServiceImpl implements GridService {
 			else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				list = traService.searchTravelQuote(req, branches);
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)) {
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)|| req.getProductId().equalsIgnoreCase(burglaryproductId)) {
 				list = buiService.searchBuildingQuote(req, branches);
 
 			} else {
@@ -917,7 +921,7 @@ public class GridServiceImpl implements GridService {
 						res.setSectionName(riskData.getSectionName());	
 					}
 				}
-				else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)) {
+				else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)|| req.getProductId().equalsIgnoreCase(burglaryproductId)) {
 					EserviceBuildingDetails riskData =data.get("c") ==null?null: (EserviceBuildingDetails) data.get("c")   ;
 					if( riskData !=null ) {
 						dozermapper.map(riskData, res);
@@ -962,7 +966,7 @@ public class GridServiceImpl implements GridService {
 				itemType = "COPY_QUOTE_BY_TRAVEL";
 				getList = traService.getTravelCoptyQuotetListItem( req,itemType);
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)) {
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)|| req.getProductId().equalsIgnoreCase(burglaryproductId)) {
 				 itemType = "COPY_QUOTE_BY_BUILDING";
 				 getList = buiService.geBuildingCoptyQuotetListItem(req, itemType);
 				 
@@ -1032,7 +1036,7 @@ public class GridServiceImpl implements GridService {
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				referralRejectedList = traService.getTravelReferalDetails(req  , branches, limit , offset, "RE" );
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId)  || req.getProductId().equalsIgnoreCase(smeProductId)) {
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId)  || req.getProductId().equalsIgnoreCase(smeProductId)|| req.getProductId().equalsIgnoreCase(burglaryproductId)) {
 				referralRejectedList = buiService.getBuildingReferalDetails(req  , branches, limit , offset, "RE" );
 			}else {
 				List<ReferalCommonCriteriaRes> referralPendingList2  = commonService.getCommonReferalDetails(req  , branches, limit , offset, "RE" );
@@ -1086,7 +1090,7 @@ public class GridServiceImpl implements GridService {
 			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				adminReferralRejectedList = traService.getTravelAdminReferalDetails(req  , branches, limit , offset,"RE" );
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId)  || req.getProductId().equalsIgnoreCase(smeProductId)) {
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId)  || req.getProductId().equalsIgnoreCase(smeProductId)|| req.getProductId().equalsIgnoreCase(burglaryproductId)) {
 				adminReferralRejectedList = buiService.getBuildingAdminReferalDetails(req  , branches, limit , offset,"RE" );
 			}else  {
 				List<ReferalCommonCriteriaRes> referralPendingList2  = commonService.getCommonAdminReferalDetails(req  , branches, limit , offset,"RE" );
@@ -1145,7 +1149,7 @@ public class GridServiceImpl implements GridService {
 					res.setMessage("Lapsed Quote Updated Successful");
 
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) ) {			
+			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) || req.getProductId().equalsIgnoreCase(burglaryproductId)) {			
 				buildingdata = buildingRepo.findByRequestReferenceNoAndQuoteNoAndProductIdAndCompanyId(req.getRequestReferenceNo(),req.getQuoteNo(),req.getProductId(),req.getCompanyId());			
 					dozerMapper.map(buildingdata, EserviceBuildingDetails.class);
 					buildingdata.setUpdatedDate(new Date());
