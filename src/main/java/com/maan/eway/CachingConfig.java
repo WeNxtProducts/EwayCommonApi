@@ -24,17 +24,17 @@ public class CachingConfig   {
 	    return new SpringCache2kCacheManager()
 	      .defaultSetup(b->b.entryCapacity(2000))
 	      .addCaches(
-	        b->b.name("RatingType").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
-	        b->b.name("ProductType").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
-	        b->b.name("loadTax").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
-	        b->b.name("loadProRata").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
-	        b->b.name("LoadConstant").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(true),
-	        b->b.name("ProductToRawtable").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
-	        b->b.name("EndtMasterData").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
-	        b->b.name("getCachedRatingFields").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
-	        b->b.name("loadfactorOnlyquery").expireAfterWrite(15, TimeUnit.SECONDS).entryCapacity(1000L).permitNullValues(false),
-	        b->b.name("countfactorOnlyquery").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
-	        b->b.name("currencyDecimalFormat").expireAfterWrite(15, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false)
+	        b->b.name("RatingType").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
+	        b->b.name("ProductType").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
+	        b->b.name("loadTax").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
+	        b->b.name("loadProRata").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
+	        b->b.name("LoadConstant").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(true),
+	        b->b.name("ProductToRawtable").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
+	        b->b.name("EndtMasterData").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
+	        b->b.name("getCachedRatingFields").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
+	        b->b.name("loadfactorOnlyquery").expireAfterWrite(1, TimeUnit.SECONDS).entryCapacity(1000L).permitNullValues(false),
+	        b->b.name("countfactorOnlyquery").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
+	        b->b.name("currencyDecimalFormat").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false)
 	        
 	        );
 		
