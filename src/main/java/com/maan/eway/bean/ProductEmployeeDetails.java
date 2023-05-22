@@ -90,10 +90,7 @@ private static final long serialVersionUID = 1L;
     
    @Column(name="EMPLOYEE_NAME")
     private String employeeName;
-
-    @Column(name="ADDRESS")
-    private String address;
-    
+ 
     @Column(name="OCCUPATION_ID")
     private String occupationId;
     
@@ -158,6 +155,12 @@ private static final long serialVersionUID = 1L;
 	  @Column(name="ENDT_PREMIUM")
 	  private Double       endtPremium ;
 	  
+	  @Temporal(TemporalType.TIMESTAMP)
+	  @Column(name="DATE_OF_BIRTH")
+	  private Date       dateOfBirth;
+	  
+	  @Column(name="DATE_OF_JOINING")
+	  private Integer dateOfJoining;
       
 }
 
