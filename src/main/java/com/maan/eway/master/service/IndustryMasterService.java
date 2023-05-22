@@ -15,11 +15,12 @@ import com.maan.eway.master.req.IndustryMasterGetallReq;
 import com.maan.eway.master.req.IndustryMasterSaveReq;
 import com.maan.eway.master.res.IndustryMasterRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.IndustryDropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 public interface IndustryMasterService  {
 
-	List<DropDownRes> getIndustryMasterDropdown(IndustryMasterDropdownReq req);
+	List<IndustryDropDownRes> getIndustryMasterDropdown(IndustryMasterDropdownReq req);
 
 	List<Error> validateIndustryDetails(IndustryMasterSaveReq req);
 

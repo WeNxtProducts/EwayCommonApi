@@ -51,6 +51,7 @@ import com.maan.eway.master.service.IndustryMasterService;
 import com.maan.eway.repository.IndustryMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.IndustryDropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 /**
@@ -74,8 +75,8 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 	private Logger log = LogManager.getLogger(IndustryMasterServiceImpl.class);
 
 	@Override
-	public List<DropDownRes> getIndustryMasterDropdown(IndustryMasterDropdownReq req) {
-		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+	public List<IndustryDropDownRes> getIndustryMasterDropdown(IndustryMasterDropdownReq req) {
+		List<IndustryDropDownRes> resList = new ArrayList<IndustryDropDownRes>();
 		try {
 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
@@ -157,10 +158,13 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			
 			for (IndustryMaster data : list) {
 				// Response 
-				DropDownRes res = new DropDownRes();
+				IndustryDropDownRes res = new IndustryDropDownRes();
 				res.setCode(data.getIndustryId().toString());
 				res.setCodeDesc(data.getIndustryName());
 				res.setStatus(data.getStatus());
+				res.setCategoryId(data.getCategoryId());
+				res.setCategoryDesc(data.getCategoryDesc());
+				
 				resList.add(res);
 			}
 		}
