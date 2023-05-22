@@ -133,8 +133,10 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			Predicate n9 = null ;
 			if(StringUtils.isNotBlank(req.getCategoryId()) ) {
 				n9 = cb.equal(c.get("categoryId"),req.getCategoryId());	
+					
 			} else {
-				n9 = cb.equal(c.get("categoryId"),"99999");
+				n9 = cb.isNotNull(c.get("categoryId"));
+			
 			}
 			
 			// Order By
