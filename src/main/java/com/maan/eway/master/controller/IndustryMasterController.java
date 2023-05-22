@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.DropdownCommonRes;
+import com.maan.eway.common.res.IndustryDropDownCommonRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CountryGetAllReq;
 import com.maan.eway.master.req.CountryMasterGetReq;
@@ -32,6 +33,7 @@ import com.maan.eway.master.res.CountryMasterRes;
 import com.maan.eway.master.res.IndustryMasterRes;
 import com.maan.eway.master.service.IndustryMasterService;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.IndustryDropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -59,19 +61,19 @@ public class IndustryMasterController {
 		@PostMapping(value="/dropdown/industry",produces = "application/json")
 		@ApiOperation(value = "This method is get Industry Master Drop Down")
 
-		public ResponseEntity<DropdownCommonRes> getIndustryMasterDropdown( @RequestBody IndustryMasterDropdownReq req ) {
+		public ResponseEntity<IndustryDropDownCommonRes> getIndustryMasterDropdown( @RequestBody IndustryMasterDropdownReq req ) {
 
-			DropdownCommonRes data = new DropdownCommonRes();
+		IndustryDropDownCommonRes data = new IndustryDropDownCommonRes();
 
 			// Save
-			List<DropDownRes> res = service.getIndustryMasterDropdown(req);
+			List<IndustryDropDownRes> res = service.getIndustryMasterDropdown(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
 			data.setMessage("Success");
 
 			if (res != null) {
-				return new ResponseEntity<DropdownCommonRes>(data, HttpStatus.CREATED);
+				return new ResponseEntity<IndustryDropDownCommonRes>(data, HttpStatus.CREATED);
 			} else {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
