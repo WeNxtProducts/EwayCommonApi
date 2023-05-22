@@ -49,6 +49,7 @@ import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.res.ProductCriteriaRes;
 import com.maan.eway.admin.service.LoginProductService;
 import com.maan.eway.auth.dto.LoginProductCriteriaRes;
+import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EndtDependantFieldMaster;
 import com.maan.eway.bean.EndtTypeMaster;
@@ -1661,7 +1662,9 @@ List<Error> errorList = new ArrayList<Error>();
 			cal.set(Calendar.HOUR_OF_DAY, 1);
 			cal.set(Calendar.MINUTE, 1);
 			Date todayEnd   = cal.getTime();
-			
+			long MILLS_IN_A_DAY = 1000*60*60*24;
+			Date oldEndDate = new Date(new Date().getTime()- MILLS_IN_A_DAY);
+
 			for(IssuerProductListReq req : req1.getIssuerProductReq()) {
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -1715,16 +1718,11 @@ List<Error> errorList = new ArrayList<Error>();
 			LoginMaster loginData = loginRepo.findByLoginId(req1.getLoginId());
 			
 			for ( CompanyProductMaster data : list  ) {
-				
-			
+		
 				LoginProductMaster save = new LoginProductMaster();
 				dozerMapper.map(data, save);
 				save.setCompanyId(req1.getInsuranceId());
 				save.setCreatedBy(req1.getCreatedBy());
-				save.setEffectiveDateStart(effDate);
-				save.setEffectiveDateEnd(endDate);
-				save.setEntryDate(new Date());
-				save.setAmendId(0);
 				save.setLoginId(req1.getLoginId());
 				save.setBackDays(0);
 				save.setAgencyCode(Integer.valueOf(loginData.getAgencyCode()));
@@ -1747,7 +1745,23 @@ List<Error> errorList = new ArrayList<Error>();
 				}
 				endorsementids=endorsementids.substring(1);
 				save.setFinancialEndtIds(endorsementids);
-			
+				List<LoginProductMaster> loginproduct = loginProductRepo.findByLoginIdAndCompanyIdAndProductIdOrderByAmendIdDesc(req1.getLoginId(),req1.getInsuranceId(),Integer.valueOf(data.getProductId()));
+				if(loginproduct.size()>0 && loginproduct!=null) {
+					LoginProductMaster lastRecord = loginproduct.get(0);
+					lastRecord.setEffectiveDateEnd(oldEndDate);
+					loginProductRepo.saveAndFlush(lastRecord);
+
+					save.setAmendId(loginproduct.get(0).getAmendId()+1);					
+
+				}
+				else {
+					save.setAmendId(0);
+
+				}
+				save.setEffectiveDateStart(effDate);
+				save.setEffectiveDateEnd(endDate);
+				save.setEntryDate(new Date());
+
 				loginProductRepo.saveAndFlush(save);
 				log.info("Saved Details is ---> " + json.toJson(save));
 				
@@ -1964,8 +1978,11 @@ List<Error> errorList = new ArrayList<Error>();
 		        	dozerMapper.map(filterUser.get(0), res);
 		        	endorsementid = filterUser.get(0).getFinancialEndtIds()==null?"":filterUser.get(0).getFinancialEndtIds();
 					referralid = filterUser.get(0).getReferralId()==null?"":filterUser.get(0).getReferralId();
+					//referralid=referralid.substring(1);
+					
 					ArrayList<String> endorsementids = new ArrayList<String>(Arrays.asList(endorsementid));
 			        ArrayList<String> referralids = new ArrayList<String>(Arrays.asList(referralid));
+			
 			        res.setEndorsementIds(endorsementids);
 					res.setReferralIds(referralids);
 					res.setIsOptedYn("Y");
@@ -1975,6 +1992,8 @@ List<Error> errorList = new ArrayList<Error>();
 		        	dozerMapper.map(data, res);
 		        	endorsementid = data.getFinancialEndtIds()==null?"":data.getFinancialEndtIds();
 					referralid = data.getReferralId()==null?"":data.getReferralId();
+					//referralid=referralid.substring(1);
+
 					ArrayList<String> endorsementids = new ArrayList<String>(Arrays.asList(endorsementid));
 			        ArrayList<String> referralids = new ArrayList<String>(Arrays.asList(referralid));
 			        res.setEndorsementIds(endorsementids);

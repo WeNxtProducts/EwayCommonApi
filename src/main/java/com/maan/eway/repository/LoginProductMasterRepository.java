@@ -35,4 +35,8 @@ public interface LoginProductMasterRepository  extends JpaRepository<LoginProduc
 
 	List<LoginProductMaster> findByLoginIdAndCompanyIdOrderByProductNameAsc(String loginId, String insuranceId);
 	List<LoginProductMaster> findByLoginIdAndCompanyIdAndProductIdAndStatusOrderByEntryDateDesc(String loginId, String insuranceId,Integer productId,String status);
+
+	List<LoginProductMaster> findByLoginIdAndCompanyIdAndProductIdOrderByAmendIdDesc(String loginId, String insuranceId,
+			Integer valueOf);
+
 }
