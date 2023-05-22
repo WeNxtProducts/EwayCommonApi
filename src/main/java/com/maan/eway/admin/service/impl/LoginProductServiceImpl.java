@@ -1662,8 +1662,6 @@ List<Error> errorList = new ArrayList<Error>();
 			cal.set(Calendar.HOUR_OF_DAY, 1);
 			cal.set(Calendar.MINUTE, 1);
 			Date todayEnd   = cal.getTime();
-			long MILLS_IN_A_DAY = 1000*60*60*24;
-			Date oldEndDate = new Date(new Date().getTime()- MILLS_IN_A_DAY);
 
 			for(IssuerProductListReq req : req1.getIssuerProductReq()) {
 			// Criteria
@@ -1748,6 +1746,9 @@ List<Error> errorList = new ArrayList<Error>();
 				List<LoginProductMaster> loginproduct = loginProductRepo.findByLoginIdAndCompanyIdAndProductIdOrderByAmendIdDesc(req1.getLoginId(),req1.getInsuranceId(),Integer.valueOf(data.getProductId()));
 				if(loginproduct.size()>0 && loginproduct!=null) {
 					LoginProductMaster lastRecord = loginproduct.get(0);
+					long MILLS_IN_A_DAY = 1000*60*60*24;
+					Date oldEndDate = new Date(effDate.getTime()- MILLS_IN_A_DAY);
+
 					lastRecord.setEffectiveDateEnd(oldEndDate);
 					loginProductRepo.saveAndFlush(lastRecord);
 
