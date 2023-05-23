@@ -117,7 +117,7 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 				errors.add(new Error("06", "Attached Branch", "Please Choose Atleast One Branch"));
 			} 
 			
-			if(StringUtils.isNotBlank(loginReq.getSubUserType()) && ( loginReq.getSubUserType().equalsIgnoreCase("SuperAdmin")) ) { 
+			if(StringUtils.isNotBlank(loginReq.getSubUserType()) && (loginReq.getSubUserType().equalsIgnoreCase("low") || loginReq.getSubUserType().equalsIgnoreCase("SuperAdmin")) ) { 
 				if( loginReq.getProductIds()==null || loginReq.getProductIds().size() == 0 ) {
 					errors.add(new Error("06", "ProductIds", "Please Choose Atleast One Product"));
 				} 
