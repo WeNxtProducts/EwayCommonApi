@@ -1,5 +1,7 @@
 package com.maan.eway.res;
 
+import java.util.List;
+
 import javax.annotation.sql.DataSourceDefinition;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -18,4 +20,7 @@ public class CommonSumInsuredDetails {
 
 	@JsonProperty("CurrencyId")
     private String   currencyId ;
+	
+	@JsonProperty("SectionId")
+	private List<String> sectionId;
 }

@@ -2326,9 +2326,13 @@ private BuildingDetailsRepository BuildingRepo;
 		try {
 			List<CommonDataDetails> paccDatas = commonDataRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
 			CommonDataDetails pacc = paccDatas.get(0) ;
+			List<EserviceSectionDetails>   sections = eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(pacc.getRequestReferenceNo());	
+			List<String> sectionIds = sections.stream().filter( o -> o.getRiskId().equals(pacc.getRiskId() )).map(EserviceSectionDetails :: getSectionId ).collect(Collectors.toList());
+			
 			res.setCurrencyId(pacc.getCurrency());
 			res.setRiskId(pacc.getRiskId().toString());
 			res.setSumInsured(pacc.getSumInsured() == null?"0" :pacc.getSumInsured().toPlainString());
+			res.setSectionId(sectionIds);
 			
 		} catch ( Exception e) {
 			e.printStackTrace();
