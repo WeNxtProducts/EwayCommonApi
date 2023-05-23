@@ -112,11 +112,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="Manufacture_age", nullable=false)
     private Integer    manufactureAge ;
 
-    @Column(name="registration_age", nullable=false)
+    @Column(name="registration_age")
     private Integer    registrationAge ;
 
     @Temporal(TemporalType.DATE)
-    @Column(name="Registration_Year", nullable=false)
+    @Column(name="Registration_Year")
     private Date       registrationYear ;
 
     @Column(name="Seating_Capacity", nullable=false, length=20)
