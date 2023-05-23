@@ -68,4 +68,7 @@ public class LoginIssuerGridRes {
 	@JsonProperty("BrokerCompanyYn")
     private String    brokerCompanyYn ;
 
+	@JsonProperty("ReferralIds")
+	private List<String> referralIds;
+	
 }
