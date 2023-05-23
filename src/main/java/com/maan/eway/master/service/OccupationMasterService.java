@@ -16,6 +16,7 @@ import com.maan.eway.master.req.OccupationMasterGetReq;
 import com.maan.eway.master.req.OccupationMasterSaveReq;
 import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.IndustryDropDownRes;
 import com.maan.eway.res.SuccessRes;
 /**
 * <h2>BankMasterServiceimpl</h2>
@@ -33,7 +34,7 @@ public interface OccupationMasterService  {
 	List<OccupationMasterRes> getActiveOccupation(OccupationMasterGetAllReq req);
 
 	//List<DropDownRes> getOccupationMasterDropdown();
-	List<DropDownRes> getOccupationMasterDropdown(OccupationDropDownReq req);
+	List<IndustryDropDownRes> getOccupationMasterDropdown(OccupationDropDownReq req);
 
 	SuccessRes changeStatusOfOccupation(OccupationChangeStatusReq req);
 

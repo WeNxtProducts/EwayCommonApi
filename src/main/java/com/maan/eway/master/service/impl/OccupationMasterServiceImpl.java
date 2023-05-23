@@ -49,6 +49,7 @@ import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.master.service.OccupationMasterService;
 import com.maan.eway.repository.OccupationMasterRepository;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.IndustryDropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.impl.BasicValidationService;
 /**
@@ -165,8 +166,8 @@ public List<Error> validateOccupation(OccupationMasterSaveReq req) {
 }
 
 @Override
-public List<DropDownRes> getOccupationMasterDropdown(OccupationDropDownReq req) {
-List<DropDownRes> resList = new ArrayList<DropDownRes>();
+public List<IndustryDropDownRes> getOccupationMasterDropdown(OccupationDropDownReq req) {
+List<IndustryDropDownRes> resList = new ArrayList<IndustryDropDownRes>();
 try {
 	Date today = new Date();
 	Calendar cal = new GregorianCalendar();
@@ -237,10 +238,13 @@ try {
 
 	for (OccupationMaster data : list) {
 		// Response 
-		DropDownRes res = new DropDownRes();
+		IndustryDropDownRes res = new IndustryDropDownRes();
 		res.setCode(data.getOccupationId().toString());
 		res.setCodeDesc(data.getOccupationName());
 		res.setStatus(data.getStatus());
+		res.setCategoryId(data.getCategoryId());
+		res.setCategoryDesc("Category " + data.getCategoryId());
+		
 		resList.add(res);
 	}
 }
