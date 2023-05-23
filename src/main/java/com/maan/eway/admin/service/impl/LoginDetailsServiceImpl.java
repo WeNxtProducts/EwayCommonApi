@@ -330,8 +330,8 @@ this.repository = repo;
 			productReq.setProductIds(req.getLoginInformation().getProductIds());
 			productReq.setReferralIds(req.getLoginInformation().getReferralIds());
 			
-			if((!req.getLoginInformation().getSubUserType().equalsIgnoreCase("high")) ||
-			!req.getLoginInformation().getSubUserType().equalsIgnoreCase("both")){
+			if((req.getLoginInformation().getSubUserType().equalsIgnoreCase("low")) ||
+			req.getLoginInformation().getSubUserType().equalsIgnoreCase("SuperAdmin")){
 				
 				LoginCreationRes productRes = loginProductService.saveIssuerProductDetails(productReq) ;
 			}
