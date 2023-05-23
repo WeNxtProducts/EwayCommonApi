@@ -26,7 +26,7 @@ public class JasperConfiguration {
 	private String datasourcebyjndi; 
 	 
 	// Enable This Value For run in Jndi Server
-	@Value("${spring.datasource.jndi-name}")  
+//	@Value("${spring.datasource.jndi-name}")  
 	private String jndiDatasource;
 	
 	public String getDraftPath() {
@@ -64,13 +64,13 @@ public class JasperConfiguration {
 	}
 	
 	// Enable This 4 Value For run in Application properties 
-	//@Value("${spring.datasource.driver-class-name}")
+	@Value("${spring.datasource.driver-class-name}")
 	private String driverclassname;
-	//@Value("${spring.datasource.url}")
+	@Value("${spring.datasource.url}")
 	private String datasourceurl;
-	//@Value("${spring.datasource.username}")
+	@Value("${spring.datasource.username}")
 	private String datausername;
-	//@Value("${spring.datasource.password}")
+	@Value("${spring.datasource.password}")
 	private String datapassword;
 	
 	
