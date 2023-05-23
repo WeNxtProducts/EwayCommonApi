@@ -21,5 +21,8 @@ public class AttachCompnayProductRequest {
 	@JsonProperty("ProductIds")
 	private List<String> productIds ;
 	
+	 @JsonProperty("ReferralIds")
+     private List<String>  referralIds ;
+
 	
 }

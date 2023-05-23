@@ -328,6 +328,7 @@ this.repository = repo;
 			productReq.setInsuranceId(req.getLoginInformation().getCompanyId());
 			productReq.setLoginId(req.getLoginInformation().getLoginId());
 			productReq.setProductIds(req.getLoginInformation().getProductIds());
+			productReq.setReferralIds(req.getLoginInformation().getReferralIds());
 			
 			if((!req.getLoginInformation().getSubUserType().equalsIgnoreCase("high")) ||
 			!req.getLoginInformation().getSubUserType().equalsIgnoreCase("both")){

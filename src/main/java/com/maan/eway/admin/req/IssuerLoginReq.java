@@ -50,4 +50,9 @@ public class IssuerLoginReq {
 	 
 	 @JsonProperty("ProductIds")
 	    private List<String>  productIds ;
-}
+	 
+	 @JsonProperty("ReferralIds")
+     private List<String>  referralIds ;
+
+
+	}

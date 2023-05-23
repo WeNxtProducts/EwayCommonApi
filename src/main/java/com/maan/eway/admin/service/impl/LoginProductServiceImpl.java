@@ -539,7 +539,14 @@ public class LoginProductServiceImpl  implements LoginProductService {
 				}
 				save.setFinancialEndtIds(financeid);
 				save.setNonFinancialEndtIds(nonfinanceid);
-				
+
+				String referralid = "";				
+				List<String> referralIds = req.getReferralIds();
+				for (int i = 0; i < referralIds.size(); i++) {
+					referralid = referralid + "," + referralIds.get(i);
+				}
+				referralid=referralid.substring(1);
+				save.setReferralId(referralid);
 				loginProductRepo.saveAndFlush(save);
 				log.info("Saved Details is ---> " + json.toJson(save));
 				
