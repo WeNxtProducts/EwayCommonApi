@@ -1746,13 +1746,16 @@ List<Error> errorList = new ArrayList<Error>();
 				List<LoginProductMaster> loginproduct = loginProductRepo.findByLoginIdAndCompanyIdAndProductIdOrderByAmendIdDesc(req1.getLoginId(),req1.getInsuranceId(),Integer.valueOf(data.getProductId()));
 				if(loginproduct.size()>0 && loginproduct!=null) {
 					LoginProductMaster lastRecord = loginproduct.get(0);
+					if(lastRecord.getEffectiveDateStart().equals(effDate)) {
+						save.setAmendId(loginproduct.get(0).getAmendId());											
+					}
+					else {
+					save.setAmendId(loginproduct.get(0).getAmendId()+1);
 					long MILLS_IN_A_DAY = 1000*60*60*24;
 					Date oldEndDate = new Date(effDate.getTime()- MILLS_IN_A_DAY);
-
 					lastRecord.setEffectiveDateEnd(oldEndDate);
+					}
 					loginProductRepo.saveAndFlush(lastRecord);
-
-					save.setAmendId(loginproduct.get(0).getAmendId()+1);					
 
 				}
 				else {
