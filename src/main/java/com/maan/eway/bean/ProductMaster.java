@@ -82,7 +82,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="PRODUCT_ICON_NAME", length=50)
     private String     productIconName ;
 
-    @Column(name="MOTOR_YN", nullable=false, length=1)
+    @Column(name="MOTOR_YN", length=1)
     private String     motorYn ;
 
     @Column(name="DISPLAY_ORDER")
