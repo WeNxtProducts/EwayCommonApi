@@ -209,6 +209,7 @@ private static final long serialVersionUID = 1L;
     private Integer  industryId ;
 
 
+
     @Column(name="NATURE_OF_TRADE_ID")
     private Integer natureOfTradeId;
     
@@ -269,6 +270,35 @@ private static final long serialVersionUID = 1L;
     @Column(name="TRAP_DOORS")
     private Integer trapDoors;
     
+    @Column(name="CASH_IN_HAND_DIRECTORS")
+    private BigDecimal cashInHandDirectors;
+    
+    @Column(name="CASH_IN_TRANSIT")
+    private BigDecimal cashInTransit;
+    
+    @Column(name="CASH_IN_HAND_EMPLOYEES")
+    private BigDecimal cashInHandEmployees;
+    
+    @Column(name="CASH_IN_SAFE")
+    private BigDecimal cashInSafe;
+    
+    @Column(name="CASH_IN_PREMISES")
+    private BigDecimal cashInPremises;
+    
+    @Column(name="REVENUE_FROM_STAMPS")
+    private BigDecimal revenueFromStamps;
+    
+    @Column(name="MONEY_IN_SAFE_BUSINESS")
+    private BigDecimal moneyInSafeBusiness;
+    
+    @Column(name="MONEY_OUT_SAFE_BUSINESS")
+    private BigDecimal moneyOutSafeBusiness;
+    
+    @Column(name="MONEY_IN_PREMISES")
+    private BigDecimal moneyInPremises;
+    
+    @Column(name="MONEY_IN_LOCKER")
+    private BigDecimal moneyInLocker;
 }
 
 

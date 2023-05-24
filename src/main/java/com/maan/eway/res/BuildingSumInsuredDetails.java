@@ -110,4 +110,34 @@ public class BuildingSumInsuredDetails {
    
     @JsonProperty("CashValueablesSi")
     private String cashValueablesSi;
+    
+    @JsonProperty("CashInHandDirectors")
+    private String cashInHandDirectors;
+    
+    @JsonProperty("CashInTransit")
+    private String cashInTransit;
+    
+    @JsonProperty("CashInHandEmployees")
+    private String cashInHandEmployees;
+    
+    @JsonProperty("CashInSafe")
+    private String cashInSafe;
+    
+    @JsonProperty("CashInPremises")
+    private String cashInPremises;
+    
+    @JsonProperty("RevenueFromStamps")
+    private String revenueFromStamps;
+    
+    @JsonProperty("MoneyInSafeBusiness")
+    private String moneyInSafeBusiness;
+    
+    @JsonProperty("MoneyOutSafeBusiness")
+    private String moneyOutSafeBusiness;
+    
+    @JsonProperty("MoneyInPremises")
+    private String moneyInPremises;
+    
+    @JsonProperty("MoneyInLocker")
+    private String moneyInLocker;
 }
