@@ -22,6 +22,8 @@ public class EndorsementMasterGetallReq {
 	@JsonProperty("EndtTypeCategoryId")
 	private String endtTypeCategoryId;
 
+	@JsonProperty("LoginId")
+	private String loginId;
 
 
 }

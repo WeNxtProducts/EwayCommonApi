@@ -88,8 +88,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="REMARKS", length=100)
     private String     remarks ;
 
-    @Column(name="MOTOR_YN")
-    private String       motorYn;
+    @Column(name="MOTOR_YN", length=1)
+    private String     motorYn;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 

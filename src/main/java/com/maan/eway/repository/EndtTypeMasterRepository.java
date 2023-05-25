@@ -52,4 +52,8 @@ public interface EndtTypeMasterRepository  extends JpaRepository<EndtTypeMaster,
 	List<EndtTypeMaster> findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndEndtTypeIdOrderByPriorityAsc(
 			String companyId, Integer valueOf, String string, Date date, Date date2, Integer valueOf2);
 
+	List<EndtTypeMaster> findByEndtTypeCategoryIdAndEndtTypeIdAndCompanyIdAndProductIdOrderByAmendIdDesc(
+			Integer integer, Integer valueOf, String companyId, Integer integer2);
+
+
 }

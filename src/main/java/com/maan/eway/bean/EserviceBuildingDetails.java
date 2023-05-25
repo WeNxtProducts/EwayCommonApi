@@ -235,6 +235,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="PRODUCT_DESC", length=100)
     private String  productDesc;
 
+    @Column(name="SECTION_ID", length=100)
+    private String  sectionId;
+    
     @Column(name="SECTION_DESC", length=100)
     private String  sectionDesc;
 
@@ -395,16 +398,17 @@ private static final long serialVersionUID = 1L;
       
       @Column(name="ENDT_CATEG_DESC", length=10)
       private String     endtCategDesc ;
-
+      
+      
       @Column(name="ENDT_PREMIUM")
       private Double       endtPremium ;
+      
 
       @Column(name="LIABILITY_OCCUPATION_ID", length=10)
       private String     liabilityOccupationId ;
       
       @Column(name="LIABILITY_OCCUPATION_DESC", length=10)
       private String     liabilityOccupationDesc ;
-    
       
       @Column(name="WALL_TYPE", length=10)
       private String     wallType ;
@@ -417,7 +421,7 @@ private static final long serialVersionUID = 1L;
       
       @Column(name="ROOF_TYPE_DESC", length=10)
       private String     roofTypeDesc ;
-      
+    
       @Column(name="NATURE_OF_TRADE_ID")
       private Integer natureOfTradeId;
       
@@ -484,9 +488,6 @@ private static final long serialVersionUID = 1L;
       @Column(name="BACK_DOORS")
       private Integer backDoors;
       
-      @Column(name="TRAP_DOORS")
-      private Integer trapDoors;
-      
       @Column(name="WINDOWS_MATERIAL_ID")
       private Integer windowsMaterialId;
       
@@ -516,9 +517,48 @@ private static final long serialVersionUID = 1L;
       
       @Column(name="ACCESSIBLE_WINDOWS")
       private Integer accessibleWindows;
-     
-      @Column(name="SECTION_ID", length=100)
-      private String  sectionId;
+   
+      
+      @Column(name="TRAP_DOORS")
+      private Integer trapDoors;
+      
+      @Column(name="CASH_IN_HAND_DIRECTORS")
+      private BigDecimal cashInHandDirectors;
+      
+      @Column(name="CASH_IN_TRANSIT")
+      private BigDecimal cashInTransit;
+      
+      @Column(name="CASH_IN_HAND_EMPLOYEES")
+      private BigDecimal cashInHandEmployees;
+      
+      @Column(name="CASH_IN_SAFE")
+      private BigDecimal cashInSafe;
+      
+      @Column(name="CASH_IN_PREMISES")
+      private BigDecimal cashInPremises;
+      
+      @Column(name="REVENUE_FROM_STAMPS")
+      private BigDecimal revenueFromStamps;
+      
+      @Column(name="MONEY_IN_SAFE_BUSINESS")
+      private BigDecimal moneyInSafeBusiness;
+      
+      @Column(name="MONEY_OUT_SAFE_BUSINESS")
+      private BigDecimal moneyOutSafeBusiness;
+      
+      @Column(name="MONEY_IN_PREMISES")
+      private BigDecimal moneyInPremises;
+      
+      @Column(name="MONEY_IN_LOCKER")
+      private BigDecimal moneyInLocker;
+
+      @Column(name="MACHINE_BREAKDOWN_SI")
+      private BigDecimal machineBreakdownSi ;
+      
+      @Column(name="PLATE_GLASS_SI")
+      private BigDecimal plateGlassSi ;
+      
+      
 }
 
 

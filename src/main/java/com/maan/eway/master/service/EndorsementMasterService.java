@@ -29,4 +29,7 @@ public interface EndorsementMasterService {
 
 	List<DropDownRes> getEndorsementMasterDropdown(EndorsementMasterDropdownReq req);
 
+	List<EndorsementMasterGetallRes> getallBrokerEndorsement(EndorsementMasterGetallReq req);
+
+
 }
