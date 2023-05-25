@@ -1369,6 +1369,7 @@ private BuildingDetailsRepository BuildingRepo;
 					underWriterReq.setUwPhonecode(underWriterData.get("mobileCodeDesc")== null ? null:Integer.valueOf(underWriterData.get("mobileCodeDesc").toString()));
 					underWriterReq.setUwPhoneNo(underWriterData.get("userMobile")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("userMobile").toString()));
 					underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
+					underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());
 					underWrite.add(underWriterReq);
 				}
 			}
@@ -1477,6 +1478,7 @@ private BuildingDetailsRepository BuildingRepo;
 					underWriterReq.setUwPhonecode(underWriterData.get("mobileCodeDesc") == null ? null: Integer.valueOf(underWriterData.get("mobileCodeDesc").toString()));
 					underWriterReq.setUwPhoneNo(underWriterData.get("userMobile") == null ? BigDecimal.ZERO: new BigDecimal(underWriterData.get("userMobile").toString()));
 					underWriterReq.setUwName(underWriterData.get("userName") == null ? "" : underWriterData.get("userName").toString());
+					underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());
 					underWrite.add(underWriterReq);
 				}
 			}
@@ -1589,6 +1591,7 @@ private BuildingDetailsRepository BuildingRepo;
 							: new BigDecimal(underWriterData.get("userMobile").toString()));
 					underWriterReq.setUwName(
 							underWriterData.get("userName") == null ? "" : underWriterData.get("userName").toString());
+					underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());
 					underWrite.add(underWriterReq);
 				}
 			}
@@ -1695,6 +1698,7 @@ private BuildingDetailsRepository BuildingRepo;
 							underWriterReq.setUwPhonecode(underWriterData.get("mobileCodeDesc")== null ? null:Integer.valueOf(underWriterData.get("mobileCodeDesc").toString()));
 							underWriterReq.setUwPhoneNo(underWriterData.get("userMobile")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("userMobile").toString()));
 							underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
+							underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());
 							underWrite.add(underWriterReq);
 						}
 					}
@@ -2713,6 +2717,7 @@ private BuildingDetailsRepository BuildingRepo;
 						underWriterReq.setUwPhonecode(underWriterData.get("mobileCodeDesc")== null ? null:Integer.valueOf(underWriterData.get("mobileCodeDesc").toString()));
 						underWriterReq.setUwPhoneNo(underWriterData.get("userMobile")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("userMobile").toString()));
 						underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
+						underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());
 						underWrite.add(underWriterReq);
 					}
 				}
@@ -2814,6 +2819,7 @@ private BuildingDetailsRepository BuildingRepo;
 						underWriterReq.setUwPhonecode(underWriterData.get("mobileCodeDesc")== null ? null:Integer.valueOf(underWriterData.get("mobileCodeDesc").toString()));
 						underWriterReq.setUwPhoneNo(underWriterData.get("userMobile")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("userMobile").toString()));
 						underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
+						underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());
 						underWrite.add(underWriterReq);
 					}
 				}
@@ -2914,6 +2920,7 @@ private BuildingDetailsRepository BuildingRepo;
 						underWriterReq.setUwPhonecode(underWriterData.get("mobileCodeDesc")== null ? null:Integer.valueOf(underWriterData.get("mobileCodeDesc").toString()));
 						underWriterReq.setUwPhoneNo(underWriterData.get("userMobile")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("userMobile").toString()));
 						underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
+						underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());
 						underWrite.add(underWriterReq);
 					}
 				}
@@ -3014,6 +3021,7 @@ private BuildingDetailsRepository BuildingRepo;
 						underWriterReq.setUwPhonecode(underWriterData.get("mobileCodeDesc")== null ? null:Integer.valueOf(underWriterData.get("mobileCodeDesc").toString()));
 						underWriterReq.setUwPhoneNo(underWriterData.get("userMobile")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("userMobile").toString()));
 						underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
+						underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());
 						underWrite.add(underWriterReq);
 					}
 				}

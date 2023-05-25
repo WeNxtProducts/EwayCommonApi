@@ -28,4 +28,7 @@ public class UnderWriter{
     private Integer    uwMessengerCode ;
 	@JsonProperty("Uwmessengerphone")
     private BigDecimal uwMessengerPhone ;
+	
+	@JsonProperty("UwLoginId")
+    private String     uwLoginId;
 }
