@@ -62,5 +62,15 @@ public class Notification {
 	
 	@JsonProperty("PushedBy")
 	private String pushedBy;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
+
+	@JsonProperty("RequestReferenceNo")
+	private String refNo;
+	
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+
 }
 

@@ -30,4 +30,11 @@ public class Broker{
     private Integer    brokerMessengerCode ;
 	@JsonProperty("Brokermessengerphone")
     private BigDecimal brokerMessengerPhone ;
+	@JsonProperty("BrokerLoginId")
+    private String     brokerLoginId;
+	@JsonProperty("BrokeruserType")
+    private String     brokeruserType;
+	@JsonProperty("BrokersubuserType")
+    private String     brokersubuserType;
+
 }

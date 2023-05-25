@@ -31,4 +31,9 @@ public class UnderWriter{
 	
 	@JsonProperty("UwLoginId")
     private String     uwLoginId;
+	@JsonProperty("UwuserType")
+    private String     uwuserType;
+	@JsonProperty("UwsubuserType")
+    private String     uwsubuserType;
+
 }

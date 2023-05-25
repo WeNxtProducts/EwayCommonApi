@@ -28,4 +28,7 @@ public class Customer{
     private Integer    customerMessengerCode ;
 	@JsonProperty("Customermessengerphone")
     private BigDecimal customerMessengerPhone ;
+	@JsonProperty("CustomerRefno")
+    private String     customerRefno ;
+
 }

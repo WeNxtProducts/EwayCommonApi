@@ -176,8 +176,33 @@ private static final long serialVersionUID = 1L;
     @Column(name="attach_file_path")
     private String attachFilePath;
     
-    @Column(name="PUSHED_BY")
+    @Column(name="PUSHED_BY", length=100)
     private String pushedBy;
+    
+    @Column(name="UWLOGIN_ID", length=100)
+    private String uwloginId;
+    
+    @Column(name="UWUSER_TYPE", length=100)
+    private String uwUserType;
+    
+    @Column(name="UWSUBUSER_TYPE", length=100)
+    private String uwSubuserType;
+
+    @Column(name="CUSTOMER_REFNO", length=100)
+    private String customerRefno;
+
+    @Column(name="PAGE_TYPE", length=100)
+    private String pageType;
+
+    @Column(name="BRANCH_CODE", length=100)
+    private String branchCode;
+
+    @Column(name="REFNO", length=100)
+    private String refno;
+
+    @Column(name="INSURANCE_ID", length=100)
+    private String insuranceId;
+
 }
 
 

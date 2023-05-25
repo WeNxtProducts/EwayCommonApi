@@ -118,8 +118,15 @@ public class NotificationService {
 					.companyLogo(coms.get(0).getCompanyLogo())
 					.companyAddress(coms.get(0).getCompanyAddress())
 					.attachFilePath(filesTobeAttch)
-					.build();	
-			NotifTransactionDetails sv = notifTrans.save(nt);
+					.uwloginId(n.getUnderwriters().get(0).getUwLoginId())
+					.uwUserType(n.getUnderwriters().get(0).getUwuserType())
+					.uwSubuserType(n.getUnderwriters().get(0).getUwsubuserType())
+					.customerRefno(n.getCustomer().getCustomerRefno())
+					.branchCode(n.getBranchCode())
+					.refno(n.getRefNo())
+					.insuranceId(n.getInsuranceId())
+					.build();
+					NotifTransactionDetails sv = notifTrans.save(nt);
 			c.setIsError(Boolean.FALSE);
 			c.setErroCode(100);
 			c.setIsError(null);

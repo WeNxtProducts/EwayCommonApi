@@ -1344,6 +1344,7 @@ private BuildingDetailsRepository BuildingRepo;
 			brokerReq.setBrokerPhoneCode(loginInfo.getMobileCodeDesc()==null?null:Integer.valueOf((loginInfo.getMobileCodeDesc())));
 			brokerReq.setBrokerPhoneNo(loginInfo.getUserMobile()==null?BigDecimal.ZERO:new BigDecimal(loginInfo.getUserMobile()));
 			brokerReq.setBrokerName(loginInfo.getUserName());
+			
 			}
 			// Customer Info
 			EserviceCustomerDetails customerData = customerDetailsRepo.findByCustomerReferenceNo(cusRefNo.get(0).getCustomerReferenceNo());
@@ -1355,6 +1356,7 @@ private BuildingDetailsRepository BuildingRepo;
 			cusReq.setCustomerPhoneNo(new BigDecimal(customerData.getMobileNo1()));
 			cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappCodeDesc()));
 			cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
+			cusReq.setCustomerRefno(cusRefNo.get(0).getCustomerReferenceNo());
 			}
 
 			// UnderWriter Info
@@ -1369,7 +1371,9 @@ private BuildingDetailsRepository BuildingRepo;
 					underWriterReq.setUwPhonecode(underWriterData.get("mobileCodeDesc")== null ? null:Integer.valueOf(underWriterData.get("mobileCodeDesc").toString()));
 					underWriterReq.setUwPhoneNo(underWriterData.get("userMobile")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("userMobile").toString()));
 					underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
-					underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());
+					underWriterReq.setUwLoginId(underWriterData.get("uwloginId")==null?"":underWriterData.get("uwloginId").toString());
+					underWriterReq.setUwuserType(underWriterData.get("uwuserType")==null?"":underWriterData.get("uwuserType").toString());
+					underWriterReq.setUwsubuserType(underWriterData.get("uwsubuserType")==null?"":underWriterData.get("uwsubuserType").toString());
 					underWrite.add(underWriterReq);
 				}
 			}
@@ -1405,6 +1409,9 @@ private BuildingDetailsRepository BuildingRepo;
 			n.setQuoteNo(StringUtils.isBlank(cusRefNo.get(0).getQuoteNo().toString())?cusRefNo.get(0).getRequestReferenceNo():cusRefNo.get(0).getQuoteNo().toString());
 			n.setSectionName(cusRefNo.get(0).getSectionName());
 			
+			n.setRefNo(req.getRequestReferenceNo());
+			n.setBranchCode(cusRefNo.get(0).getBranchCode());
+			n.setInsuranceId(cusRefNo.get(0).getCompanyId());
 			n.getTinyUrl();
 
 			// Calling pushNotification
@@ -1464,6 +1471,8 @@ private BuildingDetailsRepository BuildingRepo;
 			cusReq.setCustomerPhoneNo(new BigDecimal(customerData.getMobileNo1()));
 			cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappCodeDesc()));
 			cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
+			cusReq.setCustomerRefno(cusRefNo.get(0).getCustomerReferenceNo());
+
 			}
 			// UnderWriter Info
 			List<Tuple> underWriterList = getUnderWriterDetails(cusRefNo.get(0).getProductId(),
@@ -1479,6 +1488,10 @@ private BuildingDetailsRepository BuildingRepo;
 					underWriterReq.setUwPhoneNo(underWriterData.get("userMobile") == null ? BigDecimal.ZERO: new BigDecimal(underWriterData.get("userMobile").toString()));
 					underWriterReq.setUwName(underWriterData.get("userName") == null ? "" : underWriterData.get("userName").toString());
 					underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());
+					underWriterReq.setUwLoginId(underWriterData.get("uwloginId")==null?"":underWriterData.get("uwloginId").toString());
+					underWriterReq.setUwuserType(underWriterData.get("uwuserType")==null?"":underWriterData.get("uwuserType").toString());
+					underWriterReq.setUwsubuserType(underWriterData.get("uwsubuserType")==null?"":underWriterData.get("uwsubuserType").toString());
+
 					underWrite.add(underWriterReq);
 				}
 			}
@@ -1515,6 +1528,9 @@ private BuildingDetailsRepository BuildingRepo;
 			n.setSectionName(cusRefNo.get(0).getSectionName());
 			n.setStatusMessage("");
 			n.getTinyUrl();
+			n.setRefNo(req.getRequestReferenceNo());
+			n.setBranchCode(cusRefNo.get(0).getBranchCode());
+			n.setInsuranceId(cusRefNo.get(0).getCompanyId());
 
 			// Calling pushNotification
 			CommonRes res = notiService.pushNotification(n);
@@ -1570,6 +1586,8 @@ private BuildingDetailsRepository BuildingRepo;
 				cusReq.setCustomerPhoneNo(new BigDecimal(customerData.getMobileNo1()));
 				cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappCodeDesc()));
 				cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
+				cusReq.setCustomerRefno(cusRefNo.get(0).getCustomerReferenceNo());
+
 			}
 
 			// UnderWriter Info
@@ -1592,6 +1610,10 @@ private BuildingDetailsRepository BuildingRepo;
 					underWriterReq.setUwName(
 							underWriterData.get("userName") == null ? "" : underWriterData.get("userName").toString());
 					underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());
+					underWriterReq.setUwLoginId(underWriterData.get("uwloginId")==null?"":underWriterData.get("uwloginId").toString());
+					underWriterReq.setUwuserType(underWriterData.get("uwuserType")==null?"":underWriterData.get("uwuserType").toString());
+					underWriterReq.setUwsubuserType(underWriterData.get("uwsubuserType")==null?"":underWriterData.get("uwsubuserType").toString());
+
 					underWrite.add(underWriterReq);
 				}
 			}
@@ -1627,6 +1649,10 @@ private BuildingDetailsRepository BuildingRepo;
 			n.setQuoteNo(cusRefNo.get(0).getQuoteNo().toString());
 			n.setSectionName(cusRefNo.get(0).getSectionDesc());
 			n.setStatusMessage("");
+			n.setRefNo(req.getRequestReferenceNo());
+			n.setBranchCode(cusRefNo.get(0).getBranchCode());
+			n.setInsuranceId(cusRefNo.get(0).getCompanyId());
+			
 			n.getTinyUrl();
 
 			// Calling pushNotification
@@ -1683,6 +1709,8 @@ private BuildingDetailsRepository BuildingRepo;
 						cusReq.setCustomerPhoneNo(new BigDecimal(customerData.getMobileNo1()));
 						cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappCodeDesc()));
 						cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
+						cusReq.setCustomerRefno(cusRefNo.get(0).getCustomerReferenceNo());
+
 					}
 
 					
@@ -1699,6 +1727,10 @@ private BuildingDetailsRepository BuildingRepo;
 							underWriterReq.setUwPhoneNo(underWriterData.get("userMobile")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("userMobile").toString()));
 							underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
 							underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());
+							underWriterReq.setUwLoginId(underWriterData.get("uwloginId")==null?"":underWriterData.get("uwloginId").toString());
+							underWriterReq.setUwuserType(underWriterData.get("uwuserType")==null?"":underWriterData.get("uwuserType").toString());
+							underWriterReq.setUwsubuserType(underWriterData.get("uwsubuserType")==null?"":underWriterData.get("uwsubuserType").toString());
+
 							underWrite.add(underWriterReq);
 						}
 					}
@@ -1735,6 +1767,10 @@ private BuildingDetailsRepository BuildingRepo;
 					n.setQuoteNo(StringUtils.isBlank(cusRefNo.get(0).getQuoteNo().toString())?cusRefNo.get(0).getRequestReferenceNo():cusRefNo.get(0).getQuoteNo().toString());
 					n.setSectionName(cusRefNo.get(0).getSectionDesc());
 				// Referral Noti , referral app,recj
+					n.setRefNo(req.getRequestReferenceNo());
+					n.setBranchCode(cusRefNo.get(0).getBranchCode());
+					n.setInsuranceId(cusRefNo.get(0).getCompanyId());
+
 					n.getTinyUrl();
 
 					// Calling pushNotification
@@ -1785,8 +1821,9 @@ private BuildingDetailsRepository BuildingRepo;
 					   u.get("updatedDate").alias("updatedDate"),u.get("userMail").alias("userMail"), 
 					   u.get("userMobile").alias("userMobile"),u.get("userName").alias("userName"), 
 					   u.get("vatRegNo").alias("vatRegNo"),u.get("whatsappCode").alias("whatsappCode"),
-					   u.get("whatsappCodeDesc").alias("whatsappCodeDesc"),u.get("whatsappNo").alias("whatsappNo"));			
-			List<String> subUserType = new ArrayList<String>(); 
+					   u.get("whatsappCodeDesc").alias("whatsappCodeDesc"),u.get("whatsappNo").alias("whatsappNo"),
+					   l.get("userType").alias("userType"),l.get("subUserType").alias("subUserType"));
+					   List<String> subUserType = new ArrayList<String>(); 
 			subUserType.add("high");
 			subUserType.add("both");
 			//In 
@@ -2718,6 +2755,8 @@ private BuildingDetailsRepository BuildingRepo;
 				cusReq.setCustomerPhoneNo(new BigDecimal(customerData.getMobileNo1()));
 				cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappCodeDesc()));
 				cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
+				cusReq.setCustomerRefno(cusRefNo.get(0).getCustomerReferenceNo());
+
 				}
 
 				// UnderWriter Info
@@ -2733,6 +2772,10 @@ private BuildingDetailsRepository BuildingRepo;
 						underWriterReq.setUwPhoneNo(underWriterData.get("userMobile")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("userMobile").toString()));
 						underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
 						underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());
+						underWriterReq.setUwLoginId(underWriterData.get("uwloginId")==null?"":underWriterData.get("uwloginId").toString());
+						underWriterReq.setUwuserType(underWriterData.get("uwuserType")==null?"":underWriterData.get("uwuserType").toString());
+						underWriterReq.setUwsubuserType(underWriterData.get("uwsubuserType")==null?"":underWriterData.get("uwsubuserType").toString());
+
 						underWrite.add(underWriterReq);
 					}
 				}
@@ -2763,6 +2806,10 @@ private BuildingDetailsRepository BuildingRepo;
 				n.setProductName("Motor");
 				n.setQuoteNo(cusRefNo.get(0).getQuoteNo().toString());
 				n.setSectionName(cusRefNo.get(0).getSectionName());
+				n.setRefNo(req.getRequestReferenceNo());
+			n.setBranchCode(cusRefNo.get(0).getBranchCode());
+			n.setInsuranceId(cusRefNo.get(0).getCompanyId());
+
 				n.setStatusMessage("");
 				n.getTinyUrl();
 
@@ -2809,6 +2856,7 @@ private BuildingDetailsRepository BuildingRepo;
 				brokerReq.setBrokerPhoneCode(loginInfo.getMobileCodeDesc()==null?null:Integer.valueOf((loginInfo.getMobileCodeDesc())));
 				brokerReq.setBrokerPhoneNo(loginInfo.getUserMobile()==null?BigDecimal.ZERO:new BigDecimal(loginInfo.getUserMobile()));
 				brokerReq.setBrokerName(loginInfo.getUserName());
+
 				}
 				// Customer Info
 				EserviceCustomerDetails customerData = customerDetailsRepo.findByCustomerReferenceNo(cusRefNo.get(0).getCustomerReferenceNo());
@@ -2820,6 +2868,8 @@ private BuildingDetailsRepository BuildingRepo;
 				cusReq.setCustomerPhoneNo(new BigDecimal(customerData.getMobileNo1()));
 				cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappCodeDesc()));
 				cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
+				cusReq.setCustomerRefno(cusRefNo.get(0).getCustomerReferenceNo());
+
 				}
 
 				// UnderWriter Info
@@ -2835,6 +2885,10 @@ private BuildingDetailsRepository BuildingRepo;
 						underWriterReq.setUwPhoneNo(underWriterData.get("userMobile")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("userMobile").toString()));
 						underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
 						underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());
+						underWriterReq.setUwLoginId(underWriterData.get("uwloginId")==null?"":underWriterData.get("uwloginId").toString());
+						underWriterReq.setUwuserType(underWriterData.get("uwuserType")==null?"":underWriterData.get("uwuserType").toString());
+						underWriterReq.setUwsubuserType(underWriterData.get("uwsubuserType")==null?"":underWriterData.get("uwsubuserType").toString());
+
 						underWrite.add(underWriterReq);
 					}
 				}
@@ -2866,6 +2920,10 @@ private BuildingDetailsRepository BuildingRepo;
 				n.setQuoteNo(cusRefNo.get(0).getQuoteNo().toString());
 				n.setSectionName(cusRefNo.get(0).getSectionName());
 				n.setStatusMessage("");
+				n.setRefNo(req.getRequestReferenceNo());
+			n.setBranchCode(cusRefNo.get(0).getBranchCode());
+			n.setInsuranceId(cusRefNo.get(0).getCompanyId());
+
 				n.getTinyUrl();
 
 				// Calling pushNotification
@@ -2921,6 +2979,8 @@ private BuildingDetailsRepository BuildingRepo;
 				cusReq.setCustomerPhoneNo(new BigDecimal(customerData.getMobileNo1()));
 				cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappCodeDesc()));
 				cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
+				cusReq.setCustomerRefno(cusRefNo.get(0).getCustomerReferenceNo());
+
 				}
 
 				// UnderWriter Info
@@ -2936,6 +2996,10 @@ private BuildingDetailsRepository BuildingRepo;
 						underWriterReq.setUwPhoneNo(underWriterData.get("userMobile")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("userMobile").toString()));
 						underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
 						underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());
+						underWriterReq.setUwLoginId(underWriterData.get("uwloginId")==null?"":underWriterData.get("uwloginId").toString());
+						underWriterReq.setUwuserType(underWriterData.get("uwuserType")==null?"":underWriterData.get("uwuserType").toString());
+						underWriterReq.setUwsubuserType(underWriterData.get("uwsubuserType")==null?"":underWriterData.get("uwsubuserType").toString());
+
 						underWrite.add(underWriterReq);
 					}
 				}
@@ -2967,6 +3031,10 @@ private BuildingDetailsRepository BuildingRepo;
 				n.setQuoteNo(cusRefNo.get(0).getQuoteNo().toString());
 				n.setSectionName(cusRefNo.get(0).getSectionDesc());
 				n.setStatusMessage("");
+				n.setRefNo(req.getRequestReferenceNo());
+			n.setBranchCode(cusRefNo.get(0).getBranchCode());
+			n.setInsuranceId(cusRefNo.get(0).getCompanyId());
+
 				n.getTinyUrl();
 
 				// Calling pushNotification
@@ -3022,6 +3090,8 @@ private BuildingDetailsRepository BuildingRepo;
 				cusReq.setCustomerPhoneNo(new BigDecimal(customerData.getMobileNo1()));
 				cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappCodeDesc()));
 				cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
+				cusReq.setCustomerRefno(cusRefNo.get(0).getCustomerReferenceNo());
+
 				}
 
 				// UnderWriter Info
@@ -3037,6 +3107,10 @@ private BuildingDetailsRepository BuildingRepo;
 						underWriterReq.setUwPhoneNo(underWriterData.get("userMobile")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("userMobile").toString()));
 						underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
 						underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());
+						underWriterReq.setUwLoginId(underWriterData.get("uwloginId")==null?"":underWriterData.get("uwloginId").toString());
+						underWriterReq.setUwuserType(underWriterData.get("uwuserType")==null?"":underWriterData.get("uwuserType").toString());
+						underWriterReq.setUwsubuserType(underWriterData.get("uwsubuserType")==null?"":underWriterData.get("uwsubuserType").toString());
+
 						underWrite.add(underWriterReq);
 					}
 				}
@@ -3068,6 +3142,10 @@ private BuildingDetailsRepository BuildingRepo;
 				n.setQuoteNo(cusRefNo.get(0).getQuoteNo().toString());
 				n.setSectionName(cusRefNo.get(0).getSectionDesc());
 				n.setStatusMessage("");
+				n.setRefNo(req.getRequestReferenceNo());
+			n.setBranchCode(cusRefNo.get(0).getBranchCode());
+			n.setInsuranceId(cusRefNo.get(0).getCompanyId());
+
 				n.getTinyUrl();
 
 				// Calling pushNotification
