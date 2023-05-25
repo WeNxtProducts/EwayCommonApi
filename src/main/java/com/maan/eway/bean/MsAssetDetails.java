@@ -302,7 +302,12 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="MACHINE_BREAKDOWN_SI")
     private BigDecimal machineBreakdownSi ;
+    
+    @Column(name="PLATE_GLASS_SI")
+    private BigDecimal plateGlassSi ;
+
 }
+
 
 
 
