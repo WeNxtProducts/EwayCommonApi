@@ -299,6 +299,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="MONEY_IN_LOCKER")
     private BigDecimal moneyInLocker;
+    
+    @Column(name="MACHINE_BREAKDOWN_SI")
+    private BigDecimal machineBreakdownSi ;
 }
 
 
