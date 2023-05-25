@@ -17,10 +17,12 @@ import com.maan.eway.notification.req.DirectMailSentReq;
 import com.maan.eway.notification.req.DirectMailSmsSentReq;
 import com.maan.eway.notification.req.DirectSmsSentReq;
 import com.maan.eway.notification.req.NotifGetByIdReq;
+import com.maan.eway.notification.req.NotifGetByQuoteNoReq;
 import com.maan.eway.notification.req.NotifGetReq;
 import com.maan.eway.notification.req.NotifTemplateGetReq;
 import com.maan.eway.notification.req.TemplatesDropDownReq;
 import com.maan.eway.notification.res.MailNotifGetRes;
+import com.maan.eway.notification.res.NofiByQuoteNoRes;
 import com.maan.eway.notification.res.SmsNofiGetRes;
 import com.maan.eway.notification.service.NotifTemplateService;
 import com.maan.eway.res.DropDownRes;
@@ -230,6 +232,8 @@ public class NotifTemplateController {
 
 		}
 		
+		
+		
 		@PostMapping("/viewsentsms")
 		@ApiOperation(value = "This method is to Get Framed SMS Template Details")
 		public ResponseEntity<CommonRes> viewSmsSent(@RequestBody NotifGetByIdReq req) {
@@ -238,6 +242,47 @@ public class NotifTemplateController {
 
 			// Save
 			SmsNofiGetRes res = notifTempService.viewSmsSent(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
+		@PostMapping("/viewnoofnotification")
+		@ApiOperation(value = "This method is to Get No Of Notification Send By Quote No")
+		public ResponseEntity<CommonRes> viewNotificationSentToQuoteNo(@RequestBody NotifGetByQuoteNoReq req) {
+
+			CommonRes data = new CommonRes();
+
+			// Save
+			List<NofiByQuoteNoRes> res = notifTempService.viewNotificationSentToQuoteNo(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+
+		}
+		@PostMapping("/dropdown/activetemplist")
+		@ApiOperation(value = "This method is to Mail Templates Drop Down")
+
+		public ResponseEntity<CommonRes> getActiveTemplatesDropDown(@RequestBody  TemplatesDropDownReq req ) {
+
+			CommonRes data = new CommonRes();
+
+			// Save
+			List<DropDownRes> res = notifTempService.getActiveTemplatesDropDown(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());

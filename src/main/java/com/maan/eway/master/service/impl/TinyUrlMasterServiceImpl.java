@@ -36,18 +36,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+
 import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.TinyurlMaster;
+import com.maan.eway.bean.TinyurlRequestDetails;
 import com.maan.eway.error.Error;
+
 import com.maan.eway.master.req.TinyUrlChangeStatusReq;
 import com.maan.eway.master.req.TinyUrlDropdownReq;
 import com.maan.eway.master.req.TinyUrlMasterGetReq;
 import com.maan.eway.master.req.TinyUrlMasterGetallReq;
 import com.maan.eway.master.req.TinyUrlMasterSaveReq;
+
 import com.maan.eway.master.res.OccupationMasterRes;
 import com.maan.eway.master.res.TinyUrlMasterRes;
 import com.maan.eway.master.service.TinyUrlMasterService;
 import com.maan.eway.repository.TinyurlMasterRepository;
+import com.maan.eway.repository.TinyurlRequestDetailsRepository;
+import com.maan.eway.req.TinyUrlYnDetailsSaveReq;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 /**
@@ -63,7 +69,8 @@ private EntityManager em;
 @Autowired
 private TinyurlMasterRepository repo;
 
-
+@Autowired
+private TinyurlRequestDetailsRepository tinyReqRepo;
 Gson json = new Gson();
 
 private Logger log=LogManager.getLogger(TinyUrlMasterServiceImpl.class);
@@ -131,8 +138,36 @@ public List<Error> validateTinyUrl(TinyUrlMasterSaveReq req) {
 	}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus())||"R".equalsIgnoreCase(req.getStatus())|| "P".equalsIgnoreCase(req.getStatus()))) {
 		errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 	}
+	if(!("Y".equalsIgnoreCase(req.getNotifYn())||"N".equalsIgnoreCase(req.getNotifYn()))) {
+		errorList.add(new Error("06", "getNotifYn", "Please Select Valid Y or N "));
+	}if (StringUtils.isBlank(req.getNotifDesc())) {
+		errorList.add(new Error("07", "NotifDesc", "Please Enter NotifDesc"));
+	}else if (req.getNotifDesc().length() > 500){
+		errorList.add(new Error("07","NotifDesc", "Please Enter NotifDesc 500 Characters")); 
+	}else if (!StringUtils.isAlphaSpace(req.getNotifDesc())){
+		errorList.add(new Error("07","NotifDesc", "Please Enter Valid Notif Description ")); 
+	}
+	if (req.getRequestYn().equalsIgnoreCase("Y")) {
+		Long row = 0L;
+		for (TinyUrlYnDetailsSaveReq data : req.getTinyUrlYnDetails()) {
+			row = row + 1;
 
-	
+			if (StringUtils.isBlank(data.getRequestColumn())) {
+				errorList.add(new Error("01", "RequestColumn", "Please Enter Request Column in Row No : " + row));
+			}
+			if (StringUtils.isBlank(data.getRequestJsonKey())) {
+				errorList
+						.add(new Error("01", "RequestJsonKey", "Please Enter Request Json Key in Row No : " + row));
+			}
+			if (StringUtils.isBlank(data.getRequestTable())) {
+				errorList.add(new Error("01", "RequestTable", "Please Enter Request Table in Row No : " + row));
+			}
+//			if (StringUtils.isBlank(data.getDropdownYn())) {
+//				errorList.add(new Error("01", "RequestTable", "Please Enter Request Table in Row No : " + row));
+//			}
+
+		}
+	}
 	} catch (Exception e) {
 		log.error(e);
 		e.printStackTrace();
@@ -295,7 +330,32 @@ public SuccessRes insertTinyUrl(TinyUrlMasterSaveReq req) {
 		saveData.setAmendId(amendId);
 		repo.saveAndFlush(saveData);
 		log.info("Saved Details is --> " + json.toJson(saveData));
-		
+		//
+		Integer itemId = 0;
+		if (req.getRequestYn().equalsIgnoreCase("Y")) {
+			for (TinyUrlYnDetailsSaveReq data : req.getTinyUrlYnDetails()) {
+				TinyurlRequestDetails tinyUrlYnDetails = new TinyurlRequestDetails();
+				itemId = itemId + 1;
+				dozerMapper.map(data, tinyUrlYnDetails);
+				tinyUrlYnDetails.setItemId(itemId);
+				tinyUrlYnDetails.setTinyId(sno);
+				tinyUrlYnDetails.setEffectiveDateStart(startDate);
+				tinyUrlYnDetails.setEffectiveDateEnd(endDate);
+				tinyUrlYnDetails.setEntryDate(entryDate);
+				tinyUrlYnDetails.setAmendId(0);
+				tinyUrlYnDetails.setStatus(req.getStatus());
+				tinyUrlYnDetails.setCompanyId(req.getCompanyId());
+//				tinyUrlYnDetails.setBranchCode(req.getBranchCode());
+				tinyUrlYnDetails.setBranchCode("99999");
+				tinyUrlYnDetails.setProductId(Integer.valueOf(req.getProductId()));
+				tinyUrlYnDetails.setEntryDate(entryDate);
+				tinyUrlYnDetails.setCreatedBy(createdBy);
+				tinyUrlYnDetails.setUpdatedDate(new Date());
+				tinyUrlYnDetails.setUpdatedBy(req.getCreatedBy());
+				tinyReqRepo.saveAndFlush(tinyUrlYnDetails);
+				log.info("Saved Details is --> " + json.toJson(tinyUrlYnDetails));
+			}
+		}
 		}
 	catch (Exception e) {
 		e.printStackTrace();
@@ -480,9 +540,7 @@ public TinyUrlMasterRes getTinyUrl(TinyUrlMasterGetReq req) {
 		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
 		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
 		Predicate n4 = cb.equal(b.get("sno"), req.getSno());
-		Predicate n6 = cb.equal(b.get("branchCode"), "99999");
-		Predicate n7 = cb.or(n3,n6);
-		query.where(n1,n2,n4,n7).orderBy(orderList);
+		query.where(n1,n2,n4,n3).orderBy(orderList);
 		
 		// Get Result
 		TypedQuery<TinyurlMaster> result = em.createQuery(query);
@@ -495,6 +553,16 @@ public TinyUrlMasterRes getTinyUrl(TinyUrlMasterGetReq req) {
 		res.setEntryDate(list.get(0).getEntryDate());
 		res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
 		res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+		List<TinyUrlYnDetailsSaveReq> dropdownList = new ArrayList<TinyUrlYnDetailsSaveReq>();
+		if (list.get(0).getRequestYn().equalsIgnoreCase("Y")) {
+			List<TinyurlRequestDetails> tinyrequestres = getTinyUrlRequestDetailsById(req);
+			for (TinyurlRequestDetails data : tinyrequestres) {
+				TinyUrlYnDetailsSaveReq dropRes=new TinyUrlYnDetailsSaveReq();
+				dropRes=mapper.map(data, TinyUrlYnDetailsSaveReq.class);
+				dropdownList.add(dropRes);
+			}
+		}
+		res.setTinyUrlYnDetails(dropdownList);
 		} catch (Exception e) {
 		e.printStackTrace();
 		log.info("Exception is ---> " + e.getMessage());
@@ -503,7 +571,62 @@ public TinyUrlMasterRes getTinyUrl(TinyUrlMasterGetReq req) {
 	return res;
 }
 
+public List<TinyurlRequestDetails> getTinyUrlRequestDetailsById(TinyUrlMasterGetReq req) {
+//	List<DropdownTableDetails> res = new ArrayList<DropdownTableDetails>();
+	List<TinyurlRequestDetails> list = new ArrayList<TinyurlRequestDetails>();
+	try {
+		Date today = new Date();
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 1);
+		today = cal.getTime();
 
+		
+	
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<TinyurlRequestDetails> query = cb.createQuery(TinyurlRequestDetails.class);
+
+		// Find All
+		Root<TinyurlRequestDetails> b = query.from(TinyurlRequestDetails.class);
+
+		// Select
+		query.select(b);
+
+		// Amend ID Max Filter
+		Subquery<Long> amendId = query.subquery(Long.class);
+		Root<TinyurlRequestDetails> ocpm1 = amendId.from(TinyurlRequestDetails.class);
+		amendId.select(cb.max(ocpm1.get("amendId")));
+		Predicate a1 = cb.equal(ocpm1.get("tinyId"), b.get("tinyId"));
+		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
+		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+		amendId.where(a1, a2,a3,a4);
+
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.asc(b.get("branchCode")));
+
+		// Where
+		Predicate n1 = cb.equal(b.get("amendId"), amendId);
+		Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+		Predicate n3 = cb.equal(b.get("branchCode"), req.getBranchCode());
+		Predicate n4 = cb.equal(b.get("tinyId"), req.getSno());
+		Predicate n8 = cb.equal(b.get("productId"),req.getProductId());
+		query.where(n1,n2,n4,n3,n8).orderBy(orderList);
+		
+		// Get Result
+		TypedQuery<TinyurlRequestDetails> result = em.createQuery(query);
+		list = result.getResultList();
+		
+		} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return list;
+}
 
 @Override
 public List<TinyUrlMasterRes> getactiveTinyUrl(TinyUrlMasterGetallReq req) {

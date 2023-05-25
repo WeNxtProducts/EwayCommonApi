@@ -2,9 +2,11 @@ package com.maan.eway.master.res;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maan.eway.req.TinyUrlYnDetailsSaveReq;
 
 import lombok.Data;
 
@@ -62,5 +64,17 @@ public class TinyUrlMasterRes implements Serializable {
 	
 	@JsonProperty("UpdatedBy")
 	private String updatedBy;
+	
+	@JsonProperty("NotifYn")
+    private String     notifYn ;
+    
+	@JsonProperty("NotifDesc")
+    private String     notifDesc ;
+	
+	@JsonProperty("RequestYn")
+	private String requestYn;
+	
+	@JsonProperty("TinyUrlYnDetails")
+	private List<TinyUrlYnDetailsSaveReq> tinyUrlYnDetails;
 
 }
