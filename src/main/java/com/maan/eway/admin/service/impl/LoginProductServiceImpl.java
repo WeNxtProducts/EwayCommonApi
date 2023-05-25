@@ -1750,6 +1750,7 @@ List<Error> errorList = new ArrayList<Error>();
 				}
 				endorsementids=endorsementids.substring(1);
 				save.setFinancialEndtIds(endorsementids);
+				save.setNonFinancialEndtIds(endorsementids);
 				List<LoginProductMaster> loginproduct = loginProductRepo.findByLoginIdAndCompanyIdAndProductIdOrderByAmendIdDesc(req1.getLoginId(),req1.getInsuranceId(),Integer.valueOf(data.getProductId()));
 				if(loginproduct.size()>0 && loginproduct!=null) {
 					LoginProductMaster lastRecord = loginproduct.get(0);

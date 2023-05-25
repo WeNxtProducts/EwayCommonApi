@@ -180,5 +180,26 @@ public ResponseEntity<DropdownCommonRes> getEndorsementMasterDropdown(@RequestBo
 
 
 
+//Get All Endorsement Master
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
+@PostMapping("/getallbrokerendorsement")
+@ApiOperation("This method is getall Endorsement")
+public ResponseEntity<CommonRes> getallBrokerEndorsement(@RequestBody EndorsementMasterGetallReq req) {
+CommonRes data = new CommonRes();
+reqPrinter.reqPrint(req);
+
+List<EndorsementMasterGetallRes> res = service.getallBrokerEndorsement(req);
+data.setCommonResponse(res);
+data.setErrorMessage(Collections.emptyList());
+data.setIsError(false);
+data.setMessage("Success");
+
+if (res != null) {
+	return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+} else {
+	return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+}
+}
+
 
 }

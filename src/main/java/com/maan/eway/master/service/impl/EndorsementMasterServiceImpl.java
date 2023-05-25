@@ -34,6 +34,8 @@ import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.EndtDependantFieldMaster;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.EndorsementChangeStatusReq;
 import com.maan.eway.master.req.EndorsementMasterDropdownReq;
@@ -47,6 +49,8 @@ import com.maan.eway.master.service.EndorsementMasterService;
 import com.maan.eway.repository.EndtDependantFieldsMasterRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
+import com.maan.eway.repository.LoginMasterRepository;
+import com.maan.eway.repository.LoginProductMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 @Service
@@ -65,6 +69,12 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 	@Autowired
 	private ListItemValueRepository listrepo;
 
+	@Autowired
+	private LoginProductMasterRepository loginRepo;
+	
+	@Autowired
+	private LoginMasterRepository loginmasterrepo;
+	
 	Gson json = new Gson();
 	
 	private Logger log = LogManager.getLogger(EndorsementMasterServiceImpl.class);
@@ -859,8 +869,84 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	
-	
+
+	@Override
+	public List<EndorsementMasterGetallRes> getallBrokerEndorsement(EndorsementMasterGetallReq req) {
+		// TODO Auto-generated method stub
+		List<EndorsementMasterGetallRes> resList = new ArrayList<EndorsementMasterGetallRes>();
+		DozerBeanMapper mapper = new DozerBeanMapper();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			LoginMaster login = loginmasterrepo.findByLoginId(req.getLoginId());
+			List<LoginProductMaster> product = loginRepo.findByOaCodeAndAgencyCodeAndProductIdAndCompanyIdOrderByAmendIdDesc(login.getOaCode(),Integer.valueOf(login.getAgencyCode()),Integer.valueOf(req.getProductId()),req.getCompanyId());	
+			String endtid = "";
+			if(req.getEndtTypeCategoryId().equalsIgnoreCase("2")) {
+			endtid = product.get(0).getFinancialEndtIds();
+			}
+			if(req.getEndtTypeCategoryId().equalsIgnoreCase("1")) {
+			endtid = product.get(0).getNonFinancialEndtIds();
+			}
+			endtid = endtid.substring(0);
+			List<String> endtids = new ArrayList<String>(Arrays.asList(endtid.split(",")));
+			for(String id : endtids) {
+				List<EndtTypeMaster> data1 = new ArrayList<EndtTypeMaster>();	
+			data1 = repo.findByEndtTypeCategoryIdAndEndtTypeIdAndCompanyIdAndProductIdOrderByAmendIdDesc((Integer.valueOf(req.getEndtTypeCategoryId())), Integer.valueOf(id), req.getCompanyId(),Integer.valueOf(req.getProductId()));	
+			
+			EndorsementMasterGetallRes res1 = new EndorsementMasterGetallRes();
+			
+			List<EndorsementMasterListRes> endtlist = new ArrayList<EndorsementMasterListRes>();
+			for(EndtTypeMaster data : data1) {
+				EndorsementMasterListRes res = new EndorsementMasterListRes(); 	
+			String dependentid = data.getEndtDependantIds();
+			List<String> dependentids = new ArrayList<String>(Arrays.asList(dependentid.split(",")));
+			res.setEndtDependantIds(dependentids);
+
+			String dependentfield = data.getEndtDependantFields();
+			List<String> dependentfields = new ArrayList<String>(Arrays.asList(dependentfield.split(",")));
+			res.setEndtDependantFields(dependentfields);
+			
+			res.setAmendId(data.getAmendId().toString());
+			res.setEntryDate(data.getEntryDate());
+			res.setEffectiveDateStart(data.getEffectiveDateStart());
+			res.setEffectiveDateEnd(data.getEffectiveDateEnd());
+			res.setCoreAppCode(data.getCoreAppCode());
+			res.setEndtTypeId(data.getEndtTypeId().toString());
+			res1.setEndtTypeCategoryId(data.getEndtTypeCategoryId().toString());
+			res.setPriority(data.getPriority().toString());
+			res1.setProductId(data.getProductId().toString());
+			res.setEndtFeePercent(data.getEndtFeePercent());
+			res.setUpdatedDate(data.getUpdatedDate());
+			res.setEndtType(data.getEndtType());
+			res.setEndtTypeDesc(data.getEndtTypeDesc());
+			res1.setEndtTypeCategory(data.getEndtTypeCategory());
+			res.setStatus(data.getStatus());
+			res1.setCompanyId(data.getCompanyId());
+			res.setCalcTypeId(data.getCalcTypeId());			
+		//	res.setCalcType(data.getCalcType());
+			res.setEndtFeeYn(data.getEndtFeeYn());
+			res.setRemarks(data.getRemarks());
+			res.setCreatedBy(data.getCreatedBy());
+			res.setUpdatedBy(data.getUpdatedBy());
+			res.setRegulatoryCode(data.getRegulatoryCode());
+			endtlist.add(res);
+			}
+			res1.setEndorsementMasterListRes(endtlist);
+			resList.add(res1);
+			}
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
 	
 }
