@@ -61,6 +61,7 @@ import com.maan.eway.bean.NotifTemplateMaster;
 import com.maan.eway.bean.SmsConfigMaster;
 import com.maan.eway.bean.SmsDataDetails;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.EndorsementCriteriaRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.notification.bean.MailDataDetails;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
@@ -73,6 +74,7 @@ import com.maan.eway.notification.req.DirectSmsSentReq;
 import com.maan.eway.notification.req.JobCredentials;
 import com.maan.eway.notification.req.Mail;
 import com.maan.eway.notification.req.NotifGetByIdReq;
+import com.maan.eway.notification.req.NotifGetByQuoteNoReq;
 import com.maan.eway.notification.req.NotifGetReq;
 import com.maan.eway.notification.req.NotifTemplateGetReq;
 import com.maan.eway.notification.req.Notification;
@@ -83,6 +85,7 @@ import com.maan.eway.notification.req.UnderWriter;
 import com.maan.eway.notification.req.statealgo.NotificationStatus;
 import com.maan.eway.notification.res.MailNotifGetRes;
 import com.maan.eway.notification.res.MailTemplateRes;
+import com.maan.eway.notification.res.NofiByQuoteNoRes;
 import com.maan.eway.notification.res.SmsNofiGetRes;
 import com.maan.eway.notification.res.SmsTemplateRes;
 import com.maan.eway.notification.service.NotifTemplateService;
@@ -1628,4 +1631,151 @@ public SmsNofiGetRes viewSmsSent(NotifGetByIdReq req) {
 	}
 	return res;
 }
+
+@Override
+public List<NofiByQuoteNoRes> viewNotificationSentToQuoteNo(NotifGetByQuoteNoReq req) {
+	List<NofiByQuoteNoRes> resList=new ArrayList<NofiByQuoteNoRes>();
+	try {
+		// Get Datas
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+		// Find All
+		Root<NotifTransactionDetails> td = query.from(NotifTransactionDetails.class);
+		Root<MailDataDetails> mail = query.from(MailDataDetails.class);
+		Root<SmsDataDetails> sms = query.from(SmsDataDetails.class);
+		// Select
+		query.multiselect(// cb.literal(Long.parseLong("1")).alias("idsCount"),
+				// Notification Info
+				cb.selectCase().when(cb.max(td.get("notifNo")).in(cb.max(mail.get("notifNo"))), "Y").otherwise("N")
+						.alias("mailYn,"),
+				cb.selectCase().when(cb.max(td.get("notifNo")).in(cb.max(sms.get("notifNo"))), "Y").otherwise("N")
+						.alias("smsYn,"),
+				cb.max(td.get("notifNo")).alias("notifNo"), 
+				cb.max(td.get("customerName")).alias("customerName"),
+				cb.max(td.get("customerMailid")).alias("customerMailid"),
+				cb.max(td.get("customerPhoneNo")).alias("customerPhoneNo"),
+				cb.max(td.get("customerPhoneCode")).alias("customerPhoneCode"),
+				cb.max(td.get("customerMessengerCode")).alias("customerMessengerCode"),
+				cb.max(td.get("customerMessengerPhone")).alias("customerMessengerPhone"),
+				cb.max(td.get("brokerName")).alias("brokerName"),
+				cb.max(td.get("brokerCompanyName")).alias("brokerCompanyName"),
+				cb.max(td.get("brokerMailId")).alias("brokerMailId"), cb.max(td.get("Broker_Phone_No")).alias("idNumber"),
+				cb.max(td.get("Broker_Phone_Code")).alias("idNumber"),
+				cb.max(td.get("Broker_Messenger_Code")).alias("idNumber"),
+				cb.max(td.get("BrokerMessenger_Phone")).alias("idNumber"), cb.max(td.get("UW_name")).alias("idNumber"),
+				cb.max(td.get("uw_mail_id")).alias("idNumber"), cb.max(td.get("UW_Phone_Code")).alias("idNumber"),
+				cb.max(td.get("UW_Phone_No")).alias("idNumber"), cb.max(td.get("UW_messenger_code")).alias("idNumber"),
+				cb.max(td.get("UW_messenger_phone")).alias("idNumber"),
+				cb.max(td.get("Company_Name")).alias("idNumber"), cb.max(td.get("Product_Name")).alias("idNumber"),
+				cb.max(td.get("Section_Name")).alias("idNumber"), cb.max(td.get("Status_message")).alias("idNumber"),
+				cb.max(td.get("OTP")).alias("idNumber"), cb.max(td.get("Policy_No")).alias("idNumber"),
+				cb.max(td.get("Quote_No")).alias("idNumber"), cb.max(td.get("Notif_Description")).alias("idNumber"),
+				cb.max(td.get("notif_template_name")).alias("idNumber"), cb.max(td.get("Entry_Date")).alias("idNumber"),
+				cb.max(td.get("Notifcation_Push_date")).alias("idNumber"),
+				cb.max(td.get("Notif_pushed_status")).alias("idNumber")
+
+		);
+
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.desc(cb.max(td.get("entryDate"))));
+
+		// Where
+		Predicate n1 = cb.equal(td.get("quoteNo"), req.getQuoteNo());
+		query.where(n1).groupBy(td.get("notifNo")).orderBy(orderList);
+
+		// Get Result
+		TypedQuery<Tuple> result = em.createQuery(query);
+		List<Tuple> list = result.getResultList();
+		for (Tuple t : list) {
+			NofiByQuoteNoRes res=new NofiByQuoteNoRes();
+			resList.add(res);
+		}
+		return resList;
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+	return null;
 }
+
+//Get Active Templete Name
+@Override
+public List<DropDownRes> getActiveTemplatesDropDown(TemplatesDropDownReq req) {
+	List<DropDownRes> resList = new ArrayList<DropDownRes>();
+	try {
+		Date today = new Date();
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 1);
+		today = cal.getTime();
+		cal.set(Calendar.HOUR_OF_DAY, 1);
+		cal.set(Calendar.MINUTE, 1);
+		Date todayEnd = cal.getTime();
+
+		// Criteria
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<NotifTemplateMaster> query = cb.createQuery(NotifTemplateMaster.class);
+		List<NotifTemplateMaster> list = new ArrayList<NotifTemplateMaster>();
+
+		// Find All
+		Root<NotifTemplateMaster> c = query.from(NotifTemplateMaster.class);
+
+		// Select
+		query.select(c);
+
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.asc(c.get("notifTemplatename")));
+
+		// Effective Date Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<NotifTemplateMaster> ocpm1 = effectiveDate.from(NotifTemplateMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(c.get("notifTemplateCode"), ocpm1.get("notifTemplateCode"));
+		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		Predicate a3 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+		Predicate a4 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+		effectiveDate.where(a1, a2, a3, a4);
+		
+		// Effective Date End Max Filter
+		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Root<NotifTemplateMaster> ocpm2 = effectiveDate2.from(NotifTemplateMaster.class);
+		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		Predicate a6 = cb.equal(c.get("notifTemplateCode"), ocpm2.get("notifTemplateCode"));
+		Predicate a7 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+		Predicate a8 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+		Predicate a9 = cb.greaterThanOrEqualTo(c.get("effectiveDateEnd"), todayEnd);
+		effectiveDate2.where(a6, a7, a8 ,a9 );
+
+		// Where
+		Predicate n1 = cb.equal(c.get("status"), "Y");
+		Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+		Predicate n3 = cb.equal(c.get("companyId"), req.getInsuranceId());
+		Predicate n4 = cb.equal(c.get("productId"), req.getProductId());
+		Predicate n5 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+	
+		query.where(n1, n2, n3,n4, n5).orderBy(orderList);
+
+		// Get Result
+		TypedQuery<NotifTemplateMaster> result = em.createQuery(query);
+		list = result.getResultList();
+
+		for (NotifTemplateMaster data : list) {
+			// Response
+			DropDownRes res = new DropDownRes();
+			res.setCode(data.getNotifTemplateCode().toString());
+			res.setCodeDesc(data.getNotifTemplatename());
+			res.setStatus(data.getStatus());
+			resList.add(res);
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return resList;
+}
+}
+

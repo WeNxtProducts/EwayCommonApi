@@ -7,11 +7,13 @@ import com.maan.eway.notification.req.DirectMailSentReq;
 import com.maan.eway.notification.req.DirectMailSmsSentReq;
 import com.maan.eway.notification.req.DirectSmsSentReq;
 import com.maan.eway.notification.req.NotifGetByIdReq;
+import com.maan.eway.notification.req.NotifGetByQuoteNoReq;
 import com.maan.eway.notification.req.NotifGetReq;
 import com.maan.eway.notification.req.NotifTemplateGetReq;
 import com.maan.eway.notification.req.TemplatesDropDownReq;
 import com.maan.eway.notification.res.MailNotifGetRes;
 import com.maan.eway.notification.res.MailTemplateRes;
+import com.maan.eway.notification.res.NofiByQuoteNoRes;
 import com.maan.eway.notification.res.SmsNofiGetRes;
 import com.maan.eway.notification.res.SmsTemplateRes;
 import com.maan.eway.res.DropDownRes;
@@ -35,5 +37,9 @@ public interface NotifTemplateService {
 	MailNotifGetRes viewSentMail(NotifGetByIdReq req);
 
 	SmsNofiGetRes viewSmsSent(NotifGetByIdReq req);
+
+	List<NofiByQuoteNoRes> viewNotificationSentToQuoteNo(NotifGetByQuoteNoReq req);
+
+	List<DropDownRes> getActiveTemplatesDropDown(TemplatesDropDownReq req);
 
 }
