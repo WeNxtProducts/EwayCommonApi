@@ -558,6 +558,11 @@ private static final long serialVersionUID = 1L;
       @Column(name="PLATE_GLASS_SI")
       private BigDecimal plateGlassSi ;
       
+      @Column(name="FIRST_LOSS_PERCENT_ID")
+      private Integer firstLossPercentId;
+
+      @Column(name="FIRST_LOSS_PERCENT")
+      private Integer firstLossPercent;
       
 }
 

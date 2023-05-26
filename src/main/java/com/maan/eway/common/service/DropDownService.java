@@ -180,6 +180,8 @@ public interface DropDownService {
 
 	List<DropDownRes> getOpenoption(LovDropDownReq req);
 
+	List<DropDownRes> getFirstLossPercent(LovDropDownReq req);
+
 
 
 }
