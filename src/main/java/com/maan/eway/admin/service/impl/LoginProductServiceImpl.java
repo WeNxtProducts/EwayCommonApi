@@ -1670,6 +1670,80 @@ List<Error> errorList = new ArrayList<Error>();
 			cal.set(Calendar.MINUTE, 1);
 			Date todayEnd   = cal.getTime();
 
+
+
+
+			// Changing Added Products Date not in Req
+			
+			CriteriaBuilder cb2 = em.getCriteriaBuilder();
+			CriteriaQuery<LoginProductMaster> query2 = cb2.createQuery(LoginProductMaster.class);
+			List<LoginProductMaster> list2 = new ArrayList<LoginProductMaster>();
+			
+			// Find All
+			Root<LoginProductMaster>    c2 = query2.from(LoginProductMaster.class);		
+			
+			// Select
+			query2.select(c2);
+			
+		
+			// Order By
+			List<Order> orderList2 = new ArrayList<Order>();
+			orderList2.add(cb2.asc(c2.get("productName")));
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate4 = query2.subquery(Long.class);
+			Root<LoginProductMaster> ocpm4 = effectiveDate4.from(LoginProductMaster.class);
+			effectiveDate4.select(cb2.max(ocpm4.get("effectiveDateStart")));
+			Predicate a11 = cb2.equal(c2.get("productId"),ocpm4.get("productId") );
+			Predicate a12 = cb2.lessThanOrEqualTo(ocpm4.get("effectiveDateStart"), today);
+			Predicate a13 = cb2.equal(c2.get("companyId"),ocpm4.get("companyId") );
+			Predicate a14 = cb2.equal(c2.get("loginId"),ocpm4.get("loginId") );
+			
+			effectiveDate4.where(a11,a12,a13,a14);
+			
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate5 = query2.subquery(Long.class);
+			Root<LoginProductMaster> ocpm5 = effectiveDate5.from(LoginProductMaster.class);
+			effectiveDate5.select(cb2.max(ocpm5.get("effectiveDateEnd")));
+			Predicate a15 = cb2.equal(c2.get("productId"),ocpm5.get("productId") );
+			Predicate a16 = cb2.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);
+			Predicate a17 = cb2.equal(c2.get("companyId"),ocpm5.get("companyId") );
+			Predicate a18 = cb2.equal(c2.get("loginId"),ocpm5.get("loginId") );
+
+			effectiveDate5.where(a15,a16,a17,a18);
+			
+			
+		    // Where	
+			Predicate n11 = cb2.equal(c2.get("status"), "Y");
+			Predicate n12 = cb2.equal(c2.get("effectiveDateStart"), effectiveDate4);
+			Predicate n13 = cb2.equal(c2.get("effectiveDateEnd"), effectiveDate5);
+			Predicate n14 =cb2.equal(c2.get("loginId"), req1.getLoginId());
+			Predicate n15 =cb2.equal(c2.get("companyId"), req1.getInsuranceId());
+			query2.where(n11,n12,n13,n14,n15).orderBy(orderList2);
+			
+			// Get Result
+			TypedQuery<LoginProductMaster> result2 = em.createQuery(query2);			
+			list2 =  result2.getResultList();  
+
+				List<IssuerProductListReq> productlist = req1.getIssuerProductReq();
+		for (LoginProductMaster data : list2 ) {
+
+		List<IssuerProductListReq> filterProduct = productlist.stream().filter( o ->  o.getProductId().equalsIgnoreCase(data.getProductId().toString())).collect(Collectors.toList());
+
+		if( filterProduct.size()<=0	) {
+			long MILLS_IN_A_DAY = 1000*60*60*24;
+			Date oldEndDate = new Date(effDate.getTime()- MILLS_IN_A_DAY);
+			data.setEffectiveDateEnd(oldEndDate);				
+			Date oldEffDate = new Date(oldEndDate.getTime()- MILLS_IN_A_DAY);
+			data.setEffectiveDateStart(oldEffDate);
+			loginProductRepo.saveAndFlush(data);
+
+		}
+		
+		}
+			
+			// Adding New Products as per Req
+			
 			for(IssuerProductListReq req : req1.getIssuerProductReq()) {
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -1721,10 +1795,12 @@ List<Error> errorList = new ArrayList<Error>();
 			list =  result.getResultList();  
 			
 			LoginMaster loginData = loginRepo.findByLoginId(req1.getLoginId());
+
+			LoginProductMaster save = new LoginProductMaster();
 			
+						
 			for ( CompanyProductMaster data : list  ) {
 		
-				LoginProductMaster save = new LoginProductMaster();
 				dozerMapper.map(data, save);
 				save.setCompanyId(req1.getInsuranceId());
 				save.setCreatedBy(req1.getCreatedBy());
@@ -1778,7 +1854,6 @@ List<Error> errorList = new ArrayList<Error>();
 				log.info("Saved Details is ---> " + json.toJson(save));
 				
 			}		
-			
 			res.setResponse("Products Added Successfully");
 			}
 			
@@ -1877,7 +1952,8 @@ List<Error> errorList = new ArrayList<Error>();
 	        
 				List<LoginProductMaster> filterUser = loginlist.stream().
 						filter( o ->  o.getProductId().toString().
-								equalsIgnoreCase(data.getProductId().toString())).collect(Collectors.toList());
+								equalsIgnoreCase(data.getProductId().toString()))
+						.collect(Collectors.toList());
 
 		        IssuerProductGetRes res = new IssuerProductGetRes();
 		        String endorsementid ="";
@@ -1981,7 +2057,8 @@ List<Error> errorList = new ArrayList<Error>();
 	        
 				List<LoginProductMaster> filterUser = loginlist.stream().
 						filter( o ->  o.getProductId().toString().
-								equalsIgnoreCase(data.getProductId().toString())).collect(Collectors.toList());
+								equalsIgnoreCase(data.getProductId().toString()))
+						.collect(Collectors.toList());
 
 		        IssuerProductGetRes res = new IssuerProductGetRes();
 		        String endorsementid ="";

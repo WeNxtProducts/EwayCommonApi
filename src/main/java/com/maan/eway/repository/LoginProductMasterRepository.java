@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import com.maan.eway.bean.LoginProductMaster;
@@ -41,7 +42,7 @@ public interface LoginProductMasterRepository  extends JpaRepository<LoginProduc
 
 	List<LoginProductMaster> findByOaCodeAndAgencyCodeAndProductIdAndCompanyIdOrderByAmendIdDesc(Integer oaCode,
 			Integer valueOf, Integer valueOf2, String companyId);
-
+	
 
 
 }
