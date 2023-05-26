@@ -1726,10 +1726,9 @@ private BuildingDetailsRepository BuildingRepo;
 							underWriterReq.setUwPhonecode(underWriterData.get("mobileCodeDesc")== null ? null:Integer.valueOf(underWriterData.get("mobileCodeDesc").toString()));
 							underWriterReq.setUwPhoneNo(underWriterData.get("userMobile")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("userMobile").toString()));
 							underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
-							underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());
-							underWriterReq.setUwLoginId(underWriterData.get("uwloginId")==null?"":underWriterData.get("uwloginId").toString());
-							underWriterReq.setUwuserType(underWriterData.get("uwuserType")==null?"":underWriterData.get("uwuserType").toString());
-							underWriterReq.setUwsubuserType(underWriterData.get("uwsubuserType")==null?"":underWriterData.get("uwsubuserType").toString());
+							underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());							
+							underWriterReq.setUwuserType(underWriterData.get("userType")==null?"":underWriterData.get("userType").toString());
+							underWriterReq.setUwsubuserType(underWriterData.get("subUserType")==null?"":underWriterData.get("subUserType").toString());
 
 							underWrite.add(underWriterReq);
 						}
@@ -2771,10 +2770,9 @@ private BuildingDetailsRepository BuildingRepo;
 						underWriterReq.setUwPhonecode(underWriterData.get("mobileCodeDesc")== null ? null:Integer.valueOf(underWriterData.get("mobileCodeDesc").toString()));
 						underWriterReq.setUwPhoneNo(underWriterData.get("userMobile")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("userMobile").toString()));
 						underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
-						underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());
-						underWriterReq.setUwLoginId(underWriterData.get("uwloginId")==null?"":underWriterData.get("uwloginId").toString());
-						underWriterReq.setUwuserType(underWriterData.get("uwuserType")==null?"":underWriterData.get("uwuserType").toString());
-						underWriterReq.setUwsubuserType(underWriterData.get("uwsubuserType")==null?"":underWriterData.get("uwsubuserType").toString());
+						underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());							
+						underWriterReq.setUwuserType(underWriterData.get("userType")==null?"":underWriterData.get("userType").toString());
+						underWriterReq.setUwsubuserType(underWriterData.get("subUserType")==null?"":underWriterData.get("subUserType").toString());
 
 						underWrite.add(underWriterReq);
 					}
@@ -2884,11 +2882,9 @@ private BuildingDetailsRepository BuildingRepo;
 						underWriterReq.setUwPhonecode(underWriterData.get("mobileCodeDesc")== null ? null:Integer.valueOf(underWriterData.get("mobileCodeDesc").toString()));
 						underWriterReq.setUwPhoneNo(underWriterData.get("userMobile")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("userMobile").toString()));
 						underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
-						underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());
-						underWriterReq.setUwLoginId(underWriterData.get("uwloginId")==null?"":underWriterData.get("uwloginId").toString());
-						underWriterReq.setUwuserType(underWriterData.get("uwuserType")==null?"":underWriterData.get("uwuserType").toString());
-						underWriterReq.setUwsubuserType(underWriterData.get("uwsubuserType")==null?"":underWriterData.get("uwsubuserType").toString());
-
+						underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());							
+						underWriterReq.setUwuserType(underWriterData.get("userType")==null?"":underWriterData.get("userType").toString());
+						underWriterReq.setUwsubuserType(underWriterData.get("subUserType")==null?"":underWriterData.get("subUserType").toString());
 						underWrite.add(underWriterReq);
 					}
 				}
@@ -2995,11 +2991,9 @@ private BuildingDetailsRepository BuildingRepo;
 						underWriterReq.setUwPhonecode(underWriterData.get("mobileCodeDesc")== null ? null:Integer.valueOf(underWriterData.get("mobileCodeDesc").toString()));
 						underWriterReq.setUwPhoneNo(underWriterData.get("userMobile")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("userMobile").toString()));
 						underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
-						underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());
-						underWriterReq.setUwLoginId(underWriterData.get("uwloginId")==null?"":underWriterData.get("uwloginId").toString());
-						underWriterReq.setUwuserType(underWriterData.get("uwuserType")==null?"":underWriterData.get("uwuserType").toString());
-						underWriterReq.setUwsubuserType(underWriterData.get("uwsubuserType")==null?"":underWriterData.get("uwsubuserType").toString());
-
+						underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());							
+						underWriterReq.setUwuserType(underWriterData.get("userType")==null?"":underWriterData.get("userType").toString());
+						underWriterReq.setUwsubuserType(underWriterData.get("subUserType")==null?"":underWriterData.get("subUserType").toString());
 						underWrite.add(underWriterReq);
 					}
 				}
@@ -3106,11 +3100,9 @@ private BuildingDetailsRepository BuildingRepo;
 						underWriterReq.setUwPhonecode(underWriterData.get("mobileCodeDesc")== null ? null:Integer.valueOf(underWriterData.get("mobileCodeDesc").toString()));
 						underWriterReq.setUwPhoneNo(underWriterData.get("userMobile")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("userMobile").toString()));
 						underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
-						underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());
-						underWriterReq.setUwLoginId(underWriterData.get("uwloginId")==null?"":underWriterData.get("uwloginId").toString());
-						underWriterReq.setUwuserType(underWriterData.get("uwuserType")==null?"":underWriterData.get("uwuserType").toString());
-						underWriterReq.setUwsubuserType(underWriterData.get("uwsubuserType")==null?"":underWriterData.get("uwsubuserType").toString());
-
+						underWriterReq.setUwLoginId(underWriterData.get("loginId")==null?"":underWriterData.get("loginId").toString());							
+						underWriterReq.setUwuserType(underWriterData.get("userType")==null?"":underWriterData.get("userType").toString());
+						underWriterReq.setUwsubuserType(underWriterData.get("subUserType")==null?"":underWriterData.get("subUserType").toString());
 						underWrite.add(underWriterReq);
 					}
 				}
