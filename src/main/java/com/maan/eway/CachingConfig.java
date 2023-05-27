@@ -69,6 +69,7 @@ public class CachingConfig   {
 				CalcEngine e=(CalcEngine)params[0]; 
 				String string = new StringBuilder().append(e.getInsuranceId())
 				.append(e.getProductId())
+				.append(e.getSectionId())
 				.append("producttype")
 				.toString();
 				return string;
