@@ -560,11 +560,39 @@ private static final long serialVersionUID = 1L;
       @Column(name="MONEY_IN_LOCKER")
       private BigDecimal moneyInLocker;
       
-      @Column(name="MACHINE_BREAKDOWN_SI")
-      private BigDecimal machineBreakdownSi ;
+      @Column(name="MACHINE_EQUIP_SI")
+      private BigDecimal machineEquipSi ;
       
       @Column(name="PLATE_GLASS_SI")
-      private BigDecimal plateGlassSi ;     
+      private BigDecimal plateGlassSi ;
+      
+      @Column(name="ACC_DAMAGE_SI")
+      private BigDecimal accDamageSi ;
+      
+      @Column(name="FIRST_LOSS_PERCENT")
+      private Long firstLossPercent ;
+      
+      @Column(name="BURGLARY_SI")
+      private BigDecimal burglarySi ;
+      
+      @Column(name="POWER_PLANT_SI")
+      private BigDecimal powerPlantSi ;
+      
+      @Column(name="ELEC_MACHINES_SI")
+      private BigDecimal elecMachinesSi ;
+      
+      @Column(name="EQUIPMENT_SI")
+      private BigDecimal equipmentSi ;
+      
+      @Column(name="GENERAL_MACHINE_SI")
+      private BigDecimal generalMachineSi ;
+      
+      @Column(name="MANU_UNITS_SI")
+      private BigDecimal manuUnitsSi ;
+      
+      @Column(name="BOILER_PLANTS_SI")
+      private BigDecimal boilerPlantsSi ;
+      
 }
 
 
