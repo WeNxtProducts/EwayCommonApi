@@ -896,7 +896,7 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			for(String id : endtids) {
 				List<EndtTypeMaster> data1 = new ArrayList<EndtTypeMaster>();	
 			data1 = repo.findByEndtTypeCategoryIdAndEndtTypeIdAndCompanyIdAndProductIdOrderByAmendIdDesc((Integer.valueOf(req.getEndtTypeCategoryId())), Integer.valueOf(id), req.getCompanyId(),Integer.valueOf(req.getProductId()));	
-			
+			if(data1.size()>0 && data1!=null) {
 			EndorsementMasterGetallRes res1 = new EndorsementMasterGetallRes();
 			
 			List<EndorsementMasterListRes> endtlist = new ArrayList<EndorsementMasterListRes>();
@@ -938,7 +938,7 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			res1.setEndorsementMasterListRes(endtlist);
 			resList.add(res1);
 			}
-			
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
