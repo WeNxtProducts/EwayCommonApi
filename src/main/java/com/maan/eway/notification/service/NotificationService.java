@@ -8,7 +8,9 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -293,7 +295,7 @@ public class NotificationService {
 		InputStream openStream =null;
 		try {
 			final String tinyUrl = "http://tinyurl.com/api-create.php?url=";
-			String tinyUrlLookup = tinyUrl + encryptedURL;
+			String tinyUrlLookup = tinyUrl + URLEncoder.encode(encryptedURL,"UTF-8");
 				url = new URL(tinyUrlLookup);
 			  con = url.openConnection();
 			 con.setConnectTimeout(8000);
