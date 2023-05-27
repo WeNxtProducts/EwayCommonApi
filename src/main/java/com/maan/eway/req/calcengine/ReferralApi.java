@@ -1,5 +1,7 @@
 package com.maan.eway.req.calcengine;
 
+import java.math.BigDecimal;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Builder;
@@ -15,8 +17,9 @@ public class ReferralApi {
 	private String productId;
 	
 	@JsonProperty("SumInsured")
-	private String suminsured;
+	private BigDecimal suminsured;
 	
 	@JsonProperty("BranchCode") 
 	private String branchCode;
+	
 }

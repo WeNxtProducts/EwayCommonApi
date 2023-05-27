@@ -1813,6 +1813,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 			  columns.add("userName");
 			  columns.add("whatsappCodeDesc");
 			  columns.add("whatsappNo");
+			  columns.add("userType");
+			  columns.add("subUserType");
 			  
 			  
 			  String s1="userType:Issuer;subUserType:{High,Both};companyId:"+request.getInsuranceId()+";attachedBranches%"+request.getBranchCode()+";status:Y;";
@@ -1874,6 +1876,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 						.userName((String) tuple.get("userName"))
 						.whatsappcode((String) tuple.get("whatsappCodeDesc"))
 						.whatsAppNo((String) tuple.get("whatsappNo"))
+						.uwuserType((String) tuple.get("userType"))
+						.uwsubuserType((String) tuple.get("subUserType"))
 						.build();
 				list.add(a); 
 			}

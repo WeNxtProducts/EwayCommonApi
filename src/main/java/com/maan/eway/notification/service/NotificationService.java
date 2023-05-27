@@ -1,18 +1,32 @@
 package com.maan.eway.notification.service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.persistence.Tuple;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.maan.eway.auth.token.EncryDecryService;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
@@ -20,6 +34,7 @@ import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginUserInfo;
+import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.QuoteUpdateRes;
@@ -27,6 +42,7 @@ import com.maan.eway.error.Error;
 import com.maan.eway.jasper.req.JasperDocumentReq;
 import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.jasper.service.JasperService;
+import com.maan.eway.master.service.impl.ClausesMasterServiceImpl;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
 import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
 import com.maan.eway.notification.req.Broker;
@@ -53,10 +69,13 @@ public class NotificationService {
 	@Autowired
 	private InsuranceCompanyMasterRepository companyRepo;
 	
+	@Autowired
+	private RatingFactorsUtil ratingutil;
 	/*
 	@Autowired
 	private JobScheduler jobScheduler;
 	*/
+	private Logger log = LogManager.getLogger(NotificationService.class);
 	public CommonRes pushNotification(Notification n) {
 		
 		
@@ -76,6 +95,17 @@ public class NotificationService {
 			NotifTransactionDetails sv = null;
 			if(n.getUnderwriters().size()>0) {
 				List<NotifTransactionDetails> uws=new ArrayList<NotifTransactionDetails>();
+				
+				//Tiny URL
+				List<Tuple> loadTinyUrl = ratingutil.loadTinyUrl(n.getCompanyid(),n.getProductid(),n.getNotifTemplatename());
+				List<Tuple> loadDropdown=null;
+				if(!loadTinyUrl.isEmpty()) {
+					for(Tuple t: loadTinyUrl) {
+						String sno = t.get("sno").toString();
+						loadDropdown = ratingutil.loadTinyUrlRequest(n.getCompanyid(),n.getProductid(),n.getNotifTemplatename(),sno);  
+					}
+				}
+				
 				for (UnderWriter underWriter : n.getUnderwriters()) {
 					NotifTransactionDetails nt = NotifTransactionDetails.builder()
 							.brokerCompanyName(n.getBroker().getBrokerCompanyName())
@@ -109,9 +139,9 @@ public class NotificationService {
 							.uwName(underWriter.getUwName())
 							.uwPhonecode(underWriter.getUwPhonecode())
 							.uwPhoneNo(underWriter.getUwPhoneNo())
-							.uwloginId(n.getUnderwriters().get(0).getUwLoginId())
-							.uwUserType(n.getUnderwriters().get(0).getUwuserType())
-							.uwSubuserType(n.getUnderwriters().get(0).getUwsubuserType())
+							.uwloginId(underWriter.getUwLoginId())
+							.uwUserType(underWriter.getUwuserType())
+							.uwSubuserType(underWriter.getUwsubuserType())
 							.customerRefno(n.getCustomer().getCustomerRefno())
 							.branchCode(n.getBranchCode())
 							.refno(n.getRefNo())
@@ -126,8 +156,57 @@ public class NotificationService {
 							.companyLogo(coms.get(0).getCompanyLogo())
 							.companyAddress(coms.get(0).getCompanyAddress())
 							.attachFilePath(filesTobeAttch)
-							
-							.build();	
+							.build();
+					
+					if(!loadTinyUrl.isEmpty()) {
+						List<Map<String,String>> mps=null;
+						if(loadDropdown!=null && loadDropdown.size()>0) {
+							mps=new ArrayList<Map<String,String>>();	
+							for(Tuple l :loadDropdown) {
+								Map<String,String> mp=new HashMap<String,String>();
+								mp.put("JsonKey", l.get("requestJsonKey")==null?"":l.get("requestJsonKey").toString());
+								mp.put("JsonColum", l.get("requestColumn")==null?"":l.get("requestColumn").toString());
+								mp.put("JsonTable", l.get("requestTable")==null?"":l.get("requestTable").toString());
+								mp.put("dropdownYn",l.get("dropdownYn")==null?"":l.get("dropdownYn").toString());
+								mps.add(mp);
+							}							
+
+						} 
+
+						List<String> list=new ArrayList<String>();
+						for(Map<String, String> map:mps){
+							String jsonKey = map.get("JsonKey");
+							String jsonColum = map.get("JsonColum");
+							String dropdownYn= map.get("dropdownYn");
+							Object jsonValue = null;
+							try {
+								
+								if("Y".equals(dropdownYn.trim())) {
+									Field field = nt.getClass().getField(jsonColum);								
+									jsonValue=field.get(nt);
+								}else
+									jsonValue=jsonColum;
+							}catch(Exception e) {
+								e.printStackTrace();
+							}
+							//String jsonValue = ;
+
+							String value="\""+jsonKey+"\":\""+jsonValue+"\"";
+							list.add(value);		
+
+						}
+						String json="{"+StringUtils.join(list,',')+"}";
+						try {
+							String encrData = EncryDecryService.encrypt(json);
+							String appUrl=loadTinyUrl.get(0).get("appUrl").toString();
+							String shorternURL = getShorternURL(appUrl+encrData);
+							nt.setTinyUrl(shorternURL);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+					}
 					uws.add(nt);
 				}
 				List<NotifTransactionDetails> saveAll = notifTrans.saveAll(uws);
@@ -207,6 +286,40 @@ public class NotificationService {
 		
  	}
 	
+	private String getShorternURL(String encryptedURL) {
+		BufferedReader reader = null;
+		URL url =null;
+		URLConnection con =null;
+		InputStream openStream =null;
+		try {
+			final String tinyUrl = "http://tinyurl.com/api-create.php?url=";
+			String tinyUrlLookup = tinyUrl + encryptedURL;
+				url = new URL(tinyUrlLookup);
+			  con = url.openConnection();
+			 con.setConnectTimeout(8000);
+			 con.setReadTimeout(5000);
+			 openStream = url.openStream();
+			reader = new BufferedReader(new InputStreamReader(openStream));
+			
+			String result = reader.readLine();
+			log.info("Encrypted URL result: " + result + " Encrypted URL " + encryptedURL);
+			reader.close();
+			return result;
+		} catch (Exception e) {
+			log.error(e);
+		}finally {
+			try {
+					if(reader!=null)				
+						reader.close();
+					if(openStream!=null)
+						openStream.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		return "";
+	}
 	@Value(value = "${motor.productId}")
 	private String motorProductId;
 	

@@ -1,11 +1,12 @@
 package com.maan.eway.auth.dto;
 
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maan.eway.error.Error;
 
 import lombok.Data;
-import com.maan.eway.error.Error;
 
 @Data
 public class CommonLoginRes {
@@ -28,7 +29,10 @@ public class CommonLoginRes {
 	
 	@JsonProperty("ErroCode")
 	private int erroCode;
-
+	
+	@JsonProperty("AdditionalInfo")
+	private Map<String,Object> additionalInfo;
 /*	@JsonProperty("AdditionalData")
 	private DefaultAllResponse defaultValue; */
+	
 }

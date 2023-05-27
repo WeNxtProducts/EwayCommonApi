@@ -179,6 +179,9 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				log.info("Encrpted password "+epass);
 				 login =loginRepo.findByLoginIdAndPassword(mslogin.getLoginId(),epass);
 					
+				 if(login==null) {
+					 login =loginRepo.findByLoginIdAndPassword(mslogin.getLoginId(),mslogin.getPassword().trim());
+				 }
 			}
 			
 			if (login != null ) {

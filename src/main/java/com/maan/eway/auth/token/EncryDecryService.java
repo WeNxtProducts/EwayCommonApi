@@ -31,4 +31,21 @@ private static final String FORMAT = "ISO-8859-1";
 
         return decryptedText;
     }
+	
+	public static void main(String []args ) throws Exception {
+		EncryDecryService s =new EncryDecryService();
+		String a="{\r\n"
+				+ "\"LoginId\": \"Issuer11\",\r\n"
+				+ "\"UserType\": \"Issuer\",\r\n"
+				+ "\"SubUserType\": \"high\",\r\n"
+				+ "\"CustomerRefNo\":\"Cust-00007\",\r\n"
+				+ "\"PageType\": \"Home/existingQuotes/customerSelection/customerDetails/excess-discount\",\r\n"
+				+ "\"BranchCode\":\"01\",\r\n"
+				+ "\"QuoteNo\":null,\r\n"
+				+ "\"PolicyNo\": null,\r\n"
+				+ "\"RefNo\": \"DOM-03604\"\r\n"
+				+ "}";
+		System.out.println(s.encrypt(a)); 
+		System.out.println(s.decrypt(s.encrypt(a)));
+	}
 }

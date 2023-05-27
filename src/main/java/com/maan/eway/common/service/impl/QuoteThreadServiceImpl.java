@@ -1475,7 +1475,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 								.branchCode(cusRefNo.get(0).getBranchCode())
 								.insuranceId(cusRefNo.get(0).getCompanyId())
 								.productId(cusRefNo.get(0).getProductId())
-								//.suminsured(req. )
+								.suminsured(cusRefNo.get(0).getSumInsured())
 								
 								.build();
 				List<UnderWriter> underWrite = new ArrayList<UnderWriter>();
@@ -1488,6 +1488,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					underWriterReq.setUwPhonecode(Integer.parseInt(ref.getMobileCode()));
 					underWriterReq.setUwPhoneNo(new BigDecimal(ref.getMobileNo()));
 					underWriterReq.setUwName(ref.getInsuranceId());
+					underWriterReq.setUwLoginId(ref.getLoginId());
+					underWriterReq.setUwuserType(ref.getUwuserType());
+					underWriterReq.setUwsubuserType(ref.getUwsubuserType());
 					underWrite.add(underWriterReq);
 				}				 
 				n.setUnderwriters(underWrite);

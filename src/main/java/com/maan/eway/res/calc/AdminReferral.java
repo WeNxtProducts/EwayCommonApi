@@ -32,5 +32,9 @@ public class AdminReferral {
 		
 		@JsonProperty("WhatsAppNo")
 		private String whatsAppNo;
+		@JsonProperty("UwuserType")
+	    private String     uwuserType;
+		@JsonProperty("UwsubuserType")
+	    private String     uwsubuserType;
 		
 }

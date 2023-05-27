@@ -1412,8 +1412,7 @@ private BuildingDetailsRepository BuildingRepo;
 			n.setRefNo(req.getRequestReferenceNo());
 			n.setBranchCode(cusRefNo.get(0).getBranchCode());
 			n.setInsuranceId(cusRefNo.get(0).getCompanyId());
-			n.getTinyUrl();
-
+ 
 			// Calling pushNotification
 			CommonRes res=notiService.pushNotification(n);
 			if (res.getIsError()==null) {

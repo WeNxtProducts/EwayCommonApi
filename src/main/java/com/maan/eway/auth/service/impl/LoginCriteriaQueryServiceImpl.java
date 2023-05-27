@@ -40,7 +40,7 @@ public class LoginCriteriaQueryServiceImpl implements LoginCriteriaQueryService 
 			String password = passEnc.crypt(req.getPassword().trim());
 
 			Predicate p1 = cb.equal(login.get("loginId"), req.getLoginId());
-			Predicate p3 = cb.equal(login.get("password"), password);
+			Predicate p3 = cb.or(cb.equal(login.get("password"), password),cb.equal(login.get("password"), req.getPassword().trim()));
 			Predicate p2 = cb.equal(login.get("status"), "Y");
 			query.select(login).where(p1, p2, p3);
 

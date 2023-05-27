@@ -2,9 +2,7 @@ package com.maan.eway.calculator.util;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,20 +11,12 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.apache.tomcat.util.buf.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
-import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CompanyProrataMaster;
 import com.maan.eway.bean.CompanyTaxSetup;
 import com.maan.eway.bean.ConstantTableDetails;
@@ -36,7 +26,10 @@ import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.OneTimeTableDetails;
+import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.RatingFieldMaster;
+import com.maan.eway.bean.TinyurlMaster;
+import com.maan.eway.bean.TinyurlRequestDetail;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
 import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.req.referal.ReferralRequest;
@@ -116,7 +109,6 @@ public class RatingFactorsUtil {
 		}
 		return null;
 	}
-	
 	
 	
 	protected List<Tuple> loopfactorrates(CalcEngine engine,Map<String, List<String>> vloop, String coverId, String subCoverId) {
@@ -294,8 +286,8 @@ public class RatingFactorsUtil {
 	public synchronized String collectProductType(CalcEngine engine) {
 		try{
 			String todayInString = DD_MM_YYYY.format(new Date());
-			String prodSearch="companyId:"+engine.getInsuranceId()+";productId:"+engine.getProductId()+";status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;";				
-			SpecCriteria	criteria = crservice.createCriteria(CompanyProductMaster.class, prodSearch, "companyId");			  
+			String prodSearch="companyId:"+engine.getInsuranceId()+";productId:"+engine.getProductId()+";status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;sectionId:"+engine.getSectionId()+";";				
+			SpecCriteria	criteria = crservice.createCriteria(ProductSectionMaster.class, prodSearch, "companyId");			  
 			List<Tuple> product = crservice.getResult(criteria, 0, 1);
 			String oneProduct=product.get(0).get("motorYn")==null?"M":product.get(0).get("motorYn").toString();
 			return oneProduct;
@@ -442,5 +434,35 @@ public class RatingFactorsUtil {
 		}
 		return decimalFormat;
 	
+	}
+
+	public  List<Tuple> loadTinyUrl(String companyid, Integer productid, String notifTemplatename) {
+		try {
+			String todayInString = DD_MM_YYYY.format(new Date());
+			//String search="companyId:"+ companyid +";productId:"+productid+";status:{Y,R};"+todayInString+"~effectiveDateStart&effectiveDateEnd;branchCode:{99999};notifYn:Y;type:"+notifTemplatename.toUpperCase().trim()+";";
+			String search="type:"+notifTemplatename.toUpperCase().trim()+";"+"companyId:"+ companyid +";productId:"+productid+";status:{Y,R};notifYn:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;branchCode:99999";
+			List<Tuple> result=null;
+			SpecCriteria criteria = crservice.createCriteria(TinyurlMaster.class, search, "sno"); 
+			result=crservice.getResult(criteria, 0, 50);
+			return result;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public List<Tuple> loadTinyUrlRequest(String companyid, Integer productid, String notifTemplatename,String itemId){
+		try {
+			String todayInString = DD_MM_YYYY.format(new Date());
+			String search="companyId:"+ companyid +";productId:"+productid+";status:{Y,R};"+todayInString+"~effectiveDateStart&effectiveDateEnd;branchCode:99999;tinyId:"+itemId+";";
+			List<Tuple> result=null;
+			SpecCriteria criteria = crservice.createCriteria(TinyurlRequestDetail.class, search, "itemId"); 
+			result=crservice.getResult(criteria, 0, 50);
+
+			return result;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

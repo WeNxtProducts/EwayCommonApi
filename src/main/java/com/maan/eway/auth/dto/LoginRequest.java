@@ -23,7 +23,9 @@ public class LoginRequest {
 	
 	@JsonProperty("CompanyId")
 	private String companyId; */
+	/// ONly for encryptoin;
+	@JsonProperty("e")
+	private String encryptionkey;
 	
-
 
 }
