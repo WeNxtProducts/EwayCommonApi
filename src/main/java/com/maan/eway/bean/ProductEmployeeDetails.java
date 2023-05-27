@@ -159,8 +159,11 @@ private static final long serialVersionUID = 1L;
 	  @Column(name="DATE_OF_BIRTH")
 	  private Date       dateOfBirth;
 	  
-	  @Column(name="DATE_OF_JOINING")
-	  private Integer dateOfJoining;
+	  @Column(name="DATE_OF_JOINING_YEAR")
+	  private Integer dateOfJoiningYear;
+	  
+	  @Column(name="DATE_OF_JOINING_MONTH", length=10)
+	  private String dateOfJoiningMonth;
       
 }
 
