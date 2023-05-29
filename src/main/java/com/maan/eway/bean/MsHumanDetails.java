@@ -160,10 +160,28 @@ private static final long serialVersionUID = 1L;
     private Integer       accountAuditentType ;
 
     @Column(name="TOTAL_OUTSTANDING_AMOUNT")
-    private Long       totalOutstandingAmount;    
+    private Long       totalOutstandingAmount;
+    
+    @Column(name="LIABILITY_SI")
+    private BigDecimal       liabilitySi;
+    
+    @Column(name="FID_EMP_COUNT")
+    private BigDecimal       fidEmpCount;
+    
+    @Column(name="FID_EMP_SI")
+    private BigDecimal       fidEmpSi;
     //--- ENTITY LINKS ( RELATIONSHIP )
+    @Column(name="EMP_LIABILITY_SI")
+    private BigDecimal       empLiabilitySi;
 
-
+    @Column(name="PERSONAL_LIABILITY_OCCUPATION")
+    private String       personalLiabilityOccupation; 
+    
+    @Column(name="PERSONAL_LIABILITY_SI")
+    private BigDecimal       personalLiabilitySi; 
+    
+    @Column(name="PERSONAL_LIABILITY_CATEGORY")
+    private BigDecimal       personalLiabilityCategory; 
 }
 
 

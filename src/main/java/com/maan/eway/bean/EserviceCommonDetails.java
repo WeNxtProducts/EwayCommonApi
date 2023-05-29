@@ -64,7 +64,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="CUSTOMER_REFERENCE_NO", nullable=false, length=20)
     private String     customerReferenceNo ;
     
-    @Id
+  
     @Column(name="OCCUPATION_TYPE", length=100)
     private String occupationType ;
 
@@ -320,6 +320,27 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="INDUSTRY_NAME")
     private String       industryName;
+    
+    @Column(name="LIABILITY_SI")
+    private BigDecimal       liabilitySi;
+    
+    @Column(name="FID_EMP_COUNT")
+    private BigDecimal       fidEmpCount;
+    
+    @Column(name="FID_EMP_SI")
+    private BigDecimal       fidEmpSi;
+
+    @Column(name="EMP_LIABILITY_SI")
+    private BigDecimal       empLiabilitySi;
+    
+    @Column(name="PERSONAL_LIABILITY_OCCUPATION")
+    private String       personalLiabilityOccupation; 
+    
+    @Column(name="PERSONAL_LIABILITY_SI")
+    private BigDecimal       personalLiabilitySi; 
+    
+    @Column(name="PERSONAL_LIABILITY_CATEGORY")
+    private BigDecimal       personalLiabilityCategory; 
 }
 
 

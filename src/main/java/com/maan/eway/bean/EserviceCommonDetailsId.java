@@ -35,5 +35,4 @@ public class EserviceCommonDetailsId implements Serializable {
     
     private String     customerReferenceNo ;
     
-    private String occupationType ;
 }
