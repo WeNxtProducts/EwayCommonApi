@@ -97,4 +97,7 @@ public class BrokerCompanyProductReq {
 	@JsonProperty("PolicyTypeDesc")
 	private String policyTypeDesc;
 
+	@JsonProperty("ColumnName")
+	private String columnName;
+
 }

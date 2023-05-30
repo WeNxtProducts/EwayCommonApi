@@ -89,5 +89,8 @@ public class BrokerProductGetRes {
 	
 	@JsonProperty("NonFinanceIds")
 	private List<String> nonFinanceIds;
-	
+
+	@JsonProperty("ColumnName")
+	private String columnName;
+
 }

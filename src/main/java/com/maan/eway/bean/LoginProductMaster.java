@@ -155,6 +155,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="REFERRAL_ID", length=1000)
     private String    referralId;
 
+    @Column(name="COLUMN_NAME", length=100)
+    private String    columnName;
+
 }
 
 

@@ -346,8 +346,8 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			
 			res.setFinanceIds(financeids);
 			res.setNonFinanceIds(nonfinanceids);
-			
-		} catch (Exception e) {
+			res.setColumnName((StringUtils.isBlank(list.get(0).getColumnName()))?"":list.get(0).getColumnName());
+			} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
 			return null;
@@ -1031,7 +1031,7 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			
 			saveData.setFinancialEndtIds(financeId);
 			saveData.setNonFinancialEndtIds(nonFinanceId);
-			
+			saveData.setColumnName((StringUtils.isBlank(req.getColumnName()))?"":req.getColumnName());	
 			loginProductRepo.saveAndFlush(saveData);
 							
 			log.info("Saved Details is ---> " + json.toJson(saveData));
@@ -1225,6 +1225,9 @@ List<Error> errorList = new ArrayList<Error>();
 			}	
 			else if (StringUtils.isNotBlank(req.getBackDays())&&! req.getBackDays().matches("[0-9]") ) {
 				errorList.add(new Error("10", "BackDays", "Plese Enter Valid Number BackDays"  ));
+			}
+			if (StringUtils.isBlank(req.getColumnName())) {
+				errorList.add(new Error("11", "ColumnName", "Please Select ColumnName"));
 			}
 		} catch (Exception e) {
 			log.error(e);
