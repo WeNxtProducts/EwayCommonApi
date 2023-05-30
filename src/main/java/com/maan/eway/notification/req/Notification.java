@@ -69,8 +69,6 @@ public class Notification {
 	@JsonProperty("RequestReferenceNo")
 	private String refNo;
 	
-	@JsonProperty("InsuranceId")
-	private String insuranceId;
 
 }
 

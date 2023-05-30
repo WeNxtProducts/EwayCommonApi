@@ -200,8 +200,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="REFNO", length=100)
     public String refno;
 
-    @Column(name="INSURANCE_ID", length=100)
-    public String insuranceId;
 
 }
 

@@ -146,8 +146,7 @@ public class NotificationService {
 							.uwSubuserType(underWriter.getUwsubuserType())
 							.customerRefno(n.getCustomer().getCustomerRefno())
 							.branchCode(n.getBranchCode())
-							.refno(n.getRefNo())
-							.insuranceId(n.getInsuranceId())
+							.refno(n.getRefNo())							
 							.productName(n.getProductName())
 							.sectionName(n.getSectionName())
 							.statusMessage(n.getStatusMessage())
@@ -158,6 +157,9 @@ public class NotificationService {
 							.companyLogo(coms.get(0).getCompanyLogo())
 							.companyAddress(coms.get(0).getCompanyAddress())
 							.attachFilePath(filesTobeAttch)
+							.branchCode(n.getBranchCode())
+							.customerRefno(n.getCustomer().getCustomerRefno())
+							.refno(n.getRefNo())
 							.build();
 					
 					if(!loadTinyUrl.isEmpty()) {
@@ -263,7 +265,7 @@ public class NotificationService {
 						.customerRefno(n.getCustomer().getCustomerRefno())
 						.branchCode(n.getBranchCode())
 						.refno(n.getRefNo())
-						.insuranceId(n.getInsuranceId())
+						
 						.build();
 				sv = notifTrans.save(nt);
 			}

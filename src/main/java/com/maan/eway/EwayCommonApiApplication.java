@@ -27,7 +27,7 @@ public class EwayCommonApiApplication {
 		SpringApplication.run(EwayCommonApiApplication.class, args);
 	}
 	
-	  	@Bean(name = "NoticationThread-M")
+	  	/*@Bean(name = "NoticationThread-M")
 	    public Executor threadPoolTaskExecutor() {
 	  		ThreadPoolTaskExecutor t = new ThreadPoolTaskExecutor();
 	  		t.setCorePoolSize(2);
@@ -36,17 +36,24 @@ public class EwayCommonApiApplication {
 	  		t.setThreadNamePrefix("Mail(Async)-");
 	  		t.initialize();	  		
 	        return t;
-	    }
+	    }*/
 	  	
 	    @Bean
 	    public JobScheduler initJobRunr(DataSource dataSource, JobActivator jobActivator) {
-	        return JobRunr.configure()
+	       /* return JobRunr.configure()
 	                .useJobActivator(jobActivator)
 	                .useStorageProvider(SqlStorageProviderFactory
 	                          .using(dataSource))
 	                .useBackgroundJobServer()
 	                .useDashboard(9879)	                
-	                .initialize();
+	                .initialize();*/
+	    	return JobRunr.configure()
+	    			.useJobActivator(jobActivator)
+	    			.useStorageProvider(SqlStorageProviderFactory
+	    			.using(dataSource))
+	    			.useBackgroundJobServer()
+	    			.useDashboard(9879)
+	    			.initialize();
 	    }
 
 }

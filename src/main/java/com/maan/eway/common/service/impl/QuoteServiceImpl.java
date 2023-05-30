@@ -1411,7 +1411,7 @@ private BuildingDetailsRepository BuildingRepo;
 			
 			n.setRefNo(req.getRequestReferenceNo());
 			n.setBranchCode(cusRefNo.get(0).getBranchCode());
-			n.setInsuranceId(cusRefNo.get(0).getCompanyId());
+			n.setCompanyid(cusRefNo.get(0).getCompanyId());
  
 			// Calling pushNotification
 			CommonRes res=notiService.pushNotification(n);
@@ -1529,7 +1529,7 @@ private BuildingDetailsRepository BuildingRepo;
 			n.getTinyUrl();
 			n.setRefNo(req.getRequestReferenceNo());
 			n.setBranchCode(cusRefNo.get(0).getBranchCode());
-			n.setInsuranceId(cusRefNo.get(0).getCompanyId());
+			n.setCompanyid(cusRefNo.get(0).getCompanyId());
 
 			// Calling pushNotification
 			CommonRes res = notiService.pushNotification(n);
@@ -1650,7 +1650,7 @@ private BuildingDetailsRepository BuildingRepo;
 			n.setStatusMessage("");
 			n.setRefNo(req.getRequestReferenceNo());
 			n.setBranchCode(cusRefNo.get(0).getBranchCode());
-			n.setInsuranceId(cusRefNo.get(0).getCompanyId());
+			n.setCompanyid(cusRefNo.get(0).getCompanyId());
 			
 			n.getTinyUrl();
 
@@ -1767,7 +1767,7 @@ private BuildingDetailsRepository BuildingRepo;
 				// Referral Noti , referral app,recj
 					n.setRefNo(req.getRequestReferenceNo());
 					n.setBranchCode(cusRefNo.get(0).getBranchCode());
-					n.setInsuranceId(cusRefNo.get(0).getCompanyId());
+					n.setCompanyid(cusRefNo.get(0).getCompanyId());
 
 					n.getTinyUrl();
 
@@ -2805,7 +2805,7 @@ private BuildingDetailsRepository BuildingRepo;
 				n.setSectionName(cusRefNo.get(0).getSectionName());
 				n.setRefNo(req.getRequestReferenceNo());
 			n.setBranchCode(cusRefNo.get(0).getBranchCode());
-			n.setInsuranceId(cusRefNo.get(0).getCompanyId());
+			n.setCompanyid(cusRefNo.get(0).getCompanyId());
 
 				n.setStatusMessage("");
 				n.getTinyUrl();
@@ -2917,7 +2917,7 @@ private BuildingDetailsRepository BuildingRepo;
 				n.setStatusMessage("");
 				n.setRefNo(req.getRequestReferenceNo());
 			n.setBranchCode(cusRefNo.get(0).getBranchCode());
-			n.setInsuranceId(cusRefNo.get(0).getCompanyId());
+			n.setCompanyid(cusRefNo.get(0).getCompanyId());
 
 				n.getTinyUrl();
 
@@ -3026,7 +3026,7 @@ private BuildingDetailsRepository BuildingRepo;
 				n.setStatusMessage("");
 				n.setRefNo(req.getRequestReferenceNo());
 			n.setBranchCode(cusRefNo.get(0).getBranchCode());
-			n.setInsuranceId(cusRefNo.get(0).getCompanyId());
+			n.setCompanyid(cusRefNo.get(0).getCompanyId());
 
 				n.getTinyUrl();
 
@@ -3135,7 +3135,7 @@ private BuildingDetailsRepository BuildingRepo;
 				n.setStatusMessage("");
 				n.setRefNo(req.getRequestReferenceNo());
 			n.setBranchCode(cusRefNo.get(0).getBranchCode());
-			n.setInsuranceId(cusRefNo.get(0).getCompanyId());
+			n.setCompanyid(cusRefNo.get(0).getCompanyId());
 
 				n.getTinyUrl();
 

@@ -1454,6 +1454,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					cusReq.setCustomerPhoneNo(new BigDecimal(customerData.getMobileNo1()));
 					cusReq.setCustomerMessengerCode(Integer.valueOf(customerData.getWhatsappCodeDesc()));
 					cusReq.setCustomerMessengerPhone(new BigDecimal(customerData.getWhatsappNo()));
+					cusReq.setCustomerRefno(cusRefNo.get(0).getCustomerReferenceNo());
 				}
 
 				// UnderWriter Info Old Setup.
@@ -1513,7 +1514,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				n.setSectionName(cusRefNo.get(0).getSectionName());
 				n.setStatusMessage(req.getReferralRemarks());// Referral Noti , referral app,recj
 				n.getTinyUrl();
-
+				n.setBranchCode(cusRefNo.get(0).getBranchCode());
+				n.setRefNo(cusRefNo.get(0).getRequestReferenceNo());
+ 
 				// Calling pushNotification
 				CommonRes res=notiService.pushNotification(n);
 //				if (res.getIsError()==null) {
