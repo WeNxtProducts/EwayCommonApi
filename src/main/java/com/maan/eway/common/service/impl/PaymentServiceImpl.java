@@ -379,7 +379,7 @@ public class PaymentServiceImpl implements PaymentService {
 						doc.setProductDesc("Risk Id");
 						doc.setRiskId(mot.getRiskId().toString());
 						doc.setSectionId(String.valueOf(mot.getSectionId()));
-						doc.setSectionDesc(mot.getSectionDesc());
+						doc.setSectionDesc(mot.getSectionName());
 						docValidateReqs.add(doc);
 						
 					}

@@ -81,8 +81,8 @@ private static final long serialVersionUID = 1L;
     private String     policyNo;
 
     
-    @Column(name="SECTION_DESC", length=100)
-    private String  sectionDesc;
+    @Column(name="SECTION_NAME", length=100)
+    private String  sectionName;
     
     @Column(name="COMPANY_ID", length=20)
     private String     companyId ;

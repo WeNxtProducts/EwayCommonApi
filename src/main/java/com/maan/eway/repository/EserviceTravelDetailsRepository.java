@@ -62,4 +62,6 @@ public interface EserviceTravelDetailsRepository  extends JpaRepository<Eservice
 
 	List<EserviceTravelDetails> findByCustomerId(String customerId);
 
+	EserviceTravelDetails findByRequestReferenceNoOrderBySectionNameAsc(String requestReferenceNo);
+
 }

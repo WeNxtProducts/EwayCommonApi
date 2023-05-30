@@ -861,7 +861,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			n.setProductid(Integer.valueOf(req.getProductId()));
 			n.setProductName(cusRefNo.get(0).getProductDesc());
 			n.setQuoteNo(cusRefNo.get(0).getQuoteNo()!=null? cusRefNo.get(0).getQuoteNo().toString() : "");
-			n.setSectionName(cusRefNo.get(0).getSectionDesc());
+			n.setSectionName(cusRefNo.get(0).getSectionName());
 			n.setPushedBy(req.getCreatedBy());
 			// Referral Noti , referral app,recj
 			n.getTinyUrl();

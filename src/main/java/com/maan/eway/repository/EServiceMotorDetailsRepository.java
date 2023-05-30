@@ -90,6 +90,8 @@ public interface EServiceMotorDetailsRepository  extends JpaRepository<EserviceM
 
 	EserviceMotorDetails findByQuoteNoAndChassisNumber(String quoteNo, String chassisNumber);
 
+	List<EserviceMotorDetails> findByRequestReferenceNoOrderBySectionNameAsc(String requestReferenceNo);
+
 
 
 

@@ -660,7 +660,39 @@ private BuildingDetailsRepository BuildingRepo;
 //					buildSec.setPremiumIncludedTaxLc(PremiumIncludedTaxLc==null?"":PremiumIncludedTaxLc.toString());
 //					buildingSectionList.add(buildSec);
 					
-			//	}
+				else {
+					List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(sec.getRiskId())) &&
+							o.getCompanyId().equals(sec.getCompanyId()) && o.getProductId().toString().equals(sec.getProductId()) && o.getSectionId().toString().equals(sec.getSectionId()) ).collect(Collectors.toList());
+				
+					Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
+					
+					List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
+					// Build
+					SectionDetails buildSec = new SectionDetails(); 
+					BigDecimal PremiumAfterDiscount = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
+					BigDecimal PremiumAfterDiscountLc = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumAfterDiscountLC ).reduce((x, y) -> x.add(y)).get());
+					BigDecimal PremiumBeforeDiscount = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumBeforeDiscount ).reduce((x, y) -> x.add(y)).get());
+					BigDecimal PremiumBeforeDiscountLc = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumBeforeDiscountLC ).reduce((x, y) -> x.add(y)).get());
+					BigDecimal PremiumExcluedTax = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumExcluedTax ).reduce((x, y) -> x.add(y)).get());
+					BigDecimal PremiumExcluedTaxLc = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumExcluedTaxLC ).reduce((x, y) -> x.add(y)).get());
+					BigDecimal PremiumIncludedTax = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumIncludedTax ).reduce((x, y) -> x.add(y)).get());
+					BigDecimal PremiumIncludedTaxLc = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumIncludedTaxLC ).reduce((x, y) -> x.add(y)).get());
+					
+					buildSec.setSectionId(sec.getSectionId()==null?"":sec.getSectionId().toString());
+					buildingRes.setSectionId(StringUtils.isBlank(buildingRes.getSectionId() ) ? sec.getSectionId()==null?"":sec.getSectionId().toString() :buildingRes.getSectionId()  );
+					buildSec.setSectionName( sec.getSectionName());
+					buildSec.setCovers(coverListRes);
+					buildSec.setPremiumAfterDiscount(PremiumAfterDiscount==null?"":PremiumAfterDiscount.toString());
+					buildSec.setPremiumAfterDiscountLc(PremiumAfterDiscountLc==null?"":PremiumAfterDiscountLc.toString());
+					buildSec.setPremiumBeforeDiscount(PremiumBeforeDiscount==null?"":PremiumBeforeDiscount.toString());
+					buildSec.setPremiumBeforeDiscountLc(PremiumBeforeDiscountLc==null?"":PremiumBeforeDiscountLc.toString());
+					buildSec.setPremiumExcluedTax(PremiumExcluedTax==null?"":PremiumExcluedTax.toString());
+					buildSec.setPremiumExcluedTaxLc(PremiumExcluedTaxLc==null?"":PremiumExcluedTaxLc.toString());
+					buildSec.setPremiumIncludedTax(PremiumIncludedTax==null?"":PremiumIncludedTax.toString());
+					buildSec.setPremiumIncludedTaxLc(PremiumIncludedTaxLc==null?"":PremiumIncludedTaxLc.toString());
+					buildingSectionList.add(buildSec);
+					
+				}
 				
 			} 
 			buildingRes.setSectionDetails(buildingSectionList);
@@ -1763,7 +1795,7 @@ private BuildingDetailsRepository BuildingRepo;
 				//	ProductMaster productData= getByProductCode(Integer.valueOf(req.getProductId())) ;
 					n.setProductName(cusRefNo.get(0).getProductDesc());
 					n.setQuoteNo(StringUtils.isBlank(cusRefNo.get(0).getQuoteNo().toString())?cusRefNo.get(0).getRequestReferenceNo():cusRefNo.get(0).getQuoteNo().toString());
-					n.setSectionName(cusRefNo.get(0).getSectionDesc());
+					n.setSectionName(cusRefNo.get(0).getSectionName());
 				// Referral Noti , referral app,recj
 					n.setRefNo(req.getRequestReferenceNo());
 					n.setBranchCode(cusRefNo.get(0).getBranchCode());
@@ -3131,7 +3163,7 @@ private BuildingDetailsRepository BuildingRepo;
 				n.setProductid(Integer.valueOf(req.getProductId()));
 				n.setProductName(cusRefNo.get(0).getProductDesc());
 				n.setQuoteNo(cusRefNo.get(0).getQuoteNo().toString());
-				n.setSectionName(cusRefNo.get(0).getSectionDesc());
+				n.setSectionName(cusRefNo.get(0).getSectionName());
 				n.setStatusMessage("");
 				n.setRefNo(req.getRequestReferenceNo());
 			n.setBranchCode(cusRefNo.get(0).getBranchCode());

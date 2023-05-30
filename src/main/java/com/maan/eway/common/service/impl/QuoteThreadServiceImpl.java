@@ -1792,7 +1792,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				List<ProductMaster> productData=productRepo.findByProductIdOrderByEffectiveDateStartDesc(Integer.valueOf(req.getProductId()));
 				n.setProductName(productData.get(0).getProductName());
 				n.setQuoteNo(StringUtils.isBlank(cusRefNo.get(0).getQuoteNo().toString())?cusRefNo.get(0).getRequestReferenceNo():cusRefNo.get(0).getQuoteNo().toString());
-				n.setSectionName(cusRefNo.get(0).getSectionDesc());
+				n.setSectionName(cusRefNo.get(0).getSectionName());
 				n.setStatusMessage(req.getReferralRemarks());// Referral Noti , referral app,recj
 				n.getTinyUrl();
 
@@ -1886,7 +1886,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			//	 ProductMaster productData= getByProductCode(Integer.valueOf(req.getProductId())) ;
 				n.setProductName(cusRefNo.get(0).getProductDesc());
 				n.setQuoteNo(StringUtils.isBlank(cusRefNo.get(0).getQuoteNo().toString())?cusRefNo.get(0).getRequestReferenceNo():cusRefNo.get(0).getQuoteNo().toString());
-				n.setSectionName(cusRefNo.get(0).getSectionDesc());
+				n.setSectionName(cusRefNo.get(0).getSectionName());
 				n.setStatusMessage(req.getReferralRemarks());// Referral Noti , referral app,recj
 				n.getTinyUrl();
 

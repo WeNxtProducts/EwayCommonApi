@@ -1156,7 +1156,7 @@ this.repository = repo;
 		 DozerBeanMapper dozerMapper = new DozerBeanMapper() ;
 		try {
 			// Motor Product Details
-			List<EserviceMotorDetails>    motorDatas = eserMotorRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+			List<EserviceMotorDetails>    motorDatas = eserMotorRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
 					
 			for (EserviceMotorDetails mot :  motorDatas) {
 				// Response 
@@ -1203,7 +1203,7 @@ this.repository = repo;
 		 DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		 try {
 			List<EserviceTravelGroupDetails>    travelDatas = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(req.getRequestReferenceNo());
-			EserviceTravelDetails travelData = eserTraRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+			EserviceTravelDetails travelData = eserTraRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
 			for (EserviceTravelGroupDetails tra :  travelDatas) {
 				
 				// Response 
@@ -1264,7 +1264,7 @@ this.repository = repo;
 		 DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		 try {
 			// Building Product Details
-			List<EserviceSectionDetails>    sectionDatas = eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
+			List<EserviceSectionDetails>    sectionDatas = eserSecRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
 			List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 			
 			for (EserviceSectionDetails sec :  sectionDatas) {
@@ -1280,7 +1280,7 @@ this.repository = repo;
 						res.setInsuranceId(acc.getCompanyId());
 						res.setSectionId(sec.getSectionId());
 						res.setVehicleId(acc.getRiskId().toString());
-						res.setSectionName(acc.getSectionDesc());
+						res.setSectionName(acc.getSectionName());
 						
 						res.setGroupId(acc.getRiskId()==null?null:acc.getRiskId());
 						res.setOverallPremiumFc(acc.getOverallPremiumFc()==null?"0": acc.getOverallPremiumFc().toPlainString());
@@ -1322,7 +1322,7 @@ this.repository = repo;
 						res.setActualPremiumLc(buildData.getActualPremiumLc()==null?"0":buildData.getActualPremiumLc().toPlainString());
 						res.setHavepromocode(buildData.getHavepromocode());
 						res.setPromocode(buildData.getPromocode());
-						res.setSectionName( sec.getSectionDesc() );
+						res.setSectionName( sec.getSectionName() );
 						res.setGroupId(buildData.getRiskId()==null?null:buildData.getRiskId());
 						res.setEffectiveDate(buildData.getEndorsementEffdate()==null?null:buildData.getEndorsementEffdate() );
 						
@@ -1354,7 +1354,7 @@ this.repository = repo;
 		 List<EservieMotorDetailsViewRes> viewCommonList  = new ArrayList<EservieMotorDetailsViewRes>() ;
 		 DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		 try {
-			List<EserviceCommonDetails> findDatas = eserCommonRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+			List<EserviceCommonDetails> findDatas = eserCommonRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
 			
 			for (EserviceCommonDetails comData : findDatas ) {
 				
@@ -1371,7 +1371,7 @@ this.repository = repo;
 				res.setActualPremiumFc(comData.getActualPremiumFc()==null?"0":comData.getActualPremiumFc().toPlainString());
 				res.setActualPremiumLc(comData.getActualPremiumLc()==null?"0":comData.getActualPremiumLc().toPlainString());
 				res.setSectionId(comData.getSectionId() );
-				res.setSectionName(comData.getSectionDesc());
+				res.setSectionName(comData.getSectionName());
 				res.setEffectiveDate(comData.getEndorsementEffdate()==null?null:comData.getEndorsementEffdate() );
 				//res.setEndorsementYn(comData.getEndorsementType()==null?"N":"Y");
 				Object riskDetails = new Object();

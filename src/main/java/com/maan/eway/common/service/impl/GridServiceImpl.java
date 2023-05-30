@@ -932,7 +932,7 @@ public class GridServiceImpl implements GridService {
 					EserviceCommonDetails riskData =data.get("c") ==null?null: (EserviceCommonDetails) data.get("c")   ;
 					if( riskData !=null ) {
 						dozermapper.map(riskData, res);
-						res.setSectionName(riskData.getSectionDesc());	
+						res.setSectionName(riskData.getSectionName());	
 					}
 				}
 				res.setClientName((data.get("clientName").toString()));

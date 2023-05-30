@@ -398,7 +398,7 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 						buildingRes.setSectionId(StringUtils.isBlank(buildingRes.getSectionId())
 								? sec.getSectionId() == null ? "" : sec.getSectionId().toString()
 								: buildingRes.getSectionId());
-						buildSec.setSectionName(sec.getSectionDesc());
+						buildSec.setSectionName(sec.getSectionName());
 						buildingSectionList.add(buildSec);
 
 					}
