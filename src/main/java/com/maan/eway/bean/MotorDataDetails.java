@@ -475,6 +475,9 @@ private static final long serialVersionUID = 1L;
    
    @Column(name="ENDT_PREMIUM")
    private Double       endtPremium ;
+   
+   @Column(name="TIRA_COVER_NOTE_NO")
+   private String tiraCoverNoteNo;
 }
 
 

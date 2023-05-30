@@ -593,6 +593,9 @@ private static final long serialVersionUID = 1L;
       @Column(name="BOILER_PLANTS_SI")
       private BigDecimal boilerPlantsSi ;
       
+      @Column(name="TIRA_COVER_NOTE_NO")
+      private String tiraCoverNoteNo;
+      
 }
 
 

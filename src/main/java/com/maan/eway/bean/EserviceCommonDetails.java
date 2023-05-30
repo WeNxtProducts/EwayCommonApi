@@ -340,7 +340,10 @@ private static final long serialVersionUID = 1L;
     private BigDecimal       personalLiabilitySi; 
     
     @Column(name="PERSONAL_LIABILITY_CATEGORY")
-    private BigDecimal       personalLiabilityCategory; 
+    private BigDecimal       personalLiabilityCategory;
+    
+    @Column(name="TIRA_COVER_NOTE_NO")
+    private String tiraCoverNoteNo;
 }
 
 
