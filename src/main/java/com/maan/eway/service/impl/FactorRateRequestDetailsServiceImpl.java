@@ -579,17 +579,18 @@ this.repository = repo;
 			
 			
 			// Update Motor Premium
-			if(   req.getProductId().equalsIgnoreCase(motorProductId)) {
-				EserviceMotorDetails findData =   eserMotorRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo()  ,Integer.valueOf(req.getVehicleId()));
-				findData.setActualPremiumLc(premiumLc ==null ? null :new BigDecimal(df.format(premiumLc )));
-				findData.setActualPremiumFc(premiumFc ==null ? null :new BigDecimal(df.format(premiumFc )));
-				findData.setOverallPremiumLc(overAllPremiumLc ==null ? null :new BigDecimal(df.format(overAllPremiumLc)));
-				findData.setOverallPremiumFc(overAllPremiumFc ==null ? null :new BigDecimal(df.format(overAllPremiumFc)));
-				
-				eserMotorRepo.save(findData);
-				
-			// Update  Travle PRemium
-			} else if(   req.getProductId().equalsIgnoreCase(travelProductId)) {
+//			if(   req.getProductId().equalsIgnoreCase(motorProductId)) {
+//				EserviceMotorDetails findData =   eserMotorRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo()  ,Integer.valueOf(req.getVehicleId()));
+//				findData.setActualPremiumLc(premiumLc ==null ? null :new BigDecimal(df.format(premiumLc )));
+//				findData.setActualPremiumFc(premiumFc ==null ? null :new BigDecimal(df.format(premiumFc )));
+//				findData.setOverallPremiumLc(overAllPremiumLc ==null ? null :new BigDecimal(df.format(overAllPremiumLc)));
+//				findData.setOverallPremiumFc(overAllPremiumFc ==null ? null :new BigDecimal(df.format(overAllPremiumFc)));
+//				
+//				eserMotorRepo.save(findData);
+//				
+//			// Update  Travle PRemium
+//			} else
+			if(   req.getProductId().equalsIgnoreCase(travelProductId)) {
 				
 				// Update Group Premium
 				EserviceTravelGroupDetails findData =eserGroupRepo.findByRequestReferenceNoAndGroupId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()) ); 
@@ -632,12 +633,15 @@ this.repository = repo;
 				
 				// Update Group Premium
 				EserviceCommonDetails findData =eserCommonRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()) ); 
-				findData.setActualPremiumLc(premiumLc ==null ? null :new BigDecimal(df.format(premiumLc )));
-				findData.setActualPremiumFc(premiumFc ==null ? null :new BigDecimal(df.format(premiumFc )));
-				findData.setOverallPremiumLc(overAllPremiumLc ==null ? null :new BigDecimal(df.format(overAllPremiumLc)));
-				findData.setOverallPremiumFc(overAllPremiumFc ==null ? null :new BigDecimal(df.format(overAllPremiumFc)));
-				
-				eserCommonRepo.save(findData);
+				if(findData !=null) {
+					findData.setActualPremiumLc(premiumLc ==null ? null :new BigDecimal(df.format(premiumLc )));
+					findData.setActualPremiumFc(premiumFc ==null ? null :new BigDecimal(df.format(premiumFc )));
+					findData.setOverallPremiumLc(overAllPremiumLc ==null ? null :new BigDecimal(df.format(overAllPremiumLc)));
+					findData.setOverallPremiumFc(overAllPremiumFc ==null ? null :new BigDecimal(df.format(overAllPremiumFc)));
+					
+					eserCommonRepo.save(findData);
+				}
+			
 				
 				
 			}
