@@ -1025,7 +1025,8 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 				savedata.setUpdatedBy(req.getLoginId());
 				savedata.setUpdatedDate(new Date());
 				savedata.setRequestReferenceNo(newRequestNo);
-				savedata.setCustomerReferenceNo(newCustRefNo);
+				//savedata.setCustomerReferenceNo(newCustRefNo);
+				savedata.setCustomerReferenceNo(data.getCustomerReferenceNo());
 				savedata.setCustomerId(newCustId);
 				savedata.setOldReqRefNo(req.getRequestReferenceNo());
 				if (req.getUserType().equalsIgnoreCase("Broker") || (req.getUserType().equalsIgnoreCase("User"))) {
@@ -1662,7 +1663,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 					PersonalInfo personalInfoData=personalInforepo.findByCustomerId(olsCustomerId);
 					savedata = dozerMapper.map(personalInfoData, PersonalInfo.class);
 					savedata.setCustomerId(customerId);
-					savedata.setCustomerReferenceNo(custRefNo);
+				//	savedata.setCustomerReferenceNo(custRefNo);
 					savedata.setEntryDate(new Date());
 					savedata.setCreatedBy(req.getLoginId());
 					savedata.setUpdatedBy(req.getLoginId());
