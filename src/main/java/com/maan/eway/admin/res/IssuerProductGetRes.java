@@ -53,4 +53,7 @@ public class IssuerProductGetRes {
 	@JsonProperty("IsOptedYn")
 	private String isOptedYn;	
 
+	@JsonProperty("ColumnName")
+	private String columnName;	
+
 }

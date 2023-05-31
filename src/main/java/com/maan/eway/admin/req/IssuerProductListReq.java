@@ -24,4 +24,7 @@ public class IssuerProductListReq {
 	@JsonProperty("EndorsementIds")
 	private List<String> endorsementIds ;
 	
+	@JsonProperty("ColumnName")
+	private String  columnName; 
+	
 }
