@@ -26,7 +26,8 @@ public interface ProductBenefitMasterService {
 
 	List<Error> validateProductBenefit(ProductBenefitSaveReq req);
 
-	SuccessRes saveProductBenefit(ProductBenefitSaveReq req, Object file);
+	//SuccessRes saveProductBenefit(ProductBenefitSaveReq req, Object file);
+	SuccessRes saveProductBenefit(ProductBenefitSaveReq req);
 
 	List<ProductBenefitGetRes> getallProductBenefit(ProductBenefitGetAllReq req);
 

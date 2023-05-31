@@ -81,6 +81,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="EFFECTIVE_DATE_END", nullable=false)
     private Date       effectiveDateEnd ;
 
+    @Id
+    @Column(name="AMEND_ID")
+    private Integer    amendId ;
+
     //--- ENTITY DATA FIELDS 
     @Column(name="REQUEST_JSON_KEY", length=100)
     private String     requestJsonKey ;
@@ -98,9 +102,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;
 
-    @Column(name="AMEND_ID")
-    private Integer    amendId ;
-
+   
     @Column(name="CREATED_BY", length=100)
     private String     createdBy ;
 

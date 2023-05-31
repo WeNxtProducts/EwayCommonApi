@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.maan.eway.bean.DropdownTableDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,5 +32,9 @@ import com.maan.eway.bean.TinyurlRequestDetailsId;
  
  
 public interface TinyurlRequestDetailsRepository  extends JpaRepository<TinyurlRequestDetails,TinyurlRequestDetailsId > , JpaSpecificationExecutor<TinyurlRequestDetails> {
+
+	List<TinyurlRequestDetails> findByTinyId(Integer sno);
+
+	void deleteByTinyId(Integer sno);
 
 }

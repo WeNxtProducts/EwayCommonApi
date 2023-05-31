@@ -48,8 +48,8 @@ public class ProductBenefitMaster {
 	@Column(name="AMEND_ID",nullable=false)
 	private Integer amendId;		
 	
-	@Column(name="DESCRIPTION",length=500)
-	private String description;
+	@Column(name="BENEFIT_DESCRIPTION",length=500)
+	private String benefitDescription;
 	
 	@Column(name="TYPE_DESC",length=500)
 	private String typeDesc;
@@ -103,7 +103,37 @@ public class ProductBenefitMaster {
 	@Column(name="REGULATORY_CODE",length=20)
 	private String regulatoryCode;
 	
-	@Column(name="DISPLAY_ORDER",length=20)
+	@Column(name="DISPLAY_ORDER")
 	private Integer displayOrder;
 
-}
+	@Column(name="COVER_ID")
+	private Integer coverId;
+	
+	@Column(name="COVER_NAME",length=100)
+	private String coverName;
+	
+	@Column(name="SUB_COVER_ID")
+	private Integer subCoverId;
+	
+	@Column(name="SUB_COVER_NAME",length=100)
+	private String subCoverName;
+	
+	@Column(name="LONG_DESC",length=500)
+	private String longDesc;
+	
+	@Column(name="CALC_TYPE",length=20)
+	private String calcType;
+	
+	@Column(name="CALC_TYPE_DESC",length=100)
+	private String calcTypeDesc;
+	
+	@Column(name="VALUE")
+	private Double value;
+	
+	@Column(name="AGENCY_CODE",length=100)
+	private String agencyCode;
+	
+	@Column(name="BRANCH_CODE",length=20)
+	private String branchCode;
+
+} 

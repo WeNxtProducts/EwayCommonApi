@@ -333,7 +333,12 @@ public SuccessRes insertTinyUrl(TinyUrlMasterSaveReq req) {
 		//
 		Integer itemId = 0;
 		if (req.getRequestYn().equalsIgnoreCase("Y")) {
+			List<TinyurlRequestDetails> tinyReqList=tinyReqRepo.findByTinyId(sno);
+			if(tinyReqList.size()>0 || tinyReqList!=null) {
+				tinyReqRepo.deleteByTinyId(sno);
+			}
 			for (TinyUrlYnDetailsSaveReq data : req.getTinyUrlYnDetails()) {
+				
 				TinyurlRequestDetails tinyUrlYnDetails = new TinyurlRequestDetails();
 				itemId = itemId + 1;
 				dozerMapper.map(data, tinyUrlYnDetails);

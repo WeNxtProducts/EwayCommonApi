@@ -1032,12 +1032,18 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			Page<EserviceCustomerDetails> datas = null;
 			if (loginData.getUserType().equalsIgnoreCase("Broker")
 					|| loginData.getUserType().equalsIgnoreCase("User")) {
-				datas = repository.findByCompanyIdAndBrokerBranchCodeAndCreatedBy(paging,
+//				datas = repository.findByCompanyIdAndBrokerBranchCodeAndCreatedBy(paging,
+//						req.getComapanyId(), req.getBrokerBranchCode(),
+//						req.getCreatedBy());
+				datas = repository.findByCompanyIdAndBrokerBranchCodeAndCreatedByAndStatus(paging,
 						req.getComapanyId(), req.getBrokerBranchCode(),
-						req.getCreatedBy());
+						req.getCreatedBy(), "Y");
 			} else {
-				datas = repository.findByCompanyIdAndBranchCodeAndCreatedBy(paging, req.getComapanyId(),
-						req.getBranchCode(), req.getCreatedBy());
+//				datas = repository.findByCompanyIdAndBranchCodeAndCreatedBy(paging, req.getComapanyId(),
+//						req.getBranchCode(), req.getCreatedBy());
+				datas = repository.findByCompanyIdAndBranchCodeAndCreatedByAndStatus(paging,
+						req.getComapanyId(), req.getBranchCode(),
+						req.getCreatedBy(), "Y");
 			}
 
 			for (EserviceCustomerDetails data : datas) {

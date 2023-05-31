@@ -2,6 +2,8 @@ package com.maan.eway.master.req;
 
 import java.util.Date;
 
+import javax.persistence.Column;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -15,17 +17,26 @@ public class ProductBenefitSaveReq {
 	@JsonProperty("BenefitId")
 	private String benefitId;
 	
-	@JsonProperty("Description")
-	private String description;
+	@JsonProperty("BenefitDescription")
+	private String benefitDescription;
 	
 	@JsonProperty("InsuranceId")
 	private String companyId;
+	
+	@JsonProperty("BranchCode")
+	private String branchCode;
 	
 	@JsonProperty("ProductId")
 	private String productId;
 	
 	@JsonProperty("SectionId")
 	private String sectionId;
+	
+	@JsonProperty("CoverId")
+	private String coverId;
+	
+	@JsonProperty("SubCoverId")
+	private String subCoverId;
 	
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
@@ -34,11 +45,23 @@ public class ProductBenefitSaveReq {
 	@JsonProperty("Remarks")
 	private String remarks;
 	
+	@JsonProperty("LongDesc")
+	private String longDesc;
+	
 	@JsonProperty("Status")
 	private String status;
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
+	
+	@JsonProperty("CalcType")
+	private String calcType;
+	
+	@JsonProperty("Value")
+	private String value;
+	
+	@JsonProperty("AgencyCode")
+	private String agencyCode;
 
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;

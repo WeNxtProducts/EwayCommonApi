@@ -1104,8 +1104,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 					// Copy COVER_DOCUMENT_UPLOAD_DETAILS
 					coverDocumentUploadDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count);
 				
-					// Copy ESERVICE_CUSTOMER_DETAILS
-					eserviceCustDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
+//					// Copy ESERVICE_CUSTOMER_DETAILS
+//					eserviceCustDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
 				}
 				//res.setRequestReferenceNo(newRequestNo);
 			} catch (Exception e) {
@@ -1200,7 +1200,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 
 		}
 
-		private CopyQuoteSuccessRes eserviceCustDetailsEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo, String customerId,String loginId, String prevPolicyNo, String prevQuoteNo, Integer count,String custRefNo) {
+	/*	private CopyQuoteSuccessRes eserviceCustDetailsEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo, String customerId,String loginId, String prevPolicyNo, String prevQuoteNo, Integer count,String custRefNo) {
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 			EserviceCustomerDetails savedata = new EserviceCustomerDetails();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -1245,7 +1245,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			return res;
 
 			
-		}
+		}*/
 
 		//Home Position Master Endt Copy Quote
 		@Transactional

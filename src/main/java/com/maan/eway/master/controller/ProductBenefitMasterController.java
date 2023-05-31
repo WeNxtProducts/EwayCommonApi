@@ -53,7 +53,7 @@ public class ProductBenefitMasterController {
 	@Autowired
 	private  PrintReqService reqPrinter;
 	
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+/*	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
 	@PostMapping("/insertproductbenefit")
 	@ApiOperation(value="This Method is to save Product Benefit Master")
 	public ResponseEntity<CommonRes> saveExclusion(@RequestParam("File") Object file, @RequestParam("Req") String jsonString ) throws CommonValidationException, JsonMappingException, JsonProcessingException{
@@ -87,11 +87,41 @@ public class ProductBenefitMasterController {
 		}
 	}
 	}
-
+*/
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/insertproductbenefit")
+	@ApiOperation(value="This Method is to save Product Benefit Master")
+	public ResponseEntity<CommonRes> saveExclusion(@RequestBody ProductBenefitSaveReq req){
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+	List<Error> validation = service.validateProductBenefit(req);
+	//validation
+	if(validation !=null && validation.size()!=0) {
+		data.setCommonResponse(null);
+		data.setIsError(true);
+		data.setErrorMessage(validation);
+		data.setMessage("Failed");
+		return new ResponseEntity<CommonRes>(data,HttpStatus.OK);
+	} else {
+		//save
+		SuccessRes res = service.saveProductBenefit(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		
+		if(res!=null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	}
 	//  Get All Exclusion Master
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getallproductbenefit")
-	@ApiOperation("This method is getall Exclusion")
+	@ApiOperation("This method is getall Product Benefit")
 	public ResponseEntity<CommonRes> getallProductBenefit(@RequestBody ProductBenefitGetAllReq req)
 	{
 		CommonRes data = new CommonRes();
@@ -112,9 +142,9 @@ public class ProductBenefitMasterController {
 	}
 
 	//  Get Active Exclusion Master
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/getactiveproductbenefit")
-		@ApiOperation("This method is get Active Exclusion")
+		@ApiOperation("This method is get Active Benefit")
 		public ResponseEntity<CommonRes> getActiveExclusion(@RequestBody ProductBenefitGetAllReq req)
 		{
 			CommonRes data = new CommonRes();
@@ -135,9 +165,9 @@ public class ProductBenefitMasterController {
 		}
 
 	// Get By Exclusion Id
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/getbyproductbenefitid")
-	@ApiOperation("This Method is to get by Exclusion id")
+	@ApiOperation("This Method is to get by Benefit id")
 	public ResponseEntity<CommonRes> getByProductBenefitId(@RequestBody ProductBenefitGetReq req)
 	{
 	CommonRes data = new CommonRes();
@@ -155,9 +185,9 @@ public class ProductBenefitMasterController {
 	}
 	}
 		
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/benefit/changestatus")
-	@ApiOperation(value = "This method is get Exclusion Change Status")
+	@ApiOperation(value = "This method is get Product Benefit Change Status")
 	public ResponseEntity<CommonRes> changeStatusOfProductBenefit(@RequestBody ProductBenefitChangeStatusReq req) {
 
 		CommonRes data = new CommonRes();
@@ -179,7 +209,7 @@ public class ProductBenefitMasterController {
 	//Exclusion Master Drop Down Type
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping(value="/dropdown/productbenefit",produces = "application/json")
-	@ApiOperation(value = "This method is get Exclusion Master Drop Down")
+	@ApiOperation(value = "This method is get Product Benefit Master Drop Down")
 
 	public ResponseEntity<CommonRes> getExclusionMasterDropdown(@RequestBody ProductBenefitDropDownReq req) {
 

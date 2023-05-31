@@ -44,5 +44,5 @@ public class TinyurlRequestDetailsId implements Serializable {
     
     private Date       effectiveDateEnd ;
     
-     
+    private Integer    amendId ;
 }

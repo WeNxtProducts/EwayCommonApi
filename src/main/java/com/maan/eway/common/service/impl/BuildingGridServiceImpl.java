@@ -1082,9 +1082,9 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 			coverDocumentUploadDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId, prevPolicyNo, prevQuoteNo,
 					count);
 
-			// Copy ESERVICE_CUSTOMER_DETAILS
-			eserviceCustDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId, prevPolicyNo, prevQuoteNo, count,
-					custRefNo);
+//			// Copy ESERVICE_CUSTOMER_DETAILS
+//			eserviceCustDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId, prevPolicyNo, prevQuoteNo, count,
+//					custRefNo);
 
 			// Copy ESERVICE_COMMON_DETAILS
 //			eserviceCommonDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId, prevPolicyNo, prevQuoteNo,
@@ -1508,7 +1508,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 
 			}
 
-			private CopyQuoteSuccessRes eserviceCustDetailsEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo,
+	/*	private CopyQuoteSuccessRes eserviceCustDetailsEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo,
 					String customerId, String loginId, String prevPolicyNo, String prevQuoteNo, Integer count,
 					String custRefNo) {
 				CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
@@ -1556,7 +1556,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 				return res;
 
 			}
-
+*/
 			@Transactional
 			public CopyQuoteSuccessRes homeEndoCopyQuote(CopyQuoteReq req,String refNo,String customerId,String quoteNo,String loginId,	String prevPolicyNo,
 			String prevQuoteNo,Integer count,String custRefNo) {

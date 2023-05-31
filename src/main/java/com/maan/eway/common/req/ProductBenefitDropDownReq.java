@@ -16,6 +16,8 @@ public class ProductBenefitDropDownReq {
 	@JsonProperty("SectionId")
 	private String sectionId;
 	
+	@JsonProperty("CoverId")
+	private String coverId;
 	
 	
 }

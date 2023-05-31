@@ -15,9 +15,12 @@ public class ProductBenefitGetReq {
 	
 		@JsonProperty("SectionId")
 		private String sectionId;
+
+		@JsonProperty("CoverId")
+		private String coverId;
 		
-		@JsonProperty("TypeId")
-		private String typeId;
+//		@JsonProperty("TypeId")
+//		private String typeId;
 		
 		@JsonProperty("BenefitId")
 		private String benefitId;

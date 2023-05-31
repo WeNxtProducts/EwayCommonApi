@@ -7,8 +7,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -16,6 +18,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
@@ -42,13 +45,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
 import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.ProductBenefitMaster;
 import com.maan.eway.bean.ProductSectionMaster;
+import com.maan.eway.bean.RegionMaster;
 import com.maan.eway.common.req.ProductBenefitDropDownReq;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.CoverMasterGetReq;
 import com.maan.eway.master.req.ProductBenefitChangeStatusReq;
 import com.maan.eway.master.req.ProductBenefitGetAllReq;
 import com.maan.eway.master.req.ProductBenefitGetReq;
@@ -57,6 +63,7 @@ import com.maan.eway.master.res.ProductBenefitGetRes;
 import com.maan.eway.master.service.ProductBenefitMasterService;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.ProductBenefitMasterRepository;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.ProductBenefitDropDownRes;
 import com.maan.eway.res.ProductBenefits;
 import com.maan.eway.res.SuccessRes;
@@ -96,18 +103,18 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 
 		try {
 		
-			if (StringUtils.isBlank(req.getDescription())) {
+			if (StringUtils.isBlank(req.getBenefitDescription())) {
 				errorList.add(new Error("02", "Benefit Description", "Please enter Benefit Description"));
-			}else if (req.getDescription().length() > 1000){
+			}else if (req.getBenefitDescription().length() > 1000){
 				errorList.add(new Error("02","Benefit Description", "Please Enter Benefit Description 1000 Characters")); 
 			}else if (StringUtils.isBlank(req.getBenefitId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getSectionId())&& StringUtils.isNotBlank(req.getProductId()) &&  StringUtils.isNotBlank(req.getTypeId()) ) {
-				List<ProductBenefitMaster> BenefitList = getBenefitDescriptionExistDetails(req.getDescription() , req.getCompanyId() , req.getProductId(),req.getSectionId() , req.getTypeId() );
+				List<ProductBenefitMaster> BenefitList = getBenefitDescriptionExistDetails(req.getBenefitDescription() , req.getCompanyId() , req.getProductId(),req.getSectionId() , req.getTypeId() );
 				if (BenefitList.size()>0 ) {
 					errorList.add(new Error("01", "Benefit Description", "This Benefit Description Already Exist "));
 				}
 			}
 			else if (StringUtils.isNotBlank(req.getBenefitId()) &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getSectionId()) &&  StringUtils.isNotBlank(req.getTypeId()) ) {
-				List<ProductBenefitMaster> BenefitList = getBenefitDescriptionExistDetails(req.getDescription() , req.getCompanyId() , req.getProductId(), req.getSectionId(), req.getTypeId());
+				List<ProductBenefitMaster> BenefitList = getBenefitDescriptionExistDetails(req.getBenefitDescription() , req.getCompanyId() , req.getProductId(), req.getSectionId(), req.getTypeId());
 				
 				if (BenefitList.size()>0 &&  (! req.getBenefitId().equalsIgnoreCase(BenefitList.get(0).getBenefitId().toString())) ) {
 					errorList.add(new Error("01", "ExclusionDescription", "This ExclusionDescription Already Exist "));
@@ -173,11 +180,11 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 				errorList.add(new Error("12", "TypeId", "Please Select Benefit TypeId"));
 			}
 			
-			if (StringUtils.isBlank(req.getDisplayOrder())) {
-				errorList.add(new Error("12", "DisplayOrder", "Please Enter Display Order"));
-			} else if (! req.getDisplayOrder().matches("[0-9]") ) {
-				errorList.add(new Error("12", "DisplayOrder", "Please Enter Display Order"));
-			}
+//			if (StringUtils.isBlank(req.getDisplayOrder())) {
+//				errorList.add(new Error("12", "DisplayOrder", "Please Enter Display Order"));
+//			} else if (! req.getDisplayOrder().matches("[0-9]") ) {
+//				errorList.add(new Error("12", "DisplayOrder", "Please Enter Display Order"));
+//			}
 		} catch (Exception e) {
 		//	log.error(e);
 			e.printStackTrace();
@@ -210,7 +217,7 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			amendId.where(a1,a2,a3,a4,a5);
 
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
-			Predicate n2 = cb.equal(cb.lower( b.get("description")), description.trim().toLowerCase());
+			Predicate n2 = cb.equal(cb.lower( b.get("benefitDescription")), description.trim().toLowerCase());
 			Predicate n3 = cb.equal(b.get("companyId"),InsuranceId);
 			Predicate n4 = cb.equal(b.get("productId"),productId);
 			Predicate n5 = cb.equal(b.get("sectionId"),sectionId);
@@ -231,7 +238,8 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 	}
 		
 	@Override
-	public SuccessRes saveProductBenefit(ProductBenefitSaveReq req , Object file) {
+	//public SuccessRes saveProductBenefit(ProductBenefitSaveReq req , Object file) {
+	public SuccessRes saveProductBenefit(ProductBenefitSaveReq req ) {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		SuccessRes res = new SuccessRes();
 		ProductBenefitMaster saveData = new ProductBenefitMaster();
@@ -250,10 +258,13 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			String iconPath = "";
 			String filePath = "";
 			
+			List<CoverMaster> coverList=getByCoverId(req);
+			List<ListItemValue> calcTypes = getListItem(req.getCompanyId() , req.getBranchCode() , "CALCULATION_TYPE");
 			String productName =  getCompanyProductMasterDropdown(req.getCompanyId() , req.getProductId()); 
 			String sectionName =  req.getSectionId().equalsIgnoreCase("99999") ? "All" : getProductSectionDropdown(req.getCompanyId() , req.getProductId(), req.getSectionId()); 
 			String companyName =  getInscompanyMasterDropdown(req.getCompanyId()) ; 
 			String typeDesc    =  getTypeDesc( req.getCompanyId() , "99999", "POLICY_BENEFITS_TYPES",req.getTypeId());
+			
 			
 			if(StringUtils.isBlank(req.getBenefitId())) {
 				String seq  = seqService.generateBenefitId() ;
@@ -319,6 +330,7 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 				res.setSuccessId(benefitId.toString());
 			}
 			dozerMapper.map(req, saveData);
+			saveData.setBranchCode(req.getBranchCode());
 			saveData.setBenefitId(benefitId);
 			saveData.setEffectiveDateStart(StartDate);
 			saveData.setEffectiveDateEnd(endDate);
@@ -331,11 +343,16 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			saveData.setCompanyName(companyName);
 			saveData.setProductDesc(productName);
 			saveData.setSectionDesc(sectionName);
+			saveData.setCalcTypeDesc(calcTypes.stream().filter( o -> o.getItemCode().equalsIgnoreCase(req.getCalcType()) ).collect(Collectors.toList()).get(0).getItemValue());
+			saveData.setCoverName(coverList.get(0).getCoverName());
+			saveData.setSubCoverId(coverList.get(0).getSubCoverId());
+			saveData.setSubCoverName(coverList.get(0).getSubCoverName());
+			//saveData.setCoverName(coverList.stream().filter( o -> o.getCoverId().equals(req.getCoverId()) ).collect(Collectors.toList()).get(0).getCoverName());
 			saveData.setIconPath(iconPath);
 			saveData.setOriginalImagePath(filePath);
 			saveData.setTypeDesc(typeDesc);
 			
-			if(file != null  ) {
+		/*	if(file != null  ) {
 				MultipartFile imageFile = (MultipartFile) file ; 
 				if(StringUtils.isNotBlank(imageFile.getOriginalFilename()) ) {
 					// File Upload 
@@ -360,7 +377,7 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 				}
 				
 				
-			}
+			}*/
 			
 			repo.saveAndFlush(saveData);	
 			log.info("Saved Details is --> " + json.toJson(saveData));	
@@ -404,6 +421,133 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 
 	}
 	
+	public List<CoverMaster> getByCoverId(ProductBenefitSaveReq req) {
+		DozerBeanMapper mapper = new DozerBeanMapper();
+		String pattern = "#####0.00";
+		DecimalFormat df = new DecimalFormat(pattern);
+		List<CoverMaster> list = new ArrayList<CoverMaster>();
+		
+		
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+
+		
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CoverMaster> query = cb.createQuery(CoverMaster.class);
+
+			// Find All
+			Root<CoverMaster> b = query.from(CoverMaster.class);
+
+			// Select
+			query.select(b);
+
+			// Amend Id Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<CoverMaster> ocpm1 = amendId.from(CoverMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("coverId"), b.get("coverId"));
+			
+			amendId.where(a1);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("coverName")));
+
+			// Where
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("coverId"), req.getCoverId());
+			Predicate n3 =  cb.equal(b.get("subCoverId"), "0" );  
+			query.where(n1,n2,n3).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<CoverMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return list;
+	}
+	public synchronized List<ListItemValue> getListItem(String insuranceId , String branchCode, String itemType) {
+		List<ListItemValue> list = new ArrayList<ListItemValue>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			today = cal.getTime();
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+	
+			
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ListItemValue> query=  cb.createQuery(ListItemValue.class);
+			// Find All
+			Root<ListItemValue> c = query.from(ListItemValue.class);
+			
+			//Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("branchCode")));
+			
+			
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1,a2);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a3,a4);
+						
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n11 = cb.equal(c.get("status"),"R");
+			Predicate n12 = cb.or(n1,n11);
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
+			Predicate n4 = cb.equal(c.get("companyId"),insuranceId);
+			Predicate n5 = cb.equal(c.get("companyId"), "99999");
+			Predicate n6 = cb.equal(c.get("branchCode"),branchCode);
+			Predicate n7 = cb.equal(c.get("branchCode"), "99999");
+			Predicate n8 = cb.or(n4,n5);
+			Predicate n9 = cb.or(n6,n7);
+			Predicate n10 = cb.equal(c.get("itemType"),itemType);
+			query.where(n12,n2,n3,n8,n9,n10).orderBy(orderList);
+			// Get Result
+			TypedQuery<ListItemValue> result = em.createQuery(query);
+			list = result.getResultList();
+			
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getItemCode()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(ListItemValue :: getItemValue));
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return list ;
+	}
+
+
+	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
 	public  String getTypeDesc(String insuranceId , String branchCode , String itemType , String itemCode ) {
 		String typeDesc = "" ;
 		try {
@@ -709,7 +853,7 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("description")));
+			orderList.add(cb.asc(b.get("benefitDescription")));
 			
 			
 			// Where
@@ -717,7 +861,7 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n3 = cb.equal(b.get("sectionId"),req.getSectionId() );
 			Predicate n4 = cb.equal(b.get("amendId"), amendId);
-			Predicate n5 = cb.equal(b.get("typeId"), req.getTypeId() );
+			Predicate n5 = cb.equal(b.get("coverId"), req.getCoverId());
 			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
 			
 			// Get Result
@@ -781,7 +925,7 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("description")));
+			orderList.add(cb.asc(b.get("benefitDescription")));
 			
 			
 			// Where
@@ -789,7 +933,7 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n3 = cb.equal(b.get("sectionId"),req.getSectionId() );
 			Predicate n4 = cb.equal(b.get("amendId"), amendId);
-			Predicate n5 = cb.equal(b.get("typeId"), req.getTypeId() );
+			Predicate n5 = cb.equal(b.get("coverId"), req.getCoverId());
 			Predicate n6 = cb.equal(b.get("status"), "Y" );
 			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
 			
@@ -854,7 +998,7 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("description")));
+			orderList.add(cb.asc(b.get("benefitDescription")));
 			
 			
 			// Where
@@ -862,7 +1006,7 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			Predicate n2 = cb.equal(b.get("productId"), req.getProductId());
 			Predicate n3 = cb.equal(b.get("sectionId"),req.getSectionId() );
 			Predicate n4 = cb.equal(b.get("amendId"), amendId);
-			Predicate n5 = cb.equal(b.get("typeId"), req.getTypeId() );
+			Predicate n5 = cb.equal(b.get("coverId"), req.getCoverId());
 			Predicate n6 = cb.equal(b.get("benefitId"), req.getBenefitId() );
 			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
 			
@@ -872,9 +1016,9 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			
 //			// Map
 			res = dozerMapper.map(list.get(0) , ProductBenefitGetRes.class);
-			if(StringUtils.isNotBlank(list.get(0).getIconPath()) && new File(list.get(0).getIconPath()).exists()) {
-				res.setImageFile(new GetFileFromPath(list.get(0).getIconPath()).call().getImgUrl());
-			}
+//			if(StringUtils.isNotBlank(list.get(0).getIconPath()) && new File(list.get(0).getIconPath()).exists()) {
+//				res.setImageFile(new GetFileFromPath(list.get(0).getIconPath()).call().getImgUrl());
+//			}
 	
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -919,12 +1063,12 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
-			Predicate n3 = cb.equal(b.get("typeId"), req.getTypeId());
+//			Predicate n3 = cb.equal(b.get("typeId"), req.getTypeId());
 			Predicate n4 = cb.equal(b.get("benefitId"), req.getBenefitId());
 			Predicate n5 = cb.equal(b.get("productId"),req.getProductId());
 			Predicate n6 = cb.equal(b.get("sectionId"),req.getSectionId());
 			
-			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
+			query.where(n1,n2,n4,n5,n6).orderBy(orderList);
 			
 			// Get Result 
 			TypedQuery<ProductBenefitMaster> result = em.createQuery(query);
@@ -950,7 +1094,7 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 	public List<ProductBenefitDropDownRes> getProductBenefitDropdown(ProductBenefitDropDownReq req) {
 		List<ProductBenefitDropDownRes> resList = new ArrayList<ProductBenefitDropDownRes>();
 		try {
-			Date today = new Date();
+ 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
 			today = cal.getTime();
@@ -964,9 +1108,9 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			Root<ProductBenefitMaster> c = query.from(ProductBenefitMaster.class);
 			//Select
 			query.select(c);
-			// Order By
+			// Order By                        c
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("description")));
+			orderList.add(cb.asc(c.get("benefitDescription")));
 			
 			// Effective Date Start Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
@@ -1006,40 +1150,51 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			Predicate n4 = cb.equal(c.get("companyId"),req.getCompanyId());
 			Predicate n8 = cb.equal(c.get("productId"), req.getProductId());
 			Predicate n11 = cb.equal(c.get("sectionId"), req.getSectionId());
-			
+			Predicate n14 = cb.equal(c.get("coverId"), req.getCoverId());
 		
-			query.where(n13,n2,n3,n4,n8,n11).orderBy(orderList);
+			query.where(n13,n2,n3,n4,n8,n11,n14).orderBy(orderList);
 			// Get Result
 			TypedQuery<ProductBenefitMaster> result = em.createQuery(query);
 			list = result.getResultList();
 			
-			// Grouping
-			Map<Integer ,List<ProductBenefitMaster>> groupByType = list.stream().collect(Collectors.groupingBy(ProductBenefitMaster :: getTypeId )) ;
-			
-			for (Integer type : groupByType.keySet()) { 
-				ProductBenefitDropDownRes btype = new ProductBenefitDropDownRes();
-				List<ProductBenefitMaster> filterType = groupByType.get(type);
-				filterType.sort(Comparator.comparing(ProductBenefitMaster :: getDisplayOrder));
+//			// Grouping
+//			Map<Integer ,List<ProductBenefitMaster>> groupByType = list.stream().collect(Collectors.groupingBy(ProductBenefitMaster :: getTypeId )) ;
+//			
+//			for (Integer type : groupByType.keySet()) { 
+//				ProductBenefitDropDownRes btype = new ProductBenefitDropDownRes();
+//				List<ProductBenefitMaster> filterType = groupByType.get(type);
+//				filterType.sort(Comparator.comparing(ProductBenefitMaster :: getDisplayOrder));
+//				
+//			//	btype.setTypeId(filterType.get(0).getTypeId().toString() );
+//			//	btype.setTypeDesc(filterType.get(0).getTypeDesc())
+//				;
+//				List<ProductBenefits> productBenefits = new ArrayList<ProductBenefits>();	
+//				for(ProductBenefitMaster data :  filterType) {
+//					ProductBenefits befit = new ProductBenefits();
+//					befit.setCode(data.getBenefitId().toString()  );
+//					befit.setCodeDesc(data.getBenefitDescription());
+//					if(StringUtils.isNotBlank(data.getIconPath()) && new File(data.getIconPath()).exists()) {
+//						befit.setImage(new GetFileFromPath(data.getIconPath()).call().getImgUrl());
+//					}
+//					//befit.setImage(data.getIconPath());
+//					productBenefits.add(befit);
+//					
+//				}
+//				btype.setProductBenefits(productBenefits);
+//				resList.add(btype);				
+//			}
 				
-				btype.setTypeId(filterType.get(0).getTypeId().toString() );
-				btype.setTypeDesc(filterType.get(0).getTypeDesc())
-				;
-				List<ProductBenefits> productBenefits = new ArrayList<ProductBenefits>();	
-				for(ProductBenefitMaster data :  filterType) {
-					ProductBenefits befit = new ProductBenefits();
-					befit.setCode(data.getBenefitId().toString()  );
-					befit.setCodeDesc(data.getDescription());
-					if(StringUtils.isNotBlank(data.getIconPath()) && new File(data.getIconPath()).exists()) {
-						befit.setImage(new GetFileFromPath(data.getIconPath()).call().getImgUrl());
-					}
-					//befit.setImage(data.getIconPath());
-					productBenefits.add(befit);
-					
-				}
-				btype.setProductBenefits(productBenefits);
-				resList.add(btype);				
+			for (ProductBenefitMaster data : list) {
+				// Response
+				ProductBenefitDropDownRes res = new ProductBenefitDropDownRes();
+				res.setBenefitId(data.getBenefitId().toString());
+				res.setBenefitDescription(data.getBenefitDescription().toString());
+				res.setSectionDesc(data.getSectionDesc());
+				res.setLongDesc(data.getLongDesc());
+				res.setCalcType(data.getCalcTypeDesc());
+				res.setValue(data.getValue()==null?null: data.getValue().toString());
+				resList.add(res);
 			}
-				
 		}
 			catch(Exception e) {
 				e.printStackTrace();
