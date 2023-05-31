@@ -57,6 +57,7 @@ import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.ProductMaster;
+import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.BrokerCompanyProductReq;
 import com.maan.eway.master.req.BrokerProductChangeReq;
@@ -66,6 +67,7 @@ import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginProductMasterRepository;
+import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
@@ -87,6 +89,9 @@ public class LoginProductServiceImpl  implements LoginProductService {
 	@Autowired
 	private EndtTypeMasterRepository endtRepo;
 	
+	@Autowired
+	private RatingFactorsUtil ratingutil;
+
 	Gson json = new Gson();
 
 
@@ -1965,6 +1970,22 @@ List<Error> errorList = new ArrayList<Error>();
 			        res.setEndorsementIds(endorsementids);
 					res.setReferralIds(referralids);
 					res.setIsOptedYn("Y");
+					
+					CalcEngine engine = new CalcEngine();					
+					engine.setProductId(data.getProductId().toString());
+					engine.setInsuranceId(data.getCompanyId());
+					engine.setSectionId("");					
+					String oneProduct = ratingutil.collectProductType(engine);
+					if (oneProduct.equals("M")) {
+						res.setTableName("MsVehicleDetails");
+					}
+					else if (oneProduct.equals("H")) {
+						res.setTableName("MsHumanDetails");
+					}
+					else if (oneProduct.equals("A")) {
+						res.setTableName("MsAssetDetails");
+					}
+
 					resList.add(res);
 				}
 		        else {
@@ -1976,6 +1997,21 @@ List<Error> errorList = new ArrayList<Error>();
 			        res.setEndorsementIds(endorsementids);
 					res.setReferralIds(referralids);
 					res.setIsOptedYn("N");
+					CalcEngine engine = new CalcEngine();					
+					engine.setProductId(data.getProductId().toString());
+					engine.setInsuranceId(data.getCompanyId());
+					engine.setSectionId("");					
+					String oneProduct = ratingutil.collectProductType(engine);
+					if (oneProduct.equals("M")) {
+						res.setTableName("MsVehicleDetails");
+					}
+					else if (oneProduct.equals("H")) {
+						res.setTableName("MsHumanDetails");
+					}
+					else if (oneProduct.equals("A")) {
+						res.setTableName("MsAssetDetails");
+					}
+
 					resList.add(res);
 		        }
 	        }
@@ -2047,8 +2083,7 @@ List<Error> errorList = new ArrayList<Error>();
 			// Get Result
 			TypedQuery<LoginProductMaster> result2 = em.createQuery(query2);
 			loginlist = result2.getResultList();
-
-
+			
 			
 			
 			for(CompanyProductMaster data : companylist) {
@@ -2073,6 +2108,20 @@ List<Error> errorList = new ArrayList<Error>();
 			        res.setEndorsementIds(endorsementids);
 					res.setReferralIds(referralids);
 					res.setIsOptedYn("Y");
+					CalcEngine engine = new CalcEngine();					
+					engine.setProductId(data.getProductId().toString());
+					engine.setInsuranceId(data.getCompanyId());
+					engine.setSectionId("");
+					String oneProduct = ratingutil.collectProductType(engine);
+					if (oneProduct.equals("M")) {
+						res.setTableName("MsVehicleDetails");
+					}
+					else if (oneProduct.equals("H")) {
+						res.setTableName("MsHumanDetails");
+					}
+					else if (oneProduct.equals("A")) {
+						res.setTableName("MsAssetDetails");
+					}
 					resList.add(res);
 				}
 		        else {
@@ -2086,6 +2135,21 @@ List<Error> errorList = new ArrayList<Error>();
 			        res.setEndorsementIds(endorsementids);
 					res.setReferralIds(referralids);
 					res.setIsOptedYn("N");
+					
+					CalcEngine engine = new CalcEngine();					
+					engine.setProductId(data.getProductId().toString());
+					engine.setInsuranceId(data.getCompanyId());
+					engine.setSectionId("");					
+					String oneProduct = ratingutil.collectProductType(engine);
+					if (oneProduct.equals("M")) {
+						res.setTableName("MsVehicleDetails");
+					}
+					else if (oneProduct.equals("H")) {
+						res.setTableName("MsHumanDetails");
+					}
+					else if (oneProduct.equals("A")) {
+						res.setTableName("MsAssetDetails");
+					}
 					resList.add(res);
 		        }
 	        }

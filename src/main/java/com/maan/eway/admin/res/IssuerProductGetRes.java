@@ -56,4 +56,7 @@ public class IssuerProductGetRes {
 	@JsonProperty("ColumnName")
 	private String columnName;	
 
+	@JsonProperty("TableName")
+	private String tableName;	
+
 }
