@@ -1643,9 +1643,9 @@ public SmsNofiGetRes viewSmsSent(NotifGetByIdReq req) {
 @Override
 public List<NofiByQuoteNoRes> viewNotificationSentToQuoteNo(NotifGetByQuoteNoReq req) {
 	List<NofiByQuoteNoRes> resList=new ArrayList<NofiByQuoteNoRes>();
-	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
 	//DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-	DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+	DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
 	try {
 
 		// Get Datas
