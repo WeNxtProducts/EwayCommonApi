@@ -166,6 +166,10 @@ public class CustomerDetailsRes {
 	@JsonProperty("BranchCode")
 	private String branchCode;
 	
+	
+	@JsonProperty("BrokerBranchCode")
+	private String brokerBranchCode;
+	
 	@JsonProperty("ProductId")
 	private String productId;
 	

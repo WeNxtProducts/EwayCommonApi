@@ -111,6 +111,7 @@ import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
+import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
@@ -233,6 +234,9 @@ public class QuoteServiceImpl implements QuoteService {
 	private LoginMasterRepository loginRepo;
 	
 	@Autowired
+	private LoginBranchMasterRepository loginBranchRepo;
+	
+	@Autowired
 	private EserviceTravelDetailsRepository eserviceTravelRepo;
 	
 	@Autowired
@@ -329,7 +333,10 @@ private BuildingDetailsRepository BuildingRepo;
 			PersonalInfo custData = custRepo.findByCustomerId(homeData.getCustomerId());
 			CustomerDetailsRes  custRes = new CustomerDetailsRes();
 			custRes  = dozerMappper.map(custData, CustomerDetailsRes.class);
-			
+			List<LoginBranchMaster> brokerBranchList=loginBranchRepo.findByLoginIdAndBranchCodeOrderByBranchCodeAsc(custData.getCreatedBy(),custData.getBranchCode());
+			if(brokerBranchList.size()>0 ||brokerBranchList!=null) {
+			custRes.setBrokerBranchCode(brokerBranchList.get(0).getBrokerBranchCode());	
+			}
 			// Motor Product Details
 			if( homeData.getProductId().equals(Integer.valueOf(motorProductId))) {
 				viewRes =  getMotorProductDetails( req);
