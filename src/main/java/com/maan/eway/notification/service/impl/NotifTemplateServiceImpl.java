@@ -3,6 +3,8 @@ package com.maan.eway.notification.service.impl;
 import java.io.File;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -30,6 +32,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -38,6 +41,8 @@ import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dozer.DozerBeanMapper;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -58,8 +63,10 @@ import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MailMaster;
 import com.maan.eway.bean.NotifTemplateMaster;
+import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.SmsConfigMaster;
 import com.maan.eway.bean.SmsDataDetails;
+import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
 import com.maan.eway.error.Error;
@@ -1444,6 +1451,7 @@ public String pushSms(Sms m , SmsDataDetails savedata) {
 @Override
 public List<MailNotifGetRes> getSentMailList(NotifGetReq req) {
 	List<MailNotifGetRes> resList = new ArrayList<MailNotifGetRes>();
+	ModelMapper dozerMapper = new ModelMapper();
 	try {
 		// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -1635,7 +1643,11 @@ public SmsNofiGetRes viewSmsSent(NotifGetByIdReq req) {
 @Override
 public List<NofiByQuoteNoRes> viewNotificationSentToQuoteNo(NotifGetByQuoteNoReq req) {
 	List<NofiByQuoteNoRes> resList=new ArrayList<NofiByQuoteNoRes>();
+	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+	//DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+	DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 	try {
+
 		// Get Datas
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
@@ -1644,13 +1656,24 @@ public List<NofiByQuoteNoRes> viewNotificationSentToQuoteNo(NotifGetByQuoteNoReq
 		Root<NotifTransactionDetails> td = query.from(NotifTransactionDetails.class);
 		Root<MailDataDetails> mail = query.from(MailDataDetails.class);
 		Root<SmsDataDetails> sms = query.from(SmsDataDetails.class);
+		
+		
+		// Join with mail_data_details
+		Predicate mailJoin = cb.equal(td.get("notifNo"), mail.get("notifNo"));
+		query.where(mailJoin);
+
+		// Join with eway_sms_data_details
+		Predicate smsJoin = cb.equal(td.get("notifNo"), sms.get("notifNo"));
+		query.where(smsJoin);
+
 		// Select
 		query.multiselect(// cb.literal(Long.parseLong("1")).alias("idsCount"),
 				// Notification Info
+				
 				cb.selectCase().when(cb.max(td.get("notifNo")).in(cb.max(mail.get("notifNo"))), "Y").otherwise("N")
-						.alias("mailYn,"),
+						.alias("mailyn"),
 				cb.selectCase().when(cb.max(td.get("notifNo")).in(cb.max(sms.get("notifNo"))), "Y").otherwise("N")
-						.alias("smsYn,"),
+						.alias("smsyn"),
 				cb.max(td.get("notifNo")).alias("notifNo"), 
 				cb.max(td.get("customerName")).alias("customerName"),
 				cb.max(td.get("customerMailid")).alias("customerMailid"),
@@ -1660,38 +1683,179 @@ public List<NofiByQuoteNoRes> viewNotificationSentToQuoteNo(NotifGetByQuoteNoReq
 				cb.max(td.get("customerMessengerPhone")).alias("customerMessengerPhone"),
 				cb.max(td.get("brokerName")).alias("brokerName"),
 				cb.max(td.get("brokerCompanyName")).alias("brokerCompanyName"),
-				cb.max(td.get("brokerMailId")).alias("brokerMailId"), cb.max(td.get("Broker_Phone_No")).alias("idNumber"),
-				cb.max(td.get("Broker_Phone_Code")).alias("idNumber"),
-				cb.max(td.get("Broker_Messenger_Code")).alias("idNumber"),
-				cb.max(td.get("BrokerMessenger_Phone")).alias("idNumber"), cb.max(td.get("UW_name")).alias("idNumber"),
-				cb.max(td.get("uw_mail_id")).alias("idNumber"), cb.max(td.get("UW_Phone_Code")).alias("idNumber"),
-				cb.max(td.get("UW_Phone_No")).alias("idNumber"), cb.max(td.get("UW_messenger_code")).alias("idNumber"),
-				cb.max(td.get("UW_messenger_phone")).alias("idNumber"),
-				cb.max(td.get("Company_Name")).alias("idNumber"), cb.max(td.get("Product_Name")).alias("idNumber"),
-				cb.max(td.get("Section_Name")).alias("idNumber"), cb.max(td.get("Status_message")).alias("idNumber"),
-				cb.max(td.get("OTP")).alias("idNumber"), cb.max(td.get("Policy_No")).alias("idNumber"),
-				cb.max(td.get("Quote_No")).alias("idNumber"), cb.max(td.get("Notif_Description")).alias("idNumber"),
-				cb.max(td.get("notif_template_name")).alias("idNumber"), cb.max(td.get("Entry_Date")).alias("idNumber"),
-				cb.max(td.get("Notifcation_Push_date")).alias("idNumber"),
-				cb.max(td.get("Notif_pushed_status")).alias("idNumber")
-
+				cb.max(td.get("brokerMailId")).alias("brokerMailId"), 
+				cb.max(td.get("brokerPhoneNo")).alias("brokerPhoneNo"),
+				cb.max(td.get("brokerPhoneCode")).alias("brokerPhoneCode"),
+				cb.max(td.get("brokerMessengerCode")).alias("brokerMessengerCode"),
+				cb.max(td.get("brokerMessengerPhone")).alias("brokerMessengerPhone"),
+				cb.max(td.get("uwName")).alias("uwName"),
+				cb.max(td.get("uwMailid")).alias("uwMailid"), 
+				cb.max(td.get("uwPhonecode")).alias("uwPhonecode"),
+				cb.max(td.get("uwPhoneNo")).alias("uwPhoneNo"), 
+				cb.max(td.get("uwMessengerCode")).alias("uwMessengerCode"),
+				cb.max(td.get("uwMessengerPhone")).alias("uwMessengerPhone"),
+				cb.max(td.get("companyName")).alias("companyName"), 
+				cb.max(td.get("productName")).alias("productName"),
+				cb.max(td.get("sectionName")).alias("sectionName"),
+				cb.max(td.get("statusMessage")).alias("statusMessage"),
+				cb.max(td.get("otp")).alias("otp"), 
+				cb.max(td.get("policyNo")).alias("policyNo"),
+				cb.max(td.get("quoteNo")).alias("quoteNo"), 
+				cb.max(td.get("notifDescription")).alias("notifDescription"),
+				cb.max(td.get("notifTemplatename")).alias("notifTemplatename"), 
+				cb.max(td.get("entryDate")).alias("entryDate"),
+				cb.max(td.get("notifcationPushDate")).alias("notifcationPushDate"),
+				cb.max(td.get("notifPushedStatus")).alias("notifPushedStatus"),
+				
+				cb.selectCase()
+		        .when(cb.equal(td.get("notifPushedStatus"), "C"), "COMPLETED")
+		        .when(cb.equal(td.get("notifPushedStatus"), "P"), "PENDING")
+		        .otherwise("FAILED")
+		        .alias("notifPushedDesc"),
+		        cb.max(td.get("notifPriority")).alias("notifPriority"),
+		        cb.max(td.get("tinyUrl")).alias("tinyUrl"),
+		        cb.max(td.get("productid")).alias("productid"),
+		        cb.max(td.get("companyid")).alias("companyid"),
+		        cb.max(td.get("notifcationEndDate")).alias("notifcationEndDate"),
+		        cb.max(td.get("companyAddress")).alias("companyAddress"),
+		        cb.max(td.get("companyLogo")).alias("companyLogo"),
+		        cb.max(td.get("attachFilePath")).alias("attachFilePath"),
+		        cb.max(td.get("pushedBy")).alias("notiPushedBy"),
+		      //Mail Data Details
+		        cb.max(mail.get("mailSubject")).alias("mailSubject"),
+		        cb.max(mail.get("mailBody")).alias("mailBody"),
+		        cb.max(mail.get("mailRegards")).alias("mailRegards"),
+		        cb.max(mail.get("pushedEntryDate")).alias("pushedEntryDate"),
+		        cb.max(mail.get("toEmail")).alias("toEmail"),
+		        cb.max(mail.get("fromEmail")).alias("fromEmail"),
+		        cb.max(mail.get("mailTranId")).alias("mailTranId"),
+		        cb.max(mail.get("status")).alias("status"),
+		        cb.max(mail.get("mailResponse")).alias("mailResponse"),
+		        cb.max(mail.get("notifNo")).alias("notifNoInMail"),
+		        cb.max(mail.get("pushedBy")).alias("mailPushedby"),
+		        //sms data details
+		       cb.max(sms.get("sNo")).alias("sNo"),
+		       cb.max(sms.get("smsFrom")).alias("smsFrom"),
+		       cb.max(sms.get("mobileNo")).alias("mobileNo"),
+		       cb.max(sms.get("smsType")).alias("smsType"),
+		       cb.max(sms.get("smsContent")).alias("smsContent"),
+		       cb.max(sms.get("reqTime")).alias("reqTime"),
+		       cb.max(sms.get("resTime")).alias("resTime"),
+		       cb.max(sms.get("resStatus")).alias("resStatus"),
+		       cb.max(sms.get("resMessage")).alias("resMessage"),
+		       cb.max(sms.get("entryDate")).alias("smsEntryDate"),
+		       cb.max(sms.get("notifNo")).alias("notifNoInSms"),
+		       cb.max(sms.get("pushedBy")).alias("smsPushedBy"),
+		       cb.max(sms.get("smsRegards")).alias("smsRegards")
 		);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
 		orderList.add(cb.desc(cb.max(td.get("entryDate"))));
 
+
 		// Where
-		Predicate n1 = cb.equal(td.get("quoteNo"), req.getQuoteNo());
-		query.where(n1).groupBy(td.get("notifNo")).orderBy(orderList);
+//		Predicate n1 = cb.equal(mail.get("notifNo"), td.get("notifNo"));
+//		Predicate n2 = cb.equal(sms.get("notifNo"), td.get("notifNo"));
+		Predicate n3 = cb.equal(td.get("quoteNo"), req.getQuoteNo());
+		query.where(n3).groupBy(td.get("notifNo")).orderBy(orderList);
 
 		// Get Result
 		TypedQuery<Tuple> result = em.createQuery(query);
 		List<Tuple> list = result.getResultList();
 		for (Tuple t : list) {
-			NofiByQuoteNoRes res=new NofiByQuoteNoRes();
+			NofiByQuoteNoRes res = new NofiByQuoteNoRes();
+			// res=dozerMapper.map(t.get(0), NofiByQuoteNoRes.class);
+		
+			res.setNotifNo(t.get("notifNo")==null?"":t.get("notifNo").toString());
+			res.setMailyn(t.get("mailyn").toString());
+			res.setSmsyn(t.get("smsyn").toString());
+			res.setCustomerName(t.get("customerName")==null?"":t.get("customerName").toString());
+			res.setCustomerMailId(t.get("customerMailid")==null?"":t.get("customerMailid").toString());
+			res.setCustomerPhoneNo(t.get("customerPhoneNo")==null?"":t.get("customerPhoneNo").toString());
+			res.setCustomerPhoneCode(t.get("customerPhoneCode")==null?"":t.get("customerPhoneCode").toString());
+			res.setCustomerMessengerCode(t.get("customerMessengerCode")==null?"":t.get("customerMessengerCode").toString());
+			res.setCustomerMessengerPhone(t.get("customerMessengerPhone")==null?"":t.get("customerMessengerPhone").toString());
+			res.setBrokerName(t.get("brokerName")==null?"":t.get("brokerName").toString());
+			res.setBrokerCompanyName(t.get("brokerCompanyName")==null?"":t.get("brokerCompanyName").toString());
+			res.setBrokerMailId(t.get("brokerMailId")==null?"":t.get("brokerMailId").toString());
+			res.setBrokerPhoneNo(t.get("brokerPhoneNo")==null?"":t.get("brokerPhoneNo").toString());
+			res.setBrokerPhoneNo(t.get("brokerPhoneCode")==null?"":t.get("brokerPhoneCode").toString());
+			res.setBrokerMessengerCode(t.get("brokerMessengerCode")==null?"":t.get("brokerMessengerCode").toString());
+			res.setBrokerMessengerPhone(t.get("brokerMessengerPhone")==null?"":t.get("brokerMessengerPhone").toString());
+			res.setUwName(t.get("uwName")==null?"":t.get("uwName").toString());
+			res.setUwMailid(t.get("uwMailid")==null?"":t.get("uwMailid").toString());
+			res.setUwPhonecode(t.get("uwPhonecode")==null?"":t.get("uwPhonecode").toString());
+			res.setUwPhoneNo(t.get("uwPhoneNo")==null?"":t.get("uwPhoneNo").toString());
+			res.setUwMessengerCode(t.get("uwMessengerCode")==null?"":t.get("uwMessengerCode").toString());
+			res.setUwMessengerPhone(t.get("uwMessengerPhone")==null?"":t.get("uwMessengerPhone").toString());
+			res.setCompanyName(t.get("companyName")==null?"":t.get("companyName").toString());
+			res.setProductName(t.get("productName")==null?"":t.get("productName").toString());
+			res.setSectionName(t.get("sectionName")==null?"":t.get("sectionName").toString());
+			res.setStatusmessage(t.get("statusMessage")==null?"":t.get("statusMessage").toString());
+			res.setOtp(t.get("otp")==null?"":t.get("otp").toString());
+			res.setPolicyNo(t.get("policyNo")==null?"":t.get("policyNo").toString());
+			res.setQuoteNo(t.get("quoteNo")==null?"":t.get("quoteNo").toString());
+			res.setNotifDescription(t.get("notifDescription")==null?"":t.get("notifDescription").toString());
+			res.setNotiftemplatename(t.get("notifTemplatename")==null?"":t.get("notifTemplatename").toString());
+			
+			String entryDate=t.get("entryDate") == null ? null :dateFormat.format(t.get("entryDate"));
+			res.setEntryDate(entryDate);
+			String notifcationPushdate=t.get("notifcationPushDate") == null ? null :dateFormat.format(t.get("notifcationPushDate"));
+			res.setNotifcationPushdate(notifcationPushdate);
+			
+			res.setNotifpushedStatus(t.get("notifPushedStatus")==null?"":t.get("notifPushedStatus").toString());
+			res.setNotifpusheddesc(t.get("notifPushedDesc")==null?"":t.get("notifPushedDesc").toString());
+			res.setNotifPriority(t.get("notifPriority")==null?"":t.get("notifPriority").toString());
+			res.setTinyURL(t.get("tinyUrl")==null?"":t.get("tinyUrl").toString());
+			res.setProductid(t.get("productid")==null?"":t.get("productid").toString());
+			res.setCompanyid(t.get("companyid")==null?"":t.get("companyid").toString());
+			
+			String NotifcationEnddate=t.get("notifcationEndDate") == null ? null :dateFormat.format(t.get("notifcationEndDate"));
+			res.setNotifcationEnddate(NotifcationEnddate);
+			
+			res.setCompanyAddress(t.get("companyAddress")==null?"":t.get("companyAddress").toString());
+			res.setCompanyLogo(t.get("companyLogo")==null?"":t.get("companyLogo").toString());
+			res.setAttachfilepath(t.get("attachFilePath")==null?"":t.get("attachFilePath").toString());
+			res.setNotiPushedBy(t.get("notiPushedBy")==null?"":t.get("notiPushedBy").toString());
+			res.setMailSubject(t.get("mailSubject")==null?"":t.get("mailSubject").toString());
+			res.setMailBody(t.get("mailBody")==null?"":t.get("mailBody").toString());
+			res.setMailRegards(t.get("mailRegards")==null?"":t.get("mailRegards").toString());
+			
+			String pushedEntryDate=t.get("pushedEntryDate") == null ? null :dateFormat.format(t.get("pushedEntryDate"));
+			res.setPushedEntryDate(pushedEntryDate);
+			
+			res.setToEmail(t.get("toEmail")==null?"":t.get("toEmail").toString());
+			res.setFromeMail(t.get("fromEmail")==null?"":t.get("fromEmail").toString());
+			res.setMailTranId(t.get("mailTranId")==null?"":t.get("mailTranId").toString());
+			res.setStatus(t.get("status")==null?"":t.get("status").toString());
+			res.setMailResponse(t.get("mailResponse")==null?"":t.get("mailResponse").toString());
+			res.setNotifNoInMail(t.get("notifNoInMail")==null?"":t.get("notifNoInMail").toString());
+			res.setMailPushedby(t.get("mailPushedby")==null?"":t.get("mailPushedby").toString());
+			res.setSNo(t.get("sNo")==null?"":t.get("sNo").toString());
+			res.setSmsFrom(t.get("smsFrom")==null?"":t.get("smsFrom").toString());
+			res.setMobileNo(t.get("mobileNo")==null?"":t.get("mobileNo").toString());
+			res.setSmsType(t.get("smsType")==null?"":t.get("smsType").toString());
+			res.setSmsContent(t.get("smsContent")==null?"":t.get("smsContent").toString());
+			
+			String reqTime=t.get("reqTime") == null ? null :dateFormat.format(t.get("reqTime"));
+			res.setReqTime(reqTime);
+			
+			String resTime=t.get("resTime") == null ? null :dateFormat.format(t.get("resTime"));
+			res.setResTime(resTime);
+			
+			res.setResStatus(t.get("resStatus")==null?"":t.get("resStatus").toString());
+			res.setResMessage(t.get("resMessage")==null?"":t.get("resMessage").toString());
+		
+			String smsEntryDate=t.get("smsEntryDate") == null ? null :dateFormat.format(t.get("smsEntryDate"));
+			res.setSmsEntryDate(smsEntryDate);
+
+			res.setNotifNoInSms(t.get("notifNoInSms")==null?"":t.get("notifNoInSms").toString());
+			res.setSmsPushedBy(t.get("smsPushedBy")==null?"":t.get("smsPushedBy").toString());
+			res.setSmsRegards(t.get("smsRegards")==null?"":t.get("smsRegards").toString());
 			resList.add(res);
 		}
+
 		return resList;
 	} catch (Exception e) {
 		e.printStackTrace();
@@ -1776,6 +1940,29 @@ public List<DropDownRes> getActiveTemplatesDropDown(TemplatesDropDownReq req) {
 		return null;
 	}
 	return resList;
+}
+
+@Override
+public List<Error> validateQuotoNo(NotifGetByQuoteNoReq req) {
+	List<Error> error = new ArrayList<Error>();
+
+	try {
+
+		if (StringUtils.isBlank(req.getQuoteNo())) {
+			error.add(new Error("01", "QuoteNo", "Please Enter QuoteNo "));
+		}else{
+		List<NotifTransactionDetails> data = notifTrans.findByQuoteNo(req.getQuoteNo());
+		if (data == null || data.size() <= 0) {
+			error.add(new Error("02", "List", "No Data Found "));
+		}
+		}
+
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Log Details" + e.getMessage());
+		return null;
+	}
+	return error;
 }
 }
 

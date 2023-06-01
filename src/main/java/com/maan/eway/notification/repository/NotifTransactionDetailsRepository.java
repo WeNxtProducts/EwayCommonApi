@@ -48,6 +48,8 @@ public interface NotifTransactionDetailsRepository  extends JpaRepository<NotifT
 
 	List<NotifTransactionDetails> findByNotifNoOrderByEntryDateDesc(Integer valueOf);
 
+	List<NotifTransactionDetails> findByQuoteNo(String quoteNo);
+
 
 	
 }

@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.SendSmsReq;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.error.Error;
 import com.maan.eway.notification.req.DirectMailSentReq;
 import com.maan.eway.notification.req.DirectMailSmsSentReq;
 import com.maan.eway.notification.req.DirectSmsSentReq;
@@ -25,6 +27,7 @@ import com.maan.eway.notification.res.MailNotifGetRes;
 import com.maan.eway.notification.res.NofiByQuoteNoRes;
 import com.maan.eway.notification.res.SmsNofiGetRes;
 import com.maan.eway.notification.service.NotifTemplateService;
+import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -258,21 +261,31 @@ public class NotifTemplateController {
 		@ApiOperation(value = "This method is to Get No Of Notification Send By Quote No")
 		public ResponseEntity<CommonRes> viewNotificationSentToQuoteNo(@RequestBody NotifGetByQuoteNoReq req) {
 
+			reqPrinter.reqPrint(req);
 			CommonRes data = new CommonRes();
+			List<Error> validation = notifTempService.validateQuotoNo(req);
+			// validation
+			if (validation != null && validation.size() != 0) {
+				data.setCommonResponse(null);
+				data.setIsError(true);
+				data.setErrorMessage(validation);
+				data.setMessage("Failed");
+				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 
-			// Save
-			List<NofiByQuoteNoRes> res = notifTempService.viewNotificationSentToQuoteNo(req);
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
 
+				// Save
+				List<NofiByQuoteNoRes> res = notifTempService.viewNotificationSentToQuoteNo(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}
 		}
 		@PostMapping("/dropdown/activetemplist")
 		@ApiOperation(value = "This method is to Mail Templates Drop Down")

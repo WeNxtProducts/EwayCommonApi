@@ -1,5 +1,6 @@
 package com.maan.eway.notification.res;
 
+
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -60,22 +61,22 @@ public class NofiByQuoteNoRes {
 	private String brokerMessengerPhone;
 	
 	@JsonProperty("UWname") 
-	private String uwname;
+	private String uwName;
 	
 	@JsonProperty("Uwmailid") 
-	private String uwmailid;
+	private String uwMailid;
 	
 	@JsonProperty("UWPhoneCode") 
-	private String uWPhoneCode;
+	private String uwPhonecode;
 	
 	@JsonProperty("UWPhoneNo")
-	private String uWPhoneNo;
+	private String uwPhoneNo;
 	
 	@JsonProperty("UWmessengercode")
-	private String uWmessengercode;
+	private String uwMessengerCode;
 	
 	@JsonProperty("UWmessengerphone")
-	private String UWmessengerphone;
+	private String uwMessengerPhone;
 	
 	@JsonProperty("CompanyName") 
 	private String companyName;
@@ -104,13 +105,16 @@ public class NofiByQuoteNoRes {
 	@JsonProperty("Notiftemplatename") 
 	private String notiftemplatename;
 	
-	@JsonFormat(pattern = "dd/MM/yyyy")
+//	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")
-	private Date EntryDate;
+	private String EntryDate;
 	
-	@JsonFormat(pattern = "dd/MM/yyyy")
+//	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("NotifcationPushdate") 
-	private Date notifcationPushdate;
+	private String notifcationPushdate;
+	
+	@JsonProperty("NotifpushedStatus")
+	private String notifpushedStatus;
 	
 	@JsonProperty("Notifpusheddesc")
 	private String notifpusheddesc;
@@ -127,9 +131,9 @@ public class NofiByQuoteNoRes {
 	@JsonProperty("Productid")
 	private String productid;
 	
-	@JsonFormat(pattern = "dd/MM/yyyy")
+//	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("NotifcationEnddate") 
-	private Date notifcationEnddate;
+	private String notifcationEnddate;
 	
 	@JsonProperty("CompanyAddress") 
 	private String companyAddress;
@@ -140,11 +144,12 @@ public class NofiByQuoteNoRes {
 	@JsonProperty("Attachfilepath") 
 	private String attachfilepath;
 	
-	@JsonProperty("PushedBy") 
-	private String pushedBy;
+	@JsonProperty("NotiPushedBy") 
+	private String notiPushedBy;
 	
-	@JsonProperty("Subject")
-	private String subject;
+	//Mail
+	@JsonProperty("MailSubject")
+	private String mailSubject;
 	
 	@JsonProperty("MailBody")
 	private String mailBody ;
@@ -152,9 +157,9 @@ public class NofiByQuoteNoRes {
 	@JsonProperty("MailRegards") 
 	private String mailRegards;
 	
-	@JsonFormat(pattern = "dd/MM/yyyy")
+//	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("PushedEntryDate") 
-	private Date pushedEntryDate;
+	private String pushedEntryDate;
 	
 	@JsonProperty("ToEmail")
 	private String toEmail;
@@ -171,14 +176,15 @@ public class NofiByQuoteNoRes {
 	@JsonProperty("MailResponse")
 	private String mailResponse;
 	
-//	@JsonProperty("SmsNotifNo")
-//	private String notifNo;
+	@JsonProperty("NotifNoInMail")
+	private String notifNoInMail;
 	
-	@JsonProperty("PushedBy")
-	private String pushedby;
+	@JsonProperty("MailPushedBy")
+	private String mailPushedby;
 	
+	//Sms
 	@JsonProperty("Sno") 
-	private String sno;
+	private String sNo;
 	
 	@JsonProperty("SmsFrom")
 	private String smsFrom;
@@ -192,23 +198,28 @@ public class NofiByQuoteNoRes {
 	@JsonProperty("SmsContent") 
 	private String smsContent;
 	
+	//@JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss")
 	@JsonProperty("ReqTime")
 	private String reqTime;
 	
+	//@JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss")
 	@JsonProperty("ResTime")
 	private String resTime;
 	
-	@JsonProperty("resStatus")
+	
+	@JsonProperty("ResStatus")
 	private String resStatus;
 	
 	@JsonProperty("ResMessage")
 	private String resMessage;
 	
-//	@JsonProperty("ENTRYDATE") private String
+	@JsonProperty("SmsEntryDate")
+	private String smsEntryDate;
 	
-//	@JsonProperty("NotifNo") private String
-//	@JsonProperty("PushedBy") 
-//	private String pushedBy;
+	@JsonProperty("NotifNoInSms")
+	private String notifNoInSms;
+	@JsonProperty("SmsPushedBy") 
+	private String smsPushedBy;
 	
 	@JsonProperty("SmsRegards")
 	private String smsRegards;

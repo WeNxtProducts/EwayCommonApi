@@ -3,6 +3,7 @@ package com.maan.eway.notification.service;
 import java.util.List;
 
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.error.Error;
 import com.maan.eway.notification.req.DirectMailSentReq;
 import com.maan.eway.notification.req.DirectMailSmsSentReq;
 import com.maan.eway.notification.req.DirectSmsSentReq;
@@ -41,5 +42,7 @@ public interface NotifTemplateService {
 	List<NofiByQuoteNoRes> viewNotificationSentToQuoteNo(NotifGetByQuoteNoReq req);
 
 	List<DropDownRes> getActiveTemplatesDropDown(TemplatesDropDownReq req);
+
+	List<Error> validateQuotoNo(NotifGetByQuoteNoReq req);
 
 }
