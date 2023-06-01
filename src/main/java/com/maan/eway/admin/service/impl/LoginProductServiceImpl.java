@@ -1985,7 +1985,7 @@ List<Error> errorList = new ArrayList<Error>();
 					else if (oneProduct.equals("A")) {
 						res.setTableName("MsAssetDetails");
 					}
-
+					res.setColumnName(StringUtils.isBlank((loginlist.get(0).getColumnName()))?"":(loginlist.get(0).getColumnName()));
 					resList.add(res);
 				}
 		        else {
@@ -2011,7 +2011,7 @@ List<Error> errorList = new ArrayList<Error>();
 					else if (oneProduct.equals("A")) {
 						res.setTableName("MsAssetDetails");
 					}
-
+					res.setColumnName(StringUtils.isBlank((loginlist.get(0).getColumnName()))?"":(loginlist.get(0).getColumnName()));
 					resList.add(res);
 		        }
 	        }
@@ -2152,6 +2152,8 @@ List<Error> errorList = new ArrayList<Error>();
 					else if (oneProduct.equals("A")) {
 						res.setTableName("MsAssetDetails");
 					}
+					res.setColumnName(StringUtils.isBlank((loginlist.get(0).getColumnName()))?"":(loginlist.get(0).getColumnName()));
+
 					resList.add(res);
 		        }
 	        }
