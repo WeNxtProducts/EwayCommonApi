@@ -263,7 +263,7 @@ public class CopyRawTable  {
 			motorDataDetailsEndtStatus(req);
 			motorDriverDetailsEndtStatus(req);
 			coverDocumentUploadDetailsEndtStatus(req);
-			eserviceCustDetailsChangeStatus(req);
+			//eserviceCustDetailsChangeStatus(req);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -385,7 +385,7 @@ public class CopyRawTable  {
 		return savedata;
 
 	}
-	private EserviceCustomerDetails eserviceCustDetailsChangeStatus(ChangeEndoStatusReq req) {
+	/*private EserviceCustomerDetails eserviceCustDetailsChangeStatus(ChangeEndoStatusReq req) {
 		EserviceCustomerDetails savedata = new EserviceCustomerDetails();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
@@ -396,7 +396,6 @@ public class CopyRawTable  {
 			EserviceCustomerDetails custData = custRepo.findByCustomerReferenceNo(personalInfoData.getCustomerReferenceNo());
 			if (custData!=null) 
 					savedata = dozerMapper.map(custData, EserviceCustomerDetails.class);
-					savedata.setEndtStatus("P");
 					savedata.setStatus("P");
 					custRepo.saveAndFlush(savedata);
 		} catch (Exception e) {
@@ -407,7 +406,7 @@ public class CopyRawTable  {
 		return savedata;
 
 		
-	}
+	}*/
 
 
 }
