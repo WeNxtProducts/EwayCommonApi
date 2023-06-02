@@ -21,6 +21,9 @@ public class EserviceCustomerSaveReq {
 	@JsonProperty("CustomerReferenceNo")
 	private String customerReferenceNo;
 
+	@JsonProperty("QuoteNo")
+	private String quoteNo;
+	
 	@JsonProperty("PolicyHolderTypeid")
 	private String policyHolderTypeid;
 
@@ -148,14 +151,11 @@ public class EserviceCustomerSaveReq {
 	@JsonProperty("MobileCode3")
 	private String mobileCode3;
 
-
 	@JsonProperty("WhatsappCode")
 	private String whatsappCode;
 	@JsonProperty("WhatsappNo")
 	private String whatsappNo;
 
-	
-	
 	@JsonProperty("Email1")
 	private String email1;
 	@JsonProperty("Email2")
@@ -175,48 +175,47 @@ public class EserviceCustomerSaveReq {
 
 	@JsonProperty("Status")
 	private String status;
-	
+
 	@JsonProperty("InsuranceId")
 	private String companyId;
-	
+
 	@JsonProperty("BranchCode")
 	private String branchCode;
-	
+
 	@JsonProperty("BrokerBranchCode")
 	private String brokerBranchCode;
-	
+
 	@JsonProperty("ProductId")
 	private String productId;
-	
+
 	@JsonProperty("VrTinNo")
 	private String vrTinNo;
-	 @JsonProperty("EndorsementDate") //EndorsementDate
-	    @JsonFormat(pattern = "dd/MM/yyyy")
-	    private Date       endorsementDate ;
-	    @JsonProperty("EndorsementRemarks") // EndorsementRemarks
-	    private String     endorsementRemarks ;    
-	    @JsonProperty("EndorsementEffectiveDate") // EndorsementEffectiveDate
-	    @JsonFormat(pattern = "dd/MM/yyyy")
-	    private Date       endorsementEffdate ;
-	    @JsonProperty("OrginalPolicyNo") // OrginalPolicyNo
-	    private String     originalPolicyNo ;
-	    @JsonProperty("EndtPrevPolicyNo") // EndtPrevPolicyNo
-	    private String     endtPrevPolicyNo ;
-	    @JsonProperty("EndtPrevQuoteNo") // EndtPrevQuoteNo
-	    private String     endtPrevQuoteNo ;
-	    @JsonProperty("EndtCount")  // EndtCount
-	    private BigDecimal endtCount ;
-	    @JsonProperty("EndtStatus") //EndtStatus
-	    private String     endtStatus ;   
-	    @JsonProperty("IsFinanceEndt") //IsFinanceEndt
-	    private String     isFinaceYn ;  
-	    @JsonProperty("EndtCategoryDesc") //EndtCategoryDesc
-	    private String     endtCategDesc ;
-	    @JsonProperty("EndorsementType") //EndorsementType
-	    private Integer    endorsementType ;
+	@JsonProperty("EndorsementDate") // EndorsementDate
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	private Date endorsementDate;
+	@JsonProperty("EndorsementRemarks") // EndorsementRemarks
+	private String endorsementRemarks;
+	@JsonProperty("EndorsementEffectiveDate") // EndorsementEffectiveDate
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	private Date endorsementEffdate;
+	@JsonProperty("OrginalPolicyNo") // OrginalPolicyNo
+	private String originalPolicyNo;
+	@JsonProperty("EndtPrevPolicyNo") // EndtPrevPolicyNo
+	private String endtPrevPolicyNo;
+	@JsonProperty("EndtPrevQuoteNo") // EndtPrevQuoteNo
+	private String endtPrevQuoteNo;
+	@JsonProperty("EndtCount") // EndtCount
+	private BigDecimal endtCount;
+	@JsonProperty("EndtStatus") // EndtStatus
+	private String endtStatus;
+	@JsonProperty("IsFinanceEndt") // IsFinanceEndt
+	private String isFinaceYn;
+	@JsonProperty("EndtCategoryDesc") // EndtCategoryDesc
+	private String endtCategDesc;
+	@JsonProperty("EndorsementType") // EndorsementType
+	private Integer endorsementType;
 
-	    @JsonProperty("EndorsementTypeDesc") // EndorsementTypeDesc
-	    private String     endorsementTypeDesc ;
-	    
-	
+	@JsonProperty("EndorsementTypeDesc") // EndorsementTypeDesc
+	private String endorsementTypeDesc;
+
 }

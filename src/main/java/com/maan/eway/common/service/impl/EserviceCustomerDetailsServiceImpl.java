@@ -39,9 +39,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.OccupationMaster;
+import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.SeqCustrefno;
 import com.maan.eway.bean.StateMaster;
 import com.maan.eway.common.req.EserviceCustomerSaveReq;
@@ -52,9 +54,11 @@ import com.maan.eway.common.res.CustomerDetailsGetRes;
 import com.maan.eway.common.service.EserviceCustomerDetailsService;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
+import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.OccupationMasterRepository;
+import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.SeqCustrefnoRepository;
 import com.maan.eway.res.SuccessRes;
 
@@ -79,6 +83,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 	@Autowired
 	private SeqCustrefnoRepository custRefRepo  ; 
 	
+	@Autowired
+	private HomePositionMasterRepository homePosistionRepo;
+	
+	@Autowired
+	private PersonalInfoRepository personalInforepo;
 	
 
 	@PersistenceContext
@@ -773,6 +782,84 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 //			}
 			repository.save(saveData);
 
+			//Personal Info Update
+			if("1".equals(req.getEndorsementType().toString())) {
+				PersonalInfo savePersonalInfo=new PersonalInfo();
+				HomePositionMaster homedata=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
+			//	PersonalInfo personalInfodata=personalInforepo.findByCustomerId(homedata.getCustomerId());
+				dozerMapper.map(req, saveData);
+				savePersonalInfo.setCustomerId(homedata.getCustomerId());
+				savePersonalInfo.setAddress1(req.getAddress1());
+				savePersonalInfo.setAddress2(req.getAddress2());
+				savePersonalInfo.setAge(age);
+				savePersonalInfo.setBranchCode(req.getBranchCode());
+				savePersonalInfo.setBusinessType(req.getBusinessType());
+				if (StringUtils.isNotBlank(req.getBusinessType())) {
+					String businessType =  getListItem (req.getCompanyId() , req.getBranchCode() ,"BUSINESS_TYPE",req.getBusinessType());//listRepo.findByItemTypeAndItemCode("BUSINESS_TYPE", req.getBusinessType());
+					savePersonalInfo.setBusinessTypeDesc(businessType);
+				}
+				savePersonalInfo.setCityCode(req.getCityCode());
+				savePersonalInfo.setCityName(req.getCityName());
+				savePersonalInfo.setClientName(req.getClientName());
+				savePersonalInfo.setClientStatus(req.getClientStatus());
+				savePersonalInfo.setClientStatusDesc(req.getClientStatus().equalsIgnoreCase("N") ? "DeActive" : "Active");
+				savePersonalInfo.setCompanyId(req.getCompanyId());
+				savePersonalInfo.setCreatedBy(req.getCreatedBy());
+				savePersonalInfo.setCustomerReferenceNo(req.getCustomerReferenceNo());
+				savePersonalInfo.setDobOrRegDate(dob);
+				savePersonalInfo.setEmail1(req.getEmail1());
+				savePersonalInfo.setEmail2(req.getEmail2());
+				savePersonalInfo.setEmail3(req.getEmail3());
+				savePersonalInfo.setEndorsementDate(req.getEndorsementDate());
+				savePersonalInfo.setEndorsementEffdate(req.getEndorsementEffdate());
+				savePersonalInfo.setEndorsementRemarks(req.getEndorsementRemarks());
+				savePersonalInfo.setEndorsementType(req.getEndorsementType());
+				savePersonalInfo.setEndorsementTypeDesc(req.getEndorsementTypeDesc());
+				savePersonalInfo.setEndtCategDesc(req.getEndtCategDesc());
+				savePersonalInfo.setEndtCount(req.getEndtCount());
+				savePersonalInfo.setEndtPrevPolicyNo(req.getEndtPrevPolicyNo());
+				savePersonalInfo.setEndtPrevQuoteNo(req.getEndtPrevQuoteNo());
+				savePersonalInfo.setEndtStatus(req.getEndtStatus());
+				savePersonalInfo.setEntryDate(new Date());
+				savePersonalInfo.setFax(req.getFax());
+				savePersonalInfo.setGender(StringUtils.isBlank(req.getGender()) ? "M" : req.getGender());
+				savePersonalInfo.setOccupation(StringUtils.isBlank(req.getOccupation()) ? "2" : req.getOccupation());
+				savePersonalInfo.setGenderDesc(gender);
+				savePersonalInfo.setGenderDesc(gender);
+				savePersonalInfo.setTitleDesc(title);
+				savePersonalInfo.setLanguageDesc(language);
+				savePersonalInfo.setOccupationDesc(occupationDesc);
+				savePersonalInfo.setPolicyHolderTypeDesc(policyHolderType);
+				savePersonalInfo.setPolicyHolderTypeIdDesc(policyHolderTypeId);
+				savePersonalInfo.setIdType(req.getPolicyHolderTypeid());
+				savePersonalInfo.setIdTypeDesc(policyHolderTypeId);
+				savePersonalInfo.setMobileCode1(req.getMobileCode1());
+				savePersonalInfo.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
+				savePersonalInfo.setMobileCode3(req.getMobileCode3()==null?"":req.getMobileCode3());
+				savePersonalInfo.setWhatsappCode(req.getWhatsappCode());
+				if (StringUtils.isNotBlank(req.getMobileCode1())) {
+					ListItemValue mobiledesc1 = listRepo.findByItemTypeAndItemCode("MOBILE_CODE", req.getMobileCode1());
+					savePersonalInfo.setMobileCodeDesc1(mobiledesc1.getItemValue());
+
+				}
+				if (StringUtils.isNotBlank(req.getMobileCode2())) {
+					ListItemValue mobiledesc2 = listRepo.findByItemTypeAndItemCode("MOBILE_CODE", req.getMobileCode2());
+					savePersonalInfo.setMobileCodeDesc2(mobiledesc2.getItemValue());
+
+				}
+				if (StringUtils.isNotBlank(req.getMobileCode3())) {
+					ListItemValue mobiledesc3 = listRepo.findByItemTypeAndItemCode("MOBILE_CODE", req.getMobileCode3());
+					savePersonalInfo.setMobileCodeDesc3(mobiledesc3.getItemValue());
+
+				}
+				if (StringUtils.isNotBlank(req.getWhatsappCode())) {
+					ListItemValue whatsappCode = listRepo.findByItemTypeAndItemCode("MOBILE_CODE",
+							req.getWhatsappCode());
+					savePersonalInfo.setWhatsappcodeDesc(whatsappCode.getItemValue());
+
+				}
+				personalInforepo.save(savePersonalInfo);
+			}
 			// Response
 
 		} catch (Exception e) {
@@ -784,7 +871,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 
 	}
 	
-	 public synchronized String generateCustRefNo() {
+	 
+
+	public synchronized String generateCustRefNo() {
 	       try {
 	    	   SeqCustrefno entity;
 	            entity = custRefRepo.save(new SeqCustrefno());          
