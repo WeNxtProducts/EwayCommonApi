@@ -721,7 +721,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setClientStatusDesc(req.getClientStatus().equalsIgnoreCase("N") ? "DeActive" : "Active");
 			saveData.setGender(StringUtils.isBlank(req.getGender()) ? "M" : req.getGender());
 			saveData.setOccupation(StringUtils.isBlank(req.getOccupation()) ? "2" : req.getOccupation());
-
+			saveData.setBrokerBranchCode(req.getBrokerBranchCode());
 			// Age Calculation
 			Date dob = req.getDobOrRegDate();
 			Date today = new Date();
