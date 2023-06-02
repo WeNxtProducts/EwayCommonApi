@@ -688,7 +688,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 	//	SimpleDateFormat sdf = new SimpleDateFormat("yyMMddmmssSSS");
 		try {
 			EserviceCustomerDetails saveData = new EserviceCustomerDetails();
-			Date entryDate = null;
+			Date entryDate = null;	
 			String createdBy = "";
 			String custRefNo = "";
         
@@ -759,7 +759,6 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				String businessType =  getListItem (req.getCompanyId() , req.getBranchCode() ,"BUSINESS_TYPE",req.getBusinessType());//listRepo.findByItemTypeAndItemCode("BUSINESS_TYPE", req.getBusinessType());
 				saveData.setBusinessTypeDesc(businessType);
 			}
-
 			String occupationDesc = getByOccupationId(req.getOccupation(), req.getCompanyId(),req.getProductId() , req.getBranchCode());
 			saveData.setGenderDesc(gender);
 			saveData.setTitleDesc(title);
@@ -783,6 +782,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			repository.save(saveData);
 
 			//Personal Info Update
+			
+			if(StringUtils.isNotBlank(req.getEndtCategDesc())) {
 			if("Non Financial".equalsIgnoreCase(req.getEndtCategDesc().toString())) {
 				PersonalInfo savePersonalInfo=new PersonalInfo();
 				HomePositionMaster homedata=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
@@ -868,6 +869,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 
 				}
 				personalInforepo.save(savePersonalInfo);
+			}
 			}
 			// Response
 
