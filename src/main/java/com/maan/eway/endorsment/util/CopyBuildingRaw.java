@@ -394,7 +394,7 @@ public class CopyBuildingRaw {
 			contentAndRiskEndtStatus(req);
 			buildingDetailsEndtStatus(req);
 			coverDocumentUploadDetailsEndtStatus(req);
-			eserviceCustDetailsChangeStatus(req);
+			//eserviceCustDetailsChangeStatus(req);
 			personalAccident(req);
 			eserviceCommon(req);
 
@@ -562,7 +562,7 @@ public class CopyBuildingRaw {
 		return savedata;
 
 	}
-	private EserviceCustomerDetails eserviceCustDetailsChangeStatus(ChangeEndoStatusReq req) {
+	/*private EserviceCustomerDetails eserviceCustDetailsChangeStatus(ChangeEndoStatusReq req) {
 		EserviceCustomerDetails savedata = new EserviceCustomerDetails();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
@@ -583,7 +583,7 @@ public class CopyBuildingRaw {
 		return savedata;
 
 		
-	}
+	}*/
 
 
 }

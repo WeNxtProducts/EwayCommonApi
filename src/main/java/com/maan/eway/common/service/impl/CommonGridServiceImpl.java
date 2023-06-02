@@ -1623,7 +1623,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 
 		}
 
-		private CopyQuoteSuccessRes eserviceCustDetailsEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo, String customerId,String loginId, String prevPolicyNo, String prevQuoteNo, Integer count,String custRefNo) {
+	/*	private CopyQuoteSuccessRes eserviceCustDetailsEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo, String customerId,String loginId, String prevPolicyNo, String prevQuoteNo, Integer count,String custRefNo) {
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 			EserviceCustomerDetails savedata = new EserviceCustomerDetails();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -1668,7 +1668,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 			return res;
 
 			
-		}
+		}*/
 
 		//Home Position Master Endt Copy Quote
 		@Transactional
