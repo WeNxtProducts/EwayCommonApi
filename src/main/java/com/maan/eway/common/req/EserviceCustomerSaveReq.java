@@ -83,12 +83,14 @@ public class EserviceCustomerSaveReq {
 	@JsonProperty("PreferredNotification")
 	private String preferredNotification;
 	
+
+	@JsonProperty("IdType")
+	private String idType;
+	
 /*
 	@JsonProperty("IdTypeDesc")
 	private String idTypeDesc;
 
-	@JsonProperty("IdType")
-	private String idType;
 
 
 	@JsonProperty("Age")

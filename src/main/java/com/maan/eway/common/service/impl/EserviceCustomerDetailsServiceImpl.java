@@ -783,12 +783,17 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			repository.save(saveData);
 
 			//Personal Info Update
-			if("1".equals(req.getEndorsementType().toString())) {
+			if("Non Financial".equalsIgnoreCase(req.getEndtCategDesc().toString())) {
 				PersonalInfo savePersonalInfo=new PersonalInfo();
 				HomePositionMaster homedata=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
 			//	PersonalInfo personalInfodata=personalInforepo.findByCustomerId(homedata.getCustomerId());
 				dozerMapper.map(req, saveData);
 				savePersonalInfo.setCustomerId(homedata.getCustomerId());
+				savePersonalInfo.setIdNumber(req.getIdNumber());
+				savePersonalInfo.setCreatedBy(createdBy);
+				savePersonalInfo.setUpdatedDate(new Date());
+				savePersonalInfo.setUpdatedBy(req.getCreatedBy());
+				savePersonalInfo.setCustomerReferenceNo(custRefNo);
 				savePersonalInfo.setAddress1(req.getAddress1());
 				savePersonalInfo.setAddress2(req.getAddress2());
 				savePersonalInfo.setAge(age);
@@ -798,6 +803,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					String businessType =  getListItem (req.getCompanyId() , req.getBranchCode() ,"BUSINESS_TYPE",req.getBusinessType());//listRepo.findByItemTypeAndItemCode("BUSINESS_TYPE", req.getBusinessType());
 					savePersonalInfo.setBusinessTypeDesc(businessType);
 				}
+				savePersonalInfo.setRegionCode(req.getRegionCode());
+				savePersonalInfo.setIsTaxExempted(req.getIsTaxExempted());
 				savePersonalInfo.setCityCode(req.getCityCode());
 				savePersonalInfo.setCityName(req.getCityName());
 				savePersonalInfo.setClientName(req.getClientName());
@@ -829,6 +836,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				savePersonalInfo.setTitleDesc(title);
 				savePersonalInfo.setLanguageDesc(language);
 				savePersonalInfo.setOccupationDesc(occupationDesc);
+				savePersonalInfo.setPolicyHolderTypeid(req.getPolicyHolderTypeid());
+				savePersonalInfo.setIdType(req.getIdType());
 				savePersonalInfo.setPolicyHolderTypeDesc(policyHolderType);
 				savePersonalInfo.setPolicyHolderTypeIdDesc(policyHolderTypeId);
 				savePersonalInfo.setIdType(req.getPolicyHolderTypeid());
