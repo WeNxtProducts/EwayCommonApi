@@ -61,7 +61,7 @@ public class EwayCommonApiApplication {
 	                .useBackgroundJobServer()
 	                .useDashboard(9879)	                
 	                .initialize();
-	    }
+	    } 
 
 
 }
