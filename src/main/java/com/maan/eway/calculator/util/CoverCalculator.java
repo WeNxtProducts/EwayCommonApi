@@ -38,7 +38,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 t.setProRata(new BigDecimal("1"));
 				 if(prorata!=null && prorata.size()>0 && "Y".equals(t.getProRataYn())) {
 					 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
-					 t.setProRata((BigDecimal) decimalFormat.parse(decimalFormat.format(percenat.divide(new BigDecimal("100")))));
+					 t.setProRata(percenat.divide(new BigDecimal("100")));
 				 }
 				 
 				 /// this particular variable is for is rate defined for Single

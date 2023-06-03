@@ -3,6 +3,7 @@ package com.maan.eway.upgrade.criteria;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -416,9 +417,10 @@ public List<Tuple> getResult(SpecCriteria cr,String amendIdCol,Integer limit,Int
 	 					Object value = keyas.getValue();
 	 					if(parameterType.isAssignableFrom(Double.class) )
 	 						value=Double.parseDouble(keyas.getValue().toString());
-	 					else if(parameterType.isAssignableFrom(BigDecimal.class) )
+	 					else if(parameterType.isAssignableFrom(BigDecimal.class) ) {
+	 						System.out.println("D:::"+keyas.getValue().toString());
 	 						value=new BigDecimal(keyas.getValue().toString());
-	 					else if(parameterType.isAssignableFrom(Integer.class) )
+	 					}else if(parameterType.isAssignableFrom(Integer.class) )
 	 						value=new Integer(keyas.getValue().toString());
 	 					else if(parameterType.isAssignableFrom(Long.class) )
 	 						value=new Long(keyas.getValue().toString());
@@ -428,8 +430,8 @@ public List<Tuple> getResult(SpecCriteria cr,String amendIdCol,Integer limit,Int
 	 			}
 	 		}
 
-	 		result.setFirstResult(limit* offset);
-			result.setMaxResults(offset);
+	 		//result.setFirstResult(limit* offset);
+			//result.setMaxResults(offset);
 			reqPrinter.reqPrint(cr.getWheres());
 			list =  result.getResultList();
 		 

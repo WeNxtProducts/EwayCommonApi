@@ -193,6 +193,7 @@ public class RatingFactorsUtil {
 	
 	@Cacheable(cacheNames= {"countfactorOnlyquery"},keyGenerator  = "countfactorOnlyqueryKeyGen",value = "countfactorOnlyquery")
 	public List<Long> countfactorOnlyquery(CalcEngine engine,String condtion,String coverId, String subCoverId) {
+		String dataquery = null;
 		try{
 			Map<Integer, String> hsmap = commonQueries(engine, condtion, coverId, subCoverId);
 			//1.Priorty both s pecifi agencycode & branchcode
@@ -202,7 +203,7 @@ public class RatingFactorsUtil {
 			SpecCriteria criteria = null;
 			List<Long> count=null;
 			for(int i=1;i<=hsmap.size();i++) {
-				String dataquery = hsmap.get(i);
+				dataquery = hsmap.get(i);
 
 
 				criteria = crservice.createCriteria(FactorRateMaster.class, dataquery, "factorTypeId"); 
@@ -219,7 +220,9 @@ public class RatingFactorsUtil {
 			 
 			return count;
 		}catch (Exception e) {
+			System.out.println("Factor Id"+dataquery);
 			e.printStackTrace();
+			
 		}
 		return null;
 	}
