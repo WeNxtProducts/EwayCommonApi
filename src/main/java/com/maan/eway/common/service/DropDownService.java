@@ -182,6 +182,10 @@ public interface DropDownService {
 
 	List<DropDownRes> getFirstLossPercent(LovDropDownReq req);
 
+	List<DropDownRes> getIndemity(LovDropDownReq req);
+
+	List<DropDownRes> getPlateGlass(LovDropDownReq req);
+
 
 
 }

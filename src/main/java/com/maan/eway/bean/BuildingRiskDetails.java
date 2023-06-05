@@ -596,6 +596,20 @@ private static final long serialVersionUID = 1L;
       @Column(name="TIRA_COVER_NOTE_NO")
       private String tiraCoverNoteNo;
       
+      @Column(name="INDEMITY_PERIOD")
+      private String indemityPeriod;
+      
+      @Column(name="INDEMITY_PERIOD_DESC")
+      private String indemityPeriodDesc;
+      
+      @Column(name="MAKUTI_YN")
+      private String makutiYn;
+      
+      @Column(name="PLATE_GLASS_TYPE")
+      private String plateGlassType;
+      
+      @Column(name="PLATE_GLASS_DESC")
+      private String plateGlassDesc;
 }
 
 

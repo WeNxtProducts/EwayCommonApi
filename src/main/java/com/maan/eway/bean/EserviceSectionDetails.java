@@ -165,6 +165,11 @@ private static final long serialVersionUID = 1L;
    @Column(name="ENDT_PREMIUM")
    private Double       endtPremium ;
     
+   @Column(name="PRODUCT_TYPE", length=100)
+   private String     productType ;
+   
+   @Column(name="PRODUCT_TYPE_DESC", length=100)
+   private String     productTypeDesc ;
 }
 
 

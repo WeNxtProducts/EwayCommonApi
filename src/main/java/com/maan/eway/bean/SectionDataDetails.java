@@ -119,6 +119,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="EXCHANGE_RATE", length=20)
     private BigDecimal     exchageRate ;
     
+    @Column(name="PRODUCT_TYPE", length=100)
+    private String     productType ;
+    
+    @Column(name="PRODUCT_TYPE_DESC", length=100)
+    private String     productTypeDesc ;
+    
 }
 
 

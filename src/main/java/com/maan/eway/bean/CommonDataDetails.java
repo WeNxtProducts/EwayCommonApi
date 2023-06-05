@@ -64,6 +64,10 @@ private static final long serialVersionUID = 1L;
     @Column(name="CUSTOMER_REFERENCE_NO", nullable=false, length=20)
     private String     customerReferenceNo ;
 
+    @Id
+    @Column(name="SECTION_ID", length=20)
+    private String  sectionId ;
+    
     //--- ENTITY DATA FIELDS 
     @Column(name="PRODUCT_ID", length=20)
     private String  productId ;
@@ -75,9 +79,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="PRODUCT_DESC", length=100)
     private String  productDesc ;
 
-    @Column(name="SECTION_ID", length=20)
-    private String  sectionId ;
-
+   
     @Column(name="SECTION_DESC", length=100)
     private String sectionDesc ;
 
