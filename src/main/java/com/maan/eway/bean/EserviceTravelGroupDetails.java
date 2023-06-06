@@ -83,8 +83,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="GROUP_DESC", length=20)
     private String    groupDesc ;
 
-    @Column(name="START")
-    private Integer    start ;
+    @Column(name="STARTT")
+    private Integer    startt ;
 
     @Column(name="END")
     private Integer    end;
