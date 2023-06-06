@@ -1070,7 +1070,7 @@ this.repository = repo;
 				saveDiscounts.setDependentCoverId(null);
 				saveDiscounts.setFactorTypeId(StringUtils.isBlank(disc.getFactorTypeId())?null :new BigDecimal(disc.getFactorTypeId()) );
 				saveDiscounts.setIsSelected(coverReq.getIsselected() );
-				saveDiscounts.setCalcType(saveDiscounts.getCalcType());
+				saveDiscounts.setCalcType(coverReq.getCalcType());
 				saveDiscounts.setTaxId(0);
 				saveDiscounts.setDiscountCoverId(StringUtils.isBlank(disc.getDiscountforId())?0:Integer.parseInt(disc.getDiscountforId()));
 				saveDiscounts.setEndtCount(BigDecimal.ZERO );
