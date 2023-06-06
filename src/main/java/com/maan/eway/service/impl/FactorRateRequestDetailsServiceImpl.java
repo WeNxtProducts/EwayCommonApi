@@ -1173,11 +1173,11 @@ this.repository = repo;
 		 List<EservieMotorDetailsViewRes> viewDetailsList  = new ArrayList<EservieMotorDetailsViewRes>() ;
 		try {
 			List<EserviceMotorDetails>    motorDatas = eserMotorRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
-			List<EserviceTravelGroupDetails>    travelDatas = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(req.getRequestReferenceNo());
+			EserviceTravelDetails    travelDatas = eserTraRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
 			List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 			List<EserviceCommonDetails> findDatas = eserCommonRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
 			
-			String companyId = motorDatas.size() > 0 ? motorDatas.get(0).getCompanyId() :	 travelDatas.size() > 0 ? travelDatas.get(0).getCompanyId()  
+			String companyId = motorDatas.size() > 0 ? motorDatas.get(0).getCompanyId() :	 travelDatas!=null ? travelDatas.getCompanyId()  
 					 :  buildDatas.size() > 0 ? buildDatas.get(0).getCompanyId() :  findDatas.size() > 0 ? findDatas.get(0).getCompanyId() : "" ;
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(companyId , req.getProductId().toString());
 			
