@@ -40,6 +40,7 @@ import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CommonDataDetails;
+import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
@@ -60,6 +61,7 @@ import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.SectionCoverMaster;
+import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.bean.TravelPassengerHistory;
 import com.maan.eway.common.req.AdminReferalStatusReq;
@@ -120,6 +122,7 @@ import com.maan.eway.repository.PersonalAccidentRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.ProductMasterRepository;
+import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerHistoryRepository;
 import com.maan.eway.res.BuildingLocationDetails;
@@ -142,21 +145,9 @@ import com.maan.eway.res.calc.Tax;
 @Transactional
 public class QuoteServiceImpl implements QuoteService {
 
-	@Value(value = "${motor.productId}")
-	private String motorProductId;
-	
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
-	
-	@Value(value = "${building.productId}")
-	private String buildingProductId;
-	
-	@Value(value = "${sme.productId}")
-	private String smeProductId;
-	
-	@Value(value = "${burglary.productId}")
-	private String burglaryProductId;
-	
+
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -202,6 +193,9 @@ public class QuoteServiceImpl implements QuoteService {
 	
 	@Autowired
 	private EServiceSectionDetailsRepository eserSecRepo  ;
+	
+	@Autowired
+	private SectionDataDetailsRepository secDataRepo  ;
 
 	@Autowired
 	private PolicyCoverDataRepository polCoverRepo  ;
@@ -337,21 +331,22 @@ private BuildingDetailsRepository BuildingRepo;
 			if(brokerBranchList.size()>0 ||brokerBranchList!=null) {
 			custRes.setBrokerBranchCode(brokerBranchList.get(0).getBrokerBranchCode());	
 			}
-			// Motor Product Details
-			if( homeData.getProductId().equals(Integer.valueOf(motorProductId))) {
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(homeData.getCompanyId() , homeData.getProductId().toString());
+
+			 if(product.getMotorYn().equalsIgnoreCase("H") &&  homeData.getProductId().equals(Integer.valueOf(travelProductId))) {
+					// Travel Product Details
+					viewRes =	getTravelProductDetails( req);
+					
+			 } else if(product.getMotorYn().equalsIgnoreCase("M") ) {
+				// Motor Product Details
 				viewRes =  getMotorProductDetails( req);
 				
-			} else if( homeData.getProductId().equals(Integer.valueOf(travelProductId))) {
-				// Travel Product Details
-				viewRes =	getTravelProductDetails( req);
-				
-			} else if( homeData.getProductId().equals(Integer.valueOf(buildingProductId)) ||
-					homeData.getProductId().equals(Integer.valueOf(smeProductId)) || homeData.getProductId().equals(Integer.valueOf(burglaryProductId)) ) {
+			} else if(product.getMotorYn().equalsIgnoreCase("A") ) {
 				// Travel Product Details
 				viewRes =	getBuildingProductDetails( req);
 				
 			} else {
-				// Travel Product Details
+				// Human Product Details
 				viewRes =	getCommonProductDetails( req);
 				
 			}
@@ -536,7 +531,7 @@ private BuildingDetailsRepository BuildingRepo;
 			// Find Motor Data
 			
 			BuildingRiskDetails buildData = buildRiskRepo.findByQuoteNo(req.getQuoteNo());
-			List<EserviceSectionDetails> secDatas =  eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(buildData.getRequestReferenceNo());
+			List<SectionDataDetails> secDatas =  secDataRepo.findByRequestReferenceNoOrderByRiskIdAsc(buildData.getRequestReferenceNo());
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 			
 			
@@ -576,134 +571,103 @@ private BuildingDetailsRepository BuildingRepo;
 			 buildingRes.setCommissionAmount(commission==null?"":commission.toString());
 			 buildingRes.setCommissionPercentage(commissionPercent==null?"":commissionPercent.toString());
 			 buildingRes.setInsuranceForId(buildData.getInsuranceForId()!=null ? Arrays.asList(buildData.getInsuranceForId().split(",")) : null )  ;
+			 List<SectionDetails>  buildingSectionList = new ArrayList<SectionDetails>();
 			
-			
-			List<SectionDetails>  buildingSectionList = new ArrayList<SectionDetails>();
-			for (EserviceSectionDetails sec :  secDatas) {
-//				if( sec.getSectionId().equalsIgnoreCase("35") ) {
-//					List<CommonDataDetails> accData =  	commonDataRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
-//					for (CommonDataDetails	 acc : accData ) {
-//						
-//						List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(acc.getRiskId())) &&
-//								 o.getSectionId().toString().equals(acc.getSectionId()) ).collect(Collectors.toList());
-//					
-//						Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
-//						
-//						List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
-//
-//						BigDecimal PremiumAfterDiscount = (coverListRes.stream().filter(o -> o.getPremiumAfterDiscount()!=null ) .map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
-//						BigDecimal PremiumAfterDiscountLc = (coverListRes.stream().filter(o -> o.getPremiumAfterDiscountLC()!=null ).map(CoverRes:: getPremiumAfterDiscountLC ).reduce((x, y) -> x.add(y)).get());
-//						BigDecimal PremiumBeforeDiscount = (coverListRes.stream().filter(o -> o.getPremiumBeforeDiscount()!=null ).map(CoverRes:: getPremiumBeforeDiscount ).reduce((x, y) -> x.add(y)).get());
-//						BigDecimal PremiumBeforeDiscountLc = (coverListRes.stream().filter(o -> o.getPremiumBeforeDiscountLC()!=null ).map(CoverRes:: getPremiumBeforeDiscountLC ).reduce((x, y) -> x.add(y)).get());
-//						BigDecimal PremiumExcluedTax = (coverListRes.stream().filter(o -> o.getPremiumExcluedTax()!=null ).map(CoverRes:: getPremiumExcluedTax ).reduce((x, y) -> x.add(y)).get());
-//						BigDecimal PremiumExcluedTaxLc = (coverListRes.stream().filter(o -> o.getPremiumExcluedTaxLC()!=null ).map(CoverRes:: getPremiumExcluedTaxLC ).reduce((x, y) -> x.add(y)).get());
-//						BigDecimal PremiumIncludedTax = (coverListRes.stream().filter(o -> o.getPremiumIncludedTax()!=null ).map(CoverRes:: getPremiumIncludedTax ).reduce((x, y) -> x.add(y)).get());
-//						BigDecimal PremiumIncludedTaxLc = (coverListRes.stream().filter(o -> o.getPremiumIncludedTaxLC()!=null ).map(CoverRes:: getPremiumIncludedTaxLC ).reduce((x, y) -> x.add(y)).get());
-//
-//						// Accident
-////						PaccGetRes pacRes = new  PaccGetRes()  ;
-////						dozerMapper.map(acc, pacRes);
-////						pacRes.setOccupationType(acc.getRiskId().toString() );
-////						pacRes.setOccupationTypeDesc(acc.getOccupationDesc());
-////						pacRes.setSuminsured(acc.getSumInsured()==null?"":acc.getSumInsured().toPlainString());
-////						pacRes.setRiskId(acc.getRiskId().toString());
-////						pacRes.setDocumentsTitle(acc.getSectionDesc() + "-" + acc.getOccupationDesc());
-////						pacRes.setSectionId(acc.getSectionId()==null?"":acc.getSectionId().toString());
-////						List<SectionDetails>  paSectionList = new ArrayList<SectionDetails>();
-////						SectionDetails secData = new SectionDetails(); 
-////						secData.setSectionId(acc.getSectionId()==null?"":acc.getSectionId().toString());
-////						secData.setSectionName( acc.getSectionDesc());
-////						secData.setCovers(coverListRes);
-////						paSectionList.add(secData);
-////						pacRes.setSectionDetails(paSectionList);
-////						paccGetResList.add(pacRes);
-//						SectionDetails buildSec = new SectionDetails(); 
-//						buildSec.setSectionId(acc.getSectionId()==null?"":acc.getSectionId().toString());
-//						buildSec.setSectionName( acc.getSectionDesc());
-//
-//						buildSec.setPremiumAfterDiscount(PremiumAfterDiscount==null?"":PremiumAfterDiscount.toString());
-//						buildSec.setPremiumAfterDiscountLc(PremiumAfterDiscountLc==null?"":PremiumAfterDiscountLc.toString());
-//						buildSec.setPremiumBeforeDiscount(PremiumBeforeDiscount==null?"":PremiumBeforeDiscount.toString());
-//						buildSec.setPremiumBeforeDiscountLc(PremiumBeforeDiscountLc==null?"":PremiumBeforeDiscountLc.toString());
-//						buildSec.setPremiumExcluedTax(PremiumExcluedTax==null?"":PremiumExcluedTax.toString());
-//						buildSec.setPremiumExcluedTaxLc(PremiumExcluedTaxLc==null?"":PremiumExcluedTaxLc.toString());
-//						buildSec.setPremiumIncludedTax(PremiumIncludedTax==null?"":PremiumIncludedTax.toString());
-//						buildSec.setPremiumIncludedTaxLc(PremiumIncludedTaxLc==null?"":PremiumIncludedTaxLc.toString());
-//
-//						buildSec.setCovers(coverListRes);
-//						buildingSectionList.add(buildSec);
-//						
-//					}
+			for (SectionDataDetails sec :  secDatas) {
+				
+				if( sec.getProductType().equalsIgnoreCase("H") ) {
+					List<SectionDetails>  pacSectionList = new ArrayList<SectionDetails>();
+					List<CommonDataDetails> accData =  	commonDataRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+					for (CommonDataDetails	 acc : accData ) {
+						
+						List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(acc.getRiskId())) &&
+								 o.getSectionId().toString().equals(acc.getSectionId()) ).collect(Collectors.toList());
 					
-			//	} else {
-//					List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(sec.getRiskId())) &&
-//							o.getCompanyId().equals(sec.getCompanyId()) && o.getProductId().toString().equals(sec.getProductId()) && o.getSectionId().toString().equals(sec.getSectionId()) ).collect(Collectors.toList());
-//				
-//					Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
-//					
-//					List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
-//					// Build
-//					SectionDetails buildSec = new SectionDetails(); 
-//					BigDecimal PremiumAfterDiscount = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
-//					BigDecimal PremiumAfterDiscountLc = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumAfterDiscountLC ).reduce((x, y) -> x.add(y)).get());
-//					BigDecimal PremiumBeforeDiscount = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumBeforeDiscount ).reduce((x, y) -> x.add(y)).get());
-//					BigDecimal PremiumBeforeDiscountLc = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumBeforeDiscountLC ).reduce((x, y) -> x.add(y)).get());
-//					BigDecimal PremiumExcluedTax = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumExcluedTax ).reduce((x, y) -> x.add(y)).get());
-//					BigDecimal PremiumExcluedTaxLc = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumExcluedTaxLC ).reduce((x, y) -> x.add(y)).get());
-//					BigDecimal PremiumIncludedTax = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumIncludedTax ).reduce((x, y) -> x.add(y)).get());
-//					BigDecimal PremiumIncludedTaxLc = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumIncludedTaxLC ).reduce((x, y) -> x.add(y)).get());
-//					
-//					buildSec.setSectionId(sec.getSectionId()==null?"":sec.getSectionId().toString());
-//					buildingRes.setSectionId(StringUtils.isBlank(buildingRes.getSectionId() ) ? sec.getSectionId()==null?"":sec.getSectionId().toString() :buildingRes.getSectionId()  );
-//					buildSec.setSectionName( sec.getSectionDesc());
-//					buildSec.setCovers(coverListRes);
-//					buildSec.setPremiumAfterDiscount(PremiumAfterDiscount==null?"":PremiumAfterDiscount.toString());
-//					buildSec.setPremiumAfterDiscountLc(PremiumAfterDiscountLc==null?"":PremiumAfterDiscountLc.toString());
-//					buildSec.setPremiumBeforeDiscount(PremiumBeforeDiscount==null?"":PremiumBeforeDiscount.toString());
-//					buildSec.setPremiumBeforeDiscountLc(PremiumBeforeDiscountLc==null?"":PremiumBeforeDiscountLc.toString());
-//					buildSec.setPremiumExcluedTax(PremiumExcluedTax==null?"":PremiumExcluedTax.toString());
-//					buildSec.setPremiumExcluedTaxLc(PremiumExcluedTaxLc==null?"":PremiumExcluedTaxLc.toString());
-//					buildSec.setPremiumIncludedTax(PremiumIncludedTax==null?"":PremiumIncludedTax.toString());
-//					buildSec.setPremiumIncludedTaxLc(PremiumIncludedTaxLc==null?"":PremiumIncludedTaxLc.toString());
-//					buildingSectionList.add(buildSec);
+						Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
+						
+						List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
+
+						BigDecimal PremiumAfterDiscount = (coverListRes.stream().filter(o -> o.getPremiumAfterDiscount()!=null ) .map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
+						BigDecimal PremiumAfterDiscountLc = (coverListRes.stream().filter(o -> o.getPremiumAfterDiscountLC()!=null ).map(CoverRes:: getPremiumAfterDiscountLC ).reduce((x, y) -> x.add(y)).get());
+						BigDecimal PremiumBeforeDiscount = (coverListRes.stream().filter(o -> o.getPremiumBeforeDiscount()!=null ).map(CoverRes:: getPremiumBeforeDiscount ).reduce((x, y) -> x.add(y)).get());
+						BigDecimal PremiumBeforeDiscountLc = (coverListRes.stream().filter(o -> o.getPremiumBeforeDiscountLC()!=null ).map(CoverRes:: getPremiumBeforeDiscountLC ).reduce((x, y) -> x.add(y)).get());
+						BigDecimal PremiumExcluedTax = (coverListRes.stream().filter(o -> o.getPremiumExcluedTax()!=null ).map(CoverRes:: getPremiumExcluedTax ).reduce((x, y) -> x.add(y)).get());
+						BigDecimal PremiumExcluedTaxLc = (coverListRes.stream().filter(o -> o.getPremiumExcluedTaxLC()!=null ).map(CoverRes:: getPremiumExcluedTaxLC ).reduce((x, y) -> x.add(y)).get());
+						BigDecimal PremiumIncludedTax = (coverListRes.stream().filter(o -> o.getPremiumIncludedTax()!=null ).map(CoverRes:: getPremiumIncludedTax ).reduce((x, y) -> x.add(y)).get());
+						BigDecimal PremiumIncludedTaxLc = (coverListRes.stream().filter(o -> o.getPremiumIncludedTaxLC()!=null ).map(CoverRes:: getPremiumIncludedTaxLC ).reduce((x, y) -> x.add(y)).get());
+
+						// Accident
+						PaccGetRes pacRes = new  PaccGetRes()  ;
+						dozerMapper.map(acc, pacRes);
+//						pacRes.setOccupationType(acc.getRiskId().toString() );
+//						pacRes.setOccupationTypeDesc(acc.getOccupationDesc());
+//						pacRes.setSuminsured(acc.getSumInsured()==null?"":acc.getSumInsured().toPlainString());
+//						pacRes.setRiskId(acc.getRiskId().toString());
+//						pacRes.setDocumentsTitle(acc.getSectionDesc() + "-" + acc.getOccupationDesc());
+//						pacRes.setSectionId(acc.getSectionId()==null?"":acc.getSectionId().toString());
+//						List<SectionDetails>  paSectionList = new ArrayList<SectionDetails>();
+//						SectionDetails secData = new SectionDetails(); 
+//						secData.setSectionId(acc.getSectionId()==null?"":acc.getSectionId().toString());
+//						secData.setSectionName( acc.getSectionDesc());
+//						secData.setCovers(coverListRes);
+//						paSectionList.add(secData);
+//						pacRes.setSectionDetails(paSectionList);
+						SectionDetails buildSec = new SectionDetails(); 
+						buildSec.setSectionId(acc.getSectionId()==null?"":acc.getSectionId().toString());
+						buildSec.setSectionName( acc.getSectionDesc());
+
+						buildSec.setPremiumAfterDiscount(PremiumAfterDiscount==null?"":PremiumAfterDiscount.toString());
+						buildSec.setPremiumAfterDiscountLc(PremiumAfterDiscountLc==null?"":PremiumAfterDiscountLc.toString());
+						buildSec.setPremiumBeforeDiscount(PremiumBeforeDiscount==null?"":PremiumBeforeDiscount.toString());
+						buildSec.setPremiumBeforeDiscountLc(PremiumBeforeDiscountLc==null?"":PremiumBeforeDiscountLc.toString());
+						buildSec.setPremiumExcluedTax(PremiumExcluedTax==null?"":PremiumExcluedTax.toString());
+						buildSec.setPremiumExcluedTaxLc(PremiumExcluedTaxLc==null?"":PremiumExcluedTaxLc.toString());
+						buildSec.setPremiumIncludedTax(PremiumIncludedTax==null?"":PremiumIncludedTax.toString());
+						buildSec.setPremiumIncludedTaxLc(PremiumIncludedTaxLc==null?"":PremiumIncludedTaxLc.toString());
+
+						buildSec.setCovers(coverListRes);
+						pacSectionList.add(buildSec);
+						pacRes.setSectionDetails(pacSectionList);	
+						paccGetResList.add(pacRes);
+						;
+						
+					}
 					
-//				else {
-//					List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(sec.getRiskId())) &&
-//							o.getCompanyId().equals(sec.getCompanyId()) && o.getProductId().toString().equals(sec.getProductId()) && o.getSectionId().toString().equals(sec.getSectionId()) ).collect(Collectors.toList());
-//				
-//					Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
-//					
-//					List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
-//					// Build
-//					SectionDetails buildSec = new SectionDetails(); 
-//					BigDecimal PremiumAfterDiscount = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
-//					BigDecimal PremiumAfterDiscountLc = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumAfterDiscountLC ).reduce((x, y) -> x.add(y)).get());
-//					BigDecimal PremiumBeforeDiscount = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumBeforeDiscount ).reduce((x, y) -> x.add(y)).get());
-//					BigDecimal PremiumBeforeDiscountLc = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumBeforeDiscountLC ).reduce((x, y) -> x.add(y)).get());
-//					BigDecimal PremiumExcluedTax = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumExcluedTax ).reduce((x, y) -> x.add(y)).get());
-//					BigDecimal PremiumExcluedTaxLc = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumExcluedTaxLC ).reduce((x, y) -> x.add(y)).get());
-//					BigDecimal PremiumIncludedTax = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumIncludedTax ).reduce((x, y) -> x.add(y)).get());
-//					BigDecimal PremiumIncludedTaxLc = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumIncludedTaxLC ).reduce((x, y) -> x.add(y)).get());
-//					
-//					buildSec.setSectionId(sec.getSectionId()==null?"":sec.getSectionId().toString());
-//					buildingRes.setSectionId(StringUtils.isBlank(buildingRes.getSectionId() ) ? sec.getSectionId()==null?"":sec.getSectionId().toString() :buildingRes.getSectionId()  );
-//					buildSec.setSectionName( sec.getSectionName());
-//					buildSec.setCovers(coverListRes);
-//					buildSec.setPremiumAfterDiscount(PremiumAfterDiscount==null?"":PremiumAfterDiscount.toString());
-//					buildSec.setPremiumAfterDiscountLc(PremiumAfterDiscountLc==null?"":PremiumAfterDiscountLc.toString());
-//					buildSec.setPremiumBeforeDiscount(PremiumBeforeDiscount==null?"":PremiumBeforeDiscount.toString());
-//					buildSec.setPremiumBeforeDiscountLc(PremiumBeforeDiscountLc==null?"":PremiumBeforeDiscountLc.toString());
-//					buildSec.setPremiumExcluedTax(PremiumExcluedTax==null?"":PremiumExcluedTax.toString());
-//					buildSec.setPremiumExcluedTaxLc(PremiumExcluedTaxLc==null?"":PremiumExcluedTaxLc.toString());
-//					buildSec.setPremiumIncludedTax(PremiumIncludedTax==null?"":PremiumIncludedTax.toString());
-//					buildSec.setPremiumIncludedTaxLc(PremiumIncludedTaxLc==null?"":PremiumIncludedTaxLc.toString());
-//					buildingSectionList.add(buildSec);
-//					
-//				}
-//				
+				} else {
+					List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(sec.getRiskId())) &&
+							o.getCompanyId().equals(sec.getCompanyId()) && o.getProductId().toString().equals(sec.getProductId()) && o.getSectionId().toString().equals(sec.getSectionId()) ).collect(Collectors.toList());
+				
+					Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
+					
+					List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
+					// Build
+					SectionDetails buildSec = new SectionDetails(); 
+					BigDecimal PremiumAfterDiscount = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
+					BigDecimal PremiumAfterDiscountLc = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumAfterDiscountLC ).reduce((x, y) -> x.add(y)).get());
+					BigDecimal PremiumBeforeDiscount = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumBeforeDiscount ).reduce((x, y) -> x.add(y)).get());
+					BigDecimal PremiumBeforeDiscountLc = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumBeforeDiscountLC ).reduce((x, y) -> x.add(y)).get());
+					BigDecimal PremiumExcluedTax = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumExcluedTax ).reduce((x, y) -> x.add(y)).get());
+					BigDecimal PremiumExcluedTaxLc = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumExcluedTaxLC ).reduce((x, y) -> x.add(y)).get());
+					BigDecimal PremiumIncludedTax = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumIncludedTax ).reduce((x, y) -> x.add(y)).get());
+					BigDecimal PremiumIncludedTaxLc = (coverListRes.stream().filter( o -> o.getPremiumAfterDiscount() !=null ).map(CoverRes:: getPremiumIncludedTaxLC ).reduce((x, y) -> x.add(y)).get());
+					
+					buildSec.setSectionId(sec.getSectionId()==null?"":sec.getSectionId().toString());
+					buildingRes.setSectionId(StringUtils.isBlank(buildingRes.getSectionId() ) ? sec.getSectionId()==null?"":sec.getSectionId().toString() :buildingRes.getSectionId()  );
+					buildSec.setSectionName( sec.getSectionDesc());
+					buildSec.setCovers(coverListRes);
+					buildSec.setPremiumAfterDiscount(PremiumAfterDiscount==null?"":PremiumAfterDiscount.toString());
+					buildSec.setPremiumAfterDiscountLc(PremiumAfterDiscountLc==null?"":PremiumAfterDiscountLc.toString());
+					buildSec.setPremiumBeforeDiscount(PremiumBeforeDiscount==null?"":PremiumBeforeDiscount.toString());
+					buildSec.setPremiumBeforeDiscountLc(PremiumBeforeDiscountLc==null?"":PremiumBeforeDiscountLc.toString());
+					buildSec.setPremiumExcluedTax(PremiumExcluedTax==null?"":PremiumExcluedTax.toString());
+					buildSec.setPremiumExcluedTaxLc(PremiumExcluedTaxLc==null?"":PremiumExcluedTaxLc.toString());
+					buildSec.setPremiumIncludedTax(PremiumIncludedTax==null?"":PremiumIncludedTax.toString());
+					buildSec.setPremiumIncludedTaxLc(PremiumIncludedTaxLc==null?"":PremiumIncludedTaxLc.toString());
+					buildingSectionList.add(buildSec);
+				
 			} 
 			buildingRes.setSectionDetails(buildingSectionList);
-			
+		}
 			buildList.add(buildingRes);
 			List<Object> totalList = new ArrayList<Object>(); 
 			totalList.addAll(buildList);
@@ -713,14 +677,14 @@ private BuildingDetailsRepository BuildingRepo;
 			List<BuildingDetails> buildingRiskDatas = BuildingRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
 			List<BuildingLocationDetails> buildLocList = new ArrayList<BuildingLocationDetails>();
 			for(BuildingDetails data : buildingRiskDatas) {
-//				BuildingLocationDetails loc = new BuildingLocationDetails();
-//				loc.setDocumentsTitle( "Location - " +  data.getLocationName());
-//				loc.setLocationId(data.getRiskId().toString());
-//				loc.setLocationName(data.getLocationName());
-//				loc.setRiskId(data.getRiskId().toString());
-//				loc.setSuminsured(data.getBuildingSuminsured()==null?"" : data.getBuildingSuminsured().toPlainString());
-//				loc.setSectionId("99999");
-//				buildLocList.add(loc);
+				BuildingLocationDetails loc = new BuildingLocationDetails();
+				loc.setDocumentsTitle( "Location - " +  data.getLocationName());
+				loc.setLocationId(data.getRiskId().toString());
+				loc.setLocationName(data.getLocationName());
+				loc.setRiskId(data.getRiskId().toString());
+				loc.setSuminsured(data.getBuildingSuminsured()==null?"" : data.getBuildingSuminsured().toPlainString());
+				loc.setSectionId("99999");
+				buildLocList.add(loc);
 				
 				// Document 
 				DocumentDetails  document = new DocumentDetails();
@@ -735,6 +699,8 @@ private BuildingDetailsRepository BuildingRepo;
 			
 			viewRes.setRiskDetails(totalList);
 			viewRes.setDocumentDetails(documentDetails);
+					
+					
 			
 		} catch ( Exception e) {
 			e.printStackTrace();
@@ -1215,33 +1181,40 @@ private BuildingDetailsRepository BuildingRepo;
 	public QuoteUpdateRes updateReferralStatus(AdminReferalStatusReq req) {
 		QuoteUpdateRes updateRes = new QuoteUpdateRes();
 		try {
+			List<EserviceMotorDetails>    motorDatas = eserMotRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
+			List<EserviceTravelGroupDetails>    travelDatas = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(req.getRequestReferenceNo());
+			List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
+			List<EserviceCommonDetails> findDatas = eserCommonRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
 			
-			if( req.getProductId().equalsIgnoreCase(motorProductId)) {
-				updateRes = motorReferalUpdate(req);
-				//Mail Push Notification
-					motorPushNotification(req);
-				//Tracking Details
-					trackingDetails(req);
-					
-			} else if( req.getProductId().equalsIgnoreCase(travelProductId)) {
+			String companyId = motorDatas.size() > 0 ? motorDatas.get(0).getCompanyId() :	 travelDatas.size() > 0 ? travelDatas.get(0).getCompanyId()  
+					 :  buildDatas.size() > 0 ? buildDatas.get(0).getCompanyId() :  findDatas.size() > 0 ? findDatas.get(0).getCompanyId() : "" ;
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(companyId , req.getProductId().toString());
+		
+			if(product.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId)) {
 				updateRes = travelReferalUpdate(req);
 				//Mail Push Notification
 				 travelPushNotification(req);
 				//Tracking Details
-					trackingDetails(req);
+					trackingDetails(req ,product.getMotorYn() );
 				
-			} else if( (req.getProductId().equalsIgnoreCase(buildingProductId)) || (req.getProductId().equalsIgnoreCase(smeProductId))
-					|| (req.getProductId().equalsIgnoreCase(burglaryProductId))) {
+			} else if(product.getMotorYn().equalsIgnoreCase("M") ) {
+				updateRes = motorReferalUpdate(req);
+				//Mail Push Notification
+					motorPushNotification(req);
+				//Tracking Details
+					trackingDetails(req,product.getMotorYn() );
+					
+			} else if(product.getMotorYn().equalsIgnoreCase("A") ) {
 				updateRes = buildingReferalUpdate(req);
 				//Mail Push Notification
 				 buildingPushNotification(req);
 				//Tracking Details
-					trackingDetails(req);
+					trackingDetails(req,product.getMotorYn() );
 			}  else {
 				updateRes = commonReferalUpdate(req);
 				commonPushNotification(req);
 				//Tracking Details
-				trackingDetails(req);
+				trackingDetails(req,product.getMotorYn() );
 			} 
 			
 		
@@ -1253,34 +1226,12 @@ private BuildingDetailsRepository BuildingRepo;
 		return updateRes;
 	}
 	//Tracking Details
-	private QuoteUpdateRes trackingDetails(AdminReferalStatusReq req) {
+	private QuoteUpdateRes trackingDetails(AdminReferalStatusReq req , String motorYn) {
 		QuoteUpdateRes res=new QuoteUpdateRes();
 	try {
 	
 		List<TrackingDetailsSaveReq> trackingReq1 = new ArrayList<TrackingDetailsSaveReq>();
-		if( req.getProductId().equalsIgnoreCase(motorProductId)) {
-			List<EserviceMotorDetails> cusRefNo = eserMotRepo
-					.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
-			
-			for(EserviceMotorDetails motor:cusRefNo ) {
-				if(! motor.getStatus().equalsIgnoreCase("D")  ) {
-					TrackingDetailsSaveReq trackingReq = new TrackingDetailsSaveReq();
-					trackingReq.setProductId(req.getProductId());
-					trackingReq.setRiskId(motor.getRiskId().toString());
-					trackingReq.setStatus( req.getStatus());
-					trackingReq.setBranchCode(motor.getBranchCode());
-					trackingReq.setCompanyId(motor.getCompanyId());
-					trackingReq.setQuoteNo(motor.getQuoteNo()==null?"":motor.getQuoteNo().toString());
-					trackingReq.setPolicyNo(motor.getPolicyNo()==null?"":motor.getPolicyNo().toString());
-					trackingReq.setOriginalPolicyNo(motor.getOriginalPolicyNo()==null?"":motor.getOriginalPolicyNo().toString());
-					trackingReq.setCreatedby(req.getAdminLoginId());
-					trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());
-					trackingReq.setRemarks(motor.getAdminRemarks());
-					trackingReq1.add(trackingReq);
-				}
-				}
-				
-			} else if( req.getProductId().equalsIgnoreCase(travelProductId)) {
+		if(motorYn.equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId)) {
 			List<EserviceTravelDetails> cusRefNo = eserTraRepo
 					.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
 
@@ -1303,7 +1254,29 @@ private BuildingDetailsRepository BuildingRepo;
 					trackingReq1.add(trackingReq);
 				}
 				}
-		} else if( req.getProductId().equalsIgnoreCase(buildingProductId)) {
+		} else if(motorYn.equalsIgnoreCase("M") ) {
+			List<EserviceMotorDetails> cusRefNo = eserMotRepo
+					.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
+			
+			for(EserviceMotorDetails motor:cusRefNo ) {
+				if(! motor.getStatus().equalsIgnoreCase("D")  ) {
+					TrackingDetailsSaveReq trackingReq = new TrackingDetailsSaveReq();
+					trackingReq.setProductId(req.getProductId());
+					trackingReq.setRiskId(motor.getRiskId().toString());
+					trackingReq.setStatus( req.getStatus());
+					trackingReq.setBranchCode(motor.getBranchCode());
+					trackingReq.setCompanyId(motor.getCompanyId());
+					trackingReq.setQuoteNo(motor.getQuoteNo()==null?"":motor.getQuoteNo().toString());
+					trackingReq.setPolicyNo(motor.getPolicyNo()==null?"":motor.getPolicyNo().toString());
+					trackingReq.setOriginalPolicyNo(motor.getOriginalPolicyNo()==null?"":motor.getOriginalPolicyNo().toString());
+					trackingReq.setCreatedby(req.getAdminLoginId());
+					trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());
+					trackingReq.setRemarks(motor.getAdminRemarks());
+					trackingReq1.add(trackingReq);
+				}
+				}
+				
+			} else if(motorYn.equalsIgnoreCase("A") ) {
 			List<EserviceBuildingDetails> cusRefNo = eserviceBuildingRepo
 					.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
 
@@ -2263,14 +2236,17 @@ private BuildingDetailsRepository BuildingRepo;
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			String subUserType = "" ;
-			if( req.getProductId().equalsIgnoreCase(motorProductId) ) {
+			HomePositionMaster homeData = homeRepo.findByQuoteNo(req.getQuoteNo());
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(homeData.getCompanyId() , req.getProductId().toString());
+
+			if(product.getMotorYn().equalsIgnoreCase("M") ) {
 				
 				Long motorInfo =  motorRepo.countByQuoteNo(req.getQuoteNo());
 				if (motorInfo > 0  ) {
 					motorRepo.deleteByQuoteNo(req.getQuoteNo());
 				}
 				
-			} else if( req.getProductId().equalsIgnoreCase(travelProductId) ) {
+			} else if(product.getMotorYn().equalsIgnoreCase("H") &&  req.getProductId().equalsIgnoreCase(travelProductId) ) {
 			//  // Delete Old Record
 				Long travelInfo =  traPassRepo.countByQuoteNo(req.getQuoteNo());
 				if (travelInfo > 0  ) {
@@ -2324,7 +2300,11 @@ private BuildingDetailsRepository BuildingRepo;
 	public SectionWiseSumInsuredRes sectionWiseSuminsuredDetails(SectionSumInsuredGetReq req) {
 		SectionWiseSumInsuredRes res = new SectionWiseSumInsuredRes();
 		try {
-			 if(req.getProductId().equalsIgnoreCase(buildingProductId ) || req.getProductId().equalsIgnoreCase(smeProductId )) {
+			HomePositionMaster homeData = homeRepo.findByQuoteNo(req.getQuoteNo());
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(homeData.getCompanyId() , req.getProductId().toString());
+
+			
+			 if(product.getMotorYn().equalsIgnoreCase("A")) {
 				 BuildingSumInsuredDetails builSum  = buildingSuminsuredDetails(req);
 				 res.setProductSuminsuredDetails(builSum);	
 			} else {
@@ -2414,6 +2394,67 @@ private BuildingDetailsRepository BuildingRepo;
 		return res;
 	}
 	
+	public synchronized CompanyProductMaster getCompanyProductMasterDropdown(String companyId, String productId) {
+		CompanyProductMaster product = new CompanyProductMaster();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyProductMaster> query = cb.createQuery(CompanyProductMaster.class);
+			List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
+			// Find All
+			Root<CompanyProductMaster> c = query.from(CompanyProductMaster.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("productName")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a4, a5, a6);
+
+			// Where
+			Predicate n1 = cb.equal(c.get("status"), "Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"), companyId);
+			Predicate n5 = cb.equal(c.get("productId"), productId);
+			query.where(n1, n2, n3, n4, n5).orderBy(orderList);
+			// Get Result
+			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			product = list.size() > 0 ? list.get(0) :null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return product;
+	}
 	public CommonSumInsuredDetails commonSuminsuredDetails(SectionSumInsuredGetReq req) {
 		CommonSumInsuredDetails res = new CommonSumInsuredDetails();
 		try {
@@ -2547,33 +2588,41 @@ private BuildingDetailsRepository BuildingRepo;
 	public QuoteUpdateRes updateQuoteStatus(UpdateQuoteStatusReq req) {
 		QuoteUpdateRes updateRes = new QuoteUpdateRes();
 		try {
+			List<EserviceMotorDetails>    motorDatas = eserMotRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
+			List<EserviceTravelGroupDetails>    travelDatas = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(req.getRequestReferenceNo());
+			List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
+			List<EserviceCommonDetails> findDatas = eserCommonRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
 			
-			if( req.getProductId().equalsIgnoreCase(motorProductId)) {
-				updateRes = updateMotorPorductStatus(req) ;
-				// Notification Trigger
-				motorNotiReferralStatus(req);
-				//Tracking Details
-				trackingDetailsupdateQuoteStatus(req);
-				
-			} else if( req.getProductId().equalsIgnoreCase(travelProductId)) {
+			String companyId = motorDatas.size() > 0 ? motorDatas.get(0).getCompanyId() :	 travelDatas.size() > 0 ? travelDatas.get(0).getCompanyId()  
+					 :  buildDatas.size() > 0 ? buildDatas.get(0).getCompanyId() :  findDatas.size() > 0 ? findDatas.get(0).getCompanyId() : "" ;
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(companyId , req.getProductId().toString());
+		
+			if(product.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId)) {
 				updateRes = updateTravelPorductStatus(req);
 				// Notification Trigger
 				travelNotiReferralStatus(req);
 				//Tracking Details
-				trackingDetailsupdateQuoteStatus(req);
+				trackingDetailsupdateQuoteStatus(req,product.getMotorYn());
 				
-			} else if( req.getProductId().equalsIgnoreCase(buildingProductId)) {
+			} else if(product.getMotorYn().equalsIgnoreCase("M") ) {
+				updateRes = updateMotorPorductStatus(req) ;
+				// Notification Trigger
+				motorNotiReferralStatus(req);
+				//Tracking Details
+				trackingDetailsupdateQuoteStatus(req,product.getMotorYn());
+				
+			} else if(product.getMotorYn().equalsIgnoreCase("A") ) {
 				updateRes = updateBuildingPorductStatus(req);
 				// Notification Trigger
 				buildingNotiReferralStatus(req);
 				//Tracking Details
-				trackingDetailsupdateQuoteStatus(req);
+				trackingDetailsupdateQuoteStatus(req,product.getMotorYn());
 			} else {
 				updateRes = updateCommonPorductStatus(req);
 				// Notification Trigger
 				commonNotiReferralStatus(req);
 				//Tracking Details
-				trackingDetailsupdateQuoteStatus(req);
+				trackingDetailsupdateQuoteStatus(req,product.getMotorYn());
 			}
 			
 		
@@ -2585,12 +2634,32 @@ private BuildingDetailsRepository BuildingRepo;
 		return updateRes ;
 	}
 	//Tracking Details
-		private QuoteUpdateRes trackingDetailsupdateQuoteStatus(UpdateQuoteStatusReq req) {
+		private QuoteUpdateRes trackingDetailsupdateQuoteStatus(UpdateQuoteStatusReq req , String motorYn) {
 			QuoteUpdateRes res=new QuoteUpdateRes();
 		try {
 			
 			List<TrackingDetailsSaveReq> trackingReq1 = new ArrayList<TrackingDetailsSaveReq>();
-			if( req.getProductId().equalsIgnoreCase(motorProductId)) {
+			if(motorYn.equalsIgnoreCase("H") &&  req.getProductId().equalsIgnoreCase(travelProductId)) {
+				List<EserviceTravelDetails> cusRefNo = eserTraRepo
+						.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
+
+				for(EserviceTravelDetails motor:cusRefNo ) {
+						TrackingDetailsSaveReq trackingReq = new TrackingDetailsSaveReq();
+						trackingReq.setProductId(req.getProductId());
+						trackingReq.setRiskId(motor.getRiskId().toString());
+						trackingReq.setStatus( req.getStatus());
+						trackingReq.setBranchCode(motor.getBranchCode());
+						trackingReq.setCompanyId(motor.getCompanyId());
+						trackingReq.setQuoteNo(motor.getQuoteNo()==null?"":motor.getQuoteNo().toString());
+						trackingReq.setPolicyNo(motor.getPolicyNo()==null?"":motor.getPolicyNo().toString());
+						trackingReq.setOriginalPolicyNo(motor.getOriginalPolicyNo()==null?"":motor.getOriginalPolicyNo().toString());
+						trackingReq.setCreatedby(req.getLoginId());
+						trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());
+						trackingReq.setRemarks(motor.getReferalRemarks());
+						trackingReq1.add(trackingReq);
+					
+					}
+			} else if(motorYn.equalsIgnoreCase("M")) {
 				List<EserviceMotorDetails> cusRefNo = eserMotRepo
 						.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
 				
@@ -2611,27 +2680,7 @@ private BuildingDetailsRepository BuildingRepo;
 					
 					}
 					
-				} else if( req.getProductId().equalsIgnoreCase(travelProductId)) {
-				List<EserviceTravelDetails> cusRefNo = eserTraRepo
-						.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
-
-				for(EserviceTravelDetails motor:cusRefNo ) {
-						TrackingDetailsSaveReq trackingReq = new TrackingDetailsSaveReq();
-						trackingReq.setProductId(req.getProductId());
-						trackingReq.setRiskId(motor.getRiskId().toString());
-						trackingReq.setStatus( req.getStatus());
-						trackingReq.setBranchCode(motor.getBranchCode());
-						trackingReq.setCompanyId(motor.getCompanyId());
-						trackingReq.setQuoteNo(motor.getQuoteNo()==null?"":motor.getQuoteNo().toString());
-						trackingReq.setPolicyNo(motor.getPolicyNo()==null?"":motor.getPolicyNo().toString());
-						trackingReq.setOriginalPolicyNo(motor.getOriginalPolicyNo()==null?"":motor.getOriginalPolicyNo().toString());
-						trackingReq.setCreatedby(req.getLoginId());
-						trackingReq.setRequestReferenceNo(req.getRequestReferenceNo());
-						trackingReq.setRemarks(motor.getReferalRemarks());
-						trackingReq1.add(trackingReq);
-					
-					}
-			} else if( req.getProductId().equalsIgnoreCase(buildingProductId)) {
+				} else if(motorYn.equalsIgnoreCase("A")) {
 				List<EserviceBuildingDetails> cusRefNo = eserviceBuildingRepo
 						.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
 

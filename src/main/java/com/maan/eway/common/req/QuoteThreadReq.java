@@ -29,6 +29,9 @@ public class QuoteThreadReq {
 	 @JsonProperty("SectionId")
 	 private String    sectionId ;
 
+	 @JsonProperty("InsuranceId")
+	 private String    insuranceId ;
+
 		
 	@JsonProperty("VehicleId")
 	private Integer vehicleId ;
@@ -66,6 +69,9 @@ public class QuoteThreadReq {
 	
 	@JsonProperty("EndtFields")
 	private String endtFields;
+	
+	@JsonProperty("MotorYn")
+	private String motorYn;
 	
 	@JsonProperty("Vehicles")
 	private List<VehicleIdsReq> VehicleIdsList;

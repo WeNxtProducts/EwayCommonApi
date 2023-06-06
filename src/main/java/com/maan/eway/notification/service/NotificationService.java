@@ -13,12 +13,22 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -29,6 +39,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.auth.token.EncryDecryService;
+import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
@@ -73,6 +84,9 @@ public class NotificationService {
 	
 	@Autowired
 	private RatingFactorsUtil ratingutil;
+	
+	@PersistenceContext
+	private EntityManager em;
 	/*
 	@Autowired
 	private JobScheduler jobScheduler;
@@ -324,26 +338,11 @@ public class NotificationService {
 		}
 		return "";
 	}
-	@Value(value = "${motor.productId}")
-	private String motorProductId;
 	
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
 	
-	@Value(value = "${building.productId}")
-	private String buildingProductId;
 	
-	@Value(value = "${personalaccident.productId}")
-	private String personalAccidentProductId;
-	
-	@Value(value = "${workmencompensation.productId}")
-	private String workmenCompensationProductId;
-	
-	@Value(value = "${employeesliability.productId}")
-	private String employeesliabilityProductId;
-	
-	@Value(value = "${sme.productId}")
-	private String smeProductId;
 	
 
 	@Autowired
@@ -381,8 +380,9 @@ public class NotificationService {
 			String sectionName="";
 			String quoteNo="";
 			String productName="";
-			
-			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
+
+			if (product.getMotorYn().equalsIgnoreCase("M") ) {
 				List<EserviceMotorDetails> cusRefNo = eserMotRepo.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
 				 customerRefNo=cusRefNo.get(0).getCustomerReferenceNo();
 				 applicationId=cusRefNo.get(0).getApplicationId();
@@ -393,7 +393,7 @@ public class NotificationService {
 				 sectionName=cusRefNo.get(0).getSectionName();
 				 quoteNo=StringUtils.isBlank(cusRefNo.get(0).getQuoteNo().toString())?cusRefNo.get(0).getRequestReferenceNo():cusRefNo.get(0).getQuoteNo().toString();
 				 productName= cusRefNo.get(0).getProductName();
-			}else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) ) {
+			}else if (product.getMotorYn().equalsIgnoreCase("A") ) {
 				List<EserviceBuildingDetails> cusRefNo = eserBuildRepo.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
 				
 				 customerRefNo=cusRefNo.get(0).getCustomerReferenceNo();
@@ -406,7 +406,7 @@ public class NotificationService {
 				 quoteNo=StringUtils.isBlank(cusRefNo.get(0).getQuoteNo().toString())?cusRefNo.get(0).getRequestReferenceNo():cusRefNo.get(0).getQuoteNo().toString();
 				 productName= cusRefNo.get(0).getProductDesc();
 				 
-			}else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+			}else if (product.getMotorYn().equalsIgnoreCase("H")  && req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				List<EserviceTravelDetails> cusRefNo = eserTraRepo.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
 			     
 				 customerRefNo=cusRefNo.get(0).getCustomerReferenceNo();
@@ -511,6 +511,68 @@ public class NotificationService {
 			return null;
 		}
 		return updateRes;
+	}
+	
+	public synchronized CompanyProductMaster getCompanyProductMasterDropdown(String companyId, String productId) {
+		CompanyProductMaster product = new CompanyProductMaster();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyProductMaster> query = cb.createQuery(CompanyProductMaster.class);
+			List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
+			// Find All
+			Root<CompanyProductMaster> c = query.from(CompanyProductMaster.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("productName")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a4, a5, a6);
+
+			// Where
+			Predicate n1 = cb.equal(c.get("status"), "Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"), companyId);
+			Predicate n5 = cb.equal(c.get("productId"), productId);
+			query.where(n1, n2, n3, n4, n5).orderBy(orderList);
+			// Get Result
+			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			product = list.size() > 0 ? list.get(0) :null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return product;
 	}
 	
 	

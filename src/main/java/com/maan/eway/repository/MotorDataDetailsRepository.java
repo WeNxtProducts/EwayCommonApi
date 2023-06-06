@@ -17,6 +17,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.MotorDataDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -56,5 +57,7 @@ public interface MotorDataDetailsRepository  extends JpaRepository<MotorDataDeta
 			String string);
 
 	List<MotorDataDetails> findByRequestReferenceNoOrderByVehicleIdAsc(String requestReferenceNo);
+
+	List<EserviceMotorDetails> findByRequestReferenceNoOrderBySectionNameAsc(String requestReferenceNo);
 
 }

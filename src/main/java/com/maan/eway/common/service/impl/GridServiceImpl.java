@@ -41,6 +41,7 @@ import com.maan.eway.admin.res.ReferalCriteriaRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CityMaster;
+import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
@@ -88,20 +89,9 @@ import com.maan.eway.res.SuccessRes;
 @Transactional
 public class GridServiceImpl implements GridService {
 
-	@Value(value = "${motor.productId}")
-	private String motorProductId;
-	
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
 	
-	@Value(value = "${building.productId}")
-	private String buildingProductId;
-	
-	@Value(value = "${sme.productId}")
-	private String smeProductId;
-
-	@Value(value = "${burglary.productId}")
-	private String burglaryproductId;
 
 	
 	@Autowired
@@ -189,14 +179,16 @@ public class GridServiceImpl implements GridService {
 			} else {
 				branches.add(req.getBranchCode()) ;
 			}
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
+
 			
 			// Product Wise Get			
-			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
+			if (product.getMotorYn().equalsIgnoreCase("M") ) {
 				extingQuoteList = motService.getMotorExistingQuoteDetails(req  , branches , before30 , today , limit , offset );
-			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+			} else if (product.getMotorYn().equalsIgnoreCase("H")  &&req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				extingQuoteList = traService.getTravelExistingQuoteDetails(req  , branches , before30 , today , limit , offset );
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)  || req.getProductId().equalsIgnoreCase(burglaryproductId)) {
+			else if (product.getMotorYn().equalsIgnoreCase("A") ) {
 				extingQuoteList = buiService.getBuildingExistingQuoteDetails(req  , branches , before30 , today , limit , offset );
 				// Common
 			}else { // (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
@@ -218,6 +210,68 @@ public class GridServiceImpl implements GridService {
 		return custRes;
 	}
 
+
+	public synchronized CompanyProductMaster getCompanyProductMasterDropdown(String companyId, String productId) {
+		CompanyProductMaster product = new CompanyProductMaster();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyProductMaster> query = cb.createQuery(CompanyProductMaster.class);
+			List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
+			// Find All
+			Root<CompanyProductMaster> c = query.from(CompanyProductMaster.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("productName")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a4, a5, a6);
+
+			// Where
+			Predicate n1 = cb.equal(c.get("status"), "Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"), companyId);
+			Predicate n5 = cb.equal(c.get("productId"), productId);
+			query.where(n1, n2, n3, n4, n5).orderBy(orderList);
+			// Get Result
+			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			product = list.size() > 0 ? list.get(0) :null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return product;
+	}
 	
 
 	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
@@ -261,15 +315,16 @@ public class GridServiceImpl implements GridService {
 			} else {
 				branches.add(req.getBranchCode()) ;
 			}
-			
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
+
 			// Product Wise Get	
 			List<QuoteCriteriaRes> lapsedQuoteList = new ArrayList<QuoteCriteriaRes>();
-			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
+			if (product.getMotorYn().equalsIgnoreCase("M") ) {
 				lapsedQuoteList = motService.getMotorLapsedQuoteDetails(req  , branches, before30 , limit , offset );
-			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+			} else if (product.getMotorYn().equalsIgnoreCase("H")  && req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				lapsedQuoteList = traService.getTravelLapsedQuoteDetails(req  , branches, before30 , limit , offset );
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) || req.getProductId().equalsIgnoreCase(burglaryproductId)) {
+			else if (product.getMotorYn().equalsIgnoreCase("A") ) {
 				lapsedQuoteList = buiService.getBuildingLapsedQuoteDetails(req  , branches, before30 , limit , offset );
 			}else {
 				lapsedQuoteList = commonService.getCommonLapsedQuoteDetails(req  , branches, before30 , limit , offset );
@@ -321,14 +376,15 @@ public class GridServiceImpl implements GridService {
 			} else {
 				branches.add(req.getBranchCode()) ;
 			}
-			
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
+
 			List<RejectCriteriaRes> rejectedQuoteList = new ArrayList<RejectCriteriaRes>();
-			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
+			if (product.getMotorYn().equalsIgnoreCase("M")) {
 				rejectedQuoteList = motService.getMotorRejectedQuoteDetails(req  , branches, limit , offset );
-			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+			} else if (product.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				rejectedQuoteList = traService.getTravelRejectedQuoteDetails(req  , branches, limit , offset );
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) || req.getProductId().equalsIgnoreCase(burglaryproductId)) {
+			else if (product.getMotorYn().equalsIgnoreCase("A")) {
 				rejectedQuoteList = buiService.getBuildingRejectedQuoteDetails(req  , branches, limit , offset );
 			}else  {
 				rejectedQuoteList = commonService.getCommonRejectedQuoteDetails(req  , branches, limit , offset );
@@ -381,9 +437,10 @@ public class GridServiceImpl implements GridService {
 			} else {
 				branches.add(req.getBranchCode()) ;
 			}
-			
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
+
 			List<ReferalGridCriteriaRes> referralPendingList = new ArrayList<ReferalGridCriteriaRes>();
-			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
+			if (product.getMotorYn().equalsIgnoreCase("M") ) {
 				List<MotorGridCriteriaRes> referralPendingList2 = motService.getMotorReferalDetails(req  , branches, limit , offset , "RP" );
 				for(MotorGridCriteriaRes data : referralPendingList2  ) {
 					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
@@ -393,11 +450,11 @@ public class GridServiceImpl implements GridService {
 				}
 				return custRes;
 				
-			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+			} else if (product.getMotorYn().equalsIgnoreCase("H")  && req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				referralPendingList = traService.getTravelReferalDetails(req  , branches, limit , offset, "RP" );
 				
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) || req.getProductId().equalsIgnoreCase(burglaryproductId)) {
+			else if (product.getMotorYn().equalsIgnoreCase("A") ) {
 				referralPendingList = buiService.getBuildingReferalDetails(req  , branches, limit , offset, "RP" );
 			}else  {
 				List<ReferalCommonCriteriaRes> referralPendingList2 = commonService.getCommonReferalDetails(req  , branches, limit , offset, "RP" );
@@ -456,9 +513,11 @@ public class GridServiceImpl implements GridService {
 			} else {
 				branches.add(req.getBranchCode()) ;
 			}
-			
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
+
+
 			List<ReferalGridCriteriaRes> referralApprovedList = new ArrayList<ReferalGridCriteriaRes>();
-			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
+			if (product.getMotorYn().equalsIgnoreCase("M")) {
 				List<MotorGridCriteriaRes> List2 = motService.getMotorReferalDetails(req  , branches, limit , offset, "RA" );
 				for(MotorGridCriteriaRes data : List2  ) {
 					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
@@ -467,10 +526,10 @@ public class GridServiceImpl implements GridService {
 					 custRes.add(res);	
 				}
 				return custRes;
-			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+			} else if (product.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				referralApprovedList = traService.getTravelReferalDetails(req  , branches, limit , offset, "RA" );
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) || req.getProductId().equalsIgnoreCase(burglaryproductId)) {
+			else if (product.getMotorYn().equalsIgnoreCase("A")) {
 				referralApprovedList = buiService.getBuildingReferalDetails(req  , branches, limit , offset, "RA" );
 			} else  {
 				List<ReferalCommonCriteriaRes> referralPendingList2 = commonService.getCommonReferalDetails(req  , branches, limit , offset, "RA" );
@@ -528,9 +587,10 @@ public class GridServiceImpl implements GridService {
 			} else {
 				branches.add(req.getBranchCode()) ;
 			}
-			
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
+
 			List<ReferalGridCriteriaRes> referralRejectedList = new ArrayList<ReferalGridCriteriaRes>();
-			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
+			if (product.getMotorYn().equalsIgnoreCase("M") ) {
 				List<MotorGridCriteriaRes> List2 = motService.getMotorReferalDetails(req  , branches, limit , offset, "RR" );
 				for(MotorGridCriteriaRes data : List2  ) {
 					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
@@ -539,10 +599,10 @@ public class GridServiceImpl implements GridService {
 					 custRes.add(res);	
 				}
 				return custRes;
-			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+			} else if (product.getMotorYn().equalsIgnoreCase("H")  && req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				referralRejectedList = traService.getTravelReferalDetails(req  , branches, limit , offset, "RR" );
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) || req.getProductId().equalsIgnoreCase(burglaryproductId)) {
+			else if (product.getMotorYn().equalsIgnoreCase("A") ) {
 				referralRejectedList = buiService.getBuildingReferalDetails(req  , branches, limit , offset, "RR" );
 			} else {
 				List<ReferalCommonCriteriaRes> referralPendingList2  = commonService.getCommonReferalDetails(req  , branches, limit , offset, "RR" );
@@ -580,9 +640,10 @@ public class GridServiceImpl implements GridService {
 			List<String> branches = new ArrayList<String>();
 			List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(req.getApplicationId());
 			branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
-			
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
+
 			List<ReferalGridCriteriaRes> adminReferralPendingList = new ArrayList<ReferalGridCriteriaRes>();
-			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
+			if (product.getMotorYn().equalsIgnoreCase("M")) {
 				List<MotorGridCriteriaRes> adminReferralPendingList2 = motService.getMotorAdminReferalDetails(req  , branches, limit , offset ,"RP" );
 				for(MotorGridCriteriaRes data : adminReferralPendingList2  ) {
 					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
@@ -592,10 +653,10 @@ public class GridServiceImpl implements GridService {
 				}
 				return custRes;
 				
-			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+			} else if (product.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				adminReferralPendingList = traService.getTravelAdminReferalDetails(req  , branches, limit , offset,"RP" );
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) || req.getProductId().equalsIgnoreCase(burglaryproductId)) {
+			else if (product.getMotorYn().equalsIgnoreCase("A")) {
 				adminReferralPendingList = buiService.getBuildingAdminReferalDetails(req  , branches, limit , offset,"RP" );
 			} else  {
 				List<ReferalCommonCriteriaRes> adminReferralPendingList2 = commonService.getCommonAdminReferalDetails(req  , branches, limit , offset,"RP" );
@@ -633,9 +694,10 @@ public class GridServiceImpl implements GridService {
 			List<String> branches = new ArrayList<String>();
 			List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(req.getApplicationId());
 			branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
-			
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
+
 			List<ReferalGridCriteriaRes> adminReferralApprovedList = new ArrayList<ReferalGridCriteriaRes>();
-			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
+			if (product.getMotorYn().equalsIgnoreCase("M") ) {
 				List<MotorGridCriteriaRes> List2 = motService.getMotorAdminReferalDetails(req  , branches, limit , offset,"RA" );
 				for(MotorGridCriteriaRes data : List2  ) {
 					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
@@ -644,10 +706,10 @@ public class GridServiceImpl implements GridService {
 					 custRes.add(res);	
 				}
 				return custRes;
-			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+			} else if (product.getMotorYn().equalsIgnoreCase("H")  && req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				adminReferralApprovedList = traService.getTravelAdminReferalDetails(req  , branches, limit , offset,"RA" );
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) || req.getProductId().equalsIgnoreCase(burglaryproductId)) {
+			else if (product.getMotorYn().equalsIgnoreCase("A") ) {
 				adminReferralApprovedList = buiService.getBuildingAdminReferalDetails(req  , branches, limit , offset,"RA" );
 			}else  {
 				List<ReferalCommonCriteriaRes> adminReferralApprovedList2 = commonService.getCommonAdminReferalDetails(req  , branches, limit , offset,"RA" );
@@ -685,9 +747,10 @@ public class GridServiceImpl implements GridService {
 			List<String> branches = new ArrayList<String>();
 			List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(req.getApplicationId());
 			branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
-			
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
+
 			List<ReferalGridCriteriaRes> adminReferralRejectedList = new ArrayList<ReferalGridCriteriaRes>();
-			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
+			if (product.getMotorYn().equalsIgnoreCase("M") ) {
 				List<MotorGridCriteriaRes> List2 = motService.getMotorAdminReferalDetails(req  , branches, limit , offset ,"RR" );
 				for(MotorGridCriteriaRes data : List2  ) {
 					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
@@ -696,10 +759,10 @@ public class GridServiceImpl implements GridService {
 					 custRes.add(res);	
 				}
 				return custRes;
-			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+			} else if (product.getMotorYn().equalsIgnoreCase("H")  && req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				adminReferralRejectedList = traService.getTravelAdminReferalDetails(req  , branches, limit , offset,"RR" );
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId)  || req.getProductId().equalsIgnoreCase(smeProductId)|| req.getProductId().equalsIgnoreCase(burglaryproductId)) {
+			else if (product.getMotorYn().equalsIgnoreCase("A") ) {
 				adminReferralRejectedList = buiService.getBuildingAdminReferalDetails(req  , branches, limit , offset,"RR" );
 			}else {
 				List<ReferalCommonCriteriaRes>	adminReferralRejectedList2 = commonService.getCommonAdminReferalDetails(req  , branches, limit , offset,"RR" );
@@ -733,10 +796,12 @@ public class GridServiceImpl implements GridService {
 		CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 		try {
 			String appId="";
-			if(req.getProductId().equalsIgnoreCase(motorProductId)) {
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
+
+			if(product.getMotorYn().equalsIgnoreCase("M") ) {
 				List<EserviceMotorDetails> motorList=repo.findByRequestReferenceNo(req.getRequestReferenceNo());
 				appId=motorList.get(0).getApplicationId();
-			}else if(req.getProductId().equalsIgnoreCase(buildingProductId)) {
+			}else if(product.getMotorYn().equalsIgnoreCase("A") ) {
 				List<EserviceBuildingDetails> buildingList=buildingRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
 				appId=buildingList.get(0).getApplicationId();
 			}
@@ -752,11 +817,11 @@ public class GridServiceImpl implements GridService {
 
 			if (req.getTypeId().equalsIgnoreCase("Endt")) {
 				// Product Wise Get
-				if (req.getProductId().equalsIgnoreCase(motorProductId)) {
+				if (product.getMotorYn().equalsIgnoreCase("M") ) {
 					res = motService.motorEndt(req, branches,loginId);
-				}else if (req.getProductId().equalsIgnoreCase(travelProductId)) {
+				}else if (product.getMotorYn().equalsIgnoreCase("H")  && req.getProductId().equalsIgnoreCase(travelProductId)) {
 					res = traService.travelEndt(req, branches,loginId);
-				} else if (req.getProductId().equalsIgnoreCase(buildingProductId)|| req.getProductId().equalsIgnoreCase(smeProductId)|| req.getProductId().equalsIgnoreCase(burglaryproductId)) {
+				} else if (product.getMotorYn().equalsIgnoreCase("A") ) {
 					res = buiService.buildingEndt(req, branches,loginId);
 				}else {
 					res = commonService.commonEndt(req, branches,loginId);
@@ -764,12 +829,12 @@ public class GridServiceImpl implements GridService {
 				}
 			}else if (StringUtils.isBlank(req.getTypeId()) || req.getTypeId().equalsIgnoreCase("Normal")) {
 				// Product Wise Get
-				if (req.getProductId().equalsIgnoreCase(motorProductId)) {
+				if (product.getMotorYn().equalsIgnoreCase("M") ) {
 					res = motService.motorCopyQuote(req, branches,loginId);
 
-				} else if (req.getProductId().equalsIgnoreCase(travelProductId)) {
+				} else if (product.getMotorYn().equalsIgnoreCase("H")  && req.getProductId().equalsIgnoreCase(travelProductId)) {
 					res = traService.travelCopyQuote(req, branches,loginId);
-				} else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)|| req.getProductId().equalsIgnoreCase(burglaryproductId)) {
+				} else if (product.getMotorYn().equalsIgnoreCase("A") ) {
 					res = buiService.buildingCopyQuote(req, branches,loginId);
 
 				} else {
@@ -802,11 +867,15 @@ public class GridServiceImpl implements GridService {
 				}else if (StringUtils.isBlank(req.getEndtTypeId())) {
 					error.add(new Error("01", "EndtTypeId", "Please Select EndtTypeId "));
 				}
-				if (req.getProductId().equalsIgnoreCase(motorProductId)) {
+				CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
+
+				if (product.getMotorYn().equalsIgnoreCase("M") ) {
 					quoteExist = motService.validateMotorEndt(req.getQuoteNo());
 				} else {
 					quoteExist = commonService.validateCommonEndt(req.getQuoteNo());
 				}
+				
+				
 				
 				if (quoteExist.size() > 0) {
 					for (Tuple data : quoteExist) {
@@ -886,16 +955,17 @@ public class GridServiceImpl implements GridService {
 
 			branches.add(req.getBranchCode());
 			List<Tuple> list = null;
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
 
 			// Product Wise Get
-			if (req.getProductId().equalsIgnoreCase(motorProductId)) {
+			if (product.getMotorYn().equalsIgnoreCase("M") ) {
 				list = motService.searchMotorQuote(req, branches);
 
 			}
-			else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+			else if (product.getMotorYn().equalsIgnoreCase("H")  && req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				list = traService.searchTravelQuote(req, branches);
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)|| req.getProductId().equalsIgnoreCase(burglaryproductId)) {
+			else if (product.getMotorYn().equalsIgnoreCase("A") ) {
 				list = buiService.searchBuildingQuote(req, branches);
 
 			} else {
@@ -906,7 +976,7 @@ public class GridServiceImpl implements GridService {
 				GetAllMotorDetailsRes res = new GetAllMotorDetailsRes();
 				
 				// Risk
-				if (req.getProductId().equalsIgnoreCase(motorProductId)) {
+				if (product.getMotorYn().equalsIgnoreCase("M") ) {
 					EserviceMotorDetails riskData =data.get("c") ==null?null: (EserviceMotorDetails) data.get("c")   ;
 					if( riskData !=null ) {
 						dozermapper.map(riskData, res);
@@ -914,14 +984,14 @@ public class GridServiceImpl implements GridService {
 					}
 					
 				}
-				else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+				else if (product.getMotorYn().equalsIgnoreCase("H")  && req.getProductId().equalsIgnoreCase(travelProductId) ) {
 					EserviceTravelDetails riskData =data.get("c") ==null?null: (EserviceTravelDetails) data.get("c")   ;
 					if( riskData !=null ) {
 						dozermapper.map(riskData, res);
 						res.setSectionName(riskData.getSectionName());	
 					}
 				}
-				else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)|| req.getProductId().equalsIgnoreCase(burglaryproductId)) {
+				else if (product.getMotorYn().equalsIgnoreCase("A") ) {
 					EserviceBuildingDetails riskData =data.get("c") ==null?null: (EserviceBuildingDetails) data.get("c")   ;
 					if( riskData !=null ) {
 						dozermapper.map(riskData, res);
@@ -957,16 +1027,17 @@ public class GridServiceImpl implements GridService {
 			
 			List<ListItemValue> getList = new ArrayList<ListItemValue>();
 			String itemType ="";
-			
-			if (req.getProductId().equalsIgnoreCase(motorProductId)) {
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
+
+			if (product.getMotorYn().equalsIgnoreCase("M")) {
 				 itemType = "COPY_QUOTE_BY_MOTOR";
 				 getList = motService.geMotorCoptyQuotetListItem(req, itemType);
 			}
-			else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+			else if (product.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				itemType = "COPY_QUOTE_BY_TRAVEL";
 				getList = traService.getTravelCoptyQuotetListItem( req,itemType);
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)|| req.getProductId().equalsIgnoreCase(burglaryproductId)) {
+			else if (product.getMotorYn().equalsIgnoreCase("A")) {
 				 itemType = "COPY_QUOTE_BY_BUILDING";
 				 getList = buiService.geBuildingCoptyQuotetListItem(req, itemType);
 				 
@@ -1024,7 +1095,9 @@ public class GridServiceImpl implements GridService {
 			}
 			
 			List<ReferalGridCriteriaRes> referralRejectedList = new ArrayList<ReferalGridCriteriaRes>();
-			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
+
+			if (product.getMotorYn().equalsIgnoreCase("M") ) {
 				List<MotorGridCriteriaRes> List2 = motService.getMotorReferalDetails(req  , branches, limit , offset, "RE" );
 				for(MotorGridCriteriaRes data : List2  ) {
 					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
@@ -1033,10 +1106,10 @@ public class GridServiceImpl implements GridService {
 					 custRes.add(res);	
 				}
 				return custRes;
-			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+			} else if (product.getMotorYn().equalsIgnoreCase("H")  && req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				referralRejectedList = traService.getTravelReferalDetails(req  , branches, limit , offset, "RE" );
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId)  || req.getProductId().equalsIgnoreCase(smeProductId)|| req.getProductId().equalsIgnoreCase(burglaryproductId)) {
+			else if (product.getMotorYn().equalsIgnoreCase("A") ) {
 				referralRejectedList = buiService.getBuildingReferalDetails(req  , branches, limit , offset, "RE" );
 			}else {
 				List<ReferalCommonCriteriaRes> referralPendingList2  = commonService.getCommonReferalDetails(req  , branches, limit , offset, "RE" );
@@ -1076,9 +1149,10 @@ public class GridServiceImpl implements GridService {
 			List<String> branches = new ArrayList<String>();
 			List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginId(req.getApplicationId());
 			branches =loginBranch.stream().map(LoginBranchMaster ::getBranchCode ).collect(Collectors.toList()) ;
-			
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
+
 			List<ReferalGridCriteriaRes> adminReferralRejectedList = new ArrayList<ReferalGridCriteriaRes>();
-			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {
+			if (product.getMotorYn().equalsIgnoreCase("M") ) {
 				List<MotorGridCriteriaRes> List2 = motService.getMotorAdminReferalDetails(req  , branches, limit , offset ,"RE" );
 				for(MotorGridCriteriaRes data : List2  ) {
 					 EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
@@ -1087,10 +1161,10 @@ public class GridServiceImpl implements GridService {
 					 custRes.add(res);	
 				}
 				return custRes;
-			} else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+			} else if (product.getMotorYn().equalsIgnoreCase("H")  && req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				adminReferralRejectedList = traService.getTravelAdminReferalDetails(req  , branches, limit , offset,"RE" );
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId)  || req.getProductId().equalsIgnoreCase(smeProductId)|| req.getProductId().equalsIgnoreCase(burglaryproductId)) {
+			else if (product.getMotorYn().equalsIgnoreCase("A") ) {
 				adminReferralRejectedList = buiService.getBuildingAdminReferalDetails(req  , branches, limit , offset,"RE" );
 			}else  {
 				List<ReferalCommonCriteriaRes> referralPendingList2  = commonService.getCommonAdminReferalDetails(req  , branches, limit , offset,"RE" );
@@ -1129,8 +1203,10 @@ public class GridServiceImpl implements GridService {
 			EserviceTravelDetails traveldata = new EserviceTravelDetails();
 			EserviceBuildingDetails buildingdata = new EserviceBuildingDetails();
 			EserviceCommonDetails commondata = new EserviceCommonDetails();
-			
-			if (req.getProductId().equalsIgnoreCase(motorProductId) ) {			
+			HomePositionMaster homeData = homeRepo.findByQuoteNo(req.getQuoteNo());
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(homeData.getCompanyId() , req.getProductId().toString());
+
+			if (product.getMotorYn().equalsIgnoreCase("M") ) {			
 				 motordata = repo.findByRequestReferenceNoAndQuoteNoAndProductIdAndCompanyId(req.getRequestReferenceNo(),req.getQuoteNo(),req.getProductId(),req.getCompanyId());			
 					dozerMapper.map(motordata, EserviceMotorDetails.class);
 					motordata.setUpdatedDate(new Date());
@@ -1140,7 +1216,7 @@ public class GridServiceImpl implements GridService {
 
 			}
 			
-			else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {			
+			else if (product.getMotorYn().equalsIgnoreCase("H")  && req.getProductId().equalsIgnoreCase(travelProductId) ) {			
 				traveldata = travelRepo.findByRequestReferenceNoAndQuoteNoAndProductIdAndCompanyId(req.getRequestReferenceNo(),req.getQuoteNo(),req.getProductId(),req.getCompanyId());			
 					dozerMapper.map(traveldata, EserviceTravelDetails.class);
 					traveldata.setUpdatedDate(new Date());
@@ -1149,7 +1225,7 @@ public class GridServiceImpl implements GridService {
 					res.setMessage("Lapsed Quote Updated Successful");
 
 			}
-			else if (req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId) || req.getProductId().equalsIgnoreCase(burglaryproductId)) {			
+			else if (product.getMotorYn().equalsIgnoreCase("A") ) {			
 				buildingdata = buildingRepo.findByRequestReferenceNoAndQuoteNoAndProductIdAndCompanyId(req.getRequestReferenceNo(),req.getQuoteNo(),req.getProductId(),req.getCompanyId());			
 					dozerMapper.map(buildingdata, EserviceBuildingDetails.class);
 					buildingdata.setUpdatedDate(new Date());
@@ -1222,7 +1298,9 @@ public class GridServiceImpl implements GridService {
 				}
 
 				List<PortfolioGridCriteriaRes> portfolioActiveList = new ArrayList<PortfolioGridCriteriaRes>();
-				if (req.getProductId().equalsIgnoreCase(motorProductId)) {
+				CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
+
+				if (product.getMotorYn().equalsIgnoreCase("M") ) {
 					portfolioActiveList = motService.getMotorProtfolioActive(req, branches, today, limit, offset, "P");
 				} else {
 					portfolioActiveList = commonService.getCommonProtfolioActive(req, branches, today, limit, offset, "P");
@@ -1291,9 +1369,10 @@ public class GridServiceImpl implements GridService {
 				} else {
 					branches.add(req.getBranchCode());
 				}
+				CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
 
 				List<PortfolioGridCriteriaRes> list = new ArrayList<PortfolioGridCriteriaRes>();
-				if (req.getProductId().equalsIgnoreCase(motorProductId)) {
+				if (product.getMotorYn().equalsIgnoreCase("M") ) {
 					list = motService.getMotorProtfolioPending(req, branches, today, limit, offset, "P");
 				} else {
 					list = commonService.getCommonProtfolioPending(req, branches, today, limit, offset, "P");
@@ -1364,7 +1443,9 @@ public class GridServiceImpl implements GridService {
 				}
 
 				List<PortfolioGridCriteriaRes> list = new ArrayList<PortfolioGridCriteriaRes>();
-				if (req.getProductId().equalsIgnoreCase(motorProductId)) {
+				CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
+
+				if (product.getMotorYn().equalsIgnoreCase("M") ) {
 					list = motService.getMotorPortfolioCancelled(req, branches, today, limit, offset, "D");
 				} else {
 					list = commonService.getCommonPortfolioCancelled(req, branches, today, limit, offset, "D");
@@ -1409,9 +1490,10 @@ public class GridServiceImpl implements GridService {
 			Date before30 = cal.getTime();
 
 			List<Tuple> List = new ArrayList<Tuple>();
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
 
 			// Product Wise Get
-			if (req.getProductId().equalsIgnoreCase(motorProductId)) {
+			if (product.getMotorYn().equalsIgnoreCase("M") ) {
 				List = motService.getMotorIssuerQuoteDetails(req, before30, today);
 			}
 //				else if (req.getProductId().equalsIgnoreCase(travelProductId)) {

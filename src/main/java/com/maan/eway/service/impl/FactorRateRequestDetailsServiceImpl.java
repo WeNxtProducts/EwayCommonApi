@@ -40,6 +40,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
@@ -123,25 +124,9 @@ private MasterReferralDetailsRepository masReferralRepo;
 private UwQuestionsDetailsRepository uwReferalRepo;
 
 
-
-@Value(value = "${motor.productId}")
-private String motorProductId;
-
 @Value(value = "${travel.productId}")
 private String travelProductId;
 
-@Value(value = "${building.productId}")
-private String buildingProductId;
-
-@Value(value = "${sme.productId}")
-private String smeProductId;
-
-@Value(value="${personalaccident.productId}")
-private String personalaccidentProductId;
-
-
-@Value(value="${burglary.productId}")
-private String burglaryProductId;
 
 @Autowired
 private CalculatorEngine calcEngine;
@@ -590,7 +575,9 @@ this.repository = repo;
 //				
 //			// Update  Travle PRemium
 //			} else
-			if(   req.getProductId().equalsIgnoreCase(travelProductId)) {
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
+
+			if( product.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId)) {
 				
 				// Update Group Premium
 				EserviceTravelGroupDetails findData =eserGroupRepo.findByRequestReferenceNoAndGroupId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()) ); 
@@ -617,8 +604,7 @@ this.repository = repo;
 				traData.setOverallPremiumFc(overAllPremiumFc ==null ? null :new BigDecimal(df.format(overAllPremiumFc)));
 				eserTraRepo.save(traData);
 				
-			} else if(   req.getProductId().equalsIgnoreCase(buildingProductId) || req.getProductId().equalsIgnoreCase(smeProductId)
-					|| req.getProductId().equalsIgnoreCase(burglaryProductId)) {
+			} else if( product.getMotorYn().equalsIgnoreCase("A") ) {
 				
 				// Update Group Premium
 				EserviceBuildingDetails findData = eserBuildRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo() ,1 ); 
@@ -629,7 +615,7 @@ this.repository = repo;
 				
 				eserBuildRepo.save(findData);
 				
-			} else  {
+			} else {
 				
 				// Update Group Premium
 				EserviceCommonDetails findData =eserCommonRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()) ); 
@@ -701,6 +687,67 @@ this.repository = repo;
 		return successRes;
 	}
 	
+	public synchronized CompanyProductMaster getCompanyProductMasterDropdown(String companyId, String productId) {
+		CompanyProductMaster product = new CompanyProductMaster();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyProductMaster> query = cb.createQuery(CompanyProductMaster.class);
+			List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
+			// Find All
+			Root<CompanyProductMaster> c = query.from(CompanyProductMaster.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("productName")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a4, a5, a6);
+
+			// Where
+			Predicate n1 = cb.equal(c.get("status"), "Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"), companyId);
+			Predicate n5 = cb.equal(c.get("productId"), productId);
+			query.where(n1, n2, n3, n4, n5).orderBy(orderList);
+			// Get Result
+			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			product = list.size() > 0 ? list.get(0) :null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return product;
+	}
 
 	public Integer currencyDecimalFormat(String insuranceId  ,String currencyId ) {
 		Integer decimalFormat = 0 ;
@@ -1125,17 +1172,25 @@ this.repository = repo;
 	public  List<EservieMotorDetailsViewRes> getRiskDetails(FactorRateDetailsGetReq req) {
 		 List<EservieMotorDetailsViewRes> viewDetailsList  = new ArrayList<EservieMotorDetailsViewRes>() ;
 		try {
-			if(req.getProductId().equalsIgnoreCase(motorProductId)) {
-				viewDetailsList = getMotorDetails(req) ;
-				
-			} else if(req.getProductId().equalsIgnoreCase(travelProductId)) {
+			List<EserviceMotorDetails>    motorDatas = eserMotorRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
+			List<EserviceTravelGroupDetails>    travelDatas = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(req.getRequestReferenceNo());
+			List<EserviceBuildingDetails> buildDatas = eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
+			List<EserviceCommonDetails> findDatas = eserCommonRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
+			
+			String companyId = motorDatas.size() > 0 ? motorDatas.get(0).getCompanyId() :	 travelDatas.size() > 0 ? travelDatas.get(0).getCompanyId()  
+					 :  buildDatas.size() > 0 ? buildDatas.get(0).getCompanyId() :  findDatas.size() > 0 ? findDatas.get(0).getCompanyId() : "" ;
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(companyId , req.getProductId().toString());
+			
+			if( product.getMotorYn().equalsIgnoreCase("H")  && req.getProductId().equalsIgnoreCase(travelProductId)) {
 				viewDetailsList = getTravelDetails(req) ;
 				
-			} else if(req.getProductId().equalsIgnoreCase(buildingProductId) ||
-					req.getProductId().equalsIgnoreCase(smeProductId) || req.getProductId().equalsIgnoreCase(burglaryProductId )) {
+			} else if( product.getMotorYn().equalsIgnoreCase("M")  ) {
+				viewDetailsList = getMotorDetails(req) ;
+				
+			}  else if(product.getMotorYn().equalsIgnoreCase("A") ) {
 				viewDetailsList = getBuildingDetails(req) ;
 				
-			} else {
+			} else  {
 				viewDetailsList = getCommonDetails(req) ;
 			}
 			
@@ -1816,7 +1871,10 @@ this.repository = repo;
 			
 			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(req.getRequestReferenceNo() , req.getVehicleId() ,
 					req.getCompanyId() , Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;	
-			if(   req.getProductId().equalsIgnoreCase(motorProductId)) {
+		
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getCompanyId() , req.getProductId().toString());
+
+			if(    product.getMotorYn().equalsIgnoreCase("M") ){
 				EserviceMotorDetails  findMot = eserMotorRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo() , req.getVehicleId() 
 						) ;
 				agencyCode = findMot.getAgencyCode();
@@ -1833,7 +1891,7 @@ this.repository = repo;
 					engine.setPolicyEndDate(findMot.getPolicyEndDate());
 				}
 			
-			} else if(   req.getProductId().equalsIgnoreCase(travelProductId)) {
+			} else if(   product.getMotorYn().equalsIgnoreCase("H") &&  req.getProductId().equalsIgnoreCase(travelProductId)) {
 				EserviceTravelDetails  findTra = eserTraRepo.findByRequestReferenceNoAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() ,
 						req.getCompanyId() , 	 req.getProductId(),req.getSectionId()  ) ;
 				agencyCode = findTra.getBrokerCode();
@@ -1844,7 +1902,7 @@ this.repository = repo;
 			//	EserviceTravelGroupDetails  findGroup = eserGroupRepo.findByRequestReferenceNoAndTravelIdAndGroupIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,Integer.valueOf(req.getGroupId()) ,
 			//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
 				
-			} else if(   req.getProductId().equalsIgnoreCase(buildingProductId) ||  req.getProductId().equalsIgnoreCase(smeProductId)) {
+			} else if(    product.getMotorYn().equalsIgnoreCase("A") ) {
 				EserviceBuildingDetails    findBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndCompanyIdAndProductId(req.getRequestReferenceNo() , 1 ,
 						req.getCompanyId() , 	 req.getProductId()  ) ;
 				agencyCode = findBuild.getBrokerCode();

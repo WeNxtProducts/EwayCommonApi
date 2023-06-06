@@ -32,6 +32,34 @@ public class PaccGetRes {
 	@JsonProperty("SectionId")
 	private  String sectionId;	
 
+	@JsonProperty("EmpLiabilitySi")
+    private String empLiabilitySi    ;
+	
+	@JsonProperty("LiabilityOccupationId")
+    private String liabilityOccupationId    ;
+	
+	@JsonProperty("FidEmpSi")
+    private String fidEmpSi    ;
+	
+	@JsonProperty("FidEmpCount")
+    private String fidEmpCount    ;
+	
+	 
+    @JsonProperty("IndustryName")
+	private String       industryName;
+	
+	@JsonProperty("NatureOfBusinessId")
+	private String       natureOfBusinessId ;
+	    
+	@JsonProperty("NatureOfBusinessDesc")
+	private String       natureOfBusinessDesc;
+	    
+	@JsonProperty("TotalNoOfEmployees")
+	private String       totalNoOfEmployees;
+	    
+
+	
+
 	@JsonProperty("SectionDetails")
     private List<SectionDetails>    sectionDetails;
 }

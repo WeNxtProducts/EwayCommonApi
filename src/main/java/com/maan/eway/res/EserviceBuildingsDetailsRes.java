@@ -6,6 +6,7 @@
 package com.maan.eway.res;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import lombok.*;
 import java.util.Date;
@@ -217,10 +218,10 @@ public class EserviceBuildingsDetailsRes implements Serializable {
      @JsonProperty("showWindow")
      private String showWindow;
     
-     @JsonProperty("FRONT_DOORS")
+     @JsonProperty("FrontDoors")
      private String frontDoors;
     
-     @JsonProperty("BACK_DOORS")
+     @JsonProperty("BackDoors")
      private String backDoors;
     
      @JsonProperty("WindowsMaterialId")
@@ -256,33 +257,58 @@ public class EserviceBuildingsDetailsRes implements Serializable {
      @JsonProperty("TrapDoors")
      private String trapDoors;
 
-     @JsonProperty("CashInHandDirectors")
-     private String cashInHandDirectors;
+    @JsonProperty("MachineEquipSi")
+     private BigDecimal machineEquipSi ;
+
+    @JsonProperty("PlateGlassSi")
+     private BigDecimal plateGlassSi ;
      
-     @JsonProperty("CashInTransit")
-     private String cashInTransit;
+    @JsonProperty("FirstLossPercentId")
+     private Integer firstLossPercentId;
+
+    @JsonProperty("FirstLossPercent")
+     private Integer firstLossPercent;
+
+    @JsonProperty("AccDamageSi")
+     private BigDecimal accDamageSi ;
+       
+    @JsonProperty("BurglarySi")
+     private BigDecimal burglarySi ;
      
-     @JsonProperty("CashInHandEmployees")
-     private String cashInHandEmployees;
+    @JsonProperty("PowerPlantSi")
+     private BigDecimal powerPlantSi ;
      
-     @JsonProperty("CashInSafe")
-     private String cashInSafe;
+    @JsonProperty("ElecMachinesSi")
+     private BigDecimal elecMachinesSi ;
      
-     @JsonProperty("CashInPremises")
-     private String cashInPremises;
+    @JsonProperty("EquipmentSi")
+     private BigDecimal equipmentSi ;
      
-     @JsonProperty("RevenueFromStamps")
-     private String revenueFromStamps;
+    @JsonProperty("GeneralMachineSi")
+     private BigDecimal generalMachineSi ;
      
-     @JsonProperty("MoneyInSafeBusiness")
-     private String moneyInSafeBusiness;
+    @JsonProperty("ManuUnitsSi")
+     private BigDecimal manuUnitsSi ;
      
-     @JsonProperty("MoneyOutSafeBusiness")
-     private String moneyOutSafeBusiness;
+    @JsonProperty("BoilerPlantsSi")
+     private BigDecimal boilerPlantsSi ;
      
-     @JsonProperty("MoneyInPremises")
-     private String moneyInPremises;
+    @JsonProperty("TiraCoverNoteNo")
+     private String tiraCoverNoteNo;
      
-     @JsonProperty("MoneyInLocker")
-     private String moneyInLocker;
+    @JsonProperty("IndemityPeriod")
+     private String indemityPeriod;
+     
+    @JsonProperty("IndemityPeriodDesc")
+     private String indemityPeriodDesc;
+     
+     
+    @JsonProperty("MakutiYn")
+     private String makutiYn;
+   
+    @JsonProperty("PlateGlassType")
+     private String plateGlassType;
+     
+    @JsonProperty("PlateGlassDesc")
+     private String plateGlassDesc;
 }

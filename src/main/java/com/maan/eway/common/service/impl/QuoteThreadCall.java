@@ -139,17 +139,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 	private CoverDocumentUploadDetailsRepository docRepo ;
 	
 	// productId
-	private String motorProductId;
 	private String travelProductId;
-	private String buildingProductId;
-	private String personalAccidentProductId;
-	private String smeProductId;
+
 	
 	public QuoteThreadCall(String type , QuoteThreadReq request , EntityManager em ,EserviceCustomerDetailsRepository eserCustRepo ,
 			EServiceMotorDetailsRepository eserMotRepo  ,FactorRateRequestDetailsRepository facRateRepo  ,PersonalInfoRepository perInfoRepo  , MotorDataDetailsRepository motorRepo , MotorDriverDetailsRepository driverRepo ,
 			 CoverDetailsRepository coverRepo  , HomePositionMasterRepository homeRepo  ,EserviceTravelDetailsRepository eserTraRepo ,EserviceTravelGroupDetailsRepository eserGroupRepo ,
-			 TravelPassengerDetailsRepository    traPassRepo ,TravelPassengerHistoryRepository traPassHisRepo  , String motorProductId ,String travelProductId, String buildingProductId 
-			 , EserviceBuildingDetailsRepository eserBuildRepo , EServiceSectionDetailsRepository eserSecRepo,EserviceCommonDetailsRepository eserCommonRepo,CommonDataDetailsRepository commonDataRepo ,String smeProductId,
+			 TravelPassengerDetailsRepository    traPassRepo ,TravelPassengerHistoryRepository traPassHisRepo  ,String travelProductId
+			 , EserviceBuildingDetailsRepository eserBuildRepo , EServiceSectionDetailsRepository eserSecRepo,EserviceCommonDetailsRepository eserCommonRepo,CommonDataDetailsRepository commonDataRepo ,
 			 SectionDataDetailsRepository secRepo,BuildingRiskDetailsRepository buildRepo , CoverDocumentUploadDetailsRepository docRepo, BuildingDetailsRepository locRepo ,ContentAndRiskRepository  contentRepo  ,PersonalAccidentRepository pacRepo ) {
 		this.type = type;
 		this.request = request;
@@ -165,15 +162,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 		this.eserTraRepo = eserTraRepo ;
 		this.eserGroupRepo = eserGroupRepo ;
 		this.traPassRepo = traPassRepo ;
-		this.motorProductId = motorProductId ;
 		this.travelProductId = travelProductId ;
 		this.traPassHisRepo = traPassHisRepo ;
-		this.buildingProductId = buildingProductId ;
 		this.eserBuildRepo = eserBuildRepo ;
 		this.eserSecRepo = eserSecRepo ;
 		this.eserCommonRepo=eserCommonRepo;
 		this.commonDataRepo=commonDataRepo;
-		this.smeProductId = smeProductId;
 		this.secRepo = secRepo ;
 		this.buildRepo = buildRepo ;
 		this.docRepo = docRepo ;
@@ -416,14 +410,15 @@ public class QuoteThreadCall implements Callable<Object>  {
 
 			// FindData 
 			String customerRefNo = "" ;
-			if(request.getProductId().equalsIgnoreCase(motorProductId) ) {
-				EserviceMotorDetails motorData = eserMotRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo(),request.getVehicleIdsList().get(0).getVehicleId());
-				customerRefNo = motorData.getCustomerReferenceNo();
-			} else if(request.getProductId().equalsIgnoreCase(travelProductId) ) {
+			if(request.getMotorYn().equalsIgnoreCase("H") && request.getProductId().equalsIgnoreCase(travelProductId) ) {
 				EserviceTravelDetails travelData = eserTraRepo.findByRequestReferenceNo(request.getRequestReferenceNo());
 				customerRefNo = travelData.getCustomerReferenceNo();
-			}else if(request.getProductId().equalsIgnoreCase(buildingProductId) || request.getProductId().equalsIgnoreCase(smeProductId) 
-					||  request.getProductId().equalsIgnoreCase("1") ) {
+				
+			} else if(request.getMotorYn().equalsIgnoreCase("M")) {
+				EserviceMotorDetails motorData = eserMotRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo(),request.getVehicleIdsList().get(0).getVehicleId());
+				customerRefNo = motorData.getCustomerReferenceNo();
+				
+			} else if(request.getMotorYn().equalsIgnoreCase("A")) {
 				EserviceBuildingDetails buldingData = eserBuildRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo(),1 );
 				customerRefNo = buldingData.getCustomerReferenceNo();
 			}else {
@@ -523,22 +518,22 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			
 			// Save Motro Details
-						MotorDataDetails motorData  = new MotorDataDetails();
-						dozerMapper.map(eserMotors, motorData);
-						motorData.setEntryDate(new Date());	
-						motorData.setCreatedBy(request.getCreatedBy());
-						motorData.setQuoteNo(request.getQuoteNo());
-						motorData.setCustomerId(request.getCustomerId());
-						motorData.setVehicleId(eserMotors.getRiskId().toString());
-						motorData.setStatus(eserMotors.getStatus());
-						List<FactorRateRequestDetails>  filterCover = covers.stream().filter( o -> o.getVehicleId().equals( eserMotors.getRiskId())).collect(Collectors.toList());
-						motorData.setVdRefno(filterCover.get(0).getVdRefno());	
-						motorData.setMsRefno(filterCover.get(0).getMsRefno());		
-						motorData.setCdRefno(filterCover.get(0).getCdRefno());	
-						motorData.setActualPremiumFc(premiumFc);
-						motorData.setActualPremiumLc(premiumLc);
-						motorData.setOverallPremiumFc(overAllPremiumFc);
-						motorData.setOverallPremiumLc(overAllPremiumLc);
+			MotorDataDetails motorData  = new MotorDataDetails();
+			dozerMapper.map(eserMotors, motorData);
+			motorData.setEntryDate(new Date());	
+			motorData.setCreatedBy(request.getCreatedBy());
+			motorData.setQuoteNo(request.getQuoteNo());
+			motorData.setCustomerId(request.getCustomerId());
+			motorData.setVehicleId(eserMotors.getRiskId().toString());
+			motorData.setStatus(eserMotors.getStatus());
+			List<FactorRateRequestDetails>  filterCover = covers.stream().filter( o -> o.getVehicleId().equals( eserMotors.getRiskId())).collect(Collectors.toList());
+			motorData.setVdRefno(filterCover.get(0).getVdRefno());	
+			motorData.setMsRefno(filterCover.get(0).getMsRefno());		
+			motorData.setCdRefno(filterCover.get(0).getCdRefno());	
+			motorData.setActualPremiumFc(premiumFc);
+			motorData.setActualPremiumLc(premiumLc);
+			motorData.setOverallPremiumFc(overAllPremiumFc);
+			motorData.setOverallPremiumLc(overAllPremiumLc);
 			
 			//Vehiclewise EndtPRemium
 			if(eserMotors.getEndorsementType()!=null) {
@@ -1206,7 +1201,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		try {
 			
-			if( request.getProductId().equalsIgnoreCase(travelProductId)) {
+			if(request.getMotorYn().equalsIgnoreCase("H") && request.getProductId().equalsIgnoreCase(travelProductId)) {
 				List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndProductIdAndSectionIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()) , request.getGroupId());
 				List<FactorRateRequestDetails>  devidedCovers = new ArrayList<FactorRateRequestDetails>();
 				
@@ -1280,18 +1275,19 @@ public class QuoteThreadCall implements Callable<Object>  {
 			List<CoverIdsReq> coverReqList =new ArrayList<CoverIdsReq>();
 			
 			// Insert Other Covers
-			if ( request.getProductId().equalsIgnoreCase(motorProductId)) {
+			if(request.getMotorYn().equalsIgnoreCase("H") && request.getProductId().equalsIgnoreCase(travelProductId)) {
+				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())). collect(Collectors.toList());
+				coverReqList = VehicleList.get(0).getCoverIdList();
+				
+			} if ( request.getMotorYn().equalsIgnoreCase("M") ) {
 				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getVehicleId()) ). collect(Collectors.toList());
 				coverReqList = VehicleList.get(0).getCoverIdList();
 				
-			} else if( request.getProductId().equalsIgnoreCase(buildingProductId)  || request.getProductId().equalsIgnoreCase(smeProductId) ) {
+			} else if(request.getMotorYn().equalsIgnoreCase("A") ) {
 				
 				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getVehicleId())   &&  o.getSectionId().equalsIgnoreCase(request.getSectionId())). collect(Collectors.toList());
 				coverReqList = VehicleList.get(0).getCoverIdList();
 			
-			} else if( request.getProductId().equalsIgnoreCase(travelProductId)) {
-				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())). collect(Collectors.toList());
-				coverReqList = VehicleList.get(0).getCoverIdList();
 			} else   {
 				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getVehicleId()) ). collect(Collectors.toList());
 				coverReqList = VehicleList.get(0).getCoverIdList();
@@ -1345,18 +1341,19 @@ public class QuoteThreadCall implements Callable<Object>  {
 			List<CoverIdsReq> coverReqList =new ArrayList<CoverIdsReq>();
 			
 			// Insert Other Covers
-			if ( request.getProductId().equalsIgnoreCase(motorProductId)) {
+			 if(request.getMotorYn().equalsIgnoreCase("H") && request.getProductId().equalsIgnoreCase(travelProductId)) {
+					VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())). collect(Collectors.toList());
+					coverReqList = VehicleList.get(0).getCoverIdList();
+					
+			}else if ( request.getMotorYn().equalsIgnoreCase("M")) {
 				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())). collect(Collectors.toList());
 				coverReqList = VehicleList.get(0).getCoverIdList();
 				
-			} else if( request.getProductId().equalsIgnoreCase(buildingProductId)  || request.getProductId().equalsIgnoreCase(smeProductId) ) {
+			} else if(request.getMotorYn().equalsIgnoreCase("A")) {
 				
 				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())   &&  o.getSectionId().equalsIgnoreCase(request.getSectionId())). collect(Collectors.toList());
 				coverReqList = VehicleList.get(0).getCoverIdList();
 			
-			} else if( request.getProductId().equalsIgnoreCase(travelProductId)) {
-				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())). collect(Collectors.toList());
-				coverReqList = VehicleList.get(0).getCoverIdList();
 			} else   {
 				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())). collect(Collectors.toList());
 				coverReqList = VehicleList.get(0).getCoverIdList();
@@ -1600,14 +1597,13 @@ public class QuoteThreadCall implements Callable<Object>  {
 			try {
 				
 				// Delete Risk Tables
-				if( req.getProductId().equalsIgnoreCase(motorProductId) ) {
+				 if( req.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId) ) {
+						res = deleteTravelRecords(req);
+						
+				} else if(req.getMotorYn().equalsIgnoreCase("M") ) {
 					res = deleteMotorRecords(req);
 					
-				} else if( req.getProductId().equalsIgnoreCase(travelProductId) ) {
-					res = deleteTravelRecords(req);
-					
-				} else if( req.getProductId().equalsIgnoreCase(buildingProductId)  || 
-						req.getProductId().equalsIgnoreCase(smeProductId) ||  req.getProductId().equalsIgnoreCase("1") ) {
+				} else if(req.getMotorYn().equalsIgnoreCase("A") ) {
 					res = deleteBuildingRecords(req);
 					
 				} else  {
@@ -1882,7 +1878,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			try {
 				
 				// Deactivate Travel product covers
-				if ( request.getProductId().equalsIgnoreCase(travelProductId)) {
+				if (request.getMotorYn().equalsIgnoreCase("H") && request.getProductId().equalsIgnoreCase(travelProductId)) {
 					
 					res = deactivateTravelCovers(request);
 				// Deactivate Other Covers
@@ -2216,16 +2212,15 @@ public class QuoteThreadCall implements Callable<Object>  {
 			HomePositionMaster home = new HomePositionMaster();
 			
 			// Set Product Details
-			if( request.getProductId().equalsIgnoreCase(motorProductId) ) {
-				
-				home = setMotorDetails(request);
-				
-			} else if(request.getProductId().equalsIgnoreCase(travelProductId) ) {
+			if(request.getMotorYn().equalsIgnoreCase("H") && request.getProductId().equalsIgnoreCase(travelProductId) ) {
 				
 				home = setTravelDetails(request);
 				
-			}  else if(request.getProductId().equalsIgnoreCase(buildingProductId) || request.getProductId().equalsIgnoreCase(smeProductId)
-					||  request.getProductId().equalsIgnoreCase("1")) {
+			} else if(request.getMotorYn().equalsIgnoreCase("M")) {
+				
+				home = setMotorDetails(request);
+				
+			}  else if(request.getMotorYn().equalsIgnoreCase("A")) {
 				
 				home = setBuildingDetails(request);
 				
@@ -2273,21 +2268,20 @@ public class QuoteThreadCall implements Callable<Object>  {
 				for ( CoverIdsReq covReq :  coverReqList) { 
 					List<PolicyCoverData> filterNonDefaultCovers  = new ArrayList<PolicyCoverData>();
 					
-					 if( request.getProductId().equalsIgnoreCase(buildingProductId)  || request.getProductId().equalsIgnoreCase(smeProductId) 
-							 || request.getProductId().equalsIgnoreCase("1") ) {
+					 if(request.getMotorYn().equalsIgnoreCase("H") && request.getProductId().equalsIgnoreCase(travelProductId) ) {
+							
+							List<TravelPassengerDetails> filterGroupPassengers = passengers.stream().filter( o -> o.getGroupId().equals(vehReq.getVehicleId())). collect(Collectors.toList());
+							
+							filterNonDefaultCovers = new ArrayList<PolicyCoverData>();
+							for (TravelPassengerDetails tra :  filterGroupPassengers  ) {
+								List<PolicyCoverData> passengerCover = covers.stream().filter( o ->   o.getVehicleId().equals(tra.getPassengerId()) && o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());
+								filterNonDefaultCovers.addAll(passengerCover);
+							}
+											
+						
+					} else if(request.getMotorYn().equalsIgnoreCase("A")) {
 						 
 						 filterNonDefaultCovers = covers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(vehReq.getSectionId())) && o.getVehicleId().equals(vehReq.getVehicleId()) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());				
-					
-					} else if( request.getProductId().equalsIgnoreCase(travelProductId) ) {
-						
-						List<TravelPassengerDetails> filterGroupPassengers = passengers.stream().filter( o -> o.getGroupId().equals(vehReq.getVehicleId())). collect(Collectors.toList());
-						
-						filterNonDefaultCovers = new ArrayList<PolicyCoverData>();
-						for (TravelPassengerDetails tra :  filterGroupPassengers  ) {
-							List<PolicyCoverData> passengerCover = covers.stream().filter( o ->   o.getVehicleId().equals(tra.getPassengerId()) && o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());
-							filterNonDefaultCovers.addAll(passengerCover);
-						}
-										
 					
 					} else  {
 						
@@ -2441,7 +2435,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					
 					
 					
-				} else if(!veh.getSectionId().equalsIgnoreCase("35") && request.getProductId().equalsIgnoreCase(motorProductId)  ) {
+				} else if(!veh.getSectionId().equalsIgnoreCase("35") && request.getMotorYn().equalsIgnoreCase("M")  ) {
 					List<EserviceSectionDetails> filterSecId =  updateEserSec.stream().filter( o ->  o.getRiskId().equals(veh.getVehicleId() ) && o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList());
 					if(filterSecId.size() <=0 ) {
 						

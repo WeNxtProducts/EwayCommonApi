@@ -12,6 +12,8 @@
 
 package com.maan.eway.repository;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,6 +30,8 @@ public interface SectionDataDetailsRepository  extends JpaRepository<SectionData
 
 	@Transactional
 	void deleteByQuoteNo(String quoteNo);
+
+	List<SectionDataDetails> findByRequestReferenceNoOrderByRiskIdAsc(String requestReferenceNo);
 
 	
 

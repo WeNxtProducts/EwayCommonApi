@@ -106,4 +106,19 @@ public class EserviceCommonGetRes {
 
 	@JsonProperty("TotalOutstandingAmount")
 	private String       totalOutstandingAmount;
+	
+
+	@JsonProperty("EmpLiabilitySi")
+    private String empLiabilitySi    ;
+	
+	@JsonProperty("LiabilityOccupationId")
+    private String liabilityOccupationId    ;
+	
+	@JsonProperty("FidEmpSi")
+    private String fidEmpSi    ;
+	
+	@JsonProperty("FidEmpCount")
+    private String fidEmpCount    ;
+	
+	
 }

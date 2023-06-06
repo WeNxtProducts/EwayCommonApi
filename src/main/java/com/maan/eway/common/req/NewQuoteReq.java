@@ -36,5 +36,10 @@ public class NewQuoteReq {
 	@JsonProperty("ReferralRemarks")
 	private String referralRemarks;
 	
+	@JsonProperty("InsuranceId")
+	private String insuranceId;
+	
+	@JsonProperty("MotorYn")
+	private String motorYn;
 
 }

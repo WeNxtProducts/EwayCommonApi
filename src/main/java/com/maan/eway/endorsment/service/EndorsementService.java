@@ -4,7 +4,9 @@ package com.maan.eway.endorsment.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,12 +21,14 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
@@ -95,18 +99,10 @@ public class EndorsementService {
 	@Autowired
 	private EndtDependantFieldsMasterRepository dependantRepo;
 	
-	@Value(value = "${motor.productId}")
-	private String motorProductId;
 	
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
-	
-	@Value(value = "${building.productId}")
-	private String buildingProductId;
-	
-	@Value(value = "${sme.productId}")
-	private String smeProductId;
-	
+
 	@Autowired
 	private  FactorRateRequestDetailsService factorService;
 	@Autowired
@@ -303,16 +299,17 @@ public class EndorsementService {
 
 			 
 				  List<EndorsementCriteriaRes> grids = new ArrayList<EndorsementCriteriaRes>();
-				  
-				if( request.getProductId().equals(new BigDecimal(motorProductId))  ) {
+				  CompanyProductMaster product =  getCompanyProductMasterDropdown(request.getCompanyId() , request.getProductId().toString());
+
+				if(product.getMotorYn().equalsIgnoreCase("M") ) {
 					 grids = endorsementMotorGrid(request);
 					
 					
-				} else if ( request.getProductId().equals(new BigDecimal(travelProductId))  ) {
+				} else if (product.getMotorYn().equalsIgnoreCase("H")  && request.getProductId().equals(new BigDecimal(travelProductId))  ) {
 					grids = copyTravelraw.endorsementTravelGrid(request);
 				
 					
-				} else if ( request.getProductId().equals(new BigDecimal(buildingProductId)) || request.getProductId().equals(new BigDecimal(smeProductId))  ) {
+				} else if (product.getMotorYn().equalsIgnoreCase("A") ) {
 					grids = copyBuildingraw.endorsementBuildingGrid(request);
 				
 					
@@ -516,6 +513,8 @@ public class EndorsementService {
 	
 	public CommonRes createEndorsment(Endorsment request) {
 		try {
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(request.getCompanyId() , request.getProductId().toString());
+
 			//EndtTypeMaster entTypeMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(request.getCompanyId(), request.getProductId().intValue(), "Y",Integer.parseInt(request.getEndtType()),new Date(), new Date());
 			EndtTypeMaster entTypeMaster =ratingutil.getEndtMasterData(request.getCompanyId(),request.getProductId().toPlainString(), request.getEndtType());
 			if("42".equals(request.getEndtType())) {
@@ -540,16 +539,16 @@ public class EndorsementService {
 				c.setEndtRemarks(request.getEndtRemarks());
 				c.setEndtEffectiveDate(request.getEndtEffectiveDate());
 
-				if (request.getProductId().equals(new BigDecimal(motorProductId))) {
+				if (product.getMotorYn().equalsIgnoreCase("M") ) {
 					List<EserviceMotorDetails> copyQuote = new ArrayList<EserviceMotorDetails>();
 					copyQuote.add((EserviceMotorDetails) copyquoteService.copyQuote(c).getCommonResponse());
 					response = copyQuote;
-				} else if ( request.getProductId().equals(new BigDecimal(travelProductId))  ) {
+				} else if (product.getMotorYn().equalsIgnoreCase("H")  &&  request.getProductId().equals(new BigDecimal(travelProductId))  ) {
 					List<EserviceTravelDetails> travelCopyQuote = new ArrayList<EserviceTravelDetails>(); 
 					travelCopyQuote.add(copyTravelraw.copyTravelRaw(request));
 					response = travelCopyQuote ;
 					
-				}else if ( request.getProductId().equals(new BigDecimal(buildingProductId)) || request.getProductId().equals(new BigDecimal(smeProductId))  ) {
+				}else if (product.getMotorYn().equalsIgnoreCase("A") ) {
 					List<EserviceBuildingDetails> buildcopyquote = new ArrayList<EserviceBuildingDetails>(); 
 					buildcopyquote.add((EserviceBuildingDetails) copyquoteService.copyQuote(c).getCommonResponse());
 					response = buildcopyquote ;
@@ -571,16 +570,16 @@ public class EndorsementService {
 			}else {
 				Object response = null ;
 				
-				if( request.getProductId().equals(new BigDecimal(motorProductId))  ) {
+				if(product.getMotorYn().equalsIgnoreCase("M") ) {
 					List<EserviceMotorDetails> motorRaw = copyraw.copyMotorRaw(request,entTypeMaster);
 					response = motorRaw ;
 					
-				} else if ( request.getProductId().equals(new BigDecimal(travelProductId))  ) {
+				} else if (product.getMotorYn().equalsIgnoreCase("H")  && request.getProductId().equals(new BigDecimal(travelProductId))  ) {
 					List<EserviceTravelDetails> travelRaw = new ArrayList<EserviceTravelDetails>(); 
 					travelRaw.add(copyTravelraw.copyTravelRaw(request));
 					response = travelRaw ;
 					
-				} else if ( request.getProductId().equals(new BigDecimal(buildingProductId)) || request.getProductId().equals(new BigDecimal(smeProductId))  ) {
+				} else if (product.getMotorYn().equalsIgnoreCase("A") ) {
 					List<EserviceBuildingDetails> buildRaw = new ArrayList<EserviceBuildingDetails>(); 
 					buildRaw.add( copyBuildingraw.copyBuildingRaw(request));
 					response = buildRaw ;
@@ -610,6 +609,8 @@ public class EndorsementService {
 
 		try {
 			HomePositionMaster data=hpmrepo.findByQuoteNo(req.getQuoteNo());
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(data.getCompanyId() , req.getProductId().toString());
+
 			if ("Financial".equalsIgnoreCase(data.getEndtCategDesc())) {
 				// Update Home Posion Master
 				if (StringUtils.isNotBlank(data.getEndtTypeId()))
@@ -617,13 +618,13 @@ public class EndorsementService {
 					hpmrepo.saveAndFlush(data);
 					// Update ProductWise
 					paymentServiceImpl.updateProductWisePolicyNo(req.getProductId().toString(), data.getPolicyNo(),
-						req.getQuoteNo(), data.getEndtTypeId());
+						req.getQuoteNo(), data.getEndtTypeId(),product.getMotorYn());
 			}
 			Object res = null ;
-			if (req.getProductId().equals(motorProductId)) {
+			if (product.getMotorYn().equalsIgnoreCase("M") ) {
 				EserviceMotorDetails motorEndtStatus = copyraw.eserviceMotorEndtStatus(req);
 				res = motorEndtStatus ;
-			} else if (req.getProductId().equals(buildingProductId)|| req.getProductId().equals(smeProductId)) {
+			} else if (product.getMotorYn().equalsIgnoreCase("A") ) {
 				List<EserviceBuildingDetails> buildEndtStatus = new ArrayList<EserviceBuildingDetails>();
 				buildEndtStatus.add( copyBuildingraw.buildingRawEndtStatus(req));
 				res = buildEndtStatus ;
@@ -640,6 +641,67 @@ public class EndorsementService {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public synchronized CompanyProductMaster getCompanyProductMasterDropdown(String companyId, String productId) {
+		CompanyProductMaster product = new CompanyProductMaster();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyProductMaster> query = cb.createQuery(CompanyProductMaster.class);
+			List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
+			// Find All
+			Root<CompanyProductMaster> c = query.from(CompanyProductMaster.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("productName")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a4, a5, a6);
+
+			// Where
+			Predicate n1 = cb.equal(c.get("status"), "Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"), companyId);
+			Predicate n5 = cb.equal(c.get("productId"), productId);
+			query.where(n1, n2, n3, n4, n5).orderBy(orderList);
+			// Get Result
+			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			product = list.size() > 0 ? list.get(0) :null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return product;
 	}
 }
 
