@@ -295,6 +295,10 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="TIRA_COVER_NOTE_NO")
     private String tiraCoverNoteNo;
+    
+    
+    @Column(name="INDUSTRY_ID")
+    private String industryId;
 }
 
 

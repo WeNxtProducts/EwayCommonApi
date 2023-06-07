@@ -237,6 +237,21 @@ private static final long serialVersionUID = 1L;
     @Column(name="CASH_VALUEABLES_SI")
     private BigDecimal cashValueablesSi;
     
+    @Column(name="STOCK_LOSS_PERCENT")
+	private Integer stockLossPercent ;
+  
+  @Column(name="GOODS_LOSS_PERCENT")
+  private Integer goodsLossPercent;
+  
+  @Column(name="FURNITURE_LOSS_PERCENT")
+  private Integer furnitureLossPercent;
+  
+  @Column(name="APPLIANCE_LOSS_PERCENT")
+  private Integer applianceLossPercent;
+  
+  @Column(name="CASH_VALUEABLES_LOSS_PERCENT")
+  private Integer cashValueablesLossPercent;
+    
     @Column(name="OCCUPIED_YEAR")
     private Integer occupiedYear;
     

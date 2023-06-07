@@ -311,4 +311,21 @@ public class EserviceBuildingsDetailsRes implements Serializable {
      
     @JsonProperty("PlateGlassDesc")
      private String plateGlassDesc;
+   
+    @JsonProperty("StockLossPercent")
+	private String stockLossPercent ;
+  
+    @JsonProperty("GoodsLossPercent")
+  private String goodsLossPercent;
+  
+    @JsonProperty("FurnitureLossPercent")
+  private String furnitureLossPercent;
+  
+    @JsonProperty("ApplianceLossPercent")
+  private String applianceLossPercent;
+  
+    @JsonProperty("CashValueablesLossPercent")
+  private String cashValueablesLossPercent;
+  
+
 }

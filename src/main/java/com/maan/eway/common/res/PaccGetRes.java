@@ -58,7 +58,8 @@ public class PaccGetRes {
 	private String       totalNoOfEmployees;
 	    
 
-	
+	@JsonProperty("IndustryId")
+	private  String industryId;	
 
 	@JsonProperty("SectionDetails")
     private List<SectionDetails>    sectionDetails;
