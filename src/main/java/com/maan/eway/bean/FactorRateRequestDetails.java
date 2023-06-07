@@ -279,6 +279,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="DIFF_PREMIUM_INCLUDED_TAX_FC")
     private BigDecimal     diffPremiumIncludedTaxFc ;
  
+    @Column(name="REGULATORY_RATE")
+    private BigDecimal    regulatoryRate ;
+    
+    @Column(name="REGULATORY_SUMINSURED")
+    private BigDecimal    regulatorySuminsured ;
     
  
 }
