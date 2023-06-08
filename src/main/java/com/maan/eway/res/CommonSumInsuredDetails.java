@@ -17,7 +17,15 @@ public class CommonSumInsuredDetails {
 	@JsonProperty("SumInsured")
     private String     sumInsured ;
 	
-
+	@JsonProperty("EmpLiabilitySi")
+    private String     empLiabilitySi ;
+	
+	@JsonProperty("FidEmpSi")
+    private String     fidEmpSi;
+	
+	@JsonProperty("LiabilitySi")
+    private String     liabilitySi;
+	
 	@JsonProperty("CurrencyId")
     private String   currencyId ;
 	

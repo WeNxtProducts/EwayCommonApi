@@ -2465,7 +2465,17 @@ private BuildingDetailsRepository BuildingRepo;
 			
 			res.setCurrencyId(pacc.getCurrency());
 			res.setRiskId(pacc.getRiskId().toString());
-			res.setSumInsured(pacc.getSumInsured() == null?"0" :pacc.getSumInsured().toPlainString());
+			Double sumInsured = paccDatas.stream().filter( o -> o.getSumInsured() != null ).mapToDouble(o -> Double.valueOf(o.getSumInsured().toPlainString() ) ).sum() ;
+			res.setSumInsured(sumInsured.toString());
+			
+			Double empliabiltiySi = paccDatas.stream().filter( o -> o.getEmpLiabilitySi() != null ).mapToDouble(o -> Double.valueOf(o.getEmpLiabilitySi().toPlainString() ) ).sum() ;
+			Double fidEmpSi = paccDatas.stream().filter( o -> o.getFidEmpSi() != null ).mapToDouble(o -> Double.valueOf(o.getFidEmpSi().toPlainString() ) ).sum() ;
+			Double liabiltiySi = paccDatas.stream().filter( o -> o.getLiabilitySi()!= null ).mapToDouble(o -> Double.valueOf(o.getLiabilitySi().toPlainString() ) ).sum() ;
+			
+			res.setEmpLiabilitySi(empliabiltiySi.toString());
+			res.setFidEmpSi(fidEmpSi.toString());
+			res.setLiabilitySi(liabiltiySi.toString());
+			
 			res.setSectionId(sectionIds);
 			
 		} catch ( Exception e) {
