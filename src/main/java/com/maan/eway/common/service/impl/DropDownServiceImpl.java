@@ -1251,7 +1251,9 @@ public class DropDownServiceImpl  implements DropDownService{
 			Predicate n8 = cb.or(n4,n5);
 			Predicate n9 = cb.or(n6,n7);
 			Predicate n10 = cb.equal(c.get("itemType"),itemType);
-			query.where(n1,n2,n3,n8,n9,n10).orderBy(orderList);
+			Predicate n11 = cb.equal(c.get("status"),"R");
+			Predicate n12 = cb.or(n1,n11);
+			query.where(n2,n3,n8,n9,n10,n12).orderBy(orderList);
 			// Get Result
 			TypedQuery<ListItemValue> result = em.createQuery(query);
 			list = result.getResultList();

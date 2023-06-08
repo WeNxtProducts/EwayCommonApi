@@ -114,7 +114,7 @@ private static final long serialVersionUID = 1L;
     private Date       effectiveDateEnd ;
     
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="UPDATED_DATE", nullable=false)
+    @Column(name="UPDATED_DATE")
     private Date       updatedDate;
     
     //--- ENTITY LINKS ( RELATIONSHIP )
