@@ -580,7 +580,7 @@ private BuildingDetailsRepository BuildingRepo;
 					List<CommonDataDetails> accData =  	commonDataRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
 					for (CommonDataDetails	 acc : accData ) {
 						
-						List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(acc.getRiskId())) &&
+						List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(acc.getRiskId()) &&
 								 o.getSectionId().toString().equals(acc.getSectionId()) ).collect(Collectors.toList());
 					
 						Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
