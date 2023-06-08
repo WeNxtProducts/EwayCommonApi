@@ -615,6 +615,7 @@ public class EndorsementService {
 				// Update Home Posion Master
 				if (StringUtils.isNotBlank(data.getEndtTypeId()))
 					data.setEndtStatus("C");
+					
 					hpmrepo.saveAndFlush(data);
 					// Update ProductWise
 					paymentServiceImpl.updateProductWisePolicyNo(req.getProductId().toString(), data.getPolicyNo(),

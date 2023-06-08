@@ -551,6 +551,7 @@ public class CopyBuildingRaw {
 			if (homeData != null) {
 				savedata = dozerMapper.map(homeData, HomePositionMaster.class);
 				savedata.setEndtStatus("C");
+				savedata.setIntegrationStatus("S");
 				homePosistionRepo.saveAndFlush(savedata);
 			}
 

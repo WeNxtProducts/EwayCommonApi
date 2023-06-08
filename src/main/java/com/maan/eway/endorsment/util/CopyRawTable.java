@@ -374,6 +374,7 @@ public class CopyRawTable  {
 				savedata = dozerMapper.map(homeData, HomePositionMaster.class);
 				savedata.setEndtStatus("C");
 				savedata.setStatus("P");
+				savedata.setIntegrationStatus("S");
 				homePosistionRepo.saveAndFlush(savedata);
 			}
 
