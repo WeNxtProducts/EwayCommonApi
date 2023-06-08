@@ -1259,7 +1259,8 @@ public class DropDownServiceImpl  implements DropDownService{
 			list = result.getResultList();
 			
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getItemCode()))).collect(Collectors.toList());
-			list.sort(Comparator.comparing(ListItemValue :: getItemValue));
+			list = list.stream().sorted((o1, o2)->Long.valueOf(o1.getItemValue()).compareTo(Long.valueOf(o2.getItemValue()))).collect(Collectors.toList());
+		//	list.sort(Comparator.comparing(ListItemValue :: getItemValue));
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
