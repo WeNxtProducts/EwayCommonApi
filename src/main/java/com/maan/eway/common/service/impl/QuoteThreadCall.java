@@ -1279,7 +1279,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())). collect(Collectors.toList());
 				coverReqList = VehicleList.get(0).getCoverIdList();
 				
-			} if ( request.getMotorYn().equalsIgnoreCase("M") ) {
+			} else if ( request.getMotorYn().equalsIgnoreCase("M") ) {
 				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getVehicleId()) ). collect(Collectors.toList());
 				coverReqList = VehicleList.get(0).getCoverIdList();
 				
