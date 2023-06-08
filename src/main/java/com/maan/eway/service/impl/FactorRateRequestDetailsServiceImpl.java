@@ -1324,7 +1324,7 @@ this.repository = repo;
 			
 			for (EserviceSectionDetails sec :  sectionDatas) {
 				
-				if ( sec.getSectionId().equalsIgnoreCase("35")) {
+				if ( sec.getProductType().equalsIgnoreCase("H")) {
 					
 					List<EserviceCommonDetails> personalDatas = eserCommonRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 					for (EserviceCommonDetails acc : personalDatas ) {
@@ -1400,6 +1400,7 @@ this.repository = repo;
 	
 		} catch(Exception e) {
 			log.info("Log Details" + e.getMessage());
+			e.printStackTrace();
 			return null;
 			
 		}return viewBuildingList;
