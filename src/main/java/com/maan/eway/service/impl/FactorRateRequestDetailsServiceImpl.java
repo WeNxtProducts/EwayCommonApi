@@ -341,7 +341,8 @@ this.repository = repo;
 					saveCover.setCoverPeriodFrom(coverData.getEffectiveDate());
 					saveCover.setCoverPeriodTo(coverData.getPolicyEndDate());
 					saveCover.setProRataPercent(coverData.getProRata()!=null ? coverData.getProRata().multiply(new BigDecimal("100")) : new BigDecimal("100"));
-					
+					saveCover.setRegulatorySuminsured(coverData.getTiraSumInsured()==null?BigDecimal.ZERO:coverData.getTiraSumInsured());
+					saveCover.setRegulatoryRate(coverData.getTiraRate()==null?BigDecimal.ZERO:new BigDecimal(coverData.getTiraRate()));
 					// Date Differents
 					Date periodStart =  coverData.getEffectiveDate();
 					Date periodEnd = coverData.getPolicyEndDate() ;
@@ -1499,6 +1500,8 @@ this.repository = repo;
 					coverRes.setPolicyEndDate(filterCover.get(0).getCoverPeriodTo());
 					coverRes.setProRata(filterCover.get(0).getProRataPercent());
 					coverRes.setProRataYn(filterCover.get(0).getProRataYn());
+					coverRes.setTiraSumInsured(filterCover.get(0).getRegulSumInsured()==null?BigDecimal.ZERO:filterCover.get(0).getRegulSumInsured());
+					coverRes.setTiraRate(filterCover.get(0).getRegulatoryRate()==null?0D:filterCover.get(0).getRegulatoryRate().doubleValue());
 					
 					// Discount Covers Or Promo Covers
 					List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) && (   o.getCoverageType().equalsIgnoreCase("D") || o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
