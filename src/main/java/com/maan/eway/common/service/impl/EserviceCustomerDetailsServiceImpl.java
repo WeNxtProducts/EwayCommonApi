@@ -768,6 +768,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setPolicyHolderTypeIdDesc(policyHolderTypeId);
 			saveData.setIdType(req.getPolicyHolderTypeid());
 			saveData.setIdTypeDesc(policyHolderTypeId);
+			saveData.setVrTinNo(req.getIdNumber());
 			saveData.setAge(age);
 			saveData.setMobileCode1(req.getMobileCode1());
 			saveData.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
