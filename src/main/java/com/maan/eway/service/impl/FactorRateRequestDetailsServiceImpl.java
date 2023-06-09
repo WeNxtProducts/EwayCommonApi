@@ -1326,7 +1326,7 @@ this.repository = repo;
 				
 				if ( sec.getProductType().equalsIgnoreCase("H")) {
 					
-					List<EserviceCommonDetails> personalDatas = eserCommonRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
+					List<EserviceCommonDetails> personalDatas = eserCommonRepo.findByRequestReferenceNoAndSectionId(req.getRequestReferenceNo() , sec.getSectionId() );
 					for (EserviceCommonDetails acc : personalDatas ) {
 						
 						// Response 

@@ -577,7 +577,7 @@ private BuildingDetailsRepository BuildingRepo;
 				
 				if( sec.getProductType().equalsIgnoreCase("H") ) {
 					List<SectionDetails>  pacSectionList = new ArrayList<SectionDetails>();
-					List<CommonDataDetails> accData =  	commonDataRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+					List<CommonDataDetails> accData =  	commonDataRepo.findByQuoteNoAndSectionIdOrderByRiskIdAsc(req.getQuoteNo() , sec.getSectionId());
 					for (CommonDataDetails	 acc : accData ) {
 						
 						List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(acc.getRiskId()) &&
