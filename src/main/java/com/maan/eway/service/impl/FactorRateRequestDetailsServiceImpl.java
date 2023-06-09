@@ -1336,7 +1336,7 @@ this.repository = repo;
 						res.setInsuranceId(acc.getCompanyId());
 						res.setSectionId(sec.getSectionId());
 						res.setVehicleId(acc.getRiskId().toString());
-						res.setSectionName(acc.getSectionName());
+						res.setSectionName(sec.getSectionName()  + "~" + ( StringUtils.isNotBlank(acc.getOccupationDesc()) ? acc.getOccupationDesc() : acc.getPersonalLiabilityOccupation() ) );
 						
 						res.setGroupId(acc.getRiskId()==null?null:acc.getRiskId());
 						res.setOverallPremiumFc(acc.getOverallPremiumFc()==null?"0": acc.getOverallPremiumFc().toPlainString());
