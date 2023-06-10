@@ -572,7 +572,7 @@ private BuildingDetailsRepository BuildingRepo;
 			 buildingRes.setCommissionPercentage(commissionPercent==null?"":commissionPercent.toString());
 			 buildingRes.setInsuranceForId(buildData.getInsuranceForId()!=null ? Arrays.asList(buildData.getInsuranceForId().split(",")) : null )  ;
 			 List<SectionDetails>  buildingSectionList = new ArrayList<SectionDetails>();
-			
+			 List<BuildingLocationDetails> buildLocList = new ArrayList<BuildingLocationDetails>();
 			for (SectionDataDetails sec :  secDatas) {
 				
 				if( sec.getProductType().equalsIgnoreCase("H") ) {
@@ -634,6 +634,22 @@ private BuildingDetailsRepository BuildingRepo;
 						paccGetResList.add(pacRes);
 						;
 						
+						BuildingLocationDetails pacId = new BuildingLocationDetails();
+						pacId.setDocumentsTitle( sec.getSectionDesc() +"~" + ( StringUtils.isNotBlank(acc.getOccupationDesc() ) ? acc.getOccupationDesc()  : acc.getPersonalLiabilityOccupation() ) );
+						pacId.setLocationId(acc.getRiskId().toString());
+						pacId.setLocationName( sec.getSectionDesc() + ( StringUtils.isNotBlank(acc.getOccupationType() ) ? acc.getOccupationType()  : acc.getPersonalLiabilityOccupation() ) );
+						pacId.setRiskId(acc.getRiskId().toString());
+						pacId.setSuminsured(acc.getSumInsured()==null?"" : acc.getSumInsured().toPlainString());
+						pacId.setSectionId(sec.getSectionId());
+						buildLocList.add(pacId);
+						
+						// Document 
+						DocumentDetails  document = new DocumentDetails();
+						document.setDocumentTitle( sec.getSectionDesc() +"~" + ( StringUtils.isNotBlank(acc.getOccupationDesc() ) ? acc.getOccupationDesc()  : acc.getPersonalLiabilityOccupation() ) );
+						document.setRiskId(acc.getRiskId().toString());
+						document.setSectionId(sec.getSectionId());
+						documentDetails.add(document);
+						
 					}
 					
 				} else {
@@ -678,7 +694,7 @@ private BuildingDetailsRepository BuildingRepo;
 			
 			// Location Wise Details
 			List<BuildingDetails> buildingRiskDatas = BuildingRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
-			List<BuildingLocationDetails> buildLocList = new ArrayList<BuildingLocationDetails>();
+			
 			for(BuildingDetails data : buildingRiskDatas) {
 				BuildingLocationDetails loc = new BuildingLocationDetails();
 				loc.setDocumentsTitle( "Location - " +  data.getLocationName());
