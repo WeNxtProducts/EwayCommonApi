@@ -328,4 +328,10 @@ public class EserviceBuildingsDetailsRes implements Serializable {
   private String cashValueablesLossPercent;
   
 
+	@JsonProperty("LocationId")
+   	private  String locationId;	
+    
+    @JsonProperty("LocationName")
+   	private  String locationName;
+  
 }

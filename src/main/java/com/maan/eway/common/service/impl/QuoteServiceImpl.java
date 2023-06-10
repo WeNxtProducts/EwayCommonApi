@@ -572,7 +572,7 @@ private BuildingDetailsRepository BuildingRepo;
 			 buildingRes.setCommissionPercentage(commissionPercent==null?"":commissionPercent.toString());
 			 buildingRes.setInsuranceForId(buildData.getInsuranceForId()!=null ? Arrays.asList(buildData.getInsuranceForId().split(",")) : null )  ;
 			 List<SectionDetails>  buildingSectionList = new ArrayList<SectionDetails>();
-			 List<BuildingLocationDetails> buildLocList = new ArrayList<BuildingLocationDetails>();
+			
 			for (SectionDataDetails sec :  secDatas) {
 				
 				if( sec.getProductType().equalsIgnoreCase("H") ) {
@@ -583,9 +583,11 @@ private BuildingDetailsRepository BuildingRepo;
 						List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(acc.getRiskId()) &&
 								 o.getSectionId().toString().equals(acc.getSectionId()) ).collect(Collectors.toList());
 						SectionDetails buildSec = new SectionDetails(); 
-						if(filterCovers.size()> 0) {
-							Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
-							
+						buildSec.setSectionId(acc.getSectionId()==null?"":acc.getSectionId().toString());
+						buildSec.setSectionName( acc.getSectionDesc());
+					if( filterCovers.size() > 0 ) {
+						Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
+						
 							List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
 
 							BigDecimal PremiumAfterDiscount = (coverListRes.stream().filter(o -> o.getPremiumAfterDiscount()!=null ) .map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
@@ -607,7 +609,7 @@ private BuildingDetailsRepository BuildingRepo;
 
 							buildSec.setCovers(coverListRes);
 						}
-
+						
 						// Accident
 						PaccGetRes pacRes = new  PaccGetRes()  ;
 						dozerMapper.map(acc, pacRes);
@@ -625,12 +627,17 @@ private BuildingDetailsRepository BuildingRepo;
 //						paSectionList.add(secData);
 //						pacRes.setSectionDetails(paSectionList);
 						
-						buildSec.setSectionId(acc.getSectionId()==null?"":acc.getSectionId().toString());
-						buildSec.setSectionName( acc.getSectionDesc());
 
 						
 						pacSectionList.add(buildSec);
 						pacRes.setSectionDetails(pacSectionList);	
+						
+						pacRes.setDocumentsTitle(StringUtils.isNotBlank(sec.getSectionDesc() ) ? sec.getSectionDesc() :   sec.getProductDesc());
+						pacRes.setLocationId(acc.getRiskId().toString());
+						pacRes.setLocationName(StringUtils.isNotBlank(sec.getSectionDesc() ) ? sec.getSectionDesc() :   sec.getProductDesc());
+						pacRes.setRiskId(acc.getRiskId().toString());
+						pacRes.setSuminsured(acc.getSumInsured()==null?"" : acc.getSumInsured().toPlainString());
+						pacRes.setSectionId(StringUtils.isNotBlank(acc.getSectionId() ) ?  acc.getSectionId() :  "99999"  );
 						paccGetResList.add(pacRes);
 						;
 						
@@ -671,6 +678,12 @@ private BuildingDetailsRepository BuildingRepo;
 			} 
 			buildingRes.setSectionDetails(buildingSectionList);
 		}
+			buildingRes.setDocumentsTitle(StringUtils.isNotBlank(buildData.getSectionDesc() ) ? buildData.getSectionDesc() :   buildData.getProductDesc());
+			buildingRes.setLocationId(buildData.getRiskId().toString());
+			buildingRes.setLocationName(StringUtils.isNotBlank(buildData.getSectionDesc() ) ? buildData.getSectionDesc() :   buildData.getProductDesc());
+			buildingRes.setRiskId(buildData.getRiskId().toString());
+			buildingRes.setSuminsured(buildData.getBuildingSuminsured()==null?"" : buildData.getBuildingSuminsured().toPlainString());
+			buildingRes.setSectionId(StringUtils.isNotBlank(buildData.getSectionId() ) ?  buildData.getSectionId() :  "99999"  );
 			buildList.add(buildingRes);
 			List<Object> totalList = new ArrayList<Object>(); 
 			totalList.addAll(buildList);
@@ -678,27 +691,26 @@ private BuildingDetailsRepository BuildingRepo;
 			
 			// Location Wise Details
 			List<BuildingDetails> buildingRiskDatas = BuildingRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+		//	List<BuildingLocationDetails> buildLocList = new ArrayList<BuildingLocationDetails>();
 			
-			for(BuildingDetails data : buildingRiskDatas) {
-				BuildingLocationDetails loc = new BuildingLocationDetails();
-				loc.setDocumentsTitle( "Location - " +  data.getLocationName());
-				loc.setLocationId(data.getRiskId().toString());
-				loc.setLocationName(data.getLocationName());
-				loc.setRiskId(data.getRiskId().toString());
-				loc.setSuminsured(data.getBuildingSuminsured()==null?"" : data.getBuildingSuminsured().toPlainString());
-				loc.setSectionId("99999");
-				buildLocList.add(loc);
-				
+			if(buildingRiskDatas.size()  > 0) {
+				for(BuildingDetails data : buildingRiskDatas) {
+					// Document 
+					DocumentDetails  document = new DocumentDetails();
+					document.setDocumentTitle(StringUtils.isNotBlank(data.getSectionDesc() ) ? data.getSectionDesc() :  "Location - " +  data.getLocationName());
+					document.setRiskId(data.getRiskId().toString());
+					document.setSectionId(StringUtils.isNotBlank(data.getSectionId() ) ?  data.getSectionId() :  "99999"  )  ;
+					documentDetails.add(document);
+						
+				}
+			} else {
 				// Document 
 				DocumentDetails  document = new DocumentDetails();
-				document.setDocumentTitle( "Location - " +  data.getLocationName());
-				document.setRiskId(data.getRiskId().toString());
-				document.setSectionId("99999");
+				document.setDocumentTitle(StringUtils.isNotBlank(buildData.getSectionDesc() ) ? buildData.getSectionDesc() :   buildData.getProductDesc());
+				document.setRiskId(buildingRes.getRiskId().toString());
+				document.setSectionId(StringUtils.isNotBlank(buildData.getSectionId() ) ?  buildData.getSectionId() :  "99999"  )  ;
 				documentDetails.add(document);
-				
-				
 			}
-			totalList.addAll(buildLocList);
 			
 			viewRes.setRiskDetails(totalList);
 			viewRes.setDocumentDetails(documentDetails);
@@ -2157,27 +2169,60 @@ private BuildingDetailsRepository BuildingRepo;
 				List<VehicleIdsReq> vehicleIdsList = new ArrayList<VehicleIdsReq>();
 				
 				for(EserviceSectionDetails sec : secDatas ) {
-					VehicleIdsReq vehDeh = new VehicleIdsReq();
-					List<CoverIdsReq>  coverList = new ArrayList<CoverIdsReq>();
-					List<FactorRateRequestDetails> filterCover = coverDatas.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(sec.getSectionId())) && o.getVehicleId().equals(sec.getRiskId()) ).collect(Collectors.toList());
 					
-					for (FactorRateRequestDetails cov :  filterCover ) {
-						CoverIdsReq coverReq = new CoverIdsReq();
-						if (cov.getCoverId().equals(cov.getSubCoverId())) {
-							coverReq.setSubCoverId(null);
-						} else {
-							coverReq.setSubCoverId(cov.getSubCoverId().toString());
+					
+					if (sec.getProductType().equalsIgnoreCase("H") ) {
+						List<EserviceCommonDetails> commonDatas = eserCommonRepo.findByRequestReferenceNoAndSectionId(req.getRequestReferenceNo() , sec.getSectionId());
+						VehicleIdsReq vehDeh = new VehicleIdsReq();
+						List<CoverIdsReq>  coverList = new ArrayList<CoverIdsReq>();
+							
+						for (EserviceCommonDetails com :  commonDatas ) {
+							List<FactorRateRequestDetails> filterCover = coverDatas.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(sec.getSectionId())) && o.getVehicleId().equals(com.getRiskId()) ).collect(Collectors.toList());
+							for (FactorRateRequestDetails cov :  filterCover ) {
+								CoverIdsReq coverReq = new CoverIdsReq();
+								if (cov.getCoverId().equals(cov.getSubCoverId())) {
+									coverReq.setSubCoverId(null);
+								} else {
+									coverReq.setSubCoverId(cov.getSubCoverId().toString());
+								}
+								coverReq.setIsReferal(cov.getIsReferral());
+								coverReq.setCoverId(cov.getCoverId());
+								coverReq.setSubCoverYn(cov.getSubCoverYn());
+								coverList.add(coverReq);
+								
+							}
+							vehDeh.setCoverIdList(coverList);
+							vehDeh.setVehicleId(com.getRiskId());
+							vehDeh.setSectionId(sec.getSectionId());	
+							vehicleIdsList.add(vehDeh);
 						}
-						coverReq.setIsReferal(cov.getIsReferral());
-						coverReq.setCoverId(cov.getCoverId());
-						coverReq.setSubCoverYn(cov.getSubCoverYn());
-						coverList.add(coverReq);
 						
+						
+					} else {
+						VehicleIdsReq vehDeh = new VehicleIdsReq();
+						List<CoverIdsReq>  coverList = new ArrayList<CoverIdsReq>();
+						List<FactorRateRequestDetails> filterCover = coverDatas.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(sec.getSectionId())) && o.getVehicleId().equals(sec.getRiskId()) ).collect(Collectors.toList());
+						for (FactorRateRequestDetails cov :  filterCover ) {
+							CoverIdsReq coverReq = new CoverIdsReq();
+							if (cov.getCoverId().equals(cov.getSubCoverId())) {
+								coverReq.setSubCoverId(null);
+							} else {
+								coverReq.setSubCoverId(cov.getSubCoverId().toString());
+							}
+							coverReq.setIsReferal(cov.getIsReferral());
+							coverReq.setCoverId(cov.getCoverId());
+							coverReq.setSubCoverYn(cov.getSubCoverYn());
+							coverList.add(coverReq);
+							
+						}
+						vehDeh.setCoverIdList(coverList);
+						vehDeh.setVehicleId(sec.getRiskId());
+						vehDeh.setSectionId(sec.getSectionId());	
+						vehicleIdsList.add(vehDeh);
 					}
-					vehDeh.setCoverIdList(coverList);
-					vehDeh.setVehicleId(sec.getRiskId());
-					vehDeh.setSectionId(sec.getSectionId());	
-					vehicleIdsList.add(vehDeh);
+					
+					
+				
 				}
 				
 				req2.setAdminLoginId(req.getAdminLoginId());

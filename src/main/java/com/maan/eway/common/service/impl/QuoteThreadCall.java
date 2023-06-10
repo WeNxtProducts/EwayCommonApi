@@ -2416,10 +2416,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 			List<SectionDataDetails> secList = new ArrayList<SectionDataDetails>();
 			List<EserviceSectionDetails> updateEserSec =  new ArrayList<EserviceSectionDetails>();
 			
-			boolean pacSec = false ;
 			for (VehicleIdsReq veh : VehicleIdsList) {
-				List<EserviceSectionDetails> filterSecId =  updateEserSec.stream().filter( o ->  o.getRiskId().equals(veh.getVehicleId() ) && o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList());
-				if(filterSecId.size() <=0 ) {
+				List<EserviceSectionDetails> filterSecId =  eserSec.stream().filter( o ->  o.getRiskId().equals(veh.getVehicleId() ) && o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList());
+				if(filterSecId.size() > 0 ) {
 					
 					EserviceSectionDetails filterSec = eserSec.stream().filter( o ->  o.getRiskId().equals(veh.getVehicleId() ) &&  o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList()).get(0);	
 					filterSec.setUserOpt("Y");
@@ -2433,6 +2432,24 @@ public class QuoteThreadCall implements Callable<Object>  {
 					saveSec.setUpdatedDate(new Date());
 					saveSec.setSectionDesc(filterSec.getSectionName());
 					secList.add(saveSec);	
+				} else {
+					filterSecId =  eserSec.stream().filter( o ->   o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList());
+
+					if(filterSecId.size() > 0 ) {
+						
+						EserviceSectionDetails filterSec = eserSec.stream().filter( o ->   o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList()).get(0);	
+						filterSec.setUserOpt("Y");
+						filterSec.setQuoteNo(request.getQuoteNo());
+						filterSec.setUpdatedDate(new Date());
+						updateEserSec.add(filterSec);
+						
+						SectionDataDetails  saveSec = new  SectionDataDetails();
+						mapper.map(filterSec, saveSec)	;
+						saveSec.setQuoteNo(request.getQuoteNo());
+						saveSec.setUpdatedDate(new Date());
+						saveSec.setSectionDesc(filterSec.getSectionName());
+						secList.add(saveSec);	
+					}
 				}
 			}
 						

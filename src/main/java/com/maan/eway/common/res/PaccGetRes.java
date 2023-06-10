@@ -60,6 +60,14 @@ public class PaccGetRes {
 
 	@JsonProperty("IndustryId")
 	private  String industryId;	
+	
+
+	@JsonProperty("LocationId")
+   	private  String locationId;	
+    
+    @JsonProperty("LocationName")
+   	private  String locationName;
+
 
 	@JsonProperty("SectionDetails")
     private List<SectionDetails>    sectionDetails;
