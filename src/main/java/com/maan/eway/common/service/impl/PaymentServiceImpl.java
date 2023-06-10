@@ -1235,7 +1235,7 @@ public class PaymentServiceImpl implements PaymentService {
 					
 					if(StringUtils.isBlank(req.getMicrNo())) {
 						error.add(new Error("01","MicrNo","Please Enter MicrNo"));
-					}else if (req.getMicrNo().matches("^[a-zA-Z0-9 ]*$")) {
+					}else if (! req.getMicrNo().matches("^[a-zA-Z0-9 ]+")) {
 						error.add(new Error("01","MicrNo","Please Enter valid MicrNo"));
 					}
 					
