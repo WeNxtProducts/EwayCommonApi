@@ -2431,6 +2431,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					mapper.map(filterSec, saveSec)	;
 					saveSec.setQuoteNo(request.getQuoteNo());
 					saveSec.setUpdatedDate(new Date());
+					saveSec.setSectionDesc(filterSec.getSectionName());
 					secList.add(saveSec);	
 				}
 			}
