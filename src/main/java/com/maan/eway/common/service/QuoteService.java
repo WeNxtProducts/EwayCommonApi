@@ -34,6 +34,8 @@ public interface QuoteService {
 
 	QuoteUpdateRes updateQuoteStatus(UpdateQuoteStatusReq req);
 
+	List<Error> validateNewQuoteDetails(NewQuoteReq req);
+
 
 
 }

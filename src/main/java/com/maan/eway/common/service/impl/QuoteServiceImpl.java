@@ -69,6 +69,7 @@ import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.DeleteOldQuoteReq;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.SectionSumInsuredGetReq;
+import com.maan.eway.common.req.SlideFidelityGuarantySaveReq;
 import com.maan.eway.common.req.UpdateQuoteStatusReq;
 import com.maan.eway.common.req.VehicleIdsReq;
 import com.maan.eway.common.req.ViewQuoteReq;
@@ -141,7 +142,7 @@ import com.maan.eway.res.calc.Loading;
 import com.maan.eway.res.calc.Tax;
 
 
-@Service
+@Service 
 @Transactional
 public class QuoteServiceImpl implements QuoteService {
 
@@ -3565,5 +3566,28 @@ private BuildingDetailsRepository BuildingRepo;
 			}
 			return res;
 		}
+
+	@Override
+	public List<Error> validateNewQuoteDetails(NewQuoteReq req) {
+		List<Error> error = new ArrayList<Error>();
+
+		try {
+			if(StringUtils.isNotBlank(req.getManualReferralYn()) && req.getManualReferralYn().equalsIgnoreCase("Y")) {
+				if( StringUtils.isBlank(req.getReferralRemarks()) ) {
+					error.add(new Error("01", "ManualReferralRemarks", "Please Enter Manual Referral Remarks "));
+				} else if(req.getReferralRemarks().length() > 200 ) {
+					error.add(new Error("01", "ManualReferralRemarks", "Manual Referral Remarks Less Then 200 Charecter Only Allowed"));
+				}
+					
+			}			
+			
+		} catch (Exception e) {
+
+			log.error(e);
+			e.printStackTrace();
+			error.add(new Error("19", "Common Error", e.getMessage()));
+		}
+		return error;
+	}
 	
 }

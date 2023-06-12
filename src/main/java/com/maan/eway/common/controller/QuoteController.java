@@ -44,13 +44,25 @@ public class QuoteController {
 	public ResponseEntity<CommonRes> generateNewQuote(@RequestBody NewQuoteReq req) {
 
 		reqPrinter.reqPrint(req);
+		CommonRes res = new CommonRes();
+		List<Error> validation = entityService.validateNewQuoteDetails(req);
+		//// validation
+		if (validation != null && validation.size() != 0) {
+			res.setCommonResponse(null);
+			res.setIsError(true);
+			res.setErrorMessage(validation);
+			res.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(res, HttpStatus.OK);
+
+		} else {
 		// Save
-		CommonRes res = entityService.generateNewQuote(req);
+		 res = entityService.generateNewQuote(req);
 		
 		if (res != null) {
 			return new ResponseEntity<CommonRes>(res, HttpStatus.CREATED);
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
 		}
 		
 
