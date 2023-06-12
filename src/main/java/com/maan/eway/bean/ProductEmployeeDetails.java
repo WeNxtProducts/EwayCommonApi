@@ -164,6 +164,9 @@ private static final long serialVersionUID = 1L;
 	  
 	  @Column(name="DATE_OF_JOINING_MONTH", length=10)
 	  private String dateOfJoiningMonth;
+	  
+	  @Column(name="ADDRESS")
+	    private String address;
       
 }
 
