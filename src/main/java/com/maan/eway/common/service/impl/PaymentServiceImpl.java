@@ -1326,9 +1326,16 @@ public class PaymentServiceImpl implements PaymentService {
 			if(error.isEmpty())
 			{
 				HomePositionMaster data = homerepo.findByQuoteNo(req.getQuoteNo());
-				if(data.getOverallPremiumFc().compareTo(req.getPremium())>0 && StringUtils.isBlank(data.getEndtTypeId())) {
-					error.add(new Error("01","Premium","Required Premium Should Not be Lesser than "+data.getOverallPremiumFc()));
+				if ( StringUtils.isBlank(data.getEndtTypeId()) ) {
+					if( req.getPremium()==null ) {
+						error.add(new Error("01","Premium","Please Enter Premium "));
+					} else if ( req.getPremium().compareTo(new BigDecimal("0")) <= 0) {
+						error.add(new Error("01","Premium","Please Enter Premium Above Zero"));
+					} else if(data.getOverallPremiumFc().compareTo(req.getPremium())>0 ) {
+						error.add(new Error("01","Premium","Required Premium Should Not be Lesser than "+data.getOverallPremiumFc()));
+					} 
 				}
+ 				
 			}
 			
 		} catch (Exception e) {
