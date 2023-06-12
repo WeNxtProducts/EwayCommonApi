@@ -221,7 +221,7 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 			saveData.setUpdatedBy(req.getCreatedBy());
 			saveData.setUpdatedDate(new Date());
 			saveData.setAmendId(amendId);
-			
+			saveData.setSalePointCode(req.getSalePointCode());
 			// Direct Broker Details
 			String createLoginId = req.getBranchName().replaceAll(" ", "").replaceAll("_", "").replaceAll("-", "")  ; 			
 			String brokerLoginId = createLoginId + "_" + "brokerId" ;
@@ -534,6 +534,12 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 		}
 		else if (req.getBranchType().length()>10) {
 			errorList.add(new Error("13", "Branch Type", "Please Enter Branch Type within 10 Characters"));
+		}
+		if (StringUtils.isBlank(req.getSalePointCode()) ){
+			errorList.add(new Error("14","SalePointCode", "Please Enter Sale Point Code")); 
+		}
+		else if (req.getSalePointCode().length() > 100) {
+			errorList.add(new Error("14", "SalePointCode", "Sale Point Code under 100 Characters only allowed"));
 		}
 	} catch (Exception e) {
 		log.error(e);

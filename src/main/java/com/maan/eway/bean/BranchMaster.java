@@ -142,6 +142,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="BROKER_AGENCY_CODE", length=100)
     private String    brokerAgencyCode;
 
+    @Column(name="SALE_POINT_CODE", length=100)
+    private String    salePointCode;
+
 }
 
 
