@@ -1428,7 +1428,7 @@ this.repository = repo;
 				res.setActualPremiumFc(comData.getActualPremiumFc()==null?"0":comData.getActualPremiumFc().toPlainString());
 				res.setActualPremiumLc(comData.getActualPremiumLc()==null?"0":comData.getActualPremiumLc().toPlainString());
 				res.setSectionId(comData.getSectionId() );
-				res.setSectionName(comData.getSectionName());
+				res.setSectionName(comData.getSectionName() + "~" +  comData.getOccupationType() ) ;
 				res.setEffectiveDate(comData.getEndorsementEffdate()==null?null:comData.getEndorsementEffdate() );
 				//res.setEndorsementYn(comData.getEndorsementType()==null?"N":"Y");
 				Object riskDetails = new Object();
