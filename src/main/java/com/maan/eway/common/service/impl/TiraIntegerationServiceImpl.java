@@ -10,6 +10,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -63,7 +64,8 @@ public class TiraIntegerationServiceImpl {
 			HttpEntity<?> requestent = new HttpEntity<>(tiraReq, header);
 
 			System.out.println(new Date() + " Start " + url);
-			TiraFramedReq = temp.exchange(url, HttpMethod.POST, requestent,new ParameterizedTypeReference<Object>() {}).getBody() ;
+			ResponseEntity<Object> postEntity = temp.exchange(url, HttpMethod.POST, requestent,new ParameterizedTypeReference<Object>() {}) ;
+		    TiraFramedReq = postEntity.getBody() ;
 			System.out.println(new Date() + " End " + url);
 
 		} catch (Exception e) {
@@ -76,7 +78,7 @@ public class TiraIntegerationServiceImpl {
 	 
 		 
 	 public Object TiraIntegPush(Object pushReq , String token  ) {
-		 	Object postForEntity = new Object();
+		Object res = null;
 		try {
 			// Frame Tira Req
 
@@ -89,7 +91,8 @@ public class TiraIntegerationServiceImpl {
 			HttpEntity<?> requestent = new HttpEntity<>(pushReq , header);
 
 			System.out.println(new Date() + " Start " + url);
-			postForEntity = temp.exchange(url, HttpMethod.POST, requestent,new ParameterizedTypeReference<Object>() {}).getBody() ;
+			ResponseEntity<Object> postForEntity = temp.exchange(url, HttpMethod.POST, requestent,new ParameterizedTypeReference<Object>() {}) ;
+			res = postForEntity.getBody() ;
 			System.out.println(new Date() + " End " + url);
 
 		} catch (Exception e) {
@@ -97,7 +100,7 @@ public class TiraIntegerationServiceImpl {
 			log.info("Exception is ---> " + e.getMessage());
 			return null;
 		}
-		return postForEntity;
+		return res;
 	}
 		 
 		 
