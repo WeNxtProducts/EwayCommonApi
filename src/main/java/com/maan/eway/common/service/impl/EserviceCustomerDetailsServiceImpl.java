@@ -117,6 +117,13 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				} else if (req.getAddress1().length() > 100) {
 					errorList.add(new Error("02", "Address1", "Please Enter Address within 100 Characters"));
 				}
+				
+				if (StringUtils.isBlank(req.getStreet())) {
+					errorList.add(new Error("03", "Street", "Please Enter Street"));
+				} else if (req.getAddress1().length() > 100) {
+					errorList.add(new Error("03", "Street", "Please Enter Street within 100 Characters"));
+				}
+				
 				/*if (StringUtils.isBlank(req.getAddress2())) {
 					errorList.add(new Error("02", "Address2", "Please Enter Address2 "));
 				} else if (req.getAddress2().length() > 100) {
@@ -771,6 +778,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setVrTinNo(req.getIdNumber());
 			saveData.setAge(age);
 			saveData.setMobileCode1(req.getMobileCode1());
+			saveData.setStreet(req.getStreet());
 			saveData.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
 			saveData.setMobileCode3(req.getMobileCode3()==null?"":req.getMobileCode3());
 			saveData.setWhatsappCode(req.getWhatsappCode());

@@ -40,12 +40,13 @@ public interface PaymentService {
 
 	List<Error> validatePaymentInsert(PaymentDetailsSaveReq req);
 
-	PaymentDetailsSaveRes savePaymentDetails(PaymentDetailsSaveReq req);
+	PaymentDetailsSaveRes savePaymentDetails(PaymentDetailsSaveReq req, String string);
 
 	List<PaymentDetailGetRes> paymentdetailshistory(PaymentDetailsHistoryReq req);
 	
 	CommonRes getTinyUrl(TinyUrlGetReq req);
 
 	LoginEncryptResponse decryptTinyUrl(PaymentResUrlReq req);
+
 
 }

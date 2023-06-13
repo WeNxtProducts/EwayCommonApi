@@ -91,6 +91,7 @@ import com.maan.eway.common.req.PaymentResUrlReq;
 import com.maan.eway.common.req.SendSmsReq;
 import com.maan.eway.common.req.TinyUrlGenerateReq;
 import com.maan.eway.common.req.TinyUrlGetReq;
+import com.maan.eway.common.req.TiraFrameReqCall;
 import com.maan.eway.common.req.UpdateQuoteStatusReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.LoginEncryptResponse;
@@ -232,6 +233,9 @@ public class PaymentServiceImpl implements PaymentService {
 	
 	@Autowired
 	private NotifTemplateMasterRepository notifRepo;
+	
+	@Autowired
+	private TiraIntegerationServiceImpl tiraIntegService ;
 	
 	
 	private Logger log = LogManager.getLogger(ClausesMasterServiceImpl.class);
@@ -1256,7 +1260,7 @@ public class PaymentServiceImpl implements PaymentService {
 				PaymentInfo paymentInfo = paymentinforepo.findByQuoteNoAndPaymentId(req.getQuoteNo(), req.getPaymentId());
 				
 				if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Accepted") ) {
-					error.add(new Error("01","Accepted","This Payment Already Accepted "));
+			//		error.add(new Error("01","Accepted","This Payment Already Accepted "));
 					
 				} else if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Rejected") ) {
 					error.add(new Error("01","Rejected","This Payment Already Rejected "));
@@ -1316,7 +1320,7 @@ public class PaymentServiceImpl implements PaymentService {
 						}
 					
 					} else {
-						error.add(new Error("01","PaymentId","Already One Payment Id Accepted Against This Quote No"));
+			//			error.add(new Error("01","PaymentId","Already One Payment Id Accepted Against This Quote No"));
 					}
 				}
 				
@@ -1348,7 +1352,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	@Transactional
-	public PaymentDetailsSaveRes savePaymentDetails(PaymentDetailsSaveReq req) {
+	public PaymentDetailsSaveRes savePaymentDetails(PaymentDetailsSaveReq req , String token) {
 		PaymentDetailsSaveRes res = new PaymentDetailsSaveRes();
 		DozerBeanMapper dozermapper = new DozerBeanMapper ();
 		try {
@@ -1480,6 +1484,7 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			// Policy Convertion
 			if(paymentStatus.equalsIgnoreCase("ACCEPTED") && ( paymentInfo.getEmiYn().equalsIgnoreCase("N") || paymentInfo.getInstallmentMonth().equalsIgnoreCase("0") )  ) {
+				
 				List<DebitAndCredit> policyDetails = new ArrayList<DebitAndCredit>();
 				CalcCommission  policyReq = new CalcCommission();
 				policyReq.setAgencyCode("");
@@ -1563,6 +1568,12 @@ public class PaymentServiceImpl implements PaymentService {
 				res.setResponse("Policy Converted");
 				
 				
+				// Call Tira Insert 
+				if  (  product.getMotorYn().equalsIgnoreCase("M") ) {
+					TiraFrameReqCall tiraReq = new TiraFrameReqCall();
+					tiraReq.setQuoteNo(data.getQuoteNo());					
+					tiraIntegService.callTiraIntegeration(tiraReq , token );
+				}
 				
 			}
 			
@@ -2195,7 +2206,7 @@ public class PaymentServiceImpl implements PaymentService {
 			// Get Result
 			TypedQuery<TinyurlMaster> result = em.createQuery(query);
 			List<TinyurlMaster> list = result.getResultList();
-			url = list.get(0).getAppUrl();
+			url =list.size() > 0 ?  list.get(0).getAppUrl() : "";
 			
 			
 		} catch (Exception e) {

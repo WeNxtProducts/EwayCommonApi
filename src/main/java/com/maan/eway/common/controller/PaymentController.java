@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -81,7 +82,7 @@ public class PaymentController {
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/insertpaymentdetails")
 	@ApiOperation(value="This method is to Save Make Payment")
-	public ResponseEntity<CommonRes> savePaymentDetails(@RequestBody  PaymentDetailsSaveReq req) {
+	public ResponseEntity<CommonRes> savePaymentDetails(@RequestBody  PaymentDetailsSaveReq req,@RequestHeader("Authorization") String tokens) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 		List<Error> validation =  service.validatePaymentInsert(req);
@@ -94,7 +95,7 @@ public class PaymentController {
 			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 		}
 		else {
-			PaymentDetailsSaveRes res = service.savePaymentDetails(req);
+			PaymentDetailsSaveRes res = service.savePaymentDetails(req,tokens.replaceAll("Bearer ", "").split(",")[0]);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
