@@ -2,6 +2,7 @@ package com.maan.eway.calculator.util;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -269,13 +270,21 @@ public class RatingFactorsUtil {
 			String todayInString = DD_MM_YYYY.format(new Date());
 			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;factorTypeId:"+factorTypeId+";";
 			List<Tuple> result=null;
-			SpecCriteria criteria = crservice.createCriteria(FactorTypeDetails.class, search, "factorTypeId"); 
+			SpecCriteria criteria = crservice.createCriteria(FactorTypeDetails.class, search, "ratingFieldId"); 
 			result=crservice.getResult(criteria, 0, 50);
 			if(result!=null && result.size()>0) {
 				
 				RatingTypeUtil rate=new RatingTypeUtil();
 				List<RatingInfo> collect = result.stream().map(rate).filter(d->d!=null).collect(Collectors.toList());
-				 
+				collect.sort(new Comparator<RatingInfo>() {
+
+					@Override
+					public int compare(RatingInfo o1, RatingInfo o2) {
+						// TODO Auto-generated method stub
+						return  o1.getRatingFieldId().compareTo(o2.getRatingFieldId());
+					}
+					
+				});
 				this.LoadRatingField(engine, collect);
 				 return collect;
 			}
