@@ -16,4 +16,7 @@ public class NotifGetByQuoteNoReq {
 	@JsonProperty("QuoteNo")
 	private String quoteNo;
 	
+	@JsonProperty("RequestReferenceNo")
+	private String requestReferenceNo;
+	
 }
