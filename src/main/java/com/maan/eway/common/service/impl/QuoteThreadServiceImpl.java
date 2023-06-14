@@ -530,22 +530,30 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			{
 				List<FactorRateRequestDetails> userOptCovers = new ArrayList<FactorRateRequestDetails>();
 				
-				//UPDATE
-				CriteriaBuilder cb = em.getCriteriaBuilder();
-				// create update
-				CriteriaUpdate<FactorRateRequestDetails> update = cb.createCriteriaUpdate(FactorRateRequestDetails.class);
-				// set the root class
-				Root<FactorRateRequestDetails> m = update.from(FactorRateRequestDetails.class);
-				// set update and where clause
-				update.set("userOpt", "N");
-				
-				Predicate n3 = cb.equal(m.get("requestReferenceNo"), req.getRequestReferenceNo() );
-				Predicate n4 = cb.equal(m.get("productId"),req.getProductId());
-				update.where(n3,n4);
-				// perform update
-				em.createQuery(update).executeUpdate();
+//				//UPDATE
+//				CriteriaBuilder cb = em.getCriteriaBuilder();
+//				// create update
+//				CriteriaUpdate<FactorRateRequestDetails> update = cb.createCriteriaUpdate(FactorRateRequestDetails.class);
+//				// set the root class
+//				Root<FactorRateRequestDetails> m = update.from(FactorRateRequestDetails.class);
+//				// set update and where clause
+//				update.set("userOpt", "N");
+//				
+//				Predicate n3 = cb.equal(m.get("requestReferenceNo"), req.getRequestReferenceNo() );
+//				Predicate n4 = cb.equal(m.get("productId"),req.getProductId());
+//				update.where(n3,n4);
+//				// perform update
+//				em.createQuery(update).executeUpdate();
+			
 				// Covers Referrral Checking
 				List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo()); 
+				for (FactorRateRequestDetails cover : covers ) {
+					
+					cover.setUserOpt("N");
+					
+				}
+				facRateRepo.saveAllAndFlush(covers);
+				
 				companyId = covers.size() > 0 ? covers.get(0).getCompanyId()  :"" ;
 						
 				for (VehicleIdsReq veh : req.getVehicleIdsList()) {
@@ -615,8 +623,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				for (FactorRateRequestDetails uptCover : userOptCovers ) {
 					
 					uptCover.setUserOpt("Y");
-					facRateRepo.save(uptCover);
+					
 				}
+				facRateRepo.saveAllAndFlush(userOptCovers);
 			}	
 			
 			

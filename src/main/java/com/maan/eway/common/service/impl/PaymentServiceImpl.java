@@ -1260,7 +1260,7 @@ public class PaymentServiceImpl implements PaymentService {
 				PaymentInfo paymentInfo = paymentinforepo.findByQuoteNoAndPaymentId(req.getQuoteNo(), req.getPaymentId());
 				
 				if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Accepted") ) {
-			//		error.add(new Error("01","Accepted","This Payment Already Accepted "));
+					error.add(new Error("01","Accepted","This Payment Already Accepted "));
 					
 				} else if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Rejected") ) {
 					error.add(new Error("01","Rejected","This Payment Already Rejected "));
@@ -1320,7 +1320,7 @@ public class PaymentServiceImpl implements PaymentService {
 						}
 					
 					} else {
-			//			error.add(new Error("01","PaymentId","Already One Payment Id Accepted Against This Quote No"));
+						error.add(new Error("01","PaymentId","Already One Payment Id Accepted Against This Quote No"));
 					}
 				}
 				
