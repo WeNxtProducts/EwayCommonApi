@@ -1970,7 +1970,7 @@ List<Error> errorList = new ArrayList<Error>();
 			        res.setEndorsementIds(endorsementids);
 					res.setReferralIds(referralids);
 					res.setIsOptedYn("Y");
-					res.setColumnName(StringUtils.isBlank((loginlist.get(0).getColumnName()))?"":(loginlist.get(0).getColumnName()));
+					res.setColumnName( loginlist.size() > 0 ?loginlist.get(0).getColumnName() : "");
 					CalcEngine engine = new CalcEngine();					
 					engine.setProductId(data.getProductId().toString());
 					engine.setInsuranceId(data.getCompanyId());
@@ -1985,7 +1985,7 @@ List<Error> errorList = new ArrayList<Error>();
 					else if (oneProduct.equals("A")) {
 						res.setTableName("MsAssetDetails");
 					}
-					res.setColumnName(StringUtils.isBlank((loginlist.get(0).getColumnName()))?"":(loginlist.get(0).getColumnName()));
+					res.setColumnName( loginlist.size() > 0 ?loginlist.get(0).getColumnName() : "");
 					resList.add(res);
 				}
 		        else {
@@ -2011,7 +2011,7 @@ List<Error> errorList = new ArrayList<Error>();
 					else if (oneProduct.equals("A")) {
 						res.setTableName("MsAssetDetails");
 					}
-					res.setColumnName(StringUtils.isBlank((loginlist.get(0).getColumnName()))?"":(loginlist.get(0).getColumnName()));
+					res.setColumnName( loginlist.size() > 0 ?loginlist.get(0).getColumnName() : "");
 					resList.add(res);
 		        }
 	        }
@@ -2122,7 +2122,7 @@ List<Error> errorList = new ArrayList<Error>();
 					else if (oneProduct.equals("A")) {
 						res.setTableName("MsAssetDetails");
 					}
-					res.setColumnName(StringUtils.isBlank((loginlist.get(0).getColumnName()))?"":(loginlist.get(0).getColumnName()));
+					res.setColumnName( loginlist.size() > 0 ?loginlist.get(0).getColumnName() : "");
 
 					resList.add(res);
 				}
@@ -2152,7 +2152,7 @@ List<Error> errorList = new ArrayList<Error>();
 					else if (oneProduct.equals("A")) {
 						res.setTableName("MsAssetDetails");
 					}
-					res.setColumnName(StringUtils.isBlank((loginlist.get(0).getColumnName()))?"":(loginlist.get(0).getColumnName()));
+					res.setColumnName( loginlist.size() > 0 ?loginlist.get(0).getColumnName() : "");
 
 					resList.add(res);
 		        }
