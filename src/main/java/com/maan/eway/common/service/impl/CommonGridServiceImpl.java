@@ -41,6 +41,7 @@ import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.EndtTypeMaster;
+import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.HomePositionMaster;
@@ -145,7 +146,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 			query.multiselect(cb.count(m).alias("idsCount"),
 					// Customer Info
 					c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
-					m.get("customerName").alias("clientName"),
+					c.get("clientName").alias("clientName"),
 					// Vehicle Info
 					m.get("companyId").alias("companyId"), m.get("productId").alias("productId"),
 					m.get("branchCode").alias("branchCode"), m.get("requestReferenceNo").alias("requestReferenceNo"),
@@ -187,7 +188,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 			}
 
 			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9)
-					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), m.get("customerName"), m.get("companyId"),
+					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"))
 					.orderBy(orderList);
@@ -538,6 +539,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 				String userType, List<String> branches) {
 			List<Tuple> customerDetailsList = new ArrayList<Tuple>();
 			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
 			try {
 
 				CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -546,9 +548,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 				Root<EserviceCommonDetails> c = query.from(EserviceCommonDetails.class);
 				Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
 				
-				query.multiselect(c.alias("c") ,
-						cus.get("clientName").alias("clientName"),cb.count(c).alias("idsCount"));
-
+				query.multiselect(c.alias("c") ,cus.get("clientName").alias("clientName"),cb.count(c).alias("idsCount"));
 
 				// Order By
 				List<Order> orderList = new ArrayList<Order>();
@@ -558,7 +558,6 @@ public class CommonGridServiceImpl implements CommonGridService {
 				Predicate n3 = null;
 				Predicate n4 = null;
 				Predicate n5 = null;
-		
 
 				// Where
 				if (searchKey.equalsIgnoreCase("RequestReferenceNo")) {
@@ -613,18 +612,27 @@ public class CommonGridServiceImpl implements CommonGridService {
 				}
 				n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
 				query.where(n1,n2,n3,n4,n5)
-				.groupBy(c.get("customerReferenceNo"), c.get("occupationType"),c.get("riskId"),
-						cus.get("clientName"), c.get("companyId"),
+				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),
 						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
-						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"))
+						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),c.get("sectionId"),c.get("occupationType"))
+				
 				.orderBy(orderList);
 				if (searchKey.equalsIgnoreCase("ClientName")) {
-					query.where(n1, n2,n4,n5).orderBy(orderList);
+					query.where(n1, n2,n4,n5)
+					.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),
+							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
+							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),c.get("sectionId"),c.get("occupationType"))
+				
+					.orderBy(orderList);
 				}
 				if (searchKey.equalsIgnoreCase("EntryDate")) {
-					query.where(n1,n2,n3,n4).orderBy(orderList);
+					query.where(n1,n2,n3,n4)
+					.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),
+							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
+							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),c.get("sectionId"),c.get("occupationType"))
+				
+					.orderBy(orderList);
 				}
-
 				// Get Result
 				TypedQuery<Tuple> result = em.createQuery(query);
 				customerDetailsList = result.getResultList();
