@@ -51,7 +51,7 @@ private static final long serialVersionUID = 1L;
     //--- ENTITY PRIMARY KEY 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="PolicyNo", nullable=false)
+    @Column(name="POLICYNO", nullable=false)
     private Long       policyno ;
 
     //--- ENTITY DATA FIELDS 
