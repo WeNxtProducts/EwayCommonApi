@@ -51,7 +51,7 @@ private static final long serialVersionUID = 1L;
     //--- ENTITY PRIMARY KEY 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="debitnote", nullable=false)
+    @Column(name="DEBITNOTE", nullable=false)
     private Long       debitnote ;
 
     //--- ENTITY DATA FIELDS 

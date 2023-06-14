@@ -51,7 +51,7 @@ private static final long serialVersionUID = 1L;
     //--- ENTITY PRIMARY KEY 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="creditnote", nullable=false)
+    @Column(name="CREDITNOTE", nullable=false)
     private Long       creditnote ;
 
     //--- ENTITY DATA FIELDS 
