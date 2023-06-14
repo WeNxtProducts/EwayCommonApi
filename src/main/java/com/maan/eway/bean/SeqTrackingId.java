@@ -51,7 +51,7 @@ private static final long serialVersionUID = 1L;
     //--- ENTITY PRIMARY KEY 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="TrackingId", nullable=false)
+    @Column(name="TRACKINGID", nullable=false)
     private Long       trackingId ;
 
 }
