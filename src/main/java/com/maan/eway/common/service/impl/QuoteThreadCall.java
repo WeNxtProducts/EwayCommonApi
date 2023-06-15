@@ -1,6 +1,7 @@
 package com.maan.eway.common.service.impl;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -1408,7 +1409,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 	private synchronized BigDecimal getDevidedValue(BigDecimal inputValue ,Integer groupCount ) {
 		BigDecimal devidedValue = BigDecimal.ZERO ;
 		try {
-			devidedValue = inputValue.divide(new BigDecimal(groupCount)) ;
+			devidedValue = inputValue.divide(new BigDecimal(groupCount),2, RoundingMode.HALF_UP) ;
 	
 		}catch (Exception e) {
 			e.printStackTrace();
