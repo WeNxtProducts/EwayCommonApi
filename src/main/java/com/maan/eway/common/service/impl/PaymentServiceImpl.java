@@ -1568,12 +1568,12 @@ public class PaymentServiceImpl implements PaymentService {
 				res.setResponse("Policy Converted");
 				
 				
-				// Call Tira Insert 
-				if  (  product.getMotorYn().equalsIgnoreCase("M") ) {
-					TiraFrameReqCall tiraReq = new TiraFrameReqCall();
-					tiraReq.setQuoteNo(data.getQuoteNo());					
-					tiraIntegService.callTiraIntegeration(tiraReq , token );
-				}
+//				// Call Tira Insert 
+//				if  (  product.getMotorYn().equalsIgnoreCase("M") ) {
+//					TiraFrameReqCall tiraReq = new TiraFrameReqCall();
+//					tiraReq.setQuoteNo(data.getQuoteNo());					
+//					tiraIntegService.callTiraIntegeration(tiraReq , token );
+//				}
 				
 			}
 			

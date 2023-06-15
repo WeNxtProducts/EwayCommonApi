@@ -24,11 +24,13 @@ import com.maan.eway.common.req.PaymentInfoGetAllReq;
 import com.maan.eway.common.req.PaymentInfoGetReq;
 import com.maan.eway.common.req.PaymentResUrlReq;
 import com.maan.eway.common.req.TinyUrlGetReq;
+import com.maan.eway.common.req.TiraFrameReqCall;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.LoginEncryptResponse;
 import com.maan.eway.common.res.PaymentDetailGetRes;
 import com.maan.eway.common.res.PaymentInfoGetRes;
 import com.maan.eway.common.service.PaymentService;
+import com.maan.eway.common.service.impl.TiraIntegerationServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -46,6 +48,9 @@ public class PaymentController {
 	
 	@Autowired
 	private  PaymentService service;
+	
+	@Autowired
+	private  TiraIntegerationServiceImpl tiraService;
 	
 	// Payment Details Save
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
@@ -109,6 +114,28 @@ public class PaymentController {
 		}
 	
 		}
+	
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/pushtira")
+	@ApiOperation(value="This method is to Push Tira")
+	public ResponseEntity<CommonRes> callTiraIntegeration(@RequestBody  TiraFrameReqCall req,@RequestHeader("Authorization") String tokens) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		
+			SuccessRes res = tiraService.callTiraIntegeration(req,tokens.replaceAll("Bearer ", "").split(",")[0]);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if(res !=null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			}
+			else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+	
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/gettinyurl")
 	@ApiOperation(value = "This method is Get Quote Details")
