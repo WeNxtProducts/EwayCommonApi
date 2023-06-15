@@ -547,12 +547,6 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			
 				// Covers Referrral Checking
 				List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo()); 
-				for (FactorRateRequestDetails cover : covers ) {
-					
-					cover.setUserOpt("N");
-					
-				}
-				facRateRepo.saveAllAndFlush(covers);
 				
 				companyId = covers.size() > 0 ? covers.get(0).getCompanyId()  :"" ;
 						
@@ -618,14 +612,25 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					uwRemarks = filterUwQuestions.get(0).getUwQuestionDesc() ;
 					
 				}
+				List<FactorRateRequestDetails> nonOptCovers  = covers ;
 				
 				// Update User Opted Covers 
 				for (FactorRateRequestDetails uptCover : userOptCovers ) {
+					nonOptCovers.remove(uptCover);
 					
 					uptCover.setUserOpt("Y");
 					
 				}
 				facRateRepo.saveAllAndFlush(userOptCovers);
+				
+				// Update Non Opted Covers
+				for (FactorRateRequestDetails cover : nonOptCovers ) {
+					
+					cover.setUserOpt("N");
+					
+				}
+				facRateRepo.saveAllAndFlush(nonOptCovers);
+				
 			}	
 			
 			
