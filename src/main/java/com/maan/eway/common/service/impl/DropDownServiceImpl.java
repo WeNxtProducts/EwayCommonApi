@@ -37,6 +37,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.bean.BrokerCommissionDetails;
+import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CompanyCityMaster;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CompanyRegionMaster;
@@ -46,6 +47,7 @@ import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginProductMaster;
+import com.maan.eway.common.req.GetOccupationsReq;
 import com.maan.eway.common.req.NcdDetailsGetReq;
 import com.maan.eway.common.service.DropDownService;
 import com.maan.eway.integration.req.PremiaRequest;
@@ -60,6 +62,7 @@ import com.maan.eway.master.req.RegionDropDownReq;
 import com.maan.eway.master.req.RelationDropDownReq;
 import com.maan.eway.master.req.StateDropDownReq;
 import com.maan.eway.master.service.impl.PolicyTypeMasterServiceImpl;
+import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.CompanyCityMasterRepository;
 import com.maan.eway.repository.CompanyRegionMasterRepository;
 import com.maan.eway.repository.CompanyStateMasterRepository;
@@ -97,6 +100,9 @@ public class DropDownServiceImpl  implements DropDownService{
 	
 	@Autowired
 	private OracleQuery oracle;
+	
+	@Autowired 
+	private CommonDataDetailsRepository commonRepo;
 	
 	// Cover Note Type Drop Down
 
@@ -2480,6 +2486,28 @@ public class DropDownServiceImpl  implements DropDownService{
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
 				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+
+	@Override
+	public List<DropDownRes> getOccupations(GetOccupationsReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<CommonDataDetails> cdlist = commonRepo.findByQuoteNoAndProductIdAndSectionId(req.getQuoteNo(),req.getProductId(),req.getSectionId());
+			
+			for (CommonDataDetails data : cdlist) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getOccupationType());
+				res.setCodeDesc(data.getOccupationDesc());
 				res.setStatus(data.getStatus());
 				resList.add(res);
 			}

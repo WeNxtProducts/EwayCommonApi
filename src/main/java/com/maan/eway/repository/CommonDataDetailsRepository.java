@@ -42,6 +42,8 @@ public interface CommonDataDetailsRepository  extends JpaRepository<CommonDataDe
 
 	List<CommonDataDetails> findByQuoteNoAndSectionIdOrderByRiskIdAsc(String quoteNo, String sectionId);
 
+	List<CommonDataDetails> findByQuoteNoAndProductIdAndSectionId(String quoteNo, String productId, String sectionId);
+
 	
 
 }

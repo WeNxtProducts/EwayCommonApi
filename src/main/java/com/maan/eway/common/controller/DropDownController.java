@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.access.prepost.PreAuthorize;
+
+import com.maan.eway.common.req.GetOccupationsReq;
 import com.maan.eway.common.req.NcdDetailsGetReq;
 import com.maan.eway.common.service.DropDownService;
 import com.maan.eway.integration.req.PremiaRequest;
@@ -1484,6 +1486,22 @@ public class DropDownController {
 	public ResponseEntity<CommonRes> getPlateGlass(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
 		List<DropDownRes> res = dropDownService.getPlateGlass(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/occupations")
+	public ResponseEntity<CommonRes> getOccupations(@RequestBody GetOccupationsReq req) {
+		CommonRes data = new CommonRes();
+		List<DropDownRes> res = dropDownService.getOccupations(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);

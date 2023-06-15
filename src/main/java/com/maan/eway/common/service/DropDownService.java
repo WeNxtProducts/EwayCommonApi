@@ -2,18 +2,13 @@ package com.maan.eway.common.service;
 
 import java.util.List;
 
+import com.maan.eway.common.req.GetOccupationsReq;
 import com.maan.eway.common.req.NcdDetailsGetReq;
-import com.maan.eway.integration.req.PremiaRequest;
 import com.maan.eway.integration.req.QueryKeyReq;
 import com.maan.eway.master.req.BrokerSumInsuredRefReq;
-import com.maan.eway.master.req.BuildingUsageDropDownReq;
-import com.maan.eway.master.req.CityDropDownReq;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.LovPolicyDropDownReq;
-import com.maan.eway.master.req.RegionDropDownReq;
 import com.maan.eway.master.req.RelationDropDownReq;
-import com.maan.eway.master.req.StateDropDownReq;
-import com.maan.eway.res.ColummnDropRes;
 import com.maan.eway.res.DropDownRes;
 
 public interface DropDownService {
@@ -185,6 +180,8 @@ public interface DropDownService {
 	List<DropDownRes> getIndemity(LovDropDownReq req);
 
 	List<DropDownRes> getPlateGlass(LovDropDownReq req);
+
+	List<DropDownRes> getOccupations(GetOccupationsReq req);
 
 
 
