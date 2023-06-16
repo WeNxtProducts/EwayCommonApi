@@ -59,6 +59,7 @@ import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
+import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.SectionDataDetails;
@@ -121,6 +122,7 @@ import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.PersonalAccidentRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
+import com.maan.eway.repository.ProductEmployeesDetailsRepository;
 import com.maan.eway.repository.ProductMasterRepository;
 import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
@@ -256,6 +258,9 @@ private BuildingDetailsRepository BuildingRepo;
 	
 	@Autowired
 	private FactorRateRequestDetailsRepository facRateRepo ;
+	
+	@Autowired
+	private ProductEmployeesDetailsRepository empRepo ;
 	
 	
 	private Logger log = LogManager.getLogger(QuoteServiceImpl.class);
@@ -1065,13 +1070,27 @@ private BuildingDetailsRepository BuildingRepo;
 				commonDetails.setSectionDetails(sectionList);
 				commonResList.add(commonDetails);
 				
-				// Document 
-				DocumentDetails  document = new DocumentDetails();
-				document.setDocumentTitle(com.getCustomerName());
-				document.setRiskId(com.getRiskId().toString());
-				document.setSectionId(com.getSectionId());
-				documentDetails.add(document);
+				
 			}
+			//Common Document 
+			DocumentDetails  document = new DocumentDetails();
+			document.setDocumentTitle("Common Documents");
+			document.setRiskId("1");
+			document.setSectionId("99999");
+			documentDetails.add(document);
+			
+			// Induvidual Document
+			List<ProductEmployeeDetails> empList = empRepo.findByQuoteNo(req.getQuoteNo());
+			if(empList.size()  > 0) {
+				for(ProductEmployeeDetails data : empList) {
+					// Document 
+					DocumentDetails  document2 = new DocumentDetails();
+					document2.setDocumentTitle(   " Emp Id :" +  data.getEmployeeId() + " ~ Emp Name : " + data.getEmployeeName() );
+					document2.setRiskId(data.getEmployeeId().toString());
+					document2.setSectionId(  "99999"  )  ;
+					documentDetails.add(document2);
+				}
+			} 
 			viewRes.setRiskDetails(commonResList);	
 			viewRes.setDocumentDetails(documentDetails);
 			
