@@ -852,7 +852,7 @@ public class GridServiceImpl implements GridService {
 				if (product.getMotorYn().equalsIgnoreCase("M")) {
 					res = motService.motorEndt(req, branches, loginId);
 				} else if (product.getMotorYn().equalsIgnoreCase("H")
-						&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+						/*&& req.getProductId().equalsIgnoreCase(travelProductId)*/) {
 					res = traService.travelEndt(req, branches, loginId);
 				} else if (product.getMotorYn().equalsIgnoreCase("A")) {
 					res = buiService.buildingEndt(req, branches, loginId);
@@ -866,7 +866,7 @@ public class GridServiceImpl implements GridService {
 					res = motService.motorCopyQuote(req, branches, loginId);
 
 				} else if (product.getMotorYn().equalsIgnoreCase("H")
-						&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+						/*&& req.getProductId().equalsIgnoreCase(travelProductId)*/) {
 					res = traService.travelCopyQuote(req, branches, loginId);
 				} else if (product.getMotorYn().equalsIgnoreCase("A")) {
 					res = buiService.buildingCopyQuote(req, branches, loginId);
@@ -998,7 +998,7 @@ public class GridServiceImpl implements GridService {
 				list = motService.searchMotorQuote(req, branches);
 
 			} else if (product.getMotorYn().equalsIgnoreCase("H")
-					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+					/*&& req.getProductId().equalsIgnoreCase(travelProductId)*/) {
 				list = traService.searchTravelQuote(req, branches);
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
 				list = buiService.searchBuildingQuote(req, branches);
