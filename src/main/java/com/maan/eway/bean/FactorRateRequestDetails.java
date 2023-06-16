@@ -216,7 +216,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="Is_REFERRAL", length=5)
     private String     isReferral ;
 
-    @Column(name="referral_description", length=1000)
+    @Column(name="REFERRAL_DESCRIPTION", length=1000)
     private String     referralDescription ;
 
     @Column(name="USER_OPT", length=5)
@@ -231,7 +231,7 @@ private static final long serialVersionUID = 1L;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 
-    @Column(name="cover_based_on", length=100)
+    @Column(name="COVER_BASED_ON", length=100)
     private String     coverBasedOn ;
 
     @Column(name="REGULATORY_CODE", length=50)

@@ -52,38 +52,38 @@ private static final long serialVersionUID = 1L;
     //--- ENTITY PRIMARY KEY 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(name="id", nullable=false)
+    @Column(name="ID", nullable=false)
     private Integer    id ;
 
     //--- ENTITY DATA FIELDS 
-    @Column(name="title", nullable=false, length=255)
+    @Column(name="TITLE", nullable=false, length=255)
     private String     title ;
 
-    @Column(name="titleDown", length=255)
+    @Column(name="TITLEDOWN", length=255)
     private String     titledown ;
 
-    @Column(name="description", length=255)
+    @Column(name="DESCRIPTION", length=255)
     private String     description ;
 
-    @Column(name="batch")
+    @Column(name="BATCH")
     private Integer    batch ;
 
-    @Column(name="checksum", length=255)
+    @Column(name="CHECKSUM", length=255)
     private String     checksum ;
 
-    @Column(name="status")
+    @Column(name="STATUS")
     private Integer    status ;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="created")
+    @Column(name="CREATED")
     private Date       created ;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="created_at")
+    @Column(name="CREATED_AT")
     private Date       createdAt ;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="updated_at")
+    @Column(name="UPDATED_AT")
     private Date       updatedAt ;
 
 

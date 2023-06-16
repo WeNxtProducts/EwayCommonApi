@@ -61,7 +61,7 @@ private static final long serialVersionUID = 1L;
     private Long       vdRefno ;
 
     @Id
-    @Column(name="status", nullable=false, length=20)
+    @Column(name="STATUS", nullable=false, length=20)
     private String     status ;
     
     @Column(name="REQUEST_REFERENCE_NO", nullable=false, length=10)
@@ -79,75 +79,75 @@ private static final long serialVersionUID = 1L;
     @Column(name="ACCIDENT_YN", nullable=false, length=20)
     private String     accidentYn ;
 
-    @Column(name="Wind_Screen_Cover_Requeired", nullable=false, length=50)
+    @Column(name="WIND_SCREEN_COVER_REQUEIRED", nullable=false, length=50)
     private String     windScreenCoverRequeired ;
 
     @Column(name="INSURANCE_TYPE", nullable=false, length=10)
     private String     insuranceType ;
 
-    @Column(name="Insurance_Class", nullable=false, length=10)
+    @Column(name="INSURANCE_CLASS", nullable=false, length=10)
     private String     insuranceClass ;
 
-    @Column(name="Owner_Category", nullable=false, length=10)
+    @Column(name="OWNER_CATEGORY", nullable=false, length=10)
     private String     ownerCategory ;
 
-    @Column(name="chassis_number", nullable=false, length=20)
+    @Column(name="CHASSIS_NUMBER", nullable=false, length=20)
     private String     chassisNumber ;
 
-    @Column(name="Vehicle_Make", nullable=false, length=10)
+    @Column(name="VEHICLE_MAKE", nullable=false, length=10)
     private String     vehicleMake ;
 
-    @Column(name="Vehcile_Model", nullable=false, length=10)
+    @Column(name="VEHCILE_MODEL", nullable=false, length=10)
     private String     vehcileModel ;
 
-    @Column(name="Vehicle_Body_Type", nullable=false, length=20)
+    @Column(name="VEHICLE_BODY_TYPE", nullable=false, length=20)
     private String     vehicleBodyType ;
 
-    @Column(name="Fuel_Type", nullable=false, length=10)
+    @Column(name="FUEL_TYPE", nullable=false, length=10)
     private String     fuelType ;
 
     @Column(name="MANUFACTURE_YEAR", length=10)
     private Integer     manufactureYear ;
 
-    @Column(name="Manufacture_age", nullable=false)
+    @Column(name="MANUFACTURE_AGE", nullable=false)
     private Integer    manufactureAge ;
 
-    @Column(name="registration_age")
+    @Column(name="REGISTRATION_AGE")
     private Integer    registrationAge ;
 
     @Temporal(TemporalType.DATE)
-    @Column(name="Registration_Year")
+    @Column(name="REGISTRATION_YEAR")
     private Date       registrationYear ;
 
-    @Column(name="Seating_Capacity", nullable=false, length=20)
+    @Column(name="SEATING_CAPACITY", nullable=false, length=20)
     private String     seatingCapacity ;
 
-    @Column(name="Period_of_Insurance", nullable=false, length=10)
+    @Column(name="PERIOD_OF_INSURANCE", nullable=false, length=10)
     private String     periodOfInsurance ;
 
-    @Column(name="Wind_screen_sum_insured")
+    @Column(name="WIND_SCREEN_SUM_INSURED")
     private BigDecimal     windScreenSumInsured ;
 
-    @Column(name="acccessories_sum_insured")
+    @Column(name="ACCCESSORIES_SUM_INSURED")
     private BigDecimal     acccessoriesSumInsured ;
 
-    @Column(name="Sum_Insured")
+    @Column(name="SUM_INSURED")
     private BigDecimal     sumInsured ;
 
-    @Column(name="ncdyears", nullable=false)
+    @Column(name="NCDYEARS", nullable=false)
     private Integer    ncdyears ;
 
     @Column(name="NCD_YN", nullable=false, length=5)
     private String     ncdYn ;
 
-    @Column(name="No_OF_Claims", nullable=false)
+    @Column(name="NO_OF_CLAIMS", nullable=false)
     private Integer    noOfClaims ;
 
     @Temporal(TemporalType.DATE)
-    @Column(name="entry_date", nullable=false)
+    @Column(name="ENTRY_DATE", nullable=false)
     private Date       entryDate ;
 
-    @Column(name="Vehicle_Weight", nullable=false)
+    @Column(name="VEHICLE_WEIGHT", nullable=false)
     private BigDecimal       vehicleWeight ;
 
     @Column(name="CURRENCY", nullable=false)

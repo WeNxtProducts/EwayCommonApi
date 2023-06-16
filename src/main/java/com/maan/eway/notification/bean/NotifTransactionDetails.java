@@ -53,127 +53,127 @@ private static final long serialVersionUID = 1L;
     //--- ENTITY PRIMARY KEY 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="Notif_No", nullable=false)
+    @Column(name="NOTIF_NO", nullable=false)
     public Integer    notifNo ;
 
     //--- ENTITY DATA FIELDS 
-    @Column(name="Customer_Name", length=20)
+    @Column(name="CUSTOMER_NAME", length=20)
     public String     customerName ;
 
-    @Column(name="Customer_Mail_Id", length=20)
+    @Column(name="CUSTOMER_MAIL_ID", length=20)
     public String     customerMailid ;
 
-    @Column(name="Customer_Phone_No")
+    @Column(name="CUSTOMER_PHONE_NO")
     public BigDecimal customerPhoneNo ;
 
-    @Column(name="Customer_Phone_Code")
+    @Column(name="CUSTOMER_PHONE_CODE")
     public Integer    customerPhoneCode ;
 
-    @Column(name="Customer_Messenger_Code")
+    @Column(name="CUSTOMER_MESSENGER_CODE")
     public Integer    customerMessengerCode ;
 
-    @Column(name="Customer_Messenger_Phone")
+    @Column(name="CUSTOMER_MESSENGER_PHONE")
     public BigDecimal customerMessengerPhone ;
 
-    @Column(name="Broker_Name", length=20)
+    @Column(name="BROKER_NAME", length=20)
     public String     brokerName ;
 
-    @Column(name="Broker_Company_Name", length=20)
+    @Column(name="BROKER_COMPANY_NAME", length=20)
     public String     brokerCompanyName ;
 
-    @Column(name="Broker_Mail_Id", length=20)
+    @Column(name="BROKER_MAIL_ID", length=20)
     public String     brokerMailId ;
 
-    @Column(name="Broker_Phone_No")
+    @Column(name="BROKER_PHONE_NO")
     public BigDecimal brokerPhoneNo ;
 
-    @Column(name="Broker_Phone_Code")
+    @Column(name="BROKER_PHONE_CODE")
     public Integer    brokerPhoneCode ;
 
-    @Column(name="Broker_Messenger_Code")
+    @Column(name="BROKER_MESSENGER_CODE")
     public Integer    brokerMessengerCode ;
 
-    @Column(name="Broker_Messenger_Phone")
+    @Column(name="BROKER_MESSENGER_PHONE")
     public BigDecimal brokerMessengerPhone ;
 
-    @Column(name="UW_name", length=20)
+    @Column(name="UW_NAME", length=20)
     public String     uwName ;
 
-    @Column(name="uw_mail_id", length=20)
+    @Column(name="UW_MAIL_ID", length=20)
     public String     uwMailid ;
 
-    @Column(name="UW_Phone_Code")
+    @Column(name="UW_PHONE_CODE")
     public Integer    uwPhonecode ;
 
-    @Column(name="UW_Phone_No")
+    @Column(name="UW_PHONE_NO")
     public BigDecimal uwPhoneNo ;
 
-    @Column(name="UW_messenger_code")
+    @Column(name="UW_MESSENGER_CODE")
     public Integer    uwMessengerCode ;
 
-    @Column(name="UW_messenger_phone")
+    @Column(name="UW_MESSENGER_PHONE")
     public BigDecimal uwMessengerPhone ;
 
-    @Column(name="Company_Name", length=20)
+    @Column(name="COMPANY_NAME", length=20)
     public String     companyName ;
 
-    @Column(name="Product_Name", length=20)
+    @Column(name="PRODUCT_NAME", length=20)
     public String     productName ;
 
-    @Column(name="Section_Name", length=20)
+    @Column(name="SECTION_NAME", length=20)
     public String     sectionName ;
 
-    @Column(name="Status_message", length=20)
+    @Column(name="STATUS_MESSAGE", length=20)
     public String     statusMessage ;
 
     @Column(name="OTP")
     public Integer    otp ;
 
-    @Column(name="Policy_No")
+    @Column(name="POLICY_NO")
     public String policyNo ;
 
-    @Column(name="Quote_No")
+    @Column(name="QUOTE_NO")
     public String quoteNo ;
 
-    @Column(name="Notif_Description", length=100)
+    @Column(name="NOTIF_DESCRIPTION", length=100)
     public String     notifDescription ;
 
-    @Column(name="notif_template_name", length=20)
+    @Column(name="NOTIF_TEMPLATE_NAME", length=20)
     public String     notifTemplatename ;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="Entry_Date")
+    @Column(name="ENTRY_DATE")
     public Date       entryDate ;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="Notifcation_Push_date")
+    @Column(name="NOTIFCATION_PUSH_DATE")
     public Date       notifcationPushDate ;
     
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="Notifcation_End_date")
+    @Column(name="NOTIFCATION_END_DATE")
     public Date       notifcationEndDate ;
 
-    @Column(name="Notif_pushed_status", length=20)
+    @Column(name="NOTIF_PUSHED_STATUS", length=20)
     public String     notifPushedStatus ;
 
-    @Column(name="Notif_Priority", nullable=false)
+    @Column(name="NOTIF_PRIORITY", nullable=false)
     public Integer    notifPriority ;
 
-    @Column(name="Tiny_URL", length=15)
+    @Column(name="TINY_URL", length=15)
     public String     tinyUrl ;
 
-    @Column(name="company_id", nullable=false, length=15)
+    @Column(name="COMPANY_ID", nullable=false, length=15)
     public String     companyid ;
 
-    @Column(name="product_id", nullable=false)
+    @Column(name="PRODUCT_ID", nullable=false)
     public Integer    productid ;
 
-    @Column(name="company_Address")
+    @Column(name="COMPANY_ADDRESS")
     public String companyAddress;
-    @Column(name="company_Logo")
+    @Column(name="COMPANY_LOGO")
     public String companyLogo;
     //--- ENTITY LINKS ( RELATIONSHIP )
-    @Column(name="attach_file_path")
+    @Column(name="ATTACH_FILE_PATH")
     public String attachFilePath;
     
     @Column(name="PUSHED_BY", length=100)
