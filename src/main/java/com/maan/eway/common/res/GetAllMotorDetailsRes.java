@@ -85,17 +85,19 @@ public class GetAllMotorDetailsRes {
 		@JsonProperty("InsuranceClass")
 	    private String  insuranceClass ;
 		
-
-		@JsonFormat(pattern="dd/MM/yyyy")
+		@JsonProperty("EntryDate")
+	    private String       entryDate ;
+		
+	//	@JsonFormat(pattern="dd/MM/yyyy")
 		@JsonProperty("ManufactureYear")
-	    private Date manufactureYear;
+	    private String manufactureYear;
 
 		@JsonProperty("Status")
 	    private String   status;
 
-		@JsonFormat(pattern="dd/MM/yyyy")
+	//	@JsonFormat(pattern="dd/MM/yyyy")
 		@JsonProperty("UpdatedDate")
-	    private Date updatedDate;
+	    private String updatedDate;
 
 		@JsonProperty("UpdatedBy")
 	    private String  updatedBy;
@@ -103,13 +105,13 @@ public class GetAllMotorDetailsRes {
 		@JsonProperty("CreatedBy")
 	    private String  createdBy;
 		
-		@JsonFormat(pattern="dd/MM/yyyy")
+	//	@JsonFormat(pattern="dd/MM/yyyy")
 		@JsonProperty("PolicyStartDate")
-	    private Date policyStartDate;
+	    private String policyStartDate;
 
-		@JsonFormat(pattern="dd/MM/yyyy")
+	//	@JsonFormat(pattern="dd/MM/yyyy")
 		@JsonProperty("PolicyEndDate")
-	    private Date policyEndDate;
+	    private String policyEndDate;
 		
 		@JsonProperty("SavedFrom")
 	    private String  savedFrom;
@@ -175,16 +177,16 @@ public class GetAllMotorDetailsRes {
 		
 		
 
-		@JsonFormat(pattern="dd/MM/yyyy")
+	////	@JsonFormat(pattern="dd/MM/yyyy")
 		@JsonProperty("EndorsementDate")
-	    private Date       endorsementDate ;
+	    private String       endorsementDate ;
 
 		@JsonProperty("EndorsmentRemarks")
 	    private String     endorsementRemarks ;
 
 	    @JsonFormat(pattern="dd/MM/yyyy")
 	    @JsonProperty("EndorsementEffectiveDate")
-	    private Date       endorsementEffdate ;
+	    private String       endorsementEffdate ;
 	    
 	    @JsonProperty("PolicyNo")
 	    private String   policyNo ;
@@ -200,7 +202,7 @@ public class GetAllMotorDetailsRes {
 	    private String     endtPrevQuoteNo ;
 
 	    @JsonProperty("EndtCount")
-	    private BigDecimal endtCount ;
+	    private String endtCount ;
 
 	    @JsonProperty("EndtStatus")
 	    private String  endtStatus ;
@@ -253,11 +255,11 @@ public class GetAllMotorDetailsRes {
 //		@JsonProperty("PlanTypeId")
 //	    private String    planTypeId   ;
 //		
-//		@JsonFormat(pattern="dd/MM/yyyy")
+//	//	@JsonFormat(pattern="dd/MM/yyyy")
 //		@JsonProperty("TravelStartDate")
 //	    private Date       travelStartDate ;
 //		
-//		@JsonFormat(pattern="dd/MM/yyyy")
+//	//	@JsonFormat(pattern="dd/MM/yyyy")
 //		@JsonProperty("TravelEndDate")
 //	    private Date       travelEndDate ;
 //		
@@ -288,7 +290,7 @@ public class GetAllMotorDetailsRes {
 //		@JsonProperty("RejectReason")
 //	    private String     rejectReason ;
 //	
-//		@JsonFormat(pattern="dd/MM/yyyy")
+//	//	@JsonFormat(pattern="dd/MM/yyyy")
 //		@JsonProperty("EntryDate")
 //	    private Date       entryDate ;
 //		
@@ -298,6 +300,5 @@ public class GetAllMotorDetailsRes {
 //		@JsonProperty("DestinationCountryDesc")
 //		private String desctinationCountryDesc;
 //
-////		@JsonProperty("GroupDetails")
 ////		private List<TravelGroupGetRes> groupDetails;
 }

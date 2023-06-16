@@ -14,8 +14,12 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import javax.persistence.Column;
 import javax.persistence.EntityManager;
+import javax.persistence.Id;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -39,6 +43,7 @@ import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.EndtTypeMaster;
+import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
@@ -604,48 +609,139 @@ public class TravelGridServiceImpl implements  TravelGridService {
 	}
 	return searchQuote;
 }
-	public List<Tuple> searchDetails(String searchKey,String searchValue,String companyId, String loginId,String userType,List<String> branches) {
+	public List<Tuple> searchDetails(String searchKey, String searchValue, String companyId, String loginId,
+			String userType, List<String> branches) {
 		List<Tuple> customerDetailsList = new ArrayList<Tuple>();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
 		try {
 
-			 
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
 
 			Root<EserviceTravelDetails> c = query.from(EserviceTravelDetails.class);
-		
 			Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
-			query.multiselect(c.alias("c") ,cus.get("clientName").alias("clientName"),cb.count(c).alias("idsCount"));
+			
+			query.multiselect(cb.max(cus.get("clientName")).alias("clientName"), cb.count(c).alias("idsCount"),
+					cb.max(c.get("companyId")).alias("companyId"), cb.max(c.get("productId")).alias("productId"),
+					cb.max(c.get("branchCode")).alias("branchCode"),
+					cb.max(c.get("requestReferenceNo")).alias("requestReferenceNo"),
+					cb.selectCase().when(cb.max(c.get("quoteNo")).isNotNull(), cb.max(c.get("quoteNo")))
+							.otherwise(cb.max(c.get("quoteNo"))).alias("quoteNo"),
+
+					cb.selectCase().when(cb.max(c.get("customerId")).isNotNull(), cb.max(c.get("customerId")))
+							.otherwise(cb.max(c.get("customerId"))).alias("customerId"),
+					cb.max(c.get("travelStartDate")).alias("policyStartDate"),
+					cb.max(c.get("travelEndDate")).alias("policyEndDate"), 
+					cb.max(c.get("rejectReason")).alias("rejectReason"),
+					cb.max(c.get("adminRemarks")).alias("adminRemarks"),
+					cb.max(c.get("referalRemarks")).alias("referalRemarks"),
+					cb.max(c.get("customerReferenceNo")).alias("customerReferenceNo"),
+					cb.max(c.get("riskId")).alias("riskId"),
+					cb.max(c.get("travelCoverId")).alias("travelCoverId"),
+					cb.max(c.get("travelCoverDesc")).alias("travelCoverDesc"),
+					cb.max(c.get("sectionId")).alias("sectionId"), 
+					cb.max(c.get("policyNo")).alias("policyNo"),
+					cb.max(c.get("sourceCountry")).alias("sourceCountry"),
+					cb.max(c.get("destinationCountry")).alias("destinationCountry"),
+					cb.max(c.get("sportsCoverYn")).alias("sportsCoverYn"),
+					cb.max(c.get("terrorismCoverYn")).alias("terrorismCoverYn"),
+					cb.max(c.get("planTypeId")).alias("planTypeId"),
+					cb.max(c.get("currency")).alias("currency"),
+					cb.max(c.get("exchangeRate")).alias("exchangeRate"),
+					cb.max(c.get("planTypeDesc")).alias("planTypeDesc"),
+					cb.max(c.get("travelCoverDuration")).alias("travelCoverDuration"),
+					cb.max(c.get("totalPassengers")).alias("totalPassengers"),
+					cb.max(c.get("totalPremium")).alias("totalPremium"),
+					cb.max(c.get("age")).alias("age"), 
+					cb.max(c.get("effectiveDate")).alias("effectiveDate"),
+					cb.max(c.get("entryDate")).alias("entryDate"),
+					cb.max(c.get("createdBy")).alias("createdBy"), 
+					cb.max(c.get("status")).alias("status"),
+					cb.max(c.get("updatedDate")).alias("updatedDate"),
+					cb.max(c.get("updatedBy")).alias("updatedBy"), 
+					cb.max(c.get("remarks")).alias("remarks"),
+					cb.max(c.get("havepromocode")).alias("havepromocode"),
+					cb.max(c.get("promocode")).alias("promocode"),
+					cb.max(c.get("covidCoverYn")).alias("covidCoverYn"),
+					cb.max(c.get("acExecutiveId")).alias("acExecutiveId"),
+					cb.max(c.get("applicationId")).alias("applicationId"),
+					cb.max(c.get("brokerCode")).alias("brokerCode"),
+					cb.max(c.get("subUserType")).alias("subUserType"),
+					cb.max(c.get("loginId")).alias("loginId"),
+					cb.max(c.get("adminLoginId")).alias("adminLoginId"),
+					cb.max(c.get("bdmCode")).alias("bdmCode"),
+					cb.max(c.get("sourceType")).alias("sourceType"),
+					cb.max(c.get("customerCode")).alias("customerCode"),
+					cb.max(c.get("brokerBranchName")).alias("brokerBranchName"),
+					cb.max(c.get("brokerBranchCode")).alias("brokerBranchCode"),
+					cb.max(c.get("companyName")).alias("companyName"),
+					cb.max(c.get("productName")).alias("productName"),
+					cb.max(c.get("sectionName")).alias("sectionName"),
+					cb.max(c.get("commissionType")).alias("commissionType"),
+					cb.max(c.get("commissionTypeDesc")).alias("commissionTypeDesc"),
+					cb.max(c.get("sourceCountryDesc")).alias("sourceCountryDesc"),
+					cb.max(c.get("destinationCountryDesc")).alias("destinationCountryDesc"),
+					cb.max(c.get("actualPremiumLc")).alias("actualPremiumLc"),
+					cb.max(c.get("actualPremiumFc")).alias("actualPremiumFc"),
+					cb.max(c.get("overallPremiumLc")).alias("overallPremiumLc"),
+					cb.max(c.get("overallPremiumFc")).alias("overallPremiumFc"),
+					cb.max(c.get("oldReqRefNo")).alias("oldReqRefNo"),
+					cb.max(c.get("bankCode")).alias("bankCode"),
+					cb.max(c.get("manualReferalYn")).alias("manualReferalYn"),
+					cb.max(c.get("endorsementType")).alias("endorsementType"),
+					cb.max(c.get("endorsementTypeDesc")).alias("endorsementTypeDesc"),
+					cb.max(c.get("endorsementDate")).alias("endorsementDate"),
+					cb.max(c.get("endorsementRemarks")).alias("endorsementRemarks"),
+					cb.max(c.get("endorsementEffdate")).alias("endorsementEffdate"),
+					cb.max(c.get("originalPolicyNo")).alias("originalPolicyNo"),
+					cb.max(c.get("endtPrevPolicyNo")).alias("endtPrevPolicyNo"),
+					cb.max(c.get("endtPrevQuoteNo")).alias("endtPrevQuoteNo"),
+					cb.max(c.get("endtStatus")).alias("endtStatus"),
+					cb.max(c.get("isFinaceYn")).alias("isFinaceYn"),
+					cb.max(c.get("endtCategDesc")).alias("endtCategDesc"),
+					cb.max(c.get("endtPremium")).alias("endtPremium"));
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(c.get("customerReferenceNo")));
 
-
 			Predicate n1 = null;
 			Predicate n3 = null;
 			Predicate n4 = null;
 			Predicate n5 = null;
-			
+
 			// Where
 			if (searchKey.equalsIgnoreCase("RequestReferenceNo")) {
-				n1 = cb.like(cb.lower(c.get("requestReferenceNo")), searchValue );
+				n1 = cb.equal(cb.lower(c.get("requestReferenceNo")), searchValue);
 			} else if (searchKey.equalsIgnoreCase("CustomerReferenceNo")) {
-				n1 = cb.like(cb.lower(c.get("customerReferenceNo")), searchValue );
+				n1 = cb.equal(cb.lower(c.get("customerReferenceNo")), searchValue);
 			} else if (searchKey.equalsIgnoreCase("RegistrationNumber")) {
-				n1 = cb.like(cb.lower(c.get("registrationNumber")),searchValue );
+				n1 = cb.equal(cb.lower(c.get("registrationNumber")), searchValue);
 			} else if (searchKey.equalsIgnoreCase("QuoteNumber")) {
-				n1 = cb.like(cb.lower(c.get("quoteNo")),  searchValue  );
+				n1 = cb.equal(cb.lower(c.get("quoteNo")), searchValue);
 			} else if (searchKey.equalsIgnoreCase("EntryDate")) {
-				n1 = cb.like(cb.lower(c.get("entryDate").as(String.class)),"%"+ searchValue+"%" );
+				Date entryDate = sdf.parse(searchValue);
+				Calendar cal = new GregorianCalendar();
+				cal.setTime(entryDate);
+				//cal.add(Calendar.HOUR , -1);
+				cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
+				Date startDate = cal.getTime() ;
+				cal.setTime(entryDate);
+			//	cal.add(Calendar.HOUR , +23);
+				cal.add(Calendar.DAY_OF_MONTH, 0);cal.set(Calendar.HOUR_OF_DAY,23 );cal.set(Calendar.MINUTE, 59);
+				Date endDate = cal.getTime() ;
+				n1=cb.between(c.get("entryDate"), startDate, endDate);
+				
 			} else if (searchKey.equalsIgnoreCase("ChassisNumber")) {
-				n1 = cb.like(cb.lower(c.get("chassisNumber")),  searchValue );
+				n1 = cb.equal(cb.lower(c.get("chassisNumber")), searchValue);
 			} else if (searchKey.equalsIgnoreCase("ClientName")) {
 				n1 = cb.like(cb.lower(cus.get("clientName")), "%" + searchValue + "%");
 				n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
 			}
+
 			Predicate n2 = cb.equal(c.get("companyId"), companyId);
-			
+
 			if ("issuer".equalsIgnoreCase(userType)) {
 				n3 = cb.equal(c.get("applicationId"), loginId);
 				Expression<String> e0 = c.get("branchCode");
@@ -667,15 +763,35 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				}
 			}
 			n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
-			query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n5)
+			.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),
+					c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
+					c.get("customerId"), c.get("travelEndDate"), c.get("travelStartDate")/*,c.get("acExecutiveId"),
+				c.get("actualPremiumLc"), c.get("actualPremiumFc"), c.get("overallPremiumLc"),c.get("overallPremiumFc")*/)
+			.orderBy(orderList);
 			if (searchKey.equalsIgnoreCase("ClientName")) {
-				query.where(n1, n2,n4,n5).orderBy(orderList);
+				query.where(n1, n2,n4,n5)
+				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),
+						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
+						c.get("customerId"), c.get("travelEndDate"), c.get("travelStartDate")/*,c.get("acExecutiveId"),
+						c.get("actualPremiumLc"), c.get("actualPremiumFc"), c.get("overallPremiumLc"),c.get("overallPremiumFc")*/)
+			
+				.orderBy(orderList);
 			}
-
+			if (searchKey.equalsIgnoreCase("EntryDate")) {
+				query.where(n1,n2,n3,n4)
+				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),
+						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
+						c.get("customerId"), c.get("travelEndDate"), c.get("travelStartDate")/*,c.get("acExecutiveId"),
+						c.get("actualPremiumLc"), c.get("actualPremiumFc"), c.get("overallPremiumLc"),c.get("overallPremiumFc")*/)
+			
+				.orderBy(orderList);
+			}
 			// Get Result
 			TypedQuery<Tuple> result = em.createQuery(query);
 			customerDetailsList = result.getResultList();
-
+			customerDetailsList = customerDetailsList.stream().filter(o -> !o.get("idsCount").equals(0L))
+					.collect(Collectors.toList());
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
