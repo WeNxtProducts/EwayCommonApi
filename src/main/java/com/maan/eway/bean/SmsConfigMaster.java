@@ -52,7 +52,7 @@ private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
     @Id
-    @Column(name="S_No", nullable=false)
+    @Column(name="S_NO", nullable=false)
     private Integer    sNo ;
 
     @Id

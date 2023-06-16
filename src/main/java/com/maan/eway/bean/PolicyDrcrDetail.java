@@ -110,7 +110,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="STATUS", length=5)
     private String     status ;
 
-    @Column(name="Risk_id", length=2)
+    @Column(name="RISK_ID", length=2)
     private String     riskId ;
     
     //--- ENTITY LINKS ( RELATIONSHIP )

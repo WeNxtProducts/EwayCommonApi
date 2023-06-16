@@ -127,7 +127,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="WORKMEN_COMP_SUMINSURED")
     private BigDecimal     workmenCompSuminsured;
 
-    @Column(name="Period_of_Insurance", nullable=false, length=10)
+    @Column(name="PERIOD_OF_INSURANCE", nullable=false, length=10)
     private String     periodOfInsurance ;
     
     

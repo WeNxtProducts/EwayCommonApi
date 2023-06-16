@@ -107,7 +107,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="SUM_INSURED")
     private BigDecimal     sumInsured;
 
-	@Column(name="Period_of_Insurance", nullable=false, length=10)
+	@Column(name="PERIOD_OF_INSURANCE", nullable=false, length=10)
 	private String     periodOfInsurance ;
 	
     @Temporal(TemporalType.TIMESTAMP)
