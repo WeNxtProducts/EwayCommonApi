@@ -1072,12 +1072,12 @@ private BuildingDetailsRepository BuildingRepo;
 				
 				
 			}
-			//Common Document 
-			DocumentDetails  document = new DocumentDetails();
-			document.setDocumentTitle("Common Documents");
-			document.setRiskId("1");
-			document.setSectionId("99999");
-			documentDetails.add(document);
+//			//Common Document 
+//			DocumentDetails  document = new DocumentDetails();
+//			document.setDocumentTitle("Common Documents");
+//			document.setRiskId("1");
+//			document.setSectionId("99999");
+//			documentDetails.add(document);
 			
 			// Induvidual Document
 			List<ProductEmployeeDetails> empList = empRepo.findByQuoteNo(req.getQuoteNo());
