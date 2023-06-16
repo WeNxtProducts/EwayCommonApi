@@ -161,7 +161,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(m.get("policyStartDate")));
+			orderList.add(cb.desc(m.get("updatedDate")));
 
 			// Where
 			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
@@ -225,7 +225,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 			query.multiselect(cb.count(m).alias("idsCount"),
 					// Customer Info
 					c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
-					m.get("customerName").alias("clientName"),
+					c.get("clientName").alias("clientName"),
 					// Vehicle Info
 					m.get("companyId").alias("companyId"), m.get("productId").alias("productId"),
 					m.get("branchCode").alias("branchCode"), m.get("requestReferenceNo").alias("requestReferenceNo"),
@@ -237,7 +237,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(m.get("policyStartDate")));
+			orderList.add(cb.desc(m.get("updatedDate")));
 
 			// Where
 			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
@@ -297,7 +297,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 			query.multiselect(cb.count(m).alias("idsCount"),
 					// Customer Info
 					c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
-					m.get("customerName").alias("clientName"),
+					c.get("clientName").alias("clientName"),
 					// Vehicle Info
 					m.get("companyId").alias("companyId"), m.get("productId").alias("productId"),
 					m.get("branchCode").alias("branchCode"), m.get("requestReferenceNo").alias("requestReferenceNo"),
@@ -310,7 +310,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(m.get("policyStartDate")));
+			orderList.add(cb.desc(m.get("updatedDate")));
 
 			// Where
 			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
@@ -372,7 +372,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 			query.multiselect(cb.count(m).as(Long.class).alias("idsCount"),
 					// Customer Info
 					c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
-					m.get("customerName").alias("clientName"),
+					c.get("clientName").alias("clientName"),
 					// Vehicle Info
 					m.get("companyId").alias("companyId"), m.get("productId").alias("productId"),
 					m.get("branchCode").alias("branchCode"), m.get("requestReferenceNo").alias("requestReferenceNo"),
@@ -388,7 +388,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(m.get("policyStartDate")));
+			orderList.add(cb.desc(m.get("updatedDate")));
 
 			// Where
 			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
@@ -412,7 +412,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 			}
 		//	Predicate n7 = cb.isNull(m.get("endorsementType"));
 			query.where(n1, n2, n3, n4, n5, n6)
-					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), m.get("customerName"), m.get("companyId"),
+					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
 							m.get("rejectReason"),m.get("adminRemarks"),m.get("referalRemarks"))
@@ -449,7 +449,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 			query.multiselect(cb.count(m).as(Long.class).alias("idsCount"),
 					// Customer Info
 					c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
-					m.get("customerName").alias("clientName"),
+					c.get("clientName").alias("clientName"),
 					// Vehicle Info
 					m.get("companyId").alias("companyId"), m.get("productId").alias("productId"),
 					m.get("branchCode").alias("branchCode"), m.get("requestReferenceNo").alias("requestReferenceNo"),
@@ -464,7 +464,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(m.get("policyStartDate")));
+			orderList.add(cb.desc(m.get("updatedDate")));
 
 			// Where
 			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
@@ -476,7 +476,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 			Predicate n6 = e0.in(branches);
 		//	Predicate n7 = cb.isNull(m.get("endorsementType"));
 			query.where(n1, n2, n3, n4, n6)
-					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), m.get("customerName"), m.get("companyId"),
+					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
 							m.get("rejectReason"),m.get("adminRemarks"),m.get("referalRemarks"))
@@ -1028,7 +1028,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 						// Customer Info
 						c.get("customerReferenceNo").alias("customerReferenceNo"),
 						c.get("idNumber").alias("idNumber"),
-						m.get("customerName").alias("clientName"),
+						c.get("clientName").alias("clientName"),
 						c.get("mobileNo1").alias("mobileNo1"),
 						c.get("isTaxExempted").alias("isTaxExempted"),
 						c.get("taxExemptedId").alias("taxExemptedId"),
@@ -1104,7 +1104,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 
 				query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10)
 				.groupBy(
-						c.get("customerReferenceNo"), c.get("idNumber"), m.get("customerName"),c.get("mobileNo1"), c.get("isTaxExempted"), c.get("taxExemptedId"),
+						c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"),c.get("mobileNo1"), c.get("isTaxExempted"), c.get("taxExemptedId"),
 						m.get("companyId"),m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 						m.get("customerId"), m.get("entryDate"), m.get("expiryDate"),m.get("inceptionDate"), m.get("overallPremiumLc"), m.get("overallPremiumFc"),
 						m.get("policyNo"), m.get("debitAcNo"), m.get("debitTo"),m.get("debitToId"), m.get("debitNoteNo"), m.get("debitNoteDate"),
@@ -1147,7 +1147,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 						// Customer Info
 						c.get("customerReferenceNo").alias("customerReferenceNo"),
 						c.get("idNumber").alias("idNumber"),
-						m.get("customerName").alias("clientName"),
+						c.get("clientName").alias("clientName"),
 						c.get("mobileNo1").alias("mobileNo1"),
 						c.get("isTaxExempted").alias("isTaxExempted"),
 						c.get("taxExemptedId").alias("taxExemptedId"),
@@ -1265,7 +1265,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 						// Customer Info
 						c.get("customerReferenceNo").alias("customerReferenceNo"),
 						c.get("idNumber").alias("idNumber"),
-						m.get("customerName").alias("clientName"),
+						c.get("clientName").alias("clientName"),
 						c.get("mobileNo1").alias("mobileNo1"),
 						c.get("isTaxExempted").alias("isTaxExempted"),
 						c.get("taxExemptedId").alias("taxExemptedId"),

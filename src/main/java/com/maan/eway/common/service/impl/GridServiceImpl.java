@@ -1831,7 +1831,7 @@ public class GridServiceImpl implements GridService {
 			} else {
 				portfolioActiveList = commonService.getCommonProtfolioActive(req, branches, today, limit, offset, "P");
 			}
-//				else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
+//			 if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 //					referralApprovedList = traService.getTravelProtfolioActive(req  , branches, limit , offset, "P" );
 //				}
 //				else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
