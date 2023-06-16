@@ -254,6 +254,9 @@ private BuildingDetailsRepository BuildingRepo;
 	@Autowired
 	private TrackingDetailsService trackingService;
 	
+	@Autowired
+	private FactorRateRequestDetailsRepository facRateRepo ;
+	
 	
 	private Logger log = LogManager.getLogger(QuoteServiceImpl.class);
 	
@@ -3577,13 +3580,64 @@ private BuildingDetailsRepository BuildingRepo;
 					error.add(new Error("01", "ManualReferralRemarks", "Manual Referral Remarks Less Then 200 Charecter Only Allowed"));
 				}
 					
-			}			
+			}	
 			
-		} catch (Exception e) {
+			if(StringUtils.isBlank(req.getRequestReferenceNo() ) ){
+				error.add(new Error("01", "RequestReferenceNo", "Please Enter Request Reference No"));
+			}
+			if(StringUtils.isBlank(req.getProductId() ) ){
+				error.add(new Error("01", "ProductId", "Please Enter Product Id"));
+			}
+			
+			if(StringUtils.isNotBlank(req.getRequestReferenceNo() )  &&  StringUtils.isNotBlank(req.getProductId() ) ) {
+				List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo()); 
+				List<EserviceSectionDetails>   sections = eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());	
+				
+				Long row = 0L ;
+				for (VehicleIdsReq id :  req.getVehicleIdsList() ) {
+					row = row + 1 ;
+//						if(StringUtils.isBlank(id.getSectionId() ) ){
+//							error.add(new Error("01", "SectionId", "Please Enter Section Id In Row No : " + row));
+//						}
+//						if(id.getVehicleId()==null ){
+//							error.add(new Error("01", "RiskId", "Please Enter Risk Id In Row No : " + row));
+//						}
+						
+					if(StringUtils.isNotBlank(id.getSectionId() )  && id.getVehicleId()!=null  ) {
+						List<EserviceSectionDetails>   filterSection  = sections.stream().filter( o -> o.getSectionId().equalsIgnoreCase(id.getSectionId())).collect(Collectors.toList());
+						String sectionName = filterSection.size() > 0 ? filterSection.get(0).getSectionName() : id.getSectionId() ;
+						
+						// Base Cover Check in Table
+						List<FactorRateRequestDetails> filterBaseCover = covers.stream().filter( o -> o.getVehicleId() !=null && o.getSectionId() !=null && o.getCoverageType() !=null )
+								.filter( o ->  o.getVehicleId().equals(Integer.valueOf(id.getVehicleId())) && o.getSectionId().equals(Integer.valueOf(id.getSectionId()))
+										&& o.getCoverageType().equalsIgnoreCase("B") ).collect(Collectors.toList());
+						
+						
+						if(filterBaseCover.size() <=0 ) {
+							error.add(new Error("01", "BaseCover", "Base Cover Not Available In Risk Id :  " + id.getVehicleId()  + ", Section Id : " + sectionName ));
+						} else {
+							// Base Cover Check in Request
+							FactorRateRequestDetails cov = filterBaseCover.get(0);
 
-			log.error(e);
+							String baseCoverId = cov.getCoverId().toString();
+							List<CoverIdsReq> filterBaseCoverReq = id .getCoverIdList().stream().filter( o -> o.getCoverId() !=null  )
+									.filter( o ->  o.getCoverId().equals(Integer.valueOf(baseCoverId))  ).collect(Collectors.toList());
+							if(filterBaseCoverReq.size() <=0 ) {
+								error.add(new Error("01", "BaseCover", "Base Cover Not Available In Risk Id :  " + id.getVehicleId()  + ", Section Id : " + sectionName ));
+							}
+						}
+						
+					}
+					
+					
+					
+				}
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
-			error.add(new Error("19", "Common Error", e.getMessage()));
+			error.add(new Error("01", "CommonError", e.getMessage() ));
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
 		}
 		return error;
 	}
