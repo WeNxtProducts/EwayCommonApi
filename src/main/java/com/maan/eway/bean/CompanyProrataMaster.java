@@ -53,55 +53,55 @@ private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
     @Id
-    @Column(name="Insuranceid", nullable=false, length=10)
+    @Column(name="INSURANCEID", nullable=false, length=10)
     private String     insuranceid ;
 
     @Id
-    @Column(name="Productid", nullable=false)
+    @Column(name="PRODUCTID", nullable=false)
     private Integer    productid ;
 
     @Id
-    @Column(name="Sno", nullable=false)
+    @Column(name="SNO", nullable=false)
     private Integer    sno ;
 
     //--- ENTITY DATA FIELDS 
-    @Column(name="Startfrom")
+    @Column(name="STARTFROM")
     private BigDecimal startfrom ;
 
-    @Column(name="Endto")
+    @Column(name="ENDTO")
     private BigDecimal endto ;
 
-    @Column(name="Percent")
+    @Column(name="PERCENT")
     private BigDecimal percent ;
 
-    @Column(name="Status", length=5)
+    @Column(name="STATUS", length=5)
     private String     status ;
 
-    @Column(name="remarks", length=100)
+    @Column(name="REMARKS", length=100)
     private String     remarks ;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="entry_date")
+    @Column(name="ENTRY_DATE")
     private Date       entryDate ;
 
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="Effective_Date_Start")
+    @Column(name="EFFECTIVE_DATE_START")
     private Date       effectiveDateStart ;
     
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="Effective_Date_End")
+    @Column(name="EFFECTIVE_DATE_END")
     private Date       effectiveDateEnd ;
     
     
-    @Column(name="Created_By", length=100)
+    @Column(name="CREATED_BY", length=100)
     private String     createdBy ;
     
-    @Column(name="Updated_By", length=100)
+    @Column(name="UPDATED_BY", length=100)
     private String     updatedBy ;
    
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="Updated_Date")
+    @Column(name="UPDATED_DATE")
     private Date updatedDate ;
     //--- ENTITY LINKS ( RELATIONSHIP )
 

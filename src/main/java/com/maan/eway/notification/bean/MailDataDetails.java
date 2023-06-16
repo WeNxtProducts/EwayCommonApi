@@ -65,7 +65,7 @@ private static final long serialVersionUID = 1L;
     private String     mailRegards ;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="Pushed_Entry_Date")
+    @Column(name="PUSHED_ENTRY_DATE")
     private Date       pushedEntryDate ;
 
     @Column(name="TO_EMAIL", length=50)
@@ -74,14 +74,14 @@ private static final long serialVersionUID = 1L;
     @Column(name="FROM_EMAIL", length=50)
     private String     fromEmail ;
 
-    @Column(name="status", length=5)
+    @Column(name="STATUS", length=5)
     private String     status ;
 
     @Column(name="MAIL_RESPONSE", length=100)
     private String     mailResponse ;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
-    @Column(name="Notif_No", nullable=false)
+    @Column(name="NOTIF_NO", nullable=false)
     private Integer    notifNo ;
     
     @Column(name="PUSHED_BY", length=100)

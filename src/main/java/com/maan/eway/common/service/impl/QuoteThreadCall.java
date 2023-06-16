@@ -1737,23 +1737,23 @@ public class QuoteThreadCall implements Callable<Object>  {
 				Long travelInfo =  traPassRepo.countByQuoteNo(req.getQuoteNo());
 				if (travelInfo > 0  ) {
 					//Delete data
-					List<TravelPassengerDetails> oldPassDatas = 	traPassRepo.findByQuoteNo(req.getQuoteNo());
+//					List<TravelPassengerDetails> oldPassDatas = 	traPassRepo.findByQuoteNo(req.getQuoteNo());
 					traPassRepo.deleteByQuoteNo(req.getQuoteNo());
 						
-					// Find History
-					for (TravelPassengerDetails passData :  oldPassDatas) {
-						Long travelHisInfo =  traPassHisRepo.countByQuoteNoAndPassengerId(req.getQuoteNo() ,passData.getPassengerId());
-						if (travelHisInfo > 0 ) {
-							//Delete data
-							traPassHisRepo.deleteByQuoteNoAndPassengerId(req.getQuoteNo(),passData.getPassengerId());
-							
-						}
-						// Save New 
-						TravelPassengerHistory traHistorySave = new TravelPassengerHistory(); 
-						dozerMapper.map(passData, traHistorySave);
-						traHistorySave.setEntryDate(new Date());
-						traPassHisRepo.saveAndFlush(traHistorySave);
-					}
+//					// Find History
+//					for (TravelPassengerDetails passData :  oldPassDatas) {
+//						Long travelHisInfo =  traPassHisRepo.countByQuoteNoAndPassengerId(req.getQuoteNo() ,passData.getPassengerId());
+//						if (travelHisInfo > 0 ) {
+//							//Delete data
+//							traPassHisRepo.deleteByQuoteNoAndPassengerId(req.getQuoteNo(),passData.getPassengerId());
+//							
+//						}
+//						// Save New 
+//						TravelPassengerHistory traHistorySave = new TravelPassengerHistory(); 
+//						dozerMapper.map(passData, traHistorySave);
+//						traHistorySave.setEntryDate(new Date());
+//						traPassHisRepo.saveAndFlush(traHistorySave);
+//					}
 					
 					
 				} else if(StringUtils.isNotBlank(req.getEndtPrevQuoteNo())) {
@@ -1761,26 +1761,26 @@ public class QuoteThreadCall implements Callable<Object>  {
 					travelInfo =  traPassRepo.countByQuoteNo(req.getEndtPrevQuoteNo());
 					if (travelInfo > 0  ) {
 						//Delete data
-						List<TravelPassengerDetails> oldPassDatas = 	traPassRepo.findByQuoteNo(req.getEndtPrevQuoteNo());
+//						List<TravelPassengerDetails> oldPassDatas = 	traPassRepo.findByQuoteNo(req.getEndtPrevQuoteNo());
 						traPassRepo.deleteByQuoteNo(req.getQuoteNo());
-							
-						// Find History
-						for (TravelPassengerDetails passData :  oldPassDatas) {
-							Long travelHisInfo =  traPassHisRepo.countByQuoteNoAndPassengerId(req.getQuoteNo(),passData.getPassengerId());
-							if (travelHisInfo > 0 ) {
-								//Delete data
-								traPassHisRepo.deleteByQuoteNoAndPassengerId(req.getQuoteNo(),passData.getPassengerId());
-								
-							}
-							// Save New 
-							TravelPassengerHistory traHistorySave = new TravelPassengerHistory(); 
-							dozerMapper.map(passData, traHistorySave);
-							traHistorySave.setRequestReferenceNo(req.getRequestReferenceNo());
-							traHistorySave.setQuoteNo(req.getQuoteNo());
-							traHistorySave.setCustomerId(req.getCustomerId());
-							traHistorySave.setEntryDate(new Date());
-							traPassHisRepo.saveAndFlush(traHistorySave);
-						}
+//							
+//						// Find History
+//						for (TravelPassengerDetails passData :  oldPassDatas) {
+//							Long travelHisInfo =  traPassHisRepo.countByQuoteNoAndPassengerId(req.getQuoteNo(),passData.getPassengerId());
+//							if (travelHisInfo > 0 ) {
+//								//Delete data
+//								traPassHisRepo.deleteByQuoteNoAndPassengerId(req.getQuoteNo(),passData.getPassengerId());
+//								
+//							}
+//							// Save New 
+//							TravelPassengerHistory traHistorySave = new TravelPassengerHistory(); 
+//							dozerMapper.map(passData, traHistorySave);
+//							traHistorySave.setRequestReferenceNo(req.getRequestReferenceNo());
+//							traHistorySave.setQuoteNo(req.getQuoteNo());
+//							traHistorySave.setCustomerId(req.getCustomerId());
+//							traHistorySave.setEntryDate(new Date());
+//							traPassHisRepo.saveAndFlush(traHistorySave);
+//						}
 					}
 				
 				}
