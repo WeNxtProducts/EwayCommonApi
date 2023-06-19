@@ -57,6 +57,7 @@ import com.maan.eway.bean.SeqCustid;
 import com.maan.eway.bean.SeqCustrefno;
 import com.maan.eway.bean.SeqQuoteno;
 import com.maan.eway.bean.SeqRefno;
+import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.ChangeEndoStatusReq;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
@@ -139,7 +140,9 @@ public class MotorGridServiceImpl implements MotorGridService {
 
 	@Autowired
 	private CoverMasterRepository coverMasterRepo;
-	
+
+	@Autowired 
+	private RatingFactorsUtil ratingutil;
 	// Exiting Motor Details
 	@Override
 	public List<QuoteCriteriaRes> getMotorExistingQuoteDetails(ExistingQuoteReq req, List<String> branches,
@@ -1188,7 +1191,10 @@ public class MotorGridServiceImpl implements MotorGridService {
 				++count;
 				if (motors.size() > 0) {
 					for (EserviceMotorDetails data : motors) {
-						EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());
+						EndtTypeMaster entMaster=ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());
+								/*
+								 * endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());
+								 */
 						savedata = dozerMapper.map(data, EserviceMotorDetails.class);
 						savedata.setEntryDate(new Date());
 						savedata.setCreatedBy(req.getLoginId());
@@ -1410,7 +1416,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			
 		try {
-			EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());
+			EndtTypeMaster entMaster=ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());
+					
 			String endtFeeYn=entMaster.getEndtFeeYn();
 			BigDecimal endtPre=BigDecimal.ZERO;
 			BigDecimal endtPremiumtax=BigDecimal.ZERO;
@@ -1499,7 +1506,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			PersonalInfo savedata = new PersonalInfo();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
-				EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+				EndtTypeMaster entMaster=ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());
 				HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(prevQuoteNo);
 				String olsCustomerId=homeData.getCustomerId();
 				
@@ -1546,10 +1553,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
 				CoverMaster coverdata = null;
-				EndtTypeMaster entMaster = endtTypeRepo
-						.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
-								req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
-								Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+				EndtTypeMaster entMaster =ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());
 				String endTypeDesc = entMaster.getEndtTypeDesc();
 				String endtFeeYn = entMaster.getEndtFeeYn();
 				String coverDesc = "";
@@ -1729,7 +1733,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			MotorDataDetails savedata = new MotorDataDetails();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
-				EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+				EndtTypeMaster entMaster=ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());
 				List<MotorDataDetails> motorData=motorDataDetepo.findByQuoteNo(prevQuoteNo);
 				if (motorData.size() > 0) {
 					for (MotorDataDetails data : motorData) {
@@ -1775,9 +1779,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			MotorDriverDetails savedata = new MotorDriverDetails();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
-				EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
-						req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
-						Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+				EndtTypeMaster entMaster = ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());
 				List<MotorDriverDetails> motorDriverData = motordrivDetepo.findByQuoteNo(prevQuoteNo);
 				if (motorDriverData.size() > 0) {
 					for (MotorDriverDetails data : motorDriverData) {
@@ -1819,9 +1821,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			CoverDocumentUploadDetails savedata = new CoverDocumentUploadDetails();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
-				EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
-						req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
-						Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+				EndtTypeMaster entMaster = ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());
 				List<CoverDocumentUploadDetails> motorData = coverDocUploadDetails.findByQuoteNo(prevQuoteNo);
 				if (motorData.size() > 0) {
 					for (CoverDocumentUploadDetails data : motorData) {

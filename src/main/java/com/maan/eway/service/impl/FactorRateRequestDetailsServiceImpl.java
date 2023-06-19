@@ -52,6 +52,7 @@ import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.MasterReferralDetails;
 import com.maan.eway.bean.UwQuestionsDetails;
+import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.calculator.util.TaxFromFactor;
 import com.maan.eway.common.req.CoverIdReq2;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
@@ -143,6 +144,9 @@ private EmiTransactionDetailsRepository emiRepo ;
 @Autowired
 private ReferalServiceImpl referal;
 
+
+@Autowired 
+private RatingFactorsUtil ratingutil;
 
 private Logger log=LogManager.getLogger(FactorRateRequestDetailsServiceImpl.class);
 /*
@@ -1232,8 +1236,7 @@ this.repository = repo;
 				res.setEffectiveDate(mot.getEndorsementEffdate()==null?null:mot.getEndorsementEffdate() );
 				//res.setEndorsementYn(mot.getEndorsementType()==null?"N":"Y");
 				if(mot.getEndorsementType()!=null) {
-					EndtTypeMaster endtmaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
-							mot.getCompanyId(),Integer.parseInt(mot.getProductId()),"Y",mot.getEndorsementType(),new Date(),new Date());
+					EndtTypeMaster endtmaster = ratingutil.getEndtMasterData(mot.getCompanyId(),req.getProductId(),mot.getEndorsementType().toString());
 					EndtTypeMasterDto ddto=new EndtTypeMasterDto();
 					dozerMapper.map(endtmaster,ddto);
 					res.setEndtType(ddto);
@@ -1295,8 +1298,8 @@ this.repository = repo;
 				riskDetails = travelRes ;
 				res.setRiskDetails(riskDetails);
 				if(travelData.getEndorsementType()!=null) {
-					EndtTypeMaster endtmaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
-							travelData.getCompanyId(),Integer.parseInt(travelData.getProductId()),"Y",travelData.getEndorsementType(),new Date(),new Date());
+					EndtTypeMaster endtmaster =ratingutil.getEndtMasterData(travelData.getCompanyId(),travelData.getProductId(),travelData.getEndorsementType().toString()); 
+
 					EndtTypeMasterDto ddto=new EndtTypeMasterDto();
 					dozerMapper.map(endtmaster,ddto);
 					res.setEndtType(ddto);
@@ -1353,8 +1356,9 @@ this.repository = repo;
 						res.setRiskDetails(riskDetails); 
 						//res.setEndorsementYn(acc.getEndorsementType()==null?"N":"Y");
 						if(acc.getEndorsementType()!=null) {
-							EndtTypeMaster endtmaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
-									acc.getCompanyId(),Integer.parseInt(acc.getProductId()),"Y",acc.getEndorsementType(),new Date(),new Date());
+							EndtTypeMaster endtmaster = ratingutil.getEndtMasterData(acc.getCompanyId(),acc.getProductId(),acc.getEndorsementType().toString());
+									/*endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+									acc.getCompanyId(),Integer.parseInt(acc.getProductId()),"Y",acc.getEndorsementType(),new Date(),new Date());*/
 							EndtTypeMasterDto ddto=new EndtTypeMasterDto();
 							dozerMapper.map(endtmaster,ddto);
 							res.setEndtType(ddto);
@@ -1389,8 +1393,7 @@ this.repository = repo;
 						riskDetails = buildRes ;
 						res.setRiskDetails(riskDetails); 
 						if(buildData.getEndorsementType()!=null) {
-							EndtTypeMaster endtmaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
-									buildData.getCompanyId(),Integer.parseInt(buildData.getProductId()),"Y",buildData.getEndorsementType(),new Date(),new Date());
+							EndtTypeMaster endtmaster = ratingutil.getEndtMasterData(buildData.getCompanyId(),buildData.getProductId(),buildData.getEndorsementType().toString());							 
 							EndtTypeMasterDto ddto=new EndtTypeMasterDto();
 							dozerMapper.map(endtmaster,ddto);
 							res.setEndtType(ddto);
@@ -1439,8 +1442,9 @@ this.repository = repo;
 				res.setRiskDetails(riskDetails);	
 				viewCommonList.add(res);
 				if(comData.getEndorsementType()!=null) {
-					EndtTypeMaster endtmaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
-							comData.getCompanyId(),Integer.parseInt(comData.getProductId()),"Y",comData.getEndorsementType(),new Date(),new Date());
+					EndtTypeMaster endtmaster =  ratingutil.getEndtMasterData(comData.getCompanyId(),comData.getProductId(),comData.getEndorsementType().toString());
+							/*endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+							comData.getCompanyId(),Integer.parseInt(comData.getProductId()),"Y",comData.getEndorsementType(),new Date(),new Date());*/
 					EndtTypeMasterDto ddto=new EndtTypeMasterDto();
 					dozerMapper.map(endtmaster,ddto);
 					res.setEndtType(ddto);

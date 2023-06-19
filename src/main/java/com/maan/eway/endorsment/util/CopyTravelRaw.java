@@ -27,6 +27,7 @@ import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
 import com.maan.eway.common.res.EserviceSaveRes;
 import com.maan.eway.common.res.TravelCopyRes;
@@ -52,6 +53,9 @@ public class CopyTravelRaw {
 	
 	@Autowired
 	private EserviceTravelGroupDetailsRepository groupRepo ;
+
+	@Autowired 
+	private RatingFactorsUtil ratingutil;
 	
 	public EserviceTravelDetails copyTravelRaw(Endorsment request) {
 		try {
@@ -120,7 +124,8 @@ public class CopyTravelRaw {
 			if(pendingcount==0)
 				newRequestNo=numberGenerate.generateRequestNo(ent.getCompanyId(), ent.getBranchCode(), String.valueOf(ent.getProductId()));
 			
-			EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(ent.getCompanyId(), ent.getProductId().intValue(), "Y",Integer.parseInt(ent.getEndtType()), new Date(), new Date());
+			EndtTypeMaster entMaster=ratingutil.getEndtMasterData(ent.getCompanyId(),ent.getProductId().toPlainString(),ent.getEndtType());
+
 			List<EserviceTravelDetails> travelList=etravelRepo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
 			List<EserviceTravelDetails> newtravelList=new ArrayList<EserviceTravelDetails>();
 			++count;

@@ -26,6 +26,7 @@ import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.res.CommonCopyRes;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
 import com.maan.eway.common.service.impl.MotorGridServiceImpl;
@@ -44,6 +45,9 @@ public class CopyCommonRaw {
 	@Autowired
 	private EndtTypeMasterRepository endtTypeRepo;
 	
+
+	@Autowired 
+	private RatingFactorsUtil ratingutil;
 	
 	public EserviceCommonDetails copyCommonRaw(Endorsment request) {
 		try {
@@ -108,7 +112,8 @@ public class CopyCommonRaw {
 			if(pendingcount==0)
 				newRequestNo=numberGenerate.generateRequestNo(ent.getCompanyId(), ent.getBranchCode(), String.valueOf(ent.getProductId()));
 			
-			EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(ent.getCompanyId(), ent.getProductId().intValue(), "Y",Integer.parseInt(ent.getEndtType()), new Date(), new Date());
+			EndtTypeMaster entMaster=ratingutil.getEndtMasterData(ent.getCompanyId(),ent.getProductId().toPlainString(),ent.getEndtType());
+					//endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(ent.getCompanyId(), ent.getProductId().intValue(), "Y",Integer.parseInt(ent.getEndtType()), new Date(), new Date());
 			List<EserviceCommonDetails> CommonList=eCommonRepo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
 			List<EserviceCommonDetails> newCommonList=new ArrayList<EserviceCommonDetails>();
 			++count;

@@ -54,6 +54,7 @@ import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.SeqCustid;
 import com.maan.eway.bean.SeqCustrefno;
 import com.maan.eway.bean.SeqQuoteno;
+import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.res.QuoteCriteriaRes;
@@ -125,6 +126,9 @@ public class CommonGridServiceImpl implements CommonGridService {
 	
 	@Autowired
 	private CoverDocumentUploadDetailsRepository coverDocUploadDetails;
+
+	@Autowired 
+	private RatingFactorsUtil ratingutil;
 
 	// Exiting Motor Details
 
@@ -1580,7 +1584,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 				++count;
 				if (motors.size() > 0) {
 					for (EserviceCommonDetails data : motors) {
-						EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());
+						EndtTypeMaster entMaster=ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());
+								//endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());
 						savedata = dozerMapper.map(data, EserviceCommonDetails.class);
 						savedata.setEntryDate(new Date());
 						savedata.setCreatedBy(req.getLoginId());
@@ -1784,7 +1789,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			
 		try {
-			EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());
+			EndtTypeMaster entMaster=ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());
+					//endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());
 			String endtFeeYn=entMaster.getEndtFeeYn();
 			BigDecimal endtPre=BigDecimal.ZERO;
 			BigDecimal endtPremiumtax=BigDecimal.ZERO;
@@ -1873,7 +1879,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 			PersonalInfo savedata = new PersonalInfo();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
-				EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+				EndtTypeMaster entMaster=ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());
+				//endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 				HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(prevQuoteNo);
 				String olsCustomerId=homeData.getCustomerId();
 				
@@ -1920,10 +1927,10 @@ public class CommonGridServiceImpl implements CommonGridService {
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
 				CoverMaster coverdata = null;
-				EndtTypeMaster entMaster = endtTypeRepo
+				EndtTypeMaster entMaster = ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());/*endtTypeRepo
 						.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 								req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
-								Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+								Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
 				String endTypeDesc = entMaster.getEndtTypeDesc();
 				String endtFeeYn = entMaster.getEndtFeeYn();
 				String coverDesc = "";
@@ -2105,9 +2112,9 @@ public class CommonGridServiceImpl implements CommonGridService {
 			CoverDocumentUploadDetails savedata = new CoverDocumentUploadDetails();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
-				EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+				EndtTypeMaster entMaster = ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());/*endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 						req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
-						Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+						Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
 				List<CoverDocumentUploadDetails> motorData = coverDocUploadDetails.findByQuoteNo(prevQuoteNo);
 				if (motorData.size() > 0) {
 					for (CoverDocumentUploadDetails data : motorData) {

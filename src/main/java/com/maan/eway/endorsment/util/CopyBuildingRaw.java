@@ -35,6 +35,7 @@ import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.PersonalAccident;
 import com.maan.eway.bean.PersonalInfo;
+import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.ChangeEndoStatusReq;
 import com.maan.eway.common.res.BuildingCopyRes;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
@@ -89,6 +90,9 @@ public class CopyBuildingRaw {
 
 	@Autowired
 	private EserviceCommonDetailsRepository eserCommonRepo;
+
+	@Autowired 
+	private RatingFactorsUtil ratingutil;
 
 	private Logger log = LogManager.getLogger(MotorGridServiceImpl.class);
 	
@@ -180,7 +184,8 @@ public class CopyBuildingRaw {
 			if(pendingcount==0)
 				newRequestNo=numberGenerate.generateRequestNo(ent.getCompanyId(), ent.getBranchCode(), String.valueOf(ent.getProductId()));
 			
-			EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(ent.getCompanyId(), ent.getProductId().intValue(), "Y",Integer.parseInt(ent.getEndtType()),new Date(), new Date());
+			EndtTypeMaster entMaster=ratingutil.getEndtMasterData(ent.getCompanyId(),ent.getProductId().toPlainString(),ent.getEndtType());
+					/*endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(ent.getCompanyId(), ent.getProductId().intValue(), "Y",Integer.parseInt(ent.getEndtType()),new Date(), new Date());*/
 			List<EserviceBuildingDetails> BuildingList=eBuildingRepo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
 			List<EserviceBuildingDetails> newBuildingList=new ArrayList<EserviceBuildingDetails>();
 			++count;

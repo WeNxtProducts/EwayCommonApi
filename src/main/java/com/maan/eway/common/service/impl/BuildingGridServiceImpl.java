@@ -55,6 +55,7 @@ import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.SeqCustid;
 import com.maan.eway.bean.SeqCustrefno;
 import com.maan.eway.bean.SeqQuoteno;
+import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.res.QuoteCriteriaRes;
@@ -150,6 +151,9 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 	@Autowired
 	private BuildingRiskDetailsRepository buildRiskRepo;
 	
+
+	@Autowired 
+	private RatingFactorsUtil ratingutil;
 	// Exiting Motor Details
 
 	@Override
@@ -1209,10 +1213,11 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 		++count;
 		if (motors.size() > 0) {
 			for (EserviceBuildingDetails data : motors) {
-				EndtTypeMaster entMaster = endtTypeRepo
+				EndtTypeMaster entMaster = ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId()); 
+						/*endtTypeRepo
 						.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 								req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
-								Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+								Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
 				savedata = dozerMapper.map(data, EserviceBuildingDetails.class);
 				savedata.setEntryDate(new Date());
 				savedata.setCreatedBy(req.getLoginId());
@@ -1342,9 +1347,10 @@ private CopyQuoteSuccessRes buildingRiskDetailsCopyQuote(CopyQuoteReq req, Strin
 	BuildingRiskDetails savedata = new BuildingRiskDetails();
 	DozerBeanMapper dozerMapper = new DozerBeanMapper();
 	try {
-		EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+		EndtTypeMaster entMaster =ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId()); 
+				/*endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 				req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
-				Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+				Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
 		List<BuildingRiskDetails> buildingRiskData=buildRiskRepo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
 		if (buildingRiskData!=null) {
 			for(BuildingRiskDetails data :buildingRiskData) {
@@ -1390,9 +1396,9 @@ private CopyQuoteSuccessRes buildingDetailsEndoCopyquote(CopyQuoteReq req, Strin
 	BuildingDetails savedata = new BuildingDetails();
 	DozerBeanMapper dozerMapper = new DozerBeanMapper();
 	try {
-		EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+		EndtTypeMaster entMaster = ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());  /*endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 				req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
-				Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+				Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
 		List<BuildingDetails> buildingData=buildingRepo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
 		if (buildingData!=null) {
 			for(BuildingDetails data :buildingData) {
@@ -1437,9 +1443,9 @@ private CopyQuoteSuccessRes contentAndRiskEndoCopyquote(CopyQuoteReq req, String
 	ContentAndRisk savedata = new ContentAndRisk();
 	DozerBeanMapper dozerMapper = new DozerBeanMapper();
 	try {
-		EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+		EndtTypeMaster entMaster =ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId()); /*endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 				req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
-				Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+				Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
 		
 		List<ContentAndRisk> content = contentRiskRepo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
 		if (content != null && content.size() > 0) {
@@ -1483,10 +1489,10 @@ private CopyQuoteSuccessRes personalAccidentEndoCopyquote(CopyQuoteReq req, Stri
 	PersonalAccident savedata = new PersonalAccident();
 	DozerBeanMapper dozerMapper = new DozerBeanMapper();
 	try {
-		EndtTypeMaster entMaster = endtTypeRepo
+		EndtTypeMaster entMaster = ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());/* endtTypeRepo
 				.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 						req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
-						Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+						Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
 
 		List<PersonalAccident> PA = pARepo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
 		if (PA != null && PA.size() > 0) {
@@ -1530,10 +1536,10 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 	EserviceSectionDetails savedata = new EserviceSectionDetails();
 	DozerBeanMapper dozerMapper = new DozerBeanMapper();
 	try {
-		EndtTypeMaster entMaster = endtTypeRepo
+		EndtTypeMaster entMaster = ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId()); /*endtTypeRepo
 				.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 						req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
-						Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+						Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
 
 		List<EserviceSectionDetails> eserSec = eserSecRepo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
 		if (eserSec != null && eserSec.size()>0 ) {
@@ -1578,9 +1584,9 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 				EserviceCommonDetails savedata = new EserviceCommonDetails();
 				DozerBeanMapper dozerMapper = new DozerBeanMapper();
 				try {
-					EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+					EndtTypeMaster entMaster = ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId()); /*endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 							req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
-							Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+							Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
 					
 					EserviceCommonDetails custData = eserCommonRepo.findByQuoteNo(req.getQuoteNo());
 					if (custData!=null) 
@@ -1760,7 +1766,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 				DozerBeanMapper dozerMapper = new DozerBeanMapper();
 				
 				try {
-					EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());
+					EndtTypeMaster entMaster= ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());/*endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());*/
 					String endtFeeYn=entMaster.getEndtFeeYn()	;
 					BigDecimal endtPre=BigDecimal.ZERO;
 					BigDecimal endtPremiumtax=BigDecimal.ZERO;
@@ -1850,7 +1856,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 				PersonalInfo savedata = new PersonalInfo();
 				DozerBeanMapper dozerMapper = new DozerBeanMapper();
 				try {
-					EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+					EndtTypeMaster entMaster=ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());
 					HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(prevQuoteNo);
 					String olsCustomerId=homeData.getCustomerId();
 					
@@ -1897,10 +1903,10 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 				DozerBeanMapper dozerMapper = new DozerBeanMapper();
 				try {
 					CoverMaster coverdata = null;
-					EndtTypeMaster entMaster = endtTypeRepo
+					EndtTypeMaster entMaster =ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());/* endtTypeRepo
 							.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 									req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
-									Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+									Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
 					String endTypeDesc = entMaster.getEndtTypeDesc();
 					String endtFeeYn = entMaster.getEndtFeeYn();
 					String coverDesc = "";
@@ -2081,9 +2087,9 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 				CoverDocumentUploadDetails savedata = new CoverDocumentUploadDetails();
 				DozerBeanMapper dozerMapper = new DozerBeanMapper();
 				try {
-					EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+					EndtTypeMaster entMaster = ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());/*endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 							req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
-							Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+							Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
 					List<CoverDocumentUploadDetails> motorData = coverDocUploadDetails.findByQuoteNo(prevQuoteNo);
 					if (motorData.size() > 0) {
 						for (CoverDocumentUploadDetails data : motorData) {

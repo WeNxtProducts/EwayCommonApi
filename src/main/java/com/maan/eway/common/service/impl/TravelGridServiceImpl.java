@@ -57,7 +57,7 @@ import com.maan.eway.bean.SeqCustid;
 import com.maan.eway.bean.SeqCustrefno;
 import com.maan.eway.bean.SeqQuoteno;
 import com.maan.eway.bean.TravelPassengerDetails;
-
+import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.req.CopyQuoteReq;
@@ -140,6 +140,9 @@ public class TravelGridServiceImpl implements  TravelGridService {
 	@Autowired
 	private TravelPassengerDetailsRepository traPassDetailsRepo;
 
+
+	@Autowired 
+	private RatingFactorsUtil ratingutil;
 
 	
 	private Logger log = LogManager.getLogger(MotorGridServiceImpl.class);
@@ -1003,7 +1006,8 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			++count;
 			if (motors.size() > 0) {
 				for (EserviceTravelDetails data : motors) {
-					EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+					EndtTypeMaster entMaster=ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());
+							//endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 					savedata = dozerMapper.map(data, EserviceTravelDetails.class);
 					savedata.setEntryDate(new Date());
 					savedata.setCreatedBy(req.getLoginId());
@@ -1168,10 +1172,11 @@ public class TravelGridServiceImpl implements  TravelGridService {
 		TravelPassengerDetails savedata = new TravelPassengerDetails();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+			EndtTypeMaster entMaster =ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());
+					/*endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 					req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 					Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
-			
+			*/
 			List<TravelPassengerDetails> traData = traPassDetailsRepo.findByQuoteNo(prevQuoteNo);
 			if (traData.size()>0) { 
 				for(TravelPassengerDetails data:traData) {
@@ -1270,10 +1275,10 @@ public class TravelGridServiceImpl implements  TravelGridService {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			CoverMaster coverdata = null;
-			EndtTypeMaster entMaster = endtTypeRepo
+			EndtTypeMaster entMaster =ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId()); /*endtTypeRepo
 					.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 							req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
-							Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+							Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
 			String endTypeDesc = entMaster.getEndtTypeDesc();
 			String endtFeeYn = entMaster.getEndtFeeYn();
 			String coverDesc = "";
@@ -1456,7 +1461,8 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				DozerBeanMapper dozerMapper = new DozerBeanMapper();
 				
 				try {
-					EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());
+					EndtTypeMaster entMaster=ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());
+							/*endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()),new Date(), new Date());*/
 					String endtFeeYn=entMaster.getEndtFeeYn()	;
 					BigDecimal endtPre=BigDecimal.ZERO;
 					BigDecimal endtPremiumtax=BigDecimal.ZERO;
@@ -1547,7 +1553,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 		PersonalInfo savedata = new PersonalInfo();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+			EndtTypeMaster entMaster=ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());/*endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
 			HomePositionMaster homeData=homePosistionRepo.findByQuoteNo(prevQuoteNo);
 			String olsCustomerId=homeData.getCustomerId();
 			
@@ -1594,9 +1600,9 @@ public class TravelGridServiceImpl implements  TravelGridService {
 		CoverDocumentUploadDetails savedata = new CoverDocumentUploadDetails();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			EndtTypeMaster entMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+			EndtTypeMaster entMaster =ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId()); /*endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 					req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
-					Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+					Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
 			List<CoverDocumentUploadDetails> motorData = coverDocUploadDetails.findByQuoteNo(prevQuoteNo);
 			if (motorData.size() > 0) {
 				for (CoverDocumentUploadDetails data : motorData) {

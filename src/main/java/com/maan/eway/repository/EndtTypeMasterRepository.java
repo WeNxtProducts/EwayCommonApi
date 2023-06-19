@@ -41,17 +41,17 @@ public interface EndtTypeMasterRepository  extends JpaRepository<EndtTypeMaster,
 			String string, Integer parseInt);
 	*/
 
-	List<EndtTypeMaster> findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(String companyId, Integer productId, String status, Date date, Date date2);
+/*	List<EndtTypeMaster> findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(String companyId, Integer productId, String status, Date date, Date date2);
 
 	List<EndtTypeMaster> findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualOrderByPriorityAsc(
 			String companyId, Integer productId, String status, Date date, Date date2);
-
-	EndtTypeMaster findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+*/
+/*	EndtTypeMaster findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 			String companyId, Integer productId, String status,Integer endttypeid, Date date, Date date2);
-
-	List<EndtTypeMaster> findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndEndtTypeIdOrderByPriorityAsc(
+*/
+	/*List<EndtTypeMaster> findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualAndEndtTypeIdOrderByPriorityAsc(
 			String companyId, Integer valueOf, String string, Date date, Date date2, Integer valueOf2);
-
+*/
 	List<EndtTypeMaster> findByEndtTypeCategoryIdAndEndtTypeIdAndCompanyIdAndProductIdOrderByAmendIdDesc(
 			Integer integer, Integer valueOf, String companyId, Integer integer2);
 
