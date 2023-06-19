@@ -488,4 +488,51 @@ public class RatingFactorsUtil {
 		}
 		return null;
 	}
+
+	public List<EndtTypeMaster> getEndtMasterDatas(String companyId, String productId) {
+		try {
+
+			List<EndtTypeMaster> result=new ArrayList<EndtTypeMaster>();
+			String todayInString = DD_MM_YYYY.format(new Date());
+			String search="companyId:"+companyId+";productId:"+productId+";status=Y;"+todayInString+"effectiveDateStart&effectiveDateEnd;";
+			SpecCriteria criteria = crservice.createCriteria(EndtTypeMaster.class, search, "endtTypeId");
+			List<Tuple> prorata = crservice.getResult(criteria, 0, 50);
+			 if(prorata!=null && prorata.size()>0) {
+				 for(int i=0;i<prorata.size();i++) {
+				 Tuple t = prorata.get(i);
+				 EndtTypeMaster e=EndtTypeMaster.builder()
+						 			.amendId(t.get("amendId")==null?0:Integer.parseInt(t.get("amendId").toString()))
+						 			.calcTypeId(t.get("calcTypeId")==null?"P":t.get("calcTypeId").toString())
+						 			.companyId(t.get("companyId")==null?"":t.get("companyId").toString())
+						 			.coreAppCode(t.get("coreAppCode")==null?"":t.get("coreAppCode").toString())
+						 			.createdBy(t.get("createdBy")==null?"":t.get("createdBy").toString())
+						 			.effectiveDateEnd(new Date())
+						 			.effectiveDateStart(new Date())
+						 			.endtDependantFields(t.get("endtDependantFields")==null?"":t.get("endtDependantFields").toString())
+						 			.endtDependantIds(t.get("endtDependantIds")==null?"":t.get("endtDependantIds").toString())
+						 			.endtFeePercent(t.get("endtFeePercent")==null?"":t.get("endtFeePercent").toString())
+						 			.endtFeeYn(t.get("endtFeeYn")==null?"":t.get("endtFeeYn").toString())
+						 			.endtType(t.get("endtType")==null?"":t.get("endtType").toString())
+						 			.endtTypeCategory(t.get("endtTypeCategory")==null?"":t.get("endtTypeCategory").toString())
+						 			.endtTypeDesc(t.get("endtTypeDesc")==null?"":t.get("endtTypeDesc").toString())
+						 			.endtTypeId(t.get("endtTypeId")==null?0:Integer.parseInt(t.get("endtTypeId").toString()))
+						 			.entryDate(new Date())
+						 			.priority(t.get("priority")==null?0:Integer.parseInt(t.get("priority").toString()))
+						 			.productId(t.get("productId")==null?0:Integer.parseInt(t.get("productId").toString()))
+						 			.regulatoryCode(t.get("regulatoryCode")==null?"":t.get("regulatoryCode").toString())
+						 			.remarks(t.get("remarks")==null?"":t.get("remarks").toString())
+						 			.status(t.get("status")==null?"":t.get("status").toString())
+						 			.updatedBy(t.get("updatedBy")==null?"":t.get("updatedBy").toString())
+						 			.endtTypeCategoryId(t.get("endtTypeCategoryId")==null?0:Integer.parseInt(t.get("endtTypeCategoryId").toString()))
+						 			.updatedDate(null).build();
+				 result.add(e);
+				 }
+ 			 }
+		
+			 return result;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

@@ -251,7 +251,9 @@ public class EndorsementService {
 		try {
 			
 			
-			List<EndtTypeMaster> m = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualOrderByPriorityAsc(request.getCompanyId(),Integer.valueOf(request.getProductId().intValue()),"Y",new Date(),new Date());
+			List<EndtTypeMaster> m =ratingutil.getEndtMasterDatas(request.getCompanyId(),request.getProductId().toPlainString());
+
+					// endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualOrderByPriorityAsc(request.getCompanyId(),Integer.valueOf(request.getProductId().intValue()),"Y",new Date(),new Date());
 			
 			List<EndorsementType> ets=new ArrayList<EndorsementType>(); 
 			for(EndtTypeMaster ent:m) {
