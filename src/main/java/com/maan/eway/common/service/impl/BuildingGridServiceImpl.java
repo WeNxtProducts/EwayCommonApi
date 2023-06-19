@@ -774,6 +774,7 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(c.get("customerReferenceNo")));
 
+
 			Predicate n1 = null;
 			Predicate n3 = null;
 			Predicate n4 = null;
@@ -817,6 +818,7 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 			} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
 				n3 = cb.equal(c.get("loginId"), loginId);
 				Expression<String> e0 = c.get("brokerBranchCode");
+				//Expression<String> e0 = c.get("branchCode");
 				n4 = e0.in(branches);
 			}
 			if (searchKey.equalsIgnoreCase("ClientName")) {
@@ -832,14 +834,14 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 			}
 			n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
 			query.where(n1,n2,n3,n4,n5)
-			.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),
+			.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId")/*,c.get("riskId")*/,
 					c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 					c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"))
 			
 			.orderBy(orderList);
 			if (searchKey.equalsIgnoreCase("ClientName")) {
 				query.where(n1, n2,n4,n5)
-				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),
+				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId")/*,c.get("riskId")*/,
 						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"))
 			
@@ -847,7 +849,7 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 			}
 			if (searchKey.equalsIgnoreCase("EntryDate")) {
 				query.where(n1,n2,n3,n4)
-				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),
+				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId")/*,c.get("riskId")*/,
 						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"))
 			
@@ -884,7 +886,7 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 
 			if (list.size() > 0) {
 				String refShortCode = motorService.getListItem(companyId, req.getBranchCode(), "PRODUCT_SHORT_CODE",req.getProductId());
-		        refNo = refShortCode + seqNo.generateRefNo() ; 
+		        refNo = refShortCode + "-"  + seqNo.generateRefNo() ; 
 				for (Tuple data : list) {
 	
 						savedata = dozerMapper.map(data.get(0), EserviceBuildingDetails.class);
@@ -926,6 +928,52 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 						savedata.setEndtStatus(null);					
 						repo.saveAndFlush(savedata);
 					}
+				
+				// Save Human 
+				List<Tuple> list2 = copyCommonQuoteSearchDetails(searchKey, searchValue, companyId, loginId, userType, branches);
+				for (Tuple data : list2) {
+					EserviceCommonDetails savedata2 = new EserviceCommonDetails();
+					savedata2 = dozerMapper.map(data.get(0), EserviceCommonDetails.class);
+
+					savedata2.setEntryDate(new Date());
+					savedata2.setCreatedBy(req.getLoginId());
+					savedata2.setUpdatedBy(req.getLoginId());
+					savedata2.setUpdatedDate(new Date());
+					savedata2.setRequestReferenceNo(refNo);
+					savedata2.setOldReqRefNo(req.getRequestReferenceNo());
+					if (req.getUserType().equalsIgnoreCase("Broker")
+							|| (req.getUserType().equalsIgnoreCase("User"))) {
+						branchCode = req.getBranchCode();
+						savedata2.setApplicationId("1");
+						// savedata.setBrokerBranchCode(branchCode);
+
+					} else if ("issuer".equalsIgnoreCase(userType)) {
+						savedata2.setApplicationId(req.getLoginId());
+						branchCode = req.getBranchCode();
+						// savedata.setBranchCode(branchCode);
+					}
+
+					savedata2.setActualPremiumFc(BigDecimal.ZERO);
+					savedata2.setActualPremiumLc(BigDecimal.ZERO);
+					savedata2.setOverallPremiumFc(BigDecimal.ZERO);
+					savedata2.setOverallPremiumLc(BigDecimal.ZERO);
+					savedata2.setQuoteNo("");
+					savedata2.setStatus("Y");
+					savedata2.setEndorsementDate(null);
+					savedata2.setEndorsementEffdate(null);
+					savedata2.setEndorsementRemarks(null);
+					savedata2.setEndorsementType(null);
+					savedata2.setEndorsementTypeDesc(null);
+					savedata2.setEndtCategDesc(null);
+					savedata2.setEndtCount(null);
+					savedata2.setEndtPremium(null);
+					savedata2.setEndtPrevPolicyNo(null);
+					savedata2.setEndtPrevQuoteNo(null);
+					savedata2.setEndtStatus(null);
+					eserCommonRepo.saveAndFlush(savedata2);
+				}
+				
+				// Save Section
 				}
 		
 			
@@ -1027,8 +1075,8 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 				orderList.add(cb.asc(c.get("customerReferenceNo")));
 
 				Predicate n1 = null;
-				Predicate n3 = null;
-				Predicate n4 = null;
+	//			Predicate n3 = null;
+	//			Predicate n4 = null;
 				Predicate n5 = null;
 
 				// Where
@@ -1036,21 +1084,22 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 					n1 = cb.equal(cb.lower(c.get("requestReferenceNo")), searchValue);
 				}
 
-				Predicate n2 = cb.equal(c.get("companyId"), companyId);
-
-				if ("issuer".equalsIgnoreCase(userType)) {
-					n3 = cb.equal(c.get("applicationId"), loginId);
-					Expression<String> e0 = c.get("branchCode");
-					n4 = e0.in(branches);
-				} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
-					n3 = cb.equal(c.get("loginId"), loginId);
-				//	Expression<String> e0 = c.get("brokerBranchCode");
-				Expression<String> e0 = c.get("branchCode");
-					n4 = e0.in(branches);
-				}
-				
+//				Predicate n2 = cb.equal(c.get("companyId"), companyId);
+//
+//				if ("issuer".equalsIgnoreCase(userType)) {
+//					n3 = cb.equal(c.get("applicationId"), loginId);
+//					Expression<String> e0 = c.get("branchCode");
+//					n4 = e0.in(branches);
+//				} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
+//					n3 = cb.equal(c.get("loginId"), loginId);
+//				//	Expression<String> e0 = c.get("brokerBranchCode");
+//				Expression<String> e0 = c.get("branchCode");
+//					n4 = e0.in(branches);
+//				}
+//				
 				n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
-				query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+		//		query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+				query.where(n1,n5).orderBy(orderList);
 		
 
 				// Get Result
@@ -1085,6 +1134,65 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 			return null;
 		}
 		return res;
+	}
+	
+	
+	public List<Tuple> copyCommonQuoteSearchDetails(String searchKey, String searchValue, String companyId, String loginId,
+			String userType, List<String> branches) {
+		List<Tuple> customerDetailsList = new ArrayList<Tuple>();
+		try {
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+			Root<EserviceCommonDetails> c = query.from(EserviceCommonDetails.class);
+			Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
+			
+			query.multiselect(c,
+					cus.get("clientName").alias("clientName"));
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("customerReferenceNo")));
+
+			Predicate n1 = null;
+		//	Predicate n3 = null;
+		//	Predicate n4 = null;
+			Predicate n5 = null;
+
+			// Where
+			if (searchKey.equalsIgnoreCase("RequestReferenceNo")) {
+				n1 = cb.equal(cb.lower(c.get("requestReferenceNo")), searchValue);
+			}
+//
+//			Predicate n2 = cb.equal(c.get("companyId"), companyId);
+//
+//			if ("issuer".equalsIgnoreCase(userType)) {
+//				n3 = cb.equal(c.get("applicationId"), loginId);
+//				Expression<String> e0 = c.get("branchCode");
+//				n4 = e0.in(branches);
+//			} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
+//				n3 = cb.equal(c.get("loginId"), loginId);
+//				//Expression<String> e0 = c.get("brokerBranchCode");
+//				Expression<String> e0 = c.get("branchCode");
+//				n4 = e0.in(branches);
+//			}
+			
+			n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
+			//query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			query.where(n1,n5).orderBy(orderList);
+	
+
+			// Get Result
+			TypedQuery<Tuple> result = em.createQuery(query);
+			customerDetailsList = result.getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return customerDetailsList;
 	}
 
 public synchronized String generateCustRefNo() {

@@ -655,6 +655,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 				List<Order> orderList = new ArrayList<Order>();
 				orderList.add(cb.asc(c.get("customerReferenceNo")));
 
+
 				Predicate n1 = null;
 				Predicate n3 = null;
 				Predicate n4 = null;
@@ -698,6 +699,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 				} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
 					n3 = cb.equal(c.get("loginId"), loginId);
 					Expression<String> e0 = c.get("brokerBranchCode");
+//					Expression<String> e0 = c.get("branchCode");
 					n4 = e0.in(branches);
 				}
 				if (searchKey.equalsIgnoreCase("ClientName")) {
@@ -713,14 +715,14 @@ public class CommonGridServiceImpl implements CommonGridService {
 				}
 				n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
 				query.where(n1,n2,n3,n4,n5)
-				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),
+				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId")/*,c.get("riskId")*/,
 						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),c.get("sectionId"),c.get("occupationType"))
 				
 				.orderBy(orderList);
 				if (searchKey.equalsIgnoreCase("ClientName")) {
 					query.where(n1, n2,n4,n5)
-					.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),
+					.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId")/*,c.get("riskId")*/,
 							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),c.get("sectionId"),c.get("occupationType"))
 				
@@ -728,7 +730,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 				}
 				if (searchKey.equalsIgnoreCase("EntryDate")) {
 					query.where(n1,n2,n3,n4)
-					.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),
+					.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId")/*,c.get("riskId")*/,
 							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),c.get("sectionId"),c.get("occupationType"))
 				
@@ -768,7 +770,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 				if (list.size() > 0) {
 					String refShortCode = motorService.getListItem(companyId, req.getBranchCode(), "PRODUCT_SHORT_CODE",
 							req.getProductId());
-					refNo = refShortCode + seqNo.generateRefNo();
+					refNo = refShortCode + "-" + seqNo.generateRefNo();
 					for (Tuple data : list) {
 
 						savedata = dozerMapper.map(data.get(0), EserviceCommonDetails.class);
@@ -841,29 +843,31 @@ public class CommonGridServiceImpl implements CommonGridService {
 				orderList.add(cb.asc(c.get("customerReferenceNo")));
 
 				Predicate n1 = null;
-				Predicate n3 = null;
-				Predicate n4 = null;
+			//	Predicate n3 = null;
+			//	Predicate n4 = null;
 				Predicate n5 = null;
 
 				// Where
 				if (searchKey.equalsIgnoreCase("RequestReferenceNo")) {
 					n1 = cb.equal(cb.lower(c.get("requestReferenceNo")), searchValue);
 				}
-
-				Predicate n2 = cb.equal(c.get("companyId"), companyId);
-
-				if ("issuer".equalsIgnoreCase(userType)) {
-					n3 = cb.equal(c.get("applicationId"), loginId);
-					Expression<String> e0 = c.get("branchCode");
-					n4 = e0.in(branches);
-				} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
-					n3 = cb.equal(c.get("loginId"), loginId);
-					Expression<String> e0 = c.get("brokerBranchCode");
-					n4 = e0.in(branches);
-				}
+//
+//				Predicate n2 = cb.equal(c.get("companyId"), companyId);
+//
+//				if ("issuer".equalsIgnoreCase(userType)) {
+//					n3 = cb.equal(c.get("applicationId"), loginId);
+//					Expression<String> e0 = c.get("branchCode");
+//					n4 = e0.in(branches);
+//				} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
+//					n3 = cb.equal(c.get("loginId"), loginId);
+//					//Expression<String> e0 = c.get("brokerBranchCode");
+//					Expression<String> e0 = c.get("branchCode");
+//					n4 = e0.in(branches);
+//				}
 				
 				n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
-				query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+				//query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+				query.where(n1,n5).orderBy(orderList);
 		
 
 				// Get Result

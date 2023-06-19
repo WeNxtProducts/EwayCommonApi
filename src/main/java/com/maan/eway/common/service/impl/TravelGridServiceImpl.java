@@ -44,6 +44,7 @@ import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
+import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
@@ -517,13 +518,13 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			String companyId = req.getInsuranceId();
 			String userType=req.getUserType();
 			String branchCode="";
-			List<Tuple> list = searchDetails(searchKey, searchValue, companyId,loginId,userType,branches);
+			List<Tuple> list = copyQuoteSearchDetails(searchKey, searchValue, companyId,loginId,userType,branches);
 	
 			String refNo=req.getRequestReferenceNo();
             
 			if(list.size()>0) {
 				String refShortCode = motorService.getListItem(companyId, req.getBranchCode(), "PRODUCT_SHORT_CODE",req.getProductId());
-		        refNo = refShortCode + seqNo.generateRefNo() ; 
+		        refNo = refShortCode + "-" + seqNo.generateRefNo() ; 
 
 				for (Tuple data : list) {
 				savedata=dozerMapper.map(data.get(0),EserviceTravelDetails.class);
@@ -576,6 +577,64 @@ public class TravelGridServiceImpl implements  TravelGridService {
 		}
 		return res;
 	}
+	public List<Tuple> copyQuoteSearchDetails(String searchKey, String searchValue, String companyId, String loginId,
+			String userType, List<String> branches) {
+		List<Tuple> customerDetailsList = new ArrayList<Tuple>();
+		try {
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+			Root<EserviceTravelDetails> c = query.from(EserviceTravelDetails.class);
+			Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
+			
+			query.multiselect(c,
+					cus.get("clientName").alias("clientName"));
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("customerReferenceNo")));
+
+			Predicate n1 = null;
+		//	Predicate n3 = null;
+		//	Predicate n4 = null;
+			Predicate n5 = null;
+
+			// Where
+			if (searchKey.equalsIgnoreCase("RequestReferenceNo")) {
+				n1 = cb.equal(cb.lower(c.get("requestReferenceNo")), searchValue);
+			}
+
+//			Predicate n2 = cb.equal(c.get("companyId"), companyId);
+
+//			if ("issuer".equalsIgnoreCase(userType)) {
+//				n3 = cb.equal(c.get("applicationId"), loginId);
+//				Expression<String> e0 = c.get("branchCode");
+//				n4 = e0.in(branches);
+//			} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
+//				n3 = cb.equal(c.get("loginId"), loginId);
+//				//Expression<String> e0 = c.get("brokerBranchCode");
+//				Expression<String> e0 = c.get("branchCode");
+//				n4 = e0.in(branches);
+//			}
+//			
+			n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
+	//		query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			query.where(n1,n5).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<Tuple> result = em.createQuery(query);
+			customerDetailsList = result.getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return customerDetailsList;
+	}
+	
+
 	@Override
 	public List<Tuple> searchTravelQuote(CopyQuoteReq req, List<String> branches) {
 		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
@@ -709,6 +768,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(c.get("customerReferenceNo")));
 
+
 			Predicate n1 = null;
 			Predicate n3 = null;
 			Predicate n4 = null;
@@ -762,28 +822,29 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
 
 					Expression<String> e0 = cus.get("brokerBranchCode");
+					//Expression<String> e0 = c.get("branchCode");
 					n4 = e0.in(branches);
 				}
 			}
 			n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
 			query.where(n1,n2,n3,n4,n5)
-			.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),
+			.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId")/*,c.get("riskId")*/,
 					c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 					c.get("customerId"), c.get("travelEndDate"), c.get("travelStartDate")/*,c.get("acExecutiveId"),
 				c.get("actualPremiumLc"), c.get("actualPremiumFc"), c.get("overallPremiumLc"),c.get("overallPremiumFc")*/)
 			.orderBy(orderList);
 			if (searchKey.equalsIgnoreCase("ClientName")) {
 				query.where(n1, n2,n4,n5)
-				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),
+				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId")/*,c.get("riskId")*/,
 						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 						c.get("customerId"), c.get("travelEndDate"), c.get("travelStartDate")/*,c.get("acExecutiveId"),
 						c.get("actualPremiumLc"), c.get("actualPremiumFc"), c.get("overallPremiumLc"),c.get("overallPremiumFc")*/)
-			
+		
 				.orderBy(orderList);
 			}
 			if (searchKey.equalsIgnoreCase("EntryDate")) {
 				query.where(n1,n2,n3,n4)
-				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),
+				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId")/*,c.get("riskId")*/,
 						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 						c.get("customerId"), c.get("travelEndDate"), c.get("travelStartDate")/*,c.get("acExecutiveId"),
 						c.get("actualPremiumLc"), c.get("actualPremiumFc"), c.get("overallPremiumLc"),c.get("overallPremiumFc")*/)

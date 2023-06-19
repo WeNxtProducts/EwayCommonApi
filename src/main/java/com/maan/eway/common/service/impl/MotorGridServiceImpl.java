@@ -180,6 +180,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			orderList.add(cb.desc(m.get("updatedDate")));
 
 			// Where
+			
 			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
 			Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
 			Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
@@ -202,8 +203,16 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Expression<String> e0 = m.get("branchCode");
 				n8 = e0.in(branches);
 			}
-
-			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9)
+			// Risk Max Filter
+			Subquery<Long> riskId = query.subquery(Long.class);
+			Root<EserviceMotorDetails> ocpm1 = riskId.from(EserviceMotorDetails.class);
+			riskId.select(cb.max(ocpm1.get("riskId")));
+			Predicate a1 = cb.equal(ocpm1.get("requestReferenceNo"), m.get("requestReferenceNo"));
+			
+			riskId.where(a1);
+			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
+			
+			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),m.get("updatedDate"))
@@ -276,8 +285,17 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Expression<String> e0 = m.get("branchCode");
 				n7 = e0.in(branches);
 			}
-			Predicate n8 = cb.isNull(m.get("endtTypeId"));
-			query.where(n1, n2, n3, n4, n5, n6, n7,n8)
+			Predicate n8 = cb.isNull(m.get("endorsementType"));
+			// Risk Max Filter
+			Subquery<Long> riskId = query.subquery(Long.class);
+			Root<EserviceMotorDetails> ocpm1 = riskId.from(EserviceMotorDetails.class);
+			riskId.select(cb.max(ocpm1.get("riskId")));
+			Predicate a1 = cb.equal(ocpm1.get("requestReferenceNo"), m.get("requestReferenceNo"));
+			
+			riskId.where(a1);
+			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
+			
+			query.where(n1, n2, n3, n4, n5, n6, n7,n8,n10)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),m.get("updatedDate"))
@@ -348,8 +366,17 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Expression<String> e0 = m.get("branchCode");
 				n6 = e0.in(branches);
 			}
-			Predicate n7 = cb.isNull(m.get("endtTypeId"));
-			query.where(n1, n2, n3, n4, n5, n6,n7)
+			Predicate n7 = cb.isNull(m.get("endorsementType"));
+			// Risk Max Filter
+			Subquery<Long> riskId = query.subquery(Long.class);
+			Root<EserviceMotorDetails> ocpm1 = riskId.from(EserviceMotorDetails.class);
+			riskId.select(cb.max(ocpm1.get("riskId")));
+			Predicate a1 = cb.equal(ocpm1.get("requestReferenceNo"), m.get("requestReferenceNo"));
+			
+			riskId.where(a1);
+			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
+			
+			query.where(n1, n2, n3, n4, n5, n6,n7,n10)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
@@ -821,17 +848,17 @@ public class MotorGridServiceImpl implements MotorGridService {
 				n5 = cb.equal(cus.get("customerReferenceNo"), c.get("customerReferenceNo"));
 			//	Predicate n6 = cb.isNull(c.get("endtTypeId"));
 				query.where(n1,n2,n3,n4,n5)
-				.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
-						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
-						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
-						c.get("rejectReason"),c.get("riskId"),c.get("insuranceType"))
+					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
+							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
+							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
+							c.get("rejectReason")/*,c.get("riskId"),c.get("insuranceType")*/)
 				.orderBy(orderList);
 				if (searchKey.equalsIgnoreCase("ClientName")) {
 					query.where(n1, n2,n4,n5)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
 							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
-							c.get("rejectReason"),c.get("riskId"),c.get("insuranceType"))
+							c.get("rejectReason")/*,c.get("riskId"),c.get("insuranceType")*/)
 					.orderBy(orderList);
 				}
 				if (searchKey.equalsIgnoreCase("EntryDate")) {
@@ -839,7 +866,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"), c.get("companyId"),
 							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
-							c.get("rejectReason"),c.get("riskId"),c.get("insuranceType"))
+							c.get("rejectReason")/*,c.get("riskId"),c.get("insuranceType")*/)
 					.orderBy(orderList);
 				}
 
@@ -876,7 +903,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				if (list.size() > 0) {
 					String refShortCode = getListItem(companyId, req.getBranchCode(), "PRODUCT_SHORT_CODE",
 							req.getProductId());
-					refNo = refShortCode + seqNo.generateRefNo();
+					refNo = refShortCode +"-"+ seqNo.generateRefNo();
 					for (Tuple data : list) {
 
 						savedata = dozerMapper.map(data.get(0), EserviceMotorDetails.class);
@@ -1013,8 +1040,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 				orderList.add(cb.asc(c.get("customerReferenceNo")));
 
 				Predicate n1 = null;
-				Predicate n3 = null;
-				Predicate n4 = null;
+//				Predicate n3 = null;
+//				Predicate n4 = null;
 				Predicate n5 = null;
 
 				// Where
@@ -1022,22 +1049,22 @@ public class MotorGridServiceImpl implements MotorGridService {
 					n1 = cb.equal(cb.lower(c.get("requestReferenceNo")), searchValue);
 				}
 
-				Predicate n2 = cb.equal(c.get("companyId"), companyId);
-
-				if ("issuer".equalsIgnoreCase(userType)) {
-					n3 = cb.equal(c.get("applicationId"), loginId);
-					Expression<String> e0 = c.get("branchCode");
-					n4 = e0.in(branches);
-				} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
-					n3 = cb.equal(c.get("loginId"), loginId);
-				//	Expression<String> e0 = c.get("brokerBranchCode");
-				Expression<String> e0 = c.get("branchCode");
-					n4 = e0.in(branches);
-				}
-				
+//				Predicate n2 = cb.equal(c.get("companyId"), companyId);
+//
+//				if ("issuer".equalsIgnoreCase(userType)) {
+//					n3 = cb.equal(c.get("applicationId"), loginId);
+//					Expression<String> e0 = c.get("branchCode");
+//					n4 = e0.in(branches);
+//				} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
+//					n3 = cb.equal(c.get("loginId"), loginId);
+//				Expression<String> e0 = c.get("brokerBranchCode");
+//			//	Expression<String> e0 = c.get("branchCode");
+//					n4 = e0.in(branches);
+//				}
+//				
 				n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
-				query.where(n1,n2,n3,n4,n5).orderBy(orderList);
-		
+//				query.where(n1,n2,n3,n5).orderBy(orderList);
+				query.where(n1,n5).orderBy(orderList);
 
 				// Get Result
 				TypedQuery<Tuple> result = em.createQuery(query);
