@@ -1077,7 +1077,7 @@ public class GridServiceImpl implements GridService {
 //						res.set(data.get("accessoriesInformation")==null?null:data.get("accessoriesInformation").toString());
 //						res.set(data.get("numberOfAxels")==null?null:data.get("numberOfAxels").toString());
 //						res.set(data.get("axelDistance")==null?null:data.get("axelDistance").toString());
-//						res.setSumInsured(data.get("sumInsured")==null?null:data.get("sumInsured").toString());
+			//			res.setSumInsured(data.get("sumInsured")==null?null:data.get("sumInsured").toString());
 						res.setEndorsementType(
 								data.get("endorsementType") == null ? null : data.get("endorsementType").toString());
 						res.setEndorsementTypeDesc(data.get("endorsementTypeDesc") == null ? null
@@ -1282,7 +1282,7 @@ public class GridServiceImpl implements GridService {
 								data.get("brokerBranchCode") == null ? null : data.get("brokerBranchCode").toString());
 //						res.setCompanyName(data.get("companyName")==null?null:data.get("companyName").toString());
 //						res.setProductName(data.get("productName")==null?null:data.get("productName").toString());
-						res.setSectionName(data.get("sectionName") == null ? null : data.get("sectionName").toString());
+					//	res.setSumInsured(data.get("sumInsured")==null?null:data.get("sumInsured").toString());
 						res.setCommissionType(
 								data.get("commissionType") == null ? null : data.get("commissionType").toString());
 //						res.setCommissionTypeDesc(data.get("commissionTypeDesc")==null?null:data.get("commissionTypeDesc").toString());
@@ -1338,6 +1338,7 @@ public class GridServiceImpl implements GridService {
 //						res.setSectionName(riskData.getProductDesc());	
 //					}
 					if (data != null) {
+						
 						res.setCustomerReferenceNo(data.get("customerReferenceNo") == null ? null
 								: data.get("customerReferenceNo").toString());
 						res.setBrokerBranchCode(
@@ -1393,6 +1394,7 @@ public class GridServiceImpl implements GridService {
 						res.setSubUserType(data.get("subUserType") == null ? null : data.get("subUserType").toString());
 						res.setApplicationId(
 								data.get("applicationId") == null ? null : data.get("applicationId").toString());
+				//		res.setSumInsured(data.get("sumInsured")==null?null:data.get("sumInsured").toString());
 						res.setCurrency(data.get("currency") == null ? null : data.get("currency").toString());
 						res.setExchangeRate(
 								data.get("exchangeRate") == null ? null : data.get("exchangeRate").toString());
@@ -1433,10 +1435,16 @@ public class GridServiceImpl implements GridService {
 						res.setEndtCategDesc(
 								data.get("endtCategDesc") == null ? null : data.get("endtCategDesc").toString());
 						res.setSectionName(data.get("sectionDesc") == null ? null : data.get("sectionDesc").toString());
+						
 					}
 				} else {
 
 					if (data != null) {
+						res.setSumInsured(data.get("sumInsured")==null?null:data.get("sumInsured").toString());
+						res.setRequestReferenceNo(data.get("requestReferenceNo") == null ? null
+								: data.get("requestReferenceNo").toString());
+						res.setBrokerBranchCode(
+								data.get("brokerBranchCode") == null ? null : data.get("brokerBranchCode").toString());
 						res.setCustomerReferenceNo(data.get("customerReferenceNo") == null ? null
 								: data.get("customerReferenceNo").toString());
 						res.setSectionId(data.get("sectionId") == null ? null : data.get("sectionId").toString());
@@ -1444,14 +1452,14 @@ public class GridServiceImpl implements GridService {
 						res.setCompanyId(data.get("companyId") == null ? null : data.get("companyId").toString());
 						res.setBranchCode(data.get("branchCode") == null ? null : data.get("branchCode").toString());
 						res.setAgencyCode(data.get("agencyCode") == null ? null : data.get("agencyCode").toString());
-						res.setAgencyCode(data.get("sumInsured") == null ? null : data.get("sumInsured").toString());
+						
 						res.setStatus(data.get("status") == null ? null : data.get("status").toString());
 
 						String updatedDate = data.get("updatedDate") == null ? null
 								: dateFormat.format(data.get("updatedDate"));
 						res.setUpdatedDate(updatedDate);
 						res.setCreatedBy(data.get("createdBy") == null ? null : data.get("createdBy").toString());
-						res.setCreatedBy(data.get("updatedBy") == null ? null : data.get("updatedBy").toString());
+						res.setUpdatedBy(data.get("updatedBy") == null ? null : data.get("updatedBy").toString());
 						res.setAdminRemarks(
 								data.get("adminRemarks") == null ? null : data.get("adminRemarks").toString());
 						res.setReferalRemarks(
@@ -1497,7 +1505,7 @@ public class GridServiceImpl implements GridService {
 								data.get("endorsementType") == null ? null : data.get("endorsementType").toString());
 						res.setEndorsementTypeDesc(data.get("endorsementTypeDesc") == null ? null
 								: data.get("endorsementTypeDesc").toString());
-
+						res.setSumInsured(data.get("sumInsured")==null?null:data.get("sumInsured").toString());
 						String endorsementDate = data.get("endorsementDate") == null ? null
 								: dateFormat.format(data.get("endorsementDate"));
 						res.setEndorsementDate(endorsementDate);

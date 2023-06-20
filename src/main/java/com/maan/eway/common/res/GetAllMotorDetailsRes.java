@@ -69,7 +69,7 @@ public class GetAllMotorDetailsRes {
 		@JsonProperty("ModelNumber")
 	    private String     modelNumber  ;
 		@JsonProperty("SumInsured")
-	    private Double     sumInsured   ;
+	    private String     sumInsured   ;
 		@JsonProperty("DrivenByDesc")
 	    private String     drivenByDesc     ;
 		@JsonProperty("BranchCode")
