@@ -1241,9 +1241,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 				List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoAndProductIdAndSectionIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()) , request.getVehicleId());
 				
 				// Save Endt Covers
-				if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
+				/*if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
 					res = EndtCoverSavePoint(request , covers );
-				} else {
+				} else*/ {
 					res = CoverSavePoint(covers ) ;
 				}
 				
@@ -2576,6 +2576,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setEndtCount(motorData.getEndtCount()==null?0:motorData.getEndtCount().intValue());	
 			home.setEndtTypeDesc(motorData.getEndorsementTypeDesc()==null?"":motorData.getEndorsementTypeDesc());
 			home.setOriginalPolicyNo(motorData.getOriginalPolicyNo()==null?"":motorData.getOriginalPolicyNo());
+			
+			if(StringUtils.isNotBlank(motorData.getEndorsementType()==null?null:String.valueOf(motorData.getEndorsementType()))) {
+				HomePositionMaster oldPosition = homeRepo.findByQuoteNo(motorData.getEndtPrevQuoteNo()==null?null:motorData.getEndtPrevQuoteNo());
+				home.setCoverNoteReferenceNo(oldPosition.getCoverNoteReferenceNo());
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("Exception is ---> " + e.getMessage());
