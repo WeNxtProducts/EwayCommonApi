@@ -1241,9 +1241,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 				List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoAndProductIdAndSectionIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()) , request.getVehicleId());
 				
 				// Save Endt Covers
-				/*if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
+				if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
 					res = EndtCoverSavePoint(request , covers );
-				} else*/ {
+				} else {
 					res = CoverSavePoint(covers ) ;
 				}
 				
