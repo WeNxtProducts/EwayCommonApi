@@ -925,7 +925,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 							branchCode = req.getBranchCode();
 						//	savedata.setBranchCode(branchCode);
 						}
-
+						savedata.setPolicyStartDate(null);		
+						savedata.setPolicyEndDate(null);
 						savedata.setActualPremiumFc(BigDecimal.ZERO);
 						savedata.setActualPremiumLc(BigDecimal.ZERO);
 						savedata.setOverallPremiumFc(BigDecimal.ZERO);

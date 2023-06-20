@@ -908,7 +908,8 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 							branchCode = req.getBranchCode();
 						//	savedata.setBranchCode(branchCode);
 						}
-
+						savedata.setPolicyStartDate(null);		
+						savedata.setPolicyEndDate(null);
 						savedata.setActualPremiumFc(BigDecimal.ZERO);
 						savedata.setActualPremiumLc(BigDecimal.ZERO);
 						savedata.setOverallPremiumFc(BigDecimal.ZERO);
@@ -952,7 +953,8 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 						branchCode = req.getBranchCode();
 						// savedata.setBranchCode(branchCode);
 					}
-
+					savedata2.setPolicyStartDate(null);		
+					savedata2.setPolicyEndDate(null);
 					savedata2.setActualPremiumFc(BigDecimal.ZERO);
 					savedata2.setActualPremiumLc(BigDecimal.ZERO);
 					savedata2.setOverallPremiumFc(BigDecimal.ZERO);
@@ -974,6 +976,35 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 				}
 				
 				// Save Section
+				List<Tuple> list3 = copySectionQuoteSearchDetails(searchKey, searchValue, companyId, loginId, userType,
+						branches);
+				if (list3 != null && list3.size() > 0) {
+					for (Tuple data : list3) {
+						EserviceSectionDetails savedata3 = new EserviceSectionDetails();
+						savedata3 = dozerMapper.map(data.get(0), EserviceSectionDetails.class);
+
+						savedata3.setEntryDate(new Date());
+						savedata3.setCreatedBy(req.getLoginId());
+						savedata3.setUpdatedBy(req.getLoginId());
+						savedata3.setUpdatedDate(new Date());
+						savedata3.setRequestReferenceNo(refNo);
+						savedata3.setQuoteNo("");
+						savedata3.setStatus("Y");
+						savedata3.setEndorsementDate(null);
+						savedata3.setEndorsementEffdate(null);
+						savedata3.setEndorsementRemarks(null);
+						savedata3.setEndorsementType(null);
+						savedata3.setEndorsementTypeDesc(null);
+						savedata3.setEndtCategDesc(null);
+						savedata3.setEndtCount(null);
+						savedata3.setEndtPremium(null);
+						savedata3.setEndtPrevPolicyNo(null);
+						savedata3.setEndtPrevQuoteNo(null);
+						savedata3.setEndtStatus(null);
+						eserSecRepo.saveAndFlush(savedata3);
+					}
+
+				}
 				}
 		
 			
@@ -1146,6 +1177,64 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
 
 			Root<EserviceCommonDetails> c = query.from(EserviceCommonDetails.class);
+			Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
+			
+			query.multiselect(c,
+					cus.get("clientName").alias("clientName"));
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("customerReferenceNo")));
+
+			Predicate n1 = null;
+		//	Predicate n3 = null;
+		//	Predicate n4 = null;
+			Predicate n5 = null;
+
+			// Where
+			if (searchKey.equalsIgnoreCase("RequestReferenceNo")) {
+				n1 = cb.equal(cb.lower(c.get("requestReferenceNo")), searchValue);
+			}
+//
+//			Predicate n2 = cb.equal(c.get("companyId"), companyId);
+//
+//			if ("issuer".equalsIgnoreCase(userType)) {
+//				n3 = cb.equal(c.get("applicationId"), loginId);
+//				Expression<String> e0 = c.get("branchCode");
+//				n4 = e0.in(branches);
+//			} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
+//				n3 = cb.equal(c.get("loginId"), loginId);
+//				//Expression<String> e0 = c.get("brokerBranchCode");
+//				Expression<String> e0 = c.get("branchCode");
+//				n4 = e0.in(branches);
+//			}
+			
+			n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
+			//query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			query.where(n1,n5).orderBy(orderList);
+	
+
+			// Get Result
+			TypedQuery<Tuple> result = em.createQuery(query);
+			customerDetailsList = result.getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return customerDetailsList;
+	}
+
+	public List<Tuple> copySectionQuoteSearchDetails(String searchKey, String searchValue, String companyId, String loginId,
+			String userType, List<String> branches) {
+		List<Tuple> customerDetailsList = new ArrayList<Tuple>();
+		try {
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+			Root<EserviceSectionDetails> c = query.from(EserviceSectionDetails.class);
 			Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
 			
 			query.multiselect(c,

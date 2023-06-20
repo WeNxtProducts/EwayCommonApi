@@ -47,7 +47,9 @@ import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
+import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.MotorDataDetails;
@@ -58,6 +60,7 @@ import com.maan.eway.bean.SeqCustid;
 import com.maan.eway.bean.SeqCustrefno;
 import com.maan.eway.bean.SeqQuoteno;
 import com.maan.eway.bean.TravelPassengerDetails;
+import com.maan.eway.bean.TravelPassengerHistory;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.ListItemValue;
@@ -70,9 +73,11 @@ import com.maan.eway.common.service.TravelGridService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
+import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
+import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
@@ -83,6 +88,7 @@ import com.maan.eway.repository.SeqCustrefnoRepository;
 import com.maan.eway.repository.SeqQuotenoRepository;
 import com.maan.eway.repository.SeqRefnoRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
+import com.maan.eway.repository.TravelPassengerHistoryRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.SuccessRes;
@@ -107,6 +113,8 @@ public class TravelGridServiceImpl implements  TravelGridService {
 	
 	
 	@Autowired
+	private TravelPassengerDetailsRepository travelPassengerRepo;
+	@Autowired
 	private HomePositionMasterRepository homePosistionRepo;
 	
 	@Autowired
@@ -126,21 +134,24 @@ public class TravelGridServiceImpl implements  TravelGridService {
 
 	@Autowired
 	private SeqRefnoRepository refNoRepo ;
-	
+	@Autowired
+	private EserviceTravelGroupDetailsRepository groupRepo;
 	
 	@Autowired
 	private SeqCustrefnoRepository custRefRepo  ;
 	
 	@Autowired
 	private EndtTypeMasterRepository endtTypeRepo;
-
+	@Autowired
+	private EServiceSectionDetailsRepository eserSecRepo;
 	
 	@Autowired
 	private CoverDocumentUploadDetailsRepository coverDocUploadDetails;
 
 	@Autowired
 	private TravelPassengerDetailsRepository traPassDetailsRepo;
-
+	@Autowired
+	private TravelPassengerHistoryRepository traPassHisRepo  ;
 
 	@Autowired 
 	private RatingFactorsUtil ratingutil;
@@ -545,7 +556,8 @@ public class TravelGridServiceImpl implements  TravelGridService {
 						branchCode = req.getBranchCode();
 					//	savedata.setBranchCode(branchCode);
 					}
-
+					savedata.setTravelStartDate(null);
+					savedata.setTravelEndDate(null);
 					savedata.setActualPremiumFc(BigDecimal.ZERO);
 					savedata.setActualPremiumLc(BigDecimal.ZERO);
 					savedata.setOverallPremiumFc(BigDecimal.ZERO);
@@ -564,10 +576,93 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					savedata.setEndtPrevQuoteNo(null);
 					savedata.setEndtStatus(null);
 				repo.saveAndFlush(savedata);
-				}	
-	//			res.setResponse("Successfully Updated");
-				res.setRequestReferenceNo(refNo);
+				}
+				// Save Section
+				List<Tuple> list3 = copySectionQuoteSearchDetails(searchKey, searchValue, companyId, loginId, userType,
+						branches);
+				if (list3 != null && list3.size() > 0) {
+					for (Tuple data : list3) {
+						EserviceSectionDetails savedata3 = new EserviceSectionDetails();
+						savedata3 = dozerMapper.map(data.get(0), EserviceSectionDetails.class);
+
+						savedata3.setEntryDate(new Date());
+						savedata3.setCreatedBy(req.getLoginId());
+						savedata3.setUpdatedBy(req.getLoginId());
+						savedata3.setUpdatedDate(new Date());
+						savedata3.setRequestReferenceNo(refNo);
+						savedata3.setQuoteNo("");
+						savedata3.setStatus("Y");
+						savedata3.setEndorsementDate(null);
+						savedata3.setEndorsementEffdate(null);
+						savedata3.setEndorsementRemarks(null);
+						savedata3.setEndorsementType(null);
+						savedata3.setEndorsementTypeDesc(null);
+						savedata3.setEndtCategDesc(null);
+						savedata3.setEndtCount(null);
+						savedata3.setEndtPremium(null);
+						savedata3.setEndtPrevPolicyNo(null);
+						savedata3.setEndtPrevQuoteNo(null);
+						savedata3.setEndtStatus(null);
+						eserSecRepo.saveAndFlush(savedata3);
+					}
+
+				}
+				
+				//Travel Group Details
+	
+				List<Tuple> list4 = copyTravelQuoteSearchDetails(searchKey, searchValue, companyId, loginId, userType,
+						branches);
+				if (list4 != null && list4.size() > 0) {
+					for (Tuple data : list4) {
+						EserviceTravelGroupDetails savedata4 = new EserviceTravelGroupDetails();
+						savedata4 = dozerMapper.map(data.get(0), EserviceTravelGroupDetails.class);
+
+						savedata4.setEntryDate(new Date());
+						savedata4.setCreatedBy(req.getLoginId());
+						savedata4.setRequestReferenceNo(refNo);
+						savedata4.setQuoteNo("");
+						savedata4.setStatus("Y");
+						groupRepo.saveAndFlush(savedata4);
+					}
+
+				}
+/*				//Travel Passenger
+				List<Tuple> list5 = copyTravelPassengerQuoteSearchDetails(searchKey, searchValue, companyId, loginId, userType,
+						branches);
+				if (list5 != null && list5.size() > 0) {
+					for (Tuple data : list5) {
+						TravelPassengerDetails savedata5 = new TravelPassengerDetails();
+						savedata5 = dozerMapper.map(data.get(0), TravelPassengerDetails.class);
+
+						savedata5.setEntryDate(new Date());
+						savedata5.setCreatedBy(req.getLoginId());
+						savedata5.setRequestReferenceNo(refNo);
+						savedata5.setQuoteNo("");
+						savedata5.setStatus("Y");
+						traPassDetailsRepo.saveAndFlush(savedata5);
+					}
+
+				}
+				//Travel Passenger History
+				List<Tuple> list6 = copyTravelPassengerHistoryQuoteSearchDetails(searchKey, searchValue, companyId, loginId, userType,
+						branches);
+				if (list6 != null && list6.size() > 0) {
+					for (Tuple data : list6) {
+						TravelPassengerHistory savedata6 = new TravelPassengerHistory();
+						savedata6 = dozerMapper.map(data.get(0), TravelPassengerHistory.class);
+
+						savedata6.setEntryDate(new Date());
+						savedata6.setCreatedBy(req.getLoginId());
+						savedata6.setRequestReferenceNo(refNo);
+						savedata6.setQuoteNo("");
+						savedata6.setStatus("Y");
+						traPassHisRepo.saveAndFlush(savedata6);
+					}
+
+				}
+*/
 			}
+			res.setRequestReferenceNo(refNo);
 			
 			
 		} catch (Exception e) {
@@ -634,7 +729,203 @@ public class TravelGridServiceImpl implements  TravelGridService {
 		return customerDetailsList;
 	}
 	
+	public List<Tuple> copySectionQuoteSearchDetails(String searchKey, String searchValue, String companyId, String loginId,
+			String userType, List<String> branches) {
+		List<Tuple> customerDetailsList = new ArrayList<Tuple>();
+		try {
 
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+			Root<EserviceSectionDetails> c = query.from(EserviceSectionDetails.class);
+			Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
+			
+			query.multiselect(c,
+					cus.get("clientName").alias("clientName"));
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("customerReferenceNo")));
+
+			Predicate n1 = null;
+		//	Predicate n3 = null;
+		//	Predicate n4 = null;
+			Predicate n5 = null;
+
+			// Where
+			if (searchKey.equalsIgnoreCase("RequestReferenceNo")) {
+				n1 = cb.equal(cb.lower(c.get("requestReferenceNo")), searchValue);
+			}
+//
+//			Predicate n2 = cb.equal(c.get("companyId"), companyId);
+//
+//			if ("issuer".equalsIgnoreCase(userType)) {
+//				n3 = cb.equal(c.get("applicationId"), loginId);
+//				Expression<String> e0 = c.get("branchCode");
+//				n4 = e0.in(branches);
+//			} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
+//				n3 = cb.equal(c.get("loginId"), loginId);
+//				//Expression<String> e0 = c.get("brokerBranchCode");
+//				Expression<String> e0 = c.get("branchCode");
+//				n4 = e0.in(branches);
+//			}
+			
+			n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
+			//query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			query.where(n1,n5).orderBy(orderList);
+	
+
+			// Get Result
+			TypedQuery<Tuple> result = em.createQuery(query);
+			customerDetailsList = result.getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return customerDetailsList;
+	}
+	public List<Tuple> copyTravelQuoteSearchDetails(String searchKey, String searchValue, String companyId, String loginId,
+			String userType, List<String> branches) {
+		List<Tuple> customerDetailsList = new ArrayList<Tuple>();
+		try {
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+			Root<EserviceTravelGroupDetails> c = query.from(EserviceTravelGroupDetails.class);
+		//	Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
+			
+			query.multiselect(c);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("groupId")));
+
+			Predicate n1 = null;
+		//	Predicate n3 = null;
+		//	Predicate n4 = null;
+		//	Predicate n5 = null;
+
+			// Where
+			if (searchKey.equalsIgnoreCase("RequestReferenceNo")) {
+				n1 = cb.equal(cb.lower(c.get("requestReferenceNo")), searchValue);
+			}
+//
+//			Predicate n2 = cb.equal(c.get("companyId"), companyId);
+//
+//			if ("issuer".equalsIgnoreCase(userType)) {
+//				n3 = cb.equal(c.get("applicationId"), loginId);
+//				Expression<String> e0 = c.get("branchCode");
+//				n4 = e0.in(branches);
+//			} else if ("Broker".equalsIgnoreCase(userType) || "User".equalsIgnoreCase(userType)) {
+//				n3 = cb.equal(c.get("loginId"), loginId);
+//				//Expression<String> e0 = c.get("brokerBranchCode");
+//				Expression<String> e0 = c.get("branchCode");
+//				n4 = e0.in(branches);
+//			}
+			
+		//	n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
+			//query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+			query.where(n1).orderBy(orderList);
+	
+
+			// Get Result
+			TypedQuery<Tuple> result = em.createQuery(query);
+			customerDetailsList = result.getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return customerDetailsList;
+	}
+	public List<Tuple> copyTravelPassengerQuoteSearchDetails(String searchKey, String searchValue, String companyId, String loginId,
+			String userType, List<String> branches) {
+		List<Tuple> customerDetailsList = new ArrayList<Tuple>();
+		try {
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+			Root<TravelPassengerDetails> c = query.from(TravelPassengerDetails.class);
+			Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
+			
+			query.multiselect(c,
+					cus.get("clientName").alias("clientName"));
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("customerReferenceNo")));
+
+			Predicate n1 = null;
+			Predicate n5 = null;
+
+			// Where
+			if (searchKey.equalsIgnoreCase("RequestReferenceNo")) {
+				n1 = cb.equal(cb.lower(c.get("requestReferenceNo")), searchValue);
+			}
+
+			
+			n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
+			query.where(n1,n5).orderBy(orderList);
+	
+
+			// Get Result
+			TypedQuery<Tuple> result = em.createQuery(query);
+			customerDetailsList = result.getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return customerDetailsList;
+	}
+	public List<Tuple> copyTravelPassengerHistoryQuoteSearchDetails(String searchKey, String searchValue, String companyId, String loginId,
+			String userType, List<String> branches) {
+		List<Tuple> customerDetailsList = new ArrayList<Tuple>();
+		try {
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+			Root<TravelPassengerHistory> c = query.from(TravelPassengerHistory.class);
+			Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
+			
+			query.multiselect(c,
+					cus.get("clientName").alias("clientName"));
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("customerReferenceNo")));
+
+			Predicate n1 = null;
+			Predicate n5 = null;
+
+			// Where
+			if (searchKey.equalsIgnoreCase("RequestReferenceNo")) {
+				n1 = cb.equal(cb.lower(c.get("requestReferenceNo")), searchValue);
+			}
+
+			
+			n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
+			query.where(n1,n5).orderBy(orderList);
+	
+
+			// Get Result
+			TypedQuery<Tuple> result = em.createQuery(query);
+			customerDetailsList = result.getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return customerDetailsList;
+	}
 	@Override
 	public List<Tuple> searchTravelQuote(CopyQuoteReq req, List<String> branches) {
 		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
