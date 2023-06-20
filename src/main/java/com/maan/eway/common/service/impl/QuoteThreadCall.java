@@ -1707,8 +1707,16 @@ public class QuoteThreadCall implements Callable<Object>  {
 						motorData.setPeriodOfInsurance(diff);
 						
 						List<PolicyCoverData>  Endtcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(request.getQuoteNo() ,0, 0);
+
+						
+			
 						BigDecimal endtPremium = updateEndtPremium(request.getQuoteNo(),effDate,ref.getEndtPrevQuoteNo(),ref.getRiskId() ,Endtcovers);
 						motorData.setEndtPremium(endtPremium.doubleValue());
+						
+						motorData.setActualPremiumFc(endtPremium.doubleValue());
+						motorData.setActualPremiumLc(endtPremium.doubleValue());
+						motorData.setOverallPremiumFc(endtPremium.doubleValue());
+						motorData.setOverallPremiumLc(endtPremium.doubleValue());
 						ref.setEndtPremium(endtPremium.doubleValue());
 						motorDatas.add(motorData);
 						
