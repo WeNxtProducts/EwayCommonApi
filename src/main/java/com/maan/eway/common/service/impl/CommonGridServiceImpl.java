@@ -715,14 +715,14 @@ public class CommonGridServiceImpl implements CommonGridService {
 				}
 				n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
 				query.where(n1,n2,n3,n4,n5)
-				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId")/*,c.get("riskId")*/,
+				.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),
 						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),c.get("sectionId"),c.get("occupationType"))
 				
 				.orderBy(orderList);
 				if (searchKey.equalsIgnoreCase("ClientName")) {
 					query.where(n1, n2,n4,n5)
-					.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId")/*,c.get("riskId")*/,
+					.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),
 							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),c.get("sectionId"),c.get("occupationType"))
 				
@@ -730,7 +730,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 				}
 				if (searchKey.equalsIgnoreCase("EntryDate")) {
 					query.where(n1,n2,n3,n4)
-					.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId")/*,c.get("riskId")*/,
+					.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),c.get("riskId"),
 							c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 							c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),c.get("sectionId"),c.get("occupationType"))
 				
