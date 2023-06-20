@@ -954,7 +954,9 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				Date entryDate=sdf.parse(searchValue);
 				searchValue=sdf.format(entryDate);
 				searchQuote =  searchDetails(searchKey, searchValue, companyId,loginId,userType,branches);
-			} 
+			} else if ("PolicyNo".equalsIgnoreCase(searchKey)) {
+				searchQuote = searchDetails(searchKey, searchValue, companyId, loginId, userType, branches);
+			}
 	} catch (Exception e) {
 		e.printStackTrace();
 		log.info("Log Details" + e.getMessage());
@@ -1092,6 +1094,9 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			} else if (searchKey.equalsIgnoreCase("ClientName")) {
 				n1 = cb.like(cb.lower(cus.get("clientName")), "%" + searchValue + "%");
 				n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
+			}else if (searchKey.equalsIgnoreCase("PolicyNo")) {
+				n1 = cb.like(cb.lower(c.get("policyNo")), searchValue );
+				
 			}
 
 			Predicate n2 = cb.equal(c.get("companyId"), companyId);
