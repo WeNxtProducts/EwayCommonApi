@@ -61,6 +61,7 @@ import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.SeqCustid;
 import com.maan.eway.bean.SeqQuoteno;
 import com.maan.eway.bean.UwQuestionsDetails;
+import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.IndividualReferalReq;
 import com.maan.eway.common.req.NewQuoteReq;
@@ -237,6 +238,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	
 	@Autowired
 	private CalculatorEngine calcEngine;
+	
+	@Autowired
+	private RatingFactorsUtil ratingutil;
 	
 	@Override
 	public CommonRes call_OT_Insert(NewQuoteReq req) {
@@ -1173,9 +1177,10 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			
 			// Get Endt Fields
 			if(StringUtils.isNotBlank(endtType) ) {
-				List<EndtTypeMaster> endtList =  getEndtMasterData(companyId ,  req.getProductId() ,  endtType ) ;
-				if(endtList.size() > 0 ) {
-					endtFields = endtList.get(0).getEndtDependantFields() ;						
+				//List<EndtTypeMaster> endtList = 
+				EndtTypeMaster endtList = ratingutil.getEndtMasterData(companyId, req.getProductId(), endtType); //getEndtMasterData(companyId ,  req.getProductId() ,  endtType ) ;
+				if(endtList!=null ) {
+					endtFields = endtList.getEndtDependantFields() ;						
 				}
 				
 			}
@@ -1321,7 +1326,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					Root<EndtTypeMaster> ocpm1 = effectiveDate.from(EndtTypeMaster.class);
 					effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 					javax.persistence.criteria.Predicate a1 = cb.equal(c.get("endtTypeId"), ocpm1.get("endtTypeId"));
-					javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+					javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(cb.function("trunc", Date.class,ocpm1.get("effectiveDateStart")) , today );
 					javax.persistence.criteria.Predicate a3 = cb.equal(c.get("productId"), ocpm1.get("productId"));
 					javax.persistence.criteria.Predicate a4 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
 
@@ -1333,7 +1338,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					javax.persistence.criteria.Predicate a6 = cb.equal(c.get("endtTypeId"), ocpm2.get("endtTypeId"));
 					javax.persistence.criteria.Predicate a7 = cb.equal(c.get("productId"), ocpm2.get("productId"));
 					javax.persistence.criteria.Predicate a8 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
-					javax.persistence.criteria.Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+					javax.persistence.criteria.Predicate a10 = cb.greaterThanOrEqualTo(cb.function("trunc", Date.class,ocpm2.get("effectiveDateEnd")), todayEnd);
 					effectiveDate2.where(a6, a7, a8, a10);
 
 					// Where
@@ -1341,11 +1346,11 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					Predicate n1 = cb.equal(c.get("status"),"Y");
 					Predicate n11 = cb.equal(c.get("status"),"R");
 					Predicate n12 = cb.or(n1,n11);
-					javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+					javax.persistence.criteria.Predicate n2 = cb.equal(cb.function("trunc", Date.class,c.get("effectiveDateStart")), effectiveDate);
 					javax.persistence.criteria.Predicate n3 = cb.equal(c.get("endtTypeId"), endtTypeId);
 					javax.persistence.criteria.Predicate n5 = cb.equal(c.get("productId"), productId);
 					javax.persistence.criteria.Predicate n6 = cb.equal(c.get("companyId"), insuranceId);
-					javax.persistence.criteria.Predicate n7 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+					javax.persistence.criteria.Predicate n7 = cb.equal(cb.function("trunc", Date.class,c.get("effectiveDateEnd")), effectiveDate2);
 
 					query.where(n12, n2, n3, n5, n6,n7).orderBy(orderList);
 
