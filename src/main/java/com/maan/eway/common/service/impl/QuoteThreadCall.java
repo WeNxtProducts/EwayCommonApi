@@ -304,6 +304,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			commonData.setCustomerId(request.getCustomerId());
 			commonData.setRiskId(eserCommonData.getRiskId());
 			commonData.setStatus(eserCommonData.getStatus());
+			commonData.setSectionDesc(eserCommonData.getSectionName());		
 			List<FactorRateRequestDetails>  filterCover = covers.stream().filter( o -> o.getVehicleId().equals( eserCommonData.getRiskId())).collect(Collectors.toList());
 		//	commonData.setVdRefno(filterCover.get(0).getVdRefno());	
 		//	commonData.setMsRefno(filterCover.get(0).getMsRefno());		
@@ -1029,6 +1030,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				dozerMapper.map(pac,savePac);
 				savePac.setQuoteNo(request.getQuoteNo());
 				savePac.setUpdatedDate(new Date());
+				savePac.setSectionDesc(pac.getSectionName());	
 				savePacList.add(savePac);
 				
 				if(eserBuild.getEndorsementType()!=null) {
