@@ -2450,6 +2450,17 @@ private BuildingDetailsRepository BuildingRepo;
 			res.setMoneyAnnualcarrySuminsured(build.getMoneyAnnualcarrySuminsured() == null?"0" :build.getMoneyAnnualcarrySuminsured().toPlainString());
 			res.setMoneySinglecarrySuminsured(build.getMoneySinglecarrySuminsured() == null?"0" :build.getMoneySinglecarrySuminsured().toPlainString());;
 			
+			Double sumInsured = paccDatas.stream().filter( o -> o.getSumInsured() != null ).mapToDouble(o -> Double.valueOf(o.getSumInsured().toPlainString() ) ).sum() ;
+			res.setSumInsured(sumInsured==null ? "" : sumInsured.toString());
+			
+			Double empliabiltiySi = paccDatas.stream().filter( o -> o.getSectionId().equalsIgnoreCase("45") && o.getEmpLiabilitySi() != null ).mapToDouble(o -> Double.valueOf(o.getEmpLiabilitySi().toPlainString() ) ).sum() ;
+			Double fidEmpSi = paccDatas.stream().filter( o -> o.getSectionId().equalsIgnoreCase("43") &&  o.getFidEmpSi() != null ).mapToDouble(o -> Double.valueOf(o.getFidEmpSi().toPlainString() ) ).sum() ;
+			Double liabiltiySi = paccDatas.stream().filter( o -> o.getSectionId().equalsIgnoreCase("54") && o.getLiabilitySi()!= null ).mapToDouble(o -> Double.valueOf(o.getLiabilitySi().toPlainString() ) ).sum() ;
+			
+			res.setEmpLiabilitySi(empliabiltiySi==null ? "" : empliabiltiySi.toString());
+			res.setFidEmpSi(fidEmpSi==null ? "" :fidEmpSi.toString());
+			res.setLiabilitySi(liabiltiySi==null ? "" : liabiltiySi.toString());
+			
 			res.setCurrencyId(build.getCurrency());
 			res.setRiskId(build.getRiskId().toString());
 			res.setSectionId(sectionIds);		
