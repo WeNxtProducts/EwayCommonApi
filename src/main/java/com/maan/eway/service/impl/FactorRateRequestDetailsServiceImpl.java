@@ -1641,7 +1641,7 @@ this.repository = repo;
 			}
 			
 			System.out.print("cover sort");
-			coverListRes.sort(Comparator.comparing(Cover ::    getSumInsured ).reversed() );
+			coverListRes.sort( Comparator.comparing(Cover ::    getSumInsured ,Comparator.nullsLast(Comparator.naturalOrder())  ).reversed() );
 			
 		} catch(Exception e){
 			e.printStackTrace();
