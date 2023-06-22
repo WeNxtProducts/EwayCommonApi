@@ -40,4 +40,8 @@ public class ProductEmployeeDetailsId implements Serializable {
     private String     companyId ;
      
     private String     nationalityId ;
+    
+    private String     sectionId ;
+    
+    private Integer     locationId ;
 }
