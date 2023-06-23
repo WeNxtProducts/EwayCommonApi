@@ -56,8 +56,11 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					}
 				 }				 
 				 t.setSumInsured(si);
-				 
-				 if("F".equals(t.getCalcType())) {
+				 //t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0
+				 if(t.getSumInsured().compareTo(t.getCoverageLimit())<0) {
+					 t.setIsReferral("Y");
+					 t.setReferalDescription("CoverageLimit Referral Limits Upto"+t.getCoverageLimit());
+				 }else if("F".equals(t.getCalcType())) {
 					 // Tuple vehicle,Tuple customer,Tuple common
 					 List<Tuple> factors = LoadFactorRates(engine, t.getCoverId(),t.getFactorTypeId(),engine.getVehicleId(),StringUtils.isBlank(t.getSubCoverId())?"0":t.getSubCoverId());
 					 
@@ -92,6 +95,9 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					 t.setRegulatoryCode(regulatoryCode);
 					 /// Referal
 					 t.setIsReferral((tuple.get("status")==null?"N":tuple.get("status").toString()).equals("R")?"Y":"N");
+					 if("Y".equals(t.getIsReferral())){
+						 t.setReferalDescription(t.getCoverDesc() +" Referral" );
+					 }
 				 }else {
 					 t.setRate((t.getRate()*Double.parseDouble(rateFor)));
 					 

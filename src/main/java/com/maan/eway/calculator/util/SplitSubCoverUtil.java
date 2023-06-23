@@ -69,6 +69,7 @@ public class SplitSubCoverUtil implements Function<Tuple,Cover> {
 					.endtCount(BigDecimal.ZERO)
 					.effectiveDate(effectiveDate)
 					.policyEndDate(policyEndDate)
+					.coverageLimit(t.get("coverageLimit")==null?BigDecimal.ZERO:new BigDecimal(t.get("coverageLimit").toString()))
 					.status("Y")
 					.build();
 				return c;

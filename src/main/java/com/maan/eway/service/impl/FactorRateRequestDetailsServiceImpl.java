@@ -347,6 +347,7 @@ this.repository = repo;
 					saveCover.setProRataPercent(coverData.getProRata()!=null ? coverData.getProRata().multiply(new BigDecimal("100")) : new BigDecimal("100"));
 					saveCover.setRegulatorySuminsured(coverData.getTiraSumInsured()==null?BigDecimal.ZERO:coverData.getTiraSumInsured());
 					saveCover.setRegulatoryRate(coverData.getTiraRate()==null?BigDecimal.ZERO:new BigDecimal(coverData.getTiraRate()));
+					saveCover.setCoverageLimit(coverData.getCoverageLimit()==null?BigDecimal.ZERO:coverData.getCoverageLimit());
 					// Date Differents
 					Date periodStart =  coverData.getEffectiveDate();
 					Date periodEnd = coverData.getPolicyEndDate() ;
@@ -464,7 +465,7 @@ this.repository = repo;
 						saveSubCover.setProRataYn(subCoverData.getProRataYn()==null ? "N" : subCoverData.getProRataYn());
 						saveSubCover.setIsSelected(subCoverData.getIsselected());
 						saveSubCover.setCoverageType(subCoverData.getCoverageType());
-						
+						saveSubCover.setCoverageLimit(saveSubCover.getCoverageLimit()==null?BigDecimal.ZERO:saveSubCover.getCoverageLimit());
 //						if(subCoverData.getTaxes()!=null && subCoverData.getTaxes().size() > 0 ) {
 //							saveSubCover.setTax1(subCoverData.getTaxes().get(0).getTaxAmount()==null ? null : Double.valueOf(df.format(subCoverData.getTaxes().get(0).getTaxAmount())) );
 //							if(coverData.getTaxes().size() > 1  ) 

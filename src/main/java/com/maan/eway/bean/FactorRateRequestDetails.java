@@ -285,6 +285,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="REGULATORY_SUMINSURED")
     private BigDecimal    regulatorySuminsured ;
     
+    @Column(name="COVERAGE_LIMIT")
+    private BigDecimal     coverageLimit ;
+
  
 }
 
