@@ -517,15 +517,20 @@ public class PaymentServiceImpl implements PaymentService {
 								.mapToDouble(o -> Double.valueOf(o.getSalary().toString())).sum() ;
 						
 						if(indivcount!=checkCount) {
-							
-							error.add(new Error("01", "Occupation Count", "Employee Details count should be "+indivcount+" for Occupation "+"'"+cdata.getOccupationDesc()+"' "+" for section "+ " '"+sectionname+"'"));
+							if(cdata.getProductId().equalsIgnoreCase("19"))
+								error.add(new Error("01", "Occupation Count", "Employee Details count should be "+indivcount+" for Occupation "+"'"+cdata.getOccupationDesc()+"' "+" for section "+ " '"+sectionname+"'"));
+							else
+								error.add(new Error("01", "Occupation Count", "Employee Details count should be "+indivcount+" for Occupation "+"'"+cdata.getOccupationDesc()+"'"));
 							temp1 = false;
 						}
+						if(error.size()<1) {
 						if(totalSi!=empSi) {
-							
-							error.add(new Error("01", "Sum Insured", "Total SumInsured not equal to the Actual SumInsured for occupation "+"'"+cdata.getOccupationDesc()+"' "+" for section "+ " '"+sectionname+"'"));
+							if(cdata.getProductId().equalsIgnoreCase("19"))
+								error.add(new Error("01", "Sum Insured", "Total SumInsured not equal to the Actual SumInsured for occupation "+"'"+cdata.getOccupationDesc()+"' "+" for section "+ " '"+sectionname+"'"));
+							else
+								error.add(new Error("01", "Sum Insured", "Total SumInsured not equal to the Actual SumInsured for occupation "+"'"+cdata.getOccupationDesc()+"'"));
 							temp1 = false;
-						}
+						} }
 						if(!temp1) 
 							break;
 					}
