@@ -33,6 +33,7 @@ public class DiscountCalculator   implements Consumer<Discount> {
 	public void accept(Discount t) {
 	 try {
 		 String calctype= t.getDiscountCalcType();
+		 t.setDiscountAmount(BigDecimal.ZERO);
 		 if("F".equals(t.getDiscountCalcType())) {
 			 List<Tuple> factors = calc.LoadFactorRates(calc.engine, t.getDiscountId(),t.getFactorTypeId(),calc.engine.getVehicleId(),StringUtils.isBlank(t.getSubCoverId())?"0":t.getSubCoverId());
 			 Tuple tuple = factors.get(0);

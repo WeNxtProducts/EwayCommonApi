@@ -22,6 +22,7 @@ public class LoadingCalculator   implements Consumer<Loading> {
 	public void accept(Loading t) {
 	 try {
 		 String calctype= t.getLoadingCalcType();
+		 t.setLoadingAmount(BigDecimal.ZERO);
 		 if("F".equals(t.getLoadingCalcType())) {
 			 List<Tuple> factors = calc.LoadFactorRates(calc.engine, t.getLoadingId(),t.getFactorTypeId(),calc.engine.getVehicleId(),StringUtils.isBlank(t.getSubCoverId())?"0":t.getSubCoverId());
 			 Tuple tuple = factors.get(0);
