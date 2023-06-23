@@ -75,30 +75,35 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 						 tuple=factors.get(0);
 					 }catch (Exception e) {
 						// TODO: handle exception
-						 CoverException build = CoverException.builder().message("No factor found")
+						/* CoverException build = CoverException.builder().message("No factor found")
 						 .isError(true).build();
 						 t.setError(build);
-						 t.setNotsutable(true);
-						 throw build;
+						 t.setNotsutable(true);*/
+						// throw build;
+						 t.setIsReferral("Y");
+						 t.setReferalDescription("No factor found Referral for "+t.getCoverDesc());
+						 t.setPremiumBeforeDiscount(BigDecimal.ZERO);					 
+						 t.setPremiumBeforeDiscountLC(BigDecimal.ZERO);
 					}
-					 
-					 String calctype=tuple.get("calcType").toString();
-					 String rate=tuple.get("rate")==null?"0":tuple.get("rate").toString();
-					 String regulatoryCode=tuple.get("regulatoryCode")==null?"N/A":tuple.get("regulatoryCode").toString();
-					 
-					 t.setRate((Double) ((Double.parseDouble(rate)*Double.parseDouble(rateFor))));
-					 
-					 t.setMinimumPremium(tuple.get("minPremium")==null?BigDecimal.ZERO:new BigDecimal(tuple.get("minPremium").toString())/*.divide(t.getExchangeRate(),round)*/);
-					 BigDecimal domath = domath(calctype, t.getRate(), si,t.getExchangeRate());
-					 t.setPremiumBeforeDiscount(domath);
-					 
-					 t.setPremiumBeforeDiscountLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())))) ;
-					 t.setCalcType(calctype);
-					 t.setRegulatoryCode(regulatoryCode);
-					 /// Referal
-					 t.setIsReferral((tuple.get("status")==null?"N":tuple.get("status").toString()).equals("R")?"Y":"N");
-					 if("Y".equals(t.getIsReferral())){
-						 t.setReferalDescription(t.getCoverDesc() +" Referral" );
+					 if(tuple!=null) {
+						 String calctype=tuple.get("calcType").toString();
+						 String rate=tuple.get("rate")==null?"0":tuple.get("rate").toString();
+						 String regulatoryCode=tuple.get("regulatoryCode")==null?"N/A":tuple.get("regulatoryCode").toString();
+
+						 t.setRate((Double) ((Double.parseDouble(rate)*Double.parseDouble(rateFor))));
+
+						 t.setMinimumPremium(tuple.get("minPremium")==null?BigDecimal.ZERO:new BigDecimal(tuple.get("minPremium").toString())/*.divide(t.getExchangeRate(),round)*/);
+						 BigDecimal domath = domath(calctype, t.getRate(), si,t.getExchangeRate());
+						 t.setPremiumBeforeDiscount(domath);
+
+						 t.setPremiumBeforeDiscountLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())))) ;
+						 t.setCalcType(calctype);
+						 t.setRegulatoryCode(regulatoryCode);
+						 /// Referal
+						 t.setIsReferral((tuple.get("status")==null?"N":tuple.get("status").toString()).equals("R")?"Y":"N");
+						 if("Y".equals(t.getIsReferral())){
+							 t.setReferalDescription(t.getCoverDesc() +" Referral" );
+						 }
 					 }
 				 }else {
 					 t.setRate((t.getRate()*Double.parseDouble(rateFor)));
@@ -111,23 +116,24 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 
 				 BigDecimal domathTira = domathTira(t.getCalcType(),t.getRate(),t.getPremiumBeforeDiscountLC(),t.getExchangeRate());
 				 t.setTiraSumInsured(domathTira);
-				 
-				 
-				Double totaldiscount=0D;
-				 if(t.getDiscounts()!=null && t.getDiscounts().size()>0) {
-					 DiscountCalculator dcal=new DiscountCalculator(t.getPremiumBeforeDiscount(),t.getExchangeRate(),this);					 
-					 t.getDiscounts().stream().forEach(dcal);
-					 totaldiscount= t.getDiscounts().stream().mapToDouble(i->i.getDiscountAmount().doubleValue()).sum();
-				 }
-				 
-				 
+				 Double totaldiscount=0D;
 				 Double totalloading=0D;
-				 if(t.getLoadings()!=null && t.getLoadings().size()>0) {
-					 LoadingCalculator dcal=new LoadingCalculator(t.getPremiumBeforeDiscount(),t.getExchangeRate(),this);					 
-					 t.getLoadings().stream().forEach(dcal);
-					 totalloading= t.getLoadings().stream().mapToDouble(i->i.getLoadingAmount().doubleValue()).sum();
+				 if(!"Y".equals(t.getIsReferral())) {
+					
+					 if(t.getDiscounts()!=null && t.getDiscounts().size()>0) {
+						 DiscountCalculator dcal=new DiscountCalculator(t.getPremiumBeforeDiscount(),t.getExchangeRate(),this);					 
+						 t.getDiscounts().stream().forEach(dcal);
+						 totaldiscount= t.getDiscounts().stream().mapToDouble(i->i.getDiscountAmount().doubleValue()).sum();
+					 }
+
+
+					 
+					 if(t.getLoadings()!=null && t.getLoadings().size()>0) {
+						 LoadingCalculator dcal=new LoadingCalculator(t.getPremiumBeforeDiscount(),t.getExchangeRate(),this);					 
+						 t.getLoadings().stream().forEach(dcal);
+						 totalloading= t.getLoadings().stream().mapToDouble(i->i.getLoadingAmount().doubleValue()).sum();
+					 }
 				 }
-				 
 				 
 				 
 				 t.setPremiumAfterDiscount((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumBeforeDiscount().subtract(new BigDecimal(totaldiscount)).add(new BigDecimal(totalloading)).multiply(t.getProRata()))) );
@@ -158,9 +164,6 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 			 
 			
 			 
-		 }catch(CoverException e) {
-			 //e.printStackTrace();
-			// t.setError(e);
 		 }catch (Exception e) {
 			 System.out.println("CoverID:"+t.getCoverId()+"<Desc>:"+t.getCoverDesc()+",subcoverId:"+t.getSubCoverId());
 			 e.printStackTrace();
