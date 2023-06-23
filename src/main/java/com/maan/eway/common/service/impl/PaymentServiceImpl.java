@@ -495,11 +495,12 @@ public class PaymentServiceImpl implements PaymentService {
 				 sectionname = StringUtils.isBlank(commonDatasfilter.get(0).getSectionDesc())?"":commonDatasfilter.get(0).getSectionDesc();
 				 
 				 empCount = commonDatas.stream().mapToInt(o ->  o.getCount().intValue()).sum(); 
-					
-					//count
+				 	//count
 					if(reqList.size()>empCount || reqList.size()<empCount) {
-						
-						error.add(new Error("01", "Employees Count", "Employee's Details Count Should be "+empCount+" for section "+ " '"+sectionname+"'"));
+						if(commonDatasfilter.get(0).getProductId().equalsIgnoreCase("19"))
+							error.add(new Error("01", "Employees Count", "Employee's Details Count Should be "+empCount+" for section "+ " '"+sectionname+"'"));
+						else
+							error.add(new Error("01", "Employees Count", "Employee's Details Count Should be "+empCount));
 					} 
 					
 					if(error.size()<1) {
