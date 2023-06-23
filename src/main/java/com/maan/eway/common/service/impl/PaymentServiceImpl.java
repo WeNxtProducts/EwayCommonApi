@@ -67,19 +67,18 @@ import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MotorDataDetails;
-import com.maan.eway.bean.NotifTemplateMaster;
 import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PaymentRefno;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
+import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.bean.SeqPaymentid;
 import com.maan.eway.bean.TinyurlMaster;
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.common.req.MakePaymentRes;
 import com.maan.eway.common.req.MakePaymentSaveReq;
 import com.maan.eway.common.req.MakePaymentUpdateReq;
-import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.PaymentDetailsGetReq;
 import com.maan.eway.common.req.PaymentDetailsGetallReq;
 import com.maan.eway.common.req.PaymentDetailsHistoryReq;
@@ -88,18 +87,14 @@ import com.maan.eway.common.req.PaymentDetailsSaveRes;
 import com.maan.eway.common.req.PaymentInfoGetAllReq;
 import com.maan.eway.common.req.PaymentInfoGetReq;
 import com.maan.eway.common.req.PaymentResUrlReq;
-import com.maan.eway.common.req.SendSmsReq;
 import com.maan.eway.common.req.TinyUrlGenerateReq;
 import com.maan.eway.common.req.TinyUrlGetReq;
-import com.maan.eway.common.req.TiraFrameReqCall;
-import com.maan.eway.common.req.UpdateQuoteStatusReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.LoginEncryptResponse;
 import com.maan.eway.common.res.PaymentDetailGetRes;
 import com.maan.eway.common.res.PaymentInfoGetRes;
 import com.maan.eway.common.res.QuoteUpdateRes;
 import com.maan.eway.common.res.TinyUrlGetRes;
-import com.maan.eway.common.res.TravelPassDetailsRes;
 import com.maan.eway.common.service.PaymentService;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.TrackingDetailsSaveReq;
@@ -130,6 +125,7 @@ import com.maan.eway.repository.PaymentDetailRepository;
 import com.maan.eway.repository.PaymentInfoRepository;
 import com.maan.eway.repository.PaymentRefnoRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
+import com.maan.eway.repository.ProductEmployeesDetailsRepository;
 import com.maan.eway.repository.SeqPaymentidRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.req.calcengine.CalcCommission;
@@ -236,7 +232,9 @@ public class PaymentServiceImpl implements PaymentService {
 	
 	@Autowired
 	private TiraIntegerationServiceImpl tiraIntegService ;
-	
+
+	@Autowired
+	private ProductEmployeesDetailsRepository empDetailsRepo;
 	
 	private Logger log = LogManager.getLogger(ClausesMasterServiceImpl.class);
 
@@ -407,7 +405,6 @@ public class PaymentServiceImpl implements PaymentService {
 					sectionIds.add("99999");
 					// Common Docs 
 					
-					
 					// Other Docs
 					for (CommonDataDetails mot : commonDatas) {
 						DocValidationReq doc = new DocValidationReq();
@@ -420,6 +417,8 @@ public class PaymentServiceImpl implements PaymentService {
 						docValidateReqs.add(doc);
 						
 					}
+					//call employees count and sum insured validation
+					error = employeeCountAndSIValid(req.getQuoteNo());
 					
 				}
 				
@@ -455,11 +454,7 @@ public class PaymentServiceImpl implements PaymentService {
 					}
 				}
 				
-				
-				
 			}
-			
-			
 			
 		} catch (Exception e) {
 			log.error(e);
@@ -470,6 +465,84 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 	
 	
+	private List<Error> employeeCountAndSIValid(String quoteNo) {
+		List<Error> error = new ArrayList<Error>();
+		try {
+			int checkCount = 0;
+			int empCount = 0;
+			double totalSi = 0.0;
+			double empSi = 0.0;
+			boolean temp1 = true;
+			int indivcount = 0;
+			String sectionname = "";
+			
+			
+			List<CommonDataDetails> commonDatas = new ArrayList<CommonDataDetails>();
+			List<ProductEmployeeDetails> reqList = 	empDetailsRepo.findByQuoteNo(quoteNo)	;
+			
+			if(reqList!=null && reqList.size()> 0 && StringUtils.isNotBlank(quoteNo)  ) {
+				commonDatas = commonRepo.findByQuoteNo(quoteNo);
+				
+			}  else {
+				error.add(new Error("01", "QuoteNo", "Please Enter Atleat one Employee Details "));
+			}	
+			//key 45, value
+			Map<String,List<CommonDataDetails>> groupbysectionId = commonDatas.stream().filter(o -> o.getSectionId()!=null).collect(Collectors.groupingBy(CommonDataDetails::getSectionId));				
+		
+			for(String key : groupbysectionId.keySet() ) { //key--sectionId
+				
+				 List<CommonDataDetails> commonDatasfilter = groupbysectionId.get(key);
+				 sectionname = StringUtils.isBlank(commonDatasfilter.get(0).getSectionDesc())?"":commonDatasfilter.get(0).getSectionDesc();
+				 
+				 empCount = commonDatas.stream().mapToInt(o ->  o.getCount().intValue()).sum(); 
+					
+					//count
+					if(reqList.size()>empCount || reqList.size()<empCount) {
+						
+						error.add(new Error("01", "Employees Count", "Employee's Details Count Should be "+empCount+" for section "+ " '"+sectionname+"'"));
+					} 
+					
+					if(error.size()<1) {
+					//Total si & Individual occupation count
+					for(CommonDataDetails cdata: commonDatas) {
+						indivcount = 0;
+						checkCount = 0;
+						empSi = 0.0;
+						indivcount = indivcount + cdata.getCount().intValue(); 
+						
+						totalSi = cdata.getSumInsured()==null?0.0:cdata.getSumInsured().doubleValue();
+
+						checkCount  = (int) reqList.stream().filter(o-> o.getOccupationId()!=null&& o.getOccupationId().equalsIgnoreCase(cdata.getOccupationType())).count();
+						empSi = reqList.stream().filter(o->o.getOccupationId()!=null&&o.getOccupationId().equalsIgnoreCase(cdata.getOccupationType()))
+								.mapToDouble(o -> Double.valueOf(o.getSalary().toString())).sum() ;
+						
+						if(indivcount!=checkCount) {
+							
+							error.add(new Error("01", "Occupation Count", "Employee Details count should be "+indivcount+" for Occupation "+"'"+cdata.getOccupationDesc()+"' "+" for section "+ " '"+sectionname+"'"));
+							temp1 = false;
+						}
+						if(totalSi!=empSi) {
+							
+							error.add(new Error("01", "Sum Insured", "Total SumInsured not equal to the Actual SumInsured for occupation "+"'"+cdata.getOccupationDesc()+"' "+" for section "+ " '"+sectionname+"'"));
+							temp1 = false;
+						}
+						if(!temp1) 
+							break;
+					}
+					
+					} 
+				 
+			}
+		
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+			error.add(new Error("01","Common Error",  e.getMessage()));
+		}
+		return error;
+	}
+
+
 	public List<CoverDocumentMaster> getCoverDocumentMasterMandatoryDocs(String companyId , Integer productId , List<String> sectionIds  ) {
 		List<CoverDocumentMaster> list = new ArrayList<CoverDocumentMaster>();
 		try {
