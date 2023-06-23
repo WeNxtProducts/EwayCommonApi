@@ -1507,7 +1507,7 @@ this.repository = repo;
 					coverRes.setProRataYn(filterCover.get(0).getProRataYn());
 					coverRes.setTiraSumInsured(filterCover.get(0).getRegulSumInsured()==null?BigDecimal.ZERO:filterCover.get(0).getRegulSumInsured());
 					coverRes.setTiraRate(filterCover.get(0).getRegulatoryRate()==null?0D:filterCover.get(0).getRegulatoryRate().doubleValue());
-					
+					coverRes.setReferalDescription(filterCover.get(0).getReferralDescription() ==null?null:filterCover.get(0).getReferralDescription());
 					// Discount Covers Or Promo Covers
 					List<FactorRateRequestDetails> filterDiscountCover = covers.stream().filter( o -> ( ! o.getDiscLoadId().equals(0)) && (   o.getCoverageType().equalsIgnoreCase("D") || o.getCoverageType().equalsIgnoreCase("P") ) ).collect(Collectors.toList());
 					
