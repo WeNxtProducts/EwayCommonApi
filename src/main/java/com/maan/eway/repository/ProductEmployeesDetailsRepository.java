@@ -26,5 +26,7 @@ public interface ProductEmployeesDetailsRepository extends JpaRepository<Product
 	@Transactional
 	void deleteByQuoteNoAndRiskIdAndEmployeeId(String quoteNo, Integer valueOf, Long valueOf2);
 
+	List<ProductEmployeeDetails> findByQuoteNoAndSectionId(String quoteNo, String sectionId);
+
 
 }

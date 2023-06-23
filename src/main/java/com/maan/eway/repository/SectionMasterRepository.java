@@ -33,5 +33,7 @@ public interface SectionMasterRepository  extends JpaRepository<SectionMaster,Se
 
 	List<SectionMaster> findTopBySectionIdOrderByAmendIdDesc(Integer valueOf);
 
+	List<SectionMaster> findBySectionId(Integer valueOf);
+
 
 }

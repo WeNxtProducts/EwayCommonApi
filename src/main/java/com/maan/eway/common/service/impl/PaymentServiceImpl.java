@@ -73,6 +73,8 @@ import com.maan.eway.bean.PaymentRefno;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductEmployeeDetails;
+import com.maan.eway.bean.SectionDataDetails;
+import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.bean.SeqPaymentid;
 import com.maan.eway.bean.TinyurlMaster;
 import com.maan.eway.bean.TravelPassengerDetails;
@@ -126,6 +128,8 @@ import com.maan.eway.repository.PaymentInfoRepository;
 import com.maan.eway.repository.PaymentRefnoRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
+import com.maan.eway.repository.SectionDataDetailsRepository;
+import com.maan.eway.repository.SectionMasterRepository;
 import com.maan.eway.repository.SeqPaymentidRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.req.calcengine.CalcCommission;
@@ -235,6 +239,13 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Autowired
 	private ProductEmployeesDetailsRepository empDetailsRepo;
+	
+	@Autowired
+	private SectionMasterRepository smRepo;
+	
+
+	@Autowired
+	private  SectionDataDetailsRepository sddRepo;
 	
 	private Logger log = LogManager.getLogger(ClausesMasterServiceImpl.class);
 
@@ -377,6 +388,14 @@ public class PaymentServiceImpl implements PaymentService {
 						docValidateReqs.add(doc);
 						
 					}
+					List<EserviceSectionDetails> filterBuilding = buidingDatas.stream().filter(o->o.getProductType().equalsIgnoreCase("H")).collect(Collectors.toList());
+					if(buidingDatas.size()>0) {
+					//call employees count and sum insured validation
+					for (EserviceSectionDetails data :   filterBuilding) {
+						error.addAll(employeeCountAndSIValid(req.getQuoteNo() , data.getSectionId()  ));	
+					}
+					
+					}
 					
 				} else if(product.getMotorYn().equalsIgnoreCase("H")  && homeData.getProductId().equals(Integer.valueOf(travelProductId)) ) {
 					List<TravelPassengerDetails>  passDatas = passengerRepo.findByQuoteNoOrderByTravelIdAsc(req.getQuoteNo());	
@@ -404,7 +423,7 @@ public class PaymentServiceImpl implements PaymentService {
 					sectionIds = commonDatas.stream().map(CommonDataDetails :: getSectionId ) .collect(Collectors.toList());
 					sectionIds.add("99999");
 					// Common Docs 
-					
+					String sectionId = "";
 					// Other Docs
 					for (CommonDataDetails mot : commonDatas) {
 						DocValidationReq doc = new DocValidationReq();
@@ -413,12 +432,13 @@ public class PaymentServiceImpl implements PaymentService {
 						doc.setProductDesc("Risk Id");
 						doc.setRiskId(mot.getRiskId().toString() );
 						doc.setSectionId(String.valueOf(mot.getSectionId()));
+						sectionId = String.valueOf(mot.getSectionId());
 						doc.setSectionDesc(mot.getSectionDesc());
 						docValidateReqs.add(doc);
 						
 					}
 					//call employees count and sum insured validation
-					error = employeeCountAndSIValid(req.getQuoteNo());
+					error.addAll(employeeCountAndSIValid(req.getQuoteNo() , sectionId ));
 					
 				}
 				
@@ -465,7 +485,7 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 	
 	
-	private List<Error> employeeCountAndSIValid(String quoteNo) {
+	private List<Error> employeeCountAndSIValid(String quoteNo , String sectionId ) {
 		List<Error> error = new ArrayList<Error>();
 		try {
 			int checkCount = 0;
@@ -475,70 +495,66 @@ public class PaymentServiceImpl implements PaymentService {
 			boolean temp1 = true;
 			int indivcount = 0;
 			String sectionname = "";
+			List<SectionDataDetails> sm = sddRepo.findBySectionId(sectionId);
+			sectionname = sm.get(0).getSectionDesc();
 			
 			
 			List<CommonDataDetails> commonDatas = new ArrayList<CommonDataDetails>();
-			List<ProductEmployeeDetails> reqList = 	empDetailsRepo.findByQuoteNo(quoteNo)	;
+			List<ProductEmployeeDetails> reqList = 	empDetailsRepo.findByQuoteNoAndSectionId(quoteNo,sectionId)	;
 			
 			if(reqList!=null && reqList.size()> 0 && StringUtils.isNotBlank(quoteNo)  ) {
-				commonDatas = commonRepo.findByQuoteNo(quoteNo);
+				commonDatas = commonRepo.findByQuoteNoAndSectionId(quoteNo,sectionId);
 				
 			}  else {
 				error.add(new Error("01", "QuoteNo", "Please Enter Atleat one Employee Details "));
 			}	
-			//key 45, value
-			Map<String,List<CommonDataDetails>> groupbysectionId = commonDatas.stream().filter(o -> o.getSectionId()!=null).collect(Collectors.groupingBy(CommonDataDetails::getSectionId));				
-		
-			for(String key : groupbysectionId.keySet() ) { //key--sectionId
+			
+			
+			empCount = commonDatas.stream().mapToInt(o ->  o.getCount().intValue()).sum(); 
+			
+			//count
+			if(reqList.size()>empCount || reqList.size()<empCount) {
+				if(commonDatas.get(0).getProductId().equalsIgnoreCase("19"))
+					error.add(new Error("01", "Employees Count", "Employee's Details Count Should be "+empCount+" for section "+ " '"+sectionname+"'"));
+				else
+				error.add(new Error("01", "Employees Count", "Employee's Details Count Should be "+empCount));
+			} 
+			
+			if(error.size()<1) {
+			//Total si & Individual occupation count
+			for(CommonDataDetails cdata: commonDatas) {
+				indivcount = 0;
+				checkCount = 0;
+				empSi = 0.0;
+				indivcount = indivcount + cdata.getCount().intValue(); 
 				
-				 List<CommonDataDetails> commonDatasfilter = groupbysectionId.get(key);
-				 sectionname = StringUtils.isBlank(commonDatasfilter.get(0).getSectionDesc())?"":commonDatasfilter.get(0).getSectionDesc();
-				 
-				 empCount = commonDatas.stream().mapToInt(o ->  o.getCount().intValue()).sum(); 
-				 	//count
-					if(reqList.size()>empCount || reqList.size()<empCount) {
-						if(commonDatasfilter.get(0).getProductId().equalsIgnoreCase("19"))
-							error.add(new Error("01", "Employees Count", "Employee's Details Count Should be "+empCount+" for section "+ " '"+sectionname+"'"));
-						else
-							error.add(new Error("01", "Employees Count", "Employee's Details Count Should be "+empCount));
-					} 
-					
-					if(error.size()<1) {
-					//Total si & Individual occupation count
-					for(CommonDataDetails cdata: commonDatas) {
-						indivcount = 0;
-						checkCount = 0;
-						empSi = 0.0;
-						indivcount = indivcount + cdata.getCount().intValue(); 
-						
-						totalSi = cdata.getSumInsured()==null?0.0:cdata.getSumInsured().doubleValue();
+				totalSi = cdata.getSumInsured()==null?0.0:cdata.getSumInsured().doubleValue();
 
-						checkCount  = (int) reqList.stream().filter(o-> o.getOccupationId()!=null&& o.getOccupationId().equalsIgnoreCase(cdata.getOccupationType())).count();
-						empSi = reqList.stream().filter(o->o.getOccupationId()!=null&&o.getOccupationId().equalsIgnoreCase(cdata.getOccupationType()))
-								.mapToDouble(o -> Double.valueOf(o.getSalary().toString())).sum() ;
-						
-						if(indivcount!=checkCount) {
-							if(cdata.getProductId().equalsIgnoreCase("19"))
-								error.add(new Error("01", "Occupation Count", "Employee Details count should be "+indivcount+" for Occupation "+"'"+cdata.getOccupationDesc()+"' "+" for section "+ " '"+sectionname+"'"));
-							else
-								error.add(new Error("01", "Occupation Count", "Employee Details count should be "+indivcount+" for Occupation "+"'"+cdata.getOccupationDesc()+"'"));
-							temp1 = false;
-						}
-						if(error.size()<1) {
-						if(totalSi!=empSi) {
-							if(cdata.getProductId().equalsIgnoreCase("19"))
-								error.add(new Error("01", "Sum Insured", "Total SumInsured not equal to the Actual SumInsured for occupation "+"'"+cdata.getOccupationDesc()+"' "+" for section "+ " '"+sectionname+"'"));
-							else
-								error.add(new Error("01", "Sum Insured", "Total SumInsured not equal to the Actual SumInsured for occupation "+"'"+cdata.getOccupationDesc()+"'"));
-							temp1 = false;
-						} }
-						if(!temp1) 
-							break;
-					}
-					
-					} 
-				 
+				checkCount  = (int) reqList.stream().filter(o-> o.getOccupationId()!=null&& o.getOccupationId().equalsIgnoreCase(cdata.getOccupationType())).count();
+				empSi = reqList.stream().filter(o->o.getOccupationId()!=null&&o.getOccupationId().equalsIgnoreCase(cdata.getOccupationType()))
+						.mapToDouble(o -> Double.valueOf(o.getSalary().toString())).sum() ;
+				
+				if(indivcount!=checkCount) {
+					if(cdata.getProductId().equalsIgnoreCase("19"))
+						error.add(new Error("01", "Occupation Count", "Employee Details count should be "+indivcount+" for Occupation "+"'"+cdata.getOccupationDesc()+"' "+" for section "+ " '"+sectionname+"'"));
+					else
+					error.add(new Error("01", "Occupation Count", "Employee Details count should be "+indivcount+" for Occupation "+"'"+cdata.getOccupationDesc()+"'"));
+					temp1 = false;
+				}
+				if(error.size()<1) {
+				if(totalSi!=empSi) {
+					if(cdata.getProductId().equalsIgnoreCase("19"))
+						error.add(new Error("01", "Sum Insured", "Total SumInsured not equal to the Actual SumInsured for occupation "+"'"+cdata.getOccupationDesc()+"'"+" for section "+ " '"+sectionname+"'"));
+					else
+					error.add(new Error("01", "Sum Insured", "Total SumInsured not equal to the Actual SumInsured for occupation "+"'"+cdata.getOccupationDesc()+"'" ));
+					temp1 = false;
+				}
+				}
+				if(!temp1) 
+					break;
 			}
+			}	
+
 		
 		} catch (Exception e) {
 			log.error(e);
