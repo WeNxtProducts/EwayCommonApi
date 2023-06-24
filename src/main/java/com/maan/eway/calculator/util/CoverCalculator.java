@@ -62,6 +62,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					 t.setReferalDescription("CoverageLimit Referral Limits Upto"+t.getCoverageLimit());
 					 t.setPremiumBeforeDiscount(BigDecimal.ZERO);					 
 					 t.setPremiumBeforeDiscountLC(BigDecimal.ZERO);
+					 t.setCalcType("P");
 				 }else if("F".equals(t.getCalcType())) {
 					 // Tuple vehicle,Tuple customer,Tuple common
 					 List<Tuple> factors = LoadFactorRates(engine, t.getCoverId(),t.getFactorTypeId(),engine.getVehicleId(),StringUtils.isBlank(t.getSubCoverId())?"0":t.getSubCoverId());

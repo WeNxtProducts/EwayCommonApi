@@ -50,9 +50,9 @@ public class AdminCoverCalculator  extends CommonCalculator implements Consumer<
 				 }				 
 				 t.setSumInsured(si);
 			
-				 
-				 
-				 BigDecimal domath = domath(t.getCalcType(), t.getRate(), si,t.getExchangeRate());
+				 if("F".equals(t.getCalcType()))
+					 t.setCalcType("P");
+				BigDecimal domath = domath(t.getCalcType(), t.getRate(), si,t.getExchangeRate());
 				 t.setPremiumBeforeDiscount(domath);
 				 t.setPremiumBeforeDiscountLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())))) ;
 			 
