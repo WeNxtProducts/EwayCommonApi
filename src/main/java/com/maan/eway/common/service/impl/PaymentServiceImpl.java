@@ -438,7 +438,7 @@ public class PaymentServiceImpl implements PaymentService {
 						
 					}
 					//call employees count and sum insured validation
-					if(! commonDatas.get(0).getProductId().equalsIgnoreCase("3"))
+					
 						error.addAll(employeeCountAndSIValid(req.getQuoteNo() , sectionId ));
 					
 				}
