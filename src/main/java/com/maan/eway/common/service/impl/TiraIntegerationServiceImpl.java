@@ -33,6 +33,9 @@ import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.common.req.TiraFrameReqCall;
+import com.maan.eway.integration.req.PremiaRequest;
+import com.maan.eway.integration.res.PremiaResponse;
+import com.maan.eway.integration.service.IntegrationService;
 import com.maan.eway.master.service.impl.ClausesMasterServiceImpl;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.res.SuccessRes;
@@ -54,14 +57,42 @@ public class TiraIntegerationServiceImpl {
 	@Autowired
 	private HomePositionMasterRepository homerepo ;
 	
+	@Autowired
+	private IntegrationService service;
+	
 	public SuccessRes callTiraIntegeration(TiraFrameReqCall tiraReq, String token) {
 		SuccessRes res = new SuccessRes();
 		try {
 			HomePositionMaster data = homerepo.findByQuoteNo(tiraReq.getQuoteNo());
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(data.getCompanyId() , data.getProductId().toString());
 			
+		
 			// Call Tira Insert 
 			if  (  product.getMotorYn().equalsIgnoreCase("M") ) {
+				
+				// Call Integeration
+				PremiaRequest premiaReq = new PremiaRequest(); 
+				premiaReq.setQuoteNo(tiraReq.getQuoteNo());
+				List<String> premiaIds = new ArrayList<String>(); 
+				premiaIds.add(  "1"  );
+				premiaIds.add(  "2"  );
+				premiaIds.add(  "3"  );
+				premiaIds.add(  "4"  );
+				premiaIds.add(  "5"  );
+				premiaIds.add(  "6"  );
+				premiaIds.add(  "7"  );
+				premiaIds.add(  "8"  );
+				premiaIds.add(  "9"  );
+				premiaIds.add(  "10"  );
+				premiaIds.add(  "11"  );
+				premiaIds.add(  "12"  );
+				premiaIds.add(  "13"  );
+				premiaIds.add(  "14"  );
+				premiaReq.setPremiaIds(premiaIds);
+				
+				service.pushPremiaIntegration(premiaReq);
+				
+				
 				// Tira Request Frame
 				Object tiraFramedReq = TiraReqFrame(tiraReq, token);
 

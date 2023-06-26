@@ -591,7 +591,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 
 				}
 				if (data.size() > 0 && data != null) {
-					termsRepo.deleteAll();
+					termsRepo.deleteAll(data);
 				}
 				Long count = termsRepo.count();
 				Integer count1 = count.intValue();
