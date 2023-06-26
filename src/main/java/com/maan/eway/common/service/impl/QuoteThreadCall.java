@@ -2590,6 +2590,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			if(StringUtils.isNotBlank(motorData.getEndorsementType()==null?null:String.valueOf(motorData.getEndorsementType()))) {
 				HomePositionMaster oldPosition = homeRepo.findByQuoteNo(motorData.getEndtPrevQuoteNo()==null?null:motorData.getEndtPrevQuoteNo());
 				home.setCoverNoteReferenceNo(oldPosition.getCoverNoteReferenceNo());
+				home.setPrevCoverNoteRefNo(oldPosition.getCoverNoteReferenceNo());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

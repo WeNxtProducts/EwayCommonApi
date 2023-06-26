@@ -672,6 +672,9 @@ private String responseStatusCode;
 
 @Column(name="RESPONSE_STATUS_DESC")
 private String responseStatusDesc;
+
+@Column(name="PREV_COVERNOTE_REFNO")
+private String prevCoverNoteRefNo;
     
 
 }
