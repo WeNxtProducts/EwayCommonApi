@@ -389,7 +389,7 @@ public class PaymentServiceImpl implements PaymentService {
 						
 					}
 					List<EserviceSectionDetails> filterBuilding = buidingDatas.stream().filter(o->o.getProductType().equalsIgnoreCase("H")).collect(Collectors.toList());
-					if(buidingDatas.size()>0 && ! filterBuilding.get(0).getProductId().equalsIgnoreCase("3")) {
+					if(buidingDatas.size()>0 && ! buidingDatas.get(0).getProductId().equalsIgnoreCase("3")) {
 					//call employees count and sum insured validation
 					for (EserviceSectionDetails data :   filterBuilding) {
 						error.addAll(employeeCountAndSIValid(req.getQuoteNo() , data.getSectionId()  ));	
