@@ -108,7 +108,7 @@ public class JasperServiceImpl implements JasperService {
 //				}
 //
 //				else 
-				if (product.getMotorYn().equalsIgnoreCase("H") && travelProductId.equals(req.getProductId())) {
+				if (product.getMotorYn().equalsIgnoreCase("H") && travelProductId.equals(homeData.getProductId().toString())) {
 					res = getJasperPdfFile("/report/jasper/TravelReport.jrxml", getPdfOutFilePath, input);
 					
 				} else if (product.getMotorYn().equalsIgnoreCase("M")) {
