@@ -419,29 +419,31 @@ public class DocumentServiceImpl implements DocumentService{
 				List<SectionDataDetails>  sectionDatas =  secRepo.findByQuoteNoOrderByRiskIdAsc(homeData.getQuoteNo());
 				
 				List<DocumentSectionList> sectionList = new ArrayList<DocumentSectionList>();
-				for (MotorDataDetails mot :   motorList) {
+				sectionDatas = sectionDatas.stream().filter(distinctByKey(o -> Arrays.asList(o.getSectionId()))).collect(Collectors.toList());
+				
+				for (SectionDataDetails sec : sectionDatas) {
+					List<MotorDataDetails>  filtermotList =  motorList.stream().filter( o -> 
+							o.getSectionId().toString().equals(sec.getSectionId().toString()) ).collect(Collectors.toList());
 					
-					
-					// Vehicles
-					List<DocumentDropdownRes> idList  = new ArrayList<DocumentDropdownRes>();
-					DocumentDropdownRes doc = new DocumentDropdownRes();
-					doc.setRiskId(mot.getVehicleId());
-					doc.setId(mot.getChassisNumber());
-					String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("M") ).collect(Collectors.toList()).get(0).getItemValue() ;					
-					doc.setIdType(idType);
-					idList.add(doc);	
-					
-					List<SectionDataDetails>  filterSection =  sectionDatas.stream().filter( o -> o.getRiskId().equals(Integer.valueOf(mot.getVehicleId())) &&
-							o.getSectionId().equals(mot.getSectionId().toString()) ).collect(Collectors.toList());
-					SectionDataDetails sec = filterSection.size() > 0 ? filterSection.get(0) : null ;
 					DocumentSectionList sectionRes = new DocumentSectionList(); 
-					sectionRes.setSectionId( sec!=null ? sec.getSectionId() : mot.getSectionId().toString());
-					sectionRes.setSectionName(sec!=null ?  sec.getSectionDesc() : mot.getSectionName());
+					sectionRes.setSectionId(sec.getSectionId());
+					sectionRes.setSectionName(sec.getSectionDesc());
+					
+					List<DocumentDropdownRes> idList  = new ArrayList<DocumentDropdownRes>();
+					for (MotorDataDetails mot :   filtermotList ) {
+						
+						// Vehicles
+						DocumentDropdownRes doc = new DocumentDropdownRes();
+						doc.setRiskId(mot.getVehicleId());
+						doc.setId(mot.getChassisNumber());
+						String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("M") ).collect(Collectors.toList()).get(0).getItemValue() ;					
+						doc.setIdType(idType);
+						idList.add(doc);	
+					}
 					sectionRes.setIdList(idList);
 					sectionList.add(sectionRes);
-					
-					
 				}
+				
 				// Location 
 				LocationWiseSections loc = new LocationWiseSections();
 				loc.setLocationId("1");
@@ -455,6 +457,11 @@ public class DocumentServiceImpl implements DocumentService{
 				log.info("Exception is ---> " + e.getMessage());
 			}
 			return resList;
+		}
+		
+		private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+		    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+		    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
 		}
 		
 		public List<LocationWiseSections> getAssetDocument(HomePositionMaster homeData) {
