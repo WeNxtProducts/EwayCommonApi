@@ -29,6 +29,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 			 }else {
 
 			//	 loadOnetimetable(engine);
+				 boolean discountLoading=true;
 				 
 				 BigDecimal exchangeRate= new BigDecimal(vehicles.get(0).get("exchangeRate")==null?"1":vehicles.get(0).get("exchangeRate").toString());
 				 t.setExchangeRate(exchangeRate);
@@ -104,6 +105,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 						 t.setIsReferral((tuple.get("status")==null?"N":tuple.get("status").toString()).equals("R")?"Y":"N");
 						 if("Y".equals(t.getIsReferral())){
 							 t.setReferalDescription(t.getCoverDesc() +" Referral" );
+							 discountLoading=false;
 						 }
 					 }
 				 }else {
@@ -119,7 +121,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 t.setTiraSumInsured(domathTira);
 				 Double totaldiscount=0D;
 				 Double totalloading=0D;
-				 if(!"Y".equals(t.getIsReferral())) {
+				 if(discountLoading) {
 					
 					 if(t.getDiscounts()!=null && t.getDiscounts().size()>0) {
 						 DiscountCalculator dcal=new DiscountCalculator(t.getPremiumBeforeDiscount(),t.getExchangeRate(),this);					 

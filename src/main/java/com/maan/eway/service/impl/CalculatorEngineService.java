@@ -1811,7 +1811,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			  columns.add("subUserType");
 			  
 			  
-			  String s1="userType:Issuer;subUserType:{High,Both};companyId:"+request.getInsuranceId()+";attachedBranches%"+request.getBranchCode()+";status:Y;";
+			  String s1="userType:Issuer;subUserType:{high,both};companyId:"+request.getInsuranceId()+";attachedBranches%"+request.getBranchCode()+";status:Y;";
 			  SpecCriteria c1 = crservice.createCriteria(LoginMaster.class, s1, "loginId",columns);
 			  JoinCriteria j1=new JoinCriteria();
 			  j1.setColumnName("loginId");
