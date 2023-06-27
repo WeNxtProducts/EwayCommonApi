@@ -10,10 +10,9 @@ import java.io.Serializable;
 import java.util.List;
 
 
-import java.util.Date;
 
 /**
- * Composite primary key for entity "CoverDocumentMaster" ( stored in table "cover_document_master" )
+ * Composite primary key for entity "CoverDocumentUploadDetails" ( stored in table "cover_document_upload_details" )
  *
  * @author Telosys
  *
@@ -25,20 +24,30 @@ import java.util.Date;
 @AllArgsConstructor
 @ToString
 @Builder
-public class CoverDocumentMasterId implements Serializable {
+public class DocumentTransactionDetailsId implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     //--- ENTITY KEY ATTRIBUTES 
-    private Integer    documentId ;
+    private String     quoteNo ;
+
+    private String     requestReferenceNo ;
     
     private Integer    productId ;
-    
-    private String     companyId ;
-    
-    private Integer    sectionId ;
-    
-    private String     coverId ;
-    private Integer    amendId ;
 
+    private String     companyId ;
+
+    private Integer    sectionId ;
+
+    private Integer locationId ;
+    
+    private Integer riskId ;
+
+    private String id ;
+	
+    private String idType ;
+	
+    private Integer uniqueId ;
+    
+     
 }

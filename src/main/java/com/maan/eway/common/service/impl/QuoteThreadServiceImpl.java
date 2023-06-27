@@ -89,6 +89,8 @@ import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.ContentAndRiskRepository;
 import com.maan.eway.repository.CoverDetailsRepository;
+import com.maan.eway.repository.DocumentTransactionDetailsRepository;
+import com.maan.eway.repository.DocumentUniqueDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
@@ -242,6 +244,12 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	@Autowired
 	private RatingFactorsUtil ratingutil;
 	
+	@Autowired
+	private DocumentUniqueDetailsRepository docUniqueRepo ;
+	
+	@Autowired
+	private DocumentTransactionDetailsRepository docTranRepo ;
+	
 	@Override
 	public CommonRes call_OT_Insert(NewQuoteReq req) {
 		CommonRes commonRes = new CommonRes();
@@ -295,17 +303,17 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             commonRes =  oldQuoteRecordsDeleteThreadCall(request);
             if( commonRes.getErrorMessage() !=null && commonRes.getErrorMessage().size()>0 ) {
              	return commonRes ; 
-             }
+             } 
             
             // Customer Save Thread Call
             QuoteThreadCall customerSave = new QuoteThreadCall("CustomerSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
             		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
-            		, locRepo , contentRepo , pacRepo );
+            		, locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo );
             queue.add(customerSave);
             // Section Save
             QuoteThreadCall sectionSave = new QuoteThreadCall("SectionSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
             		, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
-            	     , locRepo , contentRepo , pacRepo );
+            	     , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo );
             queue.add(sectionSave);
             
             int threadCount = 2 ;
@@ -440,7 +448,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				request.setVehicleId(req.getVehicleIdsList().get(0).getVehicleId());
 				QuoteThreadCall quoteSave = new QuoteThreadCall("QuoteSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo  
 						, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
-					    , locRepo , contentRepo , pacRepo );
+					    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo );
 	            
 				queue2.add(quoteSave);
 				
@@ -768,7 +776,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			
         	QuoteThreadCall deleteOldRecords = new QuoteThreadCall("DeleteOldRecords" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo  
         			, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
-        		    , locRepo , contentRepo , pacRepo );
+        		    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo );
           
         	queue.add(deleteOldRecords);
         	res = "Success";
@@ -904,11 +912,11 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	            	 
 	            	QuoteThreadCall motorSave = new QuoteThreadCall("MotorSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo  
 	            			, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
-	            		    , locRepo , contentRepo , pacRepo );
+	            		    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo );
 		            queue.add(motorSave);
 					QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
 							, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
-						    , locRepo , contentRepo , pacRepo );
+						    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo );
 					queue.add(coverSave);	
 	            }
 	    	 // Response 
@@ -970,11 +978,11 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	            	 
 	            	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
 	            				, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
-	            			    , locRepo , contentRepo , pacRepo );
+	            			    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo );
 		             queue.add(travelSave);
 					 QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
 								, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
-							    , locRepo , contentRepo , pacRepo );
+							    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo );
 					 queue.add(coverSave);
 				 }					 
 	         } 
@@ -999,7 +1007,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			request.setVehicleId(1);
 			QuoteThreadCall buildingSave = new QuoteThreadCall("BuildingSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo  
 					, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
-				    , locRepo , contentRepo , pacRepo );
+				    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo );
             queue.add(buildingSave);
 			
 			
@@ -1030,7 +1038,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		            	 
 		            	QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
 		            			, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
-		            		    , locRepo , contentRepo , pacRepo );
+		            		    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo );
 						queue.add(coverSave);	
 	            	}
 	            }
@@ -1076,11 +1084,11 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	            	 
 					QuoteThreadCall commonDataSave = new QuoteThreadCall("CommonDataSave", request2, em,eserCustRepo, eserMotRepo, facRateRepo, perInfoRepo, motorRepo,driverRepo , coverRepo, homeRepo,eserRepo,
 							 eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
-						    , locRepo , contentRepo , pacRepo );
+						    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo );
 					queue.add(commonDataSave);
 					QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave", request2, em, eserCustRepo,eserMotRepo, facRateRepo, perInfoRepo, motorRepo,driverRepo , coverRepo, homeRepo, eserRepo,
 							 eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
-						    , locRepo , contentRepo , pacRepo );
+						    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo );
 					queue.add(coverSave);
 				}
 			}

@@ -6,6 +6,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,11 +30,13 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
@@ -43,6 +46,9 @@ import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.ContentAndRisk;
 import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.CurrencyMaster;
+import com.maan.eway.bean.DocumentTransactionDetails;
+import com.maan.eway.bean.DocumentUniqueDetails;
+import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
@@ -63,6 +69,8 @@ import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.bean.TravelPassengerHistory;
 import com.maan.eway.common.req.CoverIdsReq;
+import com.maan.eway.common.req.FrameOldDocSaveReq;
+import com.maan.eway.common.req.OldDocumentsCopyReq;
 import com.maan.eway.common.req.QuoteThreadReq;
 import com.maan.eway.common.req.VehicleIdsReq;
 import com.maan.eway.common.res.CommonRes;
@@ -74,6 +82,8 @@ import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.ContentAndRiskRepository;
 import com.maan.eway.repository.CoverDetailsRepository;
+import com.maan.eway.repository.DocumentTransactionDetailsRepository;
+import com.maan.eway.repository.DocumentUniqueDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
@@ -90,6 +100,7 @@ import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerHistoryRepository;
+import com.maan.eway.res.SuccessRes;
 
 
 public class QuoteThreadCall implements Callable<Object>  {
@@ -141,6 +152,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 	
 	// productId
 	private String travelProductId;
+	
+	// Document
+	private DocumentUniqueDetailsRepository docUniqueRepo ;
+	private DocumentTransactionDetailsRepository docTranRepo ;
 
 	
 	public QuoteThreadCall(String type , QuoteThreadReq request , EntityManager em ,EserviceCustomerDetailsRepository eserCustRepo ,
@@ -148,7 +163,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			 CoverDetailsRepository coverRepo  , HomePositionMasterRepository homeRepo  ,EserviceTravelDetailsRepository eserTraRepo ,EserviceTravelGroupDetailsRepository eserGroupRepo ,
 			 TravelPassengerDetailsRepository    traPassRepo ,TravelPassengerHistoryRepository traPassHisRepo  ,String travelProductId
 			 , EserviceBuildingDetailsRepository eserBuildRepo , EServiceSectionDetailsRepository eserSecRepo,EserviceCommonDetailsRepository eserCommonRepo,CommonDataDetailsRepository commonDataRepo ,
-			 SectionDataDetailsRepository secRepo,BuildingRiskDetailsRepository buildRepo , CoverDocumentUploadDetailsRepository docRepo, BuildingDetailsRepository locRepo ,ContentAndRiskRepository  contentRepo  ,PersonalAccidentRepository pacRepo ) {
+			 SectionDataDetailsRepository secRepo,BuildingRiskDetailsRepository buildRepo , CoverDocumentUploadDetailsRepository docRepo, BuildingDetailsRepository locRepo ,ContentAndRiskRepository  contentRepo  ,PersonalAccidentRepository pacRepo
+			 , DocumentUniqueDetailsRepository docUniqueRepo ,DocumentTransactionDetailsRepository docTranRepo   ) {
 		this.type = type;
 		this.request = request;
 		this.em=em;
@@ -175,6 +191,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 		this.locRepo = locRepo ;
 		this.contentRepo = contentRepo ;
 		this.pacRepo = pacRepo ;
+		this.docUniqueRepo = docUniqueRepo ;
+		this.docTranRepo = docTranRepo ;
 		
 	} 
 	
@@ -2586,12 +2604,21 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setEndtCount(motorData.getEndtCount()==null?0:motorData.getEndtCount().intValue());	
 			home.setEndtTypeDesc(motorData.getEndorsementTypeDesc()==null?"":motorData.getEndorsementTypeDesc());
 			home.setOriginalPolicyNo(motorData.getOriginalPolicyNo()==null?"":motorData.getOriginalPolicyNo());
+			home.setQuoteNo(request.getQuoteNo());
+			home.setRequestReferenceNo(request.getRequestReferenceNo());
 			
 			if(StringUtils.isNotBlank(motorData.getEndorsementType()==null?null:String.valueOf(motorData.getEndorsementType()))) {
 				HomePositionMaster oldPosition = homeRepo.findByQuoteNo(motorData.getEndtPrevQuoteNo()==null?null:motorData.getEndtPrevQuoteNo());
 				home.setCoverNoteReferenceNo(oldPosition.getCoverNoteReferenceNo());
 				home.setPrevCoverNoteRefNo(oldPosition.getCoverNoteReferenceNo());
 			}
+			
+			// Copy Old Motor Doc
+			List<FrameOldDocSaveReq> frameDocReqList = frameMotorDocRequest( home  ) ;
+			List<ListItemValue> docTypeList = getListItem( home.getCompanyId() , home.getBranchCode() , "DOC_ID_TYPE" , "M");
+			String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("M") ).collect(Collectors.toList()).get(0).getItemValue() ;	
+			saveDocumentsNewQuote(home  , idType , frameDocReqList ) ;
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("Exception is ---> " + e.getMessage());
@@ -2601,6 +2628,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 		return home;
 	}
 
+	
+	
 	private HomePositionMaster setTravelDetails(QuoteThreadReq  request) {
 		HomePositionMaster home = new HomePositionMaster();
 		try {
@@ -2806,6 +2835,113 @@ public class QuoteThreadCall implements Callable<Object>  {
 		return home;
 	}
 	
+	
+	public List<FrameOldDocSaveReq> frameMotorDocRequest( HomePositionMaster homeData  ) {
+		List<FrameOldDocSaveReq> reqList = new ArrayList<FrameOldDocSaveReq>();
+		try {
+			List<MotorDataDetails> motList = motorRepo.findByQuoteNo(homeData.getQuoteNo());
+			List<SectionDataDetails> secDatas =  secRepo.findByQuoteNoOrderByRiskIdAsc(homeData.getQuoteNo());
+			
+			// Frame Req 
+			motList.forEach(  mot -> { 
+				FrameOldDocSaveReq saveReq  = new FrameOldDocSaveReq();
+				List<SectionDataDetails> filterSec = secDatas.stream().filter(  o -> o.getSectionId().equalsIgnoreCase(mot.getSectionId().toString())  ).collect(Collectors.toList());
+				SectionDataDetails section = filterSec.get(0) ;
+				 
+				saveReq.setRiskId(mot.getVehicleId());
+				saveReq.setId(mot.getChassisNumber());
+				saveReq.setLocationId("1");
+				saveReq.setLocationName(homeData.getProductName());
+				saveReq.setSectionId(section.getSectionId()) ;
+				saveReq.setSectionName(section.getSectionDesc());
+				reqList.add(saveReq);
+				
+			} ) ;
+						
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+	
+		return reqList ;
+	}
+	
+	
+	public SuccessRes saveDocumentsNewQuote(HomePositionMaster homeData , String idType , List<FrameOldDocSaveReq> framendReqList  ) {
+		// TODO Auto-generated method stub
+		SuccessRes res = new SuccessRes();
+		try {
+			Long  docTranCount = docTranRepo.countByQuoteNo(homeData.getQuoteNo());
+			
+			if(docTranCount <= 0 ) {
+				int targetSize = 500;
+				List<FrameOldDocSaveReq> largeList = framendReqList ;
+				List<List<FrameOldDocSaveReq>> partitionList = ListUtils.partition(largeList, targetSize);
+				
+				for (List<FrameOldDocSaveReq> partitionIds :  partitionList ) {
+					
+					List<String> ids = partitionIds.stream().map( FrameOldDocSaveReq :: getId ).collect(Collectors.toList());
+					List<DocumentUniqueDetails> uniqueDatas = docUniqueRepo.findByIdTypeAndIdInOrderByEntryDateDesc(idType , ids);
+					uniqueDatas = uniqueDatas.stream().filter(distinctByKey(o -> Arrays.asList(o.getId()))).collect(Collectors.toList());
+					
+					List<DocumentTransactionDetails> saveDocList = new ArrayList<DocumentTransactionDetails>();
+					uniqueDatas.forEach ( uniq ->  {  
+						
+						DocumentTransactionDetails docTran = new DocumentTransactionDetails();
+						docTran.setUniqueId( uniq.getUniqueId());
+						docTran.setId(uniq.getId());
+						docTran.setIdType(idType);
+						docTran.setRequestReferenceNo(homeData.getRequestReferenceNo());
+						docTran.setQuoteNo(homeData.getQuoteNo());
+						docTran.setCompanyId(homeData.getCompanyId());
+						docTran.setCompanyName(homeData.getCompanyName());
+						docTran.setProductId(homeData.getProductId());
+						docTran.setProductName(homeData.getProductName());
+						
+						List<FrameOldDocSaveReq> filterPartitions = partitionIds.stream().filter(  o -> o.getId().equalsIgnoreCase(uniq.getId())  ).collect(Collectors.toList());
+						if ( filterPartitions.size() > 0 ) {
+							FrameOldDocSaveReq partition = filterPartitions.get(0);
+							docTran.setSectionId(Integer.valueOf(partition.getSectionId()));
+							docTran.setSectionName(partition.getSectionName());
+							docTran.setProductType(uniq.getProductType());
+							docTran.setLocationId(Integer.valueOf(partition.getLocationId()) );
+							docTran.setLocationName(partition.getLocationName());
+							docTran.setRiskId(Integer.valueOf(partition.getRiskId()));
+						
+						}
+						
+						if (StringUtils.isNotBlank(homeData.getEndtTypeId())) {
+								docTran.setEndorsementDate(homeData.getEndtDate() == null ? null : new Date());
+								docTran.setEndorsementEffdate(homeData.getEndorsementEffdate() == null ? null : homeData.getEndorsementEffdate());
+								docTran.setEndorsementRemarks(homeData.getEndorsementRemarks() == null ? "" : homeData.getEndorsementRemarks());
+								docTran.setEndorsementTypeDesc(homeData.getEndtTypeDesc());
+								docTran.setIsFinaceYn(homeData.getIsFinacialEndt());
+								docTran.setEndtCategDesc(homeData.getEndtCategDesc());
+								docTran.setEndtStatus(homeData.getEndtStatus());
+								docTran.setEndtCount(new BigDecimal(homeData.getEndtCount()));
+								docTran.setEndtPrevPolicyNo(homeData.getEndtPrevPolicyNo());
+								docTran.setEndtPrevQuoteNo(homeData.getEndtPrevQuoteNo());
+							
+						}
+						
+						saveDocList.add(docTran);
+						
+					} );
+					
+					docTranRepo.saveAllAndFlush(saveDocList);
+				}
+				
+			} 	
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+	
+		return res;
+	}
 
+	
 	
 }
