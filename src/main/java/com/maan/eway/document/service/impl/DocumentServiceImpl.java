@@ -1427,6 +1427,7 @@ public class DocumentServiceImpl implements DocumentService{
 					res.setUploadedBy(unique.getUploadedBy());
 					res.setUploadedTime(unique.getUploadedTime());
 					res.setProductType(unique.getProductType());
+					res.setUniqueId(req.getUniqueId());
 					
 					if (StringUtils.isNotBlank(res.getFilepathname()) && new File(res.getFilepathname()).exists()) {
 						res.setImgurl(new GetFileFromPath(res.getFilepathname()).call().getImgUrl());
