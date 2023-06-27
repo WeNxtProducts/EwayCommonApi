@@ -32,12 +32,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
+import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CoverDocumentMaster;
 import com.maan.eway.bean.DocumentUniqueDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.MotorDataDetails;
+import com.maan.eway.bean.PersonalAccident;
 import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.SeqDocuniqueid;
@@ -68,6 +70,7 @@ import com.maan.eway.repository.DocumentUniqueDetailsRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
+import com.maan.eway.repository.PersonalAccidentRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
 import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.repository.SeqDocuniqueidRepository;
@@ -186,6 +189,9 @@ public class DocumentServiceImpl implements DocumentService{
 	
 	@PersistenceContext
 	private EntityManager em;
+	
+	@Autowired
+	private PersonalAccidentRepository paccRepo ;
 	
 	
 //	@Autowired
@@ -473,6 +479,7 @@ public class DocumentServiceImpl implements DocumentService{
 				List<BuildingDetails> buildingList = buildingRepo.findByQuoteNo(homeData.getQuoteNo()); 
 				List<SectionDataDetails>  sectionDatas =  secRepo.findByQuoteNoOrderByRiskIdAsc(homeData.getQuoteNo());
 				List<ProductEmployeeDetails> employeeList = employeeRepo.findByQuoteNo(homeData.getQuoteNo()); 
+				//List<CommonDataDetails> humanList = humanRepo.findByQuoteNo(homeData.getQuoteNo()); 
 				
 				for (BuildingDetails building :   buildingList) {
 					
@@ -483,16 +490,31 @@ public class DocumentServiceImpl implements DocumentService{
 						
 						if ( sec.getProductType().equalsIgnoreCase("H") ) {
 							
-							List<ProductEmployeeDetails> filterEmpList = employeeList.stream().filter( o -> o.getSectionId().equalsIgnoreCase(sec.getSectionId() ) ).collect(Collectors.toList());
+							List<ProductEmployeeDetails> filterEmpList = employeeList.stream().filter( o -> building.getRiskId().equals(o.getRiskId())  && o.getSectionId().equalsIgnoreCase(sec.getSectionId() ) ).collect(Collectors.toList());
 						
-							for (ProductEmployeeDetails emp :  filterEmpList) {
-								// Employees Documents
-								DocumentDropdownRes doc = new DocumentDropdownRes();
-								doc.setRiskId(emp.getEmployeeId()==null ? "1" : emp.getEmployeeId().toString());
-								doc.setId(emp.getNationalityId());
-								String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("H") ).collect(Collectors.toList()).get(0).getItemValue() ;					
-								doc.setIdType(idType);
-								idList.add(doc);	
+							if(filterEmpList.size() > 0) {
+								for (ProductEmployeeDetails emp :  filterEmpList) {
+									// Employees Documents
+									DocumentDropdownRes doc = new DocumentDropdownRes();
+									doc.setRiskId(emp.getEmployeeId()==null ? "1" : emp.getEmployeeId().toString());
+									doc.setId(emp.getNationalityId());
+									String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("H") ).collect(Collectors.toList()).get(0).getItemValue() ;					
+									doc.setIdType(idType);
+									idList.add(doc);	
+								}
+								
+							} else {
+								List<PersonalAccident> filterpaccList = paccRepo.findByQuoteNoAndSectionIdOrderByPersonId(homeData.getQuoteNo() ,  sec.getSectionId());
+								filterpaccList  = filterpaccList.stream().filter( o -> building.getRiskId().equals(o.getRiskId())  && o.getSectionId().equalsIgnoreCase(sec.getSectionId() ) ).collect(Collectors.toList());
+								for (PersonalAccident emp :  filterpaccList) {
+									// Employees Documents
+									DocumentDropdownRes doc = new DocumentDropdownRes();
+									doc.setRiskId(emp.getPersonName()==null ? "1" : emp.getPersonName().toString());
+									doc.setId(emp.getPersonName());
+									String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("H") ).collect(Collectors.toList()).get(0).getItemValue() ;					
+									doc.setIdType(idType);
+									idList.add(doc);	
+								}
 							}
 							
 						} else {
@@ -506,19 +528,24 @@ public class DocumentServiceImpl implements DocumentService{
 						}
 						
 						// Section 
-						DocumentSectionList sectionRes = new DocumentSectionList(); 
-						sectionRes.setSectionId(sec.getSectionId());
-						sectionRes.setSectionName(sec.getSectionDesc());
-						sectionRes.setIdList(idList);
-						sectionList.add(sectionRes);
-							
+						if(idList.size() > 0 ) {
+							DocumentSectionList sectionRes = new DocumentSectionList(); 
+							sectionRes.setSectionId(sec.getSectionId());
+							sectionRes.setSectionName(sec.getSectionDesc());
+							sectionRes.setIdList(idList);
+							sectionList.add(sectionRes);
+						}
+													
 					}
 					// Location 
-					LocationWiseSections loc = new LocationWiseSections();
-					loc.setLocationId(building.getRiskId()==null ? "1" :  building.getRiskId().toString());
-					loc.setLocationName(building.getLocationName());
-					loc.setSectionList(sectionList);
-					resList.add(loc);
+					if (sectionList.size() > 0 ) {
+						LocationWiseSections loc = new LocationWiseSections();
+						loc.setLocationId(building.getRiskId()==null ? "1" :  building.getRiskId().toString());
+						loc.setLocationName(building.getLocationName());
+						loc.setSectionList(sectionList);
+						resList.add(loc);
+					}
+					
 				}
 				
 			} catch (Exception e) {

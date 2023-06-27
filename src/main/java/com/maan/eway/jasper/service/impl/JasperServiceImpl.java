@@ -55,6 +55,10 @@ public class JasperServiceImpl implements JasperService {
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
 	
+	@Value(value = "${jasper.compile.path}")
+	private String jasperCompilePath;
+	
+	
 	@PersistenceContext
 	private EntityManager em;
 
@@ -99,15 +103,34 @@ public class JasperServiceImpl implements JasperService {
 					theDir.mkdirs();
 				}
 
-				if (product.getMotorYn().equalsIgnoreCase("A")) {
-					res = getJasperPdfFile("/report/jasper/PersonalPlus.jrxml", getPdfOutFilePath, input);
-				}
-
-				else if (product.getMotorYn().equalsIgnoreCase("H") && travelProductId.equals(req.getProductId())) {
+//				if (product.getMotorYn().equalsIgnoreCase("A")) {
+//					res = getJasperPdfFile("/report/jasper/PersonalPlus.jrxml", getPdfOutFilePath, input);
+//				}
+//
+//				else 
+				if (product.getMotorYn().equalsIgnoreCase("H") && travelProductId.equals(req.getProductId())) {
 					res = getJasperPdfFile("/report/jasper/TravelReport.jrxml", getPdfOutFilePath, input);
 					
 				} else if (product.getMotorYn().equalsIgnoreCase("M")) {
 					res = getJasperPdfFile("/report/jasper/MotorPrivate.jrxml", getPdfOutFilePath, input);
+				} else {
+					Map<String, Object> input2 = new HashMap<String, Object>();
+					input2.put("pvQuoteNo", req.getQuoteNo());
+					input2.put("pvImagepath", config.getImagePath());
+					input2.put("pvSubReportPath",jasperCompilePath + "/report/jasper/");
+					String obj[] =new String[2];
+					obj[0]= jasperCompilePath + "/report/jasper/CoverageDetails.jrxml";
+					obj[1]= jasperCompilePath +"/report/jasper/SectionDetails.jrxml";              // for linux system
+				//	obj[0]=class_path +"/report/jasper/CoverageDetails.jrxml";
+				//	obj[1]=class_path +"/report/jasper/SectionDetails.jrxml";              // for linux system
+				//	obj[2]=class_path +"/report/jasper/VehicleDetails.jrxml";
+                for(String s :obj) {
+					// String jrxml_path=s.replace(".jasper", ".jrxml");
+					String path = JasperCompileManager.compileReportToFile(s);
+					System.out.println("Jasper compileToReport path" +path);
+					}
+					
+					res = getJasperPdfFile("/report/jasper/EwaySchedule.jrxml", getPdfOutFilePath, input2);
 				}
 				
 			}
@@ -184,25 +207,34 @@ public class JasperServiceImpl implements JasperService {
 				}
 			} else if (product.getMotorYn().equalsIgnoreCase("M") ) {
 				// Temporary
-				res = new JasperDocumentRes();
+				res = getJasperPdfFile("/report/jasper/MotorPrivate.jrxml", getPdfOutFilePath, input);
 				String filePath = config.getPolicyPath() + "pdf/MOTOR PRIVATE.pdf";
 				GetFileFromPath path = new GetFileFromPath(filePath);
 				res.setPdfoutfile(path.call().getImgUrl());
 				res.setPdfoutfilepath(filePath);
-			} else if (product.getMotorYn().equalsIgnoreCase("A") ) {
-				res = new JasperDocumentRes();
-				String filePath = config.getPolicyPath() + "pdf/PERSONAL PLUS.pdf";
-				GetFileFromPath path = new GetFileFromPath(filePath);
-				res.setPdfoutfile(path.call().getImgUrl());
-				res.setPdfoutfilepath(filePath);
-
 			} else {
-				res = new JasperDocumentRes();
-				String filePath = config.getPolicyPath() + "pdf/GROUP PERSONAL ACCIDENT.pdf";
+				
+				input.put("pvSubReportPath", "/report/jasper/");
+				res = getJasperPdfFile("/report/jasper/EwaySchedule.jrxml", getPdfOutFilePath, input);
+				String filePath = config.getPolicyPath() + "pdf/EWAY SCHEDULE.pdf";
 				GetFileFromPath path = new GetFileFromPath(filePath);
 				res.setPdfoutfile(path.call().getImgUrl());
 				res.setPdfoutfilepath(filePath);
-			}
+             }
+				 
+//				res = new JasperDocumentRes();
+//				String filePath = config.getPolicyPath() + "pdf/PERSONAL PLUS.pdf";
+//			    GetFileFromPath path = new GetFileFromPath(filePath);
+//				res.setPdfoutfile(path.call().getImgUrl());
+//				res.setPdfoutfilepath(filePath);
+
+//			} else {
+//				res = new JasperDocumentRes();
+//				String filePath = config.getPolicyPath() + "pdf/GROUP PERSONAL ACCIDENT.pdf";
+//				GetFileFromPath path = new GetFileFromPath(filePath);
+//				res.setPdfoutfile(path.call().getImgUrl());
+//				res.setPdfoutfilepath(filePath);
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
