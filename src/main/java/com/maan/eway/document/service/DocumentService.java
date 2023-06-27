@@ -10,17 +10,20 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.document.req.DocGetReq;
 import com.maan.eway.document.req.DocTypeDropDownReq;
 import com.maan.eway.document.req.DocTypeReq;
 import com.maan.eway.document.req.DocumentDeleteReq;
 import com.maan.eway.document.req.DocumentUploadReq;
 import com.maan.eway.document.req.FilePathReq;
 import com.maan.eway.document.req.GetDocListReq;
+import com.maan.eway.document.req.TermsDocUploadReq;
 import com.maan.eway.document.res.ClientDocListRes;
 import com.maan.eway.document.res.DocTypeRes;
 import com.maan.eway.document.res.DocumentListRes;
 import com.maan.eway.document.res.DocumentTypeDetails;
 import com.maan.eway.document.res.FilePathRes;
+import com.maan.eway.document.res.TermsDocRes;
 import com.maan.eway.error.Error;
 
 /**
@@ -50,5 +53,11 @@ public interface DocumentService {
 	List<DocTypeRes> getDocTypes(DocTypeDropDownReq req);
 
 	DocumentTypeDetails getLocationWiseSections(DocTypeDropDownReq req);
+
+	List<Error> doctermsvalidation(TermsDocUploadReq req, MultipartFile file);
+
+	CommonRes termsfileupload(TermsDocUploadReq req, MultipartFile file);
+
+	TermsDocRes getTermsFilePath(DocGetReq req);
 
 }

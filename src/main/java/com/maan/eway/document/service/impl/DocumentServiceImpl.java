@@ -45,12 +45,14 @@ import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.SeqDocuniqueid;
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.document.req.DocGetReq;
 import com.maan.eway.document.req.DocTypeDropDownReq;
 import com.maan.eway.document.req.DocTypeReq;
 import com.maan.eway.document.req.DocumentDeleteReq;
 import com.maan.eway.document.req.DocumentUploadReq;
 import com.maan.eway.document.req.FilePathReq;
 import com.maan.eway.document.req.GetDocListReq;
+import com.maan.eway.document.req.TermsDocUploadReq;
 import com.maan.eway.document.res.ClientDocListRes;
 import com.maan.eway.document.res.CommonDoumentRes;
 import com.maan.eway.document.res.DocTypeRes;
@@ -60,6 +62,7 @@ import com.maan.eway.document.res.DocumentSectionList;
 import com.maan.eway.document.res.DocumentTypeDetails;
 import com.maan.eway.document.res.FilePathRes;
 import com.maan.eway.document.res.LocationWiseSections;
+import com.maan.eway.document.res.TermsDocRes;
 import com.maan.eway.document.service.DocumentService;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.BuildingDetailsRepository;
@@ -144,7 +147,7 @@ public class DocumentServiceImpl implements DocumentService{
 	private EndtTypeMasterRepository endtTypeRepo;
 	
 	@Autowired
-	private HomePositionMasterRepository homeRepo;
+	private HomePositionMasterRepository homeRepo; 
 	
 	@Autowired
 	private SectionDataDetailsRepository secRepo;
@@ -750,13 +753,49 @@ public class DocumentServiceImpl implements DocumentService{
 								+ "MB for " + req.getOriginalFileName()));
 					}
 					
-				//	CoverDocumentUploadDetails  data = documentuploaddetailsrepository.findByQuoteNoAndSectionIdAndIdAndDocumentId(req.getQuoteNo() ,Integer.valueOf(req.getSectionId())  ,Integer.valueOf(req.getId()) , Integer.valueOf(req.getDocumentId()));
+				/*	CoverDocumentUploadDetails  data = documentuploaddetailsrepository.findByQuoteNoAndSectionIdAndIdAndDocumentId(req.getQuoteNo() ,Integer.valueOf(req.getSectionId())  ,Integer.valueOf(req.getId()) , Integer.valueOf(req.getDocumentId()));
 					
 //					if(data!=null ) {
 //						errorList.add(new Error("01", "Document Type", "This Document Type Already Uploaded" ));
 //						
-//					}
+//					} */
+					
+					if(StringUtils.isBlank(req.getLocationId()) ) {
+						errorList.add(new Error("01", "LocationId", "Please Select Location Id" ));
+					}
+					if(StringUtils.isBlank(req.getLocationName()) ) {
+						errorList.add(new Error("01", "LocationName", "Please Select Location Name" ));
+					}
+					if(StringUtils.isBlank(req.getProductId()) ) {
+						errorList.add(new Error("01", "ProductId", "Please Select Product" ));
+					}
+					if(StringUtils.isBlank(req.getSectionId()) ) {
+						errorList.add(new Error("01", "SectionId", "Please Select Section" ));
+					}
+					if(StringUtils.isBlank(req.getSectionId()) ) {
+						errorList.add(new Error("01", "SectionId", "Please Select Section" ));
+					}
+					
+					if(StringUtils.isBlank(req.getRiskId()) ) {
+						errorList.add(new Error("01", "RiskId", "Please Select RiskId" ));
+					}
+					
+					if(StringUtils.isBlank(req.getId()) ) {
+						errorList.add(new Error("01", "Id", "Please Select Id" ));
+					}
+					
+					if(StringUtils.isBlank(req.getIdType()) ) {
+						errorList.add(new Error("01", "IdType", "Please Select IdType" ));
+					}
+					
+					if(StringUtils.isBlank(req.getDocumentId()) ) {
+						errorList.add(new Error("01", "DocumentId", "Please Select Document Type" ));
+					}
 				
+					if(StringUtils.isBlank(req.getUploadedBy()) ) {
+						errorList.add(new Error("01", "UploadedBy", "Please Select Uploaded By" ));
+					}
+					
 			return errorList;
 
 		}
@@ -1283,6 +1322,123 @@ public class DocumentServiceImpl implements DocumentService{
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return res;
+		}
+
+
+		@Override
+		public List<Error> doctermsvalidation(TermsDocUploadReq req, MultipartFile file) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+
+		@Override
+		public CommonRes termsfileupload(TermsDocUploadReq req, MultipartFile file) {
+			CommonRes res = new CommonRes();
+			
+			try {
+			
+				// Copy File 
+				Random random = new Random();
+				Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+				
+				String newfilename  = "";
+				String newfilename1 = "";
+				//OrginalFile
+				Path destination = Paths.get(directoryPath) ;
+				newfilename= random.nextInt(100) + timestamp.toString().replace(":", "T").replace(" ", "S").replace("-", "H").replace(".", "D") +"."+FilenameUtils.getExtension(file.getOriginalFilename());
+				Files.copy(file.getInputStream(),destination.resolve(newfilename));
+				
+				Timestamp timestamp1 = new Timestamp(System.currentTimeMillis());
+				//BackupFile
+				Path destination1 = Paths.get(compressedImg) ; 
+				newfilename1= random.nextInt(100) + timestamp1.toString().replace(":", "T").replace(" ", "S").replace("-", "H").replace(".", "D") +"."+FilenameUtils.getExtension(file.getOriginalFilename());
+				Files.copy(file.getInputStream(),destination1.resolve(newfilename1));
+			
+				// Save Document Unique Details
+				DocumentUniqueDetails uniqDoc = new  DocumentUniqueDetails();
+				String uniqueId = genDocUniqueId() ;
+				
+				uniqDoc.setUniqueId(Integer.valueOf(uniqueId) );
+				uniqDoc.setUploadedBy(req.getUploadedBy());
+				uniqDoc.setDocApplicable(req.getTermsAndCondtionDesc() );
+				uniqDoc.setDocApplicableId(req.getTermsAndCondtionId());
+				uniqDoc.setFileName(newfilename);
+				uniqDoc.setFilePathOrginal(directoryPath+newfilename);
+				uniqDoc.setFilePathBackup(compressedImg+newfilename1);
+				uniqDoc.setOrginalFileName(file.getOriginalFilename());
+				uniqDoc.setUploadedTime(new Date());
+				uniqDoc.setDocumentId(Integer.valueOf(req.getTermsAndCondtionId()));
+				uniqDoc.setDocumentType(req.getType());
+				uniqDoc.setDocumentTypeDesc(req.getTermsAndCondtionDesc() );
+				uniqDoc.setDocumentDesc(req.getTermsAndCondtionDesc() );
+				uniqDoc.setDocumentName(req.getTermsAndCondtionDesc() );
+				uniqDoc.setEntryDate(new Date());
+				uniqDoc.setUploadedTime(new Date());
+				uniqDoc.setStatus("Y");
+				uniqDoc.setId(req.getTermsAndCondtionId());
+				uniqDoc.setIdType(req.getTermsAndCondtionDesc() );
+				uniqDoc.setProductType(req.getType());
+					
+				docUniqueRepo.saveAndFlush(uniqDoc);
+				SuccessRes sucRes = new SuccessRes();
+				sucRes.setResponse("File Upload Sucessfully");
+				sucRes.setSuccessId(uniqueId);
+				
+				res.setCommonResponse(sucRes);
+				res.setIsError(false);						
+			} catch (Exception e) {
+				e.printStackTrace();
+				res.setCommonResponse(null);
+				List<Error> error = new ArrayList<Error>();
+				error.add(new Error( "01" , "Upload Error" ,e.getMessage()));
+				res.setErrorMessage(error);
+				res.setIsError(true);
+			}
+			return res;
+		}
+
+
+		@Override
+		public TermsDocRes getTermsFilePath(DocGetReq req) {
+			TermsDocRes res = new TermsDocRes();
+			try {
+				
+				// Document Details
+				DocumentUniqueDetails unique = docUniqueRepo.findByUniqueId(Integer.valueOf(req.getUniqueId())) ;
+					
+				if( unique!=null) {
+					// Document Related
+					res.setDocApplicable(unique.getDocApplicable());
+					res.setDocApplicableId(unique.getDocApplicableId());
+					res.setDocumentDesc(unique.getDocumentDesc());
+					res.setDocumentId(unique.getDocumentId()==null?"" : unique.getDocumentId().toString());
+					res.setDocumentName(unique.getDocumentName());
+					res.setDocumentType(unique.getDocumentType());
+					res.setDocumentTypeDesc(unique.getDocumentTypeDesc());
+					res.setFileName(unique.getFileName());
+					res.setFilePathOriginal(unique.getFilePathBackup());
+					res.setFilepathname(unique.getFilePathBackup());
+					res.setOriginalFileName(unique.getOrginalFileName());
+					res.setStatus(unique.getStatus());
+					res.setUploadedBy(unique.getUploadedBy());
+					res.setUploadedTime(unique.getUploadedTime());
+					res.setProductType(unique.getProductType());
+					
+					if (StringUtils.isNotBlank(res.getFilepathname()) && new File(res.getFilepathname()).exists()) {
+						res.setImgurl(new GetFileFromPath(res.getFilepathname()).call().getImgUrl());
+					} else
+						System.out.println("File is Not found!!" + res.getFilepathname());
+				}
+				
+				
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				// Log.info("Exception Is --->" + e.getMessage());
 				return null;
 			}
 			return res;

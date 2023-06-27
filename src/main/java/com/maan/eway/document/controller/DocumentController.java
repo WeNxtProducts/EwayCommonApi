@@ -29,18 +29,21 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.document.req.DocGetReq;
 import com.maan.eway.document.req.DocTypeDropDownReq;
 import com.maan.eway.document.req.DocTypeReq;
 import com.maan.eway.document.req.DocumentDeleteReq;
 import com.maan.eway.document.req.DocumentUploadReq;
 import com.maan.eway.document.req.FilePathReq;
 import com.maan.eway.document.req.GetDocListReq;
+import com.maan.eway.document.req.TermsDocUploadReq;
 import com.maan.eway.document.res.ClientDocListRes;
 import com.maan.eway.document.res.CommonDocumentRes;
 import com.maan.eway.document.res.DocTypeRes;
 import com.maan.eway.document.res.DocumentListRes;
 import com.maan.eway.document.res.DocumentTypeDetails;
 import com.maan.eway.document.res.FilePathRes;
+import com.maan.eway.document.res.TermsDocRes;
 import com.maan.eway.document.service.DocumentService;
 import com.maan.eway.error.CommonValidationException;
 import com.maan.eway.error.Error;
@@ -108,6 +111,57 @@ public class DocumentController {
 		}
 		
 	}
+	
+	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
+	@PostMapping("/termsdocupload")
+	@ApiOperation(value = "This method is to Upload Terms & Condition Document")
+	public ResponseEntity<CommonRes> termsDocUploadFile(@RequestParam("File") MultipartFile file, @RequestParam("Req") String jsonString) throws CommonValidationException, JsonMappingException, JsonProcessingException{
+		
+		log.info(jsonString);
+		
+		TermsDocUploadReq req =  new ObjectMapper().readValue(jsonString, TermsDocUploadReq.class); 
+		
+    	List<Error> error = new ArrayList<Error>();
+		error = documentservice.doctermsvalidation(req,file);
+		if (error != null && error.size() > 0) {
+			
+			CommonRes res = new CommonRes();
+			res.setCommonResponse(null);
+			res.setIsError(true);
+			res.setErrorMessage(error);
+			res.setMessage("Success");
+			
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(res);
+			
+		}else {
+			CommonRes res = documentservice.termsfileupload(req,file);
+			return ResponseEntity.status(HttpStatus.OK).body(res);
+		}
+		
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
+	@PostMapping("/gettermsdoc" )	 
+	@ApiOperation(value="This method is to Get Upload Terms & Condition Image File")
+	public ResponseEntity<CommonRes>  getTermsFilePath(@RequestBody DocGetReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes()  ; 
+		
+		TermsDocRes res = documentservice.getTermsFilePath(req);
+		data .setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+		
+	}
+	
 	
 //	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 //	@PostMapping("/uploadwithoutfile")
