@@ -96,7 +96,7 @@ public class NotificationService {
 	private String generateTinyURL(Notification n,List<Tuple> loadTinyUrl,List<Tuple> loadDropdown, NotifTransactionDetails nt) {
 		
 		if(!loadTinyUrl.isEmpty()) {
-			String tinUrlId = String.valueOf(Instant.now().getEpochSecond());
+			String tinUrlId = String.valueOf(Instant.now().getEpochSecond())+String.valueOf((int)(Math.random()*100000));
 			
 			List<Map<String,String>> mps=null;
 			if(loadDropdown!=null && loadDropdown.size()>0) {

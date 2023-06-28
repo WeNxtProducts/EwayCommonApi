@@ -168,6 +168,8 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 			 
 			
 			 
+		 }catch(CoverException ex) {
+			 ex.printStackTrace();
 		 }catch (Exception e) {
 			 System.out.println("CoverID:"+t.getCoverId()+"<Desc>:"+t.getCoverDesc()+",subcoverId:"+t.getSubCoverId());
 			 e.printStackTrace();
