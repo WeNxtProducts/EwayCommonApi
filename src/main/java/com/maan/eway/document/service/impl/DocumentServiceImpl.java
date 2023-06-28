@@ -437,39 +437,73 @@ public class DocumentServiceImpl implements DocumentService{
 				List<ProductEmployeeDetails> employeeList = employeeRepo.findByQuoteNo(homeData.getQuoteNo()); 
 				//List<CommonDataDetails> humanList = humanRepo.findByQuoteNo(homeData.getQuoteNo()); 
 				
-				for (BuildingDetails building :   buildingList) {
-					
+				if(buildingList.size() > 0 ) {
+					for (BuildingDetails building :   buildingList) {
+						
+						List<DocumentSectionList> sectionList = new ArrayList<DocumentSectionList>();
+						for ( SectionDataDetails sec :  sectionDatas ) {
+							
+							List<DocumentDropdownRes> idList  = new ArrayList<DocumentDropdownRes>();
+							
+							if ( sec.getProductType().equalsIgnoreCase("H") ) {
+								
+								List<ProductEmployeeDetails> filterEmpList = employeeList.stream().filter( o -> building.getRiskId().equals(o.getRiskId())  && o.getSectionId().equalsIgnoreCase(sec.getSectionId() ) ).collect(Collectors.toList());
+							
+								if(filterEmpList.size() > 0) {
+									for (ProductEmployeeDetails emp :  filterEmpList) {
+										// Employees Documents
+										DocumentDropdownRes doc = new DocumentDropdownRes();
+										doc.setRiskId(emp.getEmployeeId()==null ? "1" : emp.getEmployeeId().toString());
+										doc.setId(emp.getNationalityId());
+										String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("H") ).collect(Collectors.toList()).get(0).getItemValue() ;					
+										doc.setIdType(idType);
+										idList.add(doc);	
+									}
+									
+								}
+								
+							} else {
+								// Asset Documents
+								DocumentDropdownRes doc = new DocumentDropdownRes();
+								doc.setRiskId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
+								doc.setId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
+								String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("A") ).collect(Collectors.toList()).get(0).getItemValue() ;					
+								doc.setIdType(idType);
+								idList.add(doc); 
+							}
+							
+							// Section 
+							if(idList.size() > 0 ) {
+								DocumentSectionList sectionRes = new DocumentSectionList(); 
+								sectionRes.setSectionId(sec.getSectionId());
+								sectionRes.setSectionName(sec.getSectionDesc());
+								sectionRes.setIdList(idList);
+								sectionList.add(sectionRes);
+							}
+														
+						}
+						// Location 
+						if (sectionList.size() > 0 ) {
+							LocationWiseSections loc = new LocationWiseSections();
+							loc.setLocationId(building.getRiskId()==null ? "1" :  building.getRiskId().toString());
+							loc.setLocationName(building.getLocationName());
+							loc.setSectionList(sectionList);
+							resList.add(loc);
+						}
+						
+					}
+				} else {
 					List<DocumentSectionList> sectionList = new ArrayList<DocumentSectionList>();
 					for ( SectionDataDetails sec :  sectionDatas ) {
 						
+						// Asset Documents
 						List<DocumentDropdownRes> idList  = new ArrayList<DocumentDropdownRes>();
-						
-						if ( sec.getProductType().equalsIgnoreCase("H") ) {
-							
-							List<ProductEmployeeDetails> filterEmpList = employeeList.stream().filter( o -> building.getRiskId().equals(o.getRiskId())  && o.getSectionId().equalsIgnoreCase(sec.getSectionId() ) ).collect(Collectors.toList());
-						
-							if(filterEmpList.size() > 0) {
-								for (ProductEmployeeDetails emp :  filterEmpList) {
-									// Employees Documents
-									DocumentDropdownRes doc = new DocumentDropdownRes();
-									doc.setRiskId(emp.getEmployeeId()==null ? "1" : emp.getEmployeeId().toString());
-									doc.setId(emp.getNationalityId());
-									String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("H") ).collect(Collectors.toList()).get(0).getItemValue() ;					
-									doc.setIdType(idType);
-									idList.add(doc);	
-								}
-								
-							}
-							
-						} else {
-							// Asset Documents
-							DocumentDropdownRes doc = new DocumentDropdownRes();
-							doc.setRiskId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
-							doc.setId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
-							String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("A") ).collect(Collectors.toList()).get(0).getItemValue() ;					
-							doc.setIdType(idType);
-							idList.add(doc); 
-						}
+						DocumentDropdownRes doc = new DocumentDropdownRes();
+						doc.setRiskId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
+						doc.setId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
+						String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("A") ).collect(Collectors.toList()).get(0).getItemValue() ;					
+						doc.setIdType(idType);
+						idList.add(doc); 
 						
 						// Section 
 						if(idList.size() > 0 ) {
@@ -484,13 +518,13 @@ public class DocumentServiceImpl implements DocumentService{
 					// Location 
 					if (sectionList.size() > 0 ) {
 						LocationWiseSections loc = new LocationWiseSections();
-						loc.setLocationId(building.getRiskId()==null ? "1" :  building.getRiskId().toString());
-						loc.setLocationName(building.getLocationName());
+						loc.setLocationId(buildingRisk.getRiskId()==null ? "1" :  buildingRisk.getRiskId().toString());
+						loc.setLocationName(buildingRisk.getProductDesc());
 						loc.setSectionList(sectionList);
 						resList.add(loc);
 					}
-					
 				}
+				
 				
 			} catch (Exception e) {
 				e.printStackTrace();
