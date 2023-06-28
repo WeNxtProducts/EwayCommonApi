@@ -29,6 +29,7 @@ import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.SessionMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.SessionMasterRepository;
 
@@ -43,6 +44,8 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 	@Autowired
 	private SessionMasterRepository sessionRep;
 
+	@Autowired
+	private NotifTransactionDetailsRepository notifRepo;
 	private Logger log = LogManager.getLogger(LoginValidatedServiceImpl.class);
 
 	public CommonLoginRes loginInputValidation(LoginRequest req) {
@@ -499,15 +502,19 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 	}
 
 	@Override
-	public List<Error> validateTinyUrlId(Object object) {
+	public List<Error> validateTinyUrlId(String object) {
 		try {
-			List<Error> erros=new ArrayList<Error>();
-			Error err=new Error();
-			err.setCode("9844");
-			err.setField("TinyUrl");
-			err.setMessage("Tiny Url is Deactivated");
-			erros.add(err);
-			return erros;
+			
+			Integer count=notifRepo.countByTinyUrlActiveAndTinyUrlId("Y",object);
+			if(count<1) {
+				List<Error> erros=new ArrayList<Error>();
+				Error err=new Error();
+				err.setCode("9844");
+				err.setField("TinyUrl");
+				err.setMessage("Tiny Url is Deactivated");
+				erros.add(err);
+				return erros;
+			}
 		}catch(Exception e) {
 			e.printStackTrace();
 			

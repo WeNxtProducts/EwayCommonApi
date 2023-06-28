@@ -50,6 +50,8 @@ public interface NotifTransactionDetailsRepository  extends JpaRepository<NotifT
 
 	List<NotifTransactionDetails> findByQuoteNo(String quoteNo);
 
+	Integer countByTinyUrlActiveAndTinyUrlId(String string, String object);
+
 
 	
 }
