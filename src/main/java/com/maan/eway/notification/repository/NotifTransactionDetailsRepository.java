@@ -56,8 +56,8 @@ public interface NotifTransactionDetailsRepository  extends JpaRepository<NotifT
 	Integer countByTinyUrlActiveAndTinyUrlId(String string, String object);
 	
 	@Modifying(clearAutomatically = true)
-	@Query("UPDATE notif_transaction_details SET TINY_URL_ACTIVE='N' WHERE TINY_GROUP_ID=:tinyGroupId AND TINY_URL_ID!=tinyUrlId")
-	int updateOtherActiveTinyUrl(@Param("tinyGroupId") String tinyGroupId,@Param("tinyUrlId") String object);
+	@Query(value="UPDATE notif_transaction_details SET TINY_URL_ACTIVE='N' WHERE TINY_GROUP_ID=:tinyGroupId AND TINY_URL_ID!=:tinyUrlId",nativeQuery = true)
+	int updateOtherActiveTinyUrl(@Param("tinyGroupId") String tinyGroupId,@Param("tinyUrlId") String tinyUrlId);
 
 
 	
