@@ -200,7 +200,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="REFNO", length=100)
     public String refno;
 
-
+    @Column(name="TINY_URL_ID", length=100)
+    public String tinyUrlId;
+    
+    
+    @Column(name="TINY_URL_ACTIVE", length=100)
+    public String tinyUrlActive;
 }
 
 

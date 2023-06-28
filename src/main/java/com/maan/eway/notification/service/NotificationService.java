@@ -9,8 +9,8 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -55,7 +55,6 @@ import com.maan.eway.error.Error;
 import com.maan.eway.jasper.req.JasperDocumentReq;
 import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.jasper.service.JasperService;
-import com.maan.eway.master.service.impl.ClausesMasterServiceImpl;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
 import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
 import com.maan.eway.notification.req.Broker;
@@ -92,6 +91,71 @@ public class NotificationService {
 	private JobScheduler jobScheduler;
 	*/
 	private Logger log = LogManager.getLogger(NotificationService.class);
+	
+	
+	private String generateTinyURL(Notification n,List<Tuple> loadTinyUrl,List<Tuple> loadDropdown, NotifTransactionDetails nt) {
+		
+		if(!loadTinyUrl.isEmpty()) {
+			String tinUrlId = String.valueOf(Instant.now().getEpochSecond());
+			
+			List<Map<String,String>> mps=null;
+			if(loadDropdown!=null && loadDropdown.size()>0) {
+				mps=new ArrayList<Map<String,String>>();	
+				for(Tuple l :loadDropdown) {
+					Map<String,String> mp=new HashMap<String,String>();
+					mp.put("JsonKey", l.get("requestJsonKey")==null?"":l.get("requestJsonKey").toString());
+					mp.put("JsonColum", l.get("requestColumn")==null?"":l.get("requestColumn").toString());
+					mp.put("JsonTable", l.get("requestTable")==null?"":l.get("requestTable").toString());
+					mp.put("dropdownYn",l.get("dropdownYn")==null?"":l.get("dropdownYn").toString());
+					mps.add(mp);
+				}
+				Map<String,String> mp=new HashMap<String,String>();
+				mp.put("JsonKey", "TinyUrlId");
+				mp.put("JsonColum",tinUrlId);
+				mp.put("JsonTable", "");
+				mp.put("dropdownYn","N");
+				mps.add(mp);
+			} 
+
+			List<String> list=new ArrayList<String>();
+			for(Map<String, String> map:mps){
+				String jsonKey = map.get("JsonKey");
+				String jsonColum = map.get("JsonColum");
+				String dropdownYn= map.get("dropdownYn");
+				Object jsonValue = null;
+				try {
+					
+					if("Y".equals(dropdownYn.trim())) {
+						Field field = nt.getClass().getField(jsonColum);								
+						jsonValue=field.get(nt);
+					}else
+						jsonValue=jsonColum;
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
+				//String jsonValue = ;
+
+				String value="\""+jsonKey+"\":\""+jsonValue+"\"";
+				list.add(value);		
+
+			}
+			String json="{"+StringUtils.join(list,',')+"}";
+			try {
+				String encrData = EncryDecryService.encrypt(json);
+				String appUrl=loadTinyUrl.get(0).get("appUrl").toString();
+				String shorternURL = getShorternURL(appUrl+encrData);
+				nt.setTinyUrl(shorternURL);
+				nt.setTinyUrlId(tinUrlId);
+
+				return shorternURL;
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		return null;
+	}
 	public CommonRes pushNotification(Notification n) {
 		
 		
@@ -107,20 +171,22 @@ public class NotificationService {
 			if(n.getAttachments()!=null && n.getAttachments().size()>0) {
 				filesTobeAttch = n.getAttachments().stream().collect(Collectors.joining(";"));
 			}
-				
+			
+			//Tiny URL
+			List<Tuple> loadTinyUrl = ratingutil.loadTinyUrl(n.getCompanyid(),n.getProductid(),n.getNotifTemplatename());
+			List<Tuple> loadDropdown=null;
+			if(!loadTinyUrl.isEmpty()) {
+				for(Tuple t: loadTinyUrl) {
+					String sno = t.get("sno").toString();
+					loadDropdown = ratingutil.loadTinyUrlRequest(n.getCompanyid(),n.getProductid(),n.getNotifTemplatename(),sno);  
+				}
+			}
+			
 			NotifTransactionDetails sv = null;
 			if(n.getUnderwriters().size()>0) {
 				List<NotifTransactionDetails> uws=new ArrayList<NotifTransactionDetails>();
 				
-				//Tiny URL
-				List<Tuple> loadTinyUrl = ratingutil.loadTinyUrl(n.getCompanyid(),n.getProductid(),n.getNotifTemplatename());
-				List<Tuple> loadDropdown=null;
-				if(!loadTinyUrl.isEmpty()) {
-					for(Tuple t: loadTinyUrl) {
-						String sno = t.get("sno").toString();
-						loadDropdown = ratingutil.loadTinyUrlRequest(n.getCompanyid(),n.getProductid(),n.getNotifTemplatename(),sno);  
-					}
-				}
+				
 				
 				for (UnderWriter underWriter : n.getUnderwriters()) {
 					NotifTransactionDetails nt = NotifTransactionDetails.builder()
@@ -174,57 +240,10 @@ public class NotificationService {
 							.branchCode(n.getBranchCode())
 							.customerRefno(n.getCustomer().getCustomerRefno())
 							.refno(n.getRefNo())
+							.tinyUrlActive("Y")
 							.build();
 					
-					if(!loadTinyUrl.isEmpty()) {
-						List<Map<String,String>> mps=null;
-						if(loadDropdown!=null && loadDropdown.size()>0) {
-							mps=new ArrayList<Map<String,String>>();	
-							for(Tuple l :loadDropdown) {
-								Map<String,String> mp=new HashMap<String,String>();
-								mp.put("JsonKey", l.get("requestJsonKey")==null?"":l.get("requestJsonKey").toString());
-								mp.put("JsonColum", l.get("requestColumn")==null?"":l.get("requestColumn").toString());
-								mp.put("JsonTable", l.get("requestTable")==null?"":l.get("requestTable").toString());
-								mp.put("dropdownYn",l.get("dropdownYn")==null?"":l.get("dropdownYn").toString());
-								mps.add(mp);
-							}							
-
-						} 
-
-						List<String> list=new ArrayList<String>();
-						for(Map<String, String> map:mps){
-							String jsonKey = map.get("JsonKey");
-							String jsonColum = map.get("JsonColum");
-							String dropdownYn= map.get("dropdownYn");
-							Object jsonValue = null;
-							try {
-								
-								if("Y".equals(dropdownYn.trim())) {
-									Field field = nt.getClass().getField(jsonColum);								
-									jsonValue=field.get(nt);
-								}else
-									jsonValue=jsonColum;
-							}catch(Exception e) {
-								e.printStackTrace();
-							}
-							//String jsonValue = ;
-
-							String value="\""+jsonKey+"\":\""+jsonValue+"\"";
-							list.add(value);		
-
-						}
-						String json="{"+StringUtils.join(list,',')+"}";
-						try {
-							String encrData = EncryDecryService.encrypt(json);
-							String appUrl=loadTinyUrl.get(0).get("appUrl").toString();
-							String shorternURL = getShorternURL(appUrl+encrData);
-							nt.setTinyUrl(shorternURL);
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						
-					}
+					generateTinyURL(n,loadTinyUrl,loadDropdown,nt);
 					uws.add(nt);
 				}
 				List<NotifTransactionDetails> saveAll = notifTrans.saveAll(uws);
@@ -266,7 +285,7 @@ public class NotificationService {
 						.productName(n.getProductName())
 						.sectionName(n.getSectionName())
 						.statusMessage(n.getStatusMessage())
-						.tinyUrl(n.getTinyUrl())
+						//.tinyUrl(n.getTinyUrl())
 						.notifPushedStatus(n.getNotifPushedStatus().toString())
 						.companyid(n.getCompanyid())
 						.productid(n.getProductid())
@@ -279,8 +298,9 @@ public class NotificationService {
 						.customerRefno(n.getCustomer().getCustomerRefno())
 						.branchCode(n.getBranchCode())
 						.refno(n.getRefNo())
-						
+						.tinyUrlActive("Y")
 						.build();
+				generateTinyURL(n,loadTinyUrl,loadDropdown,nt);
 				sv = notifTrans.save(nt);
 			}
 			c.setIsError(Boolean.FALSE);
