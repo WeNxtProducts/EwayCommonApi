@@ -178,6 +178,29 @@ private static final long serialVersionUID = 1L;
 	  
 	  @Column(name="ADDRESS")
 	    private String address;
+	  
+	  @Temporal(TemporalType.TIMESTAMP)
+	    @Column(name="POLICY_START_DATE")
+	    private Date       policyStartDate ;
+	    
+	    @Temporal(TemporalType.TIMESTAMP)
+	    @Column(name="POLICY_END_DATE")
+	    private Date       policyEndDate ;
+	    
+	    @Column(name="RATE")
+		private Double       rate ;
+	    
+	    @Column(name="PREMIUM_FC")
+	  	private Double       premiumFc ;
+	    
+	    @Column(name="PREMIUM_LC")
+	  	private Double       premiumLc ;
+	    
+	    @Column(name="CURRENCY_CODE", length=10)
+		private String currencyCode;
+	    
+	    @Column(name="EXCHANGE_RATE")
+	  	private Double       exchangeRate ;
       
 }
 
