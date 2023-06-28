@@ -515,13 +515,19 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 				erros.add(err);
 				return erros;
 			}else {
-				notifRepo.updateOtherActiveTinyUrl(tinyGroupId,object);
+				//notifRepo.updateOtherActiveTinyUrl(tinyGroupId,object);
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
 			
 		}
 		return null;
+	}
+
+	@Override
+	public void updateTinyUrlId(String object,String tinyGroupId) {
+		notifRepo.updateOtherActiveTinyUrl(tinyGroupId,object);
+		
 	}
 
 		

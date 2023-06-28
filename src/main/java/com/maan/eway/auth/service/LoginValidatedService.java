@@ -20,6 +20,8 @@ public interface LoginValidatedService {
 
 	List<Error> forgetPwdValidation(ForgetPasswordReq req);
 
-	List<Error> validateTinyUrlId(String tinyUrlId,String tinyGroupId); 
+	List<Error> validateTinyUrlId(String tinyUrlId,String tinyGroupId);
+
+	void updateTinyUrlId(String string, String string2); 
 
 }

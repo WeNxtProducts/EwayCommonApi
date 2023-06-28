@@ -54,10 +54,10 @@ public interface NotifTransactionDetailsRepository  extends JpaRepository<NotifT
 	List<NotifTransactionDetails> findByQuoteNo(String quoteNo);
 
 	Integer countByTinyUrlActiveAndTinyUrlId(String string, String object);
-	
-	@Modifying(clearAutomatically = true)
+	@Modifying
+	@Transactional
 	@Query(value="UPDATE notif_transaction_details SET TINY_URL_ACTIVE='N' WHERE TINY_GROUP_ID=:tinyGroupId AND TINY_URL_ID!=:tinyUrlId",nativeQuery = true)
-	int updateOtherActiveTinyUrl(@Param("tinyGroupId") String tinyGroupId,@Param("tinyUrlId") String tinyUrlId);
+	void updateOtherActiveTinyUrl(@Param("tinyGroupId") String tinyGroupId,@Param("tinyUrlId") String tinyUrlId);
 
 
 	

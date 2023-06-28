@@ -109,6 +109,9 @@ public class LoginController {
 				ResponseEntity<CommonLoginRes> getloginToken = getloginToken(mslogin,http);
 				CommonLoginRes body = getloginToken.getBody();
 				body.setAdditionalInfo(encValue);
+				
+				if(body.getErrorMessage().size()>0)
+					loginValidationComponent.updateTinyUrlId(encValue.get("TinyUrlId").toString(),encValue.get("TinyGroupId").toString());
 				return getloginToken;
 			}else {
 				CommonLoginRes body=new CommonLoginRes();
