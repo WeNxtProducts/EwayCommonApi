@@ -18,6 +18,8 @@ public interface LoginValidatedService {
 
 	List<Error> LoginChangePasswordValidation(ChangePasswordReq req);
 
-	List<Error> forgetPwdValidation(ForgetPasswordReq req); 
+	List<Error> forgetPwdValidation(ForgetPasswordReq req);
+
+	List<Error> validateTinyUrlId(Object object); 
 
 }
