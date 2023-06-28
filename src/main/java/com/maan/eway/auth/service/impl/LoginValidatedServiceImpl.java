@@ -498,6 +498,23 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 		return list;
 	}
 
+	@Override
+	public List<Error> validateTinyUrlId(Object object) {
+		try {
+			List<Error> erros=new ArrayList<Error>();
+			Error err=new Error();
+			err.setCode("9844");
+			err.setField("TinyUrl");
+			err.setMessage("Tiny Url is Deactivated");
+			erros.add(err);
+			return erros;
+		}catch(Exception e) {
+			e.printStackTrace();
+			
+		}
+		return null;
+	}
+
 		
 
 }
