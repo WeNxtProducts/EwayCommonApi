@@ -119,7 +119,6 @@ import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
-import com.maan.eway.repository.PersonalAccidentRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
@@ -248,7 +247,7 @@ private BuildingDetailsRepository BuildingRepo;
 		
 	
 	@Autowired
-	private PersonalAccidentRepository personalRepo;
+	private ProductEmployeesDetailsRepository personalRepo;
 
 
 	private ProductMasterRepository productRepo;

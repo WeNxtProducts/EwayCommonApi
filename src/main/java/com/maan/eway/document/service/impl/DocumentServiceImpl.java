@@ -1,19 +1,26 @@
 package com.maan.eway.document.service.impl;
 
+import java.io.File;
+import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.stream.Collector;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.Column;
 import javax.persistence.EntityManager;
-import javax.persistence.Id;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -22,6 +29,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +41,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
-import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CoverDocumentMaster;
+import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.DocumentUniqueDetails;
+import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.MotorDataDetails;
-import com.maan.eway.bean.PersonalAccident;
 import com.maan.eway.bean.ProductEmployeeDetails;
+import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.SeqDocuniqueid;
 import com.maan.eway.bean.TravelPassengerDetails;
@@ -73,71 +83,11 @@ import com.maan.eway.repository.DocumentUniqueDetailsRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
-import com.maan.eway.repository.PersonalAccidentRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
 import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.repository.SeqDocuniqueidRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.res.SuccessRes;
-
-import java.io.File;
-import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.dozer.DozerBeanMapper;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.maan.eway.bean.CoverDocumentMaster;
-import com.maan.eway.bean.CoverDocumentUploadDetails;
-import com.maan.eway.bean.CoverDocumentUploadDetailsId;
-import com.maan.eway.bean.DocumentTransactionDetails;
-import com.maan.eway.bean.DocumentTransactionDetailsId;
-import com.maan.eway.bean.EndtTypeMaster;
-import com.maan.eway.bean.ProductMaster;
-import com.maan.eway.bean.ProductSectionMaster;
-import com.maan.eway.document.req.DocTypeDropDownReq;
-import com.maan.eway.document.req.DocumentDeleteReq;
-import com.maan.eway.document.req.DocumentUploadReq;
-import com.maan.eway.document.req.FilePathReq;
-import com.maan.eway.document.req.GetDocListReq;
-import com.maan.eway.document.res.ClientDocListRes;
-import com.maan.eway.document.res.DocCategoryRes;
-import com.maan.eway.document.res.DocTypeRes;
-import com.maan.eway.document.res.FilePathRes;
-import com.maan.eway.document.service.DocumentService;
-import com.maan.eway.error.Error;
 
 @Service
 @Transactional
@@ -194,7 +144,7 @@ public class DocumentServiceImpl implements DocumentService{
 	private EntityManager em;
 	
 	@Autowired
-	private PersonalAccidentRepository paccRepo ;
+	private ProductEmployeesDetailsRepository paccRepo ;
 	
 	
 //	@Autowired
@@ -506,18 +456,6 @@ public class DocumentServiceImpl implements DocumentService{
 									idList.add(doc);	
 								}
 								
-							} else {
-								List<PersonalAccident> filterpaccList = paccRepo.findByQuoteNoAndSectionIdOrderByPersonId(homeData.getQuoteNo() ,  sec.getSectionId());
-								filterpaccList  = filterpaccList.stream().filter( o -> building.getRiskId().equals(o.getRiskId())  && o.getSectionId().equalsIgnoreCase(sec.getSectionId() ) ).collect(Collectors.toList());
-								for (PersonalAccident emp :  filterpaccList) {
-									// Employees Documents
-									DocumentDropdownRes doc = new DocumentDropdownRes();
-									doc.setRiskId(emp.getPersonName()==null ? "1" : emp.getPersonName().toString());
-									doc.setId(emp.getPersonName());
-									String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("H") ).collect(Collectors.toList()).get(0).getItemValue() ;					
-									doc.setIdType(idType);
-									idList.add(doc);	
-								}
 							}
 							
 						} else {
@@ -883,6 +821,10 @@ public class DocumentServiceImpl implements DocumentService{
 					docTran.setLocationId(Integer.valueOf(req.getLocationId()));
 					docTran.setLocationName(req.getLocationName());
 					docTran.setRiskId(Integer.valueOf(req.getRiskId()));
+					docTran.setCreatedBy(req.getUploadedBy());
+					docTran.setEntryDate(timestamp1);
+					docTran.setStatus("Y");
+					docTran.setEntryDate(new Date());
 					
 					if (StringUtils.isNotBlank(req.getEndorsementType())) {
 						EndtTypeMaster entMaster=endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeId(req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",Integer.valueOf(req.getEndorsementType()));

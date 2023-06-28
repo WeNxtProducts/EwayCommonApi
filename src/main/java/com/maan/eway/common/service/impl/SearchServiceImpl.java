@@ -1,7 +1,6 @@
 package com.maan.eway.common.service.impl;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -36,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.CompanyProductMaster;
-import com.maan.eway.bean.CoverDocumentUploadDetails;
+import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
@@ -45,10 +44,9 @@ import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.MotorVehicleInfo;
 import com.maan.eway.bean.PaymentInfo;
-import com.maan.eway.bean.PersonalAccident;
 import com.maan.eway.bean.PolicyCoverData;
+import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.bean.SectionMaster;
-
 import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
 import com.maan.eway.common.res.AdminViewQuoteRes;
@@ -70,20 +68,19 @@ import com.maan.eway.common.service.MotorSearchService;
 import com.maan.eway.common.service.SearchService;
 import com.maan.eway.common.service.TravelSearchService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
-import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
 import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.CoverDetailsRepository;
+import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
-import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.MotorVehicleInfoRepository;
 import com.maan.eway.repository.PaymentInfoRepository;
-import com.maan.eway.repository.PersonalAccidentRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PremiaCustomerDetailsRepository;
+import com.maan.eway.repository.ProductEmployeesDetailsRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SubCoverRes;
 
@@ -114,7 +111,7 @@ public class SearchServiceImpl implements SearchService {
 	@Autowired
 	private PersonalInfoRepository perRepo;
 	@Autowired
-	CoverDocumentUploadDetailsRepository coverdocumentuploaddetailsrepository;
+	private DocumentTransactionDetailsRepository coverdocumentuploaddetailsrepository;
 
 	@Autowired
 	private MotorVehicleInfoRepository motVehInfoRepo;
@@ -139,7 +136,7 @@ public class SearchServiceImpl implements SearchService {
 	BuildingDetailsRepository buildingrepo;
 
 	@Autowired
-	PersonalAccidentRepository personalRepository;
+	ProductEmployeesDetailsRepository personalRepository;
 
 	@PersistenceContext
 	private EntityManager em;
@@ -191,16 +188,16 @@ public class SearchServiceImpl implements SearchService {
 
 			PersonalAccidentRes pres = new PersonalAccidentRes();
 
-			List<PersonalAccident> personalList = new ArrayList<PersonalAccident>();
+			List<ProductEmployeeDetails> personalList = new ArrayList<ProductEmployeeDetails>();
 
 			
 			 if (StringUtils.isNotBlank(req.getRequestReferenceNo())) {
-				 personalList = personalRepository.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
+				 personalList = personalRepository.findByRequestReferenceNo(req.getRequestReferenceNo());
 			}
 			
             if(personalList!=null && personalList.size()>0)
             {
-			for (PersonalAccident data : personalList) {
+			for (ProductEmployeeDetails data : personalList) {
 
 				pres = new DozerBeanMapper().map(data, PersonalAccidentRes.class);
 				preslist.add(pres);
@@ -770,7 +767,7 @@ public class SearchServiceImpl implements SearchService {
 
 			DocumentRes dres = new DocumentRes();
 
-			List<CoverDocumentUploadDetails> getList = null;
+			List<DocumentTransactionDetails> getList = null;
 
 			if (StringUtils.isNotBlank(req.getQuoteNo())) {
 
@@ -779,7 +776,7 @@ public class SearchServiceImpl implements SearchService {
 				getList = coverdocumentuploaddetailsrepository.findByRequestReferenceNo(req.getRequestReferenceNo());
 			}
 
-			for (CoverDocumentUploadDetails cd : getList) {
+			for (DocumentTransactionDetails cd : getList) {
 
 				dres = new DozerBeanMapper().map(cd, DocumentRes.class);
 				reslist.add(dres);

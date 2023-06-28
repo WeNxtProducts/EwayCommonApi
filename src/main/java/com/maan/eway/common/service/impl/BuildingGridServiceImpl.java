@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -34,24 +33,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.maan.eway.bean.EserviceCustomerDetails;
-import com.maan.eway.bean.EserviceMotorDetails;
-import com.maan.eway.bean.EserviceSectionDetails;
-import com.maan.eway.bean.HomePositionMaster;
-import com.maan.eway.admin.res.ReferalCriteriaRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.ContentAndRisk;
-import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.CoverMaster;
+import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
+import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.bean.EserviceSectionDetails;
+import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.PersonalAccident;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
+import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.bean.SeqCustid;
 import com.maan.eway.bean.SeqCustrefno;
 import com.maan.eway.bean.SeqQuoteno;
@@ -62,28 +59,24 @@ import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.service.BuildingGridService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
-import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
 import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.ContentAndRiskRepository;
-import com.maan.eway.repository.CoverMasterRepository;
+import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
-import com.maan.eway.repository.MotorDataDetailsRepository;
-import com.maan.eway.repository.MotorDriverDetailsRepository;
-import com.maan.eway.repository.PersonalAccidentRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
+import com.maan.eway.repository.ProductEmployeesDetailsRepository;
 import com.maan.eway.repository.SeqCustidRepository;
 import com.maan.eway.repository.SeqCustrefnoRepository;
 import com.maan.eway.repository.SeqQuotenoRepository;
 import com.maan.eway.repository.SeqRefnoRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
-import com.maan.eway.res.SuccessRes;
 
 @Service
 @Transactional
@@ -134,7 +127,7 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 	private EndtTypeMasterRepository endtTypeRepo;
 	
 	@Autowired
-	private CoverDocumentUploadDetailsRepository coverDocUploadDetails;
+	private DocumentTransactionDetailsRepository coverDocUploadDetails;
 
 	@Autowired
 	private BuildingDetailsRepository buildingRepo;
@@ -143,7 +136,7 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 	private EServiceSectionDetailsRepository eserSecRepo;
 	
 	@Autowired
-	private PersonalAccidentRepository pARepo;
+	private ProductEmployeesDetailsRepository pARepo;
 	
 	@Autowired
 	private ContentAndRiskRepository contentRiskRepo;
@@ -1688,7 +1681,7 @@ private CopyQuoteSuccessRes contentAndRiskEndoCopyquote(CopyQuoteReq req, String
 //Personal Accident And Personal Indem
 private CopyQuoteSuccessRes personalAccidentEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo, String customerId,String loginId, String prevPolicyNo, String prevQuoteNo, Integer count, String custRefNo) {
 	CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
-	PersonalAccident savedata = new PersonalAccident();
+	ProductEmployeeDetails savedata = new ProductEmployeeDetails();
 	DozerBeanMapper dozerMapper = new DozerBeanMapper();
 	try {
 		EndtTypeMaster entMaster = ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());/* endtTypeRepo
@@ -1696,16 +1689,16 @@ private CopyQuoteSuccessRes personalAccidentEndoCopyquote(CopyQuoteReq req, Stri
 						req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 						Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
 
-		List<PersonalAccident> PA = pARepo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
+		List<ProductEmployeeDetails> PA = pARepo.findByQuoteNo(prevQuoteNo);
 		if (PA != null && PA.size() > 0) {
-			for (PersonalAccident data : PA) {
-				savedata = dozerMapper.map(data, PersonalAccident.class);
+			for (ProductEmployeeDetails data : PA) {
+				savedata = dozerMapper.map(data, ProductEmployeeDetails.class);
 				savedata.setEntryDate(new Date());
 				savedata.setRequestReferenceNo(refNo);
 				savedata.setQuoteNo(quoteNo);
 				savedata.setCreatedBy(loginId);
-				savedata.setUpdatedBy(loginId);
-				savedata.setUpdatedDate(new Date());
+			//	savedata.setUpdatedBy(loginId);
+		//		savedata.setUpdatedDate(new Date());
 				savedata.setOriginalPolicyNo(req.getPolicyNo());
 				savedata.setEndorsementDate(new Date());
 				savedata.setEndorsementRemarks(req.getEndtRemarks());
@@ -1863,7 +1856,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 					}
 					
 					//Cover Document Upload Details
-					List<CoverDocumentUploadDetails> coverDocList = coverDocUploadDetails.findByQuoteNo(quoteNo);
+					List<DocumentTransactionDetails> coverDocList = coverDocUploadDetails.findByQuoteNo(quoteNo);
 					if (coverDocList.size() > 0) {
 						coverDocUploadDetails.deleteAll(coverDocList);
 					}
@@ -1885,7 +1878,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 						buildingRepo.deleteAll(buildingList);
 					}
 					//Personal Accident
-					List<PersonalAccident> perList = pARepo.findByQuoteNo(quoteNo);
+					List<ProductEmployeeDetails> perList = pARepo.findByQuoteNo(quoteNo);
 					if (perList.size() > 0) {
 						pARepo.deleteAll(perList);
 					}
@@ -2286,16 +2279,16 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 					String quoteNo, String customerId, String loginId, String prevPolicyNo, String prevQuoteNo,
 					Integer count) {
 				CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
-				CoverDocumentUploadDetails savedata = new CoverDocumentUploadDetails();
+				DocumentTransactionDetails savedata = new DocumentTransactionDetails();
 				DozerBeanMapper dozerMapper = new DozerBeanMapper();
 				try {
 					EndtTypeMaster entMaster = ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());/*endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 							req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 							Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
-					List<CoverDocumentUploadDetails> motorData = coverDocUploadDetails.findByQuoteNo(prevQuoteNo);
+					List<DocumentTransactionDetails> motorData = coverDocUploadDetails.findByQuoteNo(prevQuoteNo);
 					if (motorData.size() > 0) {
-						for (CoverDocumentUploadDetails data : motorData) {
-							savedata = dozerMapper.map(data, CoverDocumentUploadDetails.class);
+						for (DocumentTransactionDetails data : motorData) {
+							savedata = dozerMapper.map(data, DocumentTransactionDetails.class);
 							savedata.setRequestReferenceNo(refNo);
 							savedata.setQuoteNo(quoteNo);
 							savedata.setEntryDate(new Date());
@@ -2313,6 +2306,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 							savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
 							savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
 							savedata.setStatus("E");
+							
 							//savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
 							coverDocUploadDetails.saveAndFlush(savedata);
 						}

@@ -27,7 +27,6 @@ import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
@@ -77,7 +76,6 @@ import com.maan.eway.common.service.QuoteThreadService;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.TrackingDetailsSaveReq;
 import com.maan.eway.master.service.TrackingDetailsService;
-import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
 import com.maan.eway.notification.req.Broker;
 import com.maan.eway.notification.req.Customer;
 import com.maan.eway.notification.req.Notification;
@@ -105,8 +103,8 @@ import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.MasterReferralDetailsRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
-import com.maan.eway.repository.PersonalAccidentRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
+import com.maan.eway.repository.ProductEmployeesDetailsRepository;
 import com.maan.eway.repository.ProductMasterRepository;
 import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.repository.SeqCustidRepository;
@@ -218,7 +216,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	private BuildingRiskDetailsRepository buildRepo ;
 	
 	@Autowired
-	private CoverDocumentUploadDetailsRepository docRepo ;
+	private DocumentTransactionDetailsRepository docRepo ;
 	
 	@Autowired
 	private BuildingDetailsRepository locRepo ;
@@ -227,7 +225,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	private ContentAndRiskRepository  contentRepo ;
 	
 	@Autowired
-	private PersonalAccidentRepository pacRepo ; 
+	private ProductEmployeesDetailsRepository pacRepo ; 
 	
 	@Autowired
 	private QuoteService quoteService;

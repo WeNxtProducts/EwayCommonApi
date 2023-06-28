@@ -25,9 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
-import com.maan.eway.bean.CoverDocumentUploadDetails;
+import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.EndtTypeMaster;
-import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.MotorDataDetails;
@@ -35,24 +34,16 @@ import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.common.req.ChangeEndoStatusReq;
-import com.maan.eway.common.req.CopyQuoteReq;
-import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.common.service.impl.MotorGridServiceImpl;
 import com.maan.eway.endorsment.request.Endorsment;
-import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
+import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
-import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
-import com.maan.eway.repository.PolicyCoverDataRepository;
-import com.maan.eway.repository.SeqCustidRepository;
-import com.maan.eway.repository.SeqQuotenoRepository;
-import com.maan.eway.repository.SeqRefnoRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
-import com.maan.eway.res.CopyQuoteSuccessRes;
 
 @Service
 public class CopyRawTable  {
@@ -84,7 +75,7 @@ public class CopyRawTable  {
 	private MotorDriverDetailsRepository motordrivDetepo;
 	
 	@Autowired
-	private CoverDocumentUploadDetailsRepository coverDocUploadDetails;
+	private DocumentTransactionDetailsRepository coverDocUploadDetails;
 	
 	@Autowired
 	private UwQuestionsDetailsRepository uwquestionRepo;
@@ -273,16 +264,16 @@ public class CopyRawTable  {
 		return savedata;
 	}
 
-	private CoverDocumentUploadDetails coverDocumentUploadDetailsEndtStatus(ChangeEndoStatusReq req) {
-		CoverDocumentUploadDetails savedata = new CoverDocumentUploadDetails();
+	private DocumentTransactionDetails coverDocumentUploadDetailsEndtStatus(ChangeEndoStatusReq req) {
+		DocumentTransactionDetails savedata = new DocumentTransactionDetails();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			List<CoverDocumentUploadDetails> motorData = coverDocUploadDetails.findByQuoteNo(req.getQuoteNo());
+			List<DocumentTransactionDetails> motorData = coverDocUploadDetails.findByQuoteNo(req.getQuoteNo());
 			if (motorData.size() > 0) {
-				for (CoverDocumentUploadDetails data : motorData) {
-					savedata = dozerMapper.map(data, CoverDocumentUploadDetails.class);
+				for (DocumentTransactionDetails data : motorData) {
+					savedata = dozerMapper.map(data, DocumentTransactionDetails.class);
 					savedata.setEndtStatus("C");
-					savedata.setStatus("P");
+				//	savedata.setStatus("P");
 					coverDocUploadDetails.saveAndFlush(savedata);
 				}
 			}

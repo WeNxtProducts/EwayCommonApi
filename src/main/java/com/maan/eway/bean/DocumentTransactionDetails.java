@@ -150,6 +150,16 @@ private static final long serialVersionUID = 1L;
    @Column(name="ENDT_CATEG_DESC", length=100)
    private String     endtCategDesc ;
 
+   @Column(name="CREATED_BY", length=100)
+   private String     createdBy;
+   
+   @Temporal(TemporalType.TIMESTAMP)
+   @Column(name="ENTRY_DATE")
+   private Date       entryDate;
+   
+   @Column(name="STATUS", length=10)
+   private String     status ;
+   
 }
 
 

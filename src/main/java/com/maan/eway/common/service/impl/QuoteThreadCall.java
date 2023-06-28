@@ -24,7 +24,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -36,7 +35,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
@@ -44,11 +42,9 @@ import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.ContentAndRisk;
-import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.DocumentUniqueDetails;
-import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
@@ -62,21 +58,18 @@ import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
-import com.maan.eway.bean.PersonalAccident;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
+import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.TravelPassengerDetails;
-import com.maan.eway.bean.TravelPassengerHistory;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.FrameOldDocSaveReq;
-import com.maan.eway.common.req.OldDocumentsCopyReq;
 import com.maan.eway.common.req.QuoteThreadReq;
 import com.maan.eway.common.req.VehicleIdsReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.QuoteThreadRes;
 import com.maan.eway.error.Error;
-import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
 import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.CommonDataDetailsRepository;
@@ -95,8 +88,8 @@ import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
-import com.maan.eway.repository.PersonalAccidentRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
+import com.maan.eway.repository.ProductEmployeesDetailsRepository;
 import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerHistoryRepository;
@@ -143,12 +136,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 	private SectionDataDetailsRepository secRepo ;
 	private BuildingDetailsRepository locRepo ;
 	private ContentAndRiskRepository  contentRepo ;
-	private PersonalAccidentRepository pacRepo ;   
+	private ProductEmployeesDetailsRepository pacRepo ;   
 	
 	//Common
 	private EserviceCommonDetailsRepository eserCommonRepo;
 	private CommonDataDetailsRepository commonDataRepo;
-	private CoverDocumentUploadDetailsRepository docRepo ;
+	private DocumentTransactionDetailsRepository docRepo ;
 	
 	// productId
 	private String travelProductId;
@@ -163,7 +156,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			 CoverDetailsRepository coverRepo  , HomePositionMasterRepository homeRepo  ,EserviceTravelDetailsRepository eserTraRepo ,EserviceTravelGroupDetailsRepository eserGroupRepo ,
 			 TravelPassengerDetailsRepository    traPassRepo ,TravelPassengerHistoryRepository traPassHisRepo  ,String travelProductId
 			 , EserviceBuildingDetailsRepository eserBuildRepo , EServiceSectionDetailsRepository eserSecRepo,EserviceCommonDetailsRepository eserCommonRepo,CommonDataDetailsRepository commonDataRepo ,
-			 SectionDataDetailsRepository secRepo,BuildingRiskDetailsRepository buildRepo , CoverDocumentUploadDetailsRepository docRepo, BuildingDetailsRepository locRepo ,ContentAndRiskRepository  contentRepo  ,PersonalAccidentRepository pacRepo
+			 SectionDataDetailsRepository secRepo,BuildingRiskDetailsRepository buildRepo , DocumentTransactionDetailsRepository docRepo, BuildingDetailsRepository locRepo ,ContentAndRiskRepository  contentRepo  ,ProductEmployeesDetailsRepository pacRepo
 			 , DocumentUniqueDetailsRepository docUniqueRepo ,DocumentTransactionDetailsRepository docTranRepo   ) {
 		this.type = type;
 		this.request = request;
@@ -355,7 +348,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			// Copy Old Quote Additional Details
 			if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
 				
-				res =  copyQuoteDocumentDetails( request , request.getEndtPrevQuoteNo() , request.getQuoteNo()) ;
+		//		res =  copyQuoteDocumentDetails( request , request.getEndtPrevQuoteNo() , request.getQuoteNo()) ;
 				
 			}
 			
@@ -579,7 +572,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				
 				res =   copyQuoteDriverDetails( request , request.getEndtPrevQuoteNo() , request.getQuoteNo()  );
 				
-				res =  copyQuoteDocumentDetails( request , request.getEndtPrevQuoteNo() , request.getQuoteNo()) ;
+			//	res =  copyQuoteDocumentDetails( request , request.getEndtPrevQuoteNo() , request.getQuoteNo()) ;
 				
 			} else {
 				Long driverInfo = driverRepo.countByQuoteNoAndRiskId(request.getQuoteNo() , request.getVehicleId());
@@ -838,50 +831,50 @@ public class QuoteThreadCall implements Callable<Object>  {
 		return res;
 	}
 	
-	private synchronized  Map<String,Object>  copyQuoteDocumentDetails(QuoteThreadReq  request , String oldQuoteNo , String newQuoteNo ) {
-		Map<String,Object> res= new HashMap<String,Object>() ;
-	 DozerBeanMapper dozerMapper = new DozerBeanMapper();
-		try {
-			
-			{
-				List<Integer> ids = new ArrayList<Integer>();
-				ids.add( request.getVehicleId());
-				
-				Long docInfo = docRepo.countByQuoteNoAndIdInAndProductIdAndSectionId(request.getQuoteNo() , ids,Integer.valueOf(request.getProductId()) , Integer.valueOf(request.getSectionId())  );
-				if( docInfo <= 0  ) {
-					// Other Doc
-					List<CoverDocumentUploadDetails>   oldDocDetails = docRepo.findByQuoteNoAndIdAndProductIdAndSectionId( oldQuoteNo , request.getVehicleId() ,
-							Integer.valueOf(request.getProductId()) , Integer.valueOf(request.getSectionId())   ) ; 
-					List<CoverDocumentUploadDetails> saveDocList = new ArrayList<CoverDocumentUploadDetails>(); 
-					if( oldDocDetails.size() > 0  ) {
-					
-						for ( CoverDocumentUploadDetails doc : oldDocDetails ) {
-							CoverDocumentUploadDetails saveDoc = new CoverDocumentUploadDetails(); 		
-							dozerMapper.map(doc , saveDoc);
-							saveDoc.setQuoteNo(request.getQuoteNo() );
-							saveDoc.setRequestReferenceNo(request.getRequestReferenceNo());
-							saveDocList.add(saveDoc) ;
-						}
-						docRepo.saveAllAndFlush(saveDocList);
-					}
-				}
-				
-			
-			}
-			
-			res.put("Response", "Success") ;
-			res.put("Errors", null) ;
-			
-			
-		}catch (Exception e) {
-			e.printStackTrace();
-			log.error("Exception is ---> " + e.getMessage());
-			res.put("Response", "Failed") ;
-			res.put("Errors", "Failed To Copy Vehicle Id : " + request.getVehicleId() + " Document Details" ) ;
-		}
-	
-		return res;
-	}
+//	private synchronized  Map<String,Object>  copyQuoteDocumentDetails(QuoteThreadReq  request , String oldQuoteNo , String newQuoteNo ) {
+//		Map<String,Object> res= new HashMap<String,Object>() ;
+//	 DozerBeanMapper dozerMapper = new DozerBeanMapper();
+//		try {
+//			
+//			{
+//				List<Integer> ids = new ArrayList<Integer>();
+//				ids.add( request.getVehicleId());
+//				
+//				Long docInfo = docRepo.countByQuoteNoAndProductIdAndSectionId(request.getQuoteNo() , Integer.valueOf(request.getProductId()) , Integer.valueOf(request.getSectionId())  );
+//				if( docInfo <= 0  ) {
+//					// Other Doc
+//					List<DocumentTransactionDetails>   oldDocDetails = docRepo.findByQuoteNoAndProductIdAndSectionId( oldQuoteNo , request.getVehicleId() ,
+//							Integer.valueOf(request.getProductId()) , Integer.valueOf(request.getSectionId())   ) ; 
+//					List<DocumentTransactionDetails> saveDocList = new ArrayList<DocumentTransactionDetails>(); 
+//					if( oldDocDetails.size() > 0  ) {
+//					
+//						for ( DocumentTransactionDetails doc : oldDocDetails ) {
+//							DocumentTransactionDetails saveDoc = new DocumentTransactionDetails(); 		
+//							dozerMapper.map(doc , saveDoc);
+//							saveDoc.setQuoteNo(request.getQuoteNo() );
+//							saveDoc.setRequestReferenceNo(request.getRequestReferenceNo());
+//							saveDocList.add(saveDoc) ;
+//						}
+//						docRepo.saveAllAndFlush(saveDocList);
+//					}
+//				}
+//				
+//			
+//			}
+//			
+//			res.put("Response", "Success") ;
+//			res.put("Errors", null) ;
+//			
+//			
+//		}catch (Exception e) {
+//			e.printStackTrace();
+//			log.error("Exception is ---> " + e.getMessage());
+//			res.put("Response", "Failed") ;
+//			res.put("Errors", "Failed To Copy Vehicle Id : " + request.getVehicleId() + " Document Details" ) ;
+//		}
+//	
+//		return res;
+//	}
 	
 	private synchronized  Map<String,Object>  copyQuoteLocationDetails(QuoteThreadReq  request , String oldQuoteNo , String newQuoteNo ) {
 		Map<String,Object> res= new HashMap<String,Object>() ;
@@ -933,12 +926,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			if( pacCount <= 0  ) {
 				
-				List<PersonalAccident> oldPacDetails = pacRepo.findByQuoteNoOrderByRiskIdAsc(oldQuoteNo );
-				List<PersonalAccident> savePacList = new ArrayList<PersonalAccident>(); 
+				List<ProductEmployeeDetails> oldPacDetails = pacRepo.findByQuoteNo(oldQuoteNo );
+				List<ProductEmployeeDetails> savePacList = new ArrayList<ProductEmployeeDetails>(); 
 				
 				if( pacCount <= 0  ) {
-					for ( PersonalAccident pac : oldPacDetails ) {
-						PersonalAccident savePac = new PersonalAccident(); 		
+					for ( ProductEmployeeDetails pac : oldPacDetails ) {
+						ProductEmployeeDetails savePac = new ProductEmployeeDetails(); 		
 						dozerMapper.map(pac , savePac);
 						savePac.setQuoteNo(request.getQuoteNo() );
 						savePac.setRequestReferenceNo(request.getRequestReferenceNo());
@@ -1069,7 +1062,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			// Copy Old Quote Additional Details
 			if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
 				
-				res =  copyQuoteDocumentDetails( request , request.getEndtPrevQuoteNo() , request.getQuoteNo()) ;
+			//	res =  copyQuoteDocumentDetails( request , request.getEndtPrevQuoteNo() , request.getQuoteNo()) ;
 				
 				res =  copyQuoteLocationDetails( request , request.getEndtPrevQuoteNo() , request.getQuoteNo()) ;
 			}
@@ -1200,7 +1193,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			// Copy Old Quote Additional Details
 			if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
 				
-				res =  copyQuoteDocumentDetails( request , request.getEndtPrevQuoteNo() , request.getQuoteNo()) ;
+			//	res =  copyQuoteDocumentDetails( request , request.getEndtPrevQuoteNo() , request.getQuoteNo()) ;
 				
 			}
 			
@@ -2194,15 +2187,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 				ids.add(0);
 				ids.add(1);
 				
-				Long docInfo = docRepo.countByQuoteNoAndIdInAndProductIdAndSectionId(req.getQuoteNo() , ids, Integer.valueOf(req.getProductId()) , 99999  );
+				Long docInfo = docRepo.countByQuoteNo(req.getQuoteNo() );
 				if( docInfo <= 0  ) {
-					List<CoverDocumentUploadDetails>   oldDocDetails = docRepo.findByQuoteNoAndIdInAndProductIdAndSectionId( req.getEndtPrevQuoteNo() , ids ,
-							Integer.valueOf(req.getProductId()) , 99999  ) ;
+					List<DocumentTransactionDetails>   oldDocDetails = docRepo.findByQuoteNo( req.getEndtPrevQuoteNo() ) ;
 					
-					List<CoverDocumentUploadDetails> saveDocList = new ArrayList<CoverDocumentUploadDetails>();
+					List<DocumentTransactionDetails> saveDocList = new ArrayList<DocumentTransactionDetails>();
 					if( oldDocDetails.size() > 0  ) {
-						for ( CoverDocumentUploadDetails doc : oldDocDetails ) {
-							CoverDocumentUploadDetails saveDoc = new CoverDocumentUploadDetails(); 		
+						for ( DocumentTransactionDetails doc : oldDocDetails ) {
+							DocumentTransactionDetails saveDoc = new DocumentTransactionDetails(); 		
 							dozerMapper.map(doc , saveDoc);
 							saveDoc.setQuoteNo(req.getQuoteNo() );
 							saveDoc.setRequestReferenceNo(req.getRequestReferenceNo());
@@ -2898,6 +2890,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 						docTran.setCompanyName(homeData.getCompanyName());
 						docTran.setProductId(homeData.getProductId());
 						docTran.setProductName(homeData.getProductName());
+						docTran.setEntryDate(new Date());
+						docTran.setCreatedBy(homeData.getLoginId());
+						docTran.setStatus("Y");
 						
 						List<FrameOldDocSaveReq> filterPartitions = partitionIds.stream().filter(  o -> o.getId().equalsIgnoreCase(uniq.getId())  ).collect(Collectors.toList());
 						if ( filterPartitions.size() > 0 ) {

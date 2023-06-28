@@ -20,7 +20,6 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -36,18 +35,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.admin.res.MotorGridCriteriaRes;
 import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
-import com.maan.eway.admin.res.ReferalCriteriaRes;
-import com.maan.eway.admin.res.ReferalGridCriteriaRes;
-import com.maan.eway.bean.EserviceMotorDetails;
-import com.maan.eway.bean.CityMaster;
-import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.CoverMaster;
+import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginUserInfo;
-import com.maan.eway.bean.MotorBodyTypeMaster;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.PersonalInfo;
@@ -56,21 +51,16 @@ import com.maan.eway.bean.PremiaCustomerDetails;
 import com.maan.eway.bean.SeqCustid;
 import com.maan.eway.bean.SeqCustrefno;
 import com.maan.eway.bean.SeqQuoteno;
-import com.maan.eway.bean.SeqRefno;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
-import com.maan.eway.common.req.ChangeEndoStatusReq;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
-import com.maan.eway.common.req.NewQuoteReq;
-import com.maan.eway.common.res.CommonRes;
-import com.maan.eway.common.res.GetAllMotorDetailsRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.service.MotorGridService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
-import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
 import com.maan.eway.repository.CoverMasterRepository;
+import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
@@ -84,8 +74,6 @@ import com.maan.eway.repository.SeqCustrefnoRepository;
 import com.maan.eway.repository.SeqQuotenoRepository;
 import com.maan.eway.repository.SeqRefnoRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
-import com.maan.eway.res.DropDownRes;
-import com.maan.eway.res.SuccessRes;
 
 
 @Service
@@ -136,7 +124,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 	private MotorDriverDetailsRepository motordrivDetepo;
 	
 	@Autowired
-	private CoverDocumentUploadDetailsRepository coverDocUploadDetails;
+	private DocumentTransactionDetailsRepository coverDocUploadDetails;
 
 	@Autowired
 	private CoverMasterRepository coverMasterRepo;
@@ -1374,7 +1362,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					motordrivDetepo.deleteAll(motorDriverData);
 				}
 				//Cover Document Upload Details
-				List<CoverDocumentUploadDetails> coverDocList = coverDocUploadDetails.findByQuoteNo(quoteNo);
+				List<DocumentTransactionDetails> coverDocList = coverDocUploadDetails.findByQuoteNo(quoteNo);
 				if (coverDocList.size() > 0) {
 					coverDocUploadDetails.deleteAll(coverDocList);
 				}
@@ -1851,14 +1839,14 @@ public class MotorGridServiceImpl implements MotorGridService {
 				String quoteNo, String customerId, String loginId, String prevPolicyNo, String prevQuoteNo,
 				Integer count) {
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
-			CoverDocumentUploadDetails savedata = new CoverDocumentUploadDetails();
+			DocumentTransactionDetails savedata = new DocumentTransactionDetails();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
 				EndtTypeMaster entMaster = ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());
-				List<CoverDocumentUploadDetails> motorData = coverDocUploadDetails.findByQuoteNo(prevQuoteNo);
+				List<DocumentTransactionDetails> motorData = coverDocUploadDetails.findByQuoteNo(prevQuoteNo);
 				if (motorData.size() > 0) {
-					for (CoverDocumentUploadDetails data : motorData) {
-						savedata = dozerMapper.map(data, CoverDocumentUploadDetails.class);
+					for (DocumentTransactionDetails data : motorData) {
+						savedata = dozerMapper.map(data, DocumentTransactionDetails.class);
 						savedata.setRequestReferenceNo(refNo);
 						savedata.setQuoteNo(quoteNo);
 						savedata.setEntryDate(new Date());

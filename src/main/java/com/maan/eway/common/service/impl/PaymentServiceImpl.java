@@ -50,7 +50,6 @@ import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CoverDocumentMaster;
-import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EserviceBuildingDetails;
@@ -74,7 +73,6 @@ import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.bean.SectionDataDetails;
-import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.bean.SeqPaymentid;
 import com.maan.eway.bean.TinyurlMaster;
 import com.maan.eway.bean.TravelPassengerDetails;
@@ -102,7 +100,6 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.TrackingDetailsSaveReq;
 import com.maan.eway.master.service.TrackingDetailsService;
 import com.maan.eway.master.service.impl.ClausesMasterServiceImpl;
-import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
 import com.maan.eway.notification.req.Broker;
 import com.maan.eway.notification.req.Customer;
 import com.maan.eway.notification.req.Notification;
@@ -110,6 +107,7 @@ import com.maan.eway.notification.req.UnderWriter;
 import com.maan.eway.notification.req.statealgo.NotificationStatus;
 import com.maan.eway.notification.service.NotificationService;
 import com.maan.eway.repository.CommonDataDetailsRepository;
+import com.maan.eway.repository.DocumentUniqueDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EmiTransactionDetailsRepository;
@@ -199,7 +197,7 @@ public class PaymentServiceImpl implements PaymentService {
 	private MotorDataDetailsRepository motorRepo ;
 	
 	@Autowired
-	private CoverDocumentUploadDetailsRepository docUploadRepo ;
+	private DocumentUniqueDetailsRepository docUploadRepo ;
 	
 	@Autowired
 	private EserviceBuildingDetailsRepository buildingRepo ;
@@ -449,28 +447,28 @@ public class PaymentServiceImpl implements PaymentService {
 				mandatoryDocs =  mandatoryDocs.stream().filter( o ->    !( o.getDocumentId().equals(16) || o.getDocumentId().equals(17)  || o.getDocumentId().equals(18) || o.getDocumentId().equals(19) )
 						).collect(Collectors.toList());
 				//Uploaded Docs
-				List<CoverDocumentUploadDetails> uploadedDocs = docUploadRepo.findByQuoteNo(req.getQuoteNo());
+				//List<DocumentUniqueDetails> uploadedDocs = docUploadRepo.findByQuoteNo(req.getQuoteNo());
 				
 				for (CoverDocumentMaster mdoc :  mandatoryDocs) {
 					// Common Docs
 					if ( mdoc.getSectionId().equals(99999) ) {
 						
-						// Filter Common Docs 
-						List<CoverDocumentUploadDetails> filterDocs = uploadedDocs.stream().filter( o ->  o.getDocumentId().equals(mdoc.getDocumentId()) && o.getId().equals(0) && o.getSectionId().equals(99999) 
-								).collect(Collectors.toList());
-						if(filterDocs.size()<=0 ) {
-							error.add(new Error("01","Common Doc", mdoc.getDocumentName() + " is Mandatory In Common Document"));
-						}
+//						// Filter Common Docs 
+//						List<DocumentUniqueDetails> filterDocs = uploadedDocs.stream().filter( o ->  o.getDocumentId().equals(mdoc.getDocumentId()) && o.getId().equals(0) && o.getSectionId().equals(99999) 
+//								).collect(Collectors.toList());
+//						if(filterDocs.size()<=0 ) {
+//							error.add(new Error("01","Common Doc", mdoc.getDocumentName() + " is Mandatory In Common Document"));
+//						}
 					} else {
 						// Filter Other Docs 
-						for (DocValidationReq doc :  docValidateReqs) {
-							List<CoverDocumentUploadDetails> filterDocs = uploadedDocs.stream().filter( o -> o.getDocumentId().equals(mdoc.getDocumentId()) && o.getId().equals(Integer.valueOf(doc.getRiskId())) && o.getSectionId().equals(Integer.valueOf(doc.getSectionId()))
-									).collect(Collectors.toList());
-							if(filterDocs.size()<=0 && doc.getSectionId().equals(mdoc.getSectionId().toString() ) ) {
-								error.add(new Error("01","Iniduvidual Doc", mdoc.getDocumentName() + " Document Mandatory In " + doc.getProductDesc() + " : " + doc.getRiskId() ));
-							}
-							
-						}
+//						for (DocValidationReq doc :  docValidateReqs) {
+//							List<DocumentUniqueDetails> filterDocs = uploadedDocs.stream().filter( o -> o.getDocumentId().equals(mdoc.getDocumentId()) && o.getId().equals(Integer.valueOf(doc.getRiskId())) && o.getSectionId().equals(Integer.valueOf(doc.getSectionId()))
+//									).collect(Collectors.toList());
+//							if(filterDocs.size()<=0 && doc.getSectionId().equals(mdoc.getSectionId().toString() ) ) {
+//								error.add(new Error("01","Iniduvidual Doc", mdoc.getDocumentName() + " Document Mandatory In " + doc.getProductDesc() + " : " + doc.getRiskId() ));
+//							}
+//							
+//						}
 						
 					}
 				}

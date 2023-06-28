@@ -26,32 +26,32 @@ import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.ContentAndRisk;
-import com.maan.eway.bean.CoverDocumentUploadDetails;
+import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.HomePositionMaster;
-import com.maan.eway.bean.PersonalAccident;
 import com.maan.eway.bean.PersonalInfo;
+import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.ChangeEndoStatusReq;
 import com.maan.eway.common.res.BuildingCopyRes;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
 import com.maan.eway.common.service.impl.MotorGridServiceImpl;
 import com.maan.eway.endorsment.request.Endorsment;
-import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
 import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.ContentAndRiskRepository;
+import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
-import com.maan.eway.repository.PersonalAccidentRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
+import com.maan.eway.repository.ProductEmployeesDetailsRepository;
 
 @Service
 public class CopyBuildingRaw {
@@ -80,13 +80,13 @@ public class CopyBuildingRaw {
 	private EserviceCustomerDetailsRepository custRepo ;
 	
 	@Autowired
-	private PersonalAccidentRepository paRepo;
+	private ProductEmployeesDetailsRepository paRepo;
 	
 	@Autowired
 	private ContentAndRiskRepository contentAndRiskRepo;
 	
 	@Autowired
-	private CoverDocumentUploadDetailsRepository coverDocUploadDetails;
+	private DocumentTransactionDetailsRepository coverDocUploadDetails;
 
 	@Autowired
 	private EserviceCommonDetailsRepository eserCommonRepo;
@@ -411,14 +411,14 @@ public class CopyBuildingRaw {
 		return savedata;
 	}
 	
-	private PersonalAccident personalAccident(ChangeEndoStatusReq req) {
-		PersonalAccident savedata = new PersonalAccident();
+	private ProductEmployeeDetails personalAccident(ChangeEndoStatusReq req) {
+		ProductEmployeeDetails savedata = new ProductEmployeeDetails();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			List<PersonalAccident> pa = paRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+			List<ProductEmployeeDetails> pa = paRepo.findByQuoteNo(req.getQuoteNo());
 			if (pa.size() > 0) {
-				for (PersonalAccident data : pa) {
-					savedata = dozerMapper.map(data, PersonalAccident.class);
+				for (ProductEmployeeDetails data : pa) {
+					savedata = dozerMapper.map(data, ProductEmployeeDetails.class);
 					savedata.setEndtStatus("C");
 					paRepo.saveAndFlush(savedata);
 				}
@@ -460,14 +460,14 @@ public class CopyBuildingRaw {
 	}
 
 
-	private CoverDocumentUploadDetails coverDocumentUploadDetailsEndtStatus(ChangeEndoStatusReq req) {
-		CoverDocumentUploadDetails savedata = new CoverDocumentUploadDetails();
+	private DocumentTransactionDetails coverDocumentUploadDetailsEndtStatus(ChangeEndoStatusReq req) {
+		DocumentTransactionDetails savedata = new DocumentTransactionDetails();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			List<CoverDocumentUploadDetails> motorData = coverDocUploadDetails.findByQuoteNo(req.getQuoteNo());
+			List<DocumentTransactionDetails> motorData = coverDocUploadDetails.findByQuoteNo(req.getQuoteNo());
 			if (motorData.size() > 0) {
-				for (CoverDocumentUploadDetails data : motorData) {
-					savedata = dozerMapper.map(data, CoverDocumentUploadDetails.class);
+				for (DocumentTransactionDetails data : motorData) {
+					savedata = dozerMapper.map(data, DocumentTransactionDetails.class);
 					savedata.setEndtStatus("C");
 					coverDocUploadDetails.saveAndFlush(savedata);
 				}

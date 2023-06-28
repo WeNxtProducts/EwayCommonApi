@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -36,19 +35,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
 import com.maan.eway.admin.res.ReferalCommonCriteriaRes;
-import com.maan.eway.admin.res.ReferalCriteriaRes;
-import com.maan.eway.admin.res.ReferalGridCriteriaRes;
-import com.maan.eway.bean.CoverDocumentUploadDetails;
+
 import com.maan.eway.bean.CoverMaster;
+import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.EndtTypeMaster;
-import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.MotorBodyTypeMaster;
 import com.maan.eway.bean.MotorDataDetails;
-import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.SeqCustid;
@@ -60,9 +55,8 @@ import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.service.CommonGridService;
-import com.maan.eway.common.service.MotorGridService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
-import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
+import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
@@ -75,7 +69,6 @@ import com.maan.eway.repository.SeqCustrefnoRepository;
 import com.maan.eway.repository.SeqQuotenoRepository;
 import com.maan.eway.repository.SeqRefnoRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
-import com.maan.eway.res.SuccessRes;
 
 @Service
 @Transactional
@@ -125,7 +118,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 	private EndtTypeMasterRepository endtTypeRepo;
 	
 	@Autowired
-	private CoverDocumentUploadDetailsRepository coverDocUploadDetails;
+	private DocumentTransactionDetailsRepository coverDocUploadDetails;
 
 	@Autowired 
 	private RatingFactorsUtil ratingutil;
@@ -1728,7 +1721,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 					policyCoverDataRepo.deleteAll(policyCoverData);
 				}
 				//Cover Document Upload Details
-				List<CoverDocumentUploadDetails> coverDocList = coverDocUploadDetails.findByQuoteNo(quoteNo);
+				List<DocumentTransactionDetails> coverDocList = coverDocUploadDetails.findByQuoteNo(quoteNo);
 				if (coverDocList.size() > 0) {
 					coverDocUploadDetails.deleteAll(coverDocList);
 				}
@@ -2119,16 +2112,16 @@ public class CommonGridServiceImpl implements CommonGridService {
 				String quoteNo, String customerId, String loginId, String prevPolicyNo, String prevQuoteNo,
 				Integer count) {
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
-			CoverDocumentUploadDetails savedata = new CoverDocumentUploadDetails();
+			DocumentTransactionDetails savedata = new DocumentTransactionDetails();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
 				EndtTypeMaster entMaster = ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());/*endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 						req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 						Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
-				List<CoverDocumentUploadDetails> motorData = coverDocUploadDetails.findByQuoteNo(prevQuoteNo);
+				List<DocumentTransactionDetails> motorData = coverDocUploadDetails.findByQuoteNo(prevQuoteNo);
 				if (motorData.size() > 0) {
-					for (CoverDocumentUploadDetails data : motorData) {
-						savedata = dozerMapper.map(data, CoverDocumentUploadDetails.class);
+					for (DocumentTransactionDetails data : motorData) {
+						savedata = dozerMapper.map(data, DocumentTransactionDetails.class);
 						savedata.setRequestReferenceNo(refNo);
 						savedata.setQuoteNo(quoteNo);
 						savedata.setEntryDate(new Date());

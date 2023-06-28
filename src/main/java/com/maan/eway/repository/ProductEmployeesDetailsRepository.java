@@ -28,5 +28,9 @@ public interface ProductEmployeesDetailsRepository extends JpaRepository<Product
 
 	List<ProductEmployeeDetails> findByQuoteNoAndSectionId(String quoteNo, String sectionId);
 
+	Long countByQuoteNo(String newQuoteNo);
+
+	List<ProductEmployeeDetails> findByRequestReferenceNo(String requestReferenceNo);
+
 
 }

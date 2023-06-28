@@ -10,16 +10,11 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.persistence.Column;
 import javax.persistence.EntityManager;
-import javax.persistence.Id;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -38,22 +33,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.maan.eway.admin.res.ReferalCriteriaRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
-import com.maan.eway.bean.CoverDocumentUploadDetails;
 import com.maan.eway.bean.CoverMaster;
+import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.EndtTypeMaster;
-import com.maan.eway.bean.EserviceBuildingDetails;
-import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.HomePositionMaster;
-import com.maan.eway.bean.LoginProductMaster;
-import com.maan.eway.bean.MotorDataDetails;
-import com.maan.eway.bean.MotorDriverDetails;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.SeqCustid;
@@ -62,25 +52,19 @@ import com.maan.eway.bean.SeqQuoteno;
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.bean.TravelPassengerHistory;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
-import com.maan.eway.bean.EserviceTravelDetails;
-import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.req.CopyQuoteReq;
-
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.service.TravelGridService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
-import com.maan.eway.notification.repository.CoverDocumentUploadDetailsRepository;
-import com.maan.eway.repository.EServiceMotorDetailsRepository;
+import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
-import com.maan.eway.repository.MotorDataDetailsRepository;
-import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.SeqCustidRepository;
@@ -89,11 +73,7 @@ import com.maan.eway.repository.SeqQuotenoRepository;
 import com.maan.eway.repository.SeqRefnoRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerHistoryRepository;
-import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
-import com.maan.eway.res.SuccessRes;
-
-import io.swagger.v3.oas.annotations.servers.Server;
 
 @Transactional
 @Service
@@ -146,7 +126,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 	private EServiceSectionDetailsRepository eserSecRepo;
 	
 	@Autowired
-	private CoverDocumentUploadDetailsRepository coverDocUploadDetails;
+	private DocumentTransactionDetailsRepository coverDocUploadDetails;
 
 	@Autowired
 	private TravelPassengerDetailsRepository traPassDetailsRepo;
@@ -1504,7 +1484,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			}
 			
 			//Cover Document Upload Details
-			List<CoverDocumentUploadDetails> coverDocList = coverDocUploadDetails.findByQuoteNo(quoteNo);
+			List<DocumentTransactionDetails> coverDocList = coverDocUploadDetails.findByQuoteNo(quoteNo);
 			if (coverDocList.size() > 0) {
 				coverDocUploadDetails.deleteAll(coverDocList);
 			}
@@ -1954,16 +1934,16 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			String quoteNo, String customerId, String loginId, String prevPolicyNo, String prevQuoteNo,
 			Integer count) {
 		CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
-		CoverDocumentUploadDetails savedata = new CoverDocumentUploadDetails();
+		DocumentTransactionDetails savedata = new DocumentTransactionDetails();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			EndtTypeMaster entMaster =ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId()); /*endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 					req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 					Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
-			List<CoverDocumentUploadDetails> motorData = coverDocUploadDetails.findByQuoteNo(prevQuoteNo);
+			List<DocumentTransactionDetails> motorData = coverDocUploadDetails.findByQuoteNo(prevQuoteNo);
 			if (motorData.size() > 0) {
-				for (CoverDocumentUploadDetails data : motorData) {
-					savedata = dozerMapper.map(data, CoverDocumentUploadDetails.class);
+				for (DocumentTransactionDetails data : motorData) {
+					savedata = dozerMapper.map(data, DocumentTransactionDetails.class);
 					savedata.setRequestReferenceNo(refNo);
 					savedata.setQuoteNo(quoteNo);
 					savedata.setEntryDate(new Date());
