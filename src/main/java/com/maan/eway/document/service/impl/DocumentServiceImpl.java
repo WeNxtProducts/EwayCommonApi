@@ -208,31 +208,34 @@ public class DocumentServiceImpl implements DocumentService{
 				
 				
 				// Effective Date Max Filter
-//				Subquery<Long> effectiveDate = query.subquery(Long.class);
-//				Root<CoverDocumentMaster> ocpm1 = effectiveDate.from(CoverDocumentMaster.class);
-//				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-//				Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
-//				Predicate a3 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId") );
-//				Predicate a4 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
-//				Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-//				effectiveDate.where(a1,a3,a4,a5);
+				Subquery<Long> effectiveDate = query.subquery(Long.class);
+				Root<CoverDocumentMaster> ocpm1 = effectiveDate.from(CoverDocumentMaster.class);
+				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+				
+				Predicate a10 = cb.equal(c.get("documentId"),ocpm1.get("documentId") );
+				Predicate a1 = cb.equal(c.get("productId"),ocpm1.get("productId") );
+				Predicate a3 = cb.equal(c.get("sectionId"),ocpm1.get("sectionId") );
+				Predicate a4 = cb.equal(c.get("companyId"),ocpm1.get("companyId") );
+				Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+				effectiveDate.where(a1,a3,a4,a5,a10);
 				
 				// Effective Date Max Filter
 				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 				Root<CoverDocumentMaster> ocpm2 = effectiveDate2.from(CoverDocumentMaster.class);
 				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+				Predicate a11 = cb.equal(c.get("documentId"),ocpm2.get("documentId") );
 				Predicate a6 = cb.equal(c.get("productId"),ocpm2.get("productId") );
 				Predicate a7 = cb.equal(c.get("sectionId"),ocpm2.get("sectionId") );
 				Predicate a8 = cb.equal(c.get("companyId"),ocpm2.get("companyId") );
 				Predicate a9 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-				effectiveDate2.where(a6,a7,a8,a9);
+				effectiveDate2.where(a6,a7,a8,a9,a11);
 				
 			    // Where	
 				Predicate p1 = cb.equal(c.get("status"), "Y");
 				Predicate p2 = cb.equal(c.get("productId"), productId ) ;
 				Predicate p3 = cb.equal(c.get("companyId"), companyId );
 				Predicate p4 = cb.equal(c.get("sectionId"), sectionId );
-	//			Predicate p5 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+				Predicate p5 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 				Predicate p6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 				query.where(p1, p2,p3,p4,p6).orderBy(orderList) ;
 
