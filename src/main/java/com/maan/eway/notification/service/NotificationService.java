@@ -115,6 +115,18 @@ public class NotificationService {
 				mp.put("JsonTable", "");
 				mp.put("dropdownYn","N");
 				mps.add(mp);
+				try {
+					Map<String,String> mp1=new HashMap<String,String>();
+					mp1.put("JsonKey", "TinyGroupId");
+					Field field = nt.getClass().getField("tinyGroupId");
+					String xtx=String.valueOf(field.get(nt));
+					mp1.put("JsonColum",xtx);
+					mp1.put("JsonTable", "");
+					mp1.put("dropdownYn","N");
+					mps.add(mp1);
+				}catch (Exception e) {
+					e.printStackTrace();
+				}
 			} 
 
 			List<String> list=new ArrayList<String>();
@@ -186,7 +198,7 @@ public class NotificationService {
 			if(n.getUnderwriters().size()>0) {
 				List<NotifTransactionDetails> uws=new ArrayList<NotifTransactionDetails>();
 				
-				
+				String tinyGroupId=String.valueOf(Instant.now().getEpochSecond());
 				
 				for (UnderWriter underWriter : n.getUnderwriters()) {
 					NotifTransactionDetails nt = NotifTransactionDetails.builder()
@@ -241,6 +253,7 @@ public class NotificationService {
 							.customerRefno(n.getCustomer().getCustomerRefno())
 							.refno(n.getRefNo())
 							.tinyUrlActive("Y")
+							.tinyGroupId(tinyGroupId)
 							.build();
 					
 					generateTinyURL(n,loadTinyUrl,loadDropdown,nt);
@@ -249,6 +262,7 @@ public class NotificationService {
 				List<NotifTransactionDetails> saveAll = notifTrans.saveAll(uws);
 				sv=saveAll.get(0);
 			}else {		
+				String tinyGroupId=String.valueOf(Instant.now().getEpochSecond());
 				NotifTransactionDetails nt = NotifTransactionDetails.builder()
 						.brokerCompanyName(n.getBroker().getBrokerCompanyName())
 						.brokerMailId(n.getBroker().getBrokerMailId())
@@ -299,6 +313,7 @@ public class NotificationService {
 						.branchCode(n.getBranchCode())
 						.refno(n.getRefNo())
 						.tinyUrlActive("Y")
+						.tinyGroupId(tinyGroupId)
 						.build();
 				generateTinyURL(n,loadTinyUrl,loadDropdown,nt);
 				sv = notifTrans.save(nt);

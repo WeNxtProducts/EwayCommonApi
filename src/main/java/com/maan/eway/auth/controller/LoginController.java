@@ -99,7 +99,7 @@ public class LoginController {
 		List<Error> errors=null;
 		if(encValue.get("TinyUrlId")!=null) {
 			
-			errors=loginValidationComponent.validateTinyUrlId(encValue.get("TinyUrlId").toString());
+			errors=loginValidationComponent.validateTinyUrlId(encValue.get("TinyUrlId").toString(),encValue.get("TinyGroupId").toString());
 			if(errors==null || errors.size()==0 ) {
 				LoginRequest mslogin=new LoginRequest();
 				LoginMaster login = loginRepo.findByLoginId(encValue.get("LoginId").toString());

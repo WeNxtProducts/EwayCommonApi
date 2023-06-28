@@ -20,7 +20,10 @@ import javax.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
 
 import com.maan.eway.notification.bean.NotifTransactionDetails;
 /**
@@ -51,6 +54,10 @@ public interface NotifTransactionDetailsRepository  extends JpaRepository<NotifT
 	List<NotifTransactionDetails> findByQuoteNo(String quoteNo);
 
 	Integer countByTinyUrlActiveAndTinyUrlId(String string, String object);
+	
+	@Modifying(clearAutomatically = true)
+	@Query("UPDATE notif_transaction_details SET TINY_URL_ACTIVE='N' WHERE TINY_GROUP_ID=:tinyGroupId AND TINY_URL_ID!=tinyUrlId")
+	int updateOtherActiveTinyUrl(@Param("tinyGroupId") String tinyGroupId,@Param("tinyUrlId") String object);
 
 
 	

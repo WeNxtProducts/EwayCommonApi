@@ -502,7 +502,7 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 	}
 
 	@Override
-	public List<Error> validateTinyUrlId(String object) {
+	public List<Error> validateTinyUrlId(String object,String tinyGroupId) {
 		try {
 			
 			Integer count=notifRepo.countByTinyUrlActiveAndTinyUrlId("Y",object);
@@ -514,6 +514,8 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 				err.setMessage("Tiny Url is Deactivated");
 				erros.add(err);
 				return erros;
+			}else {
+				notifRepo.updateOtherActiveTinyUrl(tinyGroupId,object);
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
