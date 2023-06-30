@@ -80,7 +80,7 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 			}
 			
 		   // Guest Login Checking
-			if( loginId.equalsIgnoreCase("guest")  ) {
+		/*	if( loginId.equalsIgnoreCase("guest")  ) {
 				if (StringUtils.isNotBlank(req.getLoginId()) && StringUtils.isNotBlank(req.getPassword())) {
 					LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());
 					if (loginData ==null ) {
@@ -94,7 +94,7 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 						}
 					}
 				} 
-			}
+			}*/
 			
 			   // Guest Login Checking
 					if (StringUtils.isNotBlank(req.getLoginId()) && StringUtils.isNotBlank(req.getPassword())) {
@@ -108,7 +108,8 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 
 			
 			// Other Login Checking
-			if(! loginId.equalsIgnoreCase("guest")  ) {
+			//if(! loginId.equalsIgnoreCase("guest")  )
+					{
 //				if (req.getPassword() == null || StringUtils.isBlank(req.getPassword())) {
 //					list.add(new Error("", "Password", "Please enter password"));
 //				}
@@ -117,7 +118,7 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 					LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());
 					if (loginData ==null ) {
 						list.add(new Error("", "UserId", "Please enter Valid Login Id"));
-					} else {
+					} else if( !"b2c".equalsIgnoreCase(loginData.getSubUserType())) {
 						sessionlist = sessionRep.findByLoginIdOrderByEntryDateDesc(req.getLoginId());
 					} 
 					
@@ -128,7 +129,7 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 							data = criteriaQuery.isvalidUser(req);
 							if (CollectionUtils.isEmpty(data)) {
 								list.add(new Error("", "User", "Please enter valid username/password"));
-							}else if(isExpired(data.get(0).getLpassDate())) {
+							}else if(!"b2c".equalsIgnoreCase(data.get(0).getSubUserType()) &&   isExpired(data.get(0).getLpassDate())  ) {
 								list.add(new Error("", "User", "Password Expired Please Change Your Password"));
 								changePwd = "Y";
 							}
