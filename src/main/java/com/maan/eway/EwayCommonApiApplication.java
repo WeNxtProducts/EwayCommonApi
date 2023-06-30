@@ -41,7 +41,7 @@ public class EwayCommonApiApplication {
 	                .useStorageProvider(SqlStorageProviderFactory
 	                          .using(dataSource))
 	                .useBackgroundJobServer()
-	                .useDashboard(9879)	                
+	                //.useDashboard(9879)	                
 	                .initialize();
 	    } 
 

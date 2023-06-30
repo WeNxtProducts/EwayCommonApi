@@ -206,7 +206,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 				session =sessionRep.save(session);
 				ClaimLoginResponse loginRes = new ClaimLoginResponse(); 
 				
-				if (login.getLoginId().equalsIgnoreCase("guest") ) {
+				/*if (login.getLoginId().equalsIgnoreCase("guest") ) {
 					loginRes.setToken(session.getTempTokenid());
 					loginRes.setLoginId(login.getLoginId());
 					loginRes.setUserName("guest");
@@ -219,7 +219,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 					
 					
 					
-				} else {
+				} else */ {
 					loginRes = setTokenResponse(session,login,mslogin);
 				}
 				

@@ -118,13 +118,14 @@ public class PushedStateChange implements  Function<Tuple,List<Object>>{
 	private Object getContentFrame(Tuple t ,String messageTemplate) {
 		try {
 			 
-		  
-			StringBuffer b=new StringBuffer(messageTemplate);
-			while (b.indexOf("{")!=-1 && b.indexOf("}")!=-1) {
-				 String tx = b.substring(b.indexOf("{")+1, b.indexOf("}"));
-				 b.replace(b.indexOf("{"), b.indexOf("}")+1, String.valueOf(t.get(tx)));
-			} 
-			return b.toString();
+			if(StringUtils.isNotBlank(messageTemplate)) {
+				StringBuffer b=new StringBuffer(messageTemplate);
+				while (b.indexOf("{")!=-1 && b.indexOf("}")!=-1) {
+					String tx = b.substring(b.indexOf("{")+1, b.indexOf("}"));
+					b.replace(b.indexOf("{"), b.indexOf("}")+1, String.valueOf(t.get(tx)));
+				} 
+				return b.toString();
+			}
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
