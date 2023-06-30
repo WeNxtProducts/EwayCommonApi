@@ -65,9 +65,12 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					}
 				 }				 
 				 t.setSumInsured(si);
-				 if(t.getSumInsured().compareTo(t.getCoverageLimit())<0) {
+				 if(t.getSumInsured().compareTo(t.getCoverageLimit())>0) {
 					 t.setIsReferral("Y");
 					 t.setReferalDescription("CoverageLimit Referral Limits Upto"+t.getCoverageLimit());
+					 t.setPremiumBeforeDiscount(BigDecimal.ZERO);					 
+					 t.setPremiumBeforeDiscountLC(BigDecimal.ZERO);
+					 //t.setCalcType("P");
 				 }
  				 BigDecimal domath = domath(t.getCalcType(), t.getRate(), si,t.getExchangeRate());
 				 t.setPremiumBeforeDiscount(domath);				 

@@ -1195,8 +1195,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 						else {
 							commissionPercent=5.0;
 						}
-					String premiumFc = v.getOverallPremiumFc().toString();
-					String vatPremiumFc = v.getOverallPremiumFc().toString();
+					String premiumFc = v.getActualPremiumFc().toString();
+					String vatPremiumFc = v.getActualPremiumFc().toString();
 
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
 						premiumFc = v1.getQuoteDetails().getEndtPremium().toPlainString();
@@ -1341,8 +1341,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 						else {
 							commissionPercent=5.0;
 						}
-					String premiumFc = v.getOverallPremiumFc().toString();
-					String vatPremiumFc = v.getOverallPremiumFc().toString();
+					String premiumFc = v.getActualPremiumFc().toString();
+					String vatPremiumFc = v.getActualPremiumFc().toString();
 
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
 						premiumFc = v1.getQuoteDetails().getEndtPremium().toPlainString();
@@ -1480,8 +1480,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 						else {
 							commissionPercent=5.0;
 						}
-					String premiumFc = v.getOverallPremiumFc().toString();
-					String vatPremiumFc = v.getOverallPremiumFc().toString();
+					String premiumFc = v.getActualPremiumFc().toString();
+					String vatPremiumFc = v.getActualPremiumFc().toString();
 
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
 						premiumFc = v1.getQuoteDetails().getEndtPremium().toPlainString();
@@ -1618,8 +1618,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 						else {
 							commissionPercent=5.0;
 						}
-					String premiumFc = v.getOverallPremiumFc().toString();
-					String vatPremiumFc = v.getOverallPremiumFc().toString();
+					String premiumFc = v.getActualPremiumFc().toString();
+					String vatPremiumFc = v.getActualPremiumFc().toString();
 
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
 						premiumFc = v1.getQuoteDetails().getEndtPremium().toPlainString();
