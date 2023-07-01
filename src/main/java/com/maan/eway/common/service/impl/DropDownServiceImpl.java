@@ -33,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 import org.hibernate.query.internal.NativeQueryImpl;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -95,6 +96,7 @@ public class DropDownServiceImpl  implements DropDownService{
 	@Autowired
 	private CompanyCityMasterRepository cityrepo;
 	
+	@Lazy
 	@Autowired
 	private PolicyTypeMasterServiceImpl service;
 	

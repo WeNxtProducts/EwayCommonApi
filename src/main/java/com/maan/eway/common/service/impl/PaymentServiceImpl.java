@@ -38,6 +38,7 @@ import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -166,6 +167,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired
 	private PaymentRefnoRepository seqRefNorepo;
 	
+	@Lazy
 	@Autowired
 	private CalculatorEngine calcService;
 	
@@ -211,6 +213,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired
 	private CommonDataDetailsRepository commonRepo ;
 	
+	@Lazy
 	@Autowired
 	private PaymentService paymentService ;
 	

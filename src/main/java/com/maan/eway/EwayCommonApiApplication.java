@@ -4,10 +4,10 @@ import java.util.concurrent.Executor;
 
 import javax.sql.DataSource;
 
-import org.jobrunr.configuration.JobRunr;
-import org.jobrunr.scheduling.JobScheduler;
-import org.jobrunr.server.JobActivator;
-import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
+//import org.jobrunr.configuration.JobRunr;
+//import org.jobrunr.scheduling.JobScheduler;
+//import org.jobrunr.server.JobActivator;
+//import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
@@ -23,27 +23,29 @@ public class EwayCommonApiApplication {
 		SpringApplication.run(EwayCommonApiApplication.class, args);
 	}
 	
-	  	@Bean(name = "NoticationThread-M")
-	    public Executor threadPoolTaskExecutor() {
-	  		ThreadPoolTaskExecutor t = new ThreadPoolTaskExecutor();
-	  		t.setCorePoolSize(2);
-	  		t.setMaxPoolSize(2);
-	  		t.setQueueCapacity(2);
-	  		t.setThreadNamePrefix("Mail(Async)-");
-	  		t.initialize();	  		
-	        return t;
-	    }
-	
-	    @Bean
-	    public JobScheduler initJobRunr(DataSource dataSource, JobActivator jobActivator) {
-	        return JobRunr.configure()
-	                .useJobActivator(jobActivator)
-	                .useStorageProvider(SqlStorageProviderFactory
-	                          .using(dataSource))
-	                .useBackgroundJobServer()
-	                //.useDashboard(9879)	                
-	                .initialize();
-	    } 
+
+//	  	@Bean(name = "NoticationThread-M")
+//	    public Executor threadPoolTaskExecutor() {
+//	  		ThreadPoolTaskExecutor t = new ThreadPoolTaskExecutor();
+//	  		t.setCorePoolSize(2);
+//	  		t.setMaxPoolSize(2);
+//	  		t.setQueueCapacity(2);
+//	  		t.setThreadNamePrefix("Mail(Async)-");
+//	  		t.initialize();	  		
+//	        return t;
+//	    }
+//	
+//	    @Bean
+//	    public JobScheduler initJobRunr(DataSource dataSource, JobActivator jobActivator) {
+//	        return JobRunr.configure()
+//	                .useJobActivator(jobActivator)
+//	                .useStorageProvider(SqlStorageProviderFactory
+//	                          .using(dataSource))
+//	                .useBackgroundJobServer()
+//	                .useDashboard(9879)	                
+//	                .initialize();
+//	    } 
+
 
 
 }

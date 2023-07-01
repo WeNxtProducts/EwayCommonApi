@@ -33,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -152,6 +153,7 @@ public class QuoteServiceImpl implements QuoteService {
 	@PersistenceContext
 	private EntityManager em;
 
+	@Lazy
 	@Autowired
 	private QuoteThreadService otSer ;
 	

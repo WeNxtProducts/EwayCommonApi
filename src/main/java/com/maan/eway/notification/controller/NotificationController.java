@@ -2,7 +2,7 @@ package com.maan.eway.notification.controller;
 
 import java.time.Instant;
 
-import org.jobrunr.scheduling.JobScheduler;
+//import org.jobrunr.scheduling.JobScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,28 +37,28 @@ public class NotificationController {
 		}
 	}
 	
-	
-	@Autowired
-	private JobScheduler jobScheduler;
-	
-	@Autowired
-	private JobRunrService ourservice;
-	@PostMapping("/startsched")
-	public void x() { 
-	 //jobs.schedule(Instant.now().plusSeconds(60), 
-		//	 ourservice -> o);
-			
-	 //jobs.schedule<JobRunrService>(Instant.now().plusSeconds(60),()-> x.jobProcess());
-	 
-	 jobScheduler.schedule(Instant.now(), () ->ourservice.jobProcess());
-	 /*
-	  * @Inject
-private JobRequestScheduler jobRequestScheduler;
-
-jobRequestScheduler.schedule(Instant.now().plusHours(24), 
-  new SendNewlyRegisteredEmailJobRequest());
-  */
-	  
- }
+//	
+//	@Autowired
+//	private JobScheduler jobScheduler;
+//	
+//	@Autowired
+//	private JobRunrService ourservice;
+//	@PostMapping("/startsched")
+//	public void x() { 
+//	 //jobs.schedule(Instant.now().plusSeconds(60), 
+//		//	 ourservice -> o);
+//			
+//	 //jobs.schedule<JobRunrService>(Instant.now().plusSeconds(60),()-> x.jobProcess());
+//	 
+//	 jobScheduler.schedule(Instant.now(), () ->ourservice.jobProcess());
+//	 /*
+//	  * @Inject
+//private JobRequestScheduler jobRequestScheduler;
+//
+//jobRequestScheduler.schedule(Instant.now().plusHours(24), 
+//  new SendNewlyRegisteredEmailJobRequest());
+//  */
+//	  
+// }
 
 }
