@@ -520,7 +520,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
 			Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
 			Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
-			Predicate n4 = cb.equal(m.get("status"),status);
+			//Predicate n4 = cb.equal(m.get("status"),status);
+			Predicate n4 = m.get("status").in( new ArrayList<String>(Arrays.asList("D",status) ));
 
 			Expression<String> e0 = c.get("branchCode");
 			Predicate n6 = e0.in(branches);
