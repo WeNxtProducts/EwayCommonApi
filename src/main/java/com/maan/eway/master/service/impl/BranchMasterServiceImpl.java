@@ -247,7 +247,7 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 			loginReq.setOaCode(StringUtils.isNotBlank(saveData.getBrokerAgencyCode()) ? saveData.getBrokerAgencyCode() :saveData.getBrokerAgencyCode());
 			loginReq.setPassword("BgBn8jBhAYu3paFVGk54PlgnOGo=");
 			loginReq.setStatus("Y");
-			loginReq.setSubUserType("b2b");
+			loginReq.setSubUserType("direct");
 			loginReq.setUserType("Broker");
 			
 			BrokerPersonalInfoReq personalInfo = new BrokerPersonalInfoReq();
