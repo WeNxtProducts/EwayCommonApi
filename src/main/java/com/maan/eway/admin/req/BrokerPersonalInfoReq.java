@@ -71,20 +71,20 @@ public class BrokerPersonalInfoReq {
     @JsonProperty("AcExecutiveId")
     private String    acExecutiveId ;
     
-    @JsonProperty("CustConfirmYn")
-    private String    custConfirmYn ;
+//    @JsonProperty("CustConfirmYn")
+//    private String    custConfirmYn ;
     
-    @JsonProperty("CommissionVatYn")
-    private String    commissionVatYn ;
+//    @JsonProperty("CommissionVatYn")
+//    private String    commissionVatYn ;
     
-    @JsonProperty("VatRegNo")
-    private String    vatRegNo ;
+//    @JsonProperty("VatRegNo")
+//    private String    vatRegNo ;
     
-    @JsonProperty("CheckerYn")
-    private String    checkerYn ;
-    
-    @JsonProperty("MakerYn")
-    private String    makerYn ;
+//    @JsonProperty("CheckerYn")
+//    private String    checkerYn ;
+//    
+//    @JsonProperty("MakerYn")
+//    private String    makerYn ;
     
     @JsonProperty("Designation")
     private String    designation;

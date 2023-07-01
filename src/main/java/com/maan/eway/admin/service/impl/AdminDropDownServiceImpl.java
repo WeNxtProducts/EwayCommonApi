@@ -271,9 +271,13 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 		public List<DropDownRes> getSourceType(LovDropDownReq req) {
 			List<DropDownRes> resList = new ArrayList<DropDownRes>();
 			try {
-			//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("BUSINESS_TYPE", "Y");
-				String itemType = "SOURCE_TYPE";
-				List<ListItemValue> list  = getListItem(req , itemType);
+			//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByParam2Asc(req.getUserType(), "Y");
+				String itemType = "Broker" ;
+				LovDropDownReq req2 = new LovDropDownReq();
+				req2.setBranchCode(req.getBranchCode());
+				req2.setInsuranceId(req.getInsuranceId());
+				List<ListItemValue> list  = getListItem(req2 , itemType);
+			
 				for (ListItemValue data : list) {
 					DropDownRes res = new DropDownRes();
 					res.setCode(data.getItemCode());
@@ -281,6 +285,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 					res.setStatus(data.getStatus());
 					resList.add(res);
 				}
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.info("Exception is ---> " + e.getMessage());
@@ -288,6 +293,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 			}
 			return resList;
 		}
+
 		
 		public synchronized List<ListItemValue> getListItem(LovDropDownReq req , String itemType) {
 			List<ListItemValue> list = new ArrayList<ListItemValue>();

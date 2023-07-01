@@ -32,11 +32,6 @@ public class BrokerCompanyProductReq {
 	@JsonProperty("ProductName")
 	private String productName;
 
-	
-	@JsonProperty("CommissionPercent")
-	private String commissionPercent;
-
-	
 	@JsonProperty("PaymentYn")
 	private String paymentYn;
 
@@ -61,14 +56,15 @@ public class BrokerCompanyProductReq {
 	@JsonProperty("Remarks")
 	private String remarks;
 	
-	@JsonProperty("SumInsuredStart")
-	private String sumInsuredStart;
+	@JsonProperty("CreatedBy")
+	private String createdBy;
+
 	
-	@JsonProperty("SumInsuredEnd")
-	private String sumInsuredEnd;
-	
-	@JsonProperty("CommissionVatYn")
-	private String commissionVatYn;
+	@JsonProperty("FinanceIds")
+	private List<String> financeIds;
+
+	@JsonProperty("NonFinanceIds")
+	private List<String> nonFinanceIds;
 	
 	@JsonProperty("CheckerYn")
 	private String checkerYn;
@@ -78,23 +74,13 @@ public class BrokerCompanyProductReq {
 	
 	@JsonProperty("CustConfirmYn")
 	private String custConfirmYn;
-	
-	@JsonProperty("CreatedBy")
-	private String createdBy;
-	
-	@JsonProperty("BackDays")
-	private String backDays;
-	
-	@JsonProperty("FinanceIds")
-	private List<String> financeIds;
 
-	@JsonProperty("NonFinanceIds")
-	private List<String> nonFinanceIds;
-
-	@JsonProperty("PolicyTypeId")
-	private String policyTypeId;
-
-	@JsonProperty("PolicyTypeDesc")
-	private String policyTypeDesc;
+//	@JsonProperty("PolicyTypeDesc")
+//	private String policyTypeDesc;
+	
+	@JsonProperty("BrokerCommissionDetails")
+	private List<BrokerCommissionDetailsReq> brokerCommissionDetails;
+	
+	
 
 }

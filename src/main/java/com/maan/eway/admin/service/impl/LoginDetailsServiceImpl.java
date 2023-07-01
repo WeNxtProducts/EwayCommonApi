@@ -99,6 +99,7 @@ import com.maan.eway.bean.MenuMaster;
 import com.maan.eway.bean.SeqAgencycode;
 import com.maan.eway.bean.SeqQuoteno;
 import com.maan.eway.bean.StateMaster;
+import com.maan.eway.master.req.BrokerDropdownReq;
 import com.maan.eway.master.req.BrokerProductReq;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
@@ -1439,7 +1440,7 @@ this.repository = repo;
 			Root<LoginMaster> l = query.from(LoginMaster.class);
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
 			
-
+ 
 			// Select
 			query.multiselect( l.get("loginId").alias("loginId") , l.get("createdBy").alias("createdBy") , 
 					l.get("entryDate").alias("entryDate") , l.get("updatedDate").alias("updatedDate") ,
@@ -1532,7 +1533,7 @@ this.repository = repo;
 
 
 	@Override
-	public List<BrokerDropDownRes> getBrokerIdsByCompany(LovDropDownReq req) {
+	public List<BrokerDropDownRes> getBrokerIdsByCompany(BrokerDropdownReq req) {
 		List<BrokerDropDownRes> resList = new ArrayList<BrokerDropDownRes>();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
 		ModelMapper mapper = new ModelMapper(); 
@@ -1566,8 +1567,15 @@ this.repository = repo;
 			Predicate n2 = cb.equal(l.get("status"), "Y");
 			Predicate n3 = cb.equal(l.get("loginId"), u.get("loginId"));
 			Predicate n4 = cb.equal(l.get("companyId"),req.getInsuranceId());
-
-			query.where(n1,n2,n3,n4).orderBy(orderList);
+			if(StringUtils.isNotBlank( req.getSubUserType())  ) {
+				Predicate n5 = cb.equal(l.get("subUserType"), req.getSubUserType());
+				query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+				
+			} else {
+				query.where(n1,n2,n3,n4).orderBy(orderList);
+			}
+			
+			
 
 			// Get Result
 			TypedQuery<LoginDetailsCriteriaRes> result = em.createQuery(query);

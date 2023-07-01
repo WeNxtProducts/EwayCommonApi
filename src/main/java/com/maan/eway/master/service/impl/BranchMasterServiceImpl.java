@@ -255,18 +255,18 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 			personalInfo.setAddress1(saveData.getAddress1());
 			personalInfo.setAddress2(saveData.getAddress2());
 			personalInfo.setAddress3(saveData.getAddress2());
-			personalInfo.setCheckerYn("Y");
+		//	personalInfo.setCheckerYn("Y");
 		//	personalInfo.setCityCode(saveData.getCityCode()==null?"":saveData.getCityCode() );
 			personalInfo.setCityName(saveData.getCityName());
-			personalInfo.setCommissionVatYn("N");
+		//	personalInfo.setCommissionVatYn("N");
 		//	personalInfo.setCompanyName(cityName);
 			personalInfo.setContactPersonName(saveData.getBranchName());
 			personalInfo.setCoreAppBrokerCode(saveData.getCoreAppCode());
 			personalInfo.setCountryCode(saveData.getCountryId());
-			personalInfo.setCustConfirmYn("Y");
+		//	personalInfo.setCustConfirmYn("Y");
 			personalInfo.setDesignation(saveData.getBranchName());
 			personalInfo.setFax("");
-			personalInfo.setMakerYn("Y");
+		//	personalInfo.setMakerYn("Y");
 			personalInfo.setMobileCode("");
 			personalInfo.setPobox("" );
 			personalInfo.setRemarks(saveData.getRemarks() );
@@ -274,7 +274,7 @@ public SuccessRes insertBranch(BranchMasterSaveReq req) {
 			personalInfo.setUserMail(saveData.getEmail());
 			personalInfo.setUserMobile(saveData.getMobileNumber());
 			personalInfo.setUserName(saveData.getBranchName());
-			personalInfo.setVatRegNo("");
+		//	personalInfo.setVatRegNo("");
 			personalInfo.setWhatsappCode("");
 			personalInfo.setWhatsappNo("");
 			

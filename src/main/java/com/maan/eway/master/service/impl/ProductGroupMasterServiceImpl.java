@@ -172,7 +172,7 @@ try {
 	query.select(c);
 	// Order By
 	List<Order> orderList = new ArrayList<Order>();
-	orderList.add(cb.asc(c.get("branchCode")));
+	orderList.add(cb.asc(c.get("groupId")));
 
 	// Effective Date Start Max Filter
 	Subquery<Long> effectiveDate = query.subquery(Long.class);

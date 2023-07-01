@@ -28,10 +28,6 @@ public class BrokerProductGetRes {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateEnd")
 	private Date effectiveDateEnd;
-
-	
-	@JsonProperty("CommissionPercent")
-	private String commissionPercent;
 	
 	@JsonProperty("ProductName")
 	private String productName;
@@ -60,14 +56,6 @@ public class BrokerProductGetRes {
 	@JsonProperty("Remarks")
 	private String remarks;
 	
-	@JsonProperty("SumInsuredStart")
-	private String sumInsuredStart;
-	
-	@JsonProperty("SumInsuredEnd")
-	private String sumInsuredEnd;
-	
-	@JsonProperty("CommissionVatYn")
-	private String commissionVatYn;
 	
 	@JsonProperty("CheckerYn")
 	private String checkerYn;
@@ -80,15 +68,15 @@ public class BrokerProductGetRes {
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
-	
-	@JsonProperty("BackDays")
-	private String backDays;
 
 	@JsonProperty("FinanceIds")
 	private List<String> financeIds;
 	
 	@JsonProperty("NonFinanceIds")
 	private List<String> nonFinanceIds;
+	
+	@JsonProperty("BrokerCommssionDetails")
+	private List<BrokerCommssionDetailsRes> brokerCommssionDetails ;
 
 
 }

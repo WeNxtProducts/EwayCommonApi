@@ -390,35 +390,35 @@ public class BasicLoginValidationService {
 			}
 			
 			// Yn Validation
-			if (StringUtils.isBlank(brokerReq.getMakerYn())) {
-				errors.add(new Error("23", "Maker", "Please Select Maker Y or N"));
-			} else if (!("Y".equals(brokerReq.getMakerYn()) || "N".equals(brokerReq.getMakerYn()))) {
-				errors.add(new Error("23", "Maker", "Please Select Maker Y or N"));
-			}
+//			if (StringUtils.isBlank(brokerReq.getMakerYn())) {
+//				errors.add(new Error("23", "Maker", "Please Select Maker Y or N"));
+//			} else if (!("Y".equals(brokerReq.getMakerYn()) || "N".equals(brokerReq.getMakerYn()))) {
+//				errors.add(new Error("23", "Maker", "Please Select Maker Y or N"));
+//			}
+//			
+//			if (StringUtils.isBlank(brokerReq.getCheckerYn())) {
+//				errors.add(new Error("24", "CheckerYn", "Please Select Checker Y or N"));
+//			} else if (!("Y".equals(brokerReq.getCheckerYn()) || "N".equals(brokerReq.getCheckerYn()))) {
+//				errors.add(new Error("24", "CheckerYn", "Please Select Checker Y or N"));
+//			}
 			
-			if (StringUtils.isBlank(brokerReq.getCheckerYn())) {
-				errors.add(new Error("24", "CheckerYn", "Please Select Checker Y or N"));
-			} else if (!("Y".equals(brokerReq.getCheckerYn()) || "N".equals(brokerReq.getCheckerYn()))) {
-				errors.add(new Error("24", "CheckerYn", "Please Select Checker Y or N"));
-			}
+//			if (StringUtils.isBlank(brokerReq.getCommissionVatYn())) {
+//				errors.add(new Error("25", "CommissionVat", "Please Select CommissionVat Y or N"));
+//			} else if (!("Y".equals(brokerReq.getCommissionVatYn()) || "N".equals(brokerReq.getCommissionVatYn()))) {
+//				errors.add(new Error("25", "CommissionVat", "Please Select CommissionVat Y or N"));
+//			} else if ("Y".equals(brokerReq.getCommissionVatYn())) {
+//				if(StringUtils.isBlank(brokerReq.getVatRegNo())  ) {
+//					errors.add(new Error("29", "VatRegNo", "Plese Select VatRegNo" ));
+//				} else if(brokerReq.getVatRegNo().length()>100  ) {
+//					errors.add(new Error("29", "VatRegNo", "VatRegNo Must Be Under 100 Characters Only Allowed" ));
+//				}
+//			}
 			
-			if (StringUtils.isBlank(brokerReq.getCommissionVatYn())) {
-				errors.add(new Error("25", "CommissionVat", "Please Select CommissionVat Y or N"));
-			} else if (!("Y".equals(brokerReq.getCommissionVatYn()) || "N".equals(brokerReq.getCommissionVatYn()))) {
-				errors.add(new Error("25", "CommissionVat", "Please Select CommissionVat Y or N"));
-			} else if ("Y".equals(brokerReq.getCommissionVatYn())) {
-				if(StringUtils.isBlank(brokerReq.getVatRegNo())  ) {
-					errors.add(new Error("29", "VatRegNo", "Plese Select VatRegNo" ));
-				} else if(brokerReq.getVatRegNo().length()>100  ) {
-					errors.add(new Error("29", "VatRegNo", "VatRegNo Must Be Under 100 Characters Only Allowed" ));
-				}
-			}
-			
-			if (StringUtils.isBlank(brokerReq.getCustConfirmYn())) {
-				errors.add(new Error("26", "Customer Confirm ", "Please Select Customer Confirm Y or N"));
-			} else if (!("Y".equals(brokerReq.getCustConfirmYn()) || "N".equals(brokerReq.getCustConfirmYn()))) {
-				errors.add(new Error("26", "Customer Confirm ", "Please Select Customer Confirm  Y or N"));
-			}
+//			if (StringUtils.isBlank(brokerReq.getCustConfirmYn())) {
+//				errors.add(new Error("26", "Customer Confirm ", "Please Select Customer Confirm Y or N"));
+//			} else if (!("Y".equals(brokerReq.getCustConfirmYn()) || "N".equals(brokerReq.getCustConfirmYn()))) {
+//				errors.add(new Error("26", "Customer Confirm ", "Please Select Customer Confirm  Y or N"));
+//			}
 			
 			
 			if(StringUtils.isBlank(brokerReq.getPobox())  ) {

@@ -77,14 +77,14 @@ public class GetBrokerBranchRes {
 	@JsonProperty("Status")
 	private String status;
 	
-	@JsonProperty("SourceType")
-	private String sourceType;
+//	@JsonProperty("SourceType")
+//	private String sourceType;
 	
 	@JsonProperty("DepartmentCode")
 	private String departmentCode;
 	
-	@JsonProperty("CustomerCode")
-	private String customerCode;
+//	@JsonProperty("CustomerCode")
+//	private String customerCode;
 	
 
 	@JsonProperty("Remarks")

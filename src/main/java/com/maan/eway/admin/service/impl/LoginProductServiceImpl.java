@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 import com.maan.eway.admin.req.AttachCompnayProductRequest;
 import com.maan.eway.admin.req.AttachIssuerProductRequest;
@@ -43,12 +44,14 @@ import com.maan.eway.admin.req.BrokerProductGetReq;
 import com.maan.eway.admin.req.IssuerProductGetReq;
 import com.maan.eway.admin.req.IssuerProductListReq;
 import com.maan.eway.admin.req.UserCompanyProductGetReq;
+import com.maan.eway.admin.res.BrokerCommssionDetailsRes;
 import com.maan.eway.admin.res.BrokerProductGetRes;
 import com.maan.eway.admin.res.IssuerProductGetRes;
 import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.res.ProductCriteriaRes;
 import com.maan.eway.admin.service.LoginProductService;
 import com.maan.eway.auth.dto.LoginProductCriteriaRes;
+import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EndtDependantFieldMaster;
@@ -56,13 +59,19 @@ import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
+import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.BrokerCommissionDetailsMasterGetReq;
+import com.maan.eway.master.req.BrokerCommissionDetailsMasterSaveReq;
+import com.maan.eway.master.req.BrokerCommissionDetailsReq;
 import com.maan.eway.master.req.BrokerCompanyProductReq;
 import com.maan.eway.master.req.BrokerProductChangeReq;
 import com.maan.eway.master.req.BrokerProductReq;
+import com.maan.eway.master.res.BrokerCommissionDetailsMasterGetRes;
 import com.maan.eway.master.res.CompanyProductMasterRes;
+import com.maan.eway.repository.BrokerCommissionDetailsRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginMasterRepository;
@@ -91,6 +100,9 @@ public class LoginProductServiceImpl  implements LoginProductService {
 	
 	@Autowired
 	private RatingFactorsUtil ratingutil;
+	
+	@Autowired
+	private BrokerCommissionDetailsRepository commissionRepo ;
 
 	Gson json = new Gson();
 
@@ -297,16 +309,12 @@ public class LoginProductServiceImpl  implements LoginProductService {
 		BrokerProductGetRes res = new BrokerProductGetRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			LoginProductMaster saveData = new LoginProductMaster();
 			List<LoginProductMaster> list = new ArrayList<LoginProductMaster>();
 			
-			
-			String productId="";
 			
 			// Update
 			// Get Less than Equal Today Record 
 			// Criteria
-			productId=req.getProductId().toString();
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<LoginProductMaster> query = cb.createQuery(LoginProductMaster.class);
 
@@ -340,23 +348,129 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			// Get Result
 			TypedQuery<LoginProductMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			String financeid = list.get(0).getFinancialEndtIds();
-			String nonFinanceid = list.get(0).getNonFinancialEndtIds();
+			LoginProductMaster data = list.get(0);
+			if( data !=null ) {
+				String financeid = data.getFinancialEndtIds();
+				String nonFinanceid = data.getNonFinancialEndtIds();
 
-	        ArrayList<String> financeids = new ArrayList<String>(Arrays.asList(financeid));
-	        ArrayList<String> nonfinanceids = new ArrayList<String>(Arrays.asList(nonFinanceid));
-	  	
-			dozerMapper.map(list.get(0), res);
-			res.setBackDays(list.get(0).getBackDays().toString());
+		        ArrayList<String> financeids = new ArrayList<String>(Arrays.asList(financeid));
+		        ArrayList<String> nonfinanceids = new ArrayList<String>(Arrays.asList(nonFinanceid));
+		  	
+				dozerMapper.map(list.get(0), res);
+			//	res.setBackDays(list.get(0).getBackDays().toString());
+				
+				res.setFinanceIds(financeids);
+				res.setNonFinanceIds(nonfinanceids);
+			}
 			
-			res.setFinanceIds(financeids);
-			res.setNonFinanceIds(nonfinanceids);
-			} catch (Exception e) {
+			
+			
+			// Policy Type List 
+			List<PolicyTypeMaster> policytypeList = policyTypeList(req.getInsuranceId(),req.getProductId() );	
+			
+			// Get Commission Details 
+			List<BrokerCommissionDetails>  commissionList = getBrokerCommissionDetails(req.getInsuranceId() , req.getProductId() , req.getLoginId() ) ;
+			
+			List<BrokerCommssionDetailsRes> commList = new ArrayList<BrokerCommssionDetailsRes>();
+			for ( PolicyTypeMaster policyType : policytypeList) {
+				BrokerCommssionDetailsRes comm = new BrokerCommssionDetailsRes();
+				
+				comm.setPolicyTypeId(policyType.getPolicyTypeId()==null?"" : policyType.getPolicyTypeId().toString());
+				comm.setPolicyTypeDesc(policyType.getPolicyTypeName());
+				
+				List<BrokerCommissionDetails>  filterCommission = commissionList.stream().filter( o -> o.getPolicyType().equalsIgnoreCase(policyType.getPolicyTypeId().toString()) ).collect(Collectors.toList());
+				
+				if(filterCommission.size() > 0 && filterCommission.get(0).getStatus().equalsIgnoreCase("Y")  ) {
+					BrokerCommissionDetails commData = filterCommission.get(0);
+					comm.setBackDays(commData.getBackDays()==null?"" : commData.getBackDays().toString());
+					comm.setCommissionPercent(commData.getCommissionPercentage()==null?"" : commData.getCommissionPercentage().toString());
+					comm.setCommissionVatPercent(commData.getCommissionVatPercent()==null?"" : commData.getCommissionVatPercent().toString());
+					comm.setCommissionVatYn(commData.getCommissionVatYn()==null?"" : commData.getCommissionVatYn());
+					comm.setCoreAppCode(commData.getCoreAppCode());
+					comm.setRegulatoryCode(commData.getRegulatoryCode());
+					comm.setStatus(commData.getStatus());
+					comm.setSumInsuredEnd(commData.getSuminsuredEnd()==null?"" : commData.getSuminsuredEnd().toPlainString());
+					comm.setSumInsuredStart(commData.getSuminsuredStart()==null?"" : commData.getSuminsuredStart().toPlainString());
+					comm.setSelectedYn("Y");
+					
+				} else {
+					comm.setSelectedYn("N");
+				}
+				
+				
+				commList.add(comm);
+			}
+			res.setBrokerCommssionDetails(commList);
+		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
 			return null;
 		}
 		return res;
+	}
+	
+	
+	
+	public List<BrokerCommissionDetails> getBrokerCommissionDetails(String companyId , String productId ,String loginId  ) {
+		// TODO Auto-generated method stub
+		List<BrokerCommissionDetails> list = new ArrayList<BrokerCommissionDetails>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<BrokerCommissionDetails> query = cb.createQuery(BrokerCommissionDetails.class);
+
+			// Find All
+			Root<BrokerCommissionDetails> b = query.from(BrokerCommissionDetails.class);
+
+			// Select
+			query.select(b);
+
+			// Amend ID Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<BrokerCommissionDetails> ocpm1 = amendId.from(BrokerCommissionDetails.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("agencyCode"), b.get("agencyCode"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a4 = cb.equal(ocpm1.get("oaCode"), b.get("oaCode"));
+			Predicate a5 = cb.equal(ocpm1.get("loginId"), b.get("loginId"));
+			Predicate a6 = cb.equal(ocpm1.get("policyType"), b.get("policyType"));
+			Predicate a7 = cb.equal(ocpm1.get("id"), b.get("id"));
+
+			amendId.where(a1, a2,a3,a4,a5,a6,a7);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("policyType")));
+
+			// Where
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("companyId"), companyId);
+			Predicate n3 = cb.equal(b.get("productId"),productId );
+			Predicate n5 = cb.equal(b.get("loginId"), loginId );
+			
+			query.where(n1,n2,n3,n5).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<BrokerCommissionDetails> result = em.createQuery(query);
+
+			list = result.getResultList();
+			//list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getPolicyType()))).collect(Collectors.toList());
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return list;
 	}
 	
 	@Transactional
@@ -1015,7 +1129,7 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			saveData.setOaCode(login.getOaCode());
 			saveData.setUserType(login.getUserType());
 			saveData.setSubUserType(login.getSubUserType());
-			saveData.setBackDays(Integer.valueOf(req.getBackDays()));
+			//saveData.setBackDays(Integer.valueOf(req.getBackDays()));
 			
 			String financeId = "";
 			String nonFinanceId = "";
@@ -1030,14 +1144,31 @@ public class LoginProductServiceImpl  implements LoginProductService {
 				nonFinanceId = nonFinanceId + "," + idss.get(i);
 			}
 			
-			financeId=financeId.substring(1);
-			nonFinanceId=nonFinanceId.substring(1);
+			financeId=StringUtils.isBlank(financeId) ? "" : financeId.substring(1);
+			nonFinanceId=StringUtils.isBlank(nonFinanceId) ? "" : nonFinanceId.substring(1);
 			
 			saveData.setFinancialEndtIds(financeId);
 			saveData.setNonFinancialEndtIds(nonFinanceId);
 			loginProductRepo.saveAndFlush(saveData);
 							
 			log.info("Saved Details is ---> " + json.toJson(saveData));
+			
+			
+			// Save Broker Commission Details 
+			for ( BrokerCommissionDetailsReq comm :  req.getBrokerCommissionDetails() ) {
+				
+				res = 	saveBrokerCommission(comm , req , login ) ;
+					
+				
+			}
+			
+			List<String> policyTypeIds =  req.getBrokerCommissionDetails().stream().map( BrokerCommissionDetailsReq :: getPolicyTypeId ) .collect(Collectors.toList());					
+			List<BrokerCommissionDetails>   oldCommList = commissionRepo.findByProductIdAndPolicyTypeNotInAndLoginIdAndStatus( req.getProductId() ,
+					policyTypeIds , req.getLoginId() , "Y" ) ;
+			
+			oldCommList.forEach ( o -> {  o.setStatus("N");  }   );
+			commissionRepo.saveAll(oldCommList);
+			
 				
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1045,6 +1176,273 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			return null;
 		}
 		return res;
+	}
+	
+	
+	public SuccessRes saveBrokerCommission(BrokerCommissionDetailsReq comm ,  BrokerCompanyProductReq req ,LoginMaster login  ) {
+		// TODO Auto-generated method stub
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		SuccessRes res = new SuccessRes();
+		BrokerCommissionDetails saveData = new BrokerCommissionDetails();
+		List<BrokerCommissionDetails> list  = new ArrayList<BrokerCommissionDetails>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			Integer amendId = 0;
+			Date StartDate = req.getEffectiveDateStart();
+			String end = "31/12/2050";
+			Date endDate = sdf.parse(end);
+			long MILLS_IN_A_DAY = 1000*60*60*24;
+			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime()- MILLS_IN_A_DAY);
+			Date entryDate = null;
+			String createdBy ="";
+			Integer id = 1;
+			
+			
+			
+			id = StringUtils.isBlank(comm.getPolicyTypeId()) ? 1 : Integer.valueOf(comm.getPolicyTypeId());
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<BrokerCommissionDetails> query = cb.createQuery(BrokerCommissionDetails.class);
+			//Findall
+			Root<BrokerCommissionDetails> b = query.from(BrokerCommissionDetails.class);
+			//select
+			query.select(b);
+			//Orderby
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			//Where
+			Predicate n1 = cb.equal(b.get("loginId"),req.getLoginId());
+			Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId());
+			Predicate n3 = cb.equal(b.get("productId"),req.getProductId());
+			Predicate n4 = cb.equal(b.get("oaCode"),login.getOaCode());
+			Predicate n5 = cb.equal(b.get("agencyCode"),login.getAgencyCode());
+			Predicate n6 = cb.equal(b.get("policyType"),comm.getPolicyTypeId());
+
+			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<BrokerCommissionDetails> result = em.createQuery(query);
+			int limit=0, offset=2;
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+			if(list.size()>0) {
+				Date beforeOneDay = new Date(new Date().getTime()- MILLS_IN_A_DAY);
+				if(list.get(0).getEffectiveDateStart().before(beforeOneDay)) {
+					amendId = list.get(0).getAmendId()+1;
+					entryDate = new Date();
+					createdBy = req.getCreatedBy();
+					BrokerCommissionDetails lastRecord = list.get(0);
+					lastRecord.setEffectiveDateEnd(oldEndDate);
+					commissionRepo.saveAndFlush(lastRecord);
+				}
+				else {
+					amendId = list.get(0).getAmendId();
+					entryDate = list.get(0).getEntryDate();
+					createdBy = list.get(0).getCreatedBy();
+					saveData = list.get(0);
+					if(list.size()>1) {
+						BrokerCommissionDetails lastRecord = list.get(1);	
+						lastRecord.setEffectiveDateEnd(oldEndDate);
+						commissionRepo.saveAndFlush(lastRecord);
+					}
+				}
+			}
+			res.setResponse("Updated Successfully");
+			res.setSuccessId(comm.getPolicyTypeId());
+	
+		String policytype = policyName(req.getCompanyId(),req.getProductId(),comm.getPolicyTypeId());	
+			
+		dozerMapper.map(req, saveData);
+		saveData.setEffectiveDateStart(StartDate);
+		saveData.setEffectiveDateEnd(endDate);
+		saveData.setCreatedBy(createdBy);
+		saveData.setEntryDate(entryDate);
+		saveData.setUpdatedBy(req.getCreatedBy());
+		saveData.setUpdatedDate(new Date());
+		saveData.setAmendId(amendId);
+		saveData.setSuminsuredStart(StringUtils.isBlank(comm.getSumInsuredStart()) ?  new BigDecimal("0") : new BigDecimal(comm.getSumInsuredStart()));
+		saveData.setSuminsuredEnd(StringUtils.isBlank(comm.getSumInsuredEnd()) ?  new BigDecimal("0") :  new BigDecimal(comm.getSumInsuredEnd()));
+		saveData.setCommissionPercentage(StringUtils.isBlank(comm.getCommissionPercent()) ?  0D : Double.valueOf(comm.getCommissionPercent()));
+		saveData.setCommissionVatYn(comm.getCommissionVatYn());
+		saveData.setCommissionVatPercent(StringUtils.isBlank(comm.getCommissionVatPercent()) ?  0D : Double.valueOf(comm.getCommissionVatPercent()));
+		saveData.setBackDays(StringUtils.isBlank(comm.getCommissionVatPercent()) ?  0 : Integer.valueOf(comm.getBackDays()) ) ;
+		saveData.setAgencyCode(login.getAgencyCode());
+		saveData.setCheckerYn("N");
+		saveData.setCompanyId(req.getCompanyId());
+		saveData.setFmvSiEnd("");
+		saveData.setFmvSiStart("");
+		saveData.setFmvStatus("");
+		saveData.setLoginId(login.getLoginId());
+		saveData.setOaCode(login.getOaCode().toString()) ;
+		saveData.setPolicyType(comm.getPolicyTypeId());
+		saveData.setPolicyTypeDesc(policytype);
+		saveData.setProductId(req.getProductId());
+		saveData.setRemarks(req.getRemarks());
+		saveData.setCoreAppCode(StringUtils.isBlank(comm.getCoreAppCode()) ?  req.getCoreAppCode() : comm.getCoreAppCode());
+		saveData.setRegulatoryCode(StringUtils.isBlank(comm.getRegulatoryCode()) ?  req.getRegulatoryCode() : comm.getRegulatoryCode());
+		saveData.setStatus(StringUtils.isBlank(comm.getStatus()) ?  req.getStatus() : comm.getStatus());
+		
+		
+		saveData.setId(id);
+		saveData.setPolicyTypeDesc(policytype);
+		commissionRepo.save(saveData);
+		
+		
+		res.setResponse("Saved Successfully");
+		res.setSuccessId(login.getLoginId());
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		
+		return res;
+
+	}
+
+	private String policyName(String companyId, String productId, String policyTypeId) {
+		// TODO Auto-generated method stub
+		String data="";
+		try {
+		List<PolicyTypeMaster> list = new ArrayList<PolicyTypeMaster>();
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PolicyTypeMaster> query = cb.createQuery(PolicyTypeMaster.class);
+		//Find all
+		Root<PolicyTypeMaster> b = query.from(PolicyTypeMaster.class);
+		// Select
+		query.select(b);
+		// Effective Date Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(ocpm1.get("policyTypeId"),b.get("policyTypeId"));
+		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
+		Predicate a3 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+
+		effectiveDate.where(a1,a2,a3);
+	
+		//OrderBy
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.desc(b.get("amendId")));
+		
+		Predicate n1 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
+		Predicate n2 = cb.equal(b.get("companyId"),companyId);
+		Predicate n3 = cb.equal(b.get("productId"),productId);
+		Predicate n4 = cb.equal(b.get("policyTypeId"),policyTypeId);
+		
+		query.where(n1,n2,n3,n4).orderBy(orderList);
+		
+		
+		
+		// Get Result
+		TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
+		int limit = 0 , offset = 1 ;
+		result.setFirstResult(limit * offset);
+		result.setMaxResults(offset);
+		list = result.getResultList();
+		data = list.size() > 0 ? list.get(0).getPolicyTypeName() : "" ;
+	}
+	catch(Exception e) {
+		e.printStackTrace();
+		log.info(e.getMessage());
+	}
+	return data;
+}
+	
+	private List<PolicyTypeMaster> policyTypeList(String companyId, String productId ) {
+		// TODO Auto-generated method stub
+		List<PolicyTypeMaster> list = new ArrayList<PolicyTypeMaster>();
+		try {
+		// Find Latest Record
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PolicyTypeMaster> query = cb.createQuery(PolicyTypeMaster.class);
+		//Find all
+		Root<PolicyTypeMaster> b = query.from(PolicyTypeMaster.class);
+		// Select
+		query.select(b);
+		// Effective Date Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<PolicyTypeMaster> ocpm1 = effectiveDate.from(PolicyTypeMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(ocpm1.get("policyTypeId"),b.get("policyTypeId"));
+		Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
+		Predicate a3 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+
+		effectiveDate.where(a1,a2,a3);
+	
+		//OrderBy
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.desc(b.get("amendId")));
+		
+		Predicate n1 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
+		Predicate n2 = cb.equal(b.get("companyId"),companyId);
+		Predicate n3 = cb.equal(b.get("productId"),productId);
+		
+		query.where(n1,n2,n3).orderBy(orderList);
+		
+		
+		
+		// Get Result
+		TypedQuery<PolicyTypeMaster> result = em.createQuery(query);
+		int limit = 0 , offset = 100 ;
+		result.setFirstResult(limit * offset);
+		result.setMaxResults(offset);
+		list = result.getResultList();
+		
+	}
+	catch(Exception e) {
+		e.printStackTrace();
+		log.info(e.getMessage());
+	}
+	return list;
+}
+	
+	private Integer getMasterTableCount(String companyId, String productId) {
+		// TODO Auto-generated method stub
+		Integer data =0;
+		try {
+			List<BrokerCommissionDetails> list = new ArrayList<BrokerCommissionDetails>();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<BrokerCommissionDetails> query = cb.createQuery(BrokerCommissionDetails.class);
+			//Find all
+			Root<BrokerCommissionDetails> b = query.from(BrokerCommissionDetails.class);
+			// Select
+			query.select(b);
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<BrokerCommissionDetails> ocpm1 = effectiveDate.from(BrokerCommissionDetails.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("id"),b.get("id"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"),b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("productId"),b.get("productId"));
+
+			effectiveDate.where(a1,a2,a3);
+		
+			//OrderBy
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("id")));
+			
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"),effectiveDate);
+			Predicate n2 = cb.equal(b.get("companyId"),companyId);
+			Predicate n3 = cb.equal(b.get("productId"),productId);
+			query.where(n1,n2,n3).orderBy(orderList);
+			
+			
+			
+			// Get Result
+			TypedQuery<BrokerCommissionDetails> result = em.createQuery(query);
+			int limit = 0 , offset = 1 ;
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+			data = list.size() > 0 ? list.get(0).getId() : 0 ;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+		}
+		return data;
 	}
 
 	@Override
@@ -1068,13 +1466,7 @@ List<Error> errorList = new ArrayList<Error>();
 				errorList.add(new Error("01","ProductName", "Please Enter Product  Name within 100 Characters  ")); 
 			}
 			
-			if (StringUtils.isBlank(req.getCommissionPercent())) {
-				errorList.add(new Error("01", "CommissionPercent", "Please Enter CommissionPercent  "));
-			}else if (req.getCommissionPercent().length() > 2){
-				errorList.add(new Error("01","CommissionPercent", "Please Enter Valid CommissionPercent  ")); 
-			}else if (!req.getCommissionPercent().matches("[0-9]+")){
-				errorList.add(new Error("01","CommissionPercent", "Please Enter Valid CommissionPercent  ")); 
-			}
+
 			
 			if (StringUtils.isBlank(req.getCompanyId())) {
 				errorList.add(new Error("01", "InsuranceId", "Please Select InsuranceId"));
@@ -1113,7 +1505,7 @@ List<Error> errorList = new ArrayList<Error>();
 			//	else if (req.getEffectiveDateEnd() == null ) {
 //				errorList.add(new Error("04", "EffectiveDateEnd", "Please Enter Effective Date End  in Row No :"));
 //
-//			} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equals(req.getEffectiveDateStart())) {
+//			} else if (req.getEffectiveDateEnd().before(req.getEffectiveDateStart()) || req.getEffectiveDateEnd().equalsIgnoreCase(req.getEffectiveDateStart())) {
 //				errorList.add(new Error("04", "EffectiveDateStart", "Please Enter Effective Date End  is After Effective Date Start  "));
 		//	}
 		else if (StringUtils.isBlank(req.getCompanyId())) {
@@ -1135,7 +1527,7 @@ List<Error> errorList = new ArrayList<Error>();
 				errorList.add(new Error("05", "Status", "Please Enter Status  "));
 			} else if (req.getStatus().length() > 1) {
 				errorList.add(new Error("05", "Status", "Enter Status 1 Character Only "));
-			}else if(!("P".equals(req.getStatus()) || "Y".equals(req.getStatus())||"N".equals(req.getStatus()))) {
+			}else if(!("P".equalsIgnoreCase(req.getStatus()) || "Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus()))) {
 				errorList.add(new Error("05", "Status", "Enter Status Y or N or P Only   "));
 			}
 			
@@ -1145,26 +1537,18 @@ List<Error> errorList = new ArrayList<Error>();
 				errorList.add(new Error("06", "Payment", "Enter Payment Type 1 Character Only  "));
 			}else if(StringUtils.isBlank(req.getPaymentYn())) {
 				errorList.add(new Error("06", "Payment", "Enter Payment Type"));
-			} else if ( "Y".equals(req.getPaymentYn()) && StringUtils.isBlank(req.getPaymentRedirUrl())) {
+			} else if ( "Y".equalsIgnoreCase(req.getPaymentYn()) && StringUtils.isBlank(req.getPaymentRedirUrl())) {
 				errorList.add(new Error("08", "PaymentRedirUrl", "Please Select PaymentRedirUrl  Category  "));
-			}else if ("Y".equals(req.getPaymentYn()) && req.getPaymentRedirUrl().length() > 500) {
+			}else if ("Y".equalsIgnoreCase(req.getPaymentYn()) && req.getPaymentRedirUrl().length() > 500) {
 				errorList.add(new Error("10", "PaymentRedirUrl", "Please Enter PaymentRedirUrl within 500 Characters  "));
 			}
 			
-			
-			if (StringUtils.isBlank(req.getCommissionVatYn())) {
-				errorList.add(new Error("05", "CommissionVat", "Please Select CommissionVat Type  "));
-			} else if (req.getCommissionVatYn().length() > 1) {
-				errorList.add(new Error("05", "CommissionVat", "Enter CommissionVat Type 1 Character Only  "));
-			}else if(!("Y".equals(req.getCommissionVatYn())||"N".equals(req.getCommissionVatYn()))) {
-				errorList.add(new Error("05", "CommissionVat", "Enter CommissionVat Y or N Only  "));
-			}
 			
 			if (StringUtils.isBlank(req.getCheckerYn())) {
 				errorList.add(new Error("05", "Checker", "Please Select Checker  "));
 			} else if (req.getCheckerYn().length() > 1) {
 				errorList.add(new Error("05", "Checker", "Enter Checker 1 Character Only  "));
-			}else if(!("Y".equals(req.getCheckerYn())||"N".equals(req.getCheckerYn()))) {
+			}else if(!("Y".equalsIgnoreCase(req.getCheckerYn())||"N".equalsIgnoreCase(req.getCheckerYn()))) {
 				errorList.add(new Error("05", "Checker", "Enter Checker Y or N Only  "));
 			}
 			
@@ -1172,7 +1556,7 @@ List<Error> errorList = new ArrayList<Error>();
 				errorList.add(new Error("05", "Maker", "Please Select Maker "));
 			} else if (req.getMakerYn().length() > 1) {
 				errorList.add(new Error("05", "Maker", "Enter Maker 1 Character Only  "));
-			}else if(!("Y".equals(req.getMakerYn())||"N".equals(req.getMakerYn()))) {
+			}else if(!("Y".equalsIgnoreCase(req.getMakerYn())||"N".equalsIgnoreCase(req.getMakerYn()))) {
 				errorList.add(new Error("05", "Maker", "Enter Maker Y or N Only  "));
 			}
 			
@@ -1180,24 +1564,10 @@ List<Error> errorList = new ArrayList<Error>();
 				errorList.add(new Error("05", "CustomerConfirmation", "Please Select CustomerConfirmation  "));
 			} else if (req.getCustConfirmYn().length() > 1) {
 				errorList.add(new Error("05", "CustomerConfirmation", "Enter CustomerConfirmation 1 Character Only  "));
-			}else if(!("Y".equals(req.getCustConfirmYn())||"N".equals(req.getCustConfirmYn()))) {
+			}else if(!("Y".equalsIgnoreCase(req.getCustConfirmYn())||"N".equalsIgnoreCase(req.getCustConfirmYn()))) {
 				errorList.add(new Error("05", "CustomerConfirmation", "Enter CustomerConfirmation Y or N Only  "));
 			}
-			
-			if(StringUtils.isBlank(req.getSumInsuredStart())) {
-				errorList.add(new Error("02", "Sum Insured Start", "Plese Enter Sum Insured Start in   "));
-			} else if (! req.getSumInsuredStart().matches("[0-9.]+") ) {
-				errorList.add(new Error("02", "Sum Insured Start", "Plese Enter Valid Number Sum Insured Start in  "  ));
-			}
-			if(StringUtils.isBlank(req.getSumInsuredEnd())) {
-				errorList.add(new Error("02", "Sum Insured End", "Plese Enter Sum Insured End in  Product Row No : " ));
-			} else if (! req.getSumInsuredEnd().matches("[0-9.]+") ) {
-				errorList.add(new Error("02", "Sum Insured End", "Plese Enter Valid Number Sum Insured End " ));
-			} else if (StringUtils.isNotBlank(req.getSumInsuredStart()) && StringUtils.isBlank(req.getSumInsuredEnd())  ) {
-				if (Long.valueOf(req.getSumInsuredStart()) > Long.valueOf(req.getSumInsuredEnd()) ) {
-					errorList.add(new Error("02", "Sum Insured End", "Sum Insured Start Greater Than Sum Insured End " ));
-				}
-			}
+
 			
 			if (StringUtils.isBlank(req.getProductDesc())) {
 				errorList.add(new Error("08", "ProductDesc", "Please Select Product  Desc "));
@@ -1223,12 +1593,75 @@ List<Error> errorList = new ArrayList<Error>();
 			}else if (req.getRegulatoryCode().length() > 20) {
 				errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters  "));
 			}
-			if (StringUtils.isBlank(req.getBackDays())) {
-				errorList.add(new Error("10", "BackDays", "Please Enter BackDays"));
-			}	
-			else if (StringUtils.isNotBlank(req.getBackDays())&&! req.getBackDays().matches("[0-9]") ) {
-				errorList.add(new Error("10", "BackDays", "Plese Enter Valid Number BackDays"  ));
+
+			if (req.getBrokerCommissionDetails() ==null || req.getBrokerCommissionDetails().size() <= 0 ) {
+				errorList.add(new Error("10", "BrokerCommissionDetails", "Please Enter Atleast One Broker Commission Details "));
+			} else {
+				Long row = 0L ;
+				for (BrokerCommissionDetailsReq data : req.getBrokerCommissionDetails()) {
+					row = row + 1 ;
+				if (StringUtils.isBlank(data.getCommissionPercent())) {
+					errorList.add(new Error("01", "CommissionPercent", "Please Enter Commission Percent In Row No : " + row));
+				}if (!data.getCommissionPercent().matches("[0-9.]+")){
+					errorList.add(new Error("01","CommissionPercent", "Please Enter Valid Commission Percent In Row No : " + row)); 
+				}else if (Double.valueOf(data.getCommissionPercent()) >= 100){
+					errorList.add(new Error("01","CommissionPercent", "Please Enter Valid Commission Percent In Row No : " + row)); 
+				}
+					
+				if (StringUtils.isBlank(data.getRegulatoryCode())) {
+					errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode  In Row No : " + row ));
+				}else if (data.getRegulatoryCode().length() > 20) {
+					errorList.add(new Error("09", "RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters  In Row No : " + row ));
+				}
+				
+				if (StringUtils.isBlank(data.getCoreAppCode())) {
+						errorList.add(new Error("02", "CoreAppCode", "Please Enter CoreAppCode In Row No : " + row ));
+				} else if (data.getCoreAppCode().length() > 20) {
+						errorList.add(new Error("02", "CoreAppCode", "CoreAppCode under 20 Characters only allowed In Row No : " + row ));
+				} 
+				
+				if (StringUtils.isBlank(data.getCommissionVatYn())) {
+					errorList.add(new Error("05", "CommissionVat", "Please Select Commission Vat Type In Row No : " + row));
+				} else if (data.getCommissionVatYn().length() > 1) {
+					errorList.add(new Error("05", "CommissionVat", "Enter CommissionVat Type 1 Character OnlyIn Row No : " + row));
+				}else if(!("Y".equalsIgnoreCase(data.getCommissionVatYn())||"N".equalsIgnoreCase(data.getCommissionVatYn()))) {
+					errorList.add(new Error("05", "CommissionVat", "Enter Commission Vat Y or N Only In Row No : " + row));
+				} else if ("Y".equalsIgnoreCase(data.getCommissionVatYn()) ) {
+					if (StringUtils.isBlank(data.getCommissionVatPercent())) {
+						errorList.add(new Error("01", "CommissionVatPercent", "Please Enter Commission Vat Percent In Row No : " + row));
+					}else if (!data.getCommissionVatPercent().matches("[0-9.]+")){
+						errorList.add(new Error("01","CommissionVatPercent", "Please Enter Valid Commission Vat Percent In Row No : " + row)); 
+					}else if (Double.valueOf(data.getCommissionVatPercent()) >= 100){
+						errorList.add(new Error("01","CommissionVatPercent", "Please Enter Valid Commission Vat Percent In Row No : " + row)); 
+					}
+				}
+					
+				if(StringUtils.isBlank(data.getSumInsuredStart())) {
+					errorList.add(new Error("02", "Sum Insured Start", "Plese Enter Sum Insured Start in In Row No : " + row));
+				} else if (! data.getSumInsuredStart().matches("[0-9.]+") ) {
+					errorList.add(new Error("02", "Sum Insured Start", "Plese Enter Valid Number Sum Insured Start In Row No : " + row  ));
+				}
+					
+				if(StringUtils.isBlank(data.getSumInsuredEnd())) {
+					errorList.add(new Error("02", "Sum Insured End", "Plese Enter Sum Insured End in In Row No : " + row ));
+				} else if (! data.getSumInsuredEnd().matches("[0-9.]+") ) {
+					errorList.add(new Error("02", "Sum Insured End", "Plese Enter Valid Number Sum Insured End In Row No : " + row ));
+				} else if (StringUtils.isNotBlank(data.getSumInsuredStart()) && StringUtils.isBlank(data.getSumInsuredEnd())  ) {
+					if (Long.valueOf(data.getSumInsuredStart()) > Long.valueOf(data.getSumInsuredEnd()) ) {
+						errorList.add(new Error("02", "Sum Insured End", "Sum Insured Start Greater Than Sum Insured End In Row No : " + row  ));
+					}
+				}
+					
+				if (StringUtils.isBlank(data.getBackDays())) {
+					errorList.add(new Error("10", "BackDays", "Please Enter BackDays In Row No : " + row ));
+				}	
+				else if (StringUtils.isNotBlank(data.getBackDays())&& ! data.getBackDays().matches("[0-9]+") ) {
+					errorList.add(new Error("10", "BackDays", "Plese Enter Valid Number BackDays In Row No : " + row   ));
+				}
+				
+				}
 			}
+			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();

@@ -12,6 +12,8 @@
 
 package com.maan.eway.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -20,6 +22,9 @@ import com.maan.eway.bean.BrokerCommissionDetailsId;
  
  
 public interface BrokerCommissionDetailsRepository  extends JpaRepository<BrokerCommissionDetails,BrokerCommissionDetailsId> , JpaSpecificationExecutor<BrokerCommissionDetails> {
+
+	List<BrokerCommissionDetails> findByProductIdAndPolicyTypeNotInAndLoginIdAndStatus(String productId,
+			List<String> policyTypeIds, String loginId, String string);
 
 	
 
