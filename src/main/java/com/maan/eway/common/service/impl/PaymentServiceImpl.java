@@ -42,8 +42,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.base.Functions;
-import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.maan.eway.auth.token.EncryDecryService;
 import com.maan.eway.auth.token.passwordEnc;
@@ -52,12 +50,13 @@ import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CoverDocumentMaster;
 import com.maan.eway.bean.CurrencyMaster;
+import com.maan.eway.bean.DocumentTransactionDetails;
+import com.maan.eway.bean.DocumentUniqueDetails;
 import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
-import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
@@ -108,6 +107,7 @@ import com.maan.eway.notification.req.UnderWriter;
 import com.maan.eway.notification.req.statealgo.NotificationStatus;
 import com.maan.eway.notification.service.NotificationService;
 import com.maan.eway.repository.CommonDataDetailsRepository;
+import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.DocumentUniqueDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
@@ -248,9 +248,13 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired
 	private  SectionDataDetailsRepository sddRepo;
 	
+	@Autowired
+	private  DocumentTransactionDetailsRepository docTransDetails;
+	
 	private Logger log = LogManager.getLogger(ClausesMasterServiceImpl.class);
 
 	Gson json = new Gson();
+	@SuppressWarnings("unlikely-arg-type")
 	@Override
 	public List<Error> validatemakepayment(MakePaymentSaveReq req) {
 		List<Error> error = new ArrayList<Error>();
@@ -338,145 +342,97 @@ public class PaymentServiceImpl implements PaymentService {
 				
 			}
 			
-			// Doc Validation
-			if ( StringUtils.isNotBlank( req.getQuoteNo())) {
-				HomePositionMaster homeData = homerepo.findByQuoteNo(req.getQuoteNo());
-				String companyId = homeData.getCompanyId() ;
-				Integer productId =  homeData.getProductId() ;
-				List<String> sectionIds = new ArrayList<String>(); 
-				
-				List<DocValidationReq> docValidateReqs = new ArrayList<DocValidationReq>() ;
-				CompanyProductMaster product =  getCompanyProductMasterDropdown(companyId , productId.toString());
+			//Doc validation
+			
+			//get upload document details
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Long> query1 = cb.createQuery(Long.class);
 
-				// Motor Product Specific Doc Valdiation
-				if(product.getMotorYn().equalsIgnoreCase("M") ) {
-					List<MotorDataDetails>  motorDatas = motorRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());	
-					List<Integer> sectionList = motorDatas.stream().map(MotorDataDetails :: getSectionId ) .collect(Collectors.toList());
-					sectionIds.addAll(Lists.transform(sectionList, Functions.toStringFunction()));
-					sectionIds.add("99999");
-					// Common Docs 
+			Root<DocumentTransactionDetails> td = query1.from(DocumentTransactionDetails.class);
+			Root<DocumentUniqueDetails> ud = query1.from(DocumentUniqueDetails.class);
+
+			query1.select(ud.get("documentId"));
+
+			Predicate m1 = cb.equal(td.get("quoteNo"), req.getQuoteNo());
+			Predicate m2 = cb.equal(ud.get("uniqueId"), td.get("uniqueId"));
+		
+			query1.where(m1, m2);
+
+			TypedQuery<Long> result1 = em.createQuery(query1);
+			List<Long> list1 = result1.getResultList();
 					
-					
-					// Other Docs
-					for (MotorDataDetails mot : motorDatas) {
-						DocValidationReq doc = new DocValidationReq();
-						doc.setQuoteNo(mot.getQuoteNo() );
-						doc.setProductId(String.valueOf(mot.getProductId()));
-						doc.setProductDesc("Vehicle Id");
-						doc.setRiskId(mot.getVehicleId() );
-						doc.setSectionId(String.valueOf(mot.getSectionId()));
-						doc.setSectionDesc(mot.getSectionName());
-						docValidateReqs.add(doc);
-						
-					}
-					
-				} else if(product.getMotorYn().equalsIgnoreCase("A") ) {
-					List<EserviceSectionDetails>  buidingDatas = sectionRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());	
-					sectionIds = buidingDatas.stream().map(EserviceSectionDetails ::  getSectionId ) .collect(Collectors.toList());
-					sectionIds.add("99999");
-					// Common Docs 
-					
-					
-					// Other Docs
-					for (EserviceSectionDetails mot : buidingDatas) {
-						DocValidationReq doc = new DocValidationReq();
-						doc.setQuoteNo(mot.getQuoteNo() );
-						doc.setProductId(String.valueOf(mot.getProductId()));
-						doc.setProductDesc("Risk Id");
-						doc.setRiskId(mot.getRiskId().toString());
-						doc.setSectionId(String.valueOf(mot.getSectionId()));
-						doc.setSectionDesc(mot.getSectionName());
-						docValidateReqs.add(doc);
-						
-					}
-					List<EserviceSectionDetails> filterBuilding = buidingDatas.stream().filter(o->o.getProductType().equalsIgnoreCase("H")).collect(Collectors.toList());
-					if(buidingDatas.size()>0 && ! buidingDatas.get(0).getProductId().equalsIgnoreCase("3")) {
-					//call employees count and sum insured validation
-					for (EserviceSectionDetails data :   filterBuilding) {
-						error.addAll(employeeCountAndSIValid(req.getQuoteNo() , data.getSectionId()  ));	
-					}
-					
-					}
-					
-				} else if(product.getMotorYn().equalsIgnoreCase("H")  && homeData.getProductId().equals(Integer.valueOf(travelProductId)) ) {
-					List<TravelPassengerDetails>  passDatas = passengerRepo.findByQuoteNoOrderByTravelIdAsc(req.getQuoteNo());	
-					List<Integer> sectionList =passDatas.stream().map(TravelPassengerDetails :: getSectionId ) .collect(Collectors.toList());
-					sectionIds.addAll(Lists.transform(sectionList, Functions.toStringFunction()));
-					sectionIds.add("99999");
-					// Common Docs 
-					
-					
-					// Other Docs
-					for (TravelPassengerDetails mot : passDatas) {
-						DocValidationReq doc = new DocValidationReq();
-						doc.setQuoteNo(mot.getQuoteNo() );
-						doc.setProductId(String.valueOf(mot.getProductId()));
-						doc.setProductDesc("Passenger Id");
-						doc.setRiskId(mot.getPassengerId().toString() );
-						doc.setSectionId(String.valueOf(mot.getSectionId()));
-						doc.setSectionDesc(mot.getSectionName());
-						docValidateReqs.add(doc);
-						
-					}
-					
-				} else  {
-					List<CommonDataDetails>  commonDatas = commonRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());	
-					sectionIds = commonDatas.stream().map(CommonDataDetails :: getSectionId ) .collect(Collectors.toList());
-					sectionIds.add("99999");
-					// Common Docs 
-					String sectionId = "";
-					// Other Docs
-					for (CommonDataDetails mot : commonDatas) {
-						DocValidationReq doc = new DocValidationReq();
-						doc.setQuoteNo(mot.getQuoteNo() );
-						doc.setProductId(String.valueOf(mot.getProductId()));
-						doc.setProductDesc("Risk Id");
-						doc.setRiskId(mot.getRiskId().toString() );
-						doc.setSectionId(String.valueOf(mot.getSectionId()));
-						sectionId = String.valueOf(mot.getSectionId());
-						doc.setSectionDesc(mot.getSectionDesc());
-						docValidateReqs.add(doc);
-						
-					}
-					//call employees count and sum insured validation
-					
-						error.addAll(employeeCountAndSIValid(req.getQuoteNo() , sectionId ));
-					
+		
+			String companyId = "";
+			String productId = "";
+			
+			List<SectionDataDetails> sec =  sddRepo.findByQuoteNo(req.getQuoteNo());
+			if(sec.size()>0) {
+				companyId = sec.get(0).getCompanyId();
+				productId = sec.get(0).getProductId();	
 				}
-				
-				
-				// Madatory Doc
-				List<CoverDocumentMaster> mandatoryDocs = getCoverDocumentMasterMandatoryDocs( companyId, productId , sectionIds);
-				mandatoryDocs =  mandatoryDocs.stream().filter( o ->    !( o.getDocumentId().equals(16) || o.getDocumentId().equals(17)  || o.getDocumentId().equals(18) || o.getDocumentId().equals(19) )
-						).collect(Collectors.toList());
-				//Uploaded Docs
-				//List<DocumentUniqueDetails> uploadedDocs = docUploadRepo.findByQuoteNo(req.getQuoteNo());
-				
-				for (CoverDocumentMaster mdoc :  mandatoryDocs) {
-					// Common Docs
-					if ( mdoc.getSectionId().equals(99999) ) {
+			
+			//Mandatory Y details get
+			List<CoverDocumentMaster> list = new ArrayList<CoverDocumentMaster>();
+			
+			CriteriaQuery<CoverDocumentMaster> query = cb.createQuery(CoverDocumentMaster.class);
+
+			Root<CoverDocumentMaster> b = query.from(CoverDocumentMaster.class);
+
+			query.select(b);
+
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<CoverDocumentMaster> ocpm1 = amendId.from(CoverDocumentMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("documentId"), b.get("documentId"));
+			Predicate a2 = cb.equal(b.get("coverId"), ocpm1.get("coverId"));
+			Predicate a3 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
+			Predicate a5 = cb.equal(b.get("sectionId"), ocpm1.get("sectionId"));
+			Predicate a6 = cb.equal(b.get("productId"), ocpm1.get("productId"));
+			amendId.where(a1, a2, a3, a5, a6);
+
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("documentId")));
+
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+		//	Predicate n2 = cb.equal(b.get("sectionId"), secId);
+			Predicate n3 = cb.equal(b.get("companyId"), companyId);
+			Predicate n4 = cb.equal(b.get("productId"), productId);
+			Predicate n5 = cb.equal(b.get("coverId"), "99999");
+			Predicate n6 = cb.equal(b.get("status"), "Y");
+			Predicate n7 = cb.equal(b.get("mandatoryStatus"), "Y");
+
+			query.where(n1, n3, n4, n5,n6,n7).orderBy(orderList);
+
+			TypedQuery<CoverDocumentMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getDocumentId()))).collect(Collectors.toList());
+		//	list = list.stream().filter(o -> o.getMandatoryStatus().equalsIgnoreCase("Y")).collect(Collectors.toList())	;	
+			
+			if(list.size()>0) {
+				for(CoverDocumentMaster coverDoc : list) { 
+					
+					if(list1.size()>0) {
 						
-//						// Filter Common Docs 
-//						List<DocumentUniqueDetails> filterDocs = uploadedDocs.stream().filter( o ->  o.getDocumentId().equals(mdoc.getDocumentId()) && o.getId().equals(0) && o.getSectionId().equals(99999) 
-//								).collect(Collectors.toList());
-//						if(filterDocs.size()<=0 ) {
-//							error.add(new Error("01","Common Doc", mdoc.getDocumentName() + " is Mandatory In Common Document"));
-//						}
-					} else {
-						// Filter Other Docs 
-//						for (DocValidationReq doc :  docValidateReqs) {
-//							List<DocumentUniqueDetails> filterDocs = uploadedDocs.stream().filter( o -> o.getDocumentId().equals(mdoc.getDocumentId()) && o.getId().equals(Integer.valueOf(doc.getRiskId())) && o.getSectionId().equals(Integer.valueOf(doc.getSectionId()))
-//									).collect(Collectors.toList());
-//							if(filterDocs.size()<=0 && doc.getSectionId().equals(mdoc.getSectionId().toString() ) ) {
-//								error.add(new Error("01","Iniduvidual Doc", mdoc.getDocumentName() + " Document Mandatory In " + doc.getProductDesc() + " : " + doc.getRiskId() ));
-//							}
-//							
-//						}
+						if( ! list1.contains(coverDoc.getDocumentId()))	{
+							if(coverDoc.getSectionId()==99999)
+								error.add(new Error("01","Common Doc", coverDoc.getDocumentName() + " is Mandatory In Common Document"));
+						else
+							error.add(new Error("01","Individual Doc", coverDoc.getDocumentName() + " is Mandatory In Individual Document"));
+						}			
 						
+					}else {
+						if(coverDoc.getSectionId()==99999) {
+								error.add(new Error("01","Common Doc", coverDoc.getDocumentName() + " is Mandatory In Common Document"));
+						}
+						else {
+							error.add(new Error("01","Individual Doc", coverDoc.getDocumentName() + " is Mandatory In Individual Document"));
+						}
 					}
+					
 				}
 				
 			}
+			
 			
 		} catch (Exception e) {
 			log.error(e);
