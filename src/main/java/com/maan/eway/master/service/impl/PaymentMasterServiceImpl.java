@@ -628,35 +628,39 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 		// Get Result
 		TypedQuery<PaymentMaster> result = em.createQuery(query);
 		list = result.getResultList();
-		
-		List<ListItemValue> paymentList = getPaymentItems(req.getCompanyId() , req.getBranchCode() ,  "PAYMENT_MODE");
-		
 		// Payment Types
-		ListItemValue cash = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("1") ).collect(Collectors.toList()).get(0) ;
-		ListItemValue cheque = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("2") ).collect(Collectors.toList()).get(0) ;
-	//	ListItemValue credit = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("3") ).collect(Collectors.toList()).get(0) ; 
-		 
-	
-		
+		List<ListItemValue> paymentList = getPaymentItems(req.getCompanyId() , req.getBranchCode() ,  "PAYMENT_MODE");
+				
 		if(list.size()>0 ) {
 			// Response 
 			PaymentMaster paymentData = list.get(0);
 			if(paymentData.getCashYn().equalsIgnoreCase("Y") ) {
+				ListItemValue cash = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("1") ).collect(Collectors.toList()).get(0) ;
 				PaymentMasterDropDownRes res = new PaymentMasterDropDownRes();
 				res.setCode(cash.getItemCode());
 				res.setCodeDesc(cash.getItemValue());
 				resList.add(res);
 			} 
-//			if(paymentData.getCreditYn().equalsIgnoreCase("Y") ) {
-//				PaymentMasterDropDownRes res = new PaymentMasterDropDownRes();
-//				res.setCode(credit.getItemCode());
-//				res.setCodeDesc(credit.getItemValue());
-//				resList.add(res);
-//			}
+			if(paymentData.getCreditYn().equalsIgnoreCase("Y") ) {
+				ListItemValue credit = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("3") ).collect(Collectors.toList()).get(0) ;
+				PaymentMasterDropDownRes res = new PaymentMasterDropDownRes();
+				res.setCode(credit.getItemCode());
+				res.setCodeDesc(credit.getItemValue());
+				resList.add(res);
+			}
 			if(paymentData.getChequeYn().equalsIgnoreCase("Y") ) {
+				ListItemValue cheque = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("2") ).collect(Collectors.toList()).get(0) ;
 				PaymentMasterDropDownRes res = new PaymentMasterDropDownRes();
 				res.setCode(cheque.getItemCode());
 				res.setCodeDesc(cheque.getItemValue());
+				resList.add(res);
+			}
+			
+			if(paymentData.getOnlineYn().equalsIgnoreCase("Y") ) {
+				ListItemValue online = paymentList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("4") ).collect(Collectors.toList()).get(0) ;
+				PaymentMasterDropDownRes res = new PaymentMasterDropDownRes();
+				res.setCode(online.getItemCode());
+				res.setCodeDesc(online.getItemValue());
 				resList.add(res);
 			}
 		}

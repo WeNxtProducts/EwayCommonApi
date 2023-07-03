@@ -106,6 +106,7 @@ import com.maan.eway.notification.req.Notification;
 import com.maan.eway.notification.req.UnderWriter;
 import com.maan.eway.notification.req.statealgo.NotificationStatus;
 import com.maan.eway.notification.service.NotificationService;
+import com.maan.eway.payment.service.SelcomPaymentService;
 import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.DocumentUniqueDetailsRepository;
@@ -250,7 +251,9 @@ public class PaymentServiceImpl implements PaymentService {
 	
 	@Autowired
 	private  DocumentTransactionDetailsRepository docTransDetails;
-	
+	@Autowired
+	private SelcomPaymentService selcomService;
+
 	private Logger log = LogManager.getLogger(ClausesMasterServiceImpl.class);
 
 	Gson json = new Gson();
@@ -1467,7 +1470,7 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentDetail.setReqBillToAddrPostalCode(null);
 			paymentDetail.setReqBillToEmail(personaldata.getEmail1());;
 			paymentDetail.setReqBillToForename(personaldata.getClientName());
-			paymentDetail.setReqBillToPhone(personaldata.getMobileNo1());
+			paymentDetail.setReqBillToPhone(personaldata.getMobileCode1()+""+personaldata.getMobileNo1());
 			paymentDetail.setReqBillToSurname(personaldata.getClientName());
 			paymentDetail.setReqCardExpiryDate(null);
 			paymentDetail.setReqBillToCompanyName(companyName);
@@ -1482,7 +1485,10 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentDetail.setPayments( StringUtils.isBlank(req.getPayments() ) ? "Charge" : req.getPayments()  ); 
 			paymentDetail.setPayeeName(req.getPayeeName());
 			paymentDetail.setMicrNo(req.getMicrNo());
-			
+			paymentDetail.setCompanyId(paymentInfo.getCompanyId());
+			paymentDetail.setReqBillToAddressState(personaldata.getStateName());
+			//paymentDetail.setReqBillToAddrPostalCode(personaldata.getpo);
+			paymentDetail.setReqBillToCountry(personaldata.getNationality());
 			if("2".equals(req.getPaymentType())) {
 				paymentDetail.setBankName(req.getBankName());
 				paymentDetail.setChequeNo(req.getChequeNo());
@@ -1502,6 +1508,10 @@ public class PaymentServiceImpl implements PaymentService {
 			if( req.getPaymentType().equalsIgnoreCase("1") || req.getPaymentType().equalsIgnoreCase("2")) {
 				paymentStatus = "ACCEPTED" ;
 				paymentDetail.setPaymentStatus(paymentStatus);
+			}else if(req.getPaymentType().equalsIgnoreCase("4")) {
+				paymentStatus = "PENDING" ;
+				paymentDetail.setPaymentStatus(paymentStatus);
+				selcomService.createOrderForPayment(refno);
 			} else {
 				paymentStatus = "PENDING" ;
 				paymentDetail.setPaymentStatus(paymentStatus);

@@ -248,6 +248,19 @@ private static final long serialVersionUID = 1L;
     private String payeeName;
     
     
+    @Column(name="REQ_BILL_TO_COUNTRY")
+    private String reqBillToCountry;
+    @Column(name="COMPANY_ID")
+    private String companyId;
+
+    @Column(name="CHANNEL")
+    private String channel;
+    
+    @Column(name="REFERENCE")
+    private String reference;
+    
+    @Column(name="MSISDN")
+    private String msisdn;
 }
 
 

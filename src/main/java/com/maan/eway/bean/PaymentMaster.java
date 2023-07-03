@@ -62,6 +62,8 @@ public class PaymentMaster {
 	@Column(name="CHEQUE_YN",length=20)
 	private String chequeYn;
 	
+	@Column(name="ONLINE_YN",length=20)
+	private String onlineYn;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="EFFECTIVE_DATE_START",nullable=false)
