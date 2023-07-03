@@ -432,6 +432,9 @@ this.repository = repo;
 			Date dateAfter = Date.from(after);
 			Long countId = Long.valueOf(generateAgencyCode()) ; 
 			
+			Instant date = now.minus(Duration.ofDays(1));	
+			Date firstlogindate = Date.from(date);
+			
 			// Login Master Insert
 			LoginMaster saveLogin = new LoginMaster();
 			dozerMapper.map(loginReq, saveLogin);
@@ -450,7 +453,9 @@ this.repository = repo;
 			saveLogin.setUpdatedBy(loginReq.getCreatedBy());
 			saveLogin.setPassword(newpass);
 			saveLogin.setPwdCount("0");				
-			saveLogin.setLpassDate(dateAfter);
+		//	saveLogin.setLpassDate(dateAfter);
+			saveLogin.setLpassDate(firstlogindate);
+			
 			saveLogin.setAttachedBranches(branches);
 			saveLogin.setAttachedRegions(regions);
 			saveLogin.setAttachedCompanies(companies);
@@ -614,6 +619,9 @@ this.repository = repo;
 				updateLogin.setOaCode(Integer.valueOf(loginReq.getOaCode()));
 				updateLogin.setAgencyCode(loginReq.getAgencyCode());
 			}
+			Instant now = Instant.now();
+			Instant date = now.minus(Duration.ofDays(1));	
+			Date firstlogindate = Date.from(date);
 			
 			updateLogin.setPassword(findLogin.getPassword() );
 			updateLogin.setPwdCount(findLogin.getPwdCount() );	
@@ -622,6 +630,7 @@ this.repository = repo;
 			updateLogin.setLpass3(findLogin.getLpass3());
 			updateLogin.setLpass4(findLogin.getLpass4());
 			updateLogin.setLpass5(findLogin.getLpass5());
+			updateLogin.setLpassDate(firstlogindate);
 			updateLogin.setUpdatedDate(new Date());
 			updateLogin.setUpdatedBy(loginReq.getCreatedBy());
 			updateLogin.setLoginId(loginReq.getLoginId());
