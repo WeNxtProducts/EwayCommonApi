@@ -97,22 +97,16 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 			}*/
 			
 			   // Guest Login Checking
-					if (StringUtils.isNotBlank(req.getLoginId()) && StringUtils.isNotBlank(req.getPassword())) {
-						LoginMaster loginData = loginRepo.findByLoginIdAndEffectiveDateStartLessThanEqual(req.getLoginId(), new Date());
-						if (loginData !=null && loginData.getEffectiveDateStart().after(new Date())) {
-							list.add(new Error("", "UserId", "Your  Login Id Date is not started"));
-						} 
-						
-					}
-					
+//					if (StringUtils.isNotBlank(req.getLoginId()) && StringUtils.isNotBlank(req.getPassword())) {
+//						LoginMaster loginData = loginRepo.findByLoginIdAndEffectiveDateStartLessThanEqual(req.getLoginId(), new Date());
+//						if (loginData !=null && loginData.getEffectiveDateStart().after(new Date())) {
+//							list.add(new Error("", "UserId", "Your  Login Id Date is not started"));
+//						} 
+//						
+//					}
+				
+		
 
-			
-			// Other Login Checking
-			//if(! loginId.equalsIgnoreCase("guest")  )
-					{
-//				if (req.getPassword() == null || StringUtils.isBlank(req.getPassword())) {
-//					list.add(new Error("", "Password", "Please enter password"));
-//				}
 				
 				if (StringUtils.isNotBlank(req.getLoginId()) && StringUtils.isNotBlank(req.getPassword())) {
 					LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());
@@ -126,10 +120,15 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 						if (! loginData.getStatus().equalsIgnoreCase("Y") ) {
 							list.add(new Error("", "UserId", "This Login Id is Deactivated"));
 						} else {
+							LoginMaster loginData1 = loginRepo.findByLoginId(req.getLoginId());
+							
+							if (loginData1 !=null && loginData1.getEffectiveDateStart().after(new Date())) {
+								list.add(new Error("", "UserId", "Your  Login Id Date is not started"));
+							} 
 							data = criteriaQuery.isvalidUser(req);
-							if (CollectionUtils.isEmpty(data)) {
+							if (CollectionUtils.isEmpty(data) && list.size()<=0 ) {
 								list.add(new Error("", "User", "Please enter valid username/password"));
-							}else if(!"b2c".equalsIgnoreCase(data.get(0).getSubUserType()) &&   isExpired(data.get(0).getLpassDate())  ) {
+							}else if(!"b2c".equalsIgnoreCase(data.get(0).getSubUserType()) &&   isExpired(data.get(0).getLpassDate()) && list.size()<=0 ) {
 								list.add(new Error("", "User", "Password Expired Please Change Your Password"));
 								changePwd = "Y";
 							}
@@ -145,12 +144,12 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 						sessionRep.save(updatelogout);
 				}else if(sessionlist.size()!=0) {
 				
-						if(sessionlist.get(0).getLogoutDate()==null) {
+						if(sessionlist.get(0).getLogoutDate()==null && list.size()<=0) {
 							list.add(new Error("", "SessionError", "You already have an active logged in session on another device or window Do you want to start new session and terminate that session?"));
 							list.add(new Error("", "SessionError", "User :" + sessionlist.get(0).getUserName() + " : logged in at " +sessionlist.get(0).getEntryDate().toString()));
 						}
 				}
-			}
+			
 			
 			
 			
