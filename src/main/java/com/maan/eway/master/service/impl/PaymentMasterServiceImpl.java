@@ -607,8 +607,9 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 		Predicate a11 = cb.equal(c.get("userType"),ocpm2.get("userType"));
 		Predicate a12 = cb.equal(c.get("subUserType"),ocpm2.get("subUserType"));
 		Predicate a13 = cb.equal(c.get("productId"),ocpm2.get("productId"));
-		Predicate a14 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-		effectiveDate2.where(a8,a9,a10,a11,a12,a13,a14);
+	//	Predicate a14 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+	//	effectiveDate2.where(a8,a9,a10,a11,a12,a13,a14);
+		effectiveDate2.where(a8,a9,a10,a11,a12,a13);
 		// Where
 		Predicate n1 = cb.equal(c.get("status"),"Y");
 		Predicate n11 = cb.equal(c.get("status"),"R");
