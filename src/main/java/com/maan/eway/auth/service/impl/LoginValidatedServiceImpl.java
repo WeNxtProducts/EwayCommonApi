@@ -125,12 +125,15 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 							if (loginData1 !=null && loginData1.getEffectiveDateStart().after(new Date())) {
 								list.add(new Error("", "UserId", "Your  Login Id Date is not started"));
 							} 
+							if(list.size()<=0) {
 							data = criteriaQuery.isvalidUser(req);
-							if (CollectionUtils.isEmpty(data) && list.size()<=0 ) {
+							if (CollectionUtils.isEmpty(data) ) {
 								list.add(new Error("", "User", "Please enter valid username/password"));
-							}else if(!"b2c".equalsIgnoreCase(data.get(0).getSubUserType()) &&   isExpired(data.get(0).getLpassDate()) && list.size()<=0 ) {
+							}else if(!"b2c".equalsIgnoreCase(data.get(0).getSubUserType()) &&   isExpired(data.get(0).getLpassDate())) {
 								list.add(new Error("", "User", "Password Expired Please Change Your Password"));
 								changePwd = "Y";
+							}
+							
 							}
 						}
 						
