@@ -620,7 +620,7 @@ public List<PaymentMasterDropDownRes> getPaymentMasterDropdown(PaymentMasterDrop
 		Predicate n6 = cb.equal(c.get("branchCode"),"99999");
 		Predicate n7 = cb.or(n5,n6);
 		Predicate n8 = cb.equal(c.get("userType"),req.getUserType());
-		Predicate n9 = cb.equal(c.get("subUserType"),req.getSubUserType());
+		Predicate n9 = cb.equal(cb.lower(c.get("subUserType")),req.getSubUserType().toLowerCase() );
 		Predicate n10 = cb.equal(c.get("productId"),req.getProductId());
 
 		query.where(n12,n2,n3,n4,n7,n8,n9,n10).orderBy(orderList);
