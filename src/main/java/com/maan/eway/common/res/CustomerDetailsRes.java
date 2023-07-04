@@ -175,4 +175,7 @@ public class CustomerDetailsRes {
 	
 	@JsonProperty("VrTinNo")
 	private String vrTinNo;
+	
+	@JsonProperty("PinCode")
+	private String pinCode;
 }

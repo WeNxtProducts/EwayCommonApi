@@ -219,5 +219,8 @@ public class EserviceCustomerSaveReq {
 
 	@JsonProperty("EndorsementTypeDesc") // EndorsementTypeDesc
 	private String endorsementTypeDesc;
+	
+	@JsonProperty("PinCode") 
+	private String pinCode;
 
 }

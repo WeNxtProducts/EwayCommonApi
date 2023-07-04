@@ -802,6 +802,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				HomePositionMaster homedata=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
 			//	PersonalInfo personalInfodata=personalInforepo.findByCustomerId(homedata.getCustomerId());
 				dozerMapper.map(req, saveData);
+				savePersonalInfo.setPinCode(req.getPinCode());
 				savePersonalInfo.setCustomerId(homedata.getCustomerId());
 				savePersonalInfo.setIdNumber(req.getIdNumber());
 				savePersonalInfo.setCreatedBy(createdBy);
