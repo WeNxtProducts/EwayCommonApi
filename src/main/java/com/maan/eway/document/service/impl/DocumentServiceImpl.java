@@ -237,7 +237,7 @@ public class DocumentServiceImpl implements DocumentService{
 				Predicate p4 = cb.equal(c.get("sectionId"), sectionId );
 				Predicate p5 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 				Predicate p6 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-				query.where(p1, p2,p3,p4,p6).orderBy(orderList) ;
+				query.where(p1, p2,p3,p4,p6,p5).orderBy(orderList) ;
 
 				TypedQuery<CoverDocumentMaster> result = em.createQuery(query);
 				resList = result.getResultList();
