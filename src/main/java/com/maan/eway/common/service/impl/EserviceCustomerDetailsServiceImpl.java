@@ -210,6 +210,16 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				} else if (req.getRegionCode().length() > 20) {
 					errorList.add(new Error("18", "RegionCode", "Please Enter RegionCode within 20 Characters"));
 				}
+				if (StringUtils.isBlank(req.getPinCode())) {
+					errorList.add(new Error("18", "PinCode", "Please Enter PinCode"));
+				} else {
+					 if (! req.getPinCode().matches("[0-9]+") ) {
+						errorList.add(new Error("18", "PinCode", "Please Enter Number"));
+					}
+					if (req.getPinCode().length() > 20) {
+					errorList.add(new Error("18", "PinCode", "Please Enter PinCode within 20 Characters"));
+					}
+				}
 				/*if (StringUtils.isBlank(req.getStreet())) {
 					errorList.add(new Error("19", "Street", "Please Enter Street"));
 				}
