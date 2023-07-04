@@ -457,8 +457,8 @@ public class LoginValidatedServiceImpl implements LoginValidatedService {
 					} else if (model.getPassword().equalsIgnoreCase(epass)) {
 						list.add(new Error("", "ChangePassword", "Old Password  and New Password should not match"));
 					}
-				
-				else if(model.getLpass1().equals(epass) || model.getLpass2().equals(epass) || model.getLpass3().equals(epass) || model.getLpass4().equals(epass) || model.getLpass5().equals(epass)) {
+					
+				else if((model.getLpass1()!=null && model.getLpass1().equals(epass)) || (model.getLpass2()!=null&&model.getLpass2().equals(epass)) || (model.getLpass3()!=null&&model.getLpass3().equals(epass)) || (model.getLpass4()!=null&&model.getLpass4().equals(epass)) || (model.getLpass5()!=null&&model.getLpass5().equals(epass))) {
 					list.add(new Error("", "ChangePassword", "Newpassword should not be last 5 Password"));
 				} 
 			} 
