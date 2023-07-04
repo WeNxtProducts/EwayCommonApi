@@ -1416,7 +1416,6 @@ public class PaymentServiceImpl implements PaymentService {
 			HomePositionMaster data = homerepo.findByQuoteNo(req.getQuoteNo());
 			PersonalInfo personaldata = personalrepo.findByCustomerId(data.getCustomerId());
 			String companyName =  getInscompanyMasterDropdown(data.getCompanyId()) ; // companyRepo.findByCompanyIdOrderByAmendIdDesc(req.getCompanyId());
-			CompanyProductMaster product =  getCompanyProductMasterDropdown(data.getCompanyId() , data.getProductId().toString());
 
 			String branchName = getCompanyBranchMasterDropdown(data.getCompanyId() , data.getBranchCode());
 			String paymentMode = getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_MODE",req.getPaymentType());
@@ -1547,97 +1546,20 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			// Policy Convertion
 			if(paymentStatus.equalsIgnoreCase("ACCEPTED") && ( paymentInfo.getEmiYn().equalsIgnoreCase("N") || paymentInfo.getInstallmentMonth().equalsIgnoreCase("0") )  ) {
-				
-				List<DebitAndCredit> policyDetails = new ArrayList<DebitAndCredit>();
-				CalcCommission  policyReq = new CalcCommission();
-				policyReq.setAgencyCode("");
-				policyReq.setBranchCode(paymentInfo.getBranchCode());
-				policyReq.setCreatedBy(req.getCreatedBy());
-				policyReq.setInsuranceId(paymentInfo.getCompanyId());
-				policyReq.setPolicyNo("");
-				policyReq.setProductId(paymentInfo.getProductId().toString());
-				policyReq.setQuoteno(req.getQuoteNo());
-				policyReq.setSectionId("");
-				
-				policyDetails = calcService.commissionCalc(policyReq);
-				
+				List<DebitAndCredit> policyDetails = generatePolicy(paymentInfo,req,paymentDetail);
+				String policyNo = policyDetails.get(0).getPolicyNo();
 				List<DebitAndCredit> filterDebit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("DR")).collect(Collectors.toList());
 				List<DebitAndCredit> filterCredit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")).collect(Collectors.toList());
-				
-				String policyNo = policyDetails.get(0).getPolicyNo();
 				// Debit
 				String debitNo = filterDebit.get(0).getDocNo() ;
-				Date debitDate = filterDebit.get(0).getEntryDate();
-				String debitTo = filterDebit.get(0).getDocType();
 				// Credit
 				String creditNo =  filterCredit.get(0).getDocNo();
-				Date creditDate = filterCredit.get(0).getEntryDate();
-				String creditTo = filterCredit.get(0).getDocType();
-				// Commision
-				BigDecimal commission =  policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") 
-						&& (o.getChargeCode().equals(new BigDecimal(1005)) || o.getChargeCode().equals(new BigDecimal(1001)) )
-								).collect(Collectors.toList()).get(0).getAmountFc();
-				BigDecimal commissionPercent = 		policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")
-						&& (o.getChargeCode().equals(new BigDecimal(1007))
-								||
-								o.getChargeCode().equals(new BigDecimal(1012))
-						)
-						).collect(Collectors.toList()).get(0).getAmountFc();
-				List<DebitAndCredit> filtercommissionVat = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")
-						&& o.getChargeCode().equals(new BigDecimal(1012))).collect(Collectors.toList());
-				BigDecimal commissionVat = BigDecimal.ZERO;
-				if (filtercommissionVat.size()>0 ) {
-					commissionVat =  filtercommissionVat.get(0).getAmountFc();
-				}
 				
-				
-				// Update Home Posion Master
-				data.setDebitNoteNo(debitNo);
-				data.setDebitNoteDate(debitDate);
-				data.setDebitTo(debitTo);
-				
-				data.setCreditNo(creditNo);
-				data.setCreditDate(creditDate);	
-				data.setCreditTo(creditTo);
-				
-				data.setCommission(commission);
-				data.setCommissionPercentage(commissionPercent);
-				data.setVatCommission(commissionVat);
-				data.setPaymentMode(req.getPaymentType());
-				data.setPaymentType(  paymentMode);
-				data.setPaymentStatus(paymentInfo.getEmiYn().equalsIgnoreCase("N") ? paymentStatus :"Pending");
-				data.setPolicyNo(policyNo);
-				
-				data.setStatus("P");
-				data.setIntegrationStatus("S");
-				data.setEmiYn(paymentInfo.getEmiYn());
-				data.setInstallmentPeriod(paymentInfo.getInstallmentPeriod());
-				if(StringUtils.isNotBlank(data.getEndtTypeId())) {
-					data.setEndtStatus("C");
-					
-				} else {
-					data.setOriginalPolicyNo(policyNo);
-				}
-					
-				
-				homerepo.saveAndFlush(data);
-				
-				// Update ProductWise
-				String msg = updateProductWisePolicyNo(paymentInfo.getProductId().toString() ,policyNo ,req.getQuoteNo(),data.getEndtTypeId() , product.getMotorYn()); 
-						
 				res.setPolicyNo(policyNo);
 				res.setDebitNoteNo(debitNo);
 				res.setCreditNoteNo(creditNo);
 				res.setResponse("Policy Converted");
-				
-				
-//				// Call Tira Insert 
-//				if  (  product.getMotorYn().equalsIgnoreCase("M") ) {
-//					TiraFrameReqCall tiraReq = new TiraFrameReqCall();
-//					tiraReq.setQuoteNo(data.getQuoteNo());					
-//					tiraIntegService.callTiraIntegeration(tiraReq , token );
-//				}
-				
+
 			}
 			
 			res.setPaymentId(paymentDetail.getPaymentId().toString());
@@ -1655,6 +1577,108 @@ public class PaymentServiceImpl implements PaymentService {
 		return res;
 	}
 	
+	public List<DebitAndCredit>  generatePolicy(PaymentInfo paymentInfo, PaymentDetailsSaveReq req, PaymentDetail paymentDetail) {
+		try {
+
+			HomePositionMaster data = homerepo.findByQuoteNo(req.getQuoteNo());
+			//String paymentMode = getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_MODE",req.getPaymentType());
+
+			List<DebitAndCredit> policyDetails = new ArrayList<DebitAndCredit>();
+			CalcCommission  policyReq = new CalcCommission();
+			policyReq.setAgencyCode("");
+			policyReq.setBranchCode(paymentInfo.getBranchCode());
+			policyReq.setCreatedBy(req.getCreatedBy());
+			policyReq.setInsuranceId(paymentInfo.getCompanyId());
+			policyReq.setPolicyNo("");
+			policyReq.setProductId(paymentInfo.getProductId().toString());
+			policyReq.setQuoteno(req.getQuoteNo());
+			policyReq.setSectionId("");
+
+			policyDetails = calcService.commissionCalc(policyReq);
+
+			List<DebitAndCredit> filterDebit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("DR")).collect(Collectors.toList());
+			List<DebitAndCredit> filterCredit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")).collect(Collectors.toList());
+
+			String policyNo = policyDetails.get(0).getPolicyNo();
+			// Debit
+			String debitNo = filterDebit.get(0).getDocNo() ;
+			Date debitDate = filterDebit.get(0).getEntryDate();
+			String debitTo = filterDebit.get(0).getDocType();
+			// Credit
+			String creditNo =  filterCredit.get(0).getDocNo();
+			Date creditDate = filterCredit.get(0).getEntryDate();
+			String creditTo = filterCredit.get(0).getDocType();
+			// Commision
+			BigDecimal commission =  policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") 
+					&& (o.getChargeCode().equals(new BigDecimal(1005)) || o.getChargeCode().equals(new BigDecimal(1001)) )
+					).collect(Collectors.toList()).get(0).getAmountFc();
+			BigDecimal commissionPercent = 		policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")
+					&& (o.getChargeCode().equals(new BigDecimal(1007))
+							||
+							o.getChargeCode().equals(new BigDecimal(1012))
+							)
+					).collect(Collectors.toList()).get(0).getAmountFc();
+			List<DebitAndCredit> filtercommissionVat = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")
+					&& o.getChargeCode().equals(new BigDecimal(1012))).collect(Collectors.toList());
+			BigDecimal commissionVat = BigDecimal.ZERO;
+			if (filtercommissionVat.size()>0 ) {
+				commissionVat =  filtercommissionVat.get(0).getAmountFc();
+			}
+
+
+			// Update Home Posion Master
+			data.setDebitNoteNo(debitNo);
+			data.setDebitNoteDate(debitDate);
+			data.setDebitTo(debitTo);
+
+			data.setCreditNo(creditNo);
+			data.setCreditDate(creditDate);	
+			data.setCreditTo(creditTo);
+
+			data.setCommission(commission);
+			data.setCommissionPercentage(commissionPercent);
+			data.setVatCommission(commissionVat);
+			data.setPaymentMode(req.getPaymentType());
+			data.setPaymentType(paymentDetail.getPaymentTypedesc());
+			data.setPaymentStatus(paymentInfo.getEmiYn().equalsIgnoreCase("N") ? paymentInfo.getPaymentStatus() :"Pending");
+			data.setPolicyNo(policyNo);
+
+			data.setStatus("P");
+			data.setIntegrationStatus("S");
+			data.setEmiYn(paymentInfo.getEmiYn());
+			data.setInstallmentPeriod(paymentInfo.getInstallmentPeriod());
+			if(StringUtils.isNotBlank(data.getEndtTypeId())) {
+				data.setEndtStatus("C");
+
+			} else {
+				data.setOriginalPolicyNo(policyNo);
+			}
+
+
+			homerepo.saveAndFlush(data);
+
+			// Update ProductWise
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(data.getCompanyId() , data.getProductId().toString());
+			String msg = updateProductWisePolicyNo(paymentInfo.getProductId().toString() ,policyNo ,req.getQuoteNo(),data.getEndtTypeId() , product.getMotorYn()); 
+
+
+
+			//			// Call Tira Insert 
+			//			if  (  product.getMotorYn().equalsIgnoreCase("M") ) {
+			//				TiraFrameReqCall tiraReq = new TiraFrameReqCall();
+			//				tiraReq.setQuoteNo(data.getQuoteNo());					
+			//				tiraIntegService.callTiraIntegeration(tiraReq , token );
+			//			}
+
+			return policyDetails;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
+
 	//Tracking Details
 	private QuoteUpdateRes trackingDetailsPayment(HomePositionMaster data,String createdBy) {
 		QuoteUpdateRes res=new QuoteUpdateRes();

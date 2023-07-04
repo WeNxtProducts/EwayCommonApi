@@ -14,11 +14,15 @@ import org.springframework.stereotype.Service;
 import com.google.gson.JsonObject;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.PaymentDetail;
+import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PaymentVendorMaster;
+import com.maan.eway.common.req.PaymentDetailsSaveReq;
+import com.maan.eway.common.service.PaymentService;
 import com.maan.eway.payment.service.SelcomPaymentService;
 import com.maan.eway.payment.util.ApigwClient;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.PaymentDetailRepository;
+import com.maan.eway.repository.PaymentInfoRepository;
 import com.maan.eway.repository.PaymentVendorMasterRepository;
 
 
@@ -33,6 +37,11 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 	
 	@Autowired
 	private InsuranceCompanyMasterRepository insuranceRepo;
+	
+	@Autowired
+	private PaymentService paymentService;
+	@Autowired
+	private PaymentInfoRepository paymentinforepo;
 	
 	private Logger log = LogManager.getLogger(SelcomPaymentImpl.class);
 	@Override
@@ -173,6 +182,16 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 							payment.setAuthAmount(response.get("amount").toString());
 							paymentDetailRepo.save(payment);
 							
+							PaymentInfo paymentInfo = paymentinforepo.findByQuoteNoAndPaymentIdAndMerchantReference(payment.getQuoteNo(), payment.getPaymentId(),orderId);
+							paymentInfo.setPaymentStatus(payment.getPaymentStatus());
+							paymentinforepo.save(paymentInfo);
+							if("COMPLETED".equals(response.get("payment_status").toString())) {
+								PaymentDetailsSaveReq req=new PaymentDetailsSaveReq();
+								req.setQuoteNo(payment.getQuoteNo());
+								req.setCreatedBy(payment.getUpdatedBy());
+								req.setPaymentType(payment.getPaymentType());
+								paymentService.generatePolicy(paymentInfo,req,payment);
+							}
  						return response;
 				}
 		 }catch (Exception e) {
