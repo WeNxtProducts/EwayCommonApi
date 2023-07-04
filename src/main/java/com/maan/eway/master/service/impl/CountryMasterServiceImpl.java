@@ -36,7 +36,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.CountryMaster;
+import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CountryChangeStatusReq;
@@ -845,6 +847,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 		return resList;
 	}
 
+	
 	@Override
 	public List<DropDownRes> getCountryPlansDropdown(CountryPlansReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
@@ -855,10 +858,33 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 				
 				// Country 
 				CountryMaster countryRes =  getCountryDetails(req.getCountryId()  ) ;
-				
 				List<String> planIds = countryRes.getPlanId() !=null ? Arrays.asList(countryRes.getPlanId().split(",") ) : new ArrayList<String>() ;  
 				
-				for(String id : planIds ) {
+			//
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<BrokerCommissionDetails> query=  cb.createQuery(BrokerCommissionDetails.class);
+				List<BrokerCommissionDetails> list = new ArrayList<BrokerCommissionDetails>();
+				Root<BrokerCommissionDetails> b = query.from(BrokerCommissionDetails.class);
+				query.select(b);
+				Predicate m1 = cb.equal(b.get("loginId"),req.getLoginId());
+				Predicate m2 = cb.equal(b.get("productId"),req.getProductId());  //start<=sysdate<=end
+				Predicate m3 = cb.equal(b.get("status"),"Y");
+				Predicate m4 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"), new Date());
+				Predicate m5 = cb.greaterThanOrEqualTo(b.get("effectiveDateEnd"), new Date());
+				query.where(m1,m2,m3,m4,m5);
+				
+				TypedQuery<BrokerCommissionDetails> result = em.createQuery(query);
+				list = result.getResultList();
+				List<String> newplanIds =new ArrayList<String>();
+				
+				if(list.size()>0) {
+					for(BrokerCommissionDetails data: list) {
+						List<String> newplanIdsf = 	planIds.stream().filter(o->o.equals(data.getPolicyType())).collect(Collectors.toList());
+						if(newplanIdsf.size()>0)
+							newplanIds.addAll(newplanIdsf);
+						} 
+					
+				for(String id : newplanIds ) {
 					// Response
 					List<ProductSectionMaster> filterSection = sectionlist.stream().filter( o -> o.getSectionId()!=null && o.getSectionId().toString().equals( id) ).collect(Collectors.toList()); 
 					if( filterSection.size()> 0 ) {
@@ -869,11 +895,10 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 						res.setStatus(section.getStatus());
 						resList.add(res);
 					}
-				
 				}	
 				resList.sort( Comparator.comparing(DropDownRes :: getCodeDesc )) ;
 			}
-			
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();

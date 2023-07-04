@@ -15,4 +15,7 @@ public class CountryPlansReq {
 	 
 	 @JsonProperty("InsuranceId")
 	 private String companyId;
+	 
+		@JsonProperty("LoginId")
+		private String loginId;
 }
