@@ -537,10 +537,49 @@ public class DocumentServiceImpl implements DocumentService{
 			List<LocationWiseSections> resList = new ArrayList<LocationWiseSections>();
 			try {
 				List<ListItemValue> docTypeList = getListItem( homeData.getCompanyId() , homeData.getBranchCode() , "DOC_ID_TYPE");
-				
+				List<BuildingDetails> buildingList = buildingRepo.findByQuoteNo(homeData.getQuoteNo()); 
 				List<SectionDataDetails>  sectionDatas =  secRepo.findByQuoteNoOrderByRiskIdAsc(homeData.getQuoteNo());
 				List<ProductEmployeeDetails> employeeList = employeeRepo.findByQuoteNo(homeData.getQuoteNo()); 
 				
+				if(buildingList.size() > 0 ) {
+					for (BuildingDetails building :   buildingList) {
+						
+						List<DocumentSectionList> sectionList = new ArrayList<DocumentSectionList>();
+						for ( SectionDataDetails sec :  sectionDatas ) {
+							
+							List<DocumentDropdownRes> idList  = new ArrayList<DocumentDropdownRes>();
+							
+							List<ProductEmployeeDetails> filterEmpList = employeeList.stream().filter( o -> o.getSectionId().equalsIgnoreCase(sec.getSectionId() ) ).collect(Collectors.toList());
+						
+							for (ProductEmployeeDetails emp :  filterEmpList) {
+								// Employees Documents
+								DocumentDropdownRes doc = new DocumentDropdownRes();
+								doc.setRiskId(emp.getEmployeeId()==null ? "1" : emp.getEmployeeId().toString());
+								doc.setId(emp.getNationalityId());
+								String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("H") ).collect(Collectors.toList()).get(0).getItemValue() ;					
+								doc.setIdType(idType);
+								idList.add(doc);	
+							}
+							// Section 
+							DocumentSectionList sectionRes = new DocumentSectionList(); 
+							sectionRes.setSectionId(sec.getSectionId());
+							sectionRes.setSectionName(sec.getSectionDesc());
+							sectionRes.setIdList(idList);
+							sectionList.add(sectionRes);
+								
+						}
+							
+						// Location 
+						if (sectionList.size() > 0 ) {
+							LocationWiseSections loc = new LocationWiseSections();
+							loc.setLocationId(building.getRiskId()==null ? "1" :  building.getRiskId().toString());
+							loc.setLocationName(building.getLocationName());
+							loc.setSectionList(sectionList);
+							resList.add(loc);
+						}
+					}
+					
+				} else {
 					List<DocumentSectionList> sectionList = new ArrayList<DocumentSectionList>();
 					for ( SectionDataDetails sec :  sectionDatas ) {
 						
@@ -571,6 +610,8 @@ public class DocumentServiceImpl implements DocumentService{
 					loc.setLocationName(homeData.getProductName());
 					loc.setSectionList(sectionList);
 					resList.add(loc);
+				}
+					
 				
 			} catch (Exception e) {
 				e.printStackTrace();
