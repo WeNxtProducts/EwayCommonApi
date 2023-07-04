@@ -65,6 +65,8 @@ public class CoverFromFactor implements Function<FactorRateRequestDetails,Cover>
 					.effectiveDate(t.getCoverPeriodFrom())
 					.policyEndDate(t.getCoverPeriodTo())
 					.coverageLimit(t.getCoverageLimit())
+					.tiraSumInsured(t.getRegulatorySuminsured())
+					.tiraRate(t.getRegulatoryRate()==null?0D:t.getRegulatoryRate().doubleValue())
 					.build();
 				return c;
 			 }			

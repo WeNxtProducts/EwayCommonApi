@@ -71,6 +71,8 @@ public class CoverFromPolicy implements Function<PolicyCoverData,Cover> {
 					.endtCount(t.getEndtCount())
 					.status(t.getStatus())
 					.proRata(t.getProRataPercent()==null?BigDecimal.ONE:t.getProRataPercent())
+					.tiraSumInsured(t.getRegulatorySuminsured())
+					.tiraRate(t.getRegulatoryRate()==null?0D:t.getRegulatoryRate().doubleValue())
 					//.exchangeRate(t.get("isSelectedYn")==null?0D:t.get("isSelectedYn").toString())
 					/*	.premiumBeforeDiscount(new BigDecimal(t.get("coverId").toString()))
 					.premiumAfterDiscount(new BigDecimal(t.get("coverId").toString()))
