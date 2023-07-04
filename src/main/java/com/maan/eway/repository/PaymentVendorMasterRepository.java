@@ -18,6 +18,8 @@ import java.util.List;
 import com.maan.eway.bean.PaymentVendorMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.stereotype.Repository;
+
 import com.maan.eway.bean.PaymentVendorMasterId;
 /**
  * <h2>PaymentVendorMasterRepository</h2>
@@ -28,9 +30,9 @@ import com.maan.eway.bean.PaymentVendorMasterId;
  */
  
  
- 
+ @Repository
 public interface PaymentVendorMasterRepository  extends JpaRepository<PaymentVendorMaster,PaymentVendorMasterId > , JpaSpecificationExecutor<PaymentVendorMaster> {
 
-	List<PaymentVendorMaster> findByCompanyIdAndStatusAndVendorIdOrderAmendIdDesc(String companyId, String status,String vendorId);
+	List<PaymentVendorMaster> findByCompanyIdAndStatusAndVendorIdOrderByAmendIdDesc(String companyId, String status,String vendorId);
 
 }

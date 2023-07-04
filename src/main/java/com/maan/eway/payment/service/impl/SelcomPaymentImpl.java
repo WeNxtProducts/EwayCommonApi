@@ -1,6 +1,7 @@
 package com.maan.eway.payment.service.impl;
 
 import java.util.Base64;
+
 import java.util.Date;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonObject;
 import com.maan.eway.bean.InsuranceCompanyMaster;
@@ -19,6 +21,8 @@ import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.PaymentDetailRepository;
 import com.maan.eway.repository.PaymentVendorMasterRepository;
 
+
+@Service
 public class SelcomPaymentImpl implements SelcomPaymentService {
 
 	@Autowired
@@ -37,7 +41,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 			PaymentDetail payment = paymentDetailRepo.findByMerchantReferenceAndPaymentTypeAndPaymentStatus(merchantRefernceNo,"4","PENDING");
 			
 			if(payment!=null ) {
-				List<PaymentVendorMaster> paymentId= paymentVendorRepo.findByCompanyIdAndStatusAndVendorIdOrderAmendIdDesc(payment.getCompanyId(),"Y","1");
+				List<PaymentVendorMaster> paymentId= paymentVendorRepo.findByCompanyIdAndStatusAndVendorIdOrderByAmendIdDesc(payment.getCompanyId(),"Y","1");
 				PaymentVendorMaster vendor = paymentId.get(0);
 				String apiKey = null;
 				String apiSecret = null;
@@ -133,7 +137,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 			 PaymentDetail payment = paymentDetailRepo.findByMerchantReference(orderId);
 				
 				if(payment!=null ) {
-					List<PaymentVendorMaster> paymentId= paymentVendorRepo.findByCompanyIdAndStatusAndVendorIdOrderAmendIdDesc(payment.getCompanyId(),"Y","1");
+					List<PaymentVendorMaster> paymentId= paymentVendorRepo.findByCompanyIdAndStatusAndVendorIdOrderByAmendIdDesc(payment.getCompanyId(),"Y","1");
 					PaymentVendorMaster vendor = paymentId.get(0);				
 					String apiKey = null;
 					String apiSecret = null;

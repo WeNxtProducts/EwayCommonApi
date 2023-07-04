@@ -1,6 +1,9 @@
 package com.maan.eway.payment.service;
 
+import org.springframework.stereotype.Service;
+
 import com.google.gson.JsonObject;
+
 
 public interface SelcomPaymentService {
 
