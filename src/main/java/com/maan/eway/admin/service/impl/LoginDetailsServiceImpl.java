@@ -1576,12 +1576,15 @@ this.repository = repo;
 			Predicate n2 = cb.equal(l.get("status"), "Y");
 			Predicate n3 = cb.equal(l.get("loginId"), u.get("loginId"));
 			Predicate n4 = cb.equal(l.get("companyId"),req.getInsuranceId());
+			Predicate n6 = cb.lessThanOrEqualTo(l.get("effectiveDateStart"),new Date());
+			
+			
 			if(StringUtils.isNotBlank( req.getSubUserType())  ) {
 				Predicate n5 = cb.equal(l.get("subUserType"), req.getSubUserType());
-				query.where(n1,n2,n3,n4,n5).orderBy(orderList);
+				query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
 				
 			} else {
-				query.where(n1,n2,n3,n4).orderBy(orderList);
+				query.where(n1,n2,n3,n4,n6).orderBy(orderList);
 			}
 			
 			
