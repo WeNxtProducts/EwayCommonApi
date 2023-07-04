@@ -1486,7 +1486,7 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentDetail.setMicrNo(req.getMicrNo());
 			paymentDetail.setCompanyId(paymentInfo.getCompanyId());
 			paymentDetail.setReqBillToAddressState(personaldata.getStateName());
-			//paymentDetail.setReqBillToAddrPostalCode(personaldata.getpo);
+			paymentDetail.setReqBillToAddrPostalCode(personaldata.getPinCode());
 			paymentDetail.setReqBillToCountry(personaldata.getNationality());
 			if("2".equals(req.getPaymentType())) {
 				paymentDetail.setBankName(req.getBankName());
