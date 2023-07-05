@@ -87,26 +87,26 @@ private static final long serialVersionUID = 1L;
     @Column(name="OA_CODE")
     private Integer    oaCode ;
 
-    @Column(name="PASSWORD", length=50)
+    @Column(name="PASSWORD", length=100)
     private String     password ;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="LPASS_DATE")
     private Date       lpassDate ;
 
-    @Column(name="LPASS1", length=50)
+    @Column(name="LPASS1", length=100)
     private String     lpass1 ;
 
-    @Column(name="LPASS2", length=50)
+    @Column(name="LPASS2", length=100)
     private String     lpass2 ;
 
-    @Column(name="LPASS3", length=50)
+    @Column(name="LPASS3", length=100)
     private String     lpass3 ;
 
-    @Column(name="LPASS4", length=20)
+    @Column(name="LPASS4", length=100)
     private String     lpass4 ;
 
-    @Column(name="LPASS5", length=20)
+    @Column(name="LPASS5", length=100)
     private String     lpass5 ;
 
     @Temporal(TemporalType.TIMESTAMP)

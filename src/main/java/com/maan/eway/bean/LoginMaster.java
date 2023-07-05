@@ -65,7 +65,7 @@ private static final long serialVersionUID = 1L;
     private String     subUserType ;
 
     //--- ENTITY DATA FIELDS 
-    @Column(name="PASSWORD", length=50)
+    @Column(name="PASSWORD", length=100)
     private String     password ;
 
     @Column(name="COMPANY_ID", length=20)
