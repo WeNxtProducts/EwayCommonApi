@@ -42,6 +42,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.ContentAndRisk;
 import com.maan.eway.bean.CoverDocumentMaster;
 import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.DocumentUniqueDetails;
@@ -78,6 +79,7 @@ import com.maan.eway.error.Error;
 import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.CommonDataDetailsRepository;
+import com.maan.eway.repository.ContentAndRiskRepository;
 import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.DocumentUniqueDetailsRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
@@ -128,6 +130,9 @@ public class DocumentServiceImpl implements DocumentService{
 	
 	@Autowired
 	private DocumentTransactionDetailsRepository  docTranRepo ;
+	
+	@Autowired
+	private ContentAndRiskRepository contentRepo ;
 	
 	private Logger log = LogManager.getLogger(DocumentServiceImpl.class);
 
@@ -464,12 +469,27 @@ public class DocumentServiceImpl implements DocumentService{
 								
 							} else {
 								// Asset Documents
-								DocumentDropdownRes doc = new DocumentDropdownRes();
-								doc.setRiskId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
-								doc.setId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
-								String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("A") ).collect(Collectors.toList()).get(0).getItemValue() ;					
-								doc.setIdType(idType);
-								idList.add(doc); 
+								if( "3".equalsIgnoreCase(sec.getSectionId()) ||  "2".equalsIgnoreCase(sec.getSectionId()) ||  "47".equalsIgnoreCase(sec.getSectionId()) ||
+										"53".equalsIgnoreCase(sec.getSectionId())  || "39".equalsIgnoreCase(sec.getSectionId())   || "41".equalsIgnoreCase(sec.getSectionId())  ) {
+									// Content , All Risk , PLate Glass
+									Long count = contentRepo.findByQuoteNoAndRiskIdAndSectionId(homeData.getQuoteNo() ,building.getRiskId() , sec.getSectionId());
+									if(count > 0 ) {
+										DocumentDropdownRes doc = new DocumentDropdownRes();
+										doc.setRiskId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
+										doc.setId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
+										String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("A") ).collect(Collectors.toList()).get(0).getItemValue() ;					
+										doc.setIdType(idType);
+										idList.add(doc); 
+									}
+								} else {
+									DocumentDropdownRes doc = new DocumentDropdownRes();
+									doc.setRiskId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
+									doc.setId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
+									String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("A") ).collect(Collectors.toList()).get(0).getItemValue() ;					
+									doc.setIdType(idType);
+									idList.add(doc);
+								}
+								 
 							}
 							
 							// Section 
