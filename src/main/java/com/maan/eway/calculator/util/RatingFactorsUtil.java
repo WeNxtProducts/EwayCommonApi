@@ -494,7 +494,7 @@ public class RatingFactorsUtil {
 
 			List<EndtTypeMaster> result=new ArrayList<EndtTypeMaster>();
 			String todayInString = DD_MM_YYYY.format(new Date());
-			String search="companyId:"+companyId+";productId:"+productId+";status=Y;"+todayInString+"effectiveDateStart&effectiveDateEnd;";
+			String search="companyId:"+companyId+";productId:"+productId+";status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
 			SpecCriteria criteria = crservice.createCriteria(EndtTypeMaster.class, search, "endtTypeId");
 			List<Tuple> prorata = crservice.getResult(criteria, 0, 50);
 			 if(prorata!=null && prorata.size()>0) {
