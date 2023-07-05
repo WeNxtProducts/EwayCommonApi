@@ -472,7 +472,7 @@ public class DocumentServiceImpl implements DocumentService{
 								if( "3".equalsIgnoreCase(sec.getSectionId()) ||  "2".equalsIgnoreCase(sec.getSectionId()) ||  "47".equalsIgnoreCase(sec.getSectionId()) ||
 										"53".equalsIgnoreCase(sec.getSectionId())  || "39".equalsIgnoreCase(sec.getSectionId())   || "41".equalsIgnoreCase(sec.getSectionId())  ) {
 									// Content , All Risk , PLate Glass
-									Long count = contentRepo.findByQuoteNoAndRiskIdAndSectionId(homeData.getQuoteNo() ,building.getRiskId() , sec.getSectionId());
+									Long count = contentRepo.countByQuoteNoAndRiskIdAndSectionId(homeData.getQuoteNo() ,building.getRiskId() , sec.getSectionId());
 									if(count > 0 ) {
 										DocumentDropdownRes doc = new DocumentDropdownRes();
 										doc.setRiskId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
