@@ -12,6 +12,8 @@
 
 package com.maan.eway.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -20,5 +22,11 @@ import com.maan.eway.bean.CoverDocumentMasterId;
 
  
 public interface CoverDocumentMasterRepository  extends JpaRepository<CoverDocumentMaster,CoverDocumentMasterId > , JpaSpecificationExecutor<CoverDocumentMaster> {
+
+	List<CoverDocumentMaster> findBySectionIdAndProductIdAndCompanyIdAndStatusAndMandatoryStatus(Integer valueOf,
+			Integer valueOf2, String companyId, String string, String string2);
+
+	List<CoverDocumentMaster> findByProductIdAndCompanyIdAndStatusAndMandatoryStatus(Integer valueOf, String companyId,
+			String string, String string2);
 
 }

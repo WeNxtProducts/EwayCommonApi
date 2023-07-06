@@ -43,4 +43,9 @@ public interface DocumentTransactionDetailsRepository  extends JpaRepository<Doc
 	List<DocumentTransactionDetails> findByRequestReferenceNo( String requestReferenceNo);
 
 	List<DocumentTransactionDetails> findByQuoteNoAndSectionId(String quoteNo, String secId);
+
+	List<DocumentTransactionDetails> findByQuoteNoAndIdAndIdTypeAndRiskId(String quoteNo, String id, String idType,
+			Integer valueOf);
+
+	List<DocumentTransactionDetails> findByQuoteNoAndProductId(String quoteNo, Integer valueOf);
 }

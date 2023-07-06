@@ -96,6 +96,13 @@ import com.maan.eway.common.res.PaymentInfoGetRes;
 import com.maan.eway.common.res.QuoteUpdateRes;
 import com.maan.eway.common.res.TinyUrlGetRes;
 import com.maan.eway.common.service.PaymentService;
+import com.maan.eway.document.controller.DocumentController;
+import com.maan.eway.document.req.DocTypeDropDownReq;
+import com.maan.eway.document.res.DocumentDropdownRes;
+import com.maan.eway.document.res.DocumentSectionList;
+import com.maan.eway.document.res.DocumentTypeDetails;
+import com.maan.eway.document.res.LocationWiseSections;
+import com.maan.eway.document.service.impl.DocumentServiceImpl;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.TrackingDetailsSaveReq;
 import com.maan.eway.master.service.TrackingDetailsService;
@@ -108,6 +115,7 @@ import com.maan.eway.notification.req.statealgo.NotificationStatus;
 import com.maan.eway.notification.service.NotificationService;
 import com.maan.eway.payment.service.SelcomPaymentService;
 import com.maan.eway.repository.CommonDataDetailsRepository;
+import com.maan.eway.repository.CoverDocumentMasterRepository;
 import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.DocumentUniqueDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
@@ -253,6 +261,13 @@ public class PaymentServiceImpl implements PaymentService {
 	private  DocumentTransactionDetailsRepository docTransDetails;
 	@Autowired
 	private SelcomPaymentService selcomService;
+	
+	@Autowired
+	private DocumentServiceImpl docServ;
+	
+	@Autowired
+	private	CoverDocumentMasterRepository docRepo;
+
 
 	private Logger log = LogManager.getLogger(ClausesMasterServiceImpl.class);
 
@@ -376,11 +391,8 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			//Mandatory Y details get
 			List<CoverDocumentMaster> list = new ArrayList<CoverDocumentMaster>();
-			
 			CriteriaQuery<CoverDocumentMaster> query = cb.createQuery(CoverDocumentMaster.class);
-
 			Root<CoverDocumentMaster> b = query.from(CoverDocumentMaster.class);
-
 			query.select(b);
 
 			Subquery<Long> amendId = query.subquery(Long.class);
@@ -391,25 +403,26 @@ public class PaymentServiceImpl implements PaymentService {
 			Predicate a3 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
 			Predicate a5 = cb.equal(b.get("sectionId"), ocpm1.get("sectionId"));
 			Predicate a6 = cb.equal(b.get("productId"), ocpm1.get("productId"));
+			
 			amendId.where(a1, a2, a3, a5, a6);
 
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("documentId")));
 
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
-		//	Predicate n2 = cb.equal(b.get("sectionId"), secId);
+			Predicate n2 = cb.equal(b.get("sectionId"), "99999");
 			Predicate n3 = cb.equal(b.get("companyId"), companyId);
 			Predicate n4 = cb.equal(b.get("productId"), productId);
 			Predicate n5 = cb.equal(b.get("coverId"), "99999");
 			Predicate n6 = cb.equal(b.get("status"), "Y");
 			Predicate n7 = cb.equal(b.get("mandatoryStatus"), "Y");
 
-			query.where(n1, n3, n4, n5,n6,n7).orderBy(orderList);
+			query.where(n1, n3, n4, n5,n6,n7,n2).orderBy(orderList);
 
 			TypedQuery<CoverDocumentMaster> result = em.createQuery(query);
 			list = result.getResultList();
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getDocumentId()))).collect(Collectors.toList());
-		//	list = list.stream().filter(o -> o.getMandatoryStatus().equalsIgnoreCase("Y")).collect(Collectors.toList())	;	
+				
 			
 			if(list.size()>0) {
 				for(CoverDocumentMaster coverDoc : list) { 
@@ -419,22 +432,79 @@ public class PaymentServiceImpl implements PaymentService {
 						if( ! list1.contains(coverDoc.getDocumentId()))	{
 							if(coverDoc.getSectionId()==99999)
 								error.add(new Error("01","Common Doc", coverDoc.getDocumentName() + " is Mandatory In Common Document"));
-						else
-							error.add(new Error("01","Individual Doc", coverDoc.getDocumentName() + " is Mandatory In Individual Document"));
-						}			
-						
-					}else {
+					}}else {
 						if(coverDoc.getSectionId()==99999) {
 								error.add(new Error("01","Common Doc", coverDoc.getDocumentName() + " is Mandatory In Common Document"));
 						}
-						else {
-							error.add(new Error("01","Individual Doc", coverDoc.getDocumentName() + " is Mandatory In Individual Document"));
-						}
+						
 					}
 					
+				
+				}
+			}
+			
+			
+		
+			//
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(companyId , productId.toString());
+			
+			List<CoverDocumentMaster> docmandatory = docRepo.findByProductIdAndCompanyIdAndStatusAndMandatoryStatus(
+					Integer.valueOf(productId),companyId,"Y","Y");
+			List<DocumentTransactionDetails> upload = docTransDetails.findByQuoteNoAndProductId(
+					req.getQuoteNo(),Integer.valueOf(productId) );
+			
+			DocTypeDropDownReq req1 = new DocTypeDropDownReq();
+			req1.setQuoteNo(req.getQuoteNo());
+			req1.setCompanyId(req.getInsuranceId());
+			
+			DocumentTypeDetails res = docServ.getLocationWiseSections(req1);	
+			List<LocationWiseSections>  indiDocs = res.getInduvidualDocuments();	
+			if(indiDocs.size()>0) {
+				for(LocationWiseSections loca : indiDocs) {
+					String locId = loca.getLocationId();
+					String locName = loca.getLocationName();
+					List<DocumentSectionList> secList = loca.getSectionList();
+					
+					for(DocumentSectionList section : secList) {
+						
+						Integer secId = Integer.valueOf( section.getSectionId());
+						String secName = section.getSectionName();
+						List<CoverDocumentMaster> docmandatoryfilter = docmandatory.stream().filter(o->o.getSectionId().equals(secId)).collect(Collectors.toList());						
+								
+						List<DocumentDropdownRes> docList = section.getIdList();	
+						for(DocumentDropdownRes doc : docList) {
+							String riskId = doc.getRiskId();
+								for(CoverDocumentMaster mandatorydoc : docmandatoryfilter) {
+									
+									List<DocumentTransactionDetails> uploadfilter =upload.stream().filter(o-> 
+									
+									(o.getId().equals(doc.getId())) && (o.getIdType().equals(doc.getIdType())) && (o.getRiskId().equals(riskId))
+									&& (o.getSectionId().equals(secId)) && (o.getLocationId().equals(locId)))
+											.collect(Collectors.toList());	
+									 
+									
+									docTransDetails.findByQuoteNoAndIdAndIdTypeAndRiskId(
+											req.getQuoteNo(),doc.getId(),doc.getIdType(),Integer.valueOf(riskId));
+									//section,product,locationid,rishid,id,idtype
+							
+									if(!(uploadfilter.size()>0)) {
+										if((product.getMotorYn().equalsIgnoreCase("H") &&  productId.equals("4")) || product.getMotorYn().equalsIgnoreCase("M")){
+											error.add(new Error("01","Individual Doc", mandatorydoc.getDocumentName() + " is Mandatory In Individual Document" 
+											+ " for section: "+secName+", "+ doc.getIdType()+": "+doc.getId())); }
+										else
+											
+											error.add(new Error("01","Individual Doc", mandatorydoc.getDocumentName() + " is Mandatory In Individual Document" 
+										+ " for Location: "+locName+", section: "+secName+", "+ doc.getIdType()+": "+doc.getId()));	
+									
+								}				
+								}
+						}
+						
+					}
 				}
 				
-			}
+			}			
+			
 			
 			
 		} catch (Exception e) {

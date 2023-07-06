@@ -10,7 +10,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -54,8 +53,6 @@ import com.maan.eway.common.res.TermsAndConditionRes;
 import com.maan.eway.common.res.WarrantyRes;
 import com.maan.eway.common.service.TermsAndConditionService;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.res.ClausesMasterRes;
-import com.maan.eway.master.res.WarrantyMasterRes;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.ClausesMasterRepository;
 import com.maan.eway.repository.ExclusionMasterRepository;
