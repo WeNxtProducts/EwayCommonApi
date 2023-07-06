@@ -423,7 +423,7 @@ public class PaymentServiceImpl implements PaymentService {
 			list = result.getResultList();
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getDocumentId()))).collect(Collectors.toList());
 			
-			List<CoverDocumentMaster> filtercomm = list.stream().filter(o->o.getSectionId().equals("99999")).collect(Collectors.toList());
+			List<CoverDocumentMaster> filtercomm = list.stream().filter(o->o.getSectionId().equals(99999)).collect(Collectors.toList());
 				
 			
 			if(filtercomm.size()>0) {
@@ -461,7 +461,7 @@ public class PaymentServiceImpl implements PaymentService {
 			List<LocationWiseSections>  indiDocs = res.getInduvidualDocuments();	
 			if(indiDocs.size()>0) {
 				for(LocationWiseSections loca : indiDocs) {
-					String locId = loca.getLocationId();
+					Integer locId = Integer.valueOf(loca.getLocationId());
 					String locName = loca.getLocationName();
 					List<DocumentSectionList> secList = loca.getSectionList();
 					
@@ -473,7 +473,7 @@ public class PaymentServiceImpl implements PaymentService {
 								
 						List<DocumentDropdownRes> docList = section.getIdList();	
 						for(DocumentDropdownRes doc : docList) {
-							String riskId = doc.getRiskId();
+							Integer riskId = Integer.valueOf(doc.getRiskId());
 								for(CoverDocumentMaster mandatorydoc : docmandatoryfilter) {
 									
 									List<DocumentTransactionDetails> uploadfilter =upload.stream().filter(o-> 
