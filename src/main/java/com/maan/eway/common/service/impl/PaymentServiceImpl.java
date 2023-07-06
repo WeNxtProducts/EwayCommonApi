@@ -421,10 +421,10 @@ public class PaymentServiceImpl implements PaymentService {
 
 			TypedQuery<CoverDocumentMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getDocumentId()))).collect(Collectors.toList());
+		//	list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getDocumentId()))).collect(Collectors.toList());
 			
 			List<CoverDocumentMaster> filtercomm = list.stream().filter(o->o.getSectionId().equals(99999)).collect(Collectors.toList());
-				
+			filtercomm = filtercomm.stream().filter(distinctByKey(o -> Arrays.asList(o.getDocumentId()))).collect(Collectors.toList());	
 			
 			if(filtercomm.size()>0) {
 				for(CoverDocumentMaster coverDoc : filtercomm) { 
@@ -470,7 +470,8 @@ public class PaymentServiceImpl implements PaymentService {
 						Integer secId = Integer.valueOf( section.getSectionId());
 						String secName = section.getSectionName();
 						List<CoverDocumentMaster> docmandatoryfilter = list.stream().filter(o->o.getSectionId().equals(secId)).collect(Collectors.toList());						
-								
+						docmandatoryfilter = docmandatoryfilter.stream().filter(distinctByKey(o -> Arrays.asList(o.getDocumentId()))).collect(Collectors.toList());	
+						
 						List<DocumentDropdownRes> docList = section.getIdList();	
 						for(DocumentDropdownRes doc : docList) {
 							Integer riskId = Integer.valueOf(doc.getRiskId());
