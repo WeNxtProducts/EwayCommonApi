@@ -410,22 +410,24 @@ public class PaymentServiceImpl implements PaymentService {
 			orderList.add(cb.asc(b.get("documentId")));
 
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
-			Predicate n2 = cb.equal(b.get("sectionId"), "99999");
+	//		Predicate n2 = cb.equal(b.get("sectionId"), "99999");
 			Predicate n3 = cb.equal(b.get("companyId"), companyId);
 			Predicate n4 = cb.equal(b.get("productId"), productId);
 			Predicate n5 = cb.equal(b.get("coverId"), "99999");
 			Predicate n6 = cb.equal(b.get("status"), "Y");
 			Predicate n7 = cb.equal(b.get("mandatoryStatus"), "Y");
 
-			query.where(n1, n3, n4, n5,n6,n7,n2).orderBy(orderList);
+			query.where(n1, n3, n4, n5,n6,n7).orderBy(orderList);
 
 			TypedQuery<CoverDocumentMaster> result = em.createQuery(query);
 			list = result.getResultList();
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getDocumentId()))).collect(Collectors.toList());
+			
+			List<CoverDocumentMaster> filtercomm = list.stream().filter(o->o.getSectionId().equals("99999")).collect(Collectors.toList());
 				
 			
-			if(list.size()>0) {
-				for(CoverDocumentMaster coverDoc : list) { 
+			if(filtercomm.size()>0) {
+				for(CoverDocumentMaster coverDoc : filtercomm) { 
 					
 					if(list1.size()>0) {
 						
@@ -443,13 +445,11 @@ public class PaymentServiceImpl implements PaymentService {
 				}
 			}
 			
-			
 		
 			//
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(companyId , productId.toString());
 			
-			List<CoverDocumentMaster> docmandatory = docRepo.findByProductIdAndCompanyIdAndStatusAndMandatoryStatus(
-					Integer.valueOf(productId),companyId,"Y","Y");
+
 			List<DocumentTransactionDetails> upload = docTransDetails.findByQuoteNoAndProductId(
 					req.getQuoteNo(),Integer.valueOf(productId) );
 			
@@ -469,7 +469,7 @@ public class PaymentServiceImpl implements PaymentService {
 						
 						Integer secId = Integer.valueOf( section.getSectionId());
 						String secName = section.getSectionName();
-						List<CoverDocumentMaster> docmandatoryfilter = docmandatory.stream().filter(o->o.getSectionId().equals(secId)).collect(Collectors.toList());						
+						List<CoverDocumentMaster> docmandatoryfilter = list.stream().filter(o->o.getSectionId().equals(secId)).collect(Collectors.toList());						
 								
 						List<DocumentDropdownRes> docList = section.getIdList();	
 						for(DocumentDropdownRes doc : docList) {
@@ -479,13 +479,7 @@ public class PaymentServiceImpl implements PaymentService {
 									List<DocumentTransactionDetails> uploadfilter =upload.stream().filter(o-> 
 									
 									(o.getId().equals(doc.getId())) && (o.getIdType().equals(doc.getIdType())) && (o.getRiskId().equals(riskId))
-									&& (o.getSectionId().equals(secId)) && (o.getLocationId().equals(locId)))
-											.collect(Collectors.toList());	
-									 
-									
-									docTransDetails.findByQuoteNoAndIdAndIdTypeAndRiskId(
-											req.getQuoteNo(),doc.getId(),doc.getIdType(),Integer.valueOf(riskId));
-									//section,product,locationid,rishid,id,idtype
+									&& (o.getSectionId().equals(secId)) && (o.getLocationId().equals(locId))).collect(Collectors.toList());	
 							
 									if(!(uploadfilter.size()>0)) {
 										if((product.getMotorYn().equalsIgnoreCase("H") &&  productId.equals("4")) || product.getMotorYn().equalsIgnoreCase("M")){
