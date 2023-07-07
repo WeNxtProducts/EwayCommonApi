@@ -143,6 +143,10 @@ public class EservieMotorDetailsViewRes {
 	 
 	 @JsonProperty("EndtTypeMaster")
 	 private EndtTypeMasterDto endtType;
+	 
+	 @JsonProperty("TotalAccessoriesInsured")
+	 private Double totalAccessoriesInsured;
+	 
 		
 	
 }
