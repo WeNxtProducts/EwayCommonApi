@@ -1316,4 +1316,335 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 		return resList;
 	}
 
+	@Override
+	public List<Error> validateCustomer(EserviceCustomerSaveReq req) {
+		List<Error> errorList = new ArrayList<Error>();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+		try {
+			Calendar cal = Calendar.getInstance();
+
+			if (req.getSaveOrSubmit().equalsIgnoreCase("Submit")) {
+				if (StringUtils.isBlank(req.getClientName())) {
+					errorList.add(new Error("01", "ClientName", "Please Enter ClientName "));
+				} else if (req.getClientName().length() > 100) {
+					errorList.add(new Error("01", "ClientName", "Please Enter ClientName within 100 Characters"));
+				} 
+				else if (StringUtils.isNotBlank(req.getClientName())&& !req.getClientName().matches("[a-zA-Z ]+")) {
+					errorList.add(new Error("01", "ClientName", "Please Enter Proper ClientName"));						
+				}
+				 
+				if (StringUtils.isBlank(req.getTitle())) {
+					errorList.add(new Error("04", "Title", "Please Select Title"));
+				}
+				if (StringUtils.isBlank(req.getClientStatus())) {
+					errorList.add(new Error("05", "Client Status", "Please Select Client Status"));
+				}
+
+				if (StringUtils.isNotBlank(req.getPolicyHolderType())) {
+
+					if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
+						if (StringUtils.isBlank(req.getBusinessType())) {
+							errorList.add(new Error("16", "BusinessType", "Please Select BusinessType"));
+						}
+					}
+				}
+//	 
+
+				if (StringUtils.isBlank(req.getIdNumber())) {
+					errorList.add(new Error("11", "IdNumber", "Please Enter IdNumber"));
+				} else if (req.getIdNumber().length() > 100) {
+					errorList.add(new Error("11", "IdNumber", "Please Enter IdNumber within 100 Characters"));
+				} else if (! req.getIdNumber().matches("[A-Za-z0-9]+") ) {
+					errorList.add(new Error("11", "IdNumber", "Please Enter Valid IdNumber "));
+				}
+				      
+
+				if (StringUtils.isBlank(req.getMobileNo1())) {
+					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo"));
+				} else if (req.getMobileNo1().length() > 20) {
+					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo within 20 Characters"));
+				} else if (!req.getMobileNo1().matches("\\d+")) {
+					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo only in numbers"));
+				}
+
+				if (StringUtils.isNotBlank(req.getMobileNo2()) && req.getMobileNo2().length() > 20) {
+					errorList.add(new Error("25", "MobileNo2", "Please Enter MobileNo2 within 20 Characters"));
+				} else if (StringUtils.isNotBlank(req.getMobileNo2()) && !req.getMobileNo2().matches("\\d+")) {
+					errorList.add(new Error("25", "MobileNo2", "Please Enter MobileNo2 only in numbers"));
+				}
+				if (StringUtils.isNotBlank(req.getMobileNo3()) && req.getMobileNo3().length() > 20) {
+					errorList.add(new Error("26", "MobileNo3", "Please Enter MobileNo3 within 20 Characters"));
+				} else if (StringUtils.isNotBlank(req.getMobileNo2()) && !req.getMobileNo3().matches("\\d+")) {
+					errorList.add(new Error("26", "MobileNo3", "Please Enter MobileNo3 only in numbers"));
+				}
+			/*	if (StringUtils.isBlank(req.getEmail1())) {
+					errorList.add(new Error("27", "Email1", "Please Enter Email"));
+				} else if (req.getEmail1().length() > 100) {
+					errorList.add(new Error("27", "Email1", "Please Enter Email within 100 Characters"));
+				} else {
+					boolean b = isValidMail(req.getEmail1());
+					if (b == false) {
+						errorList.add(new Error("37", "Email", "Please Enter Email in correct format"));
+					}
+				}*/
+ 
+				 
+				// Status Validation
+				if (StringUtils.isBlank(req.getStatus())) {
+					errorList.add(new Error("34", "Status", "Please Enter Status"));
+				} else if (req.getStatus().length() > 1) {
+					errorList.add(new Error("34", "Status", "Enter Status in 1 Character Only"));
+				} else if (!("Y".equals(req.getStatus()) || "N".equals(req.getStatus())
+						|| "P".equals(req.getStatus()))) {
+					errorList.add(new Error("34", "Status", "Plese Enter Status"));
+				}
+				if (StringUtils.isBlank(req.getCreatedBy())) {
+					errorList.add(new Error("35", "CreatedBy", "Please Enter CreatedBy "));
+				} else if (req.getCreatedBy().length() > 100) {
+					errorList.add(new Error("35", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
+				}
+
+				 
+
+				 
+
+				if (StringUtils.isBlank(req.getBranchCode())) {
+					errorList.add(new Error("39", "BranchCode", "Please Enter BranchCode "));
+				} else if (req.getBranchCode().length() > 20) {
+					errorList.add(new Error("39", "BranchCode", "Please Enter BranchCode within 20 Characters"));
+				}
+				if (StringUtils.isBlank(req.getProductId())) {
+					errorList.add(new Error("40", "ProductId", "Please Enter ProductId "));
+				} else if (req.getProductId().length() > 20) {
+					errorList.add(new Error("40", "ProductId", "Please Enter ProductId within 20 Characters"));
+				}
+				if (StringUtils.isBlank(req.getCompanyId())) {
+					errorList.add(new Error("41", "CompanyId", "Please Enter CompanyId "));
+				} else if (req.getCompanyId().length() > 20) {
+					errorList.add(new Error("41", "CompanyId", "Please Enter CompanyId within 20 Characters"));
+				}
+				
+				if( StringUtils.isNotBlank(req.getPolicyHolderType()) && req.getPolicyHolderType().equalsIgnoreCase("2") ) {
+					if (StringUtils.isBlank(req.getVrTinNo())) {
+						errorList.add(new Error("42", "VrTinNo", "Please Enter VrTinNo"));
+					} else if (req.getVrTinNo().length() > 20) {
+						errorList.add(new Error("42", "VrTinNo", "Please Enter VrTinNo within 20 Characters"));
+					}
+					
+				}
+				
+ 
+				 
+  
+				if (StringUtils.isBlank(req.getMobileCode1())) {
+					errorList.add(new Error("46", "MobileCode", "Please Select MobileCode "));
+				}
+				
+				if (StringUtils.isBlank(req.getWhatsappCode())) {
+					errorList.add(new Error("47", "WhatsappCode", "Please Select WhatsappCode "));
+				}
+				
+				List<EserviceCustomerDetails> list = new ArrayList<EserviceCustomerDetails>();
+				if ((StringUtils.isNotBlank(req.getAddress1())) && (StringUtils.isNotBlank(req.getAddress2()))
+						&& (StringUtils.isNotBlank(req.getBranchCode()))
+						&& (StringUtils.isNotBlank(req.getBusinessType()))
+						&& (StringUtils.isNotBlank(req.getCityCode())) && (StringUtils.isNotBlank(req.getCityName()))
+						&& (StringUtils.isNotBlank(req.getClientName()))
+						&& (StringUtils.isNotBlank(req.getClientStatus()))
+						&& (StringUtils.isNotBlank(req.getCompanyId())) && (StringUtils.isNotBlank(req.getCreatedBy()))
+						// && (StringUtils.isNotBlank(req.getCustomerReferenceNo()))
+						&& (StringUtils.isNotBlank(req.getEmail1())) && (StringUtils.isNotBlank(req.getEmail2()))
+						&& (StringUtils.isNotBlank(req.getEmail3())) && (StringUtils.isNotBlank(req.getFax()))
+						&& (StringUtils.isNotBlank(req.getGender())) && (StringUtils.isNotBlank(req.getIdNumber()))
+						&& (StringUtils.isNotBlank(req.getIsTaxExempted()))
+						&& (StringUtils.isNotBlank(req.getLanguage()))
+						&& (StringUtils.isNotBlank(req.getLanguageDesc()))
+						&& (StringUtils.isNotBlank(req.getMobileNo1())) && (StringUtils.isNotBlank(req.getMobileNo2()))
+						&& (StringUtils.isNotBlank(req.getMobileNo3()))
+						&& (StringUtils.isNotBlank(req.getNationality()))
+						&& (StringUtils.isNotBlank(req.getOccupation()))
+						&& (StringUtils.isNotBlank(req.getPlaceOfBirth()))
+						&& (StringUtils.isNotBlank(req.getPolicyHolderType()))
+						&& (StringUtils.isNotBlank(req.getPolicyHolderTypeid()))
+						&& (StringUtils.isNotBlank(req.getProductId())) && (StringUtils.isNotBlank(req.getRegionCode()))
+						&& (StringUtils.isNotBlank(req.getStateCode())) && (StringUtils.isNotBlank(req.getStateName()))
+						&& (StringUtils.isNotBlank(req.getStatus())) && (StringUtils.isNotBlank(req.getStreet()))
+						&& (StringUtils.isNotBlank(req.getTaxExemptedId()))
+						&& (StringUtils.isNotBlank(req.getTelephoneNo1()))
+						&& (StringUtils.isNotBlank(req.getTelephoneNo2()))
+						&& (StringUtils.isNotBlank(req.getTelephoneNo3())) && (StringUtils.isNotBlank(req.getTitle()))
+						&& (req.getDobOrRegDate()!=null)
+						&& (StringUtils.isNotBlank(req.getIsTaxExempted()))
+						&& (StringUtils.isNotBlank(req.getTaxExemptedId()))
+						&& (StringUtils.isNotBlank(req.getPreferredNotification()))
+						&& (req.getAppointmentDate()!=null)
+						
+						){
+
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<EserviceCustomerDetails> query = cb.createQuery(EserviceCustomerDetails.class);
+					// Find all
+					Root<EserviceCustomerDetails> b = query.from(EserviceCustomerDetails.class);
+					// Select
+					query.select(b);
+					// Where
+
+					Predicate n1 = (cb.like(cb.lower(b.get("address1")), req.getAddress1().toLowerCase()));
+					Predicate n2 = (cb.like(cb.lower(b.get("address2")), req.getAddress2().toLowerCase()));
+					Predicate n3 = (cb.like(cb.lower(b.get("branchCode")), req.getBranchCode().toLowerCase()));
+					Predicate n4 = (cb.like(cb.lower(b.get("businessType")), req.getBusinessType().toLowerCase()));
+					Predicate n5 = (cb.like(cb.lower(b.get("cityCode")), req.getCityCode().toLowerCase()));
+					Predicate n6 = (cb.like(cb.lower(b.get("cityName")), req.getCityName().toLowerCase()));
+					Predicate n7 = (cb.like(cb.lower(b.get("clientName")), req.getClientName().toLowerCase()));
+					Predicate n8 = (cb.like(cb.lower(b.get("clientStatus")), req.getClientStatus().toLowerCase()));
+					Predicate n9 = (cb.like(cb.lower(b.get("companyId")), req.getCompanyId().toLowerCase()));
+					Predicate n10 = (cb.like(cb.lower(b.get("createdBy")), req.getCreatedBy().toLowerCase()));
+					// Predicate n11 =
+					// (cb.like(cb.lower(b.get("customerReferenceNo")),req.getCustomerReferenceNo().toLowerCase()));
+					Predicate n12 = (cb.equal(b.get("dobOrRegDate"), req.getDobOrRegDate()));
+					Predicate n13 = (cb.like(cb.lower(b.get("email1")), req.getEmail1().toLowerCase()));
+					Predicate n14 = (cb.like(cb.lower(b.get("email2")), req.getEmail2().toLowerCase()));
+					Predicate n15 = (cb.like(cb.lower(b.get("email3")), req.getEmail3().toLowerCase()));
+					Predicate n16 = (cb.equal(b.get("fax"), req.getFax().toLowerCase()));
+					Predicate n17 = (cb.like(cb.lower(b.get("gender")), req.getGender().toLowerCase()));
+					Predicate n18 = (cb.like(cb.lower(b.get("idNumber")), req.getIdNumber().toLowerCase()));
+					Predicate n19 = (cb.like(cb.lower(b.get("isTaxExempted")), req.getIsTaxExempted().toLowerCase()));
+					Predicate n20 = (cb.like(cb.lower(b.get("language")), req.getLanguage().toLowerCase()));
+					Predicate n21 = (cb.like(cb.lower(b.get("languageDesc")), req.getLanguageDesc().toLowerCase()));
+					Predicate n22 = (cb.equal(b.get("mobileNo1"), req.getMobileNo1()));
+					Predicate n23 = (cb.equal(b.get("mobileNo2"), req.getMobileNo2()));
+					Predicate n24 = (cb.equal(b.get("mobileNo3"), req.getMobileNo3()));
+					Predicate n25 = (cb.like(cb.lower(b.get("nationality")), req.getNationality().toLowerCase()));
+					Predicate n26 = (cb.like(cb.lower(b.get("occupation")), req.getOccupation().toLowerCase()));
+					Predicate n27 = (cb.like(cb.lower(b.get("placeOfBirth")), req.getPlaceOfBirth().toLowerCase()));
+					Predicate n28 = (cb.like(cb.lower(b.get("policyHolderType")),
+							req.getPolicyHolderType().toLowerCase()));
+					Predicate n29 = (cb.like(cb.lower(b.get("policyHolderTypeId")),
+							req.getPolicyHolderTypeid().toLowerCase()));
+					Predicate n30 = (cb.like(cb.lower(b.get("productId")), req.getProductId().toLowerCase()));
+					Predicate n31 = (cb.like(cb.lower(b.get("regionCode")), req.getRegionCode().toLowerCase()));
+					Predicate n32 = (cb.like(cb.lower(b.get("stateCode")), req.getStateCode().toLowerCase()));
+					Predicate n33 = (cb.like(cb.lower(b.get("stateName")), req.getStateName().toLowerCase()));
+					Predicate n34 = (cb.like(cb.lower(b.get("status")), req.getStatus().toLowerCase()));
+					Predicate n35 = (cb.like(cb.lower(b.get("street")), req.getStreet().toLowerCase()));
+					Predicate n36 = (cb.like(cb.lower(b.get("taxExemptedId")), req.getTaxExemptedId().toLowerCase()));
+					Predicate n37 = (cb.equal(b.get("telephoneNo1"), req.getTelephoneNo1()));
+					Predicate n38 = (cb.equal(b.get("telephoneNo2"), req.getTelephoneNo2()));
+					Predicate n39 = (cb.equal(b.get("telephoneNo3"), req.getTelephoneNo3()));
+					Predicate n40 = (cb.like(cb.lower(b.get("title")), req.getTitle().toLowerCase()));
+					Predicate n41 = (cb.equal(b.get("appointmentDate"), req.getAppointmentDate()));
+					Predicate n42 = (cb.like(cb.lower(b.get("preferredNotification")), req.getPreferredNotification().toLowerCase()));
+
+					query.where(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10,
+							// n11,
+							n12, n13, n14, n15, n16, n17, n18, n19, n20, n21, n22, n23, n24, n25, n26, n27, n28, n29,
+							n30, n31, n32, n33, n34, n35, n36, n37, n38, n39, n40,n41,n42);
+					// Get Result
+					TypedQuery<EserviceCustomerDetails> result = em.createQuery(query);
+					list = result.getResultList();
+					if (list.size() > 0) {
+						errorList.add(new Error("42", "Already have data for customerReferenceNo",
+								list.get(0).getCustomerReferenceNo()));
+
+					}
+				}
+			}
+
+			else if (req.getSaveOrSubmit().equalsIgnoreCase("Save")) {
+				if (StringUtils.isBlank(req.getClientName())) {
+					errorList.add(new Error("01", "ClientName", "Please Enter ClientName "));
+				} else if (req.getClientName().length() > 100) {
+					errorList.add(new Error("01", "ClientName", "Please Enter ClientName within 100 Characters"));
+				}
+				if (StringUtils.isBlank(req.getPolicyHolderType())) {
+					errorList.add(new Error("02", "PolicyHolderType", "Please Select PolicyHolderType "));
+				}
+/*				if (StringUtils.isNotBlank(req.getPolicyHolderType())) {
+
+					if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
+						if (StringUtils.isBlank(req.getBusinessType())) {
+							errorList.add(new Error("16", "BusinessType", "Please Select BusinessType"));
+						}
+					}
+				}
+*/
+				// Date Validation
+			//	Calendar cal = new GregorianCalendar();
+				Date today = new Date();
+				cal.setTime(today);
+				cal.add(Calendar.DAY_OF_MONTH, -1);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 50);
+				today = cal.getTime();
+				if (req.getPolicyHolderType().equalsIgnoreCase("1")) {
+
+					if (req.getDobOrRegDate() == null) {
+						errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate "));
+
+					} else if (req.getDobOrRegDate().after(today)) {
+						errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate as Past Date"));
+
+					}
+
+					LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
+							.toLocalDate();
+					LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+					Integer years = Period.between(localDate1, localDate2).getYears();
+					if (years > 100) {
+						errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Accepted More than 100 Years"));
+
+					}
+				}
+
+				if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
+
+					if (req.getDobOrRegDate() == null) {
+						errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate "));
+
+					} else if (req.getDobOrRegDate().after(today)) {
+						errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate as Past Date"));
+
+					}
+
+					LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
+							.toLocalDate();
+					LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+					Integer years = Period.between(localDate1, localDate2).getYears();
+					if (years > 100) {
+						errorList.add(new Error("38", "DobOrRegDate", "DobOrRegDate Not Accepted More than 100 Years"));
+
+					}
+				}
+			}
+			/*
+			if (StringUtils.isBlank(req.getMobileNo1())) {
+				errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo1"));
+			} else if (req.getMobileNo1().length() > 20) {
+				errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo1 within 20 Characters"));
+			} else if (!req.getMobileNo1().matches("\\d+")) {
+				errorList.add(new Error("24", "MobileNo1", "Please Enter MobileNo1 only in numbers"));
+			}
+			if (StringUtils.isBlank(req.getEmail1())) {
+				errorList.add(new Error("27", "Email1", "Please Enter Email1"));
+			} else if (req.getEmail1().length() > 20) {
+				errorList.add(new Error("27", "Email1", "Please Enter Email1 within 20 Characters"));
+			} else {
+				boolean b = isValidMail(req.getEmail1());
+				if (b == false) {
+					errorList.add(new Error("37", "Email1", "Please Enter Email in correct format"));
+				}
+			}
+			*/
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			errorList.add(new Error("01", "Common Error", e.getMessage()));
+		}
+		return errorList;
+
+	}
+
 }

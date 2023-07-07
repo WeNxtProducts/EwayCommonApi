@@ -288,14 +288,7 @@ public class NotificationService {
 						.notifTemplatename(n.getNotifTemplatename())
 						.otp(n.getOtp())
 						.policyNo(n.getPolicyNo())
-						.quoteNo(n.getQuoteNo()) 
-						.uwMailid((n.getUnderwriters().size()>5)?n.getUnderwriters().subList(0, 5).stream().map(a -> a.getUwMailid()).collect(Collectors.joining(",")):
-							n.getUnderwriters().stream().map(a -> a.getUwMailid()).collect(Collectors.joining(",")))
-						.uwMessengerCode(n.getUnderwriters().get(0).getUwMessengerCode())
-						.uwMessengerPhone(n.getUnderwriters().get(0).getUwMessengerPhone())
-						.uwName(n.getUnderwriters().get(0).getUwName())
-						.uwPhonecode(n.getUnderwriters().get(0).getUwPhonecode())
-						.uwPhoneNo(n.getUnderwriters().get(0).getUwPhoneNo())
+						.quoteNo(n.getQuoteNo())						
 						.productName(n.getProductName())
 						.sectionName(n.getSectionName())
 						.statusMessage(n.getStatusMessage())
@@ -305,16 +298,26 @@ public class NotificationService {
 						.productid(n.getProductid())
 						.companyLogo(coms.get(0).getCompanyLogo())
 						.companyAddress(coms.get(0).getCompanyAddress())
-						.attachFilePath(filesTobeAttch)
-						.uwloginId(n.getUnderwriters().get(0).getUwLoginId())
-						.uwUserType(n.getUnderwriters().get(0).getUwuserType())
-						.uwSubuserType(n.getUnderwriters().get(0).getUwsubuserType())
+						.attachFilePath(filesTobeAttch)						
 						.customerRefno(n.getCustomer().getCustomerRefno())
 						.branchCode(n.getBranchCode())
 						.refno(n.getRefNo())
 						.tinyUrlActive("Y")
 						.tinyGroupId(tinyGroupId)
 						.build();
+				if(n.getUnderwriters()!=null) {
+					nt.setUwMailid((n.getUnderwriters().size()>5)?n.getUnderwriters().subList(0, 5).stream().map(a -> a.getUwMailid()).collect(Collectors.joining(",")):
+					n.getUnderwriters().stream().map(a -> a.getUwMailid()).collect(Collectors.joining(",")));
+					nt.setUwMessengerCode(n.getUnderwriters().get(0).getUwMessengerCode());
+					nt.setUwMessengerPhone(n.getUnderwriters().get(0).getUwMessengerPhone());
+					nt.setUwName(n.getUnderwriters().get(0).getUwName());
+					nt.setUwPhonecode(n.getUnderwriters().get(0).getUwPhonecode());
+					nt.setUwPhoneNo(n.getUnderwriters().get(0).getUwPhoneNo());
+					nt.setUwloginId(n.getUnderwriters().get(0).getUwLoginId());
+					nt.setUwUserType(n.getUnderwriters().get(0).getUwuserType());
+					nt.setUwSubuserType(n.getUnderwriters().get(0).getUwsubuserType());
+					
+				}
 				generateTinyURL(n,loadTinyUrl,loadDropdown,nt);
 				sv = notifTrans.save(nt);
 			}

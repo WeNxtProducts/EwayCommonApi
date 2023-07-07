@@ -45,5 +45,7 @@ public interface LoginMasterRepository  extends JpaRepository<LoginMaster,LoginM
 
 	LoginMaster findByLoginIdAndEffectiveDateStartLessThanEqual(String loginId, Date date);
 
+	Integer countByCompanyIdAndLoginId(String companyId, String mobileNo);
+
 
 }

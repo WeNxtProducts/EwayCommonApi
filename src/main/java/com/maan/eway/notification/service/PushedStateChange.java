@@ -43,56 +43,65 @@ public class PushedStateChange implements  Function<Tuple,List<Object>>{
 			
 			List<Object> a=new ArrayList<Object>();
 			if(master.getWhatsappRequired().equals("Y") ) {
-				Messenger m=Messenger.builder()
-						.messengerBody((String) getContentFrame(t, master.getWhatsappBodyEn()))
-						.messengerRegards((String) getContentFrame(t, master.getWhatsappRegards()))
-						.messengerSubject((String) getContentFrame(t, master.getWhatsappSubject()))
-						.messengerTo((String) getValue(t,master.getToMessengerno()))
-						.build();
-				a.add(m);
+				Object messengerTo=getValue(t,master.getToMessengerno());
+				if(messengerTo!=null) {
+					Messenger m=Messenger.builder()
+							.messengerBody((String) getContentFrame(t, master.getWhatsappBodyEn()))
+							.messengerRegards((String) getContentFrame(t, master.getWhatsappRegards()))
+							.messengerSubject((String) getContentFrame(t, master.getWhatsappSubject()))
+							.messengerTo((String) messengerTo)
+							.build();
+					a.add(m);
+				}
 			}
 			if(master.getSmsRequired().equals("Y") ) {
-				Sms s=Sms.builder()
-						.smsBody((String) getContentFrame(t, master.getSmsBodyEn()))
-						.smsRegards((String) getContentFrame(t, master.getSmsRegards()))
-						.smsSubject((String) getContentFrame(t, master.getSmsSubject()))
-						.smsTo(master.getToSmsno())	
-						.smsFrom(smsmaster.getSenderId())
-						.credential(JobCredentials.builder().host(smsmaster.getSmsPartyUrl()).isSSL(true).password(smsmaster.getSmsUserPass()).username(smsmaster.getSmsUserName()).build())
-						.smsToCode(sms.getCustomerPhoneCode().toString())
-						.notifNo(Integer.parseInt(t.get("notifNo").toString()))
-						.build();
-				a.add(s);
+				Object smsTo= getValue(t,master.getToSmsno()) ;
+				if(smsTo!=null) {
+					Sms s=Sms.builder()
+							.smsBody((String) getContentFrame(t, master.getSmsBodyEn()))
+							.smsRegards((String) getContentFrame(t, master.getSmsRegards()))
+							.smsSubject((String) getContentFrame(t, master.getSmsSubject()))
+							.smsTo((String) smsTo)	
+							.smsFrom(smsmaster.getSenderId())
+							.credential(JobCredentials.builder().host(smsmaster.getSmsPartyUrl()).isSSL(true).password(smsmaster.getSmsUserPass()).username(smsmaster.getSmsUserName()).build())
+							.smsToCode(sms.getCustomerPhoneCode().toString())
+							.notifNo(Integer.parseInt(t.get("notifNo").toString()))
+							.build();
+					a.add(s);
+				}
 			}
 			if(master.getMailRequired().equals("Y") ) {
-				
-				String tomailds=(String) getValue(t,master.getToEmail());
-				String tomailid=tomailds;
-				List<String> mailcc=null;
-				if(tomailds.indexOf(",")!=1) {
-					tomailid=tomailds.split(",")[0];
-				    String[] mailcsc = tomailid.split(",");
-				    List<String> asList = Arrays.asList(mailcsc);
-				    mailcc= (asList.size()>5)?asList.subList(0, 5):asList;
+
+				Object tomailds= getValue(t,master.getToEmail());
+				if(tomailds!=null) {
+					String tomaildstr=(String )tomailds;
+					String tomailid=tomaildstr;
+					List<String> mailcc=null;
+					if(tomaildstr.indexOf(",")!=1) {
+						tomailid=tomaildstr.split(",")[0];
+						String[] mailcsc = tomailid.split(",");
+						List<String> asList = Arrays.asList(mailcsc);
+						mailcc= (asList.size()>5)?asList.subList(0, 5):asList;
+					}
+
+					String mailSubject=(String) getContentFrame(t, master.getMailSubject());
+
+					String templatebody=getTemplateFrame(t, master);
+
+					Mail ml=Mail.builder()
+							.mailBody(templatebody)
+							.mailRegards(null)
+							.mailSubject(mailSubject)
+							.mailTo(tomailid)
+							.mailcc(mailcc)
+							.credential(JobCredentials.builder().host(mailMaster.getSmtpHost()).port(mailMaster.getSmtpPort()).isSSL(true).password(mailMaster.getSmtpPwd()).username(mailMaster.getSmtpUser()).build())
+							.attachments(t.get("attachFilePath")==null?"":t.get("attachFilePath").toString())
+							.notifNo(Integer.parseInt(t.get("notifNo").toString()))
+							.build();
+					a.add(ml);
 				}
-				
-				String mailSubject=(String) getContentFrame(t, master.getMailSubject());
-				
-				String templatebody=getTemplateFrame(t, master);
-				
-				Mail ml=Mail.builder()
-						.mailBody(templatebody)
-						.mailRegards(null)
-						.mailSubject(mailSubject)
-						.mailTo(tomailid)
-						.mailcc(mailcc)
-						.credential(JobCredentials.builder().host(mailMaster.getSmtpHost()).port(mailMaster.getSmtpPort()).isSSL(true).password(mailMaster.getSmtpPwd()).username(mailMaster.getSmtpUser()).build())
-						.attachments(t.get("attachFilePath")==null?"":t.get("attachFilePath").toString())
-						.notifNo(Integer.parseInt(t.get("notifNo").toString()))
-						.build();
-				a.add(ml);
+				return a;
 			}
-			return a;
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
