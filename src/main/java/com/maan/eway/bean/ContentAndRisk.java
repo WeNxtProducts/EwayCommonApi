@@ -64,6 +64,9 @@ public class ContentAndRisk implements Serializable {
 	@Id	
 	@Column(name = "QUOTE_NO", length = 20)
 	private String quoteNo;
+		@Id	
+	   @Column(name="SERIAL_NO_DESC", length=100)
+	   private String     serialNoDesc;
 	
 	@Column(name="POLICY_NO", length=100)
     private String     policyNo;
@@ -162,6 +165,5 @@ public class ContentAndRisk implements Serializable {
    @Column(name="CONTENT_RISK_DESC", length=100)
    private String     contentRiskDesc;
    
-   @Column(name="SERIAL_NO_DESC", length=100)
-   private String     serialNoDesc;
+
 }

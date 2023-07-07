@@ -35,6 +35,7 @@ public class ContentAndRiskId implements Serializable {
 	private String sectionId;
 	private Integer itemId;	
 	private String quoteNo;
+	  private String     serialNoDesc;
 
 
     
