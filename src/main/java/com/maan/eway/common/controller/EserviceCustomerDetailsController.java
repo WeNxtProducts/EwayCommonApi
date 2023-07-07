@@ -1,11 +1,13 @@
 package com.maan.eway.common.controller;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
-import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -82,6 +84,8 @@ public class EserviceCustomerDetailsController {
 
 		} else {
 			/////// save
+			req.setDobOrRegDate(new Date());
+			req.setOccupation("12");
 			SuccessRes res = entityService.saveCustomerDetails(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
