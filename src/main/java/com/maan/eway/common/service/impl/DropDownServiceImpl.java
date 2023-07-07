@@ -1331,7 +1331,7 @@ public class DropDownServiceImpl  implements DropDownService{
 			TypedQuery<ListItemValue> result = em.createQuery(query);
 			list = result.getResultList();
 			
-			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getItemCode()))).collect(Collectors.toList());
+		//	list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getItemCode()))).collect(Collectors.toList());
 		//	list = list.stream().sorted((o1, o2)->Long.valueOf(o1.getItemValue()).compareTo(Long.valueOf(o2.getItemValue()))).collect(Collectors.toList());
 			list.sort(Comparator.comparing(ListItemValue :: getItemValue));
 		} catch (Exception e) {
@@ -1600,28 +1600,7 @@ public class DropDownServiceImpl  implements DropDownService{
 	}
 
 
-	@Override
-	public List<DropDownRes> getcontentrisk(LovDropDownReq req) {
-		List<DropDownRes> resList = new ArrayList<DropDownRes>();
-		try {
-		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
-			String itemType = "CONTENT_RISK" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
-			for (ListItemValue data : getList) {
-				DropDownRes res = new DropDownRes();
-				res.setCode(data.getItemCode());
-				res.setCodeDesc(data.getItemValue());
-				res.setStatus(data.getStatus());
-				resList.add(res);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.info("Exception is ---> " + e.getMessage());
-			return null;
-		}
-		return resList;
-	}
-
+	
 
 	@Override
 	public List<DropDownRes> getallrisk(LovDropDownReq req) {
@@ -2520,6 +2499,52 @@ public class DropDownServiceImpl  implements DropDownService{
 		}
 		return resList;
 	}
+
+
+	
+	@Override
+	public List<DropDownRes> getcontentrisk(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
+			String itemType = "CONTENT_RISK" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public List<DropDownRes> getMotorContent(LovDropDownReq req) {
+		// TODO Auto-generated method stub
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
+			String itemType = "Electronic Accessories" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;	}
 
 	
 }

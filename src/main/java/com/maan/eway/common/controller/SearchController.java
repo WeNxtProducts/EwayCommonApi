@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
+import com.maan.eway.common.res.AccessoriesSumInsureDropDownRes;
 import com.maan.eway.common.res.AdminViewQuoteRes;
 import com.maan.eway.common.res.BuildingSearchRes;
 import com.maan.eway.common.res.CommonRes;
@@ -26,7 +27,6 @@ import com.maan.eway.common.res.SearchPremiumDetailsRes;
 import com.maan.eway.common.res.SearchROPDetailsRes;
 import com.maan.eway.common.res.SearchROPVehicleDetailsRes;
 import com.maan.eway.common.res.SearchRes;
-
 import com.maan.eway.common.service.SearchService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.res.DropDownRes;
@@ -253,6 +253,23 @@ public ResponseEntity<CommonRes> adminSearchBuildingDeatails(@RequestBody Search
 	CommonRes data = new CommonRes();
 	reqPrinter.reqPrint(req);
 	List<BuildingSearchRes> res = entityService.adminSearchBuildingDeatails(req);
+	data.setCommonResponse(res);
+	data.setErrorMessage(Collections.emptyList());
+	data.setIsError(false);
+	data.setMessage("Success");
+	if (res != null) {
+		return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+	} else {
+		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+	}
+}
+
+
+@PostMapping("/accessoriessuminsured")
+public ResponseEntity<CommonRes> getAccessoriesSuminsuredByQuoteNo(@RequestBody SearchReq req) {
+	CommonRes data = new CommonRes();
+	reqPrinter.reqPrint(req);
+	AccessoriesSumInsureDropDownRes res = entityService.getAccessoriesSuminsuredByQuoteNo(req);
 	data.setCommonResponse(res);
 	data.setErrorMessage(Collections.emptyList());
 	data.setIsError(false);

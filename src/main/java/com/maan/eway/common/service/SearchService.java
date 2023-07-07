@@ -6,6 +6,7 @@ import com.maan.eway.bean.ListItemValue;
 
 import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
+import com.maan.eway.common.res.AccessoriesSumInsureDropDownRes;
 import com.maan.eway.common.res.AdminViewQuoteRes;
 import com.maan.eway.common.res.BuildingSearchRes;
 import com.maan.eway.common.res.DocumentRes;
@@ -43,6 +44,8 @@ public interface SearchService {
 
 	List<PersonalAccidentRes> viewPersonalAccidentDetails(SearchReq req);
 	List<BuildingSearchRes> adminSearchBuildingDeatails(SearchReq req);
+
+	AccessoriesSumInsureDropDownRes getAccessoriesSuminsuredByQuoteNo(SearchReq req);
 
 
 }

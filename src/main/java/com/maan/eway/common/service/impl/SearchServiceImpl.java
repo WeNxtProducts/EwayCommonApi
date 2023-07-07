@@ -49,6 +49,8 @@ import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.bean.SectionMaster;
 import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
+import com.maan.eway.common.res.AccessoriesRes;
+import com.maan.eway.common.res.AccessoriesSumInsureDropDownRes;
 import com.maan.eway.common.res.AdminViewQuoteRes;
 import com.maan.eway.common.res.BuildingSearchRes;
 import com.maan.eway.common.res.DocumentRes;
@@ -850,7 +852,37 @@ public class SearchServiceImpl implements SearchService {
 		}
 		return product;
 	}
-	
 
+	@Override
+	public AccessoriesSumInsureDropDownRes getAccessoriesSuminsuredByQuoteNo(SearchReq req) {
+		// TODO Auto-generated method stub
+		
+		List<AccessoriesRes> resList=new ArrayList<AccessoriesRes>();
+		AccessoriesSumInsureDropDownRes totalList=new AccessoriesSumInsureDropDownRes();
+		Double totalSumInsure=0.0;
 
+		try {
+		List<MotorDataDetails> quoteDetails =motorRepo.findByQuoteNo(req.getQuoteNo());
+		
+		for(MotorDataDetails  data : quoteDetails)
+		{
+          if(data.getAcccessoriesSumInsured()!=null && data.getAcccessoriesSumInsured()>0)
+          {
+			AccessoriesRes motor=new AccessoriesRes();			
+			motor.setCode(data.getVehicleId());
+			motor.setCodeDesc(data.getChassisNumber());	
+			motor.setAccessoriesSumInsured(data.getAcccessoriesSumInsured());
+			totalSumInsure = totalSumInsure + data.getAcccessoriesSumInsured();			
+			resList.add(motor);
+          }			
+	  }
+		totalList.setTotalAccessoriesSumInsured(totalSumInsure);
+		totalList.setAccessoriesRes(resList);	
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is --->" + e.getMessage());
+		return null;
+	}
+	return totalList;
+}
 }

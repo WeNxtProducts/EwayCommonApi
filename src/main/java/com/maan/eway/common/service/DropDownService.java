@@ -183,6 +183,8 @@ public interface DropDownService {
 
 	List<DropDownRes> getOccupations(GetOccupationsReq req);
 
+	List<DropDownRes> getMotorContent(LovDropDownReq req);
+
 
 
 }
