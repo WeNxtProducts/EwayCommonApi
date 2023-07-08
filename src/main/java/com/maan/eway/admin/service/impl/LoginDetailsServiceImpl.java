@@ -479,7 +479,7 @@ this.repository = repo;
 			userInfo.setUpdatedBy(loginReq.getCreatedBy());
 			userInfo.setStatus(saveLogin.getStatus());
 			userInfo.setCountryCode(personalReq.getCountryCode());
-			userInfo.setStateCode(Integer.valueOf(personalReq.getStateCode()));
+			userInfo.setStateCode(StringUtils.isBlank(personalReq.getStateCode())?null:Integer.valueOf(personalReq.getStateCode()));
 			//userInfo.setCityCode(Integer.valueOf(personalReq.getCityCode()));
 			userInfo.setCityName(personalReq.getCityName());
 			userInfo.setMobileCodeDesc(StringUtils.isBlank(personalReq.getMobileCode()) ? "" : mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getMobileCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
@@ -494,7 +494,7 @@ this.repository = repo;
 				userInfo.setAgencyCode(saveLogin.getAgencyCode());
 			}
 			
-			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("User")  ) {
+			if((req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("User")) && StringUtils.isNotBlank(personalReq.getStateCode()) ) {
 				List<Tuple> stateCityNames = 	getStateAndCityName(personalReq.getCountryCode() ,personalReq.getStateCode());
 				
 			//	userInfo.setCityName(stateCityNames.get(0).get("cityName") == null ? "" :  stateCityNames.get(0).get("cityName").toString());
@@ -587,6 +587,7 @@ this.repository = repo;
 			dozerMapper.map(findLogin, updateLogin);
 			loginRepo.delete(findLogin);
 			LoginUserInfo updateUser = findUserInfo;
+			if(findUserInfo!=null)
 			loginUserRepo.delete(findUserInfo);
 			
 			// Save in Arch tables

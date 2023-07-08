@@ -12,6 +12,7 @@
 
 package com.maan.eway.repository;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,15 +32,18 @@ import com.maan.eway.bean.OtpDataDetailId;
  
 public interface OtpDataDetailRepository  extends JpaRepository<OtpDataDetail,OtpDataDetailId > , JpaSpecificationExecutor<OtpDataDetail> {
 
-	OtpDataDetail findByCompanyIdAndProductIdAndOtpId(String companyId, String productId, Long otpToken);
+	OtpDataDetail findByCompanyIdAndProductIdAndOtpId(String companyId, BigDecimal productId, BigDecimal otpToken);
 
-	OtpDataDetail findByCompanyIdAndProductIdAndOtpIdAndExpiryDateIsAfter(String companyId, String productId,
-			Long otpToken,Date date);
+	OtpDataDetail findByCompanyIdAndProductIdAndOtpIdAndExpiryDateIsAfter(String companyId, BigDecimal productId,
+			BigDecimal otpToken,Date date);
 
-	Integer countByCompanyIdAndProductIdAndOtpIdAndOtpAndExpiryDateIsAfter(String companyId, String productId,
-			Long otpToken, String userOtp, Date date);
+	Integer countByCompanyIdAndProductIdAndOtpIdAndOtpAndExpiryDateIsAfter(String companyId, BigDecimal productId,
+			BigDecimal otpToken, String userOtp, Date date);
 
-	Integer countByCompanyIdAndProductIdAndOtpIdAndOtp(String companyId, String productId, Long otpToken,
+	Integer countByCompanyIdAndProductIdAndOtpIdAndOtp(String companyId, BigDecimal productId, BigDecimal otpToken,
 			String userOtp);
+
+	int countByCompanyIdAndProductIdAndOtpIdAndOtpAndExpiryDateIsBefore(String companyId, BigDecimal bigDecimal,
+			BigDecimal bigDecimal2, String userOtp, Date date);
 
 }

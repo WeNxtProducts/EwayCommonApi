@@ -13,20 +13,25 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.maan.eway.admin.req.AttachCompnayProductRequest;
+import com.maan.eway.admin.req.LoginBranchesSaveReq;
+import com.maan.eway.admin.req.UserCompanyProductGetReq;
 import com.maan.eway.admin.req.UserCreationReq;
 import com.maan.eway.admin.req.UserLoginReq;
 import com.maan.eway.admin.req.UserPersonalInfoReq;
-import com.maan.eway.admin.res.LoginCreationRes;
+import com.maan.eway.admin.service.LoginBranchService;
 import com.maan.eway.admin.service.LoginDetailsService;
-import com.maan.eway.admin.service.LoginValidationService;
+import com.maan.eway.admin.service.LoginProductService;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.InsuranceCompanyMaster;
+import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.OtpDataDetail;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.QuoteUpdateRes;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.res.CompanyProductMasterRes;
 import com.maan.eway.notification.req.Broker;
 import com.maan.eway.notification.req.Customer;
 import com.maan.eway.notification.req.Notification;
@@ -38,6 +43,7 @@ import com.maan.eway.otp.dto.ValidateOtp;
 import com.maan.eway.repository.CompanyProductMasterRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
+import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.OtpDataDetailRepository;
@@ -75,6 +81,7 @@ public class OTPService {
 								.loginId(otp.getLoginId())
 								.expiryDate(instance.getTime())	
 								.sNo(new BigDecimal(otpId))
+								.productId(new BigDecimal(otp.getProductId()))
 								.build();
 			OtpDataDetail save = otpDataRepo.save(odd);
 			new Thread(new Runnable() {
@@ -114,18 +121,18 @@ public class OTPService {
 				if(otp==null || otp.getUserOtp().toString().length()>6 || !otp.getUserOtp().toString().matches("[0-9]+")) {
 					errorlist.add(new Error("09","OTP","Not a Valid OTP"));
 				}else {
-					 Integer count=	otpDataRepo.countByCompanyIdAndProductIdAndOtpIdAndOtp(otp.getCompanyId(),otp.getProductId(),otp.getOtpToken(),otp.getUserOtp());
+					 Integer count=	otpDataRepo.countByCompanyIdAndProductIdAndOtpIdAndOtp(otp.getCompanyId(),new BigDecimal(otp.getProductId()),new BigDecimal(otp.getOtpToken()),otp.getUserOtp());
 					 if(count==0)
 						 errorlist.add(new Error("09","OTP","Not a Valid OTP"));
 					 else {
-						 int i= otpDataRepo.countByCompanyIdAndProductIdAndOtpIdAndOtpAndExpiryDateIsAfter(otp.getCompanyId(),otp.getProductId(),otp.getOtpToken(),otp.getUserOtp(),new Date());
+						 int i= otpDataRepo.countByCompanyIdAndProductIdAndOtpIdAndOtpAndExpiryDateIsBefore(otp.getCompanyId(),new BigDecimal(otp.getProductId()),new BigDecimal(otp.getOtpToken()),otp.getUserOtp(),new Date());
 						 if(i>0)
 							 errorlist.add(new Error("10","OTP","Otp is Expired"));
 					 }
 				}
 				OtpDataDetail otpData =null;
 				if(errorlist.size()==0) {
-					 otpData =otpDataRepo.findByCompanyIdAndProductIdAndOtpId(otp.getCompanyId(),otp.getProductId(),otp.getOtpToken());
+					 otpData =otpDataRepo.findByCompanyIdAndProductIdAndOtpId(otp.getCompanyId(),new BigDecimal(otp.getProductId()),new BigDecimal(otp.getOtpToken()));
 				}
 				if(otp.getCreateUser() && errorlist.size()==0) {					
 					 
@@ -141,7 +148,7 @@ public class OTPService {
 					}
 				}
 				OtpConfirm c=OtpConfirm.builder()
-						.isError(errorlist.size()>0?true:false)
+						.isError((errorlist !=null && errorlist.size()>0)?true:false)
 						.errorlist(errorlist)
 						.otpToken(otp.getOtpToken())
 						.build();
@@ -152,11 +159,18 @@ public class OTPService {
 		return null;
 	}
 	
-	@Autowired
-	private LoginValidationService validationService ;
-
+	
 	@Autowired
 	private  LoginDetailsService entityService;
+
+	@Autowired
+	private  LoginBranchService loginBranchService;
+
+	@Autowired
+	private  LoginProductService loginProductService;
+	@Autowired
+	private LoginBranchMasterRepository loginBrokerRepo;
+
 	
 	@Autowired
 	private EserviceCustomerDetailsRepository eserviceCustomer;
@@ -179,14 +193,14 @@ public class OTPService {
 			loginInformation.setStatus("Y");
 			loginInformation.setSubUserType("b2c");
 			loginInformation.setUserType("User");
-			UserPersonalInfoReq personalInformation = userCreation.getPersonalInformation();
+			UserPersonalInfoReq personalInformation = new UserPersonalInfoReq();
 			EserviceCustomerDetails custotmer = eserviceCustomer.findByCustomerReferenceNo(otp.getCustomerId());
 			personalInformation.setAcExecutiveId("5");
 			personalInformation.setAddress1(custotmer.getAddress1());
 			personalInformation.setAddress2(custotmer.getAddress2());
 			personalInformation.setAddress3(null);
 			personalInformation.setApprovedPreparedBy(otpData.getLoginId());
-			personalInformation.setCityCode(custotmer.getCityCode().toString());
+			personalInformation.setCityCode("1");
 			personalInformation.setCityName(custotmer.getCityName());
 			personalInformation.setCompanyName(custotmer.getCompanyId());
 			personalInformation.setContactPersonName(custotmer.getClientName());
@@ -194,11 +208,11 @@ public class OTPService {
 			personalInformation.setCountryCode(custotmer.getNationality());
 			personalInformation.setDesignation(custotmer.getOccupationDesc());
 			personalInformation.setFax(custotmer.getFax());
-			personalInformation.setMissippiId("NA");
+			personalInformation.setMissippiId(null);
 			personalInformation.setMobileCode(custotmer.getMobileCode1());
 			personalInformation.setPobox(custotmer.getPinCode());
 			personalInformation.setRemarks("B2C Customer");
-			personalInformation.setStateCode(custotmer.getStateCode().toString());
+			personalInformation.setStateCode("");
 			personalInformation.setUserMail(custotmer.getEmail1());
 			personalInformation.setUserMobile(custotmer.getMobileNo1());
 			personalInformation.setUserName(custotmer.getClientName());
@@ -207,9 +221,43 @@ public class OTPService {
 			userCreation.setLoginInformation(loginInformation);
 			userCreation.setPersonalInformation(personalInformation);
 			
-			 validation = validationService.validateUserCreation(userCreation);
-			if(validation.size()==0)
+			/* validation = validationService.validateUserCreation(userCreation);
+			if(validation.size()==0)*/
+			Integer couts = loginMasterRepo.countByCompanyIdAndLoginId(otp.getCompanyId(), mobileNo);
+			if(couts==0) {
 				entityService.createUserLogin(userCreation);
+			}
+			LoginBranchesSaveReq branch=new LoginBranchesSaveReq();
+			branch.setLoginId(mobileNo);
+			branch.setOaCode(otp.getAgencyCode());
+			branch.setInsuranceId(otpData.getCompanyId());
+			branch.setCreatedBy(otpData.getLoginId());
+			List<String> branches=new ArrayList<String>();
+			List<LoginBranchMaster> brs = loginBrokerRepo.findByLoginIdAndStatus(otpData.getLoginId(), "Y");
+			for (LoginBranchMaster loginBranchMaster : brs) {
+				branches.add(loginBranchMaster.getBranchCode());
+			}
+			
+			branch.setBrokerBranchIds(branches);
+			loginBranchService.saveLoginBranches(branch);
+			
+				AttachCompnayProductRequest comProduct=new AttachCompnayProductRequest();
+				comProduct.setCreatedBy(otpData.getLoginId());
+				comProduct.setInsuranceId(otpData.getCompanyId());
+				comProduct.setLoginId(mobileNo);
+				
+				UserCompanyProductGetReq re=new UserCompanyProductGetReq();
+				re.setInsuranceId(otpData.getCompanyId());
+				re.setLoginId(mobileNo);
+				re.setOaCode(otp.getAgencyCode());
+				List<String> productss=new ArrayList<String>();
+				List<CompanyProductMasterRes> products = loginProductService.getallNonSelectedUserCompanyProducts(re);
+				for (CompanyProductMasterRes companyProductMasterRes : products) {
+					productss.add(companyProductMasterRes.getProductId());
+				}
+				comProduct.setProductIds(productss);
+				
+				loginProductService.saveBrokerProductDetails(comProduct);
 			return validation; 	
 		}catch (Exception e) {
 			e.printStackTrace();
