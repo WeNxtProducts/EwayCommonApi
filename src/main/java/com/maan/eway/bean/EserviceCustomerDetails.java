@@ -77,7 +77,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="TITLE", length=1)
     private String     title ;
 
-    @Column(name="REGION_CODE", nullable=false, length=20)
+    @Column(name="REGION_CODE", length=20)
     private String     regionCode ;
 
     @Column(name="TITLE_DESC", length=20)
