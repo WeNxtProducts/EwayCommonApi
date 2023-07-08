@@ -27,4 +27,7 @@ public class ValidateOtp {
 	@JsonProperty("CustomerId")
 	private String customerId;
 	
+	@JsonProperty("ReferenceNo")
+	private String referenceNo;
+	
 }
