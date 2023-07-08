@@ -141,7 +141,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="VRN_GST", length=20)
     private String     vrnGst ;
 
-    @Column(name="REGION_CODE", nullable=false, length=20)
+    @Column(name="REGION_CODE", length=20)
     private String     regionCode ;
 
     @Column(name="STATE_CODE", length=20)
