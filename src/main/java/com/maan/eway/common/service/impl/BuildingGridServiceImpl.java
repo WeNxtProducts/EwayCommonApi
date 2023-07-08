@@ -1462,7 +1462,17 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 			}
 
 		}
-
+		System.out.println("*************EserviceBuildingDetails************");
+		System.out.println("Old QUOTE NO:"+prevQuoteNo);
+		System.out.println("Old Customer Id:"+customerId);
+		System.out.println("Old Reference No:"+refNo);
+		System.out.println("QUOTE NO:"+quoteNo);
+		System.out.println("New Customer Id:"+newCustId);
+		System.out.println("Reference No:"+newRequestNo);
+		System.out.println("PreQuoteNo:"+prevPolicyNo);
+		System.out.println("OriginalPoicyNo:"+req.getPolicyNo());
+		System.out.println("Policy No:"+req.getPolicyNo()+"-"+count);
+		System.out.println("**********************************************");
 		if (pendingcount == 0) {
 			// Copy Quote Home Position Master
 			homeEndoCopyQuote(req, refNo, customerId, quoteNo, loginId, prevPolicyNo, prevQuoteNo, count, custRefNo);
@@ -1838,10 +1848,10 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 					String customerId=homeData.getCustomerId();
 					
 					PersonalInfo personalInfoData=personalInforepo.findByCustomerId(customerId);
-					EserviceCustomerDetails custData = custRepo.findByCustomerReferenceNo(personalInfoData.getCustomerReferenceNo());
-					if (custData!=null) {
-						custRepo.delete(custData);
-					}
+//					EserviceCustomerDetails custData = custRepo.findByCustomerReferenceNo(personalInfoData.getCustomerReferenceNo());
+//					if (custData!=null) {
+//						custRepo.delete(custData);
+//					}
 					//Personal Info
 					if(personalInfoData!=null) {
 						personalInforepo.delete(personalInfoData);

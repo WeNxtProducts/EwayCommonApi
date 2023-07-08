@@ -1394,6 +1394,18 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				}
 	
 			}
+
+			System.out.println("*************EserviceTravelDetails************");
+			System.out.println("Old QUOTE NO:"+prevQuoteNo);
+			System.out.println("Old Customer Id:"+customerId);
+			System.out.println("Old Reference No:"+refNo);
+			System.out.println("QUOTE NO:"+quoteNo);
+			System.out.println("New Customer Id:"+newCustId);
+			System.out.println("Reference No:"+newRequestNo);
+			System.out.println("PreQuoteNo:"+prevPolicyNo);
+			System.out.println("OriginalPoicyNo:"+req.getPolicyNo());
+			System.out.println("Policy No:"+req.getPolicyNo()+"-"+count);
+			System.out.println("**********************************************");
 	
 			if (pendingcount == 0) {
 				// Copy Quote Home Position Master
@@ -1466,10 +1478,10 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			String customerId=homeData.getCustomerId();
 			
 			PersonalInfo personalInfoData=personalInforepo.findByCustomerId(customerId);
-			EserviceCustomerDetails custData = custRepo.findByCustomerReferenceNo(personalInfoData.getCustomerReferenceNo());
-			if (custData!=null) {
-				custRepo.delete(custData);
-			}
+//			EserviceCustomerDetails custData = custRepo.findByCustomerReferenceNo(personalInfoData.getCustomerReferenceNo());
+//			if (custData!=null) {
+//				custRepo.delete(custData);
+//			}
 			//Personal Info
 			if(personalInfoData!=null) {
 				personalInforepo.delete(personalInfoData);
@@ -1780,6 +1792,17 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				}
 
 			}
+			System.out.println("*************PolicyCoverData************");
+			System.out.println("Old QUOTE NO:"+prevQuoteNo);
+			//System.out.println("Old Customer Id:"+customerId);
+			System.out.println("Old Reference No:"+refNo);
+			System.out.println("QUOTE NO:"+quoteNo);
+			//System.out.println("New Customer Id:"+newCustId);
+			//System.out.println("Reference No:"+newRequestNo);
+			System.out.println("PreQuoteNo:"+prevPolicyNo);
+			System.out.println("OriginalPoicyNo:"+req.getPolicyNo());
+			System.out.println("Policy No:"+req.getPolicyNo()+"-"+count);
+			System.out.println("**********************************************");
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -1857,9 +1880,15 @@ public class TravelGridServiceImpl implements  TravelGridService {
 
 					homePosistionRepo.saveAndFlush(savedata);
 				
+					homePosistionRepo.saveAndFlush(savedata);
+					
+					System.out.println("*************HomePositionMaster************");
 					System.out.println("QUOTE NO:"+quoteNo);
 					System.out.println("Customer Id:"+customerId);
 					System.out.println("Reference No:"+refNo);
+					System.out.println("PreQuoteNo:"+prevPolicyNo);
+					System.out.println("OriginalPoicyNo:"+req.getPolicyNo());
+					System.out.println("Policy No:"+req.getPolicyNo()+"-"+count);
 					
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -1918,7 +1947,18 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
 			savedata.setStatus("E");
 			personalInforepo.saveAndFlush(savedata);
-
+			System.out.println("*************PersonalInfo************");
+			System.out.println("Old QUOTE NO:"+prevQuoteNo);
+			System.out.println("Old Customer Id:"+olsCustomerId);
+			System.out.println("New Customer Id:"+customerId);
+//			System.out.println("Old Reference No:"+refNo);
+//			System.out.println("QUOTE NO:"+quoteNo);
+//			System.out.println("New Customer Id:"+newCustId);
+//			System.out.println("Reference No:"+newRequestNo);
+			System.out.println("PreQuoteNo:"+prevPolicyNo);
+			System.out.println("OriginalPoicyNo:"+req.getPolicyNo());
+			System.out.println("Policy No:"+req.getPolicyNo()+"-"+count);
+			System.out.println("**********************************************");
 			//res.setSuccessId(customerId);
 			
 		} catch (Exception e) {

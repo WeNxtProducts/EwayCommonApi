@@ -1498,7 +1498,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 				return itemDesc;
 			}
 
-		//Eservice Motor Copy Quote
+		//Endt Copy Quote
 		public EserviceCommonDetails eserviceCommonCopyquote(CopyQuoteReq req, String refNo, List<String> branches,String loginId,String customerId,String quoteNo,String custRefNo) {
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			EserviceCommonDetails savedata = new EserviceCommonDetails();
@@ -1638,7 +1638,17 @@ public class CommonGridServiceImpl implements CommonGridService {
 					}
 		
 				}
-		
+				System.out.println("*************EserviceCommonDetails************");
+				System.out.println("Old QUOTE NO:"+prevQuoteNo);
+				System.out.println("Old Customer Id:"+customerId);
+				System.out.println("Old Reference No:"+refNo);
+				System.out.println("QUOTE NO:"+quoteNo);
+				System.out.println("New Customer Id:"+newCustId);
+				System.out.println("Reference No:"+newRequestNo);
+				System.out.println("PreQuoteNo:"+prevPolicyNo);
+				System.out.println("OriginalPoicyNo:"+req.getPolicyNo());
+				System.out.println("Policy No:"+req.getPolicyNo()+"-"+count);
+				System.out.println("**********************************************");
 				if (pendingcount == 0) {
 					// Copy Quote Home Position Master
 					 homeEndoCopyQuote(req, refNo, customerId, quoteNo, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
@@ -1704,10 +1714,10 @@ public class CommonGridServiceImpl implements CommonGridService {
 				String customerId=homeData.getCustomerId();
 				
 				PersonalInfo personalInfoData=personalInforepo.findByCustomerId(customerId);
-				EserviceCustomerDetails custData = custRepo.findByCustomerReferenceNo(personalInfoData.getCustomerReferenceNo());
-				if (custData!=null) {
-					custRepo.delete(custData);
-				}
+//				EserviceCustomerDetails custData = custRepo.findByCustomerReferenceNo(personalInfoData.getCustomerReferenceNo());
+//				if (custData!=null) {
+//					custRepo.delete(custData);
+//				}
 				//Personal Info
 				if(personalInfoData!=null) {
 					personalInforepo.delete(personalInfoData);
@@ -2107,7 +2117,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 		}
 
 		
-		// Motor Data Details Enst Copy Quote
+		// Document Enst Copy Quote
 		public CopyQuoteSuccessRes coverDocumentUploadDetailsEndoCopyquote(CopyQuoteReq req, String refNo,
 				String quoteNo, String customerId, String loginId, String prevPolicyNo, String prevQuoteNo,
 				Integer count) {
