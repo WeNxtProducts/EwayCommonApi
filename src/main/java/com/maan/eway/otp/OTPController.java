@@ -15,6 +15,7 @@ import com.maan.eway.otp.dto.ValidateOtp;
 import com.maan.eway.otp.service.OTPService;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @RestController
 @RequestMapping("/otp")
@@ -27,7 +28,7 @@ public class OTPController {
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/generate")
 	@ApiOperation("This Method is to get by id")
-	public ResponseEntity<Object> generate(@RequestParam UserOtp otp){
+	public ResponseEntity<Object> generate(@RequestBody UserOtp otp){
 		OtpConfirm data=service.generate(otp);
 		if (data != null) {
 			return new ResponseEntity<Object>(data, HttpStatus.CREATED);
@@ -38,7 +39,7 @@ public class OTPController {
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/validate")
 	@ApiOperation("This Method is to get by id")
-	public ResponseEntity<Object> validate(@RequestParam ValidateOtp otp){
+	public ResponseEntity<Object> validate(@RequestBody ValidateOtp otp){
 		OtpConfirm data=service.validate(otp);
 		if (data != null) {
 			return new ResponseEntity<Object>(data, HttpStatus.CREATED);

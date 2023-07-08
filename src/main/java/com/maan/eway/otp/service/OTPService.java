@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -64,7 +65,7 @@ public class OTPService {
 			
 			OtpDataDetail odd=OtpDataDetail.builder()
 								.companyId(otp.getCompanyId())
-								.emailId(otp.getUser().getMailId())
+								.emailId(StringUtils.isBlank(otp.getUser().getMailId())?null:otp.getUser().getMailId())
 								.mobileCode(otp.getUser().getMobileCode())
 								.mobileNo(otp.getUser().getMobileNo())
 								.whatsappCode(otp.getUser().getWhatsappCode())
@@ -72,7 +73,8 @@ public class OTPService {
 								.otp(String.valueOf(newOtp))
 								.otpId(new BigDecimal(otpId))
 								.loginId(otp.getLoginId())
-								.expiryDate(instance.getTime())								
+								.expiryDate(instance.getTime())	
+								.sNo(new BigDecimal(otpId))
 								.build();
 			OtpDataDetail save = otpDataRepo.save(odd);
 			new Thread(new Runnable() {
