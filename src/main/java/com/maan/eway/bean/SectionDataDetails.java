@@ -124,7 +124,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="PRODUCT_TYPE_DESC", length=100)
     private String     productTypeDesc ;
-    
+
+    @Column(name="SECTION_ENDT_MODIFICATION", length=100)
+    private String     sectionEndtModification;
 }
 
 

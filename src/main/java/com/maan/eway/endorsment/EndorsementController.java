@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.req.ChangeEndoStatusReq;
+import com.maan.eway.common.req.EndtSectionListReq;
+import com.maan.eway.common.req.EndtSectionSaveReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
 import com.maan.eway.endorsment.request.Endorsment;
@@ -21,7 +23,7 @@ import com.maan.eway.endorsment.service.EndorsementService;
 import io.swagger.annotations.Api;
 
 @RestController
-@Api(tags = "NOTIFIACTION : Notifiaction ", description = "API's")
+@Api(tags = "ENDORESMENT : Endorsment ", description = "API's")
 @RequestMapping("/endorsment/")
 public class EndorsementController {
 	
@@ -80,4 +82,26 @@ public class EndorsementController {
 		}
 	}
 	
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/sectionlist")
+	public ResponseEntity<CommonRes> getSectionList(@RequestBody EndtSectionListReq req) {
+		CommonRes data = eservice.getSectionList(req);
+	 	if (data != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/saveendtsection")
+	public ResponseEntity<CommonRes> saveEndtSection(@RequestBody EndtSectionSaveReq req) {
+		CommonRes data = eservice.saveEndtSection(req);
+	 	if (data != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 }

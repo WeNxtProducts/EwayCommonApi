@@ -1213,7 +1213,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 		CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 		try {
 			String refShortCode = getListItem(req.getInsuranceId() ,req.getBranchCode(), "PRODUCT_SHORT_CODE",req.getProductId());
-			String refNo=refShortCode +seqNo.generateRefNo();
+			String refNo=refShortCode +"-"  +seqNo.generateRefNo();
 			String quoteNo  = "Q"+ generateQuoteNo();
 			String customerId = "C-" + generateCustId();
 			String custRefNo = "Cust-" +   generateCustRefNo() ; 

@@ -1081,7 +1081,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			DozerBeanMapper mapper = new DozerBeanMapper();
 			try {
 				String refShortCode = getListItem(req.getInsuranceId() ,req.getBranchCode(), "PRODUCT_SHORT_CODE",req.getProductId());
-				String refNo=refShortCode +seqNo.generateRefNo();
+				String refNo=refShortCode +"-" +seqNo.generateRefNo();
 				String quoteNo  = "Q"+ generateQuoteNo();
 				String customerId = "C-" + generateCustId();
 				String custRefNo = "Cust-" +   generateCustRefNo() ; 
@@ -2438,7 +2438,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 		
 		public String generateRequestNo(String companyId,String branchcode,String productId) {
 			String refShortCode = getListItem(companyId, branchcode, "PRODUCT_SHORT_CODE",productId);
-			String refNo = refShortCode + seqNo.generateRefNo();
+			String refNo = refShortCode  +"-" + seqNo.generateRefNo();
 			return refNo;
 		}
 		 public synchronized String generateCustRefNo() {

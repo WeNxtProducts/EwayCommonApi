@@ -24,6 +24,9 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -34,18 +37,25 @@ import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.ChangeEndoStatusReq;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.CoverIdsReq;
+import com.maan.eway.common.req.EndtSectionListReq;
+import com.maan.eway.common.req.EndtSectionSaveReq;
 import com.maan.eway.common.req.EservieMotorDetailsViewRes;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.VehicleIdsReq;
 import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
+import com.maan.eway.common.res.EndtSectionListRes;
+import com.maan.eway.common.res.EndtSectionsRes;
 import com.maan.eway.common.res.NewQuoteRes;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.QuoteService;
@@ -59,11 +69,15 @@ import com.maan.eway.endorsment.util.CopyCommonRaw;
 import com.maan.eway.endorsment.util.CopyRawTable;
 import com.maan.eway.endorsment.util.CopyTravelRaw;
 import com.maan.eway.endorsment.util.QuoteInfoUtil;
+import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EndtDependantFieldsMasterRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
+import com.maan.eway.repository.EserviceBuildingDetailsRepository;
+import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.req.FactorRateDetailsGetReq;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.res.calc.Cover;
 import com.maan.eway.service.FactorRateRequestDetailsService;
 
@@ -94,11 +108,20 @@ public class EndorsementService {
 	
 	@Autowired
 	private CopyCommonRaw copyCommonraw;
+	
+	@Autowired
+	private EServiceSectionDetailsRepository eserSecRepo ; 
 
 
 	@Autowired
 	private EndtDependantFieldsMasterRepository dependantRepo;
 	
+	
+	@Autowired
+	private EserviceBuildingDetailsRepository eserBuldingRepo ;
+	
+	@Autowired
+	private EserviceCommonDetailsRepository eserCommonRepo ;
 	
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
@@ -107,6 +130,9 @@ public class EndorsementService {
 	private  FactorRateRequestDetailsService factorService;
 	@Autowired
 	private  QuoteService entityService ;
+	
+	private Logger log = LogManager.getLogger(EndorsementService.class);
+	
 	public CommonRes cancelPolicy(Endorsment request) {
 		try {
 
@@ -706,5 +732,300 @@ public class EndorsementService {
 		}
 		return product;
 	}
+	
+	
+	
+	
+	public CommonRes getSectionList(EndtSectionListReq req) {
+		CommonRes commonRes = new CommonRes();
+		try {
+			// Find Data
+			List<ProductSectionMaster> secList = getProductSectionDropdown(req.getInsuranceId() , req.getProductId() ) ;
+			List<EserviceSectionDetails> sectionDatas = eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
+			
+			// Opted Sections
+			List<EndtSectionsRes> optedResList = new ArrayList<EndtSectionsRes>() ;
+			List<EserviceSectionDetails> optedSections = sectionDatas.stream().filter( o -> o.getSectionEndtModification() != null 
+					&& o.getSectionEndtModification().equalsIgnoreCase("None") ).collect( Collectors.toList());
+			
+			optedSections.forEach( sec ->  {
+				EndtSectionsRes secRes = new EndtSectionsRes();
+				secRes.setSectionId(sec.getSectionId());
+				secRes.setSectionName(sec.getSectionName());
+				secRes.setProductType(sec.getProductType());
+				optedResList.add(secRes);
+				
+			} );
+			
+			
+			// NonOpted Sections Fiter Based on Opted Section
+			List<EndtSectionsRes> nonoptedResList = new ArrayList<EndtSectionsRes>();
+			List<ProductSectionMaster> filterNonOptedSections = secList.stream().filter( sec -> sectionDatas.stream().map( EserviceSectionDetails :: getSectionId  ).anyMatch(  
+					eser ->  eser.equalsIgnoreCase( sec.getSectionId().toString()) )).collect(Collectors.toList());
+			List<ProductSectionMaster> fiterNonOptedSecList = secList ; 
+			fiterNonOptedSecList.removeAll(filterNonOptedSections) ; 
+			 
+			fiterNonOptedSecList.forEach( sec ->  {
+				EndtSectionsRes secRes = new EndtSectionsRes();
+				secRes.setSectionId(sec.getSectionId().toString());
+				secRes.setSectionName(sec.getSectionName());
+				secRes.setProductType(sec.getMotorYn());
+				nonoptedResList.add(secRes);
+			} );
+			
+			
+			// Endt Sections
+			List<EndtSectionsRes> endtSecResList = new  ArrayList<EndtSectionsRes>();
+			List<EserviceSectionDetails> filterEndtSections = sectionDatas.stream().filter( o -> o.getSectionEndtModification() != null 
+					&& ! o.getSectionEndtModification().equalsIgnoreCase("None") ).collect( Collectors.toList());
+			
+			filterEndtSections.forEach( sec ->  {
+				EndtSectionsRes secRes = new EndtSectionsRes();
+				secRes.setSectionId(sec.getSectionId());
+				secRes.setSectionName(sec.getSectionName());
+				secRes.setProductType(sec.getProductType());
+				endtSecResList.add(secRes);
+			} );
+			
+			// Response 
+			EndtSectionListRes  sectionRes = new EndtSectionListRes(); 
+			sectionRes.setOptedSections(optedResList);
+			sectionRes.setNonoptedSections(nonoptedResList);
+			sectionRes.setEndtSections(endtSecResList);
+			
+			commonRes.setCommonResponse(sectionRes);
+			commonRes.setErroCode(0);
+			commonRes.setIsError(false);
+			commonRes.setMessage("Success");
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return commonRes;
+	}
+	
+	
+	public List<ProductSectionMaster> getProductSectionDropdown(String companyId, String productId) {
+		List<ProductSectionMaster> sectionList = new ArrayList<ProductSectionMaster>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ProductSectionMaster> query = cb.createQuery(ProductSectionMaster.class);
+		
+			// Find All
+			Root<ProductSectionMaster> c = query.from(ProductSectionMaster.class);
+
+			// Select
+			query.select(c);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("sectionName")));
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ProductSectionMaster> ocpm1 = effectiveDate.from(ProductSectionMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a3 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3, a4);
+
+			// Effective Date End
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<ProductSectionMaster> ocpm2 = effectiveDate2.from(ProductSectionMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("sectionId"), ocpm2.get("sectionId"));
+			Predicate a7 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a8 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+
+			javax.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a5, a6, a7, a8);
+
+			// Where
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"), companyId);
+			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("productId"), productId);
+		//	Predicate n6 = cb.equal(c.get("sectionId"), sectionId);
+		//	query.where(n1, n2, n3, n4, n5, n6).orderBy(orderList);
+			query.where(n1, n2, n3, n4, n5).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<ProductSectionMaster> result = em.createQuery(query);
+			sectionList = result.getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return sectionList;
+	}
+	
+	
+	public CommonRes saveEndtSection(EndtSectionSaveReq req) {
+		CommonRes commonRes = new CommonRes();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper(); 
+		try {
+			// Section Master
+			List<ProductSectionMaster> sectionList = getProductSectionDropdown(req.getInsuranceId() , req.getProductId() ) ;
+			
+			// Transaction Tables
+			List<EserviceSectionDetails>  secDatas =  eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
+			EserviceSectionDetails mapSec = secDatas.get(0);
+			
+			String secEndtModify = req.getSectionEndtModification() ;
+			String humanProductType = getListItem(req.getInsuranceId(), req.getBranchCode(), "PRODUCT_CATEGORY", "H");
+			String assetProductType = getListItem(req.getInsuranceId(), req.getBranchCode(), "PRODUCT_CATEGORY", "A");
+			
+			
+			List<EserviceSectionDetails>  saveSecList = new ArrayList<EserviceSectionDetails>(); 
+			
+			// Modify Section 
+			for ( String sec :  req.getEndtSectionIds() ) {
+				List<EserviceSectionDetails>  filterSecs =  secDatas.stream().filter(  o -> o.getSectionId().equalsIgnoreCase(sec) ).collect(Collectors.toList() ) ;
+				if(filterSecs.size() > 0 ) {
+					EserviceSectionDetails secData =   filterSecs.get(0);
+					secData.setSectionEndtModification(secEndtModify);
+					saveSecList.add(secData);
+				} else {
+					EserviceSectionDetails secData = new EserviceSectionDetails();
+					List<ProductSectionMaster> filterSection = sectionList.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(sec ) ) ).collect(Collectors.toList());		
+					if( filterSection.size() > 0 ) {
+						ProductSectionMaster section =  filterSection.get(0) ;
+						
+						dozerMapper.map(mapSec, secData);	
+						
+						secData.setSectionId(sec);
+						secData.setSectionName( section.getSectionName() );
+						secData.setRiskId(1);
+						secData.setProductType(section.getMotorYn());
+						secData.setProductTypeDesc(section.getMotorYn().equalsIgnoreCase("H") ? humanProductType : assetProductType  );
+						secData.setUserOpt("N");
+						secData.setSectionEndtModification(secEndtModify);
+						if(!(req.getEndorsementType()==null || req.getEndorsementType()==0)) {
+							secData.setOriginalPolicyNo(req.getOriginalPolicyNo());
+							secData.setEndorsementDate(req.getEndorsementDate());
+							secData.setEndorsementRemarks(req.getEndorsementRemarks());
+							secData.setEndorsementEffdate(req.getEndorsementEffdate());
+							secData.setEndtPrevPolicyNo(req.getEndtPrevPolicyNo());
+							secData.setEndtPrevQuoteNo(req.getEndtPrevQuoteNo());
+							secData.setEndtCount(req.getEndtCount());
+							secData.setEndtStatus(req.getEndtStatus());
+							secData.setIsFinaceYn(req.getIsFinaceYn());
+							secData.setEndtCategDesc(req.getEndtCategDesc());
+							secData.setEndorsementType(req.getEndorsementType());
+							secData.setEndorsementTypeDesc(req.getEndorsementTypeDesc()); 
+								
+						} 
+						saveSecList.add(secData);
+						
+					}
+				}
+			}
+			
+			  
+			// Save Sections
+			eserSecRepo.saveAllAndFlush(saveSecList);
+				
+			// Response 
+			SuccessRes  res = new SuccessRes(); 
+			res.setResponse("Saved Successfully");
+			res.setSuccessId("1");
+			
+			commonRes.setCommonResponse(res);
+			commonRes.setErroCode(0);
+			commonRes.setIsError(false);
+			commonRes.setMessage("Success");
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return commonRes;
+	}
+	
+	
+	
+	public synchronized String getListItem(String insuranceId, String branchCode, String itemType, String itemCode) {
+		String itemDesc = "";
+		List<ListItemValue> list = new ArrayList<ListItemValue>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			today = cal.getTime();
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ListItemValue> query = cb.createQuery(ListItemValue.class);
+			// Find All
+			Root<ListItemValue> c = query.from(ListItemValue.class);
+
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("branchCode")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("itemId"), ocpm1.get("itemId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a3 = cb.equal(c.get("itemId"), ocpm2.get("itemId"));
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a3, a4);
+
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n12 = cb.equal(c.get("status"),"R");
+			Predicate n13 = cb.or(n1,n12);
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"), insuranceId);
+			Predicate n5 = cb.equal(c.get("companyId"), "99999");
+			Predicate n6 = cb.equal(c.get("branchCode"), branchCode);
+			Predicate n7 = cb.equal(c.get("branchCode"), "99999");
+			Predicate n8 = cb.or(n4, n5);
+			Predicate n9 = cb.or(n6, n7);
+			Predicate n10 = cb.equal(c.get("itemType"), itemType);
+			Predicate n11 = cb.equal(c.get("itemCode"), itemCode);
+			query.where(n13, n2, n3, n8, n9, n10, n11).orderBy(orderList);
+			// Get Result
+			TypedQuery<ListItemValue> result = em.createQuery(query);
+			list = result.getResultList();
+
+			itemDesc = list.size() > 0 ? list.get(0).getItemValue() : "";
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return itemDesc;
+	}
+
 }
 

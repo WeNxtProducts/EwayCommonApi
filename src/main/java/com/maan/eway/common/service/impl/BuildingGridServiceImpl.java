@@ -1148,7 +1148,7 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
 			String refShortCode = getListItem(req.getInsuranceId() ,req.getBranchCode(), "PRODUCT_SHORT_CODE",req.getProductId());
-			String refNo=refShortCode +seqNo.generateRefNo();
+			String refNo=refShortCode +"-"  +seqNo.generateRefNo();
 			String quoteNo  = "Q"+ generateQuoteNo();
 			String customerId = "C-" + generateCustId();
 			String custRefNo = "Cust-" +   generateCustRefNo() ; 
