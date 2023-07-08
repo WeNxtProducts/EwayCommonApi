@@ -235,7 +235,7 @@ public class OTPService {
 			List<String> branches=new ArrayList<String>();
 			List<LoginBranchMaster> brs = loginBrokerRepo.findByLoginIdAndStatus(otpData.getLoginId(), "Y");
 			for (LoginBranchMaster loginBranchMaster : brs) {
-				branches.add(loginBranchMaster.getBranchCode());
+				branches.add(loginBranchMaster.getBrokerBranchCode());
 			}
 			
 			branch.setBrokerBranchIds(branches);
