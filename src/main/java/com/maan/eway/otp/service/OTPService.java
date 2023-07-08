@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -136,7 +140,10 @@ public class OTPService {
 	private EserviceBuildingDetailsRepository eservicebuildRepo;	
 	@Autowired
 	private EserviceCommonDetailsRepository eservicecommonRepo;
-	
+	public static <T> Predicate<T> distinctByKey(Function<? super T,Object> keyExtractor) {
+	    Map<Object,Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
 	public OtpConfirm validate(ValidateOtp otp) {
 			try {
 				List<Error> errorlist=new ArrayList<Error>();
@@ -163,22 +170,29 @@ public class OTPService {
 					errorlist = createUserLogin(otpData,otp);
 					if((errorlist==null || errorlist.size()==0) && StringUtils.isNotBlank(otp.getCustomerId()) &&  StringUtils.isNotBlank(otp.getReferenceNo())) {
 						List<ProductSectionMaster> prodctSects = productSectionRepo.findByProductIdAndCompanyId(Integer.parseInt(otp.getProductId()),otp.getCompanyId());
-						for (ProductSectionMaster productSectionMaster : prodctSects) {
+						List<ProductSectionMaster> collect = prodctSects.stream().filter(distinctByKey(ProductSectionMaster::getMotorYn)).collect(Collectors.toList());
+						
+						for (ProductSectionMaster productSectionMaster : collect) {
 							String motorYn = productSectionMaster.getMotorYn();
 							if(motorYn.equals("M")) {
 								List<EserviceMotorDetails> referenceNos = eserviceMotorRepo.findByRequestReferenceNo(otp.getReferenceNo());
+								
+								eserviceMotorRepo.deleteAll(referenceNos);
 								referenceNos.forEach(m->m.setCustomerReferenceNo(otp.getCustomerId()));
 								eserviceMotorRepo.saveAll(referenceNos);
 							}else if(motorYn.equals("H")) {
 								EserviceTravelDetails referenceNos = eserviceTravelRepo.findByRequestReferenceNo(otp.getReferenceNo());
+								eserviceTravelRepo.delete(referenceNos);
 								referenceNos.setCustomerReferenceNo(otp.getCustomerId());
 								eserviceTravelRepo.save(referenceNos);
 							}else if(motorYn.equals("A")) {
 								List<EserviceBuildingDetails> referenceNos = eservicebuildRepo.findByRequestReferenceNo(otp.getReferenceNo());
+								eservicebuildRepo.deleteAll(referenceNos);
 								referenceNos.forEach(m->m.setCustomerReferenceNo(otp.getCustomerId()));
 								eservicebuildRepo.saveAll(referenceNos);
 							}else {
 								List<EserviceCommonDetails> referenceNos = eservicecommonRepo.findByRequestReferenceNo(otp.getReferenceNo());
+								eservicecommonRepo.deleteAll(referenceNos);
 								referenceNos.forEach(m->m.setCustomerReferenceNo(otp.getCustomerId()));
 								eservicecommonRepo.saveAll(referenceNos);
 							}
