@@ -52,8 +52,7 @@ public class OtpDataDetail implements Serializable {
 private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Id    
     @Column(name="S_NO", nullable=false)
     private BigDecimal sNo ;
 
