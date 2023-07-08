@@ -43,6 +43,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.maan.eway.auth.token.EncryDecryService;
 import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.BranchMaster;
@@ -128,6 +129,7 @@ import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
+import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.NotifTemplateMasterRepository;
@@ -1568,14 +1570,14 @@ public class PaymentServiceImpl implements PaymentService {
 			Date validateDate = cal.getTime();
 			
 			paymentDetail.setValidityDate(validateDate);
-			
+			JsonObject payment =null;
 			if( req.getPaymentType().equalsIgnoreCase("1") || req.getPaymentType().equalsIgnoreCase("2")) {
 				paymentStatus = "ACCEPTED" ;
 				paymentDetail.setPaymentStatus(paymentStatus);
 			}else if(req.getPaymentType().equalsIgnoreCase("4")) {
 				paymentStatus = "PENDING" ;
 				paymentDetail.setPaymentStatus(paymentStatus);
-				selcomService.createOrderForPayment(refno);
+				 payment = selcomService.createOrderForPayment(refno);
 			} else {
 				paymentStatus = "PENDING" ;
 				paymentDetail.setPaymentStatus(paymentStatus);
@@ -1630,6 +1632,7 @@ public class PaymentServiceImpl implements PaymentService {
 			res.setPaymentId(paymentDetail.getPaymentId().toString());
 			res.setQuoteNo(req.getQuoteNo());
 			res.setMerchantReference(refno);
+			res.setPayment(payment);
 			//Tracking Details
 			
 			trackingDetailsPayment(data, req.getCreatedBy());
@@ -2398,6 +2401,9 @@ public class PaymentServiceImpl implements PaymentService {
 		return resp;
 	}
 
+	@Autowired
+	private LoginMasterRepository loginmasterRepo;
+	
 	 public QuoteUpdateRes notificationTrigger(Integer productId,String quoteNo,String paymentStatus) {
 			QuoteUpdateRes updateRes = new QuoteUpdateRes();
 			try {
@@ -2494,7 +2500,11 @@ public class PaymentServiceImpl implements PaymentService {
 				n.setNotifDescription("");
 				n.setNotifPriority(0);
 				n.setNotifPushedStatus(NotificationStatus.PENDING);
-				n.setNotifTemplatename("Referral Pending");
+				LoginMaster logid = loginmasterRepo.findByCompanyIdAndLoginId(cusRefNo.get(0).getCompanyId(), loginId);
+				if(logid.getSubUserType().equalsIgnoreCase("b2c")) {
+					n.setNotifTemplatename("RISK MESSAGE");
+				}else
+					n.setNotifTemplatename("POLICY MESSAGE");
 				n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
 				n.setProductid(Integer.valueOf(productId));
 				n.setProductName("Motor");
