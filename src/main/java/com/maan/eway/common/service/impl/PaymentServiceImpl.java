@@ -1577,7 +1577,7 @@ public class PaymentServiceImpl implements PaymentService {
 			}else if(req.getPaymentType().equalsIgnoreCase("4")) {
 				paymentStatus = "PENDING" ;
 				paymentDetail.setPaymentStatus(paymentStatus);
-				 payment = selcomService.createOrderForPayment(refno);
+				
 			} else {
 				paymentStatus = "PENDING" ;
 				paymentDetail.setPaymentStatus(paymentStatus);
@@ -1586,6 +1586,9 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			
 			paymentdetailrepo.saveAndFlush(paymentDetail);
+			if(req.getPaymentType().equalsIgnoreCase("4")) 
+				 payment = selcomService.createOrderForPayment(refno);
+			
 			log.info("Saved Details " + json.toJson(paymentDetail));
 			
 			// Notification Trigger

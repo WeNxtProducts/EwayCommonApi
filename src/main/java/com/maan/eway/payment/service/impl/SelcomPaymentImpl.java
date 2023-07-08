@@ -78,13 +78,14 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					orderDict.addProperty("buyer_userid", "");
 					orderDict.addProperty("buyer_phone", payment.getReqBillToPhone());
 					orderDict.addProperty("gateway_buyer_uuid", "");
-					InsuranceCompanyMaster insInfo = insuranceRepo.findByCompanyId(payment.getCompanyId());
-					/*if(insInfo.getCurrencyId().equals(payment.getCurrencyId()))						
+					/*InsuranceCompanyMaster insInfo = insuranceRepo.findByCompanyId(payment.getCompanyId());
+					if(insInfo.getCurrencyId().equals(payment.getCurrencyId()))	{					
 						orderDict.addProperty("amount",  payment.getPremiumLc());
 					else
 						orderDict.addProperty("amount",  payment.getPremiumFc());*/ 
 					orderDict.addProperty("amount",100);
-					orderDict.addProperty("currency",payment.getCurrencyId()); 
+					//orderDict.addProperty("currency",payment.getCurrencyId()); 
+					orderDict.addProperty("currency","TZS");
 					orderDict.addProperty("payment_methods","ALL");
 					orderDict.addProperty("redirect_url",StringUtils.isNotBlank(redirect_url)?Base64.getEncoder().encodeToString(redirect_url.getBytes("UTF-8")):"");
 					orderDict.addProperty("cancel_url",StringUtils.isNotBlank(cancel_url)?Base64.getEncoder().encodeToString(cancel_url.getBytes("UTF-8")):"");

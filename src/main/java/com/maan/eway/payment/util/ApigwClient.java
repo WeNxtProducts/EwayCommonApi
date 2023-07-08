@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -51,7 +52,8 @@ public class ApigwClient {
     
         for (Object key : dataMap.keySet()) {
             String keyStr = (String)key;
-            String keyvalue = dataMap.get(keyStr).getAsString();
+            System.out.println("keyStr"+keyStr);
+            String keyvalue =dataMap.get(keyStr)==null?"":dataMap.get(keyStr).getAsString();
             serializedJson.add(keyStr+"="+keyvalue);
             keys.add(keyStr);
     
@@ -96,11 +98,11 @@ public class ApigwClient {
        		HttpEntity<?> requestent = new HttpEntity<>(jsonData, header);  
        		
 			System.out.println( new Date()+" Start "+ url);
-			ResponseEntity<JsonObject> postForEntity = temp.exchange(url,HttpMethod.POST, requestent, new ParameterizedTypeReference<JsonObject>() {} );
+			ResponseEntity<String> postForEntity = temp.exchange(url,HttpMethod.POST, requestent, new ParameterizedTypeReference<String>() {} );
 			System.out.println( new Date()+" End "+ url);
        		
 			System.out.println(  "Status Code"+ postForEntity.getStatusCode());
-            return postForEntity.getBody();
+            return null;//postForEntity.getBody();
         } catch (Exception ex) {
             JsonObject err = new JsonObject();
             err.addProperty("error", ex.getMessage());
