@@ -793,9 +793,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setMobileCode3(req.getMobileCode3()==null?"":req.getMobileCode3());
 			saveData.setWhatsappCode(req.getWhatsappCode());
 			saveData.setRegionCode(req.getStateCode());
-			saveData.setStateCode(Integer.valueOf(req.getStateCode()));
+			saveData.setStateCode(StringUtils.isBlank(req.getStateCode()) ?null :Integer.valueOf(req.getStateCode()));
 			saveData.setStateName(req.getStateName());
-			saveData.setCityCode(Integer.valueOf(req.getCityCode()));
+			saveData.setCityCode(StringUtils.isBlank(req.getCityCode())?null :Integer.valueOf(req.getCityCode()));
 			saveData.setCityName(req.getCityName());
 //			if((StringUtils.isNotBlank(req.getNationality()))&&(StringUtils.isNotBlank(req.getStateCode()))){
 //			List<StateMaster> stateCityNames = getStateAndCityName(req.getNationality(), req.getStateCode());
