@@ -20,4 +20,7 @@ public class OtpConfirm {
 	
 	@JsonProperty("Errors")
 	private List<Error> errorlist;
+	
+	@JsonProperty("OTP")
+	private String otp;
 }

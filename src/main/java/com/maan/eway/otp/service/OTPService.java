@@ -92,7 +92,9 @@ public class OTPService {
 					
 				}
 			}).start();
-			OtpConfirm c= OtpConfirm.builder().isError(false).otpToken(otpId).build();
+			OtpConfirm c= OtpConfirm.builder().isError(false).otpToken(otpId)
+					.otp(String.valueOf(newOtp))
+					.build();
 			return c;
 		}catch (Exception e) {
 			e.printStackTrace();
