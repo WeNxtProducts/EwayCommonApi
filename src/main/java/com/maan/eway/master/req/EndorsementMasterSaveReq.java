@@ -3,6 +3,8 @@ package com.maan.eway.master.req;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -62,5 +64,12 @@ public class EndorsementMasterSaveReq {
 
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
+	
+	@JsonProperty("SectionModificationYn")
+	private String sectionModificationYn;
+	
+	@JsonProperty("SectionModificationType")
+	private String sectionModificationType;
+	
 
 }

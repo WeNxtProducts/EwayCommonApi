@@ -302,6 +302,8 @@ public class EndorsementService {
 						.endorsementDesc(ent.getEndtTypeDesc())
 						.endtType(new BigDecimal(ent.getEndtTypeId()))
 						.fieldsAllowed(fields)
+						.sectionModificationYn(ent.getSectionModificationYn())
+						.sectionModificationType(ent.getSectionModificationType())
 						.build();
 				
 				ets.add(e);

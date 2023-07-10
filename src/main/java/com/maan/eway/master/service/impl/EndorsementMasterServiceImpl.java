@@ -103,6 +103,11 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 				errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
 			}
 			
+			if (StringUtils.isNotBlank(req.getSectionModificationYn())) {
+				if (req.getSectionModificationYn().equalsIgnoreCase("Y") && StringUtils.isBlank(req.getSectionModificationType()) )
+				errorList.add(new Error("04", "SectionModificationType", "Please Select Section Modition Type "));
+			}
+			
 			// Date Validation 
 			Calendar cal = new GregorianCalendar();
 			Date today = new Date();
@@ -330,6 +335,8 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 		//	saveData.setCalcType(calc.getItemValue());
 			saveData.setEndtTypeId(endtTypeId);
 			saveData.setRegulatoryCode(req.getRegulatoryCode());
+			saveData.setSectionModificationYn(StringUtils.isBlank(req.getSectionModificationYn()) ? "N" : req.getSectionModificationYn()   );
+			saveData.setSectionModificationType(req.getSectionModificationType());
 			
 			/*
 			String id = "";

@@ -79,5 +79,12 @@ public class EndorsementMasterListRes {
 */
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
+	
+
+	@JsonProperty("SectionModificationYn")
+	private String sectionModificationYn;
+	
+	@JsonProperty("SectionModificationType")
+	private String sectionModificationType;
 
 }
