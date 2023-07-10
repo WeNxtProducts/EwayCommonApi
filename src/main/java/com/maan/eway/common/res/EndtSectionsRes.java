@@ -15,4 +15,10 @@ public class EndtSectionsRes {
 	
 	@JsonProperty("ProductType")
 	private String productType;
+	
+	@JsonProperty("ViewOrEdit")
+	private String ViewOrEdit;
+	
+	@JsonProperty("ModificationType")
+	private String modificationType;
 }

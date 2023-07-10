@@ -745,14 +745,17 @@ public class EndorsementService {
 			
 			// Opted Sections
 			List<EndtSectionsRes> optedResList = new ArrayList<EndtSectionsRes>() ;
-			List<EserviceSectionDetails> optedSections = sectionDatas.stream().filter( o -> o.getSectionEndtModification() != null 
-					&& o.getSectionEndtModification().equalsIgnoreCase("None") ).collect( Collectors.toList());
-			
-			optedSections.forEach( sec ->  {
+	
+			sectionDatas.forEach( sec ->  {
 				EndtSectionsRes secRes = new EndtSectionsRes();
 				secRes.setSectionId(sec.getSectionId());
 				secRes.setSectionName(sec.getSectionName());
 				secRes.setProductType(sec.getProductType());
+				String viewOrEdit = "";
+				viewOrEdit = StringUtils.isBlank(sec.getSectionEndtModification()) || sec.getSectionEndtModification().equalsIgnoreCase("None") || sec.getSectionEndtModification().equalsIgnoreCase("Removed")
+						? "View"  : "Edit" ;
+				secRes.setViewOrEdit(viewOrEdit);
+				secRes.setModificationType(sec.getSectionEndtModification());
 				optedResList.add(secRes);
 				
 			} );
@@ -774,24 +777,24 @@ public class EndorsementService {
 			} );
 			
 			
-			// Endt Sections
-			List<EndtSectionsRes> endtSecResList = new  ArrayList<EndtSectionsRes>();
-			List<EserviceSectionDetails> filterEndtSections = sectionDatas.stream().filter( o -> o.getSectionEndtModification() != null 
-					&& ! o.getSectionEndtModification().equalsIgnoreCase("None") ).collect( Collectors.toList());
-			
-			filterEndtSections.forEach( sec ->  {
-				EndtSectionsRes secRes = new EndtSectionsRes();
-				secRes.setSectionId(sec.getSectionId());
-				secRes.setSectionName(sec.getSectionName());
-				secRes.setProductType(sec.getProductType());
-				endtSecResList.add(secRes);
-			} );
+//			// Endt Sections
+//			List<EndtSectionsRes> endtSecResList = new  ArrayList<EndtSectionsRes>();
+//			List<EserviceSectionDetails> filterEndtSections = sectionDatas.stream().filter( o -> o.getSectionEndtModification() != null 
+//					&& ! o.getSectionEndtModification().equalsIgnoreCase("None") ).collect( Collectors.toList());
+//			
+//			filterEndtSections.forEach( sec ->  {
+//				EndtSectionsRes secRes = new EndtSectionsRes();
+//				secRes.setSectionId(sec.getSectionId());
+//				secRes.setSectionName(sec.getSectionName());
+//				secRes.setProductType(sec.getProductType());
+//				endtSecResList.add(secRes);
+//			} );
 			
 			// Response 
 			EndtSectionListRes  sectionRes = new EndtSectionListRes(); 
 			sectionRes.setOptedSections(optedResList);
 			sectionRes.setNonoptedSections(nonoptedResList);
-			sectionRes.setEndtSections(endtSecResList);
+		//	sectionRes.setEndtSections(endtSecResList);
 			
 			commonRes.setCommonResponse(sectionRes);
 			commonRes.setErroCode(0);
