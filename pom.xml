@@ -228,7 +228,11 @@
       <artifactId>cache2k-spring</artifactId>
       <version>${cache2k-version}</version>
     </dependency>
-    
+      <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.5.14</version>
+  </dependency>
 	</dependencies>
 
 	<build>

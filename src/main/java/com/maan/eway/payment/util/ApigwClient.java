@@ -1,31 +1,33 @@
 package com.maan.eway.payment.util;
 
+import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 public class ApigwClient {
-
     String baseUrl;
     String apiKey;
     String apiSecret;
@@ -36,8 +38,8 @@ public class ApigwClient {
         this.apiSecret = apiSecret;
 
     }
-    public  HttpHeaders computeHeader( JsonObject dataMap) {
-        
+    public  Map<String,Object> computeHeader( JsonObject dataMap) {
+        Map<String,Object> header = new HashMap<>();
         String encodekey = Base64.getEncoder().encodeToString((apiKey).getBytes());
         String authToken = "SELCOM "+ encodekey;
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
@@ -52,8 +54,7 @@ public class ApigwClient {
     
         for (Object key : dataMap.keySet()) {
             String keyStr = (String)key;
-            System.out.println("keyStr"+keyStr);
-            String keyvalue =dataMap.get(keyStr)==null?"":dataMap.get(keyStr).getAsString();
+            String keyvalue = dataMap.get(keyStr)==null ?"":dataMap.get(keyStr).getAsString();
             serializedJson.add(keyStr+"="+keyvalue);
             keys.add(keyStr);
     
@@ -71,71 +72,59 @@ public class ApigwClient {
     
         String digest = new String(Base64.getEncoder().encodeToString(sha256_HMAC.doFinal(message.getBytes())));
         
-        HttpHeaders header=new HttpHeaders();
     
-        header.setContentType(MediaType.APPLICATION_JSON);
-        header.set("Authorization", authToken);
-        header.set("Digest-Method", "HS256");
-        header.set("Digest", digest);
-        header.set("Timestamp", timestamp);
-        header.set("Signed-Fields", signed_fields);
+        header.put("Content-type", "application/json");
+        header.put("Authorization", authToken);
+        header.put("Digest-Method", "HS256");
+        header.put("Digest", digest);
+        header.put("Timestamp", timestamp);
+        header.put("Signed-Fields", signed_fields);
     
         return header;
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-            return null;
+            return header;
             
         }
     
     }
     
     public  JsonObject postFunc(String path, JsonObject jsonData){
-    	HttpHeaders header = computeHeader(jsonData);
+        Map <String,Object> header = computeHeader(jsonData);
         String url = this.baseUrl + path;
-       
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
 
         try {
-        	RestTemplate   temp=new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(5)).setReadTimeout(Duration.ofSeconds(5)).build();
-       		HttpEntity<?> requestent = new HttpEntity<>(jsonData, header);  
-       		
-			System.out.println( new Date()+" Start "+ url);
-			ResponseEntity<String> postForEntity = temp.exchange(url,HttpMethod.POST, requestent, new ParameterizedTypeReference<String>() {} );
-			System.out.println( new Date()+" End "+ url);
-       		
-			System.out.println(  "Status Code"+ postForEntity.getStatusCode());
-            return null;//postForEntity.getBody();
-        } catch (Exception ex) {
-            JsonObject err = new JsonObject();
-            err.addProperty("error", ex.getMessage());
-            return err;
-        } 
-    }
-    
-    public  JsonObject getFunc(String path, JsonObject jsonData){
-    	HttpHeaders header = computeHeader(jsonData);
-        String url = this.baseUrl + path;    
+            Gson gson = new Gson();
+            HttpPost request = new HttpPost(url);
+            StringEntity params = new StringEntity( jsonData.toString());
 
-        try {
-        	RestTemplate   temp=new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(5)).setReadTimeout(Duration.ofSeconds(5)).build();
-        	 List<String> qstring_list = new ArrayList<String>();
-        	for (String key : jsonData.keySet()) {
-                qstring_list.add(key.toString() + "="+jsonData.get(key).getAsString());
-                
+            for (Object key : header.keySet()) {
+                request.addHeader(key.toString(), header.get(key).toString());
             }
-        	url=url+"?" + String.join("&", qstring_list);
-       		HttpEntity<?> requestent = new HttpEntity<>(header);       		
-			System.out.println( new Date()+" Start "+ url);
-			ResponseEntity<JsonObject> postForEntity = temp.exchange(url,HttpMethod.GET, requestent, new ParameterizedTypeReference<JsonObject>() {} );
-			System.out.println( new Date()+" End "+ url);       		
-			System.out.println(  "Status Code"+ postForEntity.getStatusCode());
-            return postForEntity.getBody();
+
+            request.setEntity(params);
+            HttpResponse hresp  = httpClient.execute(request);
+
+            HttpEntity httpEntity = hresp.getEntity();
+            String apiOutput = EntityUtils.toString(httpEntity);
+            
+
+            return new Gson().fromJson(apiOutput, JsonObject.class);
         } catch (Exception ex) {
             JsonObject err = new JsonObject();
             err.addProperty("error", ex.getMessage());
             return err;
-        } 
+        }finally {
+        	if(httpClient!=null)
+				try {
+					httpClient.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		} 
     }
 
-/*
     public  JsonObject getFunc(String path, JsonObject jsonData){
         Map<String, Object> header = computeHeader(jsonData);
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
@@ -166,7 +155,17 @@ public class ApigwClient {
             JsonObject err = new JsonObject();
             err.addProperty("error", ex.getMessage());
             return err;
-        }  
+        }finally {
+
+        	if(httpClient!=null)
+				try {
+					httpClient.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		
+		}  
   
 
     }
@@ -203,6 +202,5 @@ public class ApigwClient {
   
 
     }
-    */
-
+    
 }

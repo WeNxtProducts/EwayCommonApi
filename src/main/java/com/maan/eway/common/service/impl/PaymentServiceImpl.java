@@ -43,7 +43,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.maan.eway.auth.token.EncryDecryService;
 import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.BranchMaster;
@@ -97,7 +100,6 @@ import com.maan.eway.common.res.PaymentInfoGetRes;
 import com.maan.eway.common.res.QuoteUpdateRes;
 import com.maan.eway.common.res.TinyUrlGetRes;
 import com.maan.eway.common.service.PaymentService;
-import com.maan.eway.document.controller.DocumentController;
 import com.maan.eway.document.req.DocTypeDropDownReq;
 import com.maan.eway.document.res.DocumentDropdownRes;
 import com.maan.eway.document.res.DocumentSectionList;
@@ -1635,7 +1637,16 @@ public class PaymentServiceImpl implements PaymentService {
 			res.setPaymentId(paymentDetail.getPaymentId().toString());
 			res.setQuoteNo(req.getQuoteNo());
 			res.setMerchantReference(refno);
-			res.setPayment(payment);
+			
+			if(req.getPaymentType().equalsIgnoreCase("4")) {
+				res.setIserror(((JsonPrimitive) payment.get("result")).getAsString()); //;
+				if(res.getIserror().equals("SUCCESS")) {
+					JsonArray array=(JsonArray) payment.get("data");
+					JsonElement jsonElement = array.get(0);
+					JsonObject asJsonObject = jsonElement.getAsJsonObject();
+					res.setPaymentUrl(((JsonPrimitive) asJsonObject.get("payment_gateway_url")).getAsString());
+				}
+			}
 			//Tracking Details
 			
 			trackingDetailsPayment(data, req.getCreatedBy());
@@ -1773,7 +1784,7 @@ public class PaymentServiceImpl implements PaymentService {
 					trackingReq.setBranchCode(data.getBranchCode().toString());
 					trackingReq.setQuoteNo(data.getQuoteNo().toString());
 					trackingReq.setCompanyId(data.getCompanyId());
-					trackingReq.setPolicyNo(data.getPolicyNo().toString());
+					trackingReq.setPolicyNo(data.getPolicyNo()==null?"":data.getPolicyNo().toString());
 					trackingReq.setCreatedby(createdBy);
 					trackingReq.setRequestReferenceNo(data.getRequestReferenceNo());
 					trackingReq1.add(trackingReq);
@@ -2446,7 +2457,7 @@ public class PaymentServiceImpl implements PaymentService {
 				cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
 						.collect(Collectors.toList());
 				String loginId = "";
-				if (cusRefNo.get(0).getApplicationId().equalsIgnoreCase("1")) {
+				if (cusRefNo!=null && cusRefNo.size()>0 &&  cusRefNo.get(0).getApplicationId().equalsIgnoreCase("1")) {
 					loginId = cusRefNo.get(0).getLoginId();
 				} else {
 					loginId = cusRefNo.get(0).getApplicationId();

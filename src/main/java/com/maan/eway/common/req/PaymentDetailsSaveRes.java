@@ -1,7 +1,7 @@
 package com.maan.eway.common.req;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.gson.JsonObject;
+
 
 import lombok.Data;
 
@@ -29,6 +29,9 @@ public class PaymentDetailsSaveRes {
 	@JsonProperty("CreditNoteNo")
 	private String creditNoteNo;
 	
-	@JsonProperty("JsonObject")
-	private JsonObject payment;
+	@JsonProperty("paymentUrl")
+	private String paymentUrl;
+	
+	@JsonProperty("isError")
+	private String iserror;
 }

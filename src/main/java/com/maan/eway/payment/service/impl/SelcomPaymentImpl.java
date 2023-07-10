@@ -1,7 +1,6 @@
 package com.maan.eway.payment.service.impl;
 
 import java.util.Base64;
-
 import java.util.Date;
 import java.util.List;
 
@@ -11,8 +10,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PaymentVendorMaster;
@@ -101,7 +100,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					orderDict.addProperty("billing.phone" , payment.getReqBillToPhone());
 					orderDict.addProperty("shipping.firstname" ,  payment.getReqBillToForename());
 					orderDict.addProperty("shipping.lastname" ,  payment.getReqBillToSurname());
-					orderDict.addProperty("shipping.address_1" , payment.getReqBillToAddressLine1());
+					//orderDict.addProperty("shipping.address_1" , payment.getReqBillToAddressLine1());
 					orderDict.addProperty("shipping.address_2" , payment.getReqBillToAddressLine2());
 					orderDict.addProperty("shipping.city" , payment.getReqBillToAddressCity());
 					orderDict.addProperty("shipping.state_or_region" , payment.getReqBillToAddressState());  
@@ -115,7 +114,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					// initalize a new Client instace with values of the base url, api key and api secret
 					ApigwClient client = new ApigwClient(baseUrl,apiKey,apiSecret);
 					//post data
-					JsonObject response = client.postFunc(orderPath ,orderDict);
+					JsonObject response = client.postFunc(orderPath ,orderDict); 
 					return response;
 			}else {
 				log.info(merchantRefernceNo +" No Record Found") ;
