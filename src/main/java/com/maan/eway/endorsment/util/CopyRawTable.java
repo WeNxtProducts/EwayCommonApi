@@ -38,13 +38,16 @@ import com.maan.eway.common.service.impl.MotorGridServiceImpl;
 import com.maan.eway.endorsment.request.Endorsment;
 import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
+import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
+import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
-
+import com.maan.eway.bean.EserviceSectionDetails;
+import com.maan.eway.bean.SectionDataDetails;
 @Service
 public class CopyRawTable  {
 
@@ -79,6 +82,11 @@ public class CopyRawTable  {
 	
 	@Autowired
 	private UwQuestionsDetailsRepository uwquestionRepo;
+	
+	@Autowired
+	private SectionDataDetailsRepository sectionDataRepo;
+	@Autowired
+	private EServiceSectionDetailsRepository eserSecRepo;
 
 	@PersistenceContext
 	private EntityManager em;
@@ -254,6 +262,8 @@ public class CopyRawTable  {
 			motorDataDetailsEndtStatus(req);
 			motorDriverDetailsEndtStatus(req);
 			coverDocumentUploadDetailsEndtStatus(req);
+			sectionDataDetails(req);
+			eserviceSectionDetails(req);
 			//eserviceCustDetailsChangeStatus(req);
 
 		} catch (Exception e) {
@@ -264,6 +274,54 @@ public class CopyRawTable  {
 		return savedata;
 	}
 
+	private SectionDataDetails sectionDataDetails(ChangeEndoStatusReq req) {
+		SectionDataDetails savedata = new SectionDataDetails();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			List<SectionDataDetails> motorData = sectionDataRepo.findByQuoteNoAndStatusNot(req.getQuoteNo(),"D");
+			if (motorData.size() > 0) {
+				for (SectionDataDetails data : motorData) {
+					savedata = dozerMapper.map(data, SectionDataDetails.class);
+					savedata.setEndtStatus("C");
+				//	savedata.setStatus("P");
+					sectionDataRepo.saveAndFlush(savedata);
+				}
+			}
+		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return savedata;
+
+		
+	}
+	private EserviceSectionDetails eserviceSectionDetails(ChangeEndoStatusReq req) {
+		EserviceSectionDetails savedata = new EserviceSectionDetails();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			List<EserviceSectionDetails> motorData = eserSecRepo.findByQuoteNo(req.getQuoteNo());
+			if (motorData.size() > 0) {
+				for (EserviceSectionDetails data : motorData) {
+					savedata = dozerMapper.map(data, EserviceSectionDetails.class);
+					savedata.setEndtStatus("C");
+				//	savedata.setStatus("P");
+					eserSecRepo.saveAndFlush(savedata);
+				}
+			}
+		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return savedata;
+
+		
+	}
 	private DocumentTransactionDetails coverDocumentUploadDetailsEndtStatus(ChangeEndoStatusReq req) {
 		DocumentTransactionDetails savedata = new DocumentTransactionDetails();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();

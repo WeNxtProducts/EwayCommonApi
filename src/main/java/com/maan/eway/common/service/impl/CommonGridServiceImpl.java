@@ -41,11 +41,13 @@ import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
+import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.SeqCustid;
 import com.maan.eway.bean.SeqCustrefno;
 import com.maan.eway.bean.SeqQuoteno;
@@ -57,6 +59,7 @@ import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.service.CommonGridService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.repository.DocumentTransactionDetailsRepository;
+import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
@@ -64,6 +67,7 @@ import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
+import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.repository.SeqCustidRepository;
 import com.maan.eway.repository.SeqCustrefnoRepository;
 import com.maan.eway.repository.SeqQuotenoRepository;
@@ -123,6 +127,10 @@ public class CommonGridServiceImpl implements CommonGridService {
 	@Autowired 
 	private RatingFactorsUtil ratingutil;
 
+	@Autowired
+	private SectionDataDetailsRepository sectionDataRepo;
+	@Autowired
+	private EServiceSectionDetailsRepository eserSecRepo;
 	// Exiting Motor Details
 
 	@Override
@@ -1662,6 +1670,10 @@ public class CommonGridServiceImpl implements CommonGridService {
 					// Copy COVER_DOCUMENT_UPLOAD_DETAILS
 					coverDocumentUploadDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count);
 				
+					// Copy ESERVICE_SECTION_DETAILS
+					eserviceSectionDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
+					// Copy Section Data Details
+					sectionDataDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
 				}
 				//res.setRequestReferenceNo(newRequestNo);
 			} catch (Exception e) {
@@ -1734,6 +1746,16 @@ public class CommonGridServiceImpl implements CommonGridService {
 				List<DocumentTransactionDetails> coverDocList = coverDocUploadDetails.findByQuoteNo(quoteNo);
 				if (coverDocList.size() > 0) {
 					coverDocUploadDetails.deleteAll(coverDocList);
+				}
+				//Eservice SectionDetails
+				List<EserviceSectionDetails> eseSecList = eserSecRepo.findByQuoteNo(quoteNo);
+				if (eseSecList.size() > 0) {
+					eserSecRepo.deleteAll(eseSecList);
+				}
+				// Section Data Details
+				List<SectionDataDetails> secDataList = sectionDataRepo.findByQuoteNo(quoteNo);
+				if (secDataList.size() > 0) {
+					sectionDataRepo.deleteAll(secDataList);
 				}
 				
 				
@@ -2116,6 +2138,56 @@ public class CommonGridServiceImpl implements CommonGridService {
 			return res;
 		}
 
+		// Section Data Details
+				private CopyQuoteSuccessRes sectionDataDetailsEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo, String customerId,
+						String loginId, String prevPolicyNo, String prevQuoteNo, Integer count, String custRefNo) {
+					CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
+					SectionDataDetails savedata = new SectionDataDetails();
+					DozerBeanMapper dozerMapper = new DozerBeanMapper();
+					try {
+						EndtTypeMaster entMaster = ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId()); /*endtTypeRepo
+								.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+										req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
+										Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
+
+						List<SectionDataDetails> eserSec = sectionDataRepo.findByQuoteNoAndStatusOrderByRiskIdAsc(prevQuoteNo,"Y");
+						if (eserSec != null && eserSec.size()>0 ) {
+							for (SectionDataDetails data : eserSec) {
+								savedata = dozerMapper.map(data, SectionDataDetails.class);
+								savedata.setEntryDate(new Date());
+								savedata.setCustomerReferenceNo(custRefNo);
+								savedata.setRequestReferenceNo(refNo);
+								savedata.setCustomerId(customerId);
+								savedata.setQuoteNo(quoteNo);
+								savedata.setCreatedBy(loginId);
+								savedata.setUpdatedBy(loginId);
+								savedata.setUpdatedDate(new Date());
+								savedata.setOriginalPolicyNo(req.getPolicyNo());
+								savedata.setEndorsementDate(new Date());
+								savedata.setEndorsementRemarks(req.getEndtRemarks());
+								savedata.setEndorsementEffdate(req.getEndtEffectiveDate());
+								savedata.setEndtPrevPolicyNo(prevPolicyNo);
+								savedata.setEndtPrevQuoteNo(prevQuoteNo);
+								savedata.setEndtCount(new BigDecimal(count));
+								savedata.setEndtStatus("P");
+								savedata.setIsFinaceYn(entMaster.getEndtTypeCategoryId() == 2 ? "Y" : "N");
+								savedata.setEndtCategDesc(entMaster.getEndtTypeCategory());
+								savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
+								savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
+								savedata.setStatus("E");
+								savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+								sectionDataRepo.saveAndFlush(savedata);
+							}
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						log.info("Exception is ---> " + e.getMessage());
+						return null;
+					}
+					return res;
+
+				}
+
 		
 		// Document Enst Copy Quote
 		public CopyQuoteSuccessRes coverDocumentUploadDetailsEndoCopyquote(CopyQuoteReq req, String refNo,
@@ -2161,6 +2233,55 @@ public class CommonGridServiceImpl implements CommonGridService {
 				return null;
 			}
 			return res;
+		}
+		//Eservice Section Details
+		private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo, String customerId,
+				String loginId, String prevPolicyNo, String prevQuoteNo, Integer count, String custRefNo) {
+			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
+			EserviceSectionDetails savedata = new EserviceSectionDetails();
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			try {
+				EndtTypeMaster entMaster = ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId()); /*endtTypeRepo
+						.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+								req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
+								Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
+
+				List<EserviceSectionDetails> eserSec = eserSecRepo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
+				if (eserSec != null && eserSec.size()>0 ) {
+					for (EserviceSectionDetails data : eserSec) {
+						savedata = dozerMapper.map(data, EserviceSectionDetails.class);
+						savedata.setEntryDate(new Date());
+						savedata.setCustomerReferenceNo(custRefNo);
+						savedata.setRequestReferenceNo(refNo);
+						savedata.setCustomerId(customerId);
+						savedata.setQuoteNo(quoteNo);
+						savedata.setCreatedBy(loginId);
+						savedata.setUpdatedBy(loginId);
+						savedata.setUpdatedDate(new Date());
+						savedata.setOriginalPolicyNo(req.getPolicyNo());
+						savedata.setEndorsementDate(new Date());
+						savedata.setEndorsementRemarks(req.getEndtRemarks());
+						savedata.setEndorsementEffdate(req.getEndtEffectiveDate());
+						savedata.setEndtPrevPolicyNo(prevPolicyNo);
+						savedata.setEndtPrevQuoteNo(prevQuoteNo);
+						savedata.setEndtCount(new BigDecimal(count));
+						savedata.setEndtStatus("P");
+						savedata.setIsFinaceYn(entMaster.getEndtTypeCategoryId() == 2 ? "Y" : "N");
+						savedata.setEndtCategDesc(entMaster.getEndtTypeCategory());
+						savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
+						savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
+						savedata.setStatus("E");
+						savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+						eserSecRepo.saveAndFlush(savedata);
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return res;
+
 		}
 
 
