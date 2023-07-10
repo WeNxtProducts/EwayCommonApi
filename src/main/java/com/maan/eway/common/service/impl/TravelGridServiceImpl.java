@@ -1516,6 +1516,12 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			if (traList.size() > 0) {
 				traPassDetailsRepo.deleteAll(traList);
 			}
+			//Eservice Section Details
+			List<EserviceSectionDetails> sectionList = eserSecRepo.findByQuoteNo(quoteNo);
+			if (sectionList.size() > 0) {
+				eserSecRepo.deleteAll(sectionList);
+			}
+			
 			// Section Data Details
 			List<SectionDataDetails> secDataList = sectionDataRepo.findByQuoteNo(quoteNo);
 			if (secDataList.size() > 0) {

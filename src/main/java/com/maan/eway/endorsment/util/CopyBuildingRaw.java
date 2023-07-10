@@ -58,6 +58,9 @@ import com.maan.eway.repository.SectionDataDetailsRepository;
 @Service
 public class CopyBuildingRaw {
 
+	
+	@Autowired
+	private ProductEmployeesDetailsRepository proEmplyeeRepo;
 	@Autowired
 	private EserviceBuildingDetailsRepository eBuildingRepo;
 	@Autowired
@@ -407,6 +410,8 @@ public class CopyBuildingRaw {
 			eserviceCommon(req);
 			sectionDataDetails(req);
 			eserviceSectionDetails(req);
+			productEmployee(req);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -609,6 +614,25 @@ public class CopyBuildingRaw {
 				savedata.setEndtStatus("C");
 				savedata.setIntegrationStatus("S");
 				homePosistionRepo.saveAndFlush(savedata);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return savedata;
+
+	}
+	private ProductEmployeeDetails productEmployee(ChangeEndoStatusReq req) {
+		ProductEmployeeDetails savedata = new ProductEmployeeDetails();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			List<ProductEmployeeDetails> proEmpList = proEmplyeeRepo.findByQuoteNo(req.getQuoteNo());
+			if (proEmpList != null&& proEmpList.size()>0) {
+				savedata = dozerMapper.map(proEmpList, ProductEmployeeDetails.class);
+				savedata.setEndtStatus("C");
+				proEmplyeeRepo.saveAndFlush(savedata);
 			}
 
 		} catch (Exception e) {

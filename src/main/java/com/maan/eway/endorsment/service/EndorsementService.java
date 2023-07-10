@@ -657,6 +657,13 @@ public class EndorsementService {
 				List<EserviceBuildingDetails> buildEndtStatus = new ArrayList<EserviceBuildingDetails>();
 				buildEndtStatus.add( copyBuildingraw.buildingRawEndtStatus(req));
 				res = buildEndtStatus ;
+			} else if (product.getMotorYn().equalsIgnoreCase("H")
+					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+				List<EserviceTravelDetails> travelEndtStatus = new ArrayList<EserviceTravelDetails>();
+				travelEndtStatus.add( copyTravelraw.travelRawEndtStatus(req));
+			}else {
+				List<EserviceCommonDetails> comonEndtStatus = new ArrayList<EserviceCommonDetails>();
+				comonEndtStatus.add( copyCommonraw.commonRawEndtStatus(req));
 			}
 			CommonRes c=new CommonRes();
 			c.setCommonResponse(res);
