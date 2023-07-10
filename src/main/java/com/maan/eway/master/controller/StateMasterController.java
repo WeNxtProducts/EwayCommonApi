@@ -53,7 +53,7 @@ public class StateMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/insertstate")
 		@ApiOperation(value = "This method is Insert State Details")
 		public ResponseEntity<CommonRes> insertState(@RequestBody StateMasterSaveReq req) {
@@ -89,7 +89,7 @@ public class StateMasterController {
 		}
 		
 		//  Get All State Master
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/getallstatedetails")
 		@ApiOperation("This method is getall State Details")
 		public ResponseEntity<CommonRes> getallStateDetails(@RequestBody StateMasterGetAllReq req)
@@ -112,7 +112,7 @@ public class StateMasterController {
 		}
 		
 	//  Get Active Referral Master
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 			@PostMapping("/getactivestate")
 			@ApiOperation("This method is get Active State Details")
 			public ResponseEntity<CommonRes> getActiveStateDetails(@RequestBody StateMasterGetAllReq req)
@@ -135,7 +135,7 @@ public class StateMasterController {
 			}
 		
 		// Get By State Id
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/getbystateid")
 		@ApiOperation("This Method is to get by State id")
 		public ResponseEntity<CommonRes> getByStateId(@RequestBody StateMasterGetReq req)
@@ -203,7 +203,7 @@ public class StateMasterController {
 	}
 
 		//Change Status
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/state/changestatus")
 		@ApiOperation(value = "This method is get State Master Status Change")
 
