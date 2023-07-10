@@ -54,7 +54,7 @@ public class CityMasterController {
 	private  PrintReqService reqPrinter;
 	
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/insertcity")
 		@ApiOperation(value = "This method is Insert City Details")
 		public ResponseEntity<CommonRes> insertCity(@RequestBody CityMasterSaveReq req) {
@@ -90,7 +90,7 @@ public class CityMasterController {
 		}
 		
 		//  Get All City Master
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/getallcitydetails")
 		@ApiOperation("This method is getall City Details")
 		public ResponseEntity<CommonRes> getallCityDetails(@RequestBody CityMasterGetAllReq req)
@@ -113,7 +113,7 @@ public class CityMasterController {
 		}
 		
 	//  Get Active Referral Master
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 			@PostMapping("/getactivecity")
 			@ApiOperation("This method is get Active City Details")
 			public ResponseEntity<CommonRes> getActiveCityDetails(@RequestBody CityMasterGetAllReq req)
@@ -136,7 +136,7 @@ public class CityMasterController {
 			}
 		
 		// Get By City Id
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/getbycityid")
 		@ApiOperation("This Method is to get by City id")
 		public ResponseEntity<CommonRes> getByCityId(@RequestBody CityMasterGetReq req)
