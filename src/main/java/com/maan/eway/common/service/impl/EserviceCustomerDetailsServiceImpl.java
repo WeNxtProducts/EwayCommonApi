@@ -893,6 +893,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					savePersonalInfo.setWhatsappcodeDesc(whatsappCode.getItemValue());
 
 				}
+				savePersonalInfo.setStateName(req.getStateName());
 				personalInforepo.save(savePersonalInfo);
 			}
 			}
