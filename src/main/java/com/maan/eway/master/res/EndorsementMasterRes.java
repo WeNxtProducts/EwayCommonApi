@@ -87,6 +87,13 @@ public class EndorsementMasterRes {
 	
 	@JsonProperty("CalcTypeId")
 	private String calcTypeId;
+	
+
+	@JsonProperty("SectionModificationYn")
+	private String sectionModificationYn;
+	
+	@JsonProperty("SectionModificationType")
+	private String sectionModificationType;
 /*
 	@JsonProperty("CalcType")
 	private String calcType;

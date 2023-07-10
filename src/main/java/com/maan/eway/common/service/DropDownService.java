@@ -185,6 +185,8 @@ public interface DropDownService {
 
 	List<DropDownRes> getMotorContent(LovDropDownReq req);
 
+	List<DropDownRes> getSectionModifyType(LovDropDownReq req);
+
 
 
 }
