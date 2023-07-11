@@ -57,6 +57,9 @@ public class AdminCoverCalculator  extends CommonCalculator implements Consumer<
 				 t.setPremiumBeforeDiscountLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())))) ;
 			 
 				 
+				 BigDecimal domathTira = domathTira(t.getCalcType(),t.getTiraRate(),t.getPremiumBeforeDiscountLC(),t.getExchangeRate()); //Tira Calculation only for referral
+				 t.setTiraSumInsured(domathTira);
+				 
 				 Double totaldiscount=0D;
 				 if(t.getDiscounts()!=null && t.getDiscounts().size()>0) {
 					 AdminDiscountCalculator dcal=new AdminDiscountCalculator(t.getPremiumBeforeDiscount(),t.getExchangeRate(),this);					 
