@@ -338,7 +338,7 @@ this.repository = repo;
 						saveCover.setUserOpt(userOpt);
 						saveCover.setActualRate(new BigDecimal(coverData.getRate()));
 					}else {
-						saveCover.setActualRate(new BigDecimal(coverData.getTiraRate()));
+						saveCover.setActualRate(coverData.getTiraRate()==null?BigDecimal.ZERO:new BigDecimal(coverData.getTiraRate()));
 					}
 						
 						
