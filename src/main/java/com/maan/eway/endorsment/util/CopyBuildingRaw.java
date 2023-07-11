@@ -25,6 +25,7 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.BuildingDetails;
+import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.ContentAndRisk;
 import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.EndtTypeMaster;
@@ -40,6 +41,7 @@ import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.ChangeEndoStatusReq;
 import com.maan.eway.common.res.BuildingCopyRes;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
+import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.common.service.impl.MotorGridServiceImpl;
 import com.maan.eway.endorsment.request.Endorsment;
 import com.maan.eway.repository.BuildingDetailsRepository;
@@ -58,7 +60,8 @@ import com.maan.eway.repository.SectionDataDetailsRepository;
 @Service
 public class CopyBuildingRaw {
 
-	
+	@Autowired
+	private CommonDataDetailsRepository commonDataRepo;
 	@Autowired
 	private ProductEmployeesDetailsRepository proEmplyeeRepo;
 	@Autowired
@@ -411,6 +414,7 @@ public class CopyBuildingRaw {
 			sectionDataDetails(req);
 			eserviceSectionDetails(req);
 			//productEmployee(req);
+			commonDataDetails(req);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -418,6 +422,25 @@ public class CopyBuildingRaw {
 			return null;
 		}
 		return savedata;
+	}
+	private CommonDataDetails commonDataDetails(ChangeEndoStatusReq req) {
+		CommonDataDetails savedata = new CommonDataDetails();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			List<CommonDataDetails> commonData = commonDataRepo.findByQuoteNo(req.getQuoteNo());
+			if (commonData != null&& commonData.size()>0) {
+				savedata = dozerMapper.map(commonData, CommonDataDetails.class);
+				savedata.setEndtStatus("C");
+				commonDataRepo.saveAndFlush(savedata);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return savedata;
+
 	}
 	private SectionDataDetails sectionDataDetails(ChangeEndoStatusReq req) {
 		SectionDataDetails savedata = new SectionDataDetails();

@@ -37,6 +37,7 @@ import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.ChangeEndoStatusReq;
 import com.maan.eway.common.res.CommonCopyRes;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
+import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.common.service.impl.MotorGridServiceImpl;
 import com.maan.eway.endorsment.request.Endorsment;
 import com.maan.eway.repository.DocumentTransactionDetailsRepository;
@@ -47,7 +48,7 @@ import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
 import com.maan.eway.repository.SectionDataDetailsRepository;
-
+import com.maan.eway.bean.CommonDataDetails;
 @Service
 public class CopyCommonRaw {
 
@@ -71,6 +72,9 @@ public class CopyCommonRaw {
 
 	@Autowired
 	private ProductEmployeesDetailsRepository proEmplyeeRepo;
+	
+	@Autowired
+	private CommonDataDetailsRepository commonDataRepo;
 	
 	@Autowired
 	private DocumentTransactionDetailsRepository coverDocUploadDetails;
@@ -304,12 +308,32 @@ public class CopyCommonRaw {
 			sectionDataDetails(req);
 			eserviceSectionDetails(req);
 			productEmployee(req);
+			commonDataDetails(req);
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
 			return null;
 		}
 		return savedata;
+	}
+	private CommonDataDetails commonDataDetails(ChangeEndoStatusReq req) {
+		CommonDataDetails savedata = new CommonDataDetails();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			List<CommonDataDetails> commonData = commonDataRepo.findByQuoteNo(req.getQuoteNo());
+			if (commonData != null&& commonData.size()>0) {
+				savedata = dozerMapper.map(commonData, CommonDataDetails.class);
+				savedata.setEndtStatus("C");
+				commonDataRepo.saveAndFlush(savedata);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return savedata;
+
 	}
 	private ProductEmployeeDetails productEmployee(ChangeEndoStatusReq req) {
 		ProductEmployeeDetails savedata = new ProductEmployeeDetails();
