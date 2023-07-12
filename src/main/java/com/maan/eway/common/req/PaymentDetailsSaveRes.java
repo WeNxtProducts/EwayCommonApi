@@ -2,6 +2,7 @@ package com.maan.eway.common.req;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+
 import lombok.Data;
 
 @Data
@@ -27,4 +28,10 @@ public class PaymentDetailsSaveRes {
 	
 	@JsonProperty("CreditNoteNo")
 	private String creditNoteNo;
+	
+	@JsonProperty("paymentUrl")
+	private String paymentUrl;
+	
+	@JsonProperty("isError")
+	private String iserror;
 }

@@ -29,4 +29,8 @@ public class EndorsementType {
 	private BigDecimal endorsementCategory;
 	@JsonProperty("FieldsAllowed") 
 	private List<String> fieldsAllowed;
+	@JsonProperty("SectionModificationYn") 
+	private String sectionModificationYn;
+	@JsonProperty("SectionModificationType") 
+	private String sectionModificationType;
 }

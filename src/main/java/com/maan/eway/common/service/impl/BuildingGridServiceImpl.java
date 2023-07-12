@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
+import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.ContentAndRisk;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.DocumentTransactionDetails;
@@ -49,6 +50,7 @@ import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductEmployeeDetails;
+import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.SeqCustid;
 import com.maan.eway.bean.SeqCustrefno;
 import com.maan.eway.bean.SeqQuoteno;
@@ -72,10 +74,12 @@ import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
+import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.repository.SeqCustidRepository;
 import com.maan.eway.repository.SeqCustrefnoRepository;
 import com.maan.eway.repository.SeqQuotenoRepository;
 import com.maan.eway.repository.SeqRefnoRepository;
+import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 
 @Service
@@ -87,6 +91,10 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 
 	private Logger log = LogManager.getLogger(BuildingGridServiceImpl.class);
 
+	@Autowired
+	private CommonDataDetailsRepository commonDataRepo;
+	@Autowired
+	private SectionDataDetailsRepository sectionDataRepo;
 	@Autowired
 	private EserviceBuildingDetailsRepository repo;
 	
@@ -1498,6 +1506,8 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 			// Copy ESERVICE_SECTION_DETAILS
 			eserviceSectionDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
 			
+			// Copy Section Data Details
+			sectionDataDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
 			// Copy BUILDING_DETAILS
 			buildingDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
 			
@@ -1687,7 +1697,59 @@ private CopyQuoteSuccessRes contentAndRiskEndoCopyquote(CopyQuoteReq req, String
 	}
 	return res;
 }
+// Common Data Details
+private CopyQuoteSuccessRes commonDataDetailsEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo,
+		String customerId, String loginId, String prevPolicyNo, String prevQuoteNo, Integer count,
+		String custRefNo) {
+	CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
+	CommonDataDetails savedata = new CommonDataDetails();
+	DozerBeanMapper dozerMapper = new DozerBeanMapper();
+	try {
+		EndtTypeMaster entMaster = ratingutil.getEndtMasterData(req.getInsuranceId(), req.getProductId(),
+				req.getEndtTypeId()); /*
+										 * endtTypeRepo
+										 * .findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+										 * req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
+										 * Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+										 */
 
+		List<CommonDataDetails> eserSec = commonDataRepo.findByQuoteNo(prevQuoteNo);
+		if (eserSec != null && eserSec.size() > 0) {
+			for (CommonDataDetails data : eserSec) {
+				savedata = dozerMapper.map(data, CommonDataDetails.class);
+				savedata.setEntryDate(new Date());
+				savedata.setCustomerReferenceNo(custRefNo);
+				savedata.setRequestReferenceNo(refNo);
+				savedata.setCustomerId(customerId);
+				savedata.setQuoteNo(quoteNo);
+				savedata.setCreatedBy(loginId);
+				savedata.setUpdatedBy(loginId);
+				savedata.setUpdatedDate(new Date());
+				savedata.setOriginalPolicyNo(req.getPolicyNo());
+				savedata.setEndorsementDate(new Date());
+				savedata.setEndorsementRemarks(req.getEndtRemarks());
+				savedata.setEndorsementEffdate(req.getEndtEffectiveDate());
+				savedata.setEndtPrevPolicyNo(prevPolicyNo);
+				savedata.setEndtPrevQuoteNo(prevQuoteNo);
+				savedata.setEndtCount(new BigDecimal(count));
+				savedata.setEndtStatus("P");
+				savedata.setIsFinaceYn(entMaster.getEndtTypeCategoryId() == 2 ? "Y" : "N");
+				savedata.setEndtCategDesc(entMaster.getEndtTypeCategory());
+				savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
+				savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
+				savedata.setStatus("E");
+				savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+				commonDataRepo.saveAndFlush(savedata);
+			}
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return res;
+
+}
 //Personal Accident And Personal Indem
 private CopyQuoteSuccessRes personalAccidentEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo, String customerId,String loginId, String prevPolicyNo, String prevQuoteNo, Integer count, String custRefNo) {
 	CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
@@ -1877,6 +1939,12 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 						eserSecRepo.deleteAll(sectionList);
 					}
 					
+					// Section Data Details
+					List<SectionDataDetails> secDataList = sectionDataRepo.findByQuoteNo(quoteNo);
+					if (secDataList.size() > 0) {
+						sectionDataRepo.deleteAll(secDataList);
+					}
+					
 					//Eservice Common Details
 					EserviceCommonDetails commonList = eserCommonRepo.findByQuoteNo(quoteNo);
 					if (commonList!=null) {
@@ -1902,7 +1970,11 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 					if (buildingRiskDetails!= null) {
 						buildRiskRepo.delete(buildingRiskDetails);
 					}
-					
+					//CommonDataDetals
+					List<CommonDataDetails> commonData = commonDataRepo.findByQuoteNo(quoteNo);
+					if (commonData.size() > 0) {
+						commonDataRepo.deleteAll(commonData);
+					}
 					
 					
 				} catch (Exception e) {
@@ -2329,6 +2401,55 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 					return null;
 				}
 				return res;
+			}
+			// Section Data Details
+			private CopyQuoteSuccessRes sectionDataDetailsEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo, String customerId,
+					String loginId, String prevPolicyNo, String prevQuoteNo, Integer count, String custRefNo) {
+				CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
+				SectionDataDetails savedata = new SectionDataDetails();
+				DozerBeanMapper dozerMapper = new DozerBeanMapper();
+				try {
+					EndtTypeMaster entMaster = ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId()); /*endtTypeRepo
+							.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+									req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
+									Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
+
+					List<SectionDataDetails> eserSec = sectionDataRepo.findByQuoteNoAndStatusOrderByRiskIdAsc(prevQuoteNo,"Y");
+					if (eserSec != null && eserSec.size()>0 ) {
+						for (SectionDataDetails data : eserSec) {
+							savedata = dozerMapper.map(data, SectionDataDetails.class);
+							savedata.setEntryDate(new Date());
+							savedata.setCustomerReferenceNo(custRefNo);
+							savedata.setRequestReferenceNo(refNo);
+							savedata.setCustomerId(customerId);
+							savedata.setQuoteNo(quoteNo);
+							savedata.setCreatedBy(loginId);
+							savedata.setUpdatedBy(loginId);
+							savedata.setUpdatedDate(new Date());
+							savedata.setOriginalPolicyNo(req.getPolicyNo());
+							savedata.setEndorsementDate(new Date());
+							savedata.setEndorsementRemarks(req.getEndtRemarks());
+							savedata.setEndorsementEffdate(req.getEndtEffectiveDate());
+							savedata.setEndtPrevPolicyNo(prevPolicyNo);
+							savedata.setEndtPrevQuoteNo(prevQuoteNo);
+							savedata.setEndtCount(new BigDecimal(count));
+							savedata.setEndtStatus("P");
+							savedata.setIsFinaceYn(entMaster.getEndtTypeCategoryId() == 2 ? "Y" : "N");
+							savedata.setEndtCategDesc(entMaster.getEndtTypeCategory());
+							savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
+							savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
+							savedata.setStatus("E");
+							savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+							sectionDataRepo.saveAndFlush(savedata);
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					log.info("Exception is ---> " + e.getMessage());
+					return null;
+				}
+				return res;
+
 			}
 
 

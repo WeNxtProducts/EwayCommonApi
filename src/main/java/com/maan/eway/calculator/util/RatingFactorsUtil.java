@@ -524,6 +524,8 @@ public class RatingFactorsUtil {
 						 			.status(t.get("status")==null?"":t.get("status").toString())
 						 			.updatedBy(t.get("updatedBy")==null?"":t.get("updatedBy").toString())
 						 			.endtTypeCategoryId(t.get("endtTypeCategoryId")==null?0:Integer.parseInt(t.get("endtTypeCategoryId").toString()))
+						 			.sectionModificationYn(t.get("sectionModificationYn")==null ? "" : t.get("sectionModificationYn").toString())
+						 			.sectionModificationType(t.get("sectionModificationType")==null ? "" : t.get("sectionModificationType").toString())
 						 			.updatedDate(null).build();
 				 result.add(e);
 				 }

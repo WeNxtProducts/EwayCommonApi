@@ -48,10 +48,10 @@ public class NotificationValidation {
 			errors.add(new Error("04","BrokerPhoneNo" , "Please Select BrokerPhoneNo" ));
 		}
 		
-		if(StringUtils.isBlank(customer.getCustomerMailid())) {
+		/*if(StringUtils.isBlank(customer.getCustomerMailid())) {
 			errors.add(new Error("04","CustomerMailid" , "Please Select CustomerMailid" ));
 		}
-		
+		*/
 		if(StringUtils.isBlank(customer.getCustomerName())) {
 			errors.add(new Error("04","CustomerName" , "Please Select CustomerName" ));
 		}
@@ -70,7 +70,7 @@ public class NotificationValidation {
 		if(customer.getCustomerPhoneNo()==null) {
 			errors.add(new Error("04","CustomerPhoneNo" , "Please Select CustomerPhoneNo" ));
 		}
-		
+		if(underwriters!=null) {
 		for(UnderWriter underwriter: underwriters) {
 			if(StringUtils.isBlank(underwriter.getUwMailid())) {
 				errors.add(new Error("04","UwMailid" , "Please Select UwMailid" ));
@@ -92,7 +92,7 @@ public class NotificationValidation {
 			if(underwriter.getUwPhoneNo()==null) {
 				errors.add(new Error("04","UwPhoneNo" , "Please Select UwPhoneNo" ));
 			} 
-		}
+		}}
 		if(n.getCompanyid()==null) {
 			errors.add(new Error("04","CompanyId" , "Please Select CompanyId" ));
 		}

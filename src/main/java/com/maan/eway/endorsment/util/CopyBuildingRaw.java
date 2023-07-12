@@ -25,6 +25,7 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.BuildingDetails;
+import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.ContentAndRisk;
 import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.EndtTypeMaster;
@@ -35,10 +36,12 @@ import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.ProductEmployeeDetails;
+import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.ChangeEndoStatusReq;
 import com.maan.eway.common.res.BuildingCopyRes;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
+import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.common.service.impl.MotorGridServiceImpl;
 import com.maan.eway.endorsment.request.Endorsment;
 import com.maan.eway.repository.BuildingDetailsRepository;
@@ -52,13 +55,19 @@ import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
+import com.maan.eway.repository.SectionDataDetailsRepository;
 
 @Service
 public class CopyBuildingRaw {
 
 	@Autowired
+	private CommonDataDetailsRepository commonDataRepo;
+	@Autowired
+	private ProductEmployeesDetailsRepository proEmplyeeRepo;
+	@Autowired
 	private EserviceBuildingDetailsRepository eBuildingRepo;
-	
+	@Autowired
+	private SectionDataDetailsRepository sectionDataRepo;
 	@Autowired	 
 	private MotorGridServiceImpl numberGenerate ;
 	@Autowired
@@ -402,7 +411,11 @@ public class CopyBuildingRaw {
 			//eserviceCustDetailsChangeStatus(req);
 			personalAccident(req);
 			eserviceCommon(req);
-
+			sectionDataDetails(req);
+			eserviceSectionDetails(req);
+			//productEmployee(req);
+			commonDataDetails(req);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -410,7 +423,73 @@ public class CopyBuildingRaw {
 		}
 		return savedata;
 	}
-	
+	private CommonDataDetails commonDataDetails(ChangeEndoStatusReq req) {
+		CommonDataDetails savedata = new CommonDataDetails();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			List<CommonDataDetails> commonData = commonDataRepo.findByQuoteNo(req.getQuoteNo());
+			if (commonData != null&& commonData.size()>0) {
+				savedata = dozerMapper.map(commonData, CommonDataDetails.class);
+				savedata.setEndtStatus("C");
+				commonDataRepo.saveAndFlush(savedata);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return savedata;
+
+	}
+	private SectionDataDetails sectionDataDetails(ChangeEndoStatusReq req) {
+		SectionDataDetails savedata = new SectionDataDetails();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			List<SectionDataDetails> motorData = sectionDataRepo.findByQuoteNoAndStatusNot(req.getQuoteNo(),"D");
+			if (motorData.size() > 0) {
+				for (SectionDataDetails data : motorData) {
+					savedata = dozerMapper.map(data, SectionDataDetails.class);
+					savedata.setEndtStatus("C");
+				//	savedata.setStatus("P");
+					sectionDataRepo.saveAndFlush(savedata);
+				}
+			}
+		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return savedata;
+
+		
+	}
+	private EserviceSectionDetails eserviceSectionDetails(ChangeEndoStatusReq req) {
+		EserviceSectionDetails savedata = new EserviceSectionDetails();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			List<EserviceSectionDetails> motorData = eserSecRepo.findByQuoteNo(req.getQuoteNo());
+			if (motorData.size() > 0) {
+				for (EserviceSectionDetails data : motorData) {
+					savedata = dozerMapper.map(data, EserviceSectionDetails.class);
+					savedata.setEndtStatus("C");
+				//	savedata.setStatus("P");
+					eserSecRepo.saveAndFlush(savedata);
+				}
+			}
+		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return savedata;
+
+		
+	}
 	private ProductEmployeeDetails personalAccident(ChangeEndoStatusReq req) {
 		ProductEmployeeDetails savedata = new ProductEmployeeDetails();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -558,6 +637,25 @@ public class CopyBuildingRaw {
 				savedata.setEndtStatus("C");
 				savedata.setIntegrationStatus("S");
 				homePosistionRepo.saveAndFlush(savedata);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return savedata;
+
+	}
+	private ProductEmployeeDetails productEmployee(ChangeEndoStatusReq req) {
+		ProductEmployeeDetails savedata = new ProductEmployeeDetails();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			List<ProductEmployeeDetails> proEmpList = proEmplyeeRepo.findByQuoteNo(req.getQuoteNo());
+			if (proEmpList != null&& proEmpList.size()>0) {
+				savedata = dozerMapper.map(proEmpList, ProductEmployeeDetails.class);
+				savedata.setEndtStatus("C");
+				proEmplyeeRepo.saveAndFlush(savedata);
 			}
 
 		} catch (Exception e) {

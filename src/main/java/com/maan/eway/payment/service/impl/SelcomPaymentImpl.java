@@ -1,7 +1,6 @@
 package com.maan.eway.payment.service.impl;
 
 import java.util.Base64;
-
 import java.util.Date;
 import java.util.List;
 
@@ -11,8 +10,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PaymentVendorMaster;
@@ -78,13 +77,14 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					orderDict.addProperty("buyer_userid", "");
 					orderDict.addProperty("buyer_phone", payment.getReqBillToPhone());
 					orderDict.addProperty("gateway_buyer_uuid", "");
-					InsuranceCompanyMaster insInfo = insuranceRepo.findByCompanyId(payment.getCompanyId());
-					/*if(insInfo.getCurrencyId().equals(payment.getCurrencyId()))						
+					/*InsuranceCompanyMaster insInfo = insuranceRepo.findByCompanyId(payment.getCompanyId());
+					if(insInfo.getCurrencyId().equals(payment.getCurrencyId()))	{					
 						orderDict.addProperty("amount",  payment.getPremiumLc());
 					else
 						orderDict.addProperty("amount",  payment.getPremiumFc());*/ 
 					orderDict.addProperty("amount",100);
-					orderDict.addProperty("currency",payment.getCurrencyId()); 
+					//orderDict.addProperty("currency",payment.getCurrencyId()); 
+					orderDict.addProperty("currency","TZS");
 					orderDict.addProperty("payment_methods","ALL");
 					orderDict.addProperty("redirect_url",StringUtils.isNotBlank(redirect_url)?Base64.getEncoder().encodeToString(redirect_url.getBytes("UTF-8")):"");
 					orderDict.addProperty("cancel_url",StringUtils.isNotBlank(cancel_url)?Base64.getEncoder().encodeToString(cancel_url.getBytes("UTF-8")):"");
@@ -100,7 +100,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					orderDict.addProperty("billing.phone" , payment.getReqBillToPhone());
 					orderDict.addProperty("shipping.firstname" ,  payment.getReqBillToForename());
 					orderDict.addProperty("shipping.lastname" ,  payment.getReqBillToSurname());
-					orderDict.addProperty("shipping.address_1" , payment.getReqBillToAddressLine1());
+					//orderDict.addProperty("shipping.address_1" , payment.getReqBillToAddressLine1());
 					orderDict.addProperty("shipping.address_2" , payment.getReqBillToAddressLine2());
 					orderDict.addProperty("shipping.city" , payment.getReqBillToAddressCity());
 					orderDict.addProperty("shipping.state_or_region" , payment.getReqBillToAddressState());  
@@ -114,7 +114,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					// initalize a new Client instace with values of the base url, api key and api secret
 					ApigwClient client = new ApigwClient(baseUrl,apiKey,apiSecret);
 					//post data
-					JsonObject response = client.postFunc(orderPath ,orderDict);
+					JsonObject response = client.postFunc(orderPath ,orderDict); 
 					return response;
 			}else {
 				log.info(merchantRefernceNo +" No Record Found") ;

@@ -43,6 +43,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.maan.eway.auth.token.EncryDecryService;
 import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.BranchMaster;
@@ -96,7 +100,6 @@ import com.maan.eway.common.res.PaymentInfoGetRes;
 import com.maan.eway.common.res.QuoteUpdateRes;
 import com.maan.eway.common.res.TinyUrlGetRes;
 import com.maan.eway.common.service.PaymentService;
-import com.maan.eway.document.controller.DocumentController;
 import com.maan.eway.document.req.DocTypeDropDownReq;
 import com.maan.eway.document.res.DocumentDropdownRes;
 import com.maan.eway.document.res.DocumentSectionList;
@@ -128,6 +131,7 @@ import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
+import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.NotifTemplateMasterRepository;
@@ -1568,14 +1572,14 @@ public class PaymentServiceImpl implements PaymentService {
 			Date validateDate = cal.getTime();
 			
 			paymentDetail.setValidityDate(validateDate);
-			
+			JsonObject payment =null;
 			if( req.getPaymentType().equalsIgnoreCase("1") || req.getPaymentType().equalsIgnoreCase("2")) {
 				paymentStatus = "ACCEPTED" ;
 				paymentDetail.setPaymentStatus(paymentStatus);
 			}else if(req.getPaymentType().equalsIgnoreCase("4")) {
 				paymentStatus = "PENDING" ;
 				paymentDetail.setPaymentStatus(paymentStatus);
-				selcomService.createOrderForPayment(refno);
+				
 			} else {
 				paymentStatus = "PENDING" ;
 				paymentDetail.setPaymentStatus(paymentStatus);
@@ -1584,6 +1588,9 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			
 			paymentdetailrepo.saveAndFlush(paymentDetail);
+			if(req.getPaymentType().equalsIgnoreCase("4")) 
+				 payment = selcomService.createOrderForPayment(refno);
+			
 			log.info("Saved Details " + json.toJson(paymentDetail));
 			
 			// Notification Trigger
@@ -1630,6 +1637,16 @@ public class PaymentServiceImpl implements PaymentService {
 			res.setPaymentId(paymentDetail.getPaymentId().toString());
 			res.setQuoteNo(req.getQuoteNo());
 			res.setMerchantReference(refno);
+			
+			if(req.getPaymentType().equalsIgnoreCase("4")) {
+				res.setIserror(((JsonPrimitive) payment.get("result")).getAsString()); //;
+				if(res.getIserror().equals("SUCCESS")) {
+					JsonArray array=(JsonArray) payment.get("data");
+					JsonElement jsonElement = array.get(0);
+					JsonObject asJsonObject = jsonElement.getAsJsonObject();
+					res.setPaymentUrl(((JsonPrimitive) asJsonObject.get("payment_gateway_url")).getAsString());
+				}
+			}
 			//Tracking Details
 			
 			trackingDetailsPayment(data, req.getCreatedBy());
@@ -1767,7 +1784,7 @@ public class PaymentServiceImpl implements PaymentService {
 					trackingReq.setBranchCode(data.getBranchCode().toString());
 					trackingReq.setQuoteNo(data.getQuoteNo().toString());
 					trackingReq.setCompanyId(data.getCompanyId());
-					trackingReq.setPolicyNo(data.getPolicyNo().toString());
+					trackingReq.setPolicyNo(data.getPolicyNo()==null?"":data.getPolicyNo().toString());
 					trackingReq.setCreatedby(createdBy);
 					trackingReq.setRequestReferenceNo(data.getRequestReferenceNo());
 					trackingReq1.add(trackingReq);
@@ -2398,6 +2415,9 @@ public class PaymentServiceImpl implements PaymentService {
 		return resp;
 	}
 
+	@Autowired
+	private LoginMasterRepository loginmasterRepo;
+	
 	 public QuoteUpdateRes notificationTrigger(Integer productId,String quoteNo,String paymentStatus) {
 			QuoteUpdateRes updateRes = new QuoteUpdateRes();
 			try {
@@ -2437,7 +2457,7 @@ public class PaymentServiceImpl implements PaymentService {
 				cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
 						.collect(Collectors.toList());
 				String loginId = "";
-				if (cusRefNo.get(0).getApplicationId().equalsIgnoreCase("1")) {
+				if (cusRefNo!=null && cusRefNo.size()>0 &&  cusRefNo.get(0).getApplicationId().equalsIgnoreCase("1")) {
 					loginId = cusRefNo.get(0).getLoginId();
 				} else {
 					loginId = cusRefNo.get(0).getApplicationId();
@@ -2494,7 +2514,11 @@ public class PaymentServiceImpl implements PaymentService {
 				n.setNotifDescription("");
 				n.setNotifPriority(0);
 				n.setNotifPushedStatus(NotificationStatus.PENDING);
-				n.setNotifTemplatename("Referral Pending");
+				LoginMaster logid = loginmasterRepo.findByCompanyIdAndLoginId(cusRefNo.get(0).getCompanyId(), loginId);
+				if(logid.getSubUserType().equalsIgnoreCase("b2c")) {
+					n.setNotifTemplatename("RISK MESSAGE");
+				}else
+					n.setNotifTemplatename("POLICY MESSAGE");
 				n.setPolicyNo(cusRefNo.get(0).getPolicyNo());
 				n.setProductid(Integer.valueOf(productId));
 				n.setProductName("Motor");

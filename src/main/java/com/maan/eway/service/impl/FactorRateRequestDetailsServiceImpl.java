@@ -337,7 +337,10 @@ this.repository = repo;
 					if(req.getUpdateas()==null) {
 						saveCover.setUserOpt(userOpt);
 						saveCover.setActualRate(new BigDecimal(coverData.getRate()));
+					}else {
+						saveCover.setActualRate(coverData.getTiraRate()==null?BigDecimal.ZERO:new BigDecimal(coverData.getTiraRate()));
 					}
+						
 						
 					saveCover.setCoverBasedOn(StringUtils.isBlank(coverData.getCoverBasedOn())?"sumInsured":coverData.getCoverBasedOn());
 					//Double b=coverData.getPremiumBeforeDiscountLC()==null ? 0D : Double.valueOf(df.format(coverData.getPremiumBeforeDiscountLC()));
@@ -488,6 +491,8 @@ this.repository = repo;
 						if(req.getUpdateas()==null) {
 							saveSubCover.setUserOpt(userOpt);
 							saveSubCover.setActualRate(new BigDecimal(subCoverData.getRate()));
+						}else {
+							saveSubCover.setActualRate(new BigDecimal(subCoverData.getTiraRate()));
 						}
 						///Double b=subCoverData.getPremiumBeforeDiscountLC()==null ? 0D : Double.valueOf(df.format(subCoverData.getPremiumBeforeDiscountLC()));
 					//	saveSubCover.setSumInsured(subCoverData.getSumInsured()==null?BigDecimal.ZERO :subCoverData.getSumInsured());
@@ -1948,7 +1953,7 @@ this.repository = repo;
 					if(filterCover.size()>0 ) {
 						FactorRateRequestDetails  updateCover = filterCover.get(0);
 						updateCover.setMinimumPremium(new BigDecimal(df.format(Double.valueOf(covReq.getMinimumPremium()))));
-						updateCover.setActualRate(updateCover.getRate());
+				//		updateCover.setActualRate(updateCover.getRate());
 						updateCover.setRate(new BigDecimal(covReq.getRate()));
 						updateCover.setExcessAmount(new BigDecimal(covReq.getExcessAmount()));
 						updateCover.setExcessPercent(new BigDecimal(covReq.getExcessPercent()));
@@ -1961,7 +1966,7 @@ this.repository = repo;
 					if(filterSubCover.size()>0 ) {
 						FactorRateRequestDetails  updateSubCover = filterSubCover.get(0);
 						updateSubCover.setMinimumPremium(new BigDecimal(df.format(Double.valueOf(covReq.getMinimumPremium()))));
-						updateSubCover.setActualRate(updateSubCover.getRate());
+				//		updateSubCover.setActualRate(updateSubCover.getRate());
 						updateSubCover.setRate(new BigDecimal(covReq.getRate()));
 						updateSubCover.setExcessAmount(new BigDecimal(covReq.getExcessAmount()));
 						updateSubCover.setExcessPercent(new BigDecimal(covReq.getExcessPercent()));

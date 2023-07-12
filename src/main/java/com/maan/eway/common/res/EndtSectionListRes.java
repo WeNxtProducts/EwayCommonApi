@@ -15,6 +15,6 @@ public class EndtSectionListRes {
 	@JsonProperty("NonOptedSections")
 	private List<EndtSectionsRes> nonoptedSections ;
 	
-	@JsonProperty("EndtSections")
-	private List<EndtSectionsRes> endtSections ;
+//	@JsonProperty("EndtSections")
+//	private List<EndtSectionsRes> endtSections ;
 }

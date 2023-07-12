@@ -6,32 +6,23 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.maan.eway.common.req.GetMachineryContentReq;
 import com.maan.eway.common.req.GetOccupationsReq;
 import com.maan.eway.common.req.NcdDetailsGetReq;
-import com.maan.eway.common.service.DropDownService;
-import com.maan.eway.integration.req.PremiaRequest;
-import com.maan.eway.integration.req.QueryKeyReq;
-import com.maan.eway.integration.res.PremiaResponse;
-import com.maan.eway.master.req.BrokerSumInsuredRefReq;
-import com.maan.eway.master.req.BuildingUsageDropDownReq;
-import com.maan.eway.master.req.CityDropDownReq;
-import com.maan.eway.master.req.LovDropDownReq;
-import com.maan.eway.master.req.LovPolicyDropDownReq;
-import com.maan.eway.master.req.RegionDropDownReq;
-import com.maan.eway.master.req.RelationDropDownReq;
-import com.maan.eway.master.req.StateDropDownReq;
-import com.maan.eway.res.ColummnDropRes;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.GetMachineryContentRes;
+import com.maan.eway.common.service.DropDownService;
+import com.maan.eway.integration.req.QueryKeyReq;
+import com.maan.eway.master.req.BrokerSumInsuredRefReq;
+import com.maan.eway.master.req.LovDropDownReq;
+import com.maan.eway.master.req.LovPolicyDropDownReq;
+import com.maan.eway.master.req.RelationDropDownReq;
 import com.maan.eway.res.DropDownRes;
 
 import io.swagger.annotations.Api;
@@ -1532,12 +1523,35 @@ public class DropDownController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+	
 
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/machinerycontent")
 	public ResponseEntity<CommonRes> getMachineryContent(@RequestBody GetMachineryContentReq req) {
 		CommonRes data = new CommonRes();
 		GetMachineryContentRes res = dropDownService.getMachineryContent(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	
+
+
+
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/sectionmodifytype")
+	public ResponseEntity<CommonRes> getSectionModifyType(@RequestBody LovDropDownReq req) {
+		CommonRes data = new CommonRes();
+		List<DropDownRes> res = dropDownService.getSectionModifyType(req);
+
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);

@@ -252,7 +252,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
+		String isEndt=null;
 		List<Cover> retc = new ArrayList<Cover>();
 		try {
 
@@ -427,6 +427,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 				Comparator<Cover> comp = Comparator.comparing(Cover::getCoverageType);
 				retc.sort(comp);
 			}
+			
 			try {
 				String endtTypeId = vehicles.get(0).get("endtTypeId") == null ? ""
 						: vehicles.get(0).get("endtTypeId").toString();
@@ -448,7 +449,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							"requestReferenceNo");
 					result = crservice.getResult(criteria, 0, 50);
 					endtCount = new BigDecimal(result.get(0).get("endtCount").toString());
-
+					isEndt="admin";
 					loadAndRemoveCoversForEndt(engine, retc, result);
 				}
 			} catch (Exception e) {
@@ -475,7 +476,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			response.setCreatedBy(engine.getCreatedBy());
 			response.setProductId(engine.getProductId());
 			response.setMsrefno(engine.getMsrefno());
-			response.setUpdateas(null);
+			response.setUpdateas(isEndt);
 			response.setUwList(referr);
 			response.setReferals(masterreferral);
 			fservice.saveFactorRateRequestDetails(response);

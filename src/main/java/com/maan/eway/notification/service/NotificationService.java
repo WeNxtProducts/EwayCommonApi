@@ -195,7 +195,7 @@ public class NotificationService {
 			}
 			
 			NotifTransactionDetails sv = null;
-			if(n.getUnderwriters().size()>0) {
+			if(n.getUnderwriters() !=null && n.getUnderwriters().size()>0) {
 				List<NotifTransactionDetails> uws=new ArrayList<NotifTransactionDetails>();
 				
 				String tinyGroupId=String.valueOf(Instant.now().getEpochSecond());

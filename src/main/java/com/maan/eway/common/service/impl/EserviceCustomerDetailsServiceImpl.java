@@ -1,5 +1,6 @@
 package com.maan.eway.common.service.impl;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
@@ -708,14 +709,14 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			Date entryDate = null;	
 			String createdBy = "";
 			String custRefNo = "";
-        
+			Integer productId;
         if (StringUtils.isBlank(req.getCustomerReferenceNo())) {
 				// Save
 				entryDate = new Date();
 				createdBy = req.getCreatedBy();
 			//	Random rand = new Random();
 			//	int random = rand.nextInt(90) + 10;
-
+				productId=Integer.valueOf(req.getProductId());
 				custRefNo = "Cust-" +   generateCustRefNo() ; // idf.format(new Date()) + random ;
 				res.setResponse("Saved Successfully");
 				res.setSuccessId(custRefNo);
@@ -725,10 +726,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				EserviceCustomerDetails findData = repository.findByCustomerReferenceNo(req.getCustomerReferenceNo());
 				entryDate = findData.getEntryDate();
 				createdBy = findData.getCreatedBy();
+				productId=findData.getProductId();
 				res.setResponse("Updated Successfully");
 				res.setSuccessId(custRefNo);
 			}
 			dozerMapper.map(req, saveData);
+			saveData.setProductId(productId);
 			saveData.setEntryDate(entryDate);
 			saveData.setCreatedBy(createdBy);
 			saveData.setUpdatedDate(new Date());
@@ -893,6 +896,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					savePersonalInfo.setWhatsappcodeDesc(whatsappCode.getItemValue());
 
 				}
+				savePersonalInfo.setStateName(req.getStateName());
 				personalInforepo.save(savePersonalInfo);
 			}
 			}

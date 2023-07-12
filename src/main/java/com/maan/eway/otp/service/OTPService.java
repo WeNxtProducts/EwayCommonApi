@@ -8,6 +8,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +28,16 @@ import com.maan.eway.admin.service.LoginBranchService;
 import com.maan.eway.admin.service.LoginDetailsService;
 import com.maan.eway.admin.service.LoginProductService;
 import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.EserviceBuildingDetails;
+import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.OtpDataDetail;
+import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.QuoteUpdateRes;
 import com.maan.eway.error.Error;
@@ -41,12 +51,17 @@ import com.maan.eway.otp.dto.OtpConfirm;
 import com.maan.eway.otp.dto.UserOtp;
 import com.maan.eway.otp.dto.ValidateOtp;
 import com.maan.eway.repository.CompanyProductMasterRepository;
+import com.maan.eway.repository.EServiceMotorDetailsRepository;
+import com.maan.eway.repository.EserviceBuildingDetailsRepository;
+import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
+import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.OtpDataDetailRepository;
+import com.maan.eway.repository.ProductSectionMasterRepository;
 
 @Service
 public class OTPService {
@@ -92,7 +107,9 @@ public class OTPService {
 					
 				}
 			}).start();
-			OtpConfirm c= OtpConfirm.builder().isError(false).otpToken(otpId).build();
+			OtpConfirm c= OtpConfirm.builder().isError(false).otpToken(otpId)
+					.otp(String.valueOf(newOtp))
+					.build();
 			return c;
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -113,7 +130,20 @@ public class OTPService {
 		return otp;
 
 	}
-
+	@Autowired
+	private ProductSectionMasterRepository productSectionRepo;
+	@Autowired
+	private EServiceMotorDetailsRepository eserviceMotorRepo;
+	@Autowired
+	private EserviceTravelDetailsRepository eserviceTravelRepo;
+	@Autowired
+	private EserviceBuildingDetailsRepository eservicebuildRepo;	
+	@Autowired
+	private EserviceCommonDetailsRepository eservicecommonRepo;
+	public static <T> Predicate<T> distinctByKey(Function<? super T,Object> keyExtractor) {
+	    Map<Object,Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
 	public OtpConfirm validate(ValidateOtp otp) {
 			try {
 				List<Error> errorlist=new ArrayList<Error>();
@@ -138,7 +168,37 @@ public class OTPService {
 					 
 					 
 					errorlist = createUserLogin(otpData,otp);
-					
+					if((errorlist==null || errorlist.size()==0) && StringUtils.isNotBlank(otp.getCustomerId()) &&  StringUtils.isNotBlank(otp.getReferenceNo())) {
+						List<ProductSectionMaster> prodctSects = productSectionRepo.findByProductIdAndCompanyId(Integer.parseInt(otp.getProductId()),otp.getCompanyId());
+						List<ProductSectionMaster> collect = prodctSects.stream().filter(distinctByKey(ProductSectionMaster::getMotorYn)).collect(Collectors.toList());
+						
+						for (ProductSectionMaster productSectionMaster : collect) {
+							String motorYn = productSectionMaster.getMotorYn();
+							if(motorYn.equals("M")) {
+								List<EserviceMotorDetails> referenceNos = eserviceMotorRepo.findByRequestReferenceNo(otp.getReferenceNo());
+								
+								eserviceMotorRepo.deleteAll(referenceNos);
+								referenceNos.forEach(m->m.setCustomerReferenceNo(otp.getCustomerId()));
+								eserviceMotorRepo.saveAll(referenceNos);
+							}else if(motorYn.equals("H")) {
+								EserviceTravelDetails referenceNos = eserviceTravelRepo.findByRequestReferenceNo(otp.getReferenceNo());
+								eserviceTravelRepo.delete(referenceNos);
+								referenceNos.setCustomerReferenceNo(otp.getCustomerId());
+								eserviceTravelRepo.save(referenceNos);
+							}else if(motorYn.equals("A")) {
+								List<EserviceBuildingDetails> referenceNos = eservicebuildRepo.findByRequestReferenceNo(otp.getReferenceNo());
+								eservicebuildRepo.deleteAll(referenceNos);
+								referenceNos.forEach(m->m.setCustomerReferenceNo(otp.getCustomerId()));
+								eservicebuildRepo.saveAll(referenceNos);
+							}else {
+								List<EserviceCommonDetails> referenceNos = eservicecommonRepo.findByRequestReferenceNo(otp.getReferenceNo());
+								eservicecommonRepo.deleteAll(referenceNos);
+								referenceNos.forEach(m->m.setCustomerReferenceNo(otp.getCustomerId()));
+								eservicecommonRepo.saveAll(referenceNos);
+							}
+						}
+							
+					}
 					
 				}else if(errorlist.size()==0) {
 					String mobileNo = otpData.getMobileCode().concat(otpData.getMobileNo());
@@ -258,6 +318,8 @@ public class OTPService {
 				comProduct.setProductIds(productss);
 				
 				loginProductService.saveBrokerProductDetails(comProduct);
+				
+				
 			return validation; 	
 		}catch (Exception e) {
 			e.printStackTrace();

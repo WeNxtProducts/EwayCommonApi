@@ -134,6 +134,12 @@ private static final long serialVersionUID = 1L;
     @Column(name="CALC_TYPE_ID", length=10)
     private String calcTypeId;
 
+    @Column(name="SECTION_MODIFICATION_YN", length=10)
+    private String sectionModificationYn;
+    
+    @Column(name="SECTION_MODIFICATION_TYPE", length=10)
+    private String sectionModificationType;
+    
     
 }
 
