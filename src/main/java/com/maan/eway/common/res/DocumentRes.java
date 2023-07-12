@@ -1,7 +1,5 @@
 package com.maan.eway.common.res;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -12,14 +10,20 @@ public class DocumentRes {
 	@JsonProperty("DocumentType")
 	private String documentType ;
 	
+	@JsonProperty("DocumentTypeDesc")
+	private String documentTypeDesc;
+	
 	@JsonProperty("DocumentFie")
 	private String orginalFileName ;
+	
+	@JsonProperty("DocumentId")
+	private String documentId;
 	
 	@JsonProperty("DocumentDescription")
 	private String documentDesc ;
 	
-	@JsonProperty("DocumentReferenceNumber")
-	private Integer documentReferenceNo;
+	@JsonProperty("UniqueId")
+	private Integer uniqueId;
 	
 	@JsonProperty("Originalpath")
 	private String filePathOrginal;
@@ -27,12 +31,27 @@ public class DocumentRes {
 	@JsonProperty("Compressed")
 	private String filePathBackup;
 	
-	@JsonProperty("DocumentTypeDesc")
-	private String documentTypeDesc;
-	
-	@JsonProperty("DocumentId")
-	private String documentId;
-	
 	@JsonProperty("Id")
 	private String id;
+	
+	@JsonProperty("IdType")
+	private String idType;
+	
+	@JsonProperty("LocationId")
+	private Integer locationId;
+	
+	@JsonProperty("LocationName")
+	private String LocationName;
+	
+	@JsonProperty("SectionId")
+	private Integer sectionId;
+	
+	@JsonProperty("SectionName")
+	private String sectionName;
+	
+	@JsonProperty("DocApplicable")
+	private String docApplicable ;
+	
+	@JsonProperty("DocApplicableId")
+	private String docApplicableId ;
 }

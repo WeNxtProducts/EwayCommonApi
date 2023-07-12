@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import com.maan.eway.common.req.GetMachineryContentReq;
 import com.maan.eway.common.req.GetOccupationsReq;
 import com.maan.eway.common.req.NcdDetailsGetReq;
 import com.maan.eway.common.service.DropDownService;
@@ -30,6 +31,7 @@ import com.maan.eway.master.req.RelationDropDownReq;
 import com.maan.eway.master.req.StateDropDownReq;
 import com.maan.eway.res.ColummnDropRes;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.GetMachineryContentRes;
 import com.maan.eway.res.DropDownRes;
 
 import io.swagger.annotations.Api;
@@ -1520,6 +1522,22 @@ public class DropDownController {
 	public ResponseEntity<CommonRes> getMotorContent(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
 		List<DropDownRes> res = dropDownService.getMotorContent(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/machinerycontent")
+	public ResponseEntity<CommonRes> getMachineryContent(@RequestBody GetMachineryContentReq req) {
+		CommonRes data = new CommonRes();
+		GetMachineryContentRes res = dropDownService.getMachineryContent(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);

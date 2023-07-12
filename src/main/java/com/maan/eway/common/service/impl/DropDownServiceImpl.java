@@ -1,6 +1,5 @@
 package com.maan.eway.common.service.impl;
 
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,7 +7,6 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,41 +34,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.bean.BrokerCommissionDetails;
+import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CommonDataDetails;
-import com.maan.eway.bean.CompanyCityMaster;
-import com.maan.eway.bean.CompanyProductMaster;
-import com.maan.eway.bean.CompanyRegionMaster;
-import com.maan.eway.bean.CompanyStateMaster;
-import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.ListItemValue;
-import com.maan.eway.bean.LoginProductMaster;
+import com.maan.eway.common.req.GetMachineryContentReq;
 import com.maan.eway.common.req.GetOccupationsReq;
 import com.maan.eway.common.req.NcdDetailsGetReq;
+import com.maan.eway.common.res.GetMachineryContentRes;
 import com.maan.eway.common.service.DropDownService;
-import com.maan.eway.integration.req.PremiaRequest;
 import com.maan.eway.integration.req.QueryKeyReq;
 import com.maan.eway.integration.service.impl.OracleQuery;
 import com.maan.eway.master.req.BrokerSumInsuredRefReq;
-import com.maan.eway.master.req.BuildingUsageDropDownReq;
-import com.maan.eway.master.req.CityDropDownReq;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.LovPolicyDropDownReq;
-import com.maan.eway.master.req.RegionDropDownReq;
 import com.maan.eway.master.req.RelationDropDownReq;
-import com.maan.eway.master.req.StateDropDownReq;
 import com.maan.eway.master.service.impl.PolicyTypeMasterServiceImpl;
+import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.CompanyCityMasterRepository;
 import com.maan.eway.repository.CompanyRegionMasterRepository;
 import com.maan.eway.repository.CompanyStateMasterRepository;
 import com.maan.eway.repository.CountryMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
-import com.maan.eway.res.ColummnDropRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.MachineryDropDownRes;
 
 @Service
 public class DropDownServiceImpl  implements DropDownService{ 
@@ -105,6 +95,9 @@ public class DropDownServiceImpl  implements DropDownService{
 	
 	@Autowired 
 	private CommonDataDetailsRepository commonRepo;
+	
+	@Autowired 
+	private	BuildingRiskDetailsRepository buildRepo;
 	
 	// Cover Note Type Drop Down
 
@@ -2545,6 +2538,126 @@ public class DropDownServiceImpl  implements DropDownService{
 			return null;
 		}
 		return resList;	}
+
+
+	@Override
+	public GetMachineryContentRes getMachineryContent(GetMachineryContentReq req) {
+		GetMachineryContentRes resp = new GetMachineryContentRes();
+	
+		List<MachineryDropDownRes> resList = new ArrayList<MachineryDropDownRes>();
+		try {
+			BigDecimal sumInsured = BigDecimal.ZERO ;
+			
+			LovDropDownReq req1 = new LovDropDownReq();
+			req1.setBranchCode(req.getBranchCode());
+			req1.setInsuranceId(req.getInsuranceId());
+			
+			String itemType = "MACHINERY_BREAKDOWN" ;
+			List<ListItemValue> getList  = getListItem(req1 , itemType);
+			
+			BuildingRiskDetails build = buildRepo.findByQuoteNo(req.getQuoteNo());
+			
+			for (ListItemValue data : getList) {
+				MachineryDropDownRes res = new MachineryDropDownRes();
+				if(data.getItemCode().equals("1")) {
+					if(build.getBoilerPlantsSi()!=null) {
+							if(build.getBoilerPlantsSi().compareTo(BigDecimal.ZERO) > 0 ) {
+						res.setCode(data.getItemCode());
+						res.setCodeDesc(data.getItemValue());
+						res.setStatus(data.getStatus());
+						res.setSumInsured(build.getBoilerPlantsSi());
+						resList.add(res);
+						
+						sumInsured = sumInsured.add(build.getBoilerPlantsSi());
+						
+					}
+					
+				}}
+				if(data.getItemCode().equals("2")) {
+					if(build.getElecMachinesSi()!=null ) {
+							if(build.getElecMachinesSi().compareTo(BigDecimal.ZERO) > 0) {
+						res.setCode(data.getItemCode());
+						res.setCodeDesc(data.getItemValue());
+						res.setStatus(data.getStatus());
+						res.setSumInsured(build.getElecMachinesSi());
+						resList.add(res);
+						
+						sumInsured = sumInsured.add(build.getElecMachinesSi());
+					}
+				}}
+				if(data.getItemCode().equals("3")) {
+					if(build.getElecEquipSuminsured()!=null) {
+						if(build.getElecEquipSuminsured().compareTo(BigDecimal.ZERO) > 0) {
+					
+						res.setCode(data.getItemCode());
+						res.setCodeDesc(data.getItemValue());
+						res.setStatus(data.getStatus());
+						res.setSumInsured(build.getElecEquipSuminsured());
+						resList.add(res);
+						
+						sumInsured = sumInsured.add(build.getElecEquipSuminsured());
+					}
+				}}
+				if(data.getItemCode().equals("4")) {
+					if(build.getEquipmentSi()!=null ) {
+						if(build.getEquipmentSi().compareTo(BigDecimal.ZERO) > 0) {
+					
+						res.setCode(data.getItemCode());
+						res.setCodeDesc(data.getItemValue());
+						res.setStatus(data.getStatus());
+						res.setSumInsured(build.getEquipmentSi());
+						resList.add(res);
+						sumInsured = sumInsured.add(build.getEquipmentSi());
+					}
+				}}
+				if(data.getItemCode().equals("5")) {
+					if(build.getGeneralMachineSi()!=null ) {
+						if(build.getGeneralMachineSi().compareTo(BigDecimal.ZERO) > 0) {
+					
+						res.setCode(data.getItemCode());
+						res.setCodeDesc(data.getItemValue());
+						res.setStatus(data.getStatus());
+						res.setSumInsured(build.getGeneralMachineSi());
+						resList.add(res);
+						
+						sumInsured = sumInsured.add(build.getGeneralMachineSi());
+					}
+				}}
+				if(data.getItemCode().equals("6")) {
+					if(build.getManuUnitsSi()!=null) {
+						if(build.getManuUnitsSi().compareTo(BigDecimal.ZERO) > 0) {
+						res.setCode(data.getItemCode());
+						res.setCodeDesc(data.getItemValue());
+						res.setStatus(data.getStatus());
+						res.setSumInsured(build.getManuUnitsSi());
+						resList.add(res);
+						sumInsured = sumInsured.add(build.getManuUnitsSi());
+					}
+				}}
+				if(data.getItemCode().equals("7")) {
+					if(build.getPowerPlantSi()!=null) {
+						if(build.getPowerPlantSi().compareTo(BigDecimal.ZERO) > 0) {
+						res.setCode(data.getItemCode());
+						res.setCodeDesc(data.getItemValue());
+						res.setStatus(data.getStatus());
+						res.setSumInsured(build.getPowerPlantSi());
+						resList.add(res);
+						sumInsured = sumInsured.add(build.getPowerPlantSi());
+					}
+				}}
+				
+			
+			}
+			resp.setTotalSumInsured(sumInsured);
+			resp.setContentTypeRes(resList);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resp;
+	}
 
 	
 }
