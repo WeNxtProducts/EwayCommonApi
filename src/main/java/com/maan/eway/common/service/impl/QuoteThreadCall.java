@@ -2603,6 +2603,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				HomePositionMaster oldPosition = homeRepo.findByQuoteNo(motorData.getEndtPrevQuoteNo()==null?null:motorData.getEndtPrevQuoteNo());
 				home.setCoverNoteReferenceNo(oldPosition.getCoverNoteReferenceNo());
 				home.setPrevCoverNoteRefNo(oldPosition.getCoverNoteReferenceNo());
+				home.setCancelledDate(oldPosition.getExpiryDate());
 			}
 			
 			// Copy Old Motor Doc
