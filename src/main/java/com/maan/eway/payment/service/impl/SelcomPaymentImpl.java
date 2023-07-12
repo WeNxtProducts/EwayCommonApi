@@ -141,7 +141,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 		return null;
 	}
 	@Override
-	public JsonObject orderStatus(String orderId) {
+	public JsonObject orderStatus(String orderId,String token) {
 		 try {
 			 PaymentDetail payment = paymentDetailRepo.findByMerchantReference(orderId);
 				
@@ -190,7 +190,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 								req.setQuoteNo(payment.getQuoteNo());
 								req.setCreatedBy(payment.getUpdatedBy());
 								req.setPaymentType(payment.getPaymentType());
-								paymentService.generatePolicy(paymentInfo,req,payment);
+								paymentService.generatePolicy(paymentInfo,req,payment,token);
 							}
  						return response;
 				}

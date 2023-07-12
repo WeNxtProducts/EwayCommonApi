@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,8 +56,8 @@ public class SelcomPaymentController {
 	
 	@PostMapping("/v1/checkout/order-status/{orderId}")
 	@ApiOperation(value = "This method is to Payment ") 
-	public ResponseEntity<JsonObject> orderStatus(@RequestParam String orderId) {
-		JsonObject data = service.orderStatus(orderId);
+	public ResponseEntity<JsonObject> orderStatus(@RequestParam String orderId,@RequestHeader("Authorization") String tokens) {
+		JsonObject data = service.orderStatus(orderId,tokens);
 		if (data != null) {
 			return new ResponseEntity<JsonObject>(data, HttpStatus.CREATED);
 		} else {

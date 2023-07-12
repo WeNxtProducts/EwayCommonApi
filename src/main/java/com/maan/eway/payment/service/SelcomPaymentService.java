@@ -11,6 +11,6 @@ public interface SelcomPaymentService {
 
 	JsonObject methodWebhook(JsonObject jsObject);
 
-	JsonObject orderStatus(String orderId);
+	JsonObject orderStatus(String orderId, String tokens);
 
 }

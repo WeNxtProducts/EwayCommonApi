@@ -18,6 +18,7 @@ import javax.persistence.criteria.Subquery;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -71,7 +72,7 @@ public class TiraIntegerationServiceImpl {
 			if  (  product.getMotorYn().equalsIgnoreCase("M") ) {
 				
 				// Call Integeration
-				PremiaRequest premiaReq = new PremiaRequest(); 
+			/*	PremiaRequest premiaReq = new PremiaRequest(); 
 				premiaReq.setQuoteNo(tiraReq.getQuoteNo());
 				List<String> premiaIds = new ArrayList<String>(); 
 				premiaIds.add(  "1"  );
@@ -92,13 +93,13 @@ public class TiraIntegerationServiceImpl {
 				
 				service.pushPremiaIntegration(premiaReq);
 				
-				
+				*/
 				// Tira Request Frame
 				Object tiraFramedReq = TiraReqFrame(tiraReq, token);
 
 				// Tira Integ Push
-				Object tiraIntegPushRes = TiraIntegPush(tiraFramedReq , token);
-
+				JSONObject tiraIntegPushRes = TiraIntegPush(tiraFramedReq , token);
+				log.info("Tira Respone"+tiraIntegPushRes.toString());
 			}
 			
 			res.setResponse("Success");
@@ -140,8 +141,8 @@ public class TiraIntegerationServiceImpl {
 	}
 	 
 		 
-	 public Object TiraIntegPush(Object pushReq , String token  ) {
-		Object res = null;
+	 public JSONObject TiraIntegPush(Object pushReq , String token  ) {
+		 JSONObject res = null;
 		try {
 			// Frame Tira Req
 
@@ -154,7 +155,7 @@ public class TiraIntegerationServiceImpl {
 			HttpEntity<?> requestent = new HttpEntity<>(pushReq , header);
 
 			System.out.println(new Date() + " Start " + url);
-			ResponseEntity<Object> postForEntity = temp.exchange(url, HttpMethod.POST, requestent,new ParameterizedTypeReference<Object>() {}) ;
+			ResponseEntity<JSONObject> postForEntity = temp.exchange(url, HttpMethod.POST, requestent,new ParameterizedTypeReference<JSONObject>() {}) ;
 			res = postForEntity.getBody() ;
 			System.out.println(new Date() + " End " + url);
 

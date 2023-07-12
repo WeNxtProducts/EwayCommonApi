@@ -50,7 +50,7 @@ public interface PaymentService {
 
 	LoginEncryptResponse decryptTinyUrl(PaymentResUrlReq req);
 
-	List<DebitAndCredit>  generatePolicy(PaymentInfo paymentInfo, PaymentDetailsSaveReq req, PaymentDetail paymentDetail);
+	List<DebitAndCredit>  generatePolicy(PaymentInfo paymentInfo, PaymentDetailsSaveReq req, PaymentDetail paymentDetail, String token);
 
 
 }

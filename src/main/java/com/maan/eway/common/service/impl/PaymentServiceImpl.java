@@ -93,6 +93,7 @@ import com.maan.eway.common.req.PaymentInfoGetReq;
 import com.maan.eway.common.req.PaymentResUrlReq;
 import com.maan.eway.common.req.TinyUrlGenerateReq;
 import com.maan.eway.common.req.TinyUrlGetReq;
+import com.maan.eway.common.req.TiraFrameReqCall;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.LoginEncryptResponse;
 import com.maan.eway.common.res.PaymentDetailGetRes;
@@ -1618,7 +1619,7 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			// Policy Convertion
 			if(paymentStatus.equalsIgnoreCase("ACCEPTED") && ( paymentInfo.getEmiYn().equalsIgnoreCase("N") || paymentInfo.getInstallmentMonth().equalsIgnoreCase("0") )  ) {
-				List<DebitAndCredit> policyDetails = generatePolicy(paymentInfo,req,paymentDetail);
+				List<DebitAndCredit> policyDetails = generatePolicy(paymentInfo,req,paymentDetail,token);
 				String policyNo = policyDetails.get(0).getPolicyNo();
 				List<DebitAndCredit> filterDebit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("DR")).collect(Collectors.toList());
 				List<DebitAndCredit> filterCredit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")).collect(Collectors.toList());
@@ -1659,11 +1660,19 @@ public class PaymentServiceImpl implements PaymentService {
 		return res;
 	}
 	
-	public List<DebitAndCredit>  generatePolicy(PaymentInfo paymentInfo, PaymentDetailsSaveReq req, PaymentDetail paymentDetail) {
+	public List<DebitAndCredit>  generatePolicy(PaymentInfo paymentInfo, PaymentDetailsSaveReq req, PaymentDetail paymentDetail, String token) {
 		try {
 
 			HomePositionMaster data = homerepo.findByQuoteNo(req.getQuoteNo());
 			//String paymentMode = getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_MODE",req.getPaymentType());
+			
+							// Call Tira Insert 
+								
+										TiraFrameReqCall tiraReq = new TiraFrameReqCall();
+										tiraReq.setQuoteNo(data.getQuoteNo());					
+										tiraIntegService.callTiraIntegeration(tiraReq , token );
+								
+
 
 			List<DebitAndCredit> policyDetails = new ArrayList<DebitAndCredit>();
 			CalcCommission  policyReq = new CalcCommission();
@@ -1742,16 +1751,7 @@ public class PaymentServiceImpl implements PaymentService {
 			// Update ProductWise
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(data.getCompanyId() , data.getProductId().toString());
 			String msg = updateProductWisePolicyNo(paymentInfo.getProductId().toString() ,policyNo ,req.getQuoteNo(),data.getEndtTypeId() , product.getMotorYn()); 
-
-
-
-			//			// Call Tira Insert 
-			//			if  (  product.getMotorYn().equalsIgnoreCase("M") ) {
-			//				TiraFrameReqCall tiraReq = new TiraFrameReqCall();
-			//				tiraReq.setQuoteNo(data.getQuoteNo());					
-			//				tiraIntegService.callTiraIntegeration(tiraReq , token );
-			//			}
-
+  
 			return policyDetails;
 		}catch (Exception e) {
 			e.printStackTrace();
