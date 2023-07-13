@@ -150,6 +150,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="PACKAGE_YN", length=20)
     private String     packageYn;
+    
+    @Column(name="SECTION_ENDT_YN", length=20)
+    private String     sectionEndtYn;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 
