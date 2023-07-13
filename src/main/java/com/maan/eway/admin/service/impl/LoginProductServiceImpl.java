@@ -2340,8 +2340,9 @@ List<Error> errorList = new ArrayList<Error>();
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 =  cb.equal(b.get("companyId"), req.getInsuranceId() );
+			Predicate n3 =  cb.equal(b.get("status"), "Y" );
 		
-			query.where(n1, n2);
+			query.where(n1, n2,n3);
 
 			// Get Result
 			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
@@ -2476,8 +2477,8 @@ List<Error> errorList = new ArrayList<Error>();
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 =  cb.equal(b.get("companyId"), req.getInsuranceId() );
-		
-			query.where(n1, n2);
+			Predicate n3 =  cb.equal(b.get("status"), "Y" );
+			query.where(n1, n2,n3);
 
 			// Get Result
 			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
