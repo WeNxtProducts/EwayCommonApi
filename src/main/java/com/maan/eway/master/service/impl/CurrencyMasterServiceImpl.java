@@ -253,18 +253,22 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 			errorList.add(new Error("05", "CurrencyName", "Please Enter CurrencyName"));
 		} else if (req.getCurrencyName().length() > 25) {
 			errorList.add(new Error("08", "Currency Name", "Please Enter Currency Name within 25 Characters"));
-		}else if (!req.getCurrencyName().matches("[A-Za-b _]+")) {
-			errorList.add(new Error("08", "CurrencyName", "Please Enter Valid CurrencyName "));	
-		} else {
-			CurrencyMaster currencyName =   getCurrencyNameRes(req.getCurrencyName(),req.getCompanyId());
-			if(StringUtils.isBlank(req.getCurrencyId()) &&  currencyName !=null ) {
-				errorList.add(new Error("08", "Currency", "This Currency Name Already Exist"));
-			} else if( currencyName !=null  && StringUtils.isNotBlank(req.getCurrencyId()) ) {
-				if(! currencyName.getCurrencyId().equalsIgnoreCase(req.getCurrencyId()) ) {
-					errorList.add(new Error("08", "Currency", "This Currency Name Already Exist"));	
-				}			
+		}else {
+			//String curr = req.getCurrencyName().replaceAll(" ", "") ;
+			if (! req.getCurrencyName().matches("[a-zA-Z\\s]+") ) {
+				errorList.add(new Error("08", "CurrencyName", "Please Enter Valid CurrencyName "));	
+			} else {
+				CurrencyMaster currencyName =   getCurrencyNameRes(req.getCurrencyName(),req.getCompanyId());
+				if(StringUtils.isBlank(req.getCurrencyId()) &&  currencyName !=null ) {
+					errorList.add(new Error("08", "Currency", "This Currency Name Already Exist"));
+				} else if( currencyName !=null  && StringUtils.isNotBlank(req.getCurrencyId()) ) {
+					if(! currencyName.getCurrencyId().equalsIgnoreCase(req.getCurrencyId()) ) {
+						errorList.add(new Error("08", "Currency", "This Currency Name Already Exist"));	
+					}			
+				}
 			}
 		}
+			
 		
 		if (StringUtils.isNotBlank(req.getSubCurrency())&& req.getSubCurrency().length() > 10) {
 			errorList.add(new Error("09", "SubCurrency", "Please Enter SubCurrency within 10 Characters"));
