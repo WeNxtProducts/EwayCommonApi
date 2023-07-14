@@ -424,6 +424,7 @@ private BuildingDetailsRepository BuildingRepo;
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			// Find Motor Data
+			Double totalSumInsure=0.0;
 			List<MotorDataDetails> motorDatas =  motorRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(),"D");
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(),"D");
 			
@@ -517,11 +518,18 @@ private BuildingDetailsRepository BuildingRepo;
 				document.setSectionId(mot.getSectionId().toString());
 				documentDetails.add(document);
 				
+				
+				
+				vehicleDetails.setAcccessoriesSumInsured(mot.getAcccessoriesSumInsured()==null?0.0:mot.getAcccessoriesSumInsured());
+				totalSumInsure = totalSumInsure + mot.getAcccessoriesSumInsured();		
 				// Response
 				motorResList.add(vehicleDetails);		
 			}
 			viewRes.setRiskDetails(motorResList);
 			viewRes.setDocumentDetails(documentDetails);
+			
+			viewRes.setTotalAccessoriesSumInsured(totalSumInsure);
+			
 		} catch ( Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
