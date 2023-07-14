@@ -550,6 +550,22 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			if (StringUtils.isBlank(req.getRiskId())) {
 				errorList.add(new Error("06", "RiskId", "Please Enter RiskId"));
 			}
+			
+			List<TermsAndConditionListReq> req1 = req.getTermsAndConditionReq();
+			
+			if(req1.size()>0 ) {
+				for (TermsAndConditionListReq re : req1) {
+					
+					if(re.getId().equalsIgnoreCase("6") && StringUtils.isBlank(re.getSubIdDesc()))
+						errorList.add(new Error("06", "Description", "Please Enter Clauses Description"));
+					
+					if(re.getId().equalsIgnoreCase("7") && StringUtils.isBlank(re.getSubIdDesc()))
+						errorList.add(new Error("06", "Description", "Please Enter Exclusion Description"));
+					
+					if(re.getId().equalsIgnoreCase("4") && StringUtils.isBlank(re.getSubIdDesc()))
+						errorList.add(new Error("06", "Description", "Please Enter Warrranty Description"));
+				}
+			}
 
 		} catch (Exception e) {
 			log.error(e);

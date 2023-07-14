@@ -40,6 +40,7 @@ import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.PlanTypeMaster;
 import com.maan.eway.common.req.GetMachineryContentReq;
 import com.maan.eway.common.req.GetOccupationsReq;
 import com.maan.eway.common.req.NcdDetailsGetReq;
@@ -50,6 +51,7 @@ import com.maan.eway.integration.service.impl.OracleQuery;
 import com.maan.eway.master.req.BrokerSumInsuredRefReq;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.LovPolicyDropDownReq;
+import com.maan.eway.master.req.PlanTypeReq;
 import com.maan.eway.master.req.RelationDropDownReq;
 import com.maan.eway.master.service.impl.PolicyTypeMasterServiceImpl;
 import com.maan.eway.repository.BuildingRiskDetailsRepository;
@@ -1402,17 +1404,80 @@ public class DropDownServiceImpl  implements DropDownService{
 
 
 	@Override
-	public List<DropDownRes> getPlanType(LovDropDownReq req) {
+	public List<DropDownRes> getPlanType(PlanTypeReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
-		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeAsc("CONST_MATERIAL", "Y" , req.getInsuranceId());
-			String itemType = "PLAN_TYPE" ;
-			  
-			List<ListItemValue> getList  = getListItem(req , itemType);
-			for (ListItemValue data : getList) {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<PlanTypeMaster> query = cb.createQuery(PlanTypeMaster.class);
+			List<PlanTypeMaster> list = new ArrayList<PlanTypeMaster>();
+			// Find All
+			Root<PlanTypeMaster> c = query.from(PlanTypeMaster.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("branchCode")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<PlanTypeMaster> ocpm1 = effectiveDate.from(PlanTypeMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("planTypeId"), ocpm1.get("planTypeId"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a3 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a4 = cb.equal(c.get("branchCode"), ocpm1.get("branchCode"));
+			Predicate a5 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
+			Predicate a6 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			effectiveDate.where(a1, a2,a3,a4,a5,a6);
+			
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<PlanTypeMaster> ocpm2 = effectiveDate2.from(PlanTypeMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a7 = cb.equal(c.get("planTypeId"), ocpm2.get("planTypeId"));
+			Predicate a8 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a9 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a10 = cb.equal(c.get("branchCode"), ocpm2.get("branchCode"));
+			Predicate a11 = cb.equal(c.get("sectionId"),  ocpm2.get("sectionId"));
+			Predicate a12 = cb.equal(c.get("productId"),  ocpm2.get("productId"));
+			effectiveDate2.where(a11,a7,a8,a9,a10,a12);
+			
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n11 = cb.equal(c.get("status"),"R");
+			Predicate n12 = cb.or(n1,n11);
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("sectionId"), req.getSectionId());
+			Predicate n9 = cb.equal(c.get("productId"), req.getProductId());
+			Predicate n8 = cb.equal(c.get("companyId"), req.getInsuranceId());
+			Predicate n5 = cb.equal(c.get("branchCode"), req.getBranchCode());
+			Predicate n6 = cb.equal(c.get("branchCode"), "99999");
+			Predicate n7 = cb.or(n5,n6);
+			query.where(n12,n2,n3,n4,n7,n8,n9).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<PlanTypeMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getPlanTypeId()))).collect(Collectors.toList());
+			list.sort(Comparator.comparing(PlanTypeMaster :: getPlanTypeId ));
+			for (PlanTypeMaster data : list) {
+				// Response 
 				DropDownRes res = new DropDownRes();
-				res.setCode(data.getItemCode());
-				res.setCodeDesc(data.getItemValue());
+				res.setCode(data.getPlanTypeId().toString());
+				res.setCodeDesc(data.getPlanTypeDescription());
 				res.setStatus(data.getStatus());
 				resList.add(res);
 			}

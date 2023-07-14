@@ -1082,73 +1082,81 @@ public class QuoteThreadCall implements Callable<Object>  {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		 DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-			
-			List<FactorRateRequestDetails>  covers = new ArrayList<FactorRateRequestDetails>();
-			
-			covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndVehicleIdAndProductIdAndSectionIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0,request.getGroupId() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()));		
-			
-		//	List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
-			
-			// Insert Other Covers
-			List<VehicleIdsReq> VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId())).collect(Collectors.toList());
-			List<CoverIdsReq> coverReqList = VehicleList.get(0).getCoverIdList();
-			
-			List<FactorRateRequestDetails>  premiumCovers = new  ArrayList<FactorRateRequestDetails>();
-		//	premiumCovers.addAll(defaultCovers);
-			
-			for ( CoverIdsReq covReq :  coverReqList) {
-				 
-				List<FactorRateRequestDetails> filterNonDefaultCovers = covers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0)).collect(Collectors.toList());				
-				
-				if(filterNonDefaultCovers != null && filterNonDefaultCovers.size()>0 ) {
-					if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
-						
-						premiumCovers.addAll(filterNonDefaultCovers);
-						
-					}else {
-						List<FactorRateRequestDetails> filterNonDefaultSubCovers = filterNonDefaultCovers.stream().filter( o ->  o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))&& o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
-						premiumCovers.addAll(filterNonDefaultSubCovers);
-					}
-				}
-			}
-			Double premiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()  ).sum();					
-			Double overAllPremiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()  ).sum();
-			
-			Double premiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()  ).sum();					
-			Double overAllPremiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()  ).sum();
+			Double premiumFc = 0D;					
+			Double overAllPremiumFc = 0D;
+			Double premiumLc = 0D;					
+			Double overAllPremiumLc = 0D;
 
+			Double groupPremiumFc = 0D ;					
+			Double groupOverAllPremiumFc = 0D ;
+			Double groupPremiumLc = 0D ;					
+			Double groupOverAllPremiumLc = 0D ;
 			
 			
 			
 			// Update Eservice Travel
 			EserviceTravelDetails eserTravel = eserTraRepo.findByRequestReferenceNo(request.getRequestReferenceNo() );
+			EserviceTravelGroupDetails groupData = eserGroupRepo.findByRequestReferenceNoAndGroupId(request.getRequestReferenceNo() , request.getGroupId());
+			List<FactorRateRequestDetails>  covers = new ArrayList<FactorRateRequestDetails>();
 			
-			
-			
+			if ( eserTravel.getPlanTypeId().equals(3) && request.getGroupId().equals(1) ) {
+				covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndVehicleIdAndProductIdAndSectionIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0,2 ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()));
+			} else {
+				
+				covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndVehicleIdAndProductIdAndSectionIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0,request.getGroupId() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()));		
+				
+			//	List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
+				
+				// Insert Other Covers
+				List<VehicleIdsReq> VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId())).collect(Collectors.toList());
+				List<CoverIdsReq> coverReqList = VehicleList.get(0).getCoverIdList();
+				
+				List<FactorRateRequestDetails>  premiumCovers = new  ArrayList<FactorRateRequestDetails>();
+			//	premiumCovers.addAll(defaultCovers);
+				
+				for ( CoverIdsReq covReq :  coverReqList) {
+					 
+					List<FactorRateRequestDetails> filterNonDefaultCovers = covers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0)).collect(Collectors.toList());				
+					
+					if(filterNonDefaultCovers != null && filterNonDefaultCovers.size()>0 ) {
+						if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
+							
+							premiumCovers.addAll(filterNonDefaultCovers);
+							
+						}else {
+							List<FactorRateRequestDetails> filterNonDefaultSubCovers = filterNonDefaultCovers.stream().filter( o ->  o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))&& o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
+							premiumCovers.addAll(filterNonDefaultSubCovers);
+						}
+					}
+				}
+				premiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()  ).sum();					
+				overAllPremiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()  ).sum();
+				premiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()  ).sum();					
+				overAllPremiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()  ).sum();
+
+				groupPremiumFc = premiumCovers.stream().filter( o -> o.getVehicleId().equals(groupData.getGroupId()) && o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()  ).sum();					
+				groupOverAllPremiumFc = premiumCovers.stream().filter( o -> o.getVehicleId().equals(groupData.getGroupId()) &&  o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()  ).sum();
+				groupPremiumLc = premiumCovers.stream().filter( o -> o.getVehicleId().equals(groupData.getGroupId()) &&  o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()  ).sum();					
+				groupOverAllPremiumLc = premiumCovers.stream().filter( o -> o.getVehicleId().equals(groupData.getGroupId()) &&  o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()  ).sum();
+				
+			}
 			String decimalDigits = currencyDecimalFormat(eserTravel.getCompanyId() , eserTravel.getCurrency() ).toString();
 			String stringFormat = "%0"+decimalDigits+"d" ;
 			String decimalLength = decimalDigits.equals("0") ?"" : String.format(stringFormat ,0L)  ;
 			String pattern = StringUtils.isBlank(decimalLength) ?  "#####0" :   "#####0." + decimalLength;
 			DecimalFormat df = new DecimalFormat(pattern);
 			
-			eserTravel.setActualPremiumFc(new BigDecimal(df.format(premiumFc)));
-			eserTravel.setActualPremiumLc(new BigDecimal(df.format(premiumLc)));
-			eserTravel.setOverallPremiumFc(new BigDecimal(df.format(overAllPremiumFc)));
-			eserTravel.setOverallPremiumLc(new BigDecimal(df.format(overAllPremiumLc)));
+			eserTravel.setActualPremiumFc(premiumFc  == 0D ? new BigDecimal(0) : new BigDecimal(df.format(premiumFc)) );
+			eserTravel.setActualPremiumLc(premiumLc  == 0D ? new BigDecimal(0) :new BigDecimal(df.format(premiumLc)));
+			eserTravel.setOverallPremiumFc(overAllPremiumFc  == 0D ? new BigDecimal(0) :new BigDecimal(df.format(overAllPremiumFc)));
+			eserTravel.setOverallPremiumLc(overAllPremiumLc  == 0D ? new BigDecimal(0) : new BigDecimal(df.format(overAllPremiumLc)));
 			eserTravel.setQuoteNo(request.getQuoteNo());
 			eserTravel.setCustomerId(request.getCustomerId());
 			
-			
-			
-			EserviceTravelGroupDetails groupData = eserGroupRepo.findByRequestReferenceNoAndGroupId(request.getRequestReferenceNo() , request.getGroupId());
-			Double groupPremiumFc = premiumCovers.stream().filter( o -> o.getVehicleId().equals(groupData.getGroupId()) && o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()  ).sum();					
-			Double groupOverAllPremiumFc = premiumCovers.stream().filter( o -> o.getVehicleId().equals(groupData.getGroupId()) &&  o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()  ).sum();
-			Double groupPremiumLc = premiumCovers.stream().filter( o -> o.getVehicleId().equals(groupData.getGroupId()) &&  o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()  ).sum();					
-			Double groupOverAllPremiumLc = premiumCovers.stream().filter( o -> o.getVehicleId().equals(groupData.getGroupId()) &&  o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()  ).sum();
-			groupData.setActualPremiumFc(new BigDecimal(df.format(groupPremiumFc)));
-			groupData.setActualPremiumLc(new BigDecimal(df.format(groupPremiumLc)));
-			groupData.setOverallPremiumFc(new BigDecimal(df.format(groupOverAllPremiumFc)));
-			groupData.setOverallPremiumLc(new BigDecimal(df.format(groupOverAllPremiumLc)));
+			groupData.setActualPremiumFc(groupPremiumFc  == 0D ? new BigDecimal(0) : new BigDecimal(df.format(groupPremiumFc)));
+			groupData.setActualPremiumLc(groupPremiumLc  == 0D ? new BigDecimal(0) : new BigDecimal(df.format(groupPremiumLc)));
+			groupData.setOverallPremiumFc(groupOverAllPremiumFc  == 0D ? new BigDecimal(0) : new BigDecimal(df.format(groupOverAllPremiumFc)));
+			groupData.setOverallPremiumLc(groupOverAllPremiumLc  == 0D ? new BigDecimal(0) : new BigDecimal(df.format(groupOverAllPremiumLc)));
 			groupData.setQuoteNo(request.getQuoteNo());
 			groupData.setCustomerId(request.getCustomerId());
 			eserGroupRepo.saveAndFlush(groupData);
@@ -1167,6 +1175,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			travelData.setGroupCount(request.getGroupCount());
 			travelData.setStatus(eserTravel.getStatus());
 			List<FactorRateRequestDetails>  filterCover = covers.stream().filter( o -> o.getVehicleId().equals( request.getGroupId())).collect(Collectors.toList());
+			filterCover = filterCover.size() > 0  ? filterCover : covers.stream().filter( o -> o.getVehicleId().equals(2)).collect(Collectors.toList());
+					
 			travelData.setVdRefno(filterCover.get(0).getVdRefno());	
 			travelData.setMsRefno(filterCover.get(0).getMsRefno());		
 			travelData.setCdRefno(filterCover.get(0).getCdRefno());	

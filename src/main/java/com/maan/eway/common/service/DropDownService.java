@@ -10,6 +10,7 @@ import com.maan.eway.integration.req.QueryKeyReq;
 import com.maan.eway.master.req.BrokerSumInsuredRefReq;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.LovPolicyDropDownReq;
+import com.maan.eway.master.req.PlanTypeReq;
 import com.maan.eway.master.req.RelationDropDownReq;
 import com.maan.eway.res.DropDownRes;
 
@@ -103,7 +104,7 @@ public interface DropDownService {
 
 	List<DropDownRes> buildingType(LovDropDownReq req);
 
-	List<DropDownRes> getPlanType(LovDropDownReq req);
+	List<DropDownRes> getPlanType(PlanTypeReq req);
 
 	List<DropDownRes> getSourceType(LovDropDownReq req);
 

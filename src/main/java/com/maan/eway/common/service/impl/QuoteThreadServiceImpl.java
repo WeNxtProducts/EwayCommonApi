@@ -984,6 +984,44 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					 queue.add(coverSave);
 				 }					 
 	         } 
+        	 
+        	 EserviceTravelDetails travelData = eserTraRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+        	 if( travelData.getPlanTypeId().equals(3) ){
+        		// Kids Passenger Details Insert Frame  
+        		 List<EserviceTravelGroupDetails> filterGroup = groupData.stream().filter( o -> o.getGroupId().equals(1) ).collect(Collectors.toList());
+        		 for (int i=0 ; i < filterGroup.get(0).getGrouppMembers() ; i++) {
+					 passCount = passCount + 1 ;
+					 threadCount = threadCount +  1 ;
+					
+	            	 QuoteThreadReq request2 = new QuoteThreadReq();
+	            	 request2.setVehicleId(passCount);
+	            	 request2.setCustomerId(request.getCustomerId());
+	            	 request2.setProductId(request.getProductId());
+	            	 request2.setQuoteNo(request.getQuoteNo());
+	            	 request2.setRequestReferenceNo(request.getRequestReferenceNo());
+	            	 request2.setEndtPrevQuoteNo(request.getEndtPrevQuoteNo());
+	            	 request2.setVehicleIdsList(request.getVehicleIdsList());
+	            	 request2.setCreatedBy(request.getCreatedBy());
+	            	 request2.setGroupId(filterGroup.get(0).getGroupId());
+	            	 request2.setGroupCount(filterGroup.get(0).getGrouppMembers());
+	            	 request2.setSectionId(travelData.getSectionId());
+	            	 request2.setPolicyStartDate(request.getPolicyStartDate());
+		             request2.setPolicyEndDate(request.getPolicyEndDate());
+		             request2.setEffetiveDate(request.getEffetiveDate());
+		             request2.setNoOfDays(request.getNoOfDays());
+		         	 request2.setEndtType(request.getEndtType());
+	            	 request2.setEndtCount(request.getEndtCount());
+	            	 request2.setEndtFields(request.getEndtFields());	
+	            	 request2.setMotorYn(request.getMotorYn());
+	            	 
+	            	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
+	            				, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
+	            			    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo );
+		             queue.add(travelSave);
+					
+				 }	
+        	 }
+        	 
         	 ProductThreadRes.setQueue(queue);
  	        ProductThreadRes.setThreadCount(threadCount);
  	        

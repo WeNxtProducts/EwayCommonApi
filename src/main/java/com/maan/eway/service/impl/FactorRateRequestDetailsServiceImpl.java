@@ -1273,47 +1273,50 @@ this.repository = repo;
 			EserviceTravelDetails travelData = eserTraRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
 			for (EserviceTravelGroupDetails tra :  travelDatas) {
 				
-				// Response 
-				EservieMotorDetailsViewRes res = new EservieMotorDetailsViewRes();
-				dozerMapper.map(travelData,res);
-				res.setCurrency(travelData.getCurrency());
-				res.setCustomerReferenceNo(travelData.getCustomerReferenceNo());
-				res.setExchangeRate(travelData.getExchangeRate()==null?"":travelData.getExchangeRate().toString());
-				res.setInsuranceId(tra.getCompanyId());
-				res.setPolicyStartDate(travelData.getTravelStartDate());
-				res.setPolicyEndDate(travelData.getTravelEndDate());
-				res.setVehicleId(tra.getGroupId().toString());
-				res.setHavepromocode(travelData.getHavepromocode());
-				res.setPromocode(travelData.getPromocode());
-				res.setGroupMember(tra.getGrouppMembers()==null?null:tra.getGrouppMembers() );
-				res.setAdminRemarks(travelData.getAdminRemarks());
-				res.setReferalRemarks(travelData.getReferalRemarks());
-				res.setRejectReason(travelData.getRejectReason());
-				res.setOverallPremiumFc(travelData.getOverallPremiumFc()==null?"0": travelData.getOverallPremiumFc().toPlainString());
-				res.setOverallPremiumLc(travelData.getOverallPremiumLc()==null?"0":travelData.getOverallPremiumLc().toPlainString());
-				res.setActualPremiumFc(travelData.getActualPremiumFc()==null?"0":travelData.getActualPremiumFc().toPlainString());
-				res.setActualPremiumLc(travelData.getActualPremiumLc()==null?"0":travelData.getActualPremiumLc().toPlainString());
-				res.setSectionId(travelData.getSectionId() );
-				res.setSectionName(travelData.getSectionName());
-				res.setEffectiveDate(travelData.getEndorsementEffdate()==null?null:travelData.getEndorsementEffdate() );
-				//res.setEndorsementYn(travelData.getEndorsementType()==null?"N":"Y");
-				Object riskDetails = new Object();
-				EserviceTravelGetRes  travelRes = new EserviceTravelGetRes();
-				dozerMapper.map(travelData, travelRes);
-				travelRes.setTotalPassengers(tra.getGrouppMembers().toString());
-				travelRes.setTravelId(tra.getGroupId().toString());
-				//travelRes.setSectionName(travelData.getSectionName());
-				riskDetails = travelRes ;
-				res.setRiskDetails(riskDetails);
-				if(travelData.getEndorsementType()!=null) {
-					EndtTypeMaster endtmaster =ratingutil.getEndtMasterData(travelData.getCompanyId(),travelData.getProductId(),travelData.getEndorsementType().toString()); 
+				if(!(travelData.getPlanTypeId().equals(3) && tra.getGroupId().equals(1)) ) {
+					// Response 
+					EservieMotorDetailsViewRes res = new EservieMotorDetailsViewRes();
+					dozerMapper.map(travelData,res);
+					res.setCurrency(travelData.getCurrency());
+					res.setCustomerReferenceNo(travelData.getCustomerReferenceNo());
+					res.setExchangeRate(travelData.getExchangeRate()==null?"":travelData.getExchangeRate().toString());
+					res.setInsuranceId(tra.getCompanyId());
+					res.setPolicyStartDate(travelData.getTravelStartDate());
+					res.setPolicyEndDate(travelData.getTravelEndDate());
+					res.setVehicleId(tra.getGroupId().toString());
+					res.setHavepromocode(travelData.getHavepromocode());
+					res.setPromocode(travelData.getPromocode());
+					res.setGroupMember(tra.getGrouppMembers()==null?null:tra.getGrouppMembers() );
+					res.setAdminRemarks(travelData.getAdminRemarks());
+					res.setReferalRemarks(travelData.getReferalRemarks());
+					res.setRejectReason(travelData.getRejectReason());
+					res.setOverallPremiumFc(travelData.getOverallPremiumFc()==null?"0": travelData.getOverallPremiumFc().toPlainString());
+					res.setOverallPremiumLc(travelData.getOverallPremiumLc()==null?"0":travelData.getOverallPremiumLc().toPlainString());
+					res.setActualPremiumFc(travelData.getActualPremiumFc()==null?"0":travelData.getActualPremiumFc().toPlainString());
+					res.setActualPremiumLc(travelData.getActualPremiumLc()==null?"0":travelData.getActualPremiumLc().toPlainString());
+					res.setSectionId(travelData.getSectionId() );
+					res.setSectionName(travelData.getSectionName());
+					res.setEffectiveDate(travelData.getEndorsementEffdate()==null?null:travelData.getEndorsementEffdate() );
+					//res.setEndorsementYn(travelData.getEndorsementType()==null?"N":"Y");
+					Object riskDetails = new Object();
+					EserviceTravelGetRes  travelRes = new EserviceTravelGetRes();
+					dozerMapper.map(travelData, travelRes);
+					travelRes.setTotalPassengers(tra.getGrouppMembers().toString());
+					travelRes.setTravelId(tra.getGroupId().toString());
+					//travelRes.setSectionName(travelData.getSectionName());
+					riskDetails = travelRes ;
+					res.setRiskDetails(riskDetails);
+					if(travelData.getEndorsementType()!=null) {
+						EndtTypeMaster endtmaster =ratingutil.getEndtMasterData(travelData.getCompanyId(),travelData.getProductId(),travelData.getEndorsementType().toString()); 
 
-					EndtTypeMasterDto ddto=new EndtTypeMasterDto();
-					dozerMapper.map(endtmaster,ddto);
-					res.setEndtType(ddto);
+						EndtTypeMasterDto ddto=new EndtTypeMasterDto();
+						dozerMapper.map(endtmaster,ddto);
+						res.setEndtType(ddto);
+					}
+					
+					travelDetailsList.add(res);
 				}
 				
-				travelDetailsList.add(res);
 			}
 				
 		
