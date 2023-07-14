@@ -135,7 +135,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 							req.getBranchCode(), req.getProductId(), req.getSectionId(), refNO );
 			if (datas.size() > 0) {
 				for (TermsAndCondition data : datas) {
-					if (data.getId() == 4) {
+					if (data.getId() == 4 && StringUtils.isNotBlank(data.getSubIdDesc())) {
 						WarrantyRes warrantyres = new WarrantyRes();
 						warrantyres.setId(data.getId().toString());
 						warrantyres.setSubId(data.getSubId().toString());
@@ -146,7 +146,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						res.setWarrantyRes(warrantyresList);
 
 					}
-					if (data.getId() == 6) {
+					if (data.getId() == 6 && StringUtils.isNotBlank(data.getSubIdDesc())) {
 						ClausesRes clausesres = new ClausesRes();
 						clausesres.setId(data.getId().toString());
 						clausesres.setSubId(data.getSubId().toString());
@@ -157,7 +157,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						res.setClausesRes(clausesresList);
 
 					}
-					if (data.getId() == 7) {
+					if (data.getId() == 7 && StringUtils.isNotBlank(data.getSubIdDesc()) ) {
 						ExclusionRes exclusionres = new ExclusionRes();
 						exclusionres.setId(data.getId().toString());
 
@@ -173,7 +173,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 			} else if (datas1.size() > 0 && !datas1.isEmpty()) {
 				if (datas1.size() > 0) {
 					for (TermsAndCondition data : datas1) {
-						if (data.getId() == 4) {
+						if (data.getId() == 4 && StringUtils.isNotBlank(data.getSubIdDesc()) ) {
 							WarrantyRes warrantyres = new WarrantyRes();
 							warrantyres.setId(data.getId().toString());
 							warrantyres.setSubId(data.getSubId().toString());
@@ -184,7 +184,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 							res.setWarrantyRes(warrantyresList);
 
 						}
-						if (data.getId() == 6) {
+						if (data.getId() == 6 && StringUtils.isNotBlank(data.getSubIdDesc()) ) {
 							ClausesRes clausesres = new ClausesRes();
 							clausesres.setId(data.getId().toString());
 							clausesres.setSubId(data.getSubId().toString());
@@ -195,7 +195,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 							res.setClausesRes(clausesresList);
 
 						}
-						if (data.getId() == 7) {
+						if (data.getId() == 7 && StringUtils.isNotBlank(data.getSubIdDesc()) ) {
 							ExclusionRes exclusionres = new ExclusionRes();
 							exclusionres.setId(data.getId().toString());
 
@@ -468,7 +468,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				if (datas.size() > 0 && !datas.isEmpty()) {
 					if (datas.size() > 0) {
 						for (TermsAndCondition data : datas) {
-							if (data.getId() == 4) {
+							if (data.getId() == 4 && StringUtils.isNotBlank(data.getSubIdDesc()) ) {
 								WarrantyRes warrantyres = new WarrantyRes();
 								warrantyres.setId(data.getId().toString());
 								warrantyres.setSubId(data.getSubId().toString());
@@ -479,7 +479,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 								res.setWarrantyRes(warrantyresList);
 
 							}
-							if (data.getId() == 6) {
+							if (data.getId() == 6 && StringUtils.isNotBlank(data.getSubIdDesc()) ) {
 								ClausesRes clausesres = new ClausesRes();
 								clausesres.setId(data.getId().toString());
 								clausesres.setSubId(data.getSubId().toString());
@@ -490,7 +490,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 								res.setClausesRes(clausesresList);
 
 							}
-							if (data.getId() == 7) {
+							if (data.getId() == 7 && StringUtils.isNotBlank(data.getSubIdDesc()) ) {
 								ExclusionRes exclusionres = new ExclusionRes();
 								exclusionres.setId(data.getId().toString());
 
