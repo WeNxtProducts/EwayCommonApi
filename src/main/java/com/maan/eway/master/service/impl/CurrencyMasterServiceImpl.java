@@ -253,8 +253,8 @@ public List<Error> validateCurrencyDetails(CurrencyMasterSaveReq req) {
 			errorList.add(new Error("05", "CurrencyName", "Please Enter CurrencyName"));
 		} else if (req.getCurrencyName().length() > 25) {
 			errorList.add(new Error("08", "Currency Name", "Please Enter Currency Name within 25 Characters"));
-		}else if (!StringUtils.isAlpha(req.getCurrencyName())) {
-			errorList.add(new Error("08", "CurrencyName", "Please Enter getCurrencyName In Alphabets"));	
+		}else if (!req.getCurrencyName().matches("[A-Za-b _]+")) {
+			errorList.add(new Error("08", "CurrencyName", "Please Enter Valid CurrencyName "));	
 		} else {
 			CurrencyMaster currencyName =   getCurrencyNameRes(req.getCurrencyName(),req.getCompanyId());
 			if(StringUtils.isBlank(req.getCurrencyId()) &&  currencyName !=null ) {
