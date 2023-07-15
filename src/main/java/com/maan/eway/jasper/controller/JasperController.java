@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.jasper.req.JasperDocumentReq;
+import com.maan.eway.jasper.req.JasperReportDocReq;
 import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.jasper.service.JasperService;
 import com.maan.eway.service.PrintReqService;
@@ -48,6 +49,24 @@ public class JasperController {
 		CommonRes data = new CommonRes();
 		
 		JasperDocumentRes res = jasper.proposalform(req);;
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	
+	@PostMapping("/policyreport") 
+	private ResponseEntity<CommonRes> policyreportform(@RequestBody JasperReportDocReq req) {
+		printReq.reqPrint(req);
+		CommonRes data = new CommonRes();
+		
+		JasperDocumentRes res = jasper.policyreportform(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());
