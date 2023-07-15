@@ -62,7 +62,7 @@ public class PaymentMasterServiceImpl implements PaymentMasterService {
 	@Override
 	public List<Error>  validatePaymentMaster(PaymentMasterSaveReq req) {
 		List<Error> errorList = new ArrayList<Error>();
-
+		
 		try {
 		
 			
@@ -106,7 +106,7 @@ public class PaymentMasterServiceImpl implements PaymentMasterService {
 			}
 			
 			
-			List<PaymentMaster>  datas = repo.findByCompanyIdAndBranchCodeAndUserTypeAndSubUserTypeOrderByEntryDateDesc(req.getCompanyId(),req.getBranchCode(),req.getUserType(),req.getSubUserType());
+			List<PaymentMaster>  datas = repo.findByCompanyIdAndBranchCodeAndUserTypeAndSubUserTypeAndEffectiveDateStartOrderByEntryDateDesc(req.getCompanyId(),req.getBranchCode(),req.getUserType(),req.getSubUserType(), req.getEffectiveDateStart());
 			if(datas!=null && datas.size()>0) {
 				if((datas.get(0).getBranchCode().equalsIgnoreCase(req.getBranchCode()))&&
 				(datas.get(0).getCashYn().toLowerCase().equalsIgnoreCase(req.getCashYn().toLowerCase()))&&	
