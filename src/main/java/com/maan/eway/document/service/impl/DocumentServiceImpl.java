@@ -569,7 +569,7 @@ public class DocumentServiceImpl implements DocumentService{
 							
 							List<DocumentDropdownRes> idList  = new ArrayList<DocumentDropdownRes>();
 							
-							List<ProductEmployeeDetails> filterEmpList = employeeList.stream().filter( o -> o.getSectionId().equalsIgnoreCase(sec.getSectionId() ) ).collect(Collectors.toList());
+							List<ProductEmployeeDetails> filterEmpList = employeeList.stream().filter( o -> building.getRiskId().equals(o.getRiskId())  &&  o.getSectionId().equalsIgnoreCase(sec.getSectionId() ) ).collect(Collectors.toList());
 						
 							for (ProductEmployeeDetails emp :  filterEmpList) {
 								// Employees Documents
