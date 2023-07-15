@@ -19,6 +19,8 @@
 	<parameter name="pvLoginId" class="java.lang.String"/>
 	<queryString language="SQL">
 		<![CDATA[SELECT 
+HPM.LOGIN_ID,
+HPM.QUOTE_NO,
   HPM.POLICY_NO,
   UPPER(CONCAT(CONCAT(PIF.TITLE_DESC,'.'),PIF.CLIENT_NAME)) AS CUSTOMER_NAME, 
   HPM.inception_date AS START_DATE,
@@ -44,7 +46,7 @@
     FROM
       EWAY_LOGIN_BRANCH_MASTER
     WHERE
-      LOGIN_ID =  $P{pvLoginId}   LIMIT 1) AS SUB_USER_TYPE,
+      LOGIN_ID =$P{pvLoginId} LIMIT 1) AS SUB_USER_TYPE,
   HPM.CURRENCY, 
   HPM.PAYMENT_TYPE, 
   (SELECT PAYMENT_ID FROM PAYMENT_INFO WHERE QUOTE_NO=HPM.QUOTE_NO AND payment_status='ACCEPTED') AS PAYMENT_ID,
@@ -71,16 +73,28 @@ WHERE
   AND HPM.PRODUCT_ID = '5' 
   AND HPM.BRANCH_CODE = $P{pvBranch} 
   AND HPM.STATUS = 'P' 
+  AND HPM.POLICY_NO IS NOT NULL 
+  AND HPM.INCEPTION_DATE BETWEEN $P{pvStartDate} AND $P{pvEndDate}
   AND ((CASE WHEN (
     SELECT
       SUB_USER_TYPE
     FROM
       EWAY_LOGIN_BRANCH_MASTER
     WHERE
-      LOGIN_ID =  $P{pvLoginId}   LIMIT 1
-  )= 'Both' THEN '1'  END )
+      LOGIN_ID = $P{pvLoginId} LIMIT 1
+  ) IN ('Both') THEN '1' END)
   =
-  ('1')  
+  ('1') 
+  OR 
+(CASE WHEN (
+    SELECT
+      SUB_USER_TYPE
+    FROM
+      EWAY_LOGIN_BRANCH_MASTER
+    WHERE
+      LOGIN_ID =  $P{pvLoginId}  LIMIT 1
+  ) IN ('low','high') THEN HPM.Application_id  END)  
+   =($P{pvLoginId})
   OR (CASE WHEN (
     SELECT 
       USER_TYPE 
@@ -108,11 +122,18 @@ WHERE
     FROM 
       EWAY_LOGIN_BRANCH_MASTER 
     WHERE 
-      LOGIN_ID = $P{pvLoginId} ))
-      AND
-      HPM.POLICY_NO IS NOT NULL AND
-      HPM.INCEPTION_DATE BETWEEN $P{pvStartDate} AND $P{pvEndDate}]]>
+      LOGIN_ID = $P{pvLoginId} ))]]>
 	</queryString>
+	<field name="LOGIN_ID" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="LOGIN_ID"/>
+		<property name="com.jaspersoft.studio.field.label" value="LOGIN_ID"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	</field>
+	<field name="QUOTE_NO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="QUOTE_NO"/>
+		<property name="com.jaspersoft.studio.field.label" value="QUOTE_NO"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	</field>
 	<field name="POLICY_NO" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="POLICY_NO"/>
 		<property name="com.jaspersoft.studio.field.label" value="POLICY_NO"/>
