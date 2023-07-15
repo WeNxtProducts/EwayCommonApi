@@ -221,13 +221,12 @@ try {
 	Predicate n6 = cb.equal(c.get("branchCode"),"99999");
 	Predicate n7 = cb.or(n5,n6);
 	Predicate n8 = cb.equal(c.get("productId"),req.getProductId());
-	if(StringUtils.isBlank(req.getProductId())) {
-		query.where(n12,n2,n3,n4,n7).orderBy(orderList);
+	Predicate n9 = cb.equal(c.get("productId"),"99999");
+	Predicate n10 = cb.or(n8,n9);
+	
+	query.where(n12,n2,n3,n4,n7,n10).orderBy(orderList);
 		
-	}
-	else {
-	query.where(n12,n2,n3,n4,n7,n8).orderBy(orderList);
-	}
+	
 	TypedQuery<OccupationMaster> result = em.createQuery(query);
 	list = result.getResultList();
 	list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getOccupationId()))).collect(Collectors.toList());
