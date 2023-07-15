@@ -329,7 +329,7 @@ public class JasperServiceImpl implements JasperService {
 			input.put("pvBranch", req.getBranchCode());
 			input.put("pvLoginId", req.getLoginId());
 			
-			getPdfOutFilePath =  policyReportPath + "pdf/" + req.getLoginId() +"-"+"Branch " + branchName   +"-" + sdf2.format(req.getStartDate()) + "To" + sdf2.format(req.getEndDate())  + "Policy Report.pdf";
+			getPdfOutFilePath =  policyReportPath + "pdf/" + req.getLoginId() +"-"+"Branch " + branchName   +"-" + sdf2.format(req.getStartDate()) + "To" + sdf2.format(req.getEndDate())  + "-Policy Report.pdf";
 			
 			if (product.getMotorYn().equalsIgnoreCase("H")  && travelProductId.equals(req.getProductId())) {
 				res = getJasperPdfFile("/report/jasper/EwayPremiumReport.jrxml", getPdfOutFilePath, input);
