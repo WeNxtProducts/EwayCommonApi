@@ -387,11 +387,13 @@ public class PaymentServiceImpl implements PaymentService {
 		
 			String companyId = "";
 			String productId = "";
+			String sectionId = "";
 			
 			List<SectionDataDetails> sec =  sddRepo.findByQuoteNo(req.getQuoteNo());
 			if(sec.size()>0) {
 				companyId = sec.get(0).getCompanyId();
 				productId = sec.get(0).getProductId();	
+				sectionId = sec.get(0).getSectionId();
 				}
 			
 			//Mandatory Y details get
@@ -503,8 +505,13 @@ public class PaymentServiceImpl implements PaymentService {
 					}
 				}
 				
-			}			
+			}	
+			//Product employee validation
+			if(productId.equalsIgnoreCase("14") || productId.equalsIgnoreCase("32") ) {
+
 			
+					error.addAll(employeeCountAndSIValid(req.getQuoteNo(),sectionId));							
+				}
 			
 			
 		} catch (Exception e) {
