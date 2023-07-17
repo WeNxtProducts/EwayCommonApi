@@ -334,9 +334,13 @@ private BuildingDetailsRepository BuildingRepo;
 			// Customer Details
 			PersonalInfo custData = custRepo.findByCustomerId(homeData.getCustomerId());
 			CustomerDetailsRes  custRes = new CustomerDetailsRes();
-			custRes  = dozerMappper.map(custData, CustomerDetailsRes.class);
-			List<LoginBranchMaster> brokerBranchList=loginBranchRepo.findByLoginIdAndBranchCodeOrderByBranchCodeAsc(custData.getCreatedBy(),custData.getBranchCode());
-			if(brokerBranchList.size()>0 ||brokerBranchList!=null) {
+			List<LoginBranchMaster> brokerBranchList= null;
+			if(custData!=null) {
+				custRes  = dozerMappper.map(custData, CustomerDetailsRes.class);
+			
+			brokerBranchList=loginBranchRepo.findByLoginIdAndBranchCodeOrderByBranchCodeAsc(custData.getCreatedBy(),custData.getBranchCode());
+			}
+			if( brokerBranchList!=null && brokerBranchList.size()>0) {
 			custRes.setBrokerBranchCode(brokerBranchList.get(0).getBrokerBranchCode());	
 			}
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(homeData.getCompanyId() , homeData.getProductId().toString());
