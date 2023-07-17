@@ -120,6 +120,8 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 
 				 //BigDecimal domathTira = domathTira(t.getCalcType(),t.getRate(),t.getSumInsured(),t.getExchangeRate()); Tira Calculation only for referral
 				 t.setTiraSumInsured(si);
+				 if(!"A".equals(t.getCalcType()))
+					 t.setTiraRate(t.getRate());
 				 Double totaldiscount=0D;
 				 Double totalloading=0D;
 				 if(discountLoading) {

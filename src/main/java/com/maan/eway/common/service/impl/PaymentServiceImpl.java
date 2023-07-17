@@ -1606,6 +1606,10 @@ public class PaymentServiceImpl implements PaymentService {
 			paymentInfo.setPayments( StringUtils.isBlank(req.getPayments() ) ? "Charge" : req.getPayments()  ); 			
 			paymentinforepo.saveAndFlush(paymentInfo);
 			
+			data.setPaymentMode(req.getPaymentType());
+			data.setPaymentType(paymentDetail.getPaymentTypedesc());
+			data.setPaymentStatus(paymentInfo.getEmiYn().equalsIgnoreCase("N") ? paymentInfo.getPaymentStatus() :"Pending");
+			homerepo.saveAndFlush(data);
 			// Update Emi 
 			if (  paymentInfo.getEmiYn().equalsIgnoreCase("Y" )) {
 				EmiTransactionDetails  emiDetails = emiRepo.findByQuoteNoAndInstalmentAndInstallmentPeriod(req.getQuoteNo() ,paymentInfo.getInstallmentMonth() , paymentInfo.getInstallmentPeriod());
@@ -1620,6 +1624,9 @@ public class PaymentServiceImpl implements PaymentService {
 			// Policy Convertion
 			if(paymentStatus.equalsIgnoreCase("ACCEPTED") && ( paymentInfo.getEmiYn().equalsIgnoreCase("N") || paymentInfo.getInstallmentMonth().equalsIgnoreCase("0") )  ) {
 				List<DebitAndCredit> policyDetails = generatePolicy(paymentInfo,req,paymentDetail,token);
+				
+				
+				
 				String policyNo = policyDetails.get(0).getPolicyNo();
 				List<DebitAndCredit> filterDebit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("DR")).collect(Collectors.toList());
 				List<DebitAndCredit> filterCredit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")).collect(Collectors.toList());
@@ -1651,8 +1658,14 @@ public class PaymentServiceImpl implements PaymentService {
 			//Tracking Details
 			
 			trackingDetailsPayment(data, req.getCreatedBy());
-			}
-		catch(Exception e) {
+	
+		if(paymentStatus.equalsIgnoreCase("ACCEPTED") && ( paymentInfo.getEmiYn().equalsIgnoreCase("N") || paymentInfo.getInstallmentMonth().equalsIgnoreCase("0") )  ) {
+			//// Call Tira Insert				
+						TiraFrameReqCall tiraReq = new TiraFrameReqCall();
+						tiraReq.setQuoteNo(data.getQuoteNo());					
+						tiraIntegService.callTiraIntegeration(tiraReq , token );
+		}
+	}catch(Exception e) {
 			e.printStackTrace();
 			log.info("Log Details"+e.getMessage());
 			return null;
@@ -1666,11 +1679,7 @@ public class PaymentServiceImpl implements PaymentService {
 			HomePositionMaster data = homerepo.findByQuoteNo(req.getQuoteNo());
 			//String paymentMode = getListItem (data.getCompanyId() , data.getBranchCode() ,"PAYMENT_MODE",req.getPaymentType());
 			
-							// Call Tira Insert 
-								
-										TiraFrameReqCall tiraReq = new TiraFrameReqCall();
-										tiraReq.setQuoteNo(data.getQuoteNo());					
-										tiraIntegService.callTiraIntegeration(tiraReq , token );
+							
 								
 
 
@@ -1748,6 +1757,9 @@ public class PaymentServiceImpl implements PaymentService {
 
 			homerepo.saveAndFlush(data);
 
+			
+			
+			
 			// Update ProductWise
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(data.getCompanyId() , data.getProductId().toString());
 			String msg = updateProductWisePolicyNo(paymentInfo.getProductId().toString() ,policyNo ,req.getQuoteNo(),data.getEndtTypeId() , product.getMotorYn()); 
