@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.maan.eway.bean.PaymentDetail;
+import com.maan.eway.bean.PaymentDetail;  
 import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PaymentVendorMaster;
 import com.maan.eway.common.req.PaymentDetailsSaveReq;
@@ -58,6 +58,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 				String vendorCode=null;
 				String redirect_url=null;
 				String cancel_url=null;
+				String webHookUrl=null;
 					if(vendor!=null) {
 						apiKey=vendor.getApiKey();
 						apiSecret=vendor.getApiSecretKey();
@@ -66,6 +67,10 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 						vendorCode=vendor.getVendorCode();
 						redirect_url=vendor.getReturnUrlLink();
 						cancel_url=vendor.getCancelUrlLink();
+						webHookUrl=vendor.getWebhookUrlLink();
+						
+						redirect_url=redirect_url.replaceAll("{QuoteNo}", payment.getQuoteNo());
+						cancel_url=cancel_url.replaceAll("{QuoteNo}", payment.getQuoteNo());
 					}
 					
 					// data
@@ -88,7 +93,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					orderDict.addProperty("payment_methods","ALL");
 					orderDict.addProperty("redirect_url",StringUtils.isNotBlank(redirect_url)?Base64.getEncoder().encodeToString(redirect_url.getBytes("UTF-8")):"");
 					orderDict.addProperty("cancel_url",StringUtils.isNotBlank(cancel_url)?Base64.getEncoder().encodeToString(cancel_url.getBytes("UTF-8")):"");
-					orderDict.addProperty("webhook","");
+					orderDict.addProperty("webhook",StringUtils.isNotBlank(webHookUrl)?Base64.getEncoder().encodeToString(webHookUrl.getBytes("UTF-8")):"");
 					orderDict.addProperty("billing.firstname" , payment.getReqBillToForename());
 					orderDict.addProperty("billing.lastname" , payment.getReqBillToSurname());
 					orderDict.addProperty("billing.address_1" , payment.getReqBillToAddressLine1()); 
