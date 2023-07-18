@@ -544,7 +544,18 @@ public class EndorsementService {
 	public CommonRes createEndorsment(Endorsment request) {
 		try {
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(request.getCompanyId() , request.getProductId().toString());
-
+			HomePositionMaster hp = hpmrepo.findByPolicyNoAndStatusAndCompanyIdAndProductId(request.getPolicyNo(),"P", request.getCompanyId(), Integer.valueOf(request.getProductId().intValue()));
+			
+			
+			if(!((hp.getInceptionDate().compareTo(request.getEndtEffectiveDate()) * request.getEndtEffectiveDate().compareTo(hp.getExpiryDate()) ) >=0) ) {
+				CommonRes com=new CommonRes();
+				//com.setCommonResponse();
+				com.setErroCode(0);
+				com.setIsError(true);
+				com.setMessage("invalid Data ,Unable todo Endorsement");
+				return com;
+			}
+				
 			//EndtTypeMaster entTypeMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(request.getCompanyId(), request.getProductId().intValue(), "Y",Integer.parseInt(request.getEndtType()),new Date(), new Date());
 			EndtTypeMaster entTypeMaster =ratingutil.getEndtMasterData(request.getCompanyId(),request.getProductId().toPlainString(), request.getEndtType());
 			if("42".equals(request.getEndtType())) {
@@ -552,7 +563,7 @@ public class EndorsementService {
 				return cancelPolicy;
 			}else if ("1".equals(entTypeMaster.getEndtTypeCategoryId().toString()) ) {
 				Object response = null ;
-				HomePositionMaster hp = hpmrepo.findByPolicyNoAndStatusAndCompanyIdAndProductId(request.getPolicyNo(),"P", request.getCompanyId(), Integer.valueOf(request.getProductId().intValue()));
+				
 				if(hp!=null) {
 				CopyQuoteReq c = new CopyQuoteReq();
 				c.setRequestReferenceNo(hp.getRequestReferenceNo());
