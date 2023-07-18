@@ -81,7 +81,10 @@ public class CommonCalculator {
 						r.setInputColumValue(common.get(r.getInputColumName()).toString());
 					}else /*if("MS_Vehicle_DETAILS".equalsIgnoreCase(r.getInputTableName()) || "MSVehicleDETAILS".equalsIgnoreCase(r.getInputTableName()) 
 							|| "MsHumanDetails".equalsIgnoreCase(r.getInputTableName()) || "MsAssetDetails".equalsIgnoreCase(r.getInputTableName()) )*/ {
-						r.setInputColumValue(vehicle.get(r.getInputColumName()).toString());
+						if (vehicle.get(r.getInputColumName()) instanceof BigDecimal) {
+							r.setInputColumValue( ((BigDecimal) vehicle.get(r.getInputColumName())).toPlainString());
+						}else
+							r.setInputColumValue(vehicle.get(r.getInputColumName()).toString());
 					}
 					
 					String condtion=r.getDiscretCol()+":"+r.getInputColumValue()+"";
