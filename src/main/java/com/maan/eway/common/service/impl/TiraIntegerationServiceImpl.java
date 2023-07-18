@@ -25,6 +25,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -52,6 +53,9 @@ public class TiraIntegerationServiceImpl {
 	@Value(value = "${TiraIntegPushLink}")
 	private String tiraIntegPushLink;
 	
+	@Value(value = "${NonMotorTiraIntegPushLink}")
+	private String nonMotorTiraLink;
+	
 	@PersistenceContext
 	private EntityManager em;
 	
@@ -67,10 +71,10 @@ public class TiraIntegerationServiceImpl {
 			HomePositionMaster data = homerepo.findByQuoteNo(tiraReq.getQuoteNo());
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(data.getCompanyId() , data.getProductId().toString());
 			
-		
-			// Call Tira Insert 
+			String url=nonMotorTiraLink; 
 			if  (  product.getMotorYn().equalsIgnoreCase("M") ) {
-				
+				url=tiraIntegPushLink;
+			}
 				// Call Integeration
 			/*	PremiaRequest premiaReq = new PremiaRequest(); 
 				premiaReq.setQuoteNo(tiraReq.getQuoteNo());
@@ -96,13 +100,20 @@ public class TiraIntegerationServiceImpl {
 				*/
 				// Tira Request Frame
 				Object tiraFramedReq = TiraReqFrame(tiraReq, token);
-
+				res.setResponse("Success");
 				// Tira Integ Push
-				JSONObject tiraIntegPushRes = TiraIntegPush(tiraFramedReq , token);
-				log.info("Tira Respone"+tiraIntegPushRes.toString());
-			}
+				if(tiraFramedReq!=null) {
+					JSONObject tiraIntegPushRes = TiraIntegPush(tiraFramedReq , token,url);
+
+
+					log.info("Tira Respone"+tiraIntegPushRes.toString());
+				}else {
+					res.setResponse("Failed");
+					log.info("Tira Frame "+tiraFramedReq);	
+				}
+			//}
 			
-			res.setResponse("Success");
+			
 			res.setSuccessId("");
 			
 		} catch (Exception e) {
@@ -115,7 +126,7 @@ public class TiraIntegerationServiceImpl {
 	
 	
 	 public Object TiraReqFrame (TiraFrameReqCall tiraReq , String token ) {
-		 	Object TiraFramedReq = new Object();
+		 	Object TiraFramedReq = null;
 		try {
 			// Frame Tira Req
 
@@ -129,7 +140,11 @@ public class TiraIntegerationServiceImpl {
 
 			System.out.println(new Date() + " Start " + url);
 			ResponseEntity<Object> postEntity = temp.exchange(url, HttpMethod.POST, requestent,new ParameterizedTypeReference<Object>() {}) ;
-		    TiraFramedReq = postEntity.getBody() ;
+			
+			if(postEntity.getStatusCode()==HttpStatus.ACCEPTED) {
+				TiraFramedReq = postEntity.getBody() ;
+			}		
+		    
 			System.out.println(new Date() + " End " + url);
 
 		} catch (Exception e) {
@@ -141,7 +156,7 @@ public class TiraIntegerationServiceImpl {
 	}
 	 
 		 
-	 public JSONObject TiraIntegPush(Object pushReq , String token  ) {
+	 public JSONObject TiraIntegPush(Object pushReq , String token, String url  ) {
 		 JSONObject res = null;
 		try {
 			// Frame Tira Req
@@ -151,7 +166,7 @@ public class TiraIntegerationServiceImpl {
 			header.setContentType(MediaType.APPLICATION_XML);
 			// header.setCharset("UTF-8");
 			header.setBearerAuth(token);
-			String url = tiraIntegPushLink;
+			
 			HttpEntity<?> requestent = new HttpEntity<>(pushReq , header);
 
 			System.out.println(new Date() + " Start " + url);
