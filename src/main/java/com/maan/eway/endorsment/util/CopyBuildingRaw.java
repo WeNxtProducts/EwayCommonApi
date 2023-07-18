@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -120,17 +122,21 @@ public class CopyBuildingRaw {
 			// Personal Accident Copy
 			String res = copyPersonalAccident (riskRes.getRequestReferenceNo() ,	riskRes.getOldRequestReferenceNo() ,sectionIds ,  riskRes  ) ;
 			
-			EserviceBuildingDetails buildData = eBuildingRepo.findByRequestReferenceNoAndRiskId(riskRes.getRequestReferenceNo() , 1 ); 
-			
-			
-			return buildData ;
+		//	EserviceBuildingDetails buildData = eBuildingRepo.findByRequestReferenceNoAndRiskId(riskRes.getRequestReferenceNo() , 1 );
+			List<EserviceBuildingDetails> buildData = eBuildingRepo.findByRequestReferenceNo(riskRes.getRequestReferenceNo());
+			buildData = buildData.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo()))).collect(Collectors.toList());
+			EserviceBuildingDetails buildData1=buildData.get(0);
+			return buildData1 ;
 			
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
+	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
 	public BuildingCopyRes copyBuildingRiskTable(Endorsment ent) {
 		try {
 			List<EserviceBuildingDetails> BuildingDatas=null;
@@ -224,7 +230,8 @@ public class CopyBuildingRaw {
 			
 			BuildingCopyRes res = dozerMapper.map(newBuildingList.get(0) , BuildingCopyRes.class);
 			
-			List<EserviceBuildingDetails> prevDatas = eBuildingRepo.findByPolicyNoAndRiskId(prevPolicyNo , 1 );
+			//List<EserviceBuildingDetails> prevDatas = eBuildingRepo.findByPolicyNoAndRiskId(prevPolicyNo , 1 );
+			List<EserviceBuildingDetails> prevDatas = eBuildingRepo.findByPolicyNo(prevPolicyNo);
 			res.setOldRequestReferenceNo(prevDatas.get(0).getRequestReferenceNo() );
 			res.setPolicyNo(ent.getPolicyNo()+"-"+count) ;
 			 
