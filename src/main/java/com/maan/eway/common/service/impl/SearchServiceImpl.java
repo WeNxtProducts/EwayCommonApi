@@ -1,6 +1,8 @@
 package com.maan.eway.common.service.impl;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -255,6 +257,7 @@ public class SearchServiceImpl implements SearchService {
 	public List<SearchRes> adminSearchOrderByEntryDate(SearchReq req) {
 		List<SearchRes> reslist = new ArrayList<SearchRes>();
 		DozerBeanMapper dozermapper = new DozerBeanMapper();
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
 		try {
 			Date effectiveDate = null;
 			List<BranchMaster> branchlist = getByBranchCode(req.getBranchCode());
@@ -296,14 +299,107 @@ public class SearchServiceImpl implements SearchService {
 
 			for (Tuple data : list) {
 				SearchRes res = new SearchRes();
+				if (product.getMotorYn().equalsIgnoreCase("M") ) {
 				res = dozermapper.map(data.get(0), SearchRes.class);
-				res.setClientName((data.get("clientName").toString()));
-				res.setMobileNo1((data.get("mobileNumber").toString()));
+				res.setClientName(data.get("clientName")==null?null:data.get("clientName").toString());
+				res.setMobileNo1(data.get("mobileNumber").toString());
 				res.setBranchName(branchName);
 				res.setLoginId(req.getLoginId());
 				res.setEffectiveDate(effectiveDate);
+				res.setCurrency(data.get("currency").toString());
+				String entryDate = data.get("entryDate") == null ? null
+						: dateFormat.format(data.get("entryDate"));
+				res.setEntryDate(entryDate);
+				res.setExchangeRate(data.get("exchangeRate")==null?null:data.get("exchangeRate").toString());
+				res.setGpsTrackingInstalled(data.get("gpsTrackingInstalled")==null?null:data.get("gpsTrackingInstalled").toString());
+				res.setOverallPremiumLc(data.get("overallPremiumLc")==null?null:data.get("overallPremiumLc").toString());
+				String policyStartDate = data.get("policyStartDate") == null ? null
+						: dateFormat.format(data.get("policyStartDate"));
+				res.setPolicyStartDate(policyStartDate);
+				String policyEndDate = data.get("policyEndDate") == null ? null
+						: dateFormat.format(data.get("policyEndDate"));
+				res.setPolicyEndDate(policyEndDate);
+				res.setPolicyNo(data.get("policyNo") == null ? null :data.get("policyNo").toString());
+				res.setPolicyTypeDesc(data.get("policyTypeDesc") == null ? null :data.get("policyTypeDesc").toString());
+				res.setVehicleTypeDesc(data.get("vehicleTypeDesc") == null ? null :data.get("vehicleTypeDesc").toString());
+				res.setQuoteNo(data.get("quoteNo") == null ? null :data.get("quoteNo").toString());
+				res.setRequestReferenceNo(data.get("requestReferenceNo") == null ? null :data.get("requestReferenceNo").toString());
+				res.setStatus(data.get("status") == null ? null :data.get("status").toString());
+				res.setWindScreenCoverRequired(data.get("windScreenCoverRequired") == null ? null :data.get("windScreenCoverRequired").toString());
 				// res.setIdsCount(data.get("idsCount")==null?"":data.get("idsCount").toString()
 				// );
+				}	else if (product.getMotorYn().equalsIgnoreCase("H")  && req.getProductId().equalsIgnoreCase(travelProductId)) {
+					res.setClientName(data.get("clientName")==null?null:data.get("clientName").toString());
+					res.setMobileNo1(data.get("mobileNumber").toString());
+					res.setBranchName(branchName);
+					res.setLoginId(req.getLoginId());
+					res.setEffectiveDate(effectiveDate);
+					res.setCurrency(data.get("currency").toString());
+					String entryDate = data.get("entryDate") == null ? null
+							: dateFormat.format(data.get("entryDate"));
+					res.setEntryDate(entryDate);
+					res.setExchangeRate(data.get("exchangeRate")==null?null:data.get("exchangeRate").toString());
+					res.setOverallPremiumLc(data.get("overallPremiumLc")==null?null:data.get("overallPremiumLc").toString());
+					String policyStartDate = data.get("policyStartDate") == null ? null
+							: dateFormat.format(data.get("policyStartDate"));
+					res.setPolicyStartDate(policyStartDate);
+					String policyEndDate = data.get("policyEndDate") == null ? null
+							: dateFormat.format(data.get("policyEndDate"));
+					res.setPolicyEndDate(policyEndDate);
+					res.setPolicyNo(data.get("policyNo") == null ? null :data.get("policyNo").toString());
+					//res.setPolicyTypeDesc(data.get("policyTypeDesc") == null ? null :data.get("policyTypeDesc").toString());
+					res.setQuoteNo(data.get("quoteNo") == null ? null :data.get("quoteNo").toString());
+					res.setRequestReferenceNo(data.get("requestReferenceNo") == null ? null :data.get("requestReferenceNo").toString());
+					res.setStatus(data.get("status") == null ? null :data.get("status").toString());
+					
+				}else if (product.getMotorYn().equalsIgnoreCase("A") ) {
+					res.setClientName(data.get("clientName")==null?null:data.get("clientName").toString());
+					res.setMobileNo1(data.get("mobileNumber").toString());
+					res.setBranchName(branchName);
+					res.setLoginId(req.getLoginId());
+					res.setEffectiveDate(effectiveDate);
+					res.setCurrency(data.get("currency").toString());
+					String entryDate = data.get("entryDate") == null ? null
+							: dateFormat.format(data.get("entryDate"));
+					res.setEntryDate(entryDate);
+					res.setExchangeRate(data.get("exchangeRate")==null?null:data.get("exchangeRate").toString());
+					res.setOverallPremiumLc(data.get("overallPremiumLc")==null?null:data.get("overallPremiumLc").toString());
+					String policyStartDate = data.get("policyStartDate") == null ? null
+							: dateFormat.format(data.get("policyStartDate"));
+					res.setPolicyStartDate(policyStartDate);
+					String policyEndDate = data.get("policyEndDate") == null ? null
+							: dateFormat.format(data.get("policyEndDate"));
+					res.setPolicyEndDate(policyEndDate);
+					res.setPolicyNo(data.get("policyNo") == null ? null :data.get("policyNo").toString());
+					//res.setPolicyTypeDesc(data.get("policyTypeDesc") == null ? null :data.get("policyTypeDesc").toString());
+					res.setQuoteNo(data.get("quoteNo") == null ? null :data.get("quoteNo").toString());
+					res.setRequestReferenceNo(data.get("requestReferenceNo") == null ? null :data.get("requestReferenceNo").toString());
+					res.setStatus(data.get("status") == null ? null :data.get("status").toString());
+				}else {
+					res.setClientName(data.get("clientName")==null?null:data.get("clientName").toString());
+					res.setMobileNo1(data.get("mobileNumber").toString());
+					res.setBranchName(branchName);
+					res.setLoginId(req.getLoginId());
+					res.setEffectiveDate(effectiveDate);
+					res.setCurrency(data.get("currency").toString());
+					String entryDate = data.get("entryDate") == null ? null
+							: dateFormat.format(data.get("entryDate"));
+					res.setEntryDate(entryDate);
+					res.setExchangeRate(data.get("exchangeRate")==null?null:data.get("exchangeRate").toString());
+					res.setOverallPremiumLc(data.get("overallPremiumLc")==null?null:data.get("overallPremiumLc").toString());
+					String policyStartDate = data.get("policyStartDate") == null ? null
+							: dateFormat.format(data.get("policyStartDate"));
+					res.setPolicyStartDate(policyStartDate);
+					String policyEndDate = data.get("policyEndDate") == null ? null
+							: dateFormat.format(data.get("policyEndDate"));
+					res.setPolicyEndDate(policyEndDate);
+					
+					res.setPolicyNo(data.get("policyNo") == null ? null :data.get("policyNo").toString());
+					res.setQuoteNo(data.get("quoteNo") == null ? null :data.get("quoteNo").toString());
+					res.setRequestReferenceNo(data.get("requestReferenceNo") == null ? null :data.get("requestReferenceNo").toString());
+					res.setStatus(data.get("status") == null ? null :data.get("status").toString());
+				}
+				
 				reslist.add(res);
 			}
 
