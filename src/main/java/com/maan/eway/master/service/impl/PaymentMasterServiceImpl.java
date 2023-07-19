@@ -107,9 +107,7 @@ public class PaymentMasterServiceImpl implements PaymentMasterService {
 			
 			
 			List<PaymentMaster>  datas = repo.findByCompanyIdAndBranchCodeAndUserTypeAndSubUserTypeOrderByEntryDateDesc(req.getCompanyId(),req.getBranchCode(),req.getUserType(),req.getSubUserType());
-			if(StringUtils.isBlank(req.getPaymentMasterId()))
-			{		
-				if(datas!=null && datas.size()>0) {
+			if(datas!=null && datas.size()>0) {
 				if((datas.get(0).getBranchCode().equalsIgnoreCase(req.getBranchCode()))&&
 				(datas.get(0).getCashYn().toLowerCase().equalsIgnoreCase(req.getCashYn().toLowerCase()))&&	
 				(datas.get(0).getChequeYn().toLowerCase().equalsIgnoreCase(req.getChequeYn().toLowerCase()))&&	
@@ -125,7 +123,6 @@ public class PaymentMasterServiceImpl implements PaymentMasterService {
 					errorList.add(new Error("10","Duplicate Data", "Already Data Available for the same, It is a Duplicate Data")); 
 					
 				}
-					}
 			}
 			
 			
@@ -217,8 +214,6 @@ public class PaymentMasterServiceImpl implements PaymentMasterService {
 		dozerMapper.map(req, saveData);
 		
 		saveData.setPaymentMasterId(paymentId);
-		saveData.setUserType(req.getUserType());
-		saveData.setSubUserType(req.getSubUserType());
 		saveData.setEffectiveDateStart(startDate);
 		saveData.setEffectiveDateEnd(endDate);
 		saveData.setCreatedBy(createdBy);
@@ -226,8 +221,6 @@ public class PaymentMasterServiceImpl implements PaymentMasterService {
 		saveData.setUpdatedBy(req.getCreatedBy());
 		saveData.setUpdatedDate(new Date());
 		saveData.setAmendId(amendId);
-		saveData.setUserType(req.getUserType());
-		saveData.setSubUserType(req.getSubUserType());
 		saveData.setBranchCode(req.getBranchCode()==null?"99999":req.getBranchCode());
 		saveData.setCompanyId(req.getCompanyId()==null?"99999": req.getCompanyId());
 		
@@ -318,11 +311,11 @@ public List<PaymentMasterRes> getallPayment(PaymentMasterGetallReq req) {
 		Subquery<Long> amendId = query.subquery(Long.class);
 		Root<PaymentMaster> ocpm1 = amendId.from(PaymentMaster.class);
 		amendId.select(cb.max(ocpm1.get("amendId")));
-	//	Predicate a1 = cb.equal(ocpm1.get("paymentMasterId"), b.get("paymentMasterId"));
+		Predicate a1 = cb.equal(ocpm1.get("paymentMasterId"), b.get("paymentMasterId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
-		amendId.where(a2,a3,a4);
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();
@@ -385,11 +378,11 @@ public List<PaymentMasterRes> getActivePayment(PaymentMasterGetallReq req) {
 		Subquery<Long> amendId = query.subquery(Long.class);
 		Root<PaymentMaster> ocpm1 = amendId.from(PaymentMaster.class);
 		amendId.select(cb.max(ocpm1.get("amendId")));
-//		Predicate a1 = cb.equal(ocpm1.get("paymentMasterId"), b.get("paymentMasterId"));
+		Predicate a1 = cb.equal(ocpm1.get("paymentMasterId"), b.get("paymentMasterId"));
 		Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 		Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
 		Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
-		amendId.where(a2,a3,a4);
+		amendId.where(a1, a2,a3,a4);
 
 		// Order By
 		List<Order> orderList = new ArrayList<Order>();

@@ -604,7 +604,7 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 			TypedQuery<MotorMakeModelMaster> result = em.createQuery(query);
 			list = result.getResultList();
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getModelId()))).collect(Collectors.toList());
-//			list.sort(Comparator.comparing(MotorMakeModelMaster :: getModelNameEn ));
+			list.sort(Comparator.comparing(MotorMakeModelMaster :: getModelNameEn ));
 			// Map
 			for (MotorMakeModelMaster data : list) {
 				MotorMakeModelGetRes res = new MotorMakeModelGetRes();

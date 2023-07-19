@@ -70,7 +70,4 @@ public class PaymentMasterRes {
 	private Date entryDate;
 	
 	
-	@JsonProperty("OnlineYn")
-	private String onlineYn;
-	
 }
