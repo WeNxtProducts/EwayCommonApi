@@ -2,6 +2,7 @@
 package com.maan.eway.endorsment.service;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -39,6 +40,7 @@ import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
+import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.ProductSectionMaster;
@@ -69,11 +71,13 @@ import com.maan.eway.endorsment.util.CopyCommonRaw;
 import com.maan.eway.endorsment.util.CopyRawTable;
 import com.maan.eway.endorsment.util.CopyTravelRaw;
 import com.maan.eway.endorsment.util.QuoteInfoUtil;
+import com.maan.eway.error.Error;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EndtDependantFieldsMasterRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
+import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.req.FactorRateDetailsGetReq;
@@ -112,6 +116,8 @@ public class EndorsementService {
 	@Autowired
 	private EServiceSectionDetailsRepository eserSecRepo ; 
 
+	@Autowired
+	private HomePositionMasterRepository homeRepo ; 
 
 	@Autowired
 	private EndtDependantFieldsMasterRepository dependantRepo;
@@ -1048,6 +1054,37 @@ public class EndorsementService {
 			return null;
 		}
 		return itemDesc;
+	}
+	
+	public List<Error> validateEndtDetails(Endorsment request) {
+		List<Error> error = new ArrayList<Error>();
+
+		try {
+			if(request.getEndtEffectiveDate() ==null ) {
+				error.add(new Error("01", "EndtEffectiveDate", "Please Select Endoresment Effective Date"));
+				
+			}else if ( travelProductId.equalsIgnoreCase(request.getProductId().toPlainString())  ) {
+				HomePositionMaster homeData = homeRepo.findByPolicyNo(request.getPolicyNo() );	
+				if(homeData !=null ) {
+					SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy") ;
+					Date effDate = request.getEndtEffectiveDate();
+					Date travelStartDate = homeData.getInceptionDate() ;
+					if (travelStartDate.before(effDate) ) {
+						error.add(new Error("01", "TravelStartDate", "Policy Start Date - " + sdf.format(homeData.getInceptionDate()) 
+								+ " is Less Than Effective Date -" + sdf.format(request.getEndtEffectiveDate())  + " Not Allowed . Future  Policy only we can cancel in travel" ));
+					}
+				}
+			}
+			
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			error.add(new Error("01", "CommonError", e.getMessage() ));
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return error;
 	}
 
 }

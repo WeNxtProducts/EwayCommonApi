@@ -36,6 +36,7 @@ import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.DocumentTransactionDetails;
+import com.maan.eway.bean.DocumentUniqueDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
@@ -73,6 +74,7 @@ import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.CoverDetailsRepository;
 import com.maan.eway.repository.DocumentTransactionDetailsRepository;
+import com.maan.eway.repository.DocumentUniqueDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
@@ -115,6 +117,8 @@ public class SearchServiceImpl implements SearchService {
 	@Autowired
 	private DocumentTransactionDetailsRepository coverdocumentuploaddetailsrepository;
 
+	@Autowired
+	private DocumentUniqueDetailsRepository docUniqueDetailsRepo;
 	@Autowired
 	private MotorVehicleInfoRepository motVehInfoRepo;
 
@@ -770,7 +774,7 @@ public class SearchServiceImpl implements SearchService {
 			DocumentRes dres = new DocumentRes();
 
 			List<DocumentTransactionDetails> getList = null;
-
+			DocumentUniqueDetails getdocDet=new DocumentUniqueDetails();
 			if (StringUtils.isNotBlank(req.getQuoteNo())) {
 
 				getList = coverdocumentuploaddetailsrepository.findByQuoteNo(req.getQuoteNo());
@@ -779,8 +783,17 @@ public class SearchServiceImpl implements SearchService {
 			}
 
 			for (DocumentTransactionDetails cd : getList) {
-
+				getdocDet=docUniqueDetailsRepo.findByUniqueId(cd.getUniqueId());
 				dres = new DozerBeanMapper().map(cd, DocumentRes.class);
+				dres.setDocumentType(getdocDet.getDocumentType());
+				dres.setDocumentTypeDesc(getdocDet.getDocumentTypeDesc());
+				dres.setDocApplicableId(getdocDet.getDocApplicableId());
+				dres.setDocApplicable(getdocDet.getDocApplicable());
+				dres.setOrginalFileName(getdocDet.getOrginalFileName());
+				dres.setDocumentDesc(getdocDet.getDocumentDesc());
+				dres.setDocumentId(getdocDet.getDocumentId().toString());
+				dres.setFilePathOrginal(getdocDet.getFilePathOrginal());
+				dres.setFilePathBackup(getdocDet.getFilePathBackup());
 				reslist.add(dres);
 			}
 		} catch (Exception e) {

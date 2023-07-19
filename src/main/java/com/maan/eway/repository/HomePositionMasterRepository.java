@@ -50,4 +50,6 @@ public interface HomePositionMasterRepository  extends JpaRepository<HomePositio
 
 	List<HomePositionMaster> findByRequestReferenceNoAndProductId(String requestReferenceNo, Integer productId);
 
+	HomePositionMaster findByPolicyNo(String policyNo);
+
 }

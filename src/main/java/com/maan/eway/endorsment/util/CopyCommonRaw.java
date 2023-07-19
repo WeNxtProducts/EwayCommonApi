@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -30,6 +32,7 @@ import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.bean.SectionDataDetails;
@@ -89,14 +92,19 @@ public class CopyCommonRaw {
 			
 			// Risk
 			CommonCopyRes  riskRes =  copyCommonRiskTable(request);
-			
-			EserviceCommonDetails commonData = eCommonRepo.findByRequestReferenceNoAndRiskId(riskRes.getRequestReferenceNo(), 1 ); 
-			
-			return commonData ;
+			List<EserviceCommonDetails> commonData = eCommonRepo.findByRequestReferenceNo(riskRes.getRequestReferenceNo());
+			commonData = commonData.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo()))).collect(Collectors.toList());
+			//EserviceCommonDetails commonData = eCommonRepo.findByRequestReferenceNoOrderByRiskIdDesc(riskRes.getRequestReferenceNo() ); 
+			EserviceCommonDetails commonData1=commonData.get(0);
+			return commonData1 ;
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
 	}
 	
 	public CommonCopyRes copyCommonRiskTable(Endorsment ent) {
@@ -179,7 +187,7 @@ public class CopyCommonRaw {
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			CommonCopyRes res = dozerMapper.map(newCommonList.get(0) , CommonCopyRes.class);
 			
-			List<EserviceCommonDetails> prevDatas = eCommonRepo.findByPolicyNoAndRiskId(prevPolicyNo , 1 );
+			List<EserviceCommonDetails> prevDatas = eCommonRepo.findByPolicyNo(prevPolicyNo);
 			res.setOldRequestReferenceNo(prevDatas.get(0).getRequestReferenceNo() );
 			
 			return res;
