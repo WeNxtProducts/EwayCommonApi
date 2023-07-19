@@ -141,10 +141,10 @@ public class TiraIntegerationServiceImpl {
 			System.out.println(new Date() + " Start " + url);
 			ResponseEntity<Object> postEntity = temp.exchange(url, HttpMethod.POST, requestent,new ParameterizedTypeReference<Object>() {}) ;
 			
-			if(postEntity.getStatusCode()==HttpStatus.ACCEPTED) {
+			//if(postEntity.getStatusCode()==HttpStatus.ACCEPTED) {
 				TiraFramedReq = postEntity.getBody() ;
-			}		
-		    
+			//}		
+				System.out.println("HHE"+TiraFramedReq);
 			System.out.println(new Date() + " End " + url);
 
 		} catch (Exception e) {
