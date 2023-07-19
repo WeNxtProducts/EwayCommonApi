@@ -2,6 +2,7 @@
 package com.maan.eway.endorsment.service;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -39,6 +40,7 @@ import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
+import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.ProductSectionMaster;
@@ -69,11 +71,13 @@ import com.maan.eway.endorsment.util.CopyCommonRaw;
 import com.maan.eway.endorsment.util.CopyRawTable;
 import com.maan.eway.endorsment.util.CopyTravelRaw;
 import com.maan.eway.endorsment.util.QuoteInfoUtil;
+import com.maan.eway.error.Error;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EndtDependantFieldsMasterRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
+import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.req.FactorRateDetailsGetReq;
@@ -112,6 +116,8 @@ public class EndorsementService {
 	@Autowired
 	private EServiceSectionDetailsRepository eserSecRepo ; 
 
+	@Autowired
+	private HomePositionMasterRepository homeRepo ; 
 
 	@Autowired
 	private EndtDependantFieldsMasterRepository dependantRepo;
@@ -544,7 +550,18 @@ public class EndorsementService {
 	public CommonRes createEndorsment(Endorsment request) {
 		try {
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(request.getCompanyId() , request.getProductId().toString());
-
+			HomePositionMaster hp = hpmrepo.findByPolicyNoAndStatusAndCompanyIdAndProductId(request.getPolicyNo(),"P", request.getCompanyId(), Integer.valueOf(request.getProductId().intValue()));
+			
+			
+			if(!((hp.getInceptionDate().compareTo(request.getEndtEffectiveDate()) * request.getEndtEffectiveDate().compareTo(hp.getExpiryDate()) ) >=0) ) {
+				CommonRes com=new CommonRes();
+				//com.setCommonResponse();
+				com.setErroCode(0);
+				com.setIsError(true);
+				com.setMessage("invalid Data ,Unable todo Endorsement");
+				return com;
+			}
+				
 			//EndtTypeMaster entTypeMaster = endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(request.getCompanyId(), request.getProductId().intValue(), "Y",Integer.parseInt(request.getEndtType()),new Date(), new Date());
 			EndtTypeMaster entTypeMaster =ratingutil.getEndtMasterData(request.getCompanyId(),request.getProductId().toPlainString(), request.getEndtType());
 			if("42".equals(request.getEndtType())) {
@@ -552,7 +569,7 @@ public class EndorsementService {
 				return cancelPolicy;
 			}else if ("1".equals(entTypeMaster.getEndtTypeCategoryId().toString()) ) {
 				Object response = null ;
-				HomePositionMaster hp = hpmrepo.findByPolicyNoAndStatusAndCompanyIdAndProductId(request.getPolicyNo(),"P", request.getCompanyId(), Integer.valueOf(request.getProductId().intValue()));
+				
 				if(hp!=null) {
 				CopyQuoteReq c = new CopyQuoteReq();
 				c.setRequestReferenceNo(hp.getRequestReferenceNo());
@@ -1037,6 +1054,37 @@ public class EndorsementService {
 			return null;
 		}
 		return itemDesc;
+	}
+	
+	public List<Error> validateEndtDetails(Endorsment request) {
+		List<Error> error = new ArrayList<Error>();
+
+		try {
+			if(request.getEndtEffectiveDate() ==null ) {
+				error.add(new Error("01", "EndtEffectiveDate", "Please Select Endoresment Effective Date"));
+				
+			}else if ( travelProductId.equalsIgnoreCase(request.getProductId().toPlainString())  ) {
+				HomePositionMaster homeData = homeRepo.findByPolicyNo(request.getPolicyNo() );	
+				if(homeData !=null ) {
+					SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy") ;
+					Date effDate = request.getEndtEffectiveDate();
+					Date travelStartDate = homeData.getInceptionDate() ;
+					if (travelStartDate.before(effDate) ) {
+						error.add(new Error("01", "TravelStartDate", "Policy Start Date - " + sdf.format(homeData.getInceptionDate()) 
+								+ " is Less Than Effective Date -" + sdf.format(request.getEndtEffectiveDate())  + " Not Allowed . Future  Policy only we can cancel in travel" ));
+					}
+				}
+			}
+			
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			error.add(new Error("01", "CommonError", e.getMessage() ));
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return error;
 	}
 
 }

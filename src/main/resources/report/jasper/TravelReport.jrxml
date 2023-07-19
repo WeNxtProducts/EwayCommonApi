@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TravelReport" pageWidth="650" pageHeight="800" columnWidth="590" leftMargin="30" rightMargin="30" topMargin="25" bottomMargin="25" uuid="fcd8918c-6be5-472c-9128-6be9381ad25b">
-	<property name="ireport.zoom" value="1.4641000000000006"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TravelReport" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ee17b5e5-2150-4972-b3dc-c9f6a12dd017">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="pvImagePath" class="java.lang.String"/>
 	<parameter name="pvPolicyNo" class="java.lang.String"/>
-	<parameter name="pvImagepath" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[]]>
+		<![CDATA[SELECT policy_no FROM home_position_master WHERE policy_no = $P{pvPolicyNo}]]>
 	</queryString>
+	<field name="policy_no" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="POLICY_NO"/>
+		<property name="com.jaspersoft.studio.field.label" value="policy_no"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	</field>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<pageHeader>
-		<band height="60" splitType="Stretch">
+		<band height="69" splitType="Stretch">
 			<image>
-				<reportElement x="0" y="0" width="80" height="60" uuid="e72aebd1-f3c7-4f55-9c0f-88b922cdbdad"/>
-				<imageExpression><![CDATA[$P{pvImagepath} + "travellogo.JPG"]]></imageExpression>
+				<reportElement key="" x="0" y="0" width="80" height="69" uuid="eb2ec101-9d7e-482c-a888-f412a6faed63"/>
+				<box topPadding="12"/>
+				<imageExpression><![CDATA[$P{pvImagePath}+"travellogo.JPG"]]></imageExpression>
 			</image>
 		</band>
 	</pageHeader>
@@ -30,7 +33,7 @@
 					<bottomPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["TRAVEL INSURANCE POLICY"]]></textFieldExpression>
 			</textField>
@@ -41,7 +44,7 @@
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Justified">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Policyholder :"]]></textFieldExpression>
 			</textField>
@@ -51,7 +54,7 @@
 					<topPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -61,14 +64,14 @@
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Justified">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Passport :"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="70" y="21" width="110" height="10" uuid="810363c0-aefc-4450-acd3-d395fc1ef793"/>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -79,31 +82,31 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="383" y="10" width="97" height="15" uuid="acbf41b4-33bb-48b1-8d9d-ddb2982aeca0"/>
+				<reportElement x="383" y="10" width="67" height="15" uuid="acbf41b4-33bb-48b1-8d9d-ddb2982aeca0"/>
 				<box leftPadding="4">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Policy Number"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="380" y="10" width="3" height="30" uuid="ee792c6a-4b36-4065-bdfa-f9814a238446"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="383" y="25" width="97" height="15" uuid="24ed66f9-90c8-4341-9c0d-aa1b90e71f16"/>
+				<reportElement x="383" y="25" width="67" height="15" uuid="24ed66f9-90c8-4341-9c0d-aa1b90e71f16"/>
 				<box leftPadding="4">
 					<topPen lineWidth="0.0"/>
 					<leftPen lineWidth="0.75"/>
@@ -111,29 +114,29 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["N. Passengers"]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="480" y="10" width="74" height="15" uuid="467a184c-5c19-42bd-b9c1-7c6af43ad1eb"/>
-				<box>
+			<textField isBlankWhenNull="true">
+				<reportElement x="450" y="10" width="104" height="15" uuid="467a184c-5c19-42bd-b9c1-7c6af43ad1eb"/>
+				<box leftPadding="2">
 					<topPen lineWidth="0.75"/>
 					<rightPen lineWidth="0.75"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{pvPolicyNo}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{policy_no}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="480" y="25" width="74" height="15" uuid="17e2b123-10e9-4af6-8069-29841c10826a"/>
+				<reportElement x="450" y="25" width="104" height="15" uuid="17e2b123-10e9-4af6-8069-29841c10826a"/>
 				<box>
 					<bottomPen lineWidth="0.75"/>
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -144,6 +147,9 @@
 					<bottomPen lineWidth="0.75"/>
 					<rightPen lineWidth="0.75"/>
 				</box>
+				<textElement>
+					<font fontName="Arial" size="9"/>
+				</textElement>
 				<textFieldExpression><![CDATA["Text Field"]]></textFieldExpression>
 			</textField>
 		</band>
@@ -155,7 +161,7 @@
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Coverage Period"]]></textFieldExpression>
 			</textField>
@@ -166,7 +172,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -176,7 +182,7 @@
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Effective from:"]]></textFieldExpression>
 			</textField>
@@ -186,7 +192,7 @@
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Expiry:"]]></textFieldExpression>
 			</textField>
@@ -196,7 +202,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -206,7 +212,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -218,7 +224,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -230,7 +236,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -240,7 +246,7 @@
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Policy period:"]]></textFieldExpression>
 			</textField>
@@ -250,7 +256,7 @@
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Product:"]]></textFieldExpression>
 			</textField>
@@ -260,7 +266,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -270,7 +276,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -282,63 +288,63 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="180" y="5" width="3" height="45" uuid="d99f7a6d-2b61-488c-a380-15fd147a9b48"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="380" y="5" width="3" height="45" uuid="5e371874-2982-4f94-abeb-9ec4c8c6a714"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="383" y="5" width="97" height="15" uuid="9d969a6b-f73e-4df4-a11b-478aaa753b7d"/>
+				<reportElement x="383" y="5" width="67" height="15" uuid="9d969a6b-f73e-4df4-a11b-478aaa753b7d"/>
 				<box topPadding="2" leftPadding="3">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Policy Amount"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="480" y="5" width="74" height="15" uuid="bbb21146-ef62-4fd9-9977-4f848664c11e"/>
+				<reportElement x="450" y="5" width="104" height="15" uuid="bbb21146-ef62-4fd9-9977-4f848664c11e"/>
 				<box>
 					<topPen lineWidth="0.75"/>
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="383" y="20" width="97" height="10" uuid="9340aab9-9b75-4bd2-81bd-a7533717fde5"/>
+				<reportElement x="383" y="20" width="67" height="10" uuid="9340aab9-9b75-4bd2-81bd-a7533717fde5"/>
 				<box topPadding="0" leftPadding="2">
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Total Premiums"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="480" y="20" width="74" height="10" uuid="0c8730e2-33db-4fc8-aba8-b10215cc6893"/>
+				<reportElement x="450" y="20" width="104" height="10" uuid="0c8730e2-33db-4fc8-aba8-b10215cc6893"/>
 				<box>
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -350,7 +356,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -363,7 +369,7 @@
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Agent Code:"]]></textFieldExpression>
 			</textField>
@@ -374,7 +380,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["ALLIANCE INSURANCE CORPORATION LIMITED"]]></textFieldExpression>
 			</textField>
@@ -386,14 +392,14 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="380" y="7" width="3" height="25" uuid="ced42e52-9bae-4813-9a85-08c15fd297bd"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -404,7 +410,7 @@
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Country of Origin:"]]></textFieldExpression>
 			</textField>
@@ -415,7 +421,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["TANZANIA"]]></textFieldExpression>
 			</textField>
@@ -427,12 +433,12 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="50">
+		<band height="35">
 			<textField>
 				<reportElement x="80" y="9" width="300" height="11" uuid="4fa2ee33-97a7-4860-9a0f-1d4e1aad4613"/>
 				<box topPadding="1">
@@ -440,7 +446,7 @@
 					<rightPen lineWidth="0.0"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["ASIA - All countries in Asia and surrounding islands"]]></textFieldExpression>
 			</textField>
@@ -451,7 +457,7 @@
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Destination Area:"]]></textFieldExpression>
 			</textField>
@@ -463,7 +469,7 @@
 					<rightPen lineWidth="0.0"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -475,7 +481,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -490,7 +496,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Cover Table / Schedule of Covers"]]></textFieldExpression>
 			</textField>
@@ -503,7 +509,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -515,7 +521,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["PERSONAL ASSISTANCE"]]></textFieldExpression>
 			</textField>
@@ -528,7 +534,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -540,7 +546,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -553,7 +559,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -565,7 +571,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -578,7 +584,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -590,7 +596,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -603,7 +609,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -615,7 +621,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -628,7 +634,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -640,7 +646,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["MEDICAL TRANSPORTATION AND REPATRIATION"]]></textFieldExpression>
 			</textField>
@@ -653,7 +659,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -665,7 +671,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -678,7 +684,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -690,7 +696,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -703,7 +709,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -715,7 +721,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["MEDICAL EXPENSES"]]></textFieldExpression>
 			</textField>
@@ -728,7 +734,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -740,7 +746,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["MEDICAL EXPENSES"]]></textFieldExpression>
 			</textField>
@@ -753,7 +759,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -765,7 +771,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -778,7 +784,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -790,7 +796,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -803,7 +809,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -815,7 +821,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -828,7 +834,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -840,7 +846,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -853,7 +859,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -865,7 +871,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -878,7 +884,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -890,7 +896,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["REPATRIATION OF MORTAL REMAINS"]]></textFieldExpression>
 			</textField>
@@ -903,7 +909,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -915,7 +921,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -928,7 +934,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -940,7 +946,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["BAGGAGE"]]></textFieldExpression>
 			</textField>
@@ -953,7 +959,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -965,7 +971,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -978,7 +984,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -990,7 +996,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1003,7 +1009,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1015,7 +1021,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["CARDS"]]></textFieldExpression>
 			</textField>
@@ -1028,7 +1034,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1040,12 +1046,12 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="20">
+		<band height="22">
 			<textField>
 				<reportElement x="280" y="0" width="274" height="20" uuid="ad4da1ea-92e4-413d-a30d-b2872c112aec"/>
 				<box>
@@ -1053,7 +1059,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1065,22 +1071,15 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
+			<break>
+				<reportElement x="0" y="21" width="100" height="1" uuid="0b454e94-fc74-4895-ac53-1b2e877b0211"/>
+			</break>
 		</band>
-		<band height="50">
-			<textField>
-				<reportElement x="210" y="0" width="130" height="10" uuid="96577c88-f79c-458f-8aee-8aad273c103d"/>
-				<box>
-					<bottomPen lineWidth="0.75"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["LIST OF INSURED"]]></textFieldExpression>
-			</textField>
+		<band height="40">
 			<textField>
 				<reportElement x="0" y="10" width="70" height="11" uuid="eee8025c-f8e2-4dab-a61d-36bb85de3fbd"/>
 				<box topPadding="1" leftPadding="3">
@@ -1088,7 +1087,7 @@
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Justified">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Policyholder :"]]></textFieldExpression>
 			</textField>
@@ -1098,7 +1097,7 @@
 					<topPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1108,14 +1107,14 @@
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Justified">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Passport :"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="70" y="21" width="110" height="10" uuid="17efda8b-4fdf-43a0-a8a3-6064cfe2a6c1"/>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1126,31 +1125,35 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="383" y="10" width="97" height="15" uuid="ee825b12-e332-4e62-b759-63bc39b0b16f"/>
+				<reportElement x="383" y="10" width="67" height="15" uuid="ee825b12-e332-4e62-b759-63bc39b0b16f">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<box leftPadding="4">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Policy Number"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="380" y="10" width="3" height="30" uuid="53844f7c-6f09-47b5-82d2-c1ad149b6526"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="383" y="25" width="97" height="15" uuid="0c2cb1d9-53f1-4553-9edf-89934cc2182e"/>
+				<reportElement x="383" y="25" width="67" height="15" uuid="0c2cb1d9-53f1-4553-9edf-89934cc2182e">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<box leftPadding="4">
 					<topPen lineWidth="0.0"/>
 					<leftPen lineWidth="0.75"/>
@@ -1158,29 +1161,29 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["N. Passengers"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="480" y="10" width="74" height="15" uuid="5f898311-3adb-4810-9fe8-5032c054ea40"/>
-				<box>
+				<reportElement x="450" y="10" width="104" height="15" uuid="5f898311-3adb-4810-9fe8-5032c054ea40"/>
+				<box leftPadding="2">
 					<topPen lineWidth="0.75"/>
 					<rightPen lineWidth="0.75"/>
 				</box>
-				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{policy_no}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="480" y="25" width="74" height="15" uuid="48b353b5-b60b-407b-9fcd-e971e093b9f3"/>
+				<reportElement x="450" y="25" width="104" height="15" uuid="48b353b5-b60b-407b-9fcd-e971e093b9f3"/>
 				<box>
 					<bottomPen lineWidth="0.75"/>
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1191,6 +1194,9 @@
 					<bottomPen lineWidth="0.75"/>
 					<rightPen lineWidth="0.75"/>
 				</box>
+				<textElement>
+					<font fontName="Arial" size="9"/>
+				</textElement>
 				<textFieldExpression><![CDATA["Text Field"]]></textFieldExpression>
 			</textField>
 		</band>
@@ -1202,7 +1208,7 @@
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Coverage Period"]]></textFieldExpression>
 			</textField>
@@ -1213,7 +1219,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1223,7 +1229,7 @@
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Effective from:"]]></textFieldExpression>
 			</textField>
@@ -1233,7 +1239,7 @@
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Expiry:"]]></textFieldExpression>
 			</textField>
@@ -1243,7 +1249,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1253,7 +1259,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1265,7 +1271,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1277,7 +1283,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1287,7 +1293,7 @@
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Policy period:"]]></textFieldExpression>
 			</textField>
@@ -1297,7 +1303,7 @@
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Product:"]]></textFieldExpression>
 			</textField>
@@ -1307,7 +1313,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1317,7 +1323,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1329,21 +1335,21 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="180" y="5" width="3" height="45" uuid="a717d305-1ce0-474d-a4d0-1c14e86752af"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="380" y="5" width="3" height="45" uuid="b0731ae8-715a-46f2-823b-c380dc41022b"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1354,7 +1360,7 @@
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Destination Area:"]]></textFieldExpression>
 			</textField>
@@ -1365,7 +1371,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1376,7 +1382,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["ASIA - All countries in Asia and surrounding islands"]]></textFieldExpression>
 			</textField>
@@ -1388,7 +1394,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1403,7 +1409,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["NAME"]]></textFieldExpression>
 			</textField>
@@ -1415,7 +1421,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["PASSPORT"]]></textFieldExpression>
 			</textField>
@@ -1427,7 +1433,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["DATE OF BIRTH"]]></textFieldExpression>
 			</textField>
@@ -1442,7 +1448,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1454,7 +1460,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1465,7 +1471,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1480,7 +1486,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1492,7 +1498,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1504,7 +1510,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1519,7 +1525,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1531,7 +1537,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1543,7 +1549,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1558,7 +1564,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1570,7 +1576,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1582,7 +1588,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1597,7 +1603,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1609,7 +1615,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1621,7 +1627,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1636,7 +1642,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1648,7 +1654,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1660,7 +1666,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1675,7 +1681,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1687,7 +1693,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1699,7 +1705,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1714,7 +1720,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1726,7 +1732,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1738,7 +1744,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1753,7 +1759,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1765,7 +1771,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1777,7 +1783,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1792,7 +1798,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1804,7 +1810,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1816,7 +1822,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1831,7 +1837,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1843,7 +1849,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1855,7 +1861,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1870,7 +1876,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1882,7 +1888,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1894,7 +1900,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1909,7 +1915,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1921,7 +1927,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1933,7 +1939,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1948,7 +1954,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1960,7 +1966,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1972,7 +1978,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1987,7 +1993,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -1999,7 +2005,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2011,7 +2017,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2026,7 +2032,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2038,7 +2044,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2050,7 +2056,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2065,7 +2071,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2077,7 +2083,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2089,7 +2095,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2104,7 +2110,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2116,7 +2122,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2128,7 +2134,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2143,7 +2149,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2155,7 +2161,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2167,7 +2173,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2182,7 +2188,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2194,7 +2200,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2206,7 +2212,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2221,7 +2227,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2233,7 +2239,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2245,7 +2251,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2260,7 +2266,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2272,7 +2278,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2284,7 +2290,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2299,7 +2305,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2311,7 +2317,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2323,7 +2329,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2338,7 +2344,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2350,7 +2356,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2362,7 +2368,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2377,7 +2383,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2392,7 +2398,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2404,7 +2410,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2413,7 +2419,7 @@
 			<textField>
 				<reportElement x="0" y="0" width="160" height="10" uuid="f05805ae-a051-4727-9cfa-0d858da3d1ba"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["01/10/2022"]]></textFieldExpression>
 			</textField>
@@ -2421,14 +2427,14 @@
 				<reportElement x="0" y="10" width="20" height="10" uuid="4f1a290d-0ba2-4c8f-84fe-37942b478d13"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["TO:"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="20" y="10" width="140" height="10" uuid="e37a29af-5301-4918-9f1e-26c801329d27"/>
 				<textElement>
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["THE EMBASSY / CONSULATE"]]></textFieldExpression>
 			</textField>
@@ -2436,21 +2442,21 @@
 				<reportElement x="0" y="20" width="20" height="10" uuid="cba438b1-0726-4fd3-bdfe-7bad71b05ba5"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["RE:"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="20" y="20" width="140" height="10" uuid="a042b473-81cd-459b-a45e-2a90922334c5"/>
 				<textElement>
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Confirmation of Travel Insurance"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="160" y="0" width="394" height="30" uuid="e607df63-2595-4736-a777-d318d0a0c8d9"/>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2462,7 +2468,7 @@
 					<bottomPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Bottom">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["TO WHOM IT MAY CONCERN"]]></textFieldExpression>
 			</textField>
@@ -2472,7 +2478,7 @@
 					<bottomPen lineWidth="0.0"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Bottom">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2482,7 +2488,7 @@
 					<bottomPen lineWidth="0.0"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Bottom">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2492,7 +2498,7 @@
 				<reportElement x="0" y="0" width="554" height="12" uuid="6a0284f8-bc14-47e0-9586-9256f7c4b6a0"/>
 				<box topPadding="1" leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["This letter serves to confirm that the traveller/s named below is/are adequately covered for International Travel"]]></textFieldExpression>
 			</textField>
@@ -2500,7 +2506,7 @@
 				<reportElement x="0" y="12" width="553" height="10" uuid="01045da6-7dd1-4b4e-ae9e-9afd0ae5e01c"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Insurance underwritten by ALLIANCE INSURANCE CORPORATION LIMITED, whilst travelling on journeys during the period "]]></textFieldExpression>
 			</textField>
@@ -2508,7 +2514,7 @@
 				<reportElement x="0" y="22" width="553" height="10" uuid="8a25571d-55be-47d7-9e45-108e89fa444a"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["detailed below:"]]></textFieldExpression>
 			</textField>
@@ -2520,7 +2526,7 @@
 					<bottomPen lineWidth="0.0"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Bottom">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2531,7 +2537,7 @@
 					<bottomPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Bottom">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["POLICY DETAILS:"]]></textFieldExpression>
 			</textField>
@@ -2541,7 +2547,7 @@
 					<leftPen lineWidth="0.0"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2551,7 +2557,7 @@
 				<reportElement x="0" y="5" width="80" height="10" uuid="9c01b06e-05f2-4da3-8e3c-6728120b65bc"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Policy Number:"]]></textFieldExpression>
 			</textField>
@@ -2559,7 +2565,7 @@
 				<reportElement x="80" y="5" width="474" height="10" uuid="8537f601-9a5a-4126-8b5c-9592b777fc26"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["52ASIALT"]]></textFieldExpression>
 			</textField>
@@ -2569,7 +2575,7 @@
 				<reportElement x="0" y="0" width="80" height="10" uuid="3ba9b403-4924-4329-b427-e4f7f309d7cc"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Effective From:"]]></textFieldExpression>
 			</textField>
@@ -2577,7 +2583,7 @@
 				<reportElement x="80" y="0" width="474" height="10" uuid="464c394c-ae5b-471d-954d-419ca12d3f44"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["21/10/2022"]]></textFieldExpression>
 			</textField>
@@ -2587,7 +2593,7 @@
 				<reportElement x="0" y="0" width="80" height="10" uuid="38294f33-f7ee-4484-9b3d-e9ffc7fcba84"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Expiry:"]]></textFieldExpression>
 			</textField>
@@ -2595,7 +2601,7 @@
 				<reportElement x="80" y="0" width="474" height="10" uuid="515337ae-d48a-40f9-8842-71493b04058e"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["19/11/2022"]]></textFieldExpression>
 			</textField>
@@ -2605,7 +2611,7 @@
 				<reportElement x="0" y="0" width="80" height="10" uuid="ff223534-db1b-4607-9375-1824c5ddbc29"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Plan Name:"]]></textFieldExpression>
 			</textField>
@@ -2613,7 +2619,7 @@
 				<reportElement x="80" y="0" width="474" height="10" uuid="e87477dd-8783-458a-a143-ad37c0dc256f"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["ASIA"]]></textFieldExpression>
 			</textField>
@@ -2623,7 +2629,7 @@
 				<reportElement x="0" y="0" width="80" height="10" uuid="b4b37df8-2490-4b5a-98e3-4c066a62c90b"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Territory covered:"]]></textFieldExpression>
 			</textField>
@@ -2631,7 +2637,7 @@
 				<reportElement x="80" y="0" width="474" height="10" uuid="0a0a0250-0f54-4181-92b9-29335f0dd7b6"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["ASIA - All countries in Asia and surrounding islands"]]></textFieldExpression>
 			</textField>
@@ -2641,7 +2647,7 @@
 				<reportElement x="0" y="0" width="554" height="10" uuid="efa2fa8f-09d8-497c-9482-d48279756f73"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["The following Insured Person(s) are covered for the Journey detailed above:"]]></textFieldExpression>
 			</textField>
@@ -2655,7 +2661,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["First Name"]]></textFieldExpression>
 			</textField>
@@ -2666,7 +2672,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Date of Birth"]]></textFieldExpression>
 			</textField>
@@ -2677,7 +2683,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Passport Number"]]></textFieldExpression>
 			</textField>
@@ -2688,7 +2694,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Last Name"]]></textFieldExpression>
 			</textField>
@@ -2703,7 +2709,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2715,7 +2721,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2727,7 +2733,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2739,7 +2745,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2753,7 +2759,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2764,7 +2770,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2775,7 +2781,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2786,7 +2792,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2800,7 +2806,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2811,7 +2817,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2822,7 +2828,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2833,7 +2839,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2847,7 +2853,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2858,7 +2864,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2869,7 +2875,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2880,7 +2886,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2894,7 +2900,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2905,7 +2911,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2916,7 +2922,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2927,7 +2933,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2941,7 +2947,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2952,7 +2958,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2963,7 +2969,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2974,7 +2980,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -2984,7 +2990,7 @@
 				<reportElement x="0" y="7" width="554" height="10" uuid="b30de211-e30f-4854-ace8-55685c823f1a"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Insured Persons qualify for the Medical and Emergency Related Expenses listed in the Schedule of Covers of the"]]></textFieldExpression>
 			</textField>
@@ -2992,7 +2998,7 @@
 				<reportElement x="0" y="17" width="554" height="10" uuid="19d32d6c-98f1-42c9-afa2-f6bcadf577e3"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Policy Certificate Nº 52ASIALT up to the following limits:"]]></textFieldExpression>
 			</textField>
@@ -3002,7 +3008,7 @@
 				<reportElement x="0" y="4" width="554" height="10" uuid="1b8e627a-ffe3-40b0-835e-8f3a6ca9f820"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["MEDICAL TRANSPORTATION OR REPATRIATION: 15000"]]></textFieldExpression>
 			</textField>
@@ -3012,7 +3018,7 @@
 				<reportElement x="0" y="4" width="554" height="10" uuid="5ec84006-f1ed-44d3-89b0-e18cb018ebfd"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["MEDICAL EXPENSES ABROAD (Including COVID-19): 30000"]]></textFieldExpression>
 			</textField>
@@ -3022,7 +3028,7 @@
 				<reportElement x="0" y="4" width="554" height="10" uuid="d437a5f9-f216-4a45-85df-0cf7082ac651"/>
 				<box leftPadding="1"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["If an Insured Event occurs after the commencement of a Journey giving rise to a valid claim, the Journey will automatically be extended within"]]></textFieldExpression>
 			</textField>
@@ -3030,7 +3036,7 @@
 				<reportElement x="0" y="14" width="554" height="10" uuid="9484a4ae-b375-4f6c-afd6-0ebcc894b176"/>
 				<box leftPadding="1"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["the Terms & Conditions of the Policy. All Benefits are subject to the Terms & Conditions of the Policy and details of the sums insured, sub-"]]></textFieldExpression>
 			</textField>
@@ -3038,7 +3044,7 @@
 				<reportElement x="0" y="24" width="554" height="10" uuid="4e3810cc-4ec8-4de8-977c-0282c3823c89"/>
 				<box leftPadding="1"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["limits and excesses are contained in the Schedule of Covers."]]></textFieldExpression>
 			</textField>
@@ -3047,7 +3053,7 @@
 			<textField>
 				<reportElement x="0" y="4" width="554" height="10" uuid="fe3de5a7-b0dc-407e-8847-45d0ab5a1238"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["In the event of a medical emergency or security emergency, the Insured Person should contact the 24 HOUR EMERGENCY ASSISTANCE HELPLINE:"]]></textFieldExpression>
 			</textField>
@@ -3056,14 +3062,14 @@
 			<textField>
 				<reportElement x="0" y="6" width="80" height="10" uuid="066a7227-82ee-49c2-9012-725895c9b6f2"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["By Phone:"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="80" y="6" width="474" height="10" uuid="039d80ae-d5b8-4967-98ac-11040cc4f724"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["+ 44 845 217 1379"]]></textFieldExpression>
 			</textField>
@@ -3072,14 +3078,14 @@
 			<textField>
 				<reportElement x="0" y="6" width="80" height="10" uuid="185d8751-1735-4fbd-bffd-1bd46b3fed92"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["By Email:"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="80" y="6" width="474" height="10" uuid="e04f061b-3280-407f-9195-b776e89f6cba"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["afrcosiam@mapfre.com - Please include your contact information and the kind of assistance required."]]></textFieldExpression>
 			</textField>
@@ -3089,7 +3095,7 @@
 				<reportElement x="0" y="10" width="80" height="10" uuid="4d1e236d-4fa1-48b7-a326-159d37bff27b"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["For and on behalf of"]]></textFieldExpression>
 			</textField>
@@ -3097,7 +3103,7 @@
 				<reportElement x="80" y="10" width="474" height="10" uuid="b88c8bc5-dccc-4989-917b-fd59e752a5d1"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
@@ -3107,7 +3113,7 @@
 				<reportElement x="0" y="10" width="200" height="10" uuid="c5ca6f65-7888-467d-b325-8bed6c7edddd"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["ALLIANCE INSURANCE CORPORATION LIMITED"]]></textFieldExpression>
 			</textField>
@@ -3115,14 +3121,14 @@
 				<reportElement x="200" y="10" width="354" height="10" uuid="d45bc960-bfcd-4180-ad78-9950ed55abfe"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
 	<columnFooter>
-		<band height="97" splitType="Stretch">
+		<band height="87" splitType="Stretch">
 			<textField>
 				<reportElement x="0" y="4" width="554" height="11" uuid="e1387d10-f287-4f32-80a0-01b94a87742b"/>
 				<box topPadding="1">
@@ -3131,166 +3137,155 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["ASSISTANCE INFORMATION"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="15" width="554" height="10" uuid="5ca762b1-5cfc-4b77-a996-9c30f1788d53"/>
-				<box>
-					<topPen lineWidth="0.0"/>
-					<leftPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["How the Insured should contact for assistance ?"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="0" y="25" width="170" height="10" uuid="3765ef32-4dbb-4b99-b4a8-20a2330edbc2"/>
+				<reportElement x="0" y="15" width="170" height="10" uuid="3765ef32-4dbb-4b99-b4a8-20a2330edbc2"/>
 				<box rightPadding="3">
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["WhatsApp Chat"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="35" width="170" height="10" uuid="5f795a62-489a-4298-b819-9a4204bc3ac7"/>
+				<reportElement x="0" y="25" width="170" height="10" uuid="5f795a62-489a-4298-b819-9a4204bc3ac7"/>
 				<box rightPadding="3">
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["+216 29 67 72 76"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="3" y="45" width="167" height="24" uuid="a1713e8b-81aa-4ca2-a113-ed2411ad8e97"/>
+				<reportElement x="0" y="35" width="170" height="24" uuid="a1713e8b-81aa-4ca2-a113-ed2411ad8e97"/>
 				<box leftPadding="15" rightPadding="3">
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Please state your policy number When requesting assistance"]]></textFieldExpression>
 			</textField>
+			<image>
+				<reportElement x="170" y="15" width="32" height="44" uuid="b53f8e98-12ff-4733-bf6f-5304ed22a600"/>
+				<box topPadding="7"/>
+				<imageExpression><![CDATA[$P{pvImagePath}+"Whatsapplogo.JPG"]]></imageExpression>
+			</image>
 			<textField>
-				<reportElement x="202" y="25" width="55" height="10" uuid="2c753113-5489-4412-aa8e-961221d5107d"/>
+				<reportElement x="202" y="15" width="55" height="10" uuid="2c753113-5489-4412-aa8e-961221d5107d"/>
 				<box leftPadding="2"/>
 				<textElement>
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["By Phone :"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="257" y="25" width="73" height="10" uuid="974bcbfb-595d-4ef7-9271-6d6faef64c71"/>
+				<reportElement x="257" y="15" width="73" height="10" uuid="974bcbfb-595d-4ef7-9271-6d6faef64c71"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["+33 437 37 2898"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="257" y="35" width="73" height="10" uuid="2288658e-b40e-4e2b-8d56-036c66f1191b"/>
+				<reportElement x="257" y="25" width="73" height="10" uuid="2288658e-b40e-4e2b-8d56-036c66f1191b"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["+44 845 217 1379"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="202" y="35" width="55" height="10" uuid="45d65fa1-aa9a-4b5b-a5e3-4a1af5fa6a28"/>
+				<reportElement x="202" y="25" width="55" height="10" uuid="45d65fa1-aa9a-4b5b-a5e3-4a1af5fa6a28"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="202" y="45" width="128" height="10" uuid="cf3bb5e1-064f-4230-8a5e-d394881bf5a6"/>
+				<reportElement x="202" y="35" width="128" height="10" uuid="cf3bb5e1-064f-4230-8a5e-d394881bf5a6"/>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Dial +11 44 845 217 1379 if calling from the USA"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="202" y="55" width="128" height="14" uuid="27e264ee-4d2a-45d9-a76a-7bf8f3365c11"/>
+				<reportElement x="202" y="45" width="128" height="14" uuid="27e264ee-4d2a-45d9-a76a-7bf8f3365c11"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Emergency Contacts Available 24th/7d ALL Year Round"]]></textFieldExpression>
 			</textField>
+			<image>
+				<reportElement x="330" y="15" width="40" height="44" uuid="ef2d52e7-520c-4a2d-a03a-76602a33ac63"/>
+				<imageExpression><![CDATA[$P{pvImagePath}+"Email.JPG"]]></imageExpression>
+			</image>
 			<textField>
-				<reportElement x="370" y="25" width="184" height="10" uuid="3800981e-7cad-4130-b22a-dc23a8c500ae"/>
+				<reportElement x="370" y="15" width="184" height="10" uuid="3800981e-7cad-4130-b22a-dc23a8c500ae"/>
 				<box leftPadding="3">
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["E-Mail"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="370" y="35" width="184" height="10" uuid="d907f79c-ed05-4927-afe9-b8a488d3b1fe"/>
+				<reportElement x="370" y="25" width="184" height="10" uuid="d907f79c-ed05-4927-afe9-b8a488d3b1fe"/>
 				<box leftPadding="3">
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["afrcosiam@mapfre.com"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="370" y="45" width="184" height="10" uuid="5da04a76-3883-425b-9354-a9c5d39ef19d"/>
+				<reportElement x="370" y="35" width="184" height="10" uuid="5da04a76-3883-425b-9354-a9c5d39ef19d"/>
 				<box>
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Please state your policy number and telephone"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="370" y="55" width="184" height="14" uuid="abac0a28-9ce5-476f-9622-f800bb3ba174"/>
+				<reportElement x="370" y="45" width="184" height="14" uuid="abac0a28-9ce5-476f-9622-f800bb3ba174"/>
 				<box>
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["When requesting assistance"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="69" width="554" height="14" uuid="20545a78-bee5-4493-9320-713e06bad702"/>
+				<reportElement x="0" y="59" width="554" height="14" uuid="20545a78-bee5-4493-9320-713e06bad702"/>
 				<box>
 					<leftPen lineWidth="0.75"/>
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["To Verify the Authenticity of this Insurance Policy Please Go to : https://www.mapfrewarranty.com/matravelsafe.aspx"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="83" width="554" height="14" uuid="8de6c840-36ee-4403-81f2-ae6179c0f5e4"/>
+				<reportElement x="0" y="73" width="554" height="14" uuid="8de6c840-36ee-4403-81f2-ae6179c0f5e4"/>
 				<box>
 					<leftPen lineWidth="0.75"/>
 					<bottomPen lineWidth="0.75"/>
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Select your country of Residence and Then Enter the POlicy Number printed on your insurance Certificate"]]></textFieldExpression>
 			</textField>
-			<image>
-				<reportElement x="170" y="26" width="29" height="43" uuid="80f574e3-27be-4a34-a9d2-1a45532a8ff1"/>
-				<imageExpression><![CDATA[$P{pvImagepath} + "Whatsapplogo.JPG"]]></imageExpression>
-			</image>
-			<image>
-				<reportElement x="330" y="25" width="40" height="44" uuid="dc1cfbe2-db84-4e8a-9cfb-fd63cdc33b11"/>
-				<imageExpression><![CDATA[$P{pvImagepath} + "Email.JPG"]]></imageExpression>
-			</image>
 		</band>
 	</columnFooter>
 	<pageFooter>
@@ -3303,7 +3298,7 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="11"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["By signing this document, the Policyholder expressly accepts the clauses limiting the rights of the Insured included in the attached General Conditions of the Policy."]]></textFieldExpression>
 			</textField>
@@ -3314,53 +3309,59 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="11"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["This travel policy can only be modified or cancelled before the start date of the policy period. "]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="10" y="34" width="70" height="14" uuid="4f57012d-7943-4aab-ae59-90cb808403d4"/>
+				<reportElement x="9" y="34" width="80" height="14" uuid="4f57012d-7943-4aab-ae59-90cb808403d4">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<box topPadding="0">
 					<leftPen lineWidth="0.0"/>
-					<bottomPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.0"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Bottom">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9" isUnderline="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["POLICYHOLDER "]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="80" y="34" width="130" height="14" uuid="18508409-0a7e-4aa3-88cf-8108e8dea03a"/>
+				<reportElement x="89" y="34" width="121" height="14" uuid="18508409-0a7e-4aa3-88cf-8108e8dea03a">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="210" y="34" width="50" height="14" uuid="2a073ec2-b897-4892-b4a1-e086026b0a0a"/>
 				<box topPadding="0">
-					<bottomPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.0"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Bottom">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9" isUnderline="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["01/10/2022"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="261" y="34" width="70" height="14" uuid="967ff726-64e0-4e6e-a210-381fbb98b0a0"/>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="331" y="34" width="199" height="14" uuid="6b2e9bf3-9f6a-4249-a0d7-c33c6ae166eb"/>
+				<reportElement x="331" y="34" width="176" height="14" uuid="6b2e9bf3-9f6a-4249-a0d7-c33c6ae166eb">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<box topPadding="0">
-					<bottomPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.0"/>
 					<rightPen lineWidth="0.0"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Bottom">
-					<font fontName="Arial Rounded MT Bold" size="8"/>
+					<font fontName="Arial" size="9" isUnderline="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["ALLIANCE INSURANCE CORPORATION LIMITED"]]></textFieldExpression>
 			</textField>
@@ -3371,6 +3372,9 @@
 					<bottomPen lineWidth="0.75"/>
 					<rightPen lineWidth="0.75"/>
 				</box>
+				<textElement>
+					<font fontName="Arial" size="9"/>
+				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
@@ -3379,23 +3383,23 @@
 					<leftPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="530" y="34" width="24" height="14" uuid="6c9127ae-911b-4b5e-a44c-a73d0a2cb534"/>
+				<reportElement x="507" y="34" width="47" height="14" uuid="6c9127ae-911b-4b5e-a44c-a73d0a2cb534"/>
 				<box>
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageFooter>
 	<summary>
-		<band height="54" splitType="Stretch"/>
+		<band height="42" splitType="Stretch"/>
 	</summary>
 </jasperReport>

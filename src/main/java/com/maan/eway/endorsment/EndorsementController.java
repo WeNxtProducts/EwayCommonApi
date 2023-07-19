@@ -19,6 +19,7 @@ import com.maan.eway.common.res.EndorsementCriteriaRes;
 import com.maan.eway.endorsment.request.Endorsment;
 import com.maan.eway.endorsment.request.EndtMaster;
 import com.maan.eway.endorsment.service.EndorsementService;
+import com.maan.eway.error.Error;
 
 import io.swagger.annotations.Api;
 
@@ -63,11 +64,23 @@ public class EndorsementController {
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/create")
 	public ResponseEntity<CommonRes> createEndorsment(@RequestBody Endorsment request) {
-		CommonRes data = eservice.createEndorsment(request);
-	 	if (data != null) {
-			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		CommonRes data = new CommonRes();
+		List<Error> validation = eservice.validateEndtDetails(request);
+		//// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
 		} else {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			data = eservice.createEndorsment(request);
+		 	if (data != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
 		}
 	}
 	

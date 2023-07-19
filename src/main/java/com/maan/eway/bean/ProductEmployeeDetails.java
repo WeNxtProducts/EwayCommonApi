@@ -202,6 +202,8 @@ private static final long serialVersionUID = 1L;
 	    @Column(name="EXCHANGE_RATE")
 	  	private Double       exchangeRate ;
       
+	    @Column(name="LOCATION_NAME", length=100)
+			private String locationName;
 }
 
 

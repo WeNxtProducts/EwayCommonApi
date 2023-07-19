@@ -43,13 +43,13 @@ MDD.REGISTRATION_NUMBER AS REG_NO,
 CONCAT_WS("/",MDD.VEHICLE_MAKE,MDD.VEHCILE_MODEL,MDD.VEHICLE_TYPE_DESC) AS VEH_BODY,
 MDD.CUBIC_CAPACITY AS CC,
 MDD.MANUFACTURE_YEAR AS VEHYEAR,
-MDD.COLOR,
+MDD.COLOR_DESC,
 MDD.SEATING_CAPACITY NO_OF_SEATS,
 MDD.SECTION_NAME AS SECTION_NAME ,
 MDD.WIND_SCREEN_SUM_INSURED AS WIND_SCREEN_AMT,
 MDD.SUM_INSURED AS SUM_INSURED
 FROM home_position_master HPM,MOTOR_DATA_DETAILS MDD
-WHERE MDD.POLICY_NO=HPM.POLICY_NO AND HPM.POLICY_NO= $P{pvPolicyNo};]]>
+WHERE MDD.POLICY_NO=HPM.POLICY_NO AND HPM.POLICY_NO= $P{pvPolicyNo} ORDER BY SNO ASC]]>
 		</queryString>
 		<field name="SNO" class="java.lang.String">
 			<property name="com.jaspersoft.studio.field.name" value="VEHICLE_ID"/>
@@ -75,9 +75,9 @@ WHERE MDD.POLICY_NO=HPM.POLICY_NO AND HPM.POLICY_NO= $P{pvPolicyNo};]]>
 			<property name="com.jaspersoft.studio.field.label" value="VEHYEAR"/>
 			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
 		</field>
-		<field name="COLOR" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="COLOR"/>
-			<property name="com.jaspersoft.studio.field.label" value="COLOR"/>
+		<field name="COLOR_DESC" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="COLOR_DESC"/>
+			<property name="com.jaspersoft.studio.field.label" value="COLOR_DESC"/>
 			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
 		</field>
 		<field name="NO_OF_SEATS" class="java.lang.Integer">
@@ -718,7 +718,7 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="30">
-							<textField>
+							<textField isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="46" height="30" uuid="8c6bcdf3-9f54-4cd1-b90a-c2faca6498a9"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
@@ -743,7 +743,7 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="30">
-							<textField>
+							<textField isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="94" height="30" uuid="1dba05f8-0a87-4468-a0cb-8569b5454071"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
@@ -768,7 +768,7 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="30">
-							<textField>
+							<textField isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="40" height="30" uuid="4ae0fba4-53cb-45b9-974e-a7bd076e56b0"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
@@ -793,7 +793,7 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="30">
-							<textField>
+							<textField isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="50" height="30" uuid="7035c758-86a6-4ba4-81b6-abbe3ee9be30"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
@@ -818,12 +818,12 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="30">
-							<textField>
+							<textField isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="50" height="30" uuid="8f0f2af4-9903-4f69-a2fc-47ce59a049cf"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{COLOR}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{COLOR_DESC}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -843,7 +843,7 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="30">
-							<textField>
+							<textField isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="46" height="30" uuid="d94b8e46-3837-47be-ab96-7508ff646061"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
@@ -868,7 +868,7 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="30">
-							<textField>
+							<textField isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="65" height="30" uuid="a0964033-7695-4c72-88ab-f75e46637d2a"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
@@ -893,7 +893,7 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="30">
-							<textField pattern="#,##0.00">
+							<textField pattern="#,##0.00" isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="59" height="30" uuid="e4f938a3-6f01-4bec-9e55-17eb5ac901e9"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
@@ -918,7 +918,7 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="30">
-							<textField pattern="#,##0.00">
+							<textField pattern="#,##0.00" isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="71" height="30" uuid="f533c1ec-38eb-44a1-82bc-56d91bb56368"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>

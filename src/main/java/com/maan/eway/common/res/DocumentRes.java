@@ -13,7 +13,7 @@ public class DocumentRes {
 	@JsonProperty("DocumentTypeDesc")
 	private String documentTypeDesc;
 	
-	@JsonProperty("DocumentFie")
+	@JsonProperty("DocumentFile")
 	private String orginalFileName ;
 	
 	@JsonProperty("DocumentId")

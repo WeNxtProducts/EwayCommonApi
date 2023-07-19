@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -28,11 +29,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.jasper.req.JasperDocumentReq;
+import com.maan.eway.jasper.req.JasperReportDocReq;
 import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.jasper.service.JasperService;
+import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.thread.GetFileFromPath;
 
@@ -51,12 +55,17 @@ public class JasperServiceImpl implements JasperService {
 	@Autowired
 	private HomePositionMasterRepository homeRepo;
 
+	@Autowired
+	private BranchMasterRepository branchRepo ;
 	
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
 	
 	@Value(value = "${jasper.compile.path}")
 	private String jasperCompilePath;
+	
+	@Value(value = "${report.file.path}")
+	private String policyReportPath;
 	
 	
 	@PersistenceContext
@@ -109,7 +118,10 @@ public class JasperServiceImpl implements JasperService {
 //
 //				else 
 				if (product.getMotorYn().equalsIgnoreCase("H") && travelProductId.equals(homeData.getProductId().toString())) {
-					res = getJasperPdfFile("/report/jasper/TravelReport.jrxml", getPdfOutFilePath, input);
+					Map<String, Object> input2 = new HashMap<String, Object>();
+					input2.put("pvImagePath", config.getImagePath());
+					input2.put("pvPolicyNo", homeData.getPolicyNo());
+					res = getJasperPdfFile("/report/jasper/TravelReport.jrxml", getPdfOutFilePath, input2);
 					
 				} else if (product.getMotorYn().equalsIgnoreCase("M")) {
 					res = getJasperPdfFile("/report/jasper/MotorPrivate.jrxml", getPdfOutFilePath, input);
@@ -300,6 +312,47 @@ public class JasperServiceImpl implements JasperService {
 			return null;
 		}
 		return product;
+	}
+
+	@Override
+	public JasperDocumentRes policyreportform(JasperReportDocReq req) {
+		JasperDocumentRes res = null;
+		String getPdfOutFilePath = "";
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+		SimpleDateFormat sdf2 = new SimpleDateFormat("dd-MM-yyyy"); 
+		try {
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId());
+			List<BranchMaster> branchList = branchRepo.findTopByCompanyIdAndBranchCodeOrderByAmendIdDesc(req.getInsuranceId() , req.getBranchCode());
+ 			String branchName = branchList.size() > 0  ?  branchList.get(0).getBranchName() : req.getBranchCode() ;
+ 			
+			Map<String, Object> input = new HashMap<String, Object>();
+			input.put("pvStartDate", sdf.format(req.getStartDate()));
+			input.put("pvImagePath", config.getImagePath());
+			input.put("pvEndDate", sdf.format(req.getEndDate()));
+			input.put("pvBranch", req.getBranchCode());
+			input.put("pvLoginId", req.getLoginId());
+			
+			getPdfOutFilePath =  policyReportPath + "pdf/" + req.getLoginId() +":"+"Branch-" + branchName   +"(" + sdf2.format(req.getStartDate()) + "To" + sdf2.format(req.getEndDate())  + ") Policy Report.pdf";
+			
+			if (product.getMotorYn().equalsIgnoreCase("H")  && travelProductId.equals(req.getProductId())) {
+				res = getJasperPdfFile("/report/jasper/EwayPremiumReport.jrxml", getPdfOutFilePath, input);
+				
+				
+			} else if (product.getMotorYn().equalsIgnoreCase("M") ) {
+				
+				res = getJasperPdfFile("/report/jasper/EwayPremiumReport.jrxml", getPdfOutFilePath, input);
+				
+			} else {
+				
+				res = getJasperPdfFile("/report/jasper/EwayPremiumReport.jrxml", getPdfOutFilePath, input);
+				
+             }
+				 
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return res;
 	}
 	
 }

@@ -22,6 +22,7 @@ import com.maan.eway.integration.req.QueryKeyReq;
 import com.maan.eway.master.req.BrokerSumInsuredRefReq;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.LovPolicyDropDownReq;
+import com.maan.eway.master.req.PlanTypeReq;
 import com.maan.eway.master.req.RelationDropDownReq;
 import com.maan.eway.res.DropDownRes;
 
@@ -866,7 +867,7 @@ public class DropDownController {
 	}
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/plantype")
-	public ResponseEntity<CommonRes> getPlanType(@RequestBody LovDropDownReq req) {
+	public ResponseEntity<CommonRes> getPlanType(@RequestBody PlanTypeReq req) {
 		CommonRes data = new CommonRes();
 		List<DropDownRes> res = dropDownService.getPlanType(req);
 		data.setCommonResponse(res);

@@ -269,11 +269,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				} else if (StringUtils.isNotBlank(req.getMobileNo2()) && !req.getMobileNo3().matches("\\d+")) {
 					errorList.add(new Error("26", "MobileNo3", "Please Enter MobileNo3 only in numbers"));
 				}
-				if (StringUtils.isBlank(req.getEmail1())) {
-					errorList.add(new Error("27", "Email1", "Please Enter Email"));
-				} else if (req.getEmail1().length() > 100) {
+//				if (StringUtils.isBlank(req.getEmail1())) {
+//					errorList.add(new Error("27", "Email1", "Please Enter Email"));
+//				} else
+				if ( StringUtils.isNotBlank(req.getEmail1()) && req.getEmail1().length() > 100) {
 					errorList.add(new Error("27", "Email1", "Please Enter Email within 100 Characters"));
-				} else {
+				} else if(StringUtils.isNotBlank(req.getEmail1())) {
 					boolean b = isValidMail(req.getEmail1());
 					if (b == false) {
 						errorList.add(new Error("37", "Email", "Please Enter Email in correct format"));

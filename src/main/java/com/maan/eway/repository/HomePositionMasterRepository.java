@@ -30,7 +30,7 @@ import com.maan.eway.bean.HomePositionMasterId;
  */
  
  
-
+@Transactional
 public interface HomePositionMasterRepository  extends JpaRepository<HomePositionMaster,HomePositionMasterId > , JpaSpecificationExecutor<HomePositionMaster> {
 
 	HomePositionMaster findByQuoteNo(String quoteNo);
@@ -49,5 +49,7 @@ public interface HomePositionMasterRepository  extends JpaRepository<HomePositio
 	List<HomePositionMaster> findByQuoteNoAndProductId(String quoteNo, Integer productId);
 
 	List<HomePositionMaster> findByRequestReferenceNoAndProductId(String requestReferenceNo, Integer productId);
+
+	HomePositionMaster findByPolicyNo(String policyNo);
 
 }

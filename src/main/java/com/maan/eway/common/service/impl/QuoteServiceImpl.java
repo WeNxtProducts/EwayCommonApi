@@ -334,9 +334,13 @@ private BuildingDetailsRepository BuildingRepo;
 			// Customer Details
 			PersonalInfo custData = custRepo.findByCustomerId(homeData.getCustomerId());
 			CustomerDetailsRes  custRes = new CustomerDetailsRes();
-			custRes  = dozerMappper.map(custData, CustomerDetailsRes.class);
-			List<LoginBranchMaster> brokerBranchList=loginBranchRepo.findByLoginIdAndBranchCodeOrderByBranchCodeAsc(custData.getCreatedBy(),custData.getBranchCode());
-			if(brokerBranchList.size()>0 ||brokerBranchList!=null) {
+			List<LoginBranchMaster> brokerBranchList= null;
+			if(custData!=null) {
+				custRes  = dozerMappper.map(custData, CustomerDetailsRes.class);
+			
+			brokerBranchList=loginBranchRepo.findByLoginIdAndBranchCodeOrderByBranchCodeAsc(custData.getCreatedBy(),custData.getBranchCode());
+			}
+			if( brokerBranchList!=null && brokerBranchList.size()>0) {
 			custRes.setBrokerBranchCode(brokerBranchList.get(0).getBrokerBranchCode());	
 			}
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(homeData.getCompanyId() , homeData.getProductId().toString());
@@ -424,6 +428,7 @@ private BuildingDetailsRepository BuildingRepo;
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			// Find Motor Data
+			Double totalSumInsure=0.0;
 			List<MotorDataDetails> motorDatas =  motorRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(),"D");
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(),"D");
 			
@@ -517,11 +522,18 @@ private BuildingDetailsRepository BuildingRepo;
 				document.setSectionId(mot.getSectionId().toString());
 				documentDetails.add(document);
 				
+				
+				
+				vehicleDetails.setAcccessoriesSumInsured(mot.getAcccessoriesSumInsured()==null?0.0:mot.getAcccessoriesSumInsured());
+				totalSumInsure = totalSumInsure + mot.getAcccessoriesSumInsured();		
 				// Response
 				motorResList.add(vehicleDetails);		
 			}
 			viewRes.setRiskDetails(motorResList);
 			viewRes.setDocumentDetails(documentDetails);
+			
+			viewRes.setTotalAccessoriesSumInsured(totalSumInsure);
+			
 		} catch ( Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -923,17 +935,31 @@ private BuildingDetailsRepository BuildingRepo;
 				// Cover Details
 				List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(tra.getPassengerId()))).collect(Collectors.toList());
 				
-				Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));			
 				
-				List<CoverRes>  coverListRes = getCoverDetails(groupByCover);
-				BigDecimal PremiumAfterDiscount = (coverListRes.stream().map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
-				BigDecimal PremiumAfterDiscountLc = (coverListRes.stream().map(CoverRes:: getPremiumAfterDiscountLC ).reduce((x, y) -> x.add(y)).get());
-				BigDecimal PremiumBeforeDiscount = (coverListRes.stream().map(CoverRes:: getPremiumBeforeDiscount ).reduce((x, y) -> x.add(y)).get());
-				BigDecimal PremiumBeforeDiscountLc = (coverListRes.stream().map(CoverRes:: getPremiumBeforeDiscountLC ).reduce((x, y) -> x.add(y)).get());
-				BigDecimal PremiumExcluedTax = (coverListRes.stream().map(CoverRes:: getPremiumExcluedTax ).reduce((x, y) -> x.add(y)).get());
-				BigDecimal PremiumExcluedTaxLc = (coverListRes.stream().map(CoverRes:: getPremiumExcluedTaxLC ).reduce((x, y) -> x.add(y)).get());
-				BigDecimal PremiumIncludedTax = (coverListRes.stream().map(CoverRes:: getPremiumIncludedTax ).reduce((x, y) -> x.add(y)).get());
-				BigDecimal PremiumIncludedTaxLc = (coverListRes.stream().map(CoverRes:: getPremiumIncludedTaxLC ).reduce((x, y) -> x.add(y)).get());
+				List<CoverRes>  coverListRes = new ArrayList<CoverRes>();
+				BigDecimal PremiumAfterDiscount = new BigDecimal(0);
+				BigDecimal PremiumAfterDiscountLc = new BigDecimal(0);
+				BigDecimal PremiumBeforeDiscount = new BigDecimal(0);
+				BigDecimal PremiumBeforeDiscountLc = new BigDecimal(0);
+				BigDecimal PremiumExcluedTax = new BigDecimal(0);
+				BigDecimal PremiumExcluedTaxLc = new BigDecimal(0);
+				BigDecimal PremiumIncludedTax = new BigDecimal(0);
+				BigDecimal PremiumIncludedTaxLc = new BigDecimal(0);
+				
+				if( filterCovers.size() > 0 ) {
+					Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));
+					coverListRes = getCoverDetails(groupByCover);
+					PremiumAfterDiscount = (coverListRes.stream().map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
+					PremiumAfterDiscountLc = (coverListRes.stream().map(CoverRes:: getPremiumAfterDiscountLC ).reduce((x, y) -> x.add(y)).get());
+					PremiumBeforeDiscount = (coverListRes.stream().map(CoverRes:: getPremiumBeforeDiscount ).reduce((x, y) -> x.add(y)).get());
+					PremiumBeforeDiscountLc = (coverListRes.stream().map(CoverRes:: getPremiumBeforeDiscountLC ).reduce((x, y) -> x.add(y)).get());
+					PremiumExcluedTax = (coverListRes.stream().map(CoverRes:: getPremiumExcluedTax ).reduce((x, y) -> x.add(y)).get());
+					PremiumExcluedTaxLc = (coverListRes.stream().map(CoverRes:: getPremiumExcluedTaxLC ).reduce((x, y) -> x.add(y)).get());
+					PremiumIncludedTax = (coverListRes.stream().map(CoverRes:: getPremiumIncludedTax ).reduce((x, y) -> x.add(y)).get());
+					PremiumIncludedTaxLc = (coverListRes.stream().map(CoverRes:: getPremiumIncludedTaxLC ).reduce((x, y) -> x.add(y)).get());
+					
+				}
+				
 				
 //				// Response
 //				List<PassengerSectionDetails> secList = new ArrayList<PassengerSectionDetails>();
@@ -961,9 +987,9 @@ private BuildingDetailsRepository BuildingRepo;
 				PassengerSectionDetails sec = new PassengerSectionDetails();
 				sec.setSectionId(tra.getSectionId()==null?"":tra.getSectionId().toString());
 				sec.setSectionName( tra.getSectionName());
-				sec.setCovers(coverListRes);
 				sec.setPassengerId(tra.getPassengerId().toString() );
 				sec.setPassengerName(tra.getPassengerName());
+				sec.setCovers(coverListRes);
 				sec.setGroupDesc(groupRes.stream().filter( o -> o.getCode().equalsIgnoreCase(tra.getGroupId().toString()) ).collect(Collectors.toList()).get(0).getCodeDesc()) ;		
 				sec.setGroupId(tra.getGroupId().toString());
 				sec.setPremiumAfterDiscount(PremiumAfterDiscount.toString()==null?"":PremiumAfterDiscount.toString());
