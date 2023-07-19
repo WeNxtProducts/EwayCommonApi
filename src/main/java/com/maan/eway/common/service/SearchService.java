@@ -9,6 +9,7 @@ import com.maan.eway.common.req.SearchReq;
 import com.maan.eway.common.res.AccessoriesSumInsureDropDownRes;
 import com.maan.eway.common.res.AdminViewQuoteRes;
 import com.maan.eway.common.res.BuildingSearchRes;
+import com.maan.eway.common.res.DocumentDetailsRes;
 import com.maan.eway.common.res.DocumentRes;
 import com.maan.eway.common.res.PersonalAccidentRes;
 import com.maan.eway.common.res.SearchCustomerDetailsRes;
@@ -40,7 +41,7 @@ public interface SearchService {
 
 	List<SearchPaymentInfoRes> viewPaymentInfo(SearchReq req);
 
-	List<DocumentRes> viewDocumentDetails(SearchReq req);
+	DocumentDetailsRes viewDocumentDetails(SearchReq req);
 
 	List<PersonalAccidentRes> viewPersonalAccidentDetails(SearchReq req);
 	List<BuildingSearchRes> adminSearchBuildingDeatails(SearchReq req);

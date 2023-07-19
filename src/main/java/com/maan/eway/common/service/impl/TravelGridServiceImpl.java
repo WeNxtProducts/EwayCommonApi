@@ -1,6 +1,8 @@
 package com.maan.eway.common.service.impl;
 
 import java.math.BigDecimal;
+import java.sql.DatabaseMetaData;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +26,7 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
+import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -43,7 +46,12 @@ import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.bean.LoginUserInfo;
+import com.maan.eway.bean.MotorDataDetails;
+import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.SectionDataDetails;
@@ -55,6 +63,7 @@ import com.maan.eway.bean.TravelPassengerHistory;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
+import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.service.TravelGridService;
@@ -139,6 +148,12 @@ public class TravelGridServiceImpl implements  TravelGridService {
 	private SectionDataDetailsRepository sectionDataRepo;
 	@Autowired 
 	private RatingFactorsUtil ratingutil;
+	
+	 @Autowired
+	 private DataSource dataSource;
+	 
+	 private boolean isOracle;
+	 private boolean isMySQL;
 
 	
 	private Logger log = LogManager.getLogger(MotorGridServiceImpl.class);
@@ -2210,5 +2225,186 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			return itemDesc;
 		}
 
-	 
+		@Override
+		public List<Tuple> getTravelReportDetails(GetallPolicyReportsReq req) {
+			List<Tuple> list = new ArrayList<Tuple>();
+			
+			try {
+				
+				 DatabaseMetaData metaData = dataSource.getConnection().getMetaData();
+		         String databaseProductName = metaData.getDatabaseProductName();
+		         // Check if the database product name contains the word "Oracle"
+		            isOracle = databaseProductName.contains("Oracle");
+
+		            // Check if the database product name contains the word "MySQL"
+		            isMySQL = databaseProductName.contains("MySQL");
+		    
+		            String dateFormat = "";
+		            if(isOracle) {
+		            	
+		            	dateFormat = "dd-MM-yy";
+		        	 
+		         	} else if (isMySQL) {
+		        	 
+		         		dateFormat = "yyyy-MM-dd";
+		         	}
+		            DateFormat dateForm = new SimpleDateFormat(dateFormat);  
+		            
+				
+				CriteriaBuilder cb = em.getCriteriaBuilder(); 
+				CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class); 
+				
+				Root<HomePositionMaster> hpm = query.from(HomePositionMaster.class);
+				Root<PersonalInfo> pif = query.from(PersonalInfo.class);
+			
+				//broker name
+				Subquery<String> brokerName = query.subquery(String.class); 
+				Root<LoginUserInfo> lui = brokerName.from(LoginUserInfo.class);
+				brokerName.select(lui.get("userName"));
+				Predicate b1 = cb.equal( lui.get("loginId"), hpm.get("loginId"));
+				brokerName.where(b1);
+				
+				//User type
+				Subquery<String> userType = query.subquery(String.class); 
+				Root<LoginMaster> lm = userType.from(LoginMaster.class);
+				userType.select(lm.get("userType"));
+				Predicate a1 = cb.equal( lm.get("loginId"), req.getLoginId());
+				userType.where(a1);
+				
+				//SubUser type
+				Subquery<String> subUserType = query.subquery(String.class); 
+				Root<LoginMaster> lms = subUserType.from(LoginMaster.class);
+				subUserType.select(lms.get("subUserType"));
+				Predicate c1 = cb.equal( lms.get("loginId"), req.getLoginId());
+				subUserType.where(c1);
+				
+				//paymentId
+				Subquery<String> paymentId = query.subquery(String.class); 
+				Root<PaymentInfo> pi = paymentId.from(PaymentInfo.class);
+				paymentId.select(pi.get("paymentId"));
+				Predicate d1 = cb.equal( pi.get("quoteNo"), hpm.get("quoteNo"));
+				Predicate d2 = cb.equal( pi.get("paymentStatus"), "ACCEPTED");
+				paymentId.where(d1,d2);
+				
+				//CurrencyId
+				Subquery<String> currencyId = query.subquery(String.class); 
+				Root<InsuranceCompanyMaster> icm = currencyId.from(InsuranceCompanyMaster.class);
+				currencyId.select(icm.get("currencyId"));
+				Predicate e1 = cb.equal( icm.get("companyId"), hpm.get("companyId"));
+				currencyId.where(e1);
+				
+				//overallPremiumLc
+				Subquery<Double> overallPremiumLc = query.subquery(Double.class); 
+				Root<TravelPassengerDetails> tpdlc = overallPremiumLc.from(TravelPassengerDetails.class);
+				overallPremiumLc.select(cb.sum(tpdlc.get("overallPremiumLc")));
+				Predicate j1 = cb.equal( tpdlc.get("quoteNo"), hpm.get("quoteNo"));
+				overallPremiumLc.where(j1);
+				
+				//overallPremiumFc
+				Subquery<Double> overallPremiumFc = query.subquery(Double.class); 
+				Root<TravelPassengerDetails> tpdfc = overallPremiumFc.from(TravelPassengerDetails.class);
+				overallPremiumFc.select(cb.sum(tpdfc.get("overallPremiumFc")));
+				Predicate k1 = cb.equal( tpdfc.get("quoteNo"), hpm.get("quoteNo"));
+				overallPremiumFc.where(k1);
+				
+				Expression<Object> premium = cb.selectCase().when(hpm.get("currency").in(currencyId==null?null:currencyId), overallPremiumLc)
+						.otherwise(overallPremiumFc);
+				
+				//policyTypeDesc
+				Subquery<String> policyTypeDesc = query.subquery(String.class); 
+				Root<TravelPassengerDetails> tpd = policyTypeDesc.from(TravelPassengerDetails.class);
+				policyTypeDesc.select(tpd.get("travelCoverDesc")).distinct(true);
+				Predicate i1 = cb.equal( tpd.get("quoteNo"), hpm.get("quoteNo"));
+				policyTypeDesc.where(i1);
+				
+				//count
+				Subquery<Long> count = query.subquery(Long.class); 
+				Root<TravelPassengerDetails> c = count.from(TravelPassengerDetails.class);
+				count.select(cb.count(c));
+				Predicate l1 = cb.equal( c.get("quoteNo"), hpm.get("quoteNo"));
+				count.where(l1);
+				
+				query.multiselect(
+						hpm.get("loginId").alias("loginId"),
+						hpm.get("quoteNo").alias("quoteNo"),	
+						hpm.get("policyNo").alias("policyNo"),	
+						cb.upper(cb.concat(cb.concat(pif.get("titleDesc"),  "."), pif.get("clientName"))).alias("customerName"),
+						policyTypeDesc.alias("policyTypeDesc"),
+						cb.function("ROUND", Double.class, premium, cb.literal(2)).alias("premium"),   //round 2
+						count.alias("passengerCount"), //travel only
+						hpm.get("inceptionDate").alias("startDate"),
+						hpm.get("expiryDate").alias("endDate"),
+						hpm.get("effectiveDate").alias("issueDate"),
+						cb.upper(hpm.get("branchName")).alias("branchName"),
+						cb.upper(brokerName).alias("brokerName"),
+						userType.alias("userType"),
+						subUserType.alias("subUserType"),
+						hpm.get("currency").alias("currency"),
+						hpm.get("paymentType").alias("paymentType"),
+						paymentId.alias("paymentId"),
+						hpm.get("debitNoteNo").alias("debitNoteNo"),
+						cb.function("ROUND", BigDecimal.class, hpm.get("commissionPercentage"), cb.literal(1)).alias("commissionPercentage"), 
+						cb.function("ROUND", BigDecimal.class, hpm.get("commission"), cb.literal(2)).alias("commissionAmount")
+						
+						); 
+				//agencyCode
+				Subquery<String> agencyCode = query.subquery(String.class); 
+				Root<LoginMaster> log = agencyCode.from(LoginMaster.class);
+				agencyCode.select(log.get("agencyCode")).distinct(true);
+				
+				Subquery<String> agency = query.subquery(String.class); 
+				Root<LoginMaster> ag1 = agency.from(LoginMaster.class);
+				agency.select(ag1.get("agencyCode"));
+				Predicate h2 =  cb.equal(ag1.get("loginId"), req.getLoginId());
+				agency.where(h2);
+				
+				Predicate f1 =  log.get("oaCode").in(agency==null?null:agency);
+				agencyCode.where(f1);
+				
+				//agencyCode
+				Subquery<String> agencyCode1 = query.subquery(String.class); 
+				Root<LoginMaster> ag = agencyCode1.from(LoginMaster.class);
+				agencyCode1.select(ag.get("agencyCode"));
+				Predicate g2 =  cb.equal(ag.get("loginId"), req.getLoginId());
+				agencyCode1.where(g2);
+				
+				List<Predicate> predicates = new ArrayList<Predicate>();
+				predicates.add(cb.equal(hpm.get("customerId"), pif.get("customerId")));
+				predicates.add(cb.equal(hpm.get("productId"), req.getProductId()));
+				predicates.add(cb.equal(hpm.get("companyId"), req.getInsuranceId()));
+				predicates.add(cb.equal(hpm.get("branchCode"), req.getBranchCode()));
+				predicates.add(cb.equal(hpm.get("status"), "P"));
+				predicates.add(cb.isNotNull(hpm.get("policyNo")));
+				
+				predicates.add(cb.between(hpm.get("inceptionDate"),dateForm.parse(dateForm.format(req.getStartDate())), dateForm.parse(dateForm.format(req.getEndDate()))));		
+				
+				Predicate ex1 = cb.equal(cb.selectCase().when(subUserType.in("both"), "1"), "1") ;
+				Predicate ex2 = cb.equal(cb.selectCase().when(subUserType.in("low","high"), hpm.get("applicationId")), req.getLoginId());
+				Predicate ex3 = cb.selectCase().when(cb.equal(userType, "Broker"), hpm.get("agencyCode")).in(agencyCode)	;		
+				Predicate ex4 = hpm.get("agencyCode").in(agencyCode1);
+
+				predicates.add(cb.or(ex1,ex2,ex3,ex4));
+				
+				
+				query.where(predicates.toArray(new Predicate[0]));
+			
+				TypedQuery<Tuple> result = em.createQuery(query);
+				list = result.getResultList();
+				
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return list;
+		}
+		public boolean isOracle() {
+	        return isOracle;
+	    }
+
+	    public boolean isMySQL() {
+	        return isMySQL;
+	    }
+	
 }

@@ -13,6 +13,7 @@ import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
+import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
@@ -53,5 +54,7 @@ public interface MotorGridService {
 			int offset, String string);
 
 	List<Tuple> getMotorIssuerQuoteDetails(IssuerQuoteReq req, Date startDate, Date endDate);
+
+	List<Tuple> getMotorReportDetails(GetallPolicyReportsReq req);
 	
 }

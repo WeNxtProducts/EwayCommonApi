@@ -19,6 +19,7 @@ import com.maan.eway.common.res.AccessoriesSumInsureDropDownRes;
 import com.maan.eway.common.res.AdminViewQuoteRes;
 import com.maan.eway.common.res.BuildingSearchRes;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.DocumentDetailsRes;
 import com.maan.eway.common.res.DocumentRes;
 import com.maan.eway.common.res.PersonalAccidentRes;
 import com.maan.eway.common.res.SearchCustomerDetailsRes;
@@ -217,7 +218,7 @@ public ResponseEntity<CommonRes> viewPaymentInfo(@RequestBody SearchReq req) {
 @ApiOperation(value = "This method is Get Document Details")
 public ResponseEntity<CommonRes> viewDocumentDetails(@RequestBody SearchReq req) {
 	CommonRes data = new CommonRes();
-	List<DocumentRes> res = entityService.viewDocumentDetails(req);
+	DocumentDetailsRes res = entityService.viewDocumentDetails(req);
 	data.setCommonResponse(res);
 	data.setErrorMessage(Collections.emptyList());
 	data.setIsError(false);

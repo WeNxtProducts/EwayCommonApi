@@ -2,10 +2,11 @@ package com.maan.eway.common.controller;
 
 import java.util.Collections;
 import java.util.List;
-import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,11 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
+import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.UpdateLapsedQuoteReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
+import com.maan.eway.common.res.GetallPolicyReportsRes;
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
 import com.maan.eway.common.service.GridService;
@@ -25,7 +28,6 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.DropDownRes;
-import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
@@ -365,6 +367,24 @@ public class GridController {
 				reqPrinter.reqPrint(req);
 				CommonRes data = new CommonRes();
 				List<DropDownRes> res = entityService.getallIssuerQuoteDetails(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}
+			
+			//Reports grid
+			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+			@PostMapping("getall/policyreports")
+			public ResponseEntity<CommonRes> getallPolicyReports(@RequestBody GetallPolicyReportsReq req) {
+				reqPrinter.reqPrint(req);
+				CommonRes data = new CommonRes();
+				List<GetallPolicyReportsRes> res = entityService.getallPolicyReports(req);
 				data.setCommonResponse(res);
 				data.setIsError(false);
 				data.setErrorMessage(Collections.emptyList());

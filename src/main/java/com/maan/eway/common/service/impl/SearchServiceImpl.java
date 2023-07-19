@@ -54,6 +54,7 @@ import com.maan.eway.common.res.AccessoriesRes;
 import com.maan.eway.common.res.AccessoriesSumInsureDropDownRes;
 import com.maan.eway.common.res.AdminViewQuoteRes;
 import com.maan.eway.common.res.BuildingSearchRes;
+import com.maan.eway.common.res.DocumentDetailsRes;
 import com.maan.eway.common.res.DocumentRes;
 import com.maan.eway.common.res.PersonalAccidentRes;
 import com.maan.eway.common.res.SearchCustomerDetailsRes;
@@ -766,42 +767,77 @@ public class SearchServiceImpl implements SearchService {
 
 
 	@Override
-	public List<DocumentRes> viewDocumentDetails(SearchReq req) {
-		List<DocumentRes> reslist = new ArrayList<DocumentRes>();
-
+	public DocumentDetailsRes viewDocumentDetails(SearchReq req) {
+		DocumentDetailsRes res = new DocumentDetailsRes();
+		List<DocumentRes> commonList = new ArrayList<DocumentRes>();
+		List<DocumentRes> indiList = new ArrayList<DocumentRes>();
 		try {
 
-			DocumentRes dres = new DocumentRes();
-
 			List<DocumentTransactionDetails> getList = null;
-			DocumentUniqueDetails getdocDet=new DocumentUniqueDetails();
+			
 			if (StringUtils.isNotBlank(req.getQuoteNo())) {
 
 				getList = coverdocumentuploaddetailsrepository.findByQuoteNo(req.getQuoteNo());
-			} else if (StringUtils.isNotBlank(req.getRequestReferenceNo())) {
-				getList = coverdocumentuploaddetailsrepository.findByRequestReferenceNo(req.getRequestReferenceNo());
 			}
 
-			for (DocumentTransactionDetails cd : getList) {
-				getdocDet=docUniqueDetailsRepo.findByUniqueId(cd.getUniqueId());
-				dres = new DozerBeanMapper().map(cd, DocumentRes.class);
-				dres.setDocumentType(getdocDet.getDocumentType());
-				dres.setDocumentTypeDesc(getdocDet.getDocumentTypeDesc());
-				dres.setDocApplicableId(getdocDet.getDocApplicableId());
-				dres.setDocApplicable(getdocDet.getDocApplicable());
-				dres.setOrginalFileName(getdocDet.getOrginalFileName());
-				dres.setDocumentDesc(getdocDet.getDocumentDesc());
-				dres.setDocumentId(getdocDet.getDocumentId().toString());
-				dres.setFilePathOrginal(getdocDet.getFilePathOrginal());
-				dres.setFilePathBackup(getdocDet.getFilePathBackup());
-				reslist.add(dres);
+			List<Tuple> list1 = new ArrayList<Tuple>();
+			if(getList.size()>0) {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Tuple> query1 = cb.createQuery(Tuple.class);
+
+				Root<DocumentTransactionDetails> td = query1.from(DocumentTransactionDetails.class);
+				Root<DocumentUniqueDetails> ud = query1.from(DocumentUniqueDetails.class);
+
+				query1.multiselect(ud.alias("DocumentUniqueDetails"),td.alias("DocumentTransactionDetails")); 
+				
+				Predicate m1 = cb.equal(td.get("quoteNo"), req.getQuoteNo());
+				Predicate m2 = cb.equal(ud.get("uniqueId"), td.get("uniqueId"));
+			
+				query1.where(m1, m2);
+
+				TypedQuery<Tuple> result1 = em.createQuery(query1);
+				list1 = result1.getResultList();
+				 
+				 for (Tuple cd : list1) {
+					 	DocumentUniqueDetails unique = (DocumentUniqueDetails) cd.get("DocumentUniqueDetails");
+					 	DocumentTransactionDetails trans = (DocumentTransactionDetails) cd.get("DocumentTransactionDetails");
+					 	
+					 	if(unique.getDocumentType().equals("1")) { //common
+					 		
+					 		DocumentRes common = new DocumentRes();
+					 		common = new DozerBeanMapper().map(unique, DocumentRes.class);
+					 		
+					 		common.setSectionId(trans.getSectionId());
+					 		common.setSectionName(trans.getSectionName());
+					 		common.setLocationId(trans.getLocationId());
+					 		common.setLocationName(trans.getLocationName());
+					 		commonList.add(common)	;
+					 		
+					 	} else if (unique.getDocumentType().equals("2")) { //individual
+					 		DocumentRes indi = new DocumentRes();
+					 		indi = new DozerBeanMapper().map(unique, DocumentRes.class);
+					 		
+					 		indi.setSectionId(trans.getSectionId());
+					 		indi.setSectionName(trans.getSectionName());
+					 		indi.setLocationId(trans.getLocationId());
+					 		indi.setLocationName(trans.getLocationName());
+					 		indiList.add(indi)	;
+					 		
+					 	}
+					 	
+					}
+				 res.setCommonDocumentRes(commonList);
+				 res.setIndividualDocumentRes(indiList);
+				 
+
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
 			return null;
 		}
-		return reslist;
+		return res;
 	}
 
 	public synchronized CompanyProductMaster getCompanyProductMasterDropdown(String companyId, String productId) {

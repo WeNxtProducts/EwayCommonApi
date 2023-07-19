@@ -3,14 +3,11 @@ package com.maan.eway.common.service.impl;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -20,7 +17,6 @@ import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -38,30 +34,23 @@ import org.springframework.transaction.annotation.Transactional;
 import com.maan.eway.admin.res.MotorGridCriteriaRes;
 import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
 import com.maan.eway.admin.res.ReferalCommonCriteriaRes;
-import com.maan.eway.admin.res.ReferalCriteriaRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
-import com.maan.eway.bean.BranchMaster;
-import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
-import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginBranchMaster;
-import com.maan.eway.bean.LoginMaster;
-
 import com.maan.eway.common.req.CopyQuoteReq;
-import com.maan.eway.common.req.EserviceCustomerSearchVrtinReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
+import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.UpdateLapsedQuoteReq;
-import com.maan.eway.common.res.CriteriaCustomerRes;
-import com.maan.eway.common.res.CustomerDetailsGetRes;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
+import com.maan.eway.common.res.GetallPolicyReportsRes;
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
@@ -73,8 +62,6 @@ import com.maan.eway.common.service.MotorGridService;
 import com.maan.eway.common.service.TravelGridService;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
-import com.maan.eway.master.req.LovDropDownReq;
-import com.maan.eway.master.service.TrackingDetailsService;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
@@ -84,7 +71,6 @@ import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.DropDownRes;
-import com.maan.eway.res.SuccessRes;
 
 @Service
 @Transactional
@@ -128,6 +114,8 @@ public class GridServiceImpl implements GridService {
 
 	@PersistenceContext
 	private EntityManager em;
+	
+	
 
 	private Logger log = LogManager.getLogger(GridServiceImpl.class);
 
@@ -2057,5 +2045,73 @@ public class GridServiceImpl implements GridService {
 		}
 		return resList;
 	}
+
+	@Override
+	public List<GetallPolicyReportsRes> getallPolicyReports(GetallPolicyReportsReq req) {
+		List<GetallPolicyReportsRes> resList = new ArrayList<GetallPolicyReportsRes>();
+		List<Tuple> list = new ArrayList<Tuple>();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		try {
+			
+			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getInsuranceId(),
+					req.getProductId().toString());
+			
+			//Product wise
+			if (product.getMotorYn().equalsIgnoreCase("M")) {
+				list = motService.getMotorReportDetails(req);
+				
+			} else if (product.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId)) {
+					
+				list = traService.getTravelReportDetails(req);
+				
+			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+				//list = buiService.getBuildingReportDetails(req);
+			
+			} else { // common
+				//list = commonService.getCommonReportDetails(req);
+			}
+			if(list.size()>0) {
+				
+				for(Tuple report : list) {
+					GetallPolicyReportsRes res = new GetallPolicyReportsRes();
+					res.setBranchName(report.get("branchName")==null?"":report.get("branchName").toString());
+					res.setBrokerName(report.get("brokerName")==null?"":report.get("brokerName").toString());		
+					res.setCommissionAmount(report.get("commissionAmount")==null?"":report.get("commissionAmount").toString());
+					res.setCommissionPercentage(report.get("commissionPercentage")==null?"":report.get("commissionPercentage").toString());
+					res.setCurrency(report.get("currency")==null?"":report.get("currency").toString());
+					res.setCustomerName(report.get("customerName")==null?"":report.get("customerName").toString());
+					res.setDebitNoteNo(report.get("debitNoteNo")==null?"":report.get("debitNoteNo").toString());
+					res.setEndDate(report.get("endDate")==null?"":dateFormat.format(report.get("endDate")));
+					res.setIssueDate(report.get("issueDate")==null?"":dateFormat.format(report.get("issueDate")));
+					res.setLoginId(report.get("loginId")==null?"":report.get("loginId").toString());
+					res.setPaymentId(report.get("paymentId")==null?"":report.get("paymentId").toString());				
+					res.setPaymentType(report.get("paymentType")==null?"":report.get("paymentType").toString());
+					res.setPolicyNo(report.get("policyNo")==null?"":report.get("policyNo").toString());
+					res.setPolicyTypeDesc(report.get("policyTypeDesc")==null?"":report.get("policyTypeDesc").toString());
+					res.setPremium(report.get("premium")==null?"":report.get("premium").toString());
+					res.setQuoteNo(report.get("quoteNo")==null?"":report.get("quoteNo").toString());
+					res.setStartDate(report.get("startDate")==null?"":dateFormat.format(report.get("startDate")));
+					res.setSubUserType(report.get("subUserType")==null?"":report.get("subUserType").toString());
+					
+					if (product.getMotorYn().equalsIgnoreCase("M")) 
+						res.setSumInsured(report.get("sumInsured")==null?"":report.get("sumInsured").toString());
+					if (product.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId))
+						res.setPassengerCount(report.get("passengerCount")==null?"":report.get("passengerCount").toString());
+					
+					
+					res.setUserType(report.get("userType")==null?"":report.get("userType").toString());					
+					resList.add(res);
+					}
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	
 
 }

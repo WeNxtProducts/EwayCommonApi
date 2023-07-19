@@ -5,12 +5,13 @@ import com.maan.eway.error.Error;
 import com.maan.eway.common.req.CopyQuoteReq;
 
 import com.maan.eway.common.req.ExistingQuoteReq;
+import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.UpdateLapsedQuoteReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
-
+import com.maan.eway.common.res.GetallPolicyReportsRes;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
 
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
@@ -64,6 +65,8 @@ public interface GridService {
 	List<PortfolioCustomerDetailsRes> getallPortfolioCancelled(ExistingQuoteReq req);
 
 	List<DropDownRes> getallIssuerQuoteDetails(IssuerQuoteReq req);
+
+	List<GetallPolicyReportsRes> getallPolicyReports(GetallPolicyReportsReq req);
 
 
 
