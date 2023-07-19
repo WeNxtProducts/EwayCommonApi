@@ -136,9 +136,27 @@ public class CommonSearchServiceImpl implements CommonSearchService{
 			Root<EserviceCommonDetails> c = query.from(EserviceCommonDetails.class);
 			Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
 			
-			query.multiselect(c.alias("c"),
+//			query.multiselect(c.alias("c"),
+//					cus.get("clientName").alias("clientName"),
+//					cus.get("mobileNo1").alias("mobileNumber"),cb.count(c).alias("idsCount"));
+			query.multiselect(/*c.alias("c"),*/
 					cus.get("clientName").alias("clientName"),
-					cus.get("mobileNo1").alias("mobileNumber"),cb.count(c).alias("idsCount"));
+					cus.get("mobileNo1").alias("mobileNumber"),cb.count(c).alias("idsCount"),
+					cb.max(c.get("requestReferenceNo")).alias("requestReferenceNo"),
+					cb.selectCase().when(cb.max(c.get("quoteNo")).isNotNull(), cb.max(c.get("quoteNo")))
+							.otherwise(cb.max(c.get("quoteNo"))).alias("quoteNo"),
+					cb.max(c.get("policyNo")).alias("policyNo"),
+					cb.max(c.get("branchCode")).alias("branchCode"),
+					cb.max(c.get("status")).alias("status"),
+					cb.max(c.get("loginId")).alias("loginId"), 
+					cb.max(c.get("policyStartDate")).alias("policyStartDate"),
+					cb.max(c.get("policyEndDate")).alias("policyEndDate"),
+					cb.max(c.get("entryDate")).alias("entryDate"),
+					cb.max(c.get("overallPremiumLc")).alias("overallPremiumLc"),
+					cb.max(c.get("currency")).alias("currency"),
+					cb.max(c.get("exchangeRate")).alias("exchangeRate")
+		
+					);
 
 
 			// Order By
@@ -196,17 +214,17 @@ public class CommonSearchServiceImpl implements CommonSearchService{
 			n5 = cb.equal(cus.get("customerReferenceNo"), c.get("customerReferenceNo"));
 		//	Predicate n6 = cb.isNull(c.get("endtTypeId"));
 			query.where(n1,n2,n3,n4,n5,n6)
-			.groupBy(c.get("customerReferenceNo"), cus.get("clientName"), c.get("companyId"),cus.get("mobileNo1"),
-					c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
-					c.get("customerId"), c.get("policyStartDate"), c.get("occupationType"),c.get("policyEndDate"),
-					c.get("rejectReason"),c.get("riskId"))
+			.groupBy(c.get("customerReferenceNo"), cus.get("clientName"),cus.get("mobileNo1"),
+					 c.get("requestReferenceNo"), c.get("quoteNo"),
+					c.get("customerId"), c.get("policyStartDate"),c.get("policyEndDate"),
+					c.get("rejectReason"))
 			.orderBy(orderList);
 			if (searchKey.equalsIgnoreCase("CustomerName")) {
 				query.where(n1, n2,n4,n5,n6)
-				.groupBy(c.get("customerReferenceNo"),cus.get("clientName"), c.get("companyId"),cus.get("mobileNo1"),
-						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
+				.groupBy(c.get("customerReferenceNo"),cus.get("clientName"),cus.get("mobileNo1"),
+					c.get("requestReferenceNo"), c.get("quoteNo"),
 						c.get("customerId"), c.get("policyStartDate"), c.get("occupationType"),c.get("policyEndDate"),
-						c.get("rejectReason"),c.get("riskId"))
+						c.get("rejectReason"))
 				.orderBy(orderList);
 			}
 			

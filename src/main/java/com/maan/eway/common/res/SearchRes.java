@@ -42,20 +42,21 @@ public class SearchRes {
 	@JsonProperty("VehicleType")
 	private String vehicleTypeDesc;
 
-	@JsonFormat(pattern = "dd/MM/yyyy")
+//	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("PolicyStartDate")
-	private Date policyStartDate;
+	private String policyStartDate;
 
-	@JsonFormat(pattern = "dd/MM/yyyy")
+//	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("PolicyEndDate")
-	private Date policyEndDate;
+	private String policyEndDate;
 
 	@JsonProperty("OverallPremiumLc")
 	private String overallPremiumLc;
 
-	@JsonFormat(pattern = "dd/MM/yyyy")
+//	@JsonFormat(pattern = "dd/MM/yyyy")
+	
 	@JsonProperty("QuoteDate")
-	private Date entryDate;
+	private String entryDate;
 
 	
 	@JsonProperty("Currency")

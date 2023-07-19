@@ -33,6 +33,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
@@ -225,9 +227,30 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 			Root<EserviceMotorDetails> c = query.from(EserviceMotorDetails.class);
 			Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
 			
-			query.multiselect(c.alias("c"),
+			query.multiselect(/*c.alias("c"),*/
 					cus.get("clientName").alias("clientName"),
-					cus.get("mobileNo1").alias("mobileNumber"),cb.count(c).alias("idsCount"));
+					cus.get("mobileNo1").alias("mobileNumber"),cb.count(c).alias("idsCount"),
+					cb.max(c.get("requestReferenceNo")).alias("requestReferenceNo"),
+					cb.selectCase().when(cb.max(c.get("quoteNo")).isNotNull(), cb.max(c.get("quoteNo")))
+							.otherwise(cb.max(c.get("quoteNo"))).alias("quoteNo"),
+					cb.max(c.get("policyNo")).alias("policyNo"),
+					cb.max(c.get("branchCode")).alias("branchCode"),
+					cb.max(c.get("status")).alias("status"),
+					cb.max(c.get("loginId")).alias("loginId"),
+					cb.max(c.get("policyTypeDesc")).alias("policyTypeDesc"),
+					cb.max(c.get("vehicleTypeDesc")).alias("vehicleTypeDesc"), 
+					cb.max(c.get("policyStartDate")).alias("policyStartDate"),
+					cb.max(c.get("policyEndDate")).alias("policyEndDate"),
+					cb.max(c.get("entryDate")).alias("entryDate"),
+					cb.max(c.get("overallPremiumLc")).alias("overallPremiumLc"),
+					cb.max(c.get("currency")).alias("currency"),
+					cb.max(c.get("exchangeRate")).alias("exchangeRate"),
+					cb.max(c.get("gpsTrackingInstalled")).alias("gpsTrackingInstalled"),
+					cb.max(c.get("windScreenCoverRequired")).alias("windScreenCoverRequired")
+//					cb.max(c.get("rejectReason")).alias("rejectReason"),
+//					cb.max(c.get("riskId")).alias("riskId"),
+//					cb.max(c.get("insuranceType")).alias("insuranceType")
+					);
 
 
 			// Order By
@@ -294,14 +317,14 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 			.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"),cus.get("mobileNo1"), c.get("companyId"),
 					c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 					c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
-					c.get("rejectReason"),c.get("riskId"),c.get("insuranceType"))
+					c.get("rejectReason"))
 			.orderBy(orderList);
 			if (searchKey.equalsIgnoreCase("CustomerName")) {
 				query.where(n1, n2,n4,n5)
 				.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"),cus.get("mobileNo1"), c.get("companyId"),
 						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
-						c.get("rejectReason"),c.get("riskId"),c.get("insuranceType"))
+						c.get("rejectReason"))
 				.orderBy(orderList);
 			}
 			if (searchKey.equalsIgnoreCase("MobileNumber")) {
@@ -309,7 +332,7 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 				.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), cus.get("clientName"),cus.get("mobileNo1"), c.get("companyId"),
 						c.get("productId"), c.get("branchCode"), c.get("requestReferenceNo"), c.get("quoteNo"),
 						c.get("customerId"), c.get("policyStartDate"), c.get("policyEndDate"),
-						c.get("rejectReason"),c.get("riskId"),c.get("insuranceType"))
+						c.get("rejectReason"))
 				.orderBy(orderList);
 			}
 

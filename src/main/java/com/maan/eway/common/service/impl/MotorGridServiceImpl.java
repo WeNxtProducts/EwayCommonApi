@@ -818,7 +818,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				} else if (searchKey.equalsIgnoreCase("RegistrationNumber")) {
 					n1 = cb.equal(cb.lower(c.get("registrationNumber")), searchValue);
 				} else if (searchKey.equalsIgnoreCase("QuoteNumber")) {
-					n1 = cb.equal(cb.lower(c.get("quoteNo")), searchValue);
+					n1 = cb.equal(c.get("quoteNo"), searchValue);
 				} else if (searchKey.equalsIgnoreCase("EntryDate")) {
 					Date entryDate = sdf.parse(searchValue);
 					Calendar cal = new GregorianCalendar();
