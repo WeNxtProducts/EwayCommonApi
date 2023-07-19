@@ -116,7 +116,7 @@ public class CopyBuildingRaw {
 			
 			// Section Copy
 			List<String> sectionIds = copyBuildingSections( riskRes ) ;
-			riskRes.setSectionId(sectionIds);
+			riskRes.setSectionIds(sectionIds);
 			riskRes.setLocationId(riskRes.getLocationId());
 			
 			// Personal Accident Copy

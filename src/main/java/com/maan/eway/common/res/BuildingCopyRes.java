@@ -35,7 +35,7 @@ public class BuildingCopyRes {
 	private String productId;
 	
 	@JsonProperty("SectionId")
-	private List<String> sectionId;
+	private List<String> sectionIds;
 	
 	@JsonProperty("OldRequestReferenceNo")
 	private String oldRequestReferenceNo;
