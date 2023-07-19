@@ -41,6 +41,10 @@ public class MotorColorGetRes {
 	@JsonProperty("Remarks")
 	private String remarks;
 	
+	@JsonProperty("RegulatoryCode")
+	private String regulatoryCode;
+
+	
 	@JsonFormat(pattern="dd/MM/YYYY")
 	@JsonProperty("EntryDate")
 	private Date entryDate;

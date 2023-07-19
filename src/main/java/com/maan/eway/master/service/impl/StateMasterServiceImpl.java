@@ -148,7 +148,7 @@ public class StateMasterServiceImpl implements StateMasterService {
 				
 			    }
 			}
-			if (StringUtils.isBlank(req.getStateId().toString())) {
+			if (StringUtils.isBlank(req.getStateId())) {
 				// Save
 				res.setResponse("Saved Successfully ");
 				res.setSuccessId(stateId.toString());

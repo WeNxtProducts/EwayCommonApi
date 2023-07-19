@@ -128,11 +128,13 @@ public class PolicyTypeMasterServiceImpl implements PolicyTypeMasterService {
 
 	if(StringUtils.isBlank(req.getPolicyTypeId())) {
 		//save
-		Long totalCount = getMasterTableCount();
+		//Long totalCount = getMasterTableCount();
+		Long totalCount=repo.count()+1;
 		policyId = Long.valueOf(totalCount+1).toString();
 		res.setResponse("Saved Successfully");
 		res.setSuccessId(policyId);
-		}
+		
+	}
 	else {
 		// Update
 		policyId = req.getPolicyTypeId().toString();

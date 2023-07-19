@@ -59,5 +59,8 @@ public class PaymentMasterSaveReq {
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
+	
+	@JsonProperty("OnlineYn")
+	private String onlineYn;
 
 	}

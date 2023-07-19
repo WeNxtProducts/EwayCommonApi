@@ -70,7 +70,7 @@ public class RegionMasterController {
 
 			}
 	// save
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/insertregion")
 		@ApiOperation(value = "This method is Insert Region Details")
 		public ResponseEntity<CommonRes> insertRegion(@RequestBody RegionMasterSaveReq req) {
@@ -106,7 +106,7 @@ public class RegionMasterController {
 		}
 		
 		//  Get All Region Master
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/getallregiondetails")
 		@ApiOperation("This method is getall Region Details")
 		public ResponseEntity<CommonRes> getallRegionDetails(@RequestBody RegionMasterGetAllReq req)
@@ -129,7 +129,7 @@ public class RegionMasterController {
 		}
 		
 	//  Get Active Region Master
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 			@PostMapping("/getactiveregion")
 			@ApiOperation("This method is get Active Region Details")
 			public ResponseEntity<CommonRes> getActiveRegionDetails(@RequestBody RegionMasterGetAllReq req)
@@ -152,7 +152,7 @@ public class RegionMasterController {
 			}
 		
 		// Get By Region Id
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/getbyregionid")
 		@ApiOperation("This Method is to get by Region id")
 		public ResponseEntity<CommonRes> getByRegionCode(@RequestBody RegionMasterGetReq req)
@@ -173,7 +173,7 @@ public class RegionMasterController {
 	}
 		
 		
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 		@PostMapping("/region/changestatus")
 		@ApiOperation(value = "This method is get Company Product Master Drop Down")
 		public ResponseEntity<CommonRes> changeStatusOfRegion(@RequestBody RegionChangeStatusReq req) {
