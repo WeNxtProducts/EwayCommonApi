@@ -3717,7 +3717,7 @@ public class QuoteServiceImpl implements QuoteService {
 	@SuppressWarnings("unlikely-arg-type")
 	@Override
 	public SuccessRes tracesRemoved(TracesRemovedReq req) { //after buypolicy section based only, for all products
-		SuccessRes res = new SuccessRes();
+		SuccessRes res = new SuccessRes();			//additional infos delete
 	
 		try {
 			//Domestic
@@ -3725,8 +3725,6 @@ public class QuoteServiceImpl implements QuoteService {
 			
 			List<String> secIds = secs.stream().map(SectionDataDetails :: getSectionId).collect(Collectors.toList());
 			
-			
-	
 			List<ContentAndRisk> con = contentRepo.findByQuoteNo(req.getQuoteNo());
 			List<ProductEmployeeDetails> emp = empRepo.findByQuoteNo(req.getQuoteNo());
 			List<DocumentTransactionDetails> doc = docRepo.findByQuoteNo(req.getQuoteNo());
@@ -3734,7 +3732,6 @@ public class QuoteServiceImpl implements QuoteService {
 			if (secIds.size()>0) {
 				
 				//unmatched based on sectionid
-	
 				
 				List<ContentAndRisk> confilter = con.stream().filter(o -> ! secIds.contains(o.getSectionId())).collect(Collectors.toList());	
 				contentRepo.deleteAll(confilter);
@@ -3742,12 +3739,12 @@ public class QuoteServiceImpl implements QuoteService {
 				List<ProductEmployeeDetails> empfilter = emp.stream().filter(o -> ! secIds.contains(o.getSectionId())).collect(Collectors.toList());	
 				empRepo.deleteAll(empfilter);
 				
-				List<DocumentTransactionDetails> docfilter = doc.stream().filter(o -> ! secIds.contains(o.getSectionId())).collect(Collectors.toList());	
+				List<DocumentTransactionDetails> docfilter = doc.stream().filter(o -> ! secIds.contains(o.getSectionId().toString())).collect(Collectors.toList());	
 				docRepo.deleteAll(docfilter);
 			}
 			
 			
-			res.setResponse("Old Traces Removed ");
+			res.setResponse("Old Traces Removed");
 			res.setSuccessId(req.getQuoteNo());
 		
 		} catch ( Exception e) {

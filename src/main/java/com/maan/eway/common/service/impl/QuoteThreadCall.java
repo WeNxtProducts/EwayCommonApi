@@ -149,6 +149,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 	// Document
 	private DocumentUniqueDetailsRepository docUniqueRepo ;
 	private DocumentTransactionDetailsRepository docTranRepo ;
+	private ProductEmployeesDetailsRepository empRepo;
 
 	
 	public QuoteThreadCall(String type , QuoteThreadReq request , EntityManager em ,EserviceCustomerDetailsRepository eserCustRepo ,
@@ -157,7 +158,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			 TravelPassengerDetailsRepository    traPassRepo ,TravelPassengerHistoryRepository traPassHisRepo  ,String travelProductId
 			 , EserviceBuildingDetailsRepository eserBuildRepo , EServiceSectionDetailsRepository eserSecRepo,EserviceCommonDetailsRepository eserCommonRepo,CommonDataDetailsRepository commonDataRepo ,
 			 SectionDataDetailsRepository secRepo,BuildingRiskDetailsRepository buildRepo , DocumentTransactionDetailsRepository docRepo, BuildingDetailsRepository locRepo ,ContentAndRiskRepository  contentRepo  ,ProductEmployeesDetailsRepository pacRepo
-			 , DocumentUniqueDetailsRepository docUniqueRepo ,DocumentTransactionDetailsRepository docTranRepo   ) {
+			 , DocumentUniqueDetailsRepository docUniqueRepo ,DocumentTransactionDetailsRepository docTranRepo,ProductEmployeesDetailsRepository empRepo   ) {
 		this.type = type;
 		this.request = request;
 		this.em=em;
@@ -186,6 +187,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		this.pacRepo = pacRepo ;
 		this.docUniqueRepo = docUniqueRepo ;
 		this.docTranRepo = docTranRepo ;
+		this.empRepo = empRepo;
 		
 	} 
 	
@@ -900,16 +902,21 @@ public class QuoteThreadCall implements Callable<Object>  {
 				}
 			}
 			
+			List<EserviceSectionDetails> secs = eserSecRepo.findByRequestReferenceNoAndStatus(request.getRequestReferenceNo(),"Y");
+			List<String> secIds = secs.stream().map(EserviceSectionDetails :: getSectionId).collect(Collectors.toList());
 					
 			// COntent And All Risk	
 			Long contentCount = contentRepo.countByQuoteNo(newQuoteNo );
 			
 			if( contentCount <= 0  ) {
 				
+				
 				List<ContentAndRisk> oldContentDetails = contentRepo.findByQuoteNoOrderByRiskIdAsc(oldQuoteNo );
+				List<ContentAndRisk> oldfilter = oldContentDetails.stream().filter(o -> secIds.contains(o.getSectionId())).collect(Collectors.toList());	
+				
 				List<ContentAndRisk> saveConList = new ArrayList<ContentAndRisk>(); 
-				if( oldContentDetails.size() > 0  ) {
-					for ( ContentAndRisk con : oldContentDetails ) {
+				if( oldfilter.size() > 0  ) {
+					for ( ContentAndRisk con : oldfilter ) {
 						ContentAndRisk saveCon = new ContentAndRisk(); 		
 						dozerMapper.map(con , saveCon);
 						saveCon.setQuoteNo(request.getQuoteNo() );
@@ -927,10 +934,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 			if( pacCount <= 0  ) {
 				
 				List<ProductEmployeeDetails> oldPacDetails = pacRepo.findByQuoteNo(oldQuoteNo );
+				List<ProductEmployeeDetails> oldfilter = oldPacDetails.stream().filter(o -> secIds.contains(o.getSectionId())).collect(Collectors.toList());	
+				
 				List<ProductEmployeeDetails> savePacList = new ArrayList<ProductEmployeeDetails>(); 
 				
 				if( pacCount <= 0  ) {
-					for ( ProductEmployeeDetails pac : oldPacDetails ) {
+					for ( ProductEmployeeDetails pac : oldfilter ) {
 						ProductEmployeeDetails savePac = new ProductEmployeeDetails(); 		
 						dozerMapper.map(pac , savePac);
 						savePac.setQuoteNo(request.getQuoteNo() );
@@ -1828,9 +1837,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 		
 		
 		
+
 		public synchronized Map<String,Object>  deleteBuildingRecords(QuoteThreadReq req) {
 			Map<String,Object> res= new HashMap<String,Object>() ;
-			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			
 			try {
 				Long buildInfo =  buildRepo.countByQuoteNo(req.getQuoteNo());
 				if (buildInfo > 0  ) {
@@ -1841,6 +1851,34 @@ public class QuoteThreadCall implements Callable<Object>  {
 				if (pacInfo > 0  ) {
 					commonDataRepo.deleteByQuoteNo(req.getQuoteNo());
 				}
+				
+				
+				
+				//Additional info traces delete for Domestic & corporate plus
+				List<EserviceSectionDetails> secs = eserSecRepo.findByRequestReferenceNoAndStatus(req.getRequestReferenceNo(),"Y");
+				
+				List<String> secIds = secs.stream().map(EserviceSectionDetails :: getSectionId).collect(Collectors.toList());
+				
+				List<ContentAndRisk> con = contentRepo.findByQuoteNo(req.getQuoteNo());
+				List<ProductEmployeeDetails> emp = empRepo.findByQuoteNo(req.getQuoteNo());
+				List<DocumentTransactionDetails> doc = docRepo.findByQuoteNo(req.getQuoteNo());
+				
+				if (secIds.size()>0) {
+					
+					//unmatched based on sectionid
+					
+					List<ContentAndRisk> confilter = con.stream().filter(o -> ! secIds.contains(o.getSectionId())).collect(Collectors.toList());	
+					contentRepo.deleteAll(confilter);
+					
+					List<ProductEmployeeDetails> empfilter = emp.stream().filter(o -> ! secIds.contains(o.getSectionId())).collect(Collectors.toList());	
+					empRepo.deleteAll(empfilter);
+					
+					List<DocumentTransactionDetails> docfilter = doc.stream().filter(o -> ! secIds.contains(o.getSectionId().toString())).collect(Collectors.toList());	
+					docRepo.deleteAll(docfilter);
+				}
+				
+				
+				
 				
 	 			res.put("Response", "Success") ;
 				res.put("Errors", null) ;
@@ -2188,6 +2226,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			return res;
 		}
 		
+		@SuppressWarnings("unlikely-arg-type")
 		public synchronized Map<String,Object>  copyDocumentRecords(QuoteThreadReq req) {
 			Map<String,Object> res= new HashMap<String,Object>() ;
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -2197,13 +2236,17 @@ public class QuoteThreadCall implements Callable<Object>  {
 				ids.add(0);
 				ids.add(1);
 				
+				List<EserviceSectionDetails> secs = eserSecRepo.findByRequestReferenceNoAndStatus(request.getRequestReferenceNo(),"Y");
+				List<String> secIds = secs.stream().map(EserviceSectionDetails :: getSectionId).collect(Collectors.toList());
+				
 				Long docInfo = docRepo.countByQuoteNo(req.getQuoteNo() );
 				if( docInfo <= 0  ) {
 					List<DocumentTransactionDetails>   oldDocDetails = docRepo.findByQuoteNo( req.getEndtPrevQuoteNo() ) ;
+					List<DocumentTransactionDetails>   oldfilter = oldDocDetails.stream().filter(o -> secIds.contains(o.getSectionId().toString())).collect(Collectors.toList());	
 					
 					List<DocumentTransactionDetails> saveDocList = new ArrayList<DocumentTransactionDetails>();
-					if( oldDocDetails.size() > 0  ) {
-						for ( DocumentTransactionDetails doc : oldDocDetails ) {
+					if( oldfilter.size() > 0  ) {
+						for ( DocumentTransactionDetails doc : oldfilter ) {
 							DocumentTransactionDetails saveDoc = new DocumentTransactionDetails(); 		
 							dozerMapper.map(doc , saveDoc);
 							saveDoc.setQuoteNo(req.getQuoteNo() );
