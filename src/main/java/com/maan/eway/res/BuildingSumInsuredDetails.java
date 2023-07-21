@@ -152,4 +152,16 @@ public class BuildingSumInsuredDetails {
     
     @JsonProperty("MoneyInLocker")
     private String moneyInLocker;
+    
+	@JsonProperty("MiningPlantSi")
+	private String miningPlantSi;
+	
+	@JsonProperty("NonminingPlantSi")
+	private String nonminingPlantSi;
+	
+	@JsonProperty("GensetsSi")
+	private String gensetsSi;
+	
+	@JsonProperty("EquipmentSi")
+	private String equipmentSi;
 }

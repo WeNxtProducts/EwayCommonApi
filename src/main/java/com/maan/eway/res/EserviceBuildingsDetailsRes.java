@@ -333,5 +333,16 @@ public class EserviceBuildingsDetailsRes implements Serializable {
     
     @JsonProperty("LocationName")
    	private  String locationName;
+    
+	@JsonProperty("MiningPlantSi")
+	private String miningPlantSi;
+	
+	@JsonProperty("NonminingPlantSi")
+	private String nonminingPlantSi;
+	
+	@JsonProperty("GensetsSi")
+	private String gensetsSi;
+
+	
   
 }
