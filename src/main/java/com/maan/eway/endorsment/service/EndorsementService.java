@@ -592,7 +592,7 @@ public class EndorsementService {
 					response = copyQuote;
 				} else if (product.getMotorYn().equalsIgnoreCase("H")  &&  request.getProductId().equals(new BigDecimal(travelProductId))  ) {
 					List<EserviceTravelDetails> travelCopyQuote = new ArrayList<EserviceTravelDetails>(); 
-					travelCopyQuote.add(copyTravelraw.copyTravelRaw(request));
+					travelCopyQuote.add((EserviceTravelDetails)copyquoteService.copyQuote(c).getCommonResponse());
 					response = travelCopyQuote ;
 					
 				}else if (product.getMotorYn().equalsIgnoreCase("A") ) {
