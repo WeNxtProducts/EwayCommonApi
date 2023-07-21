@@ -834,6 +834,11 @@ public class CalculatorEngineService implements CalculatorEngine {
 				}
 
 				EndtCoverCalculator calc = new EndtCoverCalculator();
+				
+				if ((commontbl == null || commontbl.size() == 0) || (vehicles == null || vehicles.size() == 0)
+						|| (customers == null || customers.size() == 0)) {
+					loadOnetimetable(request);
+				}
 				calc.setEngine(request, retc, commontbl, vehicles, customers, prorata, ratingutil,
 						request.getEffectiveDate(), decimalFormat);
 
