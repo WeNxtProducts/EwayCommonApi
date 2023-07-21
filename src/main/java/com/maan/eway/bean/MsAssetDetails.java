@@ -347,7 +347,15 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="BOILER_PLANTS_SI")
     private BigDecimal boilerPlantsSi ;
+
+    @Column(name="MINING_PLANT_SI")
+    private BigDecimal miningPlantSi;
     
+    @Column(name="NONMINING_PLANT_SI")
+    private BigDecimal nonminingPlantSi;
+    
+    @Column(name="GENSETS_SI")
+    private BigDecimal gensetsSi;
 }
 
 
