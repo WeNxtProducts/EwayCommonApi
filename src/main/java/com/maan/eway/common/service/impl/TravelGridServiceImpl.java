@@ -40,6 +40,7 @@ import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.EndtTypeMaster;
+import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
@@ -1469,7 +1470,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					CriteriaBuilder cb = em.getCriteriaBuilder();
 					CriteriaQuery<Object> query = cb.createQuery(Object.class);
 					//Find all
-					Root<EserviceMotorDetails> b = query.from(EserviceMotorDetails.class);
+					Root<EserviceTravelDetails> b = query.from(EserviceTravelDetails.class);
 					// Select
 					query.multiselect(b.get("policyNo").alias("policyNo"));
 								
