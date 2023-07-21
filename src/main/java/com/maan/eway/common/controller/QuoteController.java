@@ -16,6 +16,7 @@ import com.maan.eway.common.req.AdminReferalStatusReq;
 import com.maan.eway.common.req.DeleteOldQuoteReq;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.SectionSumInsuredGetReq;
+import com.maan.eway.common.req.TracesRemovedReq;
 import com.maan.eway.common.req.UpdateQuoteStatusReq;
 import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.CommonRes;
@@ -193,4 +194,26 @@ public class QuoteController {
 			}
 		}
     } 
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/tracesremoved")
+	@ApiOperation(value = "This method is to remove traces ")
+	public ResponseEntity<CommonRes> tracesRemoved(@RequestBody TracesRemovedReq req) {
+		CommonRes commonRes = new  CommonRes() ;
+		reqPrinter.reqPrint(req);
+		// Save
+		SuccessRes res = entityService.tracesRemoved(req);
+		commonRes.setCommonResponse(res);
+		commonRes.setIsError(false);
+		commonRes.setErrorMessage(null);
+		commonRes.setMessage("Success");
+		
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(commonRes, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+		
+
+	}
 }

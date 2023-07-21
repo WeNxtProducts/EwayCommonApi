@@ -6,6 +6,7 @@ import com.maan.eway.common.req.AdminReferalStatusReq;
 import com.maan.eway.common.req.DeleteOldQuoteReq;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.SectionSumInsuredGetReq;
+import com.maan.eway.common.req.TracesRemovedReq;
 import com.maan.eway.common.req.UpdateQuoteStatusReq;
 import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.CommonRes;
@@ -35,6 +36,8 @@ public interface QuoteService {
 	QuoteUpdateRes updateQuoteStatus(UpdateQuoteStatusReq req);
 
 	List<Error> validateNewQuoteDetails(NewQuoteReq req);
+
+	SuccessRes tracesRemoved(TracesRemovedReq req);
 
 
 

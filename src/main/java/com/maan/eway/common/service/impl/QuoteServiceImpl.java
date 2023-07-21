@@ -42,6 +42,8 @@ import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.ContentAndRisk;
+import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.EmiTransactionDetails;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
@@ -71,6 +73,7 @@ import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.DeleteOldQuoteReq;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.SectionSumInsuredGetReq;
+import com.maan.eway.common.req.TracesRemovedReq;
 import com.maan.eway.common.req.UpdateQuoteStatusReq;
 import com.maan.eway.common.req.VehicleIdsReq;
 import com.maan.eway.common.req.ViewQuoteReq;
@@ -104,7 +107,9 @@ import com.maan.eway.notification.service.NotificationService;
 import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.CommonDataDetailsRepository;
+import com.maan.eway.repository.ContentAndRiskRepository;
 import com.maan.eway.repository.CoverDetailsRepository;
+import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EmiTransactionDetailsRepository;
@@ -145,6 +150,9 @@ import com.maan.eway.res.calc.Tax;
 @Service 
 @Transactional
 public class QuoteServiceImpl implements QuoteService {
+
+	private static final int ArrayList = 0;
+
 
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
@@ -242,7 +250,7 @@ public class QuoteServiceImpl implements QuoteService {
 	private EserviceCustomerDetailsRepository customerDetailsRepo;
 	
 	@Autowired
-private BuildingDetailsRepository BuildingRepo;
+	private BuildingDetailsRepository BuildingRepo;
 	
 	@Autowired
 	private ProductGroupMasterService groupService;
@@ -262,6 +270,13 @@ private BuildingDetailsRepository BuildingRepo;
 	
 	@Autowired
 	private ProductEmployeesDetailsRepository empRepo ;
+	
+	@Autowired
+	private ContentAndRiskRepository contentRepo ;
+	
+	@Autowired
+	private DocumentTransactionDetailsRepository docRepo ;
+
 	
 	
 	private Logger log = LogManager.getLogger(QuoteServiceImpl.class);
@@ -3697,6 +3712,50 @@ private BuildingDetailsRepository BuildingRepo;
 			return null;
 		}
 		return error;
+	}
+
+	@SuppressWarnings("unlikely-arg-type")
+	@Override
+	public SuccessRes tracesRemoved(TracesRemovedReq req) { //after buypolicy section based only, for all products
+		SuccessRes res = new SuccessRes();
+	
+		try {
+			//Domestic
+			List<SectionDataDetails> secs = secDataRepo.findByQuoteNo(req.getQuoteNo());
+			
+			List<String> secIds = secs.stream().map(SectionDataDetails :: getSectionId).collect(Collectors.toList());
+			
+			
+	
+			List<ContentAndRisk> con = contentRepo.findByQuoteNo(req.getQuoteNo());
+			List<ProductEmployeeDetails> emp = empRepo.findByQuoteNo(req.getQuoteNo());
+			List<DocumentTransactionDetails> doc = docRepo.findByQuoteNo(req.getQuoteNo());
+			
+			if (secIds.size()>0) {
+				
+				//unmatched based on sectionid
+	
+				
+				List<ContentAndRisk> confilter = con.stream().filter(o -> ! secIds.contains(o.getSectionId())).collect(Collectors.toList());	
+				contentRepo.deleteAll(confilter);
+				
+				List<ProductEmployeeDetails> empfilter = emp.stream().filter(o -> ! secIds.contains(o.getSectionId())).collect(Collectors.toList());	
+				empRepo.deleteAll(empfilter);
+				
+				List<DocumentTransactionDetails> docfilter = doc.stream().filter(o -> ! secIds.contains(o.getSectionId())).collect(Collectors.toList());	
+				docRepo.deleteAll(docfilter);
+			}
+			
+			
+			res.setResponse("Old Traces Removed ");
+			res.setSuccessId(req.getQuoteNo());
+		
+		} catch ( Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+			return res;
 	}
 	
 }
