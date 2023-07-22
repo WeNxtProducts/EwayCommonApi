@@ -2546,7 +2546,14 @@ List<Error> errorList = new ArrayList<Error>();
 					engine.setProductId(data.getProductId().toString());
 					engine.setInsuranceId(data.getCompanyId());
 					engine.setSectionId("");
-					String oneProduct = ratingutil.collectProductType(engine);
+					String oneProduct ="" ;
+					try { 
+					oneProduct =  ratingutil.collectProductType(engine);
+					}  catch (Exception e) {
+						e.printStackTrace();
+						log.info("Exception is --->" + e.getMessage());
+						
+					}
 					if (oneProduct.equals("M")) {
 						res.setTableName("MsVehicleDetails");
 					}
@@ -2554,6 +2561,8 @@ List<Error> errorList = new ArrayList<Error>();
 						res.setTableName("MsHumanDetails");
 					}
 					else if (oneProduct.equals("A")) {
+						res.setTableName("MsAssetDetails");
+					} else {
 						res.setTableName("MsAssetDetails");
 					}
 					res.setColumnName( loginlist.size() > 0 ?loginlist.get(0).getColumnName() : "");
@@ -2575,22 +2584,28 @@ List<Error> errorList = new ArrayList<Error>();
 					CalcEngine engine = new CalcEngine();					
 					engine.setProductId(data.getProductId().toString());
 					engine.setInsuranceId(data.getCompanyId());
-					engine.setSectionId("");					
-					String oneProduct = ratingutil.collectProductType(engine);
-					if(oneProduct!=null ) {
-						if (oneProduct.equals("M")) {
-							res.setTableName("MsVehicleDetails");
-						}
-						else if (oneProduct.equals("H")) {
-							res.setTableName("MsHumanDetails");
-						}
-						else if (oneProduct.equals("A")) {
-							res.setTableName("MsAssetDetails");
-						}
-						res.setColumnName( loginlist.size() > 0 ?loginlist.get(0).getColumnName() : "");
+					engine.setSectionId("");
+					String oneProduct ="" ;
+					try { 
+					oneProduct =  ratingutil.collectProductType(engine);
+					}  catch (Exception e) {
+						e.printStackTrace();
+						log.info("Exception is --->" + e.getMessage());
+						
 					}
 					
-
+					if (oneProduct.equals("M")) {
+						res.setTableName("MsVehicleDetails");
+					}
+					else if (oneProduct.equals("H")) {
+						res.setTableName("MsHumanDetails");
+					}
+					else if (oneProduct.equals("A")) {
+						res.setTableName("MsAssetDetails");
+					} else {
+						res.setTableName("MsAssetDetails");
+					}
+					res.setColumnName( loginlist.size() > 0 ?loginlist.get(0).getColumnName() : "");
 					resList.add(res);
 		        }
 	        }
