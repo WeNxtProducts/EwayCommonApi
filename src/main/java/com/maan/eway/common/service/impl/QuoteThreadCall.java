@@ -351,8 +351,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 			if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
 				
 		//		res =  copyQuoteDocumentDetails( request , request.getEndtPrevQuoteNo() , request.getQuoteNo()) ;
-				
+				res =  copyQuoteLocationDetails( request , request.getEndtPrevQuoteNo() , request.getQuoteNo()) ;
 			}
+			
 			
 		}catch (Exception e) {
 			e.printStackTrace();
