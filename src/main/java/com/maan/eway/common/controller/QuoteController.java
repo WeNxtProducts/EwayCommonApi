@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.req.AdminReferalStatusReq;
 import com.maan.eway.common.req.DeleteOldQuoteReq;
+import com.maan.eway.common.req.EmployeeCountGetReq;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.SectionSumInsuredGetReq;
 import com.maan.eway.common.req.TracesRemovedReq;
@@ -24,6 +25,7 @@ import com.maan.eway.common.res.QuoteUpdateRes;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.error.Error;
+import com.maan.eway.res.GetEmployeeCountRes;
 import com.maan.eway.res.SectionWiseSumInsuredRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -203,6 +205,28 @@ public class QuoteController {
 		reqPrinter.reqPrint(req);
 		// Save
 		SuccessRes res = entityService.tracesRemoved(req);
+		commonRes.setCommonResponse(res);
+		commonRes.setIsError(false);
+		commonRes.setErrorMessage(null);
+		commonRes.setMessage("Success");
+		
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(commonRes, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+		
+
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/productemployeecount")
+	@ApiOperation(value = "This method is New Quote ")
+	public ResponseEntity<CommonRes> getProductEmplyee(@RequestBody EmployeeCountGetReq req) {
+		CommonRes commonRes = new  CommonRes() ;
+		reqPrinter.reqPrint(req);
+		// Save
+		GetEmployeeCountRes res = entityService.getProductEmplyee(req);
 		commonRes.setCommonResponse(res);
 		commonRes.setIsError(false);
 		commonRes.setErrorMessage(null);

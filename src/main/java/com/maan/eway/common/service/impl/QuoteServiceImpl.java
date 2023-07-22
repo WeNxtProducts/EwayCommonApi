@@ -71,6 +71,7 @@ import com.maan.eway.bean.TravelPassengerHistory;
 import com.maan.eway.common.req.AdminReferalStatusReq;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.DeleteOldQuoteReq;
+import com.maan.eway.common.req.EmployeeCountGetReq;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.SectionSumInsuredGetReq;
 import com.maan.eway.common.req.TracesRemovedReq;
@@ -136,6 +137,7 @@ import com.maan.eway.res.BuildingSumInsuredDetails;
 import com.maan.eway.res.CommonSumInsuredDetails;
 import com.maan.eway.res.CoverRes;
 import com.maan.eway.res.EserviceBuildingsDetailsRes;
+import com.maan.eway.res.GetEmployeeCountRes;
 import com.maan.eway.res.OccupationReqClass;
 import com.maan.eway.res.PassengerSectionDetails;
 import com.maan.eway.res.SectionDetails;
@@ -3749,6 +3751,43 @@ public class QuoteServiceImpl implements QuoteService {
 			
 			res.setResponse("Old Traces Removed");
 			res.setSuccessId(req.getQuoteNo());
+		
+		} catch ( Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+			return res;
+	}
+
+	@Override
+	public GetEmployeeCountRes getProductEmplyee(EmployeeCountGetReq req) {
+		GetEmployeeCountRes res = new GetEmployeeCountRes();
+		
+		try {
+			HomePositionMaster homeData  =  homeRepo.findByQuoteNo(req.getQuoteNo());
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(homeData.getCompanyId() , homeData.getProductId().toString());
+
+		//	Long actualCount = 
+//			 if(product.getMotorYn().equalsIgnoreCase("H") &&  homeData.getProductId().equals(Integer.valueOf(travelProductId))) {
+//					
+//				 EserviceTravelDetails travelData = 	eserTraRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+//				 Long passCo
+//					
+//			 } else if(product.getMotorYn().equalsIgnoreCase("M") ) {
+//				// Motor Product Details
+//				viewRes =  getMotorProductDetails( req);
+//				
+//			} else if(product.getMotorYn().equalsIgnoreCase("A") ) {
+//				// Travel Product Details
+//				viewRes =	getBuildingProductDetails( req);
+//				
+//			} else {
+//				// Human Product Details
+//				viewRes =	getCommonProductDetails( req);
+//				
+//			}
+			 
 		
 		} catch ( Exception e) {
 			e.printStackTrace();
