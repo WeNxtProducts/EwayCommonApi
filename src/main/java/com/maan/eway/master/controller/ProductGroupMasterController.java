@@ -7,20 +7,25 @@ package com.maan.eway.master.controller;
 
 import java.util.Collections;
 import java.util.List;
-import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.common.req.ProductGrorpMasteReq;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.ProductGroupMasterRes;
+import com.maan.eway.common.res.SuccessRes;
+import com.maan.eway.error.Error;
+import com.maan.eway.master.req.ProductGroupGetAllReq;
+import com.maan.eway.master.req.ProductGroupGetReq;
 import com.maan.eway.master.res.ProductGroupMasterDropDownRes;
 import com.maan.eway.master.service.ProductGroupMasterService;
-import com.maan.eway.res.DropDownRes;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -87,4 +92,79 @@ public class ProductGroupMasterController {
 		}
 
 	}
-}
+	
+	
+	// save
+			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+				@PostMapping("/insertproductgroup")
+				public ResponseEntity<CommonRes> insertProductGroup(@RequestBody ProductGrorpMasteReq req) {
+
+					CommonRes data = new CommonRes();
+
+					List<Error> validation = entityService.validateProductGroupDetails(req);
+					// validation
+					if (validation != null && validation.size() != 0) {
+						data.setCommonResponse(null);
+						data.setIsError(true);
+						data.setMessage("Failed");
+						return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+					} else {
+
+						
+						SuccessRes res = entityService.insertProductGroup(req);
+						data.setCommonResponse(res);
+						data.setIsError(false);
+						data.setErrorMessage(Collections.emptyList());
+						data.setMessage("Success");
+
+						if (res != null) {
+							return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+						} else {
+							return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+						}
+					}
+
+				}
+			
+			
+			
+			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+			@PostMapping("/getallproductgroup")
+			public ResponseEntity<CommonRes> getAllProductGroup(@RequestBody ProductGroupGetAllReq req) {
+				CommonRes data = new CommonRes();
+
+				List<ProductGroupMasterRes> res = entityService.getAllProductGroup(req);
+				data.setCommonResponse(res);
+				data.setErrorMessage(Collections.emptyList());
+				data.setIsError(false);
+				data.setMessage("Success");
+
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}
+			
+			
+			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+			@PostMapping("/getproductgroupbyid")
+			public ResponseEntity<CommonRes> getProductgroupById(@RequestBody ProductGroupGetReq req)
+			{
+			CommonRes data = new CommonRes();
+			ProductGroupMasterRes res = entityService.getProductgroupById(req);
+			data.setCommonResponse(res);
+			data.setErrorMessage(Collections.emptyList());
+			data.setIsError(false);
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+	}
+

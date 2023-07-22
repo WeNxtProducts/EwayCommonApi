@@ -2577,16 +2577,19 @@ List<Error> errorList = new ArrayList<Error>();
 					engine.setInsuranceId(data.getCompanyId());
 					engine.setSectionId("");					
 					String oneProduct = ratingutil.collectProductType(engine);
-					if (oneProduct.equals("M")) {
-						res.setTableName("MsVehicleDetails");
+					if(oneProduct!=null ) {
+						if (oneProduct.equals("M")) {
+							res.setTableName("MsVehicleDetails");
+						}
+						else if (oneProduct.equals("H")) {
+							res.setTableName("MsHumanDetails");
+						}
+						else if (oneProduct.equals("A")) {
+							res.setTableName("MsAssetDetails");
+						}
+						res.setColumnName( loginlist.size() > 0 ?loginlist.get(0).getColumnName() : "");
 					}
-					else if (oneProduct.equals("H")) {
-						res.setTableName("MsHumanDetails");
-					}
-					else if (oneProduct.equals("A")) {
-						res.setTableName("MsAssetDetails");
-					}
-					res.setColumnName( loginlist.size() > 0 ?loginlist.get(0).getColumnName() : "");
+					
 
 					resList.add(res);
 		        }

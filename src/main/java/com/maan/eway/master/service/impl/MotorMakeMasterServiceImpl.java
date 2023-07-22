@@ -527,7 +527,7 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			TypedQuery<MotorMakeMaster> result = em.createQuery(query);
 			list = result.getResultList();
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getMakeId()))).collect(Collectors.toList());
-			list.sort(Comparator.comparing(MotorMakeMaster :: getMakeNameEn ));
+			//list.sort(Comparator.comparing(MotorMakeMaster :: getMakeNameEn ));
 			// Map
 			for (MotorMakeMaster data : list) {
 				MotorMakeGetRes res = new MotorMakeGetRes();

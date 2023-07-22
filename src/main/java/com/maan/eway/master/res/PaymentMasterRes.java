@@ -69,5 +69,8 @@ public class PaymentMasterRes {
 	@JsonProperty("EntryDate")
 	private Date entryDate;
 	
+	@JsonProperty("OnlineYn")
+	private String onlineYn;
+	
 	
 }

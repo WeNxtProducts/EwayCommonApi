@@ -726,19 +726,20 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<CountryMaster> ocpm1 = effectiveDate.from(CountryMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
+//			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
 			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a5 = cb.equal(ocpm1.get("companyId"), c.get("companyId"));
-			effectiveDate.where(a1, a2,a5);
+			effectiveDate.where( a2,a5);
 			
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<CountryMaster> ocpm2 = effectiveDate2.from(CountryMaster.class);
 			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
+	//		javax.persistence.criteria.Predicate a3 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
+//			javax.persistence.criteria.Predicate aa = cb.equal(c.get("countryId"), ocpm2.get("99999"));
 			javax.persistence.criteria.Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a6 = cb.equal(ocpm2.get("companyId"), c.get("companyId"));
-			effectiveDate2.where(a3,a4,a6);
+			effectiveDate2.where(a4,a6);
 
 			// Where
 			Predicate n1 = cb.equal(c.get("status"),"Y");

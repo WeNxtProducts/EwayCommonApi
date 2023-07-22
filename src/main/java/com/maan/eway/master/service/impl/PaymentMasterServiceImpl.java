@@ -108,6 +108,10 @@ public class PaymentMasterServiceImpl implements PaymentMasterService {
 			
 			List<PaymentMaster>  datas = repo.findByCompanyIdAndBranchCodeAndUserTypeAndSubUserTypeAndEffectiveDateStartOrderByEntryDateDesc(req.getCompanyId(),req.getBranchCode(),req.getUserType(),req.getSubUserType(), req.getEffectiveDateStart());
 			if(datas!=null && datas.size()>0) {
+				if(StringUtils.isBlank(req.getPaymentMasterId()))
+				{		
+					if(datas!=null && datas.size()>0) {
+				
 				if((datas.get(0).getBranchCode().equalsIgnoreCase(req.getBranchCode()))&&
 				(datas.get(0).getCashYn().toLowerCase().equalsIgnoreCase(req.getCashYn().toLowerCase()))&&	
 				(datas.get(0).getChequeYn().toLowerCase().equalsIgnoreCase(req.getChequeYn().toLowerCase()))&&	
@@ -119,13 +123,14 @@ public class PaymentMasterServiceImpl implements PaymentMasterService {
 				(datas.get(0).getCashYn().toLowerCase().equalsIgnoreCase(req.getCashYn().toLowerCase()))	
 
 						)
+					
 				{
 					errorList.add(new Error("10","Duplicate Data", "Already Data Available for the same, It is a Duplicate Data")); 
 					
 				}
 			}
-			
-			
+				}
+			}	
 			
 		} catch (Exception e) {
 			log.error(e);
