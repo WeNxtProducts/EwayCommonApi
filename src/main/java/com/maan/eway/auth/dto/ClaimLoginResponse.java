@@ -35,6 +35,9 @@ public class ClaimLoginResponse {
 	@JsonProperty("CountryId")
     private String countryId;
 	
+	@JsonProperty("CurrencyId")
+    private String currencyId;
+	
 	@JsonProperty("LoginBranchDetails")
     private List<LoginBranchDetailsRes> loginBranchDetails;
 

@@ -37,6 +37,8 @@ public interface InsuranceCompanyMasterRepository  extends JpaRepository<Insuran
 
 	List<InsuranceCompanyMaster> findByCompanyIdOrderByAmendIdDesc(String companyId);
 
+	List<InsuranceCompanyMaster> findByCompanyIdAndStatusOrderByEffectiveDateEndDesc(String companyId, String string);
+
 
 
 }

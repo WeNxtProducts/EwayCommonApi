@@ -75,6 +75,7 @@ import com.maan.eway.auth.token.JwtTokenUtil;
 import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
@@ -143,7 +144,6 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 	
 	@Autowired
 	private ProductMasterRepository companyProductRepo;
-	
 	
 	@Autowired
 	private MailMasterRepository mailRepo ;
@@ -251,7 +251,8 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			r.setOaCode(login.getOaCode().toString());
 			r.setBankCode(login.getBankCode());
 			r.setCountryId(userInfo.getCountryCode() );
-			
+			List<InsuranceCompanyMaster> companyList = companyRepo.findByCompanyIdAndStatusOrderByEffectiveDateEndDesc(login.getCompanyId(),"Y");
+			r.setCurrencyId(companyList.size() > 0 && StringUtils.isNotBlank(companyList.get(0).getCurrencyId()) ? companyList.get(0).getCurrencyId() : "TZS");			
 			// Branch Res	
 			List<LoginBranchMaster> loginBranch=loginBranchRepo.findByLoginIdAndStatus(login.getLoginId() , "Y");
 		
