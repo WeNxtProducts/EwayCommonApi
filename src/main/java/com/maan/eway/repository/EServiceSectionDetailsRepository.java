@@ -47,6 +47,8 @@ public interface EServiceSectionDetailsRepository  extends JpaRepository<Eservic
 
 	List<EserviceSectionDetails> findByRequestReferenceNoAndStatus(String requestReferenceNo, String string);
 
+	List<EserviceSectionDetails> findByRequestReferenceNoAndStatusIn(String requestReferenceNo, List<String> status);
+
 
 	
 
