@@ -34,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 import com.maan.eway.admin.req.AttachCompnayProductRequest;
 import com.maan.eway.admin.req.AttachIssuerProductRequest;
@@ -52,9 +51,7 @@ import com.maan.eway.admin.res.ProductCriteriaRes;
 import com.maan.eway.admin.service.LoginProductService;
 import com.maan.eway.auth.dto.LoginProductCriteriaRes;
 import com.maan.eway.bean.BrokerCommissionDetails;
-import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.CompanyProductMaster;
-import com.maan.eway.bean.EndtDependantFieldMaster;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginMaster;
@@ -63,13 +60,10 @@ import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.BrokerCommissionDetailsMasterGetReq;
-import com.maan.eway.master.req.BrokerCommissionDetailsMasterSaveReq;
 import com.maan.eway.master.req.BrokerCommissionDetailsReq;
 import com.maan.eway.master.req.BrokerCompanyProductReq;
 import com.maan.eway.master.req.BrokerProductChangeReq;
 import com.maan.eway.master.req.BrokerProductReq;
-import com.maan.eway.master.res.BrokerCommissionDetailsMasterGetRes;
 import com.maan.eway.master.res.CompanyProductMasterRes;
 import com.maan.eway.repository.BrokerCommissionDetailsRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
@@ -226,6 +220,9 @@ public class LoginProductServiceImpl  implements LoginProductService {
 					}
 					save.setFinancialEndtIds(financeid);
 					save.setNonFinancialEndtIds(nonfinanceid);
+				}else {
+					save.setFinancialEndtIds(prodfilter.get(0).getFinancialEndtIds());
+					save.setNonFinancialEndtIds(prodfilter.get(0).getNonFinancialEndtIds());
 				}
 				
 				loginProductRepo.saveAndFlush(save);
@@ -632,6 +629,10 @@ public class LoginProductServiceImpl  implements LoginProductService {
 						}
 					
 				    }
+					save.setFinancialEndtIds(filterOldData.get(0).getFinancialEndtIds());
+					save.setNonFinancialEndtIds(filterOldData.get(0).getFinancialEndtIds());
+					
+					
 				} else {
 					String financeid = "";
 					String nonfinanceid = "";
@@ -680,15 +681,15 @@ public class LoginProductServiceImpl  implements LoginProductService {
 				
 			}	
 			
-			nonSelectedFromList.sort(Comparator.comparing(LoginProductMaster :: getAmendId ).reversed());
-			nonSelectedFromList = nonSelectedFromList.stream().filter(distinctByKey(o -> Arrays.asList(o.getProductId() , o.getCompanyId()))).collect(Collectors.toList());
-			// Deactive old Records 
-			for ( LoginProductMaster data : nonSelectedFromList  ) { 
-				LoginProductMaster lastRecord = data;
-				lastRecord.setEffectiveDateEnd(today);
-				lastRecord.setStatus("N");
-				loginProductRepo.saveAndFlush(lastRecord);
-			}
+//			nonSelectedFromList.sort(Comparator.comparing(LoginProductMaster :: getAmendId ).reversed());
+//			nonSelectedFromList = nonSelectedFromList.stream().filter(distinctByKey(o -> Arrays.asList(o.getProductId() , o.getCompanyId()))).collect(Collectors.toList());
+//			// Deactive old Records 
+//			for ( LoginProductMaster data : nonSelectedFromList  ) { 
+//				LoginProductMaster lastRecord = data;
+//				lastRecord.setEffectiveDateEnd(today);
+//				lastRecord.setStatus("N");
+//				loginProductRepo.saveAndFlush(lastRecord);
+//			}
 			
 			res.setResponse("Products Added Successfully");
 			
@@ -2283,13 +2284,16 @@ List<Error> errorList = new ArrayList<Error>();
 					long MILLS_IN_A_DAY = 1000*60*60*24;
 					Date oldEndDate = new Date(effDate.getTime()- MILLS_IN_A_DAY);
 					lastRecord.setEffectiveDateEnd(oldEndDate);
-					save.setFinancialEndtIds(endorsementids);
-					save.setNonFinancialEndtIds(endorsementids);
+				
 					}
+					save.setFinancialEndtIds(lastRecord.getFinancialEndtIds());
+					save.setNonFinancialEndtIds(lastRecord.getNonFinancialEndtIds());
 					loginProductRepo.saveAndFlush(lastRecord);
 
 				}
 				else {
+					save.setFinancialEndtIds(endorsementids);
+					save.setNonFinancialEndtIds(endorsementids);
 					save.setAmendId(0);
 
 				}
