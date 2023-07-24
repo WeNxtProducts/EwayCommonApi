@@ -1118,6 +1118,29 @@ public class LoginProductServiceImpl  implements LoginProductService {
 					}
 				
 			    }
+				saveData.setFinancialEndtIds(list.get(0).getFinancialEndtIds());
+				saveData.setNonFinancialEndtIds(list.get(0).getNonFinancialEndtIds());
+				
+			} else {
+				
+				String financeId = "";
+				String nonFinanceId = "";
+
+				List<String> ids = req.getFinanceIds();
+				for (int i = 0; i < ids.size(); i++) {
+					financeId = financeId + "," + ids.get(i);
+				}
+
+				List<String> idss = req.getNonFinanceIds();
+				for (int i = 0; i < idss.size(); i++) {
+					nonFinanceId = nonFinanceId + "," + idss.get(i);
+				}
+				
+				financeId=StringUtils.isBlank(financeId) ? "" : financeId.substring(1);
+				nonFinanceId=StringUtils.isBlank(nonFinanceId) ? "" : nonFinanceId.substring(1);
+				
+				saveData.setFinancialEndtIds(financeId);
+				saveData.setNonFinancialEndtIds(nonFinanceId);
 			}
 		
 			res.setResponse("Updated Successfully ");
@@ -1142,24 +1165,7 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			saveData.setSubUserType(login.getSubUserType());
 			//saveData.setBackDays(Integer.valueOf(req.getBackDays()));
 			
-			String financeId = "";
-			String nonFinanceId = "";
-
-			List<String> ids = req.getFinanceIds();
-			for (int i = 0; i < ids.size(); i++) {
-				financeId = financeId + "," + ids.get(i);
-			}
-
-			List<String> idss = req.getNonFinanceIds();
-			for (int i = 0; i < idss.size(); i++) {
-				nonFinanceId = nonFinanceId + "," + idss.get(i);
-			}
 			
-			financeId=StringUtils.isBlank(financeId) ? "" : financeId.substring(1);
-			nonFinanceId=StringUtils.isBlank(nonFinanceId) ? "" : nonFinanceId.substring(1);
-			
-			saveData.setFinancialEndtIds(financeId);
-			saveData.setNonFinancialEndtIds(nonFinanceId);
 			loginProductRepo.saveAndFlush(saveData);
 							
 			log.info("Saved Details is ---> " + json.toJson(saveData));
