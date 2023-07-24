@@ -202,25 +202,25 @@ public class LoginProductServiceImpl  implements LoginProductService {
 				save.setAgencyCode(Integer.valueOf(loginData.getAgencyCode()));
 				save.setOaCode(loginData.getOaCode());
 				save.setCommissionPercent(15);
-				String financeid = "";
-				String nonfinanceid = "";
-				List<EndtTypeMaster> endtids = getEndtId(req.getInsuranceId(), data.getProductId()); 								
-				for(EndtTypeMaster endtid :endtids) {				
-					if(endtid.getEndtTypeCategoryId().toString().equalsIgnoreCase("2")) {						
-						financeid = financeid+","+endtid.getEndtTypeId().toString();
-					}
-					else if(endtid.getEndtTypeCategoryId().toString().equalsIgnoreCase("1")){
-						nonfinanceid = nonfinanceid+","+endtid.getEndtTypeId().toString();						
-					}					
-				}
-				if(StringUtils.isNotBlank(financeid)) {
-				financeid=financeid.substring(1);
-				}
-				if(StringUtils.isNotBlank(nonfinanceid)) {
-				nonfinanceid=nonfinanceid.substring(1);
-				}
-				save.setFinancialEndtIds(financeid);
-				save.setNonFinancialEndtIds(nonfinanceid);
+//				String financeid = "";
+//				String nonfinanceid = "";
+//				List<EndtTypeMaster> endtids = getEndtId(req.getInsuranceId(), data.getProductId()); 								
+//				for(EndtTypeMaster endtid :endtids) {				
+//					if(endtid.getEndtTypeCategoryId().toString().equalsIgnoreCase("2")) {						
+//						financeid = financeid+","+endtid.getEndtTypeId().toString();
+//					}
+//					else if(endtid.getEndtTypeCategoryId().toString().equalsIgnoreCase("1")){
+//						nonfinanceid = nonfinanceid+","+endtid.getEndtTypeId().toString();						
+//					}					
+//				}
+//				if(StringUtils.isNotBlank(financeid)) {
+//				financeid=financeid.substring(1);
+//				}
+//				if(StringUtils.isNotBlank(nonfinanceid)) {
+//				nonfinanceid=nonfinanceid.substring(1);
+//				}
+//				save.setFinancialEndtIds(financeid);
+//				save.setNonFinancialEndtIds(nonfinanceid);
 				
 				loginProductRepo.saveAndFlush(save);
 				log.info("Saved Details is ---> " + json.toJson(save));
