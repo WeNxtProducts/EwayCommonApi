@@ -9,4 +9,10 @@ public class EmployeeCountGetReq {
 
 	@JsonProperty("QuoteNo")
 	private String quoteNo ;
+	
+	@JsonProperty("ProductId")
+	private Integer productId ;
+	
+	@JsonProperty("SectionId")
+	private Integer sectionId ;
 }

@@ -903,7 +903,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 				}
 			}
 			
-			List<EserviceSectionDetails> secs = eserSecRepo.findByRequestReferenceNoAndStatus(request.getRequestReferenceNo(),"Y");
+			List<String> status = new ArrayList<String>();
+			status.add("Y");
+			status.add("E");
+			
+			List<EserviceSectionDetails> secs = eserSecRepo.findByRequestReferenceNoAndStatusIn(request.getRequestReferenceNo(),status);
 			List<String> secIds = secs.stream().map(EserviceSectionDetails :: getSectionId).collect(Collectors.toList());
 					
 			// COntent And All Risk	

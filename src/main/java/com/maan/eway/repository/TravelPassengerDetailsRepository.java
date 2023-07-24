@@ -54,4 +54,12 @@ public interface TravelPassengerDetailsRepository  extends JpaRepository<TravelP
 	List<TravelPassengerDetails> findByQuoteNoOrderByTravelIdAsc(String quoteNo);
 
 
+	List<TravelPassengerDetails> findByQuoteNoAndSectionIdAndProductId(String quoteNo, String sectionId,
+			String productId);
+
+
+	List<TravelPassengerDetails> findByQuoteNoAndSectionIdAndProductId(String quoteNo, Integer sectionId,
+			Integer productId);
+
+
 }
