@@ -32,5 +32,8 @@ public interface ProductEmployeesDetailsRepository extends JpaRepository<Product
 
 	List<ProductEmployeeDetails> findByRequestReferenceNo(String requestReferenceNo);
 
+	List<ProductEmployeeDetails> findByQuoteNoAndSectionIdAndProductIdOrderByRiskIdAsc(String quoteNo, String string,
+			Integer productId);
+
 
 }

@@ -230,6 +230,7 @@ public class QuoteServiceImpl implements QuoteService {
 	@Autowired
 	private EserviceCommonDetailsRepository eserCommonRepo ;
 	
+	
 	@Autowired
 	private NotificationService notiService;
 	
@@ -3769,24 +3770,51 @@ public class QuoteServiceImpl implements QuoteService {
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(homeData.getCompanyId() , homeData.getProductId().toString());
 
 		//	Long actualCount = 
-//			 if(product.getMotorYn().equalsIgnoreCase("H") &&  homeData.getProductId().equals(Integer.valueOf(travelProductId))) {
-//					
-//				 EserviceTravelDetails travelData = 	eserTraRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
-//				 Long passCo
-//					
-//			 } else if(product.getMotorYn().equalsIgnoreCase("M") ) {
-//				// Motor Product Details
+			 if(product.getMotorYn().equalsIgnoreCase("H") &&  homeData.getProductId().equals(Integer.valueOf(travelProductId))) {
+				
+				 EserviceTravelDetails travelData = eserTraRepo.findByQuoteNoAndSectionIdAndProductIdOrderByRiskIdAsc(req.getQuoteNo(),req.getSectionId().toString(),req.getProductId().toString());
+				 Integer  passengerCount=travelData.getTotalPassengers();
+				
+				List<TravelPassengerDetails> actualCount= traPassRepo.findByQuoteNoAndSectionIdAndProductId(req.getQuoteNo(),req.getSectionId(),req.getProductId());
+				
+				Integer count=actualCount.size();			
+				Integer uploadcount=passengerCount-count;				
+				res.setExpectedCount(passengerCount.longValue());
+				res.setActualCount(count.longValue());
+				res.setUploadCount(uploadcount.longValue());;
+							
+				}
+						
+		//	 } else if(product.getMotorYn().equalsIgnoreCase("M") ) {
+				// Motor Product Details
 //				viewRes =  getMotorProductDetails( req);
-//				
-//			} else if(product.getMotorYn().equalsIgnoreCase("A") ) {
+			
+	//		} else if(product.getMotorYn().equalsIgnoreCase("A") ) {
 //				// Travel Product Details
 //				viewRes =	getBuildingProductDetails( req);
 //				
-//			} else {
-//				// Human Product Details
+//			} 			 
+			 else {
+			 // Human Product Details
 //				viewRes =	getCommonProductDetails( req);
-//				
-//			}
+				 
+				 List<EserviceCommonDetails>  passCount=eserCommonRepo.findByQuoteNoAndSectionIdAndProductIdOrderByRiskIdAsc(req.getQuoteNo(),req.getSectionId().toString(),req.getProductId().toString());
+				 List<ProductEmployeeDetails>   actualCount=personalRepo.findByQuoteNoAndSectionIdAndProductIdOrderByRiskIdAsc(req.getQuoteNo(),req.getSectionId().toString(),req.getProductId());
+				 Integer actualEmpCount=actualCount.size();
+				 Integer uploadedCount=0;
+				 Integer count =0;
+				 if(passCount.size()>=0)
+					{
+						for(EserviceCommonDetails data:passCount)
+						{
+							count=count+data.getCount();
+						}		
+						uploadedCount=count-actualEmpCount;	
+						res.setExpectedCount(count.longValue());
+						res.setActualCount(actualEmpCount.longValue());
+						res.setUploadCount(uploadedCount.longValue());
+					}				 
+		}
 			 
 		
 		} catch ( Exception e) {
