@@ -377,14 +377,20 @@ public class RatingFactorsUtil {
 	@Cacheable(cacheNames = {"ProductToRawtable"},keyGenerator  = "getProductIdBasedRawTable",value = "ProductToRawtable" )
 	public synchronized String getProductIdBasedRawTable(CalcEngine engine) {
 		try{
-			//String todayInString = DD_MM_YYYY.format(new Date());
-			String productId=engine.getProductId();
-			if("3".equals(engine.getProductId()) && "35".equals(engine.getSectionId()))
-				productId=engine.getSectionId();
 			
-			String prodSearch="itemType:ESERVICE_TABLE;status:Y;displayName:"+productId+";";				
-			SpecCriteria	criteria = crservice.createCriteria(OneTimeTableDetails.class, prodSearch, "parentId");			  
-			List<Tuple> product = crservice.getResult(criteria, 0, 1);
+			String prodSearch="itemType:ESERVICE_TABLE;status:Y;displayName:"+engine.getProductId()+";itemValue:"+engine.getSectionId()+";";
+			SpecCriteria	criteria = crservice.createCriteria(OneTimeTableDetails.class, prodSearch, "parentId");
+			List<Tuple> product =null;
+			List<Long> count = crservice.getCount(criteria, 0, 1);
+			if(!count.isEmpty()) { 
+				Long countrec = count.get(0);
+				if(countrec<=0) {				
+					 prodSearch="itemType:ESERVICE_TABLE;status:Y;displayName:"+engine.getProductId()+";";
+					 criteria = crservice.createCriteria(OneTimeTableDetails.class, prodSearch, "parentId");					
+				}
+				product= crservice.getResult(criteria, 0, 1);
+			}	
+			
 			String rawTable=product.get(0).get("itemCode")==null?"0":product.get(0).get("itemCode").toString();
 			return "com.maan.eway.bean."+rawTable;
 
