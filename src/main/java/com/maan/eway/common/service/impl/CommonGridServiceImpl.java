@@ -1997,10 +1997,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
 				CoverMaster coverdata = null;
-				EndtTypeMaster entMaster = ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());/*endtTypeRepo
-						.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
-								req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
-								Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
+				EndtTypeMaster entMaster =ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());
 				String endTypeDesc = entMaster.getEndtTypeDesc();
 				String endtFeeYn = entMaster.getEndtFeeYn();
 				String coverDesc = "";
@@ -2163,8 +2160,20 @@ public class CommonGridServiceImpl implements CommonGridService {
 						savedata.setDiscountCoverId(data.getCoverId());
 						policyCoverDataRepo.saveAndFlush(savedata);
 					}
+					
 
 				}
+				System.out.println("*************PolicyCoverData************");
+				System.out.println("Old QUOTE NO:"+prevQuoteNo);
+				//System.out.println("Old Customer Id:"+customerId);
+				System.out.println("Old Reference No:"+refNo);
+				System.out.println("QUOTE NO:"+quoteNo);
+				//System.out.println("New Customer Id:"+newCustId);
+				//System.out.println("Reference No:"+newRequestNo);
+				System.out.println("PreQuoteNo:"+prevPolicyNo);
+				System.out.println("OriginalPoicyNo:"+req.getPolicyNo());
+				System.out.println("Policy No:"+req.getPolicyNo()+"-"+count);
+				System.out.println("**********************************************");
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.info("Exception is ---> " + e.getMessage());
