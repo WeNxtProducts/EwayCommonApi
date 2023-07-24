@@ -75,10 +75,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
  				 BigDecimal domath = domath(t.getCalcType(), t.getRate(), si,t.getExchangeRate());
 				 t.setPremiumBeforeDiscount(domath.multiply(t.getProRata()));				 
 				 t.setPremiumBeforeDiscountLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumBeforeDiscount().multiply(t.getExchangeRate())))) ;
-				 boolean isSIbecomeZero=false;
-				 if(si.compareTo(BigDecimal.ZERO)==0 && domath.compareTo(BigDecimal.ZERO)==0 ) {
-					 isSIbecomeZero=true;
-				 }
+				 
 					 
 				 BigDecimal domathTira = domathTira(t.getCalcType(),t.getTiraRate(),t.getPremiumBeforeDiscountLC(),t.getExchangeRate()); //Tira Calculation only for referral
 				 t.setTiraSumInsured(domathTira);
@@ -298,14 +295,10 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 							 endorsement.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscountLC().subtract(endorsement.getPremiumBeforeDiscountLC()));
 							 endorsement.setPremiumBeforeDiscount(t.getPremiumBeforeDiscount().subtract(endorsement.getPremiumBeforeDiscount()));
 							 
-							 if(!isSIbecomeZero) {
+							 
 								 endorsement.setPremiumExcluedTax((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumExcluedTax().subtract(endorsement.getPremiumExcluedTax()).multiply(t.getProRata()))));
 								 endorsement.setPremiumExcluedTaxLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumExcluedTaxLC().subtract(endorsement.getPremiumExcluedTaxLC()).multiply(t.getProRata()))));
-							 }else {
-								 endorsement.setPremiumExcluedTax((BigDecimal) decimalFormat.parse(decimalFormat.format(endorsement.getPremiumExcluedTax().multiply(t.getProRata()).multiply(new BigDecimal("-1")))));
-								 endorsement.setPremiumExcluedTaxLC((BigDecimal) decimalFormat.parse(decimalFormat.format(endorsement.getPremiumExcluedTaxLC().multiply(t.getProRata()).multiply(new BigDecimal("-1")))));
-							 }
-							 
+							 						 
 							 
 							 //endorsement.setProRata(t.getProRata());
 
@@ -323,12 +316,12 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 						 List<Tax> inendtfees=endorsement.getTaxes().stream().filter(v -> v.getTaxId().equals(endtTypeId)).collect(Collectors.toList());
 						 Double endtFee=0D;
 						 if(inendtfees.size()>0) {
-							 TaxCalculator tcal=new TaxCalculator(endorsement.getPremiumExcluedTax().abs(),t.getExchangeRate(),this,customers.get(0));
+							 TaxCalculator tcal=new TaxCalculator(endorsement.getPremiumExcluedTax(),t.getExchangeRate(),this,customers.get(0));
 							 inendtfees.stream().forEach(tcal);
 							 endtFee= inendtfees.stream().mapToDouble(o -> o.getTaxAmount().doubleValue()).sum();
 						 }
 						 
-						 TaxCalculator tcal=new TaxCalculator(endorsement.getPremiumExcluedTax().add(new BigDecimal(endtFee)).abs(),t.getExchangeRate(),this,customers.get(0));
+						 TaxCalculator tcal=new TaxCalculator(endorsement.getPremiumExcluedTax().add(new BigDecimal(endtFee)),t.getExchangeRate(),this,customers.get(0));
 						 notendtfees.stream().forEach(tcal);
 						 totaltax = endorsement.getTaxes().stream().mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
 					 
