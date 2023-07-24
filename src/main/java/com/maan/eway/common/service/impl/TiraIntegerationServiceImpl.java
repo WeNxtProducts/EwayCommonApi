@@ -74,7 +74,7 @@ public class TiraIntegerationServiceImpl {
 			String url=nonMotorTiraLink; 
 			if  (  product.getMotorYn().equalsIgnoreCase("M") ) {
 				url=tiraIntegPushLink;
-			}
+			} 
 				// Call Integeration
 			/*	PremiaRequest premiaReq = new PremiaRequest(); 
 				premiaReq.setQuoteNo(tiraReq.getQuoteNo());
@@ -99,6 +99,11 @@ public class TiraIntegerationServiceImpl {
 				
 				*/
 				// Tira Request Frame
+			if( data.getProductId().equals(4) ) {
+				
+				res.setResponse("Success");
+				
+			} else {
 				Object tiraFramedReq = TiraReqFrame(tiraReq, token);
 				res.setResponse("Success");
 				// Tira Integ Push
@@ -111,7 +116,8 @@ public class TiraIntegerationServiceImpl {
 					res.setResponse("Failed");
 					log.info("Tira Frame "+tiraFramedReq);	
 				}
-			//}
+			}
+	//}
 			
 			
 			res.setSuccessId("");
