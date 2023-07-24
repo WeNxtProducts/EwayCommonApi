@@ -186,8 +186,9 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			
 			LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());
 			
+			List<LoginProductMaster> prod = loginProductRepo.findByLoginIdAndCompanyId(req.getLoginId(), req.getInsuranceId());
+			
 			for ( CompanyProductMaster data : list  ) {
-				
 			
 				LoginProductMaster save = new LoginProductMaster();
 				dozerMapper.map(data, save);
@@ -202,25 +203,30 @@ public class LoginProductServiceImpl  implements LoginProductService {
 				save.setAgencyCode(Integer.valueOf(loginData.getAgencyCode()));
 				save.setOaCode(loginData.getOaCode());
 				save.setCommissionPercent(15);
-//				String financeid = "";
-//				String nonfinanceid = "";
-//				List<EndtTypeMaster> endtids = getEndtId(req.getInsuranceId(), data.getProductId()); 								
-//				for(EndtTypeMaster endtid :endtids) {				
-//					if(endtid.getEndtTypeCategoryId().toString().equalsIgnoreCase("2")) {						
-//						financeid = financeid+","+endtid.getEndtTypeId().toString();
-//					}
-//					else if(endtid.getEndtTypeCategoryId().toString().equalsIgnoreCase("1")){
-//						nonfinanceid = nonfinanceid+","+endtid.getEndtTypeId().toString();						
-//					}					
-//				}
-//				if(StringUtils.isNotBlank(financeid)) {
-//				financeid=financeid.substring(1);
-//				}
-//				if(StringUtils.isNotBlank(nonfinanceid)) {
-//				nonfinanceid=nonfinanceid.substring(1);
-//				}
-//				save.setFinancialEndtIds(financeid);
-//				save.setNonFinancialEndtIds(nonfinanceid);
+				
+				List<LoginProductMaster> prodfilter = prod.stream().filter(o ->o.getProductId().equals(data.getProductId())).collect(Collectors.toList());
+				
+				if(! (prodfilter.size()>0)) {
+					String financeid = "";
+					String nonfinanceid = "";
+					List<EndtTypeMaster> endtids = getEndtId(req.getInsuranceId(), data.getProductId()); 								
+					for(EndtTypeMaster endtid :endtids) {				
+						if(endtid.getEndtTypeCategoryId().toString().equalsIgnoreCase("2")) {						
+							financeid = financeid+","+endtid.getEndtTypeId().toString();
+						}
+						else if(endtid.getEndtTypeCategoryId().toString().equalsIgnoreCase("1")){
+							nonfinanceid = nonfinanceid+","+endtid.getEndtTypeId().toString();						
+						}					
+					}
+					if(StringUtils.isNotBlank(financeid)) {
+					financeid=financeid.substring(1);
+					}
+					if(StringUtils.isNotBlank(nonfinanceid)) {
+					nonfinanceid=nonfinanceid.substring(1);
+					}
+					save.setFinancialEndtIds(financeid);
+					save.setNonFinancialEndtIds(nonfinanceid);
+				}
 				
 				loginProductRepo.saveAndFlush(save);
 				log.info("Saved Details is ---> " + json.toJson(save));
