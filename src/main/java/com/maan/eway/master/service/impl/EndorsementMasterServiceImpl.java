@@ -891,7 +891,7 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			today = cal.getTime();
 			LoginMaster login = loginmasterrepo.findByLoginId(req.getLoginId());
 		//	List<LoginProductMaster> product = loginRepo.findByOaCodeAndAgencyCodeAndProductIdAndCompanyIdOrderByAmendIdDesc(login.getOaCode(),login.getAgencyCode(),Integer.valueOf(req.getProductId()),req.getCompanyId());	
-			List<LoginProductMaster> product = loginRepo.findByOaCodeAndAgencyCodeAndProductIdAndCompanyIdOrderByAmendIdDesc(login.getOaCode(),Integer.valueOf(login.getAgencyCode()),Integer.valueOf(req.getProductId()),req.getCompanyId());
+			List<LoginProductMaster> product = loginRepo.findByOaCodeAndAgencyCodeAndProductIdAndCompanyIdOrderByAmendIdAsc(login.getOaCode(),Integer.valueOf(login.getAgencyCode()),Integer.valueOf(req.getProductId()),req.getCompanyId());
 			String endtid = "";
 			if(req.getEndtTypeCategoryId().equalsIgnoreCase("2")) {
 			endtid = product.get(0).getFinancialEndtIds();

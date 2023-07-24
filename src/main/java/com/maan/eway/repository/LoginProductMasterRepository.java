@@ -42,6 +42,9 @@ public interface LoginProductMasterRepository  extends JpaRepository<LoginProduc
 
 	List<LoginProductMaster> findByOaCodeAndAgencyCodeAndProductIdAndCompanyIdOrderByAmendIdDesc(Integer oaCode,
 			Integer valueOf, Integer valueOf2, String companyId);
+
+	List<LoginProductMaster> findByOaCodeAndAgencyCodeAndProductIdAndCompanyIdOrderByAmendIdAsc(Integer oaCode,
+			Integer valueOf, Integer valueOf2, String companyId);
 	
 
 
