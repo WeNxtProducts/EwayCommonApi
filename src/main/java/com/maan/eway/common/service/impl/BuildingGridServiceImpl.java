@@ -1500,8 +1500,8 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 //					custRefNo);
 
 			// Copy ESERVICE_COMMON_DETAILS
-//			eserviceCommonDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId, prevPolicyNo, prevQuoteNo,
-//					count, custRefNo);
+			eserviceCommonDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId, prevPolicyNo, prevQuoteNo,
+					count, custRefNo);
 
 			// Copy ESERVICE_SECTION_DETAILS
 			eserviceSectionDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
@@ -1855,9 +1855,10 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 							req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 							Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
 					
-					EserviceCommonDetails custData = eserCommonRepo.findByQuoteNo(req.getQuoteNo());
-					if (custData!=null) 
-							savedata = dozerMapper.map(custData, EserviceCommonDetails.class);
+					List<EserviceCommonDetails> commData = eserCommonRepo.findByQuoteNo(prevQuoteNo);
+					if (commData!=null && commData.size()>0 ) 
+						for(EserviceCommonDetails commData1:commData) {
+							savedata = dozerMapper.map(commData1, EserviceCommonDetails.class);
 							savedata.setEntryDate(new Date());
 							savedata.setQuoteNo(quoteNo);
 							savedata.setCustomerId(customerId);
@@ -1882,7 +1883,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 							savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
 							eserCommonRepo.saveAndFlush(savedata);
 				
-				
+						}
 				} catch (Exception e) {
 					e.printStackTrace();
 					log.info("Exception is ---> " + e.getMessage());
@@ -1946,9 +1947,9 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 					}
 					
 					//Eservice Common Details
-					EserviceCommonDetails commonList = eserCommonRepo.findByQuoteNo(quoteNo);
-					if (commonList!=null) {
-						eserCommonRepo.delete(commonList);
+					List<EserviceCommonDetails> commonList = eserCommonRepo.findByQuoteNo(quoteNo);
+					if (commonList!=null&& commonList .size()>0) {
+						eserCommonRepo.deleteAll(commonList);
 					}
 					//Building Details
 					List<BuildingDetails> buildingList = buildingRepo.findByQuoteNo(quoteNo);
