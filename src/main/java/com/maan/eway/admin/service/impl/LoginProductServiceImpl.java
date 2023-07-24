@@ -206,10 +206,10 @@ public class LoginProductServiceImpl  implements LoginProductService {
 				String nonfinanceid = "";
 				List<EndtTypeMaster> endtids = getEndtId(req.getInsuranceId(), data.getProductId()); 								
 				for(EndtTypeMaster endtid :endtids) {				
-					if(endtid.getEndtTypeCategoryId().toString().equalsIgnoreCase("1")) {						
+					if(endtid.getEndtTypeCategoryId().toString().equalsIgnoreCase("2")) {						
 						financeid = financeid+","+endtid.getEndtTypeId().toString();
 					}
-					else {
+					else if(endtid.getEndtTypeCategoryId().toString().equalsIgnoreCase("1")){
 						nonfinanceid = nonfinanceid+","+endtid.getEndtTypeId().toString();						
 					}					
 				}
