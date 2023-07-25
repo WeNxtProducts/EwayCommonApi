@@ -1582,7 +1582,7 @@ public class DropDownController {
 	}
 	
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-	@PostMapping("/paymenttype")
+	@PostMapping("/taxpaymenttype")
 	public ResponseEntity<CommonRes> getPaymentFor(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
 		List<DropDownRes> res = dropDownService.getPaymentFor(req);
