@@ -1760,24 +1760,25 @@ public class QuoteThreadCall implements Callable<Object>  {
 						
 					}) ;
 					
-					//Doc traces delete 
-					List<EserviceSectionDetails> secs = eserSecRepo.findByRequestReferenceNoAndStatus(req.getRequestReferenceNo(),"Y");
-					
-					List<String> secIds = secs.stream().map(EserviceSectionDetails :: getSectionId).collect(Collectors.toList());
-					
 				
-					List<DocumentTransactionDetails> doc = docRepo.findByQuoteNo(req.getQuoteNo());
-					
-					if (secIds.size()>0) {
-						
-						//unmatched based on sectionid
-					
-						List<DocumentTransactionDetails> docfilter = doc.stream().filter(o -> ! secIds.contains(o.getSectionId().toString())).collect(Collectors.toList());	
-						docRepo.deleteAll(docfilter);
-					}
 
 					motorRepo.saveAllAndFlush(motorDatas);
 					eserMotRepo.saveAll(eserMotors);
+				}
+				//Doc traces delete 
+				List<EserviceSectionDetails> secs = eserSecRepo.findByRequestReferenceNoAndStatus(req.getRequestReferenceNo(),"Y");
+				
+				List<String> secIds = secs.stream().map(EserviceSectionDetails :: getSectionId).collect(Collectors.toList());
+				
+			
+				List<DocumentTransactionDetails> doc = docRepo.findByQuoteNo(req.getQuoteNo());
+				
+				if (secIds.size()>0) {
+					
+					//unmatched based on sectionid
+				
+					List<DocumentTransactionDetails> docfilter = doc.stream().filter(o -> ! secIds.contains(o.getSectionId().toString())).collect(Collectors.toList());	
+					docRepo.deleteAll(docfilter);
 				}
 				
 	 			res.put("Response", "Success") ;
