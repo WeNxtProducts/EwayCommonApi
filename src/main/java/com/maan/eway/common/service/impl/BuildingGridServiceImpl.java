@@ -1393,8 +1393,9 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 					prevPolicyNo = motors.get(1).getPolicyNo();
 					prevQuoteNo = motors.get(1).getQuoteNo();
 				} else {
-					prevPolicyNo = req.getPolicyNo();
-					prevQuoteNo = motor.get(0).getEndtPrevQuoteNo();
+					//prevPolicyNo = req.getPolicyNo();
+					prevPolicyNo =motor.get(0).getEndtPrevPolicyNo();
+					prevQuoteNo = motor.get(0).getQuoteNo();
 				}
 			}
 
@@ -1455,9 +1456,9 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 				savedata.setEndorsementDate(new Date());
 				savedata.setEndorsementRemarks(req.getEndtRemarks());
 				savedata.setEndorsementEffdate(req.getEndtEffectiveDate());
-				savedata.setEndtPrevPolicyNo(prevPolicyNo);
-				// savedata.setEndtPrevPolicyNo(req.getPolicyNo()+"-"+count);
-				savedata.setEndtPrevQuoteNo(prevQuoteNo);
+				//savedata.setEndtPrevPolicyNo(prevPolicyNo);
+				savedata.setEndtPrevPolicyNo(req.getPolicyNo()+"-"+count);
+				//savedata.setEndtPrevQuoteNo(prevQuoteNo);
 				savedata.setEndtCount(new BigDecimal(count));
 				savedata.setEndtStatus("P");
 				savedata.setIsFinaceYn(entMaster.getEndtTypeCategoryId() == 2 ? "Y" : "N");
@@ -1477,7 +1478,8 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 		System.out.println("QUOTE NO:"+quoteNo);
 		System.out.println("New Customer Id:"+newCustId);
 		System.out.println("Reference No:"+newRequestNo);
-		System.out.println("PreQuoteNo:"+prevPolicyNo);
+		System.out.println("prevPolicyNo:"+prevPolicyNo);
+		System.out.println("PreQuoteNo:"+prevQuoteNo);
 		System.out.println("OriginalPoicyNo:"+req.getPolicyNo());
 		System.out.println("Policy No:"+req.getPolicyNo()+"-"+count);
 		System.out.println("**********************************************");
@@ -2417,7 +2419,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 									req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 									Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
 
-					List<SectionDataDetails> eserSec = sectionDataRepo.findByQuoteNoAndStatusOrderByRiskIdAsc(prevQuoteNo,"Y");
+					List<SectionDataDetails> eserSec = sectionDataRepo.findByQuoteNoAndStatusNot(prevQuoteNo,"D");
 					if (eserSec != null && eserSec.size()>0 ) {
 						for (SectionDataDetails data : eserSec) {
 							savedata = dozerMapper.map(data, SectionDataDetails.class);

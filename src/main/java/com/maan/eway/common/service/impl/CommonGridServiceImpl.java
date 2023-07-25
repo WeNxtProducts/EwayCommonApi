@@ -2198,8 +2198,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 												 * Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 												 */
 
-				List<SectionDataDetails> eserSec = sectionDataRepo.findByQuoteNoAndStatusOrderByRiskIdAsc(prevQuoteNo,
-						"Y");
+				List<SectionDataDetails> eserSec = sectionDataRepo.findByQuoteNoAndStatusNot(prevQuoteNo,"Y");
 				if (eserSec != null && eserSec.size() > 0) {
 					for (SectionDataDetails data : eserSec) {
 						savedata = dozerMapper.map(data, SectionDataDetails.class);

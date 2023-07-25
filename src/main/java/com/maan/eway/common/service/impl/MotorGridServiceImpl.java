@@ -1214,8 +1214,11 @@ public class MotorGridServiceImpl implements MotorGridService {
 							prevPolicyNo=motors.get(1).getPolicyNo();
 							prevQuoteNo =motors.get(1).getQuoteNo();
 						}else {
-							prevPolicyNo=req.getPolicyNo();
-							prevQuoteNo =motor.get(0).getEndtPrevQuoteNo();
+//							prevPolicyNo=req.getPolicyNo();
+//							prevQuoteNo =motor.get(0).getEndtPrevQuoteNo();
+							//prevPolicyNo = req.getPolicyNo();
+							prevPolicyNo =motor.get(0).getEndtPrevQuoteNo();
+							prevQuoteNo = motor.get(0).getQuoteNo();
 						}
 					}
 					
