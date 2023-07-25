@@ -193,6 +193,10 @@ public interface DropDownService {
 
 	List<DropDownRes> getSectionModifyType(LovDropDownReq req);
 
+	List<DropDownRes> getTaxFor(LovDropDownReq req);
+
+	List<DropDownRes> getPaymentFor(LovDropDownReq req);
+
 
 
 

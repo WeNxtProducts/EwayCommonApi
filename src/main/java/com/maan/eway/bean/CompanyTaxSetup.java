@@ -122,6 +122,15 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="TAX_CODE", length=20)
     private String   taxCode;
+    
+    @Column(name="TAX_FOR", length=20)
+    private Integer   taxFor;
+    
+    @Column(name="TAX_FOR_DESC", length=20)
+    private String   taxForDesc;
+    
+    @Column(name="CHARGE_OR_REFUND", length=20)
+    private String   chargeOrRefund;
 
     
 }
