@@ -343,6 +343,7 @@ public class EserviceBuildingsDetailsRes implements Serializable {
 	@JsonProperty("GensetsSi")
 	private String gensetsSi;
 
-	
+	@JsonProperty("VatCommission")
+	private String vatCommission;
   
 }

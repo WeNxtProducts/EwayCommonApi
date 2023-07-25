@@ -337,6 +337,12 @@ private static final long serialVersionUID = 1L;
    
    @Column(name="ENDT_CATEG_DESC", length=100)
    private String     endtCategDesc ;
+   
+   @Column(name="COMMISSION_PERCENTAGE")
+   private BigDecimal commissionPercentage;
+   
+   @Column(name="VAT_COMMISSION")
+   private BigDecimal vatCommission;
 }
 
 

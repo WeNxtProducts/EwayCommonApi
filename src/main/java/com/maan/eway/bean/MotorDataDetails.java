@@ -478,6 +478,12 @@ private static final long serialVersionUID = 1L;
    
    @Column(name="TIRA_COVER_NOTE_NO")
    private String tiraCoverNoteNo;
+   
+   @Column(name="COMMISSION_PERCENTAGE")
+   private BigDecimal commissionPercentage;
+   
+   @Column(name="VAT_COMMISSION")
+   private BigDecimal vatCommission;
 }
 
 

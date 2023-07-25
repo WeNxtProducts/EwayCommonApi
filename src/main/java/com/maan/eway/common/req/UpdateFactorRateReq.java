@@ -35,4 +35,10 @@ public class UpdateFactorRateReq {
 	@JsonProperty("GroupId")
 	private Integer groupId;
 	
+	@JsonProperty("CommissionPercentage")
+	private String commissionPercentage;
+	
+	@JsonProperty("VatCommissison")
+	private String vatCommissison;
+	
 }

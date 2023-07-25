@@ -238,5 +238,10 @@ public class QuoteDetailsRes {
 	
 	@JsonProperty("TotalEndtPremium")
 	private BigDecimal TotalEndtPremium;
+
+	@JsonProperty("CommissionPercentage")
+	private String commissionPercentage;
 	
+	@JsonProperty("VatCommission")
+	private String vatCommission;
 }

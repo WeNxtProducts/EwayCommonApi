@@ -53,6 +53,7 @@ import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.MasterReferralDetails;
 import com.maan.eway.bean.MotorDataDetails;
+import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.calculator.util.TaxFromFactor;
@@ -1251,6 +1252,8 @@ this.repository = repo;
 				res.setSectionId(mot.getSectionId() );
 				res.setSectionName(mot.getSectionName());	
 				res.setEffectiveDate(mot.getEndorsementEffdate()==null?null:mot.getEndorsementEffdate() );
+				res.setCommissionPercentage(mot.getCommissionPercentage()==null?"" :mot.getCommissionPercentage().toPlainString());
+				res.setVatCommission(mot.getVatCommission()==null?"" :mot.getVatCommission().toPlainString());
 				//res.setEndorsementYn(mot.getEndorsementType()==null?"N":"Y");
 				if(mot.getEndorsementType()!=null) {
 					EndtTypeMaster endtmaster = ratingutil.getEndtMasterData(mot.getCompanyId(),req.getProductId(),mot.getEndorsementType().toString());
@@ -1307,6 +1310,8 @@ this.repository = repo;
 					res.setSectionId(travelData.getSectionId() );
 					res.setSectionName(travelData.getSectionName());
 					res.setEffectiveDate(travelData.getEndorsementEffdate()==null?null:travelData.getEndorsementEffdate() );
+					res.setCommissionPercentage(travelData.getCommissionPercentage()==null?"" :travelData.getCommissionPercentage().toPlainString());
+					res.setVatCommission(travelData.getVatCommission()==null?"" :travelData.getVatCommission().toPlainString());
 					//res.setEndorsementYn(travelData.getEndorsementType()==null?"N":"Y");
 					Object riskDetails = new Object();
 					EserviceTravelGetRes  travelRes = new EserviceTravelGetRes();
@@ -1368,7 +1373,8 @@ this.repository = repo;
 						res.setActualPremiumFc(acc.getActualPremiumFc()==null?"0":acc.getActualPremiumFc().toPlainString());
 						res.setActualPremiumLc(acc.getActualPremiumLc()==null?"0":acc.getActualPremiumLc().toPlainString());
 						res.setEffectiveDate(acc.getEndorsementEffdate()==null?null:acc.getEndorsementEffdate() );
-						
+						res.setCommissionPercentage(acc.getCommissionPercentage()==null?"" :acc.getCommissionPercentage().toPlainString());
+						res.setVatCommission(acc.getVatCommission()==null?"" :acc.getVatCommission().toPlainString());
 						Object riskDetails = new Object();
 						EserviceBuildingsDetailsRes  buildRes = new EserviceBuildingsDetailsRes();
 						dozerMapper.map(acc, buildRes);
@@ -1406,7 +1412,8 @@ this.repository = repo;
 						res.setSectionName( sec.getSectionName() );
 						res.setGroupId(buildData.getRiskId()==null?null:buildData.getRiskId());
 						res.setEffectiveDate(buildData.getEndorsementEffdate()==null?null:buildData.getEndorsementEffdate() );
-						
+						res.setCommissionPercentage(buildData.getCommissionPercentage()==null?"" :buildData.getCommissionPercentage().toPlainString());
+						res.setVatCommission(buildData.getVatCommission()==null?"" :buildData.getVatCommission().toPlainString());
 						Object riskDetails = new Object();
 						EserviceBuildingsDetailsRes  buildRes = new EserviceBuildingsDetailsRes();
 						dozerMapper.map(buildData, buildRes);
@@ -1454,6 +1461,8 @@ this.repository = repo;
 				res.setSectionId(comData.getSectionId() );
 				res.setSectionName( StringUtils.isNotBlank(comData.getOccupationDesc()) ? comData.getOccupationDesc() :  comData.getSectionName()  ) ;
 				res.setEffectiveDate(comData.getEndorsementEffdate()==null?null:comData.getEndorsementEffdate() );
+				res.setCommissionPercentage(comData.getCommissionPercentage()==null?"" :comData.getCommissionPercentage().toPlainString());
+				res.setVatCommission(comData.getVatCommission()==null?"" :comData.getVatCommission().toPlainString());
 				//res.setEndorsementYn(comData.getEndorsementType()==null?"N":"Y");
 				Object riskDetails = new Object();
 				EserviceCommonGetRes comRes = new EserviceCommonGetRes();
@@ -1901,9 +1910,10 @@ this.repository = repo;
 			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(req.getRequestReferenceNo() , req.getVehicleId() ,
 					req.getCompanyId() , Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;	
 		
-			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getCompanyId() , req.getProductId().toString());
-
-			if(    product.getMotorYn().equalsIgnoreCase("M") ){
+			List<ProductSectionMaster> sectionList = getProductSectionDropdown(req.getCompanyId(), req.getProductId(), req.getSectionId() ) ;
+			String productType  =sectionList.size()> 0 ? sectionList.get(0).getMotorYn() :  "M" ; 
+			
+			if(    productType.equalsIgnoreCase("M") ){
 				EserviceMotorDetails  findMot = eserMotorRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo() , req.getVehicleId() 
 						) ;
 				agencyCode = findMot.getAgencyCode();
@@ -1919,8 +1929,13 @@ this.repository = repo;
 					engine.setEffectiveDate(findMot.getEndorsementEffdate());
 					engine.setPolicyEndDate(findMot.getPolicyEndDate());
 				}
-			
-			} else if(   product.getMotorYn().equalsIgnoreCase("H") &&  req.getProductId().equalsIgnoreCase(travelProductId)) {
+				
+				// Update Commission
+				findMot.setCommissionPercentage(StringUtils.isNotBlank(req.getCommissionPercentage() ) ? new BigDecimal(req.getCommissionPercentage()) :  findMot.getCommissionPercentage() );
+				findMot.setVatCommission(StringUtils.isNotBlank(req.getVatCommissison() ) ? new BigDecimal(req.getVatCommissison()) :  findMot.getVatCommission() );;
+				eserMotorRepo.save(findMot);
+				
+			} else if(   productType.equalsIgnoreCase("H") &&  req.getProductId().equalsIgnoreCase(travelProductId)) {
 				EserviceTravelDetails  findTra = eserTraRepo.findByRequestReferenceNoAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() ,
 						req.getCompanyId() , 	 req.getProductId(),req.getSectionId()  ) ;
 				agencyCode = findTra.getBrokerCode();
@@ -1930,8 +1945,11 @@ this.repository = repo;
 				endtCount=findTra.getEndtCount();
 			//	EserviceTravelGroupDetails  findGroup = eserGroupRepo.findByRequestReferenceNoAndTravelIdAndGroupIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,Integer.valueOf(req.getGroupId()) ,
 			//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
-				
-			} else if(    product.getMotorYn().equalsIgnoreCase("A") ) {
+				// Update Commission
+				findTra.setCommissionPercentage(StringUtils.isNotBlank(req.getCommissionPercentage() ) ? new BigDecimal(req.getCommissionPercentage()) :  findTra.getCommissionPercentage() );
+				findTra.setVatCommission(StringUtils.isNotBlank(req.getVatCommissison() ) ? new BigDecimal(req.getVatCommissison()) :  findTra.getVatCommission() );
+				eserTraRepo.save(findTra);
+			} else if(    productType.equalsIgnoreCase("A") ) {
 				EserviceBuildingDetails    findBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndCompanyIdAndProductId(req.getRequestReferenceNo() , 1 ,
 						req.getCompanyId() , 	 req.getProductId()  ) ;
 				agencyCode = findBuild.getBrokerCode();
@@ -1939,6 +1957,10 @@ this.repository = repo;
 				currencyId = findBuild.getCurrency();
 				endtTypdId= findBuild.getEndorsementType()!=null?findBuild.getEndorsementType().toString():"";
 				endtCount=findBuild.getEndtCount();
+				// Update Commission
+				findBuild.setCommissionPercentage(StringUtils.isNotBlank(req.getCommissionPercentage() ) ? new BigDecimal(req.getCommissionPercentage()) :  findBuild.getCommissionPercentage() );
+				findBuild.setVatCommission(StringUtils.isNotBlank(req.getVatCommissison() ) ? new BigDecimal(req.getVatCommissison()) :  findBuild.getVatCommission() );
+				eserBuildRepo.save(findBuild);
 			//	EserviceBuildingSectionDetails  findBuildSec = eserBuildSecRepo.findByRequestReferenceNoAndLocationIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,
 			//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
 			} else  {
@@ -1948,6 +1970,10 @@ this.repository = repo;
 				currencyId = findCommon.getCurrency();
 				endtTypdId= findCommon.getEndorsementType()!=null?findCommon.getEndorsementType().toString():"";
 				endtCount=findCommon.getEndtCount();
+				// Update Commission
+				findCommon.setCommissionPercentage(StringUtils.isNotBlank(req.getCommissionPercentage() ) ? new BigDecimal(req.getCommissionPercentage()) :  findCommon.getCommissionPercentage() );
+				findCommon.setVatCommission(StringUtils.isNotBlank(req.getVatCommissison() ) ? new BigDecimal(req.getVatCommissison()) :  findCommon.getVatCommission() );
+				eserCommonRepo.save(findCommon);
 			//	EserviceBuildingSectionDetails  findBuildSec = eserBuildSecRepo.findByRequestReferenceNoAndLocationIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,
 			//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
 			}
@@ -2035,7 +2061,75 @@ this.repository = repo;
 		}return res;
 	}
 
+	public List<ProductSectionMaster> getProductSectionDropdown(String companyId, String productId , String sectionId) {
+		List<ProductSectionMaster> sectionList = new ArrayList<ProductSectionMaster>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
 
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ProductSectionMaster> query = cb.createQuery(ProductSectionMaster.class);
+		
+			// Find All
+			Root<ProductSectionMaster> c = query.from(ProductSectionMaster.class);
+
+			// Select
+			query.select(c);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("sectionName")));
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<ProductSectionMaster> ocpm1 = effectiveDate.from(ProductSectionMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a3 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3, a4);
+
+			// Effective Date End
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<ProductSectionMaster> ocpm2 = effectiveDate2.from(ProductSectionMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			javax.persistence.criteria.Predicate a5 = cb.equal(c.get("sectionId"), ocpm2.get("sectionId"));
+			Predicate a7 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a8 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+
+			javax.persistence.criteria.Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a5, a6, a7, a8);
+
+			// Where
+			javax.persistence.criteria.Predicate n1 = cb.equal(c.get("status"), "Y");
+			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			javax.persistence.criteria.Predicate n4 = cb.equal(c.get("companyId"), companyId);
+			javax.persistence.criteria.Predicate n5 = cb.equal(c.get("productId"), productId);
+			Predicate n6 = cb.equal(c.get("sectionId"), sectionId);
+			query.where(n1, n2, n3, n4, n5, n6).orderBy(orderList);
+		//	query.where(n1, n2, n3, n4, n5).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<ProductSectionMaster> result = em.createQuery(query);
+			sectionList = result.getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return sectionList;
+	}
 	@Override
 	public List<Error> validateFactorIsSelectedDetails(UpdateFactorRateReq req) {
 		List<Error> errors = new ArrayList<Error>();

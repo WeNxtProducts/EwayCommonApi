@@ -146,7 +146,10 @@ public class EservieMotorDetailsViewRes {
 	 
 	 @JsonProperty("AccessoriesSumInsured")
 	 private Double accessoriesSumInsured;
-	 
 		
-	
+	 @JsonProperty("CommissionPercentage")
+	 private String commissionPercentage;
+	 
+	 @JsonProperty("VatCommission")
+	 private String vatCommission;
 }

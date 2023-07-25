@@ -303,6 +303,12 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="ENDT_PREMIUM")
     private Double       endtPremium ;
+    
+    @Column(name="COMMISSION_PERCENTAGE")
+    private BigDecimal commissionPercentage;
+    
+    @Column(name="VAT_COMMISSION")
+    private BigDecimal vatCommission;
 }
 
 

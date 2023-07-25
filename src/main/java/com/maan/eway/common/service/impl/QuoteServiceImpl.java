@@ -305,6 +305,8 @@ public class QuoteServiceImpl implements QuoteService {
 			quoteRes.setOverAllPremiumLc(homeData.getOverallPremiumLc()==null?"":homeData.getOverallPremiumLc().toPlainString());
 			quoteRes.setPremiumFc(homeData.getPremiumFc()==null?"":homeData.getPremiumFc().toPlainString() );
 			quoteRes.setPremiumLc(homeData.getPremiumLc()==null?"":homeData.getPremiumLc().toPlainString());
+			quoteRes.setCommissionPercentage(homeData.getCommissionPercentage()==null?"":homeData.getCommissionPercentage().toPlainString());
+			quoteRes.setVatCommission(homeData.getVatCommission()==null?"":homeData.getVatCommission().toPlainString());
 			quoteRes.setAdminRemarks(homeData.getAdminRemarks());
 			quoteRes.setReferalRemarks(homeData.getReferralDescription());
 			quoteRes.setBrokerBranchCode(homeData.getBrokerBranchCode());
@@ -456,20 +458,11 @@ public class QuoteServiceImpl implements QuoteService {
 			List<DocumentDetails> documentDetails = new ArrayList<DocumentDetails>();			
 			for (MotorDataDetails mot :  motorDatas) {
 				EserviceMotorDetailsRes vehicleDetails = new  EserviceMotorDetailsRes()  ;
-				 List<BrokerCommissionDetails> policylist = getPolicyName(mot.getCompanyId() , mot.getProductId().toString(), mot.getCreatedBy(),mot.getAgencyCode(), mot.getPolicyType());
-				 Double commissionPercent =0.0;
-			
-				 if(policylist.size()>0 && policylist!=null) {
-
-				 commissionPercent = policylist.get(0).getCommissionPercentage().toString()==null?0: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
-				 }
-				 else {
-					 commissionPercent =5.0;
-				 }
+				
 				 String premiumFc = mot.getOverallPremiumFc().toString();
 				 String vatPremiumFc =	mot.getOverallPremiumFc().toString();
 				 BigDecimal commission=	new BigDecimal(premiumFc)
-			 				.multiply(new BigDecimal(commissionPercent))
+			 				.multiply(mot.getCommissionPercentage()==null ?  new BigDecimal("0") : mot.getCommissionPercentage())
 	 						.divide(BigDecimal.valueOf(100D))
 	 						.setScale(new MathContext(3, RoundingMode.HALF_UP)
 	 						.getPrecision(),RoundingMode.HALF_UP);
@@ -481,7 +474,8 @@ public class QuoteServiceImpl implements QuoteService {
 				vehicleDetails.setPremiumFc(mot.getActualPremiumFc()==null?0:mot.getActualPremiumFc() );
 				vehicleDetails.setPremiumLc(mot.getActualPremiumLc()==null?0:mot.getActualPremiumLc());
 				vehicleDetails.setCommissionAmount(commission.toString()==null?"":commission.toString());
-				vehicleDetails.setCommissionPercentage(commissionPercent.toString()==null?"":commissionPercent.toString());
+				vehicleDetails.setCommissionPercentage(mot.getCommissionPercentage()==null?"" : mot.getCommissionPercentage().toPlainString());
+				vehicleDetails.setVatCommission(mot.getVatCommission()==null?"" : mot.getVatCommission().toPlainString());	
 				// Cover Details
 				List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(mot.getVehicleId()))).collect(Collectors.toList());
 				
@@ -586,19 +580,11 @@ public class QuoteServiceImpl implements QuoteService {
 			buildingRes.setDocumentsTitle(buildData.getProductDesc());	
 			
 			
-			//Broker Commission 
-			List<BrokerCommissionDetails> policylist = getPolicyName(buildData.getCompanyId() , buildData.getProductId().toString(), buildData.getCreatedBy(),buildData.getAgencyCode(),"99999");
-			 Double commissionPercent = 0.0;
-			if(policylist.size()>0 && policylist!=null) {
-			commissionPercent = policylist.get(0).getCommissionPercentage().toString()==null?0: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
-			 	}
-			else {
-			 commissionPercent = 5.0; 
-			}
+			
 			 String premiumFc = buildData.getOverallPremiumFc().toString();
 			 String vatPremiumFc =	buildData.getOverallPremiumFc().toString();
 			 BigDecimal commission=	new BigDecimal(premiumFc)
-		 				.multiply(new BigDecimal(commissionPercent))
+		 				.multiply(buildData.getCommissionPercentage()==null ? new BigDecimal("0") : buildData.getCommissionPercentage())
  						.divide(BigDecimal.valueOf(100D))
  						.setScale(new MathContext(3, RoundingMode.HALF_UP)
  						.getPrecision(),RoundingMode.HALF_UP);
@@ -607,7 +593,9 @@ public class QuoteServiceImpl implements QuoteService {
 			 buildingRes.setPremiumFc(buildData.getActualPremiumFc()==null?0:Double.valueOf(buildData.getActualPremiumFc().toString()));
 			 buildingRes.setPremiumLc(buildData.getActualPremiumLc()==null?0:Double.valueOf(buildData.getActualPremiumLc().toString()));
 			 buildingRes.setCommissionAmount(commission==null?"":commission.toString());
-			 buildingRes.setCommissionPercentage(commissionPercent==null?"":commissionPercent.toString());
+			 buildingRes.setCommissionPercentage(buildData.getCommissionPercentage()==null?"buildData" : buildData.getCommissionPercentage().toPlainString());
+			 buildingRes.setVatCommission(buildData.getVatCommission()==null?"" : buildData.getVatCommission().toPlainString());	
+				
 			 buildingRes.setInsuranceForId(buildData.getInsuranceForId()!=null ? Arrays.asList(buildData.getInsuranceForId().split(",")) : null )  ;
 			 List<SectionDetails>  buildingSectionList = new ArrayList<SectionDetails>();
 			
@@ -926,19 +914,19 @@ public class QuoteServiceImpl implements QuoteService {
 				travelDetails.setPassengerName(tra.getPassengerName());
 				
 				List<PassengerSectionDetails>  SectionList = new ArrayList<PassengerSectionDetails>();	
-				 List<BrokerCommissionDetails> policylist = getPolicyName(tra.getCompanyId() , tra.getProductId().toString(), tra.getCreatedBy(),tra.getBrokerCode(), tra.getSectionId().toString());
-				 Double commissionPercent =0.0;
-				 if(policylist.size()>0 && policylist!=null) {
-				 commissionPercent = policylist.get(0).getCommissionPercentage().toString()==null?0: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
-				 }
-				 else {
-				 commissionPercent =5.0;
-				 }
+//				 List<BrokerCommissionDetails> policylist = getPolicyName(tra.getCompanyId() , tra.getProductId().toString(), tra.getCreatedBy(),tra.getBrokerCode(), tra.getSectionId().toString());
+//				 Double commissionPercent =0.0;
+//				 if(policylist.size()>0 && policylist!=null) {
+//				 commissionPercent = policylist.get(0).getCommissionPercentage().toString()==null?0: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
+//				 }
+//				 else {
+//				 commissionPercent =5.0;
+//				 }
 				 String premiumFc = tra.getOverallPremiumFc().toString();
 				 String vatPremiumFc =	tra.getOverallPremiumFc().toString();
 				 BigDecimal commission=	new BigDecimal(premiumFc)
-			 				.multiply(new BigDecimal(commissionPercent))
-	 						.divide(BigDecimal.valueOf(100D))
+			 				.multiply(tra.getCommissionPercentage()==null?BigDecimal.ZERO : tra.getCommissionPercentage() )
+			 				.divide(BigDecimal.valueOf(100D))
 	 						.setScale(new MathContext(3, RoundingMode.HALF_UP)
 	 						.getPrecision(),RoundingMode.HALF_UP);
 	
@@ -947,10 +935,10 @@ public class QuoteServiceImpl implements QuoteService {
 				 travelDetails.setPremiumFc(tra.getActualPremiumFc()==null?0:tra.getActualPremiumFc() );
 				 travelDetails.setPremiumLc(tra.getActualPremiumLc()==null?0:tra.getActualPremiumLc());
 				 travelDetails.setCommissionAmount(commission.toString()==null?"":commission.toString());
-				 travelDetails.setCommissionPercentage(commissionPercent.toString()==null?"":commissionPercent.toString());
-
-				
-				// Cover Details
+				 travelDetails.setCommissionPercentage(tra.getCommissionPercentage()==null?"" : tra.getCommissionPercentage().toPlainString());
+				 travelDetails.setVatCommission(tra.getVatCommission()==null?"" : tra.getVatCommission().toPlainString());				
+			
+				 // Cover Details
 				List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(tra.getPassengerId()))).collect(Collectors.toList());
 				
 				
@@ -1066,20 +1054,20 @@ public class QuoteServiceImpl implements QuoteService {
 
 				// Response
 				// Mot
-				 List<BrokerCommissionDetails> policylist = getPolicyName(com.getCompanyId() , com.getProductId().toString(), com.getCreatedBy(),com.getAgencyCode(),"99999");
-			
-				 Double commissionPercent = 0.0;
-					if(policylist.size()>0 && policylist!=null) {
-					
-				 commissionPercent = policylist.get(0).getCommissionPercentage().toString()==null?0: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
-					}
-					else {
-						commissionPercent =5.0;
-					}
+//				 List<BrokerCommissionDetails> policylist = getPolicyName(com.getCompanyId() , com.getProductId().toString(), com.getCreatedBy(),com.getAgencyCode(),"99999");
+//			
+//				 Double commissionPercent = 0.0;
+//					if(policylist.size()>0 && policylist!=null) {
+//					
+//				 commissionPercent = policylist.get(0).getCommissionPercentage().toString()==null?0: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
+//					}
+//					else {
+//						commissionPercent =5.0;
+//					}
 				 String premiumFc = com.getOverallPremiumFc().toString();
 				 String vatPremiumFc =	com.getOverallPremiumFc().toString();
 				 BigDecimal commission=	new BigDecimal(premiumFc)
-			 				.multiply(new BigDecimal(commissionPercent))
+			 				.multiply(com.getCommissionPercentage()==null ?  new BigDecimal("0") : com.getCommissionPercentage())
 	 						.divide(BigDecimal.valueOf(100D))
 	 						.setScale(new MathContext(3, RoundingMode.HALF_UP)
 	 						.getPrecision(),RoundingMode.HALF_UP);
@@ -1093,8 +1081,10 @@ public class QuoteServiceImpl implements QuoteService {
 				commonDetails.setPremiumFc(com.getActualPremiumFc()==null?0D:Double.valueOf(com.getActualPremiumFc().toString()));
 				commonDetails.setPremiumLc(com.getActualPremiumLc()==null?0D:Double.valueOf(com.getActualPremiumLc().toString()));
 				commonDetails.setCommissionAmount(commission.toString()==null?"":commission.toString());
-				commonDetails.setCommissionPercentage(commissionPercent.toString()==null?"":commissionPercent.toString());
-
+				commonDetails.setCommissionPercentage(com.getCommissionPercentage()==null?"" : com.getCommissionPercentage().toPlainString());
+				commonDetails.setVatCommission(com.getVatCommission()==null?"" : com.getVatCommission().toPlainString());				
+			
+				
 				// Section Details
 				SectionDetails sec = new SectionDetails(); 
 				sec.setSectionId(com.getSectionId()==null?"":com.getSectionId().toString());

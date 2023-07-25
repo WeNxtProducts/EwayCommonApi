@@ -213,4 +213,6 @@ public class EserviceMotorDetailsRes implements Serializable {
 		@JsonProperty("CommissionPercentage")
 	    private String commissionPercentage;	
 
+		@JsonProperty("VatCommission")
+	    private String vatCommission;	
 }

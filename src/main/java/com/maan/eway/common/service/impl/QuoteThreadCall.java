@@ -1,6 +1,7 @@
 package com.maan.eway.common.service.impl;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -2687,6 +2688,19 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setOriginalPolicyNo(motorData.getOriginalPolicyNo()==null?"":motorData.getOriginalPolicyNo());
 			home.setQuoteNo(request.getQuoteNo());
 			home.setRequestReferenceNo(request.getRequestReferenceNo());
+			List<EserviceMotorDetails> motList = eserMotRepo.findByRequestReferenceNo(request.getRequestReferenceNo());
+			
+			List<EserviceMotorDetails> filterComActive = motList.stream().filter( o ->  (! o.getStatus().equalsIgnoreCase("D")) &&  o.getCommissionPercentage() !=null ).collect(Collectors.toList());
+			BigDecimal commPercentage = new BigDecimal(filterComActive.stream().mapToDouble( o ->   o.getCommissionPercentage().doubleValue()   ).sum() ); 					  
+			BigDecimal commCount = new BigDecimal(filterComActive.size());
+			BigDecimal overAllcommPercent = commPercentage.divide(commCount).setScale(new MathContext(2, RoundingMode.HALF_UP).getPrecision(),RoundingMode.HALF_UP) ;
+			home.setCommissionPercentage(overAllcommPercent);
+			
+			List<EserviceMotorDetails> filterComVatActive = motList.stream().filter( o ->  (! o.getStatus().equalsIgnoreCase("D")) &&  o.getVatCommission() !=null ).collect(Collectors.toList());
+			BigDecimal commVatPercentage = new BigDecimal(filterComVatActive.stream().mapToDouble( o ->   o.getVatCommission().doubleValue()   ).sum() ); 					  
+			BigDecimal commVatCount = new BigDecimal(filterComVatActive.size());
+			BigDecimal overAllVatcommPercent = commVatPercentage.divide(commVatCount).setScale(new MathContext(2, RoundingMode.HALF_UP).getPrecision(),RoundingMode.HALF_UP) ;
+			home.setVatCommission(overAllVatcommPercent);
 			
 			if(StringUtils.isNotBlank(motorData.getEndorsementType()==null?null:String.valueOf(motorData.getEndorsementType()))) {
 				HomePositionMaster oldPosition = homeRepo.findByQuoteNo(motorData.getEndtPrevQuoteNo()==null?null:motorData.getEndtPrevQuoteNo());
@@ -2771,6 +2785,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setEndtCount(travelData.getEndtCount()==null?0:travelData.getEndtCount().intValue());	
 			home.setEndtTypeDesc(travelData.getEndorsementTypeDesc()==null?"":travelData.getEndorsementTypeDesc());
 			home.setOriginalPolicyNo(travelData.getOriginalPolicyNo()==null?"":travelData.getOriginalPolicyNo());
+			home.setCommissionPercentage(travelData.getCommissionPercentage());
+			home.setVatCommission(travelData.getVatCommission());
+			
 		}catch (Exception e) {
 			e.printStackTrace();
 			log.error("Exception is ---> " + e.getMessage());
@@ -2841,6 +2858,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setEndtCount(buildingData.getEndtCount()==null?0:buildingData.getEndtCount().intValue());	
 			home.setEndtTypeDesc(buildingData.getEndorsementTypeDesc()==null?"":buildingData.getEndorsementTypeDesc());
 			home.setOriginalPolicyNo(buildingData.getOriginalPolicyNo()==null?"":buildingData.getOriginalPolicyNo());
+			home.setCommissionPercentage(buildingData.getCommissionPercentage());
+			home.setVatCommission(buildingData.getVatCommission());
 		}catch (Exception e) {
 			e.printStackTrace();
 			log.error("Exception is ---> " + e.getMessage());
@@ -2908,6 +2927,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setEndtCount(eserCommonData.getEndtCount()==null?0:eserCommonData.getEndtCount().intValue());	
 			home.setEndtTypeDesc(eserCommonData.getEndorsementTypeDesc()==null?"":eserCommonData.getEndorsementTypeDesc());
 			home.setOriginalPolicyNo(eserCommonData.getOriginalPolicyNo()==null?"":eserCommonData.getOriginalPolicyNo());
+			home.setCommissionPercentage(eserCommonData.getCommissionPercentage());
+			home.setVatCommission(eserCommonData.getVatCommission());
+			
 		}catch (Exception e) {
 			e.printStackTrace();
 			log.error("Exception is ---> " + e.getMessage());

@@ -120,5 +120,6 @@ public class EserviceCommonGetRes {
 	@JsonProperty("FidEmpCount")
     private String fidEmpCount    ;
 	
-	
+	@JsonProperty("VatCommission")
+    private String vatCommission;
 }

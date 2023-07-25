@@ -630,6 +630,13 @@ private static final long serialVersionUID = 1L;
       
       @Column(name="GENSETS_SI")
       private BigDecimal gensetsSi;
+      
+      
+      @Column(name="COMMISSION_PERCENTAGE")
+      private BigDecimal commissionPercentage;
+      
+      @Column(name="VAT_COMMISSION")
+      private BigDecimal vatCommission;
 }
 
 
