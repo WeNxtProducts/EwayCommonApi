@@ -10,6 +10,7 @@ import com.maan.eway.master.req.EndorsementMasterGetallReq;
 import com.maan.eway.master.req.EndorsementMasterSaveReq;
 import com.maan.eway.master.res.EndorsementMasterGetallRes;
 import com.maan.eway.master.res.EndorsementMasterRes;
+import com.maan.eway.master.res.GetallEndorsementRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
@@ -30,6 +31,8 @@ public interface EndorsementMasterService {
 	List<DropDownRes> getEndorsementMasterDropdown(EndorsementMasterDropdownReq req);
 
 	List<EndorsementMasterGetallRes> getallBrokerEndorsement(EndorsementMasterGetallReq req);
+
+	List<GetallEndorsementRes> getallEndorsementGrid(EndorsementMasterGetallReq req);
 
 
 }

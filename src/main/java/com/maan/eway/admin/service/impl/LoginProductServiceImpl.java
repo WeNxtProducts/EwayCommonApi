@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 import com.maan.eway.admin.req.AttachCompnayProductRequest;
 import com.maan.eway.admin.req.AttachIssuerProductRequest;
@@ -51,7 +52,9 @@ import com.maan.eway.admin.res.ProductCriteriaRes;
 import com.maan.eway.admin.service.LoginProductService;
 import com.maan.eway.auth.dto.LoginProductCriteriaRes;
 import com.maan.eway.bean.BrokerCommissionDetails;
+import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.EndtDependantFieldMaster;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginMaster;
@@ -60,10 +63,13 @@ import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.BrokerCommissionDetailsMasterGetReq;
+import com.maan.eway.master.req.BrokerCommissionDetailsMasterSaveReq;
 import com.maan.eway.master.req.BrokerCommissionDetailsReq;
 import com.maan.eway.master.req.BrokerCompanyProductReq;
 import com.maan.eway.master.req.BrokerProductChangeReq;
 import com.maan.eway.master.req.BrokerProductReq;
+import com.maan.eway.master.res.BrokerCommissionDetailsMasterGetRes;
 import com.maan.eway.master.res.CompanyProductMasterRes;
 import com.maan.eway.repository.BrokerCommissionDetailsRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
@@ -180,9 +186,8 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			
 			LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());
 			
-			List<LoginProductMaster> prod = loginProductRepo.findByLoginIdAndCompanyId(req.getLoginId(), req.getInsuranceId());
-			
 			for ( CompanyProductMaster data : list  ) {
+				
 			
 				LoginProductMaster save = new LoginProductMaster();
 				dozerMapper.map(data, save);
@@ -197,33 +202,25 @@ public class LoginProductServiceImpl  implements LoginProductService {
 				save.setAgencyCode(Integer.valueOf(loginData.getAgencyCode()));
 				save.setOaCode(loginData.getOaCode());
 				save.setCommissionPercent(15);
-				
-				List<LoginProductMaster> prodfilter = prod.stream().filter(o ->o.getProductId().equals(data.getProductId())).collect(Collectors.toList());
-				
-				if(! (prodfilter.size()>0)) {
-					String financeid = "";
-					String nonfinanceid = "";
-					List<EndtTypeMaster> endtids = getEndtId(req.getInsuranceId(), data.getProductId()); 								
-					for(EndtTypeMaster endtid :endtids) {				
-						if(endtid.getEndtTypeCategoryId().toString().equalsIgnoreCase("2")) {						
-							financeid = financeid+","+endtid.getEndtTypeId().toString();
-						}
-						else if(endtid.getEndtTypeCategoryId().toString().equalsIgnoreCase("1")){
-							nonfinanceid = nonfinanceid+","+endtid.getEndtTypeId().toString();						
-						}					
+				String financeid = "";
+				String nonfinanceid = "";
+				List<EndtTypeMaster> endtids = getEndtId(req.getInsuranceId(), data.getProductId()); 								
+				for(EndtTypeMaster endtid :endtids) {				
+					if(endtid.getEndtTypeCategoryId().toString().equalsIgnoreCase("2")) {						
+						financeid = financeid+","+endtid.getEndtTypeId().toString();
 					}
-					if(StringUtils.isNotBlank(financeid)) {
-					financeid=financeid.substring(1);
-					}
-					if(StringUtils.isNotBlank(nonfinanceid)) {
-					nonfinanceid=nonfinanceid.substring(1);
-					}
-					save.setFinancialEndtIds(financeid);
-					save.setNonFinancialEndtIds(nonfinanceid);
-				}else {
-					save.setFinancialEndtIds(prodfilter.get(0).getFinancialEndtIds());
-					save.setNonFinancialEndtIds(prodfilter.get(0).getNonFinancialEndtIds());
+					else if(endtid.getEndtTypeCategoryId().toString().equalsIgnoreCase("1")){
+						nonfinanceid = nonfinanceid+","+endtid.getEndtTypeId().toString();						
+					}					
 				}
+				if(StringUtils.isNotBlank(financeid)) {
+				financeid=financeid.substring(1);
+				}
+				if(StringUtils.isNotBlank(nonfinanceid)) {
+				nonfinanceid=nonfinanceid.substring(1);
+				}
+				save.setFinancialEndtIds(financeid);
+				save.setNonFinancialEndtIds(nonfinanceid);
 				
 				loginProductRepo.saveAndFlush(save);
 				log.info("Saved Details is ---> " + json.toJson(save));
@@ -607,8 +604,6 @@ public class LoginProductServiceImpl  implements LoginProductService {
 					nonSelectedFromList.removeIf(o -> o.getCompanyId().equalsIgnoreCase(data.getCompanyId()) &&  o.getProductId().equals(data.getProductId()) ) ;
 					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
 					
-					dozerMapper.map(data, save);
-					
 					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
 						amendId = list.get(0).getAmendId() + 1 ;
 						entryDate = new Date() ;
@@ -629,33 +624,9 @@ public class LoginProductServiceImpl  implements LoginProductService {
 						}
 					
 				    }
-					save.setFinancialEndtIds(filterOldData.get(0).getFinancialEndtIds());
-					save.setNonFinancialEndtIds(filterOldData.get(0).getFinancialEndtIds());
-					
-					
-				} else {
-					String financeid = "";
-					String nonfinanceid = "";
-					List<EndtTypeMaster> endtids = getEndtId(req.getInsuranceId(), data.getProductId()); 								
-					for(EndtTypeMaster endtid :endtids) {				
-						if(endtid.getEndtTypeCategoryId().toString().equalsIgnoreCase("1")) {						
-							financeid = financeid+","+endtid.getEndtTypeId().toString();
-						}
-						else {
-							nonfinanceid = nonfinanceid+","+endtid.getEndtTypeId().toString();						
-						}					
-					}
-					if(StringUtils.isNotBlank(financeid)) {
-					financeid=financeid.substring(1);
-					}
-					if(StringUtils.isNotBlank(nonfinanceid)) {
-					nonfinanceid=nonfinanceid.substring(1);
-					}
-					save.setFinancialEndtIds(financeid);
-					save.setNonFinancialEndtIds(nonfinanceid);
 				}
 				
-				
+				dozerMapper.map(data, save);
 				save.setCompanyId(req.getInsuranceId());
 				save.setCreatedBy(createdBy);
 				save.setEffectiveDateStart(effDate);
@@ -667,7 +638,25 @@ public class LoginProductServiceImpl  implements LoginProductService {
 				save.setAgencyCode(Integer.valueOf(loginData.getAgencyCode()));
 				save.setOaCode(loginData.getOaCode());
 				save.setCommissionPercent(15);
-				
+				String financeid = "";
+				String nonfinanceid = "";
+				List<EndtTypeMaster> endtids = getEndtId(req.getInsuranceId(), data.getProductId()); 								
+				for(EndtTypeMaster endtid :endtids) {				
+					if(endtid.getEndtTypeCategoryId().toString().equalsIgnoreCase("1")) {						
+						financeid = financeid+","+endtid.getEndtTypeId().toString();
+					}
+					else {
+						nonfinanceid = nonfinanceid+","+endtid.getEndtTypeId().toString();						
+					}					
+				}
+				if(StringUtils.isNotBlank(financeid)) {
+				financeid=financeid.substring(1);
+				}
+				if(StringUtils.isNotBlank(nonfinanceid)) {
+				nonfinanceid=nonfinanceid.substring(1);
+				}
+				save.setFinancialEndtIds(financeid);
+				save.setNonFinancialEndtIds(nonfinanceid);
 
 				String referralid = "";				
 				List<String> referralIds = req.getReferralIds();
@@ -681,15 +670,15 @@ public class LoginProductServiceImpl  implements LoginProductService {
 				
 			}	
 			
-//			nonSelectedFromList.sort(Comparator.comparing(LoginProductMaster :: getAmendId ).reversed());
-//			nonSelectedFromList = nonSelectedFromList.stream().filter(distinctByKey(o -> Arrays.asList(o.getProductId() , o.getCompanyId()))).collect(Collectors.toList());
-//			// Deactive old Records 
-//			for ( LoginProductMaster data : nonSelectedFromList  ) { 
-//				LoginProductMaster lastRecord = data;
-//				lastRecord.setEffectiveDateEnd(today);
-//				lastRecord.setStatus("N");
-//				loginProductRepo.saveAndFlush(lastRecord);
-//			}
+			nonSelectedFromList.sort(Comparator.comparing(LoginProductMaster :: getAmendId ).reversed());
+			nonSelectedFromList = nonSelectedFromList.stream().filter(distinctByKey(o -> Arrays.asList(o.getProductId() , o.getCompanyId()))).collect(Collectors.toList());
+			// Deactive old Records 
+			for ( LoginProductMaster data : nonSelectedFromList  ) { 
+				LoginProductMaster lastRecord = data;
+				lastRecord.setEffectiveDateEnd(today);
+				lastRecord.setStatus("N");
+				loginProductRepo.saveAndFlush(lastRecord);
+			}
 			
 			res.setResponse("Products Added Successfully");
 			
@@ -1118,29 +1107,6 @@ public class LoginProductServiceImpl  implements LoginProductService {
 					}
 				
 			    }
-				saveData.setFinancialEndtIds(list.get(0).getFinancialEndtIds());
-				saveData.setNonFinancialEndtIds(list.get(0).getNonFinancialEndtIds());
-				
-			} else {
-				
-				String financeId = "";
-				String nonFinanceId = "";
-
-				List<String> ids = req.getFinanceIds();
-				for (int i = 0; i < ids.size(); i++) {
-					financeId = financeId + "," + ids.get(i);
-				}
-
-				List<String> idss = req.getNonFinanceIds();
-				for (int i = 0; i < idss.size(); i++) {
-					nonFinanceId = nonFinanceId + "," + idss.get(i);
-				}
-				
-				financeId=StringUtils.isBlank(financeId) ? "" : financeId.substring(1);
-				nonFinanceId=StringUtils.isBlank(nonFinanceId) ? "" : nonFinanceId.substring(1);
-				
-				saveData.setFinancialEndtIds(financeId);
-				saveData.setNonFinancialEndtIds(nonFinanceId);
 			}
 		
 			res.setResponse("Updated Successfully ");
@@ -1165,7 +1131,24 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			saveData.setSubUserType(login.getSubUserType());
 			//saveData.setBackDays(Integer.valueOf(req.getBackDays()));
 			
+			String financeId = "";
+			String nonFinanceId = "";
+
+			List<String> ids = req.getFinanceIds();
+			for (int i = 0; i < ids.size(); i++) {
+				financeId = financeId + "," + ids.get(i);
+			}
+
+			List<String> idss = req.getNonFinanceIds();
+			for (int i = 0; i < idss.size(); i++) {
+				nonFinanceId = nonFinanceId + "," + idss.get(i);
+			}
 			
+			financeId=StringUtils.isBlank(financeId) ? "" : financeId.substring(1);
+			nonFinanceId=StringUtils.isBlank(nonFinanceId) ? "" : nonFinanceId.substring(1);
+			
+			saveData.setFinancialEndtIds(financeId);
+			saveData.setNonFinancialEndtIds(nonFinanceId);
 			loginProductRepo.saveAndFlush(saveData);
 							
 			log.info("Saved Details is ---> " + json.toJson(saveData));
@@ -2278,7 +2261,8 @@ List<Error> errorList = new ArrayList<Error>();
 					endorsementids = endorsementids + "," + keys1.get(i);				
 				}
 				endorsementids=endorsementids.substring(1);
-			
+				save.setFinancialEndtIds(endorsementids);
+				save.setNonFinancialEndtIds(endorsementids);
 				List<LoginProductMaster> loginproduct = loginProductRepo.findByLoginIdAndCompanyIdAndProductIdOrderByAmendIdDesc(req1.getLoginId(),req1.getInsuranceId(),Integer.valueOf(data.getProductId()));
 				if(loginproduct.size()>0 && loginproduct!=null) {
 					LoginProductMaster lastRecord = loginproduct.get(0);
@@ -2290,16 +2274,11 @@ List<Error> errorList = new ArrayList<Error>();
 					long MILLS_IN_A_DAY = 1000*60*60*24;
 					Date oldEndDate = new Date(effDate.getTime()- MILLS_IN_A_DAY);
 					lastRecord.setEffectiveDateEnd(oldEndDate);
-				
 					}
-					save.setFinancialEndtIds(lastRecord.getFinancialEndtIds());
-					save.setNonFinancialEndtIds(lastRecord.getNonFinancialEndtIds());
 					loginProductRepo.saveAndFlush(lastRecord);
 
 				}
 				else {
-					save.setFinancialEndtIds(endorsementids);
-					save.setNonFinancialEndtIds(endorsementids);
 					save.setAmendId(0);
 
 				}

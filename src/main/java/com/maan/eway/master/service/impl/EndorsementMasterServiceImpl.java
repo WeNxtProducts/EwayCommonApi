@@ -30,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.EndtDependantFieldMaster;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.ListItemValue;
@@ -45,6 +44,7 @@ import com.maan.eway.master.req.EndorsementMasterSaveReq;
 import com.maan.eway.master.res.EndorsementMasterGetallRes;
 import com.maan.eway.master.res.EndorsementMasterListRes;
 import com.maan.eway.master.res.EndorsementMasterRes;
+import com.maan.eway.master.res.GetallEndorsementRes;
 import com.maan.eway.master.service.EndorsementMasterService;
 import com.maan.eway.repository.EndtDependantFieldsMasterRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
@@ -947,6 +947,105 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			resList.add(res1);
 			}
 			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public List<GetallEndorsementRes> getallEndorsementGrid(EndorsementMasterGetallReq req) {
+		List<GetallEndorsementRes> resList = new ArrayList<GetallEndorsementRes>();
+		try {
+			
+			List<EndtTypeMaster> list = new ArrayList<EndtTypeMaster>();
+			
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<EndtTypeMaster> query = cb.createQuery(EndtTypeMaster.class);
+
+			Root<EndtTypeMaster> b = query.from(EndtTypeMaster.class);
+
+			query.select(b);
+
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<EndtTypeMaster> ocpm1 = amendId.from(EndtTypeMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a3 = cb.equal(ocpm1.get("endtTypeCategoryId"), b.get("endtTypeCategoryId"));
+			Predicate a4 = cb.equal(ocpm1.get("endtTypeId"), b.get("endtTypeId"));
+			
+
+			amendId.where(a1, a2,a3,a4);
+
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("endtType")));
+
+			// Where
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
+			Predicate n3 = cb.equal(b.get("productId"),req.getProductId());
+			Predicate n4 = cb.equal(b.get("endtTypeCategoryId"),req.getEndtTypeCategoryId());
+			Predicate n5 = cb.equal(b.get("status"), "Y");
+			Predicate n6 = cb.lessThanOrEqualTo(b.get("effectiveDateStart"), new Date());
+			Predicate n7 = cb.greaterThanOrEqualTo(b.get("effectiveDateEnd"), new Date());
+			
+			query.where(n1,n2,n3,n4,n5,n6,n7).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<EndtTypeMaster> result = em.createQuery(query);
+
+			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getEndtTypeId()))).collect(Collectors.toList());
+			
+			LoginMaster login = loginmasterrepo.findByLoginId(req.getLoginId());
+			List<LoginProductMaster> product = loginRepo.findByOaCodeAndAgencyCodeAndProductIdAndCompanyIdOrderByAmendIdDesc(login.getOaCode(),Integer.valueOf(login.getAgencyCode()),Integer.valueOf(req.getProductId()),req.getCompanyId());
+		
+			String finan = product.get(0).getFinancialEndtIds();
+			String[] splitf = finan.split(",");
+			List<String> finanList = Arrays.asList(splitf);
+		//	List<Integer> finanList1 = finanList.stream().map(Integer::parseInt) .collect(Collectors.toList());
+			
+			
+			String nonfinan = product.get(0).getNonFinancialEndtIds();
+			String[] splitn = nonfinan.split(",");
+			List<String> nonfinanList = Arrays.asList(splitn);
+		//	List<Integer> nonfinanList1 = nonfinanList.stream().map(Integer::parseInt) .collect(Collectors.toList());
+		                
+		               
+			
+			if(list.size()>0) {
+				
+				for(EndtTypeMaster  data : list) {
+					
+					GetallEndorsementRes res = new GetallEndorsementRes();
+					if(data.getEndtTypeCategoryId()==1) {       // non financial
+						
+						if(nonfinanList.contains(data.getEndtTypeId().toString()))
+							res.setStatus("Y");            			 //tick Yes	
+						else
+							res.setStatus("");
+						
+					}else if(data.getEndtTypeCategoryId()==2) { //financial
+						
+						if(finanList.contains(data.getEndtTypeId().toString()))
+							res.setStatus("Y");    
+						else
+							res.setStatus("");
+						
+					}
+					res.setEndtTypeId(data.getEndtTypeId()==null?"":data.getEndtTypeId().toString());
+					
+					resList.add(res);
+				}
+				
+			}
+			
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
