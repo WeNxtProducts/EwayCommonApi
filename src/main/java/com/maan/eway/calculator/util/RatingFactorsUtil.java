@@ -323,17 +323,17 @@ public class RatingFactorsUtil {
 	}
 	
 	@Cacheable(cacheNames = {"loadTax"},keyGenerator  = "loadTaxKeyGen",value = "loadTax" )
-	public List<Tuple> LoadTax(CalcEngine engine) {
+	public List<Tuple> LoadTax(CalcEngine engine,List<String> taxFor) {
 		try {
 			String todayInString = DD_MM_YYYY.format(new Date());
 			//String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:Y;branchCode:{99999,"+engine.getBranchCode()+"};"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
-			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:Y;branchCode:"+engine.getBranchCode()+";"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
+			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:Y;branchCode:"+engine.getBranchCode()+";"+todayInString+"~effectiveDateStart&effectiveDateEnd;taxFor:{"+StringUtils.join(taxFor,',')+"};";
 			List<Tuple> result=null;
 			SpecCriteria criteria = crservice.createCriteria(CompanyTaxSetup.class, search, "taxId"); 
 			
 			result=crservice.getResult(criteria, 0, 50);
 			if(result.isEmpty()) {
-				search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:Y;branchCode:99999;"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
+				search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:Y;branchCode:99999;"+todayInString+"~effectiveDateStart&effectiveDateEnd;taxFor:{"+StringUtils.join(taxFor,',')+"};";
 				criteria = crservice.createCriteria(CompanyTaxSetup.class, search, "taxId"); 
 				result=crservice.getResult(criteria, 0, 50);
 				return result.size()>0?result:null;

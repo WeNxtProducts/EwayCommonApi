@@ -1522,7 +1522,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					// Endt Type
 					boolean alreadyOptCover = false ;
 					boolean endtCovModify = false ; 
-					if( StringUtils.isNotBlank(request.getEndtFields())  &&  request.getEndtFields().equalsIgnoreCase("Covers") ) {
+					if( StringUtils.isNotBlank(request.getEndtFields())  && ( request.getEndtFields().equalsIgnoreCase("Covers") ||  request.getEndtFields().equalsIgnoreCase("AddOnCovers")) ) {
 							endtCovModify = true  ;
 					}
 					

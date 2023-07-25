@@ -6,6 +6,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -68,9 +69,6 @@ import com.maan.eway.calculator.util.TaxFromFactor;
 import com.maan.eway.calculator.util.TaxUtils;
 import com.maan.eway.common.req.EserviceMotorDetailsSaveRes;
 import com.maan.eway.common.req.ViewQuoteReq;
-import com.maan.eway.common.res.EserviceCommonGetRes;
-import com.maan.eway.common.res.EserviceMotorDetailsRes;
-import com.maan.eway.common.res.EserviceTravelGetRes;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
@@ -87,7 +85,6 @@ import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.req.calcengine.CalcCommission;
 import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.req.calcengine.ReferralApi;
-import com.maan.eway.res.EserviceBuildingsDetailsRes;
 import com.maan.eway.res.calc.AdminReferral;
 import com.maan.eway.res.calc.Cover;
 import com.maan.eway.res.calc.DebitAndCredit;
@@ -184,7 +181,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 	 * System.out.println("result"+result.size()); }catch(Exception e) {
 	 * e.printStackTrace(); } }
 	 */
-
+	private final List<String> NORMAL_TAX_LIST = Arrays.asList("B", "N");
+	private final List<String> ENDT_TAX_LIST = Arrays.asList("B", "E");
+ 
 	public List<Tuple> LoadCover(CalcEngine engine) {
 		try {
 			String todayInString = DD_MM_YYYY.format(new Date());
@@ -268,8 +267,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 				 * .isError(true).build();
 				 */
 			}
+			
 			String promocode=vehicles.get(0).get("promocode")==null?"":vehicles.get(0).get("promocode").toString();
-			List<Tuple> taxes = ratingutil.LoadTax(engine);
+			List<Tuple> taxes = ratingutil.LoadTax(engine,NORMAL_TAX_LIST);
 			TaxUtils tzx = new TaxUtils(endtCount);
 
 			List<String> dependedcovers = new ArrayList<String>();
@@ -531,7 +531,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 						.findByQuoteNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndStatusOrderByCoverIdAsc(
 								endtPrevQuoteNo, Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
 								Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()), "Y");
-				List<Tuple> taxes = ratingutil.LoadTax(engine);
+				List<Tuple> taxes = ratingutil.LoadTax(engine,NORMAL_TAX_LIST);
 				TaxUtils tzx = new TaxUtils(endtCount);
 
 				// CoverFromPolicy
@@ -649,7 +649,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							Integer.valueOf(request.getProductId()), Integer.valueOf(request.getSectionId()));
 
 			// TaxFromFactor tzx=new TaxFromFactor();
-			List<Tuple> taxes = ratingutil.LoadTax(request);
+			List<Tuple> taxes = ratingutil.LoadTax(request,ENDT_TAX_LIST);
 			TaxUtils tzx = new TaxUtils(endtCount);
 
 			for (String dependcover : dependedcovers) {
@@ -1005,7 +1005,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							Integer.valueOf(request.getProductId()), Integer.valueOf(request.getSectionId()));
 
 			// TaxFromFactor tzx=new TaxFromFactor();
-			List<Tuple> taxes = ratingutil.LoadTax(request);
+			List<Tuple> taxes = ratingutil.LoadTax(request,NORMAL_TAX_LIST);
 			TaxUtils tzx = new TaxUtils(BigDecimal.ZERO);
 
 			for (String dependcover : dependedcovers) {
@@ -1190,10 +1190,10 @@ public class CalculatorEngineService implements CalculatorEngine {
 				List<MotorDataDetails> motors = motorRepo.findByQuoteNoOrderByVehicleIdAsc(request.getQuoteno());
  				//List<EserviceMotorDetailsRes> motors = (List<EserviceMotorDetailsRes>) v1.getRiskDetails();
 				for (MotorDataDetails v : motors) {
-
-					List<BrokerCommissionDetails> policylist = getPolicyName(request.getInsuranceId(),
+					Double commissionPercent = 0.0;
+					/*List<BrokerCommissionDetails> policylist = getPolicyName(request.getInsuranceId(),
 							request.getProductId(), request.getCreatedBy(), request.getAgencyCode(), v.getPolicyType());
-					 Double commissionPercent = 0.0;
+					 
 						if(policylist.size()>0 && policylist!=null) {
 						
 					commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
@@ -1201,7 +1201,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 						}
 						else {
 							commissionPercent=5.0;
-						}
+						}*/
+					commissionPercent=v.getCommissionPercentage().doubleValue();
+					
 					String premiumFc = v.getActualPremiumFc().toString();
 					String vatPremiumFc = v.getActualPremiumFc().toString();
 
@@ -1337,17 +1339,17 @@ public class CalculatorEngineService implements CalculatorEngine {
 
  				for (TravelPassengerDetails v : motors) {
 
-					List<BrokerCommissionDetails> policylist = getPolicyName(request.getInsuranceId(),
-							request.getProductId(), request.getCreatedBy(), request.getAgencyCode(), v.getSectionId().toString());
-					 Double commissionPercent = 0.0;
-						if(policylist.size()>0 && policylist!=null) {
+					/*List<BrokerCommissionDetails> policylist = getPolicyName(request.getInsuranceId(),
+							request.getProductId(), request.getCreatedBy(), request.getAgencyCode(), v.getSectionId().toString());*/
+					 Double commissionPercent = v.getCommissionPercentage().doubleValue();
+					/*	if(policylist.size()>0 && policylist!=null) {
 						
 					commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
 							: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());
 						}
 						else {
 							commissionPercent=5.0;
-						}
+						}*/
 					String premiumFc = v.getActualPremiumFc().toString();
 					String vatPremiumFc = v.getActualPremiumFc().toString();
 
@@ -1476,17 +1478,17 @@ public class CalculatorEngineService implements CalculatorEngine {
 
  				for (BuildingRiskDetails v : motors) {
 
-					List<BrokerCommissionDetails> policylist = getPolicyName(request.getInsuranceId(),
-							request.getProductId(), request.getCreatedBy(), request.getAgencyCode(),"99999");
-					 Double commissionPercent = 0.0;
-						if(policylist.size()>0 && policylist!=null) {
+					/*List<BrokerCommissionDetails> policylist = getPolicyName(request.getInsuranceId(),
+							request.getProductId(), request.getCreatedBy(), request.getAgencyCode(),"99999");*/
+					 Double commissionPercent = v.getCommissionPercentage().doubleValue();
+						/*if(policylist.size()>0 && policylist!=null) {
 						
 					commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
 							: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());
 						}
 						else {
 							commissionPercent=5.0;
-						}
+						}*/
 					String premiumFc = v.getActualPremiumFc().toString();
 					String vatPremiumFc = v.getActualPremiumFc().toString();
 
@@ -1614,17 +1616,17 @@ public class CalculatorEngineService implements CalculatorEngine {
 
  				for (CommonDataDetails v : motors) {
 
-					List<BrokerCommissionDetails> policylist = getPolicyName(request.getInsuranceId(),
-							request.getProductId(), request.getCreatedBy(), request.getAgencyCode(),"99999");
-					 Double commissionPercent = 0.0;
-						if(policylist.size()>0 && policylist!=null) {
+					/*List<BrokerCommissionDetails> policylist = getPolicyName(request.getInsuranceId(),
+							request.getProductId(), request.getCreatedBy(), request.getAgencyCode(),"99999");*/
+					 Double commissionPercent =v.getCommissionPercentage().doubleValue();
+					/*	if(policylist.size()>0 && policylist!=null) {
 						
 					commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
 							: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());
 						}
 						else {
 							commissionPercent=5.0;
-						}
+						}*/
 					String premiumFc = v.getActualPremiumFc().toString();
 					String vatPremiumFc = v.getActualPremiumFc().toString();
 

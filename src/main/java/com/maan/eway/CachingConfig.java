@@ -4,8 +4,10 @@ package com.maan.eway;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.tomcat.util.buf.StringUtils;
 import org.cache2k.extra.spring.SpringCache2kCacheManager;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -84,11 +86,13 @@ public class CachingConfig   {
 	    		return new KeyGenerator() {
 	    			@Override
 	    			public Object generate(Object target, Method method, Object... params) {
-	    				CalcEngine e=(CalcEngine)params[0];	    				
+	    				CalcEngine e=(CalcEngine)params[0];
+	    				List<String> taxFor=(List<String>) params[1];
 	    				String string = new StringBuilder().append(e.getInsuranceId())
 	    						.append(e.getProductId())
 	    						.append(e.getBranchCode())
 	    						.append("loadtax")
+	    						.append(StringUtils.join(taxFor,','))
 	    						.toString();
 	    				return string;
 	    			}
