@@ -980,32 +980,39 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			// Cover Calc
 		//	List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndVehicleIdAndProductIdAndSectionIdNotOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0,request.getGroupId() ,Integer.valueOf(request.getProductId()) ,35);
-			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndUserOptOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0,"Y" );
+			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0 );
 			
-			List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
+		//	List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
 			
 			// Insert Other Covers
-			List<VehicleIdsReq> VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getVehicleId())).collect(Collectors.toList());
-			List<CoverIdsReq> coverReqList = VehicleList.size() > 0 ? VehicleList.get(0).getCoverIdList() : request.getVehicleIdsList().get(0).getCoverIdList() ; 		
+		//	List<VehicleIdsReq> VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getVehicleId())).collect(Collectors.toList());
+		//	List<CoverIdsReq> coverReqList = VehicleList.size() > 0 ? VehicleList.get(0).getCoverIdList() : request.getVehicleIdsList().get(0).getCoverIdList() ; 		
 			
 			List<FactorRateRequestDetails>  premiumCovers = new  ArrayList<FactorRateRequestDetails>();
-			premiumCovers.addAll(defaultCovers);
+			//premiumCovers.addAll(defaultCovers);
 			
-			for ( CoverIdsReq covReq :  coverReqList) {
-				 
-				List<FactorRateRequestDetails> filterNonDefaultCovers = covers.stream().filter( o -> o.getIsSelected()!=null &&   (! o.getIsSelected().equalsIgnoreCase("D")) && o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0)).collect(Collectors.toList());				
-				
-				if(filterNonDefaultCovers != null && filterNonDefaultCovers.size()>0 ) {
-					if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
-						
-						premiumCovers.addAll(filterNonDefaultCovers);
-						
-					}else {
-						List<FactorRateRequestDetails> filterNonDefaultSubCovers = filterNonDefaultCovers.stream().filter( o ->o.getIsSelected()!=null &&  (! o.getIsSelected().equalsIgnoreCase("D")) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))&& o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
-						premiumCovers.addAll(filterNonDefaultSubCovers);
+			for (VehicleIdsReq veh :  request.getVehicleIdsList() ) {
+				List<CoverIdsReq> coverReqList = veh.getCoverIdList().size() > 0 ? veh.getCoverIdList() : new ArrayList<CoverIdsReq>();
+				for ( CoverIdsReq covReq :  coverReqList) {
+					 
+					List<FactorRateRequestDetails> filterNonDefaultCovers = covers.stream().filter( o -> o.getVehicleId().equals(veh.getVehicleId()) && 
+					o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) &&  o.getIsSelected()!=null && o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0)).collect(Collectors.toList());				
+					
+					if(filterNonDefaultCovers != null && filterNonDefaultCovers.size()>0 ) {
+						if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
+							
+							premiumCovers.addAll(filterNonDefaultCovers);
+							
+						}else {
+							List<FactorRateRequestDetails> filterNonDefaultSubCovers = filterNonDefaultCovers.stream().filter( o -> o.getVehicleId().equals(veh.getVehicleId()) && 
+									o.getSectionId().equals(Integer.valueOf(veh.getSectionId())) &&  o.getIsSelected()!=null &&    o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))&& o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
+							premiumCovers.addAll(filterNonDefaultSubCovers);
+						}
 					}
 				}
 			}
+			
+			
 			Double premiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()  ).sum();					
 			Double overAllPremiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()  ).sum();
 			
