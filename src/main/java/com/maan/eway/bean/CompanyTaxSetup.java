@@ -124,7 +124,7 @@ private static final long serialVersionUID = 1L;
     private String   taxCode;
     
     @Column(name="TAX_FOR", length=20)
-    private Integer   taxFor;
+    private String   taxFor;
     
     @Column(name="TAX_FOR_DESC", length=20)
     private String   taxForDesc;
