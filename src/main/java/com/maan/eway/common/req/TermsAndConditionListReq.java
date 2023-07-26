@@ -22,4 +22,7 @@ public class TermsAndConditionListReq {
 	@JsonProperty("DocRefNo")
 	private String docRefNo;
 	
+	@JsonProperty("TypeId")
+	private String typeId;
+	
 }
