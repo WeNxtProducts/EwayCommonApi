@@ -197,6 +197,8 @@ public interface DropDownService {
 
 	List<DropDownRes> getPaymentFor(LovDropDownReq req);
 
+	List<DropDownRes> getAdminPortFolioTypes(LovDropDownReq req);
+
 
 
 

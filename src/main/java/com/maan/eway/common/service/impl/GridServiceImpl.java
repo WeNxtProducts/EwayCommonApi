@@ -1,6 +1,7 @@
 package com.maan.eway.common.service.impl;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -35,6 +36,9 @@ import com.maan.eway.admin.res.MotorGridCriteriaRes;
 import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
 import com.maan.eway.admin.res.ReferalCommonCriteriaRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
+import com.maan.eway.auth.dto.BrokerProductCompaniesRes;
+import com.maan.eway.auth.dto.BrokerProductsGetRes;
+import com.maan.eway.auth.dto.LoginProductCriteriaRes;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
@@ -43,14 +47,20 @@ import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginBranchMaster;
+import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
+import com.maan.eway.common.req.PortFolioDashBoardReq;
 import com.maan.eway.common.req.UpdateLapsedQuoteReq;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
 import com.maan.eway.common.res.GetallPolicyReportsRes;
+import com.maan.eway.common.res.PortFolioAdminTupleRes;
+import com.maan.eway.common.res.PortFolioDashBoardRes;
+import com.maan.eway.common.res.PortfolioBrokerListRes;
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
@@ -261,6 +271,69 @@ public class GridServiceImpl implements GridService {
 		}
 		return product;
 	}
+	
+	public synchronized List<CompanyProductMaster> getCompanyProductList(String companyId) {
+		List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyProductMaster> query = cb.createQuery(CompanyProductMaster.class);
+			
+			// Find All
+			Root<CompanyProductMaster> c = query.from(CompanyProductMaster.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("productName")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a4, a5, a6);
+
+			// Where
+			Predicate n1 = cb.equal(c.get("status"), "Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"), companyId);
+		//	Predicate n5 = cb.equal(c.get("productId"), productId);
+			query.where(n1, n2, n3, n4).orderBy(orderList);
+			// Get Result
+			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
+			list = result.getResultList();
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return list;
+	}
+	
+	
 
 	private static <T> java.util.function.Predicate<T> distinctByKey(
 			java.util.function.Function<? super T, ?> keyExtractor) {
@@ -2112,6 +2185,155 @@ public class GridServiceImpl implements GridService {
 		return resList;
 	}
 
-	
+	@Override
+	public List<PortFolioDashBoardRes> getAllAdminPortfolio(PortFolioDashBoardReq req) {
+		List<PortFolioDashBoardRes> resList = new ArrayList<PortFolioDashBoardRes>();
+		try {
+			 List<PortFolioAdminTupleRes> list =  getPortFolioDashBoard(req);
+			 List<CompanyProductMaster> productList  = getCompanyProductList(req.getInsuranceId());
+			 
+			// Group By Product Id
+	//		 Map<Integer ,List<PortFolioAdminTupleRes>> groupByProductId = list.stream().collect(Collectors.groupingBy(PortFolioAdminTupleRes :: getProductId )) ;
+			 for (CompanyProductMaster product : productList  ) { 
+				 // List<PortFolioAdminTupleRes> filterProduct = groupByProductId.get(productId);
+				//  PortFolioAdminTupleRes  product = filterProduct.get(0);
+				 List<PortFolioAdminTupleRes> filterProduct = list.stream().filter( o -> o.getProductId()!=null &&  o.getProductId().equals(product.getProductId() )  ).collect(Collectors.toList());
+				 
+				 // Map Broker List
+				 List<PortfolioBrokerListRes>     brokerResList = new ArrayList<PortfolioBrokerListRes>(); 
+				 for(PortFolioAdminTupleRes data : filterProduct) { 
+					 PortfolioBrokerListRes brokerRes = new PortfolioBrokerListRes();
+					 
+					 brokerRes.setBrokerCode(data.getOaCode()==null?"0" : data.getOaCode().toString());
+					 brokerRes.setBrokerLoginId(data.getLoginId() );
+					 brokerRes.setBrokerName(data.getBrokerName() );
+					 brokerRes.setSubUserType(data.getSubUserType() );
+					 brokerRes.setTotalCount(data.getCount()==null?"0" : data.getCount().toString());
+					 brokerRes.setTotalPremiumLc(data.getOverallPremiumLc()==null ? "0" : data.getOverallPremiumLc().toPlainString());
+					 brokerRes.setTotalPremiumFc(data.getOverallPremiumFc()==null ? "0" : data.getOverallPremiumFc().toPlainString());
+					 brokerRes.setUserType(data.getUserType());
+					 brokerResList.add(brokerRes);					 
+				 }
+				 
+				 // Response 
+				 PortFolioDashBoardRes res = new PortFolioDashBoardRes();
+				 res.setBrokerList(brokerResList);
+				 res.setProductId(product.getProductId().toString());
+				 res.setProductName(product.getProductName());
+				 resList.add(res);
+			}
+			 
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	public synchronized List<PortFolioAdminTupleRes> getPortFolioDashBoard(PortFolioDashBoardReq req) {
+		List<PortFolioAdminTupleRes> list = new ArrayList<PortFolioAdminTupleRes>();
+		try {
+			Calendar cal = new GregorianCalendar();
+
+			Date startDate = req.getStartDate();
+			cal.setTime(startDate);
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			startDate = cal.getTime();
+
+			Date endDate = req.getEndDate();
+			cal.setTime(endDate);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			endDate = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<PortFolioAdminTupleRes> query = cb.createQuery(PortFolioAdminTupleRes.class);
+			
+			// Find All
+			Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+			Root<LoginMaster> l = query.from(LoginMaster.class);
+			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
+			
+			// Select
+			query.multiselect(  cb.count(h).alias("count")  ,
+								cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc") ,
+								cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc") ,
+								h.get("productId").alias("productId") ,
+								h.get("productName").alias("productName") ,
+								h.get("agencyCode").alias("oaCode") ,
+								u.get("userName").alias("brokerName") ,
+								l.get("userType").alias("userType") ,
+								l.get("subUserType").alias("subUserType"),
+								l.get("loginId").alias("loginId"));
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(h.get("productName")));
+
+			// Broker Oacode condition
+			Subquery<Long> oaCode = query.subquery(Long.class);
+			Root<LoginMaster> ocpm1 = oaCode.from(LoginMaster.class);
+			oaCode.select(cb.max(ocpm1.get("oaCode")));
+			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
+			Predicate a2 = cb.equal(ocpm1.get("agencyCode") , h.get("agencyCode") );
+			Predicate a3 = cb.equal(ocpm1.get("userType"), "Broker");
+			if(StringUtils.isNotBlank(req.getLoginId()) ) {
+				Predicate a4 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
+				oaCode.where(a1, a2 ,a3,a4);
+			} else {
+				oaCode.where(a1, a2 ,a3);
+			}
+			
+			// Where
+			List<Predicate> predicate = new ArrayList<Predicate>();
+			predicate.add(cb.equal(h.get("agencyCode"), oaCode ));
+			predicate.add(cb.greaterThanOrEqualTo(h.get("effectiveDate"), startDate));
+			predicate.add(cb.lessThanOrEqualTo(h.get("effectiveDate"), endDate));
+			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
+			predicate.add(cb.equal(l.get("agencyCode"), oaCode));
+			predicate.add(cb.equal(l.get("userType"), "Broker"));
+			predicate.add(cb.equal(u.get("agencyCode"), oaCode));
+			
+			// Business Type Condition
+			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType() ;  
+					
+			if("N".equalsIgnoreCase(businessType) ) {
+				predicate.add(cb.equal(h.get("status"), "P"));
+				predicate.add(cb.isNull(h.get("endtStatus")));
+				
+			} else if ("E".equalsIgnoreCase(businessType)  ) {
+				predicate.add(cb.equal(h.get("status"), "P"));
+				predicate.add(cb.equal(h.get("endtStatus"), "C"));
+				predicate.add(cb.notEqual(h.get("endtTypeId"), "842"));
+				
+			} else if ("C".equalsIgnoreCase(businessType)  ) {
+				predicate.add(cb.equal(h.get("status"), "P"));
+				predicate.add(cb.equal(h.get("endtStatus"), "C"));
+				predicate.add(cb.equal(h.get("endtTypeId"), "842"));
+			}
+			
+			// Product  & Branch Condition
+			if(StringUtils.isNotBlank(req.getProductId())  ) 
+				predicate.add(cb.equal(h.get("productId"), req.getProductId()));
+			if(StringUtils.isNotBlank(req.getBranchCode()) &&  (!"99999".equalsIgnoreCase(req.getBranchCode())) )  
+				predicate.add(cb.equal(h.get("branchCode"), req.getBranchCode()));
+			
+			
+			query.where(predicate.toArray(new Predicate[0])).groupBy(h.get("productId") ,
+					h.get("productName") ,h.get("agencyCode"),u.get("userName") ,
+					l.get("userType"),l.get("subUserType") ,l.get("loginId") ) 
+			.orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<PortFolioAdminTupleRes> result = em.createQuery(query);
+			list = result.getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			
+		}
+		return list ;
+	}
 
 }

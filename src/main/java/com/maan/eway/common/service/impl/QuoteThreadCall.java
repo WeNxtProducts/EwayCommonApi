@@ -2459,6 +2459,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setTax1(new BigDecimal(df.format(tax1)));
 			home.setTax2(new BigDecimal(df.format(tax2)));
 			home.setTax3(new BigDecimal(df.format(tax3)));
+			home.setEffectiveDate(new Date());
 			
 			List<Integer> vehicleIds = request.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId ).collect(Collectors.toList());
 			home.setVehicleNo(vehicleIds.size());
@@ -2654,7 +2655,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setBrokerBranchCode(motorData.getBrokerBranchCode());	
 			home.setLoginId(motorData.getLoginId());
 			home.setBrokerCode(motorData.getBrokerCode());
-			home.setEffectiveDate(motorData.getPolicyStartDate());
+		//	home.setEffectiveDate(motorData.getPolicyStartDate());
 			home.setExpiryDate(motorData.getPolicyEndDate());
 			home.setAdminRemarks(motorData.getAdminRemarks());
 			home.setAdminReferralStatus(motorData.getStatus());			
@@ -2753,7 +2754,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setAgencyCode(Integer.valueOf(travelData.getBrokerCode()));
 			home.setAcExecutiveId(travelData.getAcExecutiveId()==null?null : Long.valueOf(travelData.getAcExecutiveId()));
 			home.setBrokerCode(travelData.getBrokerCode());
-			home.setEffectiveDate(travelData.getTravelStartDate());
+		//	home.setEffectiveDate(travelData.getTravelStartDate());
 			home.setExpiryDate(travelData.getTravelEndDate());
 			home.setAdminRemarks(travelData.getAdminRemarks());
 			home.setAdminReferralStatus(travelData.getStatus());			
@@ -2826,7 +2827,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setAgencyCode(Integer.valueOf(buildingData.getBrokerCode()));
 			home.setAcExecutiveId(buildingData.getAcExecutiveId()==null?null : Long.valueOf(buildingData.getAcExecutiveId()));
 			home.setBrokerCode(buildingData.getBrokerCode());
-			home.setEffectiveDate(buildingData.getPolicyStartDate());
+		//	home.setEffectiveDate(buildingData.getPolicyStartDate());
 			home.setExpiryDate(buildingData.getPolicyEndDate());
 			home.setAdminRemarks(buildingData.getAdminRemarks());
 			home.setAdminReferralStatus(buildingData.getStatus());			
@@ -2896,7 +2897,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setAgencyCode(Integer.valueOf(eserCommonData.getBrokerCode()));
 			home.setAcExecutiveId(eserCommonData.getAcExecutiveId()==null?null : Long.valueOf(eserCommonData.getAcExecutiveId()));
 			home.setBrokerCode(eserCommonData.getBrokerCode());
-			home.setEffectiveDate(eserCommonData.getPolicyStartDate());
+		//	home.setEffectiveDate(eserCommonData.getPolicyStartDate());
 			home.setExpiryDate(eserCommonData.getPolicyEndDate());
 			home.setAdminRemarks(eserCommonData.getAdminRemarks());
 			home.setAdminReferralStatus(eserCommonData.getStatus());			
