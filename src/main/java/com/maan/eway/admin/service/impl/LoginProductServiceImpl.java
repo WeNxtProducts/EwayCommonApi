@@ -2469,10 +2469,10 @@ List<Error> errorList = new ArrayList<Error>();
 					res.setReferralIds(referralids);
 				
 					
-					if(filterUser.get(0).getStatus().equalsIgnoreCase("N"))
-						res.setIsOptedYn("N");
-					else
-						res.setIsOptedYn("Y");
+//					if(filterUser.get(0).getStatus().equalsIgnoreCase("N"))
+//						res.setIsOptedYn("N");
+//					else
+//						res.setIsOptedYn("Y");
 					
 					
 					CalcEngine engine = new CalcEngine();					
@@ -2637,10 +2637,10 @@ List<Error> errorList = new ArrayList<Error>();
 			        res.setEndorsementIds(endorsementids);
 					res.setReferralIds(referralids);
 					
-					if(filterUser.get(0).getStatus().equalsIgnoreCase("N"))
-						res.setIsOptedYn("N");
-					else
-						res.setIsOptedYn("Y");
+//					if(filterUser.get(0).getStatus().equalsIgnoreCase("N"))
+//						res.setIsOptedYn("N");
+//					else
+//						res.setIsOptedYn("Y");
 					
 					CalcEngine engine = new CalcEngine();					
 					engine.setProductId(data.getProductId().toString());
