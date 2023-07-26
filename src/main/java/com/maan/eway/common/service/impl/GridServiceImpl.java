@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -2220,8 +2221,12 @@ public class GridServiceImpl implements GridService {
 				 res.setBrokerList(brokerResList);
 				 res.setProductId(product.getProductId().toString());
 				 res.setProductName(product.getProductName());
+				 res.setBrokeCount(brokerResList.size() > 0 ? Long.valueOf(brokerResList.size()) : 0 ); 
 				 resList.add(res);
+				 
+				 
 			}
+			 resList.sort(Comparator.comparing(PortFolioDashBoardRes :: getBrokeCount  ).reversed()); 
 			 
 		} catch (Exception e) {
 			e.printStackTrace();

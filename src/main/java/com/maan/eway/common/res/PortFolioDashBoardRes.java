@@ -20,7 +20,8 @@ public class PortFolioDashBoardRes {
 	   @JsonProperty("BrokerList")
 	   private List<PortfolioBrokerListRes>     brokerList;
 	   
-	   
+	   @JsonProperty("BrokerCount")
+	   private Long brokeCount;
 	   
 	
 }
