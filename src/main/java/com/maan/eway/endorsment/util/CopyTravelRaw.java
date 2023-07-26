@@ -343,6 +343,7 @@ public class CopyTravelRaw {
 				for (EserviceTravelDetails data : travel) {
 					savedata = dozerMapper.map(data, EserviceTravelDetails.class);
 					savedata.setEndtStatus("C");
+					savedata.setEffectiveDate(new Date());
 					etravelRepo.saveAndFlush(savedata);
 				}
 

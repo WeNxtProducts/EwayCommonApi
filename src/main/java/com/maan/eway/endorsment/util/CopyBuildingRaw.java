@@ -643,6 +643,7 @@ public class CopyBuildingRaw {
 				savedata = dozerMapper.map(homeData, HomePositionMaster.class);
 				savedata.setEndtStatus("C");
 				savedata.setIntegrationStatus("S");
+				savedata.setEffectiveDate(new Date());
 				homePosistionRepo.saveAndFlush(savedata);
 			}
 

@@ -460,6 +460,7 @@ public class CopyCommonRaw {
 					savedata = dozerMapper.map(homeData, HomePositionMaster.class);
 					savedata.setEndtStatus("C");
 					savedata.setIntegrationStatus("S");
+					savedata.setEffectiveDate(new Date());
 					homePosistionRepo.saveAndFlush(savedata);
 				}
 

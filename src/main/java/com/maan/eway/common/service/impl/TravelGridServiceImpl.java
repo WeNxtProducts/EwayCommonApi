@@ -1339,8 +1339,10 @@ public class TravelGridServiceImpl implements  TravelGridService {
 						prevPolicyNo=motors.get(1).getPolicyNo();
 						prevQuoteNo =motors.get(1).getQuoteNo();
 					}else {
-						prevPolicyNo=req.getPolicyNo();
-						prevQuoteNo =motor.get(0).getEndtPrevQuoteNo();
+//						prevPolicyNo=req.getPolicyNo();
+//						prevQuoteNo =motor.get(0).getEndtPrevQuoteNo();
+						prevPolicyNo =motor.get(0).getPolicyNo();
+						prevQuoteNo = motor.get(0).getQuoteNo();
 					}
 				}
 				

@@ -1394,7 +1394,7 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 					prevQuoteNo = motors.get(1).getQuoteNo();
 				} else {
 					//prevPolicyNo = req.getPolicyNo();
-					prevPolicyNo =motor.get(0).getEndtPrevPolicyNo();
+					prevPolicyNo =motor.get(0).getPolicyNo();
 					prevQuoteNo = motor.get(0).getQuoteNo();
 				}
 			}
@@ -1456,9 +1456,9 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 				savedata.setEndorsementDate(new Date());
 				savedata.setEndorsementRemarks(req.getEndtRemarks());
 				savedata.setEndorsementEffdate(req.getEndtEffectiveDate());
-				//savedata.setEndtPrevPolicyNo(prevPolicyNo);
-				savedata.setEndtPrevPolicyNo(req.getPolicyNo()+"-"+count);
-				//savedata.setEndtPrevQuoteNo(prevQuoteNo);
+				savedata.setEndtPrevPolicyNo(prevPolicyNo);
+				//savedata.setEndtPrevPolicyNo(req.getPolicyNo()+"-"+ count);
+				savedata.setEndtPrevQuoteNo(prevQuoteNo);
 				savedata.setEndtCount(new BigDecimal(count));
 				savedata.setEndtStatus("P");
 				savedata.setIsFinaceYn(entMaster.getEndtTypeCategoryId() == 2 ? "Y" : "N");
@@ -1515,8 +1515,8 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 			// Copy Common Data Details
 			commonDataDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
 			
-			// Copy PERSONAL_ACCIDENT
-			personalAccidentEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
+			// Copy PERSONAL_ACCIDENT/ProductEmployeeDetails
+			productEmpDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
 		
 			// Copy CONDENT_AND_ALLRISK
 			contentAndRiskEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
@@ -1755,7 +1755,7 @@ private CopyQuoteSuccessRes commonDataDetailsEndoCopyquote(CopyQuoteReq req, Str
 
 }
 //Personal Accident And Personal Indem
-private CopyQuoteSuccessRes personalAccidentEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo, String customerId,String loginId, String prevPolicyNo, String prevQuoteNo, Integer count, String custRefNo) {
+private CopyQuoteSuccessRes productEmpDetailsEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo, String customerId,String loginId, String prevPolicyNo, String prevQuoteNo, Integer count, String custRefNo) {
 	CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 	ProductEmployeeDetails savedata = new ProductEmployeeDetails();
 	DozerBeanMapper dozerMapper = new DozerBeanMapper();

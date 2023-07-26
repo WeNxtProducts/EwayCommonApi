@@ -424,6 +424,7 @@ public class CopyRawTable  {
 				savedata.setEndtStatus("C");
 				savedata.setStatus("P");
 				savedata.setIntegrationStatus("S");
+				savedata.setEffectiveDate(new Date());;
 				homePosistionRepo.saveAndFlush(savedata);
 			}
 
