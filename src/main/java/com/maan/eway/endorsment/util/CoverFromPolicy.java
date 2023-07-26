@@ -25,7 +25,7 @@ public class CoverFromPolicy implements Function<PolicyCoverData,Cover> {
 				 String subc=t.getSubCoverYn()==null?"N":t.getSubCoverYn();
 				 
 				 // Referral 
-				 String referal=t.getIsReferral();
+				 String referal="N";//t.getIsReferral();
 				 Cover c = Cover.builder()						 
 					.calcType(t.getCalcType()==null?"":t.getCalcType())
 					.coverId(t.getCoverId()==null?"":t.getCoverId().toString())
