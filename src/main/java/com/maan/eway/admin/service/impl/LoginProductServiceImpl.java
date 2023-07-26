@@ -2106,9 +2106,6 @@ List<Error> errorList = new ArrayList<Error>();
 			cal.set(Calendar.MINUTE, 1);
 			Date todayEnd   = cal.getTime();
 
-
-
-
 			// Changing Added Products Date not in Req
 			
 			CriteriaBuilder cb2 = em.getCriteriaBuilder();
@@ -2173,7 +2170,8 @@ List<Error> errorList = new ArrayList<Error>();
 			Date oldEffDate = new Date(oldEndDate.getTime()- MILLS_IN_A_DAY);
 			data.setEffectiveDateStart(oldEffDate);
 			loginProductRepo.saveAndFlush(data);
-
+			
+			
 		}
 		
 		}
@@ -2237,7 +2235,7 @@ List<Error> errorList = new ArrayList<Error>();
 						
 			for ( CompanyProductMaster data : list  ) {
 		
-				dozerMapper.map(data, save);
+				dozerMapper.map(data,save);
 				save.setCompanyId(req1.getInsuranceId());
 				save.setCreatedBy(req1.getCreatedBy());
 				save.setLoginId(req1.getLoginId());
@@ -2289,9 +2287,38 @@ List<Error> errorList = new ArrayList<Error>();
 				loginProductRepo.saveAndFlush(save);
 				log.info("Saved Details is ---> " + json.toJson(save));
 				
-			}		
+			}	
+			
 			res.setResponse("Products Added Successfully");
 			}
+			
+			
+			
+			//change status "N"
+			List<IssuerProductListReq> prodlist = req1.getIssuerProductReq();
+			List<String> prodIdsReq = prodlist.stream().map(o -> o.getProductId()).collect(Collectors.toList());
+			
+			List<LoginProductMaster> lp = loginProductRepo.findByLoginIdAndCompanyId(req1.getLoginId(), req1.getInsuranceId());
+			List<LoginProductMaster> lpdist = lp.stream().filter(distinctByKey(o -> Arrays.asList(o.getProductId()))).collect(Collectors.toList());
+			
+			for(LoginProductMaster prodId: lpdist) {
+				
+				if(! prodIdsReq.contains(prodId.getProductId().toString())) {
+					
+					List<LoginProductMaster> lpfilter = lp.stream().filter(o -> o.getProductId().equals(prodId.getProductId())).collect(Collectors.toList());
+					
+						int maxValue =  lpfilter.stream().max(Comparator.comparingInt(LoginProductMaster::getAmendId)).map(LoginProductMaster::getAmendId).orElse(0);
+						
+						List<LoginProductMaster> lpf = lpfilter.stream().filter(o -> o.getAmendId().equals(maxValue)).collect(Collectors.toList());
+						
+							lpf.get(0).setStatus("N");
+							loginProductRepo.saveAndFlush(lpf.get(0));
+						}
+				
+				
+				
+			}
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2349,48 +2376,52 @@ List<Error> errorList = new ArrayList<Error>();
 			companylist = result.getResultList();
 		
 		
-			List<LoginProductMaster> loginlist = new ArrayList<LoginProductMaster>();
+//			List<LoginProductMaster> loginlist = new ArrayList<LoginProductMaster>();
+//
+//			CriteriaBuilder cb2 = em.getCriteriaBuilder();
+//			CriteriaQuery<LoginProductMaster> query2 = cb2.createQuery(LoginProductMaster.class);
+//
+//			// Find All
+//			Root<LoginProductMaster> b2 = query2.from(LoginProductMaster.class);
+//
+//			// Select
+//			query2.select(b2);
+//
+//			// Effective Date Max Filter
+//			Subquery<Long> effectiveDate2 = query2.subquery(Long.class);
+//			Root<LoginProductMaster> ocpm2 = effectiveDate2.from(LoginProductMaster.class);
+//			effectiveDate2.select(cb2.max(ocpm2.get("effectiveDateStart")));
+//			Predicate a11 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
+//			Predicate a12 = cb2.equal(ocpm2.get("loginId"), b2.get("loginId"));
+//			Predicate a13 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
+//			
+//			effectiveDate2.where(a11,a12,a13);
+//
+//			
+//			// Where
+//			Predicate n11 = cb2.equal(b2.get("effectiveDateStart"), effectiveDate2);
+//			Predicate n12 = cb2.equal(b2.get("companyId"), req.getInsuranceId() );
+//			Predicate n13 = cb2.equal(b2.get("loginId"), loginid.getLoginId());
+//
+//			query2.where( n11,n12,n13);
+//
+//			// Get Result
+//			TypedQuery<LoginProductMaster> result2 = em.createQuery(query2);
+//			loginlist = result2.getResultList();
 
-			CriteriaBuilder cb2 = em.getCriteriaBuilder();
-			CriteriaQuery<LoginProductMaster> query2 = cb2.createQuery(LoginProductMaster.class);
 
-			// Find All
-			Root<LoginProductMaster> b2 = query2.from(LoginProductMaster.class);
-
-			// Select
-			query2.select(b2);
-
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate2 = query2.subquery(Long.class);
-			Root<LoginProductMaster> ocpm2 = effectiveDate2.from(LoginProductMaster.class);
-			effectiveDate2.select(cb2.max(ocpm2.get("effectiveDateStart")));
-			Predicate a11 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
-			Predicate a12 = cb2.equal(ocpm2.get("loginId"), b2.get("loginId"));
-			Predicate a13 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
-			
-			effectiveDate2.where(a11,a12,a13);
-
-			
-			// Where
-			Predicate n11 = cb2.equal(b2.get("effectiveDateStart"), effectiveDate2);
-			Predicate n12 = cb2.equal(b2.get("companyId"), req.getInsuranceId() );
-			Predicate n13 = cb2.equal(b2.get("loginId"), loginid.getLoginId());
-
-			query2.where( n11,n12,n13);
-
-			// Get Result
-			TypedQuery<LoginProductMaster> result2 = em.createQuery(query2);
-			loginlist = result2.getResultList();
-
-
-			
+			List<LoginProductMaster> loginlist = loginProductRepo.findByLoginIdAndCompanyId(req.getLoginId(), req.getInsuranceId());	
 			
 			for(CompanyProductMaster data : companylist) {
 	        
-				List<LoginProductMaster> filterUser = loginlist.stream().
+				List<LoginProductMaster> filterUse = loginlist.stream().
 						filter( o ->  o.getProductId().toString().
 								equalsIgnoreCase(data.getProductId().toString()))
 						.collect(Collectors.toList());
+				
+				int maxValue =  filterUse.stream().max(Comparator.comparingInt(LoginProductMaster::getAmendId)).map(LoginProductMaster::getAmendId).orElse(0);
+				
+				List<LoginProductMaster> filterUser = filterUse.stream().filter(o -> o.getAmendId().equals(maxValue)).collect(Collectors.toList());
 
 		        IssuerProductGetRes res = new IssuerProductGetRes();
 		        String endorsementid ="";
@@ -2403,7 +2434,13 @@ List<Error> errorList = new ArrayList<Error>();
 			        ArrayList<String> referralids = new ArrayList<String>(Arrays.asList(referralid));
 			        res.setEndorsementIds(endorsementids);
 					res.setReferralIds(referralids);
-					res.setIsOptedYn("Y");
+					
+					
+					if(filterUser.get(0).getStatus().equalsIgnoreCase("N"))
+						res.setIsOptedYn("N");
+					else
+						res.setIsOptedYn("Y");
+						
 					res.setColumnName( loginlist.size() > 0 ?loginlist.get(0).getColumnName() : "");
 					CalcEngine engine = new CalcEngine();					
 					engine.setProductId(data.getProductId().toString());
@@ -2430,7 +2467,14 @@ List<Error> errorList = new ArrayList<Error>();
 			        ArrayList<String> referralids = new ArrayList<String>(Arrays.asList(referralid));
 			        res.setEndorsementIds(endorsementids);
 					res.setReferralIds(referralids);
-					res.setIsOptedYn("N");
+				
+					
+					if(filterUser.get(0).getStatus().equalsIgnoreCase("N"))
+						res.setIsOptedYn("N");
+					else
+						res.setIsOptedYn("Y");
+					
+					
 					CalcEngine engine = new CalcEngine();					
 					engine.setProductId(data.getProductId().toString());
 					engine.setInsuranceId(data.getCompanyId());
@@ -2485,47 +2529,55 @@ List<Error> errorList = new ArrayList<Error>();
 			companylist = result.getResultList();
 		
 		
-			List<LoginProductMaster> loginlist = new ArrayList<LoginProductMaster>();
-
-			CriteriaBuilder cb2 = em.getCriteriaBuilder();
-			CriteriaQuery<LoginProductMaster> query2 = cb2.createQuery(LoginProductMaster.class);
-
-			// Find All
-			Root<LoginProductMaster> b2 = query2.from(LoginProductMaster.class);
-
-			// Select
-			query2.select(b2);
-
-			// Effective Date Max Filter
-			Subquery<Long> effectiveDate2 = query2.subquery(Long.class);
-			Root<LoginProductMaster> ocpm2 = effectiveDate2.from(LoginProductMaster.class);
-			effectiveDate2.select(cb2.max(ocpm2.get("effectiveDateStart")));
-			Predicate a11 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
-			Predicate a12 = cb2.equal(ocpm2.get("loginId"), b2.get("loginId"));
-			Predicate a13 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
-			
-			effectiveDate2.where(a11,a12,a13);
-
-			
-			// Where
-			Predicate n11 = cb2.equal(b2.get("effectiveDateStart"), effectiveDate2);
-			Predicate n12 = cb2.equal(b2.get("companyId"), req.getInsuranceId() );
-			Predicate n13 = cb2.equal(b2.get("loginId"), req.getLoginId() );
-
-			query2.where( n11,n12,n13);
-
-			// Get Result
-			TypedQuery<LoginProductMaster> result2 = em.createQuery(query2);
-			loginlist = result2.getResultList();
 			
 			
+//			List<LoginProductMaster> loginlist = new ArrayList<LoginProductMaster>();
+//
+//			CriteriaBuilder cb2 = em.getCriteriaBuilder();
+//			CriteriaQuery<LoginProductMaster> query2 = cb2.createQuery(LoginProductMaster.class);
+//
+//			// Find All
+//			Root<LoginProductMaster> b2 = query2.from(LoginProductMaster.class);
+//
+//			// Select
+//			query2.select(b2);
+//
+//			// Effective Date Max Filter
+//			Subquery<Long> effectiveDate2 = query2.subquery(Long.class);
+//			Root<LoginProductMaster> ocpm2 = effectiveDate2.from(LoginProductMaster.class);
+//			effectiveDate2.select(cb2.max(ocpm2.get("effectiveDateStart")));
+//			Predicate a11 = cb2.equal(ocpm2.get("companyId"), b2.get("companyId"));
+//			Predicate a12 = cb2.equal(ocpm2.get("loginId"), b2.get("loginId"));
+//			Predicate a13 = cb2.equal(ocpm2.get("productId"), b2.get("productId"));
+//			
+//			effectiveDate2.where(a11,a12,a13);
+//
+//			
+//			// Where
+//			Predicate n11 = cb2.equal(b2.get("effectiveDateStart"), effectiveDate2);
+//			Predicate n12 = cb2.equal(b2.get("companyId"), req.getInsuranceId() );
+//			Predicate n13 = cb2.equal(b2.get("loginId"), req.getLoginId() );
+//
+//			query2.where( n11,n12,n13);
+//
+//			// Get Result
+//			TypedQuery<LoginProductMaster> result2 = em.createQuery(query2);
+//			loginlist = result2.getResultList();
+			
+			List<LoginProductMaster> loginlist = loginProductRepo.findByLoginIdAndCompanyId(req.getLoginId(), req.getInsuranceId());	
 			
 			for(CompanyProductMaster data : companylist) {
 	        
-				List<LoginProductMaster> filterUser = loginlist.stream().
+				
+				
+				List<LoginProductMaster> filterUse = loginlist.stream().
 						filter( o ->  o.getProductId().toString().
 								equalsIgnoreCase(data.getProductId().toString()))
 						.collect(Collectors.toList());
+				
+				int maxValue =  filterUse.stream().max(Comparator.comparingInt(LoginProductMaster::getAmendId)).map(LoginProductMaster::getAmendId).orElse(0);
+				
+				List<LoginProductMaster> filterUser = filterUse.stream().filter(o -> o.getAmendId().equals(maxValue)).collect(Collectors.toList());
 
 		        IssuerProductGetRes res = new IssuerProductGetRes();
 		        String endorsementid ="";
@@ -2541,7 +2593,12 @@ List<Error> errorList = new ArrayList<Error>();
 			
 			        res.setEndorsementIds(endorsementids);
 					res.setReferralIds(referralids);
-					res.setIsOptedYn("Y");
+					
+					if(filterUser.get(0).getStatus().equalsIgnoreCase("N"))
+						res.setIsOptedYn("N");
+					else
+						res.setIsOptedYn("Y");
+					
 					CalcEngine engine = new CalcEngine();					
 					engine.setProductId(data.getProductId().toString());
 					engine.setInsuranceId(data.getCompanyId());
@@ -2579,7 +2636,11 @@ List<Error> errorList = new ArrayList<Error>();
 			        ArrayList<String> referralids = new ArrayList<String>(Arrays.asList(referralid));
 			        res.setEndorsementIds(endorsementids);
 					res.setReferralIds(referralids);
-					res.setIsOptedYn("N");
+					
+					if(filterUser.get(0).getStatus().equalsIgnoreCase("N"))
+						res.setIsOptedYn("N");
+					else
+						res.setIsOptedYn("Y");
 					
 					CalcEngine engine = new CalcEngine();					
 					engine.setProductId(data.getProductId().toString());
