@@ -419,11 +419,11 @@ public class GridController {
 			
 			
 			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-			@PostMapping("/admin/policypendingdashboard")
+			@PostMapping("/admin/portfoliopendings")
 			public ResponseEntity<CommonRes> getAllPolicyPendingDashboard(@RequestBody PortFolioDashBoardReq req) {
 				reqPrinter.reqPrint(req);
 				CommonRes data = new CommonRes();
-				List<PortFolioDashBoardRes> res = entityService.getAllAdminPortfolio(req);
+				List<PortFolioDashBoardRes> res = entityService.getAllPolicyPendingDashboard(req);
 				data.setCommonResponse(res);
 				data.setIsError(false);
 				data.setErrorMessage(Collections.emptyList());
@@ -434,4 +434,7 @@ public class GridController {
 					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 				}
 			}
+			
+			
+			
 		}

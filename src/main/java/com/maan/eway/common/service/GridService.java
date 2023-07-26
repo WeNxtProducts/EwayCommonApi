@@ -72,6 +72,8 @@ public interface GridService {
 
 	List<PortFolioDashBoardRes> getAllAdminPortfolio(PortFolioDashBoardReq req);
 
+	List<PortFolioDashBoardRes> getAllPolicyPendingDashboard(PortFolioDashBoardReq req);
+
 
 
 }

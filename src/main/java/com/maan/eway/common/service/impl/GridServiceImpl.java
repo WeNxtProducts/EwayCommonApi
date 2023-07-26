@@ -10,7 +10,12 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -19,6 +24,7 @@ import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -61,6 +67,7 @@ import com.maan.eway.common.res.GetAllMotorDetailsRes;
 import com.maan.eway.common.res.GetallPolicyReportsRes;
 import com.maan.eway.common.res.PortFolioAdminTupleRes;
 import com.maan.eway.common.res.PortFolioDashBoardRes;
+import com.maan.eway.common.res.PortfolioAdminPendingRes;
 import com.maan.eway.common.res.PortfolioBrokerListRes;
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
@@ -82,6 +89,7 @@ import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.thread.MyTaskList;
 
 @Service
 @Transactional
@@ -2190,14 +2198,12 @@ public class GridServiceImpl implements GridService {
 	public List<PortFolioDashBoardRes> getAllAdminPortfolio(PortFolioDashBoardReq req) {
 		List<PortFolioDashBoardRes> resList = new ArrayList<PortFolioDashBoardRes>();
 		try {
-			 List<PortFolioAdminTupleRes> list =  getPortFolioDashBoard(req);
 			 List<CompanyProductMaster> productList  = getCompanyProductList(req.getInsuranceId());
+			 List<PortFolioAdminTupleRes> list =  getPortFolioDashBoard(req);
 			 
 			// Group By Product Id
 	//		 Map<Integer ,List<PortFolioAdminTupleRes>> groupByProductId = list.stream().collect(Collectors.groupingBy(PortFolioAdminTupleRes :: getProductId )) ;
 			 for (CompanyProductMaster product : productList  ) { 
-				 // List<PortFolioAdminTupleRes> filterProduct = groupByProductId.get(productId);
-				//  PortFolioAdminTupleRes  product = filterProduct.get(0);
 				 List<PortFolioAdminTupleRes> filterProduct = list.stream().filter( o -> o.getProductId()!=null &&  o.getProductId().equals(product.getProductId() )  ).collect(Collectors.toList());
 				 
 				 // Map Broker List
@@ -2209,24 +2215,25 @@ public class GridServiceImpl implements GridService {
 					 brokerRes.setBrokerLoginId(data.getLoginId() );
 					 brokerRes.setBrokerName(data.getBrokerName() );
 					 brokerRes.setSubUserType(data.getSubUserType() );
-					 brokerRes.setTotalCount(data.getCount()==null?"0" : data.getCount().toString());
+					 brokerRes.setTotalCount(data.getCount()==null?0 : data.getCount());
 					 brokerRes.setTotalPremiumLc(data.getOverallPremiumLc()==null ? "0" : data.getOverallPremiumLc().toPlainString());
 					 brokerRes.setTotalPremiumFc(data.getOverallPremiumFc()==null ? "0" : data.getOverallPremiumFc().toPlainString());
 					 brokerRes.setUserType(data.getUserType());
 					 brokerResList.add(brokerRes);					 
 				 }
+				 brokerResList.sort(Comparator.comparing(PortfolioBrokerListRes :: getTotalCount  ).reversed());
 				 
 				 // Response 
 				 PortFolioDashBoardRes res = new PortFolioDashBoardRes();
 				 res.setBrokerList(brokerResList);
 				 res.setProductId(product.getProductId().toString());
 				 res.setProductName(product.getProductName());
-				 res.setBrokeCount(brokerResList.size() > 0 ? Long.valueOf(brokerResList.size()) : 0 ); 
+				 res.setBrokerCount(brokerResList.size() > 0 ? Long.valueOf(brokerResList.size()) : 0 ); 
 				 resList.add(res);
 				 
 				 
 			}
-			 resList.sort(Comparator.comparing(PortFolioDashBoardRes :: getBrokeCount  ).reversed()); 
+			 resList.sort(Comparator.comparing(PortFolioDashBoardRes :: getBrokerCount  ).reversed()); 
 			 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2304,7 +2311,9 @@ public class GridServiceImpl implements GridService {
 					
 			if("N".equalsIgnoreCase(businessType) ) {
 				predicate.add(cb.equal(h.get("status"), "P"));
-				predicate.add(cb.isNull(h.get("endtStatus")));
+				Predicate n1 = cb.isNull(h.get("endtStatus"));
+				Predicate n2 = cb.equal(h.get("endtStatus"),"");
+				predicate.add(cb.or(n1,n2));
 				
 			} else if ("E".equalsIgnoreCase(businessType)  ) {
 				predicate.add(cb.equal(h.get("status"), "P"));
@@ -2339,6 +2348,121 @@ public class GridServiceImpl implements GridService {
 			
 		}
 		return list ;
+	}
+
+	
+	
+	
+	
+	@Override
+	public List<PortFolioDashBoardRes> getAllPolicyPendingDashboard(PortFolioDashBoardReq req) {
+		List<PortFolioDashBoardRes> resList = new ArrayList<PortFolioDashBoardRes>();
+		try {
+			// Thread Call Setup To Fetch List From 4 tables
+			 List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
+			 MyTaskList taskList = new MyTaskList(queue);
+			 PortFolioFetchThreadCall motorPendings = new PortFolioFetchThreadCall("getPortFolioMotorPendings" , req , em  );
+			 PortFolioFetchThreadCall travelPendings = new PortFolioFetchThreadCall("getPortFolioTravelPendings" , req , em  );
+			 PortFolioFetchThreadCall buildingPendings = new PortFolioFetchThreadCall("getPortFolioBuildingPendings" , req , em  );
+			 PortFolioFetchThreadCall humanPendings = new PortFolioFetchThreadCall("getPortFolioHumanPendings" , req , em  );
+			 
+			 queue.add(motorPendings);
+			 queue.add(travelPendings);
+			 queue.add(buildingPendings);
+			 queue.add(humanPendings);
+			 int threadCount = 4 ;
+			 int success = 0;
+			 ForkJoinPool forkjoin = new ForkJoinPool(threadCount); 
+             ConcurrentLinkedQueue<Future<Object>> invoke  = (ConcurrentLinkedQueue<Future<Object>>) forkjoin.invoke(taskList) ;
+             
+			 
+			 List<PortfolioAdminPendingRes> motorList   = new ArrayList<PortfolioAdminPendingRes>();
+			 List<PortfolioAdminPendingRes> travelList  = new ArrayList<PortfolioAdminPendingRes>();
+			 List<PortfolioAdminPendingRes> buildingList = new ArrayList<PortfolioAdminPendingRes>();
+			 List<PortfolioAdminPendingRes> humanList   = new ArrayList<PortfolioAdminPendingRes>();
+
+			 for (Future<Object> callable : invoke) {
+
+	 				log.info(callable.getClass() + "," + callable.isDone());
+
+	 				if (callable.isDone()) {
+	 					Map<String, Object> map = (Map<String, Object>) callable.get();
+
+	 					for (Entry<String, Object> future : map.entrySet()) {
+	 						
+	 						if ("getPortFolioMotorPendings".equalsIgnoreCase(future.getKey())) {
+	 							motorList =  (List<PortfolioAdminPendingRes>) future.getValue();
+	 							
+	 						} else if ("getPortFolioTravelPendings".equalsIgnoreCase(future.getKey())) {
+	 							travelList = (List<PortfolioAdminPendingRes>)  future.getValue();
+	 							
+	 						} else if ("getPortFolioBuildingPendings".equalsIgnoreCase(future.getKey())) {
+	 							buildingList = (List<PortfolioAdminPendingRes>)  future.getValue();
+	 							
+	 						} else if ("getPortFolioHumanPendings".equalsIgnoreCase(future.getKey())) {
+	 							humanList = (List<PortfolioAdminPendingRes>)  future.getValue();
+	 						}
+	 					}
+
+	 					success++;
+	 				}
+	 			}
+			 
+			 List<CompanyProductMaster> productList  = getCompanyProductList(req.getInsuranceId());
+			 
+			// Group By Product Id
+			 for (CompanyProductMaster product : productList  ) { 
+				 
+				 String productType = StringUtils.isBlank(product.getMotorYn()) ? "M" :product.getMotorYn() ; 
+				 List<PortfolioAdminPendingRes> filterProduct  = new ArrayList<PortfolioAdminPendingRes>();
+				 
+				if("H".equalsIgnoreCase(productType) && product.getProductId().equals(4) ) 
+					filterProduct = travelList ; //travelList.stream().filter( o -> o.getProductId()!=null &&  o.getProductId().equals(product.getProductId() )  ).collect(Collectors.toList());
+				
+				else if("M".equalsIgnoreCase(productType) )
+					filterProduct = motorList ; //motorList.stream().filter( o -> o.getProductId()!=null &&  o.getProductId().equals(product.getProductId() )  ).collect(Collectors.toList());
+				
+				else if("A".equalsIgnoreCase(productType) )
+					filterProduct = buildingList.stream().filter( o -> o.getProductId()!=null &&  o.getProductId().equals(product.getProductId() )  ).collect(Collectors.toList());
+				
+				else if("H".equalsIgnoreCase(productType) )
+					filterProduct = humanList.stream().filter( o -> o.getProductId()!=null &&  o.getProductId().equals(product.getProductId() )  ).collect(Collectors.toList());
+				 
+				 // Map Broker List
+				 List<PortfolioBrokerListRes>     brokerResList = new ArrayList<PortfolioBrokerListRes>(); 
+				 for(PortfolioAdminPendingRes data : filterProduct) { 
+					 PortfolioBrokerListRes brokerRes = new PortfolioBrokerListRes();
+					 
+					 brokerRes.setBrokerCode(data.getOaCode()==null?"0" : data.getOaCode().toString());
+					 brokerRes.setBrokerLoginId(data.getLoginId() );
+					 brokerRes.setBrokerName(data.getBrokerName() );
+					 brokerRes.setSubUserType(data.getSubUserType() );
+					 brokerRes.setTotalCount(data.getCount()==null?0 : data.getCount());
+					 brokerRes.setTotalPremiumLc(data.getOverallPremiumLc()==null ? "0" : data.getOverallPremiumLc().toPlainString());
+					 brokerRes.setTotalPremiumFc(data.getOverallPremiumFc()==null ? "0" : data.getOverallPremiumFc().toPlainString());
+					 brokerRes.setUserType(data.getUserType());
+					 brokerResList.add(brokerRes);					 
+				 }
+				 brokerResList.sort(Comparator.comparing(PortfolioBrokerListRes :: getTotalCount  ).reversed());
+				 
+				 // Response 
+				 PortFolioDashBoardRes res = new PortFolioDashBoardRes();
+				 res.setBrokerList(brokerResList);
+				 res.setProductId(product.getProductId().toString());
+				 res.setProductName(product.getProductName());
+				 res.setBrokerCount(brokerResList.size() > 0 ? Long.valueOf(brokerResList.size()) : 0 ); 
+				 resList.add(res);
+				 
+				 
+			}
+			 resList.sort(Comparator.comparing(PortFolioDashBoardRes :: getBrokerCount  ).reversed()); 
+			 
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
 	}
 
 }

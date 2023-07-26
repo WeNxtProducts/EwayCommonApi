@@ -23,7 +23,7 @@ public class PortfolioBrokerListRes {
 	   private String     subUserType;
 	   
 	   @JsonProperty("TotalCount")
-	   private String     totalCount;
+	   private Long     totalCount;
 	    
 	   @JsonProperty("TotalPremiumLc")
 	   private String     totalPremiumLc;
