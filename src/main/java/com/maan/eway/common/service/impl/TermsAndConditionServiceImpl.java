@@ -587,19 +587,22 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 		try {
-			if( req.getTermsAndConditionReq()!=null && req.getTermsAndConditionReq().size() > 0   ) {
-				List<TermsAndCondition> data = new ArrayList<TermsAndCondition>();
-				if (req.getQuoteNo() == null && StringUtils.isNotBlank(req.getQuoteNo())) {
-					data = termsRepo.findByQuoteNoAndRiskIdAndProductIdAndSectionId(req.getQuoteNo(), req.getRiskId(),
-							req.getProductId(), req.getSectionId());
-				} else {
-					data = termsRepo.findByRequestReferenceNoAndRiskIdAndProductIdAndSectionId(req.getRequestReferenceNo(),
-							req.getRiskId(), req.getProductId(), req.getSectionId());
+			
+			List<TermsAndCondition> data = new ArrayList<TermsAndCondition>();
+			if (req.getQuoteNo() == null && StringUtils.isNotBlank(req.getQuoteNo())) {
+				data = termsRepo.findByQuoteNoAndRiskIdAndProductIdAndSectionId(req.getQuoteNo(), req.getRiskId(),
+						req.getProductId(), req.getSectionId());
+			} else {
+				data = termsRepo.findByRequestReferenceNoAndRiskIdAndProductIdAndSectionId(req.getRequestReferenceNo(),
+						req.getRiskId(), req.getProductId(), req.getSectionId());
 
-				}
-				if (data.size() > 0 && data != null) {
-					termsRepo.deleteAll(data);
-				}
+			}
+			if (data.size() > 0 && data != null) {
+				termsRepo.deleteAll(data);
+			}
+			
+			if( req.getTermsAndConditionReq()!=null && req.getTermsAndConditionReq().size() > 0   ) {
+			
 				Long count = termsRepo.count();
 				Integer count1 = count.intValue();
 				Integer a = 1000;
