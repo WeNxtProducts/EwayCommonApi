@@ -142,12 +142,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						warrantyres.setSubIdDesc(data.getSubIdDesc());
 						warrantyres.setDocRefNo(data.getDocRefNo());
 						warrantyres.setDocumentId("16");
-						
-						if(data.getStatus().equalsIgnoreCase("O"))
-							warrantyres.setTypeId("O");
-						if(data.getStatus().equalsIgnoreCase("D"))
-							warrantyres.setTypeId("D");
-						
+						warrantyres.setTypeId("D");
 						warrantyresList.add(warrantyres);
 						res.setWarrantyRes(warrantyresList);
 
@@ -159,12 +154,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						clausesres.setSubIdDesc(data.getSubIdDesc());
 						clausesres.setDocRefNo(data.getDocRefNo());
 						clausesres.setDocumentId("18");
-						
-						if(data.getStatus().equalsIgnoreCase("O"))
-							clausesres.setTypeId("O");
-						if(data.getStatus().equalsIgnoreCase("D"))
-							clausesres.setTypeId("D");
-						
+						clausesres.setTypeId("D");
 						clausesresList.add(clausesres);
 						res.setClausesRes(clausesresList);
 
@@ -177,12 +167,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						exclusionres.setSubIdDesc(data.getSubIdDesc());
 						exclusionres.setDocRefNo(data.getDocRefNo());
 						exclusionres.setDocumentId("19");
-						
-						if(data.getStatus().equalsIgnoreCase("O"))
-							exclusionres.setTypeId("O");
-						if(data.getStatus().equalsIgnoreCase("D"))
-							exclusionres.setTypeId("D");
-						
+						exclusionres.setTypeId("D");
 						exclusionresList.add(exclusionres);
 						res.setExclusionRes(exclusionresList);
 
@@ -198,13 +183,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 							warrantyres.setSubIdDesc(data.getSubIdDesc());
 							warrantyres.setDocRefNo(data.getDocRefNo());
 							warrantyres.setDocumentId("16");
-							
-
-							if(data.getStatus().equalsIgnoreCase("O"))
-								warrantyres.setTypeId("O");
-							if(data.getStatus().equalsIgnoreCase("D"))
-								warrantyres.setTypeId("D");
-							
+							warrantyres.setTypeId("D");
 							warrantyresList.add(warrantyres);
 							res.setWarrantyRes(warrantyresList);
 
@@ -216,12 +195,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 							clausesres.setSubIdDesc(data.getSubIdDesc());
 							clausesres.setDocRefNo(data.getDocRefNo());
 							clausesres.setDocumentId("18");
-							
-							if(data.getStatus().equalsIgnoreCase("O"))
-								clausesres.setTypeId("O");
-							if(data.getStatus().equalsIgnoreCase("D"))
-								clausesres.setTypeId("D");
-							
+							clausesres.setTypeId("D");
 							clausesresList.add(clausesres);
 							res.setClausesRes(clausesresList);
 
@@ -234,12 +208,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 							exclusionres.setSubIdDesc(data.getSubIdDesc());
 							exclusionres.setDocRefNo(data.getDocRefNo());
 							exclusionres.setDocumentId("19");
-							
-							if(data.getStatus().equalsIgnoreCase("O"))
-								exclusionres.setTypeId("O");
-							if(data.getStatus().equalsIgnoreCase("D"))
-								exclusionres.setTypeId("D");
-							
+							exclusionres.setTypeId("D");
 							exclusionresList.add(exclusionres);
 							res.setExclusionRes(exclusionresList);
 
@@ -653,7 +622,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				saveData.setProductName(product.get(0).getProductName());
 				saveData.setSectionName(section.get(0).getSectionName());
 				saveData.setEntryDate(new Date());
-			
+				saveData.setStatus("Y");
 				saveData.setCreatedBy(req.getCreatedBy());
 				saveData.setUpdatedBy(req.getCreatedBy());
 				saveData.setUpdatedDate(new Date());
@@ -679,17 +648,10 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 						saveData.setSubId(a++);
 						saveData.setSubIdDesc(req1.getSubIdDesc());
 					}
-					
-					if(req1.getTypeId().equalsIgnoreCase("O")) 
-						saveData.setStatus("O");
-					 else if(req1.getTypeId().equalsIgnoreCase("D"))
-						saveData.setStatus("D");
-					
 					termsRepo.saveAndFlush(saveData);
 					count1++;
 				}
-				
-				
+
 				termsRepo.saveAndFlush(saveData);
 			}
 		
