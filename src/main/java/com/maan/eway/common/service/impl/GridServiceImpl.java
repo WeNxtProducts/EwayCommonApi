@@ -2204,33 +2204,36 @@ public class GridServiceImpl implements GridService {
 			// Group By Product Id
 	//		 Map<Integer ,List<PortFolioAdminTupleRes>> groupByProductId = list.stream().collect(Collectors.groupingBy(PortFolioAdminTupleRes :: getProductId )) ;
 			 for (CompanyProductMaster product : productList  ) { 
-				 List<PortFolioAdminTupleRes> filterProduct = list.stream().filter( o -> o.getProductId()!=null &&  o.getProductId().equals(product.getProductId() )  ).collect(Collectors.toList());
 				 
-				 // Map Broker List
-				 List<PortfolioBrokerListRes>     brokerResList = new ArrayList<PortfolioBrokerListRes>(); 
-				 for(PortFolioAdminTupleRes data : filterProduct) { 
-					 PortfolioBrokerListRes brokerRes = new PortfolioBrokerListRes();
+				 if(StringUtils.isBlank(req.getProductId()) || "99999".equalsIgnoreCase(req.getProductId()) || product.getProductId().equals(Integer.valueOf(req.getProductId())) ) {
+					
+					 List<PortFolioAdminTupleRes> filterProduct = list.stream().filter( o -> o.getProductId()!=null &&  o.getProductId().equals(product.getProductId() )  ).collect(Collectors.toList());
 					 
-					 brokerRes.setBrokerCode(data.getOaCode()==null?"0" : data.getOaCode().toString());
-					 brokerRes.setBrokerLoginId(data.getLoginId() );
-					 brokerRes.setBrokerName(data.getBrokerName() );
-					 brokerRes.setSubUserType(data.getSubUserType() );
-					 brokerRes.setTotalCount(data.getCount()==null?0 : data.getCount());
-					 brokerRes.setTotalPremiumLc(data.getOverallPremiumLc()==null ? "0" : data.getOverallPremiumLc().toPlainString());
-					 brokerRes.setTotalPremiumFc(data.getOverallPremiumFc()==null ? "0" : data.getOverallPremiumFc().toPlainString());
-					 brokerRes.setUserType(data.getUserType());
-					 brokerResList.add(brokerRes);					 
+					 // Map Broker List
+					 List<PortfolioBrokerListRes>     brokerResList = new ArrayList<PortfolioBrokerListRes>(); 
+					 for(PortFolioAdminTupleRes data : filterProduct) { 
+						 PortfolioBrokerListRes brokerRes = new PortfolioBrokerListRes();
+						 
+						 brokerRes.setBrokerCode(data.getOaCode()==null?"0" : data.getOaCode().toString());
+						 brokerRes.setBrokerLoginId(data.getLoginId() );
+						 brokerRes.setBrokerName(data.getBrokerName() );
+						 brokerRes.setSubUserType(data.getSubUserType() );
+						 brokerRes.setTotalCount(data.getCount()==null?0 : data.getCount());
+						 brokerRes.setTotalPremiumLc(data.getOverallPremiumLc()==null ? "0" : data.getOverallPremiumLc().toPlainString());
+						 brokerRes.setTotalPremiumFc(data.getOverallPremiumFc()==null ? "0" : data.getOverallPremiumFc().toPlainString());
+						 brokerRes.setUserType(data.getUserType());
+						 brokerResList.add(brokerRes);					 
+					 }
+					 brokerResList.sort(Comparator.comparing(PortfolioBrokerListRes :: getTotalCount  ).reversed());
+					 
+					 // Response 
+					 PortFolioDashBoardRes res = new PortFolioDashBoardRes();
+					 res.setBrokerList(brokerResList);
+					 res.setProductId(product.getProductId().toString());
+					 res.setProductName(product.getProductName());
+					 res.setBrokerCount(brokerResList.size() > 0 ? Long.valueOf(brokerResList.size()) : 0 ); 
+					 resList.add(res);
 				 }
-				 brokerResList.sort(Comparator.comparing(PortfolioBrokerListRes :: getTotalCount  ).reversed());
-				 
-				 // Response 
-				 PortFolioDashBoardRes res = new PortFolioDashBoardRes();
-				 res.setBrokerList(brokerResList);
-				 res.setProductId(product.getProductId().toString());
-				 res.setProductName(product.getProductName());
-				 res.setBrokerCount(brokerResList.size() > 0 ? Long.valueOf(brokerResList.size()) : 0 ); 
-				 resList.add(res);
-				 
 				 
 			}
 			 resList.sort(Comparator.comparing(PortFolioDashBoardRes :: getBrokerCount  ).reversed()); 
@@ -2413,45 +2416,49 @@ public class GridServiceImpl implements GridService {
 			// Group By Product Id
 			 for (CompanyProductMaster product : productList  ) { 
 				 
-				 String productType = StringUtils.isBlank(product.getMotorYn()) ? "M" :product.getMotorYn() ; 
-				 List<PortfolioAdminPendingRes> filterProduct  = new ArrayList<PortfolioAdminPendingRes>();
-				 
-				if("H".equalsIgnoreCase(productType) && product.getProductId().equals(4) ) 
-					filterProduct = travelList ; //travelList.stream().filter( o -> o.getProductId()!=null &&  o.getProductId().equals(product.getProductId() )  ).collect(Collectors.toList());
-				
-				else if("M".equalsIgnoreCase(productType) )
-					filterProduct = motorList ; //motorList.stream().filter( o -> o.getProductId()!=null &&  o.getProductId().equals(product.getProductId() )  ).collect(Collectors.toList());
-				
-				else if("A".equalsIgnoreCase(productType) )
-					filterProduct = buildingList.stream().filter( o -> o.getProductId()!=null &&  o.getProductId().equals(product.getProductId() )  ).collect(Collectors.toList());
-				
-				else if("H".equalsIgnoreCase(productType) )
-					filterProduct = humanList.stream().filter( o -> o.getProductId()!=null &&  o.getProductId().equals(product.getProductId() )  ).collect(Collectors.toList());
-				 
-				 // Map Broker List
-				 List<PortfolioBrokerListRes>     brokerResList = new ArrayList<PortfolioBrokerListRes>(); 
-				 for(PortfolioAdminPendingRes data : filterProduct) { 
-					 PortfolioBrokerListRes brokerRes = new PortfolioBrokerListRes();
+				 if(StringUtils.isBlank(req.getProductId()) || "99999".equalsIgnoreCase(req.getProductId()) || product.getProductId().equals(Integer.valueOf(req.getProductId())) ) {
 					 
-					 brokerRes.setBrokerCode(data.getOaCode()==null?"0" : data.getOaCode().toString());
-					 brokerRes.setBrokerLoginId(data.getLoginId() );
-					 brokerRes.setBrokerName(data.getBrokerName() );
-					 brokerRes.setSubUserType(data.getSubUserType() );
-					 brokerRes.setTotalCount(data.getCount()==null?0 : data.getCount());
-					 brokerRes.setTotalPremiumLc(data.getOverallPremiumLc()==null ? "0" : data.getOverallPremiumLc().toPlainString());
-					 brokerRes.setTotalPremiumFc(data.getOverallPremiumFc()==null ? "0" : data.getOverallPremiumFc().toPlainString());
-					 brokerRes.setUserType(data.getUserType());
-					 brokerResList.add(brokerRes);					 
+					 String productType = StringUtils.isBlank(product.getMotorYn()) ? "M" :product.getMotorYn() ; 
+					 List<PortfolioAdminPendingRes> filterProduct  = new ArrayList<PortfolioAdminPendingRes>();
+					 
+					if("H".equalsIgnoreCase(productType) && product.getProductId().equals(4) ) 
+						filterProduct = travelList ; //travelList.stream().filter( o -> o.getProductId()!=null &&  o.getProductId().equals(product.getProductId() )  ).collect(Collectors.toList());
+					
+					else if("M".equalsIgnoreCase(productType) )
+						filterProduct = motorList ; //motorList.stream().filter( o -> o.getProductId()!=null &&  o.getProductId().equals(product.getProductId() )  ).collect(Collectors.toList());
+					
+					else if("A".equalsIgnoreCase(productType) )
+						filterProduct = buildingList.stream().filter( o -> o.getProductId()!=null &&  o.getProductId().equals(product.getProductId() )  ).collect(Collectors.toList());
+					
+					else if("H".equalsIgnoreCase(productType) )
+						filterProduct = humanList.stream().filter( o -> o.getProductId()!=null &&  o.getProductId().equals(product.getProductId() )  ).collect(Collectors.toList());
+					 
+					 // Map Broker List
+					 List<PortfolioBrokerListRes>     brokerResList = new ArrayList<PortfolioBrokerListRes>(); 
+					 for(PortfolioAdminPendingRes data : filterProduct) { 
+						 PortfolioBrokerListRes brokerRes = new PortfolioBrokerListRes();
+						 
+						 brokerRes.setBrokerCode(data.getOaCode()==null?"0" : data.getOaCode().toString());
+						 brokerRes.setBrokerLoginId(data.getLoginId() );
+						 brokerRes.setBrokerName(data.getBrokerName() );
+						 brokerRes.setSubUserType(data.getSubUserType() );
+						 brokerRes.setTotalCount(data.getCount()==null?0 : data.getCount());
+						 brokerRes.setTotalPremiumLc(data.getOverallPremiumLc()==null ? "0" : data.getOverallPremiumLc().toPlainString());
+						 brokerRes.setTotalPremiumFc(data.getOverallPremiumFc()==null ? "0" : data.getOverallPremiumFc().toPlainString());
+						 brokerRes.setUserType(data.getUserType());
+						 brokerResList.add(brokerRes);					 
+					 }
+					 brokerResList.sort(Comparator.comparing(PortfolioBrokerListRes :: getTotalCount  ).reversed());
+					 
+					 // Response 
+					 PortFolioDashBoardRes res = new PortFolioDashBoardRes();
+					 res.setBrokerList(brokerResList);
+					 res.setProductId(product.getProductId().toString());
+					 res.setProductName(product.getProductName());
+					 res.setBrokerCount(brokerResList.size() > 0 ? Long.valueOf(brokerResList.size()) : 0 ); 
+					 resList.add(res);
 				 }
-				 brokerResList.sort(Comparator.comparing(PortfolioBrokerListRes :: getTotalCount  ).reversed());
-				 
-				 // Response 
-				 PortFolioDashBoardRes res = new PortFolioDashBoardRes();
-				 res.setBrokerList(brokerResList);
-				 res.setProductId(product.getProductId().toString());
-				 res.setProductName(product.getProductName());
-				 res.setBrokerCount(brokerResList.size() > 0 ? Long.valueOf(brokerResList.size()) : 0 ); 
-				 resList.add(res);
+				
 				 
 				 
 			}

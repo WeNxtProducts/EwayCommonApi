@@ -135,7 +135,7 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
 			
 			// Select
-			query.multiselect(  cb.count(h).alias("count")  ,
+			query.multiselect(  cb.countDistinct(h.get("requestReferenceNo") ).alias("count")  ,
 								cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc") ,
 								cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc") ,
 								h.get("productId").as(Integer.class).alias("productId") ,
@@ -242,7 +242,7 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
 			
 			// Select
-			query.multiselect(  cb.count(h).alias("count")  ,
+			query.multiselect(  cb.countDistinct(h.get("requestReferenceNo") ).alias("count")  ,
 								cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc") ,
 								cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc") ,
 								h.get("productId").as(Integer.class).alias("productId") ,
@@ -349,7 +349,7 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
 			
 			// Select
-			query.multiselect(  cb.count(h).alias("count")  ,
+			query.multiselect(  cb.countDistinct(h.get("requestReferenceNo") ).alias("count")  ,
 								cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc") ,
 								cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc") ,
 								h.get("productId").as(Integer.class).alias("productId") ,
@@ -457,7 +457,7 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
 			
 			// Select
-			query.multiselect(  cb.count(h).alias("count")  ,
+			query.multiselect(  cb.countDistinct(h.get("requestReferenceNo") ).alias("count")  ,
 								cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc") ,
 								cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc") ,
 								h.get("productId").as(Integer.class).alias("productId") ,
