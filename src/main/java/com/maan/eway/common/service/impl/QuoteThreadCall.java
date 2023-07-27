@@ -2702,13 +2702,20 @@ public class QuoteThreadCall implements Callable<Object>  {
 			List<EserviceMotorDetails> filterComActive = motList.stream().filter( o ->  (! o.getStatus().equalsIgnoreCase("D")) &&  o.getCommissionPercentage() !=null ).collect(Collectors.toList());
 			BigDecimal commPercentage = new BigDecimal(filterComActive.stream().mapToDouble( o ->   o.getCommissionPercentage().doubleValue()   ).sum() ); 					  
 			BigDecimal commCount = new BigDecimal(filterComActive.size());
-			BigDecimal overAllcommPercent = commPercentage.divide(commCount).setScale(new MathContext(2, RoundingMode.HALF_UP).getPrecision(),RoundingMode.HALF_UP) ;
+			BigDecimal overAllcommPercent  = new BigDecimal(0);
+			if(commPercentage.compareTo(new BigDecimal(0)) > 0 && commCount.compareTo(new BigDecimal(0)) >0 )
+			overAllcommPercent = commPercentage.divide(commCount).setScale(new MathContext(2, RoundingMode.HALF_UP).getPrecision(),RoundingMode.HALF_UP) ;
+			
 			home.setCommissionPercentage(overAllcommPercent);
 			
 			List<EserviceMotorDetails> filterComVatActive = motList.stream().filter( o ->  (! o.getStatus().equalsIgnoreCase("D")) &&  o.getVatCommission() !=null ).collect(Collectors.toList());
 			BigDecimal commVatPercentage = new BigDecimal(filterComVatActive.stream().mapToDouble( o ->   o.getVatCommission().doubleValue()   ).sum() ); 					  
 			BigDecimal commVatCount = new BigDecimal(filterComVatActive.size());
-			BigDecimal overAllVatcommPercent = commVatPercentage.divide(commVatCount).setScale(new MathContext(2, RoundingMode.HALF_UP).getPrecision(),RoundingMode.HALF_UP) ;
+			
+			BigDecimal overAllVatcommPercent = new BigDecimal(0);
+			if(commVatPercentage.compareTo(new BigDecimal(0)) > 0 && commVatCount.compareTo(new BigDecimal(0)) >0 )
+			overAllVatcommPercent = commVatPercentage.divide(commVatCount).setScale(new MathContext(2, RoundingMode.HALF_UP).getPrecision(),RoundingMode.HALF_UP) ;
+			
 			home.setVatCommission(overAllVatcommPercent);
 			
 			if(StringUtils.isNotBlank(motorData.getEndorsementType()==null?null:String.valueOf(motorData.getEndorsementType()))) {
