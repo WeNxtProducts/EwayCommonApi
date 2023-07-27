@@ -2,10 +2,13 @@ package com.maan.eway.common.controller;
 
 import java.util.Collections;
 import java.util.List;
-import org.springframework.security.access.prepost.PreAuthorize;
+
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -14,21 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.req.MakePaymentRes;
 import com.maan.eway.common.req.MakePaymentSaveReq;
-import com.maan.eway.common.req.MakePaymentUpdateReq;
-import com.maan.eway.common.req.PaymentDetailsGetReq;
-import com.maan.eway.common.req.PaymentDetailsGetallReq;
-import com.maan.eway.common.req.PaymentDetailsHistoryReq;
 import com.maan.eway.common.req.PaymentDetailsSaveReq;
 import com.maan.eway.common.req.PaymentDetailsSaveRes;
-import com.maan.eway.common.req.PaymentInfoGetAllReq;
-import com.maan.eway.common.req.PaymentInfoGetReq;
 import com.maan.eway.common.req.PaymentResUrlReq;
 import com.maan.eway.common.req.TinyUrlGetReq;
 import com.maan.eway.common.req.TiraFrameReqCall;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.LoginEncryptResponse;
-import com.maan.eway.common.res.PaymentDetailGetRes;
-import com.maan.eway.common.res.PaymentInfoGetRes;
 import com.maan.eway.common.service.PaymentService;
 import com.maan.eway.common.service.impl.TiraIntegerationServiceImpl;
 import com.maan.eway.error.Error;
@@ -292,7 +287,24 @@ public class PaymentController {
 //				}
 //			}
 
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/gettira/{QuoteNo}")
+	@ApiOperation(value="This method is to Push Tira")
+	public ResponseEntity<CommonRes> resultOfTiraIntegration(@PathVariable("QuoteNo") String quoteNo,@RequestHeader("Authorization") String tokens) {
 		
+			CommonRes data = new CommonRes();		
+			JSONObject res = tiraService.resultOfTiraIntegration(quoteNo,tokens.replaceAll("Bearer ", "").split(",")[0]);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+			if(res !=null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			}
+			else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
 	
 		
 }

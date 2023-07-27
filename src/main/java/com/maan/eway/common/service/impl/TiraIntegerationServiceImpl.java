@@ -56,6 +56,9 @@ public class TiraIntegerationServiceImpl {
 	@Value(value = "${NonMotorTiraIntegPushLink}")
 	private String nonMotorTiraLink;
 	
+	@Value(value="${collectDataFromTiraPost}")
+	private String collectDataFromTiraPost;
+	
 	@PersistenceContext
 	private EntityManager em;
 	
@@ -248,6 +251,35 @@ public class TiraIntegerationServiceImpl {
 				return null;
 			}
 			return product;
+		}
+
+
+		public JSONObject resultOfTiraIntegration(String quoteNo, String token) {
+			 JSONObject res = null;
+				try {
+					// Frame Tira Req
+
+					RestTemplate temp = new RestTemplate();
+					HttpHeaders header = new HttpHeaders();
+					header.setContentType(MediaType.APPLICATION_XML);
+					// header.setCharset("UTF-8");
+					header.setBearerAuth(token);
+					
+					HttpEntity<?> requestent = new HttpEntity<>(header);
+					String url=collectDataFromTiraPost.replaceAll("{QuoteNo}", quoteNo);
+					System.out.println(new Date() + " Start " + url);
+					ResponseEntity<JSONObject> postForEntity = temp.exchange(url,
+												HttpMethod.GET,
+												requestent,new ParameterizedTypeReference<JSONObject>() {}) ;
+					res = postForEntity.getBody() ;
+					System.out.println(new Date() + " End " + url);
+
+				} catch (Exception e) {
+					e.printStackTrace();
+					log.info("Exception is ---> " + e.getMessage());
+					return null;
+				}
+				return res;
 		} 
 			
 }
