@@ -46,6 +46,7 @@ import com.maan.eway.endorsment.request.Endorsment;
 import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
+import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
@@ -78,6 +79,9 @@ public class CopyCommonRaw {
 	
 	@Autowired
 	private CommonDataDetailsRepository commonDataRepo;
+	
+	@Autowired
+	private EserviceBuildingDetailsRepository eserBuildingRepo;
 	
 	@Autowired
 	private DocumentTransactionDetailsRepository coverDocUploadDetails;
@@ -315,8 +319,11 @@ public class CopyCommonRaw {
 			personolInfoEndtStatus(req);
 			sectionDataDetails(req);
 			eserviceSectionDetails(req);
+			coverDocumentUploadDetailsEndtStatus(req);
 			productEmployee(req);
 			commonDataDetails(req);
+			esrviceBuildingDetailsEndtStatus(req);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -324,6 +331,26 @@ public class CopyCommonRaw {
 		}
 		return savedata;
 	}
+	private EserviceBuildingDetails esrviceBuildingDetailsEndtStatus(ChangeEndoStatusReq req) {
+		EserviceBuildingDetails savedata = new EserviceBuildingDetails();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			EserviceBuildingDetails eserBuilding = eserBuildingRepo.findByQuoteNo(req.getQuoteNo());
+			if (eserBuilding != null) {
+				savedata = dozerMapper.map(eserBuilding, EserviceBuildingDetails.class);
+				savedata.setEndtStatus("C");
+				eserBuildingRepo.saveAndFlush(savedata);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return savedata;
+
+	}
+
 	private CommonDataDetails commonDataDetails(ChangeEndoStatusReq req) {
 		CommonDataDetails savedata = new CommonDataDetails();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();

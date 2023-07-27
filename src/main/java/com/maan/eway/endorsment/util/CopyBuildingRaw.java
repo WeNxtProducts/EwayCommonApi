@@ -27,6 +27,7 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.bean.BuildingDetails;
+import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.ContentAndRisk;
 import com.maan.eway.bean.DocumentTransactionDetails;
@@ -47,6 +48,7 @@ import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.common.service.impl.MotorGridServiceImpl;
 import com.maan.eway.endorsment.request.Endorsment;
 import com.maan.eway.repository.BuildingDetailsRepository;
+import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.ContentAndRiskRepository;
 import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
@@ -68,6 +70,8 @@ public class CopyBuildingRaw {
 	private ProductEmployeesDetailsRepository proEmplyeeRepo;
 	@Autowired
 	private EserviceBuildingDetailsRepository eBuildingRepo;
+	@Autowired
+	private BuildingRiskDetailsRepository buildRiskRepo;
 	@Autowired
 	private SectionDataDetailsRepository sectionDataRepo;
 	@Autowired	 
@@ -422,6 +426,8 @@ public class CopyBuildingRaw {
 			eserviceSectionDetails(req);
 			//productEmployee(req);
 			commonDataDetails(req);
+			buildingRiskDetailsEndtStatus(req);
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -430,6 +436,27 @@ public class CopyBuildingRaw {
 		}
 		return savedata;
 	}
+	
+	private BuildingRiskDetails buildingRiskDetailsEndtStatus(ChangeEndoStatusReq req) {
+		BuildingRiskDetails savedata = new BuildingRiskDetails();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			List<BuildingRiskDetails> commonData = buildRiskRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+			if (commonData != null&& commonData.size()>0) {
+				savedata = dozerMapper.map(commonData, BuildingRiskDetails.class);
+				savedata.setEndtStatus("C");
+				buildRiskRepo.saveAndFlush(savedata);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return savedata;
+
+	}
+
 	private CommonDataDetails commonDataDetails(ChangeEndoStatusReq req) {
 		CommonDataDetails savedata = new CommonDataDetails();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
