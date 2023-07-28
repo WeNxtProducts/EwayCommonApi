@@ -80,7 +80,7 @@ public class MenuMasterServiceImpl implements MenuMasterService{
 				query = em.createQuery(criteriaQuery);
 				otherMenulist = query.getResultList();
 				
-				p3 =  cb.like(m.get("usertype"), "%" + "admin" + "%" );
+				p3 =  cb.like(m.get("usertype"),  "admin" + "%" );
 				criteriaQuery.where(p1,p2,p3).orderBy(orderList);
 				query = em.createQuery(criteriaQuery);
 				adminMenulist = query.getResultList();
@@ -90,12 +90,20 @@ public class MenuMasterServiceImpl implements MenuMasterService{
 				query = em.createQuery(criteriaQuery);
 				otherMenulist = query.getResultList();
 				
-			} else if (req.getSubUserType().equalsIgnoreCase("high")     ) {
-				p3 =  cb.like(m.get("usertype"), "%" + "admin" + "%" );
+			} else if (req.getSubUserType().equalsIgnoreCase("high")    ) { //approver issuer
+				p3 =  cb.like(m.get("usertype"),  "admin" + "%" );
 				criteriaQuery.where(p1,p2,p3).orderBy(orderList);
 				query = em.createQuery(criteriaQuery);
 				adminMenulist = query.getResultList();
-			} else {
+			} else if (req.getSubUserType().equalsIgnoreCase("SuperAdmin")    ) {
+				p3 =  cb.like(m.get("usertype"), "%" + "SuperAdmin" + "%" );
+				criteriaQuery.where(p1,p2,p3).orderBy(orderList);
+				query = em.createQuery(criteriaQuery);
+				adminMenulist = query.getResultList();
+			}
+			
+			
+			else {
 				criteriaQuery.where(p1,p2,p3).orderBy(orderList);	
 				query = em.createQuery(criteriaQuery);
 				otherMenulist = query.getResultList();
