@@ -1667,7 +1667,8 @@ public class TravelGridServiceImpl implements  TravelGridService {
 									req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 									Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
 
-					List<SectionDataDetails> eserSec = sectionDataRepo.findByQuoteNoAndStatusOrderByRiskIdAsc(prevQuoteNo,"Y");
+//					List<SectionDataDetails> eserSec = sectionDataRepo.findByQuoteNoAndStatusOrderByRiskIdAsc(prevQuoteNo,"Y");
+					List<SectionDataDetails> eserSec = sectionDataRepo.findByQuoteNoAndStatusNot(prevQuoteNo,"D");
 					if (eserSec != null && eserSec.size()>0 ) {
 						for (SectionDataDetails data : eserSec) {
 							savedata = dozerMapper.map(data, SectionDataDetails.class);

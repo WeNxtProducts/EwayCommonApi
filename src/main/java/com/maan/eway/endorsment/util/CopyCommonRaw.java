@@ -40,6 +40,7 @@ import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.ChangeEndoStatusReq;
 import com.maan.eway.common.res.CommonCopyRes;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
+import com.maan.eway.repository.BuildingDetailsRepository;
 import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.common.service.impl.MotorGridServiceImpl;
 import com.maan.eway.endorsment.request.Endorsment;
@@ -52,10 +53,14 @@ import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.ProductEmployeesDetailsRepository;
 import com.maan.eway.repository.SectionDataDetailsRepository;
+import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.CommonDataDetails;
 @Service
 public class CopyCommonRaw {
 
+	@Autowired
+	private BuildingDetailsRepository buildingRepo;
+	
 	@Autowired
 	private EserviceCommonDetailsRepository eCommonRepo;
 	
@@ -323,6 +328,7 @@ public class CopyCommonRaw {
 			productEmployee(req);
 			commonDataDetails(req);
 			esrviceBuildingDetailsEndtStatus(req);
+			buildingDetailsEndtStatus(req);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -330,6 +336,27 @@ public class CopyCommonRaw {
 			return null;
 		}
 		return savedata;
+	}
+	private BuildingDetails buildingDetailsEndtStatus(ChangeEndoStatusReq req) {
+		BuildingDetails savedata = new BuildingDetails();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			List<BuildingDetails> buildData = buildingRepo.findByQuoteNo(req.getQuoteNo());
+			if (buildData.size() > 0) {
+				for (BuildingDetails data : buildData) {
+					savedata = dozerMapper.map(data, BuildingDetails.class);
+					savedata.setEndtStatus("C");
+					buildingRepo.saveAndFlush(savedata);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return savedata;
+
+		
 	}
 	private EserviceBuildingDetails esrviceBuildingDetailsEndtStatus(ChangeEndoStatusReq req) {
 		EserviceBuildingDetails savedata = new EserviceBuildingDetails();
