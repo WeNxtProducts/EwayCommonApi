@@ -357,9 +357,12 @@ public class CopyCommonRaw {
 		try {
 			List<CommonDataDetails> commonData = commonDataRepo.findByQuoteNo(req.getQuoteNo());
 			if (commonData != null&& commonData.size()>0) {
-				savedata = dozerMapper.map(commonData, CommonDataDetails.class);
+				for(CommonDataDetails data:commonData) {
+				savedata = dozerMapper.map(data, CommonDataDetails.class);
+				savedata.setCustomerReferenceNo(data.getCustomerReferenceNo());
 				savedata.setEndtStatus("C");
 				commonDataRepo.saveAndFlush(savedata);
+				}
 			}
 
 		} catch (Exception e) {
@@ -376,9 +379,14 @@ public class CopyCommonRaw {
 		try {
 			List<ProductEmployeeDetails> proEmpList = proEmplyeeRepo.findByQuoteNo(req.getQuoteNo());
 			if (proEmpList != null&& proEmpList.size()>0) {
-				savedata = dozerMapper.map(proEmpList, ProductEmployeeDetails.class);
+				
+				for(ProductEmployeeDetails data:proEmpList) {
+				savedata = dozerMapper.map(data, ProductEmployeeDetails.class);
+				savedata.setCompanyId(data.getCompanyId());
+				savedata.setEmployeeId(data.getEmployeeId());
 				savedata.setEndtStatus("C");
 				proEmplyeeRepo.saveAndFlush(savedata);
+				}
 			}
 
 		} catch (Exception e) {

@@ -680,9 +680,11 @@ public class EndorsementService {
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
 				List<EserviceTravelDetails> travelEndtStatus = new ArrayList<EserviceTravelDetails>();
 				travelEndtStatus.add( copyTravelraw.travelRawEndtStatus(req));
-			}else {
+				res=travelEndtStatus;
+			}else { 
 				List<EserviceCommonDetails> comonEndtStatus = new ArrayList<EserviceCommonDetails>();
 				comonEndtStatus.add( copyCommonraw.commonRawEndtStatus(req));
+				res = comonEndtStatus ;
 			}
 			CommonRes c=new CommonRes();
 			c.setCommonResponse(res);

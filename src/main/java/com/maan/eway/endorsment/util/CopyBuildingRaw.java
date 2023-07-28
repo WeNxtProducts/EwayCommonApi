@@ -463,9 +463,11 @@ public class CopyBuildingRaw {
 		try {
 			List<CommonDataDetails> commonData = commonDataRepo.findByQuoteNo(req.getQuoteNo());
 			if (commonData != null&& commonData.size()>0) {
-				savedata = dozerMapper.map(commonData, CommonDataDetails.class);
+				for(CommonDataDetails data:commonData) {
+				savedata = dozerMapper.map(data, CommonDataDetails.class);
 				savedata.setEndtStatus("C");
 				commonDataRepo.saveAndFlush(savedata);
+				}
 			}
 
 		} catch (Exception e) {
