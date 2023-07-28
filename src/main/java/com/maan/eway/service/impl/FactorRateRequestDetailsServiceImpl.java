@@ -1964,7 +1964,7 @@ this.repository = repo;
 			//	EserviceBuildingSectionDetails  findBuildSec = eserBuildSecRepo.findByRequestReferenceNoAndLocationIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,
 			//			req.getCompanyId() , 	 Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;
 			} else  {
-				EserviceCommonDetails    findCommon = eserCommonRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo() , req.getVehicleId()) ;
+				EserviceCommonDetails    findCommon = eserCommonRepo.findByRequestReferenceNoAndRiskIdAndSectionId(req.getRequestReferenceNo() , req.getVehicleId() ,req.getSectionId() ) ;
 				agencyCode = findCommon.getBrokerCode();
 				branchCode = findCommon.getBranchCode();
 				currencyId = findCommon.getCurrency();
