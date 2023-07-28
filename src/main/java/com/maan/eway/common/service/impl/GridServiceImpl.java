@@ -1,5 +1,6 @@
 package com.maan.eway.common.service.impl;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -18,8 +19,11 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -61,15 +65,18 @@ import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.PortFolioDashBoardReq;
+import com.maan.eway.common.req.PortFolioGridReq;
 import com.maan.eway.common.req.UpdateLapsedQuoteReq;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
 import com.maan.eway.common.res.GetallPolicyReportsRes;
 import com.maan.eway.common.res.PortFolioAdminTupleRes;
 import com.maan.eway.common.res.PortFolioDashBoardRes;
+import com.maan.eway.common.res.PortfolioAdminGridRes;
 import com.maan.eway.common.res.PortfolioAdminPendingRes;
 import com.maan.eway.common.res.PortfolioBrokerListRes;
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
+import com.maan.eway.common.res.PortfolioGridRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
@@ -2197,6 +2204,7 @@ public class GridServiceImpl implements GridService {
 	@Override
 	public List<PortFolioDashBoardRes> getAllAdminPortfolio(PortFolioDashBoardReq req) {
 		List<PortFolioDashBoardRes> resList = new ArrayList<PortFolioDashBoardRes>();
+		DecimalFormat df = new DecimalFormat("0.##");
 		try {
 			 List<CompanyProductMaster> productList  = getCompanyProductList(req.getInsuranceId());
 			 List<PortFolioAdminTupleRes> list =  getPortFolioDashBoard(req);
@@ -2219,8 +2227,8 @@ public class GridServiceImpl implements GridService {
 						 brokerRes.setBrokerName(data.getBrokerName() );
 						 brokerRes.setSubUserType(data.getSubUserType() );
 						 brokerRes.setTotalCount(data.getCount()==null?0 : data.getCount());
-						 brokerRes.setTotalPremiumLc(data.getOverallPremiumLc()==null ? "0" : data.getOverallPremiumLc().toPlainString());
-						 brokerRes.setTotalPremiumFc(data.getOverallPremiumFc()==null ? "0" : data.getOverallPremiumFc().toPlainString());
+						 brokerRes.setTotalPremiumLc(data.getOverallPremiumLc()==null ? "0" : df.format(Double.valueOf(data.getOverallPremiumLc().toPlainString())));
+						 brokerRes.setTotalPremiumFc(data.getOverallPremiumFc()==null ? "0" : df.format(Double.valueOf(data.getOverallPremiumFc().toPlainString())));
 						 brokerRes.setUserType(data.getUserType());
 						 brokerResList.add(brokerRes);					 
 					 }
@@ -2246,7 +2254,7 @@ public class GridServiceImpl implements GridService {
 		return resList;
 	}
 
-	public synchronized List<PortFolioAdminTupleRes> getPortFolioDashBoard(PortFolioDashBoardReq req) {
+	public List<PortFolioAdminTupleRes> getPortFolioDashBoard(PortFolioDashBoardReq req) {
 		List<PortFolioAdminTupleRes> list = new ArrayList<PortFolioAdminTupleRes>();
 		try {
 			Calendar cal = new GregorianCalendar();
@@ -2354,12 +2362,134 @@ public class GridServiceImpl implements GridService {
 	}
 
 	
-	
+	public List<PortfolioAdminGridRes> getPortFolioGrid(PortFolioGridReq req) {
+		List<PortfolioAdminGridRes> list = new ArrayList<PortfolioAdminGridRes>();
+		try {
+			Calendar cal = new GregorianCalendar();
+
+			Date startDate = req.getStartDate();
+			cal.setTime(startDate);
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			startDate = cal.getTime();
+
+			Date endDate = req.getEndDate();
+			cal.setTime(endDate);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			endDate = cal.getTime();
+			
+			Integer limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit()) ;
+			Integer offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset()) ;	
+					
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<PortfolioAdminGridRes> query = cb.createQuery(PortfolioAdminGridRes.class);
+			
+			// Find All
+			Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+			Root<LoginMaster> l = query.from(LoginMaster.class);
+			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
+			
+			// Select
+			query.multiselect(  h.get("applicationId").alias("applicationId")  ,
+								h.get("noOfVehicles").as(Long.class).alias("count")  ,
+								h.get("overallPremiumLc").alias("overallPremiumLc") ,
+								h.get("overallPremiumFc").alias("overallPremiumFc") ,
+								h.get("currency").alias("currencyCode") ,
+								h.get("exchangeRate").alias("exchangeRate") ,
+								h.get("requestReferenceNo").alias("requestReferenceNo") ,
+								h.get("quoteNo").alias("quoteNo") ,
+								h.get("policyNo").alias("policyNo") ,
+								h.get("originalPolicyNo").alias("originalPolicyNo") ,
+								h.get("productId").alias("productId") ,
+								h.get("productName").alias("productName") ,
+								h.get("agencyCode").alias("oaCode") ,
+								h.get("loginId").alias("loginId") ,
+								h.get("remarks").alias("remarks") ,
+								h.get("referralDescription").alias("referralRemarks") ,
+								h.get("adminRemarks").alias("adminRemarks") ,
+								h.get("adminLoginId").alias("adminLoginId"),
+								h.get("status").alias("status"),
+								h.get("endtStatus").alias("endtStatus"),
+								h.get("customerName").alias("customerName") ,
+								h.get("inceptionDate").alias("policyStartDate") ,
+								h.get("expiryDate").alias("policyEndDate") ,
+								h.get("branchCode").alias("branchCode") ,
+								h.get("branchName").alias("branchName") ,
+								h.get("brokerBranchCode").alias("brokerBranchCode") ,
+								h.get("brokerBranchName").alias("brokerBranchName") ,
+								u.get("userName").alias("brokerName") ,
+								l.get("userType").alias("userType") ,
+								l.get("subUserType").alias("subUserType"));
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(h.get("effectiveDate")));
+		
+			// Broker Oacode condition
+			Subquery<Long> oaCode = query.subquery(Long.class);
+			Root<LoginMaster> ocpm1 = oaCode.from(LoginMaster.class);
+			oaCode.select(cb.max(ocpm1.get("oaCode")));
+			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
+			Predicate a2 = cb.equal(ocpm1.get("agencyCode") , h.get("agencyCode") );
+			Predicate a3 = cb.equal(ocpm1.get("userType"), "Broker");
+			Predicate a4 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
+			oaCode.where(a1, a2 ,a3,a4);
+			
+			// Where
+			List<Predicate> predicate = new ArrayList<Predicate>();
+			predicate.add(cb.equal(h.get("agencyCode"), oaCode ));
+			predicate.add(cb.greaterThanOrEqualTo(h.get("effectiveDate"), startDate));
+			predicate.add(cb.lessThanOrEqualTo(h.get("effectiveDate"), endDate));
+			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
+			predicate.add(cb.equal(l.get("loginId"), h.get("loginId")));
+			predicate.add(cb.equal(u.get("loginId"), h.get("loginId")));
+			predicate.add(cb.equal(h.get("productId"),req.getProductId()));
+			
+			// Business Type Condition
+			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType() ;  
+					
+			if("N".equalsIgnoreCase(businessType) ) {
+				predicate.add(cb.equal(h.get("status"), "P"));
+				Predicate n1 = cb.isNull(h.get("endtStatus"));
+				Predicate n2 = cb.equal(h.get("endtStatus"),"");
+				predicate.add(cb.or(n1,n2));
+				
+			} else if ("E".equalsIgnoreCase(businessType)  ) {
+				predicate.add(cb.equal(h.get("status"), "P"));
+				predicate.add(cb.equal(h.get("endtStatus"), "C"));
+				predicate.add(cb.notEqual(h.get("endtTypeId"), "842"));
+				
+			} else if ("C".equalsIgnoreCase(businessType)  ) {
+				predicate.add(cb.equal(h.get("status"), "P"));
+				predicate.add(cb.equal(h.get("endtStatus"), "C"));
+				predicate.add(cb.equal(h.get("endtTypeId"), "842"));
+			}
+			
+			//  Branch Condition
+			if(StringUtils.isNotBlank(req.getBranchCode()) &&  (!"99999".equalsIgnoreCase(req.getBranchCode())) )  
+				predicate.add(cb.equal(h.get("branchCode"), req.getBranchCode()));
+			
+			
+			query.where(predicate.toArray(new Predicate[0])).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<PortfolioAdminGridRes> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			
+		}
+		return list ;
+	}
 	
 	
 	@Override
 	public List<PortFolioDashBoardRes> getAllPolicyPendingDashboard(PortFolioDashBoardReq req) {
 		List<PortFolioDashBoardRes> resList = new ArrayList<PortFolioDashBoardRes>();
+		DecimalFormat df = new DecimalFormat("0.##");
 		try {
 			// Thread Call Setup To Fetch List From 4 tables
 			 List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
@@ -2434,8 +2564,11 @@ public class GridServiceImpl implements GridService {
 						filterProduct = humanList.stream().filter( o -> o.getProductId()!=null &&  o.getProductId().equals(product.getProductId() )  ).collect(Collectors.toList());
 					 
 					 // Map Broker List
-					 List<PortfolioBrokerListRes>     brokerResList = new ArrayList<PortfolioBrokerListRes>(); 
-					 for(PortfolioAdminPendingRes data : filterProduct) { 
+					 List<PortfolioBrokerListRes>     brokerResList = new ArrayList<PortfolioBrokerListRes>();
+					 
+						
+					 for(PortfolioAdminPendingRes data : filterProduct) {
+						// System.out.println(format.format(price));
 						 PortfolioBrokerListRes brokerRes = new PortfolioBrokerListRes();
 						 
 						 brokerRes.setBrokerCode(data.getOaCode()==null?"0" : data.getOaCode().toString());
@@ -2443,8 +2576,8 @@ public class GridServiceImpl implements GridService {
 						 brokerRes.setBrokerName(data.getBrokerName() );
 						 brokerRes.setSubUserType(data.getSubUserType() );
 						 brokerRes.setTotalCount(data.getCount()==null?0 : data.getCount());
-						 brokerRes.setTotalPremiumLc(data.getOverallPremiumLc()==null ? "0" : data.getOverallPremiumLc().toPlainString());
-						 brokerRes.setTotalPremiumFc(data.getOverallPremiumFc()==null ? "0" : data.getOverallPremiumFc().toPlainString());
+						 brokerRes.setTotalPremiumLc(data.getOverallPremiumLc()==null ? "0" : df.format(Double.valueOf(data.getOverallPremiumLc().toPlainString())));
+						 brokerRes.setTotalPremiumFc(data.getOverallPremiumFc()==null ? "0" : df.format(Double.valueOf(data.getOverallPremiumFc().toPlainString())));
 						 brokerRes.setUserType(data.getUserType());
 						 brokerResList.add(brokerRes);					 
 					 }
@@ -2463,6 +2596,96 @@ public class GridServiceImpl implements GridService {
 				 
 			}
 			 resList.sort(Comparator.comparing(PortFolioDashBoardRes :: getBrokerCount  ).reversed()); 
+			 
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public List<PortfolioGridRes> getAllPolicyGrid(PortFolioGridReq req) {
+		List<PortfolioGridRes> resList = new ArrayList<PortfolioGridRes>();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		DecimalFormat df = new DecimalFormat("0.##");
+		try {
+			
+				
+			// Fetch Data
+			List<PortfolioAdminGridRes> list = new ArrayList<PortfolioAdminGridRes>();
+			String bsType = StringUtils.isNotBlank(req.getBusinessType()) ? req.getBusinessType() :"N";
+			
+			if("N".equalsIgnoreCase(bsType) || "E".equalsIgnoreCase(bsType) || "C".equalsIgnoreCase(bsType) ) {
+				list =  getPortFolioGrid(req);
+			} else {
+				CompanyProductMaster product = getCompanyProductMasterDropdown(req.getInsuranceId(),req.getProductId());
+				String productType = StringUtils.isNotBlank(product.getMotorYn()) ? product.getMotorYn() :"M";
+				
+				if("H".equalsIgnoreCase(productType) || "4".equals(req.getProductId()) ) {
+				//	list =  getPortFolioGrid(req);
+					
+				} else if("M".equalsIgnoreCase(productType)) {
+				//	list =  getPortFolioGrid(req);
+					
+				} else if("A".equalsIgnoreCase(productType)) {
+				//	list =  getPortFolioGrid(req);
+					
+				} else if("H".equalsIgnoreCase(productType)) {
+				//	list =  getPortFolioGrid(req);
+				}
+			}			
+			 
+			 // Map Broker List
+			 for(PortfolioAdminGridRes data : list) { 
+				 PortfolioGridRes res = new PortfolioGridRes();
+				 
+				 res.setApplicationId(data.getApplicationId()==null ? "" : data.getApplicationId().toString());
+				 res.setBrokerCode(data.getOaCode()==null?"":data.getOaCode().toString());				 
+				 res.setBrokerLoginId(data.getLoginId());
+				 res.setBrokerName(data.getBrokerName());
+				 res.setBranchCode(data.getBranchCode());
+				 res.setBranchName(data.getBranchName());
+				 res.setBrokerBranchCode(data.getBrokerBranchCode());
+				 res.setBrokerBranchName(data.getBrokerBranchName());
+				 res.setCount(data.getCount());
+				 res.setCurrencyCode(data.getCurrencyCode());
+				 res.setCustomerName(data.getCustomerName());
+				 res.setExchangeRate(data.getExchangeRate()==null ? "" : data.getExchangeRate().toPlainString());
+				 res.setOriginalPolicyNo(StringUtils.isNotBlank(data.getOriginalPolicyNo()) ? data.getOriginalPolicyNo() : data.getPolicyNo() );
+				 res.setOverallPremiumFc(data.getOverallPremiumFc()==null ? "0" : df.format(Double.valueOf(data.getOverallPremiumFc().toPlainString())));
+				 res.setOverallPremiumLc(data.getOverallPremiumLc()==null ? "0" : df.format(Double.valueOf(data.getOverallPremiumLc().toPlainString())));
+				 res.setPolicyStartDate(data.getPolicyStartDate()==null ? "" : sdf.format(data.getPolicyStartDate()));
+				 res.setPolicyEndDate(data.getPolicyEndDate()==null ? "" : sdf.format(data.getPolicyEndDate()));
+				 res.setPolicyNo(data.getPolicyNo());
+				 res.setQuoteNo(data.getQuoteNo());
+				 res.setRequestReferenceNo(data.getRequestReferenceNo());
+				 res.setSubUserType(data.getSubUserType());
+				 res.setUserType(data.getUserType());
+				 res.setProductId(data.getProductId()==null?"":data.getProductId().toString());
+				 res.setProductName(data.getProductName())	;
+				 res.setAdminRemarks(data.getAdminRemarks());
+				 res.setRemarks(data.getRemarks());
+				 res.setReferralRemarks(data.getReferralRemarks());
+				 res.setAdminLoginId(data.getAdminLoginId());
+				 res.setStatus(data.getStatus());
+				 res.setEndtSatus(data.getEndtStatus());
+				 String statusDesc = StringUtils.isBlank(data.getStatus()) ? "" : "Y".equalsIgnoreCase(data.getStatus()) ? "Existing Quote" 
+						   : "R".equalsIgnoreCase(data.getStatus()) ? "Quote Rejected" : "N".equalsIgnoreCase(data.getStatus()) ? "Quote Deactivated"
+						   : "D".equalsIgnoreCase(data.getStatus()) ? "Quote Deleted"  : "RP".equalsIgnoreCase(data.getStatus()) ? "Refferral Pending"
+						   : "RA".equalsIgnoreCase(data.getStatus()) ? "Refferral Approved" : "RR".equalsIgnoreCase(data.getStatus()) ? "Refferral Rejected"		   
+						   : "RA".equalsIgnoreCase(data.getStatus()) ? "Refferral Request"	 : "P".equalsIgnoreCase(data.getStatus()) ? "Policy Converted" 
+						   : "E".equalsIgnoreCase(data.getStatus()) ? "Endorsment"	:"" 	;   
+				
+				 String endtStatusDesc = StringUtils.isBlank(data.getEndtStatus()) ? "" : "P".equalsIgnoreCase(data.getEndtStatus()) ? "Pending" 
+						 : "C".equalsIgnoreCase(data.getEndtStatus()) ? "Completed"  : "" ;
+				 
+				 res.setStatusDesc(statusDesc);
+				 res.setEndtStatusDesc(endtStatusDesc);
+				  resList.add(res);					 
+			 }
+			 resList.sort(Comparator.comparing(PortfolioGridRes :: getBrokerName  ));
 			 
 		} catch (Exception e) {
 			e.printStackTrace();

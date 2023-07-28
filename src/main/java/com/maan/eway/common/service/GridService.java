@@ -8,6 +8,7 @@ import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.PortFolioDashBoardReq;
+import com.maan.eway.common.req.PortFolioGridReq;
 import com.maan.eway.common.req.UpdateLapsedQuoteReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
@@ -17,7 +18,7 @@ import com.maan.eway.common.res.PortFolioDashBoardRes;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
 
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
-
+import com.maan.eway.common.res.PortfolioGridRes;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.DropDownRes;
@@ -73,6 +74,8 @@ public interface GridService {
 	List<PortFolioDashBoardRes> getAllAdminPortfolio(PortFolioDashBoardReq req);
 
 	List<PortFolioDashBoardRes> getAllPolicyPendingDashboard(PortFolioDashBoardReq req);
+
+	List<PortfolioGridRes> getAllPolicyGrid(PortFolioGridReq req);
 
 
 

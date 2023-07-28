@@ -17,6 +17,7 @@ import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.PortFolioDashBoardReq;
+import com.maan.eway.common.req.PortFolioGridReq;
 import com.maan.eway.common.req.UpdateLapsedQuoteReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
@@ -24,6 +25,7 @@ import com.maan.eway.common.res.GetAllMotorDetailsRes;
 import com.maan.eway.common.res.GetallPolicyReportsRes;
 import com.maan.eway.common.res.PortFolioDashBoardRes;
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
+import com.maan.eway.common.res.PortfolioGridRes;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
 import com.maan.eway.common.service.GridService;
 import com.maan.eway.error.Error;
@@ -424,6 +426,24 @@ public class GridController {
 				reqPrinter.reqPrint(req);
 				CommonRes data = new CommonRes();
 				List<PortFolioDashBoardRes> res = entityService.getAllPolicyPendingDashboard(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}
+			
+			
+			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+			@PostMapping("/admin/portfoliogrid")
+			public ResponseEntity<CommonRes> getAllPolicyGrid(@RequestBody PortFolioGridReq req) {
+				reqPrinter.reqPrint(req);
+				CommonRes data = new CommonRes();
+				List<PortfolioGridRes> res = entityService.getAllPolicyGrid(req);
 				data.setCommonResponse(res);
 				data.setIsError(false);
 				data.setErrorMessage(Collections.emptyList());
