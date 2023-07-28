@@ -183,7 +183,7 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 				List<String> statusNot = new ArrayList<String>();
 				statusNot.add("P");
 				statusNot.add("D");
-				statusNot.add("N");
+			//	statusNot.add("N");
 				predicate.add(e0.in(statusNot).not() );
 				
 				// Endt Status Not
@@ -289,8 +289,8 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 				Expression<String> e0 = h.get("status");
 				List<String> statusNot = new ArrayList<String>();
 				statusNot.add("P");
-				statusNot.add("D");
-				statusNot.add("N");
+		//		statusNot.add("D");
+		//		statusNot.add("N");
 				predicate.add(e0.in(statusNot).not() );
 				
 				// Endt Status Not
@@ -396,8 +396,8 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 				Expression<String> e0 = h.get("status");
 				List<String> statusNot = new ArrayList<String>();
 				statusNot.add("P");
-				statusNot.add("D");
-				statusNot.add("N");
+			//	statusNot.add("D");
+			//	statusNot.add("N");
 				predicate.add(e0.in(statusNot).not() );
 				
 				// Endt Status Not
@@ -505,7 +505,7 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 				List<String> statusNot = new ArrayList<String>();
 				statusNot.add("P");
 				statusNot.add("D");
-				statusNot.add("N");
+			//	statusNot.add("N");
 				predicate.add(e0.in(statusNot).not() );
 				
 				// Endt Status Not

@@ -38,6 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -53,6 +54,7 @@ import com.maan.eway.auth.dto.LoginProductCriteriaRes;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
+import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.HomePositionMaster;
@@ -149,6 +151,7 @@ public class GridServiceImpl implements GridService {
 	public List<EserviceCustomerDetailsRes> getallExistingQuoteDetails(ExistingQuoteReq req) {
 		List<EserviceCustomerDetailsRes> custRes = new ArrayList<EserviceCustomerDetailsRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		 
 		try {
 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
@@ -213,7 +216,8 @@ public class GridServiceImpl implements GridService {
 
 			for (QuoteCriteriaRes data : extingQuoteList) {
 				EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
-				res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
+				dozerMapper.map(data, res);
+				
 				res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
 				custRes.add(res);
 			}
@@ -2404,7 +2408,6 @@ public class GridServiceImpl implements GridService {
 								h.get("productName").alias("productName") ,
 								h.get("agencyCode").alias("oaCode") ,
 								h.get("loginId").alias("loginId") ,
-								h.get("remarks").alias("remarks") ,
 								h.get("referralDescription").alias("referralRemarks") ,
 								h.get("adminRemarks").alias("adminRemarks") ,
 								h.get("adminLoginId").alias("adminLoginId"),
@@ -2419,7 +2422,9 @@ public class GridServiceImpl implements GridService {
 								h.get("brokerBranchName").alias("brokerBranchName") ,
 								u.get("userName").alias("brokerName") ,
 								l.get("userType").alias("userType") ,
-								l.get("subUserType").alias("subUserType"));
+								l.get("subUserType").alias("subUserType"),
+								h.get("effectiveDate").alias("updatedDate"),
+								h.get("endorsementRemarks").alias("endorsementRemarks"));
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.desc(h.get("effectiveDate")));
@@ -2485,6 +2490,639 @@ public class GridServiceImpl implements GridService {
 		return list ;
 	}
 	
+	public List<PortfolioAdminGridRes> getPortFolioTravelGrid(PortFolioGridReq req) {
+		List<PortfolioAdminGridRes> list = new ArrayList<PortfolioAdminGridRes>();
+		try {
+			Calendar cal = new GregorianCalendar();
+
+			Date startDate = req.getStartDate();
+			cal.setTime(startDate);
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			startDate = cal.getTime();
+
+			Date endDate = req.getEndDate();
+			cal.setTime(endDate);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			endDate = cal.getTime();
+			
+			Integer limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit()) ;
+			Integer offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset()) ;	
+					
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<PortfolioAdminGridRes> query = cb.createQuery(PortfolioAdminGridRes.class);
+			
+			// Find All
+			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+			Root<EserviceTravelDetails> h = query.from(EserviceTravelDetails.class);
+			Root<LoginMaster> l = query.from(LoginMaster.class);
+			Root<LoginBranchMaster> b = query.from(LoginBranchMaster.class);
+			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
+			
+			// Select
+			query.multiselect(  h.get("applicationId").alias("applicationId")  ,
+								cb.sum(h.get("totalPassengers")).as(Long.class).alias("count")  ,
+								cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc") ,
+								cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc") ,
+								h.get("currency").alias("currencyCode") ,
+								h.get("exchangeRate").alias("exchangeRate") ,
+								h.get("requestReferenceNo").alias("requestReferenceNo") ,
+								h.get("quoteNo").alias("quoteNo") ,
+								h.get("policyNo").alias("policyNo") ,
+								h.get("originalPolicyNo").alias("originalPolicyNo") ,
+								h.get("productId").as(Integer.class).alias("productId") ,
+								h.get("productName").alias("productName") ,
+								h.get("brokerCode").as(Integer.class).alias("oaCode") ,
+								h.get("loginId").alias("loginId") ,
+								h.get("referalRemarks").alias("referralRemarks") ,
+								h.get("adminRemarks").alias("adminRemarks") ,
+								h.get("adminLoginId").alias("adminLoginId"),
+								h.get("status").alias("status"),
+								h.get("endtStatus").alias("endtStatus"),
+								c.get("clientName").alias("customerName") ,
+								h.get("travelStartDate").alias("policyStartDate") ,
+								h.get("travelEndDate").alias("policyEndDate") ,
+								h.get("branchCode").alias("branchCode") ,
+								b.get("branchName").alias("branchName") ,
+								h.get("brokerBranchCode").alias("brokerBranchCode") ,
+								h.get("brokerBranchName").alias("brokerBranchName") ,
+								u.get("userName").alias("brokerName") ,
+								l.get("userType").alias("userType") ,
+								l.get("subUserType").alias("subUserType"),
+								h.get("updatedDate").alias("updatedDate"),
+								h.get("endorsementRemarks").alias("endorsementRemarks"));
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(h.get("updatedDate")));
+		
+			// Broker Oacode condition
+			Subquery<Long> oaCode = query.subquery(Long.class);
+			Root<LoginMaster> ocpm1 = oaCode.from(LoginMaster.class);
+			oaCode.select(cb.max(ocpm1.get("oaCode")));
+			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
+			Predicate a2 = cb.equal(ocpm1.get("agencyCode") , h.get("brokerCode") );
+			Predicate a3 = cb.equal(ocpm1.get("userType"), "Broker");
+			Predicate a4 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
+			oaCode.where(a1, a2 ,a3,a4);
+			
+			// Where
+			List<Predicate> predicate = new ArrayList<Predicate>();
+			predicate.add(cb.equal(h.get("brokerCode"), oaCode ));
+			predicate.add(cb.greaterThanOrEqualTo(h.get("updatedDate"), startDate));
+			predicate.add(cb.lessThanOrEqualTo(h.get("updatedDate"), endDate));
+			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
+			predicate.add(cb.equal(l.get("loginId"), h.get("loginId")));
+			predicate.add(cb.equal(u.get("loginId"), h.get("loginId")));
+			predicate.add(cb.equal(h.get("productId"),req.getProductId()));
+			predicate.add(cb.equal(h.get("customerReferenceNo"), c.get("customerReferenceNo") ));
+			predicate.add(cb.equal(b.get("loginId"), h.get("loginId") ));
+			predicate.add(cb.equal(b.get("branchCode"), h.get("branchCode") ));
+			predicate.add(cb.equal(b.get("brokerBranchCode"), h.get("brokerBranchCode") ));
+			
+			// Business Type Condition
+			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType() ;  
+					
+			// Pending Quote Condition 
+			if("Q".equalsIgnoreCase(businessType) ) {
+				// Status Not
+				Expression<String> e0 = h.get("status");
+				List<String> statusNot = new ArrayList<String>();
+				statusNot.add("P");
+				statusNot.add("D");
+				predicate.add(e0.in(statusNot).not() );
+				
+				// Endt Status Not
+//				Expression<String> e1 = h.get("endtStatus");
+//				List<String> endtStatusNot = new ArrayList<String>();
+//				endtStatusNot.add("C");
+//				predicate.add(e1.in(endtStatusNot).not() );
+			} 
+			
+			//  Branch Condition
+			if(StringUtils.isNotBlank(req.getBranchCode()) &&  (!"99999".equalsIgnoreCase(req.getBranchCode())) )  
+				predicate.add(cb.equal(h.get("branchCode"), req.getBranchCode()));
+			
+			
+			query.where(predicate.toArray(new Predicate[0]))
+		    .groupBy(h.get("applicationId") ,
+					 h.get("currency"),
+					 h.get("exchangeRate"),
+					 h.get("requestReferenceNo"),
+					 h.get("quoteNo"),
+					 h.get("policyNo"),
+					 h.get("originalPolicyNo"),
+					 h.get("productId"),
+					 h.get("productName"),
+					 h.get("brokerCode"),
+					 h.get("loginId"),
+					 h.get("referalRemarks"),
+					 h.get("adminRemarks"),
+					 h.get("adminLoginId"),
+					 h.get("status"),
+					 h.get("endtStatus"),
+					 c.get("clientName"),
+					 h.get("travelStartDate"),
+					 h.get("travelEndDate") ,
+					 h.get("branchCode"),
+					 b.get("branchName"),
+					 h.get("brokerBranchCode"),
+					 h.get("brokerBranchName"),
+					 u.get("userName"),
+					 l.get("userType"),
+					 l.get("subUserType"),
+					 h.get("updatedDate"),
+					 h.get("endorsementRemarks"))//;
+		    .orderBy(orderList);
+			
+			
+			// Get Result
+			TypedQuery<PortfolioAdminGridRes> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			
+		}
+		return list ;
+	}
+	
+	public List<PortfolioAdminGridRes> getPortFolioMotorGrid(PortFolioGridReq req) {
+		List<PortfolioAdminGridRes> list = new ArrayList<PortfolioAdminGridRes>();
+		try {
+			Calendar cal = new GregorianCalendar();
+
+			Date startDate = req.getStartDate();
+			cal.setTime(startDate);
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			startDate = cal.getTime();
+
+			Date endDate = req.getEndDate();
+			cal.setTime(endDate);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			endDate = cal.getTime();
+			
+			Integer limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit()) ;
+			Integer offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset()) ;	
+					
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<PortfolioAdminGridRes> query = cb.createQuery(PortfolioAdminGridRes.class);
+			
+			// Find All
+			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+			Root<EserviceMotorDetails> h = query.from(EserviceMotorDetails.class);
+			Root<LoginMaster> l = query.from(LoginMaster.class);
+			Root<LoginBranchMaster> b = query.from(LoginBranchMaster.class);
+			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
+			
+			// Select
+			query.multiselect(  h.get("applicationId").alias("applicationId")  ,
+								cb.count(h).alias("count")  ,
+								cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc") ,
+								cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc") ,
+								h.get("currency").alias("currencyCode") ,
+								h.get("exchangeRate").alias("exchangeRate") ,
+								h.get("requestReferenceNo").alias("requestReferenceNo") ,
+								cb.max(h.get("quoteNo")).alias("quoteNo") ,
+								cb.max(h.get("policyNo")).alias("policyNo") ,
+								h.get("originalPolicyNo").alias("originalPolicyNo") ,
+								h.get("productId").as(Integer.class).alias("productId") ,
+								h.get("productName").alias("productName") ,
+								h.get("brokerCode").as(Integer.class).alias("oaCode") ,
+								h.get("loginId").alias("loginId") ,
+								cb.max(h.get("referalRemarks")).alias("referralRemarks") ,
+								h.get("adminRemarks").alias("adminRemarks") ,
+								h.get("adminLoginId").alias("adminLoginId"),
+								cb.max(h.get("status")).alias("status"),
+								cb.max(h.get("endtStatus")).alias("endtStatus"),
+								c.get("clientName").alias("customerName") ,
+								h.get("policyStartDate").alias("policyStartDate") ,
+								h.get("policyEndDate").alias("policyEndDate") ,
+								h.get("branchCode").alias("branchCode") ,
+								b.get("branchName").alias("branchName") ,
+								h.get("brokerBranchCode").alias("brokerBranchCode") ,
+								h.get("brokerBranchName").alias("brokerBranchName") ,
+								u.get("userName").alias("brokerName") ,
+								l.get("userType").alias("userType") ,
+								l.get("subUserType").alias("subUserType"),
+								cb.max(h.get("updatedDate")).alias("updatedDate"),
+								h.get("endorsementRemarks").alias("endorsementRemarks"));
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(h.get("updatedDate")));
+		
+			// Broker Oacode condition
+			Subquery<Long> oaCode = query.subquery(Long.class);
+			Root<LoginMaster> ocpm1 = oaCode.from(LoginMaster.class);
+			oaCode.select(cb.max(ocpm1.get("oaCode")));
+			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
+			Predicate a2 = cb.equal(ocpm1.get("agencyCode") , h.get("brokerCode") );
+			Predicate a3 = cb.equal(ocpm1.get("userType"), "Broker");
+			Predicate a4 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
+			oaCode.where(a1, a2 ,a3,a4);
+			
+			// Where
+			List<Predicate> predicate = new ArrayList<Predicate>();
+			predicate.add(cb.equal(h.get("brokerCode"), oaCode ));
+			predicate.add(cb.greaterThanOrEqualTo(h.get("updatedDate"), startDate));
+			predicate.add(cb.lessThanOrEqualTo(h.get("updatedDate"), endDate));
+			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
+			predicate.add(cb.equal(l.get("loginId"), h.get("loginId")));
+			predicate.add(cb.equal(u.get("loginId"), h.get("loginId")));
+			predicate.add(cb.equal(h.get("productId"),req.getProductId()));
+			predicate.add(cb.equal(h.get("customerReferenceNo"), c.get("customerReferenceNo") ));
+			predicate.add(cb.equal(b.get("loginId"), h.get("loginId") ));
+			predicate.add(cb.equal(b.get("branchCode"), h.get("branchCode") ));
+			predicate.add(cb.equal(b.get("brokerBranchCode"), h.get("brokerBranchCode") ));
+			
+			// Business Type Condition
+			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType() ;  
+					
+			// Pending Quote Condition 
+			if("Q".equalsIgnoreCase(businessType) ) {
+				// Status Not
+				Expression<String> e0 = h.get("status");
+				List<String> statusNot = new ArrayList<String>();
+				statusNot.add("P");
+				statusNot.add("D");
+				predicate.add(e0.in(statusNot).not() );
+				
+				// Endt Status Not
+//				Expression<String> e1 = h.get("endtStatus");
+//				List<String> endtStatusNot = new ArrayList<String>();
+//				endtStatusNot.add("C");
+//				predicate.add(e1.in(endtStatusNot).not() );
+			} 
+			
+			//  Branch Condition
+			if(StringUtils.isNotBlank(req.getBranchCode()) &&  (!"99999".equalsIgnoreCase(req.getBranchCode())) )  
+				predicate.add(cb.equal(h.get("branchCode"), req.getBranchCode()));
+			
+			
+			query.where(predicate.toArray(new Predicate[0]))
+			.groupBy(h.get("applicationId") ,
+					 h.get("currency"),
+					 h.get("exchangeRate"),
+					 h.get("requestReferenceNo"),
+					 h.get("quoteNo"),
+					 h.get("policyNo"),
+					 h.get("originalPolicyNo"),
+					 h.get("productId"),
+					 h.get("productName"),
+					 h.get("brokerCode"),
+					 h.get("loginId"),
+					 h.get("referalRemarks"),
+					 h.get("adminRemarks"),
+					 h.get("adminLoginId"),
+					 h.get("status"),
+					 h.get("endtStatus"),
+					 c.get("clientName"),
+					 h.get("policyStartDate"),
+					 h.get("policyEndDate") ,
+					 h.get("branchCode"),
+					 b.get("branchName"),
+					 h.get("brokerBranchCode"),
+					 h.get("brokerBranchName"),
+					 u.get("userName"),
+					 l.get("userType"),
+					 l.get("subUserType"),
+					 h.get("updatedDate"),
+					 h.get("endorsementRemarks") )//;
+		    .orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<PortfolioAdminGridRes> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			
+		}
+		return list ;
+	}
+	
+	public List<PortfolioAdminGridRes> getPortFolioBuildingGrid(PortFolioGridReq req) {
+		List<PortfolioAdminGridRes> list = new ArrayList<PortfolioAdminGridRes>();
+		try {
+			Calendar cal = new GregorianCalendar();
+
+			Date startDate = req.getStartDate();
+			cal.setTime(startDate);
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			startDate = cal.getTime();
+
+			Date endDate = req.getEndDate();
+			cal.setTime(endDate);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			endDate = cal.getTime();
+			
+			Integer limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit()) ;
+			Integer offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset()) ;	
+					
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<PortfolioAdminGridRes> query = cb.createQuery(PortfolioAdminGridRes.class);
+			
+			// Find All
+			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+			Root<EserviceBuildingDetails> h = query.from(EserviceBuildingDetails.class);
+			Root<LoginMaster> l = query.from(LoginMaster.class);
+			Root<LoginBranchMaster> b = query.from(LoginBranchMaster.class);
+			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
+			
+			// Select
+			query.multiselect(  h.get("applicationId").alias("applicationId")  ,
+								cb.count(h).alias("count")  ,
+								cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc") ,
+								cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc") ,
+								h.get("currency").alias("currencyCode") ,
+								h.get("exchangeRate").alias("exchangeRate") ,
+								h.get("requestReferenceNo").alias("requestReferenceNo") ,
+								h.get("quoteNo").alias("quoteNo") ,
+								h.get("policyNo").alias("policyNo") ,
+								h.get("originalPolicyNo").alias("originalPolicyNo") ,
+								h.get("productId").as(Integer.class).alias("productId") ,
+								h.get("productDesc").alias("productName") ,
+								h.get("brokerCode").as(Integer.class).alias("oaCode") ,
+								h.get("loginId").alias("loginId") ,
+								h.get("referalRemarks").alias("referralRemarks") ,
+								h.get("adminRemarks").alias("adminRemarks") ,
+								h.get("adminLoginId").alias("adminLoginId"),
+								h.get("status").alias("status"),
+								h.get("endtStatus").alias("endtStatus"),
+								c.get("clientName").alias("customerName") ,
+								h.get("policyStartDate").alias("policyStartDate") ,
+								h.get("policyEndDate").alias("policyEndDate") ,
+								h.get("branchCode").alias("branchCode") ,
+								b.get("branchName").alias("branchName") ,
+								h.get("brokerBranchCode").alias("brokerBranchCode") ,
+								h.get("brokerBranchName").alias("brokerBranchName") ,
+								u.get("userName").alias("brokerName") ,
+								l.get("userType").alias("userType") ,
+								l.get("subUserType").alias("subUserType"),
+								h.get("updatedDate").alias("updatedDate"),
+								h.get("endorsementRemarks").alias("endorsementRemarks"));
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(h.get("updatedDate")));
+		
+			// Broker Oacode condition
+			Subquery<Long> oaCode = query.subquery(Long.class);
+			Root<LoginMaster> ocpm1 = oaCode.from(LoginMaster.class);
+			oaCode.select(cb.max(ocpm1.get("oaCode")));
+			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
+			Predicate a2 = cb.equal(ocpm1.get("agencyCode") , h.get("brokerCode") );
+			Predicate a3 = cb.equal(ocpm1.get("userType"), "Broker");
+			Predicate a4 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
+			oaCode.where(a1, a2 ,a3,a4);
+			
+			// Where
+			List<Predicate> predicate = new ArrayList<Predicate>();
+			predicate.add(cb.equal(h.get("brokerCode"), oaCode ));
+			predicate.add(cb.greaterThanOrEqualTo(h.get("updatedDate"), startDate));
+			predicate.add(cb.lessThanOrEqualTo(h.get("updatedDate"), endDate));
+			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
+			predicate.add(cb.equal(l.get("loginId"), h.get("loginId")));
+			predicate.add(cb.equal(u.get("loginId"), h.get("loginId")));
+			predicate.add(cb.equal(h.get("productId"),req.getProductId()));
+			predicate.add(cb.equal(h.get("customerReferenceNo"), c.get("customerReferenceNo") ));
+			predicate.add(cb.equal(b.get("loginId"), h.get("loginId") ));
+			predicate.add(cb.equal(b.get("branchCode"), h.get("branchCode") ));
+			predicate.add(cb.equal(b.get("brokerBranchCode"), h.get("brokerBranchCode") ));
+			
+			// Business Type Condition
+			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType() ;  
+					
+			// Pending Quote Condition 
+			if("Q".equalsIgnoreCase(businessType) ) {
+				// Status Not
+				Expression<String> e0 = h.get("status");
+				List<String> statusNot = new ArrayList<String>();
+				statusNot.add("P");
+				statusNot.add("D");
+				predicate.add(e0.in(statusNot).not() );
+				
+				// Endt Status Not
+//				Expression<String> e1 = h.get("endtStatus");
+//				List<String> endtStatusNot = new ArrayList<String>();
+//				endtStatusNot.add("C");
+//				predicate.add(e1.in(endtStatusNot).not() );
+			} 
+			
+			//  Branch Condition
+			if(StringUtils.isNotBlank(req.getBranchCode()) &&  (!"99999".equalsIgnoreCase(req.getBranchCode())) )  
+				predicate.add(cb.equal(h.get("branchCode"), req.getBranchCode()));
+			
+			
+			query.where(predicate.toArray(new Predicate[0]))
+			.groupBy(h.get("applicationId") ,
+					 h.get("currency"),
+					 h.get("exchangeRate"),
+					 h.get("requestReferenceNo"),
+					 h.get("quoteNo"),
+					 h.get("policyNo"),
+					 h.get("originalPolicyNo"),
+					 h.get("productId"),
+					 h.get("productDesc"),
+					 h.get("brokerCode"),
+					 h.get("loginId"),
+					 h.get("referalRemarks"),
+					 h.get("adminRemarks"),
+					 h.get("adminLoginId"),
+					 h.get("status"),
+					 h.get("endtStatus"),
+					 c.get("clientName"),
+					 h.get("policyStartDate"),
+					 h.get("policyEndDate") ,
+					 h.get("branchCode"),
+					 b.get("branchName"),
+					 h.get("brokerBranchCode"),
+					 h.get("brokerBranchName"),
+					 u.get("userName"),
+					 l.get("userType"),
+					 l.get("subUserType"),
+					 h.get("updatedDate"),
+					 h.get("endorsementRemarks") )//;
+		    .orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<PortfolioAdminGridRes> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			
+		}
+		return list ;
+	}
+	
+	public List<PortfolioAdminGridRes> getPortFolioHumanGrid(PortFolioGridReq req) {
+		List<PortfolioAdminGridRes> list = new ArrayList<PortfolioAdminGridRes>();
+		try {
+			Calendar cal = new GregorianCalendar();
+
+			Date startDate = req.getStartDate();
+			cal.setTime(startDate);
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			startDate = cal.getTime();
+
+			Date endDate = req.getEndDate();
+			cal.setTime(endDate);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			endDate = cal.getTime();
+			
+			Integer limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit()) ;
+			Integer offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset()) ;	
+					
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<PortfolioAdminGridRes> query = cb.createQuery(PortfolioAdminGridRes.class);
+			
+			// Find All
+			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+			Root<EserviceCommonDetails> h = query.from(EserviceCommonDetails.class);
+			Root<LoginMaster> l = query.from(LoginMaster.class);
+			Root<LoginBranchMaster> b = query.from(LoginBranchMaster.class);
+			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
+			
+			// Select
+			query.multiselect(  h.get("applicationId").alias("applicationId")  ,
+					cb.count(h).alias("count")  ,
+					cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc") ,
+					cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc") ,
+					h.get("currency").alias("currencyCode") ,
+					h.get("exchangeRate").alias("exchangeRate") ,
+					h.get("requestReferenceNo").alias("requestReferenceNo") ,
+					cb.max(h.get("quoteNo")).alias("quoteNo") ,
+					cb.max(h.get("policyNo")).alias("policyNo") ,
+					h.get("originalPolicyNo").alias("originalPolicyNo") ,
+					h.get("productId").as(Integer.class).alias("productId") ,
+					h.get("productDesc").alias("productName") ,
+					h.get("brokerCode").as(Integer.class).alias("oaCode") ,
+					h.get("loginId").alias("loginId") ,
+					cb.max(h.get("referalRemarks")).alias("referralRemarks") ,
+					h.get("adminRemarks").alias("adminRemarks") ,
+					h.get("adminLoginId").alias("adminLoginId"),
+					cb.max(h.get("status")).alias("status"),
+					cb.max(h.get("endtStatus")).alias("endtStatus"),
+					c.get("clientName").alias("customerName") ,
+					h.get("policyStartDate").alias("policyStartDate") ,
+					h.get("policyEndDate").alias("policyEndDate") ,
+					h.get("branchCode").alias("branchCode") ,
+					b.get("branchName").alias("branchName") ,
+					h.get("brokerBranchCode").alias("brokerBranchCode") ,
+					h.get("brokerBranchName").alias("brokerBranchName") ,
+					u.get("userName").alias("brokerName") ,
+					l.get("userType").alias("userType") ,
+					l.get("subUserType").alias("subUserType"),
+					cb.max(h.get("updatedDate")).alias("updatedDate"),
+					h.get("endorsementRemarks").alias("endorsementRemarks"));
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(h.get("updatedDate")));
+		
+			// Broker Oacode condition
+			Subquery<Long> oaCode = query.subquery(Long.class);
+			Root<LoginMaster> ocpm1 = oaCode.from(LoginMaster.class);
+			oaCode.select(cb.max(ocpm1.get("oaCode")));
+			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
+			Predicate a2 = cb.equal(ocpm1.get("agencyCode") , h.get("brokerCode") );
+			Predicate a3 = cb.equal(ocpm1.get("userType"), "Broker");
+			Predicate a4 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
+			oaCode.where(a1, a2 ,a3,a4);
+			
+			// Where
+			List<Predicate> predicate = new ArrayList<Predicate>();
+			predicate.add(cb.equal(h.get("brokerCode"), oaCode ));
+			predicate.add(cb.greaterThanOrEqualTo(h.get("updatedDate"), startDate));
+			predicate.add(cb.lessThanOrEqualTo(h.get("updatedDate"), endDate));
+			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
+			predicate.add(cb.equal(l.get("loginId"), h.get("loginId")));
+			predicate.add(cb.equal(u.get("loginId"), h.get("loginId")));
+			predicate.add(cb.equal(h.get("productId"),req.getProductId()));
+			predicate.add(cb.equal(h.get("customerReferenceNo"), c.get("customerReferenceNo") ));
+			predicate.add(cb.equal(b.get("loginId"), h.get("loginId") ));
+			predicate.add(cb.equal(b.get("branchCode"), h.get("branchCode") ));
+			predicate.add(cb.equal(b.get("brokerBranchCode"), h.get("brokerBranchCode") ));
+			
+			// Business Type Condition
+			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType() ;  
+					
+			// Pending Quote Condition 
+			if("Q".equalsIgnoreCase(businessType) ) {
+				// Status Not
+				Expression<String> e0 = h.get("status");
+				List<String> statusNot = new ArrayList<String>();
+				statusNot.add("P");
+				statusNot.add("D");
+				predicate.add(e0.in(statusNot).not() );
+				
+				// Endt Status Not
+//							Expression<String> e1 = h.get("endtStatus");
+//							List<String> endtStatusNot = new ArrayList<String>();
+//							endtStatusNot.add("C");
+//							predicate.add(e1.in(endtStatusNot).not() );
+			} 
+			
+			//  Branch Condition
+			if(StringUtils.isNotBlank(req.getBranchCode()) &&  (!"99999".equalsIgnoreCase(req.getBranchCode())) )  
+				predicate.add(cb.equal(h.get("branchCode"), req.getBranchCode()));
+			
+			
+			query.where(predicate.toArray(new Predicate[0]))
+			.groupBy(h.get("applicationId") ,
+					 h.get("currency"),
+					 h.get("exchangeRate"),
+					 h.get("requestReferenceNo"),
+					 h.get("quoteNo"),
+					 h.get("policyNo"),
+					 h.get("originalPolicyNo"),
+					 h.get("productId"),
+					 h.get("productDesc"),
+					 h.get("brokerCode"),
+					 h.get("loginId"),
+					 h.get("referalRemarks"),
+					 h.get("adminRemarks"),
+					 h.get("adminLoginId"),
+					 h.get("status"),
+					 h.get("endtStatus"),
+					 c.get("clientName"),
+					 h.get("policyStartDate"),
+					 h.get("policyEndDate") ,
+					 h.get("branchCode"),
+					 b.get("branchName"),
+					 h.get("brokerBranchCode"),
+					 h.get("brokerBranchName"),
+					 u.get("userName"),
+					 l.get("userType"),
+					 l.get("subUserType"),
+					 h.get("updatedDate"),
+					 h.get("endorsementRemarks") )//;
+		    .orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<PortfolioAdminGridRes> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			
+		}
+		return list ;
+	}
 	
 	@Override
 	public List<PortFolioDashBoardRes> getAllPolicyPendingDashboard(PortFolioDashBoardReq req) {
@@ -2623,20 +3261,27 @@ public class GridServiceImpl implements GridService {
 				CompanyProductMaster product = getCompanyProductMasterDropdown(req.getInsuranceId(),req.getProductId());
 				String productType = StringUtils.isNotBlank(product.getMotorYn()) ? product.getMotorYn() :"M";
 				
-				if("H".equalsIgnoreCase(productType) || "4".equals(req.getProductId()) ) {
-				//	list =  getPortFolioGrid(req);
+				if("H".equalsIgnoreCase(productType) && "4".equalsIgnoreCase(req.getProductId()) ) {
+					list =  getPortFolioTravelGrid(req);
 					
 				} else if("M".equalsIgnoreCase(productType)) {
-				//	list =  getPortFolioGrid(req);
+					list =  getPortFolioMotorGrid(req);
 					
 				} else if("A".equalsIgnoreCase(productType)) {
-				//	list =  getPortFolioGrid(req);
+					list =  getPortFolioBuildingGrid(req);
 					
 				} else if("H".equalsIgnoreCase(productType)) {
-				//	list =  getPortFolioGrid(req);
+					list =  getPortFolioHumanGrid(req);
 				}
 			}			
 			 
+			// Sort By Broker Name 
+//			list.sort(Comparator.comparing(PortfolioAdminGridRes :: getBrokerName  ) 
+//					 .thenComparing(PortfolioAdminGridRes :: getUpdatedDate  ).reversed());
+			
+			// Sort By Updated Date
+			list.sort(Comparator.comparing(PortfolioAdminGridRes :: getUpdatedDate  ).reversed());
+					 
 			 // Map Broker List
 			 for(PortfolioAdminGridRes data : list) { 
 				 PortfolioGridRes res = new PortfolioGridRes();
@@ -2666,27 +3311,27 @@ public class GridServiceImpl implements GridService {
 				 res.setProductId(data.getProductId()==null?"":data.getProductId().toString());
 				 res.setProductName(data.getProductName())	;
 				 res.setAdminRemarks(data.getAdminRemarks());
-				 res.setRemarks(data.getRemarks());
 				 res.setReferralRemarks(data.getReferralRemarks());
 				 res.setAdminLoginId(data.getAdminLoginId());
 				 res.setStatus(data.getStatus());
 				 res.setEndtSatus(data.getEndtStatus());
+				 res.setUpdatedDate(data.getUpdatedDate()==null ? "" : sdf.format(data.getUpdatedDate()));
+				 res.setEndorsementRemarks(data.getEndorsementRemarks());
 				 String statusDesc = StringUtils.isBlank(data.getStatus()) ? "" : "Y".equalsIgnoreCase(data.getStatus()) ? "Existing Quote" 
 						   : "R".equalsIgnoreCase(data.getStatus()) ? "Quote Rejected" : "N".equalsIgnoreCase(data.getStatus()) ? "Quote Deactivated"
 						   : "D".equalsIgnoreCase(data.getStatus()) ? "Quote Deleted"  : "RP".equalsIgnoreCase(data.getStatus()) ? "Refferral Pending"
 						   : "RA".equalsIgnoreCase(data.getStatus()) ? "Refferral Approved" : "RR".equalsIgnoreCase(data.getStatus()) ? "Refferral Rejected"		   
 						   : "RA".equalsIgnoreCase(data.getStatus()) ? "Refferral Request"	 : "P".equalsIgnoreCase(data.getStatus()) ? "Policy Converted" 
-						   : "E".equalsIgnoreCase(data.getStatus()) ? "Endorsment"	:"" 	;   
+						   : "E".equalsIgnoreCase(data.getStatus()) ? "Endorsement"	:"" 	;   
 				
 				 String endtStatusDesc = StringUtils.isBlank(data.getEndtStatus()) ? "" : "P".equalsIgnoreCase(data.getEndtStatus()) ? "Pending" 
 						 : "C".equalsIgnoreCase(data.getEndtStatus()) ? "Completed"  : "" ;
 				 
 				 res.setStatusDesc(statusDesc);
 				 res.setEndtStatusDesc(endtStatusDesc);
-				  resList.add(res);					 
+				 resList.add(res);					 
 			 }
-			 resList.sort(Comparator.comparing(PortfolioGridRes :: getBrokerName  ));
-			 
+			  
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());

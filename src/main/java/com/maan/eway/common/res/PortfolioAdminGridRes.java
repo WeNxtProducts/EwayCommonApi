@@ -26,7 +26,6 @@ public class PortfolioAdminGridRes {
 	   private String productName ; 
 	   private Integer oaCode ;
 	   private String     loginId;
-	   private String remarks ;
 	   private String     adminRemarks;
 	   private String     referralRemarks;
 	   private String     adminLoginId;
@@ -42,28 +41,9 @@ public class PortfolioAdminGridRes {
 	   private String     brokerName; 
 	   private String     userType;
 	   private String     subUserType;
-//		h.get("quoteNo").alias("quoteNo") ,
-//		h.get("policyNo").alias("policyNo") ,
-//		h.get("productId").alias("productId") ,
-//		h.get("productName").alias("productName") ,
-//		h.get("agencyCode").alias("oaCode") ,
-//		h.get("loginId").alias("loginId") ,
-//		h.get("remarks").alias("remarks") ,
-//		h.get("referralDescription").alias("referralRemarks") ,
-//		h.get("adminRemarks").alias("adminRemarks") ,
-//		h.get("adminLoginId").alias("adminLoginId"),
-//		h.get("status").alias("status"),
-//		h.get("endtStatus").alias("endtStatus"),
-//		h.get("customerName").alias("customerName") ,
-//		h.get("inceptionDate").alias("policyStartDate") ,
-//		h.get("expiryDate").alias("policyEndDate") ,
-//		h.get("branchCode").alias("branchCode") ,
-//		h.get("branchName").alias("branchName") ,
-//		h.get("brokerBranchCode").alias("brokerBranchCode") ,
-//		h.get("brokerBranchName").alias("brokerBranchName") ,
-//		u.get("userName").alias("brokerName") ,
-//		l.get("userType").alias("userType") ,
-//		l.get("subUserType").alias("subUserType")
+	   private Date     updatedDate;
+	   private String endorsementRemarks;
+
 	
 	
 }

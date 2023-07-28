@@ -106,4 +106,9 @@ public class PortfolioGridRes {
 	   @JsonProperty("BrokerBranchName")
 	   private String     brokerBranchName; 
 	
+	   @JsonProperty("UpdatedDate")
+	   private String     updatedDate; 
+	   
+	   @JsonProperty("EndorsementRemarks")
+	   private String     endorsementRemarks; 
 }
