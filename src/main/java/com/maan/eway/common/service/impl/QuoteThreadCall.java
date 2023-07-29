@@ -509,6 +509,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			Double premiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()  ).sum();					
 			Double overAllPremiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) && o.getPremiumIncludedTaxLc()!=null && o.getPremiumIncludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()  ).sum();
+			Double taxPremium = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getCoverageType().equals("T") ).mapToDouble( o ->   o.getTaxAmount().doubleValue()  ).sum();
+			
 			System.out.println("Vehicle :" + request.getVehicleId() + " PremiumFc --> "  + premiumFc );
 			System.out.println("Vehicle :" + request.getVehicleId() + " OverAllPremiumFc --> "  + overAllPremiumFc );
 			System.out.println("Vehicle :" + request.getVehicleId() + " PremiumLc --> "  + premiumLc );
@@ -551,6 +553,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			motorData.setActualPremiumLc(premiumLc);
 			motorData.setOverallPremiumFc(overAllPremiumFc);
 			motorData.setOverallPremiumLc(overAllPremiumLc);
+			motorData.setVatPremium(new BigDecimal(taxPremium));
 			
 			//Vehiclewise EndtPRemium
 			if(eserMotors.getEndorsementType()!=null) {
@@ -559,6 +562,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 				BigDecimal endtPremium = updateEndtPremium(request.getQuoteNo(),eserMotors.getEndorsementEffdate(),prevQuoteNo, eserMotors.getRiskId(),Endtcovers);				
 				eserMotors.setEndtPremium(endtPremium.doubleValue());
 				motorData.setEndtPremium(endtPremium.doubleValue());
+				Double endtVatPremium = premiumCovers.stream().filter( o -> !o.getDiscLoadId().equals(0) && o.getCoverageType().equals("T") ).mapToDouble( o ->   o.getTaxAmount().doubleValue()  ).sum();
+				motorData.setEndVatPremium(new BigDecimal(endtVatPremium));
 			}   
 			eserMotRepo.saveAndFlush(eserMotors);			
 			motorRepo.saveAndFlush(motorData);
@@ -1529,7 +1534,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					// Endt Type
 					boolean alreadyOptCover = false ;
 					boolean endtCovModify = false ; 
-					if( StringUtils.isNotBlank(request.getEndtFields())  && ( request.getEndtFields().equalsIgnoreCase("Covers") ||  request.getEndtFields().equalsIgnoreCase("AddOnCovers")) ) {
+					if( StringUtils.isNotBlank(request.getEndtFields())  && ( request.getEndtFields ().equalsIgnoreCase("Y") ) ) {
 							endtCovModify = true  ;
 					}
 					

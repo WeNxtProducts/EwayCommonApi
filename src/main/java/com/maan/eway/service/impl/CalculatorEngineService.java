@@ -1205,11 +1205,11 @@ public class CalculatorEngineService implements CalculatorEngine {
 					commissionPercent=v.getCommissionPercentage().doubleValue();
 					
 					String premiumFc = v.getActualPremiumFc().toString();
-					String vatPremiumFc = v.getActualPremiumFc().toString();
+					String vatPremiumFc = v.getVatPremium().toPlainString();
 
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
-						premiumFc = v1.getQuoteDetails().getEndtPremium().toPlainString();
-						vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax().toPlainString();
+						premiumFc = v.getEndtPremium().toString();
+						vatPremiumFc = v.getEndVatPremium().toPlainString();
 					}
 
 					BigDecimal commission = new BigDecimal(premiumFc).multiply(new BigDecimal(commissionPercent))

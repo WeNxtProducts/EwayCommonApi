@@ -483,7 +483,13 @@ private static final long serialVersionUID = 1L;
    private BigDecimal commissionPercentage;
    
    @Column(name="VAT_COMMISSION")
-   private BigDecimal vatCommission;
+   private BigDecimal vatCommission; 
+
+   @Column(name="VAT_PREMIUM")
+   private BigDecimal vatPremium;
+   
+   @Column(name="ENDT_VAT_PREMIUM")
+   private BigDecimal endVatPremium;
 }
 
 

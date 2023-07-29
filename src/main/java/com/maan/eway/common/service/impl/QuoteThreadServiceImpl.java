@@ -1224,7 +1224,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				//List<EndtTypeMaster> endtList = 
 				EndtTypeMaster endtList = ratingutil.getEndtMasterData(companyId, req.getProductId(), endtType); //getEndtMasterData(companyId ,  req.getProductId() ,  endtType ) ;
 				if(endtList!=null ) {
-					endtFields = endtList.getEndtDependantFields() ;						
+					endtFields = endtList.getIsCoverendt();						
 				}
 				
 			}

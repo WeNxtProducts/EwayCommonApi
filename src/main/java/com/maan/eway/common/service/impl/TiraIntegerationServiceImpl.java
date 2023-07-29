@@ -266,7 +266,7 @@ public class TiraIntegerationServiceImpl {
 					header.setBearerAuth(token);
 					
 					HttpEntity<?> requestent = new HttpEntity<>(header);
-					String url=collectDataFromTiraPost.replaceAll("{QuoteNo}", quoteNo);
+					String url=collectDataFromTiraPost.replaceAll("<QuoteNo>", quoteNo);
 					System.out.println(new Date() + " Start " + url);
 					ResponseEntity<JSONObject> postForEntity = temp.exchange(url,
 												HttpMethod.GET,
