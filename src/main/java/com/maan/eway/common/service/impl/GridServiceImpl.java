@@ -2433,12 +2433,11 @@ public class GridServiceImpl implements GridService {
 			oaCode.select(ocpm1.get("oaCode"));
 			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
 			Predicate a2 = cb.equal(ocpm1.get("loginId") ,req.getLoginId());
-			Predicate a3 = cb.equal(ocpm1.get("agencyCode") , h.get("agencyCode") );
-			oaCode.where(a1, a2 ,a3);
+			oaCode.where(a1, a2 );
 			
 			Subquery<Long> loginId = query.subquery(Long.class);
 			Root<LoginMaster> ocpm2 = loginId.from(LoginMaster.class);
-			Expression<String>e2=ocpm2.get("agencyCode");
+			Expression<String>e2=ocpm2.get("oaCode");
 			loginId.select(ocpm2.get("loginId"));
 			Predicate a6 = e2.in(oaCode );
 			loginId.where(a6);
@@ -2568,12 +2567,11 @@ public class GridServiceImpl implements GridService {
 			oaCode.select(ocpm1.get("oaCode"));
 			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
 			Predicate a2 = cb.equal(ocpm1.get("loginId") ,req.getLoginId());
-			Predicate a3 = cb.equal(ocpm1.get("agencyCode") , h.get("brokerCode") );
-			oaCode.where(a1, a2 ,a3);
+			oaCode.where(a1, a2 );
 			
 			Subquery<Long> loginId = query.subquery(Long.class);
 			Root<LoginMaster> ocpm2 = loginId.from(LoginMaster.class);
-			Expression<String>e2=ocpm2.get("agencyCode");
+			Expression<String>e2=ocpm2.get("oaCode");
 			loginId.select(ocpm2.get("loginId"));
 			Predicate a6 = e2.in(oaCode );
 			loginId.where(a6);
@@ -2735,12 +2733,11 @@ public class GridServiceImpl implements GridService {
 			oaCode.select(ocpm1.get("oaCode"));
 			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
 			Predicate a2 = cb.equal(ocpm1.get("loginId") ,req.getLoginId());
-			Predicate a3 = cb.equal(ocpm1.get("agencyCode") , h.get("brokerCode") );
-			oaCode.where(a1, a2 ,a3);
+			oaCode.where(a1, a2 );
 			
 			Subquery<Long> loginId = query.subquery(Long.class);
 			Root<LoginMaster> ocpm2 = loginId.from(LoginMaster.class);
-			Expression<String>e2=ocpm2.get("agencyCode");
+			Expression<String>e2=ocpm2.get("oaCode");
 			loginId.select(ocpm2.get("loginId"));
 			Predicate a6 = e2.in(oaCode );
 			loginId.where(a6);
@@ -2901,12 +2898,11 @@ public class GridServiceImpl implements GridService {
 			oaCode.select(ocpm1.get("oaCode"));
 			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
 			Predicate a2 = cb.equal(ocpm1.get("loginId") ,req.getLoginId());
-			Predicate a3 = cb.equal(ocpm1.get("agencyCode") , h.get("brokerCode") );
-			oaCode.where(a1, a2 ,a3);
+			oaCode.where(a1, a2 );
 			
 			Subquery<Long> loginId = query.subquery(Long.class);
 			Root<LoginMaster> ocpm2 = loginId.from(LoginMaster.class);
-			Expression<String>e2=ocpm2.get("agencyCode");
+			Expression<String>e2=ocpm2.get("oaCode");
 			loginId.select(ocpm2.get("loginId"));
 			Predicate a6 = e2.in(oaCode );
 			loginId.where(a6);
@@ -3068,12 +3064,11 @@ public class GridServiceImpl implements GridService {
 			oaCode.select(ocpm1.get("oaCode"));
 			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
 			Predicate a2 = cb.equal(ocpm1.get("loginId") ,req.getLoginId());
-			Predicate a3 = cb.equal(ocpm1.get("agencyCode") , h.get("brokerCode") );
-			oaCode.where(a1, a2 ,a3);
+			oaCode.where(a1, a2 );
 			
 			Subquery<Long> loginId = query.subquery(Long.class);
 			Root<LoginMaster> ocpm2 = loginId.from(LoginMaster.class);
-			Expression<String>e2=ocpm2.get("agencyCode");
+			Expression<String>e2=ocpm2.get("oaCode");
 			loginId.select(ocpm2.get("loginId"));
 			Predicate a6 = e2.in(oaCode );
 			loginId.where(a6);
