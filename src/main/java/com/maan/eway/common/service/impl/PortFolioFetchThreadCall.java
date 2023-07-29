@@ -140,7 +140,7 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 								cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc") ,
 								h.get("productId").as(Integer.class).alias("productId") ,
 								h.get("productName").alias("productName") ,
-								h.get("brokerCode").as(Integer.class).alias("oaCode") ,
+								l.get("agencyCode").as(Integer.class).alias("oaCode") ,
 								u.get("userName").alias("brokerName") ,
 								l.get("userType").alias("userType") ,
 								l.get("subUserType").alias("subUserType"),
@@ -149,29 +149,26 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(h.get("productName")));
 
-			// Broker Oacode condition
-			Subquery<Long> oaCode = query.subquery(Long.class);
-			Root<LoginMaster> ocpm1 = oaCode.from(LoginMaster.class);
-			oaCode.select(cb.max(ocpm1.get("oaCode")));
+			// Broker condition
+			Subquery<Long> loginId = query.subquery(Long.class);
+			Root<LoginMaster> ocpm1 = loginId.from(LoginMaster.class);
+			loginId.select(ocpm1.get("loginId"));
 			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
-			Predicate a2 = cb.equal(ocpm1.get("agencyCode") , h.get("brokerCode") );
-			Predicate a3 = cb.equal(ocpm1.get("userType"), "Broker");
-			if(StringUtils.isNotBlank(req.getLoginId()) ) {
-				Predicate a4 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
-				oaCode.where(a1, a2 ,a3,a4);
-			} else {
-				oaCode.where(a1, a2 ,a3);
-			}
+			Predicate a2 = cb.equal(ocpm1.get("loginId") , h.get("loginId") );
+			Predicate a3 = cb.equal(ocpm1.get("oaCode") , l.get("agencyCode") );
+			loginId.where(a1, a2 ,a3);
 			
 			// Where
 			List<Predicate> predicate = new ArrayList<Predicate>();
-			predicate.add(cb.equal(h.get("brokerCode"), oaCode ));
+			predicate.add(cb.equal(h.get("loginId"), loginId ));
 			predicate.add(cb.greaterThanOrEqualTo(h.get("updatedDate"), startDate));
 			predicate.add(cb.lessThanOrEqualTo(h.get("updatedDate"), endDate));
 			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
-			predicate.add(cb.equal(l.get("agencyCode"), oaCode));
 			predicate.add(cb.equal(l.get("userType"), "Broker"));
-			predicate.add(cb.equal(u.get("agencyCode"), oaCode));
+			predicate.add(cb.equal(u.get("loginId"), l.get("loginId")));
+			if(StringUtils.isNotBlank(req.getLoginId())  )  {
+				predicate.add(cb.equal(l.get("loginId"), req.getLoginId()));
+			}
 			
 			// Business Type Condition
 			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType() ;  
@@ -201,7 +198,7 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 			
 			
 			query.where(predicate.toArray(new Predicate[0])).groupBy(h.get("productId") ,
-					h.get("productName") ,h.get("brokerCode"),u.get("userName") ,
+					h.get("productName") ,l.get("agencyCode"),u.get("userName") ,
 					l.get("userType"),l.get("subUserType") ,l.get("loginId") ) 
 			.orderBy(orderList);
 			
@@ -247,7 +244,7 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 								cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc") ,
 								h.get("productId").as(Integer.class).alias("productId") ,
 								h.get("productDesc").alias("productName") ,
-								h.get("brokerCode").as(Integer.class).alias("oaCode") ,
+								l.get("agencyCode").as(Integer.class).alias("oaCode") ,
 								u.get("userName").alias("brokerName") ,
 								l.get("userType").alias("userType") ,
 								l.get("subUserType").alias("subUserType"),
@@ -256,29 +253,26 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(h.get("productDesc")));
 
-			// Broker Oacode condition
-			Subquery<Long> oaCode = query.subquery(Long.class);
-			Root<LoginMaster> ocpm1 = oaCode.from(LoginMaster.class);
-			oaCode.select(cb.max(ocpm1.get("oaCode")));
+			// Broker condition
+			Subquery<Long> loginId = query.subquery(Long.class);
+			Root<LoginMaster> ocpm1 = loginId.from(LoginMaster.class);
+			loginId.select(ocpm1.get("loginId"));
 			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
-			Predicate a2 = cb.equal(ocpm1.get("agencyCode") , h.get("brokerCode") );
-			Predicate a3 = cb.equal(ocpm1.get("userType"), "Broker");
-			if(StringUtils.isNotBlank(req.getLoginId()) ) {
-				Predicate a4 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
-				oaCode.where(a1, a2 ,a3,a4);
-			} else {
-				oaCode.where(a1, a2 ,a3);
-			}
+			Predicate a2 = cb.equal(ocpm1.get("loginId") , h.get("loginId") );
+			Predicate a3 = cb.equal(ocpm1.get("oaCode") , l.get("agencyCode") );
+			loginId.where(a1, a2 ,a3);
 			
 			// Where
 			List<Predicate> predicate = new ArrayList<Predicate>();
-			predicate.add(cb.equal(h.get("brokerCode"), oaCode ));
+			predicate.add(cb.equal(h.get("loginId"), loginId ));
 			predicate.add(cb.greaterThanOrEqualTo(h.get("updatedDate"), startDate));
 			predicate.add(cb.lessThanOrEqualTo(h.get("updatedDate"), endDate));
 			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
-			predicate.add(cb.equal(l.get("agencyCode"), oaCode));
 			predicate.add(cb.equal(l.get("userType"), "Broker"));
-			predicate.add(cb.equal(u.get("agencyCode"), oaCode));
+			predicate.add(cb.equal(u.get("loginId"), l.get("loginId")));
+			if(StringUtils.isNotBlank(req.getLoginId())  )  {
+				predicate.add(cb.equal(l.get("loginId"), req.getLoginId()));
+			}
 			
 			// Business Type Condition
 			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType() ;  
@@ -308,7 +302,7 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 			
 			
 			query.where(predicate.toArray(new Predicate[0])).groupBy(h.get("productId") ,
-					h.get("productDesc") ,h.get("brokerCode"),u.get("userName") ,
+					h.get("productDesc") ,l.get("agencyCode"),u.get("userName") ,
 					l.get("userType"),l.get("subUserType") ,l.get("loginId") ) 
 			.orderBy(orderList);
 			
@@ -354,7 +348,7 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 								cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc") ,
 								h.get("productId").as(Integer.class).alias("productId") ,
 								h.get("productName").alias("productName") ,
-								h.get("brokerCode").as(Integer.class).alias("oaCode") ,
+								l.get("agencyCode").as(Integer.class).alias("oaCode") ,
 								u.get("userName").alias("brokerName") ,
 								l.get("userType").alias("userType") ,
 								l.get("subUserType").alias("subUserType"),
@@ -363,29 +357,26 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(h.get("productName")));
 
-			// Broker Oacode condition
-			Subquery<Long> oaCode = query.subquery(Long.class);
-			Root<LoginMaster> ocpm1 = oaCode.from(LoginMaster.class);
-			oaCode.select(cb.max(ocpm1.get("oaCode")));
+			// Broker condition
+			Subquery<Long> loginId = query.subquery(Long.class);
+			Root<LoginMaster> ocpm1 = loginId.from(LoginMaster.class);
+			loginId.select(ocpm1.get("loginId"));
 			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
-			Predicate a2 = cb.equal(ocpm1.get("agencyCode") , h.get("brokerCode") );
-			Predicate a3 = cb.equal(ocpm1.get("userType"), "Broker");
-			if(StringUtils.isNotBlank(req.getLoginId()) ) {
-				Predicate a4 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
-				oaCode.where(a1, a2 ,a3,a4);
-			} else {
-				oaCode.where(a1, a2 ,a3);
-			}
+			Predicate a2 = cb.equal(ocpm1.get("loginId") , h.get("loginId") );
+			Predicate a3 = cb.equal(ocpm1.get("oaCode") , l.get("agencyCode") );
+			loginId.where(a1, a2 ,a3);
 			
 			// Where
 			List<Predicate> predicate = new ArrayList<Predicate>();
-			predicate.add(cb.equal(h.get("brokerCode"), oaCode ));
+			predicate.add(cb.equal(h.get("loginId"), loginId ));
 			predicate.add(cb.greaterThanOrEqualTo(h.get("updatedDate"), startDate));
 			predicate.add(cb.lessThanOrEqualTo(h.get("updatedDate"), endDate));
 			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
-			predicate.add(cb.equal(l.get("agencyCode"), oaCode));
 			predicate.add(cb.equal(l.get("userType"), "Broker"));
-			predicate.add(cb.equal(u.get("agencyCode"), oaCode));
+			predicate.add(cb.equal(u.get("loginId"), l.get("loginId")));
+			if(StringUtils.isNotBlank(req.getLoginId())  )  {
+				predicate.add(cb.equal(l.get("loginId"), req.getLoginId()));
+			}
 			
 			// Business Type Condition
 			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType() ;  
@@ -415,7 +406,7 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 			
 			
 			query.where(predicate.toArray(new Predicate[0])).groupBy(h.get("productId") ,
-					h.get("productName") ,h.get("brokerCode"),u.get("userName") ,
+					h.get("productName") ,l.get("agencyCode"),u.get("userName") ,
 					l.get("userType"),l.get("subUserType") ,l.get("loginId") ) 
 			.orderBy(orderList);
 			
@@ -462,7 +453,7 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 								cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc") ,
 								h.get("productId").as(Integer.class).alias("productId") ,
 								h.get("productDesc").alias("productName") ,
-								h.get("brokerCode").as(Integer.class).alias("oaCode") ,
+								l.get("agencyCode").as(Integer.class).alias("oaCode") ,
 								u.get("userName").alias("brokerName") ,
 								l.get("userType").alias("userType") ,
 								l.get("subUserType").alias("subUserType"),
@@ -471,29 +462,26 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(h.get("productDesc")));
 
-			// Broker Oacode condition
-			Subquery<Long> oaCode = query.subquery(Long.class);
-			Root<LoginMaster> ocpm1 = oaCode.from(LoginMaster.class);
-			oaCode.select(cb.max(ocpm1.get("oaCode")));
+			// Broker condition
+			Subquery<Long> loginId = query.subquery(Long.class);
+			Root<LoginMaster> ocpm1 = loginId.from(LoginMaster.class);
+			loginId.select(ocpm1.get("loginId"));
 			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
-			Predicate a2 = cb.equal(ocpm1.get("agencyCode") , h.get("brokerCode") );
-			Predicate a3 = cb.equal(ocpm1.get("userType"), "Broker");
-			if(StringUtils.isNotBlank(req.getLoginId()) ) {
-				Predicate a4 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
-				oaCode.where(a1, a2 ,a3,a4);
-			} else {
-				oaCode.where(a1, a2 ,a3);
-			}
+			Predicate a2 = cb.equal(ocpm1.get("loginId") , h.get("loginId") );
+			Predicate a3 = cb.equal(ocpm1.get("oaCode") , l.get("agencyCode") );
+			loginId.where(a1, a2 ,a3);
 			
 			// Where
 			List<Predicate> predicate = new ArrayList<Predicate>();
-			predicate.add(cb.equal(h.get("brokerCode"), oaCode ));
+			predicate.add(cb.equal(h.get("loginId"), loginId ));
 			predicate.add(cb.greaterThanOrEqualTo(h.get("updatedDate"), startDate));
 			predicate.add(cb.lessThanOrEqualTo(h.get("updatedDate"), endDate));
 			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
-			predicate.add(cb.equal(l.get("agencyCode"), oaCode));
 			predicate.add(cb.equal(l.get("userType"), "Broker"));
-			predicate.add(cb.equal(u.get("agencyCode"), oaCode));
+			predicate.add(cb.equal(u.get("loginId"), l.get("loginId")));
+			if(StringUtils.isNotBlank(req.getLoginId())  )  {
+				predicate.add(cb.equal(l.get("loginId"), req.getLoginId()));
+			}
 			
 			// Business Type Condition
 			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType() ;  
@@ -523,7 +511,7 @@ public class PortFolioFetchThreadCall implements Callable<Object>  {
 			
 			
 			query.where(predicate.toArray(new Predicate[0])).groupBy(h.get("productId") ,
-					h.get("productDesc") ,h.get("brokerCode"),u.get("userName") ,
+					h.get("productDesc") ,l.get("agencyCode"),u.get("userName") ,
 					l.get("userType"),l.get("subUserType") ,l.get("loginId") ) 
 			.orderBy(orderList);
 			
