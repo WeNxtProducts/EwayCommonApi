@@ -2565,16 +2565,16 @@ public class GridServiceImpl implements GridService {
 			// Broker condition
 			Subquery<Long> oaCode = query.subquery(Long.class);
 			Root<LoginMaster> ocpm1 = oaCode.from(LoginMaster.class);
-			oaCode.in(ocpm1.get("oaCode"));
+			oaCode.select(ocpm1.get("oaCode"));
 			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
 			Predicate a2 = cb.equal(ocpm1.get("loginId") ,req.getLoginId());
-			Predicate a3 = cb.equal(ocpm1.get("agencyCode") , h.get("agencyCode") );
+			Predicate a3 = cb.equal(ocpm1.get("agencyCode") , h.get("brokerCode") );
 			oaCode.where(a1, a2 ,a3);
 			
 			Subquery<Long> loginId = query.subquery(Long.class);
 			Root<LoginMaster> ocpm2 = loginId.from(LoginMaster.class);
 			Expression<String>e2=ocpm2.get("agencyCode");
-			loginId.in(ocpm2.get("loginId"));
+			loginId.select(ocpm2.get("loginId"));
 			Predicate a6 = e2.in(oaCode );
 			loginId.where(a6);
 			
@@ -2582,8 +2582,8 @@ public class GridServiceImpl implements GridService {
 			List<Predicate> predicate = new ArrayList<Predicate>();
 			Expression<String>e1=h.get("loginId");
 			predicate.add(e1.in(loginId));
-			predicate.add(cb.greaterThanOrEqualTo(h.get("effectiveDate"), startDate));
-			predicate.add(cb.lessThanOrEqualTo(h.get("effectiveDate"), endDate));
+			predicate.add(cb.greaterThanOrEqualTo(h.get("updatedDate"), startDate));
+			predicate.add(cb.lessThanOrEqualTo(h.get("updatedDate"), endDate));
 			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
 			predicate.add(cb.equal(l.get("loginId"), h.get("loginId")));
 			predicate.add(cb.equal(u.get("loginId"), h.get("loginId")));
@@ -2732,16 +2732,16 @@ public class GridServiceImpl implements GridService {
 			// Broker condition
 			Subquery<Long> oaCode = query.subquery(Long.class);
 			Root<LoginMaster> ocpm1 = oaCode.from(LoginMaster.class);
-			oaCode.in(ocpm1.get("oaCode"));
+			oaCode.select(ocpm1.get("oaCode"));
 			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
 			Predicate a2 = cb.equal(ocpm1.get("loginId") ,req.getLoginId());
-			Predicate a3 = cb.equal(ocpm1.get("agencyCode") , h.get("agencyCode") );
+			Predicate a3 = cb.equal(ocpm1.get("agencyCode") , h.get("brokerCode") );
 			oaCode.where(a1, a2 ,a3);
 			
 			Subquery<Long> loginId = query.subquery(Long.class);
 			Root<LoginMaster> ocpm2 = loginId.from(LoginMaster.class);
 			Expression<String>e2=ocpm2.get("agencyCode");
-			loginId.in(ocpm2.get("loginId"));
+			loginId.select(ocpm2.get("loginId"));
 			Predicate a6 = e2.in(oaCode );
 			loginId.where(a6);
 			
@@ -2749,8 +2749,8 @@ public class GridServiceImpl implements GridService {
 			List<Predicate> predicate = new ArrayList<Predicate>();
 			Expression<String>e1=h.get("loginId");
 			predicate.add(e1.in(loginId));
-			predicate.add(cb.greaterThanOrEqualTo(h.get("effectiveDate"), startDate));
-			predicate.add(cb.lessThanOrEqualTo(h.get("effectiveDate"), endDate));
+			predicate.add(cb.greaterThanOrEqualTo(h.get("updatedDate"), startDate));
+			predicate.add(cb.lessThanOrEqualTo(h.get("updatedDate"), endDate));
 			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
 			predicate.add(cb.equal(l.get("loginId"), h.get("loginId")));
 			predicate.add(cb.equal(u.get("loginId"), h.get("loginId")));
@@ -2898,16 +2898,16 @@ public class GridServiceImpl implements GridService {
 			// Broker condition
 			Subquery<Long> oaCode = query.subquery(Long.class);
 			Root<LoginMaster> ocpm1 = oaCode.from(LoginMaster.class);
-			oaCode.in(ocpm1.get("oaCode"));
+			oaCode.select(ocpm1.get("oaCode"));
 			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
 			Predicate a2 = cb.equal(ocpm1.get("loginId") ,req.getLoginId());
-			Predicate a3 = cb.equal(ocpm1.get("agencyCode") , h.get("agencyCode") );
+			Predicate a3 = cb.equal(ocpm1.get("agencyCode") , h.get("brokerCode") );
 			oaCode.where(a1, a2 ,a3);
 			
 			Subquery<Long> loginId = query.subquery(Long.class);
 			Root<LoginMaster> ocpm2 = loginId.from(LoginMaster.class);
 			Expression<String>e2=ocpm2.get("agencyCode");
-			loginId.in(ocpm2.get("loginId"));
+			loginId.select(ocpm2.get("loginId"));
 			Predicate a6 = e2.in(oaCode );
 			loginId.where(a6);
 			
@@ -2915,8 +2915,8 @@ public class GridServiceImpl implements GridService {
 			List<Predicate> predicate = new ArrayList<Predicate>();
 			Expression<String>e1=h.get("loginId");
 			predicate.add(e1.in(loginId));
-			predicate.add(cb.greaterThanOrEqualTo(h.get("effectiveDate"), startDate));
-			predicate.add(cb.lessThanOrEqualTo(h.get("effectiveDate"), endDate));
+			predicate.add(cb.greaterThanOrEqualTo(h.get("updatedDate"), startDate));
+			predicate.add(cb.lessThanOrEqualTo(h.get("updatedDate"), endDate));
 			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
 			predicate.add(cb.equal(l.get("loginId"), h.get("loginId")));
 			predicate.add(cb.equal(u.get("loginId"), h.get("loginId")));
@@ -3065,16 +3065,16 @@ public class GridServiceImpl implements GridService {
 			// Broker condition
 			Subquery<Long> oaCode = query.subquery(Long.class);
 			Root<LoginMaster> ocpm1 = oaCode.from(LoginMaster.class);
-			oaCode.in(ocpm1.get("oaCode"));
+			oaCode.select(ocpm1.get("oaCode"));
 			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
 			Predicate a2 = cb.equal(ocpm1.get("loginId") ,req.getLoginId());
-			Predicate a3 = cb.equal(ocpm1.get("agencyCode") , h.get("agencyCode") );
+			Predicate a3 = cb.equal(ocpm1.get("agencyCode") , h.get("brokerCode") );
 			oaCode.where(a1, a2 ,a3);
 			
 			Subquery<Long> loginId = query.subquery(Long.class);
 			Root<LoginMaster> ocpm2 = loginId.from(LoginMaster.class);
 			Expression<String>e2=ocpm2.get("agencyCode");
-			loginId.in(ocpm2.get("loginId"));
+			loginId.select(ocpm2.get("loginId"));
 			Predicate a6 = e2.in(oaCode );
 			loginId.where(a6);
 			
@@ -3082,8 +3082,8 @@ public class GridServiceImpl implements GridService {
 			List<Predicate> predicate = new ArrayList<Predicate>();
 			Expression<String>e1=h.get("loginId");
 			predicate.add(e1.in(loginId));
-			predicate.add(cb.greaterThanOrEqualTo(h.get("effectiveDate"), startDate));
-			predicate.add(cb.lessThanOrEqualTo(h.get("effectiveDate"), endDate));
+			predicate.add(cb.greaterThanOrEqualTo(h.get("updatedDate"), startDate));
+			predicate.add(cb.lessThanOrEqualTo(h.get("updatedDate"), endDate));
 			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
 			predicate.add(cb.equal(l.get("loginId"), h.get("loginId")));
 			predicate.add(cb.equal(u.get("loginId"), h.get("loginId")));
