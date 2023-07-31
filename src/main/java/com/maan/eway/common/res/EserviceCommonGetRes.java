@@ -122,4 +122,7 @@ public class EserviceCommonGetRes {
 	
 	@JsonProperty("VatCommission")
     private String vatCommission;
+	
+	@JsonProperty("PolicyNo")
+    private String policyNo;
 }

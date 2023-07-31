@@ -1978,8 +1978,9 @@ public class PaymentServiceImpl implements PaymentService {
 	   					if(StringUtils.isNotBlank(endttypeId))
 	   						update.set("endtStatus","C");
 	   					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
+	   					Predicate n2 = cb.notEqual(m.get("status"),"D" );
 	   					 
-	   					update.where(n1);
+	   					update.where(n1,n2);
 	   					// perform update
 	   					em.createQuery(update).executeUpdate();
 	   					
@@ -2090,8 +2091,8 @@ public class PaymentServiceImpl implements PaymentService {
 	   					if(StringUtils.isNotBlank(endttypeId))
 	   						update.set("endtStatus","C");
 	   					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
-	   					 
-	   					update.where(n1);
+	   					Predicate n2 = cb.notEqual(m.get("status"),"D" );
+	   					update.where(n1,n2);
 	   					// perform update
 	   					em.createQuery(update).executeUpdate();
 	   					
@@ -2145,8 +2146,8 @@ public class PaymentServiceImpl implements PaymentService {
 	   					if(StringUtils.isNotBlank(endttypeId))
 	   						update.set("endtStatus","C");
 	   					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
-	   					 
-	   					update.where(n1);
+	   					Predicate n2 = cb.notEqual(m.get("status"),"D" ); 
+	   					update.where(n1,n2);
 	   					// perform update
 	   					em.createQuery(update).executeUpdate();
 	   					
