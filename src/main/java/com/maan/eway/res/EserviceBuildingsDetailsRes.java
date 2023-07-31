@@ -345,5 +345,7 @@ public class EserviceBuildingsDetailsRes implements Serializable {
 
 	@JsonProperty("VatCommission")
 	private String vatCommission;
-  
+ 
+	@JsonProperty("PolicyNo")
+	private String policyNo;
 }

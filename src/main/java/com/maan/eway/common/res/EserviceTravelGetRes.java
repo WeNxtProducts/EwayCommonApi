@@ -99,4 +99,6 @@ public class EserviceTravelGetRes {
 		@JsonProperty("VatCommission")
 	    private String vatCommission;
 		
+		@JsonProperty("PolicyNo")
+	    private String policyNo;
 }
