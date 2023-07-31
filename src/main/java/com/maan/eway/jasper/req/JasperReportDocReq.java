@@ -32,5 +32,11 @@ public class JasperReportDocReq {
 	@JsonProperty("LoginId")
 	private String loginId;
 	
+	@JsonProperty("ImageUrl")
+	private String pvImagePath;
+	
+	@JsonProperty("PolicyNo")
+	private String pvPolicyNo;
+	
 	
 }

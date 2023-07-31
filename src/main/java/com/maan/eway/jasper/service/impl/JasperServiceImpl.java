@@ -121,7 +121,15 @@ public class JasperServiceImpl implements JasperService {
 					Map<String, Object> input2 = new HashMap<String, Object>();
 					input2.put("pvImagePath", config.getImagePath());
 					input2.put("pvPolicyNo", homeData.getPolicyNo());
-					res = getJasperPdfFile("/report/jasper/TravelReport.jrxml", getPdfOutFilePath, input2);
+					input2.put("pvSubReportPath",jasperCompilePath + "/report/jasper/");
+					String obj ="";
+					obj= jasperCompilePath + "/report/jasper/EwayTravelSubReport.jrxml";
+					
+							// String jrxml_path=s.replace(".jasper", ".jrxml");
+							String path = JasperCompileManager.compileReportToFile(obj);
+							System.out.println("Jasper compileToReport path" +path);		
+
+					res = getJasperPdfFile("/report/jasper/EwayTravelReport.jrxml", getPdfOutFilePath, input2);
 					
 				} else if (product.getMotorYn().equalsIgnoreCase("M")) {
 					res = getJasperPdfFile("/report/jasper/MotorPrivate.jrxml", getPdfOutFilePath, input);
