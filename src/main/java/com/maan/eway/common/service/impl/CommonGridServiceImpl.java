@@ -1586,8 +1586,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 						motor=motors;
 						
 						if(motors.size()>1) {
-							prevPolicyNo=motors.get(1).getPolicyNo();
-							prevQuoteNo =motors.get(1).getQuoteNo();
+							prevPolicyNo=motors.get(0).getPolicyNo();
+							prevQuoteNo =motors.get(0).getQuoteNo();
 						}else {
 //							prevPolicyNo=req.getPolicyNo();
 //							prevQuoteNo =motor.get(0).getEndtPrevQuoteNo();

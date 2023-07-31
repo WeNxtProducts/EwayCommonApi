@@ -69,8 +69,8 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 						cancel_url=vendor.getCancelUrlLink();
 						webHookUrl=vendor.getWebhookUrlLink();
 						
-						redirect_url=redirect_url.replaceAll("{QuoteNo}", payment.getQuoteNo());
-						cancel_url=cancel_url.replaceAll("{QuoteNo}", payment.getQuoteNo());
+						redirect_url=redirect_url.replaceAll("<QuoteNo>", payment.getQuoteNo());
+						cancel_url=cancel_url.replaceAll("<QuoteNo>", payment.getQuoteNo());
 					}
 					
 					// data

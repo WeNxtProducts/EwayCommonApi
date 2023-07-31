@@ -71,7 +71,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="COMPANY_ID", length=20)
     private String     companyId ;
 
-    @Column(name="ATTACHED_BRANCHES", nullable=false, length=300)
+    @Column(name="ATTACHED_BRANCHES", length=300)
     private String     attachedBranches ;
 
     @Column(name="ATTACHED_REGIONS", length=300)
