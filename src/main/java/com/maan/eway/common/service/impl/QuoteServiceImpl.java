@@ -2487,7 +2487,6 @@ public class QuoteServiceImpl implements QuoteService {
 			res.setMiningPlantSi(build.getMiningPlantSi()== null?"0" :build.getMiningPlantSi().toPlainString());
 			res.setNonminingPlantSi(build.getNonminingPlantSi() == null?"0" :build.getNonminingPlantSi().toPlainString());
 			res.setGensetsSi(build.getGensetsSi() == null?"0" :build.getGensetsSi().toPlainString());
-			res.setEquipmentSi(build.getEquipmentSi() == null?"0" :build.getEquipmentSi().toPlainString());
 			
 			Double sumInsured = paccDatas.stream().filter( o -> o.getSumInsured() != null ).mapToDouble(o -> Double.valueOf(o.getSumInsured().toPlainString() ) ).sum() ;
 			res.setSumInsured(sumInsured==null ? "" : sumInsured.toString());

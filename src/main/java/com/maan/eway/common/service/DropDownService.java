@@ -199,10 +199,6 @@ public interface DropDownService {
 
 	List<DropDownRes> getAdminPortFolioTypes(LovDropDownReq req);
 
-	List<DropDownRes> getPlantAllRisk(LovDropDownReq req);
-
-	List<DropDownRes> getBusinessAllRisk(LovDropDownReq req);
-
 
 
 

@@ -1259,9 +1259,6 @@ this.repository = repo;
 					EndtTypeMaster endtmaster = ratingutil.getEndtMasterData(mot.getCompanyId(),req.getProductId(),mot.getEndorsementType().toString());
 					EndtTypeMasterDto ddto=new EndtTypeMasterDto();
 					dozerMapper.map(endtmaster,ddto);
-					ddto.setEndorsementeffdate(mot.getEndorsementEffdate() );
-					ddto.setEndorsementPolicyNo(mot.getPolicyNo());
-					ddto.setPolicyNo(mot.getPolicyNo());
 					res.setEndtType(ddto);
 				}
 				Object riskDetails = new Object();
@@ -1319,7 +1316,6 @@ this.repository = repo;
 					Object riskDetails = new Object();
 					EserviceTravelGetRes  travelRes = new EserviceTravelGetRes();
 					dozerMapper.map(travelData, travelRes);
-					travelRes.setPolicyNo(StringUtils.isBlank(travelData.getOriginalPolicyNo()) ? travelData.getPolicyNo() : travelData.getOriginalPolicyNo() ); 
 					travelRes.setTotalPassengers(tra.getGrouppMembers().toString());
 					travelRes.setTravelId(tra.getGroupId().toString());
 					//travelRes.setSectionName(travelData.getSectionName());
@@ -1330,9 +1326,6 @@ this.repository = repo;
 
 						EndtTypeMasterDto ddto=new EndtTypeMasterDto();
 						dozerMapper.map(endtmaster,ddto);
-						ddto.setEndorsementeffdate(travelData.getEndorsementEffdate() );
-						ddto.setEndorsementPolicyNo(travelData.getPolicyNo());
-						ddto.setPolicyNo(travelData.getPolicyNo());
 						res.setEndtType(ddto);
 					}
 					
@@ -1385,8 +1378,7 @@ this.repository = repo;
 						Object riskDetails = new Object();
 						EserviceBuildingsDetailsRes  buildRes = new EserviceBuildingsDetailsRes();
 						dozerMapper.map(acc, buildRes);
-						buildRes.setPolicyNo(StringUtils.isBlank(acc.getOriginalPolicyNo()) ? acc.getPolicyNo() : acc.getOriginalPolicyNo() ); 
-						//	buildRes.setSectionName(sec.getSectionDesc());
+					//	buildRes.setSectionName(sec.getSectionDesc());
 						riskDetails = buildRes ;
 						res.setRiskDetails(riskDetails); 
 						//res.setEndorsementYn(acc.getEndorsementType()==null?"N":"Y");
@@ -1396,9 +1388,6 @@ this.repository = repo;
 									acc.getCompanyId(),Integer.parseInt(acc.getProductId()),"Y",acc.getEndorsementType(),new Date(),new Date());*/
 							EndtTypeMasterDto ddto=new EndtTypeMasterDto();
 							dozerMapper.map(endtmaster,ddto);
-							ddto.setEndorsementeffdate(acc.getEndorsementEffdate() );
-							ddto.setEndorsementPolicyNo(acc.getPolicyNo());
-							ddto.setPolicyNo(acc.getPolicyNo());
 							res.setEndtType(ddto);
 						}
 						viewBuildingList.add(res);
@@ -1428,7 +1417,6 @@ this.repository = repo;
 						Object riskDetails = new Object();
 						EserviceBuildingsDetailsRes  buildRes = new EserviceBuildingsDetailsRes();
 						dozerMapper.map(buildData, buildRes);
-						buildRes.setPolicyNo(StringUtils.isBlank(buildData.getOriginalPolicyNo()) ? buildData.getPolicyNo() : buildData.getOriginalPolicyNo() ); 
 					//	buildRes.setSectionName(sec.getSectionDesc());
 						riskDetails = buildRes ;
 						res.setRiskDetails(riskDetails); 
@@ -1436,9 +1424,6 @@ this.repository = repo;
 							EndtTypeMaster endtmaster = ratingutil.getEndtMasterData(buildData.getCompanyId(),buildData.getProductId(),buildData.getEndorsementType().toString());							 
 							EndtTypeMasterDto ddto=new EndtTypeMasterDto();
 							dozerMapper.map(endtmaster,ddto);
-							ddto.setEndorsementeffdate(buildData.getEndorsementEffdate() );
-							ddto.setEndorsementPolicyNo(buildData.getPolicyNo());
-							ddto.setPolicyNo(buildData.getPolicyNo());
 							res.setEndtType(ddto);
 						}
 						viewBuildingList.add(res);
@@ -1482,7 +1467,6 @@ this.repository = repo;
 				Object riskDetails = new Object();
 				EserviceCommonGetRes comRes = new EserviceCommonGetRes();
 				dozerMapper.map(comData, comRes);
-				comRes.setPolicyNo(StringUtils.isBlank(comData.getOriginalPolicyNo()) ? comData.getPolicyNo() : comData.getOriginalPolicyNo() ); 
 		//		comRes.setSectionName(comData.getSectionDesc());
 				riskDetails = comRes ;
 				res.setRiskDetails(riskDetails);	
@@ -1493,9 +1477,6 @@ this.repository = repo;
 							comData.getCompanyId(),Integer.parseInt(comData.getProductId()),"Y",comData.getEndorsementType(),new Date(),new Date());*/
 					EndtTypeMasterDto ddto=new EndtTypeMasterDto();
 					dozerMapper.map(endtmaster,ddto);
-					ddto.setEndorsementeffdate(comData.getEndorsementEffdate() );
-					ddto.setEndorsementPolicyNo(comData.getPolicyNo());
-					ddto.setPolicyNo(comData.getPolicyNo());
 					res.setEndtType(ddto);
 				}
 			}

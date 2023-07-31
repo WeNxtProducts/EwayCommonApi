@@ -756,23 +756,23 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			String policyHolderTypeId = getListItem (req.getCompanyId() , req.getBranchCode() ,"POLICY_HOLDER_ID_TYPE",req.getPolicyHolderTypeid());// listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_ID_TYPE", req.getPolicyHolderTypeid());
 			
 			if(StringUtils.isNotBlank(req.getMobileCode1())){		        
-				String mobileCode1 = getListItem (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getMobileCode1());
-			saveData.setMobileCodeDesc1(mobileCode1);
+	        ListItemValue mobiledesc1 = listRepo.findByItemTypeAndItemCode("MOBILE_CODE",req.getMobileCode1());
+			saveData.setMobileCodeDesc1(mobiledesc1.getItemValue());
 
 			}
 	        if(StringUtils.isNotBlank(req.getMobileCode2())){
-	        	String mobileCode2 = getListItem (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getMobileCode2());
-			saveData.setMobileCodeDesc2(mobileCode2);
+	        ListItemValue mobiledesc2 = listRepo.findByItemTypeAndItemCode("MOBILE_CODE",req.getMobileCode2());
+			saveData.setMobileCodeDesc2(mobiledesc2.getItemValue());
 
 	        }
 	        if(StringUtils.isNotBlank(req.getMobileCode3())){		        
-	        	String mobileCode3 = getListItem (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getMobileCode3());
-			saveData.setMobileCodeDesc3(mobileCode3);
+	        ListItemValue mobiledesc3 = listRepo.findByItemTypeAndItemCode("MOBILE_CODE",req.getMobileCode3());
+			saveData.setMobileCodeDesc3(mobiledesc3.getItemValue());
 
 	        }
 	        if(StringUtils.isNotBlank(req.getWhatsappCode())){		        
-	        	String whatsappCode = getListItem (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getWhatsappCode());
-			saveData.setWhatsappCodeDesc(whatsappCode);
+	        ListItemValue whatsappCode = listRepo.findByItemTypeAndItemCode("MOBILE_CODE",req.getWhatsappCode());
+			saveData.setWhatsappCodeDesc(whatsappCode.getItemValue());
 
 	        }			
 			

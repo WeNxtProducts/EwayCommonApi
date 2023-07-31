@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -76,16 +75,6 @@ public class EndtTypeMasterDto implements Serializable  {
     private Date       updatedDate  ;
 	@JsonProperty("Amendid")
     private Integer    amendId      ;
-	
-	@JsonFormat(pattern="dd/MM/yyyy")
-	@JsonProperty("Endorsementeffdate")
-    private Date    endorsementeffdate;
-	
-	@JsonProperty("endorsementPolicyNo")
-    private String    endorsementPolicyNo      ;
-	
-	@JsonProperty("PolicyNo")
-    private String    policyNo;
 
     //----------------------------------------------------------------------
     // ENTITY LINKS ( RELATIONSHIP )
