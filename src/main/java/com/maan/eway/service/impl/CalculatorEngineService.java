@@ -621,7 +621,11 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 					retc.stream().filter(r -> d.getCoverId() == Integer.parseInt(r.getCoverId())).forEach(item -> {
 						operatedList.add(item);
-						covers.stream().forEach( c -> {c.setCoverageLimit(item.getCoverageLimit());});
+						covers.stream().forEach( c -> {
+							c.setCoverageLimit(item.getCoverageLimit());
+							c.setEffectiveDate(engine.getEffectiveDate());
+							c.setPolicyEndDate(engine.getPolicyEndDate());
+							});
 					});
 					retc.removeAll(operatedList);
 					retc.addAll(covers);
