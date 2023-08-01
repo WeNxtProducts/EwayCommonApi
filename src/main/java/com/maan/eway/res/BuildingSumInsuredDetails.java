@@ -164,4 +164,10 @@ public class BuildingSumInsuredDetails {
 	
 	@JsonProperty("EquipmentSi")
 	private String equipmentSi;
+	
+	@JsonProperty("MachinerySi")
+	private String machinerySi;
+	
+	@JsonProperty("PlantAllriskSi")
+	private String plantAllriskSi;
 }

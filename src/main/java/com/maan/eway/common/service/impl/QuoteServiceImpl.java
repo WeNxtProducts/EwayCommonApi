@@ -2500,6 +2500,26 @@ public class QuoteServiceImpl implements QuoteService {
 			res.setFidEmpSi(fidEmpSi==null ? "" :fidEmpSi.toString());
 			res.setLiabilitySi(liabiltiySi==null ? "" : liabiltiySi.toString());
 			
+			// Machinery Suminsured
+			Double ElecMachinesSi = build.getElecMachinesSi() == null?0D :Double.valueOf(build.getElecMachinesSi().toPlainString());
+			Double BoilerPlantsSi = build.getBoilerPlantsSi() == null?0D :Double.valueOf(build.getBoilerPlantsSi().toPlainString()) ;
+			Double EquipmentSi = build.getEquipmentSi() == null?0D :Double.valueOf(build.getEquipmentSi().toPlainString()) ;
+			Double GeneralMachineSi = build.getGeneralMachineSi() == null?0D :Double.valueOf(build.getGeneralMachineSi().toPlainString()) ;
+			Double MachineEquipSi = build.getMachineEquipSi() == null?0D :Double.valueOf(build.getMachineEquipSi().toPlainString()) ;
+			Double ManuUnitsSi = build.getManuUnitsSi() == null?0D :Double.valueOf(build.getManuUnitsSi().toPlainString()) ;
+			Double plantSi = build.getPowerPlantSi() == null?0D :Double.valueOf(build.getMoneySinglecarrySuminsured().toPlainString()) ;
+			Double machinerySi = ElecMachinesSi + BoilerPlantsSi + EquipmentSi + GeneralMachineSi + MachineEquipSi + ManuUnitsSi + plantSi ;
+					
+			res.setMachinerySi( machinerySi==null ? "" :machinerySi.toString());
+			
+			// PLant All Risk Suminsured
+			Double MiningPlantSi = build.getMiningPlantSi() == null?0D :Double.valueOf(build.getMiningPlantSi().toPlainString()) ;
+			Double NonminingPlantSi = build.getNonminingPlantSi() == null?0D :Double.valueOf(build.getNonminingPlantSi().toPlainString()) ;
+			Double GensetsSi = build.getGensetsSi() == null?0D :Double.valueOf(build.getGensetsSi().toPlainString()) ;
+			Double plantAllRiskSi = MiningPlantSi +NonminingPlantSi  + GensetsSi ;
+			res.setPlantAllriskSi( plantAllRiskSi==null ? "" :plantAllRiskSi.toString());
+			
+			
 			res.setCurrencyId(build.getCurrency());
 			res.setRiskId(build.getRiskId().toString());
 			res.setSectionId(sectionIds);		
