@@ -1074,7 +1074,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				if(eserBuild.getEndorsementType()!=null) {
 					String prevQuoteNo=eserBuild.getEndtPrevQuoteNo();
 					List<PolicyCoverData>  Endtcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(request.getQuoteNo() ,0, 0);
-					endtPremium = updateEndtPremium(request.getQuoteNo(),eserBuild.getEndorsementEffdate(),prevQuoteNo, eserBuild.getRiskId(),Endtcovers);				
+					endtPremium = updateEndtPremium(request.getQuoteNo(),pac.getEndorsementEffdate(),prevQuoteNo, pac.getRiskId(),Endtcovers);				
 					pac.setEndtPremium(endtPremium.doubleValue());
 					savePac.setEndtPremium(endtPremium.doubleValue());
 				} 
