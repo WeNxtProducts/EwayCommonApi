@@ -1,7 +1,9 @@
 package com.maan.eway.calculator.util;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
+import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.CompanyProrataMaster;
 import com.maan.eway.bean.CompanyTaxSetup;
 import com.maan.eway.bean.ConstantTableDetails;
@@ -26,9 +29,11 @@ import com.maan.eway.bean.DropdownTableDetails;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.FactorTypeDetails;
+import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.OneTimeTableDetails;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.RatingFieldMaster;
+import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.TinyurlMaster;
 import com.maan.eway.bean.TinyurlRequestDetail;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
@@ -435,6 +440,7 @@ public class RatingFactorsUtil {
 							 			.status(t.get("status")==null?"":t.get("status").toString())
 							 			.updatedBy(t.get("updatedBy")==null?"":t.get("updatedBy").toString())
 							 			.endtTypeCategoryId(t.get("endtTypeCategoryId")==null?0:Integer.parseInt(t.get("endtTypeCategoryId").toString()))
+							 			.isCoverendt(t.get("isCoverendt")==null?"N":t.get("isCoverendt").toString())
 							 			.updatedDate(null).build();
 					 return e;
 				 }
@@ -543,4 +549,62 @@ public class RatingFactorsUtil {
 		}
 		return null;
 	}
+
+	public Tuple collectProductsFromLoginId(String loginId) {
+		try {			
+			String todayInString = DD_MM_YYYY.format(new Date());
+			String search="loginId:"+loginId+";status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
+			SpecCriteria criteria = crservice.createCriteria(LoginProductMaster.class, search, "loginId");
+			List<Tuple> data = crservice.getResult(criteria, 0, 50);
+			if(data.size()>0)
+				return data.get(0);
+		}catch (Exception e) {
+			e.printStackTrace();	
+		}
+		return null;
+		
+	}
+	@Cacheable(cacheNames= {"fetchAlipaRating"},keyGenerator  = "fetchAlipaRatingKeyGen",value = "fetchAlipaRating")
+	public List<Tuple> fetchAlipaRating(String search) {
+		try {
+			SpecCriteria criteria = crservice.createCriteria(SectionCoverMaster.class, search, "coverId");
+			List<Tuple> data = crservice.getResult(criteria, 0, 50);
+			return data;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	@Cacheable(cacheNames= {"collectCommissionDetails"},keyGenerator  = "collectCommissionDetailsKeyGen",value = "collectCommissionDetails")
+	public Map<String, Object> collectCommissionDetails(String loginId) {
+		 try {
+			 String todayInString = DD_MM_YYYY.format(new Date());
+			 String search="loginId:"+loginId+";status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;policyType:99999;";
+			 SpecCriteria criteria = crservice.createCriteria(BrokerCommissionDetails.class, search, "amendId");
+			 List<Tuple> data = crservice.getResult(criteria, 0, 50);
+			 if(data.size()>0) {
+				 Map<String, Object> r=new HashMap<String, Object>(); 
+				 r.put("COMMISSION_PERCENTAGE", data.get(0).get("commissionPercentage"));
+				 r.put("COMMISSION_VAT_YN", data.get(0).get("commissionVatYn"));
+				 r.put("COMMISSION_VAT_PERCENT", data.get(0).get("commissionVatPercent"));
+				 
+				 CalcEngine e=new CalcEngine();
+				 e.setAgencyCode("99999");
+				 e.setBranchCode("99999");
+				 e.setInsuranceId(data.get(0).get("companyId").toString());
+				 e.setProductId(data.get(0).get("productId").toString());
+				 e.setSectionId("99999");
+				  List<Tuple> loadTax = LoadTax(e, Arrays.asList("B", "N"));
+				  Double totalTax=loadTax==null?0D:loadTax.stream().mapToDouble(t->t.get("value")==null?0D:Double.parseDouble(t.get("value").toString())).sum();				  
+				  r.put("TOTALTAX", totalTax);
+				  
+				 return r;
+			 }
+		 }catch (Exception e) {
+			 e.printStackTrace();
+		}
+		return null;
+	}
+
 }
