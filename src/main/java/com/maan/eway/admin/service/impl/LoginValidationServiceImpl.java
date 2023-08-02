@@ -18,6 +18,7 @@ import com.maan.eway.admin.req.AdditionalInfoReq;
 import com.maan.eway.admin.req.AttachBrokerBranchReq;
 import com.maan.eway.admin.req.AttachCompaniesReq;
 import com.maan.eway.admin.req.AttachCompnayProductRequest;
+import com.maan.eway.admin.req.AttachEndtIdsReq;
 import com.maan.eway.admin.req.AttachIssuerBrannchReq;
 import com.maan.eway.admin.req.AttachIssuerProductRequest;
 import com.maan.eway.admin.req.AttachIssuerReferalReq;
@@ -539,6 +540,33 @@ public List<Error> validateIssuerProductReq(AttachIssuerProductRequest req) {
 	}
 	return errors;
 }
+
+
+@Override
+public List<Error> validateProductsEndtIds(AttachEndtIdsReq req) {
+	// TODO Auto-generated method stub
+		List<Error> errors = new ArrayList<Error>();
+		try {
+			//Product Validation
+			if(StringUtils.isBlank(req.getLoginId()) ) {
+				errors.add(new Error("01", "LoginId", "Plese Enter LoginId" ));
+			}
+			
+			if(StringUtils.isBlank(req.getInsuranceId()) ) {
+				errors.add(new Error("01", "InsuranceId", "Plese Enter InsuranceId" ));
+			}
+				
+			if(StringUtils.isBlank(req.getProductId()) ) {
+				errors.add(new Error("01", "ProductId", "Plese Enter ProductId" ));
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+		//	errors.add(new Error("09", "Common Error", e.getMessage() ));
+		}
+		return errors;
+	}
 
 
 	

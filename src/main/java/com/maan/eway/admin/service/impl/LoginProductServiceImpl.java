@@ -37,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 import com.maan.eway.admin.req.AttachCompnayProductRequest;
+import com.maan.eway.admin.req.AttachEndtIdsReq;
 import com.maan.eway.admin.req.AttachIssuerProductRequest;
 import com.maan.eway.admin.req.BrokerCompanyProductGetReq;
 import com.maan.eway.admin.req.BrokerCompanyProductsGetRes;
@@ -52,6 +53,7 @@ import com.maan.eway.admin.res.ProductCriteriaRes;
 import com.maan.eway.admin.service.LoginProductService;
 import com.maan.eway.auth.dto.LoginProductCriteriaRes;
 import com.maan.eway.bean.BrokerCommissionDetails;
+import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EndtDependantFieldMaster;
@@ -82,7 +84,7 @@ import com.maan.eway.res.SuccessRes;
 
 @Service
 public class LoginProductServiceImpl  implements LoginProductService {
-	
+	 
 	@Autowired
 	private LoginProductMasterRepository loginProductRepo ;
 	
@@ -2684,6 +2686,125 @@ List<Error> errorList = new ArrayList<Error>();
 		}
 		return resList;
 	}
+
+
+
+	@Override
+	public LoginCreationRes saveProductsEndtIds(AttachEndtIdsReq req) {
+		// TODO Auto-generated method stub
+				SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/YYYY");
+				LoginCreationRes res = new LoginCreationRes();
+				DozerBeanMapper dozerMapper = new  DozerBeanMapper();
+				SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
+				LoginProductMaster saveData = new LoginProductMaster();
+				try { 
+					Integer amendId = 0 ;
+					String branchCode = "";
+					Date startDate = new Date() ;
+					String end = "31/12/2050";
+					Date endDate = sdformat.parse(end);
+					long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+					Date oldEndDate = new Date(startDate.getTime() - MILLIS_IN_A_DAY);
+					Date entryDate = null ;
+					String createdBy = "" ;
+
+					// Changing Added Products Date not in Req
+					
+					CriteriaBuilder cb2 = em.getCriteriaBuilder();
+					CriteriaQuery<LoginProductMaster> query2 = cb2.createQuery(LoginProductMaster.class);
+					List<LoginProductMaster> list = new ArrayList<LoginProductMaster>();
+					
+					// Find All
+					Root<LoginProductMaster>    c2 = query2.from(LoginProductMaster.class);		
+					
+					// Select
+					query2.select(c2);
+					
+				
+					// Order By
+					List<Order> orderList2 = new ArrayList<Order>();
+					orderList2.add(cb2.desc(c2.get("amendId")));	
+					
+					
+				    // Where	
+					Predicate n14 =cb2.equal(c2.get("loginId"), req.getLoginId());
+					Predicate n15 =cb2.equal(c2.get("companyId"), req.getInsuranceId());
+					Predicate n16 =cb2.equal(c2.get("productId"), req.getProductId());
+					query2.where(n14,n15,n16).orderBy(orderList2);
+					
+					// Get Result
+					TypedQuery<LoginProductMaster> result2 = em.createQuery(query2);			
+					list =  result2.getResultList();  
+
+					if (list.size() > 0) {
+						Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
+						
+						if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+							dozerMapper.map( list.get(0), saveData )  ;
+							amendId = list.get(0).getAmendId() + 1 ;
+							entryDate = new Date() ;
+							createdBy = req.getCreatedBy();
+							LoginProductMaster lastRecord = list.get(0);
+								lastRecord.setEffectiveDateEnd(oldEndDate);
+								loginProductRepo.saveAndFlush(lastRecord);
+							
+						} else {
+							amendId = list.get(0).getAmendId() ;
+							entryDate = list.get(0).getEntryDate() ;
+							createdBy = list.get(0).getCreatedBy();
+							dozerMapper.map( list.get(0), saveData )  ;
+							if (list.size()>1 ) {
+								LoginProductMaster lastRecord = list.get(1);
+								lastRecord.setEffectiveDateEnd(oldEndDate);
+								loginProductRepo.saveAndFlush(lastRecord);
+							}
+						
+					    }
+					}
+					
+					if( "R".equalsIgnoreCase(req.getIdType())  ) {
+						String referralids="";
+						List<String> keys = req.getIds();
+						for (int i = 0; i < keys.size(); i++) {
+						referralids = referralids + "," + keys.get(i);				
+						}
+						referralids=referralids.substring(1);
+						saveData.setReferralId(referralids);
+					} else if( "F".equalsIgnoreCase(req.getIdType())  ) {
+						String endorsementids="";
+						List<String> keys1 = req.getIds();
+						for (int i = 0; i < keys1.size(); i++) {
+							endorsementids = endorsementids + "," + keys1.get(i);				
+						}
+						saveData.setFinancialEndtIds(endorsementids);
+					} else if( "NF".equalsIgnoreCase(req.getIdType())  ) {
+						String endorsementids="";
+						List<String> keys1 = req.getIds();
+						for (int i = 0; i < keys1.size(); i++) {
+							endorsementids = endorsementids + "," + keys1.get(i);				
+						}
+						saveData.setNonFinancialEndtIds(endorsementids);
+					}
+				
+					saveData.setEffectiveDateStart(startDate);
+					saveData.setEffectiveDateEnd(endDate);
+					saveData.setEntryDate(new Date());
+					saveData.setAmendId(amendId);
+					saveData.setEntryDate(entryDate);
+					saveData.setCreatedBy(createdBy);
+				
+					loginProductRepo.saveAndFlush(saveData);
+					
+					res.setResponse("Updated Successfully");
+					res.setAgencyCode(saveData.getAgencyCode().toString());
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+					log.info("Exception is --->" + e.getMessage());
+					return null;
+				}
+				return res;
+			}
 
 
 	

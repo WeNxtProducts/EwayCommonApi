@@ -5,6 +5,7 @@ import java.util.List;
 import com.maan.eway.admin.req.AttachBrokerBranchReq;
 import com.maan.eway.admin.req.AttachCompaniesReq;
 import com.maan.eway.admin.req.AttachCompnayProductRequest;
+import com.maan.eway.admin.req.AttachEndtIdsReq;
 import com.maan.eway.admin.req.AttachIssuerBrannchReq;
 import com.maan.eway.admin.req.AttachIssuerProductRequest;
 import com.maan.eway.admin.req.AttachIssuerReferalReq;
@@ -35,6 +36,7 @@ List<Error> validateIssuerReferalReq(AttachIssuerReferalReq req);
 List<Error> validateBrokerCompanyBranchReq(AttachBrokerBranchReq req);
 List<Error> validateLoginBranches(LoginBranchesSaveReq req);
 List<Error> validateIssuerProductReq(AttachIssuerProductRequest req);
+List<Error> validateProductsEndtIds(AttachEndtIdsReq req);
 
 
 }

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.maan.eway.admin.req.AttachCompnayProductRequest;
+import com.maan.eway.admin.req.AttachEndtIdsReq;
 import com.maan.eway.admin.req.AttachIssuerProductRequest;
 import com.maan.eway.admin.req.BrokerCompanyProductGetReq;
 import com.maan.eway.admin.req.BrokerCompanyProductsGetRes;
@@ -49,6 +50,8 @@ public interface LoginProductService {
 	LoginCreationRes saveIssuerProducts(AttachIssuerProductRequest req);
 
 	List<IssuerProductGetRes> getIssuerProducts(IssuerProductGetReq req);
+
+	LoginCreationRes saveProductsEndtIds(AttachEndtIdsReq req);
 
 
 	
