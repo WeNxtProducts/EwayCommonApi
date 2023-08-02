@@ -67,7 +67,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().
                 authorizeRequests()
-                .antMatchers("/post/integration/**","/login/CheckChangePassword","/login/LoginChangePassword","/login/getForgotPassword","/JasperFiles/*","/JasperFiles/**","/login/getBranchDetail","/login/verify/policy","/authentication/doauth").permitAll()
+                .antMatchers("/post/integration/**","/login/CheckChangePassword","/login/LoginChangePassword","/login/getForgotPassword","/JasperFiles/*","/JasperFiles/**","/login/getBranchDetail","/login/verify/policy","/authentication/doauth","/embedded/create/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().loginPage("/admin/region/list").loginPage("/authentication/login").permitAll()
