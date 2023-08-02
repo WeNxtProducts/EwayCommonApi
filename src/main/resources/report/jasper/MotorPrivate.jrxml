@@ -33,6 +33,33 @@
 			<rightPen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
+	<style name="Table 1_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 1_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
 	<subDataset name="TableDataSet 1" uuid="2dfcad32-0f3a-4426-ab2d-d52922456687">
 		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
@@ -99,6 +126,69 @@ WHERE MDD.POLICY_NO=HPM.POLICY_NO AND HPM.POLICY_NO= $P{pvPolicyNo} ORDER BY SNO
 			<property name="com.jaspersoft.studio.field.name" value="SUM_INSURED"/>
 			<property name="com.jaspersoft.studio.field.label" value="SUM_INSURED"/>
 			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+		</field>
+	</subDataset>
+	<subDataset name="Table Dataset 2" uuid="8fc39529-9813-4206-818a-38ddc6ac3b98">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<parameter name="pvPolicyNo" class="java.lang.String"/>
+		<queryString>
+			<![CDATA[SELECT 
+  MDD.DRIVER_ID, 
+  MDD.DRIVER_NAME, 
+  MDD.DRIVER_TYPEDESC, 
+  MDD.DRIVER_DOB, 
+  MDD.ID_NUMBER, 
+  (
+    SELECT 
+      CHASSIS_NUMBER 
+    FROM 
+      MOTOR_DATA_DETAILS 
+    WHERE 
+      QUOTE_NO = MDD.QUOTE_NO 
+      AND VEHICLE_ID = MDD.RISK_ID
+  ) AS CHASSISS_NUMBER 
+FROM 
+  MOTOR_DRIVER_DETAILS MDD 
+WHERE 
+  QUOTE_NO = (
+    SELECT 
+      QUOTE_NO 
+    FROM 
+      HOME_POSITION_MASTER 
+    WHERE 
+      POLICY_NO =  $P{pvPolicyNo} 
+  )
+]]>
+		</queryString>
+		<field name="DRIVER_ID" class="java.lang.Integer">
+			<property name="com.jaspersoft.studio.field.name" value="DRIVER_ID"/>
+			<property name="com.jaspersoft.studio.field.label" value="DRIVER_ID"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="motor_driver_details"/>
+		</field>
+		<field name="DRIVER_NAME" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="DRIVER_NAME"/>
+			<property name="com.jaspersoft.studio.field.label" value="DRIVER_NAME"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="motor_driver_details"/>
+		</field>
+		<field name="DRIVER_TYPEDESC" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="DRIVER_TYPEDESC"/>
+			<property name="com.jaspersoft.studio.field.label" value="DRIVER_TYPEDESC"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="motor_driver_details"/>
+		</field>
+		<field name="DRIVER_DOB" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="DRIVER_DOB"/>
+			<property name="com.jaspersoft.studio.field.label" value="DRIVER_DOB"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="motor_driver_details"/>
+		</field>
+		<field name="ID_NUMBER" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="ID_NUMBER"/>
+			<property name="com.jaspersoft.studio.field.label" value="ID_NUMBER"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="motor_driver_details"/>
+		</field>
+		<field name="CHASSISS_NUMBER" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="CHASSISS_NUMBER"/>
+			<property name="com.jaspersoft.studio.field.label" value="CHASSISS_NUMBER"/>
 		</field>
 	</subDataset>
 	<parameter name="pvImagepath" class="java.lang.String"/>
@@ -316,7 +406,7 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 			</textField>
 		</band>
 		<band height="14">
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="100" y="0" width="455" height="14" uuid="696b8116-4f19-43e3-ac78-23ea0216a5c6"/>
 				<box leftPadding="2">
 					<bottomPen lineWidth="0.5"/>
@@ -661,7 +751,7 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 				<textFieldExpression><![CDATA["Vehicle Details "]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="63">
+		<band height="65">
 			<componentElement>
 				<reportElement x="0" y="1" width="554" height="60" uuid="222d66a2-c32b-42c2-bf9c-f0397a95fc4d">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
@@ -942,9 +1032,9 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 				<textFieldExpression><![CDATA["VALIDITY OF THIS POLICY IS SUBJECT TO RECEIPT OF PREMIUM BY INSURER PRIOR TO INCEPTION OF RISK & SUBJECT TO REALISATON OF CHEQUE, WHEREVER APPLICABLE"]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="12">
+		<band height="47">
 			<textField>
-				<reportElement x="0" y="0" width="90" height="12" uuid="a4475770-5a66-405e-b1e3-ac56687915fc"/>
+				<reportElement mode="Transparent" x="0" y="0" width="90" height="12" backcolor="#FFFFFF" uuid="a4475770-5a66-405e-b1e3-ac56687915fc"/>
 				<box leftPadding="5">
 					<leftPen lineWidth="0.5"/>
 				</box>
@@ -954,7 +1044,7 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 				<textFieldExpression><![CDATA["Authorized Driver :"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="90" y="0" width="465" height="12" uuid="22d44464-a02f-451b-950b-b462c3a25c98"/>
+				<reportElement mode="Transparent" x="90" y="0" width="465" height="12" backcolor="#FFFFFF" uuid="22d44464-a02f-451b-950b-b462c3a25c98"/>
 				<box leftPadding="2">
 					<rightPen lineWidth="0.5"/>
 				</box>
@@ -963,6 +1053,157 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
+			<componentElement>
+				<reportElement mode="Transparent" x="0" y="12" width="555" height="35" isRemoveLineWhenBlank="true" uuid="24a53a96-466a-4810-bde2-6f6b1f94de0b">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 1_TH"/>
+					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 1_CH"/>
+					<property name="com.jaspersoft.studio.table.style.detail" value="Table 1_TD"/>
+				</reportElement>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="Table Dataset 2" uuid="20c311eb-dc54-4346-ad1c-364d44331f75">
+						<datasetParameter name="pvPolicyNo">
+							<datasetParameterExpression><![CDATA[$P{pvPolicyNo}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="60" uuid="0d17d43d-e820-42ef-85ae-166b28d5ffd4">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+						<jr:columnHeader style="Table 1_TD" height="15" rowSpan="1">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<textField>
+								<reportElement x="0" y="0" width="60" height="15" uuid="b9a51c11-06ef-4188-9b67-40816cb541a2"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="9" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA["Driver Id"]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 1_TD" height="22">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<textField>
+								<reportElement x="0" y="0" width="60" height="22" uuid="06172a5b-edb6-4599-9a2b-4be19d26779e"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{DRIVER_ID}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="115" uuid="ad894416-8cfa-405d-845c-527163678091">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+						<jr:columnHeader style="Table 1_TD" height="15" rowSpan="1">
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<textField>
+								<reportElement x="0" y="0" width="115" height="15" uuid="67537bcf-cf0f-40ee-9238-25ddbae8b291"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="9" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA["Driver Name"]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 1_TD" height="22">
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<textField>
+								<reportElement x="0" y="0" width="115" height="22" uuid="6e27e4e9-0cc8-47e1-88f0-9419f3d898f5"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{DRIVER_NAME}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="70" uuid="d3d0be7f-5579-4f45-a36d-85912c091b57">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
+						<jr:columnHeader style="Table 1_TD" height="15" rowSpan="1">
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<textField>
+								<reportElement x="0" y="0" width="70" height="15" uuid="8df7bdf7-60a9-491a-aee7-a5b243e1756c"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="9" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA["Driver Type"]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 1_TD" height="22">
+							<textField>
+								<reportElement x="0" y="0" width="70" height="22" uuid="fac1d82e-8c6c-4408-be4e-2a65b8801f7b"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{DRIVER_TYPEDESC}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="70" uuid="4d62e7c1-fe54-4b18-8af1-713b15d940ef">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
+						<jr:columnHeader style="Table 1_TD" height="15" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="70" height="15" uuid="ad105aa6-3e17-40f1-acce-032ab9f85589"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="9" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA["Date of Birth"]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 1_TD" height="22">
+							<textField>
+								<reportElement x="0" y="0" width="70" height="22" uuid="ae551231-5ed0-4933-9533-9adb2e704fc7"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse($F{DRIVER_DOB}))]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="82" uuid="f0c77324-52af-4140-ad1a-1d803ede0982">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
+						<jr:columnHeader style="Table 1_TD" height="15" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="82" height="15" uuid="fa3dc9b0-64ae-4165-a88b-fda162858a97"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="9" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA["Id Number"]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 1_TD" height="22">
+							<textField>
+								<reportElement x="0" y="0" width="82" height="22" uuid="ec4f5669-d51b-4f47-ad5c-562156c3340d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{ID_NUMBER}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="158" uuid="293959f0-2713-40ad-bd91-bea8445ec800">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column6"/>
+						<jr:columnHeader style="Table 1_TD" height="15" rowSpan="1">
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<textField>
+								<reportElement x="0" y="0" width="158" height="15" uuid="cb7ae930-3458-46ab-8856-b512664eb8c2"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="9" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA["Chassis Number"]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 1_TD" height="22">
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<textField>
+								<reportElement x="0" y="0" width="158" height="22" uuid="1b275101-6b32-4e2a-b8cf-1e04a023473d"/>
+								<box leftPadding="0"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{CHASSISS_NUMBER}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
 		</band>
 		<band height="12">
 			<textField>
