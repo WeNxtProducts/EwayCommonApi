@@ -2058,7 +2058,7 @@ this.repository = repo;
 				resp=calcEngine.referalCalculator(engine);
 			}else {
 				EndtTypeMaster endt=ratingutil.getEndtMasterData(engine.getInsuranceId(), engine.getProductId(),endtTypdId);
-				engine.setCoverModification(endt.getIsCoverendt());)
+				engine.setCoverModification(endt.getIsCoverendt());
 				resp=calcEngine.endorsementCalculator(engine,endtCount);
 			}
 			 
