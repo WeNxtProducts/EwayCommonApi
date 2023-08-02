@@ -2285,18 +2285,15 @@ public class QuoteThreadCall implements Callable<Object>  {
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
 
-				List<Integer> ids = new ArrayList<Integer>();
-				ids.add(0);
-				ids.add(1);
-				
-				List<EserviceSectionDetails> secs = eserSecRepo.findByRequestReferenceNoAndStatus(request.getRequestReferenceNo(),"Y");
+				List<EserviceSectionDetails> secs = eserSecRepo.findByRequestReferenceNoAndStatusNot(request.getRequestReferenceNo(),"D");
 				List<String> secIds = secs.stream().map(EserviceSectionDetails :: getSectionId).collect(Collectors.toList());
 				
 				Long docInfo = docRepo.countByQuoteNo(req.getQuoteNo() );
 				if( docInfo <= 0  ) {
 					List<DocumentTransactionDetails>   oldDocDetails = docRepo.findByQuoteNo( req.getEndtPrevQuoteNo() ) ;
 					List<DocumentTransactionDetails>   oldfilter = oldDocDetails.stream().filter(o -> secIds.contains(o.getSectionId().toString())).collect(Collectors.toList());	
-					
+					List<DocumentTransactionDetails>   commonfilter = oldDocDetails.stream().filter(o ->  o.getLocationId()==99999 ).collect(Collectors.toList());
+					oldfilter.addAll(commonfilter);
 					List<DocumentTransactionDetails> saveDocList = new ArrayList<DocumentTransactionDetails>();
 					if( oldfilter.size() > 0  ) {
 						for ( DocumentTransactionDetails doc : oldfilter ) {
