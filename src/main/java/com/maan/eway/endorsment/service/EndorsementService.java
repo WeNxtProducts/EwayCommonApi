@@ -702,7 +702,7 @@ public class EndorsementService {
 					dozerMapper.map(o, newTerm)			;
 					newTerm.setRequestReferenceNo(newRefNo);
 					newTerm.setQuoteNo("");
-					
+					copyTerms.add(newTerm);
 				});	
 				termsRepo.saveAllAndFlush(copyTerms);
 			}
