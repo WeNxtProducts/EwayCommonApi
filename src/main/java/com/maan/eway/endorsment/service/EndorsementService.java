@@ -83,6 +83,7 @@ import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
+import com.maan.eway.repository.TermsAndConditionRepository;
 import com.maan.eway.req.FactorRateDetailsGetReq;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.res.calc.Cover;
@@ -139,6 +140,9 @@ public class EndorsementService {
 	private  FactorRateRequestDetailsService factorService;
 	@Autowired
 	private  QuoteService entityService ;
+	
+	@Autowired
+	private TermsAndConditionRepository termsRepo;
 	
 	private Logger log = LogManager.getLogger(EndorsementService.class);
 	
@@ -692,13 +696,16 @@ public class EndorsementService {
 			TypedQuery<TermsAndCondition> result2 = em.createQuery(query2);
 			List<TermsAndCondition> list2 = result2.getResultList();
 			if(list2.size() > 0 ){
+				List<TermsAndCondition> copyTerms = new ArrayList<TermsAndCondition>(); 
 				list2.forEach( o -> {
 					TermsAndCondition newTerm = new TermsAndCondition(); 
 					dozerMapper.map(o, newTerm)			;
 					newTerm.setRequestReferenceNo(newRefNo);
+					newTerm.setQuoteNo("");
 					
 				});	
-		  }
+				termsRepo.saveAllAndFlush(copyTerms);
+			}
 			
 		}catch (Exception e) {
 			e.printStackTrace();
