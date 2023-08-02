@@ -377,7 +377,7 @@ public class EndorsementService {
 				// Find All
 				Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 				Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
-				//Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+				Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
 				// Select
 				query.multiselect(//cb.literal(Long.parseLong("1")).alias("idsCount"),
 						// Customer Info
@@ -401,13 +401,15 @@ public class EndorsementService {
 						cb.max(m.get("endorsementDate")).alias("endorsementDate"),
 						//Home Position Master
 						cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
-						cb.sum(m.get("endtPremium")).alias("endtPremium"),cb.max( m.get("currency")).alias("currency")
+						cb.sum(h.get("endtPremium")).alias("endtPremium"),cb.max( m.get("currency")).alias("currency")
 						
 						);
 			 
 				// Order By
+//				List<Order> orderList = new ArrayList<Order>();
+//				orderList.add(cb.desc(cb.max(m.get("endorsementDate"))));
 				List<Order> orderList = new ArrayList<Order>();
-				orderList.add(cb.desc(cb.max(m.get("endorsementDate"))));
+				orderList.add(cb.desc((m.get("policyNo"))));
 
 			
 				// Where
@@ -437,8 +439,8 @@ public class EndorsementService {
 					Expression<String> e0 = m.get("branchCode");
 					n8 = e0.in(branches);
 				}*/
-
-				query.where(n1, n2, n3,/* n4,*/ n5)
+				Predicate n6 = cb.equal(h.get("quoteNo"), m.get("quoteNo"));
+				query.where(n1, n2, n3,/* n4,*/ n5,n6)
 						/*.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 								m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 								m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"))*/

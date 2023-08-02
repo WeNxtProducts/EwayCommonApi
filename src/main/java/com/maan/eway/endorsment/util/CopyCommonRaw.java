@@ -219,7 +219,9 @@ public class CopyCommonRaw {
 				// Find All
 				Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 				Root<EserviceCommonDetails> m = query.from(EserviceCommonDetails.class);
-				// Select
+
+				Root<HomePositionMaster> h=query.from(HomePositionMaster.class);
+						// Select
 				query.multiselect(// cb.literal(Long.parseLong("1")).alias("idsCount"),
 						// Customer Info
 						cb.max(c.get("customerReferenceNo")).alias("customerReferenceNo"),
@@ -245,13 +247,15 @@ public class CopyCommonRaw {
 						// Home Position Master
 						cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"),
 						cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
-						cb.sum(m.get("endtPremium")).alias("endtPremium"), cb.max(m.get("currency")).alias("currency")
+						cb.sum(h.get("endtPremium")).alias("endtPremium"), cb.max(m.get("currency")).alias("currency")
 
 				);
 
 				// Order By
+//				List<Order> orderList = new ArrayList<Order>();
+//				orderList.add(cb.desc(cb.max(m.get("endorsementDate"))));
 				List<Order> orderList = new ArrayList<Order>();
-				orderList.add(cb.desc(cb.max(m.get("endorsementDate"))));
+				orderList.add(cb.desc((m.get("policyNo"))));
 
 				// Where
 				Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
@@ -279,8 +283,8 @@ public class CopyCommonRaw {
 				 * m.get("brokerBranchCode"); n8 = e0.in(branches); } else { Expression<String>
 				 * e0 = m.get("branchCode"); n8 = e0.in(branches); }
 				 */
-
-				query.where(n1, n2, n3, /* n4, */ n5)
+				Predicate n6 = cb.equal(h.get("quoteNo"), m.get("quoteNo"));
+				query.where(n1, n2, n3, /* n4, */ n5,n6)
 						/*
 						 * .groupBy(c.get("customerReferenceNo"), c.get("idNumber"),
 						 * c.get("clientName"), m.get("companyId"), m.get("productId"),

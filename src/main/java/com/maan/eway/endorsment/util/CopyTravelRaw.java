@@ -256,6 +256,7 @@ public class CopyTravelRaw {
 				// Find All
 				Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 				Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
+				Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
 				// Select
 				query.multiselect(//cb.literal(Long.parseLong("1")).alias("idsCount"),
 						// Customer Info
@@ -279,13 +280,17 @@ public class CopyTravelRaw {
 						cb.max(m.get("endorsementDate")).alias("endorsementDate"),
 						//Home Position Master
 						cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
-						cb.sum(m.get("endtPremium")).alias("endtPremium"),cb.max( m.get("currency")).alias("currency")
+						/*cb.sum(m.get("endtPremium")).alias("endtPremium")*/cb.max( m.get("currency")).alias("currency"),
+						cb.sum(h.get("endtPremium")).alias("endtPremium")
 						
 						);
 			 
 				// Order By
+//				List<Order> orderList = new ArrayList<Order>();
+//				orderList.add(cb.desc(cb.max(m.get("endorsementDate"))));
+				
 				List<Order> orderList = new ArrayList<Order>();
-				orderList.add(cb.desc(cb.max(m.get("endorsementDate"))));
+				orderList.add(cb.desc((m.get("policyNo"))));
 
 				// Where
 				Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
@@ -296,6 +301,7 @@ public class CopyTravelRaw {
 				//Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), endDate);
 				//Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
 
+				Predicate n6 = cb.equal(h.get("quoteNo"), m.get("quoteNo"));
 			/*	Predicate n7 = null;
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
 					n7 = cb.equal(m.get("loginId"), req.getLoginId());
@@ -312,7 +318,7 @@ public class CopyTravelRaw {
 					n8 = e0.in(branches);
 				}*/
 
-				query.where(n1, n2, n3, n5)
+				query.where(n1, n2, n3, n5,n6)
 						.groupBy(/*c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 								m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 								m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate")*/m.get("policyNo"))

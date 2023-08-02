@@ -18,6 +18,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,6 +40,7 @@ import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.ProductEmployeeDetails;
+import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.ChangeEndoStatusReq;
@@ -337,7 +339,7 @@ public class CopyBuildingRaw {
 				// Find All
 				Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 				Root<EserviceBuildingDetails> m = query.from(EserviceBuildingDetails.class);
-			//	Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+				Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
 				// Select
 				query.multiselect(//cb.literal(Long.parseLong("1")).alias("idsCount"),
 						// Customer Info
@@ -361,13 +363,15 @@ public class CopyBuildingRaw {
 						cb.max(m.get("endorsementDate")).alias("endorsementDate"),
 						//Home Position Master
 						cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
-						cb.sum(m.get("endtPremium")).alias("endtPremium"),cb.max( m.get("currency")).alias("currency")
+						cb.sum(h.get("endtPremium")).alias("endtPremium"),cb.max( m.get("currency")).alias("currency")
 						
 						);
 			 
 				// Order By
+//				List<Order> orderList = new ArrayList<Order>();
+//				orderList.add(cb.desc(cb.max(m.get("endorsementDate"))));
 				List<Order> orderList = new ArrayList<Order>();
-				orderList.add(cb.desc(cb.max(m.get("endorsementDate"))));
+				orderList.add(cb.desc((m.get("policyNo"))));
 
 				// Where
 				Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
@@ -375,10 +379,10 @@ public class CopyBuildingRaw {
 				Predicate n3 = cb.equal(m.get("productId"), request.getProductId());
 				Predicate n4 = cb.in(m.get("status")).value(Arrays.asList("E","P","D"));  // m.get("status").in("E","P"));
 				Predicate n5 = cb.or(cb.like(m.get("originalPolicyNo"), request.getPolicyNo()),cb.like(m.get("policyNo"), request.getPolicyNo()));
+				Predicate n6 = cb.equal(h.get("quoteNo"), m.get("quoteNo"));
+				
 
-
-			 
-				query.where(n1, n2, n3, n4, n5)
+				query.where(n1, n2, n3, n4, n5,n6)
 						.groupBy(/*c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 								m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 								m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate")*/m.get("policyNo"))

@@ -51,6 +51,6 @@ public class EndorsementCriteriaRes {
 		
 		private BigDecimal     overallPremiumLc ;
 		private BigDecimal     overallPremiumFc ;
-		private Double       endtPremium ;
+		private BigDecimal       endtPremium ;
 		private String     currency ;
 }
