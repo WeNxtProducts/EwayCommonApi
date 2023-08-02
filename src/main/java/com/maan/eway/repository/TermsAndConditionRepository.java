@@ -73,6 +73,10 @@ public interface TermsAndConditionRepository  extends JpaRepository<TermsAndCond
 			String companyId, String branchCode, String productId, String sectionId, String requestReferenceNo);
 
 
+	List<TermsAndCondition> findByRequestReferenceNoAndRiskIdAndProductIdAndSectionIdAndId(String requestReferenceNo,
+			String riskId, String productId, String sectionId, Integer id);
+
+
 
 
 }

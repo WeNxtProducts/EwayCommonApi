@@ -19,6 +19,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -44,6 +45,7 @@ import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.ProductSectionMaster;
+import com.maan.eway.bean.TermsAndCondition;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.ChangeEndoStatusReq;
 import com.maan.eway.common.req.CopyQuoteReq;
@@ -52,6 +54,7 @@ import com.maan.eway.common.req.EndtSectionListReq;
 import com.maan.eway.common.req.EndtSectionSaveReq;
 import com.maan.eway.common.req.EservieMotorDetailsViewRes;
 import com.maan.eway.common.req.NewQuoteReq;
+import com.maan.eway.common.req.QuoteThreadReq;
 import com.maan.eway.common.req.VehicleIdsReq;
 import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.CommonRes;
@@ -592,22 +595,29 @@ public class EndorsementService {
 					List<EserviceMotorDetails> copyQuote = new ArrayList<EserviceMotorDetails>();
 					copyQuote.add((EserviceMotorDetails) copyquoteService.copyQuote(c).getCommonResponse());
 					response = copyQuote;
+					updateTermsAndCondition(hp , (copyQuote.size() > 0 ?  copyQuote.get(0).getRequestReferenceNo() : "" ));
+					
 				} else if (product.getMotorYn().equalsIgnoreCase("H")  &&  request.getProductId().equals(new BigDecimal(travelProductId))  ) {
 					List<EserviceTravelDetails> travelCopyQuote = new ArrayList<EserviceTravelDetails>(); 
 					travelCopyQuote.add((EserviceTravelDetails)copyquoteService.copyQuote(c).getCommonResponse());
 					response = travelCopyQuote ;
+					updateTermsAndCondition(hp , (travelCopyQuote.size() > 0 ?  travelCopyQuote.get(0).getRequestReferenceNo() : "" ));
 					
 				}else if (product.getMotorYn().equalsIgnoreCase("A") ) {
 					List<EserviceBuildingDetails> buildcopyquote = new ArrayList<EserviceBuildingDetails>(); 
 					buildcopyquote.add((EserviceBuildingDetails) copyquoteService.copyQuote(c).getCommonResponse());
 					response = buildcopyquote ;
+					updateTermsAndCondition(hp , (buildcopyquote.size() > 0 ?  buildcopyquote.get(0).getRequestReferenceNo() : "" ));
 					
 				} else {
 					List<EserviceCommonDetails> commonCopyQuote = new ArrayList<EserviceCommonDetails>();
 					commonCopyQuote.add((EserviceCommonDetails) copyquoteService.copyQuote(c).getCommonResponse());
 					response = commonCopyQuote ;
+					updateTermsAndCondition(hp , (commonCopyQuote.size() > 0 ?  commonCopyQuote.get(0).getRequestReferenceNo() : "" ));
 				
 				}
+				
+				
 				
 				CommonRes com=new CommonRes();
 				com.setCommonResponse(response);
@@ -622,21 +632,24 @@ public class EndorsementService {
 				if(product.getMotorYn().equalsIgnoreCase("M") ) {
 					List<EserviceMotorDetails> motorRaw = copyraw.copyMotorRaw(request,entTypeMaster);
 					response = motorRaw ;
-					
+					updateTermsAndCondition(hp , (motorRaw.size() > 0 ?  motorRaw.get(0).getRequestReferenceNo() : "" ));
 				} else if (product.getMotorYn().equalsIgnoreCase("H")  && request.getProductId().equals(new BigDecimal(travelProductId))  ) {
 					List<EserviceTravelDetails> travelRaw = new ArrayList<EserviceTravelDetails>(); 
 					travelRaw.add(copyTravelraw.copyTravelRaw(request));
 					response = travelRaw ;
+					updateTermsAndCondition(hp , (travelRaw.size() > 0 ?  travelRaw.get(0).getRequestReferenceNo() : "" ));
 					
 				} else if (product.getMotorYn().equalsIgnoreCase("A") ) {
 					List<EserviceBuildingDetails> buildRaw = new ArrayList<EserviceBuildingDetails>(); 
 					buildRaw.add( copyBuildingraw.copyBuildingRaw(request));
 					response = buildRaw ;
+					updateTermsAndCondition(hp , (buildRaw.size() > 0 ?  buildRaw.get(0).getRequestReferenceNo() : "" ));
 					
 				} else {
 					List<EserviceCommonDetails> commonRaw = new ArrayList<EserviceCommonDetails>();
 					 commonRaw.add(copyCommonraw.copyCommonRaw(request));
 					response = commonRaw ;
+					updateTermsAndCondition(hp , (commonRaw.size() > 0 ?  commonRaw.get(0).getRequestReferenceNo() : "" ) );
 				
 				}
 				
@@ -652,6 +665,46 @@ public class EndorsementService {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	private void updateTermsAndCondition(HomePositionMaster hp , String newRefNo ) {
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();  
+		try {
+			//Insert Terms and Condtiond
+			// Find Latest Record
+			CriteriaBuilder cb2 = em.getCriteriaBuilder();
+			CriteriaQuery<TermsAndCondition> query2 = cb2.createQuery(TermsAndCondition.class);
+
+			// Find All
+			Root<TermsAndCondition> b2 = query2.from(TermsAndCondition.class);
+
+			// Select
+			query2.select(b2);
+			
+			// Where
+			Predicate n4 = cb2.equal(b2.get("quoteNo"), hp.getQuoteNo());
+			Predicate n5 = cb2.equal(b2.get("companyId"),   hp.getCompanyId());
+			Predicate n6 = cb2.equal(b2.get("productId"), hp.getProductId());
+			
+			query2.where(n4,n5,n6);
+
+			// Get Result
+			TypedQuery<TermsAndCondition> result2 = em.createQuery(query2);
+			List<TermsAndCondition> list2 = result2.getResultList();
+			if(list2.size() > 0 ){
+				list2.forEach( o -> {
+					TermsAndCondition newTerm = new TermsAndCondition(); 
+					dozerMapper.map(o, newTerm)			;
+					newTerm.setRequestReferenceNo(newRefNo);
+					
+				});	
+		  }
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.error("Exception is ---> " + e.getMessage());
+			
+		}
 	}
 
 	public CommonRes changeEndtStatus(ChangeEndoStatusReq req) {

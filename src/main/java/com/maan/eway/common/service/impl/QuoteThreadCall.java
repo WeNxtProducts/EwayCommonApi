@@ -25,6 +25,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -63,7 +64,9 @@ import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.bean.SectionDataDetails;
+import com.maan.eway.bean.TermsAndCondition;
 import com.maan.eway.bean.TravelPassengerDetails;
+import com.maan.eway.bean.WarrantyMaster;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.FrameOldDocSaveReq;
 import com.maan.eway.common.req.QuoteThreadReq;
@@ -2332,6 +2335,7 @@ public class QuoteThreadCall implements Callable<Object>  {
  				
 			}
 			
+		
 			// Save Home Position Master
 			HomePositionMaster home = new HomePositionMaster();
 			
@@ -2353,6 +2357,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 				home = setCommonDetails(request);
 				
 			}
+			
+			   
 			
 			// Set Branch Details 
 			LoginBranchMaster loginBranch =  getBranchDetails(home.getCompanyId() ,home.getBrokerBranchCode() ,home.getLoginId() );
@@ -2889,6 +2895,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 	
 		return home;
 	}
+	
 	
 	private HomePositionMaster setCommonDetails(QuoteThreadReq  request) {
 		HomePositionMaster home = new HomePositionMaster();

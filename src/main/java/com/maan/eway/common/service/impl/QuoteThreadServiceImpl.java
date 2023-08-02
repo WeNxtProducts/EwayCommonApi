@@ -27,6 +27,7 @@ import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
@@ -36,6 +37,7 @@ import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -59,6 +61,7 @@ import com.maan.eway.bean.MasterReferralDetails;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.SeqCustid;
 import com.maan.eway.bean.SeqQuoteno;
+import com.maan.eway.bean.TermsAndCondition;
 import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.CoverIdsReq;
@@ -477,6 +480,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 //				
 //				QuoteThreadRes quoteRes = call_QuoteSave(request);
 
+				// Update Terms And Condition
+				updateTermsAndCondition(request);
 				
 				response.setQuoteNo(quoteRes.getQuoteNo());
 				response.setRequestReferenceNo(quoteRes.getRequestReferenceNo());
@@ -761,7 +766,52 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		return commonRes ;
 	}
 
+	private void updateTermsAndCondition(QuoteThreadReq  request) {
+		try {
+		
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<TermsAndCondition> query = cb.createQuery(TermsAndCondition.class);
 
+			// Find All
+			Root<TermsAndCondition> b = query.from(TermsAndCondition.class);
+
+			// Select
+			query.select(b);
+			
+			// Where
+			Predicate n1 = cb.equal(b.get("requestReferenceNo"), request.getRequestReferenceNo());
+			Predicate n2 = cb.equal(b.get("companyId"),   request.getInsuranceId());
+			Predicate n3 = cb.equal(b.get("productId"), request.getProductId());
+			
+			query.where(n1,n2,n3);
+
+			// Get Result
+			TypedQuery<TermsAndCondition> result = em.createQuery(query);
+			List<TermsAndCondition> list = result.getResultList();
+			
+			if(list.size() > 0 ){
+				// create update
+				CriteriaUpdate<TermsAndCondition> update = cb.createCriteriaUpdate(TermsAndCondition.class);
+				// set the root class
+				Root<TermsAndCondition> m = update.from(TermsAndCondition.class);
+				Predicate a1 = cb.equal(m.get("requestReferenceNo"), request.getRequestReferenceNo());
+				Predicate a2 = cb.equal(m.get("companyId"),   request.getInsuranceId());
+				Predicate a3 = cb.equal(m.get("productId"), request.getProductId());
+					update.set("quoteNo",request.getQuoteNo());
+				 
+				update.where(a1,a2,a3);
+				// perform update
+				em.createQuery(update).executeUpdate();
+			}
+			
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			log.error("Exception is ---> " + e.getMessage());
+			
+		}
+	}
 	public CommonRes oldQuoteRecordsDeleteThreadCall( QuoteThreadReq request ) {
 		CommonRes commonRes = new CommonRes();
 		List<Error> errors = new ArrayList<Error>();
