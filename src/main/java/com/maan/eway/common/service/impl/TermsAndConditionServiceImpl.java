@@ -623,7 +623,7 @@ public class TermsAndConditionServiceImpl implements TermsAndConditionService {
 				saveData.setCompanyName(insurance.get(0).getCompanyName());
 				saveData.setBranchName(branch.get(0).getBranchName());
 				saveData.setProductName(product.get(0).getProductName());
-				saveData.setSectionName(section.get(0).getSectionName());
+				saveData.setSectionName(section.size() > 0 ? section.get(0).getSectionName() : "All") ;
 				saveData.setEntryDate(new Date());
 				saveData.setStatus("Y");
 				saveData.setCreatedBy(req.getCreatedBy());
