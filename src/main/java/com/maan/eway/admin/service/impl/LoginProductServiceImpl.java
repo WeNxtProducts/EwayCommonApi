@@ -2360,7 +2360,6 @@ List<Error> errorList = new ArrayList<Error>();
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-					
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 
@@ -2369,9 +2368,8 @@ List<Error> errorList = new ArrayList<Error>();
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 =  cb.equal(b.get("companyId"), req.getInsuranceId() );
-			Predicate n3 =  cb.equal(b.get("status"), "Y" );
 		
-			query.where(n1, n2,n3);
+			query.where(n1, n2);
 
 			// Get Result
 			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
@@ -2431,6 +2429,8 @@ List<Error> errorList = new ArrayList<Error>();
 		        if(filterUser.size()>0) {
 		        	dozerMapper.map(filterUser.get(0), res);
 		        	endorsementid = filterUser.get(0).getFinancialEndtIds()==null?"":filterUser.get(0).getFinancialEndtIds();
+		        	endorsementid =  StringUtils.isBlank(endorsementid) ?  filterUser.get(0).getNonFinancialEndtIds() :endorsementid + "," +  filterUser.get(0).getNonFinancialEndtIds() ;
+		        	endorsementid =  StringUtils.isBlank(endorsementid) ?   "" :  endorsementid ;
 					referralid = filterUser.get(0).getReferralId()==null?"":filterUser.get(0).getReferralId();
 					ArrayList<String> endorsementids = new ArrayList<String>(Arrays.asList(endorsementid));
 			        ArrayList<String> referralids = new ArrayList<String>(Arrays.asList(referralid));
@@ -2464,6 +2464,8 @@ List<Error> errorList = new ArrayList<Error>();
 		        else {
 		        	dozerMapper.map(data, res);
 		        	endorsementid = data.getFinancialEndtIds()==null?"":data.getFinancialEndtIds();
+		        	endorsementid =  StringUtils.isBlank(endorsementid) ?  data.getNonFinancialEndtIds() :endorsementid + "," +  data.getNonFinancialEndtIds() ;
+		        	endorsementid =  StringUtils.isBlank(endorsementid) ?   "" :  endorsementid ;
 					referralid = data.getReferralId()==null?"":data.getReferralId();
 					ArrayList<String> endorsementids = new ArrayList<String>(Arrays.asList(endorsementid));
 			        ArrayList<String> referralids = new ArrayList<String>(Arrays.asList(referralid));
@@ -2523,8 +2525,7 @@ List<Error> errorList = new ArrayList<Error>();
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n2 =  cb.equal(b.get("companyId"), req.getInsuranceId() );
-			Predicate n3 =  cb.equal(b.get("status"), "Y" );
-			query.where(n1, n2,n3);
+			query.where(n1, n2);
 
 			// Get Result
 			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
@@ -2587,7 +2588,9 @@ List<Error> errorList = new ArrayList<Error>();
 		        if(filterUser.size()>0) {
 		        	dozerMapper.map(filterUser.get(0), res);
 		        	endorsementid = filterUser.get(0).getFinancialEndtIds()==null?"":filterUser.get(0).getFinancialEndtIds();
-					referralid = filterUser.get(0).getReferralId()==null?"":filterUser.get(0).getReferralId();
+		        	endorsementid =  StringUtils.isBlank(endorsementid) ?  filterUser.get(0).getNonFinancialEndtIds() :endorsementid + "," +  filterUser.get(0).getNonFinancialEndtIds() ;
+		        	endorsementid =  StringUtils.isBlank(endorsementid) ?   "" :  endorsementid ;
+		        	referralid = filterUser.get(0).getReferralId()==null?"":filterUser.get(0).getReferralId();
 					//referralid=referralid.substring(1);
 					
 					ArrayList<String> endorsementids = new ArrayList<String>(Arrays.asList(endorsementid));
@@ -2631,7 +2634,9 @@ List<Error> errorList = new ArrayList<Error>();
 		        else {
 		        	dozerMapper.map(data, res);
 		        	endorsementid = data.getFinancialEndtIds()==null?"":data.getFinancialEndtIds();
-					referralid = data.getReferralId()==null?"":data.getReferralId();
+		         	endorsementid =  StringUtils.isBlank(endorsementid) ?  data.getNonFinancialEndtIds() :endorsementid + "," +  data.getNonFinancialEndtIds() ;
+		        	endorsementid =  StringUtils.isBlank(endorsementid) ?   "" :  endorsementid ;
+		        	referralid = data.getReferralId()==null?"":data.getReferralId();
 					//referralid=referralid.substring(1);
 
 					ArrayList<String> endorsementids = new ArrayList<String>(Arrays.asList(endorsementid));
