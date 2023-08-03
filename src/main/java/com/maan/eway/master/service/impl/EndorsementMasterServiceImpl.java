@@ -902,51 +902,54 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			endtid = endtid.substring(0);
 			List<String> endtids = new ArrayList<String>(Arrays.asList(endtid.split(",")));
 			for(String id : endtids) {
-				List<EndtTypeMaster> data1 = new ArrayList<EndtTypeMaster>();	
-			data1 = repo.findByEndtTypeCategoryIdAndEndtTypeIdAndCompanyIdAndProductIdOrderByAmendIdDesc((Integer.valueOf(req.getEndtTypeCategoryId())), Integer.valueOf(id), req.getCompanyId(),Integer.valueOf(req.getProductId()));	
-			if(data1.size()>0 && data1!=null) {
-			EndorsementMasterGetallRes res1 = new EndorsementMasterGetallRes();
-			
-			List<EndorsementMasterListRes> endtlist = new ArrayList<EndorsementMasterListRes>();
-			for(EndtTypeMaster data : data1) {
-				EndorsementMasterListRes res = new EndorsementMasterListRes(); 	
-			String dependentid = data.getEndtDependantIds();
-			List<String> dependentids = new ArrayList<String>(Arrays.asList(dependentid.split(",")));
-			res.setEndtDependantIds(dependentids);
+				if(StringUtils.isNotBlank(id) ) {
+					List<EndtTypeMaster> data1 = new ArrayList<EndtTypeMaster>();	
+					data1 = repo.findByEndtTypeCategoryIdAndEndtTypeIdAndCompanyIdAndProductIdOrderByAmendIdDesc((Integer.valueOf(req.getEndtTypeCategoryId())), Integer.valueOf(id), req.getCompanyId(),Integer.valueOf(req.getProductId()));	
+					if(data1.size()>0 && data1!=null) {
+					EndorsementMasterGetallRes res1 = new EndorsementMasterGetallRes();
+					
+					List<EndorsementMasterListRes> endtlist = new ArrayList<EndorsementMasterListRes>();
+					for(EndtTypeMaster data : data1) {
+						EndorsementMasterListRes res = new EndorsementMasterListRes(); 	
+					String dependentid = data.getEndtDependantIds();
+					List<String> dependentids = new ArrayList<String>(Arrays.asList(dependentid.split(",")));
+					res.setEndtDependantIds(dependentids);
 
-			String dependentfield = data.getEndtDependantFields();
-			List<String> dependentfields = new ArrayList<String>(Arrays.asList(dependentfield.split(",")));
-			res.setEndtDependantFields(dependentfields);
-			
-			res.setAmendId(data.getAmendId().toString());
-			res.setEntryDate(data.getEntryDate());
-			res.setEffectiveDateStart(data.getEffectiveDateStart());
-			res.setEffectiveDateEnd(data.getEffectiveDateEnd());
-			res.setCoreAppCode(data.getCoreAppCode());
-			res.setEndtTypeId(data.getEndtTypeId().toString());
-			res1.setEndtTypeCategoryId(data.getEndtTypeCategoryId().toString());
-			res.setPriority(data.getPriority().toString());
-			res1.setProductId(data.getProductId().toString());
-			res.setEndtFeePercent(data.getEndtFeePercent());
-			res.setUpdatedDate(data.getUpdatedDate());
-			res.setEndtType(data.getEndtType());
-			res.setEndtTypeDesc(data.getEndtTypeDesc());
-			res1.setEndtTypeCategory(data.getEndtTypeCategory());
-			res.setStatus(data.getStatus());
-			res1.setCompanyId(data.getCompanyId());
-			res.setCalcTypeId(data.getCalcTypeId());			
-		//	res.setCalcType(data.getCalcType());
-			res.setEndtFeeYn(data.getEndtFeeYn());
-			res.setRemarks(data.getRemarks());
-			res.setCreatedBy(data.getCreatedBy());
-			res.setUpdatedBy(data.getUpdatedBy());
-			res.setRegulatoryCode(data.getRegulatoryCode());
-			endtlist.add(res);
+					String dependentfield = data.getEndtDependantFields();
+					List<String> dependentfields = new ArrayList<String>(Arrays.asList(dependentfield.split(",")));
+					res.setEndtDependantFields(dependentfields);
+					
+					res.setAmendId(data.getAmendId().toString());
+					res.setEntryDate(data.getEntryDate());
+					res.setEffectiveDateStart(data.getEffectiveDateStart());
+					res.setEffectiveDateEnd(data.getEffectiveDateEnd());
+					res.setCoreAppCode(data.getCoreAppCode());
+					res.setEndtTypeId(data.getEndtTypeId().toString());
+					res1.setEndtTypeCategoryId(data.getEndtTypeCategoryId().toString());
+					res.setPriority(data.getPriority().toString());
+					res1.setProductId(data.getProductId().toString());
+					res.setEndtFeePercent(data.getEndtFeePercent());
+					res.setUpdatedDate(data.getUpdatedDate());
+					res.setEndtType(data.getEndtType());
+					res.setEndtTypeDesc(data.getEndtTypeDesc());
+					res1.setEndtTypeCategory(data.getEndtTypeCategory());
+					res.setStatus(data.getStatus());
+					res1.setCompanyId(data.getCompanyId());
+					res.setCalcTypeId(data.getCalcTypeId());			
+				//	res.setCalcType(data.getCalcType());
+					res.setEndtFeeYn(data.getEndtFeeYn());
+					res.setRemarks(data.getRemarks());
+					res.setCreatedBy(data.getCreatedBy());
+					res.setUpdatedBy(data.getUpdatedBy());
+					res.setRegulatoryCode(data.getRegulatoryCode());
+					endtlist.add(res);
+					}
+					res1.setEndorsementMasterListRes(endtlist);
+					resList.add(res1);
+					}
+				}
 			}
-			res1.setEndorsementMasterListRes(endtlist);
-			resList.add(res1);
-			}
-			}
+				
 			
 		} catch (Exception e) {
 			e.printStackTrace();
