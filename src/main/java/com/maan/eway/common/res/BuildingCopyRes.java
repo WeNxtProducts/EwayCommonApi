@@ -1,5 +1,6 @@
 package com.maan.eway.common.res;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -45,4 +46,23 @@ public class BuildingCopyRes {
 	
 	@JsonProperty("EndtPrevQuoteNo")
 	private String endtPrevQuoteNo;
+	
+	@JsonProperty("EndtPrevPolicyNo")
+	private String endtPrevPolicyNo;
+	
+	@JsonProperty("EndtCount")
+	private BigDecimal endtCount;
+	
+	@JsonProperty("EndtStatus")
+	private String endtStatus;
+	
+	@JsonProperty("IsFinanceYn")
+	private String isFinanceYn ;
+	
+	@JsonProperty("EndtCategDesc")
+	private String endtCategoryDesc;
+	
+	@JsonProperty("EndtTypeDesc")
+	private String endTypeDesc;
+	
 }

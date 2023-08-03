@@ -127,7 +127,7 @@ public class CopyBuildingRaw {
 			riskRes.setLocationId(riskRes.getLocationId());
 			
 			// Personal Accident Copy
-			String res = copyPersonalAccident (riskRes.getRequestReferenceNo() ,	riskRes.getOldRequestReferenceNo() ,sectionIds ,  riskRes  ) ;
+			String res = copyPersonalAccident (riskRes.getRequestReferenceNo() ,	riskRes.getOldRequestReferenceNo() ,sectionIds ,  riskRes ,request  ) ;
 			
 		//	EserviceBuildingDetails buildData = eBuildingRepo.findByRequestReferenceNoAndRiskId(riskRes.getRequestReferenceNo() , 1 );
 			List<EserviceBuildingDetails> buildData = eBuildingRepo.findByRequestReferenceNo(riskRes.getRequestReferenceNo());
@@ -241,7 +241,14 @@ public class CopyBuildingRaw {
 			List<EserviceBuildingDetails> prevDatas = eBuildingRepo.findByPolicyNo(prevPolicyNo);
 			res.setOldRequestReferenceNo(prevDatas.get(0).getRequestReferenceNo() );
 			res.setPolicyNo(ent.getPolicyNo()+"-"+count) ;
-			 
+			res.setEndtPrevPolicyNo(prevDatas.get(0).getPolicyNo());
+			res.setEndtCount(new BigDecimal(count));
+
+			res.setEndtStatus(newBuildingList.get(0).getEndtStatus());
+			res.setIsFinanceYn(newBuildingList.get(0).getIsFinaceYn());
+			res.setEndtCategoryDesc(newBuildingList.get(0).getEndtCategDesc());
+			res.setEndTypeDesc(newBuildingList.get(0).getEndorsementTypeDesc());
+			
 			return res;
 		}catch(ObjectOptimisticLockingFailureException ex ) {
 			return copyBuildingRiskTable(ent);
@@ -284,39 +291,59 @@ public class CopyBuildingRaw {
 		return null;
 	}
 	
-	public String  copyPersonalAccident(String newReqRefNo , String  oldReqRefNo , List<String> sectionIds ,  BuildingCopyRes buildingData ) {
+	public String  copyPersonalAccident(String newReqRefNo , String  oldReqRefNo , List<String> sectionIds ,  BuildingCopyRes buildingData ,Endorsment request ) {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		String res = "" ;
 		try {
-			List<EserviceCommonDetails> oldAccData = eserCommonRepo.findByQuoteNoOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo()); 
+			List<EserviceCommonDetails> endtData  = eserCommonRepo.findByRequestReferenceNo(newReqRefNo);
+			boolean newInsert = false ; 
 			
-			if( oldAccData !=null && oldAccData.size() > 0) {
-				EserviceCommonDetails accdata = new EserviceCommonDetails();
-				
-				List<String> sectionids = sectionIds ;
-				List<String> result = sectionids.stream().filter(sectionid -> "35".equalsIgnoreCase(sectionid))
-						.collect(Collectors.toList());
-				if(result!=null&& result.size()>0  ) {
-
-				if (result.get(0).equalsIgnoreCase("35")) {
-
-					Long count = eserCommonRepo.countByRequestReferenceNo(newReqRefNo);
-					if (count > 0) {
-						eserCommonRepo.deleteByRequestReferenceNo(newReqRefNo);
-					}
-
-					dozerMapper.map(oldAccData.get(0) , accdata);
-					accdata.setRequestReferenceNo(newReqRefNo );
-					accdata.setPolicyNo(buildingData.getPolicyNo());
-					accdata.setQuoteNo(null);
-					eserCommonRepo.save(accdata);
-					res = "Saved Succefully" ;
+			if(endtData.size() > 0 ) {
+				EserviceCommonDetails data = endtData.get(0)   ;
+				Integer endtType  = data.getEndorsementType() == null ? 0 : data.getEndorsementType() ;
+				if( endtType.equals(Integer.valueOf(request.getEndtType())) ) {
+					newInsert = false ;
+				} else {
+					newInsert = true ;
+					eserCommonRepo.deleteAll(endtData)	;
 				}
-				res = "Not Data Available" ;
-					
-				
+			} else {
+				newInsert = true ;
+			}
+			
+			if(newInsert == true) {
+				List<EserviceCommonDetails> oldAccData = eserCommonRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo() , "D");
+				if(oldAccData.size() >0) {
+					if( oldAccData !=null && oldAccData.size() > 0) {
+						List<EserviceCommonDetails> humanList = new ArrayList<EserviceCommonDetails>();
+						for (EserviceCommonDetails old : oldAccData) {
+							EserviceCommonDetails accdata = new EserviceCommonDetails();
+							
+								dozerMapper.map(old , accdata);
+								accdata.setRequestReferenceNo(newReqRefNo);
+								accdata.setOriginalPolicyNo(buildingData.getPolicyNo());
+								accdata.setEndorsementDate(new Date());
+								accdata.setEndorsementRemarks(request.getEndtRemarks());
+								accdata.setEndorsementEffdate(request.getEndtEffectiveDate());
+								accdata.setEndtPrevPolicyNo(buildingData.getEndtPrevPolicyNo());
+								accdata.setEndtPrevQuoteNo(buildingData.getEndtPrevQuoteNo());
+								accdata.setEndtCount(buildingData.getEndtCount());
+								accdata.setEndtStatus(buildingData.getEndtStatus());
+								accdata.setIsFinaceYn(buildingData.getIsFinanceYn());
+								accdata.setEndtCategDesc(buildingData.getEndtCategoryDesc());
+								accdata.setEndorsementType(Integer.parseInt(request.getEndtType()));
+								accdata.setEndorsementTypeDesc(buildingData.getEndTypeDesc());
+								accdata.setStatus("E");
+								accdata.setPolicyNo(buildingData.getPolicyNo());
+								accdata.setQuoteNo(null);
+								humanList.add(accdata);							
+						}
+							eserCommonRepo.saveAll(humanList);
+						
+					}
 				}
 			}
+			res = "Saved Succefully" ;
 			
 			return res;
 		}catch (Exception e) {
