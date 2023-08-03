@@ -1065,7 +1065,7 @@ public class LoginProductServiceImpl  implements LoginProductService {
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			orderList.add(cb.desc(b.get("amendId")));
 			
 
 			// Order By
@@ -1078,7 +1078,7 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			Predicate n4 =  cb.equal(b.get("companyId"), req.getCompanyId() );
 			Predicate n5 =  cb.equal(b.get("loginId"), req.getLoginId() );
 
-			query.where( n3,n4,n5);//.orderBy(orderList);
+			query.where( n3,n4,n5).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<LoginProductMaster> result = em.createQuery(query);
@@ -1090,7 +1090,7 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			if(list.size()>0) {
 				Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
 				financeId = list.get(0).getFinancialEndtIds();
-				nonFinanceId= list.get(0).getFinancialEndtIds();
+				nonFinanceId= list.get(0).getNonFinancialEndtIds();
 				
 				if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
 					amendId = list.get(0).getAmendId() + 1 ;
