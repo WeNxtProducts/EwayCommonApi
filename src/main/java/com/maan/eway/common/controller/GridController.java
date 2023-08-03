@@ -402,7 +402,7 @@ public class GridController {
 			
 			
 			//Reports grid
-			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
 			@PostMapping("/admin/portfoliodashboard")
 			public ResponseEntity<CommonRes> getAllAdminPortfolio(@RequestBody PortFolioDashBoardReq req) {
 				reqPrinter.reqPrint(req);
@@ -420,7 +420,7 @@ public class GridController {
 			}
 			
 			
-			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
 			@PostMapping("/admin/portfoliopendings")
 			public ResponseEntity<CommonRes> getAllPolicyPendingDashboard(@RequestBody PortFolioDashBoardReq req) {
 				reqPrinter.reqPrint(req);
@@ -438,7 +438,7 @@ public class GridController {
 			}
 			
 			
-			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
 			@PostMapping("/admin/portfoliogrid")
 			public ResponseEntity<CommonRes> getAllPolicyGrid(@RequestBody PortFolioGridReq req) {
 				reqPrinter.reqPrint(req);
