@@ -40,6 +40,7 @@ import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.ProductEmployeeDetails;
+import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
@@ -339,7 +340,15 @@ public class CopyBuildingRaw {
 				// Find All
 				Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 				Root<EserviceBuildingDetails> m = query.from(EserviceBuildingDetails.class);
-				Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+				
+				Subquery<Long> endtPre = query.subquery(Long.class);
+				Root<HomePositionMaster> h = endtPre.from(HomePositionMaster.class);
+				endtPre.select(cb.sum(h.get("endtPremium"))) ;
+				Predicate pm1 = cb.equal(h.get("companyId"), m.get("companyId"));
+				Predicate pm2 = cb.equal(h.get("productId"), m.get("productId"));
+				Predicate pm3   = cb.like(h.get("policyNo"), m.get("policyNo"));
+				endtPre.where(pm1,pm2,pm3);
+		
 				// Select
 				query.multiselect(//cb.literal(Long.parseLong("1")).alias("idsCount"),
 						// Customer Info
@@ -363,7 +372,7 @@ public class CopyBuildingRaw {
 						cb.max(m.get("endorsementDate")).alias("endorsementDate"),
 						//Home Position Master
 						cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
-						cb.sum(h.get("endtPremium")).alias("endtPremium"),cb.max( m.get("currency")).alias("currency")
+						endtPre.alias("endtPremium"),cb.max( m.get("currency")).alias("currency")
 						
 						);
 			 
@@ -373,16 +382,17 @@ public class CopyBuildingRaw {
 				List<Order> orderList = new ArrayList<Order>();
 				orderList.add(cb.desc((m.get("policyNo"))));
 
+			
 				// Where
 				Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
 				Predicate n2 = cb.equal(m.get("companyId"), request.getCompanyId());
 				Predicate n3 = cb.equal(m.get("productId"), request.getProductId());
 				Predicate n4 = cb.in(m.get("status")).value(Arrays.asList("E","P","D"));  // m.get("status").in("E","P"));
 				Predicate n5 = cb.or(cb.like(m.get("originalPolicyNo"), request.getPolicyNo()),cb.like(m.get("policyNo"), request.getPolicyNo()));
-				Predicate n6 = cb.equal(h.get("quoteNo"), m.get("quoteNo"));
+				//Predicate n6 = cb.equal(h.get("quoteNo"), m.get("quoteNo"));
 				
 
-				query.where(n1, n2, n3, n4, n5,n6)
+				query.where(n1, n2, n3, n4, n5)
 						.groupBy(/*c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 								m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 								m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate")*/m.get("policyNo"))

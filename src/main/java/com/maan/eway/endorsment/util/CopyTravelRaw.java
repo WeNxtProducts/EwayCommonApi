@@ -16,6 +16,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -256,7 +257,15 @@ public class CopyTravelRaw {
 				// Find All
 				Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 				Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
-				Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+				
+				Subquery<Long> endtPre = query.subquery(Long.class);
+				Root<HomePositionMaster> h = endtPre.from(HomePositionMaster.class);
+				endtPre.select(cb.sum(h.get("endtPremium"))) ;
+				Predicate pm1 = cb.equal(h.get("companyId"), m.get("companyId"));
+				Predicate pm2 = cb.equal(h.get("productId"), m.get("productId"));
+				Predicate pm3   = cb.like(h.get("policyNo"), m.get("policyNo"));
+				endtPre.where(pm1,pm2,pm3);
+				
 				// Select
 				query.multiselect(//cb.literal(Long.parseLong("1")).alias("idsCount"),
 						// Customer Info
@@ -281,7 +290,7 @@ public class CopyTravelRaw {
 						//Home Position Master
 						cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
 						/*cb.sum(m.get("endtPremium")).alias("endtPremium")*/cb.max( m.get("currency")).alias("currency"),
-						cb.sum(h.get("endtPremium")).alias("endtPremium")
+						endtPre.alias("endtPremium")
 						
 						);
 			 
@@ -301,7 +310,7 @@ public class CopyTravelRaw {
 				//Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), endDate);
 				//Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
 
-				Predicate n6 = cb.equal(h.get("quoteNo"), m.get("quoteNo"));
+			
 			/*	Predicate n7 = null;
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
 					n7 = cb.equal(m.get("loginId"), req.getLoginId());
@@ -318,7 +327,7 @@ public class CopyTravelRaw {
 					n8 = e0.in(branches);
 				}*/
 
-				query.where(n1, n2, n3, n5,n6)
+				query.where(n1, n2, n3, n5)
 						.groupBy(/*c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 								m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 								m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate")*/m.get("policyNo"))
