@@ -1043,7 +1043,8 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			Date endDate = sdformat.parse(end);
 			long MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
 			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime() - MILLIS_IN_A_DAY);
-			
+			String financeId = "";
+			String nonFinanceId = "";
 			
 			String productId="";
 			Date entryDate = null ;
@@ -1072,12 +1073,12 @@ public class LoginProductServiceImpl  implements LoginProductService {
 		//	orderList.add(cb.asc(b.get("branchName")));
 			
 			// Where
-			Predicate n1 = cb.equal(b.get("status"), "Y");
+			//Predicate n1 = cb.equal(b.get("status"), "Y");
 			Predicate n3 =  cb.equal(b.get("productId"), req.getProductId() );
 			Predicate n4 =  cb.equal(b.get("companyId"), req.getCompanyId() );
 			Predicate n5 =  cb.equal(b.get("loginId"), req.getLoginId() );
 
-			query.where(n1, n3,n4,n5);//.orderBy(orderList);
+			query.where( n3,n4,n5);//.orderBy(orderList);
 
 			// Get Result
 			TypedQuery<LoginProductMaster> result = em.createQuery(query);
@@ -1088,12 +1089,15 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			
 			if(list.size()>0) {
 				Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
-			
+				financeId = list.get(0).getFinancialEndtIds();
+				nonFinanceId= list.get(0).getFinancialEndtIds();
+				
 				if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
 					amendId = list.get(0).getAmendId() + 1 ;
 					entryDate = new Date() ;
 					createdBy = req.getCreatedBy();
 					LoginProductMaster lastRecord = list.get(0);
+					
 						lastRecord.setEffectiveDateEnd(oldEndDate);
 						loginProductRepo.saveAndFlush(lastRecord);
 					
@@ -1132,22 +1136,6 @@ public class LoginProductServiceImpl  implements LoginProductService {
 			saveData.setUserType(login.getUserType());
 			saveData.setSubUserType(login.getSubUserType());
 			//saveData.setBackDays(Integer.valueOf(req.getBackDays()));
-			
-			String financeId = "";
-			String nonFinanceId = "";
-
-			List<String> ids = req.getFinanceIds();
-			for (int i = 0; i < ids.size(); i++) {
-				financeId = financeId + "," + ids.get(i);
-			}
-
-			List<String> idss = req.getNonFinanceIds();
-			for (int i = 0; i < idss.size(); i++) {
-				nonFinanceId = nonFinanceId + "," + idss.get(i);
-			}
-			
-			financeId=StringUtils.isBlank(financeId) ? "" : financeId.substring(1);
-			nonFinanceId=StringUtils.isBlank(nonFinanceId) ? "" : nonFinanceId.substring(1);
 			
 			saveData.setFinancialEndtIds(financeId);
 			saveData.setNonFinancialEndtIds(nonFinanceId);
@@ -2171,6 +2159,7 @@ List<Error> errorList = new ArrayList<Error>();
 			data.setEffectiveDateEnd(oldEndDate);				
 			Date oldEffDate = new Date(oldEndDate.getTime()- MILLS_IN_A_DAY);
 			data.setEffectiveDateStart(oldEffDate);
+			
 			loginProductRepo.saveAndFlush(data);
 			
 			
@@ -2246,26 +2235,16 @@ List<Error> errorList = new ArrayList<Error>();
 				save.setOaCode(loginData.getOaCode());
 				save.setSumInsuredStart(new BigDecimal(req.getSuminsuredStart()));
 				save.setSumInsuredEnd(new BigDecimal(req.getSuminsuredEnd()));
-				
-				String referralids="";
-				List<String> keys = req.getReferralIds();
-				for (int i = 0; i < keys.size(); i++) {
-				referralids = referralids + "," + keys.get(i);				
-				}
-				referralids=referralids.substring(1);
-				save.setReferralId(referralids);
+				String financeId = data.getFinancialEndtIds() ;
+				String nonFinanceId = data.getNonFinancialEndtIds();
 			
-				String endorsementids="";
-				List<String> keys1 = req.getEndorsementIds();
-				for (int i = 0; i < keys1.size(); i++) {
-					endorsementids = endorsementids + "," + keys1.get(i);				
-				}
-				endorsementids=endorsementids.substring(1);
-				save.setFinancialEndtIds(endorsementids);
-				save.setNonFinancialEndtIds(endorsementids);
 				List<LoginProductMaster> loginproduct = loginProductRepo.findByLoginIdAndCompanyIdAndProductIdOrderByAmendIdDesc(req1.getLoginId(),req1.getInsuranceId(),Integer.valueOf(data.getProductId()));
 				if(loginproduct.size()>0 && loginproduct!=null) {
+					
 					LoginProductMaster lastRecord = loginproduct.get(0);
+					financeId = lastRecord.getFinancialEndtIds() ;
+					nonFinanceId = lastRecord.getNonFinancialEndtIds();
+					
 					if(lastRecord.getEffectiveDateStart().equals(effDate)) {
 						save.setAmendId(loginproduct.get(0).getAmendId());											
 					}
@@ -2282,6 +2261,8 @@ List<Error> errorList = new ArrayList<Error>();
 					save.setAmendId(0);
 
 				}
+				save.setFinancialEndtIds(financeId);
+				save.setNonFinancialEndtIds(nonFinanceId);
 				save.setEffectiveDateStart(effDate);
 				save.setEffectiveDateEnd(endDate);
 				save.setEntryDate(new Date());
