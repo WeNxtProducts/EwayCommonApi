@@ -67,7 +67,9 @@
 		<queryString>
 			<![CDATA[SELECT MDD.VEHICLE_ID AS SNO,
 MDD.REGISTRATION_NUMBER AS REG_NO,
-CONCAT_WS("/",MDD.VEHICLE_MAKE,MDD.VEHCILE_MODEL,MDD.VEHICLE_TYPE_DESC) AS VEH_BODY,
+MDD.VEHICLE_MAKE,
+MDD.VEHCILE_MODEL,
+MDD.VEHICLE_TYPE_DESC,
 MDD.CUBIC_CAPACITY AS CC,
 MDD.MANUFACTURE_YEAR AS VEHYEAR,
 MDD.COLOR_DESC,
@@ -88,9 +90,20 @@ WHERE MDD.POLICY_NO=HPM.POLICY_NO AND HPM.POLICY_NO= $P{pvPolicyNo} ORDER BY SNO
 			<property name="com.jaspersoft.studio.field.label" value="REG_NO"/>
 			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
 		</field>
-		<field name="VEH_BODY" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="VEH_BODY"/>
-			<property name="com.jaspersoft.studio.field.label" value="VEH_BODY"/>
+		<field name="VEHICLE_MAKE" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="VEHICLE_MAKE"/>
+			<property name="com.jaspersoft.studio.field.label" value="VEHICLE_MAKE"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+		</field>
+		<field name="VEHCILE_MODEL" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="VEHCILE_MODEL"/>
+			<property name="com.jaspersoft.studio.field.label" value="VEHCILE_MODEL"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+		</field>
+		<field name="VEHICLE_TYPE_DESC" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="VEHICLE_TYPE_DESC"/>
+			<property name="com.jaspersoft.studio.field.label" value="VEHICLE_TYPE_DESC"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
 		</field>
 		<field name="CC" class="java.lang.Double">
 			<property name="com.jaspersoft.studio.field.name" value="CUBIC_CAPACITY"/>
@@ -158,8 +171,7 @@ WHERE
       HOME_POSITION_MASTER 
     WHERE 
       POLICY_NO =  $P{pvPolicyNo} 
-  )
-]]>
+  )]]>
 		</queryString>
 		<field name="DRIVER_ID" class="java.lang.Integer">
 			<property name="com.jaspersoft.studio.field.name" value="DRIVER_ID"/>
@@ -194,61 +206,101 @@ WHERE
 	<parameter name="pvImagepath" class="java.lang.String"/>
 	<parameter name="pvPolicyNo" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT
-HPM.POLICY_NO,
-HPM.customer_name AS INSURED_NAME,
-HPM.DEBIT_NOTE_NO AS INVOICE_NO,
-(SELECT CONCAT_WS(" ",PIF.Address_1,PIF.Address_2)  FROM personal_info  PIF WHERE PIF.Customer_Id=HPM.Customer_Id )  AS POSTAL_ADDRESS,
-DATE_FORMAT(HPM.inception_date,"%d/%m/%Y") AS FROM_DATE,
-DATE_FORMAT(HPM.expiry_date,"%d/%m/%Y") AS TO_DATE,
-DATE_FORMAT(DATE_ADD(HPM.expiry_date,INTERVAL 1 DAY),"%d/%m/%Y") AS RENEWAL_DATE,
-HPM.CURRENCY AS CURRENCY,
-CASE WHEN hpm.currency IN (cpm.currency_ids) THEN HPM.PREMIUM_LC ELSE HPM.PREMIUM_FC END AS PREMIUM,
-CASE WHEN hpm.currency IN (cpm.currency_ids) THEN HPM.VAT_PREMIUM_LC ELSE HPM.VAT_PREMIUM_FC END AS VAT,
-CASE WHEN hpm.currency IN (cpm.currency_ids) THEN HPM.OVERALL_PREMIUM_LC ELSE HPM.OVERALL_PREMIUM_FC END AS TOTAL,
-HPM.BRANCH_NAME AS PLACE,
-MDD.INSURANCE_TYPE_DESC INSURANCE_COVER,
-DATE_FORMAT(CURDATE(),'%m/%d/%Y') AS DATEVALUE,
-MDD.COMPANY_NAME AS COMPANY_NAME,
-HPM.APPROVED_BY AS APPROVED_BY,
-LUI.USER_NAME AS INTERMEDIARY,
-LUI.USER_NAME AS PREPARED_BY,
-LUI.USER_NAME AS PRINTED_BY
-FROM home_position_master HPM,MOTOR_DATA_DETAILS MDD,LOGIN_USER_INFO LUI, company_product_master cpm
-WHERE MDD.POLICY_NO=HPM.POLICY_NO AND HPM.LOGIN_ID=LUI.LOGIN_ID AND cpm.company_id = hpm.company_id
-AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POLICY_NO= $P{pvPolicyNo} LIMIT 1;]]>
+		<![CDATA[
+WITH MOTOR_DATA AS(
+
+SELECT 
+  DISTINCT
+  ROW_NUMBER() OVER (ORDER BY HPM.POLICY_NO) AS ROW_NUM,
+  HPM.POLICY_NO,
+  PIF.TITLE_DESC,
+  PIF.CLIENT_NAME,
+  HPM.DEBIT_NOTE_NO AS INVOICE_NO, 
+  PIF.Address_1,
+  PIF.Address_2, 
+  HPM.inception_date AS FROM_DATE, 
+  HPM.expiry_date AS TO_DATE, 
+  HPM.expiry_date  AS RENEWAL_DATE, 
+  HPM.CURRENCY AS CURRENCY, 
+  CASE WHEN hpm.currency IN (cpm.currency_id) THEN HPM.PREMIUM_LC ELSE HPM.PREMIUM_FC END AS PREMIUM, 
+  CASE WHEN hpm.currency IN (cpm.currency_id) THEN HPM.VAT_PREMIUM_LC ELSE HPM.VAT_PREMIUM_FC END AS VAT, 
+  CASE WHEN hpm.currency IN (cpm.currency_id) THEN HPM.OVERALL_PREMIUM_LC ELSE HPM.OVERALL_PREMIUM_FC END AS TOTAL, 
+  HPM.BRANCH_NAME AS PLACE, 
+  MDD.INSURANCE_TYPE_DESC INSURANCE_COVER, 
+  MDD.COMPANY_NAME AS COMPANY_NAME, 
+  HPM.APPROVED_BY AS APPROVED_BY, 
+  LUI.USER_NAME AS INTERMEDIARY, 
+  LUI.USER_NAME AS PREPARED_BY, 
+  LUI.USER_NAME AS PRINTED_BY 
+FROM 
+  home_position_master HPM, 
+  MOTOR_DATA_DETAILS MDD, 
+  LOGIN_USER_INFO LUI, 
+  eway_insurance_company_master cpm,
+  Personal_info PIF 
+WHERE 
+  MDD.POLICY_NO = HPM.POLICY_NO 
+  AND PIF.Customer_Id = HPM.Customer_Id
+  AND HPM.LOGIN_ID = LUI.LOGIN_ID 
+  AND cpm.company_id = hpm.company_id 
+  AND cpm.status='Y'
+  AND (SELECT CURRENT_DATE AS TODAY_DATE FROM DUAL) BETWEEN CPM.EFFECTIVE_DATE_START AND CPM.EFFECTIVE_DATE_END
+  AND HPM.POLICY_NO = $P{pvPolicyNo} 
+  )
+  SELECT * FROM MOTOR_DATA WHERE ROW_NUM = 1
+]]>
 	</queryString>
+	<field name="ROW_NUM" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ROW_NUM"/>
+		<property name="com.jaspersoft.studio.field.label" value="ROW_NUM"/>
+	</field>
 	<field name="POLICY_NO" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="POLICY_NO"/>
 		<property name="com.jaspersoft.studio.field.label" value="POLICY_NO"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
-	<field name="INSURED_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="INSURED_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="INSURED_NAME"/>
+	<field name="TITLE_DESC" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="TITLE_DESC"/>
+		<property name="com.jaspersoft.studio.field.label" value="TITLE_DESC"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	</field>
+	<field name="CLIENT_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="CLIENT_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="CLIENT_NAME"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
 	</field>
 	<field name="INVOICE_NO" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="INVOICE_NO"/>
 		<property name="com.jaspersoft.studio.field.label" value="INVOICE_NO"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
-	<field name="POSTAL_ADDRESS" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="POSTAL_ADDRESS"/>
-		<property name="com.jaspersoft.studio.field.label" value="POSTAL_ADDRESS"/>
+	<field name="ADDRESS_1" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADDRESS_1"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADDRESS_1"/>
 	</field>
-	<field name="FROM_DATE" class="java.lang.String">
+	<field name="ADDRESS_2" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADDRESS_2"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADDRESS_2"/>
+	</field>
+	<field name="FROM_DATE" class="java.sql.Timestamp">
 		<property name="com.jaspersoft.studio.field.name" value="FROM_DATE"/>
 		<property name="com.jaspersoft.studio.field.label" value="FROM_DATE"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
-	<field name="TO_DATE" class="java.lang.String">
+	<field name="TO_DATE" class="java.sql.Timestamp">
 		<property name="com.jaspersoft.studio.field.name" value="TO_DATE"/>
 		<property name="com.jaspersoft.studio.field.label" value="TO_DATE"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
-	<field name="RENEWAL_DATE" class="java.lang.String">
+	<field name="RENEWAL_DATE" class="java.sql.Timestamp">
 		<property name="com.jaspersoft.studio.field.name" value="RENEWAL_DATE"/>
 		<property name="com.jaspersoft.studio.field.label" value="RENEWAL_DATE"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
 	<field name="CURRENCY" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="CURRENCY"/>
 		<property name="com.jaspersoft.studio.field.label" value="CURRENCY"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
 	<field name="PREMIUM" class="java.math.BigDecimal">
 		<property name="com.jaspersoft.studio.field.name" value="PREMIUM"/>
@@ -262,37 +314,40 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 		<property name="com.jaspersoft.studio.field.name" value="TOTAL"/>
 		<property name="com.jaspersoft.studio.field.label" value="TOTAL"/>
 	</field>
-	<field name="INSURANCE_COVER" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="INSURANCE_COVER"/>
-		<property name="com.jaspersoft.studio.field.label" value="INSURANCE_COVER"/>
-	</field>
 	<field name="PLACE" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="PLACE"/>
 		<property name="com.jaspersoft.studio.field.label" value="PLACE"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
-	<field name="DATEVALUE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="DATEVALUE"/>
-		<property name="com.jaspersoft.studio.field.label" value="DATEVALUE"/>
+	<field name="INSURANCE_COVER" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="INSURANCE_COVER"/>
+		<property name="com.jaspersoft.studio.field.label" value="INSURANCE_COVER"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
 	</field>
 	<field name="COMPANY_NAME" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="COMPANY_NAME"/>
 		<property name="com.jaspersoft.studio.field.label" value="COMPANY_NAME"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
 	</field>
 	<field name="APPROVED_BY" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="APPROVED_BY"/>
 		<property name="com.jaspersoft.studio.field.label" value="APPROVED_BY"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
 	<field name="INTERMEDIARY" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="INTERMEDIARY"/>
 		<property name="com.jaspersoft.studio.field.label" value="INTERMEDIARY"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="login_user_info"/>
 	</field>
 	<field name="PREPARED_BY" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="PREPARED_BY"/>
 		<property name="com.jaspersoft.studio.field.label" value="PREPARED_BY"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="login_user_info"/>
 	</field>
 	<field name="PRINTED_BY" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="PRINTED_BY"/>
 		<property name="com.jaspersoft.studio.field.label" value="PRINTED_BY"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="login_user_info"/>
 	</field>
 	<background>
 		<band splitType="Stretch"/>
@@ -390,7 +445,7 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[(($F{INSURED_NAME} )== null? "Not Available" : $F{INSURED_NAME})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{TITLE_DESC}+"."+$F{CLIENT_NAME}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="100" height="14" uuid="d888abef-bbcc-42fc-b0a1-1d5165ef0d11"/>
@@ -440,7 +495,7 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{POSTAL_ADDRESS}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{ADDRESS_1}+", "+$F{ADDRESS_2}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="100" height="25" uuid="70bad771-5317-4f85-872d-441ee0dab6b1"/>
@@ -478,7 +533,7 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{FROM_DATE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new Date($F{FROM_DATE}.getTime()))]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="100" y="0" width="32" height="14" uuid="50a62b2a-59d0-4a29-9b79-352612d2ff82"/>
@@ -502,7 +557,7 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{TO_DATE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new Date($F{TO_DATE}.getTime()))]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="240" y="0" width="315" height="14" uuid="daee1878-bbe4-4e3c-9514-24227d6d1d63"/>
@@ -540,7 +595,7 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{RENEWAL_DATE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new Date($F{RENEWAL_DATE}.getTime() + 24*60*60*1000))]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="240" y="0" width="315" height="14" uuid="bce8cc29-851c-4a49-b0a9-203bf6b0606f"/>
@@ -829,16 +884,17 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA["Make/ Model/Body Type"]]></textFieldExpression>
+								<textFieldExpression><![CDATA["Make/ Model/ Body Type"]]></textFieldExpression>
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="30">
 							<textField isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="94" height="30" uuid="1dba05f8-0a87-4468-a0cb-8569b5454071"/>
+								<box leftPadding="0"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{VEH_BODY}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{VEHICLE_MAKE}+"/"+$F{VEHCILE_MODEL}+"/"+$F{VEHICLE_TYPE_DESC}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -3027,11 +3083,8 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 			</textField>
 		</band>
 	</detail>
-	<columnFooter>
-		<band height="27" splitType="Stretch"/>
-	</columnFooter>
 	<pageFooter>
-		<band height="76" splitType="Stretch">
+		<band height="93" splitType="Stretch">
 			<textField>
 				<reportElement x="0" y="12" width="555" height="12" uuid="273177c0-f97f-47f5-8817-aaec3f13c404"/>
 				<box leftPadding="4">
@@ -3061,14 +3114,6 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[(($F{PLACE} )== null? "Not Available" : $F{PLACE})]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="172" y="24" width="92" height="13" uuid="5efd3519-17bb-451b-9df4-a922e22510b6"/>
-				<box leftPadding="2"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{DATEVALUE}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="132" y="24" width="40" height="13" uuid="cdda56b7-2508-4bb4-8869-896f85948e68"/>
@@ -3171,16 +3216,6 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 				<textFieldExpression><![CDATA[$F{PRINTED_BY}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="225" y="63" width="115" height="13" uuid="d5b94fd9-0433-4f25-9bf6-bce3748e9814"/>
-				<box leftPadding="2">
-					<bottomPen lineWidth="0.5"/>
-				</box>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{DATEVALUE}]]></textFieldExpression>
-			</textField>
-			<textField>
 				<reportElement x="162" y="63" width="63" height="13" uuid="0d48b4cf-8fba-485c-9746-983f9850c22e"/>
 				<box leftPadding="4">
 					<bottomPen lineWidth="0.5"/>
@@ -3219,6 +3254,26 @@ AND cpm.product_id = hpm.product_id AND cpm.amend_id = hpm.amend_id AND  HPM.POL
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Note : This cover is subject to the terms and conditions and exceptions attached at the end of the policy document"]]></textFieldExpression>
+			</textField>
+			<textField pattern="MMMMM dd, yyyy">
+				<reportElement x="225" y="63" width="115" height="13" uuid="498226ff-934c-470c-815c-9a8e990c9533"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<textField pattern="MMMMM dd, yyyy">
+				<reportElement x="172" y="24" width="92" height="13" uuid="34c0d607-a3c4-4071-afc7-558bcc2873b8"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement>
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date())]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageFooter>
