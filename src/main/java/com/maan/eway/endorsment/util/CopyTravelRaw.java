@@ -289,8 +289,8 @@ public class CopyTravelRaw {
 						cb.max(m.get("endorsementDate")).alias("endorsementDate"),
 						//Home Position Master
 						cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
-						/*cb.sum(m.get("endtPremium")).alias("endtPremium")*/cb.max( m.get("currency")).alias("currency"),
-						endtPre.alias("endtPremium")
+						endtPre.alias("endtPremium"),/*cb.sum(m.get("endtPremium")).alias("endtPremium")*/cb.max( m.get("currency")).alias("currency")
+						
 						
 						);
 			 
