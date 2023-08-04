@@ -1377,17 +1377,18 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					savedata.setCustomerReferenceNo(data.getCustomerReferenceNo());
 					savedata.setCustomerId(newCustId);
 					savedata.setOldReqRefNo(req.getRequestReferenceNo());
-					if (req.getUserType().equalsIgnoreCase("Broker")|| (req.getUserType().equalsIgnoreCase("User"))) {
-						branchCode = req.getBranchCode();
-						savedata.setApplicationId("1");
-						savedata.setBrokerBranchCode(branchCode);
-
-					} else if ("issuer".equalsIgnoreCase(userType)) {
-						savedata.setApplicationId(req.getLoginId());
-						branchCode = req.getBranchCode();
-						savedata.setBranchCode(branchCode);
-					}
-
+//					if (req.getUserType().equalsIgnoreCase("Broker")|| (req.getUserType().equalsIgnoreCase("User"))) {
+//						branchCode = req.getBranchCode();
+//						savedata.setApplicationId("1");
+//						savedata.setBrokerBranchCode(branchCode);
+//
+//					} else if ("issuer".equalsIgnoreCase(userType)) {
+//						savedata.setApplicationId(req.getLoginId());
+//						branchCode = req.getBranchCode();
+//						savedata.setBranchCode(branchCode);
+//					}
+					savedata.setApplicationId(data.getApplicationId());
+					savedata.setBrokerBranchCode(data.getBrokerBranchCode());
 					savedata.setActualPremiumFc(BigDecimal.ZERO);
 					savedata.setActualPremiumLc(BigDecimal.ZERO);
 					savedata.setOverallPremiumFc(BigDecimal.ZERO);
