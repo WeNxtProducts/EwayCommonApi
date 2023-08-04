@@ -12,7 +12,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -118,14 +117,17 @@ public class JasperServiceImpl implements JasperService {
 //
 //				else 
 				if (product.getMotorYn().equalsIgnoreCase("H") && travelProductId.equals(homeData.getProductId().toString())) {
+					String classPath = this.getClass().getClassLoader().getResource("").getPath();
+					classPath = classPath.substring(1, classPath.length()-0);
+					jasperCompilePath = classPath;
 					Map<String, Object> input2 = new HashMap<String, Object>();
-					input2.put("pvImagePath", config.getImagePath());
+					input2.put("pvImagePath", config.getImagePath().substring(1,config.getImagePath().length()-0));
 					input2.put("pvPolicyNo", homeData.getPolicyNo());
-					input2.put("pvSubReportPath",jasperCompilePath + "/report/jasper/");
+					input2.put("pvSubReportPath",jasperCompilePath + "report/jasper/");
 					String obj ="";
-					obj= jasperCompilePath + "/report/jasper/EwayTravelSubReport.jrxml";
+					obj= jasperCompilePath + "report/jasper/EwayTravelSubReport.jrxml";
 					
-							// String jrxml_path=s.replace(".jasper", ".jrxml");
+							//String jrxml_path=obj.replace(".jasper", ".jrxml");
 							String path = JasperCompileManager.compileReportToFile(obj);
 							System.out.println("Jasper compileToReport path" +path);		
 

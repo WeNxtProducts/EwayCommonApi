@@ -2,7 +2,7 @@
 <!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="EwayTravelReport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a38c4307-b80c-4367-9551-f8676f2c35b4">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter4.xml"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
 	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
 		<box>
 			<pen lineWidth="0.5" lineColor="#000000"/>
@@ -73,6 +73,7 @@
 	</subDataset>
 	<parameter name="pvImagePath" class="java.lang.String"/>
 	<parameter name="pvPolicyNo" class="java.lang.String"/>
+	<parameter name="pvSubReportPath" class="java.lang.String"/>
 	<queryString language="SQL">
 		<![CDATA[SELECT 
 HPM.QUOTE_NO,
@@ -140,32 +141,34 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 		<property name="com.jaspersoft.studio.field.name" value="PHONE_NUMBER"/>
 		<property name="com.jaspersoft.studio.field.label" value="PHONE_NUMBER"/>
 	</field>
-	<field name="AGENCY_CODE" class="java.math.BigDecimal">
+	<field name="AGENCY_CODE" class="java.lang.Integer">
 		<property name="com.jaspersoft.studio.field.name" value="AGENCY_CODE"/>
 		<property name="com.jaspersoft.studio.field.label" value="AGENCY_CODE"/>
 	</field>
-	<field name="FROM_DATE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="FROM_DATE"/>
+	<field name="FROM_DATE" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="INCEPTION_DATE"/>
 		<property name="com.jaspersoft.studio.field.label" value="FROM_DATE"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
-	<field name="TO_DATE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="TO_DATE"/>
+	<field name="TO_DATE" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="EXPIRY_DATE"/>
 		<property name="com.jaspersoft.studio.field.label" value="TO_DATE"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
 	<field name="CURRENCY" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="CURRENCY"/>
 		<property name="com.jaspersoft.studio.field.label" value="CURRENCY"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
-	<field name="OVERALL_PREMIUM" class="java.math.BigDecimal">
+	<field name="OVERALL_PREMIUM" class="java.lang.Double">
 		<property name="com.jaspersoft.studio.field.name" value="OVERALL_PREMIUM"/>
 		<property name="com.jaspersoft.studio.field.label" value="OVERALL_PREMIUM"/>
 	</field>
-	<field name="PREMIUM" class="java.math.BigDecimal">
+	<field name="PREMIUM" class="java.lang.Double">
 		<property name="com.jaspersoft.studio.field.name" value="PREMIUM"/>
 		<property name="com.jaspersoft.studio.field.label" value="PREMIUM"/>
 	</field>
-	<field name="NO_OF_PASSENGER" class="java.math.BigDecimal">
+	<field name="NO_OF_PASSENGER" class="java.lang.Long">
 		<property name="com.jaspersoft.studio.field.name" value="NO_OF_PASSENGER"/>
 		<property name="com.jaspersoft.studio.field.label" value="NO_OF_PASSENGER"/>
 	</field>
@@ -754,14 +757,18 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 				</jr:table>
 			</componentElement>
 		</band>
-		<band height="50">
+		<band height="20">
 			<subreport>
-				<reportElement mode="Transparent" x="-20" y="0" width="595" height="50" uuid="51cd7bbc-90c7-445c-a4eb-314671a19728"/>
+				<reportElement stretchType="RelativeToTallestObject" mode="Transparent" x="0" y="0" width="555" height="20" uuid="51cd7bbc-90c7-445c-a4eb-314671a19728">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<subreportParameter name="pvPolicyNo">
 					<subreportParameterExpression><![CDATA[$P{pvPolicyNo}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA["EwayTravelSubReport.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{pvSubReportPath}+"EwayTravelSubReport.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>
