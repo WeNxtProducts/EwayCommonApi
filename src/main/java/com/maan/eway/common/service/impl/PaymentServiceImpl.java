@@ -1988,10 +1988,12 @@ public class PaymentServiceImpl implements PaymentService {
 	   				   // Cancellation Condition
 						if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
 							update.where(n1);
-						} else {
-							Predicate n2 = cb.notEqual(m.get("status"),"D" );
-							update.where(n1,n2);
-						}
+						} 
+						
+//						else {
+//							Predicate n2 = cb.notEqual(m.get("status"),"D" );
+//							update.where(n1,n2);
+//						}
 	   					 
 						// perform update
 	   					em.createQuery(update).executeUpdate();
