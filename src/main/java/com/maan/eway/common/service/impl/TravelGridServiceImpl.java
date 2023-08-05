@@ -1503,7 +1503,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			// Delete Old Record
 			
 			//E service Motor Details
-			if(motors.size()>0) {
+			if(motors.size()>0  && motors!=null) {
 				repo.deleteAll(motors);
 			}
 			//E service Customer Details 
@@ -1524,30 +1524,35 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				homePosistionRepo.delete(homeData);				}
 			//Policy Cover Data
 			List<PolicyCoverData> policyCoverData = policyCoverDataRepo.findByQuoteNo(quoteNo);
-			if (policyCoverData.size() > 0) {
+			if (policyCoverData.size() > 0 && policyCoverData!=null) {
 				policyCoverDataRepo.deleteAll(policyCoverData);
 			}
 			
 			//Cover Document Upload Details
 			List<DocumentTransactionDetails> coverDocList = coverDocUploadDetails.findByQuoteNo(quoteNo);
-			if (coverDocList.size() > 0) {
+			if (coverDocList.size() > 0 && coverDocList!=null) {
 				coverDocUploadDetails.deleteAll(coverDocList);
 			}
 			//Travel Passenger Details
 			List<TravelPassengerDetails> traList = traPassDetailsRepo.findByQuoteNo(quoteNo);
-			if (traList.size() > 0) {
+			if (traList.size() > 0 && traList!=null) {
 				traPassDetailsRepo.deleteAll(traList);
 			}
 			//Eservice Section Details
 			List<EserviceSectionDetails> sectionList = eserSecRepo.findByQuoteNo(quoteNo);
-			if (sectionList.size() > 0) {
+			if (sectionList.size() > 0 && sectionList!=null) {
 				eserSecRepo.deleteAll(sectionList);
 			}
 			
 			// Section Data Details
 			List<SectionDataDetails> secDataList = sectionDataRepo.findByQuoteNo(quoteNo);
-			if (secDataList.size() > 0) {
+			if (secDataList.size() > 0 && secDataList!=null) {
 				sectionDataRepo.deleteAll(secDataList);
+			}
+			// Eservice Travel Group Details
+			List<EserviceTravelGroupDetails> eseTraGrpList = groupRepo.findByQuoteNo(quoteNo);
+			if (eseTraGrpList.size() > 0 && eseTraGrpList!=null) {
+				groupRepo.deleteAll(eseTraGrpList);
 			}
 			
 		} catch (Exception e) {

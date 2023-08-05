@@ -396,12 +396,38 @@ public class CopyTravelRaw {
 			sectionDataDetails(req);
 			eserviceSectionDetails(req);
 			travelPassengerDetails(req);
+			eserviceTravelgroupDetails(req);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
 			return null;
 		}
 		return savedata;
+	}
+	private EserviceTravelGroupDetails eserviceTravelgroupDetails(ChangeEndoStatusReq req) {
+		EserviceTravelGroupDetails savedata = new EserviceTravelGroupDetails();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			List<EserviceTravelGroupDetails> travelPass = groupRepo.findByQuoteNo(req.getQuoteNo());
+			if (travelPass.size() > 0) {
+				for (EserviceTravelGroupDetails data : travelPass) {
+					savedata = dozerMapper.map(data, EserviceTravelGroupDetails.class);
+					savedata.setEndtStatus("C");
+				//	savedata.setStatus("P");
+					groupRepo.saveAndFlush(savedata);
+				}
+			}
+		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return savedata;
+
+		
 	}
 	private TravelPassengerDetails travelPassengerDetails(ChangeEndoStatusReq req) {
 		TravelPassengerDetails savedata = new TravelPassengerDetails();
