@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.maan.eway.common.req.GetMachineryContentReq;
 import com.maan.eway.common.req.GetOccupationsReq;
+import com.maan.eway.common.req.GetPlanBenefitsReq;
 import com.maan.eway.common.req.NcdDetailsGetReq;
 import com.maan.eway.common.res.GetMachineryContentRes;
 import com.maan.eway.integration.req.QueryKeyReq;
@@ -202,6 +203,8 @@ public interface DropDownService {
 	List<DropDownRes> getPlantAllRisk(LovDropDownReq req);
 
 	List<DropDownRes> getBusinessAllRisk(LovDropDownReq req);
+
+	List<DropDownRes> getPlanBenefits(LovDropDownReq req);
 
 
 

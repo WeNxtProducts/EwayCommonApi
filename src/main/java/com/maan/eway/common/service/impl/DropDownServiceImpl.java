@@ -64,6 +64,7 @@ import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.MachineryDropDownRes;
 
+
 @Service
 public class DropDownServiceImpl  implements DropDownService{ 
   
@@ -2853,6 +2854,28 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "BUSINESS_ALL_RISK" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;	
+	}
+
+
+	@Override
+	public List<DropDownRes> getPlanBenefits(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			String itemType = "PLAN_BENEFITS" ;
 			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();

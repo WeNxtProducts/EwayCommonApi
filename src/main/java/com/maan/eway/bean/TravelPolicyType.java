@@ -101,5 +101,37 @@ public class TravelPolicyType implements Serializable {
 
 	@Column(name = "REMARKS", length = 100)
 	private String remarks;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "EFFECTIVE_START_DATE")
+	private Date effectiveStartdate;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "EFFECTIVE_END_DATE")
+	private Date effectiveEnddate;
+	
+	@Column(name = "AMEND_ID", nullable = false)
+	private Integer amendId;
+	
+	 @Column(name="COMPANY_ID")
+	    private String     companyId ;
+
+	  
+	    @Column(name="PRODUCT_ID")
+	    private String    productId ;
+
+	   
+	    @Column(name="BRANCH_CODE")
+	    private String     branchCode ;
+	    
+	    @Temporal(TemporalType.TIMESTAMP)
+		@Column(name = "UPDATED_DATE")
+		private Date updatedDate;
+		
+		@Column(name = "UPDATED_BY")
+		private String updatedBy;
+		
+		@Column(name = "COVER_STATUS")
+		private String coverStatus;
 
 }
