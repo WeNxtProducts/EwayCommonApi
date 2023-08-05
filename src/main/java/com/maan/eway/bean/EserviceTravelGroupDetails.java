@@ -159,6 +159,8 @@ private static final long serialVersionUID = 1L;
    private String     endtCategDesc ;
 
 
+   @Column(name="RISK_ID")
+   private Integer    riskId ;
 }
 
 
