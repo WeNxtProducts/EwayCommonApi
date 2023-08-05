@@ -50,5 +50,7 @@ public interface EserviceTravelGroupDetailsRepository  extends JpaRepository<Ese
 
 	void deleteByRequestReferenceNo(String newReqRefNo);
 
+	List<EserviceTravelGroupDetails> findByQuoteNo(String prevQuoteNo);
+
 
 }

@@ -98,7 +98,7 @@ public class CopyTravelRaw {
 			TravelCopyRes  riskRes =  copyTravelRiskTable(request);
 			
 			// Group
-			List<TravelGroupGetRes> travelGroupList = copyTravelRiskGroup(riskRes.getRequestReferenceNo() , riskRes.getOldRequestReferenceNo() );
+			List<TravelGroupGetRes> travelGroupList = copyTravelRiskGroup(riskRes.getRequestReferenceNo() , riskRes.getOldRequestReferenceNo() ,riskRes,request);
 			riskRes.setGroupDetails(travelGroupList);
 			
 			EserviceTravelDetails travelData = etravelRepo.findByRequestReferenceNo(riskRes.getRequestReferenceNo() ); 
@@ -190,8 +190,18 @@ public class CopyTravelRaw {
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			TravelCopyRes res = dozerMapper.map(newtravelList.get(0) , TravelCopyRes.class);
 			
-			List<EserviceTravelDetails> prevDatas = etravelRepo.findByPolicyNoAndRiskId(prevPolicyNo , 1 );
+			//List<EserviceTravelDetails> prevDatas = etravelRepo.findByPolicyNoAndRiskId(prevPolicyNo , 1 );
+			List<EserviceTravelDetails> prevDatas = etravelRepo.findByPolicyNo(prevPolicyNo);
 			res.setOldRequestReferenceNo(prevDatas.get(0).getRequestReferenceNo() );
+			
+			res.setPolicyNo(ent.getPolicyNo()+"-"+count) ;
+			res.setEndtPrevPolicyNo(prevDatas.get(0).getPolicyNo());
+			res.setEndtCount(new BigDecimal(count));
+
+			res.setEndtStatus(newtravelList.get(0).getEndtStatus());
+			res.setIsFinanceYn(newtravelList.get(0).getIsFinaceYn());
+			res.setEndtCategoryDesc(newtravelList.get(0).getEndtCategDesc());
+			res.setEndTypeDesc(newtravelList.get(0).getEndorsementTypeDesc());
 			
 			return res;
 		}catch (Exception e) {
@@ -201,7 +211,7 @@ public class CopyTravelRaw {
 	}
 	
 	
-	public List<TravelGroupGetRes> copyTravelRiskGroup(String newReqRefNo , String  oldReqRefNo) {
+	public List<TravelGroupGetRes> copyTravelRiskGroup(String newReqRefNo , String  oldReqRefNo,TravelCopyRes  riskRes,Endorsment request) {
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			List<EserviceTravelGroupDetails>  oldGroupDatas = groupRepo.findByRequestReferenceNoOrderByGroupIdAsc(oldReqRefNo) ;
@@ -220,6 +230,22 @@ public class CopyTravelRaw {
 				
 				// Save
 				dozerMapper.map(data, saveGroup);
+				saveGroup.setRequestReferenceNo(newReqRefNo);
+				saveGroup.setOriginalPolicyNo(riskRes.getPolicyNo());
+				saveGroup.setEndorsementDate(new Date());
+				saveGroup.setEndorsementRemarks(request.getEndtRemarks());
+				saveGroup.setEndorsementEffdate(request.getEndtEffectiveDate());
+				saveGroup.setEndtPrevPolicyNo(riskRes.getEndtPrevPolicyNo());
+				saveGroup.setEndtPrevQuoteNo(riskRes.getEndtPrevQuoteNo());
+				saveGroup.setEndtCount(riskRes.getEndtCount());
+				saveGroup.setEndtStatus(riskRes.getEndtStatus());
+				saveGroup.setIsFinaceYn(riskRes.getIsFinanceYn());
+				saveGroup.setEndtCategDesc(riskRes.getEndtCategoryDesc());
+				saveGroup.setEndorsementType(Integer.parseInt(request.getEndtType()));
+				saveGroup.setEndorsementTypeDesc(riskRes.getEndTypeDesc());
+				saveGroup.setStatus("E");
+				saveGroup.setPolicyNo(riskRes.getPolicyNo());
+				saveGroup.setQuoteNo(null);
 				saveGroup.setRequestReferenceNo(newReqRefNo);	
 				saveGroup.setEntryDate(new Date());
 				saveGroup.setStatus("Y");

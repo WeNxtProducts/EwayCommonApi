@@ -1449,6 +1449,9 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				// Copy TravelPassengerDetails
 				travelPassengerDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
 				
+				//Copy EserviceTravelGroupDetails
+				eserviceTravelGroupDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
+				
 				// Copy ESERVICE_SECTION_DETAILS
 				eserviceSectionDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
 				
@@ -1554,6 +1557,53 @@ public class TravelGridServiceImpl implements  TravelGridService {
 		}
 		return res;
 
+	}
+	
+	private CopyQuoteSuccessRes eserviceTravelGroupDetailsEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo, String customerId,String loginId, String prevPolicyNo, String prevQuoteNo, Integer count,String custRefNo) {
+		CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
+		EserviceTravelGroupDetails savedata = new EserviceTravelGroupDetails();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			EndtTypeMaster entMaster =ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId());
+					/*endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+					req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
+					Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
+			*/
+			List<EserviceTravelGroupDetails> traData = groupRepo.findByQuoteNo(prevQuoteNo);
+			if (traData.size()>0) { 
+				for(EserviceTravelGroupDetails data:traData) {
+					savedata = dozerMapper.map(data, EserviceTravelGroupDetails.class);
+					savedata.setEntryDate(new Date());
+					savedata.setRequestReferenceNo(refNo);
+					savedata.setCustomerId(customerId);
+					savedata.setQuoteNo(quoteNo);
+					savedata.setCreatedBy(loginId);
+					savedata.setOriginalPolicyNo(req.getPolicyNo());
+					savedata.setEndorsementDate(new Date());
+					savedata.setEndorsementRemarks(req.getEndtRemarks());
+					savedata.setEndorsementEffdate(req.getEndtEffectiveDate());
+					savedata.setEndtPrevPolicyNo(prevPolicyNo);
+					savedata.setEndtPrevQuoteNo(prevQuoteNo);
+					savedata.setEndtCount(new BigDecimal(count));
+					savedata.setEndtStatus("P");
+					savedata.setIsFinaceYn(entMaster.getEndtTypeCategoryId() == 2 ? "Y" : "N");
+					savedata.setEndtCategDesc(entMaster.getEndtTypeCategory());
+					savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
+					savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
+					savedata.setStatus("E");
+					savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+					groupRepo.saveAndFlush(savedata);
+				}
+			}
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return res;
+
+		
 	}
 	
 	private CopyQuoteSuccessRes travelPassengerDetailsEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo, String customerId,String loginId, String prevPolicyNo, String prevQuoteNo, Integer count,String custRefNo) {
