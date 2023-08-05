@@ -384,6 +384,7 @@ public class CopyTravelRaw {
 				for (EserviceTravelDetails data : travel) {
 					savedata = dozerMapper.map(data, EserviceTravelDetails.class);
 					savedata.setEndtStatus("C");
+					savedata.setStatus("P");
 					savedata.setEffectiveDate(new Date());
 					etravelRepo.saveAndFlush(savedata);
 				}
@@ -414,7 +415,7 @@ public class CopyTravelRaw {
 				for (EserviceTravelGroupDetails data : travelPass) {
 					savedata = dozerMapper.map(data, EserviceTravelGroupDetails.class);
 					savedata.setEndtStatus("C");
-				//	savedata.setStatus("P");
+					savedata.setStatus("P");
 					groupRepo.saveAndFlush(savedata);
 				}
 			}
@@ -438,7 +439,7 @@ public class CopyTravelRaw {
 				for (TravelPassengerDetails data : travelPass) {
 					savedata = dozerMapper.map(data, TravelPassengerDetails.class);
 					savedata.setEndtStatus("C");
-				//	savedata.setStatus("P");
+					savedata.setStatus("P");
 					traPassDetailsRepo.saveAndFlush(savedata);
 				}
 			}
@@ -462,7 +463,7 @@ public class CopyTravelRaw {
 				for (SectionDataDetails data : motorData) {
 					savedata = dozerMapper.map(data, SectionDataDetails.class);
 					savedata.setEndtStatus("C");
-				//	savedata.setStatus("P");
+					savedata.setStatus("P");
 					sectionDataRepo.saveAndFlush(savedata);
 				}
 			}
@@ -486,7 +487,7 @@ public class CopyTravelRaw {
 				for (EserviceSectionDetails data : motorData) {
 					savedata = dozerMapper.map(data, EserviceSectionDetails.class);
 					savedata.setEndtStatus("C");
-				//	savedata.setStatus("P");
+					savedata.setStatus("P");
 					eserSecRepo.saveAndFlush(savedata);
 				}
 			}
@@ -508,6 +509,7 @@ public class CopyTravelRaw {
 					for (DocumentTransactionDetails data : motorData) {
 						savedata = dozerMapper.map(data, DocumentTransactionDetails.class);
 						savedata.setEndtStatus("C");
+						savedata.setStatus("P");
 						coverDocUploadDetails.saveAndFlush(savedata);
 					}
 				}
@@ -531,6 +533,7 @@ public class CopyTravelRaw {
 				PersonalInfo personalInfoData=personalInforepo.findByCustomerId(customerId);
 				savedata = dozerMapper.map(personalInfoData, PersonalInfo.class);
 				savedata.setEndtStatus("C");
+				savedata.setStatus("P");
 				personalInforepo.saveAndFlush(savedata);
 
 			} catch (Exception e) {
@@ -551,6 +554,7 @@ public class CopyTravelRaw {
 					savedata = dozerMapper.map(homeData, HomePositionMaster.class);
 					savedata.setEndtStatus("C");
 					savedata.setIntegrationStatus("S");
+					savedata.setStatus("P");
 					homePosistionRepo.saveAndFlush(savedata);
 				}
 

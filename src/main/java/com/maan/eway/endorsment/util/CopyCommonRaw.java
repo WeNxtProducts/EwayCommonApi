@@ -326,6 +326,7 @@ public class CopyCommonRaw {
 				for (EserviceCommonDetails data : common) {
 					savedata = dozerMapper.map(data, EserviceCommonDetails.class);
 					savedata.setEndtStatus("C");
+					savedata.setStatus("P");
 					eCommonRepo.saveAndFlush(savedata);
 				}
 
@@ -357,6 +358,7 @@ public class CopyCommonRaw {
 				for (BuildingDetails data : buildData) {
 					savedata = dozerMapper.map(data, BuildingDetails.class);
 					savedata.setEndtStatus("C");
+					savedata.setStatus("P");
 					buildingRepo.saveAndFlush(savedata);
 				}
 			}
@@ -377,6 +379,7 @@ public class CopyCommonRaw {
 			if (eserBuilding != null) {
 				savedata = dozerMapper.map(eserBuilding, EserviceBuildingDetails.class);
 				savedata.setEndtStatus("C");
+				savedata.setStatus("P");
 				eserBuildingRepo.saveAndFlush(savedata);
 			}
 
@@ -399,6 +402,7 @@ public class CopyCommonRaw {
 				savedata = dozerMapper.map(data, CommonDataDetails.class);
 				savedata.setCustomerReferenceNo(data.getCustomerReferenceNo());
 				savedata.setEndtStatus("C");
+				savedata.setStatus("P");
 				commonDataRepo.saveAndFlush(savedata);
 				}
 			}
@@ -423,6 +427,7 @@ public class CopyCommonRaw {
 				savedata.setCompanyId(data.getCompanyId());
 				savedata.setEmployeeId(data.getEmployeeId());
 				savedata.setEndtStatus("C");
+				savedata.setStatus("P");
 				proEmplyeeRepo.saveAndFlush(savedata);
 				}
 			}
@@ -444,7 +449,7 @@ public class CopyCommonRaw {
 				for (SectionDataDetails data : motorData) {
 					savedata = dozerMapper.map(data, SectionDataDetails.class);
 					savedata.setEndtStatus("C");
-				//	savedata.setStatus("P");
+					savedata.setStatus("P");
 					sectionDataRepo.saveAndFlush(savedata);
 				}
 			}
@@ -468,7 +473,7 @@ public class CopyCommonRaw {
 				for (EserviceSectionDetails data : motorData) {
 					savedata = dozerMapper.map(data, EserviceSectionDetails.class);
 					savedata.setEndtStatus("C");
-				//	savedata.setStatus("P");
+					savedata.setStatus("P");
 					eserSecRepo.saveAndFlush(savedata);
 				}
 			}
@@ -490,6 +495,7 @@ public class CopyCommonRaw {
 					for (DocumentTransactionDetails data : motorData) {
 						savedata = dozerMapper.map(data, DocumentTransactionDetails.class);
 						savedata.setEndtStatus("C");
+						savedata.setStatus("P");
 						coverDocUploadDetails.saveAndFlush(savedata);
 					}
 				}
@@ -513,6 +519,7 @@ public class CopyCommonRaw {
 				PersonalInfo personalInfoData=personalInforepo.findByCustomerId(customerId);
 				savedata = dozerMapper.map(personalInfoData, PersonalInfo.class);
 				savedata.setEndtStatus("C");
+				savedata.setStatus("P");
 				personalInforepo.saveAndFlush(savedata);
 
 			} catch (Exception e) {
@@ -533,6 +540,7 @@ public class CopyCommonRaw {
 					savedata = dozerMapper.map(homeData, HomePositionMaster.class);
 					savedata.setEndtStatus("C");
 					savedata.setIntegrationStatus("S");
+					savedata.setStatus("P");
 					savedata.setEffectiveDate(new Date());
 					homePosistionRepo.saveAndFlush(savedata);
 				}

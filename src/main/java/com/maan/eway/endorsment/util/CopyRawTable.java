@@ -283,7 +283,7 @@ public class CopyRawTable  {
 				for (SectionDataDetails data : motorData) {
 					savedata = dozerMapper.map(data, SectionDataDetails.class);
 					savedata.setEndtStatus("C");
-				//	savedata.setStatus("P");
+					savedata.setStatus("P");
 					sectionDataRepo.saveAndFlush(savedata);
 				}
 			}
@@ -307,7 +307,7 @@ public class CopyRawTable  {
 				for (EserviceSectionDetails data : motorData) {
 					savedata = dozerMapper.map(data, EserviceSectionDetails.class);
 					savedata.setEndtStatus("C");
-				//	savedata.setStatus("P");
+					savedata.setStatus("P");
 					eserSecRepo.saveAndFlush(savedata);
 				}
 			}
@@ -331,7 +331,7 @@ public class CopyRawTable  {
 				for (DocumentTransactionDetails data : motorData) {
 					savedata = dozerMapper.map(data, DocumentTransactionDetails.class);
 					savedata.setEndtStatus("C");
-				//	savedata.setStatus("P");
+					savedata.setStatus("P");
 					coverDocUploadDetails.saveAndFlush(savedata);
 				}
 			}
