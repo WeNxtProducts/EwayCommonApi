@@ -1198,10 +1198,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 			travelData.setEntryDate(new Date());	
 			travelData.setCreatedBy(request.getCreatedBy());
 			travelData.setQuoteNo(request.getQuoteNo());
-			travelData.setTravelId(request.getVehicleId());
+			travelData.setTravelId(request.getInduvidualId());
 			travelData.setCustomerId(request.getCustomerId());
 			travelData.setPassengerId( request.getVehicleId());
 			travelData.setGroupId(request.getGroupId());
+			
 			travelData.setGroupCount(request.getGroupCount());
 			travelData.setStatus(eserTravel.getStatus());
 			List<FactorRateRequestDetails>  filterCover = covers.stream().filter( o -> o.getVehicleId().equals( request.getGroupId())).collect(Collectors.toList());
@@ -1493,6 +1494,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setCreatedBy(request.getCreatedBy());
 					coverData.setVehicleId(request.getVehicleId());
 					coverData.setDiscountCoverId(cov.getDiscountCoverId()==null?0 :cov.getDiscountCoverId());
+					coverData.setInduvidualId(request.getInduvidualId()==null ? 0 : request.getInduvidualId());
 					saveCovers.add(coverData);
 				//	log.error("Save Cover Info is ---> " + json.toJson(coverData));
 					
@@ -1586,7 +1588,6 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setCoverPeriodTo(periodEnd);
 					coverData.setNoOfDays(new BigDecimal(diff));
 					coverData.setStatus("Y");
-					
 					// Premium
 					if(endtCovModify == true && alreadyOptCover==true && ( cov.getCoverageType().equalsIgnoreCase("E") || cov.getCoverageType().equalsIgnoreCase("T") && cov.getDiscLoadId() > 0 ) ) {
 						
@@ -1622,6 +1623,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setCreatedBy(request.getCreatedBy());
 					coverData.setVehicleId(request.getVehicleId());
 					coverData.setDiscountCoverId(cov.getDiscountCoverId()==null?0 :cov.getDiscountCoverId());
+					coverData.setInduvidualId(request.getInduvidualId()==null ? 0 : request.getInduvidualId());
 					
 					saveCovers.add(coverData);	
 				//	log.error("Save Cover Info is ---> " + json.toJson(coverData));

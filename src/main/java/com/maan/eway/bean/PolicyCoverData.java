@@ -93,6 +93,10 @@ private static final long serialVersionUID = 1L;
     private Integer    taxId ;
     
     @Id
+    @Column(name="INDUVIDUAL_ID")
+    private Integer    induvidualId ;
+    
+    @Id
     @Column(name="DISCOUNT_COVER_ID")
     private Integer    discountCoverId;
      
@@ -289,6 +293,8 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="REGULATORY_SUMINSURED")
     private BigDecimal    regulatorySuminsured ;
+    
+ 
  
 }
 

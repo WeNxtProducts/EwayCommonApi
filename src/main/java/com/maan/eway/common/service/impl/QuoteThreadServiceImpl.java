@@ -1005,7 +1005,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					 threadCount = threadCount +  2 ;
 					
 	            	 QuoteThreadReq request2 = new QuoteThreadReq();
-	            	 request2.setVehicleId(passCount);
+	            	 request2.setVehicleId(vehId);
 	            	 request2.setCustomerId(request.getCustomerId());
 	            	 request2.setProductId(request.getProductId());
 	            	 request2.setQuoteNo(request.getQuoteNo());
@@ -1024,6 +1024,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	            	 request2.setEndtCount(request.getEndtCount());
 	            	 request2.setEndtFields(request.getEndtFields());	
 	            	 request2.setMotorYn(request.getMotorYn());
+	            	 request2.setInduvidualId(passCount);
 	            	 
 	            	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
 	            				, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo

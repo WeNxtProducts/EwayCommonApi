@@ -939,7 +939,7 @@ public class QuoteServiceImpl implements QuoteService {
 				 travelDetails.setVatCommission(tra.getVatCommission()==null?"" : tra.getVatCommission().toPlainString());				
 			
 				 // Cover Details
-				List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(tra.getPassengerId()))).collect(Collectors.toList());
+				List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getInduvidualId().equals(Integer.valueOf(tra.getPassengerId()))).collect(Collectors.toList());
 				
 				
 				List<CoverRes>  coverListRes = new ArrayList<CoverRes>();

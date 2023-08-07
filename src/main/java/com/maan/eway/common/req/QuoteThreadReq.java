@@ -73,6 +73,9 @@ public class QuoteThreadReq {
 	@JsonProperty("MotorYn")
 	private String motorYn;
 	
+	@JsonProperty("InduvidualId")
+	private Integer induvidualId ;
+	
 	@JsonProperty("Vehicles")
 	private List<VehicleIdsReq> VehicleIdsList;
 
