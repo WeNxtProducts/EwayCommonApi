@@ -856,6 +856,7 @@ public class SearchServiceImpl implements SearchService {
 			for (PaymentDetail pi : pay) {
 
 				paymentgetres = new DozerBeanMapper().map(pi, SearchPaymentInfoRes.class);
+				paymentgetres.setEntryDate(pi.getEntryDate());
 				paylist.add(paymentgetres);
 
 			}

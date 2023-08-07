@@ -1,6 +1,7 @@
 package com.maan.eway.common.res;
 
 import java.math.BigDecimal;
+import java.sql.Time;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -182,11 +183,15 @@ public class SearchPaymentInfoRes {
 	@JsonProperty("BranchCode")
     private String     branchCode;
 
-	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonFormat(pattern="dd/MM/yyyy hh:mm:ss")
 	@JsonProperty("EntryDate")
     private Date   entryDate   ;
+	
+//	@JsonFormat(pattern="hh:mm:ss")
+//	@JsonProperty("Time")
+//    private Time  time   ;
 	  
-	@JsonFormat(pattern="dd/MM/yyyy")
+	@JsonFormat(pattern="dd/MM/yyyy hh:mm:ss")
 	@JsonProperty("UpdatedDate")
     private Date   updatedDate   ;
 
