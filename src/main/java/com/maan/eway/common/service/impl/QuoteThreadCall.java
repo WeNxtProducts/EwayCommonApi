@@ -1258,41 +1258,41 @@ public class QuoteThreadCall implements Callable<Object>  {
 		try {
 			
 			if(request.getMotorYn().equalsIgnoreCase("H") && request.getProductId().equalsIgnoreCase(travelProductId)) {
-				List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndProductIdAndSectionIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()) , request.getGroupId());
-				List<FactorRateRequestDetails>  devidedCovers = new ArrayList<FactorRateRequestDetails>();
+//				List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndProductIdAndSectionIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()) , request.getGroupId());
+//				List<FactorRateRequestDetails>  devidedCovers = new ArrayList<FactorRateRequestDetails>();
+//				
+//				// Cover Amounts Devide By Group Count
+//				for ( FactorRateRequestDetails cover  : covers) {
+//					cover.setActualRate(cover.getActualRate()==null?null : getDevidedValue(  cover.getActualRate() ,request.getGroupCount()));
+//					cover.setMaxLodingAmount(cover.getMaxLodingAmount()==null?null : getDevidedValue(  cover.getMaxLodingAmount() ,request.getGroupCount()));
+//					cover.setMinimumPremium(cover.getMinimumPremium()==null?null : getDevidedValue(  cover.getMinimumPremium() ,request.getGroupCount()));
+//					cover.setPremiumAfterDiscountFc(cover.getPremiumAfterDiscountFc()==null?null : getDevidedValue(  cover.getPremiumAfterDiscountFc() ,request.getGroupCount()));
+//					cover.setPremiumAfterDiscountLc(cover.getPremiumAfterDiscountLc()==null?null : getDevidedValue(  cover.getPremiumAfterDiscountLc() ,request.getGroupCount()));
+//					cover.setPremiumBeforeDiscountFc(cover.getPremiumBeforeDiscountFc()==null?null : getDevidedValue(  cover.getPremiumBeforeDiscountFc() ,request.getGroupCount()));
+//					cover.setPremiumBeforeDiscountLc(cover.getPremiumBeforeDiscountLc()==null?null : getDevidedValue(  cover.getPremiumBeforeDiscountLc() ,request.getGroupCount()));
+//					cover.setPremiumExcludedTaxFc(cover.getPremiumExcludedTaxFc()==null?null : getDevidedValue(  cover.getPremiumExcludedTaxFc() ,request.getGroupCount()));
+//					cover.setPremiumExcludedTaxLc(cover.getPremiumExcludedTaxLc()==null?null : getDevidedValue(  cover.getPremiumExcludedTaxLc() ,request.getGroupCount()));
+//					cover.setPremiumIncludedTaxFc(cover.getPremiumIncludedTaxFc()==null?null : getDevidedValue(  cover.getPremiumIncludedTaxFc() ,request.getGroupCount()));
+//					cover.setPremiumIncludedTaxLc(cover.getPremiumIncludedTaxLc()==null?null : getDevidedValue(  cover.getPremiumIncludedTaxLc() ,request.getGroupCount()));
+//					cover.setRate(cover.getRate()==null?null : getDevidedValue(  cover.getRate() ,request.getGroupCount()));
+//					cover.setRegulSumInsured(cover.getRegulSumInsured()==null?null : getDevidedValue(  cover.getRegulSumInsured() ,request.getGroupCount()));
+//					cover.setSumInsured(cover.getSumInsured()==null?null : getDevidedValue(  cover.getSumInsured() ,request.getGroupCount()));
+//					cover.setTaxAmount(cover.getTaxAmount()==null?null : getDevidedValue(  cover.getTaxAmount() ,request.getGroupCount()));
+//					cover.setTaxRate(cover.getTaxRate()==null?null : getDevidedValue(  cover.getTaxRate() ,request.getGroupCount()));  
+//					devidedCovers.add(cover);
+//				}
+//				
+//				// Save Endt Covers
+//				if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
+//					res = EndtCoverSavePoint(request , devidedCovers );
+//					
+//				} else {
+//					res = CoverSavePoint(devidedCovers ) ;
+//					
+//				}
 				
-				// Cover Amounts Devide By Group Count
-				for ( FactorRateRequestDetails cover  : covers) {
-					cover.setActualRate(cover.getActualRate()==null?null : getDevidedValue(  cover.getActualRate() ,request.getGroupCount()));
-					cover.setMaxLodingAmount(cover.getMaxLodingAmount()==null?null : getDevidedValue(  cover.getMaxLodingAmount() ,request.getGroupCount()));
-					cover.setMinimumPremium(cover.getMinimumPremium()==null?null : getDevidedValue(  cover.getMinimumPremium() ,request.getGroupCount()));
-					cover.setPremiumAfterDiscountFc(cover.getPremiumAfterDiscountFc()==null?null : getDevidedValue(  cover.getPremiumAfterDiscountFc() ,request.getGroupCount()));
-					cover.setPremiumAfterDiscountLc(cover.getPremiumAfterDiscountLc()==null?null : getDevidedValue(  cover.getPremiumAfterDiscountLc() ,request.getGroupCount()));
-					cover.setPremiumBeforeDiscountFc(cover.getPremiumBeforeDiscountFc()==null?null : getDevidedValue(  cover.getPremiumBeforeDiscountFc() ,request.getGroupCount()));
-					cover.setPremiumBeforeDiscountLc(cover.getPremiumBeforeDiscountLc()==null?null : getDevidedValue(  cover.getPremiumBeforeDiscountLc() ,request.getGroupCount()));
-					cover.setPremiumExcludedTaxFc(cover.getPremiumExcludedTaxFc()==null?null : getDevidedValue(  cover.getPremiumExcludedTaxFc() ,request.getGroupCount()));
-					cover.setPremiumExcludedTaxLc(cover.getPremiumExcludedTaxLc()==null?null : getDevidedValue(  cover.getPremiumExcludedTaxLc() ,request.getGroupCount()));
-					cover.setPremiumIncludedTaxFc(cover.getPremiumIncludedTaxFc()==null?null : getDevidedValue(  cover.getPremiumIncludedTaxFc() ,request.getGroupCount()));
-					cover.setPremiumIncludedTaxLc(cover.getPremiumIncludedTaxLc()==null?null : getDevidedValue(  cover.getPremiumIncludedTaxLc() ,request.getGroupCount()));
-					cover.setRate(cover.getRate()==null?null : getDevidedValue(  cover.getRate() ,request.getGroupCount()));
-					cover.setRegulSumInsured(cover.getRegulSumInsured()==null?null : getDevidedValue(  cover.getRegulSumInsured() ,request.getGroupCount()));
-					cover.setSumInsured(cover.getSumInsured()==null?null : getDevidedValue(  cover.getSumInsured() ,request.getGroupCount()));
-					cover.setTaxAmount(cover.getTaxAmount()==null?null : getDevidedValue(  cover.getTaxAmount() ,request.getGroupCount()));
-					cover.setTaxRate(cover.getTaxRate()==null?null : getDevidedValue(  cover.getTaxRate() ,request.getGroupCount()));  
-					devidedCovers.add(cover);
-				}
 				
-				// Save Endt Covers
-				if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
-					res = EndtCoverSavePoint(request , devidedCovers );
-					
-				} else {
-					res = CoverSavePoint(devidedCovers ) ;
-					
-				}
-				
-				
-			} else {
+			} 
 				List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoAndProductIdAndSectionIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()) , request.getVehicleId());
 				
 				// Save Endt Covers
@@ -1302,7 +1302,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					res = CoverSavePoint(covers ) ;
 				}
 				
-			}
+			
 			
 
 			
