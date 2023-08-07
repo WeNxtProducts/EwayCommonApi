@@ -176,6 +176,9 @@ public class SearchPaymentInfoRes {
     private String     resSignature ;
 	@JsonProperty("HitCount")
     private Double     hitCount     ;
+	
+	@JsonProperty("PayeeName")
+	 private String payeeName;
 	@JsonProperty("BranchCode")
     private String     branchCode;
 
