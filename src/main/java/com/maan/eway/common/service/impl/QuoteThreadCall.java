@@ -2398,14 +2398,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 					List<PolicyCoverData> filterNonDefaultCovers  = new ArrayList<PolicyCoverData>();
 					
 					 if(request.getMotorYn().equalsIgnoreCase("H") && request.getProductId().equalsIgnoreCase(travelProductId) ) {
-							
-							List<TravelPassengerDetails> filterGroupPassengers = passengers.stream().filter( o -> o.getGroupId().equals(vehReq.getVehicleId())). collect(Collectors.toList());
-							
-							filterNonDefaultCovers = new ArrayList<PolicyCoverData>();
-							for (TravelPassengerDetails tra :  filterGroupPassengers  ) {
-								List<PolicyCoverData> passengerCover = covers.stream().filter( o ->   o.getVehicleId().equals(tra.getPassengerId()) && o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());
-								filterNonDefaultCovers.addAll(passengerCover);
-							}
+						 filterNonDefaultCovers = covers.stream().filter( o -> o.getSectionId().equals(Integer.valueOf(vehReq.getSectionId())) && o.getVehicleId().equals(vehReq.getVehicleId()) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());
+//							List<TravelPassengerDetails> filterGroupPassengers = passengers.stream().filter( o -> o.getGroupId().equals(vehReq.getVehicleId())). collect(Collectors.toList());
+//							
+//							filterNonDefaultCovers = new ArrayList<PolicyCoverData>();
+//							for (TravelPassengerDetails tra :  filterGroupPassengers  ) {
+//								List<PolicyCoverData> passengerCover = covers.stream().filter( o ->   o.getVehicleId().equals(tra.getGroupId()) && o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());
+//								filterNonDefaultCovers.addAll(passengerCover);
+//							}
 											
 						
 					} else if(request.getMotorYn().equalsIgnoreCase("A")) {
