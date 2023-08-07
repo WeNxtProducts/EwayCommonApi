@@ -98,5 +98,11 @@ public class UserPersonalInfoGetRes {
     
     @JsonProperty("Designation")
     private String    designation;
+    
+	@JsonProperty("TaxExemptedYn")
+    private String    taxExemptedYn ;
+	
+	@JsonProperty("CreditLimit")
+    private String    creditLimit ;
    
 }
