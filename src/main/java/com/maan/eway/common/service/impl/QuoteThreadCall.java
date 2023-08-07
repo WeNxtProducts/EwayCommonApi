@@ -1130,10 +1130,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 			List<FactorRateRequestDetails>  covers = new ArrayList<FactorRateRequestDetails>();
 			
 			if ( eserTravel.getPlanTypeId().equals(3) && request.getGroupId().equals(1) ) {
-				covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndVehicleIdAndProductIdAndSectionIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0,2 ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()));
+				covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndProductIdAndSectionIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0 ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()));
 			} else {
 				
-				covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndVehicleIdAndProductIdAndSectionIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0,request.getGroupId() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()));		
+				covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndProductIdAndSectionIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0 ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()));		
 				
 			//	List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
 				
@@ -1143,22 +1143,23 @@ public class QuoteThreadCall implements Callable<Object>  {
 				
 				List<FactorRateRequestDetails>  premiumCovers = new  ArrayList<FactorRateRequestDetails>();
 			//	premiumCovers.addAll(defaultCovers);
-				
-				for ( CoverIdsReq covReq :  coverReqList) {
-					 
-					List<FactorRateRequestDetails> filterNonDefaultCovers = covers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0)).collect(Collectors.toList());				
-					
-					if(filterNonDefaultCovers != null && filterNonDefaultCovers.size()>0 ) {
-						if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
-							
-							premiumCovers.addAll(filterNonDefaultCovers);
-							
-						}else {
-							List<FactorRateRequestDetails> filterNonDefaultSubCovers = filterNonDefaultCovers.stream().filter( o ->  o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))&& o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
-							premiumCovers.addAll(filterNonDefaultSubCovers);
-						}
-					}
-				}
+				List<FactorRateRequestDetails> filterNonDefaultCovers = covers.stream().filter( o -> o.getUserOpt()!=null && o.getUserOpt().equals("Y") && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());				
+				premiumCovers.addAll(filterNonDefaultCovers);
+//				for ( CoverIdsReq covReq :  coverReqList) {
+//					 
+//					List<FactorRateRequestDetails> filterNonDefaultCovers = covers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0)).collect(Collectors.toList());				
+//					
+//					if(filterNonDefaultCovers != null && filterNonDefaultCovers.size()>0 ) {
+//						if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
+//							
+//							premiumCovers.addAll(filterNonDefaultCovers);
+//							
+//						}else {
+//							List<FactorRateRequestDetails> filterNonDefaultSubCovers = filterNonDefaultCovers.stream().filter( o ->  o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))&& o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
+//							premiumCovers.addAll(filterNonDefaultSubCovers);
+//						}
+//					}
+//				}
 				premiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()  ).sum();					
 				overAllPremiumFc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()  ).sum();
 				premiumLc = premiumCovers.stream().filter( o -> o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()  ).sum();					
@@ -1219,7 +1220,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			if(eserTravel.getEndorsementType()!=null) {
 				String prevQuoteNo=eserTravel.getEndtPrevQuoteNo();
 				List<PolicyCoverData>  Endtcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(request.getQuoteNo() ,0, 0);
-				BigDecimal endtPremium = updateEndtPremium(request.getQuoteNo(),eserTravel.getEndorsementEffdate(),prevQuoteNo, eserTravel.getRiskId(),Endtcovers);				
+				BigDecimal endtPremium = updateEndtPremium(request.getQuoteNo(),eserTravel.getEndorsementEffdate(),prevQuoteNo, 0,Endtcovers);				
 				eserTravel.setEndtPremium(endtPremium.doubleValue());
 				travelData.setEndtPremium(endtPremium.doubleValue());
 			}   
