@@ -93,8 +93,8 @@ private static final long serialVersionUID = 1L;
     private Integer    taxId ;
     
     @Id
-    @Column(name="INDUVIDUAL_ID")
-    private Integer    induvidualId ;
+    @Column(name="INDIVIDUAL_ID")
+    private Integer    individualId ;
     
     @Id
     @Column(name="DISCOUNT_COVER_ID")

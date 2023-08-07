@@ -1198,7 +1198,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			travelData.setEntryDate(new Date());	
 			travelData.setCreatedBy(request.getCreatedBy());
 			travelData.setQuoteNo(request.getQuoteNo());
-			travelData.setTravelId(request.getInduvidualId());
+			travelData.setTravelId(request.getIndividualId());
 			travelData.setCustomerId(request.getCustomerId());
 			travelData.setPassengerId( request.getVehicleId());
 			travelData.setGroupId(request.getGroupId());
@@ -1494,7 +1494,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setCreatedBy(request.getCreatedBy());
 					coverData.setVehicleId(request.getVehicleId());
 					coverData.setDiscountCoverId(cov.getDiscountCoverId()==null?0 :cov.getDiscountCoverId());
-					coverData.setInduvidualId(request.getInduvidualId()==null ? 0 : request.getInduvidualId());
+					coverData.setIndividualId(request.getIndividualId()==null ? 0 : request.getIndividualId());
 					saveCovers.add(coverData);
 				//	log.error("Save Cover Info is ---> " + json.toJson(coverData));
 					
@@ -1623,7 +1623,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setCreatedBy(request.getCreatedBy());
 					coverData.setVehicleId(request.getVehicleId());
 					coverData.setDiscountCoverId(cov.getDiscountCoverId()==null?0 :cov.getDiscountCoverId());
-					coverData.setInduvidualId(request.getInduvidualId()==null ? 0 : request.getInduvidualId());
+					coverData.setIndividualId(request.getIndividualId()==null ? 0 : request.getIndividualId());
 					
 					saveCovers.add(coverData);	
 				//	log.error("Save Cover Info is ---> " + json.toJson(coverData));
