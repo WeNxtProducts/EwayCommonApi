@@ -1495,7 +1495,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setCreatedBy(request.getCreatedBy());
 					coverData.setVehicleId(request.getVehicleId());
 					coverData.setDiscountCoverId(cov.getDiscountCoverId()==null?0 :cov.getDiscountCoverId());
-					coverData.setIndividualId(request.getIndividualId()==null ? 0 : request.getIndividualId());
+					coverData.setIndividualId(request.getVehicleId());
 					saveCovers.add(coverData);
 				//	log.error("Save Cover Info is ---> " + json.toJson(coverData));
 					
@@ -1624,7 +1624,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setCreatedBy(request.getCreatedBy());
 					coverData.setVehicleId(request.getVehicleId());
 					coverData.setDiscountCoverId(cov.getDiscountCoverId()==null?0 :cov.getDiscountCoverId());
-					coverData.setIndividualId(request.getIndividualId()==null ? 0 : request.getIndividualId());
+					coverData.setIndividualId(request.getVehicleId());
 					
 					saveCovers.add(coverData);	
 				//	log.error("Save Cover Info is ---> " + json.toJson(coverData));
