@@ -76,4 +76,10 @@ public class LoginBrokerDetailsGridRes {
 	
 	@JsonProperty("WhatsappNo")
 	private String    whatsappNo ;
+	
+	@JsonProperty("TaxExemptedYn")
+    private String    taxExemptedYn ;
+	
+	@JsonProperty("CreditLimit")
+    private String    creditLimit ;
 }

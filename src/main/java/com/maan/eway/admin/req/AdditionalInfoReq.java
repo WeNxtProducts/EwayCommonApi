@@ -100,5 +100,11 @@ public class AdditionalInfoReq {
     
     @JsonProperty("CityName")
     private String    cityName ;
+    
+	@JsonProperty("TaxExemptedYn")
+    private String    taxExemptedYn ;
+	
+	@JsonProperty("CreditLimit")
+    private String    creditLimit ;
 
 }

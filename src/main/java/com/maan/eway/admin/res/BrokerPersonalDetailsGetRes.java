@@ -102,4 +102,10 @@ public class BrokerPersonalDetailsGetRes {
     
     @JsonProperty("WhatsappNo")
     private String    whatsappNo ;
+    
+	@JsonProperty("TaxExemptedYn")
+    private String    taxExemptedYn ;
+	
+	@JsonProperty("CreditLimit")
+    private String    creditLimit ;
 }

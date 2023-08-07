@@ -9,6 +9,7 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toCollection;
 
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
@@ -480,6 +481,9 @@ this.repository = repo;
 			userInfo.setStatus(saveLogin.getStatus());
 			userInfo.setCountryCode(personalReq.getCountryCode());
 			userInfo.setStateCode(StringUtils.isBlank(personalReq.getStateCode())?null:Integer.valueOf(personalReq.getStateCode()));
+			userInfo.setTaxExemptedYn(StringUtils.isBlank(personalReq.getTaxExemptedYn())?"N":personalReq.getTaxExemptedYn() );
+			userInfo.setCreditLimit(StringUtils.isBlank(personalReq.getCreditLimit())?BigDecimal.ZERO : new BigDecimal(personalReq.getCreditLimit()) );
+			
 			//userInfo.setCityCode(Integer.valueOf(personalReq.getCityCode()));
 			userInfo.setCityName(personalReq.getCityName());
 			userInfo.setMobileCodeDesc(StringUtils.isBlank(personalReq.getMobileCode()) ? "" : mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getMobileCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
@@ -662,6 +666,8 @@ this.repository = repo;
 			List<ListItemValue> mobileCodes = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("MOBILE_CODE" , "Y");
 			updateUser.setMobileCodeDesc(StringUtils.isBlank(personalReq.getMobileCode()) ? "" : mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getMobileCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
 			updateUser.setWhatsappCodeDesc(StringUtils.isBlank(personalReq.getWhatsappCode()) ? "" : mobileCodes.stream().filter(o -> o.getItemCode().equalsIgnoreCase(personalReq.getWhatsappCode()) ).collect(Collectors.toList()).get(0).getItemValue() );
+			updateUser.setTaxExemptedYn(StringUtils.isBlank(personalReq.getTaxExemptedYn())?"N":personalReq.getTaxExemptedYn() );
+			updateUser.setCreditLimit(StringUtils.isBlank(personalReq.getCreditLimit())?BigDecimal.ZERO : new BigDecimal(personalReq.getCreditLimit()) );
 			
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("Issuer") ) {
 				updateUser.setOaCode(loginReq.getOaCode());

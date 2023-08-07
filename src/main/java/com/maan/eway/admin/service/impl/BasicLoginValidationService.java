@@ -389,6 +389,8 @@ public class BasicLoginValidationService {
 				errors.add(new Error("22", "Fax", "Fax Must Be Under 50 Character Only Allowed" ));
 			}
 			
+		
+			
 			// Yn Validation
 //			if (StringUtils.isBlank(brokerReq.getMakerYn())) {
 //				errors.add(new Error("23", "Maker", "Please Select Maker Y or N"));

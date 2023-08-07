@@ -86,6 +86,16 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 				errors.add(new Error("01","BrokerCompanyYn","Please Select BrokerCompany Y or N"));
 			}
 			
+//			if(StringUtils.isBlank(brokerReq.getTaxExemptedYn())  ) {
+//				errors.add(new Error("22", "TaxExempted", "Plese Select Tax Exempted Yes/No" ));
+//			}
+			
+			if(StringUtils.isNotBlank(brokerReq.getCreditLimit())  ) {
+				if(! brokerReq.getCreditLimit().matches("[0-9.]+")  ) {
+					errors.add(new Error("22", "CreditLimit", "Plese Enter Valid Number in Credit Limit" ));
+				}
+			} 
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
@@ -212,6 +222,16 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 					errors.add(new Error("01","BrokerCompanyYn","Please Select BrokerCompany Y or N"));
 				}
 			}
+			
+//			if(StringUtils.isBlank(brokerReq.getTaxExemptedYn())  ) {
+//				errors.add(new Error("22", "TaxExempted", "Plese Select Tax Exempted Yes/No" ));
+//			}
+			
+			if(StringUtils.isNotBlank(brokerReq.getCreditLimit())  ) {
+				if(! brokerReq.getCreditLimit().matches("[0-9.]+")  ) {
+					errors.add(new Error("22", "CreditLimit", "Plese Enter Valid Number in Credit Limit" ));
+				}
+			} 
 			
 			
 		} catch (Exception e) {

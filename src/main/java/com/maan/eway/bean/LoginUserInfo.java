@@ -189,6 +189,12 @@ private static final long serialVersionUID = 1L;
     private String     whatsappNo ;
 
 
+    @Column(name="TAX_EXEMPTED_YN", length=20)
+    private String     taxExemptedYn;
+    
+    @Column(name="CREDIT_LIMIT", length=20)
+    private BigDecimal creditLimit ;
+    
     //--- ENTITY LINKS ( RELATIONSHIP )
 
 

@@ -73,6 +73,12 @@ public class UserPersonalInfoReq {
 //    @JsonProperty("MakerYn")
 //    private String    makerYn ;
     
+	@JsonProperty("TaxExemptedYn")
+    private String    taxExemptedYn ;
+	
+	@JsonProperty("CreditLimit")
+    private String    creditLimit ;
+    
     @JsonProperty("Designation")
     private String    designation;
     

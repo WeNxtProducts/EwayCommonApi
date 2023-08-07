@@ -46,6 +46,7 @@ public class BrokerLoginInfoReq {
 	
 	@JsonProperty("BrokerCompanyYn")
     private String    brokerCompanyYn ;
+
 	
 	 @JsonFormat(pattern = "dd/MM/yyyy")
 	 @JsonProperty("EffectiveDateStart")
