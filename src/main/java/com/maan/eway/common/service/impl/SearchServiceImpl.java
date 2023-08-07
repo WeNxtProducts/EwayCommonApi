@@ -46,6 +46,7 @@ import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.MotorVehicleInfo;
+import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductEmployeeDetails;
@@ -84,6 +85,7 @@ import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
 import com.maan.eway.repository.MotorVehicleInfoRepository;
+import com.maan.eway.repository.PaymentDetailRepository;
 import com.maan.eway.repository.PaymentInfoRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PremiaCustomerDetailsRepository;
@@ -117,6 +119,9 @@ public class SearchServiceImpl implements SearchService {
 
 	@Autowired
 	private PersonalInfoRepository perRepo;
+	
+	@Autowired
+	private PaymentDetailRepository paymentRepo;
 	@Autowired
 	private DocumentTransactionDetailsRepository coverdocumentuploaddetailsrepository;
 
@@ -838,11 +843,17 @@ public class SearchServiceImpl implements SearchService {
 
 		try {
 			List<PaymentInfo> paymentinfo = null;
+			List<PaymentDetail>  pay=null;
+			List<PaymentDetail> patmentDetails=null;
 			if (StringUtils.isNotBlank(req.getQuoteNo())) {
 				paymentinfo = paymentrepo.findByQuoteNoAndProductId(req.getQuoteNo(),Integer.valueOf(req.getProductId()));
+				String paymentId=paymentinfo.get(0).getPaymentId();
+						
+				patmentDetails= paymentRepo.findByQuoteNo(req.getQuoteNo());
+				pay=patmentDetails.stream().filter( o -> o.getPaymentId().equals(paymentId) ).collect(Collectors.toList());
 			}  
-
-			for (PaymentInfo pi : paymentinfo) {
+			
+			for (PaymentDetail pi : pay) {
 
 				paymentgetres = new DozerBeanMapper().map(pi, SearchPaymentInfoRes.class);
 				paylist.add(paymentgetres);
