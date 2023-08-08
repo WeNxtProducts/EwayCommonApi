@@ -2004,14 +2004,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 			try {
 				
 				// Deactivate Travel product covers
-				if (request.getMotorYn().equalsIgnoreCase("H") && request.getProductId().equalsIgnoreCase(travelProductId)) {
-					
-					res = deactivateTravelCovers(request);
-				// Deactivate Other Covers
-				} else {
-					res = deactivateOtherProductCovers(request);
-				}
-				
+//				if (request.getMotorYn().equalsIgnoreCase("H") && request.getProductId().equalsIgnoreCase(travelProductId)) {
+//					
+//					res = deactivateTravelCovers(request);
+//				// Deactivate Other Covers
+//				} else {
+//					res = deactivateOtherProductCovers(request);
+//				}
+				res = deactivateOtherProductCovers(request);
 				
 	 			
 		        commonRes.setCommonResponse(res);
