@@ -60,6 +60,7 @@ public class CoverFromFactor implements Function<FactorRateRequestDetails,Cover>
 					.excessPercent(t.getExcessPercent()==null?BigDecimal.ZERO:t.getExcessPercent())
 					.minimumPremiumYn(t.getMinimumPremiumYn())
 					.proRataYn(t.getProRataYn())
+					.proRata(t.getProRataPercent())
 					.endtCount(t.getEndtCount())
 					.status(t.getStatus())
 					.effectiveDate(t.getCoverPeriodFrom())

@@ -43,17 +43,30 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 				 //this.setEngine(engine);
 				 t.getSubcovers().stream().forEach(this);
 			 }else {
-
+				 Endorsement endorsement = null;
 			//	 loadOnetimetable(engine);
+				 if(t.getEndorsements()!=null && t.getEndorsements().size()>0) {
+					 t.getEndorsements().sort(new Comparator<Endorsement>() {
+						@Override
+						public int compare(Endorsement o1, Endorsement o2) {
+							// TODO Auto-generated method stub
+							return o1.getEndtCount().compareTo(o2.getEndtCount());
+						}
+						 
+					}.reversed());
+					 endorsement= t.getEndorsements().get(0);
+					 	//isCancellation=endorsement.getEndorsementId().equals("842");
+				 }
 				 
 				 BigDecimal exchangeRate= new BigDecimal(vehicles.get(0).get("exchangeRate")==null?"1":vehicles.get(0).get("exchangeRate").toString());
 				 t.setExchangeRate(exchangeRate);
 				 String currecy=vehicles.get(0).get("currency")==null?"N/A":vehicles.get(0).get("currency").toString();
 				 t.setCurrency(currecy);
 				 
-				 t.setProRata(new BigDecimal("1"));
-				 
-				 if(prorata!=null && prorata.size()>0 && "Y".equals(t.getProRataYn()) ) {
+				// t.setProRata(new BigDecimal("1"));
+				 if("Y".equals(engine.getCoverModification()) && "Y".equals(t.getProRataYn()) && "Y".equals(t.getUserOpt()) && endorsement!=null) {
+					 t.setProRata(t.getProRata().divide(new BigDecimal("100")));
+				 }else  if(prorata!=null && prorata.size()>0 && "Y".equals(t.getProRataYn()) ) {
 					 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
 					 t.setProRata(percenat.divide(new BigDecimal("100")));
 				 }
@@ -104,18 +117,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 				 // Minimium Premium setup.
 				 
 				 boolean isCancellation=false;
-				 if(t.getEndorsements()!=null && t.getEndorsements().size()>0) {
-					 t.getEndorsements().sort(new Comparator<Endorsement>() {
-						@Override
-						public int compare(Endorsement o1, Endorsement o2) {
-							// TODO Auto-generated method stub
-							return o1.getEndtCount().compareTo(o2.getEndtCount());
-						}
-						 
-					}.reversed());
-					 Endorsement endorsement = t.getEndorsements().get(0);
-					 	//isCancellation=endorsement.getEndorsementId().equals("842");
-				 }
+				 
 				 t.setMinimumPremiumYn("N");
 				 if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0 /*&& !isCancellation*/) {
 					 
@@ -144,7 +146,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 						 
 					}.reversed());*/
 					 //new premium-old prem
-					 Endorsement endorsement = t.getEndorsements().get(0);
+					  endorsement = t.getEndorsements().get(0);
 					
 
 			 		

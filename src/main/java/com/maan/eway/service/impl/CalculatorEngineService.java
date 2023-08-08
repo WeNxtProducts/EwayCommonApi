@@ -525,7 +525,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 						endtTypeId);
 
 				retc.stream().forEach(i -> i.setEndtCount(endtCount));
-
+			/*	List<PolicyCoverData> oldPolicyCovers =ratingutil.findDataForTravel(
+						endtPrevQuoteNo, Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
+						Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()), "Y");*/
 				// find Prev Quote Data
 				List<PolicyCoverData> oldPolicyCovers = coverDataRepo
 						.findByQuoteNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndStatusOrderByCoverIdAsc(
@@ -582,7 +584,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 							.premiumExcluedTax(d.getPremiumExcludedTaxFc())
 							.premiumExcluedTaxLC(d.getPremiumExcludedTaxLc())
 							.premiumIncludedTax(d.getPremiumIncludedTaxFc())
-							.premiumIncludedTaxLC(d.getPremiumIncludedTaxLc()).proRata(BigDecimal.ZERO).proRataYn("N")
+							.premiumIncludedTaxLC(d.getPremiumIncludedTaxLc())
+							.proRata(BigDecimal.ZERO).proRataYn("N")
 							.build();
 
 					{
