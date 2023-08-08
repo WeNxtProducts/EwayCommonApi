@@ -2216,7 +2216,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 								fc.setPremiumExcludedTaxLc(f.getPremiumExcludedTaxLc());
 								fc.setPremiumIncludedTaxFc(f.getPremiumIncludedTaxFc());
 								fc.setPremiumIncludedTaxLc(f.getPremiumIncludedTaxLc());
-								
+								fc.setIndividualId(f.getVehicleId());
 								// Date Diffrence
 								Date periodStart = ref.getCoverPeriodFrom();
 								Date effDate =  request.getEffetiveDate();
