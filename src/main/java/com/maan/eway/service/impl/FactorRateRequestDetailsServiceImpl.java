@@ -963,7 +963,7 @@ this.repository = repo;
 				
 				saveLod.setNoOfDays(new BigDecimal(diff));
 				saveLod.setProRataYn(lod.getProRataYn()==null?"N":lod.getProRataYn());
-				saveLod.setProRataPercent(lod.getProRata()==null?new BigDecimal("100"):lod.getProRata()/*.multiply( new BigDecimal("100"))*/);
+				saveLod.setProRataPercent(lod.getProRata()==null?new BigDecimal("100"):lod.getProRata().multiply( new BigDecimal("100")));
 				//repository.saveAndFlush(saveLod);
 				saveEndt.add(saveLod);
 				
