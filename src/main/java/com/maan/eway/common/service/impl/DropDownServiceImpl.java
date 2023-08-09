@@ -2543,7 +2543,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			List<CommonDataDetails> cdlist = commonRepo.findByQuoteNoAndProductIdAndSectionId(req.getQuoteNo(),req.getProductId(),req.getSectionId());
-			
+			cdlist = cdlist.stream().filter( o ->  ! o.getStatus().equalsIgnoreCase("D") ).collect(Collectors.toList());
 			for (CommonDataDetails data : cdlist) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getOccupationType());
