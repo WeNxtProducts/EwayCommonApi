@@ -343,6 +343,23 @@ private static final long serialVersionUID = 1L;
    
    @Column(name="VAT_COMMISSION")
    private BigDecimal vatCommission;
+   
+   
+   @Column(name="SUM_INSURED_LC")
+   private BigDecimal     sumInsuredLc;
+   
+   @Column(name="LIABILITY_SI_LC")
+   private BigDecimal       liabilitySiLc;
+   
+   
+   @Column(name="FID_EMP_SI_LC")
+   private BigDecimal       fidEmpSiLc;
+   //--- ENTITY LINKS ( RELATIONSHIP )
+   @Column(name="EMP_LIABILITY_SI_LC")
+   private BigDecimal       empLiabilitySiLc;
+   
+   @Column(name="PERSONAL_LIABILITY_SI_LC")
+   private BigDecimal       personalLiabilitySiLc;
 }
 
 

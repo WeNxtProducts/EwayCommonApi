@@ -490,6 +490,21 @@ private static final long serialVersionUID = 1L;
    
    @Column(name="ENDT_VAT_PREMIUM")
    private BigDecimal endVatPremium;
+   
+   @Column(name="WIND_SCREEN_SUM_INSURED_LC")
+   private BigDecimal     windScreenSumInsuredLc ;
+
+   @Column(name="SUM_INSURED_LC")
+   private BigDecimal     sumInsuredLc ;
+   
+   @Column(name="TPPD_FREE_LIMIT_LC")
+   private BigDecimal     tppdFreeLimitLc ;
+
+   @Column(name="TPPD_INCREAE_LIMIT_LC")
+   private BigDecimal     tppdIncreaeLimitLc ;
+   
+   @Column(name="ACCCESSORIES_SUM_INSURED_LC")
+   private BigDecimal     acccessoriesSumInsuredLc ;
 }
 
 
