@@ -625,6 +625,126 @@ private static final long serialVersionUID = 1L;
       
       @Column(name="VAT_COMMISSION")
       private BigDecimal vatCommission;
+      
+      
+      
+      //LC Columns
+      @Column(name="BUILDING_SUMINSURED_LC")
+      private BigDecimal buildingSumInsuredLC;
+
+      @Column(name="ALLRISK_SUMINSURED_LC")
+      private BigDecimal allRiskSumInsuredLC;
+
+      @Column(name="PERSONAL_INT_SUMINSURED_LC")
+      private BigDecimal personalIntSumInsuredLC;
+
+      @Column(name="PERSONAL_ACC_SUMINSURED_LC")
+      private BigDecimal personalAccSumInsuredLC;
+
+      @Column(name="CONTENT_SUMINSURED_LC")
+      private BigDecimal contentSumInsuredLC;
+
+      @Column(name="WORKMEN_COMP_SUMINSURED_LC")
+      private BigDecimal workmenCompSumInsuredLC;
+
+      @Column(name="PA_DEATH_SUMINSURED_LC")
+      private BigDecimal paDeathSumInsuredLC;
+
+      @Column(name="PA_PERMANENTDISABLEMENT_SUMINSURED_LC")
+      private BigDecimal paPermanentDisablementSumInsuredLC;
+
+      @Column(name="PA_TOTALDISABILITY_SUMINSURED_LC")
+      private BigDecimal paTotalDisabilitySumInsuredLC;
+
+      @Column(name="PA_MEDICAL_SUMINSURED_LC")
+      private BigDecimal paMedicalSumInsuredLC;
+
+      @Column(name="ELEC_EQUIP_SUMINSURED_LC")
+      private BigDecimal elecEquipSumInsuredLC;
+
+      @Column(name="MONEY_SINGLECARRY_SUMINSURED_LC")
+      private BigDecimal moneySingleCarrySumInsuredLC;
+
+      @Column(name="MONEY_ANNUALCARRY_SUMINSURED_LC")
+      private BigDecimal moneyAnnualCarrySumInsuredLC;
+
+      @Column(name="MONEY_INSAFE_SUMINSURED_LC")
+      private BigDecimal moneyInSafeSumInsuredLC;
+
+      @Column(name="FIDELITY_ANYOCCU_SUMINSURED_LC")
+      private BigDecimal fidelityAnyOccuSumInsuredLC;
+
+      @Column(name="FIDELITY_ANNUAL_SUMINSURED_LC")
+      private BigDecimal fidelityAnnualSumInsuredLC;
+
+      @Column(name="TPLIABILITY_ANYOCCU_SUMINSURED_LC")
+      private BigDecimal tpliabilityAnyOccuSumInsuredLC;
+
+      @Column(name="EMPLIABILITY_ANNUAL_SUMINSURED_LC")
+      private BigDecimal empliabilityAnnualSumInsuredLC;
+
+      @Column(name="EMPLIABILITY_EXCESS_SUMINSURED_LC")
+      private BigDecimal empliabilityExcessSumInsuredLC;
+
+      @Column(name="GOODS_SINGLECARRY_SUMINSURED_LC")
+      private BigDecimal goodsSingleCarrySumInsuredLC;
+
+      @Column(name="GOODS_TURNOVER_SUMINSURED_LC")
+      private BigDecimal goodsTurnoverSumInsuredLC;
+
+      @Column(name="STOCK_IN_TRADE_SI_LC")
+      private BigDecimal stockInTradeSiLC;
+
+      @Column(name="GOODS_SI_LC")
+      private BigDecimal goodsSiLC;
+
+      @Column(name="FURNITURE_SI_LC")
+      private BigDecimal furnitureSiLC;
+
+      @Column(name="APPLIANCE_SI_LC")
+      private BigDecimal applianceSiLC;
+
+      @Column(name="CASH_VALUEABLES_SI_LC")
+      private BigDecimal cashValuablesSiLC;
+
+      @Column(name="MACHINE_EQUIP_SI_LC")
+      private BigDecimal machineEquipSiLC;
+
+      @Column(name="PLATE_GLASS_SI_LC")
+      private BigDecimal plateGlassSiLC;
+
+      @Column(name="ACC_DAMAGE_SI_LC")
+      private BigDecimal accDamageSiLC;
+
+      @Column(name="BURGLARY_SI_LC")
+      private BigDecimal burglarySiLC;
+
+      @Column(name="POWER_PLANT_SI_LC")
+      private BigDecimal powerPlantSiLC;
+
+      @Column(name="ELEC_MACHINES_SI_LC")
+      private BigDecimal elecMachinesSiLC;
+
+      @Column(name="EQUIPMENT_SI_LC")
+      private BigDecimal equipmentSiLC;
+
+      @Column(name="GENERAL_MACHINE_SI_LC")
+      private BigDecimal generalMachineSiLC;
+
+      @Column(name="MANU_UNITS_SI_LC")
+      private BigDecimal manuUnitsSiLC;
+
+      @Column(name="BOILER_PLANTS_SI_LC")
+      private BigDecimal boilerPlantsSiLC;
+
+      @Column(name="MINING_PLANT_SI_LC")
+      private BigDecimal miningPlantSiLC;
+
+      @Column(name="NONMINING_PLANT_SI_LC")
+      private BigDecimal nonMiningPlantSiLC;
+
+      @Column(name="GENSETS_SI_LC")
+      private BigDecimal gensetsSiLC;
 }
 
 
