@@ -54,6 +54,7 @@ public class ApigwClient {
     
         for (Object key : dataMap.keySet()) {
             String keyStr = (String)key;
+            System.out.println("keyStr"+keyStr);
             String keyvalue = dataMap.get(keyStr)==null ?"":dataMap.get(keyStr).getAsString();
             serializedJson.add(keyStr+"="+keyvalue);
             keys.add(keyStr);

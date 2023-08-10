@@ -43,6 +43,9 @@ public interface InsuranceCompanyMasterRepository  extends JpaRepository<Insuran
 	List<InsuranceCompanyMaster> findByCompanyIdAndStatusAndEffectiveDateStartAfterAndEffectiveDateEndBefore(String companyId,
 			String string, Date date, Date date2);
 
+	List<InsuranceCompanyMaster> findByCompanyIdAndStatusAndEffectiveDateStartBeforeAndEffectiveDateEndAfter(
+			String companyId, String string, Date date, Date date2);
+
 
 
 }

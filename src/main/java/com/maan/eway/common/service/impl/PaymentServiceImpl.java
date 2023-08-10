@@ -1601,9 +1601,11 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			log.info("Saved Details " + json.toJson(paymentDetail));
 			
-			// Notification Trigger
+			try{// Notification Trigger
 			notificationTrigger(data.getProductId(),req.getQuoteNo(),paymentStatus);
-			
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
 			
 			// Update Payment Info
 			paymentInfo.setValidityDate(validateDate);
@@ -2535,7 +2537,7 @@ public class PaymentServiceImpl implements PaymentService {
 			QuoteUpdateRes updateRes = new QuoteUpdateRes();
 			try {
 				List<EserviceMotorDetails> cusRefNo = eserMotRepo
-						.findByRequestReferenceNoAndProductId(quoteNo, productId.toString());
+						.findByQuoteNoOrderByRiskIdAsc(quoteNo);
 
 				cusRefNo = cusRefNo.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo())))
 						.collect(Collectors.toList());
