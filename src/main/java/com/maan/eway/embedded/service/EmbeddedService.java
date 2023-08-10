@@ -69,7 +69,7 @@ public class EmbeddedService {
 			 CompletableFuture<Map<String,Object>> task_2 = CompletableFuture.supplyAsync(()->(ratingutil.collectCommissionDetails(loginId)));
 			 CompletableFuture<List<String>> task_3 = CompletableFuture.supplyAsync(()->(validator.validateRequest(request)));
 			 CompletableFuture<String> task_4 = CompletableFuture.supplyAsync(()->(notifcationService.getShorternURL(new String(scheduleUrl.replaceAll("<LoginId>", loginId)+encrypt))))
-					 .completeOnTimeout(new String(scheduleUrl.replaceAll("<LoginId>", loginId)+encrypt), 1, TimeUnit.SECONDS);
+			/*		 .completeOnTimeout(new String(scheduleUrl.replaceAll("<LoginId>", loginId)+encrypt), 1, TimeUnit.SECONDS)*/;
 			 
 			 List<CompletableFuture<?>> allTask=new ArrayList<CompletableFuture<?>>();
 			 allTask.add(task_1);
