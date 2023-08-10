@@ -204,6 +204,9 @@ private static final long serialVersionUID = 1L;
       
 	    @Column(name="LOCATION_NAME", length=100)
 			private String locationName;
+	    
+	    @Column(name="SALARY_LC")
+	    private BigDecimal salaryLc;
 }
 
 
