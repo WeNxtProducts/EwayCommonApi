@@ -1664,6 +1664,8 @@ public class PaymentServiceImpl implements PaymentService {
 					JsonElement jsonElement = array.get(0);
 					JsonObject asJsonObject = jsonElement.getAsJsonObject();
 					res.setPaymentUrl(((JsonPrimitive) asJsonObject.get("payment_gateway_url")).getAsString());
+				}else {
+					res.setResponse(((JsonPrimitive) payment.get("message")).getAsString());
 				}
 			}
 			//Tracking Details

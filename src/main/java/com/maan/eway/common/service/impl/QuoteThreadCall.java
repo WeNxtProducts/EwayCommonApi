@@ -1774,6 +1774,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 						motorData.setOverallPremiumFc(endtPremium.doubleValue());
 						motorData.setOverallPremiumLc(endtPremium.doubleValue());
 						ref.setEndtPremium(endtPremium.doubleValue());
+						ref.setActualPremiumFc(BigDecimal.ZERO);
+						ref.setActualPremiumLc(BigDecimal.ZERO);
+						ref.setOverallPremiumFc(BigDecimal.ZERO);
+						ref.setOverallPremiumLc(BigDecimal.ZERO);
 						motorDatas.add(motorData);
 						
 					}) ;
