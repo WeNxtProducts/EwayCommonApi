@@ -2418,7 +2418,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
 				Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
 				Predicate n4 = cb.equal(m.get("status"), status);
-				Predicate n9 = cb.equal(m.get("integrationStatus"), "P");
+//				Predicate n9 = cb.equal(m.get("integrationStatus"), "P");
 				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), startDate);
 				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), startDate);
 				Predicate n10 = cb.equal(m.get("endtCount"), endtCount);
@@ -2467,7 +2467,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 
 		@Override
 		public List<PortfolioGridCriteriaRes> getMotorPortfolioCancelled(ExistingQuoteReq req, List<String> branches,
-				Date startDate,int limit, int offset, String status) {
+				Date startDate,int limit, int offset, String endtId) {
 			List<PortfolioGridCriteriaRes> portfolio = new ArrayList<PortfolioGridCriteriaRes>();
 			try {
 				CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -2536,10 +2536,11 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Predicate n1 = cb.equal(c.get("customerId"), m.get("customerId"));
 				Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
 				Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
-				Predicate n4 = cb.equal(m.get("status"), status);
+				Predicate n4 = cb.equal(m.get("status"), "P");
 				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), startDate);
 				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), startDate);
 				Predicate n10 = cb.equal(m.get("endtCount"), endtCount);
+				Predicate n12 = cb.equal(m.get("endtTypeId"), endtId);
 			//	Predicate n10 = cb.isNull(m.get("endtTypeId"));
 				
 				Predicate n5 = null;
@@ -2557,7 +2558,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 					n6 = e0.in(branches);
 				}
 
-				query.where(n1,n2, n3, n4, n5, n6,n7,n8,n10)
+				query.where(n1,n2, n3, n4, n5, n6,n7,n8,n10,n12)
 						.groupBy(
 								c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"),c.get("mobileNo1"), c.get("isTaxExempted"), c.get("taxExemptedId"),
 								m.get("companyId"),m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),

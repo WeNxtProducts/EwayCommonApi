@@ -1989,9 +1989,9 @@ public class GridServiceImpl implements GridService {
 
 			List<PortfolioGridCriteriaRes> list = new ArrayList<PortfolioGridCriteriaRes>();
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
-				list = motService.getMotorProtfolioPending(req, branches, today, limit, offset, "P");
+				list = motService.getMotorProtfolioPending(req, branches, today, limit, offset, "E");
 			} else {
-				list = commonService.getCommonProtfolioPending(req, branches, today, limit, offset, "P");
+				list = commonService.getCommonProtfolioPending(req, branches, today, limit, offset, "E");
 
 			}
 //				else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
@@ -2063,9 +2063,9 @@ public class GridServiceImpl implements GridService {
 					req.getProductId().toString());
 
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
-				list = motService.getMotorPortfolioCancelled(req, branches, today, limit, offset, "D");
+				list = motService.getMotorPortfolioCancelled(req, branches, today, limit, offset, "842");
 			} else {
-				list = commonService.getCommonPortfolioCancelled(req, branches, today, limit, offset, "D");
+				list = commonService.getCommonPortfolioCancelled(req, branches, today, limit, offset, "842");
 			}
 //				else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
 //					referralApprovedList = traService.getTravelPortfolioCancelled(req  , branches, limit , offset, "D" );
