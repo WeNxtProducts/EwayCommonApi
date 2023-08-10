@@ -1602,6 +1602,7 @@ this.repository = repo;
 					 coverRes.setCoverDesc(filterCover.get(0).getCoverDesc());
 					 coverRes.setMinimumPremium(filterCover.get(0).getMinimumPremium()==null ? null : new BigDecimal(filterCover.get(0).getMinimumPremium().toString()));
 					 coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
+					 coverRes.setSumInsuredLc(filterCover.get(0).getSumInsuredLc()==null ? BigDecimal.ZERO : new BigDecimal(filterCover.get(0).getSumInsuredLc().toString()));
 					 coverRes.setSumInsured(filterCover.get(0).getSumInsured()==null ? BigDecimal.ZERO : new BigDecimal(filterCover.get(0).getSumInsured().toString()));
 					 coverRes.setRate(filterCover.get(0).getRate()==null?null:Double.valueOf(filterCover.get(0).getRate().toString()));
 					 coverRes.setPremiumAfterDiscount(filterCover.get(0).getPremiumAfterDiscountFc()==null?BigDecimal.ZERO :filterCover.get(0).getPremiumAfterDiscountFc());

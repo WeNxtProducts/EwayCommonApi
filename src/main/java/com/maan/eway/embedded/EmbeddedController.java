@@ -32,4 +32,15 @@ public class EmbeddedController {
 			return new ResponseEntity<>(null,HttpStatus.EXPECTATION_FAILED);	
 		
 	}
+	
+	@PostMapping("/create/{LoginId}/schedule/{EncodedPolicyNo}")
+	@ApiOperation("This Method is to get by id")
+	public ResponseEntity<ResponseForInalipa>  createSchedule(@PathVariable("LoginId")  String loginId,@PathVariable("EncodedPolicyNo") String encodedPolicyNo) {
+		ResponseForInalipa response=embService.createSchedule(loginId,encodedPolicyNo);
+		if(response!=null)
+			return new ResponseEntity<>(response,HttpStatus.OK);
+		else
+			return new ResponseEntity<>(null,HttpStatus.EXPECTATION_FAILED);	
+		
+	}
 }

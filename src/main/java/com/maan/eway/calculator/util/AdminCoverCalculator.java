@@ -1,6 +1,7 @@
 package com.maan.eway.calculator.util;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.function.Consumer;
@@ -49,6 +50,7 @@ public class AdminCoverCalculator  extends CommonCalculator implements Consumer<
 					}
 				 }				 
 				 t.setSumInsured(si);
+				 t.setSumInsuredLc(si.multiply(exchangeRate,MathContext.DECIMAL64));
 			
 				 if("F".equals(t.getCalcType()))
 					 t.setCalcType("P");

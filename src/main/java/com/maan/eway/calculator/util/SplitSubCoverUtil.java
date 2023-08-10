@@ -40,6 +40,7 @@ public class SplitSubCoverUtil implements Function<Tuple,Cover> {
 					.minimumPremium(t.get("minPremium")==null?BigDecimal.ZERO:new BigDecimal(t.get("minPremium").toString()))
 					.coverToolTip(t.get("toolTip")==null?"":t.get("toolTip").toString())
 					.isSubCover( t.get("subCoverYn")==null?"N":t.get("subCoverYn").toString())
+					.sumInsuredLc(BigDecimal.ZERO)
 					.sumInsured(BigDecimal.ZERO)
 					.rate(t.get("baseRate")==null?0D:Double.parseDouble(t.get("baseRate").toString()))
 					.subCoverId( (t.get("subCoverId")==null || "N".equals(subc) )?null:t.get("subCoverId").toString())

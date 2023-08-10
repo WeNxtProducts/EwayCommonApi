@@ -817,6 +817,7 @@ public class QuoteServiceImpl implements QuoteService {
 					 coverRes.setCoverDesc(filterCover.get(0).getCoverDesc());
 					 coverRes.setIsSubCover(filterCover.get(0).getSubCoverYn());
 					 coverRes.setSumInsured(filterCover.get(0).getSumInsured()==null ? null : new BigDecimal(filterCover.get(0).getSumInsured().toString()));
+					 coverRes.setSumInsuredLc(filterCover.get(0).getSumInsuredLc()==null ? null : new BigDecimal(filterCover.get(0).getSumInsuredLc().toString()));
 					 coverRes.setRate(filterCover.get(0).getRate()==null?null : Double.valueOf(filterCover.get(0).getRate().toString()));
 					coverRes.setExcessAmount(filterCover.get(0).getExcessAmount()==null ? "" :filterCover.get(0).getExcessAmount().toPlainString() );
 					coverRes.setExcessPercent(filterCover.get(0).getExcessPercent()==null ? "" :filterCover.get(0).getExcessPercent().toPlainString() );

@@ -79,8 +79,8 @@ public interface FactorRateRequestDetailsRepository  extends JpaRepository<Facto
 	List<FactorRateRequestDetails> findByRequestReferenceNoAndDiscLoadIdAndUserOptOrderByVehicleIdAsc(
 			String requestReferenceNo, int i, String string);
 
-	List<FactorRateRequestDetails> findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndVehicleIdAndProductIdAndSectionIdOrderByVehicleIdAsc(
-			String requestReferenceNo, int i, int j, Integer vehicleId, Integer valueOf, Integer valueOf2);
+	List<FactorRateRequestDetails> findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndVehicleIdAndProductIdAndSectionIdAndStatusOrderByVehicleIdAsc(
+			String requestReferenceNo, int i, int j, Integer vehicleId, Integer valueOf, Integer valueOf2,String status);
 
 	List<FactorRateRequestDetails> findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndUserOptAndVehicleIdAndProductIdAndSectionIdOrderByVehicleIdAsc(
 			String requestReferenceNo, int i, int j, String string, Integer vehicleId, Integer valueOf,
@@ -97,6 +97,12 @@ public interface FactorRateRequestDetailsRepository  extends JpaRepository<Facto
 
 	List<FactorRateRequestDetails> findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndProductIdAndSectionIdOrderByVehicleIdAsc(
 			String requestReferenceNo, int i, int j, Integer valueOf, Integer valueOf2);
+
+	List<FactorRateRequestDetails> findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndStatusOrderByVehicleIdAsc(
+			String requestReferenceNo, int i, int j, String string);
+
+	List<FactorRateRequestDetails> findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndProductIdAndSectionIdAndStatusOrderByVehicleIdAsc(
+			String requestReferenceNo, int i, int j, Integer valueOf, Integer valueOf2, String string);
 
 
 }

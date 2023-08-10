@@ -288,7 +288,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="COVERAGE_LIMIT")
     private BigDecimal     coverageLimit ;
 
- 
+    @Column(name="SUM_INSURED_LC")
+    private BigDecimal     sumInsuredLc ;
 }
 
 

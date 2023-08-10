@@ -38,7 +38,8 @@ public class CachingConfig   {
 	        b->b.name("countfactorOnlyquery").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
 	        b->b.name("currencyDecimalFormat").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
 	        b->b.name("fetchAlipaRating").expireAfterWrite(2, TimeUnit.MINUTES).entryCapacity(10L).permitNullValues(false),
-	        b->b.name("collectCommissionDetails").expireAfterWrite(2, TimeUnit.MINUTES).entryCapacity(10L).permitNullValues(false)
+	        b->b.name("collectCommissionDetails").expireAfterWrite(2, TimeUnit.MINUTES).entryCapacity(10L).permitNullValues(false),
+	        b->b.name("collectProductsFromLoginId").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(2L).permitNullValues(false)
 	        );
 		
 	  }
@@ -302,6 +303,26 @@ public class CachingConfig   {
 		    		};
 		    	
 	    	 	}
+	    	 	@Bean
+		    	public KeyGenerator collectProductsFromLoginIdKeyGen() {
+
+		    		return new KeyGenerator() {
+		    			@Override
+		    			public Object generate(Object target, Method method, Object... params) {
+		    				String e=(String)params[0];
+		    				//String r=(String)params[1];
+		    				
+		    				String string = new StringBuilder().append(e)
+		    						.append(e)		    						
+		    					//	.append(DD_MM_YYYY.format(new Date()))
+		    						.toString();
+		    				return string;
+		    			}
+
+		    		};
+		    	
+	    	 	}
+	    	 	
 	    	 	
 	    	 	
 }

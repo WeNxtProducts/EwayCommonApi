@@ -1,6 +1,8 @@
 package com.maan.eway.calculator.util;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -57,6 +59,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					}
 				 }				 
 				 t.setSumInsured(si);
+				 t.setSumInsuredLc(si.multiply(exchangeRate,MathContext.DECIMAL64));
 				 //t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0
 				 if(t.getSumInsured().compareTo(t.getCoverageLimit())>0) {
 					 t.setIsReferral("Y");

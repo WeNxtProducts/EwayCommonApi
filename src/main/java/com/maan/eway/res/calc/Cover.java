@@ -33,8 +33,10 @@ public class Cover implements Serializable{
 	    public String coverToolTip;
 	    @JsonProperty("IsSubCover") 
 	    public String isSubCover;
-	    @JsonProperty("SumInsured") 
+	    @JsonProperty("SumInsured")
 	    public BigDecimal sumInsured;
+	    @JsonProperty("SumInsuredLc") 
+	    public BigDecimal sumInsuredLc;
 	    @JsonProperty("Rate") 
 	    public Double rate;
 	    @JsonProperty("SubCoverId") 

@@ -1,6 +1,7 @@
 package com.maan.eway.calculator.util;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -78,6 +79,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					}
 				 }				 
 				 t.setSumInsured(si);
+				 t.setSumInsuredLc(si.multiply(exchangeRate,MathContext.DECIMAL64));
 				 if(t.getSumInsured().compareTo(t.getCoverageLimit())>0) {
 					 t.setIsReferral("Y");
 					 t.setReferalDescription("CoverageLimit Referral Limits Upto"+t.getCoverageLimit());

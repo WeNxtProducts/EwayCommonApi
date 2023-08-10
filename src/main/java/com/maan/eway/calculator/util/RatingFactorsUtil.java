@@ -1,5 +1,6 @@
 package com.maan.eway.calculator.util;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,7 +14,14 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 
 import org.apache.tomcat.util.buf.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +39,7 @@ import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.FactorTypeDetails;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.OneTimeTableDetails;
+import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.RatingFieldMaster;
 import com.maan.eway.bean.SectionCoverMaster;
@@ -549,7 +558,8 @@ public class RatingFactorsUtil {
 		}
 		return null;
 	}
-
+	
+	@Cacheable(cacheNames= {"collectProductsFromLoginId"},keyGenerator  = "collectProductsFromLoginIdKeyGen",value = "collectProductsFromLoginId")
 	public Tuple collectProductsFromLoginId(String loginId) {
 		try {			
 			String todayInString = DD_MM_YYYY.format(new Date());
@@ -604,6 +614,48 @@ public class RatingFactorsUtil {
 		 }catch (Exception e) {
 			 e.printStackTrace();
 		}
+		return null;
+	}
+	
+	@PersistenceContext
+	private EntityManager em;
+
+	public List<PolicyCoverData> findDataForTravel(String endtPrevQuoteNo, Integer vehicleId, String insuranceId,
+			Integer productId, Integer sectionId, String status) {
+
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<PolicyCoverData> createQuery = cb.createQuery(PolicyCoverData.class);
+			Root<PolicyCoverData> from = createQuery.from(PolicyCoverData.class);
+			Predicate n1 = cb.equal(from.get("quoteNo"),endtPrevQuoteNo);
+			Predicate n2 = cb.equal(from.get("vehicleId"),vehicleId);
+			Predicate n3 = cb.equal(from.get("companyId"),insuranceId);			
+			Predicate n4 = cb.equal(from.get("productId"),productId);
+			Predicate n5 = cb.equal(from.get("sectionId"),sectionId);
+			Predicate n6 = cb.equal(from.get("status"),status);
+			Field[] declaredFields = PolicyCoverData.class.getDeclaredFields();
+			//declaredFields
+			List<Selection<?>> colselct=new ArrayList<Selection<?>>();
+			
+			for(Field  field:declaredFields) {
+				try {
+					if(!"serialVersionUID".equals(field.getName()))
+					{
+						Selection<Object> alias = from.get(field.getName()).alias(field.getName());
+						colselct.add(alias);
+					}
+				}catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			
+			createQuery.where(n1,n2,n3,n4,n5,n6).groupBy(from.get(""));
+			createQuery.multiselect(colselct);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		// TODO Auto-generated method stub
 		return null;
 	}
 

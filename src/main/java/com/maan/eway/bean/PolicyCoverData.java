@@ -294,7 +294,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="REGULATORY_SUMINSURED")
     private BigDecimal    regulatorySuminsured ;
     
- 
+    @Column(name="SUM_INSURED_LC")
+    private BigDecimal     sumInsuredLc ;
  
 }
 

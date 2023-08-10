@@ -10,9 +10,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.maan.eway.bean.PaymentDetail;  
+import com.maan.eway.bean.InsuranceCompanyMaster;
+import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PaymentVendorMaster;
 import com.maan.eway.common.req.PaymentDetailsSaveReq;
@@ -82,14 +82,16 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					orderDict.addProperty("buyer_userid", "");
 					orderDict.addProperty("buyer_phone", payment.getReqBillToPhone());
 					orderDict.addProperty("gateway_buyer_uuid", "");
-					/*InsuranceCompanyMaster insInfo = insuranceRepo.findByCompanyId(payment.getCompanyId());
-					if(insInfo.getCurrencyId().equals(payment.getCurrencyId()))	{					
+					List<InsuranceCompanyMaster> insInfo = insuranceRepo.findByCompanyIdAndStatusAndEffectiveDateStartAfterAndEffectiveDateEndBefore(payment.getCompanyId(),"Y",new Date(),new Date());
+					if(insInfo.get(0).getCurrencyId().equals(payment.getCurrencyId()))						
 						orderDict.addProperty("amount",  payment.getPremiumLc());
 					else
-						orderDict.addProperty("amount",  payment.getPremiumFc());*/ 
-					orderDict.addProperty("amount",100);
-					//orderDict.addProperty("currency",payment.getCurrencyId()); 
-					orderDict.addProperty("currency","TZS");
+						orderDict.addProperty("amount",  payment.getPremiumFc());
+					
+					orderDict.addProperty("currency",payment.getCurrencyId());
+					
+					//orderDict.addProperty("amount",100);					 
+					//4orderDict.addProperty("currency","TZS");
 					orderDict.addProperty("payment_methods","ALL");
 					orderDict.addProperty("redirect_url",StringUtils.isNotBlank(redirect_url)?Base64.getEncoder().encodeToString(redirect_url.getBytes("UTF-8")):"");
 					orderDict.addProperty("cancel_url",StringUtils.isNotBlank(cancel_url)?Base64.getEncoder().encodeToString(cancel_url.getBytes("UTF-8")):"");

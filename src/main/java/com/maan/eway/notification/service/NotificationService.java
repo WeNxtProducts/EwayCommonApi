@@ -342,7 +342,7 @@ public class NotificationService {
 		
  	}
 	
-	private String getShorternURL(String encryptedURL) {
+	public String getShorternURL(String encryptedURL) {
 		BufferedReader reader = null;
 		URL url =null;
 		URLConnection con =null;

@@ -256,7 +256,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		try {
 		
 			// Cover Calc
-			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndVehicleIdAndProductIdAndSectionIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0,request.getVehicleId() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()));
+			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndVehicleIdAndProductIdAndSectionIdAndStatusOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0,request.getVehicleId() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()),"Y");
 			List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
 			
 			// Insert Other Covers
@@ -482,7 +482,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				motorRepo.deleteByQuoteNoAndVehicleId(request.getQuoteNo(), String.valueOf(request.getVehicleId()));
 			}
 			// Cover Calc
-			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndVehicleIdAndProductIdAndSectionIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0,request.getVehicleId() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()));
+			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndVehicleIdAndProductIdAndSectionIdAndStatusOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0,request.getVehicleId() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()),"Y");
 			List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
 			
 			// Insert Other Covers
@@ -988,7 +988,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			// Cover Calc
 		//	List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndVehicleIdAndProductIdAndSectionIdNotOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0,request.getGroupId() ,Integer.valueOf(request.getProductId()) ,35);
-			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0 );
+			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndStatusOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0 ,"Y");
 			
 		//	List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
 			
@@ -1130,10 +1130,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 			List<FactorRateRequestDetails>  covers = new ArrayList<FactorRateRequestDetails>();
 			
 			if ( eserTravel.getPlanTypeId().equals(3) && request.getGroupId().equals(1) ) {
-				covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndProductIdAndSectionIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0 ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()));
+				covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndProductIdAndSectionIdAndStatusOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0 ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()),"Y");
 			} else {
 				
-				covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndProductIdAndSectionIdOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0 ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()));		
+				covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndProductIdAndSectionIdAndStatusOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0 ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()),"Y");		
 				
 			//	List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
 				

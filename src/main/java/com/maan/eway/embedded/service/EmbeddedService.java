@@ -10,21 +10,29 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.persistence.Tuple;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import com.maan.eway.auth.token.EncryDecryService;
 import com.maan.eway.bean.GroupMedicalDetails;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
 import com.maan.eway.embedded.request.Inalipa;
 import com.maan.eway.embedded.response.ResponseForInalipa;
+import com.maan.eway.notification.service.NotificationService;
 import com.maan.eway.repository.GroupMedicalDetailsRepository;
 
 @Service
@@ -42,15 +50,75 @@ public class EmbeddedService {
 	@Autowired
 	private EmbeddedServiceValidator validator;
 	DecimalFormat decimalFormat =new DecimalFormat("#####0.###");
+	
+	
+	@Autowired
+	private NotificationService notifcationService;
+	
+	@Value(value = "${embedded.scheduleUrl}")
+	private String scheduleUrl;
+	
 	public ResponseForInalipa createPolicy(String loginId, Inalipa request) {
 		try {
 			SimpleDateFormat format=new SimpleDateFormat("YYYY-MM-dd");			
 			format.setTimeZone(TimeZone.getTimeZone("EAT"));
 			
-			Tuple loginInfo = ratingutil.collectProductsFromLoginId(loginId);
+			String requestReferenceNo=loginId.toUpperCase()+"-"+Calendar.getInstance().getTimeInMillis();
+			String encrypt = EncryDecryService.encrypt(requestReferenceNo);
+			 CompletableFuture<Tuple> task_1 = CompletableFuture.supplyAsync(()->(ratingutil.collectProductsFromLoginId(loginId)));
+			 CompletableFuture<Map<String,Object>> task_2 = CompletableFuture.supplyAsync(()->(ratingutil.collectCommissionDetails(loginId)));
+			 CompletableFuture<List<String>> task_3 = CompletableFuture.supplyAsync(()->(validator.validateRequest(request)));
+			 CompletableFuture<String> task_4 = CompletableFuture.supplyAsync(()->(notifcationService.getShorternURL(new String(scheduleUrl.replaceAll("<LoginId>", loginId)+encrypt))))
+					 .completeOnTimeout(new String(scheduleUrl.replaceAll("<LoginId>", loginId)+encrypt), 1, TimeUnit.SECONDS);
+			 
+			 List<CompletableFuture<?>> allTask=new ArrayList<CompletableFuture<?>>();
+			 allTask.add(task_1);
+			 allTask.add(task_2);
+			 allTask.add(task_3);
+			 allTask.add(task_4);
+			 CompletableFuture<Void> allFuture = CompletableFuture.allOf(allTask.toArray(new CompletableFuture[allTask.size()]));
+			 CompletableFuture<?> allCompletableFuture = allFuture.thenApply(future -> {
+		 
+				             return allTask.stream().map(completableFuture -> completableFuture.join())
+		  
+				                     .collect(Collectors.toList());
+				  	         });
+
+			 CompletableFuture<?> completableFuture = allCompletableFuture.toCompletableFuture();
+			 String pdfUrl=null;
+			 Tuple loginInfo=null;
+			 List<String> errorss=null;
+			 Map<String,Object> commissionDetails=null;
+			 try {
+				  
+				 
+				             List<Object> finalLists = (List<Object>) completableFuture.get();
+				             for (Object finalList : finalLists) {
+				            	 if(finalList instanceof String)
+					            	 	pdfUrl=(String) finalList;
+					             else if(finalList instanceof Tuple)
+					            	 	loginInfo=(Tuple) finalList;
+					             else if(finalList instanceof ArrayList)
+					            	 errorss=(List<String>) finalList;
+					             else if(finalList instanceof HashMap)
+					            	 commissionDetails=( Map<String,Object> ) finalList;
+							}
+				             
+				             
+				         } catch (InterruptedException e) {
+				  
+				             e.printStackTrace();
+				  
+				         } catch (ExecutionException e) {
+				  
+				             e.printStackTrace();
+				  
+				         }
+		/*	Tuple loginInfo = ratingutil.collectProductsFromLoginId(loginId);
 			Map<String,Object> commissionDetails= ratingutil.collectCommissionDetails(loginId);
-			List<String> errorss=validator.validateRequest(request);
-			
+			List<String> errorss=validator.validateRequest(request);			
+			String pdfUrl=notifcationService.getShorternURL(new String(scheduleUrl.replaceAll("<LoginId>", loginId)+""+EncryDecryService.encrypt(requestReferenceNo)));
+			*/
 			if(errorss!=null && errorss.size()>0) {
 				ResponseForInalipa response=ResponseForInalipa.builder()
 						.expiredDate(null)
@@ -65,7 +133,7 @@ public class EmbeddedService {
 			
 			Date expiredDate = new Date();//LocalDate.now();
 			
-			String pdfUrl="www.maansarovor.com";
+
 			if(loginInfo!=null) {
 					String search="companyId:"+loginInfo.get("companyId") +";productId:"+loginInfo.get("productId")+";status:{Y,R};coverId:"+request.getPlanOpted()+";"
 					+DD_MM_YYYY.format(new Date())+"~effectiveDateStart&effectiveDateEnd;agencyCode:99999"
@@ -101,7 +169,7 @@ public class EmbeddedService {
 						BigDecimal totalcommission =premium.multiply(new BigDecimal((Double) (commissionPercent/ 100)));
 						
 						String policyNo=genNo.generatePolicyNo();
-						
+						//notifcationService.getShorternURL(pdfUrl+""+policyNo);
 						GroupMedicalDetails medical=GroupMedicalDetails.builder()
 								.amountPaid(request.getOrderValue())
 								.applicationId("1")
@@ -118,7 +186,7 @@ public class EmbeddedService {
 								.status("Y")
 								.sectionId(Integer.parseInt(request.getPlanOpted()))
 								.responsePeriod(new Date())
-								.requestReferenceNo(loginId.toUpperCase()+"-"+Calendar.getInstance().getTimeInMillis()) 
+								.requestReferenceNo(requestReferenceNo) 
 								.productId(Integer.parseInt(loginInfo.get("productId").toString()))
 								.premium(premium)
 								.taxPremium(totalTax)
@@ -190,6 +258,15 @@ public class EmbeddedService {
 					.build();
 			return response;
 		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	public ResponseForInalipa createSchedule(String loginId, String encodedPolicyNo) {
+		try {
+		 
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

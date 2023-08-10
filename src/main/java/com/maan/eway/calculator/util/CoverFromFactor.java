@@ -3,6 +3,8 @@ package com.maan.eway.calculator.util;
 import java.math.BigDecimal;
 import java.util.function.Function;
 
+import javax.persistence.Column;
+
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.res.calc.Cover;
 
@@ -34,7 +36,9 @@ public class CoverFromFactor implements Function<FactorRateRequestDetails,Cover>
 					.minimumPremium(t.getMinimumPremium()==null?BigDecimal.ZERO:t.getMinimumPremium())
 					//.coverToolTip(t.get ==null?"":t.get("toolTip").toString())
 					.isSubCover( t.getSubCoverYn()==null?"N":t.getSubCoverYn())
+					.sumInsuredLc(BigDecimal.ZERO)
 					.sumInsured(BigDecimal.ZERO)
+					
 					.rate(t.getRate()==null?0D: t.getRate().doubleValue() )
 					.subCoverId( (t.getSubCoverId()==null || "N".equals(subc) )?null:t.getSubCoverId().toString())
 					.subCoverDesc("Y".equals(subc)?(t.getSubCoverDesc()==null?"":t.getSubCoverDesc()):null)

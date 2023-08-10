@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import com.maan.eway.bean.InsuranceCompanyMaster;
@@ -38,6 +39,9 @@ public interface InsuranceCompanyMasterRepository  extends JpaRepository<Insuran
 	List<InsuranceCompanyMaster> findByCompanyIdOrderByAmendIdDesc(String companyId);
 
 	List<InsuranceCompanyMaster> findByCompanyIdAndStatusOrderByEffectiveDateEndDesc(String companyId, String string);
+
+	List<InsuranceCompanyMaster> findByCompanyIdAndStatusAndEffectiveDateStartAfterAndEffectiveDateEndBefore(String companyId,
+			String string, Date date, Date date2);
 
 
 

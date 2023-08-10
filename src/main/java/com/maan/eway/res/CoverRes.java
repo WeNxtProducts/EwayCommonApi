@@ -4,11 +4,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.maan.eway.res.calc.Cover;
-import com.maan.eway.res.calc.CoverException;
-import com.maan.eway.res.calc.Discount;
-import com.maan.eway.res.calc.Loading;
-import com.maan.eway.res.calc.Tax;
 
 import lombok.Data;
 
@@ -28,7 +23,8 @@ public class CoverRes {
     public String isSubCover;
     @JsonProperty("SumInsured") 
     public BigDecimal sumInsured;
- 
+    @JsonProperty("SumInsuredLc") 
+    public BigDecimal sumInsuredLc;
     @JsonProperty("SubCovers") 
     public List<SubCoverRes> subcovers;
 
