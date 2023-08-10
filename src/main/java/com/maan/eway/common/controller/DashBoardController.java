@@ -18,21 +18,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.maan.eway.common.req.AdminTiraIntegrationGridReq;
 import com.maan.eway.common.req.DashBoardGetReq;
-import com.maan.eway.common.req.ExistingQuoteReq;
-import com.maan.eway.common.res.AdminTiraIntegrationGirdRes;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.DasboardCountRes;
 import com.maan.eway.common.res.DasboardListRes;
 import com.maan.eway.common.res.DasboardRecentCusListRes;
 import com.maan.eway.common.res.DasboardReferalPendingRes;
-import com.maan.eway.common.service.AdminTiraIntegrationService;
 import com.maan.eway.common.service.DashBoardService;
 import com.maan.eway.error.Error;
 
 
-import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
