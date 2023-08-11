@@ -480,6 +480,13 @@ public class DocumentServiceImpl implements DocumentService{
 										String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("A") ).collect(Collectors.toList()).get(0).getItemValue() ;					
 										doc.setIdType(idType);
 										idList.add(doc); 
+									}else {
+										DocumentDropdownRes doc = new DocumentDropdownRes();
+										doc.setRiskId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
+										doc.setId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
+										String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("A") ).collect(Collectors.toList()).get(0).getItemValue() ;					
+										doc.setIdType(idType);
+										idList.add(doc);
 									}
 								} else {
 									DocumentDropdownRes doc = new DocumentDropdownRes();
