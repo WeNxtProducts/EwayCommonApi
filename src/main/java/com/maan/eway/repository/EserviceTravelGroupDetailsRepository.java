@@ -52,8 +52,10 @@ public interface EserviceTravelGroupDetailsRepository  extends JpaRepository<Ese
 
 	List<EserviceTravelGroupDetails> findByQuoteNo(String prevQuoteNo);
 
+
 	List<EserviceTravelGroupDetails> findByRequestReferenceNoAndStatusNotOrderByGroupIdAsc(String requestReferenceNo,
 			String string);
+	List<EserviceTravelGroupDetails> findByQuoteNoOrderByGroupIdAsc(String quoteNo);
 
 
 }
