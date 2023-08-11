@@ -2288,7 +2288,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 									
 								} else {
 									Long diffInMillies = Math.abs(effDate.getTime() - periodStart.getTime());
-									daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
+									daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) + 1 ;
 									oldEndDate  = effDate ;
 									// Check Leap Year
 									SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
