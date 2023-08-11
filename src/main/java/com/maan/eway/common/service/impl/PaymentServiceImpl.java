@@ -62,6 +62,7 @@ import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
+import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.ListItemValue;
@@ -129,6 +130,7 @@ import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
+import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
@@ -272,6 +274,9 @@ public class PaymentServiceImpl implements PaymentService {
 	
 	@Autowired
 	private	CoverDocumentMasterRepository docRepo;
+	
+	@Autowired
+	private EserviceTravelGroupDetailsRepository groupRepo ;
 
 
 	private Logger log = LogManager.getLogger(ClausesMasterServiceImpl.class);
@@ -507,11 +512,14 @@ public class PaymentServiceImpl implements PaymentService {
 				
 			}	
 			//Product employee validation
-			if(productId.equalsIgnoreCase("14") || productId.equalsIgnoreCase("32") ) {
+			if(product.getMotorYn().equalsIgnoreCase("H") && productId.equalsIgnoreCase("4") ) {
 
-			
-					error.addAll(employeeCountAndSIValid(req.getQuoteNo(),sectionId));							
-				}
+				error.addAll(checkGroupValidation(req.getQuoteNo()));
+					
+					
+			} else if(product.getMotorYn().equalsIgnoreCase("H")  ) {
+				error.addAll(employeeCountAndSIValid(req.getQuoteNo(),sectionId));
+			}
 			
 			
 		} catch (Exception e) {
@@ -521,8 +529,40 @@ public class PaymentServiceImpl implements PaymentService {
 		}
 		return error;
 	}
+
 	
-	
+	private List<Error> checkGroupValidation(String quoteNo  ) {
+		List<Error> errors = new ArrayList<Error>();
+		try {
+			List<EserviceTravelGroupDetails> groupDetails = groupRepo.findByQuoteNoOrderByGroupIdAsc(quoteNo);
+			List<TravelPassengerDetails>     passengerList = passengerRepo.findByQuoteNoAndStatusNot(quoteNo, "D");
+			
+			// Group Validation 
+			for ( EserviceTravelGroupDetails group : groupDetails ) {
+				List<TravelPassengerDetails> filterList = passengerList.stream().filter( o -> o.getGroupId()!=null && Integer.valueOf(o.getGroupId()).equals(group.getGroupId())  )
+						.collect(Collectors.toList()) ;
+				if( group.getGrouppMembers() < filterList.size() ) {
+					errors.add(new Error("12", "Group", "Group : " + group.getGroupDesc() + " Number Of Passengers Greater Than " + group.getGrouppMembers() + " Passengers Not Allowed" ));
+				} else if( group.getGrouppMembers() > filterList.size() ) {
+					errors.add(new Error("12", "Group", "Group : " + group.getGroupDesc() + " Number Of Passengers Lesser Than  " + group.getGrouppMembers() + " Passengers Not Allowed" ));
+				}
+				
+			}
+		
+			List<TravelPassengerDetails> filterSelf1 = passengerList.stream().filter( o -> o.getRelationId()!=null && Integer.valueOf(o.getRelationId()).equals(9)  )
+					.collect(Collectors.toList()) ;
+			List<TravelPassengerDetails> filterSelf2 =passengerList.stream().filter( o -> o.getRelationId()!=null && Integer.valueOf(o.getRelationId()).equals(10)  )
+					.collect(Collectors.toList()) ;
+			if(filterSelf1.size()<=0 && filterSelf2.size()<=0 ) {
+				errors.add(new Error("12", "SelfRelation", " Self Relation is missing in Passenger Details" ));
+			}
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+			errors.add(new Error("01","Common Error",  e.getMessage()));
+		}
+		return errors;
+	}
 	private List<Error> employeeCountAndSIValid(String quoteNo , String sectionId ) {
 		List<Error> error = new ArrayList<Error>();
 		try {

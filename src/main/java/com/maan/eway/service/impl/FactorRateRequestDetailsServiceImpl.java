@@ -368,7 +368,7 @@ this.repository = repo;
 					
 					if(periodStart!=null && periodEnd!=null ) {
 						Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
-						Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
+						Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS)  + 1 ;
 						
 						// Check Leap Year
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
@@ -518,7 +518,7 @@ this.repository = repo;
 						
 						if(periodStart!=null && periodEnd!=null ) {
 							Long diffInMillies = Math.abs(periodEnd.getTime() - periodStart.getTime());
-							Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) ;
+							Long daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS)  + 1 ;
 							
 							// Check Leap Year
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
