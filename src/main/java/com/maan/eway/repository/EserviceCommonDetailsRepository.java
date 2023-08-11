@@ -83,6 +83,11 @@ public interface EserviceCommonDetailsRepository  extends JpaRepository<Eservice
 
 		List<EserviceCommonDetails> findByRequestReferenceNoAndEndorsementType(String newReqRefNo, String string);
 
+		List<EserviceCommonDetails> findByRequestReferenceNoAndStatusNotAndRiskIdInOrderByRiskIdAsc(
+				String requestReferenceNo, String string, List<Integer> vehicleIds);
+
+		List<EserviceCommonDetails> findByRequestReferenceNoAndStatus(String requestReferenceNo, String string);
+
 
 
 }

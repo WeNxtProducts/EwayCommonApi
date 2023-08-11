@@ -78,5 +78,8 @@ public class QuoteThreadReq {
 	
 	@JsonProperty("Vehicles")
 	private List<VehicleIdsReq> VehicleIdsList;
+	
+	private List<VehicleNeedToRemove> vehicleNeedberemove; 
+	
 
 }

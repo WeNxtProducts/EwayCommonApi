@@ -71,6 +71,7 @@ import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.FrameOldDocSaveReq;
 import com.maan.eway.common.req.QuoteThreadReq;
 import com.maan.eway.common.req.VehicleIdsReq;
+import com.maan.eway.common.req.VehicleNeedToRemove;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.QuoteThreadRes;
 import com.maan.eway.error.Error;
@@ -1652,6 +1653,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			Map<String,Object> res= new HashMap<String,Object>() ;
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
+				req.setVehicleNeedberemove(new ArrayList<VehicleNeedToRemove>());
 				
 				// Delete Risk Tables
 				 if( req.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId) ) {
@@ -1669,7 +1671,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 				}
 				
 				// Delete Cover Table
-				res = deleteCoverRecords(req);
+				 
+				 res = deleteCoverRecords(req);
 				
 	 			// Section
 				res = deleteSectionRecords(req);
@@ -1707,7 +1710,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				// update 
 				
 				// Find Motor
-				// Deactivate Old Record
+				// Deactivate Old Record 
 				if(StringUtils.isNotBlank(req.getEndtPrevQuoteNo()) ) {
 					List<MotorDataDetails> oldMotors = motorRepo.findByQuoteNo(request.getEndtPrevQuoteNo() );
 					
@@ -1783,9 +1786,17 @@ public class QuoteThreadCall implements Callable<Object>  {
 					}) ;
 					
 				
-
 					motorRepo.saveAllAndFlush(motorDatas);
 					eserMotRepo.saveAll(eserMotors);
+					List<VehicleNeedToRemove> vehicleNeedberemove = new ArrayList<VehicleNeedToRemove>();
+					eserMotors.forEach( o -> {
+						VehicleNeedToRemove removeVehicle = new VehicleNeedToRemove(); 
+						removeVehicle.setSectionId(o.getSectionId());
+						removeVehicle.setVehicleId(Integer.valueOf(o.getRiskId()));
+						vehicleNeedberemove.add(removeVehicle);
+					});
+					
+					req.setVehicleNeedberemove(vehicleNeedberemove);
 				}
 				//Doc traces delete 
 				List<EserviceSectionDetails> secs = eserSecRepo.findByRequestReferenceNoAndStatus(req.getRequestReferenceNo(),"Y");
@@ -1936,8 +1947,26 @@ public class QuoteThreadCall implements Callable<Object>  {
 					List<DocumentTransactionDetails> docfilter = doc.stream().filter(o -> o.getLocationId()!=99999 &&  ! secIds.contains(o.getSectionId().toString())).collect(Collectors.toList());	
 					docRepo.deleteAll(docfilter);
 				}
+				List<VehicleNeedToRemove> vehicleNeedberemove = new ArrayList<VehicleNeedToRemove>();
+				List<EserviceCommonDetails> eserHumans = eserCommonRepo.findByRequestReferenceNoAndStatus(request.getRequestReferenceNo(),"D");
+				eserHumans.forEach( o -> {
+					VehicleNeedToRemove removeVehicle = new VehicleNeedToRemove(); 
+					removeVehicle.setSectionId(o.getSectionId());
+					removeVehicle.setVehicleId(Integer.valueOf(o.getRiskId()));
+					vehicleNeedberemove.add(removeVehicle);
+				});
+				List<EserviceSectionDetails> eserSections = eserSecRepo.findByRequestReferenceNoAndStatus(req.getRequestReferenceNo() ,"D");
+				eserSections.forEach( o -> {
+					VehicleNeedToRemove removeVehicle = new VehicleNeedToRemove();
+					if(! "H".equalsIgnoreCase(o.getProductType())) {
+						removeVehicle.setSectionId(o.getSectionId());
+						removeVehicle.setVehicleId(Integer.valueOf(o.getRiskId()));
+						vehicleNeedberemove.add(removeVehicle);
+					}
+					
+				});
 				
-				
+				req.setVehicleNeedberemove(vehicleNeedberemove);
 				
 				
 	 			res.put("Response", "Success") ;
@@ -1960,8 +1989,16 @@ public class QuoteThreadCall implements Callable<Object>  {
 				if (commonInfo > 0  ) {
 					commonDataRepo.deleteByQuoteNo(req.getQuoteNo());
 				}
-				
-	 			res.put("Response", "Success") ;
+				List<VehicleNeedToRemove> vehicleNeedberemove = new ArrayList<VehicleNeedToRemove>();
+				List<EserviceCommonDetails> eserHumans = eserCommonRepo.findByRequestReferenceNoAndStatus(request.getRequestReferenceNo(),"D");
+				eserHumans.forEach( o -> {
+					VehicleNeedToRemove removeVehicle = new VehicleNeedToRemove(); 
+					removeVehicle.setSectionId(o.getSectionId());
+					removeVehicle.setVehicleId(Integer.valueOf(o.getRiskId()));
+					vehicleNeedberemove.add(removeVehicle);
+				});
+				req.setVehicleNeedberemove(vehicleNeedberemove);
+				res.put("Response", "Success") ;
 				res.put("Errors", null) ;
 				
 			} catch ( Exception e) {
@@ -1987,7 +2024,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 	 			  // Deactivate Old Covers 
 	 			if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
 	 				
-	 				CommonRes commonRes = deactivateOldCovers(request); 
+	 				CommonRes commonRes = deactivateOldCovers(req); 
 	 				
 	 			}
 	 			
@@ -2171,9 +2208,17 @@ public class QuoteThreadCall implements Callable<Object>  {
 //					
 //				}) ;
 				
+
+				// Filter Deactivated Covers
+				List<VehicleIdsReq> collect = request.getVehicleIdsList().stream()
+						.filter( d -> request.getVehicleNeedberemove().stream().map( VehicleNeedToRemove :: getSectionId).anyMatch(  
+								e ->  ! e.equals( d.getSectionId()  )))
+						.filter( d -> request.getVehicleNeedberemove().stream().map( VehicleNeedToRemove :: getVehicleId).anyMatch(  
+								e ->  ! e.equals( d.getVehicleId() ))).collect(Collectors.toList());
+					
 				// Non Selected Records
-				List<PolicyCoverData>  deactivateOldCovers = OldPolicyCovers.stream().filter( o ->  ! o.getStatus().equalsIgnoreCase("D") ).collect(Collectors.toList());
-				 for ( VehicleIdsReq vehId :  request.getVehicleIdsList() ) {
+				 List<PolicyCoverData>  deactivateOldCovers = OldPolicyCovers.stream().filter( o ->  ! o.getStatus().equalsIgnoreCase("D") ).collect(Collectors.toList());
+				 for ( VehicleIdsReq vehId :  collect ) {
 		            	for (CoverIdsReq cov : vehId.getCoverIdList() ) {
 							
 		            		if( cov.getSubCoverYn() ==null || cov.getSubCoverYn().equalsIgnoreCase("N") ) {

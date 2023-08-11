@@ -50,6 +50,7 @@ import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
@@ -936,8 +937,11 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			
 			// Multiple Vehicle Thread Call
 			List<Integer> vehicleIds = req.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
-	    	 for (Integer vehId :  vehicleIds ) {
-	            	threadCount = threadCount +  2 ;
+	    	List<EserviceMotorDetails> activeMotorList =  eserMotRepo.findByRequestReferenceNoAndRiskIdInAndStatusNotOrderByRiskIdAsc(req.getRequestReferenceNo(),vehicleIds ,"D");
+	    	List<Integer> activeVehicleIds = activeMotorList.stream().map(EserviceMotorDetails :: getRiskId  ).collect(Collectors.toList());
+	    	
+			for (Integer vehId :  activeVehicleIds ) {
+					threadCount = threadCount +  2 ;
 	            	List<String> sectionId = req.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());
 	            	
 	            	QuoteThreadReq request2 = new QuoteThreadReq();
@@ -958,7 +962,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	            	request2.setEndtCount(request.getEndtCount());
 	            	request2.setEndtFields(request.getEndtFields());
 	            	request2.setMotorYn(request.getMotorYn());
-	            	 
+	            	  
 	            	QuoteThreadCall motorSave = new QuoteThreadCall("MotorSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo  
 	            			, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
 	            		    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
@@ -987,7 +991,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
 			
 			// Multiple Vehicle Thread Call
-			List<EserviceTravelGroupDetails> groupData = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(request.getRequestReferenceNo() );
+			List<EserviceTravelGroupDetails> groupData = eserGroupRepo.findByRequestReferenceNoAndStatusNotOrderByGroupIdAsc(request.getRequestReferenceNo() ,"D" );
         	
         	Integer passCount = 0;
         	List<VehicleIdsReq>  filterAdult  = req.getVehicleIdsList().stream().filter( o ->  o.getVehicleId().equals(2) ).collect(Collectors.toList());
@@ -996,6 +1000,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
         	totalGroup.addAll(filterAdult)	;
         	totalGroup.addAll(filterOthers);
         	List<Integer> groupIds = totalGroup.stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
+        	
         	// Filte Count
         	 for (Integer vehId :  groupIds ) {
 				 List<EserviceTravelGroupDetails> filterGroup = groupData.stream().filter( o -> o.getGroupId().equals(vehId) ).collect(Collectors.toList());				 
@@ -1097,6 +1102,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			int threadCount = 1 ;
 			request.setGroupId(1);
 			request.setVehicleId(1);
+			
 			QuoteThreadCall buildingSave = new QuoteThreadCall("BuildingSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo  
 					, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
 				    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
@@ -1104,34 +1110,41 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			
 			
 			List<Integer> vehicleIds = req.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
-			 for (Integer vehId :  vehicleIds ) {
+			List<EserviceSectionDetails> sectionList = eserSecRepo.findByRequestReferenceNoAndStatusNot(request.getRequestReferenceNo(),"D");
+			
+			
+			for (Integer vehId :  vehicleIds ) {
 	            	threadCount = threadCount +  1 ;
 	            	List<String> sectionId = req.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());
 	            	
 	            	for ( String sec : sectionId) {
-	            		QuoteThreadReq request2 = new QuoteThreadReq();
-		            	request2.setCustomerId(request.getCustomerId());
-		            	request2.setProductId(request.getProductId());
-		            	request2.setQuoteNo(request.getQuoteNo());
-		            	request2.setRequestReferenceNo(request.getRequestReferenceNo());
-		            	request2.setEndtPrevQuoteNo(request.getEndtPrevQuoteNo());
-		            	request2.setVehicleIdsList(request.getVehicleIdsList());
-		            	request2.setCreatedBy(request.getCreatedBy());
-		            	request2.setVehicleId(vehId);
-		            	request2.setSectionId(sec);	
-		            	request2.setPolicyStartDate(request.getPolicyStartDate());
-		            	request2.setPolicyEndDate(request.getPolicyEndDate());
-		            	request2.setEffetiveDate(request.getEffetiveDate());
-		            	request2.setNoOfDays(request.getNoOfDays());
-		            	request2.setEndtType(request.getEndtType());
-		            	request2.setEndtCount(request.getEndtCount());
-		            	request2.setEndtFields(request.getEndtFields());
-		            	request2.setMotorYn(request.getMotorYn());
-		            	 
-		            	QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
-		            			, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
-		            		    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
-						queue.add(coverSave);	
+	            		List<EserviceSectionDetails> activeSection = sectionList.stream().filter( o -> o.getSectionId().equals(sec)).collect(Collectors.toList());
+		    			if(activeSection.size() > 0 ) {
+		    				QuoteThreadReq request2 = new QuoteThreadReq();
+			            	request2.setCustomerId(request.getCustomerId());
+			            	request2.setProductId(request.getProductId());
+			            	request2.setQuoteNo(request.getQuoteNo());
+			            	request2.setRequestReferenceNo(request.getRequestReferenceNo());
+			            	request2.setEndtPrevQuoteNo(request.getEndtPrevQuoteNo());
+			            	request2.setVehicleIdsList(request.getVehicleIdsList());
+			            	request2.setCreatedBy(request.getCreatedBy());
+			            	request2.setVehicleId(vehId);
+			            	request2.setSectionId(sec);	
+			            	request2.setPolicyStartDate(request.getPolicyStartDate());
+			            	request2.setPolicyEndDate(request.getPolicyEndDate());
+			            	request2.setEffetiveDate(request.getEffetiveDate());
+			            	request2.setNoOfDays(request.getNoOfDays());
+			            	request2.setEndtType(request.getEndtType());
+			            	request2.setEndtCount(request.getEndtCount());
+			            	request2.setEndtFields(request.getEndtFields());
+			            	request2.setMotorYn(request.getMotorYn());
+			            	 
+			            	QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
+			            			, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
+			            		    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
+							queue.add(coverSave);	
+		    			}
+	            	
 	            	}
 	            }
 			 	ProductThreadRes.setQueue(queue);
@@ -1150,7 +1163,10 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			int threadCount = 0 ;
 			List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
 			List<Integer> vehicleIds = req.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
-			for (Integer vehId : vehicleIds) {
+			List<EserviceCommonDetails> commonDatas = eserCommonRepo.findByRequestReferenceNoAndStatusNotAndRiskIdInOrderByRiskIdAsc(req.getRequestReferenceNo(),"D",vehicleIds );
+			List<Integer> activeVehicleIds = commonDatas.stream().map(EserviceCommonDetails :: getRiskId).collect(Collectors.toList());
+			
+			for (Integer vehId : activeVehicleIds) {
 				threadCount = threadCount + 2;
 				List<String> sectionId = req.getVehicleIdsList().stream().filter(o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq::getSectionId).collect(Collectors.toList());
 
