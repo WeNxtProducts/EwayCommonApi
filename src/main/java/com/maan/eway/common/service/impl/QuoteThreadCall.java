@@ -2210,12 +2210,20 @@ public class QuoteThreadCall implements Callable<Object>  {
 				
 
 				// Filter Deactivated Covers
-				List<VehicleIdsReq> collect = request.getVehicleIdsList().stream()
-						.filter( d -> request.getVehicleNeedberemove().stream().map( VehicleNeedToRemove :: getSectionId).anyMatch(  
-								e ->  ! e.equals( d.getSectionId()  )))
-						.filter( d -> request.getVehicleNeedberemove().stream().map( VehicleNeedToRemove :: getVehicleId).anyMatch(  
-								e ->  ! e.equals( d.getVehicleId() ))).collect(Collectors.toList());
+				List<VehicleIdsReq> collect = new ArrayList<VehicleIdsReq>();
+//				List<VehicleIdsReq> collect = request.getVehicleIdsList().stream()
+//						.filter( d -> request.getVehicleNeedberemove().stream().map( VehicleNeedToRemove :: getSectionId).anyMatch(  
+//								e ->  ! ( e.equals( d.getSectionId()  )))
+//						.filter( d -> request.getVehicleNeedberemove().stream().map( VehicleNeedToRemove :: getVehicleId).anyMatch(  
+//								e ->  ! e.equals( d.getVehicleId() ))).collect(Collectors.toList());
+				for(VehicleIdsReq o : request.getVehicleIdsList() ) {
+					List<VehicleNeedToRemove> filterVehicle =  request.getVehicleNeedberemove().stream().filter( e -> 
+					e.getVehicleId().equals(o.getVehicleId()) && e.getSectionId().equals(o.getSectionId()) ).collect(Collectors.toList());
 					
+					if(filterVehicle.size()<= 0 ) {
+						collect.add(o);
+					}
+				}
 				// Non Selected Records
 				 List<PolicyCoverData>  deactivateOldCovers = OldPolicyCovers.stream().filter( o ->  ! o.getStatus().equalsIgnoreCase("D") ).collect(Collectors.toList());
 				 for ( VehicleIdsReq vehId :  collect ) {
