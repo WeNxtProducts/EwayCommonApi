@@ -79,6 +79,7 @@ import com.maan.eway.common.res.PortfolioAdminPendingRes;
 import com.maan.eway.common.res.PortfolioBrokerListRes;
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.PortfolioGridRes;
+import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
@@ -1987,20 +1988,19 @@ public class GridServiceImpl implements GridService {
 			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getInsuranceId(),
 					req.getProductId().toString());
 
-			List<PortfolioGridCriteriaRes> list = new ArrayList<PortfolioGridCriteriaRes>();
+			List<PortfolioPendingGridCriteriaRes> list = new ArrayList<PortfolioPendingGridCriteriaRes>();
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
-				list = motService.getMotorProtfolioPending(req, branches, today, limit, offset, "E");
+				list = motService.getMotorProtfolioPending(req, branches, today, limit, offset, "P");
+			} else if (product.getMotorYn().equalsIgnoreCase("H")
+					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+				list = traService.getTravelProtfolioPending(req, branches,today, limit, offset, "P");
+			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+				list = buiService.getBuildingProtfolioPending(req, branches,today, limit, offset, "P");
 			} else {
-				list = commonService.getCommonProtfolioPending(req, branches, today, limit, offset, "E");
+				list = commonService.getCommonProtfolioPending(req, branches, today, limit, offset, "P");
 
 			}
-//				else if (req.getProductId().equalsIgnoreCase(travelProductId) ) {
-//					referralApprovedList = traService.getTravelProtfolioPending(req  , branches, limit , offset, "P" );
-//				}
-//				else if (req.getProductId().equalsIgnoreCase(buildingProductId) ) {
-//					referralApprovedList = buiService.getBuildingProtfolioPending(req  , branches, limit , offset, "P" );
-//				}
-			for (PortfolioGridCriteriaRes data : list) {
+			for (PortfolioPendingGridCriteriaRes data : list) {
 				PortfolioCustomerDetailsRes res = new PortfolioCustomerDetailsRes();
 				res = dozerMapper.map(data, PortfolioCustomerDetailsRes.class);
 				// res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );

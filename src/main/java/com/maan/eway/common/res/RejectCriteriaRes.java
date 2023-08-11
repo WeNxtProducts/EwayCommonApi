@@ -1,5 +1,6 @@
 package com.maan.eway.common.res;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import lombok.AllArgsConstructor;
@@ -31,4 +32,6 @@ public class RejectCriteriaRes {
 		private Date policyStartDate;
 		private Date policyEndDate;
 		private String rejectReason;
+		private BigDecimal overallPremiumLc;
+		private BigDecimal overallPremiumFc;
 }

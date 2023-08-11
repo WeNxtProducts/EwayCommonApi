@@ -1,5 +1,6 @@
 package com.maan.eway.common.res;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -58,5 +59,11 @@ public class EserviceCustomerDetailsRes {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EntryDate")
 	private Date entryDate;
+	
+	@JsonProperty("OverallPremiumLc")
+	private BigDecimal overallPremiumLc;
+	
+	@JsonProperty("OverallPremiumFc")
+	private BigDecimal overallPremiumFc;
 		
 }

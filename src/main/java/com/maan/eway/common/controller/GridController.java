@@ -26,6 +26,7 @@ import com.maan.eway.common.res.GetallPolicyReportsRes;
 import com.maan.eway.common.res.PortFolioDashBoardRes;
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.PortfolioGridRes;
+import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
 import com.maan.eway.common.service.GridService;
 import com.maan.eway.error.Error;
@@ -314,7 +315,7 @@ public class GridController {
 			}
 		
 			// Portfolio
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 			@PostMapping("/portfolio/active")
 			public ResponseEntity<CommonRes> getallPortfolioActive(@RequestBody ExistingQuoteReq req) {
 				reqPrinter.reqPrint(req);
@@ -330,7 +331,8 @@ public class GridController {
 					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 				}
 			}
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+
+			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 			@PostMapping("/portfolio/pending")
 			public ResponseEntity<CommonRes> getallPortfolioPending(@RequestBody ExistingQuoteReq req) {
 				reqPrinter.reqPrint(req);
@@ -346,7 +348,8 @@ public class GridController {
 					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 				}
 			}
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+
+			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 			@PostMapping("/portfolio/cancelled")
 			public ResponseEntity<CommonRes> getallPortfolioCancelled(@RequestBody ExistingQuoteReq req) {
 				reqPrinter.reqPrint(req);

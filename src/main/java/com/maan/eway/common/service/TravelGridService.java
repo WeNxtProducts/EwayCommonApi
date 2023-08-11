@@ -11,6 +11,7 @@ import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
+import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
@@ -38,5 +39,8 @@ public interface TravelGridService {
 	CopyQuoteSuccessRes travelEndt(CopyQuoteReq req, List<String> branches, String loginId);
 
 	List<Tuple> getTravelReportDetails(GetallPolicyReportsReq req);
+
+	List<PortfolioPendingGridCriteriaRes> getTravelProtfolioPending(ExistingQuoteReq req, List<String> branches,
+			Date today, int limit, int offset, String string);
 
 }

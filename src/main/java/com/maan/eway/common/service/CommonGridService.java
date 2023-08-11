@@ -12,6 +12,7 @@ import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
+import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
@@ -41,7 +42,7 @@ public interface CommonGridService {
 	List<PortfolioGridCriteriaRes> getCommonProtfolioActive(ExistingQuoteReq req, List<String> branches, Date startDate,int limit,
 			int offset, String string);
 
-	List<PortfolioGridCriteriaRes> getCommonProtfolioPending(ExistingQuoteReq req, List<String> branches,Date startDate,  int limit,
+	List<PortfolioPendingGridCriteriaRes> getCommonProtfolioPending(ExistingQuoteReq req, List<String> branches,Date startDate,  int limit,
 			int offset, String string);
 
 	List<PortfolioGridCriteriaRes> getCommonPortfolioCancelled(ExistingQuoteReq req, List<String> branches,Date startDate,  int limit,

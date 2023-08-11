@@ -65,6 +65,7 @@ import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
+import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.service.TravelGridService;
@@ -188,7 +189,9 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					cb.selectCase().when(m.get("quoteNo").isNotNull(), m.get("quoteNo")).otherwise( m.get("quoteNo")).alias("quoteNo") ,
 					cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId")).otherwise( m.get("customerId")).alias("customerId") ,
 					m.get("travelStartDate").alias("policyStartDate"),
-					m.get("travelEndDate").alias("policyEndDate"));
+					m.get("travelEndDate").alias("policyEndDate"),
+					cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), 
+					cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"));
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -262,7 +265,9 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					cb.selectCase().when(m.get("quoteNo").isNotNull(), m.get("quoteNo")).otherwise( m.get("quoteNo")).alias("quoteNo") ,
 					cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId")).otherwise( m.get("customerId")).alias("customerId") ,
 					m.get("travelStartDate").alias("policyStartDate"),
-					m.get("travelEndDate").alias("policyEndDate")
+					m.get("travelEndDate").alias("policyEndDate"),
+					cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), 
+					cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc")
 					);
 			
 			// Order By
@@ -334,7 +339,9 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					cb.selectCase().when(m.get("quoteNo").isNotNull(), m.get("quoteNo")).otherwise( m.get("quoteNo")).alias("quoteNo") ,
 					cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId")).otherwise( m.get("customerId")).alias("customerId") ,
 					m.get("travelStartDate").alias("policyStartDate"),
-					m.get("travelEndDate").alias("policyEndDate"), m.get("rejectReason").alias("rejectReason")
+					m.get("travelEndDate").alias("policyEndDate"), m.get("rejectReason").alias("rejectReason"),
+					cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), 
+					cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc")
 					);
 			
 			// Order By
@@ -2466,5 +2473,122 @@ public class TravelGridServiceImpl implements  TravelGridService {
 	    public boolean isMySQL() {
 	        return isMySQL;
 	    }
+
+		@Override
+		public List<PortfolioPendingGridCriteriaRes> getTravelProtfolioPending(ExistingQuoteReq req,
+				List<String> branches, Date startDate, int limit, int offset, String status) {
+			List<PortfolioPendingGridCriteriaRes> portfolio = new ArrayList<PortfolioPendingGridCriteriaRes>();
+			try {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<PortfolioPendingGridCriteriaRes> query = cb.createQuery(PortfolioPendingGridCriteriaRes.class);
+
+				Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+				Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
+				Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+				
+				Subquery<Long> endtPre = query.subquery(Long.class);
+				Root<HomePositionMaster> h1 = endtPre.from(HomePositionMaster.class);
+				endtPre.select(cb.sum(h1.get("endtPremium"))) ;
+				Predicate pm1 = cb.equal(h1.get("endtStatus"), m.get("endtStatus"));
+				Predicate pm2   = cb.like(h1.get("originalPolicyNo"), m.get("originalPolicyNo"));
+				endtPre.where(pm1,pm2);
+		
+				// Select
+				query.multiselect(//cb.literal(Long.parseLong("1")).alias("idsCount"),
+						cb.count(m).as(Long.class).alias("idsCount"),
+						// Customer Info
+						cb.max(c.get("customerReferenceNo")).alias("customerReferenceNo"), 
+						cb.max(c.get("idNumber")).alias("idNumber"),
+						cb.max(c.get("clientName")).alias("clientName"),
+						
+						cb.max(c.get("mobileNo1")).alias("mobileNo1"),
+						cb.max(c.get("isTaxExempted")).alias("isTaxExempted"),
+						cb.max(c.get("taxExemptedId")).alias("taxExemptedId"),
+						// Vehicle Info
+						cb.max(m.get("companyId")).alias("companyId"), 
+						cb.max(m.get("productId")).alias("productId"),
+						cb.max(m.get("branchCode")).alias("branchCode"),
+						cb.max(m.get("requestReferenceNo")).alias("requestReferenceNo"),
+						cb.selectCase().when(cb.max(m.get("quoteNo")).isNotNull(), cb.max(m.get("quoteNo"))).otherwise(cb.max(m.get("quoteNo")))
+								.alias("quoteNo"),
+						cb.selectCase().when(cb.max(m.get("customerId")).isNotNull(), cb.max(m.get("customerId")))
+								.otherwise(cb.max(m.get("customerId"))).alias("customerId"),
+						cb.max(m.get("policyStartDate")).alias("inceptionDate"),
+						cb.max(m.get("policyEndDate")).alias("expiryDate"),
+						cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), 
+						cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
+						cb.max(m.get("policyNo")).alias("policyNo"),
+						
+						//Home Position Master
+						
+						cb.max(h.get("debitAcNo")).alias("debitAcNo"),
+						cb.max(h.get("debitTo")).alias("debitTo"),
+						cb.max(h.get("debitToId")).alias("debitToId"),
+						cb.max(h.get("debitNoteNo")).alias("debitNoteNo"),
+						cb.max(h.get("debitNoteDate")).alias("debitNoteDate"),
+						cb.max(h.get("creditTo")).alias("creditTo"),
+						cb.max(h.get("creditToId")).alias("creditToId"),
+						cb.max(h.get("creditNo")).alias("creditNo"),
+						cb.max(h.get("creditDate")).alias("creditDate"),
+						cb.max(h.get("emiYn")).alias("emiYn"),
+						cb.max(h.get("installmentPeriod")).alias("installmentPeriod"),
+						cb.max(h.get("effectiveDate")).alias("effectiveDate"),
+						cb.max(m.get("currency")).alias("currency"),
+						cb.max(m.get("originalPolicyNo")).alias("originalPolicyNo"),
+						
+						cb.max(m.get("endorsementType")).alias("endorsementTypeId"),
+						cb.max(m.get("endorsementTypeDesc")).alias("endorsementDesc"),
+						cb.max(m.get("endtCategDesc")).alias("endorsementCategoryDesc"),
+						//cb.max(m.get("endorsementEffdate")).alias("effectiveDate"),
+						cb.max(m.get("endtStatus")).alias("endorsementStatus"),
+						cb.max(m.get("endorsementRemarks")).alias("endorsementRemarks"),
+						cb.max(m.get("endorsementDate")).alias("endorsementDate"),
+						endtPre.alias("endtPremium")
+						);
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(m.get("entryDate")));
+
+			
+				// Where
+				Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
+				Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
+				Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
+				Predicate n4 = cb.equal(m.get("endtStatus"), status);
+			//	Predicate n4 = cb.in(m.get("status")).value(Arrays.asList("E","D"));  
+				Predicate n7 = cb.greaterThanOrEqualTo(h.get("expiryDate"), startDate);
+				Predicate n8 = cb.lessThanOrEqualTo(h.get("entryDate"), startDate);
+
+				Predicate n5 = null;
+				if (req.getApplicationId().equalsIgnoreCase("1")) {
+					n5 = cb.equal(m.get("loginId"), req.getLoginId());
+				} else {
+					n5 = cb.equal(m.get("applicationId"), req.getApplicationId());
+				}
+				Predicate n6 = null;
+				if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
+					Expression<String> e0 = m.get("brokerBranchCode");
+					n6 = e0.in(branches);
+				} else {
+					Expression<String> e0 = m.get("branchCode");
+					n6 = e0.in(branches);
+				}
+
+				query.where(n1, n2, n3, n4, n5, n6,n7,n8).groupBy((m.get("originalPolicyNo")),m.get("endtStatus"));
+
+				// Get Result
+				TypedQuery<PortfolioPendingGridCriteriaRes> result = em.createQuery(query);
+				portfolio = result.getResultList();
+				portfolio = portfolio.stream().filter(o -> !o.getIdsCount().equals(0L))
+						.collect(Collectors.toList());
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return portfolio;
+		}
+
+
 	
 }

@@ -1,5 +1,6 @@
 package com.maan.eway.common.res;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import lombok.AllArgsConstructor;
@@ -29,6 +30,8 @@ public class QuoteCriteriaRes {
 	private String customerId;
 	private Date policyStartDate;
 	private Date policyEndDate;
+	private BigDecimal overallPremiumLc;
+	private BigDecimal overallPremiumFc;
 	
 	
 	

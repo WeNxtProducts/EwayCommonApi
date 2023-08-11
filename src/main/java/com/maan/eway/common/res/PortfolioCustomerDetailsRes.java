@@ -104,5 +104,27 @@ public class PortfolioCustomerDetailsRes {
 	@JsonProperty("OriginalPolicyNo")
 	private String   originalPolicyNo;
 	
+	@JsonProperty("EndorsementTypeId")
+	private Integer endorsementTypeId;
+	
+	@JsonProperty("EndorsementDesc")
+	private String endorsementDesc;
+	
+	@JsonProperty("EndorsementCategoryDesc")
+	private String endorsementCategoryDesc;
+
+	@JsonProperty("EndorsementStatus")
+	private String endorsementStatus;
+	
+	@JsonProperty("EndorsementRemarks")
+	private String endorsementRemarks;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EndorsementDate")
+	private Date endorsementDate;
+	
+	@JsonProperty("EndtPremium")
+	private BigDecimal endtPremium;
+	
 	
 }

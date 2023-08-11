@@ -42,6 +42,7 @@ import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
@@ -58,6 +59,7 @@ import com.maan.eway.bean.SeqQuoteno;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
+import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.service.CommonGridService;
@@ -177,8 +179,9 @@ public class CommonGridServiceImpl implements CommonGridService {
 							.alias("quoteNo"),
 					cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId"))
 							.otherwise(m.get("customerId")).alias("customerId"),
-					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate")
-					
+					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
+					cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), 
+					cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc")
 					);
 			
 
@@ -256,7 +259,9 @@ public class CommonGridServiceImpl implements CommonGridService {
 							.alias("quoteNo"),
 					cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId"))
 							.otherwise(m.get("customerId")).alias("customerId"),
-					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"));
+					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
+					cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), 
+					cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"));
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -329,7 +334,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 					cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId"))
 							.otherwise(m.get("customerId")).alias("customerId"),
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
-					m.get("rejectReason").alias("rejectReason"));
+					m.get("rejectReason").alias("rejectReason"),	cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), 
+					cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"));
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -1162,81 +1168,89 @@ public class CommonGridServiceImpl implements CommonGridService {
 		}
 
 		@Override
-		public List<PortfolioGridCriteriaRes> getCommonProtfolioPending(ExistingQuoteReq req, List<String> branches,
+		public List<PortfolioPendingGridCriteriaRes> getCommonProtfolioPending(ExistingQuoteReq req, List<String> branches,
 				Date startDate, int limit, int offset, String status) {
-			List<PortfolioGridCriteriaRes> portfolio = new ArrayList<PortfolioGridCriteriaRes>();
+			List<PortfolioPendingGridCriteriaRes> portfolio = new ArrayList<PortfolioPendingGridCriteriaRes>();
 			try {
 				CriteriaBuilder cb = em.getCriteriaBuilder();
-				CriteriaQuery<PortfolioGridCriteriaRes> query = cb.createQuery(PortfolioGridCriteriaRes.class);
+				CriteriaQuery<PortfolioPendingGridCriteriaRes> query = cb.createQuery(PortfolioPendingGridCriteriaRes.class);
 
-				// Find All
-				Root<HomePositionMaster> m = query.from(HomePositionMaster.class);
-				Root<PersonalInfo> c = query.from(PersonalInfo.class);
+				Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+				Root<EserviceCommonDetails> m = query.from(EserviceCommonDetails.class);
+				Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
 				
-
+				Subquery<Long> endtPre = query.subquery(Long.class);
+				Root<HomePositionMaster> h1 = endtPre.from(HomePositionMaster.class);
+				endtPre.select(cb.sum(h1.get("endtPremium"))) ;
+				Predicate pm1 = cb.equal(h1.get("endtStatus"), m.get("endtStatus"));
+				Predicate pm2   = cb.like(h1.get("originalPolicyNo"), m.get("originalPolicyNo"));
+				endtPre.where(pm1,pm2);
+		
 				// Select
-				query.multiselect(
+				query.multiselect(//cb.literal(Long.parseLong("1")).alias("idsCount"),
 						cb.count(m).as(Long.class).alias("idsCount"),
 						// Customer Info
-						c.get("customerReferenceNo").alias("customerReferenceNo"),
-						c.get("idNumber").alias("idNumber"),
-						c.get("clientName").alias("clientName"),
-						c.get("mobileNo1").alias("mobileNo1"),
-						c.get("isTaxExempted").alias("isTaxExempted"),
-						c.get("taxExemptedId").alias("taxExemptedId"),
+						cb.max(c.get("customerReferenceNo")).alias("customerReferenceNo"), 
+						cb.max(c.get("idNumber")).alias("idNumber"),
+						cb.max(c.get("clientName")).alias("clientName"),
+						
+						cb.max(c.get("mobileNo1")).alias("mobileNo1"),
+						cb.max(c.get("isTaxExempted")).alias("isTaxExempted"),
+						cb.max(c.get("taxExemptedId")).alias("taxExemptedId"),
 						// Vehicle Info
-						m.get("companyId").alias("companyId"), 
-						m.get("productId").alias("productId"),
-						m.get("branchCode").alias("branchCode"), 
-						m.get("requestReferenceNo").alias("requestReferenceNo"),
-						cb.selectCase().when(m.get("quoteNo").isNotNull(), m.get("quoteNo")).otherwise(m.get("quoteNo"))
+						cb.max(m.get("companyId")).alias("companyId"), 
+						cb.max(m.get("productId")).alias("productId"),
+						cb.max(m.get("branchCode")).alias("branchCode"),
+						cb.max(m.get("requestReferenceNo")).alias("requestReferenceNo"),
+						cb.selectCase().when(cb.max(m.get("quoteNo")).isNotNull(), cb.max(m.get("quoteNo"))).otherwise(cb.max(m.get("quoteNo")))
 								.alias("quoteNo"),
-						cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId"))
-								.otherwise(m.get("customerId")).alias("customerId"),
-						m.get("inceptionDate").alias("inceptionDate"),
-						m.get("expiryDate").alias("expiryDate"),
-						m.get("overallPremiumLc").alias("overallPremiumLc"),
-						m.get("overallPremiumFc").alias("overallPremiumFc"),
-						m.get("policyNo").alias("policyNo"),
-						m.get("debitAcNo").alias("debitAcNo"),
-						m.get("debitTo").alias("debitTo"),
-						m.get("debitToId").alias("debitToId"),
-						m.get("debitNoteNo").alias("debitNoteNo"),
-						m.get("debitNoteDate").alias("debitNoteDate"),
-						m.get("creditTo").alias("creditTo"),
-						m.get("creditToId").alias("creditToId"),
-						m.get("creditNo").alias("creditNo"),
-						m.get("creditDate").alias("creditDate"),
-						m.get("emiYn").alias("emiYn"),
-						m.get("installmentPeriod").alias("installmentPeriod"),
-						m.get("effectiveDate").alias("effectiveDate"),
-						m.get("currency").alias("currency"),
-						m.get("originalPolicyNo").alias("originalPolicyNo")
+						cb.selectCase().when(cb.max(m.get("customerId")).isNotNull(), cb.max(m.get("customerId")))
+								.otherwise(cb.max(m.get("customerId"))).alias("customerId"),
+						cb.max(m.get("policyStartDate")).alias("inceptionDate"),
+						cb.max(m.get("policyEndDate")).alias("expiryDate"),
+						cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), 
+						cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
+						cb.max(m.get("policyNo")).alias("policyNo"),
+						
+						//Home Position Master
+						
+						cb.max(h.get("debitAcNo")).alias("debitAcNo"),
+						cb.max(h.get("debitTo")).alias("debitTo"),
+						cb.max(h.get("debitToId")).alias("debitToId"),
+						cb.max(h.get("debitNoteNo")).alias("debitNoteNo"),
+						cb.max(h.get("debitNoteDate")).alias("debitNoteDate"),
+						cb.max(h.get("creditTo")).alias("creditTo"),
+						cb.max(h.get("creditToId")).alias("creditToId"),
+						cb.max(h.get("creditNo")).alias("creditNo"),
+						cb.max(h.get("creditDate")).alias("creditDate"),
+						cb.max(h.get("emiYn")).alias("emiYn"),
+						cb.max(h.get("installmentPeriod")).alias("installmentPeriod"),
+						cb.max(h.get("effectiveDate")).alias("effectiveDate"),
+						cb.max(m.get("currency")).alias("currency"),
+						cb.max(m.get("originalPolicyNo")).alias("originalPolicyNo"),
+						
+						cb.max(m.get("endorsementType")).alias("endorsementTypeId"),
+						cb.max(m.get("endorsementTypeDesc")).alias("endorsementDesc"),
+						cb.max(m.get("endtCategDesc")).alias("endorsementCategoryDesc"),
+						//cb.max(m.get("endorsementEffdate")).alias("effectiveDate"),
+						cb.max(m.get("endtStatus")).alias("endorsementStatus"),
+						cb.max(m.get("endorsementRemarks")).alias("endorsementRemarks"),
+						cb.max(m.get("endorsementDate")).alias("endorsementDate"),
+						endtPre.alias("endtPremium")
 						);
-
 				// Order By
 				List<Order> orderList = new ArrayList<Order>();
 				orderList.add(cb.desc(m.get("entryDate")));
 
-				// Endt Count Max Filter
-				Subquery<Long> endtCount = query.subquery(Long.class);
-				Root<HomePositionMaster> ocpm1 = endtCount.from(HomePositionMaster.class);
-				endtCount.select(cb.max(ocpm1.get("endtCount")));
-				Predicate a1 = cb.equal(ocpm1.get("originalPolicyNo"), m.get("originalPolicyNo"));
-				Predicate a2 = cb.equal(ocpm1.get("status"),m.get("status"));
-				endtCount.where(a1,a2);
-				
-				 
+			
 				// Where
-				Predicate n1 = cb.equal(c.get("customerId"), m.get("customerId"));
+				Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
 				Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
 				Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
-				Predicate n4 = cb.equal(m.get("status"), status);
-			//	Predicate n9 = cb.equal(m.get("integrationStatus"), "P");
-				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), startDate);
-				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), startDate);
-				Predicate n10 = cb.equal(m.get("endtCount"), endtCount);
-
+				Predicate n4 = cb.equal(m.get("endtStatus"), status);
+			//	Predicate n4 = cb.in(m.get("status")).value(Arrays.asList("E","D"));  
+				Predicate n7 = cb.greaterThanOrEqualTo(h.get("expiryDate"), startDate);
+				Predicate n8 = cb.lessThanOrEqualTo(h.get("entryDate"), startDate);
 
 				Predicate n5 = null;
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
@@ -1253,21 +1267,10 @@ public class CommonGridServiceImpl implements CommonGridService {
 					n6 = e0.in(branches);
 				}
 
-				query.where(n1, n2, n3, n4, n5, n6,n7,n8,n10)
-				.groupBy(
-						c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"),c.get("mobileNo1"), c.get("isTaxExempted"), c.get("taxExemptedId"),
-						m.get("companyId"),m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
-						m.get("customerId"), m.get("entryDate"), m.get("expiryDate"),m.get("inceptionDate"), m.get("overallPremiumLc"), m.get("overallPremiumFc"),
-						m.get("policyNo"), m.get("debitAcNo"), m.get("debitTo"),m.get("debitToId"), m.get("debitNoteNo"), m.get("debitNoteDate"),
-						m.get("creditTo"), m.get("creditToId"), m.get("creditNo"),m.get("creditDate"), m.get("emiYn"), m.get("installmentPeriod"),m.get("effectiveDate"),
-						m.get("currency"),m.get("originalPolicyNo")
-						)
-						.orderBy(orderList);
+				query.where(n1, n2, n3, n4, n5, n6,n7,n8).groupBy((m.get("originalPolicyNo")),m.get("endtStatus"));
 
 				// Get Result
-				TypedQuery<PortfolioGridCriteriaRes> result = em.createQuery(query);
-				result.setFirstResult(limit * offset);
-				result.setMaxResults(offset);
+				TypedQuery<PortfolioPendingGridCriteriaRes> result = em.createQuery(query);
 				portfolio = result.getResultList();
 				portfolio = portfolio.stream().filter(o -> !o.getIdsCount().equals(0L))
 						.collect(Collectors.toList());
