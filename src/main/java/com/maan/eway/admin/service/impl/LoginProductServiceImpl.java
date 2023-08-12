@@ -2913,8 +2913,8 @@ List<Error> errorList = new ArrayList<Error>();
 				saveData.setSubUserType(login.getSubUserType());
 				saveData.setCheckerYn(req.getCheckerYn());
 				saveData.setMakerYn(req.getCheckerYn());
-				saveData.setCreditYn(req.getCreditYn());
-				saveData.setBackDays(Integer.valueOf(req.getBackDays()));
+				saveData.setCreditYn(req.getCreditYn()==null?"N":req.getCreditYn());
+				saveData.setBackDays(req.getBackDays()==null?0:Integer.valueOf(req.getBackDays()));
 
 				if ("5".equalsIgnoreCase(req.getProductId())) {
 					saveData.setPolicyTypeId(req.getPolicyTypeId());
