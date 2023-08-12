@@ -157,6 +157,10 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="COLUMN_NAME", length=100)
     private String    columnName;
+    
+    
+    @Column(name="CREDIT_YN", length=1)
+    private String     creditYn ;
 
 }
 

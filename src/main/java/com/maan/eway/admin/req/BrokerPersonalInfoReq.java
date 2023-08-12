@@ -75,6 +75,12 @@ public class BrokerPersonalInfoReq {
 	@JsonProperty("TaxExemptedYn")
     private String    taxExemptedYn ;
 	
+	@JsonProperty("TaxExemptedCode")
+    private String    taxExemptedCode ;
+	
+	@JsonProperty("RegulatoryCode")
+    private String    regulatoryCode ;
+	
 	@JsonProperty("CreditLimit")
     private String    creditLimit ;
 	

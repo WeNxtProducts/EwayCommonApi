@@ -6,6 +6,7 @@ import java.util.List;
 import com.maan.eway.admin.req.AttachCompnayProductRequest;
 import com.maan.eway.admin.req.AttachEndtIdsReq;
 import com.maan.eway.admin.req.AttachIssuerProductRequest;
+import com.maan.eway.admin.req.BrokerCompanyListProductsGetAllRes;
 import com.maan.eway.admin.req.BrokerCompanyProductGetReq;
 import com.maan.eway.admin.req.BrokerCompanyProductsGetRes;
 import com.maan.eway.admin.req.BrokerProductGetReq;
@@ -16,10 +17,12 @@ import com.maan.eway.admin.res.IssuerProductGetRes;
 import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.auth.dto.LoginProductCriteriaRes;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.BrokerCompanyListProductReq;
 import com.maan.eway.master.req.BrokerCompanyProductReq;
 import com.maan.eway.master.req.BrokerProductChangeReq;
 import com.maan.eway.master.req.BrokerProductReq;
 import com.maan.eway.master.res.CompanyProductMasterRes;
+import com.maan.eway.master.res.GetAllNonSelectedBrokerProductMasterRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
@@ -52,6 +55,15 @@ public interface LoginProductService {
 	List<IssuerProductGetRes> getIssuerProducts(IssuerProductGetReq req);
 
 	LoginCreationRes saveProductsEndtIds(AttachEndtIdsReq req);
+
+	List<Error> validatebrokerListCompanyProducts(List<BrokerCompanyListProductReq> req);
+
+	SuccessRes brokerListCompanyProducts(List<BrokerCompanyListProductReq> req);
+
+	List<BrokerCompanyListProductsGetAllRes> getAllBrokerCompanyListProducts(BrokerCompanyProductGetReq req);
+
+	List<GetAllNonSelectedBrokerProductMasterRes> getallNonSelectedUserCompanyProductsList(
+			UserCompanyProductGetReq req);
 
 
 	

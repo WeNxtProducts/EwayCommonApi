@@ -148,7 +148,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="REGULATORY_CODE", length=100)
     private String     regulatoryCode ;
 
-
+    @Column(name="CREDIT_YN", length=1)
+    private String     creditYn ;
 }
 
 

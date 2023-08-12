@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.maan.eway.admin.req.AttachCompnayProductRequest;
 import com.maan.eway.admin.req.AttachEndtIdsReq;
 import com.maan.eway.admin.req.AttachIssuerProductRequest;
+import com.maan.eway.admin.req.BrokerCompanyListProductsGetAllRes;
 import com.maan.eway.admin.req.BrokerCompanyProductGetReq;
 import com.maan.eway.admin.req.BrokerCompanyProductsGetRes;
 import com.maan.eway.admin.req.BrokerProductGetReq;
@@ -28,10 +29,12 @@ import com.maan.eway.admin.service.LoginValidationService;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.BrokerCompanyListProductReq;
 import com.maan.eway.master.req.BrokerCompanyProductReq;
 import com.maan.eway.master.req.BrokerProductChangeReq;
 import com.maan.eway.master.req.BrokerProductReq;
 import com.maan.eway.master.res.CompanyProductMasterRes;
+import com.maan.eway.master.res.GetAllNonSelectedBrokerProductMasterRes;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
@@ -337,6 +340,80 @@ public class LoginProductController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+//************************************************************************************************************
+	
+	@PostMapping("/getallbrokercompanylistproduct")
+	@ApiOperation(value="This method is to Get Broker Company Products")
+	public ResponseEntity<CommonRes> getAllBrokerCompanyListProducts(@RequestBody  BrokerCompanyProductGetReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		
+		/////// get
+		List<BrokerCompanyListProductsGetAllRes> res = entityService.getAllBrokerCompanyListProducts(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 
+	@PostMapping("/updatebrokercompanylistproducts")
+	@ApiOperation(value = "This method is Insert Company Product Master")
+	public ResponseEntity<CommonRes> brokerListCompanyProducts(@RequestBody List<BrokerCompanyListProductReq> req) {
+
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+
+		List<Error> validation = entityService.validatebrokerListCompanyProducts(req);
+		// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else {
+
+			// Save
+			SuccessRes res = entityService.brokerListCompanyProducts(req);
+			data.setCommonResponse(res);
+			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
+			data.setMessage("Success");
+
+			if (res != null) {
+				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+	}
+
+	@PostMapping("/getallnonselecteduserproductslist")
+	@ApiOperation("This method is getall User Company Product Master")
+	public ResponseEntity<CommonRes> getallNonSelectedUserCompanyProductsList(@RequestBody UserCompanyProductGetReq req)
+	{
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		
+		List<GetAllNonSelectedBrokerProductMasterRes> res = entityService.getallNonSelectedUserCompanyProductsList(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		
+		if(res!= null) {
+			return new ResponseEntity<CommonRes> (data, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<> (null, HttpStatus.BAD_REQUEST);
+		}
+	}
 	
 }
