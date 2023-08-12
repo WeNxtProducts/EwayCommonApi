@@ -14,8 +14,8 @@ public class BrokerCompanyListProductReq {
 	@JsonProperty("ProductId")
 	private String productId;
 	
-	@JsonProperty("ProductName")
-	private String productName;
+//	@JsonProperty("ProductName")
+//	private String productName;
 	
 	@JsonProperty("ProductDesc")
 	private String productDesc;
@@ -44,8 +44,8 @@ public class BrokerCompanyListProductReq {
 	@JsonProperty("CheckerYn")
 	private String checkerYn;
 	
-	@JsonProperty("MakerYn")
-	private String makerYn;
+//	@JsonProperty("MakerYn")
+//	private String makerYn;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@JsonProperty("EffectiveDateStart")
@@ -70,30 +70,30 @@ public class BrokerCompanyListProductReq {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
-	@JsonProperty("PaymentYn")
-	private String paymentYn;
-
-	@JsonProperty("PaymentRedirUrl")
-	private String paymentRedirUrl;
-
-	@JsonProperty("AppLoginUrl")
-	private String appLoginUrl;
-	
-	@JsonProperty("CommissionVatYn")
-	private String commissionVatYn;
-	
-	@JsonProperty("CommissionVatPercent")
-	private String commissionVatPercent;
-	
-	@JsonProperty("FinanceIds")
-	private List<String> financeIds;
-
-	@JsonProperty("NonFinanceIds")
-	private List<String> nonFinanceIds;
-
-	@JsonProperty("CustConfirmYn")
-	private String custConfirmYn;
-	
+//	@JsonProperty("PaymentYn")
+//	private String paymentYn;
+//
+//	@JsonProperty("PaymentRedirUrl")
+//	private String paymentRedirUrl;
+//
+//	@JsonProperty("AppLoginUrl")
+//	private String appLoginUrl;
+//	
+//	@JsonProperty("CommissionVatYn")
+//	private String commissionVatYn;
+//	
+//	@JsonProperty("CommissionVatPercent")
+//	private String commissionVatPercent;
+//	
+//	@JsonProperty("FinanceIds")
+//	private List<String> financeIds;
+//
+//	@JsonProperty("NonFinanceIds")
+//	private List<String> nonFinanceIds;
+//
+//	@JsonProperty("CustConfirmYn")
+//	private String custConfirmYn;
+//	
 //	@JsonProperty("BrokerCommissionDetails")
 //	private List<BrokerCommissionDetailsReq> brokerCommissionDetails;
 	
