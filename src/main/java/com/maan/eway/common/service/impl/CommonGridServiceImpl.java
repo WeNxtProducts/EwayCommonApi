@@ -181,7 +181,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 							.otherwise(m.get("customerId")).alias("customerId"),
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
 					cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), 
-					cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc")
+					cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
+					m.get("currency").alias("currency")
 					);
 			
 
@@ -216,7 +217,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
-							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),m.get("updatedDate"))
+							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),m.get("updatedDate"),m.get("currency"))
 					.orderBy(orderList);
 
 			// Get Result
@@ -261,7 +262,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 							.otherwise(m.get("customerId")).alias("customerId"),
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
 					cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), 
-					cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"));
+					cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
+					m.get("currency").alias("currency"));
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -292,7 +294,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 			query.where(n1, n2, n3, n4, n5, n6, n7)
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
-							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),m.get("updatedDate"))
+							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),m.get("updatedDate"),m.get("currency"))
 					.orderBy(orderList);
 
 			// Get Result
@@ -335,7 +337,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 							.otherwise(m.get("customerId")).alias("customerId"),
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
 					m.get("rejectReason").alias("rejectReason"),	cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), 
-					cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"));
+					cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),m.get("currency").alias("currency"));
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -366,7 +368,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),m.get("updatedDate"),
-							m.get("rejectReason"))
+							m.get("rejectReason"),m.get("currency"))
 					.orderBy(orderList);
 
 			// Get Result

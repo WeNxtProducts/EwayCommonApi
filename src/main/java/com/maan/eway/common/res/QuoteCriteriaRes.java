@@ -32,6 +32,7 @@ public class QuoteCriteriaRes {
 	private Date policyEndDate;
 	private BigDecimal overallPremiumLc;
 	private BigDecimal overallPremiumFc;
+	private String currency;
 	
 	
 	

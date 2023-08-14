@@ -65,5 +65,8 @@ public class EserviceCustomerDetailsRes {
 	
 	@JsonProperty("OverallPremiumFc")
 	private BigDecimal overallPremiumFc;
+	
+	@JsonProperty("Currency")
+	private String currency;
 		
 }
