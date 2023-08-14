@@ -2871,11 +2871,7 @@ List<Error> errorList = new ArrayList<Error>();
 				errorList.add(new Error("08", "ProductDesc", "Please Enter Product Desc within 500 Characters  In Row No : " + row));
 			}
 	
-			if (StringUtils.isBlank(req.getCreatedBy())) {
-				errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy  In Row No :" + row));
-			}else if (req.getCreatedBy().length() > 50) {
-				errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy within 100 Characters  In Row No : " + row));
-			}
+		
 			
 					
 				if (StringUtils.isBlank(req.getCommissionPercent())) {
@@ -3033,11 +3029,6 @@ List<Error> errorList = new ArrayList<Error>();
 				saveData.setProductId(Integer.valueOf(productId));
 				saveData.setProductName(productName);
 				saveData.setEffectiveDateStart(startDate);
-//			if("N".equalsIgnoreCase(req.getStatus())) {
-//				saveData.setEffectiveDateEnd(new Date());	
-//			}else {
-//				saveData.setEffectiveDateEnd(endDate);
-//			}
 				saveData.setEffectiveDateEnd(endDate);
 				saveData.setCreatedBy(createdBy);
 				saveData.setStatus(req.getStatus());
@@ -3572,6 +3563,9 @@ List<Error> errorList = new ArrayList<Error>();
 					for (PolicyTypeMaster data1 : policytype) {
 
 						res = dozerMapper.map(data, GetAllNonSelectedBrokerProductMasterRes.class);
+						res.setSumInsuredStart("1");
+						res.setSumInsuredEnd("99999999");
+						res.setCreditYn("N");
 						res.setProductId(data.getProductId().toString());
 						res.setPolicyTypeId(data1.getPolicyTypeId().toString());
 						res.setPolicyTypeDesc(data1.getPolicyTypeName().toString());
@@ -3581,8 +3575,11 @@ List<Error> errorList = new ArrayList<Error>();
 				} else {
 					res = dozerMapper.map(data, GetAllNonSelectedBrokerProductMasterRes.class);
 					res.setProductId(data.getProductId().toString());
+					res.setSumInsuredStart("1");
 					res.setPolicyTypeId("99999");
 					res.setPolicyTypeDesc("ALL");
+					res.setSumInsuredEnd("99999999");
+					res.setCreditYn("N");
 					resList.add(res);
 				}
 			}
