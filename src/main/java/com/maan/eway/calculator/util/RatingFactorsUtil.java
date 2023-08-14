@@ -392,14 +392,14 @@ public class RatingFactorsUtil {
 	public synchronized String getProductIdBasedRawTable(CalcEngine engine) {
 		try{
 			
-			String prodSearch="itemType:ESERVICE_TABLE;status:Y;displayName:"+engine.getProductId()+";itemValue:"+engine.getSectionId()+";";
+			String prodSearch="itemType:ESERVICE_TABLE;status:Y;displayName:"+engine.getProductId()+";itemValue:"+engine.getSectionId()+";companyId:"+engine.getInsuranceId()+";";
 			SpecCriteria	criteria = crservice.createCriteria(OneTimeTableDetails.class, prodSearch, "parentId");
 			List<Tuple> product =null;
 			List<Long> count = crservice.getCount(criteria, 0, 1);
 			if(!count.isEmpty()) { 
 				Long countrec = count.get(0);
 				if(countrec<=0) {				
-					 prodSearch="itemType:ESERVICE_TABLE;status:Y;displayName:"+engine.getProductId()+";";
+					 prodSearch="itemType:ESERVICE_TABLE;status:Y;displayName:"+engine.getProductId()+";companyId:"+engine.getInsuranceId()+";";
 					 criteria = crservice.createCriteria(OneTimeTableDetails.class, prodSearch, "parentId");					
 				}
 				product= crservice.getResult(criteria, 0, 1);

@@ -76,6 +76,9 @@ private static final long serialVersionUID = 1L;
     @Temporal(TemporalType.DATE)
     @Column(name="ENTRY_DATE")
     private Date       entryDate ;
+    
+    @Column(name="COMPANY_ID", length=30)
+    private String     companyId;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )
