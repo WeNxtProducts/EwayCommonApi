@@ -3132,7 +3132,7 @@ List<Error> errorList = new ArrayList<Error>();
 			// saveData.setPolicyTypeDesc(policytype);
 			commissionRepo.save(saveData);
 			
-			List<BrokerCommissionDetails>   oldCommList = commissionRepo.findByProductIdNotInAndLoginIdAndStatus(req.getProductId().toString(), req.getLoginId() , "Y" ) ;
+			List<BrokerCommissionDetails>   oldCommList = commissionRepo.findByProductIdNotAndLoginIdAndStatus(req.getProductId().toString(), req.getLoginId() , "Y" ) ;
 
 			oldCommList.forEach ( o -> { 
 				Date startDate1=null;
