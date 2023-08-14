@@ -2798,9 +2798,134 @@ List<Error> errorList = new ArrayList<Error>();
 //**********************************************************************************************************
 
 	@Override
-	public List<Error> validatebrokerListCompanyProducts(List<BrokerCompanyListProductReq> req) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Error> validatebrokerListCompanyProducts(List<BrokerCompanyListProductReq> reqList) {
+		List<Error> errorList = new ArrayList<Error>();
+		
+		try {
+			Long row = 0L;
+			for (BrokerCompanyListProductReq req : reqList) {
+
+				row = row + 1;
+				if (req.getProductId()!=null) {
+					if (StringUtils.isBlank(req.getProductId().toString())) {
+						errorList.add(new Error("01", "ProductId", "Please Select Product  Id  In Row No : " + row));
+					}else if ((req.getProductId().toString()).length() > 3){
+						errorList.add(new Error("01","ProductId", "Please Enter Product  Id within 100 Characters  In Row No : " + row)); 
+					}else if (! (req.getProductId().toString()).matches("[0-9]+") ){
+						errorList.add(new Error("01","ProductId", "Please Enter Valid Number in Product  Id  In Row No : "+ row)); 
+					}
+				}else  {
+					errorList.add(new Error("01", "ProductId", "Please Select Product  Id  In Row No : " + row));
+				}
+	
+				if (StringUtils.isBlank(req.getLoginId())) {
+					errorList.add(new Error("02", "LoginId", "Please Select LoginId In Row No : " + row));
+				}
+			
+			
+			if (StringUtils.isBlank(req.getRemarks()) ) {
+				errorList.add(new Error("03", "Remark", "Please Select Remark  In Row No : " + row ));
+			}else if (req.getRemarks().length() > 100){
+				errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters   In Row No : "+ row)); 
+			}
+
+			//Status Validation
+			if (StringUtils.isBlank(req.getStatus())) {
+				errorList.add(new Error("04", "Status", "Please Select Status   In Row No : " + row));
+			} else if (req.getStatus().length() > 1) {
+				errorList.add(new Error("04", "Status", "Please Select Valid Status - One Character Only Allwed In Row No : " + row));
+			}else if(!("Y".equalsIgnoreCase(req.getStatus())||"N".equalsIgnoreCase(req.getStatus()))) {
+				errorList.add(new Error("04", "Status", "Please Select Valid Status - Active or Deactive In Row No :" + row));
+			}
+			// Effective Date Validation
+			Calendar cal = new GregorianCalendar();
+			Date today = new Date();
+			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 50);
+			today = cal.getTime();
+			if (req.getEffectiveDateStart() == null ) {
+				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start In Row No : " + row));
+
+			} else if (req.getEffectiveDateStart().before(today)) {
+				errorList.add(new Error("05", "EffectiveDateStart", "Please Enter Effective Date Start as Future Date  In Row No : " + row));
+			}
+		
+		else if (StringUtils.isBlank(req.getCompanyId())) {
+			errorList.add(new Error("06", "InsuranceId", "Please Enter InsuranceId   In Row No : " + row));
+		} else if (req.getCompanyId().length() > 20) {
+			errorList.add(new Error("06", "InsuranceId", "Please Enter InsuranceId within 20 Characters  In Row No : " + row));
+		}
+			
+			
+			
+			if (StringUtils.isBlank(req.getCheckerYn())) {
+				errorList.add(new Error("07", "Checker", "Please Select Checker  "));
+			} else if (req.getCheckerYn().length() > 1) {
+				errorList.add(new Error("07", "Checker", "Enter Checker 1 Character Only   In Row No : " + row));
+			}else if(!("Y".equalsIgnoreCase(req.getCheckerYn())||"N".equalsIgnoreCase(req.getCheckerYn()))) {
+				errorList.add(new Error("07", "Checker", "Enter Checker Y or N Only  In Row No :" + row));
+			}
+
+			if (StringUtils.isBlank(req.getProductDesc())) {
+				errorList.add(new Error("08", "ProductDesc", "Please Select Product  Desc  In Row No :" + row));
+			}else if (req.getProductDesc().length() > 500) {
+				errorList.add(new Error("08", "ProductDesc", "Please Enter Product Desc within 500 Characters  In Row No : " + row));
+			}
+	
+			if (StringUtils.isBlank(req.getCreatedBy())) {
+				errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy  In Row No :" + row));
+			}else if (req.getCreatedBy().length() > 50) {
+				errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy within 100 Characters  In Row No : " + row));
+			}
+			
+					
+				if (StringUtils.isBlank(req.getCommissionPercent())) {
+					errorList.add(new Error("10", "CommissionPercent", "Please Enter Commission Percent In Row No : " + row));
+				}if (!req.getCommissionPercent().matches("[0-9.]+")){
+					errorList.add(new Error("10","CommissionPercent", "Please Enter Valid Commission Percent In Row No : " + row)); 
+				}else if (Double.valueOf(req.getCommissionPercent()) >= 100){
+					errorList.add(new Error("10","CommissionPercent", "Please Enter Valid Commission Percent In Row No : " + row)); 
+				}
+					
+					
+				if(StringUtils.isBlank(req.getSumInsuredStart())) {
+					errorList.add(new Error("11", "Sum Insured Start", "Plese Enter Sum Insured Start in In Row No : " + row));
+				} else if (! req.getSumInsuredStart().matches("[0-9.]+") ) {
+					errorList.add(new Error("11", "Sum Insured Start", "Plese Enter Valid Number Sum Insured Start In Row No : " + row  ));
+				}
+					
+				if(StringUtils.isBlank(req.getSumInsuredEnd())) {
+					errorList.add(new Error("12", "Sum Insured End", "Plese Enter Sum Insured End in In Row No : " + row ));
+				} else if (! req.getSumInsuredEnd().matches("[0-9.]+") ) {
+					errorList.add(new Error("12", "Sum Insured End", "Plese Enter Valid Number Sum Insured End In Row No : " + row ));
+				} else if (StringUtils.isNotBlank(req.getSumInsuredStart()) && StringUtils.isBlank(req.getSumInsuredEnd())  ) {
+					if (Long.valueOf(req.getSumInsuredStart()) > Long.valueOf(req.getSumInsuredEnd()) ) {
+						errorList.add(new Error("12", "Sum Insured End", "Sum Insured Start Greater Than Sum Insured End In Row No : " + row  ));
+					}
+				}
+					
+				if (StringUtils.isBlank(req.getBackDays())) {
+					errorList.add(new Error("13", "BackDays", "Please Enter BackDays In Row No : " + row ));
+				}	
+				else if (StringUtils.isNotBlank(req.getBackDays())&& ! req.getBackDays().matches("[0-9]+") ) {
+					errorList.add(new Error("13", "BackDays", "Plese Enter Valid Number Back Days In Row No : " + row   ));
+				}
+				if (StringUtils.isBlank(req.getPolicyTypeId())) {
+					errorList.add(new Error("14", "PolicyTypeId", "Please Enter Policy Type Id In Row No : " + row ));
+				}	
+				else if (StringUtils.isNotBlank(req.getPolicyTypeId())&& ! req.getBackDays().matches("[0-9]+") ) {
+					errorList.add(new Error("14", "PolicyTypeId", "Plese Enter Valid Number Policy Type Id In Row No : " + row   ));
+				}
+				if (StringUtils.isBlank(req.getPolicyTypeDesc())) {
+					errorList.add(new Error("14", "PolicyTypeDesc", "Please Enter Policy Type Desc In Row No : " + row ));
+				}	
+
+			}
+				
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		return errorList;
 	}
 	//Update Broker Product List
 	@Override
