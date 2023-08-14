@@ -437,7 +437,10 @@ public class CalculatorEngineService implements CalculatorEngine {
 					String search = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
 							+ ";sectionId:" + engine.getSectionId() + ";riskId:" + engine.getVehicleId()
 							+ ";status:{E,D};requestReferenceNo:" + requestRefercenNo + ";";
-					if ("3".equals(engine.getProductId()) || "19".equals(engine.getProductId()) || "4".equals(engine.getProductId())) {
+					SpecCriteria criteria = crservice.createCriteria(Class.forName(rawtable), search,
+							"requestReferenceNo");
+					List<Long> count = crservice.getCount(criteria,0,2);
+					if (!count.isEmpty() && count.get(0)<=0) {
 
 						String riskid = engine.getVehicleId();
 						search = "companyId:" + engine.getInsuranceId() + ";productId:" + engine.getProductId()
@@ -445,7 +448,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					}
 
 					List<Tuple> result = null;
-					SpecCriteria criteria = crservice.createCriteria(Class.forName(rawtable), search,
+					 criteria = crservice.createCriteria(Class.forName(rawtable), search,
 							"requestReferenceNo");
 					result = crservice.getResult(criteria, 0, 50);
 					endtCount = new BigDecimal(result.get(0).get("endtCount").toString());
