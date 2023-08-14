@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.LoginProductMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -47,6 +48,9 @@ public interface LoginProductMasterRepository  extends JpaRepository<LoginProduc
 			Integer valueOf, Integer valueOf2, String companyId);
 
 	List<LoginProductMaster> findByLoginIdAndCompanyId(String loginId, String insuranceId);
+
+	List<LoginProductMaster> findByProductIdNotInAndLoginIdAndStatus(List<Integer> findproductId, String loginId,
+			String string);
 	
 
 

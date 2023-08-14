@@ -36,14 +36,14 @@ public class GetAllNonSelectedBrokerProductMasterRes implements Serializable {
 	@JsonProperty("OldProductName")
 	private String oldProductName;
 
-	@JsonProperty("PaymentYn")
-	private String paymentYn;
-
-	@JsonProperty("PaymentRedirUrl")
-	private String paymentRedirUrl;
-
-	@JsonProperty("AppLoginUrl")
-	private String appLoginUrl;
+//	@JsonProperty("PaymentYn")
+//	private String paymentYn;
+//
+//	@JsonProperty("PaymentRedirUrl")
+//	private String paymentRedirUrl;
+//
+//	@JsonProperty("AppLoginUrl")
+//	private String appLoginUrl;
 
 	@JsonProperty("Status")
 	private String status;
@@ -85,8 +85,8 @@ public class GetAllNonSelectedBrokerProductMasterRes implements Serializable {
 	@JsonProperty("MakerYn")
 	private String makerYn;
 	
-	@JsonProperty("CustConfirmYn")
-	private String custConfirmYn;
+//	@JsonProperty("CustConfirmYn")
+//	private String custConfirmYn;
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
@@ -101,14 +101,14 @@ public class GetAllNonSelectedBrokerProductMasterRes implements Serializable {
 	@JsonProperty("PolicyTypeDesc")
 	private String policyTypeDesc;
 	
-	@JsonProperty("CommissionPercent")
-	private String commissionPercent;
-	
-	@JsonProperty("BackDays")
-	private String backDays;
-
-	@JsonProperty("CreditYn")
-	private String creditYn;
+//	@JsonProperty("CommissionPercent")
+//	private String commissionPercent;
+//	
+//	@JsonProperty("BackDays")
+//	private String backDays;
+//
+//	@JsonProperty("CreditYn")
+//	private String creditYn;
 	
 	@JsonProperty("LoginId")
 	private String loginId;

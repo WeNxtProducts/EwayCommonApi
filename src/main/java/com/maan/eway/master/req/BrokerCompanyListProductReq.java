@@ -12,7 +12,7 @@ import lombok.Data;
 public class BrokerCompanyListProductReq {
 
 	@JsonProperty("ProductId")
-	private String productId;
+	private Integer productId;
 	
 //	@JsonProperty("ProductName")
 //	private String productName;
