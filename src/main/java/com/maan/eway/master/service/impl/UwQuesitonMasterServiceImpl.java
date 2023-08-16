@@ -77,8 +77,8 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 		
 			if (StringUtils.isBlank(req.getUwQuestionDesc())) {
 				errorList.add(new Error("02", "UwQuestionDesc", "Please Select UwQuestionDesc"));
-			}else if (req.getUwQuestionDesc().length() > 100){
-				errorList.add(new Error("02","UwQuestionDesc", "Please Enter UwQuestionDesc 100 Characters")); 
+			}else if (req.getUwQuestionDesc().length() > 500){
+				errorList.add(new Error("02","UwQuestionDesc", "Please Enter UwQuestionDesc 500 Characters")); 
 			}
 			
 			
