@@ -1138,7 +1138,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeAsc("CONST_MATERIAL", "Y" , req.getInsuranceId());
-			String itemType = "CONST_MATERIAL" ;
+			String itemType = "CONSTRUCT_TYPE" ;
 			  
 			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {

@@ -90,7 +90,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 			List<DropDownRes> resList = new ArrayList<DropDownRes>();
 			try {
 			//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("CONST_MATERIAL", "Y");
-				String itemType = "CONST_MATERIAL";
+				String itemType = "CONSTRUCT_TYPE";
 				List<ListItemValue> list  = getListItem(req , itemType);
 				
 				for (ListItemValue data : list) {
