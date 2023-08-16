@@ -120,6 +120,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="PLAN_DESC", length=100)
     private String     planDesc;
+    
+    @Column(name="NATIONALITY", length=100)
+    private String     nationality;
 
 }
 
