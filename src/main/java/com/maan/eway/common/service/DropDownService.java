@@ -208,6 +208,8 @@ public interface DropDownService {
 
 	List<DropDownRes> getCyberInsuranceTypes(LovDropDownReq req);
 
+	List<DropDownRes> getCyberContents(LovDropDownReq req);
+
 
 
 

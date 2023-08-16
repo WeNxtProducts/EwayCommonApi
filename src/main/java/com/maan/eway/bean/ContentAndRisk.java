@@ -173,7 +173,9 @@ public class ContentAndRisk implements Serializable {
    
    @Column(name="BRAND", length=100)
    private String     brand;
-   
+
+   @Column(name="MANUFACTURE_YEAR", length=100)
+   private String     manufactureYear;
    
    //LC Column
 	@Column(name = "SUM_INSURED_LC")

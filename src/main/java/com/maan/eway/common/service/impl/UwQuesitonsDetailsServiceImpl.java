@@ -66,7 +66,7 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			if (StringUtils.isBlank(req.getProductId())) {
 				error.add(new Error("02", "ProductId", "Please Enter ProductId"+row));
 			}
-			if (StringUtils.isNotBlank(req.getUwQuestionDesc()) &&req.getUwQuestionDesc().length() > 100) {
+			if (StringUtils.isNotBlank(req.getUwQuestionDesc()) &&req.getUwQuestionDesc().length() > 500) {
 				error.add(new Error("03", "UwQuestionDesc", "Please Enter UwQuestionDesc within 100 Characters"+row));
 			}
 			if (StringUtils.isNotBlank(req.getQuestionType()) &&req.getQuestionType().length() > 100) {
