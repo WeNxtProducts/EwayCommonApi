@@ -1126,7 +1126,9 @@ public class CommonGridServiceImpl implements CommonGridService {
 				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), startDate);
 				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), startDate);
 				Predicate n10 = cb.equal(m.get("endtCount"), endtCount);
-
+				Predicate n11 = cb.notEqual(m.get("endtTypeId"),"842");
+				Predicate n12 = cb.isNull(m.get("endtTypeId"));
+				Predicate n13 = cb.or(n11,n12);
 
 				Predicate n5 = null;
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
@@ -1143,7 +1145,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 					n6 = e0.in(branches);
 				}
 
-				query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10)
+				query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10,n13)
 				.groupBy(
 						c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"),c.get("mobileNo1"), c.get("isTaxExempted"), c.get("taxExemptedId"),
 						m.get("companyId"),m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
