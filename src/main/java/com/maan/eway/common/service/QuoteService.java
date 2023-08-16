@@ -15,6 +15,7 @@ import com.maan.eway.common.res.QuoteUpdateRes;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.GetEmployeeCountRes;
+import com.maan.eway.res.GroupSuminsuredDetailsRes;
 import com.maan.eway.res.SectionWiseSumInsuredRes;
 import com.maan.eway.res.SuccessRes;
 
@@ -42,6 +43,8 @@ public interface QuoteService {
 	SuccessRes tracesRemoved(TracesRemovedReq req);
 
 	GetEmployeeCountRes getProductEmplyee(EmployeeCountGetReq req);
+
+	List<GroupSuminsuredDetailsRes> groupSuminsuredDetails(SectionSumInsuredGetReq req);
 
 
 

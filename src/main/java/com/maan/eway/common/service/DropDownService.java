@@ -206,6 +206,8 @@ public interface DropDownService {
 
 	List<DropDownRes> getPlanBenefits(LovDropDownReq req);
 
+	List<DropDownRes> getCyberInsuranceTypes(LovDropDownReq req);
+
 
 
 

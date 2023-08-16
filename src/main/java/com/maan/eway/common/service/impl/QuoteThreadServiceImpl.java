@@ -1005,7 +1005,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
         	 for (Integer vehId :  groupIds ) {
 				 List<EserviceTravelGroupDetails> filterGroup = groupData.stream().filter( o -> o.getGroupId().equals(vehId) ).collect(Collectors.toList());				 
 				 List<String> sectionId = req.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());	
-				 for (int i=0 ; i < filterGroup.get(0).getGrouppMembers() ; i++) {
+			//	 for (int i=0 ; i < filterGroup.get(0).getGrouppMembers() ; i++) {
 					 passCount = passCount + 1 ;
 					 threadCount = threadCount +  2 ;
 					
@@ -1031,23 +1031,27 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	            	 request2.setMotorYn(request.getMotorYn());
 	            	 request2.setIndividualId(passCount);
 	            	 
-	            	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
-	            				, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
-	            			    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
-		             queue.add(travelSave);
+	            	 request.setSectionId(sectionId.get(0));
+	            	 request.setGroupId(filterGroup.get(0).getGroupId());
+	            	 
 					 QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
 								, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
 							    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
 					 queue.add(coverSave);
-				 }					 
+				// }					 
 	         } 
+        	 
+        	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
+     				, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
+     			    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
+          queue.add(travelSave);
         	 
         	 EserviceTravelDetails travelData = eserTraRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
         	 if( travelData.getPlanTypeId().equals(3) ){
         		// Kids Passenger Details Insert Frame  
         		 List<EserviceTravelGroupDetails> filterGroup = groupData.stream().filter( o -> o.getGroupId().equals(1) ).collect(Collectors.toList());
         		 if(filterGroup.size()>0 ) {
-        			 for (int i=0 ; i < filterGroup.get(0).getGrouppMembers() ; i++) {
+        		//	 for (int i=0 ; i < filterGroup.get(0).getGrouppMembers() ; i++) {
     					 passCount = passCount + 1 ;
     					 threadCount = threadCount +  1 ;
     					
@@ -1073,12 +1077,12 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
     	            	 request2.setMotorYn(request.getMotorYn());
     	            	 request2.setIndividualId(passCount);
     	            	 
-    	            	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
-    	            				, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
-    	            			    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
-    		             queue.add(travelSave);
+//    	            	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
+//    	            				, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
+//    	            			    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
+//    		             queue.add(travelSave);
     					
-    				 }	
+    			//	 }	
         		 }
         		
         	 }

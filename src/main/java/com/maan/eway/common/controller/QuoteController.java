@@ -26,6 +26,7 @@ import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.error.Error;
 import com.maan.eway.res.GetEmployeeCountRes;
+import com.maan.eway.res.GroupSuminsuredDetailsRes;
 import com.maan.eway.res.SectionWiseSumInsuredRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
@@ -113,6 +114,27 @@ public class QuoteController {
 
 	}
 	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/groupsuminsureddetails")
+	@ApiOperation(value = "This method is New Quote ")
+	public ResponseEntity<CommonRes> groupSuminsuredDetails(@RequestBody SectionSumInsuredGetReq req) {
+		CommonRes commonRes = new  CommonRes() ;
+		reqPrinter.reqPrint(req);
+		// Save
+		List<GroupSuminsuredDetailsRes> res = entityService.groupSuminsuredDetails(req);
+		commonRes.setCommonResponse(res);
+		commonRes.setIsError(false);
+		commonRes.setErrorMessage(null);
+		commonRes.setMessage("Success");
+		
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(commonRes, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+		
+
+	}
 
 	 
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")

@@ -138,6 +138,7 @@ import com.maan.eway.res.CommonSumInsuredDetails;
 import com.maan.eway.res.CoverRes;
 import com.maan.eway.res.EserviceBuildingsDetailsRes;
 import com.maan.eway.res.GetEmployeeCountRes;
+import com.maan.eway.res.GroupSuminsuredDetailsRes;
 import com.maan.eway.res.OccupationReqClass;
 import com.maan.eway.res.PassengerSectionDetails;
 import com.maan.eway.res.SectionDetails;
@@ -152,7 +153,7 @@ import com.maan.eway.res.calc.Tax;
 @Service 
 @Transactional
 public class QuoteServiceImpl implements QuoteService {
-
+ 
 	private static final int ArrayList = 0;
 
 
@@ -892,129 +893,132 @@ public class QuoteServiceImpl implements QuoteService {
 			List<TravelPassengerDetails> totalDatas  = new ArrayList<TravelPassengerDetails>();	
 			totalDatas.addAll(adultDatas);
 			totalDatas.addAll(otherDatas);
-			
-			ProductGroupDropDownReq groupReq = new ProductGroupDropDownReq();
-			groupReq.setBranchCode(travelDatas.get(0).getBranchCode());
-			groupReq.setInsuranceId(travelDatas.get(0).getCompanyId());		
-			groupReq.setProductId(travelDatas.get(0).getProductId().toString());	
-			
-			List<ProductGroupMasterDropDownRes> groupRes =	groupService.getProductGroupMasterDropdown(groupReq);
-			
-			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
-			
-			List<EserviceTravelGetRes>   travelResList = new ArrayList<EserviceTravelGetRes>();
-			List<DocumentDetails> documentDetails = new ArrayList<DocumentDetails>();
-			
-			
-			for (TravelPassengerDetails tra :  totalDatas) {
-				EserviceTravelGetRes travelDetails = new  EserviceTravelGetRes()  ;
-				dozerMapper.map(tra, travelDetails);
-				travelDetails.setRiskId(tra.getPassengerId().toString());
-				travelDetails.setSectionId(tra.getSectionId()==null?"":tra.getSectionId().toString());
-				travelDetails.setPassengerId(tra.getPassengerId().toString());
-				travelDetails.setPassengerName(tra.getPassengerName());
+			if(travelDatas.size() > 0 ) {
+				ProductGroupDropDownReq groupReq = new ProductGroupDropDownReq();
+				groupReq.setBranchCode(travelDatas.get(0).getBranchCode());
+				groupReq.setInsuranceId(travelDatas.get(0).getCompanyId());		
+				groupReq.setProductId(travelDatas.get(0).getProductId().toString());	
 				
-				List<PassengerSectionDetails>  SectionList = new ArrayList<PassengerSectionDetails>();	
-//				 List<BrokerCommissionDetails> policylist = getPolicyName(tra.getCompanyId() , tra.getProductId().toString(), tra.getCreatedBy(),tra.getBrokerCode(), tra.getSectionId().toString());
-//				 Double commissionPercent =0.0;
-//				 if(policylist.size()>0 && policylist!=null) {
-//				 commissionPercent = policylist.get(0).getCommissionPercentage().toString()==null?0: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
-//				 }
-//				 else {
-//				 commissionPercent =5.0;
-//				 }
-				 String premiumFc = tra.getOverallPremiumFc().toString();
-				 String vatPremiumFc =	tra.getOverallPremiumFc().toString();
-				 BigDecimal commission=	new BigDecimal(premiumFc)
-			 				.multiply(tra.getCommissionPercentage()==null?BigDecimal.ZERO : tra.getCommissionPercentage() )
-			 				.divide(BigDecimal.valueOf(100D))
-	 						.setScale(new MathContext(3, RoundingMode.HALF_UP)
-	 						.getPrecision(),RoundingMode.HALF_UP);
-	
-				 travelDetails.setOverAllPremiumFc(tra.getOverallPremiumFc()==null?0: tra.getOverallPremiumFc() );
-				 travelDetails.setOverAllPremiumLc(tra.getOverallPremiumLc()==null?0:tra.getOverallPremiumLc());
-				 travelDetails.setPremiumFc(tra.getActualPremiumFc()==null?0:tra.getActualPremiumFc() );
-				 travelDetails.setPremiumLc(tra.getActualPremiumLc()==null?0:tra.getActualPremiumLc());
-				 travelDetails.setCommissionAmount(commission.toString()==null?"":commission.toString());
-				 travelDetails.setCommissionPercentage(tra.getCommissionPercentage()==null?"" : tra.getCommissionPercentage().toPlainString());
-				 travelDetails.setVatCommission(tra.getVatCommission()==null?"" : tra.getVatCommission().toPlainString());				
-			
-				 // Cover Details
-				List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(tra.getGroupId()))).collect(Collectors.toList());
+				List<ProductGroupMasterDropDownRes> groupRes =	groupService.getProductGroupMasterDropdown(groupReq);
+				
+				List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
+				
+				List<EserviceTravelGetRes>   travelResList = new ArrayList<EserviceTravelGetRes>();
+				List<DocumentDetails> documentDetails = new ArrayList<DocumentDetails>();
 				
 				
-				List<CoverRes>  coverListRes = new ArrayList<CoverRes>();
-				BigDecimal PremiumAfterDiscount = new BigDecimal(0);
-				BigDecimal PremiumAfterDiscountLc = new BigDecimal(0);
-				BigDecimal PremiumBeforeDiscount = new BigDecimal(0);
-				BigDecimal PremiumBeforeDiscountLc = new BigDecimal(0);
-				BigDecimal PremiumExcluedTax = new BigDecimal(0);
-				BigDecimal PremiumExcluedTaxLc = new BigDecimal(0);
-				BigDecimal PremiumIncludedTax = new BigDecimal(0);
-				BigDecimal PremiumIncludedTaxLc = new BigDecimal(0);
-				
-				if( filterCovers.size() > 0 ) {
-					Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));
-					coverListRes = getCoverDetails(groupByCover);
-					PremiumAfterDiscount = (coverListRes.stream().map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
-					PremiumAfterDiscountLc = (coverListRes.stream().map(CoverRes:: getPremiumAfterDiscountLC ).reduce((x, y) -> x.add(y)).get());
-					PremiumBeforeDiscount = (coverListRes.stream().map(CoverRes:: getPremiumBeforeDiscount ).reduce((x, y) -> x.add(y)).get());
-					PremiumBeforeDiscountLc = (coverListRes.stream().map(CoverRes:: getPremiumBeforeDiscountLC ).reduce((x, y) -> x.add(y)).get());
-					PremiumExcluedTax = (coverListRes.stream().map(CoverRes:: getPremiumExcluedTax ).reduce((x, y) -> x.add(y)).get());
-					PremiumExcluedTaxLc = (coverListRes.stream().map(CoverRes:: getPremiumExcluedTaxLC ).reduce((x, y) -> x.add(y)).get());
-					PremiumIncludedTax = (coverListRes.stream().map(CoverRes:: getPremiumIncludedTax ).reduce((x, y) -> x.add(y)).get());
-					PremiumIncludedTaxLc = (coverListRes.stream().map(CoverRes:: getPremiumIncludedTaxLC ).reduce((x, y) -> x.add(y)).get());
+				for (TravelPassengerDetails tra :  totalDatas) {
+					EserviceTravelGetRes travelDetails = new  EserviceTravelGetRes()  ;
+					dozerMapper.map(tra, travelDetails);
+					travelDetails.setRiskId(tra.getPassengerId().toString());
+					travelDetails.setSectionId(tra.getSectionId()==null?"":tra.getSectionId().toString());
+					travelDetails.setPassengerId(tra.getPassengerId().toString());
+					travelDetails.setPassengerName(tra.getPassengerName());
 					
-				}
-				
-				
-//				// Response
-//				List<PassengerSectionDetails> secList = new ArrayList<PassengerSectionDetails>();
-//				// Passenger
-//				PassengerSectionDetails traSec = new PassengerSectionDetails(); 
-//				
-//				traSec.setSectionId(tra.getSectionId()==null?"":tra.getSectionId().toString());
-//				traSec.setSectionName( tra.getSectionName());
-//				traSec.setCovers(coverListRes);
-//				traSec.setPassengerId(tra.getPassengerId().toString() );
-//				traSec.setPassengerName(tra.getPassengerName());
-//				traSec.setGroupDesc(groupRes.stream().filter( o -> o.getCode().equalsIgnoreCase(tra.getGroupId().toString()) ).collect(Collectors.toList()).get(0).getCodeDesc()) ;		
-//				traSec.setGroupId(tra.getGroupId().toString());
-//				secList.add(traSec);
-//				travelDetails.setSectionDetails(secList);
-				
-				// Document 
-				DocumentDetails  document = new DocumentDetails();
-				document.setDocumentTitle(tra.getPassengerName());
-				document.setRiskId(tra.getPassengerId().toString());
-				document.setSectionId(tra.getSectionId().toString());
-				documentDetails.add(document);
-				
-				
-				PassengerSectionDetails sec = new PassengerSectionDetails();
-				sec.setSectionId(tra.getSectionId()==null?"":tra.getSectionId().toString());
-				sec.setSectionName( tra.getSectionName());
-				sec.setPassengerId(tra.getPassengerId().toString() );
-				sec.setPassengerName(tra.getPassengerName());
-				sec.setCovers(coverListRes);
-				sec.setGroupDesc(groupRes.stream().filter( o -> o.getCode().equalsIgnoreCase(tra.getGroupId().toString()) ).collect(Collectors.toList()).get(0).getCodeDesc()) ;		
-				sec.setGroupId(tra.getGroupId().toString());
-				sec.setPremiumAfterDiscount(PremiumAfterDiscount.toString()==null?"":PremiumAfterDiscount.toString());
-				sec.setPremiumAfterDiscountLc(PremiumAfterDiscountLc.toString()==null?"":PremiumAfterDiscountLc.toString());
-				sec.setPremiumBeforeDiscount(PremiumBeforeDiscount.toString()==null?"":PremiumBeforeDiscount.toString());
-				sec.setPremiumBeforeDiscountLc(PremiumBeforeDiscountLc.toString()==null?"":PremiumBeforeDiscountLc.toString());
-				sec.setPremiumExcluedTax(PremiumExcluedTax.toString()==null?"":PremiumExcluedTax.toString());
-				sec.setPremiumExcluedTaxLc(PremiumExcluedTaxLc.toString()==null?"":PremiumExcluedTaxLc.toString());
-				sec.setPremiumIncludedTax(PremiumIncludedTax.toString()==null?"":PremiumIncludedTax.toString());
-				sec.setPremiumIncludedTaxLc(PremiumIncludedTaxLc.toString()==null?"":PremiumIncludedTaxLc.toString());
-			
-				SectionList.add(sec);
-				travelDetails.setSectionDetails(SectionList);	
-				travelResList.add(travelDetails);
-			}
+					List<PassengerSectionDetails>  SectionList = new ArrayList<PassengerSectionDetails>();	
+//					 List<BrokerCommissionDetails> policylist = getPolicyName(tra.getCompanyId() , tra.getProductId().toString(), tra.getCreatedBy(),tra.getBrokerCode(), tra.getSectionId().toString());
+//					 Double commissionPercent =0.0;
+//					 if(policylist.size()>0 && policylist!=null) {
+//					 commissionPercent = policylist.get(0).getCommissionPercentage().toString()==null?0: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());	
+//					 }
+//					 else {
+//					 commissionPercent =5.0;
+//					 }
+					 String premiumFc = tra.getOverallPremiumFc().toString();
+					 String vatPremiumFc =	tra.getOverallPremiumFc().toString();
+					 BigDecimal commission=	new BigDecimal(premiumFc)
+				 				.multiply(tra.getCommissionPercentage()==null?BigDecimal.ZERO : tra.getCommissionPercentage() )
+				 				.divide(BigDecimal.valueOf(100D))
+		 						.setScale(new MathContext(3, RoundingMode.HALF_UP)
+		 						.getPrecision(),RoundingMode.HALF_UP);
 		
-			viewRes.setRiskDetails(travelResList);	
-			viewRes.setDocumentDetails(documentDetails);
+					 travelDetails.setOverAllPremiumFc(tra.getOverallPremiumFc()==null?0: tra.getOverallPremiumFc() );
+					 travelDetails.setOverAllPremiumLc(tra.getOverallPremiumLc()==null?0:tra.getOverallPremiumLc());
+					 travelDetails.setPremiumFc(tra.getActualPremiumFc()==null?0:tra.getActualPremiumFc() );
+					 travelDetails.setPremiumLc(tra.getActualPremiumLc()==null?0:tra.getActualPremiumLc());
+					 travelDetails.setCommissionAmount(commission.toString()==null?"":commission.toString());
+					 travelDetails.setCommissionPercentage(tra.getCommissionPercentage()==null?"" : tra.getCommissionPercentage().toPlainString());
+					 travelDetails.setVatCommission(tra.getVatCommission()==null?"" : tra.getVatCommission().toPlainString());				
+				
+					 // Cover Details
+					List<PolicyCoverData> filterCovers = covers.stream().filter( o -> o.getVehicleId().equals(Integer.valueOf(tra.getGroupId()))).collect(Collectors.toList());
+					
+					
+					List<CoverRes>  coverListRes = new ArrayList<CoverRes>();
+					BigDecimal PremiumAfterDiscount = new BigDecimal(0);
+					BigDecimal PremiumAfterDiscountLc = new BigDecimal(0);
+					BigDecimal PremiumBeforeDiscount = new BigDecimal(0);
+					BigDecimal PremiumBeforeDiscountLc = new BigDecimal(0);
+					BigDecimal PremiumExcluedTax = new BigDecimal(0);
+					BigDecimal PremiumExcluedTaxLc = new BigDecimal(0);
+					BigDecimal PremiumIncludedTax = new BigDecimal(0);
+					BigDecimal PremiumIncludedTaxLc = new BigDecimal(0);
+					
+					if( filterCovers.size() > 0 ) {
+						Map<Integer,List<PolicyCoverData>> groupByCover = filterCovers.stream().collect(Collectors.groupingBy(PolicyCoverData :: getCoverId));
+						coverListRes = getCoverDetails(groupByCover);
+						PremiumAfterDiscount = (coverListRes.stream().map(CoverRes:: getPremiumAfterDiscount ).reduce((x, y) -> x.add(y)).get());
+						PremiumAfterDiscountLc = (coverListRes.stream().map(CoverRes:: getPremiumAfterDiscountLC ).reduce((x, y) -> x.add(y)).get());
+						PremiumBeforeDiscount = (coverListRes.stream().map(CoverRes:: getPremiumBeforeDiscount ).reduce((x, y) -> x.add(y)).get());
+						PremiumBeforeDiscountLc = (coverListRes.stream().map(CoverRes:: getPremiumBeforeDiscountLC ).reduce((x, y) -> x.add(y)).get());
+						PremiumExcluedTax = (coverListRes.stream().map(CoverRes:: getPremiumExcluedTax ).reduce((x, y) -> x.add(y)).get());
+						PremiumExcluedTaxLc = (coverListRes.stream().map(CoverRes:: getPremiumExcluedTaxLC ).reduce((x, y) -> x.add(y)).get());
+						PremiumIncludedTax = (coverListRes.stream().map(CoverRes:: getPremiumIncludedTax ).reduce((x, y) -> x.add(y)).get());
+						PremiumIncludedTaxLc = (coverListRes.stream().map(CoverRes:: getPremiumIncludedTaxLC ).reduce((x, y) -> x.add(y)).get());
+						
+					}
+					
+					
+//					// Response
+//					List<PassengerSectionDetails> secList = new ArrayList<PassengerSectionDetails>();
+//					// Passenger
+//					PassengerSectionDetails traSec = new PassengerSectionDetails(); 
+//					
+//					traSec.setSectionId(tra.getSectionId()==null?"":tra.getSectionId().toString());
+//					traSec.setSectionName( tra.getSectionName());
+//					traSec.setCovers(coverListRes);
+//					traSec.setPassengerId(tra.getPassengerId().toString() );
+//					traSec.setPassengerName(tra.getPassengerName());
+//					traSec.setGroupDesc(groupRes.stream().filter( o -> o.getCode().equalsIgnoreCase(tra.getGroupId().toString()) ).collect(Collectors.toList()).get(0).getCodeDesc()) ;		
+//					traSec.setGroupId(tra.getGroupId().toString());
+//					secList.add(traSec);
+//					travelDetails.setSectionDetails(secList);
+					
+					// Document 
+					DocumentDetails  document = new DocumentDetails();
+					document.setDocumentTitle(tra.getPassengerName());
+					document.setRiskId(tra.getPassengerId().toString());
+					document.setSectionId(tra.getSectionId().toString());
+					documentDetails.add(document);
+					
+					
+					PassengerSectionDetails sec = new PassengerSectionDetails();
+					sec.setSectionId(tra.getSectionId()==null?"":tra.getSectionId().toString());
+					sec.setSectionName( tra.getSectionName());
+					sec.setPassengerId(tra.getPassengerId().toString() );
+					sec.setPassengerName(tra.getPassengerName());
+					sec.setCovers(coverListRes);
+					sec.setGroupDesc(groupRes.stream().filter( o -> o.getCode().equalsIgnoreCase(tra.getGroupId().toString()) ).collect(Collectors.toList()).get(0).getCodeDesc()) ;		
+					sec.setGroupId(tra.getGroupId().toString());
+					sec.setPremiumAfterDiscount(PremiumAfterDiscount.toString()==null?"":PremiumAfterDiscount.toString());
+					sec.setPremiumAfterDiscountLc(PremiumAfterDiscountLc.toString()==null?"":PremiumAfterDiscountLc.toString());
+					sec.setPremiumBeforeDiscount(PremiumBeforeDiscount.toString()==null?"":PremiumBeforeDiscount.toString());
+					sec.setPremiumBeforeDiscountLc(PremiumBeforeDiscountLc.toString()==null?"":PremiumBeforeDiscountLc.toString());
+					sec.setPremiumExcluedTax(PremiumExcluedTax.toString()==null?"":PremiumExcluedTax.toString());
+					sec.setPremiumExcluedTaxLc(PremiumExcluedTaxLc.toString()==null?"":PremiumExcluedTaxLc.toString());
+					sec.setPremiumIncludedTax(PremiumIncludedTax.toString()==null?"":PremiumIncludedTax.toString());
+					sec.setPremiumIncludedTaxLc(PremiumIncludedTaxLc.toString()==null?"":PremiumIncludedTaxLc.toString());
+				
+					SectionList.add(sec);
+					travelDetails.setSectionDetails(SectionList);	
+					travelResList.add(travelDetails);
+				}
+				viewRes.setRiskDetails(travelResList);	
+				viewRes.setDocumentDetails(documentDetails);
+			}
+			
+		
+			
 			
 		} catch ( Exception e) {
 			e.printStackTrace();
@@ -2605,6 +2609,7 @@ public class QuoteServiceImpl implements QuoteService {
 			
 			res.setCurrencyId(pacc.getCurrency());
 			res.setRiskId(pacc.getRiskId().toString());
+
 			Double sumInsured = paccDatas.stream().filter( o -> o.getStatus().equalsIgnoreCase("D") &&  o.getSumInsured() != null ).mapToDouble(o -> Double.valueOf(o.getSumInsured().toPlainString() ) ).sum() ;
 			res.setSumInsured(sumInsured.toString());
 			
@@ -3835,6 +3840,45 @@ public class QuoteServiceImpl implements QuoteService {
 			return null;
 		}
 			return res;
+	}
+
+	@Override
+	public List<GroupSuminsuredDetailsRes> groupSuminsuredDetails(SectionSumInsuredGetReq req) {
+		List<GroupSuminsuredDetailsRes> resList = new ArrayList<GroupSuminsuredDetailsRes>();
+		try {
+			HomePositionMaster homeData = homeRepo.findByQuoteNo(req.getQuoteNo());
+			CompanyProductMaster product =  getCompanyProductMasterDropdown(homeData.getCompanyId() , homeData.getProductId().toString());
+
+			
+			 if(product.getProductId().equals(4)) {
+				 List<EserviceTravelGroupDetails> travelGroupDatas = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(homeData.getRequestReferenceNo());
+				 for (EserviceTravelGroupDetails group :  travelGroupDatas ) {
+					 GroupSuminsuredDetailsRes res = new GroupSuminsuredDetailsRes();
+					 res.setGroupCount(group.getGrouppMembers() ==null ? "" :group.getGrouppMembers().toString() );	
+					 res.setGroupDesc(group.getGroupDesc());
+					 res.setGroupId(group.getGroupId()==null?"": group.getGroupId().toString());
+					 res.setGroupSuminsured("");
+					 resList.add(res);
+				}
+				 
+			} else {
+				List<CommonDataDetails> commonList =  commonDataRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+				for (CommonDataDetails group :  commonList ) {
+					 GroupSuminsuredDetailsRes res = new GroupSuminsuredDetailsRes();
+					 res.setGroupCount(group.getCount() ==null ? "" :group.getCount().toString() );	
+					 res.setGroupDesc(group.getOccupationDesc());
+					 res.setGroupId(group.getRiskId()==null?"": group.getRiskId().toString());
+					 res.setGroupSuminsured(group.getSumInsured()==null?"": group.getSumInsured().toPlainString());
+					 resList.add(res);
+				}
+			}
+				
+		} catch ( Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
 	}
 	
 }

@@ -335,7 +335,7 @@ public class DocumentServiceImpl implements DocumentService{
 				List<ListItemValue> docTypeList = getListItem( homeData.getCompanyId() , homeData.getBranchCode() , "DOC_ID_TYPE");
 				
 				
-				List<TravelPassengerDetails> passengerList = passengerRepo.findByQuoteNo(homeData.getQuoteNo()); 
+				List<TravelPassengerDetails> passengerList = passengerRepo.findByQuoteNoAndStatusNot(homeData.getQuoteNo(), "D"); 
 				List<SectionDataDetails>  sectionDatas =  secRepo.findByQuoteNoOrderByRiskIdAsc(homeData.getQuoteNo());
 				
 				List<DocumentSectionList> sectionList = new ArrayList<DocumentSectionList>();
@@ -452,7 +452,7 @@ public class DocumentServiceImpl implements DocumentService{
 							
 							if ( sec.getProductType().equalsIgnoreCase("H") ) {
 								
-								List<ProductEmployeeDetails> filterEmpList = employeeList.stream().filter( o -> building.getRiskId().equals(o.getRiskId())  && o.getSectionId().equalsIgnoreCase(sec.getSectionId() ) ).collect(Collectors.toList());
+								List<ProductEmployeeDetails> filterEmpList = employeeList.stream().filter( o -> (! o.getStatus().equalsIgnoreCase("D")) && building.getRiskId().equals(o.getRiskId())  && o.getSectionId().equalsIgnoreCase(sec.getSectionId() ) ).collect(Collectors.toList());
 							
 								if(filterEmpList.size() > 0) {
 									for (ProductEmployeeDetails emp :  filterEmpList) {

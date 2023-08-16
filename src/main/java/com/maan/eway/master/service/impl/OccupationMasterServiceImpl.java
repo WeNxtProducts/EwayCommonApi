@@ -220,11 +220,17 @@ try {
 	Predicate n5 = cb.equal(c.get("branchCode"),req.getBranchCode());
 	Predicate n6 = cb.equal(c.get("branchCode"),"99999");
 	Predicate n7 = cb.or(n5,n6);
-	Predicate n8 = cb.equal(c.get("productId"),req.getProductId());
-	Predicate n9 = cb.equal(c.get("productId"),"99999");
-	Predicate n10 = cb.or(n8,n9);
+	Predicate n8 = null ;
+	if(StringUtils.isNotBlank(req.getProductId() )) {
+		n8 = cb.equal(c.get("productId"),req.getProductId());
+	} else {
+		n8 = cb.equal(c.get("productId"),"99999");
+	}
 	
-	query.where(n12,n2,n3,n4,n7,n10).orderBy(orderList);
+	//Predicate n9 = cb.equal(c.get("productId"),"99999");
+//	Predicate n10 = cb.or(n8,);
+	
+	query.where(n12,n2,n3,n4,n7,n8).orderBy(orderList);
 		
 	
 	TypedQuery<OccupationMaster> result = em.createQuery(query);
