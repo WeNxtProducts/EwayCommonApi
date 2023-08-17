@@ -51,5 +51,11 @@ public class FollowUpDetailsListRes {
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("UpdatedDate")
     private String updatedDate;
+	
+	@JsonProperty("Status")
+    private String status;
+    
+	@JsonProperty("StatusDesc")
+    private String statusDesc;  
 	  
 }

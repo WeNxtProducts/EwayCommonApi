@@ -18,11 +18,11 @@ public class FollowUpDetailsPageRes {
 	@JsonProperty("ProductId")
 	private String productId;
 	
-	@JsonProperty("Status")
-    private String status;
-    
-	@JsonProperty("StatusDesc")
-    private String statusDesc;    
+//	@JsonProperty("Status")
+//    private String status;
+//    
+//	@JsonProperty("StatusDesc")
+//    private String statusDesc;    
     
 	@JsonProperty("BranchCode")
 	private String branchCode;

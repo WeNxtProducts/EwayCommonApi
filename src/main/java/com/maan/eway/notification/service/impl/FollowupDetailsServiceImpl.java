@@ -387,11 +387,11 @@ public class FollowupDetailsServiceImpl  implements FollowupDetailsService{
 			Predicate n1 = cb.equal(b.get("companyId"), req.getCompanyId());
 			Predicate n2 = cb.equal(b.get("branchCode"), "99999");
 			Predicate n3 = cb.equal(b.get("productId"),req.getProductId());			
-			Predicate n4 = cb.equal(b.get("status"),req.getStatus());
+		//	Predicate n4 = cb.equal(b.get("status"),req.getStatus());
 			Predicate n5 = cb.equal(b.get("loginId"),req.getLoginId());
 			Predicate n6 = cb.equal(b.get("requestReferenceNo"),req.getRequestReferenceNo());
 
-			query.where(n1,n2,n3,n4,n5,n6).orderBy(orderList);
+			query.where(n1,n2,n3,n5,n6).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<FollowUpDetails> result = em.createQuery(query);
@@ -408,14 +408,16 @@ public class FollowupDetailsServiceImpl  implements FollowupDetailsService{
 				res1.setEndDate(followUpDetails.getEndDate().toString());
 				res1.setStartDate(followUpDetails.getStartDate().toString());
 				res1.setEntryDate(followUpDetails.getEntryDate().toString());
+				res1.setStatus(followUpDetails.getStatus().toString());
+				res1.setStatusDesc(followUpDetails.getStatusDesc().toString());
 				reslist.add(res1);
 			}
 			
 			res.setBranchCode("99999");
 			res.setCompanyId(req.getCompanyId());
 			res.setProductId(req.getProductId());
-			res.setStatus(req.getStatus());
-			res.setStatusDesc(list.get(0).getStatusDesc());
+//			res.setStatus(req.getStatus());
+//			res.setStatusDesc(list.get(0).getStatusDesc());
 			
 			res.setFollowupDetailsRes(reslist);
 			

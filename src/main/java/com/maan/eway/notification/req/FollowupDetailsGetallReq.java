@@ -18,8 +18,8 @@ public class FollowupDetailsGetallReq {
 	@JsonProperty("ProductId")
 	private String productId;
 
-	@JsonProperty("Status")
-	private String status;
+//	@JsonProperty("Status")
+//	private String status;
 
 	@JsonProperty("LoginId")
 	private String loginId;    
