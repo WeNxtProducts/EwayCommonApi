@@ -1,6 +1,13 @@
 package com.maan.eway.common.req;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maan.eway.res.calc.Cover;
+import com.maan.eway.res.calc.CoverException;
+import com.maan.eway.res.calc.Discount;
+import com.maan.eway.res.calc.Loading;
+import com.maan.eway.res.calc.Tax;
 
 import lombok.Data;
 @Data
@@ -39,5 +46,11 @@ public class CoverIdReq2 {
 	
 	@JsonProperty("ExcessDesc")
 	private String excessDesc;
+	
+	 @JsonProperty("Discounts") 
+	 public List<Discount> discounts;
+	    
+	    @JsonProperty("Loadings") 
+	    public List<Loading> loadings;
 
 }
