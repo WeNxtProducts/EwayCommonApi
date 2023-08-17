@@ -469,17 +469,21 @@ public class DocumentServiceImpl implements DocumentService{
 								
 							} else {
 								// Asset Documents
-								if( "3".equalsIgnoreCase(sec.getSectionId()) ||  "2".equalsIgnoreCase(sec.getSectionId()) ||  "47".equalsIgnoreCase(sec.getSectionId()) ||
-										"53".equalsIgnoreCase(sec.getSectionId())  || "39".equalsIgnoreCase(sec.getSectionId())   || "41".equalsIgnoreCase(sec.getSectionId())  ) {
+//								if( "3".equalsIgnoreCase(sec.getSectionId()) ||  "2".equalsIgnoreCase(sec.getSectionId()) ||  "47".equalsIgnoreCase(sec.getSectionId()) ||
+//										"53".equalsIgnoreCase(sec.getSectionId())  || "39".equalsIgnoreCase(sec.getSectionId())   || "41".equalsIgnoreCase(sec.getSectionId())  ) {
 									// Content , All Risk , PLate Glass
-									Long count = contentRepo.countByQuoteNoAndRiskIdAndSectionId(homeData.getQuoteNo() ,building.getRiskId() , sec.getSectionId());
-									if(count > 0 ) {
-										DocumentDropdownRes doc = new DocumentDropdownRes();
-										doc.setRiskId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
-										doc.setId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
-										String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("A") ).collect(Collectors.toList()).get(0).getItemValue() ;					
-										doc.setIdType(idType);
-										idList.add(doc); 
+									List<ContentAndRisk> contents = contentRepo.findByQuoteNoAndRiskIdAndSectionId(homeData.getQuoteNo() ,building.getRiskId() , sec.getSectionId());
+								//	Long count = contentRepo.countByQuoteNoAndRiskIdAndSectionId(homeData.getQuoteNo() ,building.getRiskId() , sec.getSectionId());
+									if(contents.size() >  0 ) {
+										for ( ContentAndRisk c : contents) {
+											DocumentDropdownRes doc = new DocumentDropdownRes();
+											doc.setRiskId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
+											doc.setId(c.getSerialNoDesc()==null ? "1" : c.getSerialNoDesc());
+											String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("A") ).collect(Collectors.toList()).get(0).getItemValue() ;					
+											doc.setIdType(idType);
+											idList.add(doc); 
+										}
+										
 									}else {
 										DocumentDropdownRes doc = new DocumentDropdownRes();
 										doc.setRiskId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
@@ -488,14 +492,14 @@ public class DocumentServiceImpl implements DocumentService{
 										doc.setIdType(idType);
 										idList.add(doc);
 									}
-								} else {
-									DocumentDropdownRes doc = new DocumentDropdownRes();
-									doc.setRiskId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
-									doc.setId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
-									String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("A") ).collect(Collectors.toList()).get(0).getItemValue() ;					
-									doc.setIdType(idType);
-									idList.add(doc);
-								}
+//								} else {
+//									DocumentDropdownRes doc = new DocumentDropdownRes();
+//									doc.setRiskId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
+//									doc.setId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
+//									String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("A") ).collect(Collectors.toList()).get(0).getItemValue() ;					
+//									doc.setIdType(idType);
+//									idList.add(doc);
+//								}
 								 
 							}
 							

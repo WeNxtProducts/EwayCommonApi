@@ -54,5 +54,8 @@ public interface ContentAndRiskRepository  extends JpaRepository<ContentAndRisk,
 	Long countByQuoteNoAndRiskIdAndSectionId(String quoteNo,Integer riskId, String sectionId);
 
 
+	List<ContentAndRisk> findByQuoteNoAndRiskIdAndSectionId(String quoteNo, Integer riskId, String sectionId);
+
+
 
 }

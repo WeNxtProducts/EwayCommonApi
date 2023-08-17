@@ -1014,7 +1014,7 @@ this.repository = repo;
 				saveLod.setCoverageType("L");
 				
 				// Factor
-				saveLod.setFactorTypeId(lod.getFactorTypeId()==null?null: new BigDecimal(lod.getFactorTypeId()));
+				saveLod.setFactorTypeId(StringUtils.isBlank(lod.getFactorTypeId())?null: new BigDecimal(lod.getFactorTypeId()));
 				saveLod.setMinimumPremium(lod.getLoadingAmount()==null?null: new BigDecimal(df.format(lod.getLoadingAmount())));
 				saveLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
 				saveLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
@@ -1023,7 +1023,7 @@ this.repository = repo;
 				saveLod.setDiscLoadId(lod.getLoadingId()==null?null:Integer.valueOf(lod.getLoadingId()));
 				saveLod.setDependentCoverYn("N");
 				saveLod.setDependentCoverId(null);
-				saveLod.setCalcType(lod.getLoadingCalcType());
+				saveLod.setCalcType(StringUtils.isBlank(lod.getLoadingCalcType()) ? "A" :lod.getLoadingCalcType());
 				saveLod.setCoverName(lod.getLoadingDesc());
 				saveLod.setCoverDesc(lod.getLoadingDesc());
 				saveLod.setTaxId(0);
@@ -2027,8 +2027,8 @@ this.repository = repo;
 								List<FactorRateRequestDetails> filterLoading = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(Integer.valueOf(lod.getLoadingId())) && o.getTaxId().equals(0)  ).collect(Collectors.toList()); 
 								if(filterLoading.size()>0 ) {
 									FactorRateRequestDetails  updateLod = filterLoading.get(0);
-									updateLod.setRate( lod.getLoadingAmount()==null ? BigDecimal.ZERO :lod.getLoadingAmount() );
-									updateLod.setCalcType("A");
+									updateLod.setRate(StringUtils.isBlank(lod.getLoadingRate()) ? BigDecimal.ZERO :new BigDecimal(lod.getLoadingRate()));
+									updateLod.setCalcType(StringUtils.isBlank(lod.getLoadingCalcType()) ? "A" :lod.getLoadingCalcType());
 									updateLod.setMinimumPremium(lod.getLoadingAmount()==null?null: new BigDecimal(df.format(lod.getLoadingAmount())));
 									updateLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
 									updateLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
@@ -2079,8 +2079,8 @@ this.repository = repo;
 								List<FactorRateRequestDetails> filterLoading = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId())  && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId())) && o.getDiscLoadId().equals(Integer.valueOf( lod.getLoadingId())) && o.getTaxId().equals(0)  ).collect(Collectors.toList()); 
 								if(filterLoading.size()>0 ) {
 									FactorRateRequestDetails  updateLod = filterLoading.get(0);
-									updateLod.setRate( lod.getLoadingAmount()==null ? BigDecimal.ZERO :lod.getLoadingAmount() );
-									updateLod.setCalcType("A");
+									updateLod.setRate(StringUtils.isBlank(lod.getLoadingRate()) ? BigDecimal.ZERO :new BigDecimal(lod.getLoadingRate()));
+									updateLod.setCalcType(lod.getLoadingCalcType() );
 									updateLod.setMinimumPremium(lod.getLoadingAmount()==null?null: new BigDecimal(df.format(lod.getLoadingAmount())));
 									updateLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
 									updateLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
