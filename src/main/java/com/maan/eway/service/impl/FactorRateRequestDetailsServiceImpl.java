@@ -1014,7 +1014,7 @@ this.repository = repo;
 				saveLod.setCoverageType("L");
 				
 				// Factor
-				saveLod.setFactorTypeId(lod.getFactorTypeId()==null?null: new BigDecimal(lod.getFactorTypeId()));
+				saveLod.setFactorTypeId(StringUtils.isBlank(lod.getFactorTypeId())?null: new BigDecimal(lod.getFactorTypeId()));
 				saveLod.setMinimumPremium(lod.getLoadingAmount()==null?null: new BigDecimal(df.format(lod.getLoadingAmount())));
 				saveLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
 				saveLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
