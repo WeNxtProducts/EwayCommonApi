@@ -119,6 +119,7 @@ public class CopyCommonRaw {
 	}
 	
 	public CommonCopyRes copyCommonRiskTable(Endorsment ent) {
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
 			List<EserviceCommonDetails> CommonDatas=null;
 		//	Integer count=eCommonRepo.countByOriginalPolicyNoAndRiskId(ent.getPolicyNo(),1);
@@ -127,6 +128,7 @@ public class CopyCommonRaw {
 			String prevPolicyNo=null;
 			String prevQuoteNo=null;
 			String newRequestNo =null;
+			String prevRequestRefNo=null;
 			long pendingcount =0;
 			if(count>0) {
 				//List<EserviceCommonDetails> CommonList=eCommonRepo.findByOriginalPolicyNoAndRiskId(ent.getPolicyNo(),1);
@@ -143,22 +145,35 @@ public class CopyCommonRaw {
 				}.reversed());
 				
 				pendingcount = CommonList.stream().filter(m->m.getEndtStatus().equals("P")).count();
+				if(CommonList.stream().filter(m->(m.getEndtStatus().equals("P") && (Integer.parseInt(ent.getEndtType())==m.getEndorsementType()))).count()>0) {
+					CommonCopyRes res = dozerMapper.map(CommonList.get(0) , CommonCopyRes.class);
+					return res;
+				}
 				if(pendingcount>0) {
 					 List<EserviceCommonDetails> pendingData = CommonList.stream().filter(m->m.getEndtStatus().equals("P")).collect(Collectors.toList());
 					 CommonDatas= pendingData;
 					 prevPolicyNo=CommonDatas.get(0).getEndtPrevPolicyNo();
 					 prevQuoteNo=CommonDatas.get(0).getEndtPrevQuoteNo();
 					 newRequestNo=CommonDatas.get(0).getRequestReferenceNo();
+					 prevRequestRefNo=CommonDatas.get(0).getRequestReferenceNo();
+					 List<EserviceCommonDetails> rows = eCommonRepo.findByRequestReferenceNo(prevRequestRefNo);
+					 eCommonRepo.deleteAllInBatch(rows);
+					 eCommonRepo.flush();
 					 count--;
+					// count--;
 				}else {
 					CommonDatas=CommonList;
 					
 					if(CommonList.size()>1) {
 						prevPolicyNo=CommonList.get(1).getPolicyNo();
 						prevQuoteNo =CommonList.get(1).getQuoteNo();
+						prevRequestRefNo=CommonList.get(0).getRequestReferenceNo();
 					}else {
-						prevPolicyNo=ent.getPolicyNo();
-						prevQuoteNo =CommonDatas.get(0).getEndtPrevQuoteNo();
+					//	prevPolicyNo=ent.getPolicyNo();
+					//	prevQuoteNo =CommonDatas.get(0).getEndtPrevQuoteNo();
+						prevPolicyNo=CommonList.get(0).getPolicyNo();
+						prevQuoteNo =CommonList.get(0).getQuoteNo();
+						prevRequestRefNo=CommonDatas.get(0).getRequestReferenceNo();
 					}
 				}
 				
@@ -166,6 +181,7 @@ public class CopyCommonRaw {
 				CommonDatas=eCommonRepo.findByPolicyNoAndStatus(ent.getPolicyNo(),"P");
 				prevPolicyNo=ent.getPolicyNo();
 				prevQuoteNo =CommonDatas.get(0).getQuoteNo();
+				prevRequestRefNo=CommonDatas.get(0).getRequestReferenceNo();
 			}
 			if(pendingcount==0)
 				newRequestNo=numberGenerate.generateRequestNo(ent.getCompanyId(), ent.getBranchCode(), String.valueOf(ent.getProductId()));
@@ -173,19 +189,18 @@ public class CopyCommonRaw {
 			EndtTypeMaster entMaster=ratingutil.getEndtMasterData(ent.getCompanyId(),ent.getProductId().toPlainString(),ent.getEndtType());
 					//endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(ent.getCompanyId(), ent.getProductId().intValue(), "Y",Integer.parseInt(ent.getEndtType()), new Date(), new Date());
 			List<EserviceCommonDetails> CommonList=eCommonRepo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
-			List<EserviceCommonDetails> newCommonList=new ArrayList<EserviceCommonDetails>();
-			List<EserviceCommonDetails> endtList=eCommonRepo.findByPolicyNo(ent.getPolicyNo()+"-"+count);
-			if(endtList.size()> 0 && endtList.get(0).getEndorsementType() !=null && 
-			endtList.get(0).getEndorsementType().equals(Integer.parseInt(ent.getEndtType()))) {
-			newCommonList = endtList;
-			} else {
-			if(  endtList.size()>0 ) {
-			eCommonRepo.deleteByPolicyNo(ent.getPolicyNo()+"-"+count);
-
-			}
+			List<EserviceCommonDetails> newCommonList = new ArrayList<EserviceCommonDetails>();
+//			List<EserviceCommonDetails> endtList = eCommonRepo.findByPolicyNo(ent.getPolicyNo() + "-" + count);
+//			if (endtList.size() > 0 && endtList.get(0).getEndorsementType() != null
+//					&& endtList.get(0).getEndorsementType().equals(Integer.parseInt(ent.getEndtType()))) {
+//				newCommonList = endtList;
+//			} else {
+//				if (endtList.size() > 0) {
+//					eCommonRepo.deleteByPolicyNo(ent.getPolicyNo() + "-" + count);
+//
+//				}
 			++count;
 			for(EserviceCommonDetails m :CommonList) {
-			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			EserviceCommonDetails newObject = dozerMapper.map(m , EserviceCommonDetails.class);
 			newObject.setRequestReferenceNo(newRequestNo);
 			newObject.setOriginalPolicyNo(ent.getPolicyNo());
@@ -206,10 +221,10 @@ public class CopyCommonRaw {
 			newCommonList.add(newObject);
 			}
 			eCommonRepo.saveAllAndFlush(newCommonList);
-			}
+			//}
 			
 			// Response 
-			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			
 			CommonCopyRes res = dozerMapper.map(newCommonList.get(0) , CommonCopyRes.class);
 			
 			List<EserviceCommonDetails> prevDatas = eCommonRepo.findByPolicyNo(prevPolicyNo);
