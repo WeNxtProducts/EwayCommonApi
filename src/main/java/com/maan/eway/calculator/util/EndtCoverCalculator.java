@@ -328,10 +328,16 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 							 endtFee= inendtfees.stream().mapToDouble(o -> o.getTaxAmount().doubleValue()).sum();
 						 }
 						 
-						 TaxCalculator tcal=new TaxCalculator(endorsement.getPremiumExcluedTax().add(new BigDecimal(endtFee)),t.getExchangeRate(),this,customers.get(0));
-						 notendtfees.stream().forEach(tcal);
-						 totaltax = endorsement.getTaxes().stream().mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
-					 
+						 
+						 TaxCalculator tcal=new TaxCalculator(endorsement.getPremiumExcluedTax().add(new BigDecimal(endtFee)),t.getExchangeRate(),this,customers.get(0));  
+						 notendtfees.stream().filter(f -> "N".equals(f.getDependentYn())).forEach(tcal);
+						 Double totaltax_N = notendtfees.stream().filter(f -> "N".equals(f.getDependentYn())).mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
+						 
+						 
+						 tcal=new TaxCalculator(t.getPremiumExcluedTax().add(new BigDecimal(endtFee)).add(new BigDecimal(totaltax_N)),t.getExchangeRate(),this,customers.get(0));
+						 notendtfees.stream().filter(f -> "Y".equals(f.getDependentYn())).forEach(tcal);
+						 Double totaltax_Y = notendtfees.stream().filter(f -> "Y".equals(f.getDependentYn())).mapToDouble(i->i.getTaxAmount().doubleValue()).sum();						 
+						 totaltax=totaltax_N+totaltax_Y;  
 					 
 					 
 					 }
