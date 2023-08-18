@@ -143,6 +143,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="PRIORITY", length=20)
     private Integer   priority;
+    
+    @Column(name="DEPENDENT_YN", length=20)
+    private String   dependentYn;
 }
 
 
