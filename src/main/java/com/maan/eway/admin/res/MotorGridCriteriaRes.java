@@ -1,5 +1,6 @@
 package com.maan.eway.admin.res;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import lombok.Data;
@@ -26,5 +27,20 @@ public class MotorGridCriteriaRes {
 	private Date policyEndDate;
 	private String rejectReason;
 	private String adminRemarks;
+	
+	
+	private String endorsementType;
+	private String endorsementTypeDesc;
+	private Date endorsementDate;
+	private String endorsementRemarks;
+	private Date endorsementEffdate;
+	private String originalPolicyNo;
+	private String endtPrevPolicyNo;
+	private String endtPrevQuoteNo;
+	private BigDecimal endtCount;
+	private String endtStatus;
+	private String endtCategDesc;
+	private String endorsementYn;
+	private Double endtPremium;
 	
 }

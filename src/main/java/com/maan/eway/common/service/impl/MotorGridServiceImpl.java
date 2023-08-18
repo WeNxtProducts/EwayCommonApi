@@ -446,10 +446,23 @@ public class MotorGridServiceImpl implements MotorGridService {
 							.alias("quoteNo"),
 					cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId"))
 							.otherwise(m.get("customerId")).alias("customerId"),
-					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
-					m.get("rejectReason").alias("rejectReason"),
-					m.get("adminRemarks").alias("adminRemarks")
-			
+					cb.max(m.get("policyStartDate")).alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
+					cb.max(m.get("rejectReason")).alias("rejectReason"),
+					cb.max(m.get("adminRemarks")).alias("adminRemarks"),
+					cb.max(m.get("endorsementType")).alias("endorsementType"),
+					cb.max(m.get("endorsementTypeDesc")).alias("endorsementTypeDesc"),
+					cb.max(m.get("endorsementDate")).alias("endorsementDate"),
+					cb.max(m.get("endorsementRemarks")).alias("endorsementRemarks"),
+					cb.max(m.get("endorsementEffdate")).alias("endorsementEffdate"),
+					cb.max(m.get("originalPolicyNo")).alias("originalPolicyNo"),
+					cb.max(m.get("endtPrevPolicyNo")).alias("endtPrevPolicyNo"),
+					cb.max(m.get("endtPrevQuoteNo")).alias("endtPrevQuoteNo"),
+					cb.max(m.get("endtCount")).alias("endtCount"),
+					cb.max(m.get("endtStatus")).alias("endtStatus"),
+					cb.max(m.get("endtCategDesc")).alias("endtCategDesc"),
+					//cb.max(m.get("endorsementYn")).alias("endorsementYn"),
+					cb.max(m.get("endtPremium")).alias("endtPremium")
+					
 					);
 
 			// Order By
@@ -505,6 +518,20 @@ public class MotorGridServiceImpl implements MotorGridService {
 				res.setQuoteNo(r.get("quoteNo")==null ? "" : (String) r.get("quoteNo"));
 				res.setRejectReason(r.get("rejectReason")==null ? "" : (String) r.get("rejectReason"));
 				res.setRequestReferenceNo(r.get("requestReferenceNo")==null ? "" : (String) r.get("requestReferenceNo"));
+				res.setEndorsementDate(r.get("endorsementDate")==null ? null : (Date) r.get("endorsementDate"));
+				res.setEndorsementEffdate(r.get("endorsementEffdate")==null ? null : (Date) r.get("endorsementEffdate"));
+				res.setEndorsementRemarks(r.get("endorsementRemarks")==null ? "" : r.get("endorsementRemarks").toString());
+				res.setEndorsementType(r.get("endorsementType")==null ? "" : r.get("endorsementType").toString());
+				res.setEndorsementTypeDesc(r.get("endorsementTypeDesc")==null ? "" : r.get("endorsementTypeDesc").toString());
+//				res.setEndorsementYn(r.get("endorsementYn")==null ? "" : r.get("endorsementYn").toString());
+				res.setEndtCategDesc(r.get("endtCategDesc")==null ? "" : r.get("endtCategDesc").toString());
+				res.setEndtCount(r.get("endtCount")==null ? BigDecimal.ZERO : new BigDecimal(r.get("endorsementType").toString()));
+				res.setEndtPremium(r.get("endtPremium")==null ? null : Double.valueOf(r.get("endtPremium").toString()));
+				res.setEndtPrevPolicyNo(r.get("endtPrevPolicyNo")==null ? "" : r.get("endtPrevPolicyNo").toString());
+				res.setEndtPrevQuoteNo(r.get("endtPrevQuoteNo")==null ? "" : r.get("endtPrevQuoteNo").toString());
+				res.setEndtStatus(r.get("endtStatus")==null ? "" : r.get("endtStatus").toString());
+				res.setOriginalPolicyNo(r.get("originalPolicyNo")==null ? "" : r.get("originalPolicyNo").toString());
+				
 				referrals.add(res);
 			}
 			
@@ -544,7 +571,19 @@ public class MotorGridServiceImpl implements MotorGridService {
 							.otherwise(m.get("customerId")).alias("customerId"),
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
 					m.get("rejectReason").alias("rejectReason"),
-					m.get("adminRemarks").alias("adminRemarks")
+					m.get("adminRemarks").alias("adminRemarks"),
+					cb.max(m.get("endorsementType")).alias("endorsementType"),
+					cb.max(m.get("endorsementTypeDesc")).alias("endorsementTypeDesc"),
+					cb.max(m.get("endorsementDate")).alias("endorsementDate"),
+					cb.max(m.get("endorsementRemarks")).alias("endorsementRemarks"),
+					cb.max(m.get("endorsementEffdate")).alias("endorsementEffdate"),
+					cb.max(m.get("originalPolicyNo")).alias("originalPolicyNo"),
+					cb.max(m.get("endtPrevPolicyNo")).alias("endtPrevPolicyNo"),
+					cb.max(m.get("endtPrevQuoteNo")).alias("endtPrevQuoteNo"),
+					cb.max(m.get("endtCount")).alias("endtCount"),
+					cb.max(m.get("endtStatus")).alias("endtStatus"),
+					cb.max(m.get("endtCategDesc")).alias("endtCategDesc"),
+					cb.max(m.get("endtPremium")).alias("endtPremium")
 					);
 
 			// Order By
@@ -589,6 +628,19 @@ public class MotorGridServiceImpl implements MotorGridService {
 				res.setQuoteNo(r.get("quoteNo")==null ? "" : (String) r.get("quoteNo"));
 				res.setRejectReason(r.get("rejectReason")==null ? "" : (String) r.get("rejectReason"));
 				res.setRequestReferenceNo(r.get("requestReferenceNo")==null ? "" : (String) r.get("requestReferenceNo"));
+				res.setEndorsementDate(r.get("endorsementDate")==null ? null : (Date) r.get("endorsementDate"));
+				res.setEndorsementEffdate(r.get("endorsementEffdate")==null ? null : (Date) r.get("endorsementEffdate"));
+				res.setEndorsementRemarks(r.get("endorsementRemarks")==null ? "" : r.get("endorsementRemarks").toString());
+				res.setEndorsementType(r.get("endorsementType")==null ? "" : r.get("endorsementType").toString());
+				res.setEndorsementTypeDesc(r.get("endorsementTypeDesc")==null ? "" : r.get("endorsementTypeDesc").toString());
+//				res.setEndorsementYn(r.get("endorsementYn")==null ? "" : r.get("endorsementYn").toString());
+				res.setEndtCategDesc(r.get("endtCategDesc")==null ? "" : r.get("endtCategDesc").toString());
+				res.setEndtCount(r.get("endtCount")==null ? BigDecimal.ZERO : new BigDecimal(r.get("endorsementType").toString()));
+				res.setEndtPremium(r.get("endtPremium")==null ? null : Double.valueOf(r.get("endtPremium").toString()));
+				res.setEndtPrevPolicyNo(r.get("endtPrevPolicyNo")==null ? "" : r.get("endtPrevPolicyNo").toString());
+				res.setEndtPrevQuoteNo(r.get("endtPrevQuoteNo")==null ? "" : r.get("endtPrevQuoteNo").toString());
+				res.setEndtStatus(r.get("endtStatus")==null ? "" : r.get("endtStatus").toString());
+				res.setOriginalPolicyNo(r.get("originalPolicyNo")==null ? "" : r.get("originalPolicyNo").toString());
 				referrals.add(res);
 			}
 			referrals = referrals.stream().filter(o -> !o.getIdsCount().equals(0L))

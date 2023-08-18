@@ -418,7 +418,19 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					 cb.max(m.get("travelStartDate")).alias("policyStartDate"),
 					 cb.max(m.get("travelEndDate")).alias("policyEndDate") , m.get("rejectReason").alias("rejectReason"),
 					 cb.max(m.get("adminRemarks")).alias("adminRemarks"),
-					 cb.max(m.get("referalRemarks")).alias("referalRemarks")
+					 cb.max(m.get("referalRemarks")).alias("referalRemarks"),
+					 cb.max(m.get("endorsementType")).alias("endorsementType"),
+						cb.max(m.get("endorsementTypeDesc")).alias("endorsementTypeDesc"),
+						cb.max(m.get("endorsementDate")).alias("endorsementDate"),
+						cb.max(m.get("endorsementRemarks")).alias("endorsementRemarks"),
+						cb.max(m.get("endorsementEffdate")).alias("endorsementEffdate"),
+						cb.max(m.get("originalPolicyNo")).alias("originalPolicyNo"),
+						cb.max(m.get("endtPrevPolicyNo")).alias("endtPrevPolicyNo"),
+						cb.max(m.get("endtPrevQuoteNo")).alias("endtPrevQuoteNo"),
+						cb.max(m.get("endtCount")).alias("endtCount"),
+						cb.max(m.get("endtStatus")).alias("endtStatus"),
+						cb.max(m.get("endtCategDesc")).alias("endtCategDesc"),
+						cb.max(m.get("endtPremium")).alias("endtPremium")
 					);
 			
 			// Order By
@@ -480,23 +492,35 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			
 			
 			// Select
-			query.multiselect(  m.get("totalPassengers").as(Long.class).alias("idsCount"),
+			query.multiselect(  cb.max(m.get("totalPassengers")).as(Long.class).alias("idsCount"),
 					// Customer Info
-				    c.get("customerReferenceNo").alias("customerReferenceNo"),
-				    c.get("idNumber").alias("idNumber"),
-					c.get("clientName").alias("clientName"),
+					cb.max(c.get("customerReferenceNo")).alias("customerReferenceNo"),
+					cb.max( c.get("idNumber")).alias("idNumber"),
+					cb.max(c.get("clientName")).alias("clientName"),
 					// Vehicle Info
-					m.get("companyId").alias("companyId"),
-					m.get("productId").alias("productId"),
-					m.get("branchCode").alias("branchCode"),
-				   m.get("requestReferenceNo").alias("requestReferenceNo") , 
+					cb.max(m.get("companyId")).alias("companyId"),
+					cb.max(m.get("productId")).alias("productId"),
+					cb.max(m.get("branchCode")).alias("branchCode"),
+					cb.max( m.get("requestReferenceNo")).alias("requestReferenceNo") , 
 					cb.selectCase().when(m.get("quoteNo").isNotNull(), m.get("quoteNo")).otherwise( m.get("quoteNo")).alias("quoteNo") ,
 					cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId")).otherwise( m.get("customerId")).alias("customerId") ,
-					m.get("travelStartDate").alias("policyStartDate"),
-					m.get("travelEndDate").alias("policyEndDate") , m.get("rejectReason").alias("rejectReason")
+					cb.max(m.get("travelStartDate")).alias("policyStartDate"),
+					cb.max(m.get("travelEndDate")).alias("policyEndDate") , cb.max(m.get("rejectReason")).alias("rejectReason")
 					,
-					m.get("adminRemarks").alias("adminRemarks"),
-					m.get("referalRemarks").alias("referalRemarks"));
+					cb.max(m.get("adminRemarks")).alias("adminRemarks"),
+					cb.max(m.get("referalRemarks")).alias("referalRemarks"),
+					cb.max(m.get("endorsementType")).alias("endorsementType"),
+					cb.max(m.get("endorsementTypeDesc")).alias("endorsementTypeDesc"),
+					cb.max(m.get("endorsementDate")).alias("endorsementDate"),
+					cb.max(m.get("endorsementRemarks")).alias("endorsementRemarks"),
+					cb.max(m.get("endorsementEffdate")).alias("endorsementEffdate"),
+					cb.max(m.get("originalPolicyNo")).alias("originalPolicyNo"),
+					cb.max(m.get("endtPrevPolicyNo")).alias("endtPrevPolicyNo"),
+					cb.max(m.get("endtPrevQuoteNo")).alias("endtPrevQuoteNo"),
+					cb.max(m.get("endtCount")).alias("endtCount"),
+					cb.max(m.get("endtStatus")).alias("endtStatus"),
+					cb.max(m.get("endtCategDesc")).alias("endtCategDesc"),
+					cb.max(m.get("endtPremium")).alias("endtPremium"));
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -512,7 +536,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Expression<String>e0=c.get("branchCode");
 			Predicate n6 = e0.in(branches ) ;
 		//	Predicate n7 = cb.isNull(m.get("endorsementType"));
-			query.where(n1,n2,n3,n4,n6).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n6).orderBy(orderList).groupBy(m.get("quoteNo"),m.get("customerId"),m.get("updatedDate"));
 			
 			// Get Result
 			TypedQuery<ReferalGridCriteriaRes> result = em.createQuery(query);

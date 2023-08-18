@@ -413,7 +413,20 @@ public class CommonGridServiceImpl implements CommonGridService {
 							.otherwise(m.get("customerId")).alias("customerId"),
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
 					m.get("rejectReason").alias("rejectReason"),
-					m.get("adminRemarks").alias("adminRemarks"),m.get("referalRemarks").alias("referalRemarks")
+					m.get("adminRemarks").alias("adminRemarks"),m.get("referalRemarks").alias("referalRemarks"),
+					cb.max(m.get("endorsementType")).alias("endorsementType"),
+					cb.max(m.get("endorsementTypeDesc")).alias("endorsementTypeDesc"),
+					cb.max(m.get("endorsementDate")).alias("endorsementDate"),
+					cb.max(m.get("endorsementRemarks")).alias("endorsementRemarks"),
+					cb.max(m.get("endorsementEffdate")).alias("endorsementEffdate"),
+					cb.max(m.get("originalPolicyNo")).alias("originalPolicyNo"),
+					cb.max(m.get("endtPrevPolicyNo")).alias("endtPrevPolicyNo"),
+					cb.max(m.get("endtPrevQuoteNo")).alias("endtPrevQuoteNo"),
+					cb.max(m.get("endtCount")).alias("endtCount"),
+					cb.max(m.get("endtStatus")).alias("endtStatus"),
+					cb.max(m.get("endtCategDesc")).alias("endtCategDesc"),
+//					cb.max(m.get("endorsementYn")).alias("endorsementYn"),
+					cb.max(m.get("endtPremium")).alias("endtPremium")
 			
 					);
 
@@ -490,7 +503,19 @@ public class CommonGridServiceImpl implements CommonGridService {
 							.otherwise(m.get("customerId")).alias("customerId"),
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
 					m.get("rejectReason").alias("rejectReason"),
-					m.get("adminRemarks").alias("adminRemarks"),m.get("referalRemarks").alias("referalRemarks")
+					m.get("adminRemarks").alias("adminRemarks"),m.get("referalRemarks").alias("referalRemarks"),
+					cb.max(m.get("endorsementType")).alias("endorsementType"),
+					cb.max(m.get("endorsementTypeDesc")).alias("endorsementTypeDesc"),
+					cb.max(m.get("endorsementDate")).alias("endorsementDate"),
+					cb.max(m.get("endorsementRemarks")).alias("endorsementRemarks"),
+					cb.max(m.get("endorsementEffdate")).alias("endorsementEffdate"),
+					cb.max(m.get("originalPolicyNo")).alias("originalPolicyNo"),
+					cb.max(m.get("endtPrevPolicyNo")).alias("endtPrevPolicyNo"),
+					cb.max(m.get("endtPrevQuoteNo")).alias("endtPrevQuoteNo"),
+					cb.max(m.get("endtCount")).alias("endtCount"),
+					cb.max(m.get("endtStatus")).alias("endtStatus"),
+					cb.max(m.get("endtCategDesc")).alias("endtCategDesc"),
+					cb.max(m.get("endtPremium")).alias("endtPremium")
 					);
 
 			// Order By

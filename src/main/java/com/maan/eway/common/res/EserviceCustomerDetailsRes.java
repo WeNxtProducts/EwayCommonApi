@@ -68,5 +68,34 @@ public class EserviceCustomerDetailsRes {
 	
 	@JsonProperty("Currency")
 	private String currency;
+	
+	@JsonProperty("EndorsementType")
+	private String endorsementType;
+	@JsonProperty("EndorsementTypeDesc")
+	private String endorsementTypeDesc;
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EndorsementDate")
+	private Date endorsementDate;
+	@JsonProperty("EndorsementRemarks")
+	private String endorsementRemarks;
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonProperty("EndorsementEffdate")
+	private Date endorsementEffdate;
+	@JsonProperty("OriginalPolicyNo")
+	private String originalPolicyNo;
+	@JsonProperty("EndtPrevPolicyNo")
+	private String endtPrevPolicyNo;
+	@JsonProperty("EndtPrevQuoteNo")
+	private String endtPrevQuoteNo;
+	@JsonProperty("EndtCount")
+	private BigDecimal endtCount;
+	@JsonProperty("EndtStatus")
+	private String endtStatus;
+	@JsonProperty("EndtCategDesc")
+	private String endtCategDesc;
+//	@JsonProperty(" EndorsementYn")
+//	private String endorsementYn;
+	@JsonProperty("EndtPremium")
+	private Double endtPremium;
 		
 }
