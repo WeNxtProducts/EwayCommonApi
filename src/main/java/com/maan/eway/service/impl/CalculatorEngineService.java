@@ -181,8 +181,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 	 * System.out.println("result"+result.size()); }catch(Exception e) {
 	 * e.printStackTrace(); } }
 	 */
-	private final List<String> NORMAL_TAX_LIST = Arrays.asList("B", "N");
-	private final List<String> ENDT_TAX_LIST = Arrays.asList("B", "E");
+	private final List<String> NORMAL_TAX_LIST = Arrays.asList("NB");
+	private final List<String> ENDT_TAX_LIST = Arrays.asList("EC", "ER");
  
 	public List<Tuple> LoadCover(CalcEngine engine) {
 		try {

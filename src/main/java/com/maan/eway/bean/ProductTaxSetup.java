@@ -138,8 +138,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="REGULATORY_CODE", length=20)
     private String   regulatoryCode;
     
-    @Column(name="TAX_EXEMPTION_ALLOWED_YN", length=20)
-    private String   taxExemptionAllowedYn;
+    @Column(name="TAX_EXEMPT_ALLOW_YN", length=20)
+    private String   taxExemptAllowYn;
     
     @Column(name="PRIORITY", length=20)
     private Integer   priority;

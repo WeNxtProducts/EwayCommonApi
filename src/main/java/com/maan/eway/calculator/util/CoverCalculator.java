@@ -163,8 +163,15 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 Double totaltax=0D;
 				 if(t.getTaxes()!=null && t.getTaxes().size()>0 && customers!=null && customers.get(0)!=null ) {
 					 TaxCalculator tcal=new TaxCalculator(t.getPremiumExcluedTax(),t.getExchangeRate(),this,customers.get(0));
-					 t.getTaxes().stream().forEach(tcal);
-					 totaltax = t.getTaxes().stream().mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
+					 t.getTaxes().stream().filter(f -> "N".equals(f.getDependentYn())).forEach(tcal);
+					 Double totaltax_N = t.getTaxes().stream().filter(f -> "N".equals(f.getDependentYn())).mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
+					 
+					 
+					 tcal=new TaxCalculator(t.getPremiumExcluedTax().add(new BigDecimal(totaltax_N)),t.getExchangeRate(),this,customers.get(0));
+					 t.getTaxes().stream().filter(f -> "Y".equals(f.getDependentYn())).forEach(tcal);
+					 Double totaltax_Y = t.getTaxes().stream().filter(f -> "Y".equals(f.getDependentYn())).mapToDouble(i->i.getTaxAmount().doubleValue()).sum();
+					 
+					 totaltax=totaltax_N+totaltax_Y;
 				 }
 				 
 				 t.setPremiumIncludedTax(t.getPremiumExcluedTax().add(new BigDecimal(totaltax)));				 

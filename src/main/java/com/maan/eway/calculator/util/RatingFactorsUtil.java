@@ -1,7 +1,6 @@
 package com.maan.eway.calculator.util;
 
 import java.lang.reflect.Field;
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +40,7 @@ import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.OneTimeTableDetails;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductSectionMaster;
+import com.maan.eway.bean.ProductTaxSetup;
 import com.maan.eway.bean.RatingFieldMaster;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.TinyurlMaster;
@@ -343,12 +343,12 @@ public class RatingFactorsUtil {
 			//String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:Y;branchCode:{99999,"+engine.getBranchCode()+"};"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
 			String search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:Y;branchCode:"+engine.getBranchCode()+";"+todayInString+"~effectiveDateStart&effectiveDateEnd;taxFor:{"+StringUtils.join(taxFor,',')+"};";
 			List<Tuple> result=null;
-			SpecCriteria criteria = crservice.createCriteria(CompanyTaxSetup.class, search, "taxId"); 
+			SpecCriteria criteria = crservice.createCriteria(ProductTaxSetup.class, search, "taxId"); 
 			
 			result=crservice.getResult(criteria, 0, 50);
 			if(result.isEmpty()) {
 				search="companyId:"+ engine.getInsuranceId() +";productId:"+engine.getProductId()+";status:Y;branchCode:99999;"+todayInString+"~effectiveDateStart&effectiveDateEnd;taxFor:{"+StringUtils.join(taxFor,',')+"};";
-				criteria = crservice.createCriteria(CompanyTaxSetup.class, search, "taxId"); 
+				criteria = crservice.createCriteria(ProductTaxSetup.class, search, "taxId"); 
 				result=crservice.getResult(criteria, 0, 50);
 				return result.size()>0?result:null;
 			}

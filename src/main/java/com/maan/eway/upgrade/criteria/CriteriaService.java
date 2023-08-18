@@ -282,7 +282,7 @@ public List<Tuple> getResult(SpecCriteria cr,String amendIdCol,Integer limit,Int
 						data.addAll(Arrays.asList(inData.split(",")));
 						params.add(new SearchCriteria(matcher.group(1), matcher.group(2), null,data,null));
 					}else {
-						data.add(matcher.group(3));
+						data.add(inData);
 						params.add(new SearchCriteria(matcher.group(1), matcher.group(2), null,data,null));
 					}
 				}else 

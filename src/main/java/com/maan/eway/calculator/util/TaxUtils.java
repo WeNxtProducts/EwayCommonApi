@@ -27,6 +27,8 @@ public class TaxUtils  implements Function<Tuple,Tax>{
 				 	.calcType(t.get("calcType")==null?"":t.get("calcType").toString())
 					.regulatoryCode(t.get("taxCode")==null?"N/A":t.get("taxCode").toString())
 					.endtTypeCount(endtCount)
+					.dependentYn(t.get("dependentYn")==null?"N":t.get("dependentYn").toString())
+					.taxExemptedAllowed(t.get("taxExemptAllowYn")==null?"Y":t.get("taxExemptAllowYn").toString())
 				 	.build();
 			return d;
 		}catch (Exception e) {
