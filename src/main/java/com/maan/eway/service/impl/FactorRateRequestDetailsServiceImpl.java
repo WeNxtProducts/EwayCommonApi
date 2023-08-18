@@ -885,7 +885,7 @@ this.repository = repo;
 				saveTax.setDiscountCoverId(0);
 				saveTax.setCoverPeriodFrom(coverReq.getEffectiveDate());
 				saveTax.setCoverPeriodTo(coverReq.getPolicyEndDate());
-
+				saveTax.setDependentCoverYn(StringUtils.isBlank(tax.getDependentYn())?"N":tax.getDependentYn());
 				
 				saveTax.setNoOfDays(new BigDecimal(diff));
 				//	repository.saveAndFlush(saveTax);
@@ -1767,6 +1767,7 @@ this.repository = repo;
 				taxes.setTaxExemptType(tax.getTaxExemptType());
 				taxes.setTaxId(tax.getTaxId()==null?null:tax.getTaxId().toString()) ;
 				taxes.setTaxRate( tax.getTaxRate()==null?null : Double.valueOf(tax.getTaxRate().toString()));
+				taxes.setDependentYn(tax.getDependentCoverYn());
 				TaxList.add(taxes);
 			}
 			
