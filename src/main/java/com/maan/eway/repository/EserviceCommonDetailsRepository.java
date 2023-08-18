@@ -88,6 +88,8 @@ public interface EserviceCommonDetailsRepository  extends JpaRepository<Eservice
 
 		List<EserviceCommonDetails> findByRequestReferenceNoAndStatus(String requestReferenceNo, String string);
 
+		void deleteByPolicyNo(String string);
+
 
 
 }

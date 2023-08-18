@@ -31,6 +31,7 @@ import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
@@ -120,13 +121,17 @@ public class CopyCommonRaw {
 	public CommonCopyRes copyCommonRiskTable(Endorsment ent) {
 		try {
 			List<EserviceCommonDetails> CommonDatas=null;
-			Integer count=eCommonRepo.countByOriginalPolicyNoAndRiskId(ent.getPolicyNo(),1);
+		//	Integer count=eCommonRepo.countByOriginalPolicyNoAndRiskId(ent.getPolicyNo(),1);
+			List<Object> list=getMasterTableCount(ent.getPolicyNo());
+			Integer	count = list.size();
 			String prevPolicyNo=null;
 			String prevQuoteNo=null;
 			String newRequestNo =null;
 			long pendingcount =0;
 			if(count>0) {
-				List<EserviceCommonDetails> CommonList=eCommonRepo.findByOriginalPolicyNoAndRiskId(ent.getPolicyNo(),1);
+				//List<EserviceCommonDetails> CommonList=eCommonRepo.findByOriginalPolicyNoAndRiskId(ent.getPolicyNo(),1);
+				List<EserviceCommonDetails> CommonList=eCommonRepo.findByOriginalPolicyNo(ent.getPolicyNo());
+				CommonList=CommonList.stream().filter(distinctByKey(m ->m.getPolicyNo())).collect(Collectors.toList());
 				//Compar
 				CommonList.sort(new Comparator<EserviceCommonDetails>() {
 
@@ -169,29 +174,39 @@ public class CopyCommonRaw {
 					//endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(ent.getCompanyId(), ent.getProductId().intValue(), "Y",Integer.parseInt(ent.getEndtType()), new Date(), new Date());
 			List<EserviceCommonDetails> CommonList=eCommonRepo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
 			List<EserviceCommonDetails> newCommonList=new ArrayList<EserviceCommonDetails>();
+			List<EserviceCommonDetails> endtList=eCommonRepo.findByPolicyNo(ent.getPolicyNo()+"-"+count);
+			if(endtList.size()> 0 && endtList.get(0).getEndorsementType() !=null && 
+			endtList.get(0).getEndorsementType().equals(Integer.parseInt(ent.getEndtType()))) {
+			newCommonList = endtList;
+			} else {
+			if(  endtList.size()>0 ) {
+			eCommonRepo.deleteByPolicyNo(ent.getPolicyNo()+"-"+count);
+
+			}
 			++count;
 			for(EserviceCommonDetails m :CommonList) {
-				DozerBeanMapper dozerMapper = new DozerBeanMapper();
-				EserviceCommonDetails newObject = dozerMapper.map(m , EserviceCommonDetails.class);
-				newObject.setRequestReferenceNo(newRequestNo);
-				newObject.setOriginalPolicyNo(ent.getPolicyNo());
-				newObject.setEndorsementDate(new Date());
-				newObject.setEndorsementRemarks(ent.getEndtRemarks());
-				newObject.setEndorsementEffdate(ent.getEndtEffectiveDate());
-				newObject.setEndtPrevPolicyNo(prevPolicyNo);
-				newObject.setEndtPrevQuoteNo(prevQuoteNo);
-				newObject.setEndtCount(new BigDecimal(count));
-				newObject.setEndtStatus("P");
-				newObject.setIsFinaceYn(entMaster.getEndtTypeCategoryId()==2?"Y":"N");
-				newObject.setEndtCategDesc(entMaster.getEndtTypeCategory());
-				newObject.setEndorsementType(Integer.parseInt(ent.getEndtType()));
-				newObject.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
-				newObject.setStatus("E");
-				newObject.setPolicyNo(ent.getPolicyNo()+"-"+count);
-				newObject.setQuoteNo(null);
-				newCommonList.add(newObject);
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			EserviceCommonDetails newObject = dozerMapper.map(m , EserviceCommonDetails.class);
+			newObject.setRequestReferenceNo(newRequestNo);
+			newObject.setOriginalPolicyNo(ent.getPolicyNo());
+			newObject.setEndorsementDate(new Date());
+			newObject.setEndorsementRemarks(ent.getEndtRemarks());
+			newObject.setEndorsementEffdate(ent.getEndtEffectiveDate());
+			newObject.setEndtPrevPolicyNo(prevPolicyNo);
+			newObject.setEndtPrevQuoteNo(prevQuoteNo);
+			newObject.setEndtCount(new BigDecimal(count));
+			newObject.setEndtStatus("P");
+			newObject.setIsFinaceYn(entMaster.getEndtTypeCategoryId()==2?"Y":"N");
+			newObject.setEndtCategDesc(entMaster.getEndtTypeCategory());
+			newObject.setEndorsementType(Integer.parseInt(ent.getEndtType()));
+			newObject.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
+			newObject.setStatus("E");
+			newObject.setPolicyNo(ent.getPolicyNo()+"-"+count);
+			newObject.setQuoteNo(null);
+			newCommonList.add(newObject);
 			}
 			eCommonRepo.saveAllAndFlush(newCommonList);
+			}
 			
 			// Response 
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -207,6 +222,33 @@ public class CopyCommonRaw {
 		return null;
 	}
 	
+	//Count
+	public List<Object> getMasterTableCount(String policyNo) {
+		List<Object> list = new ArrayList<Object>();
+		try {
+			//List<EserviceMotorDetails> list = new ArrayList<EserviceMotorDetails>();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Object> query = cb.createQuery(Object.class);
+			//Find all
+			Root<EserviceCommonDetails> b = query.from(EserviceCommonDetails.class);
+			// Select
+			query.multiselect(b.get("policyNo").alias("policyNo"));
+						
+			Predicate n1 = cb.equal(b.get("originalPolicyNo"),policyNo);
+			query.where(n1).groupBy(b.get("policyNo"));
+			
+			// Get Result
+			TypedQuery<Object> result = em.createQuery(query);
+			list = result.getResultList();
+			
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+		}
+		return list;
+	}
 	@PersistenceContext
 	private EntityManager em;
 
