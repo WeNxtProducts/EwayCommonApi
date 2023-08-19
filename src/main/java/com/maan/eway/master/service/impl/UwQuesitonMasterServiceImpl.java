@@ -522,6 +522,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("branchCode")));
+			orderList.add(cb.asc(b.get("uwQuestionId")));
 
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
@@ -537,7 +538,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			TypedQuery<UWQuestionsMaster> result = em.createQuery(query);
 			list = result.getResultList();
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getUwQuestionId()))).collect(Collectors.toList());
-			list.sort(Comparator.comparing(UWQuestionsMaster :: getUwQuestionDesc ));
+		//	list.sort(Comparator.comparing(UWQuestionsMaster :: getUwQuestionDesc ));
 			
 			// Map
 			for (UWQuestionsMaster data : list) {
@@ -583,7 +584,6 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 
 			// Find All 
 			Root<UWQuestionsMaster> b = query.from(UWQuestionsMaster.class);
-			
 			
 
 			// Select
