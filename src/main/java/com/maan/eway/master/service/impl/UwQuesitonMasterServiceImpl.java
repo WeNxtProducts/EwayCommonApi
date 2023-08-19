@@ -544,7 +544,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 				UwQuestionMasterRes res = new UwQuestionMasterRes();
 
 				res = mapper.map(data, UwQuestionMasterRes.class);
-				res.setCoreAppCode(data.getCoreAppCode());
+			//	res.setCoreAppCode(data.getCoreAppCode());
 
 				resList.add(res);
 			}
@@ -646,7 +646,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			for (UWQuestionsMaster data : list) {
 				UwQuestionMasterRes res = new UwQuestionMasterRes();
 				res = mapper.map(data, UwQuestionMasterRes.class);
-				res.setCoreAppCode(data.getCoreAppCode());
+			//	res.setCoreAppCode(data.getCoreAppCode());
 				
 				List<UwQuestionsOptionsMaster> optionsfilter =optionsList.stream().filter(o -> o.getDependentUwQuestionId().equals(data.getUwQuestionId()))
 						.collect(Collectors.toList());
@@ -712,6 +712,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("branchCode")));
+			orderList.add(cb.asc(b.get("uwQuestionId")));
 
 			// Where
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
@@ -729,14 +730,33 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 
 			list = result.getResultList();
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getUwQuestionId()))).collect(Collectors.toList());
-			list.sort(Comparator.comparing(UWQuestionsMaster :: getUwQuestionDesc ));
+		//	list.sort(Comparator.comparing(UWQuestionsMaster :: getUwQuestionDesc ));
+			
+			List<UwQuestionsOptionsMaster> optionsList = optionsRepo.findByCompanyIdAndBranchCodeOrBranchCodeAndProductId(req.getCompanyId(),req.getBranchCode(),
+					"99999",Integer.valueOf(req.getProductId()));
+			
+			
 			if(list!=null &&list.size()>0) {
-			res = mapper.map(list.get(0), UwQuestionMasterRes.class);
-			res.setUwQuestionId(list.get(0).getUwQuestionId().toString());
-			res.setEntryDate(list.get(0).getEntryDate());
-			res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
-			res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
-			res.setCoreAppCode(list.get(0).getCoreAppCode());
+				res = mapper.map(list.get(0), UwQuestionMasterRes.class);
+				res.setUwQuestionId(list.get(0).getUwQuestionId().toString());
+				res.setEntryDate(list.get(0).getEntryDate());
+				res.setEffectiveDateStart(list.get(0).getEffectiveDateStart());
+				res.setEffectiveDateEnd(list.get(0).getEffectiveDateEnd());
+				//res.setCoreAppCode(list.get(0).getCoreAppCode());
+				int quesId = list.get(0).getUwQuestionId();
+				
+				List<UwQuestionsOptionsMaster> optionsfilter =optionsList.stream().filter(o -> o.getDependentUwQuestionId().equals(quesId))
+						.collect(Collectors.toList());
+				
+				if(optionsfilter.size()>0) {
+					List<OptionsRes> optionsRes = new ArrayList<OptionsRes>();
+					for(UwQuestionsOptionsMaster ops : optionsfilter ) {
+						OptionsRes options = new OptionsRes();
+						options = mapper.map(ops, OptionsRes.class);
+						optionsRes.add(options);
+					}
+					res.setOptionsRes(optionsRes);
+				}
 			}
 		}
 		catch (Exception e) {
