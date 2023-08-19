@@ -2,6 +2,7 @@ package com.maan.eway.master.res;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -37,7 +38,6 @@ public class UwQuestionMasterRes implements Serializable {
 	private Date effectiveDateEnd;
 
 	
-	
 	@JsonProperty("Status")
     private String     status ;
 
@@ -72,5 +72,8 @@ public class UwQuestionMasterRes implements Serializable {
 	@JsonFormat(pattern="dd/MM/yyyy")
 	@JsonProperty("EntryDate")
 	private Date entryDate;
+	
+	@JsonProperty("Options")
+	private List<OptionsRes> optionsRes;
 
 }

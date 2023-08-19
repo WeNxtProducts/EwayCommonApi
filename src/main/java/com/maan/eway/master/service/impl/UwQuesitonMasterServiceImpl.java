@@ -10,6 +10,8 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -31,21 +33,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.maan.eway.bean.BankMaster;
-import com.maan.eway.bean.LoginBranchMaster;
-import com.maan.eway.bean.LoginMaster;
-import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.UWQuestionsMaster;
+import com.maan.eway.bean.UwQuestionsOptionsMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.OptionsReq;
 import com.maan.eway.master.req.UwQuestionChangeStatusReq;
 import com.maan.eway.master.req.UwQuestionMasterGetReq;
 import com.maan.eway.master.req.UwQuestionMasterSaveReq;
 import com.maan.eway.master.req.UwQuestionsMasterGetAllReq;
+import com.maan.eway.master.res.OptionsRes;
 import com.maan.eway.master.res.UwQuestionMasterRes;
 import com.maan.eway.master.service.UwQuestionMasterService;
 import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.UwQuestionMasterRepository;
+import com.maan.eway.repository.UwQuestionsOptionsMasterRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.SuccessRes;
 
@@ -66,6 +68,9 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 	
 	@Autowired
 	private LoginMasterRepository loginRepo ;
+	
+	@Autowired
+	private UwQuestionsOptionsMasterRepository optionsRepo;
 
 	private Logger log = LogManager.getLogger(UwQuesitonMasterServiceImpl.class);
 
@@ -126,20 +131,112 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 			}
 
-			if (StringUtils.isBlank(req.getCoreAppCode())) {
-				errorList.add(new Error("07", "CoreAppCode", "Please Select CoreAppCode"));
-			}else if (req.getCoreAppCode().length() > 20){
-				errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
-			}
-			if (StringUtils.isBlank(req.getRegulatoryCode())) {
-				errorList.add(new Error("08", "RegulatoryCode", "Please Select RegulatoryCode"));
-			}else if (req.getRegulatoryCode().length() > 20){
-				errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters")); 
-			}
+//			if (StringUtils.isBlank(req.getCoreAppCode())) {
+//				errorList.add(new Error("07", "CoreAppCode", "Please Select CoreAppCode"));
+//			}else if (req.getCoreAppCode().length() > 20){
+//				errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
+//			}
+//			if (StringUtils.isBlank(req.getRegulatoryCode())) {
+//				errorList.add(new Error("08", "RegulatoryCode", "Please Select RegulatoryCode"));
+//			}else if (req.getRegulatoryCode().length() > 20){
+//				errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters")); 
+//			}
 			if (StringUtils.isBlank(req.getCreatedBy())) {
 				errorList.add(new Error("09", "CreatedBy", "Please Select CreatedBy"));
 			}else if (req.getCreatedBy().length() > 100){
 				errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
+			}
+			
+			
+			
+			List<String> opsId = new ArrayList<String>();
+			List<String> opsDesc = new ArrayList<String>();
+			
+			//Options Validation
+			if(req.getQuestionType().equalsIgnoreCase("01")) { //Radio Button
+				
+				if(req.getOptionsReq().size()<=0)
+					errorList.add(new Error("01","Options", "Please Add Atleast One Option Details")); 
+				else {
+					int row = 0;
+					for(OptionsReq ops : req.getOptionsReq()) {
+						row = row + 1;
+						
+
+						if (StringUtils.isBlank(ops.getUwQuesOptionId())) {
+							errorList.add(new Error("07", "Option Id", "Please Enter Value in Row "+ row));
+						}else {
+							
+							if(opsId.contains(ops.getUwQuesOptionId())) {
+								errorList.add(new Error("07","Option Id", "Duplicate Value Entered in Row " + row)); 
+							}
+							
+							opsId.add(ops.getUwQuesOptionId());
+							if ( ! isNumeric(ops.getUwQuesOptionId())  )
+								errorList.add(new Error("07","Option Id", "Please Enter Value in Numeric Only in Row " + row)); 
+						}
+						
+						if (StringUtils.isBlank(ops.getUwQuesOptionDesc())) {
+							errorList.add(new Error("07", "Option Desc", "Please Enter Display Name in Row "+ row));
+						}else {
+							
+							if(opsDesc.contains(ops.getUwQuesOptionDesc())) {
+								errorList.add(new Error("07","Option Desc", "Duplicate Display Name Entered in Row " + row)); 
+							}
+							
+							opsDesc.add(ops.getUwQuesOptionDesc());
+							
+							if ( ops.getUwQuesOptionDesc().length()>100  )
+								errorList.add(new Error("07","Option Desc", "Please Enter Display Name within 100 Characters in Row " + row)); 
+						}
+						
+						if (StringUtils.isBlank(ops.getStatus())) {
+							errorList.add(new Error("05", "Status", "Please Select Status in Row "+ row));
+						} else if (ops.getStatus().length() > 1) {
+							errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed in row" + row));
+						}
+						
+						if (StringUtils.isBlank(ops.getLoadingPercent())) {
+							errorList.add(new Error("07", "Loading", "Please Enter Loading in Row "+ row));
+						}else if ( ! isNumeric(ops.getLoadingPercent())  ){
+							errorList.add(new Error("07","Loading", "Please Enter Loading in Numeric Only in Row " + row)); 
+						}
+						
+						//DependantYN
+						if (StringUtils.isBlank(ops.getDependentYn())) {
+							errorList.add(new Error("05", "DependentYn", "Please Select DependentYn in Row "+ row));
+						} else {
+							
+							if (ops.getDependentYn().length() > 1) 
+								errorList.add(new Error("05", "DependentYn", "Please Select Valid DependentYn - One Character Only Allwed in row" + row));
+						
+							if(ops.getDependentYn().equalsIgnoreCase("Y")) {
+							
+								if (StringUtils.isBlank(ops.getDependentUnderwriterId())) {
+									errorList.add(new Error("07", "Dependant Question", "Please Select Dependant Question in Row "+ row));
+								}
+								
+//								if (StringUtils.isBlank(ops.getDependentUwAction())) {
+//									errorList.add(new Error("07", "Dependant Question Action", "Please Enter Dependant Question Action in Row "+ row));
+//								}else if ( ops.getDependentUwAction().length()>100  ){
+//									errorList.add(new Error("07","Dependant Question Action", "Please Enter Dependant Question Action within 100 Characters in Row " + row)); 
+//								}
+						
+							}
+						}
+						
+						if (StringUtils.isBlank(ops.getReferralYn())) {
+							errorList.add(new Error("05", "Referral", "Please Select Referral in Row "+ row));
+						} else if (ops.getReferralYn().length() > 1) {
+							errorList.add(new Error("05", "Referral", "Please Select Valid Referral - One Character Only Allwed in row" + row));
+						}
+						
+				}
+				
+				
+				
+			}
+			
 			}
 			
 		} catch (Exception e) {
@@ -203,6 +300,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 		UWQuestionsMaster saveData = new UWQuestionsMaster();
 		List<UWQuestionsMaster> list  = new ArrayList<UWQuestionsMaster>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		Integer uwQuestionId = 0;
 		try {
 			Integer amendId = 0;
 			Date StartDate = req.getEffectiveDateStart();
@@ -212,7 +310,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			Date oldEndDate = new Date(req.getEffectiveDateStart().getTime()- MILLS_IN_A_DAY);
 			Date entryDate = null;
 			String createdBy ="";
-			Integer uwQuestionId = 0;
+		
 			if(StringUtils.isBlank(req.getUwQuestionId())) {
 				Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getBranchCode(),req.getProductId());
 				uwQuestionId = totalCount+1;
@@ -284,6 +382,52 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			saveData.setAmendId(amendId);
 			saveData.setBranchCode(req.getBranchCode());
 			repo.saveAndFlush(saveData);	
+			
+			List<UwQuestionsOptionsMaster> optionsList = optionsRepo.findByCompanyIdAndBranchCodeOrBranchCodeAndProductId(req.getCompanyId(),req.getBranchCode(),
+					"99999",Integer.valueOf(req.getProductId()));
+			
+			Integer quesId = uwQuestionId;
+			//Options save
+			if( req.getOptionsReq().size()>0) {
+				
+				if(optionsList.size()>0) {
+					
+					//old delete
+					List<UwQuestionsOptionsMaster> optionsfilter =optionsList.stream().filter(o -> o.getDependentUwQuestionId().equals(quesId))
+							.collect(Collectors.toList());
+					
+					optionsRepo.deleteAll(optionsfilter);
+				}
+				
+				List<UwQuestionsOptionsMaster> opsList = new ArrayList<UwQuestionsOptionsMaster>();
+				for(OptionsReq options : req.getOptionsReq()) {
+					UwQuestionsOptionsMaster ops =  UwQuestionsOptionsMaster.builder()
+							.amendId(amendId)
+							.branchCode(req.getBranchCode())
+							.companyId(req.getCompanyId())
+							.productId(Integer.valueOf(req.getProductId()))
+							.dependentUwQuestionId(Integer.valueOf(quesId))
+							.effectiveDateEnd(StartDate)
+							.effectiveDateStart(endDate)
+							.entryDate(entryDate)
+							
+							.uwQuesOptionDesc(options.getUwQuesOptionDesc())  //DisplayName (i.e, Options)
+							.uwQuesOptionId(StringUtils.isBlank(options.getUwQuesOptionId())?null:Integer.valueOf(options.getUwQuesOptionId())) //value
+							.dependentYn(options.getDependentYn())
+							.dependentUnderwriterId(StringUtils.isBlank(options.getDependentUnderwriterId())?null:Integer.valueOf(options.getDependentUnderwriterId())) //dropdown 
+							.dependentUwAction(options.getDependentUwAction()==null?"":options.getDependentUwAction())
+							.loadingPercent(StringUtils.isBlank(options.getLoadingPercent())?null:Integer.valueOf(options.getLoadingPercent()))
+							.referralYn(options.getReferralYn())
+							.status(options.getStatus())
+							
+							.build();
+					opsList.add(ops);
+				}
+				optionsRepo.saveAllAndFlush(opsList);
+			
+			}
+			
+			
 			log.info("Saved Details is --> " + json.toJson(saveData));	
 			}
 		catch(Exception e) {
@@ -420,6 +564,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 	@Override
 	public List<UwQuestionMasterRes> getActiveUwQuestions(UwQuestionsMasterGetAllReq req) {
 		List<UwQuestionMasterRes> resList = new ArrayList<UwQuestionMasterRes>();
+		
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
 			Date today = new Date();
@@ -428,7 +573,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			today = cal.getTime();
 			Date todayEnd = cal.getTime();
 
-			 LoginMaster loginData =  loginRepo.findByLoginId(req.getLoginId());
+	//		 LoginMaster loginData =  loginRepo.findByLoginId(req.getLoginId());
 		
 			List<UWQuestionsMaster> list = new ArrayList<UWQuestionsMaster>();
 		
@@ -436,41 +581,13 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<UWQuestionsMaster> query = cb.createQuery(UWQuestionsMaster.class);
 
-			// Find All
+			// Find All 
 			Root<UWQuestionsMaster> b = query.from(UWQuestionsMaster.class);
+			
+			
 
 			// Select
 			query.select(b);
-			
-			/*
-			// Amend ID Max Filter
-			Subquery<Long> amendId = query.subquery(Long.class);
-			Root<UWQuestionsMaster> ocpm1 = amendId.from(UWQuestionsMaster.class);
-			amendId.select(cb.max(ocpm1.get("amendId")));
-			Predicate a1 = cb.equal(ocpm1.get("uwQuestionId"), b.get("uwQuestionId"));
-			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-			Predicate a4 = cb.equal(ocpm1.get("productId"),b.get("productId"));
-
-			amendId.where(a1, a2,a3,a4);
-
-			// Order By
-			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(b.get("branchCode")));
-
-			// Where
-			Predicate n1 = cb.equal(b.get("amendId"), amendId);
-			Predicate n2 = cb.equal(b.get("companyId"), req.getCompanyId());
-			Predicate n3 = cb.equal(b.get("branchCode"),  req.getBranchCode() );
-			Predicate n4 = cb.equal(b.get("status"), "Y");
-			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
-			Predicate n6 = cb.or(n3,n5);
-			Predicate n7 = cb.equal(b.get("productId"), req.getProductId());
-			Predicate n8 = cb.equal(b.get("status"), "R");
-			Predicate n9 = cb.or(n4,n8);
-				
-			query.where(n1,n2,n9,n6,n7).orderBy(orderList);
-			*/
 			
 			// Effective Date Start Max Filter
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
@@ -492,12 +609,14 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			Predicate a8 = cb.equal(b.get("companyId"),ocpm2.get("companyId"));
 			Predicate a9 = cb.equal(b.get("branchCode"),ocpm2.get("branchCode"));
 			Predicate a10 = cb.equal(b.get("productId"),ocpm2.get("productId"));
-
 			effectiveDate2.where(a6,a7,a8,a9,a10);
+			
+			//amendId
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("branchCode")));
+			orderList.add(cb.asc(b.get("uwQuestionId")));
 
 			// Where
 			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
@@ -514,26 +633,34 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			query.where(n1,n2,n9,n6,n7,n10).orderBy(orderList);
 			
 			
-			
-			
-			
-			
-			
-			
-			
 			// Get Result
 			TypedQuery<UWQuestionsMaster> result = em.createQuery(query);
 			list = result.getResultList();
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getUwQuestionId()))).collect(Collectors.toList());
-			list.sort(Comparator.comparing(UWQuestionsMaster :: getUwQuestionDesc ));
+		//	list.sort(Comparator.comparing(UWQuestionsMaster :: getUwQuestionDesc ));
+			
+			List<UwQuestionsOptionsMaster> optionsList = optionsRepo.findByCompanyIdAndBranchCodeOrBranchCodeAndProductId(req.getCompanyId(),req.getBranchCode(),
+					"99999",Integer.valueOf(req.getProductId()));
 			
 			// Map
 			for (UWQuestionsMaster data : list) {
 				UwQuestionMasterRes res = new UwQuestionMasterRes();
-
 				res = mapper.map(data, UwQuestionMasterRes.class);
 				res.setCoreAppCode(data.getCoreAppCode());
-
+				
+				List<UwQuestionsOptionsMaster> optionsfilter =optionsList.stream().filter(o -> o.getDependentUwQuestionId().equals(data.getUwQuestionId()))
+						.collect(Collectors.toList());
+				
+				if(optionsfilter.size()>0) {
+					List<OptionsRes> optionsRes = new ArrayList<OptionsRes>();
+					for(UwQuestionsOptionsMaster ops : optionsfilter ) {
+						OptionsRes options = new OptionsRes();
+						options = mapper.map(ops, OptionsRes.class);
+						optionsRes.add(options);
+					}
+					res.setOptionsRes(optionsRes);
+				}
+				
 				resList.add(res);
 			}
 
@@ -773,5 +900,11 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 		return resList;
 	}
 	
-
+	  public static boolean isNumeric(String input) {
+	        String numericPattern = "^[0-9]+$";
+	        Pattern pattern = Pattern.compile(numericPattern);
+	        Matcher matcher = pattern.matcher(input);
+	        
+	        return matcher.matches();
+	    }
 }

@@ -2,8 +2,7 @@ package com.maan.eway.master.req;
 
 import java.io.Serializable;
 import java.util.Date;
-
-import javax.persistence.Column;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -59,10 +58,14 @@ public class UwQuestionMasterSaveReq implements Serializable {
 	@JsonProperty("UpdatedDate")
 	private Date updatedDate;
 
-	@JsonProperty("CoreAppCode")
-	private String coreAppCode;
+//	@JsonProperty("CoreAppCode")
+//	private String coreAppCode;
+//	
+//	@JsonProperty("RegulatoryCode")
+//	private String regulatoryCode;
 	
-	@JsonProperty("RegulatoryCode")
-	private String regulatoryCode;
+	@JsonProperty("Options")
+	private List<OptionsReq> optionsReq;	
+
 	
 }

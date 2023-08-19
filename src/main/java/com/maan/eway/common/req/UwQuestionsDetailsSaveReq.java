@@ -41,7 +41,7 @@ public class UwQuestionsDetailsSaveReq implements Serializable {
     private String   questionType ;
     
 	@JsonProperty("Value")
-    private String   value;
+    private String   value;  //option
 
 	@JsonProperty("MandatoryYn")
     private String  mandatoryYn;

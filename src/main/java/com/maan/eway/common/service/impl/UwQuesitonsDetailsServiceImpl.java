@@ -151,7 +151,7 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			saveData.setUpdatedDate(new Date());			
 			saveData.setStatus(da.get().getStatus());
 			saveData.setTextValue(da.get().getTextValue());
-			;
+			
 			res.setResponse("Updated Successfully");
 
 			saveData1 = dozerMapper.map(data,UwQuestionsDetailsArch.class);
@@ -177,6 +177,7 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			saveData.setStatus(data.getStatus());
 			if((StringUtils.isNotBlank(data.getStatus())) && (data.getStatus().equalsIgnoreCase("R"))
 					&& data.getValue().equalsIgnoreCase("Y")){
+				
 				saveData.setIsReferral("Y");
 				
 			}
