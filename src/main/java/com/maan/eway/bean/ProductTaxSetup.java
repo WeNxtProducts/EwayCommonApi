@@ -19,6 +19,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -146,6 +147,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="DEPENDENT_YN", length=20)
     private String   dependentYn;
+    
+    @Column(name="MINIMUM_AMOUNT", length=20)
+    private BigDecimal   minimumAmount;
 }
 
 

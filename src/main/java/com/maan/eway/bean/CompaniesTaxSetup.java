@@ -15,11 +15,11 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -134,14 +134,17 @@ private static final long serialVersionUID = 1L;
     @Column(name="REGULATORY_CODE", length=20)
     private String   regulatoryCode;
      
-    @Column(name="TAX_EXEMPTION_ALLOWED_YN", length=20)
-    private String   taxExemptionAllowedYn;
+    @Column(name="TAX_EXEMPT_ALLOW_YN", length=20)
+    private String   taxExemptAllowYn;
     
     @Column(name="PRIORITY", length=20)
     private Integer   priority;
     
-    
-    
+    @Column(name="DEPENDENT_YN", length=20)
+    private String   dependentYn;    
+
+    @Column(name="MINIMUM_AMOUNT", length=20)
+    private BigDecimal   minimumAmount;
 }
 
 
