@@ -1873,6 +1873,19 @@ public class QuoteThreadCall implements Callable<Object>  {
 			Map<String,Object> res= new HashMap<String,Object>() ;
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
+				List<EserviceTravelGroupDetails> oldGroupDatas = 	eserGroupRepo.findByQuoteNo(req.getEndtPrevQuoteNo() );
+				List<VehicleNeedToRemove> vehicleNeedberemove = new ArrayList<VehicleNeedToRemove>();
+				oldGroupDatas.forEach( o -> {
+					VehicleNeedToRemove removeVehicle = new VehicleNeedToRemove(); 
+					removeVehicle.setSectionId(o.getSectionId().toString());
+					removeVehicle.setVehicleId(Integer.valueOf(o.getRiskId()));
+					vehicleNeedberemove.add(removeVehicle);
+				});
+				
+				req.setVehicleNeedberemove(vehicleNeedberemove);
+				
+			//	List<TravelPassengerDetails> oldPassDatas = 	traPassRepo.findByQuoteNo(req.getQuoteNo());
+//				traPassRepo.deleteByQuoteNo(req.getQuoteNo());
 //				Long travelInfo =  traPassRepo.countByQuoteNo(req.getQuoteNo());
 //				if (travelInfo > 0  ) {
 //					// Delete data
@@ -1895,33 +1908,52 @@ public class QuoteThreadCall implements Callable<Object>  {
 //					}
 //					
 //					
-//				} else if(StringUtils.isNotBlank(req.getEndtPrevQuoteNo())) {
+//				} else 
+				if(StringUtils.isNotBlank(req.getEndtPrevQuoteNo())) {
 //					// Endorsement
-//					travelInfo =  traPassRepo.countByQuoteNo(req.getEndtPrevQuoteNo());
-//					if (travelInfo > 0  ) {
-//						// Delete data
-//						List<TravelPassengerDetails> oldPassDatas = 	traPassRepo.findByQuoteNo(req.getEndtPrevQuoteNo());
-//						traPassRepo.deleteByQuoteNo(req.getQuoteNo());
-//							
-//						// Find History
-//						for (TravelPassengerDetails passData :  oldPassDatas) {
-//							Long travelHisInfo =  traPassHisRepo.countByQuoteNoAndPassengerId(req.getQuoteNo(),passData.getPassengerId());
-//							if (travelHisInfo > 0 ) {
-//								//Delete data
-//								traPassHisRepo.deleteByQuoteNoAndPassengerId(req.getQuoteNo(),passData.getPassengerId());
-//								
-//							}
-//							// Save New 
-//							TravelPassengerHistory traHistorySave = new TravelPassengerHistory(); 
-//							dozerMapper.map(passData, traHistorySave);
-//							traHistorySave.setRequestReferenceNo(req.getRequestReferenceNo());
-//							traHistorySave.setQuoteNo(req.getQuoteNo());
-//							traHistorySave.setCustomerId(req.getCustomerId());
-//							traHistorySave.setEntryDate(new Date());
-//							traPassHisRepo.saveAndFlush(traHistorySave);
-//						}
-//					}
-//				
+					Long travelInfo =  traPassRepo.countByQuoteNo(req.getEndtPrevQuoteNo());
+					if (travelInfo > 0  ) {
+					
+						List<TravelPassengerDetails> oldPassDatas = 	traPassRepo.findByQuoteNo(req.getEndtPrevQuoteNo());
+						List<TravelPassengerDetails> saveEndtDatas = new ArrayList<TravelPassengerDetails>();
+						for (TravelPassengerDetails passData :  oldPassDatas) {
+							TravelPassengerDetails endtData = new TravelPassengerDetails(); 
+							// Save New 
+							dozerMapper.map(passData, endtData);
+							
+							// Date Diffrence
+							Date periodStart = request.getPolicyStartDate();
+							Date effDate =  request.getEffetiveDate();
+							Date oldEndDate = null ;
+							Long daysBetween = 0L ;
+							String diff = "" ;
+								
+							if(periodStart.equals(effDate)  || periodStart.after(effDate) ) {
+								oldEndDate = periodStart ;
+								daysBetween = 0L ;
+								diff = String.valueOf(daysBetween);
+								
+							} else {
+								Long diffInMillies = Math.abs(effDate.getTime() - periodStart.getTime());
+								daysBetween =  TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS) + 1 ;
+								oldEndDate  = effDate ;
+								// Check Leap Year
+								SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+								boolean leapYear = LocalDate.parse(sdf.format(effDate) ).isLeapYear();
+								System.out.println( "Deactivated Policy Cover :  "+ request.getPolicyStartDate() + "  Difference in days: " + diff);
+								diff = String.valueOf( daysBetween==365 &&  leapYear==true ? daysBetween+1 : daysBetween );
+							}
+							
+							endtData.setQuoteNo(request.getQuoteNo());
+							endtData.setRequestReferenceNo(request.getRequestReferenceNo());
+							endtData.setTravelEndDate(oldEndDate);
+							endtData.setStatus("D");
+							endtData.setTravelCoverDuration(Integer.valueOf(diff));
+							saveEndtDatas.add(endtData);
+						}
+						traPassRepo.saveAllAndFlush(saveEndtDatas)	;
+					}
+				}
 //				}
 //				//Doc traces delete 
 //				List<EserviceSectionDetails> secs = eserSecRepo.findByRequestReferenceNoAndStatus(req.getRequestReferenceNo(),"Y");
