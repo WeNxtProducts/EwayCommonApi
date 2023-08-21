@@ -991,7 +991,13 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
 			
 			// Multiple Vehicle Thread Call
-			List<EserviceTravelGroupDetails> groupData = eserGroupRepo.findByRequestReferenceNoAndStatusNotOrderByGroupIdAsc(request.getRequestReferenceNo() ,"D" );
+			List<EserviceTravelGroupDetails> groupData = new ArrayList<EserviceTravelGroupDetails>(); 
+			if(request.getEndtType().equalsIgnoreCase("842") ) {
+				groupData = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(request.getRequestReferenceNo() );
+			} else {
+				groupData = eserGroupRepo.findByRequestReferenceNoAndStatusNotOrderByGroupIdAsc(request.getRequestReferenceNo() ,"D" );	
+			}
+			
         	
         	Integer passCount = 0;
         	List<VehicleIdsReq>  filterAdult  = req.getVehicleIdsList().stream().filter( o ->  o.getVehicleId().equals(2) ).collect(Collectors.toList());

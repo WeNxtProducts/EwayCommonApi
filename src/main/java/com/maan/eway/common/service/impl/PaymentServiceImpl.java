@@ -534,28 +534,31 @@ public class PaymentServiceImpl implements PaymentService {
 	private List<Error> checkGroupValidation(String quoteNo  ) {
 		List<Error> errors = new ArrayList<Error>();
 		try {
+			
 			List<EserviceTravelGroupDetails> groupDetails = groupRepo.findByQuoteNoOrderByGroupIdAsc(quoteNo);
 			List<TravelPassengerDetails>     passengerList = passengerRepo.findByQuoteNoAndStatusNot(quoteNo, "D");
-			
-			// Group Validation 
-			for ( EserviceTravelGroupDetails group : groupDetails ) {
-				List<TravelPassengerDetails> filterList = passengerList.stream().filter( o -> o.getGroupId()!=null && Integer.valueOf(o.getGroupId()).equals(group.getGroupId())  )
-						.collect(Collectors.toList()) ;
-				if( group.getGrouppMembers() < filterList.size() ) {
-					errors.add(new Error("12", "Group", "Group : " + group.getGroupDesc() + " Number Of Passengers Greater Than " + group.getGrouppMembers() + " Passengers Not Allowed" ));
-				} else if( group.getGrouppMembers() > filterList.size() ) {
-					errors.add(new Error("12", "Group", "Group : " + group.getGroupDesc() + " Number Of Passengers Lesser Than  " + group.getGrouppMembers() + " Passengers Not Allowed" ));
+			if(groupDetails.size() > 0 && (groupDetails.get(0).getEndorsementType()==null ||  groupDetails.get(0).getEndorsementType() != 842)  ) {
+				// Group Validation 
+				for ( EserviceTravelGroupDetails group : groupDetails ) {
+					List<TravelPassengerDetails> filterList = passengerList.stream().filter( o -> o.getGroupId()!=null && Integer.valueOf(o.getGroupId()).equals(group.getGroupId())  )
+							.collect(Collectors.toList()) ;
+					if( group.getGrouppMembers() < filterList.size() ) {
+						errors.add(new Error("12", "Group", "Group : " + group.getGroupDesc() + " Number Of Passengers Greater Than " + group.getGrouppMembers() + " Passengers Not Allowed" ));
+					} else if( group.getGrouppMembers() > filterList.size() ) {
+						errors.add(new Error("12", "Group", "Group : " + group.getGroupDesc() + " Number Of Passengers Lesser Than  " + group.getGrouppMembers() + " Passengers Not Allowed" ));
+					}
+					
 				}
-				
+			
+				List<TravelPassengerDetails> filterSelf1 = passengerList.stream().filter( o -> o.getRelationId()!=null && Integer.valueOf(o.getRelationId()).equals(9)  )
+						.collect(Collectors.toList()) ;
+				List<TravelPassengerDetails> filterSelf2 =passengerList.stream().filter( o -> o.getRelationId()!=null && Integer.valueOf(o.getRelationId()).equals(10)  )
+						.collect(Collectors.toList()) ;
+				if(filterSelf1.size()<=0 && filterSelf2.size()<=0 ) {
+					errors.add(new Error("12", "SelfRelation", " Self Relation is missing in Passenger Details" ));
+				}
 			}
-		
-			List<TravelPassengerDetails> filterSelf1 = passengerList.stream().filter( o -> o.getRelationId()!=null && Integer.valueOf(o.getRelationId()).equals(9)  )
-					.collect(Collectors.toList()) ;
-			List<TravelPassengerDetails> filterSelf2 =passengerList.stream().filter( o -> o.getRelationId()!=null && Integer.valueOf(o.getRelationId()).equals(10)  )
-					.collect(Collectors.toList()) ;
-			if(filterSelf1.size()<=0 && filterSelf2.size()<=0 ) {
-				errors.add(new Error("12", "SelfRelation", " Self Relation is missing in Passenger Details" ));
-			}
+			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
