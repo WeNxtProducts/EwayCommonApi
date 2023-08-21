@@ -44,4 +44,12 @@ public class Tax implements Serializable  {
     private String dependentYn;
     @JsonProperty("TaxExemptedAllowed")
     private String taxExemptedAllowed;
+    
+    @JsonProperty("MinimumTaxAmount")
+    private BigDecimal minimumTaxAmount;
+    
+    @JsonProperty("MinimumTaxAmountLC")
+    private BigDecimal minimumTaxAmountLc;
+    @JsonProperty("TaxAmountLc") 
+    public BigDecimal taxAmountLc;
 }

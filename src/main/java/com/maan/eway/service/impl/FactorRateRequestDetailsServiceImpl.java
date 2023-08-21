@@ -886,6 +886,9 @@ this.repository = repo;
 				saveTax.setCoverPeriodFrom(coverReq.getEffectiveDate());
 				saveTax.setCoverPeriodTo(coverReq.getPolicyEndDate());
 				saveTax.setDependentCoverYn(StringUtils.isBlank(tax.getDependentYn())?"N":tax.getDependentYn());
+				saveTax.setMinimumPremium(tax.getMinimumTaxAmountLc());
+				saveTax.setMinimumPremiumFc(tax.getMinimumTaxAmount());
+				saveTax.setTaxAmountLc(tax.getTaxAmountLc()==null?null :new BigDecimal(df.format(tax.getTaxAmountLc())));
 				
 				saveTax.setNoOfDays(new BigDecimal(diff));
 				//	repository.saveAndFlush(saveTax);
@@ -1768,6 +1771,9 @@ this.repository = repo;
 				taxes.setTaxId(tax.getTaxId()==null?null:tax.getTaxId().toString()) ;
 				taxes.setTaxRate( tax.getTaxRate()==null?null : Double.valueOf(tax.getTaxRate().toString()));
 				taxes.setDependentYn(tax.getDependentCoverYn());
+				taxes.setMinimumTaxAmount(tax.getMinimumPremiumFc());
+				taxes.setMinimumTaxAmountLc(tax.getMinimumPremium());
+				taxes.setTaxAmountLc(tax.getTaxAmountLc());
 				TaxList.add(taxes);
 			}
 			

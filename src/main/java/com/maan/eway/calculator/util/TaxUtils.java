@@ -29,6 +29,9 @@ public class TaxUtils  implements Function<Tuple,Tax>{
 					.endtTypeCount(endtCount)
 					.dependentYn(t.get("dependentYn")==null?"N":t.get("dependentYn").toString())
 					.taxExemptedAllowed(t.get("taxExemptAllowYn")==null?"Y":t.get("taxExemptAllowYn").toString())
+					.minimumTaxAmountLc(t.get("minimumAmount")==null?BigDecimal.ZERO:new BigDecimal(t.get("minimumAmount").toString()))
+					.minimumTaxAmount(t.get("minimumAmount")==null?BigDecimal.ZERO:new BigDecimal(t.get("minimumAmount").toString()))
+					.taxAmountLc(BigDecimal.ZERO)
 				 	.build();
 			return d;
 		}catch (Exception e) {

@@ -43,11 +43,22 @@ public class TaxCalculator   implements Consumer<Tax> {
 		 t.setIsTaxExempted(isTaxExempted);
 		 t.setTaxExemptCode(taxExemptedId);
 		 
-		 BigDecimal domath = BigDecimal.ZERO;
-		 	
-		 if("Y".equals(t.getTaxExemptedAllowed()) && t.getIsTaxExempted().equals("N"))
-				 domath= calc.domath(calctype, t.getTaxRate(), premium,exchangeRate);
-		 t.setTaxAmount(domath);
+		 BigDecimal domath_Fc = BigDecimal.ZERO;
+		 t.setTaxAmount(BigDecimal.ZERO);
+		 t.setTaxAmountLc(BigDecimal.ZERO);
+		 if("Y".equals(t.getTaxExemptedAllowed()) && t.getIsTaxExempted().equals("N")) {
+			 domath_Fc= calc.domath(calctype, t.getTaxRate(), premium,exchangeRate); 
+			 BigDecimal domath_Lc = domath_Fc.multiply(exchangeRate);
+			 t.setTaxAmount(domath_Fc);
+			 t.setTaxAmountLc(domath_Lc);
+			 t.setMinimumTaxAmount(t.getMinimumTaxAmountLc().multiply(exchangeRate));
+			 if(domath_Lc.compareTo(t.getMinimumTaxAmountLc())<0) {
+				 t.setTaxAmount(t.getMinimumTaxAmount());
+				 t.setTaxAmountLc(t.getMinimumTaxAmountLc());
+			 }
+			 
+		 }
+		 
 		  
 	 }catch (Exception e) {
 		 e.printStackTrace();
