@@ -163,7 +163,6 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			
 			uwArchRepo.save(saveData1);	
 			
-			
 			}
 			else {
 			saveData = dozerMapper.map(data,UwQuestionsDetails.class);
@@ -175,7 +174,7 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			
 			}
 			saveData.setStatus(data.getStatus());
-			if((StringUtils.isNotBlank(data.getStatus())) && (data.getStatus().equalsIgnoreCase("R"))
+			if((StringUtils.isNotBlank(data.getStatus())) && (data.getStatus().equalsIgnoreCase("R")) 
 					&& data.getValue().equalsIgnoreCase("Y")){
 				
 				saveData.setIsReferral("Y");
@@ -185,7 +184,7 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 				saveData.setIsReferral("N");							
 			}
 			
-			
+			saveData.setLoading(data.getLoading()==null?0:Integer.valueOf(data.getLoading()));
 			uwRepo.save(saveData);				
 			res.setSuccessId(data.getRequestReferenceNo());			
 			}

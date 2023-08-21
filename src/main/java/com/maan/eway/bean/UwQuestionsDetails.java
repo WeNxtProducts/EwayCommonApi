@@ -44,6 +44,7 @@ import lombok.ToString;
 * @author Telosys Tools Generator
 *
 */
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -120,6 +121,9 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="TEXT_VALUE", length=100)
     private String    textValue;
+    
+    @Column(name="LOADING")
+    private Integer     loading ;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 
