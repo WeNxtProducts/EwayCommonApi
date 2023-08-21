@@ -210,6 +210,8 @@ public interface DropDownService {
 
 	List<DropDownRes> getCyberContents(LovDropDownReq req);
 
+	List<DropDownRes> getTaxForDesc(LovDropDownReq req);
+
 
 
 

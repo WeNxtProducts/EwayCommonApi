@@ -3003,5 +3003,28 @@ public class DropDownServiceImpl  implements DropDownService{
 		return resList;	
 	}
 
+
+	@Override
+	public List<DropDownRes> getTaxForDesc(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			String itemType = "TAX_FOR_DESC" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
+			getList.sort(Comparator.comparing(ListItemValue :: getItemValue).reversed());
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;	
+	}
+
 	
 }
