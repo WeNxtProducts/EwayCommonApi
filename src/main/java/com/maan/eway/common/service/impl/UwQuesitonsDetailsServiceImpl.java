@@ -184,7 +184,7 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 				saveData.setIsReferral("N");							
 			}
 			
-			saveData.setLoading(data.getLoading()==null?0:Integer.valueOf(data.getLoading()));
+			saveData.setLoading(data.getLoadingPercent()==null?0:Integer.valueOf(data.getLoadingPercent()));
 			uwRepo.save(saveData);				
 			res.setSuccessId(data.getRequestReferenceNo());			
 			}
