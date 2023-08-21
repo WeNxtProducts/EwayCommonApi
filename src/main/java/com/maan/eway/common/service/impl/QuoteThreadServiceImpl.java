@@ -340,8 +340,11 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 //	 			}
             
         	 ProductThreadRes productThreads = (ProductThreadRes) commonRes.getCommonResponse();
-        	 threadCount = threadCount + productThreads.getThreadCount();
-        	 queue.addAll(productThreads.getQueue());
+        	 if( productThreads.getThreadCount() !=null) {
+        		 threadCount = threadCount + productThreads.getThreadCount();
+            	 queue.addAll(productThreads.getQueue());
+            	 	 
+        	 }
         	 ForkJoinPool forkjoin = new ForkJoinPool(threadCount); 
              ConcurrentLinkedQueue<Future<Object>> invoke  = (ConcurrentLinkedQueue<Future<Object>>) forkjoin.invoke(taskList) ;
              
@@ -991,104 +994,110 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
 			
 			// Multiple Vehicle Thread Call
-			List<EserviceTravelGroupDetails> groupData = eserGroupRepo.findByRequestReferenceNoAndStatusNotOrderByGroupIdAsc(request.getRequestReferenceNo() ,"D" );
+			List<EserviceTravelGroupDetails> groupData = new ArrayList<EserviceTravelGroupDetails>(); 
+			
+			
+			groupData = eserGroupRepo.findByRequestReferenceNoAndStatusNotOrderByGroupIdAsc(request.getRequestReferenceNo() ,"D" );
+			if(groupData.size() > 0 ) {
+				Integer passCount = 0;
+	        	List<VehicleIdsReq>  filterAdult  = req.getVehicleIdsList().stream().filter( o ->  o.getVehicleId().equals(2) ).collect(Collectors.toList());
+	        	List<VehicleIdsReq>  filterOthers =req.getVehicleIdsList().stream().filter( o -> ! o.getVehicleId().equals(2) ).collect(Collectors.toList());
+	        	List<VehicleIdsReq>  totalGroup  = new ArrayList<VehicleIdsReq>();
+	        	totalGroup.addAll(filterAdult)	;
+	        	totalGroup.addAll(filterOthers);
+	        	List<Integer> groupIds = totalGroup.stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
+	        	
+	        	// Filte Count
+	        	 for (Integer vehId :  groupIds ) {
+					 List<EserviceTravelGroupDetails> filterGroup = groupData.stream().filter( o -> o.getGroupId().equals(vehId) ).collect(Collectors.toList());				 
+					 List<String> sectionId = req.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());	
+				//	 for (int i=0 ; i < filterGroup.get(0).getGrouppMembers() ; i++) {
+						 passCount = passCount + 1 ;
+						 threadCount = threadCount +  2 ;
+						
+		            	 QuoteThreadReq request2 = new QuoteThreadReq();
+		            	 request2.setVehicleId(vehId);
+		            	 request2.setCustomerId(request.getCustomerId());
+		            	 request2.setProductId(request.getProductId());
+		            	 request2.setQuoteNo(request.getQuoteNo());
+		            	 request2.setRequestReferenceNo(request.getRequestReferenceNo());
+		            	 request2.setEndtPrevQuoteNo(request.getEndtPrevQuoteNo());
+		            	 request2.setVehicleIdsList(request.getVehicleIdsList());
+		            	 request2.setCreatedBy(request.getCreatedBy());
+		            	 request2.setGroupId(filterGroup.get(0).getGroupId());
+		            	 request2.setGroupCount(filterGroup.get(0).getGrouppMembers());
+		            	 request2.setSectionId(sectionId.get(0));
+		            	 request2.setPolicyStartDate(request.getPolicyStartDate());
+			             request2.setPolicyEndDate(request.getPolicyEndDate());
+			             request2.setEffetiveDate(request.getEffetiveDate());
+			             request2.setNoOfDays(request.getNoOfDays());
+			         	 request2.setEndtType(request.getEndtType());
+		            	 request2.setEndtCount(request.getEndtCount());
+		            	 request2.setEndtFields(request.getEndtFields());	
+		            	 request2.setMotorYn(request.getMotorYn());
+		            	 request2.setIndividualId(passCount);
+		            	 
+		            	 request.setSectionId(sectionId.get(0));
+		            	 request.setGroupId(filterGroup.get(0).getGroupId());
+		            	 
+						 QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
+									, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
+								    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
+						 queue.add(coverSave);
+					// }					 
+		         } 
+	        	 
+	        	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
+	     				, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
+	     			    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
+	          queue.add(travelSave);
+	        	 
+	        	 EserviceTravelDetails travelData = eserTraRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+	        	 if( travelData.getPlanTypeId().equals(3) ){
+	        		// Kids Passenger Details Insert Frame  
+	        		 List<EserviceTravelGroupDetails> filterGroup = groupData.stream().filter( o -> o.getGroupId().equals(1) ).collect(Collectors.toList());
+	        		 if(filterGroup.size()>0 ) {
+	        		//	 for (int i=0 ; i < filterGroup.get(0).getGrouppMembers() ; i++) {
+	    					 passCount = passCount + 1 ;
+	    					 threadCount = threadCount +  1 ;
+	    					
+	    	            	 QuoteThreadReq request2 = new QuoteThreadReq();
+	    	            	 request2.setVehicleId(filterGroup.get(0).getGroupId());
+	    	            	 request2.setCustomerId(request.getCustomerId());
+	    	            	 request2.setProductId(request.getProductId());
+	    	            	 request2.setQuoteNo(request.getQuoteNo());
+	    	            	 request2.setRequestReferenceNo(request.getRequestReferenceNo());
+	    	            	 request2.setEndtPrevQuoteNo(request.getEndtPrevQuoteNo());
+	    	            	 request2.setVehicleIdsList(request.getVehicleIdsList());
+	    	            	 request2.setCreatedBy(request.getCreatedBy());
+	    	            	 request2.setGroupId(filterGroup.get(0).getGroupId());
+	    	            	 request2.setGroupCount(filterGroup.get(0).getGrouppMembers());
+	    	            	 request2.setSectionId(travelData.getSectionId());
+	    	            	 request2.setPolicyStartDate(request.getPolicyStartDate());
+	    		             request2.setPolicyEndDate(request.getPolicyEndDate());
+	    		             request2.setEffetiveDate(request.getEffetiveDate());
+	    		             request2.setNoOfDays(request.getNoOfDays());
+	    		         	 request2.setEndtType(request.getEndtType());
+	    	            	 request2.setEndtCount(request.getEndtCount());
+	    	            	 request2.setEndtFields(request.getEndtFields());	
+	    	            	 request2.setMotorYn(request.getMotorYn());
+	    	            	 request2.setIndividualId(passCount);
+	    	            	 
+//	    	            	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
+//	    	            				, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
+//	    	            			    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
+//	    		             queue.add(travelSave);
+	    					
+	    			//	 }	
+	        		 }
+	        		
+	        	 }
+	        	 ProductThreadRes.setQueue(queue);
+	  	        ProductThreadRes.setThreadCount(threadCount);
+			}
         	
-        	Integer passCount = 0;
-        	List<VehicleIdsReq>  filterAdult  = req.getVehicleIdsList().stream().filter( o ->  o.getVehicleId().equals(2) ).collect(Collectors.toList());
-        	List<VehicleIdsReq>  filterOthers =req.getVehicleIdsList().stream().filter( o -> ! o.getVehicleId().equals(2) ).collect(Collectors.toList());
-        	List<VehicleIdsReq>  totalGroup  = new ArrayList<VehicleIdsReq>();
-        	totalGroup.addAll(filterAdult)	;
-        	totalGroup.addAll(filterOthers);
-        	List<Integer> groupIds = totalGroup.stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
+        	 
         	
-        	// Filte Count
-        	 for (Integer vehId :  groupIds ) {
-				 List<EserviceTravelGroupDetails> filterGroup = groupData.stream().filter( o -> o.getGroupId().equals(vehId) ).collect(Collectors.toList());				 
-				 List<String> sectionId = req.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());	
-			//	 for (int i=0 ; i < filterGroup.get(0).getGrouppMembers() ; i++) {
-					 passCount = passCount + 1 ;
-					 threadCount = threadCount +  2 ;
-					
-	            	 QuoteThreadReq request2 = new QuoteThreadReq();
-	            	 request2.setVehicleId(vehId);
-	            	 request2.setCustomerId(request.getCustomerId());
-	            	 request2.setProductId(request.getProductId());
-	            	 request2.setQuoteNo(request.getQuoteNo());
-	            	 request2.setRequestReferenceNo(request.getRequestReferenceNo());
-	            	 request2.setEndtPrevQuoteNo(request.getEndtPrevQuoteNo());
-	            	 request2.setVehicleIdsList(request.getVehicleIdsList());
-	            	 request2.setCreatedBy(request.getCreatedBy());
-	            	 request2.setGroupId(filterGroup.get(0).getGroupId());
-	            	 request2.setGroupCount(filterGroup.get(0).getGrouppMembers());
-	            	 request2.setSectionId(sectionId.get(0));
-	            	 request2.setPolicyStartDate(request.getPolicyStartDate());
-		             request2.setPolicyEndDate(request.getPolicyEndDate());
-		             request2.setEffetiveDate(request.getEffetiveDate());
-		             request2.setNoOfDays(request.getNoOfDays());
-		         	 request2.setEndtType(request.getEndtType());
-	            	 request2.setEndtCount(request.getEndtCount());
-	            	 request2.setEndtFields(request.getEndtFields());	
-	            	 request2.setMotorYn(request.getMotorYn());
-	            	 request2.setIndividualId(passCount);
-	            	 
-	            	 request.setSectionId(sectionId.get(0));
-	            	 request.setGroupId(filterGroup.get(0).getGroupId());
-	            	 
-					 QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
-								, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
-							    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
-					 queue.add(coverSave);
-				// }					 
-	         } 
-        	 
-        	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
-     				, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
-     			    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
-          queue.add(travelSave);
-        	 
-        	 EserviceTravelDetails travelData = eserTraRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
-        	 if( travelData.getPlanTypeId().equals(3) ){
-        		// Kids Passenger Details Insert Frame  
-        		 List<EserviceTravelGroupDetails> filterGroup = groupData.stream().filter( o -> o.getGroupId().equals(1) ).collect(Collectors.toList());
-        		 if(filterGroup.size()>0 ) {
-        		//	 for (int i=0 ; i < filterGroup.get(0).getGrouppMembers() ; i++) {
-    					 passCount = passCount + 1 ;
-    					 threadCount = threadCount +  1 ;
-    					
-    	            	 QuoteThreadReq request2 = new QuoteThreadReq();
-    	            	 request2.setVehicleId(filterGroup.get(0).getGroupId());
-    	            	 request2.setCustomerId(request.getCustomerId());
-    	            	 request2.setProductId(request.getProductId());
-    	            	 request2.setQuoteNo(request.getQuoteNo());
-    	            	 request2.setRequestReferenceNo(request.getRequestReferenceNo());
-    	            	 request2.setEndtPrevQuoteNo(request.getEndtPrevQuoteNo());
-    	            	 request2.setVehicleIdsList(request.getVehicleIdsList());
-    	            	 request2.setCreatedBy(request.getCreatedBy());
-    	            	 request2.setGroupId(filterGroup.get(0).getGroupId());
-    	            	 request2.setGroupCount(filterGroup.get(0).getGrouppMembers());
-    	            	 request2.setSectionId(travelData.getSectionId());
-    	            	 request2.setPolicyStartDate(request.getPolicyStartDate());
-    		             request2.setPolicyEndDate(request.getPolicyEndDate());
-    		             request2.setEffetiveDate(request.getEffetiveDate());
-    		             request2.setNoOfDays(request.getNoOfDays());
-    		         	 request2.setEndtType(request.getEndtType());
-    	            	 request2.setEndtCount(request.getEndtCount());
-    	            	 request2.setEndtFields(request.getEndtFields());	
-    	            	 request2.setMotorYn(request.getMotorYn());
-    	            	 request2.setIndividualId(passCount);
-    	            	 
-//    	            	 QuoteThreadCall travelSave = new QuoteThreadCall("TravelSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
-//    	            				, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
-//    	            			    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
-//    		             queue.add(travelSave);
-    					
-    			//	 }	
-        		 }
-        		
-        	 }
-        	 
-        	 ProductThreadRes.setQueue(queue);
- 	        ProductThreadRes.setThreadCount(threadCount);
  	        
 		} catch (Exception e) {
 			e.printStackTrace();

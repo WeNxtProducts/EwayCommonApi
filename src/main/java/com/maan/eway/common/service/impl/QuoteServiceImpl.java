@@ -2452,7 +2452,7 @@ public class QuoteServiceImpl implements QuoteService {
 //				 occupation.add(occu);
 //				 
 //			}
-			res.setOccupationType(paccDatas.size()> 0 ? paccDatas.get(0).getOccupationType().toString() : "");
+			res.setOccupationType(build.getOccupationType());
 			res.setOccupationTypeDesc(build.getOccupationTypeDesc());
 			res.setLiabilityOccupationId(build.getLiabilityOccupationId());
 			res.setLiabilityOccupationDesc(build.getLiabilityOccupationDesc());
