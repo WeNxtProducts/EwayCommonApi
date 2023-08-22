@@ -207,6 +207,13 @@ private static final long serialVersionUID = 1L;
 	    
 	    @Column(name="SALARY_LC")
 	    private BigDecimal salaryLc;
+	    
+	    
+		@Column(name = "HIGHEST_QUALIFICATION_HELD", length = 20)
+		private String highestQualificationHeld;
+
+		@Column(name = "ISSUING_AUTHORITY", length = 20)
+		private String issuingAuthority;
 }
 
 
