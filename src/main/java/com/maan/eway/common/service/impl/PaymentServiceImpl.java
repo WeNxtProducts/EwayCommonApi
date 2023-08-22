@@ -517,7 +517,7 @@ public class PaymentServiceImpl implements PaymentService {
 				error.addAll(checkGroupValidation(req.getQuoteNo()));
 					
 					
-			} else if(product.getMotorYn().equalsIgnoreCase("H")  ) {
+			} else if(product.getMotorYn().equalsIgnoreCase("H") && !productId.equalsIgnoreCase("43") ) {
 				error.addAll(employeeCountAndSIValid(req.getQuoteNo(),sectionId));
 			}
 			
