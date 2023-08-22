@@ -2865,12 +2865,12 @@ List<Error> errorList = new ArrayList<Error>();
 				errorList.add(new Error("07", "Checker", "Enter Checker Y or N Only  In Row No :" + row));
 			}
 
-			if (StringUtils.isBlank(req.getProductDesc())) {
-				errorList.add(new Error("08", "ProductDesc", "Please Select Product  Desc  In Row No :" + row));
-			}else if (req.getProductDesc().length() > 500) {
-				errorList.add(new Error("08", "ProductDesc", "Please Enter Product Desc within 500 Characters  In Row No : " + row));
-			}
-	
+//			if (StringUtils.isBlank(req.getProductDesc())) {
+//				errorList.add(new Error("08", "ProductDesc", "Please Select Product  Desc  In Row No :" + row));
+//			}else if (req.getProductDesc().length() > 500) {
+//				errorList.add(new Error("08", "ProductDesc", "Please Enter Product Desc within 500 Characters  In Row No : " + row));
+//			}
+//	
 		
 			
 					
