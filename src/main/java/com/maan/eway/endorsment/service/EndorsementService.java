@@ -19,7 +19,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -41,7 +40,6 @@ import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
-import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.ProductSectionMaster;
@@ -54,7 +52,6 @@ import com.maan.eway.common.req.EndtSectionListReq;
 import com.maan.eway.common.req.EndtSectionSaveReq;
 import com.maan.eway.common.req.EservieMotorDetailsViewRes;
 import com.maan.eway.common.req.NewQuoteReq;
-import com.maan.eway.common.req.QuoteThreadReq;
 import com.maan.eway.common.req.VehicleIdsReq;
 import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.CommonRes;
@@ -71,6 +68,7 @@ import com.maan.eway.endorsment.request.Endorsment;
 import com.maan.eway.endorsment.request.EndtMaster;
 import com.maan.eway.endorsment.util.CopyBuildingRaw;
 import com.maan.eway.endorsment.util.CopyCommonRaw;
+import com.maan.eway.endorsment.util.CopyPolicyCoverData;
 import com.maan.eway.endorsment.util.CopyRawTable;
 import com.maan.eway.endorsment.util.CopyTravelRaw;
 import com.maan.eway.endorsment.util.QuoteInfoUtil;
@@ -80,7 +78,6 @@ import com.maan.eway.repository.EndtDependantFieldsMasterRepository;
 import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
-import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.TermsAndConditionRepository;
@@ -145,6 +142,9 @@ public class EndorsementService {
 	private TermsAndConditionRepository termsRepo;
 	
 	private Logger log = LogManager.getLogger(EndorsementService.class);
+	
+	@Autowired
+	private CopyPolicyCoverData copycover;
 	
 	public CommonRes cancelPolicy(Endorsment request) {
 		try {
@@ -641,32 +641,39 @@ public class EndorsementService {
 				}
 			}else {
 				Object response = null ;
-				
+				String policyNo=null;
 				if(product.getMotorYn().equalsIgnoreCase("M") ) {
 					List<EserviceMotorDetails> motorRaw = copyraw.copyMotorRaw(request,entTypeMaster);
+					policyNo=motorRaw.get(0).getEndtPrevPolicyNo();
 					response = motorRaw ;
 					updateTermsAndCondition(hp , (motorRaw.size() > 0 ?  motorRaw.get(0).getRequestReferenceNo() : "" ));
 				} else if (product.getMotorYn().equalsIgnoreCase("H")  && request.getProductId().equals(new BigDecimal(travelProductId))  ) {
 					List<EserviceTravelDetails> travelRaw = new ArrayList<EserviceTravelDetails>(); 
 					travelRaw.add(copyTravelraw.copyTravelRaw(request));
+					policyNo=travelRaw.get(0).getEndtPrevPolicyNo();
 					response = travelRaw ;
 					updateTermsAndCondition(hp , (travelRaw.size() > 0 ?  travelRaw.get(0).getRequestReferenceNo() : "" ));
 					
 				} else if (product.getMotorYn().equalsIgnoreCase("A") ) {
 					List<EserviceBuildingDetails> buildRaw = new ArrayList<EserviceBuildingDetails>(); 
 					buildRaw.add( copyBuildingraw.copyBuildingRaw(request));
+					policyNo=buildRaw.get(0).getEndtPrevPolicyNo();
+							
 					response = buildRaw ;
 					updateTermsAndCondition(hp , (buildRaw.size() > 0 ?  buildRaw.get(0).getRequestReferenceNo() : "" ));
 					
 				} else {
 					List<EserviceCommonDetails> commonRaw = new ArrayList<EserviceCommonDetails>();
 					 commonRaw.add(copyCommonraw.copyCommonRaw(request));
+					 policyNo=commonRaw.get(0).getEndtPrevPolicyNo();
 					response = commonRaw ;
 					updateTermsAndCondition(hp , (commonRaw.size() > 0 ?  commonRaw.get(0).getRequestReferenceNo() : "" ) );
 				
 				}
 				
-				
+				if(StringUtils.isNotBlank(policyNo)) {
+					copycover.copy(policyNo);
+				}
 				CommonRes c=new CommonRes();
 				c.setCommonResponse(response);
 				c.setErroCode(0);
