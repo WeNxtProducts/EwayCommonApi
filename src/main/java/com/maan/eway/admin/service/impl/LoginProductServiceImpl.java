@@ -3286,32 +3286,32 @@ List<Error> errorList = new ArrayList<Error>();
 			List<String> companyIds = new ArrayList<String>() ;
 			companyIds.add(req.getInsuranceId());
 			
-			List<LoginProductMaster> loginProducts = getBrokerProducts1 (loginId , companyIds , today ) ;
+			List<BrokerCommissionDetails> loginProducts = getBrokerProducts1 (loginId , companyIds , today ) ;
 				
-			for(LoginProductMaster data :  loginProducts) {
+			for(BrokerCommissionDetails data :  loginProducts) {
 				BrokerCompanyListProductsGetAllRes productRes = new BrokerCompanyListProductsGetAllRes();
 				
 				String pattern = "#####0.00";
 				DecimalFormat df = new DecimalFormat(pattern);
-				productRes.setProductId(data.getProductId()==null?"" :data.getProductId().toString() );
-				productRes.setCompanyId(data.getCompanyId());
-				productRes.setProductName(data.getProductName());
-				productRes.setProductDesc(data.getProductDesc());
-				productRes.setSumInsuredStart(data.getSumInsuredStart()==null?"" : df.format(data.getSumInsuredStart()) );
-				productRes.setSumInsuredEnd(data.getSumInsuredEnd()==null?"" :df.format(data.getSumInsuredEnd()) );
-				productRes.setStatus(data.getStatus());
-				productRes.setCreatedBy(data.getCreatedBy());
-				productRes.setEffectiveDateStart(data.getEffectiveDateStart() );
-				productRes.setEffectiveDateEnd(data.getEffectiveDateEnd() );
-				productRes.setBackDays(data.getBackDays().toString());
-				productRes.setCommissionPercent(data.getCommissionPercent().toString());
-				productRes.setCheckerYn(data.getCheckerYn());
-				productRes.setMakerYn(data.getMakerYn());
-				productRes.setPolicyTypeDesc(data.getPolicyTypeDesc());
-				productRes.setPolicyTypeId(data.getPolicyTypeId());
-				productRes.setRemarks(data.getRemarks());
-				productRes.setLoginId(data.getLoginId());
-				
+				productRes.setProductId(data.getProductId()==null?"" :data.getProductId().toString());
+				productRes.setCompanyId(data.getCompanyId()==null?"" :data.getCompanyId());
+			//	productRes.setProductName(data.getProductName());
+				//productRes.setProductDesc(data.getProductDesc());
+				productRes.setSumInsuredStart(data.getSuminsuredStart()==null?"" : df.format(data.getSuminsuredStart()) );
+				productRes.setSumInsuredEnd(data.getSuminsuredEnd()==null?"" :df.format(data.getSuminsuredEnd()) );
+				productRes.setStatus(data.getStatus()==null?"" :data.getStatus());
+				productRes.setCreatedBy(data.getCreatedBy()==null?"" :data.getCreatedBy());
+				productRes.setEffectiveDateStart(data.getEffectiveDateStart()==null?null : data.getEffectiveDateStart());
+				productRes.setEffectiveDateEnd(data.getEffectiveDateEnd()==null?null : data.getEffectiveDateEnd());
+				productRes.setBackDays(data.getBackDays()==null?"" :data.getBackDays().toString());
+				productRes.setCommissionPercent(data.getCommissionPercentage()==null?"" :data.getCommissionPercentage().toString());
+				productRes.setCheckerYn(data.getCheckerYn()==null?"" :data.getCheckerYn());
+				//productRes.setMakerYn(data.getMakerYn());
+				productRes.setPolicyTypeDesc(data.getPolicyTypeDesc()==null?"" :data.getPolicyTypeDesc());
+				productRes.setPolicyTypeId(data.getPolicyType()==null?"" :data.getPolicyType());
+				productRes.setRemarks(data.getRemarks()==null?"" :data.getRemarks());
+				productRes.setLoginId(data.getLoginId()==null?"" :data.getLoginId());
+				productRes.setCreditYn(data.getCreditYn()==null?"" :data.getCreditYn());
 				
 				
 				productList.add(productRes);
@@ -3325,8 +3325,8 @@ List<Error> errorList = new ArrayList<Error>();
 		return productList;
 	}
 
-	public List<LoginProductMaster> getBrokerProducts1(String loginId , List<String> companyIds , Date today ) {
-		List<LoginProductMaster> list = new ArrayList<LoginProductMaster>(); 
+	public List<BrokerCommissionDetails> getBrokerProducts1(String loginId , List<String> companyIds , Date today ) {
+		List<BrokerCommissionDetails> list = new ArrayList<BrokerCommissionDetails>(); 
 		try {
 			Calendar cal = new GregorianCalendar(); 
 			cal.setTime(today);
@@ -3340,83 +3340,58 @@ List<Error> errorList = new ArrayList<Error>();
 			
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<LoginProductMaster> query = cb.createQuery(LoginProductMaster.class);
+			CriteriaQuery<BrokerCommissionDetails> query = cb.createQuery(BrokerCommissionDetails.class);
 		
 			// Find All
-			Root<LoginProductMaster>    c = query.from(LoginProductMaster.class);		
+			Root<BrokerCommissionDetails>    b = query.from(BrokerCommissionDetails.class);		
 			
 			// Select
-			query.select(c );
+			query.select(b);
 			
 		
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.asc(c.get("productName")));
+			orderList.add(cb.asc(b.get("productId")));
 	
 			
 			// Effective Date Max Filter
-			Subquery<Long> loginProducteffectiveDateStart = query.subquery(Long.class);
-			Root<LoginProductMaster> ocpm1 = loginProducteffectiveDateStart.from(LoginProductMaster.class);
-			loginProducteffectiveDateStart.select(cb.max(ocpm1.get("effectiveDateStart")));
-			Predicate l1 = cb.equal(ocpm1.get("productId"),c.get("productId") );
-			Predicate l2 = cb.equal(ocpm1.get("companyId"),c.get("companyId") );
-			Predicate l3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			Predicate l7 = cb.equal(ocpm1.get("loginId"), c.get("loginId"));
-			loginProducteffectiveDateStart.where(l1,l2,l3,l7);
+			Subquery<Long>effectiveDateStart = query.subquery(Long.class);
+			Root<BrokerCommissionDetails> ocpm1 = effectiveDateStart.from(BrokerCommissionDetails.class);
+			effectiveDateStart.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a5 = cb.equal(ocpm1.get("loginId"), b.get("loginId"));
+			Predicate a6 = cb.equal(ocpm1.get("policyType"), b.get("policyType"));
+			Predicate a7 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a8= cb.equal(ocpm1.get("id"), b.get("id"));
+			effectiveDateStart.where( a2,a3,a5,a6,a7,a8);
 			
-			Subquery<Long> loginProducteffectiveDateEnd = query.subquery(Long.class);
-			Root<LoginProductMaster> ocpm2 = loginProducteffectiveDateEnd.from(LoginProductMaster.class);
-			loginProducteffectiveDateEnd.select(cb.max(ocpm2.get("effectiveDateEnd")));
-			Predicate l4 = cb.equal(ocpm2.get("productId"),c.get("productId") );
-			Predicate l5 = cb.equal(ocpm2.get("companyId"),c.get("companyId") );
-			Predicate l6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-			Predicate l8 = cb.equal(ocpm2.get("loginId"), c.get("loginId"));
-			loginProducteffectiveDateEnd.where(l4,l5,l6,l8);
+			// Effective Date Max Filter
+			Subquery<Long>effectiveDateEnd = query.subquery(Long.class);
+			Root<BrokerCommissionDetails> ocpm2 = effectiveDateEnd.from(BrokerCommissionDetails.class);
+			effectiveDateEnd.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate aa2 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
+			Predicate aa3 = cb.equal(ocpm2.get("productId"), b.get("productId"));
+			Predicate aa5 = cb.equal(ocpm2.get("loginId"), b.get("loginId"));
+			Predicate aa6 = cb.equal(ocpm2.get("policyType"), b.get("policyType"));
+			Predicate aa7 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate aa8= cb.equal(ocpm2.get("id"), b.get("id"));
+			effectiveDateEnd.where(aa2,aa3,aa5,aa6,aa7,aa8);
+		
+
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDateStart);
+			Predicate n2 = cb.equal(b.get("effectiveDateEnd"), effectiveDateEnd);
+			Predicate n3 = cb.equal(b.get("companyId"), companyIds.get(0));
+			Predicate n4 = cb.equal(b.get("loginId"), loginId );
 			
-			// Filer Product IDs
-			Subquery<Long> productIds = query.subquery(Long.class);
-			Root<CompanyProductMaster> cm = productIds.from(CompanyProductMaster.class);
-			
-			
-			Subquery<Long> effectiveDate3 = query.subquery(Long.class);
-			Root<CompanyProductMaster> ocpm4 = effectiveDate3.from(CompanyProductMaster.class);
-			effectiveDate3.select(cb.max(ocpm4.get("effectiveDateStart")));
-			Predicate a9 = cb.equal(cm.get("productId"),ocpm4.get("productId") );
-			Predicate a10 = cb.equal(cm.get("companyId"),ocpm4.get("companyId") );
-			Predicate a11 = cb.lessThanOrEqualTo(ocpm4.get("effectiveDateStart"), today);
-			effectiveDate3.where(a9,a10,a11);
-			
-			Subquery<Long> effectiveDate4 = query.subquery(Long.class);
-			Root<CompanyProductMaster> ocpm5 = effectiveDate4.from(CompanyProductMaster.class);
-			effectiveDate4.select(cb.max(ocpm5.get("effectiveDateEnd")));
-			Predicate a12 = cb.equal(cm.get("productId"),ocpm5.get("productId") );
-			Predicate a13 = cb.equal(cm.get("companyId"),ocpm5.get("companyId") );
-			Predicate a14 = cb.greaterThanOrEqualTo(ocpm5.get("effectiveDateEnd"), todayEnd);
-			effectiveDate4.where(a12,a13,a14);
-			
-			
-			productIds.select(cm.get("productId"));
-			Predicate a15 = cb.equal(cm.get("companyId"),companyIds.get(0));
-			Predicate a16 = cb.equal(cm.get("status"),"Y" );
-			Predicate a17 = cb.equal(cm.get("effectiveDateStart"), effectiveDate3);
-			Predicate a18 = cb.equal(cm.get("effectiveDateEnd"), effectiveDate4);
-			productIds.where(a15,a16,a17,a18);
-			
-			//In 
-			Expression<String>e0=c.get("productId");
-			
-		    // Where	
-			Predicate n1 = cb.equal(c.get("effectiveDateStart"), loginProducteffectiveDateStart);
-			Predicate n2 = cb.equal(c.get("effectiveDateEnd"), loginProducteffectiveDateEnd);
-			Predicate n4 = cb.equal(c.get("companyId"), companyIds.get(0));
-			Predicate n5 = cb.equal(c.get("loginId"), loginId);
-			Predicate n6 = e0.in(productIds);
-			query.where(n1,n2,n4,n5,n6).orderBy(orderList);
+			query.where(n1,n2,n3,n4).orderBy(orderList);
 			
 			// Get Result
-			TypedQuery<LoginProductMaster> result = em.createQuery(query);			
-			list =  result.getResultList(); 
-			
+			TypedQuery<BrokerCommissionDetails> result = em.createQuery(query);
+
+			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getProductId()))).collect(Collectors.toList());
 		} catch(Exception e ) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
