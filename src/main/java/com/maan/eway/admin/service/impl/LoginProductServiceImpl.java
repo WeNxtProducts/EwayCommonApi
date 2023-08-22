@@ -3290,12 +3290,12 @@ List<Error> errorList = new ArrayList<Error>();
 				
 			for(BrokerCommissionDetails data :  loginProducts) {
 				BrokerCompanyListProductsGetAllRes productRes = new BrokerCompanyListProductsGetAllRes();
-				
+				String productName =   getCompanyProductMasterDropdown(data.getCompanyId() , data.getProductId().toString());
 				String pattern = "#####0.00";
 				DecimalFormat df = new DecimalFormat(pattern);
 				productRes.setProductId(data.getProductId()==null?"" :data.getProductId().toString());
 				productRes.setCompanyId(data.getCompanyId()==null?"" :data.getCompanyId());
-			//	productRes.setProductName(data.getProductName());
+				productRes.setProductName(productName);
 				//productRes.setProductDesc(data.getProductDesc());
 				productRes.setSumInsuredStart(data.getSuminsuredStart()==null?"" : df.format(data.getSuminsuredStart()) );
 				productRes.setSumInsuredEnd(data.getSuminsuredEnd()==null?"" :df.format(data.getSuminsuredEnd()) );
