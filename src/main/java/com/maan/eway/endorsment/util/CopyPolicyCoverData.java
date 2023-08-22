@@ -33,9 +33,10 @@ public class CopyPolicyCoverData {
 		try {
 			HomePositionMaster hpmData = homeRepo.findByPolicyNo(policyNo);
 			boolean isBasePolicy=false;
-			
+			String quoteNo=hpmData.getEndtPrevQuoteNo();
 			if(StringUtils.isBlank(hpmData.getEndtTypeId())){
 				isBasePolicy=true;
+				quoteNo=hpmData.getQuoteNo();
 			} 
 			List<String> coverageTypes=new ArrayList<String>();			
 			List<PolicyCoverData> datas=null;
@@ -46,7 +47,7 @@ public class CopyPolicyCoverData {
 				coverageTypes.add("E");
 			}
 			
-			datas= policyCoverRepo.findByQuoteNoAndStatusAndCoverageTypeIn(hpmData.getEndtPrevQuoteNo(),"Y",coverageTypes);
+			datas= policyCoverRepo.findByQuoteNoAndStatusAndCoverageTypeIn(quoteNo,"Y",coverageTypes);
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			List<PolicyCoverDataEndt> mappedData = datas.stream().map( m->{ 
 				PolicyCoverDataEndt map = dozerMapper.map(m, PolicyCoverDataEndt.class);
