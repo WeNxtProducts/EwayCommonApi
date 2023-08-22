@@ -1,10 +1,10 @@
 package com.maan.eway.common.service.impl;
 
-import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -19,11 +19,8 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -38,7 +35,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.DozerBeanMapper;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -48,9 +44,6 @@ import com.maan.eway.admin.res.MotorGridCriteriaRes;
 import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
 import com.maan.eway.admin.res.ReferalCommonCriteriaRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
-import com.maan.eway.auth.dto.BrokerProductCompaniesRes;
-import com.maan.eway.auth.dto.BrokerProductsGetRes;
-import com.maan.eway.auth.dto.LoginProductCriteriaRes;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
@@ -61,9 +54,11 @@ import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
+import com.maan.eway.common.req.GetApproverListReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.PortFolioDashBoardReq;
@@ -71,6 +66,8 @@ import com.maan.eway.common.req.PortFolioGridReq;
 import com.maan.eway.common.req.UpdateLapsedQuoteReq;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
+import com.maan.eway.common.res.GetApproverListRes;
+import com.maan.eway.common.res.GetApproverListResponse;
 import com.maan.eway.common.res.GetallPolicyReportsRes;
 import com.maan.eway.common.res.PortFolioAdminTupleRes;
 import com.maan.eway.common.res.PortFolioDashBoardRes;
@@ -3374,4 +3371,69 @@ public class GridServiceImpl implements GridService {
 		return resList;
 	}
 
+	@Override
+	public List<GetApproverListRes> getApproverList(GetApproverListReq req) {
+		List<GetApproverListRes> resList = new ArrayList<GetApproverListRes>();
+		try {
+			//
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<LoginProductMaster> query = cb.createQuery(LoginProductMaster.class);
+			List<LoginProductMaster> list = new ArrayList<LoginProductMaster>();
+		
+			Root<LoginProductMaster> c = query.from(LoginProductMaster.class);
+		
+			query.select(c);
+			
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("loginId")));
+		
+			Subquery<String> loginId = query.subquery(String.class);
+			Root<LoginBranchMaster> ocpm2 = loginId.from(LoginBranchMaster.class);
+			loginId.select(ocpm2.get("loginId"));
+			Predicate a4 = cb.equal(ocpm2.get("branchCode"), req.getBranchCode());
+			Predicate a5 = cb.equal(c.get("loginId"), ocpm2.get("loginId"));
+			Predicate a3 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			loginId.where(a3,a4, a5);
+			
+			Predicate n1 = cb.equal(c.get("status"), "Y");
+			Predicate n2 = cb.equal(c.get("productId"), req.getProductId());
+			Predicate n3 = cb.equal(cb.lower(c.get("userType")), "issuer");
+			Predicate n4 =  cb.or(cb.equal(cb.lower(c.get("subUserType")), "high"), cb.equal(cb.lower(c.get("subUserType")), "both"));
+			Predicate n5 = cb.equal(c.get("companyId"), req.getCompanyId());
+			Predicate n6 = cb.greaterThanOrEqualTo(c.get("sumInsuredEnd"), req.getSumInsured()) ;
+			Predicate n7 = cb.lessThanOrEqualTo(c.get("sumInsuredStart"), req.getSumInsured()) ;
+			Predicate n11 = cb.and(n6, n7);
+			
+			Predicate n9 = cb.greaterThanOrEqualTo(c.get("effectiveDateEnd"), new Date()) ;
+			Predicate n10 = cb.lessThanOrEqualTo(c.get("effectiveDateStart"), new Date()) ;
+			Predicate n12 = cb.and(n9, n10);
+					
+			Predicate n8 = cb.equal(c.get("loginId"), loginId);
+			
+			query.where(n1, n2, n3, n4, n5, n11, n8, n12).orderBy(orderList);
+		
+			TypedQuery<LoginProductMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getLoginId()))).collect(Collectors.toList());
+			
+			if(list.size()>0) {
+				
+				for(LoginProductMaster data : list) {
+					GetApproverListRes res = new GetApproverListRes();
+					res.setLoginId(data.getLoginId()==null?"":data.getLoginId());
+					resList.add(res);
+					
+				}
+			
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	
 }
