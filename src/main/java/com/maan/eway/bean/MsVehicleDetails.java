@@ -208,6 +208,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="ACCCESSORIES_SUM_INSURED_LC")
     private BigDecimal     acccessoriesSumInsuredLc ;
    
+    @Column(name="LOADING_PERCENT")
+    private BigDecimal     loadingPercent;
     
 }
 

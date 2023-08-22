@@ -372,6 +372,20 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="PERSONAL_LIABILITY_SI_LC")
     private BigDecimal       personalLiabilitySiLc;
+    
+    
+    @Column(name="AOO_SUMINSURED")
+    private BigDecimal       aooSuminsured;
+    
+    @Column(name="AOO_SUMINSURED_LC")
+    private BigDecimal       aooSuminsuredLc;
+    
+    @Column(name="AGG_SUMINSURED")
+    private BigDecimal       aggSuminsured;
+    
+    @Column(name="AGG_SUMINSURED_LC")
+    private BigDecimal       aggSuminsuredLc;
+    
 }
 
 

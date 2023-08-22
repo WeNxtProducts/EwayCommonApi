@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.maan.eway.bean.MsAssetDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,5 +30,7 @@ import com.maan.eway.bean.MsAssetDetailsId;
  
  
 public interface MsAssetDetailsRepository  extends JpaRepository<MsAssetDetails,MsAssetDetailsId > , JpaSpecificationExecutor<MsAssetDetails> {
+
+	MsAssetDetails findByVdRefno(Long valueOf);
 
 }

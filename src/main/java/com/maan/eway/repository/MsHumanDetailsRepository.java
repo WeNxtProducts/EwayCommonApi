@@ -13,6 +13,7 @@
 package com.maan.eway.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.maan.eway.bean.MsHumanDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,5 +30,7 @@ import com.maan.eway.bean.MsHumanDetailsId;
  
  
 public interface MsHumanDetailsRepository  extends JpaRepository<MsHumanDetails,MsHumanDetailsId > , JpaSpecificationExecutor<MsHumanDetails> {
+
+	MsHumanDetails findByVdRefno(Long valueOf);
 
 }
