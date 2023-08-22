@@ -1909,7 +1909,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 //					
 //					
 //				} else 
-				if(StringUtils.isNotBlank(req.getEndtPrevQuoteNo())) {
+				if(StringUtils.isNotBlank(req.getEndtPrevQuoteNo()) && req.getEndtType().equalsIgnoreCase("842") ) {
 //					// Endorsement
 					Long travelInfo =  traPassRepo.countByQuoteNo(req.getEndtPrevQuoteNo());
 					if (travelInfo > 0  ) {
