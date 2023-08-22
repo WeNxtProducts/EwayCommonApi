@@ -33,7 +33,7 @@ public class CopyPolicyCoverData {
 		try {
 			HomePositionMaster hpmData = homeRepo.findByPolicyNo(policyNo);
 			boolean isBasePolicy=false;
-			String quoteNo=hpmData.getEndtPrevQuoteNo();
+			String quoteNo=hpmData.getQuoteNo();
 			if(StringUtils.isBlank(hpmData.getEndtTypeId())){
 				isBasePolicy=true;
 				quoteNo=hpmData.getQuoteNo();
