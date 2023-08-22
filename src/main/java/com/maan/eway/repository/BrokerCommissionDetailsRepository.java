@@ -26,8 +26,12 @@ public interface BrokerCommissionDetailsRepository  extends JpaRepository<Broker
 	List<BrokerCommissionDetails> findByProductIdAndPolicyTypeNotInAndLoginIdAndStatus(String productId,
 			List<String> policyTypeIds, String loginId, String string);
 
-	List<BrokerCommissionDetails> findByProductIdNotAndLoginIdAndStatus(String string, String loginId,
-			String string2);
+	List<BrokerCommissionDetails> findByProductIdNotInAndLoginId(List<String> pro, String loginId);
+
+
+
+
+	
 
 
 

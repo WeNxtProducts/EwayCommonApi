@@ -3063,6 +3063,22 @@ List<Error> errorList = new ArrayList<Error>();
 				res = saveBrokerCommission1(req, login);
 
 			}
+			List<Integer> productIds =  reqList.stream().map( BrokerCompanyListProductReq :: getProductId ) .collect(Collectors.toList());
+			List<String> pro=new ArrayList<String>();
+			for(int i=0;i<productIds.size();i++) {
+			pro.add(productIds.get(i).toString());
+			}
+			List<BrokerCommissionDetails>   oldCommList1 = commissionRepo.findByProductIdNotInAndLoginId(pro, reqList.get(0).getLoginId() ) ;
+
+			oldCommList1.forEach ( o -> { 
+				Date startDate1=null;
+				Date date1 = new Date();
+				Calendar cal = new GregorianCalendar();
+				cal.setTime(date1);
+				cal.add(Calendar.DATE, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
+				startDate1 = cal.getTime();
+				o.setEffectiveDateEnd(startDate1);  }   );
+			commissionRepo.saveAll(oldCommList1);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3153,6 +3169,22 @@ List<Error> errorList = new ArrayList<Error>();
 			Integer id = 1;
 
 			id = StringUtils.isBlank(req.getPolicyTypeId()) ? 1 : Integer.valueOf(req.getPolicyTypeId());
+			
+			
+			
+//			List<BrokerCommissionDetails>   oldCommList = commissionRepo.findByProductIdNotAndLoginId(req.getProductId().toString(), req.getLoginId() ) ;
+//
+//			oldCommList.forEach ( o -> { 
+//				Date startDate1=null;
+//				Date date1 = new Date();
+//				Calendar cal = new GregorianCalendar();
+//				cal.setTime(date1);
+//				cal.add(Calendar.DATE, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
+//				startDate1 = cal.getTime();
+//				o.setEffectiveDateEnd(startDate1);  }   );
+//			commissionRepo.saveAll(oldCommList);
+			
+			
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<BrokerCommissionDetails> query = cb.createQuery(BrokerCommissionDetails.class);
 			// Findall
@@ -3206,11 +3238,7 @@ List<Error> errorList = new ArrayList<Error>();
 
 			dozerMapper.map(req, saveData);
 			saveData.setEffectiveDateStart(StartDate);
-			if ("N".equalsIgnoreCase(req.getStatus())) {
-				saveData.setEffectiveDateEnd(new Date());
-			} else {
-				saveData.setEffectiveDateEnd(endDate);
-			}
+			saveData.setEffectiveDateEnd(endDate);
 			saveData.setCreatedBy(createdBy);
 			saveData.setEntryDate(entryDate);
 			saveData.setUpdatedBy(req.getCreatedBy());
@@ -3248,17 +3276,7 @@ List<Error> errorList = new ArrayList<Error>();
 			// saveData.setPolicyTypeDesc(policytype);
 			commissionRepo.save(saveData);
 			
-			List<BrokerCommissionDetails>   oldCommList = commissionRepo.findByProductIdNotAndLoginIdAndStatus(req.getProductId().toString(), req.getLoginId() , "Y" ) ;
-
-			oldCommList.forEach ( o -> { 
-				Date startDate1=null;
-				Date date1 = new Date();
-				Calendar cal = new GregorianCalendar();
-				cal.setTime(date1);
-				cal.add(Calendar.DATE, -1);cal.set(Calendar.HOUR_OF_DAY, 23);cal.set(Calendar.MINUTE, 59);
-				startDate1 = cal.getTime();
-				o.setEffectiveDateEnd(startDate1);  }   );
-			commissionRepo.saveAll(oldCommList);
+		
 
 			res.setResponse("Saved Successfully");
 			res.setSuccessId(login.getLoginId());
@@ -3293,6 +3311,8 @@ List<Error> errorList = new ArrayList<Error>();
 				String productName =   getCompanyProductMasterDropdown(data.getCompanyId() , data.getProductId().toString());
 				String pattern = "#####0.00";
 				DecimalFormat df = new DecimalFormat(pattern);
+				String pattern1 = "#####0";
+				DecimalFormat df1 = new DecimalFormat(pattern1);
 				productRes.setProductId(data.getProductId()==null?"" :data.getProductId().toString());
 				productRes.setCompanyId(data.getCompanyId()==null?"" :data.getCompanyId());
 				productRes.setProductName(productName);
@@ -3304,7 +3324,7 @@ List<Error> errorList = new ArrayList<Error>();
 				productRes.setEffectiveDateStart(data.getEffectiveDateStart()==null?null : data.getEffectiveDateStart());
 				productRes.setEffectiveDateEnd(data.getEffectiveDateEnd()==null?null : data.getEffectiveDateEnd());
 				productRes.setBackDays(data.getBackDays()==null?"" :data.getBackDays().toString());
-				productRes.setCommissionPercent(data.getCommissionPercentage()==null?"" :data.getCommissionPercentage().toString());
+				productRes.setCommissionPercent(data.getCommissionPercentage()==null?"" :df1.format(data.getCommissionPercentage().toString()));
 				productRes.setCheckerYn(data.getCheckerYn()==null?"" :data.getCheckerYn());
 				//productRes.setMakerYn(data.getMakerYn());
 				productRes.setPolicyTypeDesc(data.getPolicyTypeDesc()==null?"" :data.getPolicyTypeDesc());
