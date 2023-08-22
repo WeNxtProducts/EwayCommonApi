@@ -3324,7 +3324,7 @@ List<Error> errorList = new ArrayList<Error>();
 				productRes.setEffectiveDateStart(data.getEffectiveDateStart()==null?null : data.getEffectiveDateStart());
 				productRes.setEffectiveDateEnd(data.getEffectiveDateEnd()==null?null : data.getEffectiveDateEnd());
 				productRes.setBackDays(data.getBackDays()==null?"" :data.getBackDays().toString());
-				productRes.setCommissionPercent(data.getCommissionPercentage()==null?"" :df1.format(data.getCommissionPercentage().toString()));
+				productRes.setCommissionPercent(data.getCommissionPercentage()==null?"" :df1.format(data.getCommissionPercentage()));
 				productRes.setCheckerYn(data.getCheckerYn()==null?"" :data.getCheckerYn());
 				//productRes.setMakerYn(data.getMakerYn());
 				productRes.setPolicyTypeDesc(data.getPolicyTypeDesc()==null?"" :data.getPolicyTypeDesc());
