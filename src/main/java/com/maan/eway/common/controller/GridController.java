@@ -1,5 +1,6 @@
 package com.maan.eway.common.controller;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
+import com.maan.eway.common.req.GetApproverListReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.PortFolioDashBoardReq;
@@ -22,11 +24,11 @@ import com.maan.eway.common.req.UpdateLapsedQuoteReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
+import com.maan.eway.common.res.GetApproverListRes;
 import com.maan.eway.common.res.GetallPolicyReportsRes;
 import com.maan.eway.common.res.PortFolioDashBoardRes;
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.PortfolioGridRes;
-import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
 import com.maan.eway.common.service.GridService;
 import com.maan.eway.error.Error;
@@ -458,6 +460,38 @@ public class GridController {
 				}
 			}
 			
+			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
+			@PostMapping("/getapproverlist")
+			public ResponseEntity<CommonRes> getApproverList(@RequestBody GetApproverListReq req) {
+				reqPrinter.reqPrint(req);
+				CommonRes data = new CommonRes();
+				
+				List<GetApproverListRes> res = entityService.getApproverList(req);
+				List<Error> validation = new ArrayList<Error>();	
+				
+				if(res.size()>0) {
+					data.setCommonResponse(res);
+					data.setIsError(false);
+					data.setErrorMessage(Collections.emptyList());
+					data.setMessage("Success");
+					if (res != null) {
+						return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+					} else {
+						return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+					}
+				} else {
+					Error err = new Error();
+					err.setCode("0");
+					err.setField("No UnderWritter");
+					err.setMessage("There Is No UnderWritter For This Product");
+					validation.add(err);
+					data.setCommonResponse(null);
+					data.setIsError(true);
+					data.setErrorMessage(validation);
+					data.setMessage("Failed");
+					return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+				}
+			}
 			
-			
-		}
+}
