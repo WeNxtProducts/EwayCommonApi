@@ -6,6 +6,7 @@
 package com.maan.eway.service.impl;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -914,10 +915,8 @@ this.repository = repo;
 				FactorRateRequestDetails saveLod = new FactorRateRequestDetails();
 				dozerMapper.map(coverReq, saveLod);
 				saveLod.setRequestReferenceNo(primaryKeys.get("RefNo").toString() );
-				saveLod.setCoverName(lod.getEndorsementDesc());
-				saveLod.setCoverDesc(lod.getEndorsementDesc());
-				saveLod.setCurrency(coverReq.getCurrency());
-				saveLod.setExchangeRate(coverReq.getExchangeRate()==null?null : coverReq.getExchangeRate());
+				saveLod.setCoverName(lod.getCoverName());
+				saveLod.setCoverDesc(lod.getEndorsementDesc());				
 				saveLod.setCompanyId(primaryKeys.get("InsuranceId").toString());
 				saveLod.setProductId(Integer.valueOf(primaryKeys.get("ProductId").toString()));
 				saveLod.setSectionId(Integer.valueOf(primaryKeys.get("SectionId").toString()));
@@ -927,43 +926,50 @@ this.repository = repo;
 				saveLod.setVdRefno( primaryKeys.get("VdRefNo").toString());
 				saveLod.setMsRefno( primaryKeys.get("MsRefNo").toString());	
 				saveLod.setEntryDate(new Date());			
-				saveLod.setCreatedBy(primaryKeys.get("CreatedBy").toString());
+				saveLod.setCreatedBy(lod.getCreatedBy());
 				//saveLod.setSubCoverId(StringUtils.isBlank(coverReq.getSubCoverId()) ?0 : Integer.valueOf(coverReq.getSubCoverId()) );
 				saveLod.setSubCoverId(lod.getEndtCount()==null ?0 : lod.getEndtCount().intValue() );
 				saveLod.setEndtCount(lod.getEndtCount()==null ?BigDecimal.ZERO: lod.getEndtCount() );
 				saveLod.setCoverId(Integer.valueOf(coverReq.getCoverId()));
 				saveLod.setStatus(coverReq.getStatus());
-				saveLod.setIsSelected(coverReq.getIsselected());
+				saveLod.setIsSelected(lod.getIsselected());
 				saveLod.setCoverageType("E");
-				
-				// Factor
-				saveLod.setFactorTypeId(StringUtils.isBlank(lod.getFactorTypeId())?null: new BigDecimal(lod.getFactorTypeId()));
-				//saveLod.setMinimumPremium(lod.getEndorsementAmount()==null?null: new BigDecimal(df.format(lod.getEndorsementAmount())));
-				saveLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
-				saveLod.setPremiumIncludedTaxFc(lod.getMaxAmount()==null?null:new BigDecimal(df.format(lod.getMaxAmount())));
-				saveLod.setRate(lod.getEndorsementRate()==null?null:new BigDecimal(lod.getEndorsementRate()));
-			//	saveLod.setLodingSubcoverId(lod.getSubCoverId()==null?null:Integer.valueOf(lod.getSubCoverId()));
 				saveLod.setDiscLoadId(lod.getEndorsementId()==null?null:Integer.valueOf(lod.getEndorsementId()));
 				saveLod.setDependentCoverYn(coverReq.getDependentCoveryn());
 				saveLod.setDependentCoverId(StringUtils.isBlank(coverReq.getDependentCoverId())?null:Integer.parseInt(coverReq.getDependentCoverId()));
-				saveLod.setCalcType(lod.getEndorsementCalcType());
+				
+				// Factor
+				saveLod.setFactorTypeId(StringUtils.isBlank(lod.getFactorTypeId())?null: new BigDecimal(lod.getFactorTypeId()));				
 				saveLod.setCoverName(lod.getEndorsementDesc());
 				saveLod.setCoverDesc(lod.getEndorsementDesc());
 				saveLod.setTaxId(0);
 				
-				
-				saveLod.setPremiumAfterDiscountFc(lod.getPremiumAfterDiscount()==null ? null : new BigDecimal(df.format( lod.getPremiumAfterDiscount())));
+								
 				saveLod.setPremiumBeforeDiscountFc(lod.getPremiumBeforeDiscount()==null ? null : new BigDecimal(df.format(lod.getPremiumBeforeDiscount())));
-				saveLod.setPremiumExcludedTaxFc(lod.getPremiumExcluedTax()==null ? null : new BigDecimal(df.format(lod.getPremiumExcluedTax())));
-				saveLod.setPremiumIncludedTaxFc(lod.getPremiumIncludedTax()==null ? null : new BigDecimal(df.format(lod.getPremiumIncludedTax())));
-				saveLod.setPremiumAfterDiscountLc(lod.getPremiumAfterDiscountLC()==null ? null : new BigDecimal(df.format(lod.getPremiumAfterDiscountLC())));
 				saveLod.setPremiumBeforeDiscountLc(lod.getPremiumBeforeDiscountLC()==null ? null : new BigDecimal(df.format(lod.getPremiumBeforeDiscountLC())));
+				saveLod.setPremiumAfterDiscountFc(lod.getPremiumAfterDiscount()==null ? null : new BigDecimal(df.format( lod.getPremiumAfterDiscount())));
+				saveLod.setPremiumAfterDiscountLc(lod.getPremiumAfterDiscountLC()==null ? null : new BigDecimal(df.format(lod.getPremiumAfterDiscountLC())));
+				saveLod.setPremiumExcludedTaxFc(lod.getPremiumExcluedTax()==null ? null : new BigDecimal(df.format(lod.getPremiumExcluedTax())));
 				saveLod.setPremiumExcludedTaxLc(lod.getPremiumExcluedTaxLC()==null ? null : new BigDecimal(df.format(lod.getPremiumExcluedTaxLC())));
+				saveLod.setPremiumIncludedTaxFc(lod.getPremiumIncludedTax()==null ? null : new BigDecimal(df.format(lod.getPremiumIncludedTax())));					
 				saveLod.setPremiumIncludedTaxLc(lod.getPremiumIncludedTaxLC()==null ? null : new BigDecimal(df.format(lod.getPremiumIncludedTaxLC())));
+				
 				saveLod.setDiscountCoverId(StringUtils.isBlank(lod.getEndorsementforId())?0:Integer.parseInt(lod.getEndorsementforId()));
+				
 				saveLod.setCoverPeriodFrom(coverReq.getEffectiveDate());
 				saveLod.setCoverPeriodTo(coverReq.getPolicyEndDate());
 				
+				saveLod.setCalcType(lod.getEndorsementCalcType());
+				saveLod.setMinimumPremium(lod.getMinimumPremium());
+				saveLod.setMinimumPremiumFc(lod.getMinimumPremium().multiply(lod.getExchangeRate(),MathContext.DECIMAL64));
+				saveLod.setMinimumPremiumYn(lod.getMinimumPremiumYn());
+				saveLod.setSumInsured(lod.getEndorsementsumInsured());
+				saveLod.setSumInsuredLc(lod.getEndorsementsumInsuredLc());
+				saveLod.setCurrency(lod.getCurrency());
+				saveLod.setExchangeRate(lod.getExchangeRate()==null?null : lod.getExchangeRate());
+				saveLod.setRate(lod.getEndorsementRate()==null?null:new BigDecimal(lod.getEndorsementRate()));
+	 			saveLod.setCalcType(lod.getEndorsementCalcType());
+				saveLod.setCoverageLimit(lod.getCoverageLimit());
 				saveLod.setNoOfDays(new BigDecimal(diff));
 				saveLod.setProRataYn(lod.getProRataYn()==null?"N":lod.getProRataYn());
 				saveLod.setProRataPercent(lod.getProRata()==null?new BigDecimal("100"):lod.getProRata().multiply( new BigDecimal("100")));
@@ -1789,32 +1795,28 @@ this.repository = repo;
 		List<Endorsement> endtList = new  ArrayList<Endorsement>();
 		try {
 			for (FactorRateRequestDetails t :  filterEndtCover ) {
-				 Endorsement d=Endorsement.builder()
-						 	.endorsementDesc(t.getCoverName()==null?"":t.getCoverName())
-						 	.endorsementId(t.getDiscLoadId()==null?"":t.getDiscLoadId().toString())
-						 	.endorsementRate("F".equals(t.getCalcType()==null?"A":t.getCalcType())?"0": t.getRate()==null?"0":t.getRate().toString())
-						 	.endorsementCalcType(t.getCalcType()==null?"":t.getCalcType())
-						 	.endorsementforId(t.getDiscountCoverId()==null?"":t.getDiscountCoverId().toString())
-						 	.maxAmount(t.getMinimumPremium()==null?BigDecimal.ZERO:t.getMinimumPremium())
-						 	.factorTypeId(t.getFactorTypeId()==null?"":t.getFactorTypeId().toString())
-						 	.regulatoryCode(t.getRegulatoryCode()==null?"N/A":t.getRegulatoryCode())	
-						 	.premiumAfterDiscount(t.getPremiumAfterDiscountFc())
-						    .premiumAfterDiscountLC(t.getPremiumAfterDiscountLc())
-						     .premiumBeforeDiscount(t.getPremiumBeforeDiscountFc())
-						    .premiumBeforeDiscountLC(t.getPremiumBeforeDiscountLc())
-						    .premiumExcluedTax(t.getPremiumExcludedTaxFc())
-						    .premiumExcluedTaxLC(t.getPremiumExcludedTaxLc())
-						    .premiumIncludedTax(t.getPremiumIncludedTaxFc())
-						    .premiumIncludedTaxLC(t.getPremiumIncludedTaxLc())	 
-						    .endtCount(t.getEndtCount())
-						     .proRata(t.getProRataPercent())
-						     .proRataYn(t.getProRataYn())
-						 	.build();
-				 
-				
-					
-					
-				 endtList.add(d);
+				Endorsement d=Endorsement.builder()
+						.endorsementDesc(t.getCoverName()==null?"":t.getCoverName())
+						.endorsementId(t.getDiscLoadId()==null?"":t.getDiscLoadId().toString())
+						.endorsementRate("F".equals(t.getCalcType()==null?"A":t.getCalcType())?0D: t.getRate()==null?0D:t.getRate().doubleValue())
+						.endorsementCalcType(t.getCalcType()==null?"":t.getCalcType())
+						.endorsementforId(t.getDiscountCoverId()==null?"":t.getDiscountCoverId().toString())
+						.maxAmount(t.getMinimumPremium()==null?BigDecimal.ZERO:t.getMinimumPremium())
+						.factorTypeId(t.getFactorTypeId()==null?"":t.getFactorTypeId().toString())
+						.regulatoryCode(t.getRegulatoryCode()==null?"N/A":t.getRegulatoryCode())	
+						.premiumAfterDiscount(t.getPremiumAfterDiscountFc())
+						.premiumAfterDiscountLC(t.getPremiumAfterDiscountLc())
+						.premiumBeforeDiscount(t.getPremiumBeforeDiscountFc())
+						.premiumBeforeDiscountLC(t.getPremiumBeforeDiscountLc())
+						.premiumExcluedTax(t.getPremiumExcludedTaxFc())
+						.premiumExcluedTaxLC(t.getPremiumExcludedTaxLc())
+						.premiumIncludedTax(t.getPremiumIncludedTaxFc())
+						.premiumIncludedTaxLC(t.getPremiumIncludedTaxLc())	 
+						.endtCount(t.getEndtCount())
+						.proRata(t.getProRataPercent())
+						.proRataYn(t.getProRataYn())
+						.build();
+				endtList.add(d);
 			}
 			
 			

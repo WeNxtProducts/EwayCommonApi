@@ -291,20 +291,26 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 
 					 		 }
 					 		 
-					 		 if(t.getProRata().doubleValue()==0D) 
-								 t.setProRata(new BigDecimal("1"));
+					 		 if(t.getProRata().doubleValue()==0D) {
+								 t.setProRata(BigDecimal.ONE);
+								 endorsement.setProRata(BigDecimal.ONE);
+					 		 }
 					 		 
 							// Temp Prev Premium
+					 		
 							 endorsement.setPremiumAfterDiscountLC(endorsement.getPremiumExcluedTaxLC());
 							 endorsement.setPremiumAfterDiscount(endorsement.getPremiumExcluedTax());
+							 endorsement.setExchangeRate(exchangeRate);
+							 endorsement.setEndorsementsumInsured(t.getSumInsured().subtract(endorsement.getEndorsementsumInsured()));
+							 endorsement.setEndorsementsumInsuredLc(endorsement.getEndorsementsumInsured().multiply(exchangeRate,MathContext.DECIMAL64));
+							 
 							 //t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0
+							 domath = domath(endorsement.getEndorsementCalcType(), endorsement.getEndorsementRate(), endorsement.getEndorsementsumInsured(),endorsement.getExchangeRate());
+							 endorsement.setPremiumBeforeDiscountLC(domath.multiply(t.getProRata()));
+							 endorsement.setPremiumBeforeDiscount((BigDecimal) decimalFormat.parse(decimalFormat.format(endorsement.getPremiumBeforeDiscount().multiply(t.getExchangeRate()))));
 							 
-							 endorsement.setPremiumBeforeDiscountLC(t.getPremiumBeforeDiscountLC().subtract(endorsement.getPremiumBeforeDiscountLC()));
-							 endorsement.setPremiumBeforeDiscount(t.getPremiumBeforeDiscount().subtract(endorsement.getPremiumBeforeDiscount()));
-							 
-							 
-								 endorsement.setPremiumExcluedTax((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumExcluedTax().subtract(endorsement.getPremiumExcluedTax()).multiply(t.getProRata()))));
-								 endorsement.setPremiumExcluedTaxLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumExcluedTaxLC().subtract(endorsement.getPremiumExcluedTaxLC()).multiply(t.getProRata()))));
+							 endorsement.setPremiumExcluedTax((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumExcluedTax().subtract(endorsement.getPremiumExcluedTax()).multiply(t.getProRata()))));
+							 endorsement.setPremiumExcluedTaxLC((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getPremiumExcluedTaxLC().subtract(endorsement.getPremiumExcluedTaxLC()).multiply(t.getProRata()))));
 							 						 
 							 
 							 //endorsement.setProRata(t.getProRata());

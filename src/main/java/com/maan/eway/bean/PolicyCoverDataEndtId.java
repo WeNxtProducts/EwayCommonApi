@@ -4,10 +4,15 @@
  */
 package com.maan.eway.bean;
 
-import lombok.*;
-import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
+import java.math.BigDecimal;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 
 
@@ -53,7 +58,7 @@ public class PolicyCoverDataEndtId implements Serializable {
     
     private Integer    taxId ;
     
-    private Double     endtCount ;
+    private BigDecimal     endtCount ;
     
     private Integer    discountCoverId ;
     

@@ -13,17 +13,27 @@
 package com.maan.eway.bean;
 
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
-import lombok.*;
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.List;
-
-import java.util.Date;
-import javax.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 
 
@@ -102,7 +112,7 @@ private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name="ENDT_COUNT", nullable=false)
-    private Double     endtCount ;
+    private BigDecimal     endtCount ;
 
     @Id
     @Column(name="DISCOUNT_COVER_ID", nullable=false)
@@ -138,46 +148,46 @@ private static final long serialVersionUID = 1L;
     private String     calcType ;
 
     @Column(name="MINIMUM_PREMIUM")
-    private Double     minimumPremium ;
+    private BigDecimal     minimumPremium ;
 
     @Column(name="SUM_INSURED")
-    private Double     sumInsured ;
+    private BigDecimal     sumInsured ;
 
     @Column(name="RATE")
-    private Double     rate ;
+    private BigDecimal     rate ;
 
     @Column(name="CURRENCY", length=60)
     private String     currency ;
 
     @Column(name="EXCHANGE_RATE")
-    private Double     exchangeRate ;
+    private BigDecimal     exchangeRate ;
 
     @Column(name="PREMIUM_BEFORE_DISCOUNT_FC")
-    private Double     premiumBeforeDiscountFc ;
+    private BigDecimal     premiumBeforeDiscountFc ;
 
     @Column(name="PREMIUM_BEFORE_DISCOUNT_LC")
-    private Double     premiumBeforeDiscountLc ;
+    private BigDecimal     premiumBeforeDiscountLc ;
 
     @Column(name="PREMIUM_AFTER_DISCOUNT_FC")
-    private Double     premiumAfterDiscountFc ;
+    private BigDecimal     premiumAfterDiscountFc ;
 
     @Column(name="PREMIUM_AFTER_DISCOUNT_LC")
-    private Double     premiumAfterDiscountLc ;
+    private BigDecimal     premiumAfterDiscountLc ;
 
     @Column(name="PREMIUM_EXCLUDED_TAX_FC")
-    private Double     premiumExcludedTaxFc ;
+    private BigDecimal     premiumExcludedTaxFc ;
 
     @Column(name="PREMIUM_EXCLUDED_TAX_LC")
-    private Double     premiumExcludedTaxLc ;
+    private BigDecimal     premiumExcludedTaxLc ;
 
     @Column(name="PREMIUM_INCLUDED_TAX_FC")
-    private Double     premiumIncludedTaxFc ;
+    private BigDecimal     premiumIncludedTaxFc ;
 
     @Column(name="PREMIUM_INCLUDED_TAX_LC")
-    private Double     premiumIncludedTaxLc ;
+    private BigDecimal     premiumIncludedTaxLc ;
 
     @Column(name="FACTOR_TYPE_ID")
-    private Double     factorTypeId ;
+    private BigDecimal     factorTypeId ;
 
     @Column(name="DEPENDENT_COVER_YN", length=60)
     private String     dependentCoverYn ;
@@ -213,10 +223,10 @@ private static final long serialVersionUID = 1L;
     private String     createdBy ;
 
     @Column(name="TAX_RATE")
-    private Double     taxRate ;
+    private BigDecimal     taxRate ;
 
     @Column(name="TAX_AMOUNT")
-    private Double     taxAmount ;
+    private BigDecimal     taxAmount ;
 
     @Column(name="TAX_DESC", length=300)
     private String     taxDesc ;
@@ -234,7 +244,7 @@ private static final long serialVersionUID = 1L;
     private String     taxExemptCode ;
 
     @Column(name="MAX_LODING_AMOUNT")
-    private Double     maxLodingAmount ;
+    private BigDecimal     maxLodingAmount ;
 
     @Column(name="Is_REFERRAL", length=15)
     private String     isReferral ;
@@ -246,16 +256,16 @@ private static final long serialVersionUID = 1L;
     private String     regulatoryCode ;
 
     @Column(name="EXCESS_AMOUNT")
-    private Double     excessAmount ;
+    private BigDecimal     excessAmount ;
 
     @Column(name="EXCESS_PERCENT")
-    private Double     excessPercent ;
+    private BigDecimal     excessPercent ;
 
     @Column(name="EXCESS_DESC", length=500)
     private String     excessDesc ;
 
     @Column(name="ACTUAL_RATE")
-    private Double     actualRate ;
+    private BigDecimal     actualRate ;
 
     @Column(name="COVER_BASED_ON", length=100)
     private String     coverBasedOn ;
@@ -267,37 +277,37 @@ private static final long serialVersionUID = 1L;
     private String     minimumPremiumYn ;
 
     @Column(name="REGUL_SUM_INSURED")
-    private Double     regulSumInsured ;
+    private BigDecimal     regulSumInsured ;
 
     @Column(name="PRO_RATA_YN", length=50)
     private String     proRataYn ;
 
     @Column(name="PRO_RATA_PERCENT")
-    private Long       proRataPercent ;
+    private BigDecimal        proRataPercent ;
 
     @Column(name="DIFF_PREMIUM_INCLUDED_TAX_LC")
-    private Double     diffPremiumIncludedTaxLc ;
+    private BigDecimal     diffPremiumIncludedTaxLc ;
 
     @Column(name="DIFF_PREMIUM_INCLUDED_TAX_FC")
-    private Double     diffPremiumIncludedTaxFc ;
+    private BigDecimal     diffPremiumIncludedTaxFc ;
 
     @Column(name="REGULATORY_RATE")
-    private Double     regulatoryRate ;
+    private BigDecimal     regulatoryRate ;
 
     @Column(name="REGULATORY_SUMINSURED")
-    private Double     regulatorySuminsured ;
+    private BigDecimal     regulatorySuminsured ;
 
     @Column(name="SUM_INSURED_LC")
-    private Double     sumInsuredLc ;
+    private BigDecimal     sumInsuredLc ;
 
     @Column(name="REGULATORY_SUMINSURED_LC")
-    private Double     regulatorySuminsuredLc ;
+    private BigDecimal     regulatorySuminsuredLc ;
 
     @Column(name="TAX_AMOUNT_LC")
-    private Double     taxAmountLc ;
+    private BigDecimal     taxAmountLc ;
 
     @Column(name="COVERAGE_LIMIT")
-    private Double     coverageLimit ;
+    private BigDecimal     coverageLimit ;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )

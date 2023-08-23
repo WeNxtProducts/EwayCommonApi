@@ -51,6 +51,7 @@ import com.maan.eway.bean.MsCustomerDetails;
 import com.maan.eway.bean.MsHumanDetails;
 import com.maan.eway.bean.MsVehicleDetails;
 import com.maan.eway.bean.PolicyCoverData;
+import com.maan.eway.bean.PolicyCoverDataEndt;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.calculator.util.AdminCoverCalculator;
@@ -72,7 +73,9 @@ import com.maan.eway.common.req.ViewQuoteReq;
 import com.maan.eway.common.res.ViewQuoteRes;
 import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.common.service.impl.GenerateSeqNoServiceImpl;
+import com.maan.eway.endorsment.util.CopyPolicyCoverData;
 import com.maan.eway.endorsment.util.CoverFromPolicy;
+import com.maan.eway.endorsment.util.CreateEndorsment;
 import com.maan.eway.endorsment.util.DiscountFromPolicy;
 import com.maan.eway.endorsment.util.LoadingFromPolicy;
 import com.maan.eway.repository.BuildingRiskDetailsRepository;
@@ -80,6 +83,7 @@ import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.LoginProductMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
+import com.maan.eway.repository.PolicyCoverDataEndtRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.req.calcengine.CalcCommission;
@@ -183,6 +187,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 	 */
 	private final List<String> NORMAL_TAX_LIST = Arrays.asList("NB");
 	private final List<String> ENDT_TAX_LIST = Arrays.asList("EC", "ER");
+	@Autowired
+	private PolicyCoverDataEndtRepository policyCoverEndtRepo;
  
 	public List<Tuple> LoadCover(CalcEngine engine) {
 		try {
@@ -524,27 +530,31 @@ public class CalculatorEngineService implements CalculatorEngine {
 				String endtTypeId = result.get(0).get("endorsementType").toString();
 				BigDecimal endtCount = new BigDecimal(result.get(0).get("endtCount").toString());
 
+				String originalPolicyNo = result.get(0).get("originalPolicyNo").toString();
+				List<PolicyCoverDataEndt> oldPolicyData = policyCoverEndtRepo.findByPolicyNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(originalPolicyNo,
+						Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
+						Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()));
+				
 				EndtTypeMaster endtmaster = ratingutil.getEndtMasterData(engine.getInsuranceId(), engine.getProductId(),
 						endtTypeId);
 
 				retc.stream().forEach(i -> i.setEndtCount(endtCount));
-			/*	List<PolicyCoverData> oldPolicyCovers =ratingutil.findDataForTravel(
-						endtPrevQuoteNo, Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
-						Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()), "Y");*/
-				// find Prev Quote Data
+			 	// find Prev Quote Data
 				List<PolicyCoverData> oldPolicyCovers = coverDataRepo
 						.findByQuoteNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndStatusOrderByCoverIdAsc(
 								endtPrevQuoteNo, Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
 								Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()), "Y");
 				List<Tuple> taxes = ratingutil.LoadTax(engine,NORMAL_TAX_LIST);
 				TaxUtils tzx = new TaxUtils(endtCount);
-
+				List<Tax> taxey = taxes.stream().map(tzx).filter(t -> t != null).collect(Collectors.toList());
+				
 				// CoverFromPolicy
 				List<PolicyCoverData> basecovers = oldPolicyCovers.stream()
 						.filter(d -> !("T".equals(d.getCoverageType()) || "D".equals(d.getCoverageType())
 								|| "L".equals(d.getCoverageType()) || "E".equals(d.getCoverageType())
 								|| "P".equals(d.getCoverageType())))
 						.collect(Collectors.toList());
+				
 				for (PolicyCoverData d : basecovers) {
 					List<Cover> operatedList = new ArrayList<Cover>();
 
@@ -556,59 +566,16 @@ public class CalculatorEngineService implements CalculatorEngine {
 					List<Loading> loadings = oldPolicyCovers.stream().filter(r -> d.getCoverId() == r.getCoverId())
 							.map(loadingUtil).filter(dx -> dx != null).collect(Collectors.toList());
 
-					/*
-					 * EndtFromPolicy endtUtils=new EndtFromPolicy(); List<Endorsement> endorsements
-					 * = oldPolicyCovers.stream().filter(r ->
-					 * d.getCoverId()==r.getCoverId()).map(endtUtils).filter(dx->dx!=null).collect(
-					 * Collectors.toList());
-					 * 
-					 * TaxFromPolicy endttaxUtil=new TaxFromPolicy(); if(endorsements!=null &&
-					 * endorsements.size()>0) { for (Endorsement e : endorsements) { List<Tax> txx =
-					 * oldPolicyCovers.stream().filter(r -> (d.getCoverId() ==r.getCoverId() &&
-					 * "T".equals(r.getCoverageType()) &&
-					 * r.getEndtCount().intValue()==e.getEndtCount().intValue() && r.getCoverId()
-					 * ==Integer.parseInt(e.getEndorsementforId()) )
-					 * ).map(endttaxUtil).filter(dx->dx!=null).collect(Collectors.toList());
-					 * e.setTaxes(txx); } }
-					 */
-					// CurrentEndorsement
-
+					
+					
+					
 					List<Endorsement> endorsements = new ArrayList<Endorsement>();
-
-					Endorsement currentEndt = Endorsement.builder()
-							.endorsementDesc(d.getCoverDesc() + " " + endtDesc/* +" "+endtCount.intValue() */)
-							.endorsementId(endtTypeId).endorsementRate(d.getRate().toPlainString())
-							.endorsementCalcType("A").endorsementforId(String.valueOf(d.getCoverId()))
-							.maxAmount(BigDecimal.ZERO).factorTypeId(null).regulatoryCode("N/A").endtCount(endtCount)
-							.premiumAfterDiscount(d.getPremiumAfterDiscountFc())
-							.premiumAfterDiscountLC(d.getPremiumAfterDiscountLc())
-							.premiumBeforeDiscount(d.getPremiumBeforeDiscountFc())
-							.premiumBeforeDiscountLC(d.getPremiumBeforeDiscountLc())
-							.premiumExcluedTax(d.getPremiumExcludedTaxFc())
-							.premiumExcluedTaxLC(d.getPremiumExcludedTaxLc())
-							.premiumIncludedTax(d.getPremiumIncludedTaxFc())
-							.premiumIncludedTaxLC(d.getPremiumIncludedTaxLc())
-							.proRata(BigDecimal.ZERO).proRataYn("N")
-							.build();
-
-					{
-						List<Tax> taxey = taxes.stream().map(tzx).filter(t -> t != null).collect(Collectors.toList());
-						taxey.stream().forEach(t -> t.setEndtTypeId(endtTypeId + ""));
-						taxey.stream().forEach(t -> t.setEndtTypeCount(endtCount));
-						taxey.stream().forEach(t -> t.setTaxDesc(/* endtDesc +" "+ */t.getTaxDesc()));
-						if ("Y".equals(endtmaster.getEndtFeeYn())) {
-							Tax tax = Tax.builder().calcType(endtmaster.getCalcTypeId()).isTaxExempted("N")
-									.regulatoryCode("N/A").taxAmount(BigDecimal.ZERO)
-									.taxDesc(/* endtDesc+ */" Endorsement Fee"/* +" "+endtCount.intValue() */)
-									.taxExemptCode(null).taxRate(Double.parseDouble(endtmaster.getEndtFeePercent()))
-									.taxId(endtTypeId + "").endtTypeId(endtTypeId + "").endtTypeCount(endtCount)
-									.build();
-							taxey.add(tax);
-						}
-
-						currentEndt.setTaxes(taxey);
-					}
+					List<PolicyCoverDataEndt> coverData = oldPolicyData.stream().filter(i -> i.getCoverId()== d.getCoverId()).collect(Collectors.toList()) ;
+					
+					CreateEndorsment createEndt=new CreateEndorsment(endtmaster,endtCount,taxey,coverData);
+					Endorsement currentEndt =createEndt.create();
 					endorsements.add(currentEndt);
+					
 
 					CoverFromPolicy coverUtil = new CoverFromPolicy("");
 					List<Cover> covers = oldPolicyCovers.stream().filter(r -> d.getCoverId() == r.getCoverId())
@@ -618,7 +585,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					 * "T".equals(c.getCoverageType())).collect(Collectors.toList());
 					 * covers.removeAll(oldTax);
 					 */
-					List<Tax> taxey = taxes.stream().map(tzx).filter(t -> t != null).collect(Collectors.toList());
+					
 					covers.forEach(c -> c.setTaxes(taxey));
 					covers.forEach(c -> c.setEndtCount(endtCount));
 					covers.forEach(c -> c.setEndorsements(endorsements));// Existing Endorsement

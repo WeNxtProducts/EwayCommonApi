@@ -3,7 +3,6 @@ package com.maan.eway.endorsment.util;
 import java.math.BigDecimal;
 import java.util.function.Function;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.res.calc.Endorsement; 
 
@@ -18,7 +17,7 @@ public class EndtFromPolicy  implements Function<PolicyCoverData,Endorsement>{
 				 Endorsement d=Endorsement.builder()
 						 	.endorsementDesc(t.getCoverName()==null?"":t.getCoverName())
 						 	.endorsementId(t.getDiscLoadId()==null?"":t.getDiscLoadId().toString())
-						 	.endorsementRate("F".equals(calctype)?"0": t.getRate()==null?"0":t.getRate().toString())
+						 	.endorsementRate("F".equals(calctype)?0D: t.getRate()==null?0D:t.getRate().doubleValue())
 						 	.endorsementCalcType(calctype)
 						 	.endorsementforId(t.getDiscountCoverId()==null?"":t.getDiscountCoverId().toString())
 						 	.maxAmount(t.getMinimumPremium()==null?BigDecimal.ZERO:t.getMinimumPremium())

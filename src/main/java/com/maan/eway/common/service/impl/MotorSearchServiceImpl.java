@@ -656,7 +656,7 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 				 Endorsement d=Endorsement.builder()
 						 	.endorsementDesc(t.getCoverName()==null?"":t.getCoverName())
 						 	.endorsementId(t.getDiscLoadId()==null?"":t.getDiscLoadId().toString())
-						 	.endorsementRate("F".equals(t.getCalcType()==null?"A":t.getCalcType())?"0": t.getRate()==null?"0":t.getRate().toString())
+						 	.endorsementRate("F".equals(t.getCalcType()==null?"A":t.getCalcType())?0D: t.getRate()==null?0D:t.getRate().doubleValue())
 						 	.endorsementCalcType(t.getCalcType()==null?"":t.getCalcType())
 						 	.endorsementforId(t.getDiscountCoverId()==null?"":t.getDiscountCoverId().toString())
 						 	.maxAmount(t.getMinimumPremium()==null?BigDecimal.ZERO:t.getMinimumPremium())

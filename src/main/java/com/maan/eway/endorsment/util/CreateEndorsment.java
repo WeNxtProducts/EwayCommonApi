@@ -1,0 +1,126 @@
+package com.maan.eway.endorsment.util;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maan.eway.bean.EndtTypeMaster;
+import com.maan.eway.bean.PolicyCoverDataEndt;
+import com.maan.eway.res.calc.Endorsement;
+import com.maan.eway.res.calc.Tax;
+
+public class CreateEndorsment {
+	private EndtTypeMaster endtmaster;
+	private BigDecimal endtCount;
+	private List<Tax> taxey;
+	List<PolicyCoverDataEndt> coverData;
+	public CreateEndorsment(EndtTypeMaster endtmaster,BigDecimal endtCount, List<Tax> taxey, List<PolicyCoverDataEndt> coverData) {
+		 this.endtmaster=endtmaster;
+		 this.endtCount=endtCount;
+		 this.taxey=taxey;
+		 this.coverData=coverData;
+		 
+	}
+
+	public Endorsement create() {
+		// CurrentEndorsement
+
+		String endtTypeId=String.valueOf(endtmaster.getEndtTypeId());
+		PolicyCoverDataEndt d = coverData.get(0);
+		
+		BigDecimal totalSumInsured=coverData.stream().map(x -> x.getSumInsured()).reduce(BigDecimal.ZERO,BigDecimal::add);
+		
+  		Endorsement currentEndt = Endorsement.builder()
+				.endorsementDesc(d.getCoverDesc() + " " + endtmaster.getEndtTypeDesc())
+				.endorsementId(endtTypeId)
+				.endorsementRate(d.getRate().doubleValue())
+				.endorsementCalcType(d.getCalcType())
+				.endorsementforId(String.valueOf(d.getCoverId()))
+				.maxAmount(BigDecimal.ZERO)
+				.factorTypeId(null)
+				.regulatoryCode("N/A")
+				.endtCount(endtCount) 
+				.premiumAfterDiscount(d.getPremiumAfterDiscountFc())
+				.premiumAfterDiscountLC(d.getPremiumAfterDiscountLc())
+				.premiumBeforeDiscount(d.getPremiumBeforeDiscountFc())
+				.premiumBeforeDiscountLC(d.getPremiumBeforeDiscountLc())
+				.premiumExcluedTax(d.getPremiumExcludedTaxFc())
+				.premiumExcluedTaxLC(d.getPremiumExcludedTaxLc())
+				.premiumIncludedTax(d.getPremiumIncludedTaxFc())
+				.premiumIncludedTaxLC(d.getPremiumIncludedTaxLc())
+				.proRata(d.getProRataPercent())
+				.proRataYn(d.getProRataYn())
+				.coverName(d.getCoverName())
+				.minimumPremium(d.getMinimumPremium())				
+				.minimumPremiumYn(d.getMinimumPremiumYn())
+				.isSubCover("N")
+				.endorsementsumInsured(totalSumInsured)
+				.endorsementsumInsuredLc(totalSumInsured.multiply(d.getExchangeRate(),MathContext.DECIMAL64))
+				.subCoverDesc("")
+				.subCoverName("")
+				.sectionId(String.valueOf(d.getSectionId()))
+				.dependentCoveryn(d.getDependentCoverYn())
+				.dependentCoverId(d.getDependentCoverId()==null?"":String.valueOf(d.getDependentCoverId()))
+				.coverageType("E")
+				.isselected("Y")
+				.userOpt("Y")
+				.exchangeRate(d.getExchangeRate())
+				.currency(d.getCurrency())
+				.isReferral(d.getIsReferral())
+				.referalDescription(d.getReferralDescription())
+				.regulatoryCode(d.getRegulatoryCode())
+				.tiraSumInsured(d.getRegulatorySuminsured())
+				.tiraRate(d.getRegulatoryRate().doubleValue())
+				.coverBasedOn(d.getCoverBasedOn())
+				.insuranceId(d.getCompanyId())
+				.productId(String.valueOf(d.getProductId()))
+				.vehicleId(String.valueOf(d.getVehicleId()))
+				.cdRefNo(d.getCdRefno())
+				.vdRefNo(d.getVdRefno())
+				.createdBy(d.getCreatedBy())
+				.requestReferenceNo(d.getRequestReferenceNo())
+				.multiSelectYn(d.getMultiSelectYn())
+				.sectionId(String.valueOf(d.getSectionId()))
+				.excessPercent(d.getExcessPercent())
+				.excessAmount(d.getExcessAmount())
+				.excessDesc(d.getExcessDesc())
+				.effectiveDate(d.getCoverPeriodFrom())
+				.policyEndDate(d.getCoverPeriodTo())
+				.status("Y")
+				.diffPremiumIncludedTax(BigDecimal.ZERO)
+				.coverageLimit(d.getCoverageLimit())
+				.diffPremiumIncludedTaxLC(BigDecimal.ZERO)
+				.build();
+  		
+
+		{
+
+			taxey.stream().forEach(t -> t.setEndtTypeId(endtTypeId + ""));
+			taxey.stream().forEach(t -> t.setEndtTypeCount(endtCount));
+			taxey.stream().forEach(t -> t.setTaxDesc(t.getTaxDesc()));
+			if ("Y".equals(endtmaster.getEndtFeeYn())) {
+				Tax tax = Tax.builder()
+						.calcType(endtmaster.getCalcTypeId())
+						.isTaxExempted("N")
+						.regulatoryCode("N/A")
+						.taxAmount(BigDecimal.ZERO)
+						.taxDesc(" Endorsement Fee")
+						.taxExemptCode(null)
+						.taxRate(Double.parseDouble(endtmaster.getEndtFeePercent()))
+						.taxId(endtTypeId + "")
+						.endtTypeId(endtTypeId + "")
+						.endtTypeCount(endtCount)
+						.build();
+				taxey.add(tax);
+			}
+
+			currentEndt.setTaxes(taxey);
+		}
+		return currentEndt;
+	}
+}
