@@ -126,7 +126,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 				 t.setMinimumPremiumYn("N");
 				 if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0 /*&& !isCancellation*/) {
 					 
-					 t.setPremiumExcluedTax((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getMinimumPremium().divide(t.getExchangeRate())))); 
+					 t.setPremiumExcluedTax((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getMinimumPremium().divide(t.getExchangeRate(),MathContext.DECIMAL64)))); 
 					 t.setPremiumExcluedTaxLC(t.getMinimumPremium());
 					 t.setMinimumPremiumYn("Y");
 				 }		 
@@ -301,8 +301,9 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 							 endorsement.setPremiumAfterDiscountLC(endorsement.getPremiumExcluedTaxLC());
 							 endorsement.setPremiumAfterDiscount(endorsement.getPremiumExcluedTax());
 							 endorsement.setExchangeRate(exchangeRate);
-							 endorsement.setEndorsementsumInsured(t.getSumInsured().subtract(endorsement.getEndorsementsumInsured()));
-							 endorsement.setEndorsementsumInsuredLc(endorsement.getEndorsementsumInsured().multiply(exchangeRate,MathContext.DECIMAL64));
+							 endorsement.setEndorsementsumInsuredLc(t.getSumInsuredLc().subtract(endorsement.getEndorsementsumInsuredLc()));//.multiply(exchangeRate,MathContext.DECIMAL64));
+							 endorsement.setEndorsementsumInsured(endorsement.getEndorsementsumInsuredLc().divide(exchangeRate,MathContext.DECIMAL64));
+							 
 							 
 							 //t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0
 							 domath = domath(endorsement.getEndorsementCalcType(), endorsement.getEndorsementRate(), endorsement.getEndorsementsumInsured(),endorsement.getExchangeRate());
