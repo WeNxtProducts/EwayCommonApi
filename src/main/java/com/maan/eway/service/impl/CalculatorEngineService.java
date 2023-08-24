@@ -626,7 +626,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 							Integer.valueOf(request.getProductId()), Integer.valueOf(request.getSectionId()));
 
 			// TaxFromFactor tzx=new TaxFromFactor();
-			List<Tuple> taxes = ratingutil.LoadTax(request,ENDT_TAX_LIST);
+			List<Tuple> taxes = ratingutil.LoadTax(request,NORMAL_TAX_LIST);
+			List<Tuple> taxesEndt = ratingutil.LoadTax(request,ENDT_TAX_LIST);
 			TaxUtils tzx = new TaxUtils(endtCount);
 
 			for (String dependcover : dependedcovers) {
@@ -682,18 +683,22 @@ public class CalculatorEngineService implements CalculatorEngine {
 							// List<Tax> taxey =
 							// taxes.stream().map(tzx).filter(d->d!=null).collect(Collectors.toList());
 
-							TaxFromFactor endttaxUtil = new TaxFromFactor();
+							//TaxFromFactor endttaxUtil = new TaxFromFactor();
 							if (ds != null && ds.size() > 0) {
+								
+								
 								for (Endorsement e : ds) {
 
 									// only for endrose we cannt use cover objs tax cover wontbe list.
-									List<Tax> txx = factors.stream()
+									/*List<Tax> txx = factors.stream()
 											.filter(r -> (r.getDiscLoadId() == Integer.parseInt(e.getEndorsementId())
 													&& r.getCoverId() == Integer.parseInt(e.getEndorsementforId())
 													&& r.getEndtCount().intValue() == e.getEndtCount().intValue()))
 											.map(endttaxUtil).filter(dx -> (dx != null && !"0".equals(dx.getTaxId())))
+											.collect(Collectors.toList());*/
+									List<Tax> taxey = taxesEndt.stream().map(tzx).filter(d -> d != null)
 											.collect(Collectors.toList());
-									e.setTaxes(txx);
+									e.setTaxes(taxey);
 								}
 							}
 
@@ -754,15 +759,18 @@ public class CalculatorEngineService implements CalculatorEngine {
 							List<Endorsement> dss = ds.stream().map(dx -> SerializationUtils.clone(dx))
 									.collect(Collectors.toList());
 
-							TaxFromFactor endttaxUtil = new TaxFromFactor();
+							//TaxFromFactor endttaxUtil = new TaxFromFactor();
 							if (dss != null && dss.size() > 0) {
+								
 								for (Endorsement e : dss) {
-									List<Tax> txx = covers.stream()
+								/*	List<Tax> txx = covers.stream()
 											.filter(r -> (r.getDiscLoadId() == Integer.parseInt(e.getEndorsementId())
 													&& r.getCoverId() == Integer.parseInt(e.getEndorsementforId())
 													&& r.getEndtCount().intValue() == e.getEndtCount().intValue()))
-											.map(endttaxUtil).filter(dx -> dx != null).collect(Collectors.toList());
-									e.setTaxes(txx);
+											.map(endttaxUtil).filter(dx -> dx != null).collect(Collectors.toList());*/
+									List<Tax> taxey = taxesEndt.stream().map(tzx).filter(d -> d != null)
+											.collect(Collectors.toList());
+									e.setTaxes(taxey);
 								}
 							}
 

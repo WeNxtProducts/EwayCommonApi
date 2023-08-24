@@ -302,15 +302,15 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 							 endorsement.setPremiumAfterDiscount(endorsement.getPremiumExcluedTax());
 							 endorsement.setExchangeRate(exchangeRate);
 							 endorsement.setEndorsementsumInsuredLc(t.getSumInsuredLc().subtract(endorsement.getEndorsementsumInsuredLc()));//.multiply(exchangeRate,MathContext.DECIMAL64));
-							 endorsement.setEndorsementsumInsured(endorsement.getEndorsementsumInsuredLc().divide(exchangeRate,MathContext.DECIMAL64));
+							 endorsement.setEndorsementsumInsured((BigDecimal) decimalFormat.parse(decimalFormat.format(endorsement.getEndorsementsumInsuredLc().divide(exchangeRate,MathContext.DECIMAL64))));
 							 
 							 
 							 //t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0
 							 domath = domath(endorsement.getEndorsementCalcType(), endorsement.getEndorsementRate(), endorsement.getEndorsementsumInsured(),endorsement.getExchangeRate());
-							 endorsement.setPremiumBeforeDiscountLC(domath.multiply(t.getProRata()));
-							 endorsement.setPremiumBeforeDiscount((BigDecimal) decimalFormat.parse(decimalFormat.format(endorsement.getPremiumBeforeDiscount().multiply(t.getExchangeRate()))));
-							 
-							 endorsement.setPremiumExcluedTax(endorsement.getPremiumAfterDiscount());				 
+							 endorsement.setPremiumBeforeDiscount(domath.multiply(endorsement.getProRata()));
+							 endorsement.setPremiumBeforeDiscountLC((BigDecimal) decimalFormat.parse(decimalFormat.format(endorsement.getPremiumBeforeDiscount().multiply(endorsement.getExchangeRate()))));
+							 							 
+							 endorsement.setPremiumExcluedTax(endorsement.getPremiumBeforeDiscount());				 
 							 endorsement.setPremiumExcluedTaxLC((BigDecimal) decimalFormat.parse(decimalFormat.format(endorsement.getPremiumExcluedTax().multiply(endorsement.getExchangeRate())))); 						 
 							 
 							 //endorsement.setProRata(t.getProRata());
@@ -321,6 +321,11 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 
 					 totaltax=0D;
 					 if(endorsement.getTaxes()!=null && endorsement.getTaxes().size()>0) {
+						 
+						 if(endorsement.getPremiumExcluedTax().compareTo(BigDecimal.ZERO)<0)
+							 endorsement.getTaxes().removeIf(ta -> ta.getTaxFor().equals("EC"));
+						 else
+							 endorsement.getTaxes().removeIf(ta -> ta.getTaxFor().equals("ER"));
 						 
 						 
 						 String endtTypeId=vehicles.get(0).get("endtTypeId")==null?"":vehicles.get(0).get("endtTypeId").toString();
@@ -333,6 +338,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 							 inendtfees.stream().forEach(tcal);
 							 endtFee= inendtfees.stream().mapToDouble(o -> o.getTaxAmount().doubleValue()).sum();
 						 }
+						 
 						 
 						 
 						 TaxCalculator tcal=new TaxCalculator(endorsement.getPremiumExcluedTax().add(new BigDecimal(endtFee)),t.getExchangeRate(),this,customers.get(0));  
@@ -350,7 +356,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					/* t.setPremiumIncludedTax(t.getPremiumExcluedTax().add(new BigDecimal(totaltax,round)));				 
 					 t.setPremiumIncludedTaxLC(t.getPremiumIncludedTax().multiply(t.getExchangeRate()).round(round));
 					*/
-					 BigDecimal totalWithTax=endorsement.getPremiumExcluedTax().add(new BigDecimal(totaltax));					 
+					 BigDecimal totalWithTax=(BigDecimal) decimalFormat.parse(decimalFormat.format(endorsement.getPremiumExcluedTax().add(new BigDecimal(totaltax))));					 
 					 BigDecimal totalWithTaxLC=(BigDecimal) decimalFormat.parse(decimalFormat.format(totalWithTax.multiply(t.getExchangeRate())));
 					 
 					 

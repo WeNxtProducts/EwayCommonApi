@@ -52,4 +52,7 @@ public class Tax implements Serializable  {
     private BigDecimal minimumTaxAmountLc;
     @JsonProperty("TaxAmountLc") 
     public BigDecimal taxAmountLc;
+    
+    @JsonProperty("TaxFor")
+    private String taxFor;
 }

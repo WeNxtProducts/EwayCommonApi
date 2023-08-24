@@ -32,6 +32,7 @@ public class TaxUtils  implements Function<Tuple,Tax>{
 					.minimumTaxAmountLc(t.get("minimumAmount")==null?BigDecimal.ZERO:new BigDecimal(t.get("minimumAmount").toString()))
 					.minimumTaxAmount(t.get("minimumAmount")==null?BigDecimal.ZERO:new BigDecimal(t.get("minimumAmount").toString()))
 					.taxAmountLc(BigDecimal.ZERO)
+					.taxFor(t.get("taxFor")==null?"":t.get("taxFor").toString())
 				 	.build();
 			return d;
 		}catch (Exception e) {

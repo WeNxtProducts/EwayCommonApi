@@ -115,6 +115,7 @@ public class CreateEndorsment {
 						.taxId(endtTypeId + "")
 						.endtTypeId(endtTypeId + "")
 						.endtTypeCount(endtCount)
+						.taxFor("NB")
 						.build();
 				taxey.add(tax);
 			}
