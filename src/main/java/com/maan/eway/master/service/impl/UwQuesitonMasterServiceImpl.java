@@ -199,7 +199,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 						
 						if (StringUtils.isBlank(ops.getLoadingPercent())) {
 							errorList.add(new Error("07", "Loading", "Please Enter Loading in Row "+ row));
-						}else if ( ! ops.getLoadingPercent().matches("[0-9]+")  ){
+						}else if ( ! ops.getLoadingPercent().matches("[0-9.]+")  ){
 							errorList.add(new Error("07","Loading", "Please Enter Loading in Numeric Only in Row " + row)); 
 						}
 						
