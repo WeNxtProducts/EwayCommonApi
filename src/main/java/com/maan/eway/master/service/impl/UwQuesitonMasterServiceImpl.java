@@ -1,5 +1,6 @@
 package com.maan.eway.master.service.impl;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -198,7 +199,7 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 						
 						if (StringUtils.isBlank(ops.getLoadingPercent())) {
 							errorList.add(new Error("07", "Loading", "Please Enter Loading in Row "+ row));
-						}else if ( ! isNumeric(ops.getLoadingPercent())  ){
+						}else if ( ! ops.getLoadingPercent().matches("[0-9]+")  ){
 							errorList.add(new Error("07","Loading", "Please Enter Loading in Numeric Only in Row " + row)); 
 						}
 						
@@ -416,8 +417,8 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 							.dependentYn(options.getDependentYn())
 							.dependentUnderwriterId(StringUtils.isBlank(options.getDependentUnderwriterId())?null:Integer.valueOf(options.getDependentUnderwriterId())) //dropdown 
 							.dependentUwAction(options.getDependentUwAction()==null?"":options.getDependentUwAction())
-							.loadingPercent(StringUtils.isBlank(options.getLoadingPercent())?null:Integer.valueOf(options.getLoadingPercent()))
-							.referralYn(options.getReferralYn())
+							.loadingPercent(StringUtils.isBlank(options.getLoadingPercent())?null:new BigDecimal(options.getLoadingPercent()))
+							.referralYn(options.getReferralYn()) 
 							.status(options.getStatus())
 							
 							.build();

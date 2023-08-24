@@ -1,12 +1,22 @@
 package com.maan.eway.common.service.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +27,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.CompanyProductMaster;
+import com.maan.eway.bean.EserviceBuildingDetails;
+import com.maan.eway.bean.EserviceCommonDetails;
+import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.EserviceTravelDetails;
+import com.maan.eway.bean.MsAssetDetails;
+import com.maan.eway.bean.MsHumanDetails;
+import com.maan.eway.bean.MsVehicleDetails;
 import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.bean.UwQuestionsDetailsArch;
 import com.maan.eway.bean.UwQuestionsDetailsId;
@@ -25,6 +43,13 @@ import com.maan.eway.common.req.UwQuestionsDetailsSaveReq;
 import com.maan.eway.common.res.UwQuestionsDetailsRes;
 import com.maan.eway.common.service.UwQuestionsDetailsService;
 import com.maan.eway.error.Error;
+import com.maan.eway.repository.EServiceMotorDetailsRepository;
+import com.maan.eway.repository.EserviceBuildingDetailsRepository;
+import com.maan.eway.repository.EserviceCommonDetailsRepository;
+import com.maan.eway.repository.EserviceTravelDetailsRepository;
+import com.maan.eway.repository.MsAssetDetailsRepository;
+import com.maan.eway.repository.MsHumanDetailsRepository;
+import com.maan.eway.repository.MsVehicleDetailsRepository;
 import com.maan.eway.repository.UwQuestionsDetailsArchRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
 import com.maan.eway.res.SuccessRes;
@@ -39,6 +64,28 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 	@Autowired
 	private UwQuestionsDetailsArchRepository uwArchRepo;
 
+	@Autowired
+	private MsVehicleDetailsRepository msVehRepo;
+	
+	@Autowired
+	private MsAssetDetailsRepository msAssetRepo ;
+	
+	@Autowired
+	private MsHumanDetailsRepository msHumanRepo ;
+	
+	@Autowired
+	private EServiceMotorDetailsRepository eserMotRepo ;
+	
+	@Autowired
+	private EserviceCommonDetailsRepository eserHumanRepo ;
+	
+	@Autowired
+	private EserviceBuildingDetailsRepository eserBuildRepo ;
+	
+	@Autowired
+	private EserviceTravelDetailsRepository eserTraRepo ;
+	
+	
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -132,62 +179,127 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		
 		try {
+			Date entryDate = new Date();
+			String refNo = req.get(0).getRequestReferenceNo();
+			Integer vehId = Integer.valueOf(req.get(0).getVehicleId());
+			String companyId = req.get(0).getCompanyId();
+			String productId = req.get(0).getProductId();
 			
+			// Save Old Datas
+			List<UwQuestionsDetails> oldDatas = uwRepo.findByRequestReferenceNoAndVehicleId(refNo , vehId);
+			List<UwQuestionsDetailsArch> saveArchs = new ArrayList<UwQuestionsDetailsArch>();
+			Long count = uwArchRepo.countByRequestReferenceNoAndVehicleId(refNo , vehId);
+			//Integer sno = Integer.valueOf(count.toString())+1;
+			if(count > 0 ) {
+				uwArchRepo.deleteByRequestReferenceNoAndVehicleId(refNo , vehId);
+				
+			}
+			if ( oldDatas.size() > 0 ) {
+				entryDate = oldDatas.get(0).getEntryDate() !=null ? oldDatas.get(0).getEntryDate() : new Date()  ;
+			}
+			
+			oldDatas.forEach( o -> {
+				UwQuestionsDetailsArch arch = new UwQuestionsDetailsArch();
+				dozerMapper.map(o, arch);
+				arch.setArchId(o.getVehicleId().toString());
+				saveArchs.add(arch);
+					
+			});
+			uwArchRepo.saveAllAndFlush(saveArchs);
+			uwRepo.deleteAll(oldDatas);	
+			
+			List<UwQuestionsDetails> saveList = new ArrayList<UwQuestionsDetails>();
+			BigDecimal totalUwLoading = BigDecimal.ZERO ;
 			for(UwQuestionsDetailsSaveReq data : req) {
-			UwQuestionsDetailsId id = new UwQuestionsDetailsId();
-			id.setCompanyId(data.getCompanyId());
-			id.setProductId(Integer.valueOf(data.getProductId()));
-			id.setRequestReferenceNo(data.getRequestReferenceNo());
-			id.setUwQuestionId(Integer.valueOf(data.getUwQuestionId()));
-			id.setVehicleId(Integer.valueOf(data.getVehicleId()));
-			UwQuestionsDetails saveData = new UwQuestionsDetails();
-			UwQuestionsDetailsArch saveData1 = new UwQuestionsDetailsArch();
+				UwQuestionsDetails saveData = new UwQuestionsDetails();
+				
+				saveData = dozerMapper.map(data,UwQuestionsDetails.class);
+				saveData.setEntryDate(entryDate);		
+				saveData.setUpdatedDate(new Date());			
+				saveData.setStatus(data.getStatus());
+				saveData.setTextValue(data.getTextValue());
+				saveData.setStatus(data.getStatus());
+				if((StringUtils.isNotBlank(data.getStatus())) && (data.getStatus().equalsIgnoreCase("R")) ){
+					saveData.setIsReferral("Y");
+				}
+				else {
+					saveData.setIsReferral("N");							
+				}
+				saveData.setLoading(data.getLoadingPercent()==null? BigDecimal.ZERO : new BigDecimal (data.getLoadingPercent()));
+				totalUwLoading = totalUwLoading.add(saveData.getLoading());
+				saveList.add(saveData);
 			
-			Optional<UwQuestionsDetails> da = uwRepo.findById(id);
-			if(da.isPresent()) {
-			uwRepo.delete(saveData);	
-			saveData = dozerMapper.map(data,UwQuestionsDetails.class);
-			saveData.setEntryDate(da.get().getEntryDate());		
-			saveData.setUpdatedDate(new Date());			
-			saveData.setStatus(da.get().getStatus());
-			saveData.setTextValue(da.get().getTextValue());
+			}
+						
+			res.setSuccessId(vehId.toString());			
+			CompanyProductMaster product = getCompanyProductMasterDropdown(companyId , productId); 
+			Integer cdRefNo = null;
+			Integer vdRefNo = null;
+			Integer msRefNo = null;
 			
+			if(product.getMotorYn().equalsIgnoreCase("M") ) {
+				EserviceMotorDetails motData = eserMotRepo.findByRequestReferenceNoAndRiskId(refNo, vehId)	;	
+				MsVehicleDetails vehicleData = msVehRepo.findByVdRefno(Long.valueOf(motData.getVdRefNo()) );
+				if(vehicleData!=null) {
+					cdRefNo = motData.getCdRefno() ;
+					vdRefNo = motData.getVdRefNo();
+					msRefNo = motData.getMsRefno();
+					
+					vehicleData.setUwLoading(totalUwLoading);
+					msVehRepo.saveAndFlush(vehicleData);
+					
+				}
+			} else if(product.getMotorYn().equalsIgnoreCase("H") && "4".equalsIgnoreCase(productId) ) {
+				EserviceTravelDetails traData = eserTraRepo.findByRequestReferenceNo(refNo)	;
+				MsHumanDetails humanData = msHumanRepo.findByVdRefno(Long.valueOf(traData.getVdRefNo()) );
+				if(humanData!=null) {
+					cdRefNo = traData.getCdRefno() ;
+					vdRefNo = traData.getVdRefNo();
+					msRefNo = traData.getMsRefno();
+					
+					humanData.setUwLoading(totalUwLoading);
+					msHumanRepo.saveAndFlush(humanData);
+					
+				}
+			} else if(product.getMotorYn().equalsIgnoreCase("H") ) {
+					EserviceCommonDetails comData = eserHumanRepo.findByRequestReferenceNoAndRiskId(refNo , vehId)	;
+					if(comData==null ) {
+						List<EserviceCommonDetails> comDatas = eserHumanRepo.findByRequestReferenceNo(refNo)	;
+						comData = comDatas.size() > 0 ? comDatas.get(0) : null ;
+					}
+				
+					MsHumanDetails humanData = msHumanRepo.findByVdRefno(Long.valueOf(comData.getVdRefNo()) );
+					if(humanData!=null) {
+						cdRefNo = comData.getCdRefno() ;
+						vdRefNo = comData.getVdRefNo();
+						msRefNo = comData.getMsRefno();
+						
+						humanData.setUwLoading(totalUwLoading);
+						msHumanRepo.saveAndFlush(humanData);
+						
+					}			
+			} else  {
+					EserviceBuildingDetails buildData = eserBuildRepo.findByRequestReferenceNoAndRiskId(refNo , 1 )	;
+					MsAssetDetails assetData = msAssetRepo.findByVdRefno(Long.valueOf(buildData.getVdRefNo()) );
+					if(assetData !=null) {
+						cdRefNo = buildData.getCdRefno() ;
+						vdRefNo = buildData.getVdRefNo();
+						msRefNo = buildData.getMsRefno();
+						
+						assetData.setUwLoading(totalUwLoading);
+						msAssetRepo.saveAndFlush(assetData);
+					}
+			}
+			
+			
+			for (UwQuestionsDetails  o : saveList )  {
+				o.setVdRefNo(vdRefNo);
+				o.setCdRefno(cdRefNo);
+				o.setMsRefno(msRefNo);
+			}
+			uwRepo.saveAll(saveList);	
 			res.setResponse("Updated Successfully");
-
-			saveData1 = dozerMapper.map(data,UwQuestionsDetailsArch.class);
-			Long count = uwArchRepo.count();
-			Integer sno = Integer.valueOf(count.toString())+1;
-			saveData1.setArchId(sno.toString());
-			saveData1.setEntryDate(da.get().getEntryDate());		
-			saveData1.setStatus(da.get().getStatus());		
-			
-			uwArchRepo.save(saveData1);	
-			
-			}
-			else {
-			saveData = dozerMapper.map(data,UwQuestionsDetails.class);
-			saveData.setEntryDate(new Date());
-			saveData.setStatus(data.getStatus());
-			saveData.setUpdatedDate(data.getUpdatedDate());
-			
-			res.setResponse("Inserted Successfully");
-			
-			}
-			saveData.setStatus(data.getStatus());
-			if((StringUtils.isNotBlank(data.getStatus())) && (data.getStatus().equalsIgnoreCase("R")) 
-					){ //&& data.getValue().equalsIgnoreCase("Y")
 				
-				saveData.setIsReferral("Y");
-				
-			}
-			else {
-				saveData.setIsReferral("N");							
-			}
-			
-			saveData.setLoading(data.getLoadingPercent()==null?0:Integer.valueOf(data.getLoadingPercent()));
-			uwRepo.save(saveData);				
-			res.setSuccessId(data.getRequestReferenceNo());			
-			}
 			} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
@@ -195,7 +307,68 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 		}
 		return res;
 	}
+	
+	public CompanyProductMaster getCompanyProductMasterDropdown(String companyId, String productId) {
+		CompanyProductMaster product = new CompanyProductMaster();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
 
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CompanyProductMaster> query = cb.createQuery(CompanyProductMaster.class);
+			List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
+			// Find All
+			Root<CompanyProductMaster> c = query.from(CompanyProductMaster.class);
+			// Select
+			query.select(c);
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("productName")));
+
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm1 = effectiveDate.from(CompanyProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("productId"), ocpm1.get("productId"));
+			Predicate a2 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+			Predicate a3 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			effectiveDate.where(a1, a2, a3);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<CompanyProductMaster> ocpm2 = effectiveDate2.from(CompanyProductMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(c.get("productId"), ocpm2.get("productId"));
+			Predicate a5 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			effectiveDate2.where(a4, a5, a6);
+
+			// Where
+			Predicate n1 = cb.equal(c.get("status"), "Y");
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"), companyId);
+			Predicate n5 = cb.equal(c.get("productId"), productId);
+			query.where(n1, n2, n3, n4, n5).orderBy(orderList);
+			// Get Result
+			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			product = list.size() > 0 ? list.get(0) : null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return product;
+	}
 	@Override
 	public List<UwQuestionsDetailsRes> getUwQuestionsDetails(UwQuestionsDetailsGetReq req) {
 		List<UwQuestionsDetailsRes> resList = new ArrayList<UwQuestionsDetailsRes>();

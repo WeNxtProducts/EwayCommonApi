@@ -1,6 +1,7 @@
 package com.maan.eway.bean;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -71,7 +72,7 @@ public class UwQuestionsOptionsMaster implements Serializable {
 	    private String     status ;
 	    
 	    @Column(name="LOADING_PERCENT")
-	    private Integer  loadingPercent;
+	    private BigDecimal  loadingPercent;
 
 	    
 	    @Column(name="DEPENDENT_YN")

@@ -728,6 +728,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						}
 					}
 					
+					// 
+					
 					ReferalResponse res = new ReferalResponse();
 					res.setReferalRemarks(referralRemarks);
 					res.setRequestReferenceNo(req.getRequestReferenceNo());

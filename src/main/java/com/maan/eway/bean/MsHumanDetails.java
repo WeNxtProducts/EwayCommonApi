@@ -203,9 +203,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="PERSONAL_LIABILITY_SI_LC")
     private BigDecimal       personalLiabilitySiLc; 
 
-    @Column(name="LOADING_PERCENT")
-    private BigDecimal     loadingPercent;
-    
     
     @Column(name="AOO_SUMINSURED")
     private BigDecimal       aooSuminsured;
@@ -218,6 +215,9 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="AGG_SUMINSURED_LC")
     private BigDecimal       aggSuminsuredLc;
+    
+    @Column(name="UW_LOADING")
+    private BigDecimal     uwLoading;
 }
 
 

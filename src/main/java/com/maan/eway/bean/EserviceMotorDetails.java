@@ -533,6 +533,15 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="ACCCESSORIES_SUM_INSURED_LC")
     private BigDecimal     acccessoriesSumInsuredLc ;
+    
+    @Column(name="VD_REFNO")
+    private Integer     vdRefNo ;
+    
+    @Column(name="CD_REFNO")
+    private Integer     cdRefno;
+    
+    @Column(name="MS_REFNO")
+    private Integer     msRefno ;
 }
 
 

@@ -491,8 +491,9 @@ private static final long serialVersionUID = 1L;
 	@Column(name = "MONEY_IN_PREMISES_LC")
 	private BigDecimal moneyInPremisesLc;
 	
-    @Column(name="LOADING_PERCENT")
-    private BigDecimal     loadingPercent;    
+    
+    @Column(name="UW_LOADING")
+    private BigDecimal     uwLoading;
 }
 
 

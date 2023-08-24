@@ -744,5 +744,14 @@ public class EserviceBuildingDetails implements Serializable {
 
 	@Column(name = "MONEY_IN_PREMISES_LC")
 	private BigDecimal moneyInPremisesLc;
+	
+    @Column(name="VD_REFNO")
+    private Integer     vdRefNo ;
+    
+    @Column(name="CD_REFNO")
+    private Integer     cdRefno;
+    
+    @Column(name="MS_REFNO")
+    private Integer     msRefno ;
 
 }

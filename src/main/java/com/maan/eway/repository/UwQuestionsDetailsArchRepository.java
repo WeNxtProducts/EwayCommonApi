@@ -14,6 +14,9 @@ package com.maan.eway.repository;
 
 import java.math.BigDecimal;
 
+import javax.transaction.TransactionScoped;
+import javax.transaction.Transactional;
+
 import com.maan.eway.bean.UwQuestionsDetailsArch;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -30,4 +33,8 @@ import com.maan.eway.bean.UwQuestionsDetailsArchId;
  
 public interface UwQuestionsDetailsArchRepository  extends JpaRepository<UwQuestionsDetailsArch,UwQuestionsDetailsArchId > , JpaSpecificationExecutor<UwQuestionsDetailsArch> {
 
+	Long countByRequestReferenceNoAndVehicleId(String refNo, Integer vehId);
+
+	@Transactional
+	void deleteByRequestReferenceNoAndVehicleId(String refNo, Integer vehId);
 }
