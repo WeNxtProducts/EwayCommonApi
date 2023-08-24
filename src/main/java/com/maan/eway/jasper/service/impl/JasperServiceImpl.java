@@ -135,7 +135,21 @@ public class JasperServiceImpl implements JasperService {
 					
 				} else if (product.getMotorYn().equalsIgnoreCase("M")) {
 					res = getJasperPdfFile("/report/jasper/MotorPrivate.jrxml", getPdfOutFilePath, input);
-				} else {
+				}else if(product.getMotorYn().equalsIgnoreCase("A")&& "42".equalsIgnoreCase(homeData.getProductId().toString())) {
+					String classPath = this.getClass().getClassLoader().getResource("").getPath();
+					classPath = classPath.substring(1, classPath.length()-0);
+					jasperCompilePath = classPath;
+					String imagePath = config.getImagePath().substring(1,config.getImagePath().length()-0);
+					Map<String,Object> input2 = new HashMap<>();
+					input2.put("pvImagePath", imagePath);
+					input2.put("pvPolicyNo", homeData.getPolicyNo());
+					input2.put("pvFooterImage", imagePath);
+					input2.put("pvheaderImage", imagePath);
+					String obj = jasperCompilePath + "report/jasper/CyberInsurance.jrxml";
+					String path = JasperCompileManager.compileReportToFile(obj);
+					System.out.println("Jasper compileToReport path" +path);
+					res = getJasperPdfFile("/report/jasper/CyberInsurance.jrxml", getPdfOutFilePath, input2);
+				}else {
 					Map<String, Object> input2 = new HashMap<String, Object>();
 					input2.put("pvQuoteNo", req.getQuoteNo());
 					input2.put("pvImagepath", config.getImagePath());
