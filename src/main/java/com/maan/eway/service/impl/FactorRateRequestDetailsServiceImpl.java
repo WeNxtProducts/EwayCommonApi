@@ -55,6 +55,7 @@ import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.MasterReferralDetails;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.ProductSectionMaster;
+import com.maan.eway.bean.UWReferralDetails;
 import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.calculator.util.TaxFromFactor;
@@ -80,6 +81,7 @@ import com.maan.eway.repository.EserviceTravelGroupDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.MasterReferralDetailsRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
+import com.maan.eway.repository.UWReferralDetailsRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
 import com.maan.eway.req.FactorRateDetailsGetReq;
 import com.maan.eway.req.calcengine.CalcEngine;
@@ -130,6 +132,8 @@ private MasterReferralDetailsRepository masReferralRepo;
 @Autowired
 private UwQuestionsDetailsRepository uwReferalRepo;
 
+@Autowired
+private UWReferralDetailsRepository uwReferalDetailsRepo ;
 
 @Value(value = "${travel.productId}")
 private String travelProductId;
@@ -2155,7 +2159,18 @@ this.repository = repo;
 			 
 		
 			 
-			
+			// Update Referral Details 
+			if(StringUtils.isNotBlank(req.getAdminLoginId())) {
+				List<UWReferralDetails> uwList = uwReferalDetailsRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+				
+				uwList.forEach( o -> {
+					if( o.getUwLoginId().equals(req.getAdminLoginId()) )
+						 o.setUwStatus("Y");
+					else 
+						 o.setUwStatus("N");
+					
+				});
+			}
 			 
 			 
 			res.setCoverList(resp.getCoverList());

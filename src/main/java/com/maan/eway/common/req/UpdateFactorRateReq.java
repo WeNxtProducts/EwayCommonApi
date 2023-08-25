@@ -41,4 +41,6 @@ public class UpdateFactorRateReq {
 	@JsonProperty("VatCommissison")
 	private String vatCommissison;
 	
+	@JsonProperty("AdminLoginId")
+	private String adminLoginId;
 }

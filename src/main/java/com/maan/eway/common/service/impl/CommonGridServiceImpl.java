@@ -539,7 +539,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 				Root<UWReferralDetails> uw = query.from(UWReferralDetails.class);
 				Predicate n8 = cb.equal(uw.get("requestReferenceNo"), m.get("requestReferenceNo")); 
 				Predicate n9 = cb.equal(uw.get("uwLoginId"),req.getApplicationId()); 
-				Predicate n10 = cb.equal(uw.get("status"), "Y"); 
+				Predicate n10 = cb.equal(uw.get("uwStatus"), "Y"); 
 				query.where(n1, n2, n3, n4, n6,n8,n9,n10)
 				.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 						m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),

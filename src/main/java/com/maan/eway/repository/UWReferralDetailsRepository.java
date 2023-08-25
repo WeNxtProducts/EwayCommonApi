@@ -12,6 +12,8 @@
 
 package com.maan.eway.repository;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,5 +30,5 @@ public interface UWReferralDetailsRepository  extends JpaRepository<UWReferralDe
 	@Transactional
 	void deleteByRequestReferenceNo(String requestReferenceNo);
 
-
+	List<UWReferralDetails> findByRequestReferenceNo(String requestReferenceNo);
 }
