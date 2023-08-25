@@ -41,7 +41,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 t.setProRata(new BigDecimal("1"));
 				 if(prorata!=null && prorata.size()>0 && "Y".equals(t.getProRataYn())) {
 					 BigDecimal percenat=prorata.get(0).get("percent")==null?BigDecimal.ZERO:new BigDecimal(prorata.get(0).get("percent").toString());	
-					 t.setProRata(percenat.divide(new BigDecimal("100")));
+					 t.setProRata(percenat.divide(new BigDecimal("100"),MathContext.DECIMAL32));
 				 }
 				 
 				 /// this particular variable is for is rate defined for Single
@@ -155,7 +155,7 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 // Minimium Premium setup.
 				 if(t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0) {
 					 
-					 t.setPremiumExcluedTax((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getMinimumPremium().divide(t.getExchangeRate())))); 
+					 t.setPremiumExcluedTax((BigDecimal) decimalFormat.parse(decimalFormat.format(t.getMinimumPremium().divide(t.getExchangeRate(),MathContext.DECIMAL64)))); 
 					 t.setPremiumExcluedTaxLC(t.getMinimumPremium());
 					 t.setMinimumPremiumYn("Y");
 				 }

@@ -355,8 +355,7 @@ private Date       endtDate ;
 @Column(name="ENDT_BY", length=100)
 private String     endtBy ;
 
-@Column(name="ENDT_PREMIUM")
-private BigDecimal       endtPremium ;
+
 
 @Column(name="ENDT_COMMISSION")
 private BigDecimal endtCommission ;
@@ -675,7 +674,10 @@ private String responseStatusDesc;
 
 @Column(name="PREV_COVERNOTE_REFNO")
 private String prevCoverNoteRefNo;
-    
+@Column(name="ENDT_PREMIUM")
+private BigDecimal       endtPremium ;
+@Column(name="ENDT_PREMIUM_LC")
+private BigDecimal       endtPremiumLc ;
 
 }
 

@@ -387,25 +387,25 @@ public class QuoteThreadCall implements Callable<Object>  {
 				 oldcovers = coverRepo.findByQuoteNoAndVehicleIdAndDiscLoadIdAndTaxIdAndStatusNotOrderByVehicleIdAsc(prevQuoteNo ,riskId,0, 0 ,"D");
 			 }
 			
-			Double removedCoverPremium =  (totalcovers.stream().filter( o ->   o.getPremiumIncludedTaxLc()!=null 
+			Double removedCoverPremium =  (totalcovers.stream().filter( o ->   o.getPremiumIncludedTaxFc()!=null 
 					 && "D".equals(o.getStatus())   && "E".equals(o.getCoverageType()) 
 					  )
-			 .mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()   ).sum());			 
+			 .mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum());			 
 			 Double endtChangePremium=totalcovers.stream().filter( o ->   
-					   o.getPremiumIncludedTaxLc()!=null && "E".equals(o.getCoverageType()) && !"D".equals(o.getStatus())
+					   o.getPremiumIncludedTaxFc()!=null && "E".equals(o.getCoverageType()) && !"D".equals(o.getStatus())
 					  )
-			 .mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()   ).sum();
+			 .mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum();
 			 
 			 List<PolicyCoverData>  oldcoversf=oldcovers;
 			 newCovers.removeIf(p-> {
 				 return oldcoversf.stream().anyMatch(x-> (x.getVehicleId()==p.getVehicleId() && x.getSectionId() ==p.getSectionId() && x.getProductId()==p.getProductId() && x.getCoverId()==p.getCoverId()));
 			 });
 			 Double addedCoverPremium =newCovers.stream().filter( o -> o.getDiscLoadId().equals(0)  &&  
-					 o.getTaxId().equals(0) && o.getPremiumIncludedTaxLc()!=null 
+					 o.getTaxId().equals(0) && o.getPremiumIncludedTaxFc()!=null 
 					 && !"D".equals(o.getStatus())
 					 && effDate.compareTo(o.getCoverPeriodFrom())>=0
 					  )
-			 .mapToDouble( o ->   o.getPremiumIncludedTaxLc().doubleValue()   ).sum();
+			 .mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()   ).sum();
 				BigDecimal endtPremium= new  BigDecimal(removedCoverPremium+addedCoverPremium+endtChangePremium);
 			String endtChargeOrRefund="REFUND";
 			if(endtPremium.doubleValue()>=0) {
@@ -2622,6 +2622,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				Double endtPremiumTax = 0D;
 				home.setEndtPremiumTax(new BigDecimal(endtPremiumTax));
 				home.setEndtPremium(endtPremium);
+				home.setEndtPremiumLc((BigDecimal) df.parse(df.format(endtPremium.multiply(home.getExchangeRate(),MathContext.DECIMAL64))));
 				home.setIsChargRefund(endtChargeOrRefund);
 	
 			
