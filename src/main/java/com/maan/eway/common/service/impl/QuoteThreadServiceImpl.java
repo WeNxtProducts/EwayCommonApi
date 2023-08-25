@@ -63,18 +63,22 @@ import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.SeqCustid;
 import com.maan.eway.bean.SeqQuoteno;
 import com.maan.eway.bean.TermsAndCondition;
+import com.maan.eway.bean.UWReferralDetails;
 import com.maan.eway.bean.UwQuestionsDetails;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.CoverIdsReq;
+import com.maan.eway.common.req.GetApproverListReq;
 import com.maan.eway.common.req.IndividualReferalReq;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.QuoteThreadReq;
 import com.maan.eway.common.req.VehicleIdsReq;
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.common.res.GetApproverListRes;
 import com.maan.eway.common.res.NewQuoteRes;
 import com.maan.eway.common.res.ProductThreadRes;
 import com.maan.eway.common.res.QuoteThreadRes;
 import com.maan.eway.common.res.QuoteUpdateRes;
+import com.maan.eway.common.service.GridService;
 import com.maan.eway.common.service.QuoteService;
 import com.maan.eway.common.service.QuoteThreadService;
 import com.maan.eway.error.Error;
@@ -115,6 +119,7 @@ import com.maan.eway.repository.SeqCustidRepository;
 import com.maan.eway.repository.SeqQuotenoRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerHistoryRepository;
+import com.maan.eway.repository.UWReferralDetailsRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
 import com.maan.eway.req.calcengine.ReferralApi;
 import com.maan.eway.res.ReferalResponse;
@@ -252,6 +257,12 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	@Autowired
 	private DocumentTransactionDetailsRepository docTranRepo ;
 	
+	@Autowired
+	private GridService gridService;
+	
+	@Autowired
+	private UWReferralDetailsRepository uwReferralRepo;
+	
 	@Override
 	public CommonRes call_OT_Insert(NewQuoteReq req) {
 		CommonRes commonRes = new CommonRes();
@@ -279,7 +290,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 		
 		// Referal Returning Block
 		if( referal == true || (commonRes.getIsError()!=null && commonRes.getIsError()==true) ) {
-			 
+			 if(commonRes.getIsError()==true ) {
+				 return  commonRes ; 
+			 }
 			 // Notification Trigger
 			req.setReferralRemarks(((ReferalResponse) commonRes.getCommonResponse()).getReferalRemarks());
 			 updateReferralStatus(req);
@@ -657,10 +670,12 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			
 			
 			if (  referral == true ) {
+				  BigDecimal overAllSuminsured = BigDecimal.ZERO;
+				  String branchCode = "" ;
 					String otherReferals  =  StringUtils.isBlank(manualRemarks) ? "" : manualRemarks ;
 					otherReferals = StringUtils.isBlank(uwRemarks) ? otherReferals : uwRemarks ;//+ ( StringUtils.isNotBlank(otherReferals) ?  "~" +otherReferals :"")  ;
 					referralRemarks = otherReferals ;
-					
+					Double sumInsured=0.0d;
 					if (req.getMotorYn().equalsIgnoreCase("H") &&  req.getProductId().equalsIgnoreCase(travelProductId)) {
 						EserviceTravelDetails travelData = eserTraRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
 						List<IndividualReferalReq> filterInduRef = induRefs.stream().filter( o -> o.getRiskId().equals(travelData.getRiskId()) ).collect(Collectors.toList()) ;
@@ -676,6 +691,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						travelData.setManualReferalYn(req.getManualReferralYn());
 						eserTraRepo.save(travelData);
 						
+						overAllSuminsured = new BigDecimal("50000");
+						branchCode = travelData.getBranchCode();
+						
 					} else if ( req.getMotorYn().equalsIgnoreCase("M") ) {
 						List<EserviceMotorDetails> motorDatas = eserMotRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
 						
@@ -685,14 +703,22 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							String induRefDesc  = filterInduRef.size()> 0 ?  filterInduRef.get(0).getReferals() : "" ;
 							String induRefDesc3  = StringUtils.isBlank(otherReferals) ? induRefDesc : otherReferals;// + ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"")  ;
 							referralRemarks = StringUtils.isBlank(referralRemarks) ? induRefDesc : referralRemarks;// + ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"") ;
-							
+							//sumInsured=mot.getSumInsuredLc();
 							mot.setReferalRemarks(induRefDesc3) ;
 							mot.setUpdatedDate(new Date());
 							mot.setQuoteNo("");
 							mot.setCustomerId("");
 							mot.setManualReferalYn(req.getManualReferralYn());
 							eserMotRepo.save(mot);
+							
+							// Suminsured 
+							if(  ! "D".equalsIgnoreCase(mot.getStatus()) ) {
+								overAllSuminsured = mot.getSumInsuredLc()==null ? overAllSuminsured : mot.getSumInsuredLc().add(overAllSuminsured) ;
+								branchCode = mot.getBranchCode();
+							}
 						}
+						
+						
 					}  else if (req.getMotorYn().equalsIgnoreCase("A") ) {
 						List<EserviceBuildingDetails> buildingDatas = eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
 						for (EserviceBuildingDetails build : buildingDatas ) {
@@ -708,6 +734,57 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							build.setCustomerId("");
 							build.setManualReferalYn(req.getManualReferralYn());
 							eserBuildRepo.save(build);
+							
+							branchCode = build.getBranchCode();
+							
+							// Suminsured 
+							overAllSuminsured = build.getAccDamageSiLC()==null ? overAllSuminsured : build.getAccDamageSiLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getAllRiskSumInsuredLC()==null ? overAllSuminsured : build.getAllRiskSumInsuredLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getApplianceSiLc()==null ? overAllSuminsured : build.getApplianceSiLc().add(overAllSuminsured) ;
+							overAllSuminsured = build.getBoilerPlantsSiLC()==null ? overAllSuminsured : build.getBoilerPlantsSiLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getBuildingSumInsuredLC()==null ? overAllSuminsured : build.getBuildingSumInsuredLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getBurglarySiLC()==null ? overAllSuminsured : build.getBurglarySiLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getCashInHandEmployeesLc()==null ? overAllSuminsured : build.getCashInHandEmployeesLc().add(overAllSuminsured) ;
+							overAllSuminsured = build.getCashInSafeLc()==null ? overAllSuminsured : build.getCashInSafeLc().add(overAllSuminsured) ;
+							overAllSuminsured = build.getCashInTransitLc()==null ? overAllSuminsured : build.getCashInTransitLc().add(overAllSuminsured) ;
+							overAllSuminsured = build.getCashValueablesSiLc()==null ? overAllSuminsured : build.getCashValueablesSiLc().add(overAllSuminsured) ;
+							overAllSuminsured = build.getContentSumInsuredLC()==null ? overAllSuminsured : build.getContentSumInsuredLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getElecEquipSumInsuredLC()==null ? overAllSuminsured : build.getElecEquipSumInsuredLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getElecMachinesSiLC()==null ? overAllSuminsured : build.getElecMachinesSiLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getEmpliabilityAnnualSumInsuredLC()==null ? overAllSuminsured : build.getEmpliabilityAnnualSumInsuredLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getEmpliabilityExcessSumInsuredLC()==null ? overAllSuminsured : build.getEmpliabilityExcessSumInsuredLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getEquipmentSiLC()==null ? overAllSuminsured : build.getEquipmentSiLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getFidelityAnnualSumInsuredLC()==null ? overAllSuminsured : build.getFidelityAnnualSumInsuredLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getFurnitureSiLc()==null ? overAllSuminsured : build.getFurnitureSiLc().add(overAllSuminsured) ;
+							overAllSuminsured = build.getGeneralMachineSiLC()==null ? overAllSuminsured : build.getGeneralMachineSiLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getGensetsSiLC()==null ? overAllSuminsured : build.getGensetsSiLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getGoodsSiLc()==null ? overAllSuminsured : build.getGoodsSiLc().add(overAllSuminsured) ;
+							overAllSuminsured = build.getGoodsSilcnglEcarrySumInsuredLC()==null ? overAllSuminsured : build.getGoodsSilcnglEcarrySumInsuredLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getGoodsTurnoverSumInsuredLC()==null ? overAllSuminsured : build.getGoodsTurnoverSumInsuredLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getMachineEquipSiLC()==null ? overAllSuminsured : build.getMachineEquipSiLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getManuUnitsSiLC()==null ? overAllSuminsured : build.getManuUnitsSiLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getMiningPlantSiLC()==null ? overAllSuminsured : build.getMiningPlantSiLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getMoneyAnnualCarrySumInsuredLC()==null ? overAllSuminsured : build.getMoneyAnnualCarrySumInsuredLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getMoneyInPremisesLc()==null ? overAllSuminsured : build.getMoneyInPremisesLc().add(overAllSuminsured) ;
+							overAllSuminsured = build.getMoneyInSafeSumInsuredLC()==null ? overAllSuminsured : build.getMoneyInSafeSumInsuredLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getMoneyOutSafeBusinessLc()==null ? overAllSuminsured : build.getMoneyOutSafeBusinessLc().add(overAllSuminsured) ;
+							overAllSuminsured = build.getMoneySingleCarrySumInsuredLC()==null ? overAllSuminsured : build.getMoneySingleCarrySumInsuredLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getNonMiningPlantSiLC()==null ? overAllSuminsured : build.getNonMiningPlantSiLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getPlateGlassSiLC()==null ? overAllSuminsured : build.getPlateGlassSiLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getPowerPlantSiLC()==null ? overAllSuminsured : build.getPowerPlantSiLC().add(overAllSuminsured) ;
+							overAllSuminsured = build.getStockInTradeSiLc()==null ? overAllSuminsured : build.getStockInTradeSiLc().add(overAllSuminsured) ;
+							
+							
+							List<EserviceCommonDetails> commonDatas = eserCommonRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
+							for (EserviceCommonDetails commonData : commonDatas ) {
+								if(! "D".equalsIgnoreCase(commonData.getStatus()) ) {
+									overAllSuminsured = commonData.getSumInsuredLc()==null ? overAllSuminsured : commonData.getSumInsuredLc().add(overAllSuminsured) ;
+									overAllSuminsured = commonData.getAooSuminsuredLc()==null ? overAllSuminsured : commonData.getAooSuminsuredLc().add(overAllSuminsured) ;
+									overAllSuminsured = commonData.getAggSuminsuredLc()==null ? overAllSuminsured : commonData.getAggSuminsuredLc().add(overAllSuminsured) ;
+									
+								}
+								
+							}
 						}
 						
 					} else  {
@@ -725,11 +802,59 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							commonData.setCustomerId("");
 							commonData.setManualReferalYn(req.getManualReferralYn());
 							eserCommonRepo.save(commonData);
+							
+							branchCode = commonData.getBranchCode();
+							
+							if(! "D".equalsIgnoreCase(commonData.getStatus()) ) {
+								overAllSuminsured = commonData.getSumInsuredLc()==null ? overAllSuminsured : commonData.getSumInsuredLc().add(overAllSuminsured) ;
+								overAllSuminsured = commonData.getAooSuminsuredLc()==null ? overAllSuminsured : commonData.getAooSuminsuredLc().add(overAllSuminsured) ;
+								overAllSuminsured = commonData.getAggSuminsuredLc()==null ? overAllSuminsured : commonData.getAggSuminsuredLc().add(overAllSuminsured) ;
+							}
 						}
 					}
 					
-					// 
+					//Referral Update Based on Sum insured
+					GetApproverListReq refReq= new GetApproverListReq(); 
+					refReq.setBranchCode(branchCode);
+					refReq.setCompanyId(req.getInsuranceId());
+					refReq.setProductId(req.getProductId());
+					refReq.setSumInsured(overAllSuminsured.toPlainString());
+					List<GetApproverListRes> res1 =gridService.getApproverList(refReq);
 					
+					if(res1 ==null || res1.size() <=0 ) {
+						errors.add(new Error("01","UwRefferral", "No Under Writter Available for this Over All Suminsured : " + overAllSuminsured.toPlainString()));
+						commonRes.setCommonResponse(null);
+						commonRes.setIsError(true);
+						commonRes.setErrorMessage(errors);
+						commonRes.setMessage("Failed");	
+						return commonRes; 
+					}
+					
+					// Delete Old
+					Long uwReferralCount = uwReferralRepo.countByRequestReferenceNo(req.getRequestReferenceNo());
+					if(uwReferralCount > 0 ) {
+						uwReferralRepo.deleteByRequestReferenceNo(req.getRequestReferenceNo());
+					}
+					
+					//Save New
+					List<UWReferralDetails> saveUWList =new ArrayList<UWReferralDetails>();
+					for(GetApproverListRes uwres : res1) {
+						UWReferralDetails saveUWReferral =new UWReferralDetails();
+						saveUWReferral.setBrancCode(branchCode);
+						saveUWReferral.setCompanyId(req.getInsuranceId());
+						saveUWReferral.setEntryDate(new Date());
+						saveUWReferral.setProductId(Integer.valueOf(req.getProductId()));
+						saveUWReferral.setRequestReferenceNo(req.getRequestReferenceNo());
+						saveUWReferral.setStatus("Y");
+						saveUWReferral.setSumInsured(overAllSuminsured);
+						saveUWReferral.setUwLoginId(uwres.getLoginId());
+						saveUWReferral.setUwStatus("Y");
+						saveUWList.add(saveUWReferral);
+						
+					}
+					uwReferralRepo.saveAllAndFlush(saveUWList);
+					
+					// Referral Response 
 					ReferalResponse res = new ReferalResponse();
 					res.setReferalRemarks(referralRemarks);
 					res.setRequestReferenceNo(req.getRequestReferenceNo());
@@ -746,7 +871,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				 	
 				 	
 			} else {
-				
+				// Referral Response 
 				ReferalResponse res = new ReferalResponse();
 				res.setReferalRemarks("");
 				res.setRequestReferenceNo(req.getRequestReferenceNo());

@@ -61,6 +61,7 @@ import com.maan.eway.bean.SeqCustrefno;
 import com.maan.eway.bean.SeqQuoteno;
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.bean.TravelPassengerHistory;
+import com.maan.eway.bean.UWReferralDetails;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
@@ -536,7 +537,20 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Expression<String>e0=c.get("branchCode");
 			Predicate n6 = e0.in(branches ) ;
 		//	Predicate n7 = cb.isNull(m.get("endorsementType"));
-			query.where(n1,n2,n3,n4,n6).orderBy(orderList).groupBy(m.get("quoteNo"),m.get("customerId"),m.get("updatedDate"));
+			// Uw Condition 
+			if("RP".equalsIgnoreCase(status)) {
+				Root<UWReferralDetails> uw = query.from(UWReferralDetails.class);
+				Predicate n8 = cb.equal(uw.get("requestReferenceNo"), m.get("requestReferenceNo")); 
+				Predicate n9 = cb.equal(uw.get("uwLoginId"),req.getApplicationId()); 
+				Predicate n10 = cb.equal(uw.get("status"), "Y"); 
+							
+							
+				query.where(n1,n2,n3,n4,n6,n8,n9,n10).orderBy(orderList).groupBy(m.get("quoteNo"),m.get("customerId"),m.get("updatedDate"));
+				
+			} else {
+				query.where(n1,n2,n3,n4,n6).orderBy(orderList).groupBy(m.get("quoteNo"),m.get("customerId"),m.get("updatedDate"));
+				
+			}
 			
 			// Get Result
 			TypedQuery<ReferalGridCriteriaRes> result = em.createQuery(query);

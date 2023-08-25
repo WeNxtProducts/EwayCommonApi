@@ -56,6 +56,7 @@ import com.maan.eway.bean.SeqCustrefno;
 import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.SeqQuoteno;
+import com.maan.eway.bean.UWReferralDetails;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
@@ -432,7 +433,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(m.get("updatedDate")));
+			orderList.add(cb.desc(cb.max(m.get("updatedDate"))));
 
 			// Where
 			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
@@ -459,7 +460,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
-							m.get("rejectReason"),m.get("adminRemarks"),m.get("referalRemarks"),m.get("updatedDate"))
+							m.get("rejectReason"),m.get("adminRemarks"),m.get("referalRemarks")//,m.get("updatedDate")
+							)
 					.orderBy(orderList);
 
 			// Get Result
@@ -520,7 +522,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(m.get("updatedDate")));
+			orderList.add(cb.desc(cb.max(m.get("updatedDate"))));
 
 			// Where
 			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
@@ -531,12 +533,32 @@ public class CommonGridServiceImpl implements CommonGridService {
 			Expression<String> e0 = c.get("branchCode");
 			Predicate n6 = e0.in(branches);
 		//	Predicate n7 = cb.isNull(m.get("endorsementType"));
-			query.where(n1, n2, n3, n4, n6)
-					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
-							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
-							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
-							m.get("rejectReason"),m.get("adminRemarks"),m.get("referalRemarks"),m.get("updatedDate"))
-					.orderBy(orderList);
+			// Uw Condition 
+			if("RP".equalsIgnoreCase(status)) {
+				
+				Root<UWReferralDetails> uw = query.from(UWReferralDetails.class);
+				Predicate n8 = cb.equal(uw.get("requestReferenceNo"), m.get("requestReferenceNo")); 
+				Predicate n9 = cb.equal(uw.get("uwLoginId"),req.getApplicationId()); 
+				Predicate n10 = cb.equal(uw.get("status"), "Y"); 
+				query.where(n1, n2, n3, n4, n6,n8,n9,n10)
+				.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
+						m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
+						m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
+						m.get("rejectReason"),m.get("adminRemarks"),m.get("referalRemarks")//,m.get("updatedDate")
+						)
+				.orderBy(orderList);
+				
+			}else {
+				
+				query.where(n1, n2, n3, n4, n6)
+				.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
+						m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
+						m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
+						m.get("rejectReason"),m.get("adminRemarks"),m.get("referalRemarks"),m.get("updatedDate"))
+				.orderBy(orderList);
+			}
+			
+					
 
 			// Get Result
 			TypedQuery<ReferalCommonCriteriaRes> result = em.createQuery(query);
