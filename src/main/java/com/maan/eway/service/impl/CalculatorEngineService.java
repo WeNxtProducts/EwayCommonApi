@@ -276,7 +276,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			
 			String promocode=vehicles.get(0).get("promocode")==null?"":vehicles.get(0).get("promocode").toString();
 			List<Tuple> taxes = ratingutil.LoadTax(engine,NORMAL_TAX_LIST);
-			TaxUtils tzx = new TaxUtils(endtCount);
+			TaxUtils tzx = new TaxUtils(endtCount,"");
 
 			List<String> dependedcovers = new ArrayList<String>();
 			dependedcovers.add("N");
@@ -502,7 +502,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 						: vehicles.get(0).get("endtTypeId").toString();
 				if (StringUtils.isNotBlank(endtTypeId) && !"0".equals(endtTypeId)) {
 					// referalCalculator = referalCalculator(engine);
-					return endorsementCalculator(engine, endtCount);
+					return endorsementCalculator(engine, endtCount,endtTypeId);
 
 				}
 			} catch (Exception e) {
@@ -549,7 +549,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 								endtPrevQuoteNo, Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
 								Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()), "Y");
 				List<Tuple> taxes = ratingutil.LoadTax(engine,NORMAL_TAX_LIST);
-				TaxUtils tzx = new TaxUtils(endtCount);
+				TaxUtils tzx = new TaxUtils(endtCount,endtTypeId);
 				List<Tax> taxey = taxes.stream().map(tzx).filter(t -> t != null).collect(Collectors.toList());
 				
 				// CoverFromPolicy
@@ -615,7 +615,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 	}
 
-	public EserviceMotorDetailsSaveRes endorsementCalculator(CalcEngine request, BigDecimal endtCount) {
+	public EserviceMotorDetailsSaveRes endorsementCalculator(CalcEngine request, BigDecimal endtCount, String endtTypeId) {
 		try {
 			List<Cover> retc = new ArrayList<Cover>();
 
@@ -632,7 +632,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			// TaxFromFactor tzx=new TaxFromFactor();
 			List<Tuple> taxes = ratingutil.LoadTax(request,NORMAL_TAX_LIST);
 			List<Tuple> taxesEndt = ratingutil.LoadTax(request,ENDT_TAX_LIST);
-			TaxUtils tzx = new TaxUtils(endtCount);
+			TaxUtils tzx = new TaxUtils(endtCount,endtTypeId);
 
 			for (String dependcover : dependedcovers) {
 				List<Cover> totalcovers = new ArrayList<Cover>();
@@ -999,7 +999,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 			// TaxFromFactor tzx=new TaxFromFactor();
 			List<Tuple> taxes = ratingutil.LoadTax(request,NORMAL_TAX_LIST);
-			TaxUtils tzx = new TaxUtils(BigDecimal.ZERO);
+			TaxUtils tzx = new TaxUtils(BigDecimal.ZERO	,"");
 
 			for (String dependcover : dependedcovers) {
 				List<Cover> totalcovers = new ArrayList<Cover>();

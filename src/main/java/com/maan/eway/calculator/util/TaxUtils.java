@@ -5,13 +5,17 @@ import java.util.function.Function;
 
 import javax.persistence.Tuple;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.maan.eway.res.calc.Tax;
 
 public class TaxUtils  implements Function<Tuple,Tax>{
 	private BigDecimal endtCount;
-	public TaxUtils(BigDecimal endtCount) {
+	private String endtTypeId;
+	public TaxUtils(BigDecimal endtCount,String endtTypeId) {
 		super();
 		this.endtCount = endtCount;
+		this.endtTypeId=endtTypeId;
 	}
 	@Override
 	public Tax apply(Tuple t) {
@@ -22,7 +26,8 @@ public class TaxUtils  implements Function<Tuple,Tax>{
 				 	.taxDesc(t.get("taxName")==null?"":t.get("taxName").toString())
 				 	.taxExemptCode(null)
 				 	.taxExemptType(null)
-				 	.taxId(t.get("taxId")==null?"":t.get("taxId").toString())
+				 	.taxId(endtTypeId )					
+				 	.taxId(StringUtils.isBlank(endtTypeId)?t.get("taxId")==null?"":t.get("taxId").toString():endtTypeId)
 				 	.taxRate(t.get("value")==null?0D:Double.parseDouble(t.get("value").toString()))
 				 	.calcType(t.get("calcType")==null?"":t.get("calcType").toString())
 					.regulatoryCode(t.get("taxCode")==null?"N/A":t.get("taxCode").toString())

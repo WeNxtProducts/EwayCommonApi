@@ -2154,7 +2154,7 @@ this.repository = repo;
 			}else {
 				EndtTypeMaster endt=ratingutil.getEndtMasterData(engine.getInsuranceId(), engine.getProductId(),endtTypdId);
 				engine.setCoverModification(endt.getIsCoverendt());
-				resp=calcEngine.endorsementCalculator(engine,endtCount);
+				resp=calcEngine.endorsementCalculator(engine,endtCount,endtTypdId);
 			}
 			 
 		

@@ -21,5 +21,5 @@ public interface CalculatorEngine {
 	 List<DebitAndCredit> commissionCalc(CalcCommission request);
 
 	 List<AdminReferral> getReferalList(ReferralApi request);
-	 EserviceMotorDetailsSaveRes endorsementCalculator(CalcEngine request, BigDecimal endtCount);
+	 EserviceMotorDetailsSaveRes endorsementCalculator(CalcEngine request, BigDecimal endtCount,String endtTypeId);
 }
