@@ -408,8 +408,8 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 							.companyId(req.getCompanyId())
 							.productId(Integer.valueOf(req.getProductId()))
 							.dependentUwQuestionId(Integer.valueOf(quesId))
-							.effectiveDateEnd(StartDate)
-							.effectiveDateStart(endDate)
+							.effectiveDateEnd(endDate)
+							.effectiveDateStart(StartDate)
 							.entryDate(entryDate)
 							
 							.uwQuesOptionDesc(options.getUwQuesOptionDesc())  //DisplayName (i.e, Options)
