@@ -335,9 +335,11 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 					if (!noncovers.isEmpty()) {
 						for (Cover c : noncovers) {
-							List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null)
-									.collect(Collectors.toList());
-							c.setTaxes(taxey);
+							if(!c.getCoverageType().equals("A")) {
+								List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null)
+										.collect(Collectors.toList());
+								c.setTaxes(taxey);
+							}
 						}
 					}
 				}
@@ -377,9 +379,11 @@ public class CalculatorEngineService implements CalculatorEngine {
 					}
 					if (!noncovers.isEmpty()) {
 						for (Cover c : noncovers) {
+							if(!c.getCoverageType().equals("A")) {
 							List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null)
 									.collect(Collectors.toList());
 							c.setTaxes(taxey);
+							}
 						}
 					}
 
@@ -586,7 +590,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					 * covers.removeAll(oldTax);
 					 */
 					
-					covers.forEach(c -> c.setTaxes(taxey));
+					covers.stream().filter(c -> !c.getCoverageType().equals("A")).forEach(c -> c.setTaxes(taxey));
 					covers.forEach(c -> c.setEndtCount(endtCount));
 					covers.forEach(c -> c.setEndorsements(endorsements));// Existing Endorsement
 					covers.forEach(c -> c.setDiscounts(discounts));
@@ -708,10 +712,12 @@ public class CalculatorEngineService implements CalculatorEngine {
 					}
 
 					if (!noncovers.isEmpty()) {
-						for (Cover c : noncovers) {
-							List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null)
-									.collect(Collectors.toList());
-							c.setTaxes(taxey);
+						for (Cover c : noncovers) { 
+							if(!c.getCoverageType().equals("A")) {
+								List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null)
+										.collect(Collectors.toList());
+								c.setTaxes(taxey);
+							}
 						}
 					}
 				}
@@ -780,10 +786,12 @@ public class CalculatorEngineService implements CalculatorEngine {
 					}
 
 					if (!noncovers.isEmpty()) {
-						for (Cover c : noncovers) {
-							List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null)
-									.collect(Collectors.toList());
-							c.setTaxes(taxey);
+						for (Cover c : noncovers) { 
+							if(!c.getCoverageType().equals("A")) {
+								List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null)
+										.collect(Collectors.toList());
+								c.setTaxes(taxey);
+							}
 						}
 					}
 
@@ -1034,10 +1042,12 @@ public class CalculatorEngineService implements CalculatorEngine {
 						}
 					}
 					if (!noncovers.isEmpty()) {
-						for (Cover c : noncovers) {
+						for (Cover c : noncovers) { 
+							if(!c.getCoverageType().equals("A")) {
 							List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null)
 									.collect(Collectors.toList());
 							c.setTaxes(taxey);
+							}
 						}
 					}
 				}
@@ -1076,10 +1086,12 @@ public class CalculatorEngineService implements CalculatorEngine {
 						}
 					}
 					if (!noncovers.isEmpty()) {
-						for (Cover c : noncovers) {
-							List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null)
-									.collect(Collectors.toList());
-							c.setTaxes(taxey);
+						for (Cover c : noncovers) { 
+							if(!c.getCoverageType().equals("A")) {
+								List<Tax> taxey = taxes.stream().map(tzx).filter(d -> d != null)
+										.collect(Collectors.toList());
+								c.setTaxes(taxey);
+							}
 						}
 					}
 
