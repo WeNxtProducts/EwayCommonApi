@@ -384,8 +384,29 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			saveData.setBranchCode(req.getBranchCode());
 			repo.saveAndFlush(saveData);	
 			
-			List<UwQuestionsOptionsMaster> optionsList = optionsRepo.findByCompanyIdAndBranchCodeOrBranchCodeAndProductId(req.getCompanyId(),req.getBranchCode(),
-					"99999",Integer.valueOf(req.getProductId()));
+			//Options
+			List<UwQuestionsOptionsMaster> optionsList = new ArrayList<UwQuestionsOptionsMaster>();
+					
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<UwQuestionsOptionsMaster> query1 = cb.createQuery(UwQuestionsOptionsMaster.class);
+			
+			Root<UwQuestionsOptionsMaster> b = query1.from(UwQuestionsOptionsMaster.class);
+			
+			query1.select(b);
+			
+			
+			Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId());
+			Predicate n3 = cb.equal(b.get("branchCode"),req.getBranchCode());
+			Predicate n4 = cb.equal(b.get("productId"),req.getProductId());
+			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n6 = cb.or(n3,n5);
+		
+			query1.where(n2,n6,n4);
+			
+			// Get Result
+			TypedQuery<UwQuestionsOptionsMaster> result1 = em.createQuery(query1);
+			optionsList = result1.getResultList();
+			
 			
 			Integer quesId = uwQuestionId;
 			//Options save
@@ -640,8 +661,29 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getUwQuestionId()))).collect(Collectors.toList());
 		//	list.sort(Comparator.comparing(UWQuestionsMaster :: getUwQuestionDesc ));
 			
-			List<UwQuestionsOptionsMaster> optionsList = optionsRepo.findByCompanyIdAndBranchCodeOrBranchCodeAndProductId(req.getCompanyId(),req.getBranchCode(),
-					"99999",Integer.valueOf(req.getProductId()));
+			
+			//Options
+			List<UwQuestionsOptionsMaster> optionsList = new ArrayList<UwQuestionsOptionsMaster>();
+					
+			CriteriaBuilder cb1 = em.getCriteriaBuilder();
+			CriteriaQuery<UwQuestionsOptionsMaster> query1 = cb1.createQuery(UwQuestionsOptionsMaster.class);
+			
+			Root<UwQuestionsOptionsMaster> opst = query1.from(UwQuestionsOptionsMaster.class);
+			
+			query1.select(opst);
+			
+			
+			Predicate m2 = cb1.equal(opst.get("companyId"),req.getCompanyId());
+			Predicate m3 = cb1.equal(opst.get("branchCode"),req.getBranchCode());
+			Predicate m4 = cb1.equal(opst.get("productId"),req.getProductId());
+			Predicate m5 = cb1.equal(opst.get("branchCode"), "99999");
+			Predicate m6 = cb1.or(m3,m5);
+		
+			query1.where(m2,m6,m4);
+			
+			// Get Result
+			TypedQuery<UwQuestionsOptionsMaster> result1 = em.createQuery(query1);
+			optionsList = result1.getResultList();
 			
 			// Map
 			for (UWQuestionsMaster data : list) {
@@ -733,8 +775,31 @@ public class UwQuesitonMasterServiceImpl implements UwQuestionMasterService {
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getUwQuestionId()))).collect(Collectors.toList());
 		//	list.sort(Comparator.comparing(UWQuestionsMaster :: getUwQuestionDesc ));
 			
-			List<UwQuestionsOptionsMaster> optionsList = optionsRepo.findByCompanyIdAndBranchCodeOrBranchCodeAndProductId(req.getCompanyId(),req.getBranchCode(),
-					"99999",Integer.valueOf(req.getProductId()));
+//			List<UwQuestionsOptionsMaster> optionsList = optionsRepo.findByCompanyIdAndBranchCodeOrBranchCodeAndProductId(req.getCompanyId(),req.getBranchCode(),
+//					"99999",Integer.valueOf(req.getProductId()));
+			
+			//Options
+			List<UwQuestionsOptionsMaster> optionsList = new ArrayList<UwQuestionsOptionsMaster>();
+					
+			CriteriaBuilder cb1 = em.getCriteriaBuilder();
+			CriteriaQuery<UwQuestionsOptionsMaster> query1 = cb1.createQuery(UwQuestionsOptionsMaster.class);
+			
+			Root<UwQuestionsOptionsMaster> opst = query1.from(UwQuestionsOptionsMaster.class);
+			
+			query1.select(opst);
+			
+			
+			Predicate m2 = cb1.equal(opst.get("companyId"),req.getCompanyId());
+			Predicate m3 = cb1.equal(opst.get("branchCode"),req.getBranchCode());
+			Predicate m4 = cb1.equal(opst.get("productId"),req.getProductId());
+			Predicate m5 = cb1.equal(opst.get("branchCode"), "99999");
+			Predicate m6 = cb1.or(m3,m5);
+		
+			query1.where(m2,m6,m4);
+			
+			// Get Result
+			TypedQuery<UwQuestionsOptionsMaster> result1 = em.createQuery(query1);
+			optionsList = result1.getResultList();
 			
 			
 			if(list!=null &&list.size()>0) {
