@@ -479,6 +479,17 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 		List<EndorsementMasterGetallRes> resList = new ArrayList<EndorsementMasterGetallRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
+			LoginProductMaster loginProduct =   getLoginProductDetails(req.getCompanyId() , req.getProductId() , req.getLoginId() );
+			List<String> financeids = new ArrayList<String>();
+			List<String> nonfinanceids = new ArrayList<String>();
+			if ( loginProduct !=null ) {
+				String financeid = loginProduct.getFinancialEndtIds();
+				String nonFinanceid = loginProduct.getNonFinancialEndtIds();
+				financeids = new ArrayList<String>(Arrays.asList(financeid.split(",")));
+				nonfinanceids = new ArrayList<String>(Arrays.asList(nonFinanceid.split(",")));
+			}
+			
+			
 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
@@ -564,6 +575,18 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			res.setCreatedBy(data.getCreatedBy());
 			res.setUpdatedBy(data.getUpdatedBy());
 			res.setRegulatoryCode(data.getRegulatoryCode());
+			res.setSelectedYn("N");
+			if(data.getEndtTypeCategoryId().equals(1) ) {
+				List<String> filterTotalIds = nonfinanceids.stream().filter( o -> o.equalsIgnoreCase(data.getEndtTypeId().toString()) ).collect(Collectors.toList());
+				if(filterTotalIds.size() > 0 ) {
+					res.setSelectedYn("Y");
+				}
+			} else {
+				List<String> filterTotalIds = financeids.stream().filter( o -> o.equalsIgnoreCase(data.getEndtTypeId().toString()) ).collect(Collectors.toList());
+				if(filterTotalIds.size() > 0 ) {
+					res.setSelectedYn("Y");
+				}
+			}
 			endtlist.add(res);
 			}
 			res1.setEndorsementMasterListRes(endtlist);
@@ -576,6 +599,66 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 		return resList;
 	}
 
+	public LoginProductMaster getLoginProductDetails(String companyId  , String productId , String loginId ) {
+		LoginProductMaster res = new LoginProductMaster();
+		List<LoginProductMaster> list = new ArrayList<LoginProductMaster>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			// Update
+			// Get Less than Equal Today Record 
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<LoginProductMaster> query = cb.createQuery(LoginProductMaster.class);
+
+			// Find All
+			Root<LoginProductMaster> b = query.from(LoginProductMaster.class);
+
+			// Select
+			query.select(b);
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<LoginProductMaster> ocpm1 = effectiveDate.from(LoginProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("loginId"), b.get("loginId"));
+			effectiveDate.where(a1,a2,a3);
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<LoginProductMaster> ocpm2 = effectiveDate2.from(LoginProductMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(ocpm2.get("productId"), b.get("productId"));
+			Predicate a5 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
+			Predicate a6 = cb.equal(ocpm2.get("loginId"), b.get("loginId"));
+			effectiveDate2.where(a4,a5,a6);
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			
+			// Where
+			Predicate n1 = cb.lessThanOrEqualTo(b.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n2 = cb.greaterThanOrEqualTo(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 =  cb.equal(b.get("productId"), productId );
+			Predicate n4 =  cb.equal(b.get("companyId"), companyId );
+			Predicate n5 =  cb.equal(b.get("loginId"), loginId );
+
+			query.where(n1, n2, n3,n4,n5);//.orderBy(orderList);
+
+			// Get Result
+			TypedQuery<LoginProductMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			res = list.get(0);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+	
 	@Override
 	public List<EndorsementMasterGetallRes> getActiveEndorsement(EndorsementMasterGetallReq req) {
 		// TODO Auto-generated method stub

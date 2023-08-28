@@ -86,5 +86,7 @@ public class EndorsementMasterListRes {
 	
 	@JsonProperty("SectionModificationType")
 	private String sectionModificationType;
+	@JsonProperty("SelectedYn")
+	private String selectedYn;
 
 }
