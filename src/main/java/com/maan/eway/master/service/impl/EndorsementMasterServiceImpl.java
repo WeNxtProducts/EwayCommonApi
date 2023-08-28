@@ -483,8 +483,8 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			List<String> financeids = new ArrayList<String>();
 			List<String> nonfinanceids = new ArrayList<String>();
 			if ( loginProduct !=null ) {
-				String financeid = loginProduct.getFinancialEndtIds();
-				String nonFinanceid = loginProduct.getNonFinancialEndtIds();
+				String financeid = loginProduct.getFinancialEndtIds()==null ? "": loginProduct.getFinancialEndtIds() ;
+				String nonFinanceid = loginProduct.getNonFinancialEndtIds()==null ? "": loginProduct.getNonFinancialEndtIds();
 				financeids = new ArrayList<String>(Arrays.asList(financeid.split(",")));
 				nonfinanceids = new ArrayList<String>(Arrays.asList(nonFinanceid.split(",")));
 			}
