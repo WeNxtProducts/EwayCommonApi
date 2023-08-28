@@ -307,8 +307,8 @@ public class EndorsementService {
 			// LoginDetails
 			List<String> financeids = new ArrayList<String>();
 			List<String> nonfinanceids = new ArrayList<String>();
+			LoginMaster loginData = loginRepo.findByLoginId(request.getLoginId());
 			if(StringUtils.isNotBlank(request.getLoginId()) ) {
-				LoginMaster loginData = loginRepo.findByLoginId(request.getLoginId());
 				LoginProductMaster loginProduct =   getLoginProductDetails(request.getCompanyId() , request.getProductId().toPlainString() , request.getLoginId() );
 				
 				if ( loginProduct !=null ) {
@@ -344,7 +344,7 @@ public class EndorsementService {
 						if(filterTotalIds.size() > 0 ) {
 							endtAvailable = true ;
 						}
-					} else if( "Issuer".equalsIgnoreCase(loginData.getUserType()){
+					} else if( "Issuer".equalsIgnoreCase(loginData.getUserType())){
 						List<String> filterTotalIds = financeids.stream().filter( o -> o.equalsIgnoreCase(ent.getEndtTypeId().toString()) ).collect(Collectors.toList());
 						if(filterTotalIds.size() > 0 ) {
 							endtAvailable = true ;
