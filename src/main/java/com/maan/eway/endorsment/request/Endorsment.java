@@ -45,5 +45,8 @@ public class Endorsment {
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
+	
+	@JsonProperty("LoginId")
+	private String loginId;
 
 }

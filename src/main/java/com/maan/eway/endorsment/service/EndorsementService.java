@@ -32,6 +32,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.maan.eway.admin.req.BrokerProductGetReq;
+import com.maan.eway.admin.res.BrokerCommssionDetailsRes;
+import com.maan.eway.admin.res.BrokerProductGetRes;
+import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
@@ -42,6 +46,9 @@ import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.bean.LoginProductMaster;
+import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.TermsAndCondition;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
@@ -79,6 +86,7 @@ import com.maan.eway.repository.EndtTypeMasterRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
 import com.maan.eway.repository.EserviceCommonDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
+import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
 import com.maan.eway.repository.TermsAndConditionRepository;
 import com.maan.eway.req.FactorRateDetailsGetReq;
@@ -145,6 +153,9 @@ public class EndorsementService {
 	
 	@Autowired
 	private CopyPolicyCoverData copycover;
+	
+	@Autowired
+	private LoginMasterRepository loginRepo ;
 	
 	public CommonRes cancelPolicy(Endorsment request) {
 		try {
@@ -293,33 +304,80 @@ public class EndorsementService {
 			List<EndtTypeMaster> m =ratingutil.getEndtMasterDatas(request.getCompanyId(),request.getProductId().toPlainString());
 
 					// endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualOrderByPriorityAsc(request.getCompanyId(),Integer.valueOf(request.getProductId().intValue()),"Y",new Date(),new Date());
+			// LoginDetails
+			List<String> totalids = new ArrayList<String>();
+			if(StringUtils.isNotBlank(request.getLoginId()) ) {
+				LoginMaster loginData = loginRepo.findByLoginId(request.getLoginId());
+				LoginProductMaster loginProduct =   getLoginProductDetails(request.getCompanyId() , request.getProductId().toPlainString() , request.getLoginId() );
+				List<String> financeids = new ArrayList<String>();
+				List<String> nonfinanceids = new ArrayList<String>();
+				
+				if ( loginProduct !=null ) {
+					String financeid = loginProduct.getFinancialEndtIds();
+					String nonFinanceid = loginProduct.getNonFinancialEndtIds();
+
+					if( "Issuer".equalsIgnoreCase(loginData.getUserType()) ) {
+						financeids = new ArrayList<String>(Arrays.asList(financeid.split(",")));
+						financeids.forEach( o -> {
+							totalids.add(o);
+						});;
+						 // String[] strSplit = financeid.split(",");
+						 // strSplit
+						//  totalids.addAll(Arrays.asList(strSplit));
+							
+						  
+					}
+			        //nonfinanceids = new ArrayList<String>(Arrays.asList(nonFinanceid));
+					nonfinanceids = new ArrayList<String>(Arrays.asList(nonFinanceid.split(",")));
+					nonfinanceids.forEach( o -> {
+						totalids.add(o);
+					});
+					
+			  	}
+			//	totalids.add(financeids);
+			//	totalids.addAll(nonfinanceids);
+			}
 			
 			List<EndorsementType> ets=new ArrayList<EndorsementType>(); 
 			for(EndtTypeMaster ent:m) {
 				
-				String fieldAsString = ent.getEndtDependantFields();
-				List<String> fields=null;
-				if(StringUtils.isNotBlank(fieldAsString)) {
-					 fields=new ArrayList<String>();
-					 if(fieldAsString.indexOf(",")!=-1) {
-						 String[] split = fieldAsString.split(",");
-						 fields= Arrays.asList(split);
-					 }else {
-						 fields.add(fieldAsString);
-					 }
+				// Login Restrict Condition
+				boolean endtAvailable = false ;
+				if(StringUtils.isNotBlank(request.getLoginId())  ) {
+					List<String> filterTotalIds = totalids.stream().filter( o -> o.equalsIgnoreCase(ent.getEndtTypeId().toString()) ).collect(Collectors.toList());
+					if(filterTotalIds.size() > 0 ) {
+						endtAvailable = true ;
+					}
+				} else {
+					endtAvailable = true ;
+				}
+			
+				if( endtAvailable == true  ) {
+					String fieldAsString = ent.getEndtDependantFields();
+					List<String> fields=null;
+					if(StringUtils.isNotBlank(fieldAsString)) {
+						 fields=new ArrayList<String>();
+						 if(fieldAsString.indexOf(",")!=-1) {
+							 String[] split = fieldAsString.split(",");
+							 fields= Arrays.asList(split);
+						 }else {
+							 fields.add(fieldAsString);
+						 }
+					}
+					
+					EndorsementType e = EndorsementType.builder()
+							.endorsementCategory(new BigDecimal(ent.getEndtTypeCategoryId()))
+							.endorsementCategoryDesc(ent.getEndtTypeCategory())
+							.endorsementDesc(ent.getEndtTypeDesc())
+							.endtType(new BigDecimal(ent.getEndtTypeId()))
+							.fieldsAllowed(fields)
+							.sectionModificationYn(ent.getSectionModificationYn())
+							.sectionModificationType(ent.getSectionModificationType())
+							.build();
+					
+					ets.add(e);
 				}
 				
-				EndorsementType e = EndorsementType.builder()
-						.endorsementCategory(new BigDecimal(ent.getEndtTypeCategoryId()))
-						.endorsementCategoryDesc(ent.getEndtTypeCategory())
-						.endorsementDesc(ent.getEndtTypeDesc())
-						.endtType(new BigDecimal(ent.getEndtTypeId()))
-						.fieldsAllowed(fields)
-						.sectionModificationYn(ent.getSectionModificationYn())
-						.sectionModificationType(ent.getSectionModificationType())
-						.build();
-				
-				ets.add(e);
 			}
 			EndtMaster endt=EndtMaster.builder().endorsementTypes(ets).build();
 			return endt;
@@ -334,6 +392,67 @@ public class EndorsementService {
 	@PersistenceContext
 	private EntityManager em;
 	private EndtTypeMaster entMaster;
+	
+	
+	public LoginProductMaster getLoginProductDetails(String companyId  , String productId , String loginId ) {
+		LoginProductMaster res = new LoginProductMaster();
+		List<LoginProductMaster> list = new ArrayList<LoginProductMaster>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			// Update
+			// Get Less than Equal Today Record 
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<LoginProductMaster> query = cb.createQuery(LoginProductMaster.class);
+
+			// Find All
+			Root<LoginProductMaster> b = query.from(LoginProductMaster.class);
+
+			// Select
+			query.select(b);
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<LoginProductMaster> ocpm1 = effectiveDate.from(LoginProductMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("loginId"), b.get("loginId"));
+			effectiveDate.where(a1,a2,a3);
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<LoginProductMaster> ocpm2 = effectiveDate2.from(LoginProductMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a4 = cb.equal(ocpm2.get("productId"), b.get("productId"));
+			Predicate a5 = cb.equal(ocpm2.get("companyId"), b.get("companyId"));
+			Predicate a6 = cb.equal(ocpm2.get("loginId"), b.get("loginId"));
+			effectiveDate2.where(a4,a5,a6);
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.desc(b.get("effectiveDateStart")));
+			
+			// Where
+			Predicate n1 = cb.lessThanOrEqualTo(b.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n2 = cb.greaterThanOrEqualTo(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n3 =  cb.equal(b.get("productId"), productId );
+			Predicate n4 =  cb.equal(b.get("companyId"), companyId );
+			Predicate n5 =  cb.equal(b.get("loginId"), loginId );
+
+			query.where(n1, n2, n3,n4,n5);//.orderBy(orderList);
+
+			// Get Result
+			TypedQuery<LoginProductMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			res = list.get(0);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is --->" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
 	
 	
 	public List<EndorsementCriteriaRes> endorsementPendingData(Endorsment request) {
