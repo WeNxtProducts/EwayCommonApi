@@ -344,7 +344,7 @@ public class EndorsementService {
 						if(filterTotalIds.size() > 0 ) {
 							endtAvailable = true ;
 						}
-					} else {
+					} else if( "Issuer".equalsIgnoreCase(loginData.getUserType()){
 						List<String> filterTotalIds = financeids.stream().filter( o -> o.equalsIgnoreCase(ent.getEndtTypeId().toString()) ).collect(Collectors.toList());
 						if(filterTotalIds.size() > 0 ) {
 							endtAvailable = true ;
