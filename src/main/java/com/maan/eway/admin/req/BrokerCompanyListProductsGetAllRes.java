@@ -99,5 +99,8 @@ public class BrokerCompanyListProductsGetAllRes {
 	@JsonProperty("CreatedBy")
 	private String createdBy;
 	
+	@JsonProperty("SelectedYn")
+	private String selectedYn;
+	
 	
 }
