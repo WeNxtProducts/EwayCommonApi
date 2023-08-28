@@ -305,12 +305,11 @@ public class EndorsementService {
 
 					// endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqualOrderByPriorityAsc(request.getCompanyId(),Integer.valueOf(request.getProductId().intValue()),"Y",new Date(),new Date());
 			// LoginDetails
-			List<String> totalids = new ArrayList<String>();
+			List<String> financeids = new ArrayList<String>();
+			List<String> nonfinanceids = new ArrayList<String>();
 			if(StringUtils.isNotBlank(request.getLoginId()) ) {
 				LoginMaster loginData = loginRepo.findByLoginId(request.getLoginId());
 				LoginProductMaster loginProduct =   getLoginProductDetails(request.getCompanyId() , request.getProductId().toPlainString() , request.getLoginId() );
-				List<String> financeids = new ArrayList<String>();
-				List<String> nonfinanceids = new ArrayList<String>();
 				
 				if ( loginProduct !=null ) {
 					String financeid = loginProduct.getFinancialEndtIds();
@@ -318,9 +317,7 @@ public class EndorsementService {
 
 					if( "Issuer".equalsIgnoreCase(loginData.getUserType()) ) {
 						financeids = new ArrayList<String>(Arrays.asList(financeid.split(",")));
-						financeids.forEach( o -> {
-							totalids.add(o);
-						});;
+						;
 						 // String[] strSplit = financeid.split(",");
 						 // strSplit
 						//  totalids.addAll(Arrays.asList(strSplit));
@@ -329,9 +326,7 @@ public class EndorsementService {
 					}
 			        //nonfinanceids = new ArrayList<String>(Arrays.asList(nonFinanceid));
 					nonfinanceids = new ArrayList<String>(Arrays.asList(nonFinanceid.split(",")));
-					nonfinanceids.forEach( o -> {
-						totalids.add(o);
-					});
+					
 					
 			  	}
 			//	totalids.add(financeids);
@@ -344,10 +339,18 @@ public class EndorsementService {
 				// Login Restrict Condition
 				boolean endtAvailable = false ;
 				if(StringUtils.isNotBlank(request.getLoginId())  ) {
-					List<String> filterTotalIds = totalids.stream().filter( o -> o.equalsIgnoreCase(ent.getEndtTypeId().toString()) ).collect(Collectors.toList());
-					if(filterTotalIds.size() > 0 ) {
-						endtAvailable = true ;
+					if(ent.getEndtTypeCategoryId().equals(1) ) {
+						List<String> filterTotalIds = nonfinanceids.stream().filter( o -> o.equalsIgnoreCase(ent.getEndtTypeId().toString()) ).collect(Collectors.toList());
+						if(filterTotalIds.size() > 0 ) {
+							endtAvailable = true ;
+						}
+					} else {
+						List<String> filterTotalIds = financeids.stream().filter( o -> o.equalsIgnoreCase(ent.getEndtTypeId().toString()) ).collect(Collectors.toList());
+						if(filterTotalIds.size() > 0 ) {
+							endtAvailable = true ;
+						}
 					}
+					
 				} else {
 					endtAvailable = true ;
 				}
