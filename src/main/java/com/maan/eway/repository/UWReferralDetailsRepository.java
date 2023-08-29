@@ -31,4 +31,9 @@ public interface UWReferralDetailsRepository  extends JpaRepository<UWReferralDe
 	void deleteByRequestReferenceNo(String requestReferenceNo);
 
 	List<UWReferralDetails> findByRequestReferenceNo(String requestReferenceNo);
+
+	List<UWReferralDetails> findByRequestReferenceNoAndProductIdAndUwLoginIdNotIn(String requestReferenceNo,
+			Integer valueOf, List<String> loginIds);
+
+
 }
