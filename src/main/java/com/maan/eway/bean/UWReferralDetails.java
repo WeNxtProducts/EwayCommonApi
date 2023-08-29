@@ -69,7 +69,7 @@ private static final long serialVersionUID = 1L;
     private String     companyId ;
 
     @Column(name="BRANCH_CODE", length=100)
-    private String     brancCode;
+    private String     branchCode;
 
     @Column(name="SUM_INSURED")
     private BigDecimal sumInsured;

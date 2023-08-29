@@ -120,6 +120,7 @@ import com.maan.eway.repository.SeqQuotenoRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerHistoryRepository;
 import com.maan.eway.repository.UWReferralDetailsRepository;
+import com.maan.eway.repository.UWReferralHistoryRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
 import com.maan.eway.req.calcengine.ReferralApi;
 import com.maan.eway.res.ReferalResponse;
@@ -262,6 +263,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	
 	@Autowired
 	private UWReferralDetailsRepository uwReferralRepo;
+	
+	@Autowired
+	private UWReferralHistoryRepository uwReferralHistRepo;
 	
 	@Override
 	public CommonRes call_OT_Insert(NewQuoteReq req) {
@@ -840,7 +844,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					List<UWReferralDetails> saveUWList =new ArrayList<UWReferralDetails>();
 					for(GetApproverListRes uwres : res1) {
 						UWReferralDetails saveUWReferral =new UWReferralDetails();
-						saveUWReferral.setBrancCode(branchCode);
+						saveUWReferral.setBranchCode(branchCode);
 						saveUWReferral.setCompanyId(req.getInsuranceId());
 						saveUWReferral.setEntryDate(new Date());
 						saveUWReferral.setProductId(Integer.valueOf(req.getProductId()));
