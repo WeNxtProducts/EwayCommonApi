@@ -35,5 +35,7 @@ public interface ProductEmployeesDetailsRepository extends JpaRepository<Product
 	List<ProductEmployeeDetails> findByQuoteNoAndSectionIdAndProductIdOrderByRiskIdAsc(String quoteNo, String string,
 			Integer productId);
 
+	List<ProductEmployeeDetails> findByQuoteNoAndSectionIdAndStatusNot(String quoteNo, String sectionId, String string);
+
 
 }

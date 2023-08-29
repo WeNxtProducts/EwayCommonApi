@@ -581,7 +581,7 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			
 			List<CommonDataDetails> commonDatas = new ArrayList<CommonDataDetails>();
-			List<ProductEmployeeDetails> reqList = 	empDetailsRepo.findByQuoteNoAndSectionId(quoteNo,sectionId)	;
+			List<ProductEmployeeDetails> reqList = 	empDetailsRepo.findByQuoteNoAndSectionIdAndStatusNot(quoteNo,sectionId,"D")	;
 			
 			if(reqList!=null && reqList.size()> 0 && StringUtils.isNotBlank(quoteNo)  ) {
 				commonDatas = commonRepo.findByQuoteNoAndSectionId(quoteNo,sectionId);
