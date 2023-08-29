@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.maan.eway.admin.res.MotorGridCriteriaAdminRes;
 import com.maan.eway.admin.res.MotorGridCriteriaRes;
 import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
 import com.maan.eway.bean.CoverMaster;
@@ -65,6 +66,7 @@ import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
+import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
 import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
@@ -3013,5 +3015,261 @@ public class MotorGridServiceImpl implements MotorGridService {
 		    public boolean isMySQL() {
 		        return isMySQL;
 		    }
+		    
+		    @Override
+			public synchronized List<MotorGridCriteriaAdminRes> getMotorAdminReferalPendingDetails(RevertGridReq req , int limit,int offset ,String status) {
+				List<MotorGridCriteriaAdminRes> referrals = new ArrayList<MotorGridCriteriaAdminRes>();
+				try {
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+					// Find All
+					Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
+					Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+					
+					// Select
+					query.multiselect(cb.count(m).as(Long.class).alias("idsCount"),
+							// Customer Info
+							c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
+							c.get("clientName").alias("clientName"),
+							// Vehicle Info
+							m.get("companyId").alias("companyId"), m.get("productId").alias("productId"),
+							m.get("branchCode").alias("branchCode"),
+							m.get("requestReferenceNo").alias("requestReferenceNo"),
+							cb.selectCase().when(m.get("quoteNo").isNotNull(), m.get("quoteNo")).otherwise(m.get("quoteNo"))
+									.alias("quoteNo"),
+							cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId"))
+									.otherwise(m.get("customerId")).alias("customerId"),
+							m.get("policyStartDate").alias("policyStartDate"),
+							m.get("policyEndDate").alias("policyEndDate"),
+							m.get("rejectReason").alias("rejectReason"),
+							m.get("adminRemarks").alias("adminRemarks"),
+							cb.max(m.get("status")).alias("status"),
+							cb.max(m.get("entryDate")).alias("entryDate"),
+							cb.max(m.get("endorsementType")).alias("endorsementType"),
+							cb.max(m.get("endorsementTypeDesc")).alias("endorsementTypeDesc"),
+							cb.max(m.get("endorsementDate")).alias("endorsementDate"),
+							cb.max(m.get("endorsementRemarks")).alias("endorsementRemarks"),
+							cb.max(m.get("endorsementEffdate")).alias("endorsementEffdate"),
+							cb.max(m.get("originalPolicyNo")).alias("originalPolicyNo"),
+							cb.max(m.get("endtPrevPolicyNo")).alias("endtPrevPolicyNo"),
+							cb.max(m.get("endtPrevQuoteNo")).alias("endtPrevQuoteNo"),
+							cb.max(m.get("endtCount")).alias("endtCount"),
+							cb.max(m.get("endtStatus")).alias("endtStatus"),
+							cb.max(m.get("endtCategDesc")).alias("endtCategDesc"),
+							cb.max(m.get("endtPremium")).alias("endtPremium")
+							);
+
+					// Order By
+					List<Order> orderList = new ArrayList<Order>();
+					orderList.add(cb.desc(m.get("updatedDate")));
+
+					// Where
+					Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
+					Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
+					Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
+					Predicate n4 = cb.equal(m.get("status"),status);
+					//Predicate n4 = m.get("status").in( new ArrayList<String>(Arrays.asList("D",status) ));
+
+					String branchCode ="";
+					if (StringUtils.isNotBlank(req.getBranchCode()) && !"99999".equals(req.getBranchCode())) {
+						branchCode = req.getBranchCode();
+						Predicate n6 =cb.equal(m.get("branchCode"),branchCode);
+						query.where(n1, n2, n3, n4, n6)
+						.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
+								m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
+								m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
+								m.get("rejectReason"),m.get("adminRemarks"),m.get("updatedDate")
+								)
+						.orderBy(orderList);
+					}else {
+						query.where(n1, n2, n3, n4)
+						.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
+								m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
+								m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
+								m.get("rejectReason"),m.get("adminRemarks"),m.get("updatedDate")
+								)
+						.orderBy(orderList);
+						
+					}
+				
+						
+					
+
+					// Get Result
+					TypedQuery<Tuple> result = em.createQuery(query);
+					result.setFirstResult(limit * offset);
+					result.setMaxResults(offset);
+					List<Tuple> referralsList = result.getResultList();
+					for (  Tuple r :referralsList   ) {
+						MotorGridCriteriaAdminRes res = new MotorGridCriteriaAdminRes();
+						res.setIdsCount(r.get("idsCount")==null ? null : (Long) r.get("idsCount"));
+						res.setAdminRemarks(r.get("adminRemarks")==null ? "" : (String) r.get("adminRemarks"));
+						res.setBranchCode(r.get("branchCode")==null ? "" : (String) r.get("branchCode"));
+						res.setClientName(r.get("clientName")==null ? "" : (String) r.get("clientName"));
+						res.setCompanyId(r.get("companyId")==null ? "" : (String) r.get("companyId"));
+						res.setCustomerId(r.get("customerId")==null ? "" : (String) r.get("customerId"));
+						res.setCustomerReferenceNo(r.get("customerReferenceNo")==null ? "" : (String) r.get("customerReferenceNo"));
+						res.setIdNumber(r.get("idNumber")==null ? "" : (String) r.get("idNumber"));
+						res.setPolicyEndDate(r.get("policyEndDate")==null ? null : (Date) r.get("policyEndDate"));
+						res.setPolicyStartDate(r.get("policyStartDate")==null ? null : (Date) r.get("policyStartDate"));
+						res.setProductId(r.get("productId")==null ? "" : (String) r.get("productId"));
+						res.setStatus(r.get("status")==null ? "" : (String) r.get("status"));
+						res.setEntryDate(r.get("entryDate")==null ? null : (Date) r.get("entryDate"));
+						res.setQuoteNo(r.get("quoteNo")==null ? "" : (String) r.get("quoteNo"));
+						res.setRejectReason(r.get("rejectReason")==null ? "" : (String) r.get("rejectReason"));
+						res.setRequestReferenceNo(r.get("requestReferenceNo")==null ? "" : (String) r.get("requestReferenceNo"));
+						res.setEndorsementDate(r.get("endorsementDate")==null ? null : (Date) r.get("endorsementDate"));
+						res.setEndorsementEffdate(r.get("endorsementEffdate")==null ? null : (Date) r.get("endorsementEffdate"));
+						res.setEndorsementRemarks(r.get("endorsementRemarks")==null ? "" : r.get("endorsementRemarks").toString());
+						res.setEndorsementType(r.get("endorsementType")==null ? "" : r.get("endorsementType").toString());
+						res.setEndorsementTypeDesc(r.get("endorsementTypeDesc")==null ? "" : r.get("endorsementTypeDesc").toString());
+//						res.setEndorsementYn(r.get("endorsementYn")==null ? "" : r.get("endorsementYn").toString());
+						res.setEndtCategDesc(r.get("endtCategDesc")==null ? "" : r.get("endtCategDesc").toString());
+						res.setEndtCount(r.get("endtCount")==null ? BigDecimal.ZERO : new BigDecimal(r.get("endorsementType").toString()));
+						res.setEndtPremium(r.get("endtPremium")==null ? null : Double.valueOf(r.get("endtPremium").toString()));
+						res.setEndtPrevPolicyNo(r.get("endtPrevPolicyNo")==null ? "" : r.get("endtPrevPolicyNo").toString());
+						res.setEndtPrevQuoteNo(r.get("endtPrevQuoteNo")==null ? "" : r.get("endtPrevQuoteNo").toString());
+						res.setEndtStatus(r.get("endtStatus")==null ? "" : r.get("endtStatus").toString());
+						res.setOriginalPolicyNo(r.get("originalPolicyNo")==null ? "" : r.get("originalPolicyNo").toString());
+						referrals.add(res);
+					}
+					referrals = referrals.stream().filter(o -> !o.getIdsCount().equals(0L))
+							.collect(Collectors.toList());
+				} catch (Exception e) {
+					e.printStackTrace();
+					log.info("Log Details" + e.getMessage());
+					return null;
+				}
+				return referrals;
+			}
+		    
+			@Override
+			public synchronized List<MotorGridCriteriaAdminRes> getMotorAdminReferalPendingDetailsCount(RevertGridReq req, String status) {
+				List<MotorGridCriteriaAdminRes> referrals = new ArrayList<MotorGridCriteriaAdminRes>();
+				try {
+							CriteriaBuilder cb = em.getCriteriaBuilder();
+							CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+							// Find All
+							Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
+							Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+							
+							// Select
+							query.multiselect(cb.count(m).as(Long.class).alias("idsCount"),
+									// Customer Info
+									c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
+									c.get("clientName").alias("clientName"),
+									// Vehicle Info
+									m.get("companyId").alias("companyId"), m.get("productId").alias("productId"),
+									m.get("branchCode").alias("branchCode"),
+									m.get("requestReferenceNo").alias("requestReferenceNo"),
+									cb.selectCase().when(m.get("quoteNo").isNotNull(), m.get("quoteNo")).otherwise(m.get("quoteNo"))
+											.alias("quoteNo"),
+									cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId"))
+											.otherwise(m.get("customerId")).alias("customerId"),
+									m.get("policyStartDate").alias("policyStartDate"),
+									m.get("policyEndDate").alias("policyEndDate"),
+									m.get("rejectReason").alias("rejectReason"),
+									m.get("adminRemarks").alias("adminRemarks"),
+									cb.max(m.get("status")).alias("status"),
+									cb.max(m.get("entryDate")).alias("entryDate"),
+									cb.max(m.get("endorsementType")).alias("endorsementType"),
+									cb.max(m.get("endorsementTypeDesc")).alias("endorsementTypeDesc"),
+									cb.max(m.get("endorsementDate")).alias("endorsementDate"),
+									cb.max(m.get("endorsementRemarks")).alias("endorsementRemarks"),
+									cb.max(m.get("endorsementEffdate")).alias("endorsementEffdate"),
+									cb.max(m.get("originalPolicyNo")).alias("originalPolicyNo"),
+									cb.max(m.get("endtPrevPolicyNo")).alias("endtPrevPolicyNo"),
+									cb.max(m.get("endtPrevQuoteNo")).alias("endtPrevQuoteNo"),
+									cb.max(m.get("endtCount")).alias("endtCount"),
+									cb.max(m.get("endtStatus")).alias("endtStatus"),
+									cb.max(m.get("endtCategDesc")).alias("endtCategDesc"),
+									cb.max(m.get("endtPremium")).alias("endtPremium")
+									);
+
+							// Order By
+							List<Order> orderList = new ArrayList<Order>();
+							orderList.add(cb.desc(m.get("updatedDate")));
+
+							// Where
+							Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
+							Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
+							Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
+							Predicate n4 = cb.equal(m.get("status"),status);
+							//Predicate n4 = m.get("status").in( new ArrayList<String>(Arrays.asList("D",status) ));
+
+							String branchCode ="";
+							if (StringUtils.isNotBlank(req.getBranchCode()) && !"99999".equals(req.getBranchCode())) {
+								branchCode = req.getBranchCode();
+								Predicate n6 =cb.equal(m.get("branchCode"),branchCode);
+								query.where(n1, n2, n3, n4, n6)
+								.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
+										m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
+										m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
+										m.get("rejectReason"),m.get("adminRemarks"),m.get("updatedDate")
+										)
+								.orderBy(orderList);
+							}else {
+								query.where(n1, n2, n3, n4)
+								.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
+										m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
+										m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
+										m.get("rejectReason"),m.get("adminRemarks"),m.get("updatedDate")
+										)
+								.orderBy(orderList);
+								
+							}
+						
+								
+							
+
+							// Get Result
+							TypedQuery<Tuple> result = em.createQuery(query);
+
+							List<Tuple> referralsList = result.getResultList();
+							for (  Tuple r :referralsList   ) {
+								MotorGridCriteriaAdminRes res = new MotorGridCriteriaAdminRes();
+								res.setIdsCount(r.get("idsCount")==null ? null : (Long) r.get("idsCount"));
+								res.setAdminRemarks(r.get("adminRemarks")==null ? "" : (String) r.get("adminRemarks"));
+								res.setBranchCode(r.get("branchCode")==null ? "" : (String) r.get("branchCode"));
+								res.setClientName(r.get("clientName")==null ? "" : (String) r.get("clientName"));
+								res.setCompanyId(r.get("companyId")==null ? "" : (String) r.get("companyId"));
+								res.setCustomerId(r.get("customerId")==null ? "" : (String) r.get("customerId"));
+								res.setCustomerReferenceNo(r.get("customerReferenceNo")==null ? "" : (String) r.get("customerReferenceNo"));
+								res.setIdNumber(r.get("idNumber")==null ? "" : (String) r.get("idNumber"));
+								res.setPolicyEndDate(r.get("policyEndDate")==null ? null : (Date) r.get("policyEndDate"));
+								res.setPolicyStartDate(r.get("policyStartDate")==null ? null : (Date) r.get("policyStartDate"));
+								res.setProductId(r.get("productId")==null ? "" : (String) r.get("productId"));
+								res.setStatus(r.get("status")==null ? "" : (String) r.get("status"));
+								res.setEntryDate(r.get("entryDate")==null ? null : (Date) r.get("entryDate"));
+								res.setQuoteNo(r.get("quoteNo")==null ? "" : (String) r.get("quoteNo"));
+								res.setRejectReason(r.get("rejectReason")==null ? "" : (String) r.get("rejectReason"));
+								res.setRequestReferenceNo(r.get("requestReferenceNo")==null ? "" : (String) r.get("requestReferenceNo"));
+								res.setEndorsementDate(r.get("endorsementDate")==null ? null : (Date) r.get("endorsementDate"));
+								res.setEndorsementEffdate(r.get("endorsementEffdate")==null ? null : (Date) r.get("endorsementEffdate"));
+								res.setEndorsementRemarks(r.get("endorsementRemarks")==null ? "" : r.get("endorsementRemarks").toString());
+								res.setEndorsementType(r.get("endorsementType")==null ? "" : r.get("endorsementType").toString());
+								res.setEndorsementTypeDesc(r.get("endorsementTypeDesc")==null ? "" : r.get("endorsementTypeDesc").toString());
+//								res.setEndorsementYn(r.get("endorsementYn")==null ? "" : r.get("endorsementYn").toString());
+								res.setEndtCategDesc(r.get("endtCategDesc")==null ? "" : r.get("endtCategDesc").toString());
+								res.setEndtCount(r.get("endtCount")==null ? BigDecimal.ZERO : new BigDecimal(r.get("endorsementType").toString()));
+								res.setEndtPremium(r.get("endtPremium")==null ? null : Double.valueOf(r.get("endtPremium").toString()));
+								res.setEndtPrevPolicyNo(r.get("endtPrevPolicyNo")==null ? "" : r.get("endtPrevPolicyNo").toString());
+								res.setEndtPrevQuoteNo(r.get("endtPrevQuoteNo")==null ? "" : r.get("endtPrevQuoteNo").toString());
+								res.setEndtStatus(r.get("endtStatus")==null ? "" : r.get("endtStatus").toString());
+								res.setOriginalPolicyNo(r.get("originalPolicyNo")==null ? "" : r.get("originalPolicyNo").toString());
+								referrals.add(res);
+							}
+							referrals = referrals.stream().filter(o -> !o.getIdsCount().equals(0L))
+									.collect(Collectors.toList());
+						} catch (Exception e) {
+							e.printStackTrace();
+							log.info("Log Details" + e.getMessage());
+							return null;
+						}
+						return referrals;
+					}		    
+
 		
 	}

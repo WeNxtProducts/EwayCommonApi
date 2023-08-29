@@ -8,10 +8,12 @@ import javax.persistence.Tuple;
 import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
 import com.maan.eway.admin.res.ReferalCommonCriteriaRes;
 import com.maan.eway.admin.res.ReferalCriteriaRes;
+import com.maan.eway.admin.res.ReferalGridCriteriaAdminRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
+import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
@@ -49,4 +51,9 @@ public interface CommonGridService {
 			int offset, String string);
 
 	CopyQuoteSuccessRes commonEndt(CopyQuoteReq req, List<String> branches, String loginId);
+
+	List<ReferalGridCriteriaAdminRes> getCommonAdminReferalPendingDetails(RevertGridReq req, int limit, int offset,
+			String string);
+
+	List<ReferalGridCriteriaAdminRes> getCommonAdminReferalPendingDetailsCount(RevertGridReq req, String string);
 }

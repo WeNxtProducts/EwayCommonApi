@@ -31,4 +31,13 @@ public class CommonCopyRes {
 	
 	@JsonProperty("OldRequestReferenceNo")
 	private String oldRequestReferenceNo;
+	
+	
+	@JsonProperty("PolicyNo")
+	private String policyNo;
+	
+	@JsonProperty("EndtPrevQuoteNo")
+	private String endtPrevQuoteNo;
+	
+	
 }

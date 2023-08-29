@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
 import com.maan.eway.admin.res.ReferalCommonCriteriaRes;
-
+import com.maan.eway.admin.res.ReferalGridCriteriaAdminRes;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.EndtTypeMaster;
@@ -60,6 +60,7 @@ import com.maan.eway.bean.UWReferralDetails;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
+import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
@@ -2589,4 +2590,185 @@ public class CommonGridServiceImpl implements CommonGridService {
 			return res;
 			
 		}
+		
+		@Override
+		public synchronized List<ReferalGridCriteriaAdminRes> getCommonAdminReferalPendingDetails(RevertGridReq req,  int limit,
+				int offset ,String status) {
+			List<ReferalGridCriteriaAdminRes> referrals = new ArrayList<ReferalGridCriteriaAdminRes>();
+			try {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<ReferalGridCriteriaAdminRes> query = cb.createQuery(ReferalGridCriteriaAdminRes.class);
+
+				// Find All
+				Root<EserviceCommonDetails> m = query.from(EserviceCommonDetails.class);
+				Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+
+				// Select
+				query.multiselect(cb.count(m).as(Long.class).alias("idsCount"),
+						// Customer Info
+						c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
+						c.get("clientName").alias("clientName"),
+						// Vehicle Info
+						m.get("companyId").alias("companyId"), m.get("productId").alias("productId"),
+						m.get("branchCode").alias("branchCode"), m.get("requestReferenceNo").alias("requestReferenceNo"),
+						cb.selectCase().when(m.get("quoteNo").isNotNull(), m.get("quoteNo")).otherwise(m.get("quoteNo"))
+								.alias("quoteNo"),
+						cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId"))
+								.otherwise(m.get("customerId")).alias("customerId"),
+						m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
+						m.get("rejectReason").alias("rejectReason"),
+						m.get("adminRemarks").alias("adminRemarks"),
+						cb.max(m.get("status")).alias("status"),
+						cb.max(m.get("entryDate")).alias("entryDate"),
+						m.get("referalRemarks").alias("referalRemarks"),
+						cb.max(m.get("endorsementType")).alias("endorsementType"),
+						cb.max(m.get("endorsementTypeDesc")).alias("endorsementTypeDesc"),
+						cb.max(m.get("endorsementDate")).alias("endorsementDate"),
+						cb.max(m.get("endorsementRemarks")).alias("endorsementRemarks"),
+						cb.max(m.get("endorsementEffdate")).alias("endorsementEffdate"),
+						cb.max(m.get("originalPolicyNo")).alias("originalPolicyNo"),
+						cb.max(m.get("endtPrevPolicyNo")).alias("endtPrevPolicyNo"),
+						cb.max(m.get("endtPrevQuoteNo")).alias("endtPrevQuoteNo"),
+						cb.max(m.get("endtCount")).alias("endtCount"),
+						cb.max(m.get("endtStatus")).alias("endtStatus"),
+						cb.max(m.get("endtCategDesc")).alias("endtCategDesc"),
+						cb.max(m.get("endtPremium")).alias("endtPremium")
+						);
+
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(cb.max(m.get("updatedDate"))));
+
+				// Where
+				Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
+				Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
+				Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
+				Predicate n4 = cb.equal(m.get("status"),status);
+				
+				String branchCode ="";
+				if (StringUtils.isNotBlank(req.getBranchCode()) && !"99999".equals(req.getBranchCode())) {
+					branchCode = req.getBranchCode();
+					Predicate n6 =cb.equal(m.get("branchCode"),branchCode);
+					query.where(n1, n2, n3, n4, n6)
+					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
+							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
+							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
+							m.get("rejectReason"),m.get("adminRemarks"),m.get("referalRemarks"),m.get("updatedDate")
+							)
+					.orderBy(orderList);
+				}else {
+					
+					query.where(n1, n2, n3, n4)
+					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
+							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
+							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
+							m.get("rejectReason"),m.get("adminRemarks"),m.get("referalRemarks"),m.get("updatedDate"))
+					.orderBy(orderList);
+				}
+				
+						
+
+				// Get Result
+				TypedQuery<ReferalGridCriteriaAdminRes> result = em.createQuery(query);
+				result.setFirstResult(limit * offset);
+				result.setMaxResults(offset);
+				referrals = result.getResultList();
+				referrals = referrals.stream().filter(o -> !o.getIdsCount().equals(0L))
+						.collect(Collectors.toList());
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return referrals;
+		}
+
+		public synchronized List<ReferalGridCriteriaAdminRes> getCommonAdminReferalPendingDetailsCount(RevertGridReq req,String status) {
+			List<ReferalGridCriteriaAdminRes> referrals = new ArrayList<ReferalGridCriteriaAdminRes>();
+			try {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<ReferalGridCriteriaAdminRes> query = cb.createQuery(ReferalGridCriteriaAdminRes.class);
+
+				// Find All
+				Root<EserviceCommonDetails> m = query.from(EserviceCommonDetails.class);
+				Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+
+				// Select
+				query.multiselect(cb.count(m).as(Long.class).alias("idsCount"),
+						// Customer Info
+						c.get("customerReferenceNo").alias("customerReferenceNo"), c.get("idNumber").alias("idNumber"),
+						c.get("clientName").alias("clientName"),
+						// Vehicle Info
+						m.get("companyId").alias("companyId"), m.get("productId").alias("productId"),
+						m.get("branchCode").alias("branchCode"), m.get("requestReferenceNo").alias("requestReferenceNo"),
+						cb.selectCase().when(m.get("quoteNo").isNotNull(), m.get("quoteNo")).otherwise(m.get("quoteNo"))
+								.alias("quoteNo"),
+						cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId"))
+								.otherwise(m.get("customerId")).alias("customerId"),
+						m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
+						m.get("rejectReason").alias("rejectReason"),
+						m.get("adminRemarks").alias("adminRemarks"),
+						cb.max(m.get("status")).alias("status"),
+						cb.max(m.get("entryDate")).alias("entryDate"),
+						m.get("referalRemarks").alias("referalRemarks"),
+						cb.max(m.get("endorsementType")).alias("endorsementType"),
+						cb.max(m.get("endorsementTypeDesc")).alias("endorsementTypeDesc"),
+						cb.max(m.get("endorsementDate")).alias("endorsementDate"),
+						cb.max(m.get("endorsementRemarks")).alias("endorsementRemarks"),
+						cb.max(m.get("endorsementEffdate")).alias("endorsementEffdate"),
+						cb.max(m.get("originalPolicyNo")).alias("originalPolicyNo"),
+						cb.max(m.get("endtPrevPolicyNo")).alias("endtPrevPolicyNo"),
+						cb.max(m.get("endtPrevQuoteNo")).alias("endtPrevQuoteNo"),
+						cb.max(m.get("endtCount")).alias("endtCount"),
+						cb.max(m.get("endtStatus")).alias("endtStatus"),
+						cb.max(m.get("endtCategDesc")).alias("endtCategDesc"),
+						cb.max(m.get("endtPremium")).alias("endtPremium")
+						);
+
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.desc(cb.max(m.get("updatedDate"))));
+
+				// Where
+				Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
+				Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
+				Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
+				Predicate n4 = cb.equal(m.get("status"),status);
+				
+				String branchCode ="";
+				if (StringUtils.isNotBlank(req.getBranchCode()) && !"99999".equals(req.getBranchCode())) {
+					branchCode = req.getBranchCode();
+					Predicate n6 =cb.equal(m.get("branchCode"),branchCode);
+					query.where(n1, n2, n3, n4, n6)
+					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
+							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
+							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
+							m.get("rejectReason"),m.get("adminRemarks"),m.get("referalRemarks"),m.get("updatedDate")
+							)
+					.orderBy(orderList);
+				}else {
+					
+					query.where(n1, n2, n3, n4)
+					.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
+							m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
+							m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"),
+							m.get("rejectReason"),m.get("adminRemarks"),m.get("referalRemarks"),m.get("updatedDate"))
+					.orderBy(orderList);
+				}
+				
+						
+
+				// Get Result
+				TypedQuery<ReferalGridCriteriaAdminRes> result = em.createQuery(query);
+				referrals = result.getResultList();
+				referrals = referrals.stream().filter(o -> !o.getIdsCount().equals(0L))
+						.collect(Collectors.toList());
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return referrals;
+		}
+
 }

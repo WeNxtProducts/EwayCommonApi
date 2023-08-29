@@ -40,6 +40,7 @@ import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.ChangeEndoStatusReq;
+import com.maan.eway.common.res.BuildingCopyRes;
 import com.maan.eway.common.res.CommonCopyRes;
 import com.maan.eway.common.res.EndorsementCriteriaRes;
 import com.maan.eway.repository.BuildingDetailsRepository;
@@ -103,10 +104,19 @@ public class CopyCommonRaw {
 			
 			// Risk
 			CommonCopyRes  riskRes =  copyCommonRiskTable(request);
+			
+			
+			// Section Copy
+			List<String> sectionIds = copyBuildingSections(riskRes);
+//			riskRes.setSectionIds(sectionIds);
+//			riskRes.setLocationId(riskRes.getLocationId());
+			
 			List<EserviceCommonDetails> commonData = eCommonRepo.findByRequestReferenceNo(riskRes.getRequestReferenceNo());
 			commonData = commonData.stream().filter(distinctByKey(o -> Arrays.asList(o.getRequestReferenceNo()))).collect(Collectors.toList());
 			//EserviceCommonDetails commonData = eCommonRepo.findByRequestReferenceNoOrderByRiskIdDesc(riskRes.getRequestReferenceNo() ); 
 			EserviceCommonDetails commonData1=commonData.get(0);
+			
+			
 			return commonData1 ;
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -263,6 +273,39 @@ public class CopyCommonRaw {
 			log.info(e.getMessage());
 		}
 		return list;
+	}
+	
+	public List<String> copyBuildingSections( CommonCopyRes buildingData ) {
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+			String newReqRefNo=buildingData.getRequestReferenceNo() ;
+		//	String  oldReqRefNo=buildingData.getOldRequestReferenceNo() ;
+			List<EserviceSectionDetails>  oldSecDatas = eserSecRepo.findByQuoteNoOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo()) ;
+			
+			// Building Section Insert
+			Long buildSecCount = eserSecRepo.countByRequestReferenceNoAndRiskId(newReqRefNo, 1);
+			if (buildSecCount > 0) {
+				eserSecRepo.deleteByRequestReferenceNoAndRiskId(newReqRefNo, 1);
+			}
+
+			List<String> secList = new ArrayList<String>(); 
+			for (EserviceSectionDetails section : oldSecDatas) {
+				EserviceSectionDetails secData = new EserviceSectionDetails();
+			
+				dozerMapper.map(section, secData);
+				secData.setRequestReferenceNo(newReqRefNo);
+				secData.setUserOpt("N");
+				secData.setPolicyNo(buildingData.getPolicyNo());
+				secData.setQuoteNo(null);
+				eserSecRepo.saveAndFlush(secData);
+				secList.add(secData.getSectionId());
+			}
+			
+			return secList;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	@PersistenceContext
 	private EntityManager em;

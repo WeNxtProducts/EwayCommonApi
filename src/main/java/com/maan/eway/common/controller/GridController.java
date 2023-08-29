@@ -20,7 +20,9 @@ import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.PortFolioDashBoardReq;
 import com.maan.eway.common.req.PortFolioGridReq;
+import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.req.UpdateLapsedQuoteReq;
+import com.maan.eway.common.res.AdminPendingGridRes;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
@@ -29,12 +31,14 @@ import com.maan.eway.common.res.GetallPolicyReportsRes;
 import com.maan.eway.common.res.PortFolioDashBoardRes;
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.PortfolioGridRes;
+import com.maan.eway.common.res.RevertGridRes;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
 import com.maan.eway.common.service.GridService;
 import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
 import io.swagger.annotations.Api;
@@ -491,6 +495,57 @@ public class GridController {
 					data.setMessage("Failed");
 					return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
 
+				}
+			}
+			
+
+			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
+			@PostMapping("/uwpendinggrid")
+			public ResponseEntity<CommonRes> getUwPendingGrid(@RequestBody RevertGridReq req) {
+				reqPrinter.reqPrint(req);
+				CommonRes data = new CommonRes();
+				RevertGridRes res = entityService.getUwPendingGrid(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}
+			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
+			@PostMapping("/superadminreferralpending")
+			public ResponseEntity<CommonRes> getReAllotUwPendingGrid(@RequestBody RevertGridReq req) {
+				reqPrinter.reqPrint(req);
+				CommonRes data = new CommonRes();
+				AdminPendingGridRes res = entityService.getReAllotUwPendingGrid(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}
+			
+			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
+			@PostMapping("/updateuwreferraldetails")
+			public ResponseEntity<CommonRes> updateUwReferralDetails(@RequestBody List<RevertGridReq> req) {
+				reqPrinter.reqPrint(req);
+				CommonRes data = new CommonRes();
+				SuccessRes res = entityService.updateUwReferralDetails(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 				}
 			}
 			

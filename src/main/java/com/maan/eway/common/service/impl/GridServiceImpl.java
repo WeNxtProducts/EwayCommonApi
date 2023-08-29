@@ -40,10 +40,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.maan.eway.admin.res.MotorGridCriteriaAdminRes;
 import com.maan.eway.admin.res.MotorGridCriteriaRes;
 import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
 import com.maan.eway.admin.res.ReferalCommonCriteriaRes;
+import com.maan.eway.admin.res.ReferalGridCriteriaAdminRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
+import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
@@ -56,6 +60,7 @@ import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
+import com.maan.eway.bean.UWReferralDetails;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetApproverListReq;
@@ -63,7 +68,10 @@ import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.PortFolioDashBoardReq;
 import com.maan.eway.common.req.PortFolioGridReq;
+import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.req.UpdateLapsedQuoteReq;
+import com.maan.eway.common.res.AdminPendingGridListRes;
+import com.maan.eway.common.res.AdminPendingGridRes;
 import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
 import com.maan.eway.common.res.GetApproverListRes;
@@ -79,6 +87,8 @@ import com.maan.eway.common.res.PortfolioGridRes;
 import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
+import com.maan.eway.common.res.RevertGridListRes;
+import com.maan.eway.common.res.RevertGridRes;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
 import com.maan.eway.common.service.BuildingGridService;
 import com.maan.eway.common.service.CommonGridService;
@@ -86,6 +96,7 @@ import com.maan.eway.common.service.GridService;
 import com.maan.eway.common.service.MotorGridService;
 import com.maan.eway.common.service.TravelGridService;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.BrokerCompanyListProductReq;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EserviceBuildingDetailsRepository;
@@ -94,8 +105,10 @@ import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
+import com.maan.eway.repository.UWReferralDetailsRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.SuccessRes;
 import com.maan.eway.thread.MyTaskList;
 
 @Service
@@ -138,6 +151,8 @@ public class GridServiceImpl implements GridService {
 	@Autowired
 	private HomePositionMasterRepository homeRepo;
 
+	@Autowired
+	private UWReferralDetailsRepository uwReferalDetailsRepo ;
 	@PersistenceContext
 	private EntityManager em;
 	
@@ -3435,5 +3450,250 @@ public class GridServiceImpl implements GridService {
 		return resList;
 	}
 
+	@Override
+	public RevertGridRes getUwPendingGrid(RevertGridReq req) {
+		RevertGridRes res = new RevertGridRes();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
+		try {
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+			
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<UWReferralDetails> query = cb.createQuery(UWReferralDetails.class);
+			List<UWReferralDetails> list = new ArrayList<UWReferralDetails>();
+		
+			Root<UWReferralDetails> c = query.from(UWReferralDetails.class);
+		
+			query.select(c);
+			
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("entryDate")));
+			
+			Predicate n1 = cb.equal(c.get("companyId"),req.getInsuranceId());
+			Predicate n2 = cb.equal(c.get("branchCode"),req.getBranchCode());	
+			Predicate n3 = cb.equal(c.get("productId"),req.getProductId());	
+//			Predicate n4 = cb.equal(c.get("uwLoginId"), req.getLoginId());
+			Predicate n5 = cb.equal(c.get("requestReferenceNo"), req.getRequestReferenceNo());
+			
+			
+			query.where(n1,n2 ,n3, n5).orderBy(orderList);
+		
+			TypedQuery<UWReferralDetails> result = em.createQuery(query);
+			result.setFirstResult(limit * offset);
+			result.setMaxResults(offset);
+			list = result.getResultList();
+			
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getUwLoginId()))).collect(Collectors.toList());
+			
+			if(list.size()>0) {
+				List<RevertGridListRes> resList=new ArrayList<RevertGridListRes>();
+				for(UWReferralDetails data : list) {
+					RevertGridListRes res1 = new RevertGridListRes();
+					res1.setUnderWriterLoginId(data.getUwLoginId()==null?"":data.getUwLoginId());
+					res1.setBranchCode(data.getBranchCode()==null?"":data.getBranchCode());
+					res1.setProductId(data.getProductId()==null?"":data.getProductId().toString());
+					res1.setStatus(data.getUwStatus()==null?"":data.getUwStatus());
+					res1.setRequestReferenceNo(data.getRequestReferenceNo()==null?"":data.getRequestReferenceNo());
+					res1.setEntryDate(data.getEntryDate()==null?null:sdf.format(data.getEntryDate()));
+					res1.setUwStatus(data.getUwStatus()==null?null:data.getUwStatus());
+					resList.add(res1);
+				}
+			res.setCount(Long.valueOf(list.size()));
+			res.setPendingList(resList);			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return res;
+	}
+
+	@Override
+	public AdminPendingGridRes getReAllotUwPendingGrid(RevertGridReq req) {
+		AdminPendingGridRes custRes = new AdminPendingGridRes();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
+		int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+		int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+		Long count=0l;
 	
+		CompanyProductMaster product = getCompanyProductMasterDropdown(req.getInsuranceId(),
+				req.getProductId().toString());
+		
+		List<BranchMaster> branchlist = getByBranchCode(req.getInsuranceId());
+		String branchName = "";
+		
+		
+		List<AdminPendingGridListRes> resList = new ArrayList<AdminPendingGridListRes>();
+		List<ReferalGridCriteriaAdminRes> adminReferralPendingList = new ArrayList<ReferalGridCriteriaAdminRes>();
+		List<ReferalGridCriteriaAdminRes> adminReferralPendingListCount = new ArrayList<ReferalGridCriteriaAdminRes>();
+		
+		
+		
+		if (product.getMotorYn().equalsIgnoreCase("M")) {
+			List<MotorGridCriteriaAdminRes> adminReferralPendingList2 = motService.getMotorAdminReferalPendingDetails(req,limit, offset, "RP");
+			List<MotorGridCriteriaAdminRes> adminReferralPendingListCount2 = motService.getMotorAdminReferalPendingDetailsCount(req, "RP");
+			
+			//Total Count
+			if (adminReferralPendingListCount2.size() > 0 && adminReferralPendingListCount2 != null) {
+				count = Long.valueOf(adminReferralPendingListCount2.size());
+			}
+			for (MotorGridCriteriaAdminRes data : adminReferralPendingList2) {
+				AdminPendingGridListRes res = new AdminPendingGridListRes();
+				if(data.getBranchCode()!=null && StringUtils.isNotBlank(data.getBranchCode())) {
+					List<BranchMaster> filterProducts =  branchlist.stream().filter( o -> o.getBranchCode().equalsIgnoreCase(data.getBranchCode()) ).collect(Collectors.toList());
+					branchName = filterProducts.get(0).getBranchName();
+				}
+				res = dozerMapper.map(data, AdminPendingGridListRes.class);
+				res.setBranchName(branchName);
+				resList.add(res);
+			}
+			custRes.setCount(count);
+			custRes.setAdminPendingGridListRes(resList);
+			return custRes;
+
+		} else if (product.getMotorYn().equalsIgnoreCase("H")
+				&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+			adminReferralPendingList = traService.getTravelAdminReferalPendingDetails(req, limit, offset, "RP");
+			adminReferralPendingListCount = traService.getTravelAdminReferalPendingDetailsCount(req, "RP");
+		} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+			adminReferralPendingList = buiService.getBuildingAdminReferalPendingDetails(req, limit, offset,"RP");
+			adminReferralPendingListCount = buiService.getBuildingAdminReferalPendingDetailsCount(req,"RP");
+		} else {
+			List<ReferalGridCriteriaAdminRes> adminReferralPendingList2 = commonService .getCommonAdminReferalPendingDetails(req, limit, offset, "RP");
+			List<ReferalGridCriteriaAdminRes> adminReferralPendingListCount2 = commonService .getCommonAdminReferalPendingDetailsCount(req, "RP");
+			
+			//Total Count
+			if (adminReferralPendingListCount2.size() > 0 && adminReferralPendingListCount2 != null) {
+				count = Long.valueOf(adminReferralPendingListCount2.size());
+			}
+			for (ReferalGridCriteriaAdminRes data : adminReferralPendingList2) {
+				AdminPendingGridListRes res = new AdminPendingGridListRes();
+				
+				if(data.getBranchCode()!=null && StringUtils.isNotBlank(data.getBranchCode())) {
+					List<BranchMaster> filterProducts =  branchlist.stream().filter( o -> o.getBranchCode().equalsIgnoreCase(data.getBranchCode()) ).collect(Collectors.toList());
+					branchName = filterProducts.get(0).getBranchName();
+				}
+				res = dozerMapper.map(data, AdminPendingGridListRes.class);
+				res.setBranchName(branchName);
+				resList.add(res);
+			}
+			custRes.setCount(count);
+			custRes.setAdminPendingGridListRes(resList);
+			return custRes;
+		}
+		if (adminReferralPendingListCount.size() > 0 && adminReferralPendingListCount != null) {
+			count = Long.valueOf(adminReferralPendingListCount.size());
+		}
+		for (ReferalGridCriteriaAdminRes data : adminReferralPendingList) {
+			AdminPendingGridListRes res = new AdminPendingGridListRes();
+			if(data.getBranchCode()!=null && StringUtils.isNotBlank(data.getBranchCode())) {
+				List<BranchMaster> filterProducts =  branchlist.stream().filter( o -> o.getBranchCode().equalsIgnoreCase(data.getBranchCode()) ).collect(Collectors.toList());
+				branchName = filterProducts.get(0).getBranchName();
+			}
+			res = dozerMapper.map(data, AdminPendingGridListRes.class);
+			res.setBranchName(branchName);
+			resList.add(res);
+		}
+		custRes.setCount(count);
+		custRes.setAdminPendingGridListRes(resList);
+
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Log Details" + e.getMessage());
+		return null;
+	}
+	return custRes;
+}
+
+	//BranchName
+		public List<BranchMaster> getByBranchCode(String companyId) {
+			//BranchMaster res = new BranchMasterRes();
+			List<BranchMaster> list = new ArrayList<BranchMaster>();
+			try {
+				Date today = new Date();
+				Calendar cal = new GregorianCalendar();
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 1);
+				today = cal.getTime();
+				// Criteria
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<BranchMaster> query = cb.createQuery(BranchMaster.class);
+				
+				
+				// Find All
+				Root<BranchMaster>    c = query.from(BranchMaster.class);		
+				
+				// Select
+				query.select(c );
+				
+				// amendId Max Filter
+				Subquery<Long> amendId = query.subquery(Long.class);
+				Root<BranchMaster> ocpm1 = amendId.from(BranchMaster.class);
+				amendId.select(cb.max(ocpm1.get("amendId")));
+				Predicate a1 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode") );
+				
+				amendId.where(a1);
+				
+				// Order By
+				List<Order> orderList = new ArrayList<Order>();
+				orderList.add(cb.asc(c.get("branchCode")));
+				
+				// Where
+				Predicate n1 = cb.equal(c.get("amendId"), amendId);
+				Predicate n4 = cb.equal(c.get("companyId"), companyId);
+				query.where(n1,n4).orderBy(orderList);
+				
+				// Get Result
+				TypedQuery<BranchMaster> result = em.createQuery(query);			
+				list =  result.getResultList();  
+				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getBranchCode()))).collect(Collectors.toList());
+				list.sort(Comparator.comparing(BranchMaster :: getBranchName ));
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return list;
+		}
+
+		@Override
+		public SuccessRes updateUwReferralDetails(List<RevertGridReq> reqList) {
+			SuccessRes res = new SuccessRes();
+			try {
+				List<String> loginIds = reqList.stream().map(RevertGridReq::getLoginId).collect(Collectors.toList());
+
+				List<UWReferralDetails> nonselected = uwReferalDetailsRepo
+						.findByRequestReferenceNoAndProductIdAndUwLoginIdNotIn(reqList.get(0).getRequestReferenceNo(),
+								Integer.valueOf(reqList.get(0).getProductId()), loginIds);
+
+				nonselected.forEach(o -> {
+					o.setUwStatus("N");
+				});
+
+				uwReferalDetailsRepo.saveAll(nonselected);
+				for(RevertGridReq req:reqList) {
+				// Update Referral Details 
+				if(StringUtils.isNotBlank(req.getLoginId())) {
+					List<UWReferralDetails> uwList = uwReferalDetailsRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+					
+					uwList.forEach( o -> {
+						if( o.getUwLoginId().equals(req.getLoginId()) )
+							 o.setUwStatus("Y");
+					});
+					uwReferalDetailsRepo.saveAll(uwList);
+				}
+			}
+				res.setResponse("Updated Successfully");
+				res.setSuccessId(reqList.get(0).getRequestReferenceNo());
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return res;
+		}
+		
 }

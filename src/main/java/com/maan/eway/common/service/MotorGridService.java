@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.Tuple;
 
+import com.maan.eway.admin.res.MotorGridCriteriaAdminRes;
 import com.maan.eway.admin.res.MotorGridCriteriaRes;
 import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
 import com.maan.eway.admin.res.ReferalCriteriaRes;
@@ -15,6 +16,7 @@ import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
+import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
@@ -57,5 +59,10 @@ public interface MotorGridService {
 	List<Tuple> getMotorIssuerQuoteDetails(IssuerQuoteReq req, Date startDate, Date endDate);
 
 	List<Tuple> getMotorReportDetails(GetallPolicyReportsReq req);
+
+	List<MotorGridCriteriaAdminRes> getMotorAdminReferalPendingDetails(RevertGridReq req,int limit, int offset,
+			String string);
+
+	List<MotorGridCriteriaAdminRes> getMotorAdminReferalPendingDetailsCount(RevertGridReq req, String string);
 	
 }

@@ -6,11 +6,13 @@ import java.util.List;
 import javax.persistence.Tuple;
 
 import com.maan.eway.admin.res.ReferalCriteriaRes;
+import com.maan.eway.admin.res.ReferalGridCriteriaAdminRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
+import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
@@ -42,5 +44,10 @@ public interface TravelGridService {
 
 	List<PortfolioPendingGridCriteriaRes> getTravelProtfolioPending(ExistingQuoteReq req, List<String> branches,
 			Date today, int limit, int offset, String string);
+
+	List<ReferalGridCriteriaAdminRes> getTravelAdminReferalPendingDetails(RevertGridReq req, int limit, int offset,
+			String string);
+
+	List<ReferalGridCriteriaAdminRes> getTravelAdminReferalPendingDetailsCount(RevertGridReq req, String string);
 
 }
