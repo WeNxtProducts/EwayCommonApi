@@ -312,8 +312,8 @@ public class EndorsementService {
 				LoginProductMaster loginProduct =   getLoginProductDetails(request.getCompanyId() , request.getProductId().toPlainString() , request.getLoginId() );
 				
 				if ( loginProduct !=null ) {
-					String financeid = loginProduct.getFinancialEndtIds();
-					String nonFinanceid = loginProduct.getNonFinancialEndtIds();
+					String financeid = StringUtils.isBlank(loginProduct.getFinancialEndtIds()) ? "" :  loginProduct.getFinancialEndtIds();
+					String nonFinanceid =StringUtils.isBlank( loginProduct.getNonFinancialEndtIds()) ? "" : loginProduct.getNonFinancialEndtIds();
 
 					if( "Issuer".equalsIgnoreCase(loginData.getUserType()) ) {
 						financeids = new ArrayList<String>(Arrays.asList(financeid.split(",")));
@@ -325,7 +325,7 @@ public class EndorsementService {
 						  
 					}
 			        //nonfinanceids = new ArrayList<String>(Arrays.asList(nonFinanceid));
-					nonfinanceids = new ArrayList<String>(Arrays.asList(nonFinanceid.split(",")));
+					nonfinanceids =  new ArrayList<String>(Arrays.asList(nonFinanceid.split(",")));
 					
 					
 			  	}
