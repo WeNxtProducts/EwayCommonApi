@@ -665,6 +665,16 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 		List<EndorsementMasterGetallRes> resList = new ArrayList<EndorsementMasterGetallRes>();
 		DozerBeanMapper mapper = new DozerBeanMapper();
 		try {
+			LoginProductMaster loginProduct =   getLoginProductDetails(req.getCompanyId() , req.getProductId() , req.getLoginId() );
+			List<String> financeids = new ArrayList<String>();
+			List<String> nonfinanceids = new ArrayList<String>();
+			if ( loginProduct !=null ) {
+				String financeid = loginProduct.getFinancialEndtIds()==null ? "": loginProduct.getFinancialEndtIds() ;
+				String nonFinanceid = loginProduct.getNonFinancialEndtIds()==null ? "": loginProduct.getNonFinancialEndtIds();
+				financeids = new ArrayList<String>(Arrays.asList(financeid.split(",")));
+				nonfinanceids = new ArrayList<String>(Arrays.asList(nonFinanceid.split(",")));
+			}
+			
 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
@@ -750,7 +760,18 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			res.setCreatedBy(data.getCreatedBy());
 			res.setUpdatedBy(data.getUpdatedBy());
 			res.setRegulatoryCode(data.getRegulatoryCode());
-			
+			res.setSelectedYn("N");
+			if(data.getEndtTypeCategoryId().equals(1) ) {
+				List<String> filterTotalIds = nonfinanceids.stream().filter( o -> o.equalsIgnoreCase(data.getEndtTypeId().toString()) ).collect(Collectors.toList());
+				if(filterTotalIds.size() > 0 ) {
+					res.setSelectedYn("Y");
+				}
+			} else {
+				List<String> filterTotalIds = financeids.stream().filter( o -> o.equalsIgnoreCase(data.getEndtTypeId().toString()) ).collect(Collectors.toList());
+				if(filterTotalIds.size() > 0 ) {
+					res.setSelectedYn("Y");
+				}
+			}
 			endtlist.add(res);
 			}
 			res1.setEndorsementMasterListRes(endtlist);
