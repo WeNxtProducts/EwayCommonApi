@@ -3485,6 +3485,7 @@ public class GridServiceImpl implements GridService {
 			
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getUwLoginId()))).collect(Collectors.toList());
 			
+			Long resCount=getUwPendingGridCount(req);
 			if(list.size()>0) {
 				List<RevertGridListRes> resList=new ArrayList<RevertGridListRes>();
 				for(UWReferralDetails data : list) {
@@ -3498,7 +3499,7 @@ public class GridServiceImpl implements GridService {
 					res1.setUwStatus(data.getUwStatus()==null?null:data.getUwStatus());
 					resList.add(res1);
 				}
-			res.setCount(Long.valueOf(list.size()));
+			res.setCount(resCount);
 			res.setPendingList(resList);			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3506,6 +3507,41 @@ public class GridServiceImpl implements GridService {
 			return null;
 		}
 		return res;
+	}
+	public Long getUwPendingGridCount(RevertGridReq req) {
+		Long count =0l;
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
+		try {
+			
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<UWReferralDetails> query = cb.createQuery(UWReferralDetails.class);
+			List<UWReferralDetails> list = new ArrayList<UWReferralDetails>();
+		
+			Root<UWReferralDetails> c = query.from(UWReferralDetails.class);
+		
+			query.select(c);
+			
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("entryDate")));
+			
+			Predicate n1 = cb.equal(c.get("companyId"),req.getInsuranceId());
+			Predicate n2 = cb.equal(c.get("branchCode"),req.getBranchCode());	
+			Predicate n3 = cb.equal(c.get("productId"),req.getProductId());	
+			Predicate n5 = cb.equal(c.get("requestReferenceNo"), req.getRequestReferenceNo());
+			
+			
+			query.where(n1,n2 ,n3, n5).orderBy(orderList);
+		
+			TypedQuery<UWReferralDetails> result = em.createQuery(query);
+			list = result.getResultList();
+			count=Long.valueOf(list.size());
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return count;
 	}
 
 	@Override
