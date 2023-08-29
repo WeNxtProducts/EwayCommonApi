@@ -104,5 +104,9 @@ public interface FactorRateRequestDetailsRepository  extends JpaRepository<Facto
 	List<FactorRateRequestDetails> findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndProductIdAndSectionIdAndStatusOrderByVehicleIdAsc(
 			String requestReferenceNo, int i, int j, Integer valueOf, Integer valueOf2, String string);
 
+	@Transactional
+	void deleteByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleIdAndSectionIdAndCoverIdNotIn(
+			String companyId,Integer productId,String requestRefNo,Integer vehicleId,Integer sectionId,
+			List<Integer> coverId);
 
 }

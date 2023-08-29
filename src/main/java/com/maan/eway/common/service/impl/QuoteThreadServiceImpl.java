@@ -656,13 +656,13 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				facRateRepo.saveAllAndFlush(userOptCovers);
 				
 				// Update Non Opted Covers
-				for (FactorRateRequestDetails cover : nonOptCovers ) {
+				/*for (FactorRateRequestDetails cover : nonOptCovers ) {
 					String userOptCond = StringUtils.isNotBlank(cover.getUserOpt()) && "Y".equalsIgnoreCase(cover.getUserOpt()) 
 							&& cover.getEndtCount()!=null && cover.getEndtCount().compareTo(BigDecimal.ZERO) >0 ? "Y" :"N";
 					cover.setUserOpt(userOptCond);
 					
-				}
-				facRateRepo.saveAllAndFlush(nonOptCovers);
+				}*/
+				facRateRepo.deleteAll(nonOptCovers);
 				
 			}	
 			

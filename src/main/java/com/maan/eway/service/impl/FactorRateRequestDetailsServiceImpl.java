@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -1939,6 +1940,23 @@ this.repository = repo;
 			String endtTypdId="";
 			BigDecimal endtCount=BigDecimal.ZERO;
 			CalcEngine engine= new CalcEngine();
+			
+			// delete unselected cover block start
+			String companyId =req.getCompanyId();
+			Integer productId =Integer.valueOf(req.getProductId());
+			String requestRef =req.getRequestReferenceNo();
+			Integer sectionId =Integer.valueOf(req.getSectionId());
+			Integer vehicleId =req.getVehicleId();
+			List<CoverIdReq2> coverList =req.getCoverIdList().isEmpty() || req.getCoverIdList().size()==0 ?Collections.emptyList():req.getCoverIdList();
+			if(!coverList.isEmpty()) {
+				List<Integer> selectedCoverId =coverList.stream()
+						.map(c ->c.getCoverId())
+						.collect(Collectors.toList());
+				
+				repository.deleteByCompanyIdAndProductIdAndRequestReferenceNoAndVehicleIdAndSectionIdAndCoverIdNotIn(
+						companyId, Integer.valueOf(productId), requestRef, vehicleId, sectionId, selectedCoverId);
+			}
+			// delete unselected cover block end
 			
 			List<FactorRateRequestDetails> findCovers = repository.findByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdOrderByCoverIdAsc(req.getRequestReferenceNo() , req.getVehicleId() ,
 					req.getCompanyId() , Integer.valueOf(req.getProductId()) , Integer.valueOf(req.getSectionId())   ) ;	
