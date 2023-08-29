@@ -780,7 +780,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 								if(! "D".equalsIgnoreCase(commonData.getStatus()) ) {
 									overAllSuminsured = commonData.getSumInsuredLc()==null ? overAllSuminsured : commonData.getSumInsuredLc().add(overAllSuminsured) ;
 									overAllSuminsured = commonData.getAooSuminsuredLc()==null ? overAllSuminsured : commonData.getAooSuminsuredLc().add(overAllSuminsured) ;
-									overAllSuminsured = commonData.getAggSuminsuredLc()==null ? overAllSuminsured : commonData.getAggSuminsuredLc().add(overAllSuminsured) ;
+								//	overAllSuminsured = commonData.getAggSuminsuredLc()==null ? overAllSuminsured : commonData.getAggSuminsuredLc().add(overAllSuminsured) ;
 									
 								}
 								
@@ -808,7 +808,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							if(! "D".equalsIgnoreCase(commonData.getStatus()) ) {
 								overAllSuminsured = commonData.getSumInsuredLc()==null ? overAllSuminsured : commonData.getSumInsuredLc().add(overAllSuminsured) ;
 								overAllSuminsured = commonData.getAooSuminsuredLc()==null ? overAllSuminsured : commonData.getAooSuminsuredLc().add(overAllSuminsured) ;
-								overAllSuminsured = commonData.getAggSuminsuredLc()==null ? overAllSuminsured : commonData.getAggSuminsuredLc().add(overAllSuminsured) ;
+								//overAllSuminsured = commonData.getAggSuminsuredLc()==null ? overAllSuminsured : commonData.getAggSuminsuredLc().add(overAllSuminsured) ;
 							}
 						}
 					}

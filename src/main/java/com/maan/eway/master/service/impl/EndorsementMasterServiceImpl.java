@@ -701,8 +701,8 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			Predicate a1 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a2 = cb.equal(ocpm1.get("productId"), b.get("productId"));
 			Predicate a3 = cb.equal(ocpm1.get("endtTypeCategoryId"), b.get("endtTypeCategoryId"));
-
-			amendId.where(a1, a2,a3);
+			Predicate a4 = cb.equal(ocpm1.get("endtTypeId"), b.get("endtTypeId"));
+			amendId.where(a1, a2,a3,a4);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
