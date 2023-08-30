@@ -2440,6 +2440,10 @@ public class QuoteServiceImpl implements QuoteService {
 			BuildingRiskDetails build  = buildRiskRepo.findByQuoteNo(req.getQuoteNo());
 			List<EserviceSectionDetails>   buildSections = eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(build.getRequestReferenceNo());	
 			List<CommonDataDetails> paccDatas = commonDataRepo.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+			List<CommonDataDetails> filterPacc = paccDatas.stream().filter( o -> ! "D".equalsIgnoreCase(o.getStatus()) 
+					&& o.getSectionId().equals("35") ).collect(Collectors.toList());					
+			List<CommonDataDetails> filterLiability = paccDatas.stream().filter( o -> ! "D".equalsIgnoreCase(o.getStatus()) 
+					&& o.getSectionId().equals("36") ).collect(Collectors.toList());
 
 			List<String> sectionIds = buildSections.stream().filter( o -> o.getRiskId().equals(build.getRiskId() )).map(EserviceSectionDetails :: getSectionId ).collect(Collectors.toList());
 			
@@ -2456,12 +2460,12 @@ public class QuoteServiceImpl implements QuoteService {
 			res.setOccupationTypeDesc(build.getOccupationTypeDesc());
 			res.setLiabilityOccupationId(build.getLiabilityOccupationId());
 			res.setLiabilityOccupationDesc(build.getLiabilityOccupationDesc());
-			res.setPersonalAccSuminsured(paccDatas.size()> 0 ? paccDatas.get(0).getSumInsured().toString() : "");
+			res.setPersonalAccSuminsured(filterPacc.size()> 0 ? filterPacc.get(0).getSumInsured().toPlainString() : "");
 			res.setCount(paccDatas.size()> 0 ? paccDatas.get(0).getCount().toString() : "");
 			
 			res.setBuildingSuminsured(build.getBuildingSuminsured() == null?"0" :build.getBuildingSuminsured().toPlainString());
 			res.setAllriskSuminsured(build.getAllriskSuminsured() == null?"0" :build.getAllriskSuminsured().toPlainString());
-			res.setPersonalIntermediarySuminsured(build.getPersonalIntSuminsured() == null?"0" :build.getPersonalIntSuminsured().toPlainString());
+			res.setPersonalIntermediarySuminsured(filterLiability.size()> 0 ? filterLiability.get(0).getSumInsured().toPlainString() : "");
 			res.setContentSuminsured(build.getContentSuminsured() == null?"0" :build.getContentSuminsured().toPlainString());
 		//	res.setOccupationDetails(occupation);
 			res.setMoneySinglecarrySuminsured(build.getMoneySinglecarrySuminsured() == null?"0" :build.getMoneySinglecarrySuminsured().toPlainString());
