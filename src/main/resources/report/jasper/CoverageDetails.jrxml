@@ -404,17 +404,17 @@ ORDER BY EMPLOYEE_ID]]>
 								<reportElement x="0" y="0" width="30" height="20" uuid="7da68979-da0c-4c85-968e-4dc5609b5ecc"/>
 								<box leftPadding="2"/>
 								<textElement verticalAlignment="Middle">
-									<font fontName="Arial"/>
+									<font fontName="Arial" size="9"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="170" uuid="97e81a03-2c98-41e9-9181-a8bf767c17de">
+					<jr:column width="145" uuid="97e81a03-2c98-41e9-9181-a8bf767c17de">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
 						<jr:tableHeader style="Table_TH" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="170" height="20" uuid="485550c1-196f-4b5b-a464-57a7a5393d35"/>
+								<reportElement x="0" y="0" width="145" height="20" uuid="485550c1-196f-4b5b-a464-57a7a5393d35"/>
 								<box leftPadding="2" rightPadding="0"/>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
 									<font fontName="Arial"/>
@@ -424,20 +424,20 @@ ORDER BY EMPLOYEE_ID]]>
 						</jr:tableHeader>
 						<jr:detailCell style="Table_TD" height="20">
 							<textField>
-								<reportElement x="0" y="0" width="170" height="20" uuid="03a2b427-2e2e-4807-bf02-c82ec8d7e4b5"/>
+								<reportElement x="0" y="0" width="145" height="20" uuid="03a2b427-2e2e-4807-bf02-c82ec8d7e4b5"/>
 								<box leftPadding="2" rightPadding="0"/>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
-									<font fontName="Arial"/>
+									<font fontName="Arial" size="9"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{EMPLOYEE_NAME}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="160" uuid="44637fdc-8a14-42dc-a9e1-7ea91a2a05ff">
+					<jr:column width="180" uuid="44637fdc-8a14-42dc-a9e1-7ea91a2a05ff">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
 						<jr:tableHeader style="Table_TH" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="160" height="20" uuid="aa2d5d51-5888-4ab5-8ac3-26fab1515897"/>
+								<reportElement x="0" y="0" width="180" height="20" uuid="aa2d5d51-5888-4ab5-8ac3-26fab1515897"/>
 								<box leftPadding="2" rightPadding="0"/>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
 									<font fontName="Arial"/>
@@ -447,10 +447,10 @@ ORDER BY EMPLOYEE_ID]]>
 						</jr:tableHeader>
 						<jr:detailCell style="Table_TD" height="20">
 							<textField>
-								<reportElement x="0" y="0" width="160" height="20" uuid="6de046dc-bc80-4cc8-8168-bd29fb997d2c"/>
+								<reportElement x="0" y="0" width="180" height="20" uuid="6de046dc-bc80-4cc8-8168-bd29fb997d2c"/>
 								<box leftPadding="2" rightPadding="0"/>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
-									<font fontName="Arial"/>
+									<font fontName="Arial" size="9"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{OCCUPATION_DESC}]]></textFieldExpression>
 							</textField>
@@ -473,7 +473,7 @@ ORDER BY EMPLOYEE_ID]]>
 								<reportElement x="0" y="0" width="95" height="20" uuid="ad30fc38-ff16-4091-a521-7f5357799f59"/>
 								<box rightPadding="2"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
-									<font fontName="Arial"/>
+									<font fontName="Arial" size="9"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{SALARY}]]></textFieldExpression>
 							</textField>
