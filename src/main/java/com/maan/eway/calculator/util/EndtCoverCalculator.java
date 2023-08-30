@@ -306,7 +306,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 							 
 							 
 							 //t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0
-							 domath = domath(endorsement.getEndorsementCalcType(), endorsement.getEndorsementRate(), endorsement.getEndorsementsumInsured(),endorsement.getExchangeRate());
+							 domath = domath(endorsement.getEndorsementCalcType(), endorsement.getEndorsementRate(), endorsement.getEndorsementsumInsured().abs(),endorsement.getExchangeRate());
 							 endorsement.setPremiumBeforeDiscount(domath.multiply(endorsement.getProRata()));
 							 endorsement.setPremiumBeforeDiscountLC((BigDecimal) decimalFormat.parse(decimalFormat.format(endorsement.getPremiumBeforeDiscount().multiply(endorsement.getExchangeRate()))));
 							 							 
@@ -368,7 +368,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 if(("Y".equals(engine.getCoverModification()) && "Y".equals(t.getProRataYn()) && "Y".equals(t.getUserOpt()))
 							||
 							("N".equals(engine.getCoverModification()) && "Y".equals(t.getProRataYn()) && "Y".equals(t.getUserOpt())
-									&& endorsement.getPremiumAfterDiscountLC().compareTo(endorsement.getPremiumExcluedTaxLC())<0 )	
+									&& endorsement.getPremiumAfterDiscountLC().compareTo(endorsement.getPremiumExcluedTaxLC())>0 )	
 							 ) {
 						 
 					 endorsement.setPremiumIncludedTax(totalWithTax.multiply(new BigDecimal("-1")));
