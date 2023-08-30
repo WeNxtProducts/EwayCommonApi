@@ -31,7 +31,7 @@ public class CopyPolicyCoverData {
 	
 	public Map<String,Object> copy(String policyNo){
 		try {
-			HomePositionMaster hpmData = homeRepo.findByPolicyNo(policyNo);
+			HomePositionMaster hpmData = homeRepo.findByPolicyNoAndStatus(policyNo,"P");
 			boolean isBasePolicy=false;
 			String quoteNo=hpmData.getQuoteNo();
 			if(StringUtils.isBlank(hpmData.getEndtTypeId())){
