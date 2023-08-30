@@ -71,8 +71,8 @@ public class EndorsementMasterSaveReq {
 	@JsonProperty("SectionModificationType")
 	private String sectionModificationType;
 	
-	@JsonProperty("IsCoverendt")
-	private String isCoverendt;
+	@JsonProperty("IsCoverEndorsementYN")
+	private String isCoverEndorsementYN;
 	
 	
 }

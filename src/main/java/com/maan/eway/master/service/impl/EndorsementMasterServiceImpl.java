@@ -337,7 +337,7 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 		//	saveData.setRegulatoryCode(req.getRegulatoryCode());
 			saveData.setSectionModificationYn(StringUtils.isBlank(req.getSectionModificationYn()) ? "N" : req.getSectionModificationYn()   );
 			saveData.setSectionModificationType(req.getSectionModificationType());
-			saveData.setIsCoverendt(StringUtils.isBlank(req.getIsCoverendt()) ?"N" :req.getIsCoverendt()  );
+			saveData.setIsCoverendt(StringUtils.isBlank(req.getIsCoverEndorsementYN()) ?"N" :req.getIsCoverEndorsementYN()  );
 			/*
 			String id = "";
 			String desc = "";
@@ -576,7 +576,7 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			res.setUpdatedBy(data.getUpdatedBy());
 			res.setRegulatoryCode(data.getRegulatoryCode());
 			res.setSelectedYn("N");
-			res.setIsCoverendt(data.getIsCoverendt());
+			res.setIsCoverEndorsementYN(data.getIsCoverendt());
 			if(data.getEndtTypeCategoryId().equals(1) ) {
 				List<String> filterTotalIds = nonfinanceids.stream().filter( o -> o.equalsIgnoreCase(data.getEndtTypeId().toString()) ).collect(Collectors.toList());
 				if(filterTotalIds.size() > 0 ) {
@@ -762,7 +762,7 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			res.setUpdatedBy(data.getUpdatedBy());
 			res.setRegulatoryCode(data.getRegulatoryCode());
 			res.setSelectedYn("N");
-			res.setIsCoverendt(data.getIsCoverendt());
+			res.setIsCoverEndorsementYN(data.getIsCoverendt());
 			if(data.getEndtTypeCategoryId().equals(1) ) {
 				List<String> filterTotalIds = nonfinanceids.stream().filter( o -> o.equalsIgnoreCase(data.getEndtTypeId().toString()) ).collect(Collectors.toList());
 				if(filterTotalIds.size() > 0 ) {
@@ -874,7 +874,7 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			res.setCreatedBy(list.get(0).getCreatedBy());
 			res.setUpdatedBy(list.get(0).getUpdatedBy());	
 			res.setRegulatoryCode(list.get(0).getRegulatoryCode());
-			res.setIsCoverendt(list.get(0).getIsCoverendt());
+			res.setIsCoverEndorsementYN(list.get(0).getIsCoverendt());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
