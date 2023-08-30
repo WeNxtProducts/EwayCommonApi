@@ -549,8 +549,10 @@ public class CalculatorEngineService implements CalculatorEngine {
 								endtPrevQuoteNo, Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
 								Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()), "Y");
 				List<Tuple> taxes = ratingutil.LoadTax(engine,NORMAL_TAX_LIST);
-				TaxUtils tzx = new TaxUtils(endtCount,endtTypeId);
+				TaxUtils tzx = new TaxUtils(endtCount,"");
+				TaxUtils tzxEndt = new TaxUtils(endtCount,endtTypeId);
 				List<Tax> taxey = taxes.stream().map(tzx).filter(t -> t != null).collect(Collectors.toList());
+				List<Tax> tzxeyEndt = taxes.stream().map(tzxEndt).filter(t -> t != null).collect(Collectors.toList());
 				
 				// CoverFromPolicy
 				List<PolicyCoverData> basecovers = oldPolicyCovers.stream()
@@ -576,7 +578,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					List<Endorsement> endorsements = new ArrayList<Endorsement>();
 					List<PolicyCoverDataEndt> coverData = oldPolicyData.stream().filter(i -> i.getCoverId()== d.getCoverId()).collect(Collectors.toList()) ;
 					
-					CreateEndorsment createEndt=new CreateEndorsment(endtmaster,endtCount,taxey,coverData);
+					CreateEndorsment createEndt=new CreateEndorsment(endtmaster,endtCount,tzxeyEndt,coverData);
 					Endorsement currentEndt =createEndt.create();
 					endorsements.add(currentEndt);
 					
@@ -632,7 +634,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 			// TaxFromFactor tzx=new TaxFromFactor();
 			List<Tuple> taxes = ratingutil.LoadTax(request,NORMAL_TAX_LIST);
 			List<Tuple> taxesEndt = ratingutil.LoadTax(request,ENDT_TAX_LIST);
-			TaxUtils tzx = new TaxUtils(endtCount,endtTypeId);
+			TaxUtils tzx = new TaxUtils(endtCount,"");
+			TaxUtils tzxsa = new TaxUtils(endtCount,endtTypeId);
 
 			for (String dependcover : dependedcovers) {
 				List<Cover> totalcovers = new ArrayList<Cover>();
@@ -700,7 +703,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 													&& r.getEndtCount().intValue() == e.getEndtCount().intValue()))
 											.map(endttaxUtil).filter(dx -> (dx != null && !"0".equals(dx.getTaxId())))
 											.collect(Collectors.toList());*/
-									List<Tax> taxey = taxesEndt.stream().map(tzx).filter(d -> d != null)
+									List<Tax> taxey = taxesEndt.stream().map(tzxsa).filter(d -> d != null)
 											.collect(Collectors.toList());
 									e.setTaxes(taxey);
 								}
@@ -774,7 +777,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 													&& r.getCoverId() == Integer.parseInt(e.getEndorsementforId())
 													&& r.getEndtCount().intValue() == e.getEndtCount().intValue()))
 											.map(endttaxUtil).filter(dx -> dx != null).collect(Collectors.toList());*/
-									List<Tax> taxey = taxesEndt.stream().map(tzx).filter(d -> d != null)
+									List<Tax> taxey = taxesEndt.stream().map(tzxsa).filter(d -> d != null)
 											.collect(Collectors.toList());
 									e.setTaxes(taxey);
 								}
