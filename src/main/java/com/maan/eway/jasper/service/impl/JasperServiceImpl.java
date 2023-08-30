@@ -60,9 +60,6 @@ public class JasperServiceImpl implements JasperService {
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
 	
-	@Value(value = "${jasper.compile.path}")
-	private String jasperCompilePath;
-	
 	@Value(value = "${report.file.path}")
 	private String policyReportPath;
 	
@@ -117,15 +114,12 @@ public class JasperServiceImpl implements JasperService {
 //
 //				else 
 				if (product.getMotorYn().equalsIgnoreCase("H") && travelProductId.equals(homeData.getProductId().toString())) {
-					String classPath = this.getClass().getClassLoader().getResource("").getPath();
-					classPath = classPath.substring(1, classPath.length()-0);
-					jasperCompilePath = classPath;
 					Map<String, Object> input2 = new HashMap<String, Object>();
 					input2.put("pvImagePath", config.getImagePath().substring(1,config.getImagePath().length()-0));
 					input2.put("pvPolicyNo", homeData.getPolicyNo());
-					input2.put("pvSubReportPath",jasperCompilePath + "report/jasper/");
+					input2.put("pvSubReportPath",config.getJasperFilePath() + "report/jasper/");
 					String obj ="";
-					obj= jasperCompilePath + "report/jasper/EwayTravelSubReport.jrxml";
+					obj= config.getJasperFilePath() + "report/jasper/EwayTravelSubReport.jrxml";
 					
 							//String jrxml_path=obj.replace(".jasper", ".jrxml");
 							String path = JasperCompileManager.compileReportToFile(obj);
@@ -136,27 +130,24 @@ public class JasperServiceImpl implements JasperService {
 				} else if (product.getMotorYn().equalsIgnoreCase("M")) {
 					res = getJasperPdfFile("/report/jasper/MotorPrivate.jrxml", getPdfOutFilePath, input);
 				}else if(product.getMotorYn().equalsIgnoreCase("A")&& "42".equalsIgnoreCase(homeData.getProductId().toString())) {
-					String classPath = this.getClass().getClassLoader().getResource("").getPath();
-					classPath = classPath.substring(1, classPath.length()-0);
-					jasperCompilePath = classPath;
 					String imagePath = config.getImagePath().substring(1,config.getImagePath().length()-0);
 					Map<String,Object> input2 = new HashMap<>();
 					input2.put("pvImagePath", imagePath);
 					input2.put("pvPolicyNo", homeData.getPolicyNo());
 					input2.put("pvFooterImage", imagePath);
 					input2.put("pvheaderImage", imagePath);
-					String obj = jasperCompilePath + "report/jasper/CyberInsurance.jrxml";
+					String obj = config.getJasperFilePath() + "report/jasper/CyberInsurance.jrxml";
 					String path = JasperCompileManager.compileReportToFile(obj);
 					System.out.println("Jasper compileToReport path" +path);
 					res = getJasperPdfFile("/report/jasper/CyberInsurance.jrxml", getPdfOutFilePath, input2);
 				}else {
 					Map<String, Object> input2 = new HashMap<String, Object>();
 					input2.put("pvQuoteNo", req.getQuoteNo());
-					input2.put("pvImagepath", config.getImagePath());
-					input2.put("pvSubReportPath",jasperCompilePath + "/report/jasper/");
+					input2.put("pvImagepath", config.getImagePath().substring(1,config.getImagePath().length()-0));
+					input2.put("pvSubReportPath",config.getJasperFilePath() + "/report/jasper/");
 					String obj[] =new String[2];
-					obj[0]= jasperCompilePath + "/report/jasper/CoverageDetails.jrxml";
-					obj[1]= jasperCompilePath +"/report/jasper/SectionDetails.jrxml";              // for linux system
+					obj[0]= config.getJasperFilePath() + "/report/jasper/CoverageDetails.jrxml";
+					obj[1]= config.getJasperFilePath() +"/report/jasper/SectionDetails.jrxml";              // for linux system
 				//	obj[0]=class_path +"/report/jasper/CoverageDetails.jrxml";
 				//	obj[1]=class_path +"/report/jasper/SectionDetails.jrxml";              // for linux system
 				//	obj[2]=class_path +"/report/jasper/VehicleDetails.jrxml";

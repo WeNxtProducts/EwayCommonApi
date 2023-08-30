@@ -63,6 +63,12 @@ public class JasperConfiguration {
     	return null;
 	}
 	
+	public String getJasperFilePath() {
+		String classPath = this.getClass().getClassLoader().getResource("").getPath();
+		classPath = classPath.substring(1, classPath.length()-0);
+		return classPath;
+	}
+	
 	// Enable This 4 Value For run in Application properties 
 	@Value("${spring.datasource.driver-class-name}")
 	private String driverclassname;
