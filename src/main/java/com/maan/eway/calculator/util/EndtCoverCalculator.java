@@ -152,7 +152,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					}.reversed());*/
 					 //new premium-old prem
 					  endorsement = t.getEndorsements().get(0);
-					
+					  boolean dontGo=true;
 
 			 		
 			 		 
@@ -306,8 +306,14 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 							 
 							 
 							 //t.getPremiumAfterDiscountLC().compareTo(t.getMinimumPremium())<0
-							 domath = domath(endorsement.getEndorsementCalcType(), endorsement.getEndorsementRate(), endorsement.getEndorsementsumInsured().abs(),endorsement.getExchangeRate());
-							 endorsement.setPremiumBeforeDiscount(domath.multiply(endorsement.getProRata()));
+							 domath = domath(endorsement.getEndorsementCalcType(), endorsement.getEndorsementRate(), endorsement.getEndorsementsumInsured(),endorsement.getExchangeRate());
+							 
+							 if(domath.compareTo(BigDecimal.ZERO)<0)
+								 dontGo=true;
+							 else if(endorsement.getPremiumAfterDiscountLC().compareTo(endorsement.getPremiumExcluedTaxLC())>0)
+							 	dontGo=false;
+							 
+							 endorsement.setPremiumBeforeDiscount(domath.multiply(endorsement.getProRata()).abs());
 							 endorsement.setPremiumBeforeDiscountLC((BigDecimal) decimalFormat.parse(decimalFormat.format(endorsement.getPremiumBeforeDiscount().multiply(endorsement.getExchangeRate()))));
 							 							 
 							 endorsement.setPremiumExcluedTax(endorsement.getPremiumBeforeDiscount());				 
@@ -368,7 +374,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 if(("Y".equals(engine.getCoverModification()) && "Y".equals(t.getProRataYn()) && "Y".equals(t.getUserOpt()))
 							||
 							("N".equals(engine.getCoverModification()) && "Y".equals(t.getProRataYn()) && "Y".equals(t.getUserOpt())
-									&& endorsement.getPremiumAfterDiscountLC().compareTo(endorsement.getPremiumExcluedTaxLC())>0 )	
+									&& !dontGo )	
 							 ) {
 						 
 					 endorsement.setPremiumIncludedTax(totalWithTax.multiply(new BigDecimal("-1")));
