@@ -41,11 +41,11 @@
 	</style>
 	<subDataset name="SectionInfo" uuid="2d7e0568-0aee-4fa3-9aa6-f6d0096b331e">
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter "/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
 		<parameter name="pvQuoteNo" class="java.lang.String"/>
 		<parameter name="pvSectionId" class="java.lang.String"/>
 		<queryString language="SQL">
-			<![CDATA[SELECT COVER_DESC,SUM_INSURED,RATE,PREMIUM_INCLUDED_TAX_LC,PREMIUM_INCLUDED_TAX_FC FROM POLICY_COVER_DATA WHERE Quote_no = $P{pvQuoteNo}  AND SECTION_ID= $P{pvSectionId}  AND TAX_ID='0' AND DISC_LOAD_ID='0' AND SUB_COVER_ID='0'
+			<![CDATA[SELECT PC.COVER_DESC,PC.SUM_INSURED,PC.RATE,PC.PREMIUM_INCLUDED_TAX_LC,PC.PREMIUM_INCLUDED_TAX_FC,(SELECT OCCUPATION_DESC FROM COMMON_DATA_DETAILS WHERE RISK_ID = PC.VEHICLE_ID AND QUOTE_NO = PC.QUOTE_NO) AS OCCUPATION_DESC FROM POLICY_COVER_DATA PC WHERE Quote_no = $P{pvQuoteNo}  AND SECTION_ID= $P{pvSectionId}  AND TAX_ID='0' AND DISC_LOAD_ID='0' AND SUB_COVER_ID='0'
 ORDER BY COVER_ID]]>
 		</queryString>
 		<field name="COVER_DESC" class="java.lang.String">
@@ -72,6 +72,10 @@ ORDER BY COVER_ID]]>
 			<property name="com.jaspersoft.studio.field.name" value="PREMIUM_INCLUDED_TAX_FC"/>
 			<property name="com.jaspersoft.studio.field.label" value="PREMIUM_INCLUDED_TAX_FC"/>
 			<property name="com.jaspersoft.studio.field.tree.path" value="policy_cover_data"/>
+		</field>
+		<field name="OCCUPATION_DESC" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="OCCUPATION_DESC"/>
+			<property name="com.jaspersoft.studio.field.label" value="OCCUPATION_DESC"/>
 		</field>
 	</subDataset>
 	<parameter name="pvQuoteNo" class="java.lang.String"/>
@@ -114,11 +118,13 @@ ORDER BY COVER_ID]]>
 		</band>
 		<band height="21">
 			<componentElement>
-				<reportElement x="42" y="0" width="555" height="20" uuid="320b42d3-eff7-4605-951a-085be1e82f3e">
+				<reportElement x="0" y="1" width="555" height="20" uuid="320b42d3-eff7-4605-951a-085be1e82f3e">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
 					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="SectionInfo" uuid="605fdbbe-592c-428c-bf79-f05c81359905">
@@ -130,11 +136,41 @@ ORDER BY COVER_ID]]>
 						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
-					<jr:column width="190" uuid="700e7fff-cdcf-42f6-a856-861b99c8e644">
+					<jr:column width="180" uuid="4826ac47-02f2-4716-b82d-596e0224f57d">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
 						<jr:tableHeader style="Table_TH" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="190" height="20" uuid="2360be41-d648-452b-b960-199e1d9e99a9">
+								<reportElement x="0" y="0" width="180" height="20" uuid="0b8de231-afe2-4a48-8bb0-a548e143ac58">
+									<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								</reportElement>
+								<box leftPadding="2">
+									<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+									<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial" size="9" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA["Occupation"]]></textFieldExpression>
+							</textField>
+						</jr:tableHeader>
+						<jr:detailCell style="Table_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="180" height="20" uuid="0ca10155-df48-4f57-a486-1243644b53b0"/>
+								<box leftPadding="2"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial" size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{OCCUPATION_DESC}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="130" uuid="700e7fff-cdcf-42f6-a856-861b99c8e644">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+						<jr:tableHeader style="Table_TH" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="130" height="20" uuid="2360be41-d648-452b-b960-199e1d9e99a9">
 									<property name="com.jaspersoft.studio.unit.height" value="px"/>
 								</reportElement>
 								<box leftPadding="2">
@@ -152,20 +188,20 @@ ORDER BY COVER_ID]]>
 						<jr:detailCell style="Table_TD" height="20">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							<textField>
-								<reportElement x="0" y="0" width="190" height="20" uuid="84a2dd52-928e-40bc-9d8c-0eefd2501fce"/>
+								<reportElement x="0" y="0" width="130" height="20" uuid="84a2dd52-928e-40bc-9d8c-0eefd2501fce"/>
 								<box leftPadding="2"/>
 								<textElement verticalAlignment="Middle">
-									<font fontName="Arial"/>
+									<font fontName="Arial" size="9"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{COVER_DESC}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="120" uuid="860a08ff-dedd-4b0e-aabe-415966f940d5">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+					<jr:column width="90" uuid="860a08ff-dedd-4b0e-aabe-415966f940d5">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
 						<jr:tableHeader style="Table_TH" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="120" height="20" uuid="a929e844-abb9-427b-8514-30caac7a7d6c">
+								<reportElement x="0" y="0" width="90" height="20" uuid="a929e844-abb9-427b-8514-30caac7a7d6c">
 									<property name="com.jaspersoft.studio.unit.height" value="px"/>
 								</reportElement>
 								<box leftPadding="2">
@@ -182,17 +218,17 @@ ORDER BY COVER_ID]]>
 						</jr:tableHeader>
 						<jr:detailCell style="Table_TD" height="20">
 							<textField pattern="#,##0.##">
-								<reportElement x="0" y="0" width="120" height="20" uuid="e3b75aee-33a6-4214-a457-3202ce14c20b"/>
+								<reportElement x="0" y="0" width="90" height="20" uuid="e3b75aee-33a6-4214-a457-3202ce14c20b"/>
 								<box rightPadding="2"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
-									<font fontName="Arial"/>
+									<font fontName="Arial" size="9"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{SUM_INSURED}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
 					<jr:column width="70" uuid="c418044d-a1e4-432c-94d1-c98e3bca729f">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
 						<jr:tableHeader style="Table_TH" height="20" rowSpan="1">
 							<textField>
 								<reportElement x="0" y="0" width="70" height="20" uuid="0e174623-5720-4d5a-acb2-584975fae543">
@@ -215,17 +251,17 @@ ORDER BY COVER_ID]]>
 								<reportElement x="0" y="0" width="70" height="20" uuid="08f3e048-e91c-47ed-b2c1-f3d70e25208d"/>
 								<box rightPadding="2"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
-									<font fontName="Arial"/>
+									<font fontName="Arial" size="9"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{RATE}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="95" uuid="862d450a-3fd0-4522-adaa-d298a177caca">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
+					<jr:column width="85" uuid="862d450a-3fd0-4522-adaa-d298a177caca">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
 						<jr:tableHeader style="Table_TH" height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="95" height="20" uuid="4dd3c024-731d-484f-b322-ab7c6e077a88">
+								<reportElement x="0" y="0" width="85" height="20" uuid="4dd3c024-731d-484f-b322-ab7c6e077a88">
 									<property name="com.jaspersoft.studio.unit.height" value="px"/>
 								</reportElement>
 								<box leftPadding="2">
@@ -242,10 +278,10 @@ ORDER BY COVER_ID]]>
 						</jr:tableHeader>
 						<jr:detailCell style="Table_TD" height="20">
 							<textField pattern="#,##0.##" isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="95" height="20" uuid="8167f086-edc9-43d5-bb1f-7ce3c6b87619"/>
+								<reportElement x="0" y="0" width="85" height="20" uuid="8167f086-edc9-43d5-bb1f-7ce3c6b87619"/>
 								<box rightPadding="2"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
-									<font fontName="Arial"/>
+									<font fontName="Arial" size="9"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{PREMIUM_INCLUDED_TAX_LC}]]></textFieldExpression>
 							</textField>

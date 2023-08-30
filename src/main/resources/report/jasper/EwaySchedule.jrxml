@@ -2,7 +2,7 @@
 <!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="EwaySchedule" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="34db4777-6d02-4a2b-85ad-a339988880c1">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter "/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="96"/>
@@ -204,7 +204,7 @@ HPM.QUOTE_NO= $P{pvQuoteNo}]]>
 		<property name="com.jaspersoft.studio.field.label" value="VAT_PERCENT"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
-	<field name="PREMIUM" class="java.lang.Double">
+	<field name="PREMIUM" class="java.lang.Long">
 		<property name="com.jaspersoft.studio.field.name" value="PREMIUM"/>
 		<property name="com.jaspersoft.studio.field.label" value="PREMIUM"/>
 	</field>
@@ -212,7 +212,7 @@ HPM.QUOTE_NO= $P{pvQuoteNo}]]>
 		<property name="com.jaspersoft.studio.field.name" value="VAT"/>
 		<property name="com.jaspersoft.studio.field.label" value="VAT"/>
 	</field>
-	<field name="TOTAL" class="java.lang.Double">
+	<field name="TOTAL" class="java.lang.Long">
 		<property name="com.jaspersoft.studio.field.name" value="TOTAL"/>
 		<property name="com.jaspersoft.studio.field.label" value="TOTAL"/>
 	</field>
@@ -767,7 +767,7 @@ HPM.QUOTE_NO= $P{pvQuoteNo}]]>
 				</textElement>
 				<textFieldExpression><![CDATA["Premium :"]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement x="367" y="0" width="188" height="15" uuid="b06202df-9ae8-40d8-a4b6-43abb441d956">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -830,7 +830,7 @@ HPM.QUOTE_NO= $P{pvQuoteNo}]]>
 				</textElement>
 				<textFieldExpression><![CDATA["Total Premium :"]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement x="367" y="0" width="188" height="15" uuid="f592ee0d-7835-4dd2-a06b-ea65c91fbd1d">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -866,7 +866,7 @@ HPM.QUOTE_NO= $P{pvQuoteNo}]]>
 		</band>
 		<band height="34">
 			<subreport>
-				<reportElement x="10" y="1" width="470" height="32" uuid="3ab740cd-5977-44ff-9a46-8ea48db3c5e8"/>
+				<reportElement x="0" y="1" width="555" height="32" uuid="3ab740cd-5977-44ff-9a46-8ea48db3c5e8"/>
 				<subreportParameter name="SubReportPath">
 					<subreportParameterExpression><![CDATA[$P{pvSubReportPath}]]></subreportParameterExpression>
 				</subreportParameter>
