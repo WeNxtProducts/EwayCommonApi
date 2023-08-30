@@ -12,12 +12,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.BrokerBackdaysGetReq;
 import com.maan.eway.master.req.BrokerCommissionDetailsMasterChangeStatusReq;
 import com.maan.eway.master.req.BrokerCommissionDetailsMasterGetReq;
 import com.maan.eway.master.req.BrokerCommissionDetailsMasterGetallReq;
 import com.maan.eway.master.req.BrokerCommissionDetailsMasterSaveReq;
+import com.maan.eway.master.res.BrokerCommRes;
 import com.maan.eway.master.res.BrokerCommissionDetailsMasterGetRes;
 import com.maan.eway.master.res.EndorsementMasterGetallRes;
 import com.maan.eway.master.service.BrokerCommissionDetailsMasterService;
@@ -150,6 +153,24 @@ public ResponseEntity<CommonRes> changeStatusBrokerCommission(@RequestBody Broke
 	}
 
 
+@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
+@PostMapping("/brokerbackdays")
+@ApiOperation(value = "This Method is to Broker Backdays")
+public ResponseEntity<CommonRes> getallBrokerCommission(@RequestBody BrokerBackdaysGetReq req) {
+	CommonRes data = new CommonRes();
+	reqPrinter.reqPrint(req);
+	BrokerCommRes res = service.getBackDays(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 
 }
 

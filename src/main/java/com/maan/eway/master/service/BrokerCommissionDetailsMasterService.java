@@ -8,10 +8,12 @@ package com.maan.eway.master.service;
 import java.util.List;
 
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.BrokerBackdaysGetReq;
 import com.maan.eway.master.req.BrokerCommissionDetailsMasterChangeStatusReq;
 import com.maan.eway.master.req.BrokerCommissionDetailsMasterGetReq;
 import com.maan.eway.master.req.BrokerCommissionDetailsMasterGetallReq;
 import com.maan.eway.master.req.BrokerCommissionDetailsMasterSaveReq;
+import com.maan.eway.master.res.BrokerCommRes;
 import com.maan.eway.master.res.BrokerCommissionDetailsMasterGetRes;
 import com.maan.eway.res.SuccessRes;
 
@@ -31,4 +33,6 @@ public interface BrokerCommissionDetailsMasterService  {
 	List<BrokerCommissionDetailsMasterGetRes> getactiveBrokerCommission(BrokerCommissionDetailsMasterGetallReq req);
 
 	SuccessRes changeStatusBrokerCommission(BrokerCommissionDetailsMasterChangeStatusReq req);
+
+	BrokerCommRes getBackDays(BrokerBackdaysGetReq req);
 }

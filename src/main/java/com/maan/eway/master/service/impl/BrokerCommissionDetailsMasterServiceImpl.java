@@ -36,10 +36,12 @@ import com.maan.eway.bean.ClausesMaster;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.PolicyTypeMaster;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.BrokerBackdaysGetReq;
 import com.maan.eway.master.req.BrokerCommissionDetailsMasterChangeStatusReq;
 import com.maan.eway.master.req.BrokerCommissionDetailsMasterGetReq;
 import com.maan.eway.master.req.BrokerCommissionDetailsMasterGetallReq;
 import com.maan.eway.master.req.BrokerCommissionDetailsMasterSaveReq;
+import com.maan.eway.master.res.BrokerCommRes;
 import com.maan.eway.master.res.BrokerCommissionDetailsMasterGetRes;
 import com.maan.eway.master.service.BrokerCommissionDetailsMasterService;
 import com.maan.eway.repository.BrokerCommissionDetailsRepository;
@@ -49,7 +51,7 @@ import com.maan.eway.res.SuccessRes;
 @Service
 public class BrokerCommissionDetailsMasterServiceImpl implements BrokerCommissionDetailsMasterService {
 
-	@PersistenceContext
+	@PersistenceContext 
 	private EntityManager em;
 	
 	@Autowired
@@ -851,6 +853,87 @@ public class BrokerCommissionDetailsMasterServiceImpl implements BrokerCommissio
 		
 		return res;
 
+	}
+
+
+
+
+	@Override
+	public BrokerCommRes getBackDays(BrokerBackdaysGetReq req) {
+		BrokerCommRes brokerRes  = new BrokerCommRes() ;
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+
+			List<BrokerCommissionDetails> list = new ArrayList<BrokerCommissionDetails>();
+		
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<BrokerCommissionDetails> query = cb.createQuery(BrokerCommissionDetails.class);
+
+			// Find All
+			Root<BrokerCommissionDetails> b = query.from(BrokerCommissionDetails.class);
+
+			// Select
+			query.select(b);
+
+			// Effective Date Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<BrokerCommissionDetails> ocpm1 = effectiveDate.from(BrokerCommissionDetails.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			javax.persistence.criteria.Predicate a1 = cb.equal(b.get("companyId"), ocpm1.get("companyId"));
+			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			javax.persistence.criteria.Predicate a3 = cb.equal(b.get("loginId"), ocpm1.get("loginId"));
+			javax.persistence.criteria.Predicate a4 = cb.equal(b.get("productId"), ocpm1.get("productId"));
+			javax.persistence.criteria.Predicate a11 = cb.equal(b.get("policyType"), ocpm1.get("policyType"));
+			javax.persistence.criteria.Predicate a12 = cb.equal(b.get("id"), ocpm1.get("id"));
+			effectiveDate.where(a1, a2, a3,a4,a11,a12);
+			
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<BrokerCommissionDetails> ocpm2 = effectiveDate2.from(BrokerCommissionDetails.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			javax.persistence.criteria.Predicate a6 = cb.equal(b.get("companyId"), ocpm2.get("companyId"));
+			javax.persistence.criteria.Predicate a8 = cb.equal(b.get("productId"), ocpm2.get("productId"));
+			javax.persistence.criteria.Predicate a9 = cb.equal(b.get("loginId"), ocpm2.get("loginId"));
+			javax.persistence.criteria.Predicate a10 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			javax.persistence.criteria.Predicate a13 = cb.equal(b.get("policyType"), ocpm2.get("policyType"));
+			javax.persistence.criteria.Predicate a14 = cb.equal(b.get("id"), ocpm2.get("id"));
+			effectiveDate2.where(a6,  a8, a9, a10,a13,a14);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(b.get("policyType")));
+
+			// Where
+			Predicate n1 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
+			Predicate n2 = cb.equal(b.get("effectiveDateEnd"), effectiveDate2);
+			Predicate n3 = cb.equal(b.get("companyId"), req.getCompanyId());
+			Predicate n4 = cb.equal(b.get("productId"), req.getProductId());
+			Predicate n5 = cb.equal(b.get("loginId"),  req.getLoginId());
+			Predicate n6 = cb.equal(b.get("policyType"),"99999");
+			Predicate n7 = cb.equal(b.get("id"),"99999");
+			query.where(n1,n2,n3,n4,n5,n6,n7).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<BrokerCommissionDetails> result = em.createQuery(query);
+
+			list = result.getResultList();
+			Integer backDays = list.size() > 0 ? (list.get(0).getBackDays() !=null ? list.get(0).getBackDays() : 0)  : 0 ;
+			brokerRes.setBackDays(backDays.toString() );
+			} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return brokerRes;
 	}
 
 	
