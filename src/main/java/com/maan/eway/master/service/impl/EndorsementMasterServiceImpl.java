@@ -128,11 +128,11 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 				errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 			}
 			
-			if (StringUtils.isBlank(req.getCoreAppCode())) {
-				errorList.add(new Error("07", "CoreAppCode", "Please Enter CoreAppCode"));
-			}else if (req.getCoreAppCode().length() > 20){
-				errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
-			}
+//			if (StringUtils.isBlank(req.getCoreAppCode())) {
+//				errorList.add(new Error("07", "CoreAppCode", "Please Enter CoreAppCode"));
+//			}else if (req.getCoreAppCode().length() > 20){
+//				errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters")); 
+//			}
 			
 			if (StringUtils.isBlank(req.getCreatedBy())) {
 				errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy"));
@@ -212,11 +212,11 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			}
 
 			
-			if (StringUtils.isBlank(req.getRegulatoryCode())) {
-				errorList.add(new Error("20", "RegulatoryCode", "Please Enter RegulatoryCode"));
-			}else if (req.getRegulatoryCode().length() > 10){
-				errorList.add(new Error("20","RegulatoryCode", "Please Enter RegulatoryCode within 10 Characters")); 
-			}
+//			if (StringUtils.isBlank(req.getRegulatoryCode())) {
+//				errorList.add(new Error("20", "RegulatoryCode", "Please Enter RegulatoryCode"));
+//			}else if (req.getRegulatoryCode().length() > 10){
+//				errorList.add(new Error("20","RegulatoryCode", "Please Enter RegulatoryCode within 10 Characters")); 
+//			}
 			if((StringUtils.isNotBlank(req.getCalcTypeId())) && req.getCalcTypeId().equalsIgnoreCase("M")) {
 				if (StringUtils.isBlank(req.getEndtFeePercent())) {				
 					errorList.add(new Error("16", "EndtFeePercent", "Please Enter EndtFeePercent"));
@@ -334,10 +334,10 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			saveData.setCalcTypeId(req.getCalcTypeId());
 		//	saveData.setCalcType(calc.getItemValue());
 			saveData.setEndtTypeId(endtTypeId);
-			saveData.setRegulatoryCode(req.getRegulatoryCode());
+		//	saveData.setRegulatoryCode(req.getRegulatoryCode());
 			saveData.setSectionModificationYn(StringUtils.isBlank(req.getSectionModificationYn()) ? "N" : req.getSectionModificationYn()   );
 			saveData.setSectionModificationType(req.getSectionModificationType());
-			
+			saveData.setIsCoverendt(StringUtils.isBlank(req.getIsCoverendt()) ?"N" :req.getIsCoverendt()  );
 			/*
 			String id = "";
 			String desc = "";
@@ -576,6 +576,7 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			res.setUpdatedBy(data.getUpdatedBy());
 			res.setRegulatoryCode(data.getRegulatoryCode());
 			res.setSelectedYn("N");
+			res.setIsCoverendt(data.getIsCoverendt());
 			if(data.getEndtTypeCategoryId().equals(1) ) {
 				List<String> filterTotalIds = nonfinanceids.stream().filter( o -> o.equalsIgnoreCase(data.getEndtTypeId().toString()) ).collect(Collectors.toList());
 				if(filterTotalIds.size() > 0 ) {
@@ -761,6 +762,7 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			res.setUpdatedBy(data.getUpdatedBy());
 			res.setRegulatoryCode(data.getRegulatoryCode());
 			res.setSelectedYn("N");
+			res.setIsCoverendt(data.getIsCoverendt());
 			if(data.getEndtTypeCategoryId().equals(1) ) {
 				List<String> filterTotalIds = nonfinanceids.stream().filter( o -> o.equalsIgnoreCase(data.getEndtTypeId().toString()) ).collect(Collectors.toList());
 				if(filterTotalIds.size() > 0 ) {
@@ -872,7 +874,7 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			res.setCreatedBy(list.get(0).getCreatedBy());
 			res.setUpdatedBy(list.get(0).getUpdatedBy());	
 			res.setRegulatoryCode(list.get(0).getRegulatoryCode());
-			
+			res.setIsCoverendt(list.get(0).getIsCoverendt());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

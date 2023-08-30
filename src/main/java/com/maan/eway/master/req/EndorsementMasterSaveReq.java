@@ -36,7 +36,7 @@ public class EndorsementMasterSaveReq {
 	
 	@JsonProperty("ProductId")
 	private String productId;
-	
+//	
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
 	
@@ -61,7 +61,7 @@ public class EndorsementMasterSaveReq {
 	
 	@JsonProperty("CalcTypeId")
 	private String calcTypeId;
-
+//
 	@JsonProperty("RegulatoryCode")
 	private String regulatoryCode;
 	
@@ -71,5 +71,8 @@ public class EndorsementMasterSaveReq {
 	@JsonProperty("SectionModificationType")
 	private String sectionModificationType;
 	
-
+	@JsonProperty("IsCoverendt")
+	private String isCoverendt;
+	
+	
 }

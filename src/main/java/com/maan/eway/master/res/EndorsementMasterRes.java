@@ -94,6 +94,9 @@ public class EndorsementMasterRes {
 	
 	@JsonProperty("SectionModificationType")
 	private String sectionModificationType;
+	
+	@JsonProperty("IsCoverendt")
+	private String isCoverendt;
 /*
 	@JsonProperty("CalcType")
 	private String calcType;

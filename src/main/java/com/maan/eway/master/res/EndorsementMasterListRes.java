@@ -89,4 +89,6 @@ public class EndorsementMasterListRes {
 	@JsonProperty("SelectedYn")
 	private String selectedYn;
 
+	@JsonProperty("IsCoverendt")
+	private String isCoverendt;
 }
