@@ -77,9 +77,9 @@ public class TiraIntegerationServiceImpl {
 			String url=nonMotorTiraLink; 
 			if  (  product.getMotorYn().equalsIgnoreCase("M") ) {
 				url=tiraIntegPushLink;
-			} 
+				
 				// Call Integeration
-			/*	PremiaRequest premiaReq = new PremiaRequest(); 
+				PremiaRequest premiaReq = new PremiaRequest(); 
 				premiaReq.setQuoteNo(tiraReq.getQuoteNo());
 				List<String> premiaIds = new ArrayList<String>(); 
 				premiaIds.add(  "1"  );
@@ -99,8 +99,10 @@ public class TiraIntegerationServiceImpl {
 				premiaReq.setPremiaIds(premiaIds);
 				
 				service.pushPremiaIntegration(premiaReq);
+			} 
 				
-				*/
+				
+				
 				// Tira Request Frame
 			if( data.getProductId().equals(4) ) {
 				
