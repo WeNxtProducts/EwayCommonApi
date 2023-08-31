@@ -98,7 +98,10 @@ public class LoginController {
 		}
 		List<Error> errors=null;
 		if(encValue.get("TinyUrlId")!=null) {
-			
+			boolean executeValidate=true;
+			if(encValue.containsKey("SubUserType") && encValue.get("SubUserType")!=null && encValue.get("SubUserType").equals("b2c"))
+				executeValidate=false;
+			if(executeValidate)
 			errors=loginValidationComponent.validateTinyUrlId(encValue.get("TinyUrlId").toString(),encValue.get("TinyGroupId").toString());
 			if(errors==null || errors.size()==0 ) {
 				LoginRequest mslogin=new LoginRequest();
