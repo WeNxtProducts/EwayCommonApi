@@ -139,6 +139,7 @@ import com.maan.eway.res.CoverRes;
 import com.maan.eway.res.EserviceBuildingsDetailsRes;
 import com.maan.eway.res.GetEmployeeCountRes;
 import com.maan.eway.res.GroupSuminsuredDetailsRes;
+import com.maan.eway.res.MotorSuminsuredDetails;
 import com.maan.eway.res.OccupationReqClass;
 import com.maan.eway.res.PassengerSectionDetails;
 import com.maan.eway.res.SectionDetails;
@@ -2412,8 +2413,18 @@ public class QuoteServiceImpl implements QuoteService {
 			HomePositionMaster homeData = homeRepo.findByQuoteNo(req.getQuoteNo());
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(homeData.getCompanyId() , req.getProductId().toString());
 
-			
-			 if(product.getMotorYn().equalsIgnoreCase("A")) {
+			 if(product.getMotorYn().equalsIgnoreCase("M")) {
+				 List<MotorDataDetails> motList = motorRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(),"D");
+				 Double accSuminsured = 0D;
+				 for (MotorDataDetails o : motList ) {
+					 accSuminsured = accSuminsured +  (o.getAcccessoriesSumInsured()==null ? 0D : o.getAcccessoriesSumInsured())  ;
+				 }
+				 MotorSuminsuredDetails motSum = new MotorSuminsuredDetails(); 
+				 motSum.setAccessoriesSuminsured(accSuminsured.toString() );
+				 motSum.setQuoteNo(motList.get(0).getQuoteNo());
+				motSum.setCurrency(motList.get(0).getCurrency());
+				 res.setProductSuminsuredDetails(motSum);
+			}else  if(product.getMotorYn().equalsIgnoreCase("A")) {
 				 BuildingSumInsuredDetails builSum  = buildingSuminsuredDetails(req);
 				 res.setProductSuminsuredDetails(builSum);	
 			} else {

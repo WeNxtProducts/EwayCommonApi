@@ -40,6 +40,7 @@ import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.PlanTypeMaster;
 import com.maan.eway.common.req.GetMachineryContentReq;
 import com.maan.eway.common.req.GetOccupationsReq;
@@ -51,6 +52,7 @@ import com.maan.eway.integration.service.impl.OracleQuery;
 import com.maan.eway.master.req.BrokerSumInsuredRefReq;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.LovPolicyDropDownReq;
+import com.maan.eway.master.req.MotDropdownReq;
 import com.maan.eway.master.req.PlanTypeReq;
 import com.maan.eway.master.req.RelationDropDownReq;
 import com.maan.eway.master.service.impl.PolicyTypeMasterServiceImpl;
@@ -61,14 +63,16 @@ import com.maan.eway.repository.CompanyRegionMasterRepository;
 import com.maan.eway.repository.CompanyStateMasterRepository;
 import com.maan.eway.repository.CountryMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
+import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.MachineryDropDownRes;
+import com.maan.eway.res.MotorWithAccessoriesRes;
 
 
 @Service
 public class DropDownServiceImpl  implements DropDownService{ 
   
-
+ 
 	private Logger log = LogManager.getLogger(DropDownServiceImpl.class);
 
 	@PersistenceContext
@@ -101,6 +105,9 @@ public class DropDownServiceImpl  implements DropDownService{
 	
 	@Autowired 
 	private	BuildingRiskDetailsRepository buildRepo;
+	
+	@Autowired
+	private MotorDataDetailsRepository motorRepo; 
 	
 	// Cover Note Type Drop Down
 
@@ -3018,6 +3025,29 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;	
+	}
+
+
+	@Override
+	public List<MotorWithAccessoriesRes> getMotAccDropdown(MotDropdownReq req) {
+		List<MotorWithAccessoriesRes> resList = new ArrayList<MotorWithAccessoriesRes>();
+		try {
+			 List<MotorDataDetails> motList = motorRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(),"D");
+			 
+			 for (MotorDataDetails data : motList ) {
+				 MotorWithAccessoriesRes res = new MotorWithAccessoriesRes();
+					res.setCode(data.getVehicleId());
+					res.setCodeDesc(data.getChassisNumber());
+					res.setSuminsured(data.getAcccessoriesSumInsured()==null?"" : data.getAcccessoriesSumInsured().toString());
+					resList.add(res);
+			 }
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());

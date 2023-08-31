@@ -11,9 +11,11 @@ import com.maan.eway.integration.req.QueryKeyReq;
 import com.maan.eway.master.req.BrokerSumInsuredRefReq;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.LovPolicyDropDownReq;
+import com.maan.eway.master.req.MotDropdownReq;
 import com.maan.eway.master.req.PlanTypeReq;
 import com.maan.eway.master.req.RelationDropDownReq;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.MotorWithAccessoriesRes;
 
 public interface DropDownService {
 
@@ -211,6 +213,8 @@ public interface DropDownService {
 	List<DropDownRes> getCyberContents(LovDropDownReq req);
 
 	List<DropDownRes> getTaxForDesc(LovDropDownReq req);
+
+	List<MotorWithAccessoriesRes> getMotAccDropdown(MotDropdownReq req);
 
 
 
