@@ -1125,7 +1125,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			} else if (searchKey.equalsIgnoreCase("RegistrationNumber")) {
 				n1 = cb.equal(cb.lower(c.get("registrationNumber")), searchValue);
 			} else if (searchKey.equalsIgnoreCase("QuoteNumber")) {
-				n1 = cb.equal(cb.lower(c.get("quoteNo")), searchValue);
+				n1 = cb.equal(c.get("quoteNo"), searchValue);
 			} else if (searchKey.equalsIgnoreCase("EntryDate")) {
 				Date entryDate = sdf.parse(searchValue);
 				Calendar cal = new GregorianCalendar();
@@ -1144,9 +1144,9 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			} else if (searchKey.equalsIgnoreCase("ClientName")) {
 				n1 = cb.like(cb.lower(cus.get("clientName")), "%" + searchValue + "%");
 				n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
-			}else if (searchKey.equalsIgnoreCase("PolicyNo")) {
+			} else if (searchKey.equalsIgnoreCase("PolicyNo")) {
 				n1 = cb.like(cb.lower(c.get("policyNo")), searchValue );
-				
+			
 			}
 
 			Predicate n2 = cb.equal(c.get("companyId"), companyId);
