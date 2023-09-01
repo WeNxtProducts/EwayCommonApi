@@ -9,7 +9,6 @@ import lombok.Data;
 public class PortfolioAdminSearchRes {
 
 	// Customer Info
-		private Long   idsCount ;
 		private String customerReferenceNo;
 		private String idNumber;
 		private String clientName;
