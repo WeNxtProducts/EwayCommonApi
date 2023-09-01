@@ -1371,7 +1371,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			String endtType = "" ;
 			String endtCount = "" ;
 			String endtFields = "" ;
-			
+			String originalPolicyNo = "" ;
 			
 			// Find Old QuoteNo
 			 if( req.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId)) {
@@ -1386,7 +1386,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					effectiveDate    = data.getEndorsementEffdate()==null?null: data.getEndorsementEffdate() ;
 					noOfDays		 = data.getTravelCoverDuration()==null?null: data.getTravelCoverDuration().toString();
 					endtType		 = data.getEndorsementType()==null?"": data.getEndorsementType().toString() ;
-					endtCount		 = data.getEndtCount()==null?"": data.getEndtCount().toString() ;
+					endtCount		 = data.getEndtCount()==null?"0": data.getEndtCount().toString() ;
+					originalPolicyNo = data.getOriginalPolicyNo();
 					
 			} else if( req.getMotorYn().equalsIgnoreCase("M") ) {
 				EserviceMotorDetails data =  eserMotRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo() , req.getVehicleIdsList().get(0).getVehicleId());
@@ -1400,7 +1401,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				effectiveDate    = data.getEndorsementEffdate()==null?null: data.getEndorsementEffdate() ;
 				noOfDays		 = data.getPeriodOfInsurance()==null?null: data.getPeriodOfInsurance() ;
 				endtType		 = data.getEndorsementType()==null?"": data.getEndorsementType().toString() ;
-				endtCount		 = data.getEndtCount()==null?"": data.getEndtCount().toString() ;
+				endtCount		 = data.getEndtCount()==null?"0": data.getEndtCount().toString() ;
+				originalPolicyNo = data.getOriginalPolicyNo();
 			
 			} else if( req.getMotorYn().equalsIgnoreCase("A")) {
 				List<EserviceBuildingDetails> datas =  eserBuildRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo() );
@@ -1415,7 +1417,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				effectiveDate    = data.getEndorsementEffdate()==null?null : data.getEndorsementEffdate() ;
 				noOfDays		 = data.getPolicyPeriord()==null?null: data.getPolicyPeriord().toString() ;
 				endtType		 = data.getEndorsementType()==null?"": data.getEndorsementType().toString() ;
-				endtCount		 = data.getEndtCount()==null?"": data.getEndtCount().toString() ;
+				endtCount		 = data.getEndtCount()==null?"0": data.getEndtCount().toString() ;
+				originalPolicyNo = data.getOriginalPolicyNo();
 				
 			} else {
 				List<EserviceCommonDetails> datas =  eserCommonRepo.findByRequestReferenceNo(req.getRequestReferenceNo() );
@@ -1432,7 +1435,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				effectiveDate    = data.getEndorsementEffdate()==null?null : data.getEndorsementEffdate() ;
 				noOfDays		 = data.getPolicyPeriod()==null?null: data.getPolicyPeriod().toString() ;
 				endtType		 = data.getEndorsementType()==null?"": data.getEndorsementType().toString() ;
-				endtCount		 = data.getEndtCount()==null?"": data.getEndtCount().toString() ;
+				endtCount		 = data.getEndtCount()==null?"0": data.getEndtCount().toString() ;
+				originalPolicyNo = data.getOriginalPolicyNo();
 			}
 			
 			// Get Endt Fields
@@ -1475,8 +1479,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
             request.setEndtCount(endtCount);
             request.setEndtFields(endtFields);
             request.setMotorYn(req.getMotorYn());
-            ;
-			commonRes.setCommonResponse(request);
+            request.setOriginalPolicyNo(originalPolicyNo);
+            
+            commonRes.setCommonResponse(request);
 			commonRes.setIsError(false);
 			commonRes.setErrorMessage(null);
 			commonRes.setMessage("Success");

@@ -69,6 +69,7 @@ import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.PortFolioDashBoardReq;
 import com.maan.eway.common.req.PortFolioGridReq;
 import com.maan.eway.common.req.RevertGridReq;
+import com.maan.eway.common.req.SearchBrokerPolicyReq;
 import com.maan.eway.common.req.UpdateLapsedQuoteReq;
 import com.maan.eway.common.res.AdminPendingGridListRes;
 import com.maan.eway.common.res.AdminPendingGridRes;
@@ -85,6 +86,7 @@ import com.maan.eway.common.res.PortfolioBrokerListRes;
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.PortfolioGridRes;
 import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
+import com.maan.eway.common.res.PortfolioSearchDataRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.res.RevertGridListRes;
@@ -114,7 +116,7 @@ import com.maan.eway.thread.MyTaskList;
 @Service
 @Transactional
 public class GridServiceImpl implements GridService {
-
+  
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
 
@@ -3730,6 +3732,28 @@ public class GridServiceImpl implements GridService {
 				return null;
 			}
 			return res;
+		}
+
+		@Override
+		public PortFolioSearchGridRes searchBrokerPolicies(SearchBrokerPolicyReq req) {
+			PortFolioSearchGridRes res = new PortFolioSearchGridRes();
+			try {
+					
+				List<PortfolioSearchDataRes> resList = new ArrayList<PortfolioSearchDataRes>();
+				//CompanyProductMaster product = getCompanyProductMasterDropdown(req.getInsuranceId(), req.getProductId());
+
+				Long totalCount = motService.getProtfolioSearchDataCount(req);
+				resList = motService.getProtfolioSearchData(req);
+			
+				res.setPortFolioList(resList);
+				res.setTotalCount(totalCount);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return res ;
 		}
 		
 }

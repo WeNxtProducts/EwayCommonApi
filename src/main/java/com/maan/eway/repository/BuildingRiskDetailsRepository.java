@@ -12,6 +12,7 @@
 
 package com.maan.eway.repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -42,6 +43,13 @@ public interface BuildingRiskDetailsRepository  extends JpaRepository<BuildingRi
 	void deleteByQuoteNo(String quoteNo);
 
 	List<BuildingRiskDetails> findByQuoteNoOrderByRiskIdAsc(String quoteNo);
+
+	Long countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal,
+			String originalPolicyNo);
+
+	@Transactional
+	void deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal,
+			String originalPolicyNo);
 
 
 

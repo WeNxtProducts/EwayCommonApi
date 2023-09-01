@@ -12,6 +12,7 @@
 
 package com.maan.eway.repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -43,5 +44,12 @@ public interface SectionDataDetailsRepository  extends JpaRepository<SectionData
 
 
 	List<SectionDataDetails> findByQuoteNoAndStatusNot(String quoteNo, String string);
+
+	Long countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal,
+			String originalPolicyNo);
+
+	@Transactional
+	void deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal,
+			String originalPolicyNo);
 
 }

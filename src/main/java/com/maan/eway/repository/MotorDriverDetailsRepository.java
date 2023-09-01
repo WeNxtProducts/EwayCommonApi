@@ -12,6 +12,7 @@
 
 package com.maan.eway.repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -41,6 +42,12 @@ public interface MotorDriverDetailsRepository  extends JpaRepository<MotorDriver
 	List<MotorDriverDetails> findByQuoteNoAndRiskId(String oldQuoteNo, Integer vehicleId);
 
 	List<MotorDriverDetails> findByRequestReferenceNo(String requestReferenceNo);
+
+	Long countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal,
+			String originalPolicyNo);
+
+	void deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal,
+			String originalPolicyNo);
 
 	
 

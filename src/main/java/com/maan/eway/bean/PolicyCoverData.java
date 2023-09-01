@@ -303,8 +303,12 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="MINIMUM_PREMIUM_FC")
     private BigDecimal     minimumPremiumFc ;
+    
     @Column(name="TAX_AMOUNT_LC")
     private BigDecimal     taxAmountLc ;
+    
+    @Column(name="ORIGINAL_POLICY_NO")
+    private String originalPolicyNo ;
 }
 
 

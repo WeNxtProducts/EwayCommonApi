@@ -60,4 +60,11 @@ public interface MotorDataDetailsRepository  extends JpaRepository<MotorDataDeta
 
 	List<EserviceMotorDetails> findByRequestReferenceNoOrderBySectionNameAsc(String requestReferenceNo);
 
+	Long countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal,
+			String originalPolicyNo);
+
+	@Transactional
+	void deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal,
+			String originalPolicyNo);
+
 }

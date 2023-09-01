@@ -12,7 +12,10 @@
 
 package com.maan.eway.repository;
 
+import java.math.BigDecimal;
 import java.util.List;
+
+import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -55,6 +58,15 @@ public interface ContentAndRiskRepository  extends JpaRepository<ContentAndRisk,
 
 
 	List<ContentAndRisk> findByQuoteNoAndRiskIdAndSectionId(String quoteNo, Integer riskId, String sectionId);
+
+
+	Long countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal,
+			String originalPolicyNo);
+
+	
+	@Transactional
+	void deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal,
+			String originalPolicyNo);
 
 
 

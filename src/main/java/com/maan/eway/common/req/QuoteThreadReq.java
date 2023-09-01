@@ -1,5 +1,6 @@
 package com.maan.eway.common.req;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -81,5 +82,6 @@ public class QuoteThreadReq {
 	
 	private List<VehicleNeedToRemove> vehicleNeedberemove; 
 	
-
+	private String originalPolicyNo;
+	
 }
