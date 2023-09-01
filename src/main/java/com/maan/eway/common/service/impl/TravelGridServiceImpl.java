@@ -419,7 +419,8 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					cb.selectCase().when(m.get("quoteNo").isNotNull(), m.get("quoteNo")).otherwise( m.get("quoteNo")).alias("quoteNo") ,
 					cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId")).otherwise( m.get("customerId")).alias("customerId") ,
 					 cb.max(m.get("travelStartDate")).alias("policyStartDate"),
-					 cb.max(m.get("travelEndDate")).alias("policyEndDate") , m.get("rejectReason").alias("rejectReason"),
+					 cb.max(m.get("travelEndDate")).alias("policyEndDate") ,
+					 cb.max( m.get("rejectReason")).alias("rejectReason"),
 					 cb.max(m.get("adminRemarks")).alias("adminRemarks"),
 					 cb.max(m.get("referalRemarks")).alias("referalRemarks"),
 					 cb.max(m.get("endorsementType")).alias("endorsementType"),
@@ -508,7 +509,8 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					cb.selectCase().when(m.get("quoteNo").isNotNull(), m.get("quoteNo")).otherwise( m.get("quoteNo")).alias("quoteNo") ,
 					cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId")).otherwise( m.get("customerId")).alias("customerId") ,
 					cb.max(m.get("travelStartDate")).alias("policyStartDate"),
-					cb.max(m.get("travelEndDate")).alias("policyEndDate") , cb.max(m.get("rejectReason")).alias("rejectReason")
+					cb.max(m.get("travelEndDate")).alias("policyEndDate") , 
+					cb.max(m.get("rejectReason")).alias("rejectReason")
 					,
 					cb.max(m.get("adminRemarks")).alias("adminRemarks"),
 					cb.max(m.get("referalRemarks")).alias("referalRemarks"),
