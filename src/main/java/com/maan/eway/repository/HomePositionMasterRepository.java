@@ -54,11 +54,11 @@ public interface HomePositionMasterRepository  extends JpaRepository<HomePositio
 
 	HomePositionMaster findByPolicyNoAndStatus(String policyNo, String string);
 	
-	Long countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal,
+	Long countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, Integer bigDecimal,
 			String originalPolicyNo);
 
 	@Transactional
-	void deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal,
+	void deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, Integer bigDecimal,
 			String originalPolicyNo);
 
 }

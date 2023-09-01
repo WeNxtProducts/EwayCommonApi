@@ -1727,9 +1727,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 					res = copyDocumentRecords(req);
 					
 					// Find Traces
-					Long dupQuoteCount = homeRepo.countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+					Long dupQuoteCount = homeRepo.countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , Integer.valueOf(req.getEndtCount()) ,req.getOriginalPolicyNo() );
 					if (dupQuoteCount> 0) {
-						homeRepo.deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+						homeRepo.deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , Integer.valueOf(req.getEndtCount()) ,req.getOriginalPolicyNo() );
 					}
 				}
 				
