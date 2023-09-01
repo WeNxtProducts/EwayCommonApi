@@ -12,5 +12,9 @@ public interface JasperService {
 
 	public JasperDocumentRes policyreportform(JasperReportDocReq req);
 
+	public JasperDocumentRes taxInvoice(String quoteNo);
+
+	public JasperDocumentRes creditNote(String quoteNo);
+
 
 }
