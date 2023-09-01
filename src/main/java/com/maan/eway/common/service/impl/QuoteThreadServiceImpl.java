@@ -1450,12 +1450,11 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			}
 			
 			// Quote No Generate
-			if(StringUtils.isNotBlank( quoteNo) && (subUserType.equalsIgnoreCase("b2c")) ) {
-			//	Random rand = new Random();
-	       //     int random=rand.nextInt(90)+10; 
-	        	customerId = "C-" + generateCustId();// idf.format(new Date()) + random ;
-	            quoteNo  = "Q"+ generateQuoteNo();// idf.format(new Date()) + random ;
-	        } else if (StringUtils.isBlank( quoteNo)  ) {
+		//	if(StringUtils.isNotBlank( quoteNo) && (subUserType.equalsIgnoreCase("b2c")) ) {
+			// 	customerId = "C-" + generateCustId();// idf.format(new Date()) + random ;
+	        //    quoteNo  = "Q"+ generateQuoteNo();// idf.format(new Date()) + random ;
+	      //  } else
+	       if (StringUtils.isBlank( quoteNo)  ) {
 	       // 	Random rand = new Random();
 	       //     int random=rand.nextInt(90)+10; 
 	        	customerId = "C-" + generateCustId();// idf.format(new Date()) + random ;
