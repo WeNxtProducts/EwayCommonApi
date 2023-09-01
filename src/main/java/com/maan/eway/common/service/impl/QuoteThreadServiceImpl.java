@@ -1,6 +1,7 @@
 package com.maan.eway.common.service.impl;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1372,7 +1373,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			String endtCount = "" ;
 			String endtFields = "" ;
 			String originalPolicyNo = "" ;
-			
+			DecimalFormat df = new DecimalFormat("####");
 			// Find Old QuoteNo
 			 if( req.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId)) {
 					EserviceTravelDetails data =  eserTraRepo.findByRequestReferenceNo(req.getRequestReferenceNo() );
@@ -1386,7 +1387,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					effectiveDate    = data.getEndorsementEffdate()==null?null: data.getEndorsementEffdate() ;
 					noOfDays		 = data.getTravelCoverDuration()==null?null: data.getTravelCoverDuration().toString();
 					endtType		 = data.getEndorsementType()==null?"": data.getEndorsementType().toString() ;
-					endtCount		 = data.getEndtCount()==null?"0": data.getEndtCount().toString() ;
+					endtCount		 = data.getEndtCount()==null?"0": df.format(Double.valueOf(data.getEndtCount().toPlainString())) ;
 					originalPolicyNo = data.getOriginalPolicyNo();
 					
 			} else if( req.getMotorYn().equalsIgnoreCase("M") ) {
@@ -1401,7 +1402,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				effectiveDate    = data.getEndorsementEffdate()==null?null: data.getEndorsementEffdate() ;
 				noOfDays		 = data.getPeriodOfInsurance()==null?null: data.getPeriodOfInsurance() ;
 				endtType		 = data.getEndorsementType()==null?"": data.getEndorsementType().toString() ;
-				endtCount		 = data.getEndtCount()==null?"0": data.getEndtCount().toString() ;
+				endtCount		 = data.getEndtCount()==null?"0": df.format(Double.valueOf(data.getEndtCount().toPlainString()))  ;
 				originalPolicyNo = data.getOriginalPolicyNo();
 			
 			} else if( req.getMotorYn().equalsIgnoreCase("A")) {
@@ -1417,7 +1418,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				effectiveDate    = data.getEndorsementEffdate()==null?null : data.getEndorsementEffdate() ;
 				noOfDays		 = data.getPolicyPeriord()==null?null: data.getPolicyPeriord().toString() ;
 				endtType		 = data.getEndorsementType()==null?"": data.getEndorsementType().toString() ;
-				endtCount		 = data.getEndtCount()==null?"0": data.getEndtCount().toString() ;
+				endtCount		 = data.getEndtCount()==null?"0": df.format(Double.valueOf(data.getEndtCount().toPlainString()))  ;
 				originalPolicyNo = data.getOriginalPolicyNo();
 				
 			} else {
@@ -1435,7 +1436,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				effectiveDate    = data.getEndorsementEffdate()==null?null : data.getEndorsementEffdate() ;
 				noOfDays		 = data.getPolicyPeriod()==null?null: data.getPolicyPeriod().toString() ;
 				endtType		 = data.getEndorsementType()==null?"": data.getEndorsementType().toString() ;
-				endtCount		 = data.getEndtCount()==null?"0": data.getEndtCount().toString() ;
+				endtCount		 = data.getEndtCount()==null?"0": df.format(Double.valueOf(data.getEndtCount().toPlainString()))  ;
 				originalPolicyNo = data.getOriginalPolicyNo();
 			}
 			
