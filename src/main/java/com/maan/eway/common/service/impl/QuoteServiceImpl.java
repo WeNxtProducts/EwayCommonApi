@@ -549,7 +549,7 @@ public class QuoteServiceImpl implements QuoteService {
 			if(accCovers.size()> 0 )  {
 				viewRes.setTotalAccessoriesSumInsured(totalSumInsure);	
 			} else {
-				viewRes.setTotalAccessoriesSumInsured(0);
+				viewRes.setTotalAccessoriesSumInsured(0D);
 			}
 			
 			
