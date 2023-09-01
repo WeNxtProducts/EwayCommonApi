@@ -3,9 +3,16 @@ package com.maan.eway.admin.res;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PortfolioAdminSearchRes {
 
 	// Customer Info
@@ -13,13 +20,13 @@ public class PortfolioAdminSearchRes {
 		private String idNumber;
 		private String clientName;
 		private String mobileNo1;
-		private String taxExemptedId;
 		private String isTaxExempted;
+		private String taxExemptedId;
 		
 
 		// Vehicle Info
 		private String     companyId ;
-		private int     productId ;
+		private Integer     productId ;
 		private String     branchCode ;
 		
 		private String   requestReferenceNo ;
@@ -54,4 +61,7 @@ public class PortfolioAdminSearchRes {
 		
 		private String currency;
 		private String originalPolicyNo;
+	
+		
+		
 }

@@ -3310,7 +3310,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 						// Find All
 						Root<HomePositionMaster> m = query.from(HomePositionMaster.class);
 						Root<PersonalInfo> c = query.from(PersonalInfo.class);
-
+						
 						// Select
 						query.multiselect(
 								c.get("customerReferenceNo").alias("customerReferenceNo"),
