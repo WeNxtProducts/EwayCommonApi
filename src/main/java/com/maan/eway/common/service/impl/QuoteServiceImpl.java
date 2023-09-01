@@ -545,8 +545,13 @@ public class QuoteServiceImpl implements QuoteService {
 			}
 			viewRes.setRiskDetails(motorResList);
 			viewRes.setDocumentDetails(documentDetails);
+			List<PolicyCoverData>  accCovers = covers.stream().filter( o -> o.getCoverId().equals(55)  ).collect(Collectors.toList());
+			if(accCovers.size()> 0 )  {
+				viewRes.setTotalAccessoriesSumInsured(totalSumInsure);	
+			} else {
+				viewRes.setTotalAccessoriesSumInsured(0);
+			}
 			
-			viewRes.setTotalAccessoriesSumInsured(totalSumInsure);
 			
 		} catch ( Exception e) {
 			e.printStackTrace();
