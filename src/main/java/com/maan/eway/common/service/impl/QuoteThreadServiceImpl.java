@@ -696,7 +696,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						travelData.setManualReferalYn(req.getManualReferralYn());
 						eserTraRepo.save(travelData);
 						
-						overAllSuminsured = new BigDecimal("50000");
+						overAllSuminsured = new BigDecimal("0");
 						branchCode = travelData.getBranchCode();
 						
 					} else if ( req.getMotorYn().equalsIgnoreCase("M") ) {
