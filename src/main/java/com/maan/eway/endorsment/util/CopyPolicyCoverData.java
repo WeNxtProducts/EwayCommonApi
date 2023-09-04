@@ -3,6 +3,7 @@ package com.maan.eway.endorsment.util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -44,12 +45,27 @@ public class CopyPolicyCoverData {
 				coverageTypes.add("B");
 				coverageTypes.add("O");				 
 			}else {
+				coverageTypes.add("B");
+				coverageTypes.add("O");
 				coverageTypes.add("E");
 			}
 			
 			datas= policyCoverRepo.findByQuoteNoAndStatusAndCoverageTypeIn(quoteNo,"Y",coverageTypes);
+			Map<String, List<PolicyCoverData>> groupedRecords = groupRecordsByMultipleColumns(datas);
+			List<PolicyCoverData> newData=new ArrayList<PolicyCoverData>();
+			groupedRecords.forEach((col, data) -> {
+	            
+	            List<PolicyCoverData> collect = data.stream().filter(i -> i.getCoverageType().equals("E")).collect(Collectors.toList());
+	            if(collect.isEmpty()) {
+	            	collect=data.stream().filter(i -> (i.getCoverageType().equals("B") || i.getCoverageType().equals("O") || i.getCoverageType().equals("A"))).collect(Collectors.toList());
+	            
+	            }
+	            newData.addAll(collect);	            
+	        });
+
+			
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
-			List<PolicyCoverDataEndt> mappedData = datas.stream().map( m->{ 
+			List<PolicyCoverDataEndt> mappedData = newData.stream().map( m->{ 
 				PolicyCoverDataEndt map = dozerMapper.map(m, PolicyCoverDataEndt.class);
 				map.setPolicyNo(StringUtils.isNotBlank(hpmData.getOriginalPolicyNo())?hpmData.getOriginalPolicyNo():hpmData.getPolicyNo());
 				return map;
@@ -64,4 +80,12 @@ public class CopyPolicyCoverData {
 		return null;
 		
 	}
+	 private  Map<String, List<PolicyCoverData>> groupRecordsByMultipleColumns(List<PolicyCoverData> records) {
+	        return records.stream()
+	            .collect(Collectors.groupingBy(record -> record.getCompanyId() 
+	            		+ "-" + record.getProductId()
+	            		+"-"+ record.getVehicleId()
+	            		+"-"+ record.getSectionId()
+	            		+"-"+ record.getCoverId() ));
+	    }
 }

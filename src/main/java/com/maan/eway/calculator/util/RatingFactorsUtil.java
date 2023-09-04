@@ -494,7 +494,20 @@ public class RatingFactorsUtil {
 		}
 		return null;
 	}
-
+	public  List<Tuple> loadTinyUrl(String companyid, Integer productid, String notifTemplatename,String notifYn) {
+		try {
+			String todayInString = DD_MM_YYYY.format(new Date());
+			//String search="companyId:"+ companyid +";productId:"+productid+";status:{Y,R};"+todayInString+"~effectiveDateStart&effectiveDateEnd;branchCode:{99999};notifYn:Y;type:"+notifTemplatename.toUpperCase().trim()+";";
+			String search="type:"+notifTemplatename.toUpperCase().trim()+";"+"companyId:"+ companyid +";productId:"+productid+";status:{Y,R};notifYn:"+notifYn+";"+todayInString+"~effectiveDateStart&effectiveDateEnd;branchCode:99999";
+			List<Tuple> result=null;
+			SpecCriteria criteria = crservice.createCriteria(TinyurlMaster.class, search, "sno"); 
+			result=crservice.getResult(criteria, 0, 50);
+			return result;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	public List<Tuple> loadTinyUrlRequest(String companyid, Integer productid, String notifTemplatename,String itemId){
 		try {
 			String todayInString = DD_MM_YYYY.format(new Date());

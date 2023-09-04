@@ -68,6 +68,7 @@ import com.maan.eway.bean.LoginBranchMasterArch;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginMasterArch;
 import com.maan.eway.bean.LoginProductMaster;
+import com.maan.eway.bean.PremiaCustomerDetails;
 import com.maan.eway.bean.RegionMaster;
 import com.maan.eway.master.req.FactorRateSaveReq;
 import com.maan.eway.repository.BranchMasterRepository;
@@ -76,6 +77,7 @@ import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterArchRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginProductMasterRepository;
+import com.maan.eway.repository.PremiaCustomerDetailsRepository;
 
 @Service
 public class LoginBranchServiceImpl implements LoginBranchService {
@@ -97,6 +99,9 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 
 	@Autowired
 	private BranchMasterRepository branchRepo;
+	
+	@Autowired
+	private PremiaCustomerDetailsRepository premiaCustRepo ; 
 
 	@PersistenceContext
 	private EntityManager em;
@@ -519,6 +524,13 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			List<BranchMaster> branchname = branchRepo.findTopByCompanyIdAndBranchCodeOrderByAmendIdDesc(req.getCompanyId(),req.getBranchCode());
 			save.setBranchName(branchname.get(0).getBranchName());
 			save.setBrokerBranchName(req.getBrokerBranchName());
+			save.setCustomerCode(req.getCustomerCode());
+			
+			
+			List<PremiaCustomerDetails> premiaCustDetails  = premiaCustRepo.findByCustomerCodeAndCompanyIdAndBranchCodeAndStatus(
+						req.getCustomerCode() , 	req.getCompanyId() ,req.getBranchCode()  , "Y");
+			save.setCustomerName(premiaCustDetails.size()> 0 ? premiaCustDetails.get(0).getCustomerName() : "");
+		
 			loginBrokerRepo.save(save);
 
 			log.info("Login Master Updated Details ---> " + json.toJson(save));
@@ -543,6 +555,7 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 					req.getBrokerBranchCode(), req.getLoginId(), req.getInsuranceId());
 			if(findBranch!=null) {
 			res = dozerMapper.map(findBranch, GetBrokerBranchRes.class);
+			res.setCustomerCode(findBranch.getCustomerCode() );
 			}
 			else {
 				return res;
@@ -579,6 +592,7 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 				if( filterBranch.size()>0 ) {
 					GetBrokerBranchRes res = new GetBrokerBranchRes();
 					mapper.map(brokerBranch, res);
+					res.setCustomerCode(brokerBranch.getCustomerCode());
 					resList.add(res);
 				}
 				
@@ -702,7 +716,6 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 		GetallBrokerBranchesRes res = new GetallBrokerBranchesRes();
 		res.setBrokerBranchCode(data.getBrokerBranchCode());
 		res.setBrokerBranchName(data.getBrokerBranchName());
-
 		resList.add(res);
 		}
 	}
@@ -733,6 +746,7 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 					GetBrokerBranchRes res = new GetBrokerBranchRes();
 					
 					res = dozerMapper.map(data, GetBrokerBranchRes.class);
+					res.setCustomerCode(data.getCustomerCode());
 					resList.add(res);
 			
 				}

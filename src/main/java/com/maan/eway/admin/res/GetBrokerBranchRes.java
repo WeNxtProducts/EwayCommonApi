@@ -74,6 +74,9 @@ public class GetBrokerBranchRes {
 	@JsonProperty("CoreAppCode")
 	private String coreAppCode;
 	
+	@JsonProperty("CustomerCode")
+	private String customerCode;
+	
 	@JsonProperty("Status")
 	private String status;
 	
@@ -82,6 +85,7 @@ public class GetBrokerBranchRes {
 	
 	@JsonProperty("DepartmentCode")
 	private String departmentCode;
+
 	
 //	@JsonProperty("CustomerCode")
 //	private String customerCode;

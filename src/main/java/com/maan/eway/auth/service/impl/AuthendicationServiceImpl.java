@@ -289,6 +289,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 					branchRes.setSourceType(data.getSourceType());
 					branchRes.setDepartmentCode(data.getDepartmentCode());
 					branchRes.setCustomerCode(data.getCustomerCode());
+					branchRes.setCustomerName(data.getCustomerName());
 				}
 				
 				// Attached Branch
@@ -307,7 +308,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 						branchRes.setSourceType(data.getSourceType());
 						branchRes.setDepartmentCode(data.getDepartmentCode());
 						branchRes.setCustomerCode(data.getCustomerCode());
-					
+						branchRes.setCustomerName(data.getCustomerName());
 					}
 				}
 				loginBranchRes.add(branchRes);

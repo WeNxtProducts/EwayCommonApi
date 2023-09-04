@@ -395,6 +395,9 @@ private static final long serialVersionUID = 1L;
     @Column(name="MS_REFNO")
     private Integer     msRefno ;
     
+    @Column(name="SUB_USER_TYPE", length=20)
+    private String     subUserType ;
+    
 }
 
 
