@@ -2185,6 +2185,54 @@ public class PaymentServiceImpl implements PaymentService {
 	   	    		   
 	    		   }
 	    		   
+	    		// Eservice Common Update
+	    		   {
+	    		    CriteriaBuilder cb = em.getCriteriaBuilder();
+					// create update
+					CriteriaUpdate<EserviceCommonDetails> update = cb.createCriteriaUpdate(EserviceCommonDetails.class);
+					// set the root class
+					Root<EserviceCommonDetails> m = update.from(EserviceCommonDetails.class);
+					// set update and where clause
+					update.set("policyNo", policyNo);
+					update.set("status", "P");
+					if(StringUtils.isNotBlank(endttypeId))
+						update.set("endtStatus","C");
+					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
+					// Cancellation Condition
+					if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
+						update.where(n1);
+					} else {
+						Predicate n2 = cb.notEqual(m.get("status"),"D" );
+						update.where(n1,n2);
+					}
+					// perform update
+					em.createQuery(update).executeUpdate();
+					
+	    		   }
+	    		   if(StringUtils.isNotBlank(endttypeId)){
+		    			 
+	   	    		    CriteriaBuilder cb = em.getCriteriaBuilder();
+	   					// create update
+	   					CriteriaUpdate<EserviceCommonDetails> update = cb.createCriteriaUpdate(EserviceCommonDetails.class);
+	   					// set the root class
+	   					Root<EserviceCommonDetails> m = update.from(EserviceCommonDetails.class);
+	   					if(StringUtils.isNotBlank(endttypeId))
+	   						update.set("endtStatus","C");
+	   					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
+	   				// Cancellation Condition
+						if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
+							update.where(n1);
+						} else {
+							Predicate n2 = cb.notEqual(m.get("status"),"D" );
+							update.where(n1,n2);
+						}
+	   					
+	   					// perform update
+	   					em.createQuery(update).executeUpdate();
+	   					
+	   	    		   
+	    		   }
+	    		   
 	    		   // Building Data Details Update
 //	    		   {
 //		    		    CriteriaBuilder cb = em.getCriteriaBuilder();
