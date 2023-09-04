@@ -1760,10 +1760,16 @@ public class PaymentServiceImpl implements PaymentService {
 			String debitNo = filterDebit.get(0).getDocNo() ;
 			Date debitDate = filterDebit.get(0).getEntryDate();
 			String debitTo = filterDebit.get(0).getDocType();
+			
+			String creditNo ="";
+			Date creditDate =null;
+			String creditTo = "";
+			if(filterCredit!=null && !filterCredit.isEmpty()) {
 			// Credit
-			String creditNo =  filterCredit.get(0).getDocNo();
-			Date creditDate = filterCredit.get(0).getEntryDate();
-			String creditTo = filterCredit.get(0).getDocType();
+			 creditNo =  filterCredit.get(0).getDocNo();
+			 creditDate = filterCredit.get(0).getEntryDate();
+			 creditTo = filterCredit.get(0).getDocType();
+			}
 			// Commision
 			BigDecimal commission =  policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") 
 					&& (o.getChargeCode().equals(new BigDecimal(1005)) || o.getChargeCode().equals(new BigDecimal(1001)) )
