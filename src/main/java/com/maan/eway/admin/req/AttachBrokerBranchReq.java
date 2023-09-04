@@ -69,6 +69,8 @@ public class AttachBrokerBranchReq {
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
 	
+	@JsonProperty("CustomerCode")
+	private String customerCode;
 	
 //	@JsonProperty("SourceType")
 //	private String sourceType;

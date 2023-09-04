@@ -465,6 +465,10 @@ public List<Error> validateBrokerCompanyBranchReq(AttachBrokerBranchReq req) {
 			errors.add(new Error("02", "InsuranceId", "Plese Enter InsuranceId" ));
 		}
 		
+		if(StringUtils.isBlank(req.getCustomerCode()) ) {
+			errors.add(new Error("02", "CustomerCode", "Plese Select CustomerCode" ));
+		}
+		
 //		if (StringUtils.isBlank(req.getBrokerBranchCode())) {
 //			errors.add(new Error("03", "BrokerBranchCode", "Plese Enter BrokerBranchCode"));
 //		}
