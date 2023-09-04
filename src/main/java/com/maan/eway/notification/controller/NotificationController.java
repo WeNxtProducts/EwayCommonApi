@@ -1,6 +1,6 @@
 package com.maan.eway.notification.controller;
 
-import java.time.Instant;
+import java.util.Map;
 
 //import org.jobrunr.scheduling.JobScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.notification.req.Notification;
-import com.maan.eway.notification.service.JobRunrService;
 import com.maan.eway.notification.service.NotificationService;
 
 import io.swagger.annotations.Api;
@@ -35,6 +34,12 @@ public class NotificationController {
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
+	}
+	
+	@PostMapping("/tinyurl")
+	public ResponseEntity<Map<String,String>> createTinyUrl(){
+		Map<String, String> data = notificationservice.createTinyUrl();
+		return new ResponseEntity<>(data, HttpStatus.CREATED);
 	}
 	
 //	
