@@ -69,6 +69,7 @@ public class LoginBranchDetailsRes {
 	@JsonProperty("CustomerCode")
 	private String customerCode;
 	
-	
+	@JsonProperty("CustomerName")
+	private String customerName ;
 	
 }
