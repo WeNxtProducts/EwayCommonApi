@@ -11,6 +11,7 @@ import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.PortFolioDashBoardReq;
 import com.maan.eway.common.req.PortFolioGridReq;
 import com.maan.eway.common.req.RevertGridReq;
+import com.maan.eway.common.req.SearchBrokerPolicyReq;
 import com.maan.eway.common.req.UpdateLapsedQuoteReq;
 import com.maan.eway.common.res.AdminPendingGridRes;
 import com.maan.eway.common.res.CommonRes;
@@ -21,10 +22,11 @@ import com.maan.eway.common.res.GetApproverListResponse;
 import com.maan.eway.common.res.GetallPolicyReportsRes;
 import com.maan.eway.common.res.PortFolioDashBoardRes;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
-
+import com.maan.eway.common.service.impl.PortFolioSearchGridRes;
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.PortfolioGridRes;
 import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
+import com.maan.eway.common.res.PortfolioSearchDataRes;
 import com.maan.eway.common.res.RevertGridRes;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.res.CopyQuoteSuccessRes;
@@ -91,6 +93,8 @@ public interface GridService {
 	AdminPendingGridRes getReAllotUwPendingGrid(RevertGridReq req);
 
 	SuccessRes updateUwReferralDetails(List<RevertGridReq> req);
+
+	PortFolioSearchGridRes searchBrokerPolicies(SearchBrokerPolicyReq req);
 
 
 	

@@ -419,7 +419,8 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					cb.selectCase().when(m.get("quoteNo").isNotNull(), m.get("quoteNo")).otherwise( m.get("quoteNo")).alias("quoteNo") ,
 					cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId")).otherwise( m.get("customerId")).alias("customerId") ,
 					 cb.max(m.get("travelStartDate")).alias("policyStartDate"),
-					 cb.max(m.get("travelEndDate")).alias("policyEndDate") , m.get("rejectReason").alias("rejectReason"),
+					 cb.max(m.get("travelEndDate")).alias("policyEndDate") ,
+					 cb.max( m.get("rejectReason")).alias("rejectReason"),
 					 cb.max(m.get("adminRemarks")).alias("adminRemarks"),
 					 cb.max(m.get("referalRemarks")).alias("referalRemarks"),
 					 cb.max(m.get("endorsementType")).alias("endorsementType"),
@@ -508,7 +509,8 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					cb.selectCase().when(m.get("quoteNo").isNotNull(), m.get("quoteNo")).otherwise( m.get("quoteNo")).alias("quoteNo") ,
 					cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId")).otherwise( m.get("customerId")).alias("customerId") ,
 					cb.max(m.get("travelStartDate")).alias("policyStartDate"),
-					cb.max(m.get("travelEndDate")).alias("policyEndDate") , cb.max(m.get("rejectReason")).alias("rejectReason")
+					cb.max(m.get("travelEndDate")).alias("policyEndDate") , 
+					cb.max(m.get("rejectReason")).alias("rejectReason")
 					,
 					cb.max(m.get("adminRemarks")).alias("adminRemarks"),
 					cb.max(m.get("referalRemarks")).alias("referalRemarks"),
@@ -1125,7 +1127,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			} else if (searchKey.equalsIgnoreCase("RegistrationNumber")) {
 				n1 = cb.equal(cb.lower(c.get("registrationNumber")), searchValue);
 			} else if (searchKey.equalsIgnoreCase("QuoteNumber")) {
-				n1 = cb.equal(cb.lower(c.get("quoteNo")), searchValue);
+				n1 = cb.equal(c.get("quoteNo"), searchValue);
 			} else if (searchKey.equalsIgnoreCase("EntryDate")) {
 				Date entryDate = sdf.parse(searchValue);
 				Calendar cal = new GregorianCalendar();
@@ -1144,9 +1146,9 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			} else if (searchKey.equalsIgnoreCase("ClientName")) {
 				n1 = cb.like(cb.lower(cus.get("clientName")), "%" + searchValue + "%");
 				n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
-			}else if (searchKey.equalsIgnoreCase("PolicyNo")) {
+			} else if (searchKey.equalsIgnoreCase("PolicyNo")) {
 				n1 = cb.like(cb.lower(c.get("policyNo")), searchValue );
-				
+			
 			}
 
 			Predicate n2 = cb.equal(c.get("companyId"), companyId);

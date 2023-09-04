@@ -22,9 +22,11 @@ import com.maan.eway.integration.req.QueryKeyReq;
 import com.maan.eway.master.req.BrokerSumInsuredRefReq;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.LovPolicyDropDownReq;
+import com.maan.eway.master.req.MotDropdownReq;
 import com.maan.eway.master.req.PlanTypeReq;
 import com.maan.eway.master.req.RelationDropDownReq;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.MotorWithAccessoriesRes;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -1703,6 +1705,22 @@ public class DropDownController {
 	public ResponseEntity<CommonRes> getTaxForDesc(@RequestBody LovDropDownReq req) {
 		CommonRes data = new CommonRes();
 		List<DropDownRes> res = dropDownService.getTaxForDesc(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/motorWithaccessories")
+	public ResponseEntity<CommonRes> getTaxForDesc(@RequestBody MotDropdownReq req) {
+		CommonRes data = new CommonRes();
+		List<MotorWithAccessoriesRes> res = dropDownService.getMotAccDropdown(req);
 		data.setCommonResponse(res);
 		data.setErrorMessage(Collections.emptyList());
 		data.setIsError(false);
