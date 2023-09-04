@@ -1687,7 +1687,10 @@ public class PaymentServiceImpl implements PaymentService {
 				// Debit
 				String debitNo = filterDebit.get(0).getDocNo() ;
 				// Credit
-				String creditNo =  filterCredit.get(0).getDocNo();
+				String creditNo ="";
+				if(filterCredit!=null && !filterCredit.isEmpty()){
+					creditNo =filterCredit.get(0).getDocNo();
+			}
 				
 				res.setPolicyNo(policyNo);
 				res.setDebitNoteNo(debitNo);
@@ -1764,22 +1767,27 @@ public class PaymentServiceImpl implements PaymentService {
 			String creditNo ="";
 			Date creditDate =null;
 			String creditTo = "";
+			BigDecimal commission = null;
+			BigDecimal commissionPercent = null;
 			if(filterCredit!=null && !filterCredit.isEmpty()) {
 			// Credit
 			 creditNo =  filterCredit.get(0).getDocNo();
 			 creditDate = filterCredit.get(0).getEntryDate();
 			 creditTo = filterCredit.get(0).getDocType();
-			}
+			 
+			 
 			// Commision
-			BigDecimal commission =  policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") 
-					&& (o.getChargeCode().equals(new BigDecimal(1005)) || o.getChargeCode().equals(new BigDecimal(1001)) )
-					).collect(Collectors.toList()).get(0).getAmountFc();
-			BigDecimal commissionPercent = 		policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")
-					&& (o.getChargeCode().equals(new BigDecimal(1007))
-							||
-							o.getChargeCode().equals(new BigDecimal(1012))
-							)
-					).collect(Collectors.toList()).get(0).getAmountFc();
+			 commission=policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") 
+						&& (o.getChargeCode().equals(new BigDecimal(1005)) || o.getChargeCode().equals(new BigDecimal(1001)) )
+						).collect(Collectors.toList()).get(0).getAmountFc();
+			 commissionPercent=	policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")
+						&& (o.getChargeCode().equals(new BigDecimal(1007))
+								||
+								o.getChargeCode().equals(new BigDecimal(1012))
+								)
+						).collect(Collectors.toList()).get(0).getAmountFc();
+			}
+			
 			List<DebitAndCredit> filtercommissionVat = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")
 					&& o.getChargeCode().equals(new BigDecimal(1012))).collect(Collectors.toList());
 			BigDecimal commissionVat = BigDecimal.ZERO;
