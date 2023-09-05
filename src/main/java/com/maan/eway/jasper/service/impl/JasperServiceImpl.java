@@ -382,9 +382,9 @@ public class JasperServiceImpl implements JasperService {
 				Map<String,Object> map = new HashMap<String,Object>();
 				map.put("pvImagePath", config.getImagePath().substring(1,config.getImagePath().length()-0));
 				map.put("pvPolicyNo", homeData.getPolicyNo());
-				String obj = config.getJasperFilePath()+"report/jasper/EwayTaxInvoice.jrxml";
+				/*String obj = config.getJasperFilePath()+"report/jasper/EwayTaxInvoice.jrxml";
 				String path = JasperCompileManager.compileReportToFile(obj);
-				System.out.println("Jasper compileToReport path" +path);
+				System.out.println("Jasper compileToReport path" +path);*/
 				res = getJasperPdfFile("/report/jasper/EwayTaxInvoice.jrxml", getPdfOutFilePath, map);
 			}
 		} catch (Exception e) {
@@ -404,9 +404,9 @@ public class JasperServiceImpl implements JasperService {
 				Map<String,Object> input = new HashMap<String,Object>();
 				input.put("pvImagePath", config.getImagePath().substring(1, config.getImagePath().length()-0));
 				input.put("pvPolicyNo", homeData.getPolicyNo());
-				String obj = config.getJasperFilePath()+"report/jasper/EwayCreditNote.jrxml";
+				/*String obj = config.getJasperFilePath()+"report/jasper/EwayCreditNote.jrxml";
 				String path = JasperCompileManager.compileReportToFile(obj);
-				System.out.println("Jasper compileToReport Path"+path);
+				System.out.println("Jasper compileToReport Path"+path);*/
 				res = getJasperPdfFile("/report/jasper/EwayCreditNote.jrxml", getpdfFileOutFilePath, input);
 			}
 		} catch (Exception e) {
