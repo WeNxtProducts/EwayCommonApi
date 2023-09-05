@@ -631,13 +631,13 @@ public class AcExecutiveProductMasterServiceImpl implements AcExecutiveProductMa
 			Predicate n8 = cb.equal(ac.get("branchCode"),"99999");
 			Predicate n9 = cb.or(n7,n8);
 			Predicate n10 = cb.equal(ac.get("companyId"),req.getCompanyId());
-			Predicate n11 = cb.equal(ac.get("companyId"),"99999");
-			Predicate n12 = cb.or(n10,n11);		
+			//Predicate n11 = cb.equal(ac.get("companyId"),"99999");
+			//Predicate n12 = cb.or(n10,n11);		
 		//	Predicate n13 = cb.equal(ac.get("bankCode"),req.getBankCode());
 		//	Predicate n14 = cb.equal(ac.get("bankCode"),"None");
 		//	Predicate n15 = cb.or(n13,n14);					
 			Predicate n16 = cb.equal(c.get("acExecutiveId"),ac.get("acExecutiveId"));
-			acExecutive.where(n1,n2,n3,n6,n9,n12,n16);
+			acExecutive.where(n1,n2,n3,n6,n9,n10,n16);
 
 			query.multiselect(acExecutive.alias("acExecutiveName") ,   c.get("acExecutiveId").alias("acExecutiveId"),
 					c.get("bankCode").alias("bankCode") , c.get("bankName").alias("bankName")

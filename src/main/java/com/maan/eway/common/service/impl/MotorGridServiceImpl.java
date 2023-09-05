@@ -69,10 +69,6 @@ import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.req.SearchBrokerPolicyReq;
-import com.maan.eway.common.res.AdminPendingGridListRes;
-import com.maan.eway.common.res.EndorsementCriteriaRes;
-import com.maan.eway.common.res.PortFolioSearchRes;
-import com.maan.eway.common.res.PortfolioAdminGridRes;
 import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
 import com.maan.eway.common.res.PortfolioSearchDataRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
@@ -196,8 +192,12 @@ public class MotorGridServiceImpl implements MotorGridService {
 							.otherwise(m.get("customerId")).alias("customerId"),
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
 					cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), 
-					cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
+					
+				
 					m.get("currency").alias("currency")
+					
+				
+
 					);
 			
 
@@ -286,8 +286,11 @@ public class MotorGridServiceImpl implements MotorGridService {
 							.otherwise(m.get("customerId")).alias("customerId"),
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
 					cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), 
+					
 					cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
-					m.get("currency").alias("currency"));
+					m.get("currency").alias("currency") );			
+		
+
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -371,8 +374,12 @@ public class MotorGridServiceImpl implements MotorGridService {
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
 					m.get("rejectReason").alias("rejectReason"),
 					cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), 
+					
 					cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
-					m.get("currency").alias("currency")); 
+					m.get("currency").alias("currency")
+			
+			);
+
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -1117,7 +1124,14 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Predicate n9 = cb.or(n6, n7);
 				Predicate n10 = cb.equal(c.get("itemType"), itemType);
 				Predicate n11 = cb.equal(c.get("itemCode"), itemCode);
-				query.where(n1, n2, n3, n8, n9, n10, n11).orderBy(orderList);
+				
+				if(itemType.equalsIgnoreCase("PRODUCT_SHORT_CODE"))          //not company based
+					query.where(n1, n2, n3, n8, n9, n10, n11).orderBy(orderList);
+				else
+					query.where(n1, n2, n3, n4, n9, n10, n11).orderBy(orderList);
+					
+				
+				
 				// Get Result
 				TypedQuery<ListItemValue> result = em.createQuery(query);
 				list = result.getResultList();
@@ -2280,13 +2294,13 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 				Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 				Predicate n4 = cb.equal(c.get("companyId"), req.getInsuranceId());
-				Predicate n5 = cb.equal(c.get("companyId"), "99999");
+				//Predicate n5 = cb.equal(c.get("companyId"), "99999");
 				Predicate n6 = cb.equal(c.get("branchCode"), req.getBranchCode());
 				Predicate n7 = cb.equal(c.get("branchCode"), "99999");
-				Predicate n8 = cb.or(n4, n5);
+				//Predicate n8 = cb.or(n4, n5);
 				Predicate n9 = cb.or(n6, n7);
 				Predicate n10 = cb.equal(c.get("itemType"), itemType);
-				query.where(n1, n2, n3, n8, n9, n10).orderBy(orderList);
+				query.where(n1, n2, n3, n4, n9, n10).orderBy(orderList);
 				// Get Result
 				TypedQuery<ListItemValue> result = em.createQuery(query);
 				list = result.getResultList();

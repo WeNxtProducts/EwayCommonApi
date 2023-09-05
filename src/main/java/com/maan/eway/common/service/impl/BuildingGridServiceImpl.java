@@ -1125,7 +1125,7 @@ public class BuildingGridServiceImpl implements BuildingGridService {
 			Predicate n8 = cb.or(n4, n5);
 			Predicate n9 = cb.or(n6, n7);
 			Predicate n10 = cb.equal(c.get("itemType"), itemType);
-			query.where(n1, n2, n3, n8, n9, n10).orderBy(orderList);
+			query.where(n1, n2, n3, n4, n9, n10).orderBy(orderList);
 			// Get Result
 			TypedQuery<ListItemValue> result = em.createQuery(query);
 			list = result.getResultList();
@@ -2562,7 +2562,13 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 					Predicate n9 = cb.or(n6, n7);
 					Predicate n10 = cb.equal(c.get("itemType"), itemType);
 					Predicate n11 = cb.equal(c.get("itemCode"), itemCode);
-					query.where(n1, n2, n3, n8, n9, n10, n11).orderBy(orderList);
+					
+					if(itemType.equalsIgnoreCase("PRODUCT_SHORT_CODE"))          //not company based
+						query.where(n1, n2, n3, n8, n9, n10, n11).orderBy(orderList);
+					else
+						query.where(n1, n2, n3, n4, n9, n10, n11).orderBy(orderList);
+					
+					
 					// Get Result
 					TypedQuery<ListItemValue> result = em.createQuery(query);
 					list = result.getResultList();
