@@ -1166,14 +1166,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 //						req.getComapanyId(), req.getBrokerBranchCode(),
 //						req.getCreatedBy());
 				datas = repository.findByCompanyIdAndBrokerBranchCodeAndCreatedByAndStatus(paging,
-						req.getComapanyId(), req.getBrokerBranchCode(),
-						req.getCreatedBy(), "Y");
+						req.getComapanyId(), req.getBrokerBranchCode(),req.getCreatedBy());
 			} else {
 //				datas = repository.findByCompanyIdAndBranchCodeAndCreatedBy(paging, req.getComapanyId(),
 //						req.getBranchCode(), req.getCreatedBy());
 				datas = repository.findByCompanyIdAndBranchCodeAndCreatedByAndStatus(paging,
-						req.getComapanyId(), req.getBranchCode(),
-						req.getCreatedBy(), "Y");
+						req.getComapanyId(), req.getBranchCode(),req.getCreatedBy());
 			}
 
 			for (EserviceCustomerDetails data : datas) {
