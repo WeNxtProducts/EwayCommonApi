@@ -39,7 +39,9 @@ public class CachingConfig   {
 	        b->b.name("currencyDecimalFormat").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(1000L).permitNullValues(false),
 	        b->b.name("fetchAlipaRating").expireAfterWrite(2, TimeUnit.MINUTES).entryCapacity(10L).permitNullValues(false),
 	        b->b.name("collectCommissionDetails").expireAfterWrite(2, TimeUnit.MINUTES).entryCapacity(10L).permitNullValues(false),
-	        b->b.name("collectProductsFromLoginId").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(2L).permitNullValues(false)
+	        b->b.name("collectProductsFromLoginId").expireAfterWrite(1, TimeUnit.MINUTES).entryCapacity(2L).permitNullValues(false),
+	        b->b.name("collectSectionMaster").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(100L).permitNullValues(false),
+	        b->b.name("collectBranchMaster").expireAfterWrite(5, TimeUnit.MINUTES).entryCapacity(100L).permitNullValues(false)  
 	        );
 		
 	  }
@@ -323,6 +325,53 @@ public class CachingConfig   {
 		    	
 	    	 	}
 	    	 	
+	    	 	@Bean
+		    	public KeyGenerator collectSectionMasterKeyGen() {
+
+		    		return new KeyGenerator() {
+		    			@Override
+		    			public Object generate(Object target, Method method, Object... params) {
+		    				String e=(String)params[0];
+		    				String r=(String)params[1];
+		    				String f=(String)params[2];
+		    				
+		    				String string = new StringBuilder().append(e)
+		    						.append(e)		    						
+		    						.append(r)
+		    						.append(f)
+		    						.append(DD_MM_YYYY.format(new Date()))
+		    						.toString();
+		    				return string;
+		    			}
+
+		    		};
+		    	
+	    	 	}
+	    	 	
+	    	 	@Bean
+		    	public KeyGenerator collectBranchMasterKeyGen() {
+
+		    		return new KeyGenerator() {
+		    			@Override
+		    			public Object generate(Object target, Method method, Object... params) {
+		    				String e=(String)params[0];
+		    				String r=(String)params[1];
+		    				//String f=(String)params[2];
+		    				
+		    				String string = new StringBuilder().append(e)
+		    						.append(e)		    						
+		    						.append(r)
+		    					//	.append(f)
+		    						.append(DD_MM_YYYY.format(new Date()))
+		    						.toString();
+		    				return string;
+		    			}
+
+		    		};
+		    	
+	    	 	}
+	    	 	
+		            	 	
 	    	 	
 	    	 	
 }

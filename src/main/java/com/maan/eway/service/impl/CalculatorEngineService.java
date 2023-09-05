@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CommonDataDetails;
@@ -52,6 +53,7 @@ import com.maan.eway.bean.MsHumanDetails;
 import com.maan.eway.bean.MsVehicleDetails;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PolicyCoverDataEndt;
+import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.calculator.util.AdminCoverCalculator;
@@ -1185,7 +1187,18 @@ public class CalculatorEngineService implements CalculatorEngine {
 			q.setQuoteNo(request.getQuoteno());
 			ViewQuoteRes v1 = quoteservice.viewQuoteDetails(q);
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(v1.getQuoteDetails().getCompanyId() , v1.getQuoteDetails().getProductId().toString());
-
+			String endttypeid = v1.getQuoteDetails().getEndtTypeId();
+			if (StringUtils.isBlank(endttypeid)) {
+			 
+		 	List<ProductSectionMaster> coreappcode=ratingutil.collectSectionMaster(v1.getQuoteDetails().getCompanyId(),v1.getQuoteDetails().getProductId().toString(),v1.getQuoteDetails().getSectionId());
+			 List<BranchMaster> branchCode=ratingutil.collectBranchMaster(v1.getQuoteDetails().getCompanyId(),v1.getQuoteDetails().getBranchCode());
+ 				
+			 String policyNo = genNo.generatePolicyNo(coreappcode.get(0).getCoreAppCode(),branchCode.get(0).getCoreAppCode());
+				request.setPolicyNo(policyNo);
+			} else {
+				request.setPolicyNo(v1.getQuoteDetails().getPolicyNo());
+			}
+			
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
 				List<MotorDataDetails> motors = motorRepo.findByQuoteNoOrderByVehicleIdAsc(request.getQuoteno());
  				//List<EserviceMotorDetailsRes> motors = (List<EserviceMotorDetailsRes>) v1.getRiskDetails();
@@ -1217,7 +1230,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							.setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP);
 					//totalcommission = totalcommission.add(commission);
 
-					String endttypeid = v1.getQuoteDetails().getEndtTypeId();
+			
 					List<Map<String, Object>> rules = new ArrayList<Map<String, Object>>();
 
 					// Setup
@@ -1293,12 +1306,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					String drnumber = "DN-" + genNo.generateDebitNo(); // ThreadLocalRandom.current().ints(4999,
 																		// 9999).distinct().limit(5).findAny().toString();
 
-					if (StringUtils.isBlank(endttypeid)) {
-						String policyNo = genNo.generatePolicyNo();
-						request.setPolicyNo(policyNo);
-					} else {
-						request.setPolicyNo(v1.getQuoteDetails().getPolicyNo());
-					}
+					
 					int rownum = 1;
 
 					for (Map<String, Object> map : rules) {
@@ -1368,7 +1376,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							.divide(BigDecimal.valueOf(100D))
 							.setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP);
 					v1.getQuoteDetails().getVatPercent();
-					String endttypeid = v1.getQuoteDetails().getEndtTypeId();
+				//	String endttypeid = v1.getQuoteDetails().getEndtTypeId();
 					List<Map<String, Object>> rules = new ArrayList<Map<String, Object>>();
 
 					// Setup
@@ -1444,12 +1452,12 @@ public class CalculatorEngineService implements CalculatorEngine {
 					String drnumber = "DN-" + genNo.generateDebitNo(); // ThreadLocalRandom.current().ints(4999,
 																		// 9999).distinct().limit(5).findAny().toString();
 
-					if (StringUtils.isBlank(endttypeid)) {
+					/*if (StringUtils.isBlank(endttypeid)) {
 						String policyNo = genNo.generatePolicyNo();
 						request.setPolicyNo(policyNo);
 					} else {
 						request.setPolicyNo(v1.getQuoteDetails().getPolicyNo());
-					}
+					}*/
 					int rownum = 1;
 
 					for (Map<String, Object> map : rules) {
@@ -1520,7 +1528,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							.divide(BigDecimal.valueOf(100D))
 							.setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP);
 					v1.getQuoteDetails().getVatPercent();
-				   String endttypeid = v1.getQuoteDetails().getEndtTypeId();
+				 //  String endttypeid = v1.getQuoteDetails().getEndtTypeId();
 					List<Map<String, Object>> rules = new ArrayList<Map<String, Object>>();
 
 					// Setup
@@ -1598,12 +1606,12 @@ public class CalculatorEngineService implements CalculatorEngine {
 					String drnumber = "DN-" + genNo.generateDebitNo(); // ThreadLocalRandom.current().ints(4999,
 																		// 9999).distinct().limit(5).findAny().toString();
 
-					if (StringUtils.isBlank(endttypeid)) {
+					/*if (StringUtils.isBlank(endttypeid)) {
 						String policyNo = genNo.generatePolicyNo();
 						request.setPolicyNo(policyNo);
 					} else {
 						request.setPolicyNo(v1.getQuoteDetails().getPolicyNo());
-					}
+					}*/
 					int rownum = 1;
 
 					for (Map<String, Object> map : rules) {
@@ -1674,7 +1682,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							.setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP);
 					v1.getQuoteDetails().getVatPercent();
 				
-					String endttypeid = v1.getQuoteDetails().getEndtTypeId();
+					//String endttypeid = v1.getQuoteDetails().getEndtTypeId();
 					List<Map<String, Object>> rules = new ArrayList<Map<String, Object>>();
 
 					// Setup
@@ -1751,12 +1759,12 @@ public class CalculatorEngineService implements CalculatorEngine {
 					String drnumber = "DN-" + genNo.generateDebitNo(); // ThreadLocalRandom.current().ints(4999,
 																		// 9999).distinct().limit(5).findAny().toString();
 
-					if (StringUtils.isBlank(endttypeid)) {
+				/*	if (StringUtils.isBlank(endttypeid)) {
 						String policyNo = genNo.generatePolicyNo();
 						request.setPolicyNo(policyNo);
 					} else {
 						request.setPolicyNo(v1.getQuoteDetails().getPolicyNo());
-					}
+					}*/
 					int rownum = 1;
 
 					for (Map<String, Object> map : rules) {

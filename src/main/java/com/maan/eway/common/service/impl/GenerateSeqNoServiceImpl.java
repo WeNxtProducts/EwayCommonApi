@@ -59,7 +59,7 @@ public class GenerateSeqNoServiceImpl {
 	 }
 	 
 
-	 public synchronized String generatePolicyNo() {
+	 public synchronized String generatePolicyNo(String productCode,String branchcode) {
 		 SimpleDateFormat sdf = new SimpleDateFormat("yyyy"); 
 	       try {
 	    	    SeqPolicyno entity;
@@ -68,7 +68,7 @@ public class GenerateSeqNoServiceImpl {
 	            String year =  sdf.format(new Date()) ;
 	            //P11/2021/100/1002/10/020459
 	            
-	            return "P11/"+year+"/100/1002/10/"+String.format("%05d",entity.getPolicyno()) ;
+	            return "P11/"+year+"/"+branchcode+"/"+productCode+"/10/"+String.format("%07d",entity.getPolicyno()) ;
 	        } catch (Exception e) {
 				e.printStackTrace();
 				log.info( "Exception is ---> " + e.getMessage());
