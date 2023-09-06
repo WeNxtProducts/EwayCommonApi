@@ -192,7 +192,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 							.otherwise(m.get("customerId")).alias("customerId"),
 					m.get("policyStartDate").alias("policyStartDate"), m.get("policyEndDate").alias("policyEndDate"),
 					cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), 
-					
+					cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
 				
 					m.get("currency").alias("currency")
 					

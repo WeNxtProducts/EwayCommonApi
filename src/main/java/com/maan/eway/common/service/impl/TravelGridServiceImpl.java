@@ -194,7 +194,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					cb.max(m.get("travelStartDate")).alias("policyStartDate"),
 					cb.max(m.get("travelEndDate")).alias("policyEndDate"),
 					cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), 
-					
+					cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"), 
 					
 					cb.max(m.get("currency")).alias("currency")
 				);
