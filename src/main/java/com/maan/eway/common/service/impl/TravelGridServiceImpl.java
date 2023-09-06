@@ -348,7 +348,8 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					cb.selectCase().when(m.get("quoteNo").isNotNull(), m.get("quoteNo")).otherwise( m.get("quoteNo")).alias("quoteNo") ,
 					cb.selectCase().when(m.get("customerId").isNotNull(), m.get("customerId")).otherwise( m.get("customerId")).alias("customerId") ,
 					cb.max(m.get("travelStartDate")).alias("policyStartDate"),
-					cb.max(m.get("travelEndDate")).alias("policyEndDate"), m.get("rejectReason").alias("rejectReason"),
+					cb.max(m.get("travelEndDate")).alias("policyEndDate"),
+					cb.max(m.get("rejectReason")).alias("rejectReason"),
 					cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), 
 					cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
 					cb.max(m.get("currency")).alias("currency")

@@ -34,4 +34,5 @@ public class RejectCriteriaRes {
 		private String rejectReason;
 		private BigDecimal overallPremiumLc;
 		private BigDecimal overallPremiumFc;
+		private String currency;
 }
