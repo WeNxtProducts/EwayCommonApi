@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -125,6 +124,13 @@ private static final long serialVersionUID = 1L;
     @Column(name="REGULATORY_CODE", nullable=false, length=20)
     private String     regulatoryCode ;
 
+
+    @Column(name="TIN_NUMBER", length=100)
+    private String     tinNumber;
+    
+
+    @Column(name="VRN_NUMBER", length=100)
+    private String     vrnNumber;
 
     //--- ENTITY LINKS ( RELATIONSHIP )
 
