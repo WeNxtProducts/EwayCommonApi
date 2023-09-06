@@ -68,6 +68,8 @@ import com.maan.eway.bean.SectionCoverMaster;
 import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.bean.TravelPassengerHistory;
+import com.maan.eway.bean.UWReferralDetails;
+import com.maan.eway.bean.UWRefferralHistory;
 import com.maan.eway.common.req.AdminReferalStatusReq;
 import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.DeleteOldQuoteReq;
@@ -133,6 +135,8 @@ import com.maan.eway.repository.ProductMasterRepository;
 import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerHistoryRepository;
+import com.maan.eway.repository.UWReferralDetailsRepository;
+import com.maan.eway.repository.UWReferralHistoryRepository;
 import com.maan.eway.res.BuildingSumInsuredDetails;
 import com.maan.eway.res.CommonSumInsuredDetails;
 import com.maan.eway.res.CoverRes;
@@ -282,7 +286,11 @@ public class QuoteServiceImpl implements QuoteService {
 	@Autowired
 	private DocumentTransactionDetailsRepository docRepo ;
 
+	@Autowired
+	private UWReferralHistoryRepository uwReferralHistRepo ;
 	
+	@Autowired
+	private UWReferralDetailsRepository uwReferralRepo ;
 	
 	private Logger log = LogManager.getLogger(QuoteServiceImpl.class);
 	
@@ -1237,7 +1245,7 @@ public class QuoteServiceImpl implements QuoteService {
 			
 			if(StringUtils.isBlank(req.getStatus())) {
 				errors.add(new Error("02","ReferralStatus","Please Select Referral Status"));
-			} else if ( !(req.getStatus().equalsIgnoreCase("RP") || req.getStatus().equalsIgnoreCase("RA") || req.getStatus().equalsIgnoreCase("RR") ||  req.getStatus().equalsIgnoreCase("RE"))) {
+			} else if ( !(req.getStatus().equalsIgnoreCase("RP") || req.getStatus().equalsIgnoreCase("RA") || req.getStatus().equalsIgnoreCase("RR") ||  req.getStatus().equalsIgnoreCase("RE")||  req.getStatus().equalsIgnoreCase("REV"))) {
 				errors.add(new Error("02","ReferralStatus","Please Select Valid Referral Status Accept/Reject/Pending/Re-Quote"));
 			} else if ( req.getStatus().equalsIgnoreCase("RR")  ) {
 				if(StringUtils.isBlank(req.getRejectReason())) {
@@ -1262,6 +1270,7 @@ public class QuoteServiceImpl implements QuoteService {
 	@Override
 	public QuoteUpdateRes updateReferralStatus(AdminReferalStatusReq req) {
 		QuoteUpdateRes updateRes = new QuoteUpdateRes();
+		
 		try {
 			List<EserviceMotorDetails>    motorDatas = eserMotRepo.findByRequestReferenceNoOrderBySectionNameAsc(req.getRequestReferenceNo());
 			List<EserviceTravelGroupDetails>    travelDatas = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(req.getRequestReferenceNo());
@@ -1272,34 +1281,68 @@ public class QuoteServiceImpl implements QuoteService {
 					 :  buildDatas.size() > 0 ? buildDatas.get(0).getCompanyId() :  findDatas.size() > 0 ? findDatas.get(0).getCompanyId() : "" ;
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(companyId , req.getProductId().toString());
 		
-			if(product.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId)) {
+			if (!"REV".equalsIgnoreCase(req.getStatus())) {		
+				if(product.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId)) {
 				updateRes = travelReferalUpdate(req);
 				//Mail Push Notification
-				 travelPushNotification(req);
-				//Tracking Details
-					trackingDetails(req ,product.getMotorYn() );
+				travelPushNotification(req);
+				// Tracking Details
+				trackingDetails(req, product.getMotorYn());
+				//UWReferral History Table
+				if ("RA".equalsIgnoreCase(req.getStatus())) {
+					uwHisTable(req);
+				}
 				
 			} else if(product.getMotorYn().equalsIgnoreCase("M") ) {
 				updateRes = motorReferalUpdate(req);
 				//Mail Push Notification
-					motorPushNotification(req);
+				motorPushNotification(req);
 				//Tracking Details
-					trackingDetails(req,product.getMotorYn() );
-					
+				trackingDetails(req,product.getMotorYn() );
+				//UWReferral History Table
+				if ("RA".equalsIgnoreCase(req.getStatus())) {
+					uwHisTable(req);
+				}
 			} else if(product.getMotorYn().equalsIgnoreCase("A") ) {
 				updateRes = buildingReferalUpdate(req);
 				//Mail Push Notification
 				 buildingPushNotification(req);
 				//Tracking Details
-					trackingDetails(req,product.getMotorYn() );
+				trackingDetails(req,product.getMotorYn() );
+				//UWReferral History Table
+				if ("RA".equalsIgnoreCase(req.getStatus())) {
+					uwHisTable(req);
+				}
 			}  else {
 				updateRes = commonReferalUpdate(req);
 				commonPushNotification(req);
 				//Tracking Details
 				trackingDetails(req,product.getMotorYn() );
+				//UWReferral History Table
+				if ("RA".equalsIgnoreCase(req.getStatus())) {
+					uwHisTable(req);
+				}
 			} 
-			
+			}else {
+				if(StringUtils.isNotBlank(req.getAdminLoginId())) {
+					List<UWReferralDetails> uwList = uwReferralRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+					
+					uwList.forEach( o -> {
+						if( o.getRequestReferenceNo().equals(req.getRequestReferenceNo()) )
+							 o.setUwStatus("Y");
+	
+						
+					});
+				}
+				updateRes.setResponse("Referal Reverted");
+				updateRes.setQuoteNo("");
+				updateRes.setCustomerId("");
+				updateRes.setRequestReferenceNo(req.getRequestReferenceNo());
+			}
 		
+		
+			
+			
 		} catch ( Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -1307,6 +1350,35 @@ public class QuoteServiceImpl implements QuoteService {
 		}
 		return updateRes;
 	}
+	//Save In UwReferral Histrory table
+	private QuoteUpdateRes uwHisTable(AdminReferalStatusReq req) {
+		QuoteUpdateRes res=new QuoteUpdateRes();
+		DozerBeanMapper dozerMapper=new DozerBeanMapper();
+	try {
+		// Delete Old
+		List<UWReferralDetails> uwReferral = uwReferralRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+		if(uwReferral.size()>0 && uwReferral !=null) {
+			// Delete 
+			Long uwReferralCount = uwReferralRepo.countByRequestReferenceNo(req.getRequestReferenceNo());
+			if(uwReferralCount > 0 ) {
+				uwReferralRepo.deleteByRequestReferenceNo(req.getRequestReferenceNo());
+			}
+			for(UWReferralDetails oldData:uwReferral) {
+				// Save In History Table
+				UWRefferralHistory uwRefHistorySave = new UWRefferralHistory(); 
+				dozerMapper.map(oldData, uwRefHistorySave);
+				uwRefHistorySave.setEntryDate(new Date());
+				uwReferralHistRepo.saveAndFlush(uwRefHistorySave);
+			}
+		}
+	} catch ( Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return res;
+}
+	
 	//Tracking Details
 	private QuoteUpdateRes trackingDetails(AdminReferalStatusReq req , String motorYn) {
 		QuoteUpdateRes res=new QuoteUpdateRes();

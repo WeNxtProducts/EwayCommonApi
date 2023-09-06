@@ -846,12 +846,15 @@ public class SearchServiceImpl implements SearchService {
 			List<PaymentDetail>  pay=null;
 			List<PaymentDetail> patmentDetails=null;
 			if (StringUtils.isNotBlank(req.getQuoteNo())) {
+				
 				paymentinfo = paymentrepo.findByQuoteNoAndProductId(req.getQuoteNo(),Integer.valueOf(req.getProductId()));
+				if(paymentinfo!=null && paymentinfo.size()>0) {
 				String paymentId=paymentinfo.get(0).getPaymentId();
 						
 				patmentDetails= paymentRepo.findByQuoteNo(req.getQuoteNo());
 				pay=patmentDetails.stream().filter( o -> o.getPaymentId().equals(paymentId) ).collect(Collectors.toList());
-			}  
+				
+			 
 			
 			for (PaymentDetail pi : pay) {
 
@@ -860,6 +863,8 @@ public class SearchServiceImpl implements SearchService {
 				paylist.add(paymentgetres);
 
 			}
+				}
+		}
 
 		} catch (Exception e) {
 
