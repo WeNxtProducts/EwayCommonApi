@@ -82,7 +82,7 @@ public class GenerateSeqNoServiceImpl {
 	       try {
 	    	    SeqDebitnote entity;
 	            entity = debitRepo.save(new SeqDebitnote());          
-	            return "DNP"+branchCode+String.format("%09d",entity.getDebitnote()) ;
+	            return "DNP"+branchCode+"-"+String.format("%09d",entity.getDebitnote()) ;
 	        } catch (Exception e) {
 				e.printStackTrace();
 				log.info( "Exception is ---> " + e.getMessage());
@@ -96,7 +96,7 @@ public class GenerateSeqNoServiceImpl {
 	       try {
 	    	    SeqCreditno entity;
 	            entity = creditRepo.save(new SeqCreditno());          
-	            return "CNP"+branchCode+String.format("%09d",entity.getCreditnote()) ;
+	            return "CNP"+branchCode+"-"+String.format("%09d",entity.getCreditnote()) ;
 	        } catch (Exception e) {
 				e.printStackTrace();
 				log.info( "Exception is ---> " + e.getMessage());
