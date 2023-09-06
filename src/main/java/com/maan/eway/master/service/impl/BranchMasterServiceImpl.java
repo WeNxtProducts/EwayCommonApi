@@ -541,6 +541,13 @@ public List<Error> validateBranchDetails(BranchMasterSaveReq req) {
 		else if (req.getSalePointCode().length() > 100) {
 			errorList.add(new Error("14", "SalePointCode", "Sale Point Code under 100 Characters only allowed"));
 		}
+		
+//		if(StringUtils.isBlank(req.getPoBox())) {
+//			errorList.add(new Error("03","PoBox","Please Enter Po Box No"));
+//		} else if( req.getPoBox().matches("[0-9]+") ) {
+//			errorList.add(new Error("03","PoBox","Please Enter Valid Po Box No"));
+//		}
+		
 	} catch (Exception e) {
 		log.error(e);
 		e.printStackTrace();
