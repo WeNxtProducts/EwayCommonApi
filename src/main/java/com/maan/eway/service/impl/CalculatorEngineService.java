@@ -1188,12 +1188,10 @@ public class CalculatorEngineService implements CalculatorEngine {
 			ViewQuoteRes v1 = quoteservice.viewQuoteDetails(q);
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(v1.getQuoteDetails().getCompanyId() , v1.getQuoteDetails().getProductId().toString());
 			String endttypeid = v1.getQuoteDetails().getEndtTypeId();
-			if (StringUtils.isBlank(endttypeid)) {
-			 
-		 	List<ProductSectionMaster> coreappcode=ratingutil.collectSectionMaster(v1.getQuoteDetails().getCompanyId(),v1.getQuoteDetails().getProductId().toString(),v1.getQuoteDetails().getSectionId());
 			 List<BranchMaster> branchCode=ratingutil.collectBranchMaster(v1.getQuoteDetails().getCompanyId(),v1.getQuoteDetails().getBranchCode());
- 				
-			 String policyNo = genNo.generatePolicyNo(coreappcode.get(0).getCoreAppCode(),branchCode.get(0).getCoreAppCode());
+			if (StringUtils.isBlank(endttypeid)) {			 
+		 	List<ProductSectionMaster> coreappcode=ratingutil.collectSectionMaster(v1.getQuoteDetails().getCompanyId(),v1.getQuoteDetails().getProductId().toString(),v1.getQuoteDetails().getSectionId());
+ 		   String policyNo = genNo.generatePolicyNo(coreappcode.get(0).getCoreAppCode(),branchCode.get(0).getCoreAppCode());
 				request.setPolicyNo(policyNo);
 			} else {
 				request.setPolicyNo(v1.getQuoteDetails().getPolicyNo());
@@ -1271,7 +1269,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							bsubsets.add(subset);
 						}
 						setup.put("<BROKER>", bsubsets);
-						crnumber = "CN-" + genNo.generateCreditNo();
+						crnumber =  genNo.generateCreditNo(branchCode.get(0).getCoreAppCode());
 					}
 					/*
 					 * if(commissionVatYn.equals("Y")) { commissionVat=commission .multiply(new
@@ -1303,7 +1301,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 					 // ThreadLocalRandom.current().ints(1001,
 																		// 4999).distinct().limit(5).findAny().toString();
-					String drnumber = "DN-" + genNo.generateDebitNo(); // ThreadLocalRandom.current().ints(4999,
+					String drnumber =  genNo.generateDebitNo(branchCode.get(0).getCoreAppCode()); // ThreadLocalRandom.current().ints(4999,
 																		// 9999).distinct().limit(5).findAny().toString();
 
 					
@@ -1416,7 +1414,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							bsubsets.add(subset);
 						}
 						setup.put("<BROKER>", bsubsets);
-						crnumber = "CN-" + genNo.generateCreditNo();
+						crnumber = genNo.generateCreditNo(branchCode.get(0).getCoreAppCode());
 					}
 					/*
 					 * if(commissionVatYn.equals("Y")) { commissionVat=commission .multiply(new
@@ -1449,7 +1447,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 					 // ThreadLocalRandom.current().ints(1001,
 																		// 4999).distinct().limit(5).findAny().toString();
-					String drnumber = "DN-" + genNo.generateDebitNo(); // ThreadLocalRandom.current().ints(4999,
+					String drnumber =  genNo.generateDebitNo(branchCode.get(0).getCoreAppCode()); // ThreadLocalRandom.current().ints(4999,
 																		// 9999).distinct().limit(5).findAny().toString();
 
 					/*if (StringUtils.isBlank(endttypeid)) {
@@ -1570,7 +1568,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							bsubsets.add(subset);
 						}
 						setup.put("<BROKER>", bsubsets);
-						 crnumber = "CN-" + genNo.generateCreditNo();
+						 crnumber = genNo.generateCreditNo(branchCode.get(0).getCoreAppCode());
 					}
 					/*
 					 * if(commissionVatYn.equals("Y")) { commissionVat=commission .multiply(new
@@ -1603,7 +1601,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 				 // ThreadLocalRandom.current().ints(1001,
 																		// 4999).distinct().limit(5).findAny().toString();
-					String drnumber = "DN-" + genNo.generateDebitNo(); // ThreadLocalRandom.current().ints(4999,
+					String drnumber =  genNo.generateDebitNo(branchCode.get(0).getCoreAppCode()); // ThreadLocalRandom.current().ints(4999,
 																		// 9999).distinct().limit(5).findAny().toString();
 
 					/*if (StringUtils.isBlank(endttypeid)) {
@@ -1723,7 +1721,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 							bsubsets.add(subset);
 						}
 						setup.put("<BROKER>", bsubsets);
-						crnumber = "CN-" + genNo.generateCreditNo();
+						crnumber =  genNo.generateCreditNo(branchCode.get(0).getCoreAppCode());
 					}
 					/*
 					 * if(commissionVatYn.equals("Y")) { commissionVat=commission .multiply(new
@@ -1756,7 +1754,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 					 // ThreadLocalRandom.current().ints(1001,
 																		// 4999).distinct().limit(5).findAny().toString();
-					String drnumber = "DN-" + genNo.generateDebitNo(); // ThreadLocalRandom.current().ints(4999,
+					String drnumber = genNo.generateDebitNo(branchCode.get(0).getCoreAppCode()); // ThreadLocalRandom.current().ints(4999,
 																		// 9999).distinct().limit(5).findAny().toString();
 
 				/*	if (StringUtils.isBlank(endttypeid)) {

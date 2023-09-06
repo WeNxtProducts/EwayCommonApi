@@ -78,11 +78,11 @@ public class GenerateSeqNoServiceImpl {
 	 
 	 }
 	 
-	 public synchronized String generateDebitNo() {
+	 public synchronized String generateDebitNo(String branchCode) {
 	       try {
 	    	    SeqDebitnote entity;
 	            entity = debitRepo.save(new SeqDebitnote());          
-	            return String.format("%05d",entity.getDebitnote()) ;
+	            return "DNP"+branchCode+String.format("%09d",entity.getDebitnote()) ;
 	        } catch (Exception e) {
 				e.printStackTrace();
 				log.info( "Exception is ---> " + e.getMessage());
@@ -92,11 +92,11 @@ public class GenerateSeqNoServiceImpl {
 	 
 	 }
 	 
-	 public synchronized String generateCreditNo() {
+	 public synchronized String generateCreditNo(String branchCode) {
 	       try {
 	    	    SeqCreditno entity;
 	            entity = creditRepo.save(new SeqCreditno());          
-	            return String.format("%05d",entity.getCreditnote()) ;
+	            return "CNP"+branchCode+String.format("%09d",entity.getCreditnote()) ;
 	        } catch (Exception e) {
 				e.printStackTrace();
 				log.info( "Exception is ---> " + e.getMessage());
