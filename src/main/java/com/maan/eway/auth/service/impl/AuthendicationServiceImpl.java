@@ -251,6 +251,8 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			r.setOaCode(login.getOaCode().toString());
 			r.setBankCode(login.getBankCode());
 			r.setCountryId(userInfo.getCountryCode() );
+			r.setCustomerCode(userInfo.getCustomerCode());
+			r.setCustomerName(userInfo.getCustomerName());
 			List<InsuranceCompanyMaster> companyList = companyRepo.findByCompanyIdAndStatusOrderByEffectiveDateEndDesc(login.getCompanyId(),"Y");
 			r.setCurrencyId(companyList.size() > 0 && StringUtils.isNotBlank(companyList.get(0).getCurrencyId()) ? companyList.get(0).getCurrencyId() : "TZS");			
 			// Branch Res	
@@ -288,8 +290,8 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 					branchRes.setCurrencyId(getBranch.getCurrencyId() );;
 					branchRes.setSourceType(data.getSourceType());
 					branchRes.setDepartmentCode(data.getDepartmentCode());
-					branchRes.setCustomerCode(data.getCustomerCode());
-					branchRes.setCustomerName(data.getCustomerName());
+//					branchRes.setCustomerCode(data.getCustomerCode());
+//					branchRes.setCustomerName(data.getCustomerName());
 				}
 				
 				// Attached Branch
@@ -307,8 +309,8 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 						branchRes.setCurrencyId(getAttachedBranch.getCurrencyId() );
 						branchRes.setSourceType(data.getSourceType());
 						branchRes.setDepartmentCode(data.getDepartmentCode());
-						branchRes.setCustomerCode(data.getCustomerCode());
-						branchRes.setCustomerName(data.getCustomerName());
+//						branchRes.setCustomerCode(data.getCustomerCode());
+//						branchRes.setCustomerName(data.getCustomerName());
 					}
 				}
 				loginBranchRes.add(branchRes);

@@ -60,5 +60,11 @@ public class LoginUserGridRes {
 	
 	@JsonProperty("BrokerCompanyYn")
     private String    brokerCompanyYn ;
+	
+	@JsonProperty("CustomerCode")
+    private String    customerCode;
+	
+	@JsonProperty("CustomerName")
+    private String    customerName;
 
 }

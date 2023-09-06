@@ -68,6 +68,7 @@ import com.maan.eway.bean.LoginBranchMasterArch;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginMasterArch;
 import com.maan.eway.bean.LoginProductMaster;
+import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.PremiaCustomerDetails;
 import com.maan.eway.bean.RegionMaster;
 import com.maan.eway.master.req.FactorRateSaveReq;
@@ -77,6 +78,7 @@ import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.LoginMasterArchRepository;
 import com.maan.eway.repository.LoginMasterRepository;
 import com.maan.eway.repository.LoginProductMasterRepository;
+import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.PremiaCustomerDetailsRepository;
 
 @Service
@@ -84,6 +86,9 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 
 	@Autowired
 	private LoginMasterRepository loginRepo;
+	
+	@Autowired
+	private LoginUserInfoRepository loginUserRepo; 
 
 	@Autowired
 	private LoginMasterArchRepository loginArchRepo;
@@ -474,6 +479,7 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 		try {
 			// Login Data
 			LoginMaster loginData = loginRepo.findByLoginId(req.getLoginId());
+			LoginUserInfo loginUserInfo = loginUserRepo.findByLoginId(req.getLoginId());
 
 			// Find Data
 			String brokerBranchCode = "None";
@@ -524,12 +530,8 @@ public class LoginBranchServiceImpl implements LoginBranchService {
 			List<BranchMaster> branchname = branchRepo.findTopByCompanyIdAndBranchCodeOrderByAmendIdDesc(req.getCompanyId(),req.getBranchCode());
 			save.setBranchName(branchname.get(0).getBranchName());
 			save.setBrokerBranchName(req.getBrokerBranchName());
-			save.setCustomerCode(req.getCustomerCode());
-			
-			
-			List<PremiaCustomerDetails> premiaCustDetails  = premiaCustRepo.findByCustomerCodeAndCompanyIdAndBranchCodeAndStatus(
-						req.getCustomerCode() , 	req.getCompanyId() ,req.getBranchCode()  , "Y");
-			save.setCustomerName(premiaCustDetails.size()> 0 ? premiaCustDetails.get(0).getCustomerName() : "");
+			save.setCustomerCode(loginUserInfo.getCustomerCode());
+			save.setCustomerName(loginUserInfo.getCustomerName());
 		
 			loginBrokerRepo.save(save);
 

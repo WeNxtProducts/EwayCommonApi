@@ -115,4 +115,7 @@ public class BrokerPersonalInfoReq {
     
     @JsonProperty("WhatsappNo")
     private String    whatsappNo ;
+    
+    @JsonProperty("CustomerCode")
+    private String     customerCode     ;
 }

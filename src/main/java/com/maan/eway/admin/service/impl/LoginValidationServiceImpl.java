@@ -14,6 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.maan.eway.admin.req.AdditionalInfoReq;
 import com.maan.eway.admin.req.AttachBrokerBranchReq;
 import com.maan.eway.admin.req.AttachCompaniesReq;
@@ -95,7 +96,19 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 					errors.add(new Error("22", "CreditLimit", "Plese Enter Valid Number in Credit Limit" ));
 				}
 			} 
-			
+
+			if(StringUtils.isBlank(brokerReq.getCustomerCode())  ) {
+				errors.add(new Error("22", "CustomerCode", "Plese Select Customer Code" ));
+				
+			} 
+			if(StringUtils.isBlank(brokerReq.getRegulatoryCode())  ) {
+				errors.add(new Error("22", "RegulatoryCode", "Plese Enter Regulatory Code" ));
+				
+			} else if (brokerReq.getRegulatoryCode().length() > 20  ) {
+				errors.add(new Error("22", "RegulatoryCode", "Regulatory Code Max 20 Characters only allowed" ));
+				
+			}
+		  
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
@@ -233,6 +246,17 @@ public class LoginValidationServiceImpl implements LoginValidationService  {
 				}
 			} 
 			
+			if(StringUtils.isBlank(brokerReq.getCustomerCode())  ) {
+				errors.add(new Error("22", "CustomerCode", "Plese Select Customer Code" ));
+				
+			} 
+//			if(StringUtils.isBlank(brokerReq.getRegulatoryCode())  ) {
+//				errors.add(new Error("22", "RegulatoryCode", "Plese Enter Regulatory Code" ));
+//				
+//			} else if (brokerReq.getRegulatoryCode().length() > 20  ) {
+//				errors.add(new Error("22", "RegulatoryCode", "Regulatory Code Max 20 Characters only allowed" ));
+//				
+//			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -465,9 +489,9 @@ public List<Error> validateBrokerCompanyBranchReq(AttachBrokerBranchReq req) {
 			errors.add(new Error("02", "InsuranceId", "Plese Enter InsuranceId" ));
 		}
 		
-		if(StringUtils.isBlank(req.getCustomerCode()) ) {
-			errors.add(new Error("02", "CustomerCode", "Plese Select CustomerCode" ));
-		}
+//		if(StringUtils.isBlank(req.getCustomerCode()) ) {
+//			errors.add(new Error("02", "CustomerCode", "Plese Select CustomerCode" ));
+//		}
 		
 //		if (StringUtils.isBlank(req.getBrokerBranchCode())) {
 //			errors.add(new Error("03", "BrokerBranchCode", "Plese Enter BrokerBranchCode"));

@@ -492,10 +492,14 @@ this.repository = repo;
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("Issuer") ) {
 				userInfo.setOaCode(saveLogin.getOaCode().toString());
 				userInfo.setAgencyCode(saveLogin.getAgencyCode());
+				userInfo.setCustomerCode(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker") ?  personalReq.getCustomerCode():"");
+				userInfo.setCustomerName(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker") ? personalReq.getUserName() : "");
 				
 			} else if(req.getLoginInformation().getUserType().equalsIgnoreCase("User") ) {
 				userInfo.setOaCode(saveLogin.getOaCode().toString());
 				userInfo.setAgencyCode(saveLogin.getAgencyCode());
+				userInfo.setCustomerCode(personalReq.getCustomerCode());
+				userInfo.setCustomerName(personalReq.getUserName());
 			}
 			
 			if((req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("User")) && StringUtils.isNotBlank(personalReq.getStateCode()) ) {
@@ -672,10 +676,13 @@ this.repository = repo;
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("Issuer") ) {
 				updateUser.setOaCode(loginReq.getOaCode());
 				updateUser.setAgencyCode(loginReq.getOaCode());
-				
+				updateUser.setCustomerCode(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker") ?  personalReq.getCustomerCode():"");
+				updateUser.setCustomerName(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker") ? personalReq.getUserName() : "");
 			} else if(req.getLoginInformation().getUserType().equalsIgnoreCase("User") ) {
 				updateUser.setOaCode(loginReq.getOaCode());
 				updateUser.setAgencyCode(loginReq.getAgencyCode());
+				updateUser.setCustomerCode( personalReq.getCustomerCode());
+				updateUser.setCustomerName(personalReq.getUserName() );
 			}
 			
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("User")  ) {

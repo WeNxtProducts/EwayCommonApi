@@ -74,6 +74,12 @@ public class BrokerPersonalDetailsGetRes {
     @JsonProperty("AcExecutiveId")
     private String    acExecutiveId ;
     
+	@JsonProperty("CustomerCode")
+    private String    customerCode;
+	
+	@JsonProperty("CustomerName")
+    private String    customerName;
+    
 //    @JsonProperty("CustConfirmYn")
 //    private String    custConfirmYn ;
     

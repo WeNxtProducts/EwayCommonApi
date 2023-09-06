@@ -187,11 +187,12 @@ public class BasicLoginValidationService {
 			
 			if( StringUtils.isBlank(personalReq.getUserName()) ) {
 				errors.add(new Error("08", "User Name", "Please Enter User Name"));
-			} else if (personalReq.getUserName().length() > 100 ) {
-				errors.add(new Error("08", "User Name ", "User Name Must Be Under 100 Characters Only Allowed"));
-			} else if (isNotValidName(personalReq.getUserName()) ) {
-				errors.add(new Error("08", "User Name ", "Please Enter Valid User Name"));
-			} 
+			} else if (personalReq.getUserName().length() > 500 ) {
+				errors.add(new Error("08", "User Name ", "User Name Must Be Under 500 Characters Only Allowed"));
+			}
+//			else if (isNotValidName(personalReq.getUserName()) ) {
+//				errors.add(new Error("08", "User Name ", "Please Enter Valid User Name"));
+//			} 
 			 
 			if( StringUtils.isBlank(personalReq.getCityName()) ) {
 				errors.add(new Error("09", "City Name", "Please Enter City Name"));
@@ -496,11 +497,11 @@ public class BasicLoginValidationService {
 			
 			
 						
-			if(StringUtils.isBlank(brokerReq.getContactPersonName())  ) {
-				errors.add(new Error("29", "ContactPersonName", "Plese Enter ContactPersonName" ));
-			} else if(brokerReq.getContactPersonName().length()>100  ) {
-				errors.add(new Error("29", "ContactPersonName", "ContactPersonName Must Be Under 100 Characters Only Allowed" ));
-			}
+//			if(StringUtils.isBlank(brokerReq.getContactPersonName())  ) {
+//				errors.add(new Error("29", "ContactPersonName", "Plese Enter ContactPersonName" ));
+//			} else if(brokerReq.getContactPersonName().length()>100  ) {
+//				errors.add(new Error("29", "ContactPersonName", "ContactPersonName Must Be Under 100 Characters Only Allowed" ));
+//			}
 			
 			if(StringUtils.isBlank(brokerReq.getMobileCode())  ) {
 				errors.add(new Error("29", "MobileCode", "Plese Select MobileCode" ));
@@ -526,7 +527,7 @@ public class BasicLoginValidationService {
 			if(StringUtils.isBlank(brokerReq.getUserName())  ) {
 				errors.add(new Error("31", "Broker Name", "Plese Enter Broker Name" ));
 			}
-			else if(brokerReq.getUserName().length()>50)   {
+			else if(brokerReq.getUserName().length()>500)   {
 				errors.add(new Error("31", "Broker Name", "Plese Enter Broker Name within 50 Characters" ));
 			}
 			if(StringUtils.isBlank(brokerReq.getUserMail())  ) {

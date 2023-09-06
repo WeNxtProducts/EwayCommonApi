@@ -107,10 +107,15 @@ public class CommonPersonalInforReq {
     @JsonProperty("MobileCode")
     private String    mobileCode ;
     
+    @JsonProperty("CustomerCode")
+    private String    customerCode ;
     
     @JsonProperty("WhatsappCode")
     private String    whatsappCode ;
     
     @JsonProperty("WhatsappNo")
     private String    whatsappNo ;
+    
+    @JsonProperty("RegulatoryCode")
+    private String    regulatoryCode;
 }

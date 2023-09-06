@@ -48,7 +48,9 @@ public class AdditionalInfoReq {
     @JsonProperty("Fax")
     private String    fax ;
    
-    
+	@JsonProperty("RegulatoryCode")
+    private String    regulatoryCode ;
+	
     @JsonProperty("Remarks")
     private String    remarks ;
     
@@ -106,5 +108,8 @@ public class AdditionalInfoReq {
 	
 	@JsonProperty("CreditLimit")
     private String    creditLimit ;
+	
+	@JsonProperty("CustomerCode")
+	private String     customerCode     ;
 
 }
