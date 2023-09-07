@@ -754,7 +754,8 @@ public class GridServiceImpl implements GridService {
 
 			List<String> branches = new ArrayList<String>();
 			List<LoginBranchMaster> loginBranch = loginBranchRepo.findByLoginId(req.getApplicationId());
-			branches = loginBranch.stream().map(LoginBranchMaster::getBranchCode).collect(Collectors.toList());
+			//branches = loginBranch.stream().map(LoginBranchMaster::getBranchCode).collect(Collectors.toList());
+			branches.add(req.getBranchCode());
 			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getInsuranceId(),
 					req.getProductId().toString());
 
