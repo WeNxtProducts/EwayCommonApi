@@ -259,7 +259,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				} else if (StringUtils.isNotBlank(req.getTelephoneNo3()) && !req.getTelephoneNo3().matches("\\d+")) {
 					errorList.add(new Error("23", "TelephoneNo3", "Please Enter TelephoneNo3 only in numbers"));
 				}
+				
+				if (StringUtils.isBlank(req.getOccupation()) ) {
+					errorList.add(new Error("23", "Occupation", "Please Select Occupation"));
+				}
 
+				
 				if (StringUtils.isBlank(req.getMobileNo1())) {
 					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo"));
 				} else if (req.getMobileNo1().length() > 20) {
@@ -281,7 +286,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 //				if (StringUtils.isBlank(req.getEmail1())) {
 //					errorList.add(new Error("27", "Email1", "Please Enter Email"));
 //				} else
-				if ( StringUtils.isNotBlank(req.getEmail1()) && req.getEmail1().length() > 100) {
+				if ( StringUtils.isBlank(req.getEmail1()) ) {
+					errorList.add(new Error("27", "Email1", "Please Enter Email "));
+					
+				} else if( req.getEmail1().length() > 100 ) {
 					errorList.add(new Error("27", "Email1", "Please Enter Email within 100 Characters"));
 				} else if(StringUtils.isNotBlank(req.getEmail1())) {
 					boolean b = isValidMail(req.getEmail1());
@@ -383,6 +391,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				} else if (req.getCreatedBy().length() > 100) {
 					errorList.add(new Error("35", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
 				}
+				
 
 				// Date Validation
 				Date today = new Date();
@@ -491,15 +500,15 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				}*/
 				
 				if (StringUtils.isBlank(req.getStateCode())) {
-					errorList.add(new Error("45", "StateCode", "Please Enter StateCode "));
+					errorList.add(new Error("45", "RegionCode", "Please Enter RegionCode "));
 				}
 				if (StringUtils.isBlank(req.getMobileCode1())) {
 					errorList.add(new Error("46", "MobileCode", "Please Select MobileCode "));
 				}
 				
-				if (StringUtils.isBlank(req.getWhatsappCode())) {
-					errorList.add(new Error("47", "WhatsappCode", "Please Select WhatsappCode "));
-				}
+//				if (StringUtils.isBlank(req.getWhatsappCode())) {
+//					errorList.add(new Error("47", "WhatsappCode", "Please Select WhatsappCode "));
+//				}
 				
 				List<EserviceCustomerDetails> list = new ArrayList<EserviceCustomerDetails>();
 				if ((StringUtils.isNotBlank(req.getAddress1())) && (StringUtils.isNotBlank(req.getAddress2()))
@@ -641,6 +650,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					} else if (req.getDobOrRegDate().after(today)) {
 						errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate as Past Date"));
 
+					}
+					
+
+					if (StringUtils.isBlank(req.getGender()) ) {
+						errorList.add(new Error("23", "Gender", "Please Select Gender"));
 					}
 
 					LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
