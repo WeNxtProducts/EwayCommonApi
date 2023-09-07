@@ -710,7 +710,8 @@ public class EndorsementService {
 			if("42".equals(request.getEndtType())) {
 				CommonRes cancelPolicy = cancelPolicy(request);	
 				return cancelPolicy;
-			}else if ("1".equals(entTypeMaster.getEndtTypeCategoryId().toString()) ) {
+			}else if ("1".equals(entTypeMaster.getEndtTypeCategoryId().toString()) ) { 
+				// Non- Finacial
 				Object response = null ;
 				
 				if(hp!=null) {
@@ -764,7 +765,7 @@ public class EndorsementService {
 				com.setMessage("Success");
 				return com;
 				}
-			}else {
+			}else {//FInancial
 				Object response = null ;
 				String policyNo=null;
 				if(product.getMotorYn().equalsIgnoreCase("M") ) {
