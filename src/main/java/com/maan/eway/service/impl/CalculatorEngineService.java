@@ -1773,6 +1773,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 						for (Entry<String, Object> m : map.entrySet()) {
 
 							List<Map<String, Object>> dd = (List<Map<String, Object>>) setup.get(m.getValue());
+							if(dd!=null) {
+
 							for (Map<String, Object> s : dd) {
 							 	 DebitAndCredit res =new  DebitAndCredit();
 								String doctype = m.getValue().equals("<CUSTOMER>") ? "C" : "B";
@@ -1796,6 +1798,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 								res.setSectionId(request.getSectionId());
 								res.setRiskId(v.getRiskId().toString());
 								resList.add(res);
+							}
 							}
 						}
 					}
