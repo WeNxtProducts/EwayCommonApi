@@ -569,6 +569,26 @@ public class QuoteThreadCall implements Callable<Object>  {
 				motorData.setEndtPremium(endtPremium.doubleValue());
 				Double endtVatPremium = premiumCovers.stream().filter( o -> !o.getDiscLoadId().equals(0) && o.getCoverageType().equals("T") ).mapToDouble( o ->   o.getTaxAmount().doubleValue()  ).sum();
 				motorData.setEndVatPremium(new BigDecimal(endtVatPremium));
+				
+				List<ContentAndRisk> con = contentRepo.findByQuoteNo(request.getQuoteNo());
+				if(con.size() <= 0 ) {
+					List<ContentAndRisk> con1 = contentRepo.findByQuoteNo(prevQuoteNo);
+					List<ContentAndRisk> confilter = con1.stream().filter(o -> request.getVehicleId().equals(o.getRiskId())).collect(Collectors.toList());
+					
+					List<ContentAndRisk> saveContList  = new ArrayList<ContentAndRisk>(); 
+					for(ContentAndRisk cont : confilter) {
+						ContentAndRisk content = new ContentAndRisk();
+						dozerMapper.map(cont, content);
+						content.setCreatedBy(request.getCreatedBy());
+						content.setQuoteNo(request.getQuoteNo());
+						content.setRequestReferenceNo(request.getRequestReferenceNo());
+						saveContList.add(content);
+					}
+					contentRepo.saveAllAndFlush(saveContList);
+					
+					
+				}
+				
 			}   
 			eserMotRepo.saveAndFlush(eserMotors);			
 			motorRepo.saveAndFlush(motorData);
@@ -1766,12 +1786,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 				// update 
 				
 				// Find Motor
-				// Deactivate Old Record 
+				// Deactivate Old Record
 				if(StringUtils.isNotBlank(req.getEndtPrevQuoteNo()) ) {
 					List<MotorDataDetails> oldMotors = motorRepo.findByQuoteNo(request.getEndtPrevQuoteNo() );
-					
-					// Copy Quote Doc
 					List<EserviceMotorDetails> eserMotors = eserMotRepo.findByRequestReferenceNoAndStatusOrderByRiskIdAsc(request.getRequestReferenceNo() ,"D");
+						
+					// Copy Quote Doc
 					eserMotors.stream().forEach(i->i.setQuoteNo(request.getQuoteNo()));
 					
 					List<MotorDataDetails> motorDatas  = new ArrayList<MotorDataDetails>();
@@ -1865,6 +1885,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 						driverRepo.deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
 					}
 					
+					// Remove Dup Traces
+					dupQuoteCount = contentRepo.countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+					if (dupQuoteCount> 0) {
+						contentRepo.deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+					}
 					
 				}
 				//Doc traces delete 
@@ -1882,6 +1907,17 @@ public class QuoteThreadCall implements Callable<Object>  {
 					List<DocumentTransactionDetails> docfilter = doc.stream().filter(o -> ! secIds.contains(o.getSectionId().toString())).collect(Collectors.toList());	
 					docRepo.deleteAll(docfilter);
 				}
+				List<EserviceMotorDetails> eserMotors = eserMotRepo.findByRequestReferenceNoAndStatusNotOrderByRiskIdAsc(request.getRequestReferenceNo() ,"D");
+				List<ContentAndRisk> con = contentRepo.findByQuoteNo(req.getQuoteNo());
+				List<String> riskIds = new ArrayList<>();
+				eserMotors.forEach(  o -> {  
+					riskIds.add(String.valueOf(o.getRiskId())); 
+					} ) ;
+				
+				List<ContentAndRisk> confilter = con.stream().filter(o -> ! riskIds.contains(String.valueOf(o.getRiskId()))).collect(Collectors.toList());	
+				contentRepo.deleteAll(confilter);
+				
+			
 				
 	 			res.put("Response", "Success") ;
 				res.put("Errors", null) ;
