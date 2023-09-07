@@ -2043,6 +2043,7 @@ public class PaymentServiceImpl implements PaymentService {
 	   					CriteriaUpdate<EserviceMotorDetails> update = cb.createCriteriaUpdate(EserviceMotorDetails.class);
 	   					// set the root class
 	   					Root<EserviceMotorDetails> m = update.from(EserviceMotorDetails.class);
+	   					
 	   					if(StringUtils.isNotBlank(endttypeId))
 	   						update.set("endtStatus","C");
 	   					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
@@ -2183,6 +2184,7 @@ public class PaymentServiceImpl implements PaymentService {
 	   					CriteriaUpdate<EserviceBuildingDetails> update = cb.createCriteriaUpdate(EserviceBuildingDetails.class);
 	   					// set the root class
 	   					Root<EserviceBuildingDetails> m = update.from(EserviceBuildingDetails.class);
+	   					update.set("policyNo", policyNo);
 	   					if(StringUtils.isNotBlank(endttypeId))
 	   						update.set("endtStatus","C");
 	   					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
@@ -2190,7 +2192,7 @@ public class PaymentServiceImpl implements PaymentService {
 						if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
 							update.where(n1);
 						} else {
-							Predicate n2 = cb.notEqual(m.get("status"),"D" );
+							Predicate n2 = cb.equal(m.get("status"),"D" );
 							update.where(n1,n2);
 						}
 	   					// perform update
@@ -2215,7 +2217,8 @@ public class PaymentServiceImpl implements PaymentService {
 					// Cancellation Condition
 					if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
 						update.where(n1);
-					} else {
+					} 
+					else {
 						Predicate n2 = cb.notEqual(m.get("status"),"D" );
 						update.where(n1,n2);
 					}
@@ -2230,6 +2233,7 @@ public class PaymentServiceImpl implements PaymentService {
 	   					CriteriaUpdate<EserviceCommonDetails> update = cb.createCriteriaUpdate(EserviceCommonDetails.class);
 	   					// set the root class
 	   					Root<EserviceCommonDetails> m = update.from(EserviceCommonDetails.class);
+	   					update.set("policyNo", policyNo);
 	   					if(StringUtils.isNotBlank(endttypeId))
 	   						update.set("endtStatus","C");
 	   					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
@@ -2237,7 +2241,7 @@ public class PaymentServiceImpl implements PaymentService {
 						if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
 							update.where(n1);
 						} else {
-							Predicate n2 = cb.notEqual(m.get("status"),"D" );
+							Predicate n2 = cb.equal(m.get("status"),"D" );
 							update.where(n1,n2);
 						}
 	   					
@@ -2296,6 +2300,7 @@ public class PaymentServiceImpl implements PaymentService {
 	   					CriteriaUpdate<EserviceCommonDetails> update = cb.createCriteriaUpdate(EserviceCommonDetails.class);
 	   					// set the root class
 	   					Root<EserviceCommonDetails> m = update.from(EserviceCommonDetails.class);
+	   					update.set("policyNo", policyNo);
 	   					if(StringUtils.isNotBlank(endttypeId))
 	   						update.set("endtStatus","C");
 	   					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
@@ -2303,7 +2308,7 @@ public class PaymentServiceImpl implements PaymentService {
 						if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
 							update.where(n1);
 						} else {
-							Predicate n2 = cb.notEqual(m.get("status"),"D" );
+							Predicate n2 = cb.equal(m.get("status"),"D" );
 							update.where(n1,n2);
 						}
 	   					

@@ -90,6 +90,10 @@ public interface EserviceCommonDetailsRepository  extends JpaRepository<Eservice
 
 		void deleteByPolicyNo(String string);
 
+		List<EserviceCommonDetails> findByOriginalPolicyNoAndStatusNot(String policyNo, String string);
+
+
+
 
 
 }

@@ -142,7 +142,7 @@ public class CopyCommonRaw {
 			long pendingcount =0;
 			if(count>0) {
 				//List<EserviceCommonDetails> CommonList=eCommonRepo.findByOriginalPolicyNoAndRiskId(ent.getPolicyNo(),1);
-				List<EserviceCommonDetails> CommonList=eCommonRepo.findByOriginalPolicyNo(ent.getPolicyNo());
+				List<EserviceCommonDetails> CommonList=eCommonRepo.findByOriginalPolicyNoAndStatusNot(ent.getPolicyNo(),"D");
 				CommonList=CommonList.stream().filter(distinctByKey(m ->m.getPolicyNo())).collect(Collectors.toList());
 				//Compar
 				CommonList.sort(new Comparator<EserviceCommonDetails>() {
@@ -175,11 +175,11 @@ public class CopyCommonRaw {
 					 }
 					// count--;
 				}else {
-					CommonDatas=CommonList;
+					CommonDatas=CommonList.stream().filter(m->m.getEndtStatus().equals("C")).collect(Collectors.toList());;
 					
 					if(CommonList.size()>1) {
-						prevPolicyNo=CommonList.get(1).getPolicyNo();
-						prevQuoteNo =CommonList.get(1).getQuoteNo();
+						prevPolicyNo=CommonList.get(0).getPolicyNo();
+						prevQuoteNo =CommonList.get(0).getQuoteNo();
 						prevRequestRefNo=CommonList.get(0).getRequestReferenceNo();
 					}else {
 					//	prevPolicyNo=ent.getPolicyNo();
@@ -201,7 +201,7 @@ public class CopyCommonRaw {
 			
 			EndtTypeMaster entMaster=ratingutil.getEndtMasterData(ent.getCompanyId(),ent.getProductId().toPlainString(),ent.getEndtType());
 					//endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(ent.getCompanyId(), ent.getProductId().intValue(), "Y",Integer.parseInt(ent.getEndtType()), new Date(), new Date());
-			List<EserviceCommonDetails> CommonList=eCommonRepo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
+			List<EserviceCommonDetails> CommonList=eCommonRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(prevQuoteNo,"D");
 			List<EserviceCommonDetails> newCommonList = new ArrayList<EserviceCommonDetails>();
 //			List<EserviceCommonDetails> endtList = eCommonRepo.findByPolicyNo(ent.getPolicyNo() + "-" + count);
 //			if (endtList.size() > 0 && endtList.get(0).getEndorsementType() != null
