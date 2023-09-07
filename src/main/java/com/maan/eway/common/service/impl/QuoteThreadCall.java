@@ -2169,7 +2169,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 					removeVehicle.setSectionId(o.getSectionId());
 					removeVehicle.setVehicleId(Integer.valueOf(o.getRiskId()));
 					vehicleNeedberemove.add(removeVehicle);
+					
+					o.setQuoteNo(req.getQuoteNo());
+					
 				});
+				eserCommonRepo.saveAllAndFlush(eserHumans);
 				
 				// Find Traces 
 				Long dupQuoteCount = commonDataRepo.countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
