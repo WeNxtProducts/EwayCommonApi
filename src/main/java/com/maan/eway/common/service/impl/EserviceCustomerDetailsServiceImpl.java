@@ -136,7 +136,18 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				if (StringUtils.isBlank(req.getClientStatus())) {
 					errorList.add(new Error("05", "Client Status", "Please Select Client Status"));
 				}
-
+				if (StringUtils.isBlank(req.getIdType())) {
+					errorList.add(new Error("09", "IdType", "Please Select Personal/Corporate"));
+				}
+				
+				if (StringUtils.isBlank(req.getPolicyHolderTypeid())) {
+					errorList.add(new Error("09", " Identity Type", "Please Select Identity Type"));
+				}
+				if (StringUtils.isBlank(req.getPreferredNotification())) {
+					errorList.add(new Error("09", "Preferred Notification", "Please Select Preferred Notification"));
+				}
+				
+				
 				if (StringUtils.isNotBlank(req.getPolicyHolderType())) {
 
 					if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
@@ -145,9 +156,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 						}
 					}
 				}
-//			if (StringUtils.isBlank(req.getIdType())) {
-//				errorList.add(new Error("09", "IdType", "Please Select IdType"));
-//			}
+				
 
 				if (StringUtils.isBlank(req.getIdNumber())) {
 					errorList.add(new Error("11", "IdNumber", "Please Enter IdNumber"));
@@ -382,6 +391,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				cal.set(Calendar.HOUR_OF_DAY, 23);
 				cal.set(Calendar.MINUTE, 50);
 				today = cal.getTime();
+				
+				
 				if (StringUtils.isNotBlank(req.getPolicyHolderType()) && req.getPolicyHolderType().equalsIgnoreCase("1")) {
 
 					if (req.getDobOrRegDate() == null) {
@@ -408,24 +419,29 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				}
 
 				if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
-
+					cal.setTime(today);
+					cal.add(Calendar.DAY_OF_MONTH, +1);
+					cal.set(Calendar.HOUR_OF_DAY, 23);
+					cal.set(Calendar.MINUTE, 50);
+					Date tomorrow = cal.getTime();
 					if (req.getDobOrRegDate() == null) {
 						errorList.add(new Error("38", "DobOrRegDate", "Please Enter RegDate "));
 
-					} else if (req.getDobOrRegDate().after(today)) {
+					} else if (req.getDobOrRegDate().after(tomorrow)) {
 						errorList.add(new Error("38", "DobOrRegDate", "Please Enter RegDate as Past Date"));
 
+					} else if(req.getDobOrRegDate()!=null ) {
+						LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
+								.toLocalDate();
+						LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+						Integer years = Period.between(localDate1, localDate2).getYears();
+						if (years > 100) {
+							errorList.add(new Error("38", "DobOrRegDate", "RegDate Not Accepted More than 100 Years"));
+
+						}
 					}
-
-					LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
-							.toLocalDate();
-					LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-					Integer years = Period.between(localDate1, localDate2).getYears();
-					if (years > 100) {
-						errorList.add(new Error("38", "DobOrRegDate", "RegDate Not Accepted More than 100 Years"));
-
-					}
+					
 				}
 
 				if (StringUtils.isBlank(req.getBranchCode())) {
@@ -433,6 +449,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				} else if (req.getBranchCode().length() > 20) {
 					errorList.add(new Error("39", "BranchCode", "Please Enter BranchCode within 20 Characters"));
 				}
+				
+//				if (StringUtils.isBlank(req.getBranchCode())) {
+//					errorList.add(new Error("39", "BranchCode", "Please Enter BranchCode "));
+//				}
 				if (StringUtils.isBlank(req.getProductId())) {
 					errorList.add(new Error("40", "ProductId", "Please Enter ProductId "));
 				} else if (req.getProductId().length() > 20) {
@@ -446,9 +466,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				
 				if( StringUtils.isNotBlank(req.getPolicyHolderType()) && req.getPolicyHolderType().equalsIgnoreCase("2") ) {
 					if (StringUtils.isBlank(req.getVrTinNo())) {
-						errorList.add(new Error("42", "VrTinNo", "Please Enter VrTinNo"));
+						errorList.add(new Error("42", "VRN/GST Number", "Please Enter VRN/GST Number"));
 					} else if (req.getVrTinNo().length() > 20) {
-						errorList.add(new Error("42", "VrTinNo", "Please Enter VrTinNo within 20 Characters"));
+						errorList.add(new Error("42", "VRN/GST Number", "Please Enter VRN/GST Number within 20 Characters"));
 					}
 					
 				}
