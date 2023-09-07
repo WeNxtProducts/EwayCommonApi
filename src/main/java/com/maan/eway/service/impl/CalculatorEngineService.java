@@ -55,6 +55,7 @@ import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PolicyCoverDataEndt;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionCoverMaster;
+import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.calculator.util.AdminCoverCalculator;
 import com.maan.eway.calculator.util.CoverCalculator;
@@ -87,6 +88,7 @@ import com.maan.eway.repository.LoginProductMasterRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.PolicyCoverDataEndtRepository;
 import com.maan.eway.repository.PolicyCoverDataRepository;
+import com.maan.eway.repository.SectionDataDetailsRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.req.calcengine.CalcCommission;
 import com.maan.eway.req.calcengine.CalcEngine;
@@ -1177,7 +1179,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 	@Autowired
 	private MotorDataDetailsRepository motorRepo;
-	
+	@Autowired
+	private SectionDataDetailsRepository sectionRepo;
 	@Override
 	public List<DebitAndCredit> commissionCalc(CalcCommission request) {
 		List<DebitAndCredit> resList = new ArrayList<DebitAndCredit>();
@@ -1190,8 +1193,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 			String endttypeid = v1.getQuoteDetails().getEndtTypeId();
 			 List<BranchMaster> branchCode=ratingutil.collectBranchMaster(v1.getQuoteDetails().getCompanyId(),v1.getQuoteDetails().getBranchCode());
 			if (StringUtils.isBlank(endttypeid)) {			 
-		 	List<ProductSectionMaster> coreappcode=ratingutil.collectSectionMaster(v1.getQuoteDetails().getCompanyId(),v1.getQuoteDetails().getProductId().toString(),v1.getQuoteDetails().getSectionId());
- 		   String policyNo = genNo.generatePolicyNo(coreappcode.get(0).getCoreAppCode(),branchCode.get(0).getCoreAppCode());
+				List<SectionDataDetails> sections = sectionRepo.findByQuoteNoOrderByRiskIdAsc(request.getQuoteno());
+		 	List<ProductSectionMaster> coreappcode=ratingutil.collectSectionMaster(v1.getQuoteDetails().getCompanyId(),v1.getQuoteDetails().getProductId().toString(),sections.get(0).getSectionId());
+		 	String policyNo = genNo.generatePolicyNo(coreappcode.get(0).getCoreAppCode(),branchCode.get(0).getCoreAppCode());
 				request.setPolicyNo(policyNo);
 			} else {
 				request.setPolicyNo(v1.getQuoteDetails().getPolicyNo());
