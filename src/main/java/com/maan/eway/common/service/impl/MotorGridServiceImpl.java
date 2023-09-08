@@ -215,11 +215,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 
 					overallPremiumLc.alias("overallPremiumLc"), 
 					overallPremiumFc.alias("overallPremiumFc"),
-
-					cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), 
-					cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
-				
-				m.get("currency").alias("currency")
+					m.get("currency").alias("currency")
 					
 				
 
