@@ -1526,7 +1526,10 @@ public class QuoteServiceImpl implements QuoteService {
 			}
 
 			// UnderWriter Info
-			List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),cusRefNo.get(0).getLoginId());
+			List<UWReferralDetails> uwReferral = uwReferralRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+			List<String> loginIds=uwReferral.stream().map(i -> i.getUwLoginId().toLowerCase()).collect(Collectors.toList());
+					
+			List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),loginIds);
 			List<UnderWriter> underWrite = new ArrayList<UnderWriter>();
 			if (underWriterList != null) {
 				for (Tuple underWriterData : underWriterList) {
@@ -1640,8 +1643,10 @@ public class QuoteServiceImpl implements QuoteService {
 
 			}
 			// UnderWriter Info
+			List<UWReferralDetails> uwReferral = uwReferralRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+			List<String> loginIds=uwReferral.stream().map(i -> i.getUwLoginId().toLowerCase()).collect(Collectors.toList());
 			List<Tuple> underWriterList = getUnderWriterDetails(cusRefNo.get(0).getProductId(),
-					cusRefNo.get(0).getCompanyId(), cusRefNo.get(0).getBranchCode(), cusRefNo.get(0).getLoginId());
+					cusRefNo.get(0).getCompanyId(), cusRefNo.get(0).getBranchCode(), loginIds);
 			List<UnderWriter> underWrite = new ArrayList<UnderWriter>();
 			if (underWriterList != null) {
 				for (Tuple underWriterData : underWriterList) {
@@ -1756,8 +1761,11 @@ public class QuoteServiceImpl implements QuoteService {
 			}
 
 			// UnderWriter Info
+			List<UWReferralDetails> uwReferral = uwReferralRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+			List<String> loginIds=uwReferral.stream().map(i -> i.getUwLoginId().toLowerCase()).collect(Collectors.toList());
+			
 			List<Tuple> underWriterList = getUnderWriterDetails(cusRefNo.get(0).getProductId(),
-					cusRefNo.get(0).getCompanyId(), cusRefNo.get(0).getBranchCode(), cusRefNo.get(0).getLoginId());
+					cusRefNo.get(0).getCompanyId(), cusRefNo.get(0).getBranchCode(), loginIds);
 			List<UnderWriter> underWrite = new ArrayList<UnderWriter>();
 			if (underWriterList != null) {
 				for (Tuple underWriterData : underWriterList) {
@@ -1880,7 +1888,10 @@ public class QuoteServiceImpl implements QuoteService {
 
 					
 					// UnderWriter Info
-					List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),cusRefNo.get(0).getLoginId());
+					List<UWReferralDetails> uwReferral = uwReferralRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+					List<String> loginIds=uwReferral.stream().map(i -> i.getUwLoginId().toLowerCase()).collect(Collectors.toList());
+					
+					List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),loginIds);
 					List<UnderWriter> underWrite = new ArrayList<UnderWriter>();
 					if (underWriterList != null) {
 						for (Tuple underWriterData : underWriterList) {
@@ -1955,7 +1966,7 @@ public class QuoteServiceImpl implements QuoteService {
 			}
 
 	
-	private List<Tuple> getUnderWriterDetails(String productId,String companyId,String branchCode,String loginId) {
+	private List<Tuple> getUnderWriterDetails(String productId,String companyId,String branchCode,List<String> loginId) {
 		List<Tuple> list = new ArrayList<Tuple>();
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -2001,12 +2012,17 @@ public class QuoteServiceImpl implements QuoteService {
 			Predicate n6 = cb.equal(p.get("loginId"),(l.get("loginId")));
 			Predicate n7 = cb.equal(b.get("branchCode"),branchCode);
 			Predicate n8 = cb.equal(p.get("productId"),productId);
+			Predicate n10 =cb.lower(p.get("loginId")).in(loginId);
+			/*Predicate n12 = cb.greaterThanOrEqualTo(p.get("sumInsuredEnd"), sumInsured) ;
+			Predicate n10 = cb.lessThanOrEqualTo(p.get("sumInsuredStart"), sumInsured) ;
+			Predicate n11 = cb.and(n12, n10);
+			*/
 			Calendar cal = new GregorianCalendar();
 			Date today = new Date();
 			cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);;
 			today = cal.getTime();
 			Predicate n9 = cb.between(cb.literal(today),p.get("effectiveDateStart"), p.get("effectiveDateEnd"));
-			query.where(n1,n2,n3,n4,n5,n6,n7,n8,n9);
+			query.where(n1,n2,n3,n4,n5,n6,n7,n8,n9,n10);
 			TypedQuery<Tuple> result = em.createQuery(query);
 			list = result.getResultList();
 		} catch (Exception e) {
@@ -3093,7 +3109,10 @@ public class QuoteServiceImpl implements QuoteService {
 				}
 
 				// UnderWriter Info
-				List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),cusRefNo.get(0).getLoginId());
+				List<UWReferralDetails> uwReferral = uwReferralRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+				List<String> loginIds=uwReferral.stream().map(i -> i.getUwLoginId().toLowerCase()).collect(Collectors.toList());
+				
+				List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),loginIds);
 				List<UnderWriter> underWrite = new ArrayList<UnderWriter>();
 				if (underWriterList != null) {
 					for (Tuple underWriterData : underWriterList) {
@@ -3205,7 +3224,10 @@ public class QuoteServiceImpl implements QuoteService {
 				}
 
 				// UnderWriter Info
-				List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),cusRefNo.get(0).getLoginId());
+				List<UWReferralDetails> uwReferral = uwReferralRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+				List<String> loginIds=uwReferral.stream().map(i -> i.getUwLoginId().toLowerCase()).collect(Collectors.toList());
+				
+				List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),loginIds);
 				List<UnderWriter> underWrite = new ArrayList<UnderWriter>();
 				if (underWriterList != null) {
 					for (Tuple underWriterData : underWriterList) {
@@ -3314,7 +3336,9 @@ public class QuoteServiceImpl implements QuoteService {
 				}
 
 				// UnderWriter Info
-				List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),cusRefNo.get(0).getLoginId());
+				List<UWReferralDetails> uwReferral = uwReferralRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+				List<String> loginIds=uwReferral.stream().map(i -> i.getUwLoginId().toLowerCase()).collect(Collectors.toList());
+								List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),loginIds);
 				List<UnderWriter> underWrite = new ArrayList<UnderWriter>();
 				if (underWriterList != null) {
 					for (Tuple underWriterData : underWriterList) {
@@ -3423,7 +3447,9 @@ public class QuoteServiceImpl implements QuoteService {
 				}
 
 				// UnderWriter Info
-				List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),cusRefNo.get(0).getLoginId());
+				List<UWReferralDetails> uwReferral = uwReferralRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
+				List<String> loginIds=uwReferral.stream().map(i -> i.getUwLoginId().toLowerCase()).collect(Collectors.toList());				
+				List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),loginIds);
 				List<UnderWriter> underWrite = new ArrayList<UnderWriter>();
 				if (underWriterList != null) {
 					for (Tuple underWriterData : underWriterList) {
