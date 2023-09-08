@@ -244,7 +244,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			Predicate n8 = null;
 			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
 				
-				n8 = cb.equal(m.get("brokerBranchCode"), req.getBranchCode());
+				n8 = cb.equal(m.get("brokerBranchCode"), req.getBrokerBranchCode());
 			} else {
 			
 				n8 = cb.equal(m.get("branchCode"), req.getBranchCode());
@@ -309,7 +309,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			Predicate n8 = null;
 			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
 				
-				n8 = cb.equal(m.get("brokerBranchCode"), req.getBranchCode());
+				n8 = cb.equal(m.get("brokerBranchCode"), req.getBrokerBranchCode());
 			} else {
 			
 				n8 = cb.equal(m.get("branchCode"), req.getBranchCode());
@@ -407,7 +407,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			Predicate n8 = null;
 			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
 				
-				n8 = cb.equal(m.get("brokerBranchCode"), req.getBranchCode());
+				n8 = cb.equal(m.get("brokerBranchCode"), req.getBrokerBranchCode());
 			} else {
 			
 				n8 = cb.equal(m.get("branchCode"), req.getBranchCode());
@@ -484,7 +484,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			Predicate n8 = null;
 			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
 				
-				n8 = cb.equal(m.get("brokerBranchCode"), req.getBranchCode());
+				n8 = cb.equal(m.get("brokerBranchCode"), req.getBrokerBranchCode());
 			} else {
 			
 				n8 = cb.equal(m.get("branchCode"), req.getBranchCode());
@@ -588,7 +588,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			Predicate n8 = null;
 			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
 				
-				n8 = cb.equal(m.get("brokerBranchCode"), req.getBranchCode());
+				n8 = cb.equal(m.get("brokerBranchCode"), req.getBrokerBranchCode());
 			} else {
 			
 				n8 = cb.equal(m.get("branchCode"), req.getBranchCode());
@@ -695,7 +695,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			Predicate n6 = null;
 			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
 			
-				n6 = cb.equal(m.get("brokerBranchCode"), req.getBranchCode());
+				n6 = cb.equal(m.get("brokerBranchCode"),req.getBrokerBranchCode());
 			} else {
 				
 				n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
@@ -799,7 +799,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			Predicate n6 = null;
 			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
 			
-				n6 = cb.equal(m.get("brokerBranchCode"), req.getBranchCode());
+				n6 = cb.equal(m.get("brokerBranchCode"), req.getBrokerBranchCode());
 			} else {
 				
 				n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
@@ -2829,7 +2829,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Predicate n6 = null;
 				if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
 					
-					n6 =cb.equal(m.get("brokerBranchCode"), req.getBranchCode());
+					n6 =cb.equal(m.get("brokerBranchCode"), req.getBrokerBranchCode());
 				} else {
 					
 					n6 =cb.equal(m.get("branchCode"), req.getBranchCode());
@@ -2903,7 +2903,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Predicate n6 = null;
 				if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
 					
-					n6 =cb.equal(m.get("brokerBranchCode"), req.getBranchCode());
+					n6 =cb.equal(m.get("brokerBranchCode"),req.getBrokerBranchCode());
 				} else {
 					
 					n6 =cb.equal(m.get("branchCode"), req.getBranchCode());
@@ -3127,7 +3127,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Predicate n6 = null;
 				if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
 				
-					n6 = cb.equal(m.get("brokerBranchCode"), req.getBranchCode());
+					n6 = cb.equal(m.get("brokerBranchCode"), req.getBrokerBranchCode());
 				} else {
 				
 					n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
@@ -3196,7 +3196,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Predicate n6 = null;
 				if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
 				
-					n6 = cb.equal(m.get("brokerBranchCode"), req.getBranchCode());
+					n6 = cb.equal(m.get("brokerBranchCode"), req.getBrokerBranchCode());
 				} else {
 				
 					n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
