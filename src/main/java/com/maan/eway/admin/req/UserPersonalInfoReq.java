@@ -102,4 +102,7 @@ public class UserPersonalInfoReq {
     @JsonProperty("CustomerCode")
     private String     customerCode     ;
     
+    @JsonProperty("CustomerName")
+    private String     customerName;
+    
 }

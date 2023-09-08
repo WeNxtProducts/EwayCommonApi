@@ -58,4 +58,10 @@ public class LoginDetailsCriteriaRes {
 	@JsonProperty("CompanyId")
 	private String companyId;
 	
+	@JsonProperty("CustomerCode")
+	private String customerCode;
+	
+	@JsonProperty("CustomerName")
+	private String customerName;
+	
 }

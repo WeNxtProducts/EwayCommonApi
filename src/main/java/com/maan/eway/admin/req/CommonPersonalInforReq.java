@@ -118,4 +118,8 @@ public class CommonPersonalInforReq {
     
     @JsonProperty("RegulatoryCode")
     private String    regulatoryCode;
+    
+    @JsonProperty("CustomerName")
+    private String    customerName ;
+    
 }
