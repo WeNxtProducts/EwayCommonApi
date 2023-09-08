@@ -38,4 +38,7 @@ public class RevertGridReq {
 	   
 	   @JsonProperty("Offset")
 	   private String     offset;
+	   
+	   @JsonProperty("Type")
+	   private String     type;
 }

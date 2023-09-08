@@ -12,10 +12,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class QuoteCriteriaRes {
-
+public class TravelQuoteCriteriaRes {
  	// Customer Info
-	//private Integer   idsCount ;
+	private Integer   idsCount ;
     private String   customerReferenceNo ;
     private String idNumber;
 	private String clientName;
@@ -33,8 +32,4 @@ public class QuoteCriteriaRes {
 	private BigDecimal overallPremiumLc;
 	private BigDecimal overallPremiumFc;
 	private String currency;
-	
-
-	
-	
 }

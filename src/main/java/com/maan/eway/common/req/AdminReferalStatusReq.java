@@ -24,4 +24,7 @@ public class AdminReferalStatusReq {
 	
 	@JsonProperty("RejectReason")
 	private String rejectReason;
+	
+	@JsonProperty("CompanyId")
+	private String companyId;
 }

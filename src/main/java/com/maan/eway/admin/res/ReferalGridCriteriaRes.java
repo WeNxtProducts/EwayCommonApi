@@ -6,6 +6,7 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,11 +16,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ReferalGridCriteriaRes {
 
 
 	// Customer Info
-	private Long   idsCount ;
+	//private Long   idsCount ;
     private String   customerReferenceNo ;
     private String idNumber;
 	private String clientName;

@@ -19,7 +19,7 @@ public class ReferalGridCriteriaAdminRes {
 
 
 	// Customer Info
-	private Long   idsCount ;
+//	private Long   idsCount ;
     private String   customerReferenceNo ;
     private String idNumber;
 	private String clientName;

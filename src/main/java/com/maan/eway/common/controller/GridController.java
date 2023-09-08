@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.admin.res.GetallPortfolioActiveRes;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetApproverListReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
+import com.maan.eway.common.req.GetallReferralPendingDetailsRes;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.PortFolioDashBoardReq;
 import com.maan.eway.common.req.PortFolioGridReq;
@@ -24,10 +26,13 @@ import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.req.UpdateLapsedQuoteReq;
 import com.maan.eway.common.res.AdminPendingGridRes;
 import com.maan.eway.common.res.CommonRes;
-import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
 import com.maan.eway.common.res.GetApproverListRes;
+import com.maan.eway.common.res.GetallExistingRejectedLapsedRes;
 import com.maan.eway.common.res.GetallPolicyReportsRes;
+import com.maan.eway.common.res.GetallReferralApprovedDetailsRes;
+import com.maan.eway.common.res.GetallReferralDetailsCommonRes;
+import com.maan.eway.common.res.GetallReferralRejectedDetailsRes;
 import com.maan.eway.common.res.PortFolioDashBoardRes;
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.PortfolioGridRes;
@@ -60,7 +65,7 @@ public class GridController {
 	public ResponseEntity<CommonRes> getallExistingQuoteDetails(@RequestBody  ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<EserviceCustomerDetailsRes> res = entityService.getallExistingQuoteDetails(req);
+		GetallExistingRejectedLapsedRes res = entityService.getallExistingQuoteDetails(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -77,7 +82,7 @@ public class GridController {
 	public ResponseEntity<CommonRes> getallLapsedQuoteDetails(@RequestBody  ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<EserviceCustomerDetailsRes> res = entityService.getallLapsedQuoteDetails(req);
+		GetallExistingRejectedLapsedRes res = entityService.getallLapsedQuoteDetails(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -93,7 +98,7 @@ public class GridController {
 	public ResponseEntity<CommonRes> getallRejectedQuoteDetails(@RequestBody  ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<EserviceCustomerDetailsRes> res = entityService.getallRejectedQuoteDetails(req);
+		GetallExistingRejectedLapsedRes res = entityService.getallRejectedQuoteDetails(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -112,7 +117,7 @@ public class GridController {
 	public ResponseEntity<CommonRes> getallReferralPendingDetails(@RequestBody  ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<EserviceCustomerDetailsRes> res = entityService.getallReferralPendingDetails(req);
+		GetallReferralPendingDetailsRes res = entityService.getallReferralPendingDetails(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -129,7 +134,7 @@ public class GridController {
 	public ResponseEntity<CommonRes> getallReferralApprovedDetails(@RequestBody  ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<EserviceCustomerDetailsRes> res = entityService.getallReferralApprovedDetails(req);
+		GetallReferralApprovedDetailsRes res = entityService.getallReferralApprovedDetails(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -146,7 +151,7 @@ public class GridController {
 	public ResponseEntity<CommonRes> getallReferralRejectedDetails(@RequestBody  ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<EserviceCustomerDetailsRes> res = entityService.getallReferralRejectedDetails(req);
+		GetallReferralRejectedDetailsRes res = entityService.getallReferralRejectedDetails(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -162,7 +167,7 @@ public class GridController {
 	public ResponseEntity<CommonRes> getallReferralRequoteDetails(@RequestBody  ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<EserviceCustomerDetailsRes> res = entityService.getallReferralRequoteDetails(req);
+		GetallReferralDetailsCommonRes res = entityService.getallReferralRequoteDetails(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -179,7 +184,7 @@ public class GridController {
 	public ResponseEntity<CommonRes> getallAdminReferralPendings(@RequestBody  ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<EserviceCustomerDetailsRes> res = entityService.getallAdminReferralPendings(req);
+		GetallReferralDetailsCommonRes res = entityService.getallAdminReferralPendings(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -196,7 +201,7 @@ public class GridController {
 	public ResponseEntity<CommonRes> getallAdminReferralApproved(@RequestBody  ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<EserviceCustomerDetailsRes> res = entityService.getallAdminReferralApproved(req);
+		GetallReferralDetailsCommonRes res = entityService.getallAdminReferralApproved(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -212,7 +217,7 @@ public class GridController {
 	public ResponseEntity<CommonRes> getallAdminReferralRejecteds(@RequestBody  ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<EserviceCustomerDetailsRes> res = entityService.getallAdminReferralRejected(req);
+		GetallReferralDetailsCommonRes res = entityService.getallAdminReferralRejected(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -230,7 +235,7 @@ public class GridController {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 
-		List<EserviceCustomerDetailsRes> res = entityService.getallAdminReferralRequote(req);
+		GetallReferralDetailsCommonRes res = entityService.getallAdminReferralRequote(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -326,7 +331,7 @@ public class GridController {
 			public ResponseEntity<CommonRes> getallPortfolioActive(@RequestBody ExistingQuoteReq req) {
 				reqPrinter.reqPrint(req);
 				CommonRes data = new CommonRes();
-				List<PortfolioCustomerDetailsRes> res = entityService.getallPortfolioActive(req);
+				GetallPortfolioActiveRes res = entityService.getallPortfolioActive(req);
 				data.setCommonResponse(res);
 				data.setIsError(false);
 				data.setErrorMessage(Collections.emptyList());
@@ -360,7 +365,7 @@ public class GridController {
 			public ResponseEntity<CommonRes> getallPortfolioCancelled(@RequestBody ExistingQuoteReq req) {
 				reqPrinter.reqPrint(req);
 				CommonRes data = new CommonRes();
-				List<PortfolioCustomerDetailsRes> res = entityService.getallPortfolioCancelled(req);
+				GetallPortfolioActiveRes res = entityService.getallPortfolioCancelled(req);
 
 				data.setCommonResponse(res);
 				data.setIsError(false);
@@ -497,6 +502,7 @@ public class GridController {
 
 				}
 			}
+		
 			
 
 			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")

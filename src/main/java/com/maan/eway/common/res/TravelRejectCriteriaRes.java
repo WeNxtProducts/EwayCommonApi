@@ -4,19 +4,16 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RejectCriteriaRes {
-
+public class TravelRejectCriteriaRes {
 	// Customer Info
-	//	private Integer   idsCount ;
+		private Integer   idsCount ;
 	    private String   customerReferenceNo ;
 	    private String idNumber;
 		private String clientName;

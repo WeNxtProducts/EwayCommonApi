@@ -100,8 +100,7 @@ public class AdminPendingGridListRes {
 	private String endtStatus;
 	@JsonProperty("EndtCategDesc")
 	private String endtCategDesc;
-//	@JsonProperty(" EndorsementYn")
-//	private String endorsementYn;
+
 	@JsonProperty("EndtPremium")
 	private Double endtPremium;
 		

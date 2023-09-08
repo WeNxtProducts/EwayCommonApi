@@ -25,7 +25,6 @@ public class EserviceCustomerDetailsRes {
 	private String clientName;
 
 	
-	
 	@JsonProperty("IdNumber")
 	private String idNumber;
 
@@ -93,9 +92,10 @@ public class EserviceCustomerDetailsRes {
 	private String endtStatus;
 	@JsonProperty("EndtCategDesc")
 	private String endtCategDesc;
-//	@JsonProperty(" EndorsementYn")
-//	private String endorsementYn;
+
 	@JsonProperty("EndtPremium")
 	private Double endtPremium;
+	
+
 		
 }

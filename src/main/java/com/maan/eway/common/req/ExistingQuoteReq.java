@@ -36,4 +36,7 @@ public class ExistingQuoteReq {
 	   private String     limit     ;
 	   @JsonProperty("Offset")
 	   private String     offset ;
+	   
+	   @JsonProperty("Type")
+	   private String     type ;
 }

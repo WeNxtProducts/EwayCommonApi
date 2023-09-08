@@ -11,17 +11,32 @@
 
 package com.maan.eway.bean;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import lombok.*;
-import javax.persistence.*;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.List;
-
-import java.util.Date;
-import javax.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Domain class for entity "EserviceBuildingDetails"
@@ -718,25 +733,25 @@ public class EserviceBuildingDetails implements Serializable {
 	@Column(name = "STOCK_IN_TRADE_SI_LC")
 	private BigDecimal stockInTradeSiLc;
 
-	@Column(name = "GOODS_SI_LC ")
+	@Column(name = "GOODS_SI_LC")
 	private BigDecimal goodsSiLc;
 
-	@Column(name = "FURNITURE_SI_LC ")
+	@Column(name = "FURNITURE_SI_LC")
 	private BigDecimal furnitureSiLc;
 
-	@Column(name = "APPLIANCE_SI_LC ")
+	@Column(name = "APPLIANCE_SI_LC")
 	private BigDecimal applianceSiLc;
 
 	@Column(name = "CASH_VALUEABLES_SI_LC")
 	private BigDecimal cashValueablesSiLc;
 
-	@Column(name = "CASH_IN_HAND_EMPLOYEES_LC  ")
+	@Column(name = "CASH_IN_HAND_EMPLOYEES_LC")
 	private BigDecimal cashInHandEmployeesLc;
 
-	@Column(name = "CASH_IN_SAFE_LC  ")
+	@Column(name = "CASH_IN_SAFE_LC")
 	private BigDecimal cashInSafeLc;
 
-	@Column(name = "CASH_IN_TRANSIT_LC  ")
+	@Column(name = "CASH_IN_TRANSIT_LC")
 	private BigDecimal cashInTransitLc;
 
 	@Column(name = "MONEY_OUT_SAFE_BUSINESS_LC")
@@ -753,5 +768,8 @@ public class EserviceBuildingDetails implements Serializable {
     
     @Column(name="MS_REFNO")
     private Integer     msRefno ;
+    
+    
+  
 
 }

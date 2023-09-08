@@ -15,7 +15,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ReferalCommonCriteriaRes {
 
-	private Long   idsCount ;
+	
     private String   customerReferenceNo ;
     private String idNumber;
 	private String clientName;
@@ -45,7 +45,7 @@ public class ReferalCommonCriteriaRes {
 	private BigDecimal endtCount;
 	private String endtStatus;
 	private String endtCategDesc;
-//	private String endorsementYn;
+
 	private Double endtPremium;
 
 }
