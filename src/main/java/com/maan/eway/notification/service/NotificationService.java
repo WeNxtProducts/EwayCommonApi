@@ -35,6 +35,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -611,6 +612,91 @@ public class NotificationService {
 			return null;
 		}
 		return product;
+	}
+	public Map<String, String> createTinyUrl() {
+		
+
+		String tinUrlId = String.valueOf(Instant.now().getEpochSecond())+String.valueOf((int)(Math.random()*100000));
+		//Tiny URL
+		List<Tuple> loadTinyUrl = ratingutil.loadTinyUrl("100002",5,"B2C Customer Portal","N");
+		List<Tuple> loadDropdown=null;
+		if(!loadTinyUrl.isEmpty()) {
+			for(Tuple t: loadTinyUrl) {
+				String sno = t.get("sno").toString();
+				loadDropdown = ratingutil.loadTinyUrlRequest("100002",5,"B2C Customer Portal",sno);  
+			}
+		}
+		
+		
+		List<Map<String,String>> mps=null;
+		if(loadDropdown!=null && loadDropdown.size()>0) {
+			mps=new ArrayList<Map<String,String>>();	
+			for(Tuple l :loadDropdown) {
+				Map<String,String> mp=new HashMap<String,String>();
+				mp.put("JsonKey", l.get("requestJsonKey")==null?"":l.get("requestJsonKey").toString());
+				mp.put("JsonColum", l.get("requestColumn")==null?"":l.get("requestColumn").toString());
+				mp.put("JsonTable", l.get("requestTable")==null?"":l.get("requestTable").toString());
+				mp.put("dropdownYn",l.get("dropdownYn")==null?"":l.get("dropdownYn").toString());
+				mps.add(mp);
+			}
+			Map<String,String> mp=new HashMap<String,String>();
+			mp.put("JsonKey", "TinyUrlId");
+			mp.put("JsonColum",tinUrlId);
+			mp.put("JsonTable", "");
+			mp.put("dropdownYn","N");
+			mps.add(mp);
+			try {
+				Map<String,String> mp1=new HashMap<String,String>();
+				mp1.put("JsonKey", "TinyGroupId");
+				 
+				String xtx=tinUrlId;
+				mp1.put("JsonColum",xtx);
+				mp1.put("JsonTable", "");
+				mp1.put("dropdownYn","N");
+				mps.add(mp1);
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+		} 
+
+		List<String> list=new ArrayList<String>();
+		for(Map<String, String> map:mps){
+			String jsonKey = map.get("JsonKey");
+			String jsonColum = map.get("JsonColum");
+			String dropdownYn= map.get("dropdownYn");
+			Object jsonValue = null;
+			try {
+				
+				/*if("Y".equals(dropdownYn.trim())) {
+					Field field = nt.getClass().getField(jsonColum);								
+					jsonValue=field.get(nt);
+				}else*/
+					jsonValue=jsonColum;
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+			//String jsonValue = ;
+
+			String value="\""+jsonKey+"\":\""+jsonValue+"\"";
+			list.add(value);		
+
+		}
+		String json="{"+StringUtils.join(list,',')+"}";
+		try {
+			String encrData = EncryDecryService.encrypt(json);
+			String appUrl=loadTinyUrl.get(0).get("appUrl").toString();
+			String shorternURL = getShorternURL(appUrl+encrData);
+			
+			Map<String,String> result=new HashMap<String,String>();
+			result.put("TinyUrl", shorternURL);
+			return result;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	
+		return null;
 	}
 	
 	

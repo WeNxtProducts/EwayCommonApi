@@ -23,6 +23,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +40,7 @@ import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.thread.GetFileFromPath;
 
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -195,7 +197,6 @@ public class JasperServiceImpl implements JasperService {
 				try {
 					connection.close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 		}
@@ -364,6 +365,50 @@ public class JasperServiceImpl implements JasperService {
              }
 				 
 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return res;
+	}
+
+	@Override
+	public JasperDocumentRes taxInvoice(String quoteNo) {
+		JasperDocumentRes res = new JasperDocumentRes();
+		HomePositionMaster homeData = homeRepo.findByQuoteNo(quoteNo);
+		try {
+			if(StringUtils.isNotBlank(homeData.getPolicyNo())) {
+				String filePath = config.getPolicyPath() + "pdf";
+				String getPdfOutFilePath = filePath + "/" + homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+ ".pdf";
+				Map<String,Object> map = new HashMap<String,Object>();
+				map.put("pvImagePath", config.getImagePath().substring(1,config.getImagePath().length()-0));
+				map.put("pvPolicyNo", homeData.getPolicyNo());
+				/*String obj = config.getJasperFilePath()+"report/jasper/EwayTaxInvoice.jrxml";
+				String path = JasperCompileManager.compileReportToFile(obj);
+				System.out.println("Jasper compileToReport path" +path);*/
+				res = getJasperPdfFile("/report/jasper/EwayTaxInvoice.jrxml", getPdfOutFilePath, map);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return res;
+	}
+
+	@Override
+	public JasperDocumentRes creditNote(String quoteNo) {
+		JasperDocumentRes res = new JasperDocumentRes();
+		HomePositionMaster homeData = homeRepo.findByQuoteNo(quoteNo);
+		try {
+			if(StringUtils.isNotBlank(homeData.getPolicyNo())) {
+				String filepath = config.getPolicyPath()+"pdf";
+				String getpdfFileOutFilePath = filepath+"/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+".pdf";
+				Map<String,Object> input = new HashMap<String,Object>();
+				input.put("pvImagePath", config.getImagePath().substring(1, config.getImagePath().length()-0));
+				input.put("pvPolicyNo", homeData.getPolicyNo());
+				/*String obj = config.getJasperFilePath()+"report/jasper/EwayCreditNote.jrxml";
+				String path = JasperCompileManager.compileReportToFile(obj);
+				System.out.println("Jasper compileToReport Path"+path);*/
+				res = getJasperPdfFile("/report/jasper/EwayCreditNote.jrxml", getpdfFileOutFilePath, input);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

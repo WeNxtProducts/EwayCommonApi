@@ -74,6 +74,7 @@ import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.PortFolioDashBoardReq;
 import com.maan.eway.common.req.PortFolioGridReq;
 import com.maan.eway.common.req.RevertGridReq;
+import com.maan.eway.common.req.SearchBrokerPolicyReq;
 import com.maan.eway.common.req.UpdateLapsedQuoteReq;
 import com.maan.eway.common.res.AdminPendingGridListRes;
 import com.maan.eway.common.res.AdminPendingGridRes;
@@ -98,6 +99,7 @@ import com.maan.eway.common.res.PortfolioBrokerListRes;
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.PortfolioGridRes;
 import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
+import com.maan.eway.common.res.PortfolioSearchDataRes;
 import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaResponse;
 import com.maan.eway.common.res.RejectCriteriaRes;
@@ -130,7 +132,7 @@ import com.maan.eway.thread.MyTaskList;
 @Service
 @Transactional
 public class GridServiceImpl implements GridService {
-
+  
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
 
@@ -859,9 +861,8 @@ public class GridServiceImpl implements GridService {
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 
-//			List<String> branches = new ArrayList<String>();
-//			List<LoginBranchMaster> loginBranch = loginBranchRepo.findByLoginId(req.getApplicationId());
-//			branches = loginBranch.stream().map(LoginBranchMaster::getBranchCode).collect(Collectors.toList());
+		
+
 			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getInsuranceId(),
 					req.getProductId().toString());
 
@@ -3931,6 +3932,66 @@ public class GridServiceImpl implements GridService {
 				return null;
 			}
 			return res;
+		}
+
+		@Override
+		public PortFolioSearchGridRes searchBrokerPolicies(SearchBrokerPolicyReq req) {
+			PortFolioSearchGridRes res = new PortFolioSearchGridRes();
+			try {
+					
+				// Thread Call Setup To Fetch List From 4 tables
+				 List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
+				 MyTaskList taskList = new MyTaskList(queue);
+				 PortFolioSearchThreadCall count = new PortFolioSearchThreadCall("getProtfolioSearchDataCount" , req , em  );
+				 PortFolioSearchThreadCall list = new PortFolioSearchThreadCall("getProtfolioSearchData" , req , em  );
+				 
+				 queue.add(count);
+				 queue.add(list);
+				 int threadCount = 2 ;
+				 int success = 0;
+				 ForkJoinPool forkjoin = new ForkJoinPool(threadCount); 
+	             ConcurrentLinkedQueue<Future<Object>> invoke  = (ConcurrentLinkedQueue<Future<Object>>) forkjoin.invoke(taskList) ;
+	             
+				 
+	             Long totalCount = 0L ;
+	             List<PortfolioSearchDataRes> resList = new ArrayList<PortfolioSearchDataRes>();
+
+				 for (Future<Object> callable : invoke) {
+
+		 				log.info(callable.getClass() + "," + callable.isDone());
+
+		 				if (callable.isDone()) {
+		 					Map<String, Object> map = (Map<String, Object>) callable.get();
+
+		 					for (Entry<String, Object> future : map.entrySet()) {
+		 						
+		 						if ("getProtfolioSearchDataCount".equalsIgnoreCase(future.getKey())) {
+		 							totalCount =  (Long) future.getValue();
+		 							
+		 						} else if ("getProtfolioSearchData".equalsIgnoreCase(future.getKey())) {
+		 							resList = (List<PortfolioSearchDataRes>)  future.getValue();
+		 							
+		 						} 
+		 					}
+
+		 					success++;
+		 				}
+		 			}
+			//	List<PortfolioSearchDataRes> resList = new ArrayList<PortfolioSearchDataRes>();
+				//CompanyProductMaster product = getCompanyProductMasterDropdown(req.getInsuranceId(), req.getProductId());
+
+//				Long totalCount = motService.getProtfolioSearchDataCount(req);
+//				resList = motService.getProtfolioSearchData(req);
+			
+				res.setPortFolioList(resList);
+				res.setTotalCount(totalCount);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return res ;
 		}
 		
 }

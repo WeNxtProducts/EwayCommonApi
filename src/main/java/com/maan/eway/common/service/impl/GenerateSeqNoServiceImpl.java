@@ -59,7 +59,7 @@ public class GenerateSeqNoServiceImpl {
 	 }
 	 
 
-	 public synchronized String generatePolicyNo() {
+	 public synchronized String generatePolicyNo(String productCode,String branchcode) {
 		 SimpleDateFormat sdf = new SimpleDateFormat("yyyy"); 
 	       try {
 	    	    SeqPolicyno entity;
@@ -68,7 +68,7 @@ public class GenerateSeqNoServiceImpl {
 	            String year =  sdf.format(new Date()) ;
 	            //P11/2021/100/1002/10/020459
 	            
-	            return "P11/"+year+"/100/1002/10/"+String.format("%05d",entity.getPolicyno()) ;
+	            return "P11/"+year+"/"+branchcode+"/"+productCode+"/10/"+String.format("%07d",entity.getPolicyno()) ;
 	        } catch (Exception e) {
 				e.printStackTrace();
 				log.info( "Exception is ---> " + e.getMessage());
@@ -78,11 +78,11 @@ public class GenerateSeqNoServiceImpl {
 	 
 	 }
 	 
-	 public synchronized String generateDebitNo() {
+	 public synchronized String generateDebitNo(String branchCode) {
 	       try {
 	    	    SeqDebitnote entity;
 	            entity = debitRepo.save(new SeqDebitnote());          
-	            return String.format("%05d",entity.getDebitnote()) ;
+	            return "DNP"+branchCode+"-"+String.format("%09d",entity.getDebitnote()) ;
 	        } catch (Exception e) {
 				e.printStackTrace();
 				log.info( "Exception is ---> " + e.getMessage());
@@ -92,11 +92,11 @@ public class GenerateSeqNoServiceImpl {
 	 
 	 }
 	 
-	 public synchronized String generateCreditNo() {
+	 public synchronized String generateCreditNo(String branchCode) {
 	       try {
 	    	    SeqCreditno entity;
 	            entity = creditRepo.save(new SeqCreditno());          
-	            return String.format("%05d",entity.getCreditnote()) ;
+	            return "CNP"+branchCode+"-"+String.format("%09d",entity.getCreditnote()) ;
 	        } catch (Exception e) {
 				e.printStackTrace();
 				log.info( "Exception is ---> " + e.getMessage());

@@ -69,7 +69,6 @@ import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.res.GetTravelReferalDetailsRes;
 import com.maan.eway.common.res.GetTravelRejectedQuoteDetailsRes;
 import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
-import com.maan.eway.common.res.QuoteCriteriaRes;
 import com.maan.eway.common.res.TravelQuoteCriteriaRes;
 import com.maan.eway.common.res.TravelQuoteCriteriaResponse;
 import com.maan.eway.common.res.TravelRejectCriteriaRes;
@@ -185,6 +184,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					c.get("idNumber").alias("idNumber"),
 					c.get("clientName").alias("clientName"),
 					// Travel Info
+
 					m.get("companyId").alias("companyId"),
 					m.get("productId").alias("productId"),
 					m.get("branchCode").alias("branchCode"),
@@ -196,6 +196,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					m.get("overallPremiumLc").alias("overallPremiumLc"), 
 					m.get("overallPremiumFc").alias("overallPremiumFc"),
 					m.get("currency").alias("currency"));
+
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -313,6 +314,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					c.get("idNumber").alias("idNumber"),
 					c.get("clientName").alias("clientName"),
 					// Travel Info
+
 					m.get("companyId").alias("companyId"),
 					m.get("productId").alias("productId"),
 					m.get("branchCode").alias("branchCode"),
@@ -324,6 +326,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					m.get("overallPremiumLc").alias("overallPremiumLc"), 
 					m.get("overallPremiumFc").alias("overallPremiumFc"),
 					m.get("currency").alias("currency"));
+
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -444,6 +447,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					c.get("idNumber").alias("idNumber"),
 					c.get("clientName").alias("clientName"),
 					// Travel Info
+
 					m.get("companyId").alias("companyId"),
 					m.get("productId").alias("productId"),
 					m.get("branchCode").alias("branchCode"),
@@ -456,6 +460,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					m.get("overallPremiumLc").alias("overallPremiumLc"), 
 					m.get("overallPremiumFc").alias("overallPremiumFc"),
 					m.get("currency").alias("currency"));
+
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -524,6 +529,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					c.get("idNumber").alias("idNumber"),
 					c.get("clientName").alias("clientName"),
 					// Travel Info
+
 					m.get("companyId").alias("companyId"),
 					m.get("productId").alias("productId"),
 					m.get("branchCode").alias("branchCode"),
@@ -546,6 +552,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 						m.get("endtStatus").alias("endtStatus"),
 						m.get("endtCategDesc").alias("endtCategDesc"),
 						m.get("endtPremium").alias("endtPremium")
+
 					);
 			
 			// Order By
@@ -691,6 +698,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					 c.get("idNumber").alias("idNumber"),
 					c.get("clientName").alias("clientName"),
 					// Vehicle Info
+
 					m.get("companyId").alias("companyId"),
 					m.get("productId").alias("productId"),
 					m.get("branchCode").alias("branchCode"),
@@ -713,6 +721,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 					m.get("endtStatus").alias("endtStatus"),
 					m.get("endtCategDesc").alias("endtCategDesc"),
 					m.get("endtPremium").alias("endtPremium")   );
+
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -1438,7 +1447,7 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			} else if (searchKey.equalsIgnoreCase("RegistrationNumber")) {
 				n1 = cb.equal(cb.lower(c.get("registrationNumber")), searchValue);
 			} else if (searchKey.equalsIgnoreCase("QuoteNumber")) {
-				n1 = cb.equal(cb.lower(c.get("quoteNo")), searchValue);
+				n1 = cb.equal(c.get("quoteNo"), searchValue);
 			} else if (searchKey.equalsIgnoreCase("EntryDate")) {
 				Date entryDate = sdf.parse(searchValue);
 				Calendar cal = new GregorianCalendar();
@@ -1457,9 +1466,9 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			} else if (searchKey.equalsIgnoreCase("ClientName")) {
 				n1 = cb.like(cb.lower(cus.get("clientName")), "%" + searchValue + "%");
 				n5 = cb.equal(c.get("customerReferenceNo"), cus.get("customerReferenceNo"));
-			}else if (searchKey.equalsIgnoreCase("PolicyNo")) {
+			} else if (searchKey.equalsIgnoreCase("PolicyNo")) {
 				n1 = cb.like(cb.lower(c.get("policyNo")), searchValue );
-				
+			
 			}
 
 			Predicate n2 = cb.equal(c.get("companyId"), companyId);
@@ -1565,13 +1574,13 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
 			Predicate n4 = cb.equal(c.get("companyId"), req.getInsuranceId());
-			Predicate n5 = cb.equal(c.get("companyId"), "99999");
+			//Predicate n5 = cb.equal(c.get("companyId"), "99999");
 			Predicate n6 = cb.equal(c.get("branchCode"), req.getBranchCode());
 			Predicate n7 = cb.equal(c.get("branchCode"), "99999");
-			Predicate n8 = cb.or(n4,n5);
+			//Predicate n8 = cb.or(n4,n5);
 			Predicate n9 = cb.or(n6,n7);
 			Predicate n10 = cb.equal(c.get("itemType"),itemType);
-			query.where(n1,n2,n3,n8,n9,n10).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n9,n10).orderBy(orderList);
 			// Get Result
 			TypedQuery<ListItemValue> result = em.createQuery(query);
 			list = result.getResultList();
@@ -2634,7 +2643,13 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				Predicate n9 = cb.or(n6, n7);
 				Predicate n10 = cb.equal(c.get("itemType"), itemType);
 				Predicate n11 = cb.equal(c.get("itemCode"), itemCode);
-				query.where(n1, n2, n3, n8, n9, n10, n11).orderBy(orderList);
+				
+				if(itemType.equalsIgnoreCase("PRODUCT_SHORT_CODE"))          //not company based
+					query.where(n1, n2, n3, n8, n9, n10, n11).orderBy(orderList);
+				else
+					query.where(n1, n2, n3, n4, n9, n10, n11).orderBy(orderList);
+				
+				
 				// Get Result
 				TypedQuery<ListItemValue> result = em.createQuery(query);
 				list = result.getResultList();

@@ -16,4 +16,8 @@ public class BrokerDropDownRes {
 	private String companyId;
 	@JsonProperty("SubUserType")
 	private String subUserType;
+	@JsonProperty("CustomerCode")
+	private String customerCode;
+	@JsonProperty("CustomerName")
+	private String customerName;
 }

@@ -33,4 +33,7 @@ public interface PremiaCustomerDetailsRepository  extends JpaRepository<PremiaCu
 
 	List<PremiaCustomerDetails> findByCustomerCode(String coustomerCode);
 
+	List<PremiaCustomerDetails> findByCustomerCodeAndCompanyIdAndBranchCodeAndStatus(String customerCode,
+			String companyId, String branchCode, String string);
+
 }

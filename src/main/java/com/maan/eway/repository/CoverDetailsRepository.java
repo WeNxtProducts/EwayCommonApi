@@ -12,6 +12,7 @@
 
 package com.maan.eway.repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -67,6 +68,11 @@ public interface CoverDetailsRepository  extends JpaRepository<PolicyCoverData,P
 
 	List<PolicyCoverData> findByQuoteNoAndVehicleIdAndDiscLoadIdAndTaxIdAndStatusNotOrderByVehicleIdAsc(
 			String prevQuoteNo, Integer riskId, int i, int j, String string);
+
+	Long countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal , String originalPolicyNo);
+
+	@Transactional
+	void deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal, String originalPolicyNo);
 
 
 }

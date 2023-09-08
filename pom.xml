@@ -195,12 +195,13 @@
 	    <artifactId>jackson-dataformat-xml</artifactId>
 	    <version>2.13.4</version>
 	</dependency>
-	<!-- Job Runr
+	
 	<dependency>
 	    <groupId>org.jobrunr</groupId>
 	    <artifactId>jobrunr-spring-boot-starter</artifactId>
 		<version>3.2.1</version>	   
 	</dependency>
+	<!-- Job Runr
 	<dependency>
 	   <groupId>org.jobrunr</groupId>
 	   <artifactId>jobrunr</artifactId>
@@ -233,7 +234,16 @@
       <artifactId>httpclient</artifactId>
       <version>4.5.14</version>
   	</dependency>
-	
+	<dependency>
+	    <groupId>com.google.zxing</groupId>
+	    <artifactId>core</artifactId>
+	    <version>2.2</version>
+	</dependency>
+	<dependency>
+	    <groupId>com.google.zxing</groupId>
+	    <artifactId>javase</artifactId>
+	    <version>2.2</version>
+	</dependency>
 	</dependencies>
 
 	<build>

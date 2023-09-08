@@ -87,6 +87,9 @@ public class BranchMasterRes implements Serializable {
 	
 	@JsonProperty("SalePointCode")
     private String  salePointCode;
+	
+	@JsonProperty("PoBox")
+    private String    poBox ;
 
 
 }

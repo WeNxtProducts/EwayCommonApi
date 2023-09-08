@@ -40,6 +40,7 @@ import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.PlanTypeMaster;
 import com.maan.eway.common.req.GetMachineryContentReq;
 import com.maan.eway.common.req.GetOccupationsReq;
@@ -51,6 +52,7 @@ import com.maan.eway.integration.service.impl.OracleQuery;
 import com.maan.eway.master.req.BrokerSumInsuredRefReq;
 import com.maan.eway.master.req.LovDropDownReq;
 import com.maan.eway.master.req.LovPolicyDropDownReq;
+import com.maan.eway.master.req.MotDropdownReq;
 import com.maan.eway.master.req.PlanTypeReq;
 import com.maan.eway.master.req.RelationDropDownReq;
 import com.maan.eway.master.service.impl.PolicyTypeMasterServiceImpl;
@@ -61,14 +63,16 @@ import com.maan.eway.repository.CompanyRegionMasterRepository;
 import com.maan.eway.repository.CompanyStateMasterRepository;
 import com.maan.eway.repository.CountryMasterRepository;
 import com.maan.eway.repository.ListItemValueRepository;
+import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.MachineryDropDownRes;
+import com.maan.eway.res.MotorWithAccessoriesRes;
 
 
 @Service
 public class DropDownServiceImpl  implements DropDownService{ 
   
-
+ 
 	private Logger log = LogManager.getLogger(DropDownServiceImpl.class);
 
 	@PersistenceContext
@@ -101,6 +105,9 @@ public class DropDownServiceImpl  implements DropDownService{
 	
 	@Autowired 
 	private	BuildingRiskDetailsRepository buildRepo;
+	
+	@Autowired
+	private MotorDataDetailsRepository motorRepo; 
 	
 	// Cover Note Type Drop Down
 
@@ -288,7 +295,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("POLICY_HOLDER_GENDER", "Y");
-			String itemType = "POLICY_HOLDER_GENDER" ;
+			String itemType = "GENDER" ;
 			List<ListItemValue> getList  = getListItem(req , itemType);
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
@@ -1216,6 +1223,8 @@ public class DropDownServiceImpl  implements DropDownService{
 			today = cal.getTime();
 			Date todayEnd = cal.getTime();
 			
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);			
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<ListItemValue> query=  cb.createQuery(ListItemValue.class);
@@ -1249,15 +1258,15 @@ public class DropDownServiceImpl  implements DropDownService{
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
 			Predicate n4 = cb.equal(c.get("companyId"), req.getInsuranceId());
-			Predicate n5 = cb.equal(c.get("companyId"), "99999");
+			//Predicate n5 = cb.equal(c.get("companyId"), "99999");
 			Predicate n6 = cb.equal(c.get("branchCode"), req.getBranchCode());
 			Predicate n7 = cb.equal(c.get("branchCode"), "99999");
-			Predicate n8 = cb.or(n4,n5);
+			//Predicate n8 = cb.or(n4,n5);
 			Predicate n9 = cb.or(n6,n7);
 			Predicate n10 = cb.equal(c.get("itemType"),itemType);
 			Predicate n11 = cb.equal(c.get("status"),"R");
 			Predicate n12 = cb.or(n1,n11);
-			query.where(n2,n3,n8,n9,n10,n12).orderBy(orderList);
+			query.where(n2,n3,n4,n9,n10,n12).orderBy(orderList);
 			// Get Result
 			TypedQuery<ListItemValue> result = em.createQuery(query);
 			list = result.getResultList();
@@ -1389,7 +1398,41 @@ public class DropDownServiceImpl  implements DropDownService{
 			Predicate n10 = cb.equal(c.get("itemType"),itemType);
 			Predicate n11 = cb.equal(c.get("status"),"R");
 			Predicate n12 = cb.or(n1,n11);
-			query.where(n2,n3,n8,n9,n10,n12).orderBy(orderList);
+			
+			 
+			if(itemType.equalsIgnoreCase("TAX_FOR_DESC") ||itemType.equalsIgnoreCase("TERMS_TYPE")
+					||itemType.equalsIgnoreCase("POLICY_HOLDER_TYPE") ||
+					itemType.equalsIgnoreCase("CALCULATION_TYPE") || itemType.equalsIgnoreCase("COVERAGE_TYPE") || 
+					itemType.equalsIgnoreCase("PRODUCT_CATEGORY") || 
+					itemType.equalsIgnoreCase("USER_TYPE") || itemType.equalsIgnoreCase("Broker") || 
+					itemType.equalsIgnoreCase("USER") || itemType.equalsIgnoreCase("ISSUER") || 
+					itemType.equalsIgnoreCase("PRODUCT_ICONS") || 
+					itemType.equalsIgnoreCase("DOCUMENT_APPLICABLE") || itemType.equalsIgnoreCase("INDUSTRY_CATEGORY") || 
+					itemType.equalsIgnoreCase("RANGE") || itemType.equalsIgnoreCase("IS_TAX_EXEMPTED") || 
+					itemType.equalsIgnoreCase("DISCRETE") || itemType.equalsIgnoreCase("POLICY_HOLDER_TYPE") || 
+					itemType.equalsIgnoreCase("POLICY_HOLDER_ID_TYPE") || 
+					itemType.equalsIgnoreCase("PRODUCT_SHORT_CODE") || 
+					itemType.equalsIgnoreCase("PAYMENT_TYPES") || itemType.equalsIgnoreCase("NOTIFICATION_TYPE") || 
+					itemType.equalsIgnoreCase("TERMS_AND_CONDITION") || itemType.equalsIgnoreCase("TITLE") || 
+					itemType.equalsIgnoreCase("COPY_QUOTE_BY_BUILDING") || itemType.equalsIgnoreCase("BUSINESS_TYPE") || 
+					itemType.equalsIgnoreCase("COPY_QUOTE_BY_COMMON") || itemType.equalsIgnoreCase("SOURCE_TYPE") || 
+					itemType.equalsIgnoreCase("PROMOCODE_TYPE") || itemType.equalsIgnoreCase("COPY_QUOTE_BY_MOTOR") ||
+					
+					itemType.equalsIgnoreCase("COPY_QUOTE_BY_TRAVEL") ||
+					itemType.equalsIgnoreCase("COPY_QUOTE_BY_BUILDING") || itemType.equalsIgnoreCase("COPY_QUOTE_BY_COMMON") || 
+					itemType.equalsIgnoreCase("TERMS_TYPE") || itemType.equalsIgnoreCase("PROMOCODE_TYPE") || 
+					itemType.equalsIgnoreCase("TRACKING_STATUS") || itemType.equalsIgnoreCase("ADMIN_SEARCH_MOTOR") || 
+					itemType.equalsIgnoreCase("ADMIN_SEARCH_BUILDING") || itemType.equalsIgnoreCase("ADMIN_SEARCH_TRAVEL") || 
+					itemType.equalsIgnoreCase("ADMIN_SEARCH_COMMON") || itemType.equalsIgnoreCase("COPY_QUOTE_BY_MOTOR") || 
+					itemType.equalsIgnoreCase("COPY_QUOTE_BY_TRAVEL") || itemType.equalsIgnoreCase("COPY_QUOTE_BY_BUILDING") || 
+					itemType.equalsIgnoreCase("COPY_QUOTE_BY_COMMON") || itemType.equalsIgnoreCase("DOC_ID_TYPE") || 
+					itemType.equalsIgnoreCase("TAX_FOR") || itemType.equalsIgnoreCase("PAYMENT") || 
+					itemType.equalsIgnoreCase("PORTFOLIO_TYPES") || itemType.equalsIgnoreCase("TAX_FOR_DESC") || 
+					itemType.equalsIgnoreCase("MONTHS")) {  //not company based 
+				query.where(n2,n3,n8,n9,n10,n12).orderBy(orderList);
+			}else {
+				query.where(n2,n3,n4,n9,n10,n12).orderBy(orderList);
+			}
 			// Get Result
 			TypedQuery<ListItemValue> result = em.createQuery(query);
 			list = result.getResultList();
@@ -3018,6 +3061,29 @@ public class DropDownServiceImpl  implements DropDownService{
 				res.setStatus(data.getStatus());
 				resList.add(res);
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;	
+	}
+
+
+	@Override
+	public List<MotorWithAccessoriesRes> getMotAccDropdown(MotDropdownReq req) {
+		List<MotorWithAccessoriesRes> resList = new ArrayList<MotorWithAccessoriesRes>();
+		try {
+			 List<MotorDataDetails> motList = motorRepo.findByQuoteNoAndStatusNotOrderByVehicleIdAsc(req.getQuoteNo(),"D");
+			 
+			 for (MotorDataDetails data : motList ) {
+				 MotorWithAccessoriesRes res = new MotorWithAccessoriesRes();
+					res.setCode(data.getVehicleId());
+					res.setCodeDesc(data.getChassisNumber());
+					res.setSuminsured(data.getAcccessoriesSumInsured()==null?"" : data.getAcccessoriesSumInsured().toString());
+					resList.add(res);
+			 }
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());

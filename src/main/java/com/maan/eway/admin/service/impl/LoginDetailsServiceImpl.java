@@ -492,10 +492,14 @@ this.repository = repo;
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("Issuer") ) {
 				userInfo.setOaCode(saveLogin.getOaCode().toString());
 				userInfo.setAgencyCode(saveLogin.getAgencyCode());
+				userInfo.setCustomerCode(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker") ?  personalReq.getCustomerCode():"");
+				userInfo.setCustomerName(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker") ? personalReq.getUserName() : "");
 				
 			} else if(req.getLoginInformation().getUserType().equalsIgnoreCase("User") ) {
 				userInfo.setOaCode(saveLogin.getOaCode().toString());
 				userInfo.setAgencyCode(saveLogin.getAgencyCode());
+				userInfo.setCustomerCode(personalReq.getCustomerCode());
+				userInfo.setCustomerName(StringUtils.isNotBlank(personalReq.getCustomerName()) ? personalReq.getCustomerName() : personalReq.getUserName());
 			}
 			
 			if((req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("User")) && StringUtils.isNotBlank(personalReq.getStateCode()) ) {
@@ -643,7 +647,6 @@ this.repository = repo;
 			updateLogin.setAttachedRegions(regions);
 			updateLogin.setAttachedCompanies(companies);
 			updateLogin.setMenuIds(findLogin.getMenuIds());
-			
 			updateLogin.setBrokerCompanyYn(findBroker !=null ? findBroker.getBrokerCompanyYn() : loginReq.getBrokerCompanyYn());
 			
 			if( ! loginReq.getSubUserType().equalsIgnoreCase("bank") ) {
@@ -672,10 +675,14 @@ this.repository = repo;
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("Issuer") ) {
 				updateUser.setOaCode(loginReq.getOaCode());
 				updateUser.setAgencyCode(loginReq.getOaCode());
-				
+				updateUser.setCustomerCode(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker") ?  personalReq.getCustomerCode():"");
+				updateUser.setCustomerName(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker") ? personalReq.getUserName() : "");
 			} else if(req.getLoginInformation().getUserType().equalsIgnoreCase("User") ) {
 				updateUser.setOaCode(loginReq.getOaCode());
 				updateUser.setAgencyCode(loginReq.getAgencyCode());
+				updateUser.setCustomerCode( personalReq.getCustomerCode());
+				updateUser.setCustomerName(StringUtils.isNotBlank(personalReq.getCustomerName()) ? personalReq.getCustomerName() : personalReq.getUserName());
+				
 			}
 			
 			if(req.getLoginInformation().getUserType().equalsIgnoreCase("Broker")  || req.getLoginInformation().getUserType().equalsIgnoreCase("User")  ) {
@@ -1572,7 +1579,8 @@ this.repository = repo;
 					 l.get("bankCode").alias("bankCode") ,
 					//cb.selectCase().when(l.get("bankCode").isNotNull(), l.get("bankCode") ).otherwise("No Bank").alias("BankCode") ,
 					u.get("userName").alias("userName")  ,
-					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail") ,  l.get("companyId").alias("companyId")   );
+					u.get("userMobile").alias("userMobile") , u.get("userMail").alias("userMail") ,  l.get("companyId").alias("companyId") ,
+					u.get("customerCode").alias("customerCode") , u.get("customerName").alias("customerName") );
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -1607,6 +1615,8 @@ this.repository = repo;
 				res.setBrokerName(data.getUserName());
 				res.setCompanyId(data.getCompanyId());
 				res.setSubUserType(data.getSubUserType());
+				res.setCustomerCode(data.getCustomerCode());
+				res.setCustomerName(data.getCustomerName());
 				resList.add(res);
 			}
 			

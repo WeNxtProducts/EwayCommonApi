@@ -933,10 +933,10 @@ public class PaymentServiceImpl implements PaymentService {
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 			Predicate n4 = cb.equal(c.get("companyId"),insuranceId);
-			Predicate n5 = cb.equal(c.get("companyId"),"99999");
-			Predicate n6 = cb.or(n4,n5);
+			//Predicate n5 = cb.equal(c.get("companyId"),"99999");
+			//Predicate n6 = cb.or(n4,n5);
 			Predicate n7 = cb.equal(c.get("currencyId"),currencyId);
-			query.where(n1,n2,n3,n6,n7).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n7).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<CurrencyMaster> result = em.createQuery(query);			
@@ -1008,14 +1008,14 @@ public class PaymentServiceImpl implements PaymentService {
 				Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 				Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
 				Predicate n4 = cb.equal(c.get("companyId"), insuranceId);
-				Predicate n5 = cb.equal(c.get("companyId"), "99999");
+				//Predicate n5 = cb.equal(c.get("companyId"), "99999");
 				Predicate n6 = cb.equal(c.get("branchCode"), branchCode);
 				Predicate n7 = cb.equal(c.get("branchCode"), "99999");
-				Predicate n8 = cb.or(n4,n5);
+				//Predicate n8 = cb.or(n4,n5);
 				Predicate n9 = cb.or(n6,n7);
 				Predicate n10 = cb.equal(c.get("itemType"),itemType );
 			//	Predicate n11 = cb.equal(c.get("itemCode"), itemCode);
-				query.where(n1,n2,n3,n8,n9,n10).orderBy(orderList);
+				query.where(n1,n2,n3,n4,n9,n10).orderBy(orderList);
 				// Get Result
 				TypedQuery<ListItemValue> result = em.createQuery(query);
 				list = result.getResultList();
@@ -1687,7 +1687,10 @@ public class PaymentServiceImpl implements PaymentService {
 				// Debit
 				String debitNo = filterDebit.get(0).getDocNo() ;
 				// Credit
-				String creditNo =  filterCredit.get(0).getDocNo();
+				String creditNo ="";
+				if(filterCredit!=null && !filterCredit.isEmpty()){
+					creditNo =filterCredit.get(0).getDocNo();
+			}
 				
 				res.setPolicyNo(policyNo);
 				res.setDebitNoteNo(debitNo);
@@ -1760,20 +1763,31 @@ public class PaymentServiceImpl implements PaymentService {
 			String debitNo = filterDebit.get(0).getDocNo() ;
 			Date debitDate = filterDebit.get(0).getEntryDate();
 			String debitTo = filterDebit.get(0).getDocType();
+			
+			String creditNo ="";
+			Date creditDate =null;
+			String creditTo = "";
+			BigDecimal commission = null;
+			BigDecimal commissionPercent = null;
+			if(filterCredit!=null && !filterCredit.isEmpty()) {
 			// Credit
-			String creditNo =  filterCredit.get(0).getDocNo();
-			Date creditDate = filterCredit.get(0).getEntryDate();
-			String creditTo = filterCredit.get(0).getDocType();
+			 creditNo =  filterCredit.get(0).getDocNo();
+			 creditDate = filterCredit.get(0).getEntryDate();
+			 creditTo = filterCredit.get(0).getDocType();
+			 
+			 
 			// Commision
-			BigDecimal commission =  policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") 
-					&& (o.getChargeCode().equals(new BigDecimal(1005)) || o.getChargeCode().equals(new BigDecimal(1001)) )
-					).collect(Collectors.toList()).get(0).getAmountFc();
-			BigDecimal commissionPercent = 		policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")
-					&& (o.getChargeCode().equals(new BigDecimal(1007))
-							||
-							o.getChargeCode().equals(new BigDecimal(1012))
-							)
-					).collect(Collectors.toList()).get(0).getAmountFc();
+			 commission=policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") 
+						&& (o.getChargeCode().equals(new BigDecimal(1005)) || o.getChargeCode().equals(new BigDecimal(1001)) )
+						).collect(Collectors.toList()).get(0).getAmountFc();
+			 commissionPercent=	policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")
+						&& (o.getChargeCode().equals(new BigDecimal(1007))
+								||
+								o.getChargeCode().equals(new BigDecimal(1012))
+								)
+						).collect(Collectors.toList()).get(0).getAmountFc();
+			}
+			
 			List<DebitAndCredit> filtercommissionVat = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")
 					&& o.getChargeCode().equals(new BigDecimal(1012))).collect(Collectors.toList());
 			BigDecimal commissionVat = BigDecimal.ZERO;
@@ -2029,6 +2043,7 @@ public class PaymentServiceImpl implements PaymentService {
 	   					CriteriaUpdate<EserviceMotorDetails> update = cb.createCriteriaUpdate(EserviceMotorDetails.class);
 	   					// set the root class
 	   					Root<EserviceMotorDetails> m = update.from(EserviceMotorDetails.class);
+	   					
 	   					if(StringUtils.isNotBlank(endttypeId))
 	   						update.set("endtStatus","C");
 	   					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
@@ -2169,6 +2184,7 @@ public class PaymentServiceImpl implements PaymentService {
 	   					CriteriaUpdate<EserviceBuildingDetails> update = cb.createCriteriaUpdate(EserviceBuildingDetails.class);
 	   					// set the root class
 	   					Root<EserviceBuildingDetails> m = update.from(EserviceBuildingDetails.class);
+	   					update.set("policyNo", policyNo);
 	   					if(StringUtils.isNotBlank(endttypeId))
 	   						update.set("endtStatus","C");
 	   					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
@@ -2176,9 +2192,59 @@ public class PaymentServiceImpl implements PaymentService {
 						if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
 							update.where(n1);
 						} else {
-							Predicate n2 = cb.notEqual(m.get("status"),"D" );
+							Predicate n2 = cb.equal(m.get("status"),"D" );
 							update.where(n1,n2);
 						}
+	   					// perform update
+	   					em.createQuery(update).executeUpdate();
+	   					
+	   	    		   
+	    		   }
+	    		   
+	    		// Eservice Common Update
+	    		   {
+	    		    CriteriaBuilder cb = em.getCriteriaBuilder();
+					// create update
+					CriteriaUpdate<EserviceCommonDetails> update = cb.createCriteriaUpdate(EserviceCommonDetails.class);
+					// set the root class
+					Root<EserviceCommonDetails> m = update.from(EserviceCommonDetails.class);
+					// set update and where clause
+					update.set("policyNo", policyNo);
+					update.set("status", "P");
+					if(StringUtils.isNotBlank(endttypeId))
+						update.set("endtStatus","C");
+					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
+					// Cancellation Condition
+					if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
+						update.where(n1);
+					} 
+					else {
+						Predicate n2 = cb.notEqual(m.get("status"),"D" );
+						update.where(n1,n2);
+					}
+					// perform update
+					em.createQuery(update).executeUpdate();
+					
+	    		   }
+	    		   if(StringUtils.isNotBlank(endttypeId)){
+		    			 
+	   	    		    CriteriaBuilder cb = em.getCriteriaBuilder();
+	   					// create update
+	   					CriteriaUpdate<EserviceCommonDetails> update = cb.createCriteriaUpdate(EserviceCommonDetails.class);
+	   					// set the root class
+	   					Root<EserviceCommonDetails> m = update.from(EserviceCommonDetails.class);
+	   					update.set("policyNo", policyNo);
+	   					if(StringUtils.isNotBlank(endttypeId))
+	   						update.set("endtStatus","C");
+	   					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
+	   				// Cancellation Condition
+						if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
+							update.where(n1);
+						} else {
+							Predicate n2 = cb.equal(m.get("status"),"D" );
+							update.where(n1,n2);
+						}
+	   					
 	   					// perform update
 	   					em.createQuery(update).executeUpdate();
 	   					
@@ -2234,6 +2300,7 @@ public class PaymentServiceImpl implements PaymentService {
 	   					CriteriaUpdate<EserviceCommonDetails> update = cb.createCriteriaUpdate(EserviceCommonDetails.class);
 	   					// set the root class
 	   					Root<EserviceCommonDetails> m = update.from(EserviceCommonDetails.class);
+	   					update.set("policyNo", policyNo);
 	   					if(StringUtils.isNotBlank(endttypeId))
 	   						update.set("endtStatus","C");
 	   					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
@@ -2241,7 +2308,7 @@ public class PaymentServiceImpl implements PaymentService {
 						if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
 							update.where(n1);
 						} else {
-							Predicate n2 = cb.notEqual(m.get("status"),"D" );
+							Predicate n2 = cb.equal(m.get("status"),"D" );
 							update.where(n1,n2);
 						}
 	   					

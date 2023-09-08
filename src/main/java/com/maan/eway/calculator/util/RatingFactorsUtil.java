@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
+import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.BrokerCommissionDetails;
 import com.maan.eway.bean.CompanyProrataMaster;
 import com.maan.eway.bean.CompanyTaxSetup;
@@ -494,7 +495,20 @@ public class RatingFactorsUtil {
 		}
 		return null;
 	}
-
+	public  List<Tuple> loadTinyUrl(String companyid, Integer productid, String notifTemplatename,String notifYn) {
+		try {
+			String todayInString = DD_MM_YYYY.format(new Date());
+			//String search="companyId:"+ companyid +";productId:"+productid+";status:{Y,R};"+todayInString+"~effectiveDateStart&effectiveDateEnd;branchCode:{99999};notifYn:Y;type:"+notifTemplatename.toUpperCase().trim()+";";
+			String search="type:"+notifTemplatename.toUpperCase().trim()+";"+"companyId:"+ companyid +";productId:"+productid+";status:{Y,R};notifYn:"+notifYn+";"+todayInString+"~effectiveDateStart&effectiveDateEnd;branchCode:99999";
+			List<Tuple> result=null;
+			SpecCriteria criteria = crservice.createCriteria(TinyurlMaster.class, search, "sno"); 
+			result=crservice.getResult(criteria, 0, 50);
+			return result;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	public List<Tuple> loadTinyUrlRequest(String companyid, Integer productid, String notifTemplatename,String itemId){
 		try {
 			String todayInString = DD_MM_YYYY.format(new Date());
@@ -657,6 +671,60 @@ public class RatingFactorsUtil {
 		}
 		// TODO Auto-generated method stub
 		return null;
+	}
+	@Cacheable(cacheNames= {"collectSectionMaster"},keyGenerator  = "collectSectionMasterKeyGen",value = "collectSectionMaster")
+	public List<ProductSectionMaster> collectSectionMaster(String companyId, String productId, String sectionId) {
+		try {
+
+			List<ProductSectionMaster> result=new ArrayList<ProductSectionMaster>();
+			String todayInString = DD_MM_YYYY.format(new Date());
+			String search="companyId:"+companyId+";productId:"+productId+";sectionId:"+sectionId+";status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
+			SpecCriteria criteria = crservice.createCriteria(ProductSectionMaster.class, search, "sectionId");
+			List<Tuple> prorata = crservice.getResult(criteria, 0, 50);
+			 if(prorata!=null && prorata.size()>0) {
+				 for(int i=0;i<prorata.size();i++) {
+					 Tuple t = prorata.get(i);
+					 ProductSectionMaster section= new ProductSectionMaster();
+					 section.setCoreAppCode(t.get("coreAppCode")==null?"":t.get("coreAppCode").toString());
+					 section.setSectionName(t.get("sectionName")==null?"":t.get("sectionName").toString());
+					 section.setSectionId(t.get("sectionId")==null?0:Integer.parseInt(t.get("sectionId").toString()));
+					 result.add(section);
+					 
+				 }
+			 }
+			 return result;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Cacheable(cacheNames= {"collectBranchMaster"},keyGenerator  = "collectBranchMasterKeyGen",value = "collectBranchMaster")
+	public List<BranchMaster> collectBranchMaster(String companyId, String branchCode) {
+
+		try {
+
+			List<BranchMaster> result=new ArrayList<BranchMaster>();
+			String todayInString = DD_MM_YYYY.format(new Date());
+			String search="companyId:"+companyId+";branchCode:"+branchCode+";status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
+			SpecCriteria criteria = crservice.createCriteria(BranchMaster.class, search, "branchCode");
+			List<Tuple> prorata = crservice.getResult(criteria, 0, 50);
+			 if(prorata!=null && prorata.size()>0) {
+				 for(int i=0;i<prorata.size();i++) {
+					 Tuple t = prorata.get(i);
+					 BranchMaster b=new BranchMaster();
+					 b.setCoreAppCode(t.get("coreAppCode")==null?"":t.get("coreAppCode").toString());
+					 
+					 result.add(b);
+					 
+				 }
+			 }
+			 return result;
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	
 	}
 
 }

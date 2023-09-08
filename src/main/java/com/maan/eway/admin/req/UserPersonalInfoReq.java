@@ -98,5 +98,11 @@ public class UserPersonalInfoReq {
     
     @JsonProperty("CityName")
     private String    cityName;
+
+    @JsonProperty("CustomerCode")
+    private String     customerCode     ;
+    
+    @JsonProperty("CustomerName")
+    private String     customerName;
     
 }

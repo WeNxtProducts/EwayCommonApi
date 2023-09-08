@@ -153,7 +153,7 @@ public ResponseEntity<CommonRes> changeStatusBrokerCommission(@RequestBody Broke
 	}
 
 
-@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
+@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_APPROVER','ROLE_USER')")
 @PostMapping("/brokerbackdays")
 @ApiOperation(value = "This Method is to Broker Backdays")
 public ResponseEntity<CommonRes> getallBrokerCommission(@RequestBody BrokerBackdaysGetReq req) {

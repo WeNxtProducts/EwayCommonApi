@@ -82,4 +82,10 @@ public class LoginBrokerDetailsGridRes {
 	
 	@JsonProperty("CreditLimit")
     private String    creditLimit ;
+	
+	@JsonProperty("CustomerCode")
+    private String    customerCode;
+	
+	@JsonProperty("CustomerName")
+    private String    customerName;
 }

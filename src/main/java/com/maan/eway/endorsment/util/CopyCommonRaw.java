@@ -142,7 +142,7 @@ public class CopyCommonRaw {
 			long pendingcount =0;
 			if(count>0) {
 				//List<EserviceCommonDetails> CommonList=eCommonRepo.findByOriginalPolicyNoAndRiskId(ent.getPolicyNo(),1);
-				List<EserviceCommonDetails> CommonList=eCommonRepo.findByOriginalPolicyNo(ent.getPolicyNo());
+				List<EserviceCommonDetails> CommonList=eCommonRepo.findByOriginalPolicyNoAndStatusNot(ent.getPolicyNo(),"D");
 				CommonList=CommonList.stream().filter(distinctByKey(m ->m.getPolicyNo())).collect(Collectors.toList());
 				//Compar
 				CommonList.sort(new Comparator<EserviceCommonDetails>() {
@@ -167,16 +167,19 @@ public class CopyCommonRaw {
 					 newRequestNo=CommonDatas.get(0).getRequestReferenceNo();
 					 prevRequestRefNo=CommonDatas.get(0).getRequestReferenceNo();
 					 List<EserviceCommonDetails> rows = eCommonRepo.findByRequestReferenceNo(prevRequestRefNo);
+					 if(rows.size()>0 && rows!=null) {
 					 eCommonRepo.deleteAllInBatch(rows);
 					 eCommonRepo.flush();
 					 count--;
+					 newRequestNo=numberGenerate.generateRequestNo(ent.getCompanyId(), ent.getBranchCode(), String.valueOf(ent.getProductId()));
+					 }
 					// count--;
 				}else {
-					CommonDatas=CommonList;
+					CommonDatas=CommonList.stream().filter(m->m.getEndtStatus().equals("C")).collect(Collectors.toList());;
 					
 					if(CommonList.size()>1) {
-						prevPolicyNo=CommonList.get(1).getPolicyNo();
-						prevQuoteNo =CommonList.get(1).getQuoteNo();
+						prevPolicyNo=CommonList.get(0).getPolicyNo();
+						prevQuoteNo =CommonList.get(0).getQuoteNo();
 						prevRequestRefNo=CommonList.get(0).getRequestReferenceNo();
 					}else {
 					//	prevPolicyNo=ent.getPolicyNo();
@@ -198,7 +201,7 @@ public class CopyCommonRaw {
 			
 			EndtTypeMaster entMaster=ratingutil.getEndtMasterData(ent.getCompanyId(),ent.getProductId().toPlainString(),ent.getEndtType());
 					//endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(ent.getCompanyId(), ent.getProductId().intValue(), "Y",Integer.parseInt(ent.getEndtType()), new Date(), new Date());
-			List<EserviceCommonDetails> CommonList=eCommonRepo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
+			List<EserviceCommonDetails> CommonList=eCommonRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(prevQuoteNo,"D");
 			List<EserviceCommonDetails> newCommonList = new ArrayList<EserviceCommonDetails>();
 //			List<EserviceCommonDetails> endtList = eCommonRepo.findByPolicyNo(ent.getPolicyNo() + "-" + count);
 //			if (endtList.size() > 0 && endtList.get(0).getEndorsementType() != null
@@ -368,6 +371,7 @@ public class CopyCommonRaw {
 				Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
 				Predicate n2 = cb.equal(m.get("companyId"), request.getCompanyId());
 				Predicate n3 = cb.equal(m.get("productId"), request.getProductId());
+				Predicate n4 = cb.notEqual(m.get("status"),"D");
 				// Predicate n4 = cb.in(m.get("status")).value(Arrays.asList("E","P","D")); //
 				// m.get("status").in("E","P"));
 				Predicate n5 = cb.or(cb.like(m.get("originalPolicyNo"), request.getPolicyNo()),
@@ -391,7 +395,7 @@ public class CopyCommonRaw {
 				 * e0 = m.get("branchCode"); n8 = e0.in(branches); }
 				 */
 				
-				query.where(n1, n2, n3, /* n4, */ n5)
+				query.where(n1, n2, n3, n4,  n5)
 						/*
 						 * .groupBy(c.get("customerReferenceNo"), c.get("idNumber"),
 						 * c.get("clientName"), m.get("companyId"), m.get("productId"),

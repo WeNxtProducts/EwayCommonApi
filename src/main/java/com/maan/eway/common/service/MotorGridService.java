@@ -14,9 +14,11 @@ import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.RevertGridReq;
+import com.maan.eway.common.req.SearchBrokerPolicyReq;
 import com.maan.eway.common.res.GetMotorReferalDetailsRes;
 import com.maan.eway.common.res.GetRejectedQuoteDetailsRes;
 import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
+import com.maan.eway.common.res.PortfolioSearchDataRes;
 import com.maan.eway.common.res.QuoteCriteriaResponse;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.res.CopyQuoteSuccessRes;
@@ -62,5 +64,8 @@ public interface MotorGridService {
 	List<MotorGridCriteriaAdminRes> getMotorAdminReferalPendingDetailsCount(RevertGridReq req, String string);
 
 
+	List<PortfolioSearchDataRes> getProtfolioSearchData(SearchBrokerPolicyReq req);
+
+	Long getProtfolioSearchDataCount(SearchBrokerPolicyReq req);
 
 }

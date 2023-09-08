@@ -168,7 +168,7 @@ public class EmbeddedService {
 						Double commissionPercent=(Double) commissionDetails.get("COMMISSION_PERCENTAGE"); 
 						BigDecimal totalcommission =premium.multiply(new BigDecimal((Double) (commissionPercent/ 100)));
 						
-						String policyNo=genNo.generatePolicyNo();
+						String policyNo=genNo.generatePolicyNo("1001","100");
 						//notifcationService.getShorternURL(pdfUrl+""+policyNo);
 						GroupMedicalDetails medical=GroupMedicalDetails.builder()
 								.amountPaid(request.getOrderValue())

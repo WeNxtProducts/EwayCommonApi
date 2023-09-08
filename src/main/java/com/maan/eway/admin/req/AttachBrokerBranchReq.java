@@ -56,8 +56,8 @@ public class AttachBrokerBranchReq {
 	@JsonProperty("Mobile")
 	private String mobile;
 	
-	@JsonProperty("CoreAppCode")
-	private String coreAppCode;
+//	@JsonProperty("CoreAppCode")
+//	private String coreAppCode;
 	
 	@JsonProperty("Status")
 	private String status;
@@ -69,6 +69,8 @@ public class AttachBrokerBranchReq {
 	@JsonProperty("EffectiveDateStart")
 	private Date effectiveDateStart;
 	
+//	@JsonProperty("CustomerCode")
+//	private String customerCode;
 	
 //	@JsonProperty("SourceType")
 //	private String sourceType;

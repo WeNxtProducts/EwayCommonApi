@@ -145,6 +145,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="SALE_POINT_CODE", length=100)
     private String    salePointCode;
 
+    @Column(name="PO_BOX", length=100)
+    private String    poBox;
 }
 
 

@@ -12,6 +12,7 @@
 
 package com.maan.eway.repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -47,6 +48,13 @@ public interface CommonDataDetailsRepository  extends JpaRepository<CommonDataDe
 	List<CommonDataDetails> findByQuoteNo(String quoteNo);
 
 	List<CommonDataDetails> findByQuoteNoAndSectionId(String quoteNo, String sectionId);
+
+	Long countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal,
+			String originalPolicyNo);
+
+	@Transactional
+	void deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal,
+			String originalPolicyNo);
 
 	
 

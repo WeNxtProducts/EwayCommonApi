@@ -17,12 +17,12 @@
 //@Configuration
 //public class StorageProviderConfig {
 //
-//  /*  @Bean
+//   @Bean
 //    public StorageProvider storageProvider(JobMapper jobMapper) {
 //        InMemoryStorageProvider storageProvider = new InMemoryStorageProvider();
 //        storageProvider.setJobMapper(jobMapper);
 //        return storageProvider;
-//    }*/
+//    }
 //    @Autowired
 //	private JobScheduler jobScheduler;
 //	

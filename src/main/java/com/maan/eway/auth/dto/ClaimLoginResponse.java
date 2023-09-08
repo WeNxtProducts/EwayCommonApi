@@ -38,6 +38,12 @@ public class ClaimLoginResponse {
 	@JsonProperty("CurrencyId")
     private String currencyId;
 	
+	@JsonProperty("CustomerCode")
+	private String customerCode;
+	
+	@JsonProperty("CustomerName")
+	private String customerName ;
+	
 	@JsonProperty("LoginBranchDetails")
     private List<LoginBranchDetailsRes> loginBranchDetails;
 

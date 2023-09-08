@@ -193,7 +193,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 		List<Error> errorList = new ArrayList<Error>();
 
 		try {
-			String companyId = StringUtils.isBlank(req.getCompanyId()) ? "99999" :req.getCompanyId() ; 
+			String companyId=req.getCompanyId() ; 
 			// Coutnry Name
 			if (StringUtils.isBlank(req.getCountryName())) {
 				errorList.add(new Error("01", "CountryName", "Please Select Country Name"));
@@ -649,10 +649,10 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("countryId"), b.get("countryId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
-			Predicate a3 = cb.equal(b.get("companyId"), "99999");
-			Predicate a4 = cb.or(a2,a3);
+			//Predicate a3 = cb.equal(b.get("companyId"), "99999");
+			//Predicate a4 = cb.or(a2,a3);
 
-			amendId.where(a1,a4);
+			amendId.where(a1,a2);
 	
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -726,20 +726,20 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			Subquery<Long> effectiveDate = query.subquery(Long.class);
 			Root<CountryMaster> ocpm1 = effectiveDate.from(CountryMaster.class);
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
-//			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
+			javax.persistence.criteria.Predicate a1 = cb.equal(c.get("countryId"), ocpm1.get("countryId"));
 			javax.persistence.criteria.Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a5 = cb.equal(ocpm1.get("companyId"), c.get("companyId"));
-			effectiveDate.where( a2,a5);
+			effectiveDate.where(a1,a2,a5);
 			
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<CountryMaster> ocpm2 = effectiveDate2.from(CountryMaster.class);
 			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
-	//		javax.persistence.criteria.Predicate a3 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
+			javax.persistence.criteria.Predicate a3 = cb.equal(c.get("countryId"), ocpm2.get("countryId"));
 //			javax.persistence.criteria.Predicate aa = cb.equal(c.get("countryId"), ocpm2.get("99999"));
 			javax.persistence.criteria.Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a6 = cb.equal(ocpm2.get("companyId"), c.get("companyId"));
-			effectiveDate2.where(a4,a6);
+			effectiveDate2.where(a3, a4,a6);
 
 			// Where
 			Predicate n1 = cb.equal(c.get("status"),"Y");
@@ -747,8 +747,12 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			Predicate n12 = cb.or(n1,n11);
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			Predicate n4 = cb.equal(c.get("companyId"), req.getInsuranceId() );
-			
+			Predicate n4 = null;
+			if(StringUtils.isBlank(req.getInsuranceId()))
+				n4 = cb.equal(c.get("companyId"),  "99999" );
+			else
+				n4 = cb.equal(c.get("companyId"), req.getInsuranceId() );
+		
 			query.where(n12, n2,n3,n4).orderBy(orderList);
 
 			// Get Result
@@ -824,9 +828,9 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			Predicate n12 = cb.or(n1,n11);
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			Predicate n4 = cb.greaterThanOrEqualTo(c.get("companyId"), "99999");
+			//Predicate n4 = cb.greaterThanOrEqualTo(c.get("companyId"), "99999");
 			
-			query.where(n12, n2,n3,n4).orderBy(orderList);
+			query.where(n12, n2,n3).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CountryMaster> result = em.createQuery(query);
@@ -858,7 +862,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 				List<ProductSectionMaster> sectionlist = getPlansList(req.getCompanyId() , req.getProductId() ) ;
 				
 				// Country 
-				CountryMaster countryRes =  getCountryDetails(req.getCountryId()  ) ;
+				CountryMaster countryRes =  getCountryDetails(req.getCountryId(),req.getCompanyId()  ) ;
 				List<String> planIds = countryRes.getPlanId() !=null ? Arrays.asList(countryRes.getPlanId().split(",") ) : new ArrayList<String>() ;  
 				
 			//
@@ -980,7 +984,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 	}
 	
 
-	public CountryMaster getCountryDetails(String countryId ) {
+	public CountryMaster getCountryDetails(String countryId, String companyId ) {
 		CountryMaster countryRes = new CountryMaster();
 		try {
 			Date today = new Date();
@@ -1032,7 +1036,7 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			Predicate n12 = cb.or(n1,n11);
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			Predicate n4 = cb.equal(c.get("companyId"), "99999");
+			Predicate n4 = cb.equal(c.get("companyId"),companyId);
 			Predicate n5 = cb.equal(c.get("countryId"), countryId);
 			
 			query.where(n12, n2,n3,n4 ,n5).orderBy(orderList);

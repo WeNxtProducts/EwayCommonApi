@@ -554,13 +554,16 @@ public class EndorsementService {
 				Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
 				Predicate n2 = cb.equal(m.get("companyId"), request.getCompanyId());
 				Predicate n3 = cb.equal(m.get("productId"), request.getProductId());
-		//	Predicate n4 = cb.in(m.get("status")).value(Arrays.asList("E","P","D"));  // m.get("status").in("E","P"));
-				Predicate n5 = cb.or(cb.like(m.get("originalPolicyNo"), request.getPolicyNo()),cb.like(m.get("policyNo"), request.getPolicyNo()));
-				//Predicate n6 = cb.equal(m.get("riskId"), "1");
-				//Predicate n7 = cb.like(h.get("quoteNo"), m.get("quoteNo"));
-				//Predicate n8 = cb.like(m.get("PolicyNo"), request.getPolicyNo());
-				//Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), endDate);
-				//Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
+				Predicate n4 = cb.notEqual(m.get("status"), "D");
+				// Predicate n4 = cb.in(m.get("status")).value(Arrays.asList("E","P","D")); //
+				// m.get("status").in("E","P"));
+				Predicate n5 = cb.or(cb.like(m.get("originalPolicyNo"), request.getPolicyNo()),
+						cb.like(m.get("policyNo"), request.getPolicyNo()));
+				// Predicate n6 = cb.equal(m.get("riskId"), "1");
+				// Predicate n7 = cb.like(h.get("quoteNo"), m.get("quoteNo"));
+				// Predicate n8 = cb.like(m.get("PolicyNo"), request.getPolicyNo());
+				// Predicate n5 = cb.lessThanOrEqualTo(m.get("updatedDate"), endDate);
+				// Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
 
 			/*	Predicate n7 = null;
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
@@ -578,7 +581,7 @@ public class EndorsementService {
 					n8 = e0.in(branches);
 				}*/
 			
-				query.where(n1, n2, n3,/* n4,*/ n5)
+				query.where(n1, n2, n3,n4, n5)
 						/*.groupBy(c.get("customerReferenceNo"), c.get("idNumber"), c.get("clientName"), m.get("companyId"),
 								m.get("productId"), m.get("branchCode"), m.get("requestReferenceNo"), m.get("quoteNo"),
 								m.get("customerId"), m.get("policyStartDate"), m.get("policyEndDate"))*/
@@ -707,7 +710,8 @@ public class EndorsementService {
 			if("42".equals(request.getEndtType())) {
 				CommonRes cancelPolicy = cancelPolicy(request);	
 				return cancelPolicy;
-			}else if ("1".equals(entTypeMaster.getEndtTypeCategoryId().toString()) ) {
+			}else if ("1".equals(entTypeMaster.getEndtTypeCategoryId().toString()) ) { 
+				// Non- Finacial
 				Object response = null ;
 				
 				if(hp!=null) {
@@ -761,7 +765,7 @@ public class EndorsementService {
 				com.setMessage("Success");
 				return com;
 				}
-			}else {
+			}else {//FInancial
 				Object response = null ;
 				String policyNo=null;
 				if(product.getMotorYn().equalsIgnoreCase("M") ) {
@@ -1237,14 +1241,14 @@ public class EndorsementService {
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 			Predicate n4 = cb.equal(c.get("companyId"), insuranceId);
-			Predicate n5 = cb.equal(c.get("companyId"), "99999");
+			//Predicate n5 = cb.equal(c.get("companyId"), "99999");
 			Predicate n6 = cb.equal(c.get("branchCode"), branchCode);
 			Predicate n7 = cb.equal(c.get("branchCode"), "99999");
-			Predicate n8 = cb.or(n4, n5);
+			//Predicate n8 = cb.or(n4, n5);
 			Predicate n9 = cb.or(n6, n7);
 			Predicate n10 = cb.equal(c.get("itemType"), itemType);
 			Predicate n11 = cb.equal(c.get("itemCode"), itemCode);
-			query.where(n13, n2, n3, n8, n9, n10, n11).orderBy(orderList);
+			query.where(n13, n2, n3, n4, n9, n10, n11).orderBy(orderList);
 			// Get Result
 			TypedQuery<ListItemValue> result = em.createQuery(query);
 			list = result.getResultList();

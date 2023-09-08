@@ -136,7 +136,18 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				if (StringUtils.isBlank(req.getClientStatus())) {
 					errorList.add(new Error("05", "Client Status", "Please Select Client Status"));
 				}
-
+				if (StringUtils.isBlank(req.getIdType())) {
+					errorList.add(new Error("09", "IdType", "Please Select Personal/Corporate"));
+				}
+				
+				if (StringUtils.isBlank(req.getPolicyHolderTypeid())) {
+					errorList.add(new Error("09", " Identity Type", "Please Select Identity Type"));
+				}
+				if (StringUtils.isBlank(req.getPreferredNotification())) {
+					errorList.add(new Error("09", "Preferred Notification", "Please Select Preferred Notification"));
+				}
+				
+				
 				if (StringUtils.isNotBlank(req.getPolicyHolderType())) {
 
 					if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
@@ -145,9 +156,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 						}
 					}
 				}
-//			if (StringUtils.isBlank(req.getIdType())) {
-//				errorList.add(new Error("09", "IdType", "Please Select IdType"));
-//			}
+				
 
 				if (StringUtils.isBlank(req.getIdNumber())) {
 					errorList.add(new Error("11", "IdNumber", "Please Enter IdNumber"));
@@ -250,7 +259,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				} else if (StringUtils.isNotBlank(req.getTelephoneNo3()) && !req.getTelephoneNo3().matches("\\d+")) {
 					errorList.add(new Error("23", "TelephoneNo3", "Please Enter TelephoneNo3 only in numbers"));
 				}
+				
+				if (StringUtils.isBlank(req.getOccupation()) ) {
+					errorList.add(new Error("23", "Occupation", "Please Select Occupation"));
+				}
 
+				
 				if (StringUtils.isBlank(req.getMobileNo1())) {
 					errorList.add(new Error("24", "MobileNo", "Please Enter MobileNo"));
 				} else if (req.getMobileNo1().length() > 20) {
@@ -272,7 +286,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 //				if (StringUtils.isBlank(req.getEmail1())) {
 //					errorList.add(new Error("27", "Email1", "Please Enter Email"));
 //				} else
-				if ( StringUtils.isNotBlank(req.getEmail1()) && req.getEmail1().length() > 100) {
+				if ( StringUtils.isBlank(req.getEmail1()) ) {
+					errorList.add(new Error("27", "Email1", "Please Enter Email "));
+					
+				} else if( req.getEmail1().length() > 100 ) {
 					errorList.add(new Error("27", "Email1", "Please Enter Email within 100 Characters"));
 				} else if(StringUtils.isNotBlank(req.getEmail1())) {
 					boolean b = isValidMail(req.getEmail1());
@@ -374,6 +391,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				} else if (req.getCreatedBy().length() > 100) {
 					errorList.add(new Error("35", "CreatedBy", "Please Enter CreatedBy within 100 Characters"));
 				}
+				
 
 				// Date Validation
 				Date today = new Date();
@@ -382,6 +400,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				cal.set(Calendar.HOUR_OF_DAY, 23);
 				cal.set(Calendar.MINUTE, 50);
 				today = cal.getTime();
+				
+				
 				if (StringUtils.isNotBlank(req.getPolicyHolderType()) && req.getPolicyHolderType().equalsIgnoreCase("1")) {
 
 					if (req.getDobOrRegDate() == null) {
@@ -408,24 +428,29 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				}
 
 				if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
-
+					cal.setTime(today);
+					cal.add(Calendar.DAY_OF_MONTH, +1);
+					cal.set(Calendar.HOUR_OF_DAY, 23);
+					cal.set(Calendar.MINUTE, 50);
+					Date tomorrow = cal.getTime();
 					if (req.getDobOrRegDate() == null) {
 						errorList.add(new Error("38", "DobOrRegDate", "Please Enter RegDate "));
 
-					} else if (req.getDobOrRegDate().after(today)) {
+					} else if (req.getDobOrRegDate().after(tomorrow)) {
 						errorList.add(new Error("38", "DobOrRegDate", "Please Enter RegDate as Past Date"));
 
+					} else if(req.getDobOrRegDate()!=null ) {
+						LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
+								.toLocalDate();
+						LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+						Integer years = Period.between(localDate1, localDate2).getYears();
+						if (years > 100) {
+							errorList.add(new Error("38", "DobOrRegDate", "RegDate Not Accepted More than 100 Years"));
+
+						}
 					}
-
-					LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
-							.toLocalDate();
-					LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-					Integer years = Period.between(localDate1, localDate2).getYears();
-					if (years > 100) {
-						errorList.add(new Error("38", "DobOrRegDate", "RegDate Not Accepted More than 100 Years"));
-
-					}
+					
 				}
 
 				if (StringUtils.isBlank(req.getBranchCode())) {
@@ -433,6 +458,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				} else if (req.getBranchCode().length() > 20) {
 					errorList.add(new Error("39", "BranchCode", "Please Enter BranchCode within 20 Characters"));
 				}
+				
+//				if (StringUtils.isBlank(req.getBranchCode())) {
+//					errorList.add(new Error("39", "BranchCode", "Please Enter BranchCode "));
+//				}
 				if (StringUtils.isBlank(req.getProductId())) {
 					errorList.add(new Error("40", "ProductId", "Please Enter ProductId "));
 				} else if (req.getProductId().length() > 20) {
@@ -446,9 +475,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				
 				if( StringUtils.isNotBlank(req.getPolicyHolderType()) && req.getPolicyHolderType().equalsIgnoreCase("2") ) {
 					if (StringUtils.isBlank(req.getVrTinNo())) {
-						errorList.add(new Error("42", "VrTinNo", "Please Enter VrTinNo"));
+						errorList.add(new Error("42", "VRN/GST Number", "Please Enter VRN/GST Number"));
 					} else if (req.getVrTinNo().length() > 20) {
-						errorList.add(new Error("42", "VrTinNo", "Please Enter VrTinNo within 20 Characters"));
+						errorList.add(new Error("42", "VRN/GST Number", "Please Enter VRN/GST Number within 20 Characters"));
 					}
 					
 				}
@@ -471,15 +500,15 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				}*/
 				
 				if (StringUtils.isBlank(req.getStateCode())) {
-					errorList.add(new Error("45", "StateCode", "Please Enter StateCode "));
+					errorList.add(new Error("45", "RegionCode", "Please Enter RegionCode "));
 				}
 				if (StringUtils.isBlank(req.getMobileCode1())) {
 					errorList.add(new Error("46", "MobileCode", "Please Select MobileCode "));
 				}
 				
-				if (StringUtils.isBlank(req.getWhatsappCode())) {
-					errorList.add(new Error("47", "WhatsappCode", "Please Select WhatsappCode "));
-				}
+//				if (StringUtils.isBlank(req.getWhatsappCode())) {
+//					errorList.add(new Error("47", "WhatsappCode", "Please Select WhatsappCode "));
+//				}
 				
 				List<EserviceCustomerDetails> list = new ArrayList<EserviceCustomerDetails>();
 				if ((StringUtils.isNotBlank(req.getAddress1())) && (StringUtils.isNotBlank(req.getAddress2()))
@@ -621,6 +650,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					} else if (req.getDobOrRegDate().after(today)) {
 						errorList.add(new Error("38", "DobOrRegDate", "Please Enter DobOrRegDate as Past Date"));
 
+					}
+					
+
+					if (StringUtils.isBlank(req.getGender()) ) {
+						errorList.add(new Error("23", "Gender", "Please Select Gender"));
 					}
 
 					LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
@@ -970,14 +1004,14 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
 			Predicate n4 = cb.equal(c.get("companyId"), insuranceId);
-			Predicate n5 = cb.equal(c.get("companyId"), "99999");
+			//Predicate n5 = cb.equal(c.get("companyId"), "99999");
 			Predicate n6 = cb.equal(c.get("branchCode"), branchCode);
 			Predicate n7 = cb.equal(c.get("branchCode"), "99999");
-			Predicate n8 = cb.or(n4,n5);
+			//Predicate n8 = cb.or(n4,n5);
 			Predicate n9 = cb.or(n6,n7);
 			Predicate n10 = cb.equal(c.get("itemType"),itemType );
 			Predicate n11 = cb.equal(c.get("itemCode"), itemCode);
-			query.where(n1,n2,n3,n8,n9,n10,n11).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n9,n10,n11).orderBy(orderList);
 			// Get Result
 			TypedQuery<ListItemValue> result = em.createQuery(query);
 			list = result.getResultList();
@@ -1165,15 +1199,13 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 //				datas = repository.findByCompanyIdAndBrokerBranchCodeAndCreatedBy(paging,
 //						req.getComapanyId(), req.getBrokerBranchCode(),
 //						req.getCreatedBy());
-				datas = repository.findByCompanyIdAndBrokerBranchCodeAndCreatedByAndStatus(paging,
-						req.getComapanyId(), req.getBrokerBranchCode(),
-						req.getCreatedBy(), "Y");
+				datas = repository.findByCompanyIdAndBrokerBranchCodeAndCreatedBy(paging,
+						req.getComapanyId(), req.getBrokerBranchCode(),req.getCreatedBy());
 			} else {
 //				datas = repository.findByCompanyIdAndBranchCodeAndCreatedBy(paging, req.getComapanyId(),
 //						req.getBranchCode(), req.getCreatedBy());
-				datas = repository.findByCompanyIdAndBranchCodeAndCreatedByAndStatus(paging,
-						req.getComapanyId(), req.getBranchCode(),
-						req.getCreatedBy(), "Y");
+				datas = repository.findByCompanyIdAndBranchCodeAndCreatedBy(paging,
+						req.getComapanyId(), req.getBranchCode(),req.getCreatedBy());
 			}
 
 			for (EserviceCustomerDetails data : datas) {

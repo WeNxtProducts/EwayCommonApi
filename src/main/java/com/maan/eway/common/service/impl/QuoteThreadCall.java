@@ -569,6 +569,26 @@ public class QuoteThreadCall implements Callable<Object>  {
 				motorData.setEndtPremium(endtPremium.doubleValue());
 				Double endtVatPremium = premiumCovers.stream().filter( o -> !o.getDiscLoadId().equals(0) && o.getCoverageType().equals("T") ).mapToDouble( o ->   o.getTaxAmount().doubleValue()  ).sum();
 				motorData.setEndVatPremium(new BigDecimal(endtVatPremium));
+				
+				List<ContentAndRisk> con = contentRepo.findByQuoteNo(request.getQuoteNo());
+				if(con.size() <= 0 ) {
+					List<ContentAndRisk> con1 = contentRepo.findByQuoteNo(prevQuoteNo);
+					List<ContentAndRisk> confilter = con1.stream().filter(o -> request.getVehicleId().equals(o.getRiskId())).collect(Collectors.toList());
+					
+					List<ContentAndRisk> saveContList  = new ArrayList<ContentAndRisk>(); 
+					for(ContentAndRisk cont : confilter) {
+						ContentAndRisk content = new ContentAndRisk();
+						dozerMapper.map(cont, content);
+						content.setCreatedBy(request.getCreatedBy());
+						content.setQuoteNo(request.getQuoteNo());
+						content.setRequestReferenceNo(request.getRequestReferenceNo());
+						saveContList.add(content);
+					}
+					contentRepo.saveAllAndFlush(saveContList);
+					
+					
+				}
+				
 			}   
 			eserMotRepo.saveAndFlush(eserMotors);			
 			motorRepo.saveAndFlush(motorData);
@@ -680,7 +700,13 @@ public class QuoteThreadCall implements Callable<Object>  {
 			Predicate n9 = cb.or(n6,n7);
 			Predicate n10 = cb.equal(c.get("itemType"),itemType);
 			Predicate n11 = cb.equal(c.get("itemCode"),itemCode);
-			query.where(n1,n2,n3,n8,n9,n10,n11).orderBy(orderList);
+			
+			if(itemType.equalsIgnoreCase("DOC_ID_TYPE")) {
+				query.where(n1,n2,n3,n8,n9,n10,n11).orderBy(orderList);
+			}else {
+			
+				query.where(n1,n2,n3,n4,n9,n10,n11).orderBy(orderList);
+			}
 			// Get Result
 			TypedQuery<ListItemValue> result = em.createQuery(query);
 			list = result.getResultList();
@@ -788,10 +814,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 			Predicate n4 = cb.equal(c.get("companyId"),insuranceId);
-			Predicate n5 = cb.equal(c.get("companyId"),"99999");
-			Predicate n6 = cb.or(n4,n5);
+			//Predicate n5 = cb.equal(c.get("companyId"),"99999");
+			//Predicate n6 = cb.or(n4,n5);
 			Predicate n7 = cb.equal(c.get("currencyId"),currencyId);
-			query.where(n1,n2,n3,n6,n7).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n7).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<CurrencyMaster> result = em.createQuery(query);			
@@ -1540,6 +1566,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setVehicleId(request.getVehicleId());
 					coverData.setDiscountCoverId(cov.getDiscountCoverId()==null?0 :cov.getDiscountCoverId());
 					coverData.setIndividualId(request.getVehicleId());
+					coverData.setOriginalPolicyNo(request.getOriginalPolicyNo());
 					saveCovers.add(coverData);
 				//	log.error("Save Cover Info is ---> " + json.toJson(coverData));
 					
@@ -1724,6 +1751,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 				if(StringUtils.isNotBlank(req.getEndtPrevQuoteNo()) ) {
 					// Copy Quote Doc
 					res = copyDocumentRecords(req);
+					
+					// Find Traces
+					Long dupQuoteCount = homeRepo.countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , Integer.valueOf(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+					if (dupQuoteCount> 0) {
+						homeRepo.deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , Integer.valueOf(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+					}
 				}
 				
 	 			res.put("Response", "Success") ;
@@ -1753,12 +1786,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 				// update 
 				
 				// Find Motor
-				// Deactivate Old Record 
+				// Deactivate Old Record
 				if(StringUtils.isNotBlank(req.getEndtPrevQuoteNo()) ) {
 					List<MotorDataDetails> oldMotors = motorRepo.findByQuoteNo(request.getEndtPrevQuoteNo() );
-					
-					// Copy Quote Doc
 					List<EserviceMotorDetails> eserMotors = eserMotRepo.findByRequestReferenceNoAndStatusOrderByRiskIdAsc(request.getRequestReferenceNo() ,"D");
+						
+					// Copy Quote Doc
 					eserMotors.stream().forEach(i->i.setQuoteNo(request.getQuoteNo()));
 					
 					List<MotorDataDetails> motorDatas  = new ArrayList<MotorDataDetails>();
@@ -1840,6 +1873,24 @@ public class QuoteThreadCall implements Callable<Object>  {
 					});
 					
 					req.setVehicleNeedberemove(vehicleNeedberemove);
+					
+					// Find Traces 
+					Long dupQuoteCount = motorRepo.countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+					if (dupQuoteCount> 0) {
+						motorRepo.deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+					}
+					
+					dupQuoteCount = driverRepo.countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+					if (dupQuoteCount> 0) {
+						driverRepo.deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+					}
+					
+					// Remove Dup Traces
+					dupQuoteCount = contentRepo.countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+					if (dupQuoteCount> 0) {
+						contentRepo.deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+					}
+					
 				}
 				//Doc traces delete 
 				List<EserviceSectionDetails> secs = eserSecRepo.findByRequestReferenceNoAndStatus(req.getRequestReferenceNo(),"Y");
@@ -1856,7 +1907,22 @@ public class QuoteThreadCall implements Callable<Object>  {
 					List<DocumentTransactionDetails> docfilter = doc.stream().filter(o -> ! secIds.contains(o.getSectionId().toString())).collect(Collectors.toList());	
 					docRepo.deleteAll(docfilter);
 				}
+				List<EserviceMotorDetails> eserMotors = eserMotRepo.findByRequestReferenceNoAndStatusNotOrderByRiskIdAsc(request.getRequestReferenceNo() ,"D");
+				List<String> riskIds = new ArrayList<>();
+				eserMotors.forEach(  o -> {  
+					riskIds.add(String.valueOf(o.getRiskId())); 
+					} ) ;
+			
+				// COntent
+				List<ContentAndRisk> con = contentRepo.findByQuoteNo(req.getQuoteNo());
+				List<ContentAndRisk> confilter = con.stream().filter(o -> ! riskIds.contains(String.valueOf(o.getRiskId()))).collect(Collectors.toList());	
+				contentRepo.deleteAll(confilter);
 				
+				// Driver
+				List<MotorDriverDetails>  driverList = driverRepo.findByQuoteNo(req.getQuoteNo() );
+				List<MotorDriverDetails> drifilter = driverList.stream().filter(o -> ! riskIds.contains(String.valueOf(o.getRiskId()))).collect(Collectors.toList());
+				driverRepo.deleteAll(drifilter);
+					
 	 			res.put("Response", "Success") ;
 				res.put("Errors", null) ;
 				
@@ -1883,6 +1949,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 				});
 				
 				req.setVehicleNeedberemove(vehicleNeedberemove);
+				
+				
 				
 			//	List<TravelPassengerDetails> oldPassDatas = 	traPassRepo.findByQuoteNo(req.getQuoteNo());
 //				traPassRepo.deleteByQuoteNo(req.getQuoteNo());
@@ -1954,6 +2022,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 						traPassRepo.saveAllAndFlush(saveEndtDatas)	;
 					}
 				}
+				
+				if(StringUtils.isNotBlank(req.getEndtPrevQuoteNo()) ) {
+					// Find Traces 
+					Long dupQuoteCount = traPassRepo.countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+					if (dupQuoteCount> 0) {
+						traPassRepo.deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+					}
+				}
 //				}
 //				//Doc traces delete 
 //				List<EserviceSectionDetails> secs = eserSecRepo.findByRequestReferenceNoAndStatus(req.getRequestReferenceNo(),"Y");
@@ -1998,6 +2074,16 @@ public class QuoteThreadCall implements Callable<Object>  {
 					commonDataRepo.deleteByQuoteNo(req.getQuoteNo());
 				}
 				
+				// Find Traces 
+				Long dupQuoteCount = buildRepo.countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+				if (dupQuoteCount> 0) {
+					buildRepo.deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+				}
+				
+				dupQuoteCount = commonDataRepo.countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+				if (dupQuoteCount> 0) {
+					commonDataRepo.deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+				}
 				
 				
 				//Additional info traces delete for Domestic & corporate plus
@@ -2021,6 +2107,18 @@ public class QuoteThreadCall implements Callable<Object>  {
 					
 					List<DocumentTransactionDetails> docfilter = doc.stream().filter(o -> o.getLocationId()!=99999 &&  ! secIds.contains(o.getSectionId().toString())).collect(Collectors.toList());	
 					docRepo.deleteAll(docfilter);
+					
+					// Remove Dup Traces
+					dupQuoteCount = contentRepo.countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+					if (dupQuoteCount> 0) {
+						contentRepo.deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+					}
+					
+					dupQuoteCount = empRepo.countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+					if (dupQuoteCount> 0) {
+						empRepo.deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+					}
+					
 				}
 				List<VehicleNeedToRemove> vehicleNeedberemove = new ArrayList<VehicleNeedToRemove>();
 				List<EserviceCommonDetails> eserHumans = eserCommonRepo.findByRequestReferenceNoAndStatus(request.getRequestReferenceNo(),"D");
@@ -2071,7 +2169,18 @@ public class QuoteThreadCall implements Callable<Object>  {
 					removeVehicle.setSectionId(o.getSectionId());
 					removeVehicle.setVehicleId(Integer.valueOf(o.getRiskId()));
 					vehicleNeedberemove.add(removeVehicle);
+					
+					o.setQuoteNo(req.getQuoteNo());
+					
 				});
+				eserCommonRepo.saveAllAndFlush(eserHumans);
+				
+				// Find Traces 
+				Long dupQuoteCount = commonDataRepo.countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+				if (dupQuoteCount> 0) {
+					commonDataRepo.deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+				}
+				
 				req.setVehicleNeedberemove(vehicleNeedberemove);
 				res.put("Response", "Success") ;
 				res.put("Errors", null) ;
@@ -2100,6 +2209,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 	 			if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
 	 				
 	 				CommonRes commonRes = deactivateOldCovers(req); 
+	 				
+		 			// Find Traces
+					Long dupQuoteCount = coverRepo.countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+					if (dupQuoteCount> 0) {
+						coverRepo.deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+					}
 	 				
 	 			}
 	 			
@@ -2404,6 +2519,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 					secRepo.deleteByQuoteNo(req.getQuoteNo());
 				}
 				
+				// Find Traces
+				Long dupQuoteCount = secRepo.countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+				if (dupQuoteCount> 0) {
+					secRepo.deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+				}
+				
 	 			res.put("Response", "Success") ;
 				res.put("Errors", null) ;
 				
@@ -2419,7 +2540,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 			Map<String,Object> res= new HashMap<String,Object>() ;
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
 			try {
-
+				// Find Traces
+				Long dupQuoteCount = docRepo.countByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+				if (dupQuoteCount> 0) {
+					docRepo.deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
+				}
+				
 				List<EserviceSectionDetails> secs = eserSecRepo.findByRequestReferenceNoAndStatusNot(request.getRequestReferenceNo(),"D");
 				List<String> secIds = secs.stream().map(EserviceSectionDetails :: getSectionId).collect(Collectors.toList());
 				

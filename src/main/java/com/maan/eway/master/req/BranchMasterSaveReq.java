@@ -64,6 +64,9 @@ public class BranchMasterSaveReq implements Serializable {
 	@JsonProperty("SalePointCode")
     private String  salePointCode;
 	
+
+	@JsonProperty("PoBox")
+    private String    poBox ;
 	
 
 }
