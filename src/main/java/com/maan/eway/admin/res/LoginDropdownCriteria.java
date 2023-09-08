@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginDetailsCriteriaRes {
+public class LoginDropdownCriteria {
 
 	@JsonProperty("LoginId")
 	private String loginId ;
@@ -57,6 +57,10 @@ public class LoginDetailsCriteriaRes {
 	
 	@JsonProperty("CompanyId")
 	private String companyId;
-
 	
+	@JsonProperty("CustomerCode")
+	private String customerCode;
+	
+	@JsonProperty("CustomerName")
+	private String customerName;
 }

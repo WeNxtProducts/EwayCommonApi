@@ -76,6 +76,7 @@ import com.maan.eway.admin.res.LoginBrokerDetailsGetRes;
 import com.maan.eway.admin.res.LoginBrokerDetailsGridRes;
 import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.res.LoginDetailsCriteriaRes;
+import com.maan.eway.admin.res.LoginDropdownCriteria;
 import com.maan.eway.admin.res.LoginIssuerGridRes;
 import com.maan.eway.admin.res.LoginUserGridRes;
 import com.maan.eway.admin.res.MenuIdGetRes;
@@ -1563,8 +1564,8 @@ this.repository = repo;
 		try { 
 			// Limit Offset
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<LoginDetailsCriteriaRes> query = cb.createQuery(LoginDetailsCriteriaRes.class);
-			List<LoginDetailsCriteriaRes> list = new ArrayList<LoginDetailsCriteriaRes>();
+			CriteriaQuery<LoginDropdownCriteria> query = cb.createQuery(LoginDropdownCriteria.class);
+			List<LoginDropdownCriteria> list = new ArrayList<LoginDropdownCriteria>();
 			
 			// Find All
 			Root<LoginMaster> l = query.from(LoginMaster.class);
@@ -1605,11 +1606,11 @@ this.repository = repo;
 			
 
 			// Get Result
-			TypedQuery<LoginDetailsCriteriaRes> result = em.createQuery(query);
+			TypedQuery<LoginDropdownCriteria> result = em.createQuery(query);
 			list = result.getResultList();
 			
 
-			for( LoginDetailsCriteriaRes data :list ) {
+			for( LoginDropdownCriteria data :list ) {
 				BrokerDropDownRes res = new BrokerDropDownRes();
 				res.setBrokerId(data.getAgencyCode());
 				res.setBrokerName(data.getUserName());
