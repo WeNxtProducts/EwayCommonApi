@@ -12,10 +12,54 @@
 	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="Dataset1" uuid="b914f5dd-2149-4288-b612-424b5bf37dc1">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
+		<queryString language="SQL">
+			<![CDATA[SELECT REGISTRATION_NUMBER,motor_category_desc FROM motor_data_details WHERE Quote_no = 'Q04326']]>
+		</queryString>
+		<field name="REGISTRATION_NUMBER" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="REGISTRATION_NUMBER"/>
+			<property name="com.jaspersoft.studio.field.label" value="REGISTRATION_NUMBER"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+		</field>
+		<field name="motor_category_desc" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="MOTOR_CATEGORY_DESC"/>
+			<property name="com.jaspersoft.studio.field.label" value="motor_category_desc"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+		</field>
+	</subDataset>
 	<parameter name="pvImagePath" class="java.lang.String"/>
 	<parameter name="pvPolicyNo" class="java.lang.String"/>
 	<queryString language="SQL">
-		<![CDATA[SELECT 
+		<![CDATA[SELECT DISTINCT
 LUI.USER_NAME AS PRINTED_BY,
 HPM.APPROVED_BY AS APPROVED_BY,
 LUI.USER_NAME,
@@ -29,8 +73,11 @@ HPM.POLICY_NO,
 HPM.INCEPTION_DATE,
 HPM.EXPIRY_DATE,
 HPM.CURRENCY ,
- MDD.SECTION_NAME  SECTION_NAME,
- MDD.REGISTRATION_NUMBER,
+HPM.DEBIT_NOTE_NO,
+HPM.QUOTE_NO,
+ (SELECT VRN_NUMBER FROM eway_insurance_company_master ei WHERE ei.COMPANY_ID = HPM.COMPANY_ID AND (SELECT CURRENT_DATE FROM DUAL) BETWEEN ei.Effective_Date_Start  AND ei.Effective_Date_End) AS VRN_NUMBER,
+ (SELECT TIN_NUMBER FROM eway_insurance_company_master ei WHERE ei.COMPANY_ID = HPM.COMPANY_ID AND (SELECT CURRENT_DATE FROM DUAL) BETWEEN ei.Effective_Date_Start  AND ei.Effective_Date_End) AS TIN_NUMBER,
+ (SELECT USER_NAME FROM LOGIN_USER_INFO WHERE LOGIN_ID = HPM.LOGIN_ID) AS BROKER_NAME,
  CASE WHEN HPM.CURRENCY IN (
     SELECT 
       CURRENCY_ID 
@@ -130,15 +177,27 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 		<property name="com.jaspersoft.studio.field.label" value="CURRENCY"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
-	<field name="SECTION_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="SECTION_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="SECTION_NAME"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+	<field name="DEBIT_NOTE_NO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="DEBIT_NOTE_NO"/>
+		<property name="com.jaspersoft.studio.field.label" value="DEBIT_NOTE_NO"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
-	<field name="REGISTRATION_NUMBER" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="REGISTRATION_NUMBER"/>
-		<property name="com.jaspersoft.studio.field.label" value="REGISTRATION_NUMBER"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+	<field name="QUOTE_NO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="QUOTE_NO"/>
+		<property name="com.jaspersoft.studio.field.label" value="QUOTE_NO"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	</field>
+	<field name="VRN_NUMBER" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="VRN_NUMBER"/>
+		<property name="com.jaspersoft.studio.field.label" value="VRN_NUMBER"/>
+	</field>
+	<field name="TIN_NUMBER" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="TIN_NUMBER"/>
+		<property name="com.jaspersoft.studio.field.label" value="TIN_NUMBER"/>
+	</field>
+	<field name="BROKER_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="BROKER_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="BROKER_NAME"/>
 	</field>
 	<field name="PERMIUM" class="java.lang.Double">
 		<property name="com.jaspersoft.studio.field.name" value="PERMIUM"/>
@@ -172,16 +231,30 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 		<property name="com.jaspersoft.studio.field.label" value="TOTAL_SUM_INSURED"/>
 	</field>
 	<background>
-		<band splitType="Stretch"/>
+		<band height="685" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="555" height="684" uuid="f7784224-bf13-4ecc-931d-a0867ff8c51d">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
 	</background>
 	<pageHeader>
-		<band height="90" splitType="Stretch">
+		<band height="80" splitType="Stretch">
 			<image>
-				<reportElement x="0" y="0" width="555" height="90" uuid="d45886ab-e3c3-4abc-89cf-c1a6c9d76416"/>
-				<box leftPadding="2">
-					<topPen lineWidth="0.5" lineStyle="Solid"/>
-					<leftPen lineWidth="0.5" lineStyle="Solid"/>
-					<rightPen lineWidth="0.5" lineStyle="Solid"/>
+				<reportElement x="0" y="10" width="555" height="70" uuid="d45886ab-e3c3-4abc-89cf-c1a6c9d76416"/>
+				<box topPadding="5" leftPadding="2">
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0" lineStyle="Solid"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
 				</box>
 				<imageExpression><![CDATA[$P{pvImagePath}+"AllianceHearderlogo.png"]]></imageExpression>
 			</image>
@@ -201,48 +274,8 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 				</textElement>
 				<textFieldExpression><![CDATA["TAX INVOICE"]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="0" y="0" width="15" height="30" uuid="fad0ff35-fec3-4d9c-aa82-326e561f9ae3"/>
-				<box>
-					<leftPen lineWidth="0.5"/>
-				</box>
-				<textElement>
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="540" y="0" width="15" height="30" uuid="d3f3f2d1-a861-4b4a-95b2-3dc3c3730ccb"/>
-				<box>
-					<rightPen lineWidth="0.5"/>
-				</box>
-				<textElement>
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
 		</band>
 		<band height="40">
-			<textField>
-				<reportElement x="0" y="0" width="15" height="40" uuid="435c2161-5b07-479f-b3da-d05332be45e5"/>
-				<box>
-					<leftPen lineWidth="0.5"/>
-				</box>
-				<textElement>
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="540" y="0" width="15" height="40" uuid="b8b1ab10-18f6-41c7-a39e-df974a11bbe3"/>
-				<box>
-					<rightPen lineWidth="0.5"/>
-				</box>
-				<textElement>
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
 			<textField>
 				<reportElement x="15" y="0" width="15" height="15" uuid="0fe1ac8e-3ede-44f6-8265-481c0c486749">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -273,7 +306,7 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 				<textElement>
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ADDRESS_1}+" "+$F{ADDRESS_2}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{ADDRESS_1}+" "+(($F{ADDRESS_2})==null?"":$F{ADDRESS_2})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="336" y="10" width="64" height="15" uuid="cc8a1628-a72c-4ab1-84f4-8ce66a4525ce">
@@ -294,7 +327,7 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{DEBIT_NOTE_NO}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="375" y="25" width="25" height="15" uuid="eb32fc5a-780c-4a9b-babc-769b59606087">
@@ -338,26 +371,6 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 		</band>
 		<band height="57">
 			<textField>
-				<reportElement x="0" y="0" width="15" height="57" uuid="1d851f40-2b14-4fc6-b0d1-415c9c7e5894"/>
-				<box>
-					<leftPen lineWidth="0.5"/>
-				</box>
-				<textElement>
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="540" y="0" width="15" height="57" uuid="a7d9f705-d78a-4b8c-8e34-e671482f4095"/>
-				<box>
-					<rightPen lineWidth="0.5"/>
-				</box>
-				<textElement>
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
-			<textField>
 				<reportElement x="15" y="19" width="65" height="15" uuid="438787dd-6243-4525-beef-d13e07224684">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -388,7 +401,7 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{VR_TIN_NO}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="80" y="42" width="200" height="15" uuid="bf0ce5b4-8949-47aa-9a0a-04eef4702d45"/>
@@ -396,7 +409,7 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{BROKER_NAME}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="197" y="20" width="65" height="15" uuid="a72d1d96-ab31-4fd4-8df7-05b4884eceef">
@@ -440,7 +453,7 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{VR_TIN_NO}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{VRN_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="400" y="9" width="10" height="15" uuid="4bb28a0f-7caa-41ba-9a73-021e17f83c88">
@@ -480,7 +493,7 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{TIN_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="320" y="42" width="80" height="15" uuid="a62de6a8-ede8-4139-b8ab-62bdd3599932">
@@ -546,31 +559,7 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="50">
-			<textField>
-				<reportElement x="540" y="0" width="15" height="50" uuid="d3d9f82b-5b8b-4614-85e0-ac83e7ee442e">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<rightPen lineWidth="0.5"/>
-				</box>
-				<textElement>
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="0" y="0" width="15" height="50" uuid="d9c70243-6a6e-4306-b052-b15b78607ef7">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<leftPen lineWidth="0.5"/>
-				</box>
-				<textElement>
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
+		<band height="37">
 			<textField>
 				<reportElement x="15" y="0" width="46" height="15" uuid="0750dc81-3c08-4135-80a7-ddf628c1cdbc">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -637,17 +626,6 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 				<textFieldExpression><![CDATA["Policy Period To :"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="324" y="30" width="68" height="15" uuid="2953ea87-95c7-48f2-ae49-7c694b86d11e">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Registration No :"]]></textFieldExpression>
-			</textField>
-			<textField>
 				<reportElement x="392" y="0" width="28" height="15" uuid="42e46740-79c1-4ac6-8e28-d99f9600f481"/>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
@@ -655,7 +633,7 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{CURRENCY}]]></textFieldExpression>
 			</textField>
-			<textField pattern="# ##0.00">
+			<textField pattern="#,##0.00#;#,##0.00#-">
 				<reportElement x="420" y="0" width="70" height="15" uuid="b6e3c3b6-428b-478a-9582-5e5ed4172e43"/>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
@@ -670,14 +648,6 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{EXPIRY_DATE}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="392" y="30" width="70" height="15" uuid="352720c2-bb4d-494c-b238-2a6e8940ab96"/>
-				<box leftPadding="2"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{REGISTRATION_NUMBER}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="1">
@@ -717,52 +687,6 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 		</band>
 		<band height="103">
 			<textField>
-				<reportElement x="15" y="0" width="48" height="15" uuid="c7b4f732-ff5e-422f-8819-7c91aba23161">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Description"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="0" y="0" width="15" height="103" uuid="11d8c3f0-c040-4a1c-9ee8-ecdf32404fa7">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<leftPen lineWidth="0.5"/>
-				</box>
-				<textElement>
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="540" y="0" width="15" height="103" uuid="efdf8d26-0c18-4dea-b63f-743feaa195a5">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<rightPen lineWidth="0.5"/>
-				</box>
-				<textElement>
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="15" y="15" width="165" height="15" uuid="c2155529-4882-40ac-b3b3-ecc02a21bd82">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<box leftPadding="2"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="false"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
-			<textField>
 				<reportElement x="442" y="0" width="45" height="15" uuid="692cb576-a2d3-44ef-a329-505814aecab1">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -782,7 +706,7 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{CURRENCY}]]></textFieldExpression>
 			</textField>
-			<textField pattern="# ##0.00">
+			<textField pattern="#,##0.00#;#,##0.00#-">
 				<reportElement x="442" y="15" width="86" height="15" uuid="a0eb2977-b5be-4472-80b4-7cc21add73fa">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -794,7 +718,7 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{PERMIUM}]]></textFieldExpression>
 			</textField>
-			<textField pattern="# ##0.00">
+			<textField pattern="#,##0.00#;#,##0.00#-">
 				<reportElement x="442" y="30" width="86" height="15" uuid="ba2500d8-30bf-4b63-aa7b-2dd8eed7e261">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -806,7 +730,7 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{PERMIUM}]]></textFieldExpression>
 			</textField>
-			<textField pattern="# ##0.00">
+			<textField pattern="#,##0.00#;#,##0.00#-">
 				<reportElement x="442" y="45" width="86" height="20" uuid="543d91a2-bbb5-416a-9928-882230e0801e">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -818,7 +742,7 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{VAT_PERMIUM}]]></textFieldExpression>
 			</textField>
-			<textField pattern="# ##0.00">
+			<textField pattern="#,##0.00#;#,##0.00#-">
 				<reportElement x="442" y="65" width="86" height="15" uuid="f6a72648-cf5d-4949-8ad5-b76a3d30a35e">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -878,6 +802,83 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
+			<line>
+				<reportElement x="442" y="81" width="86" height="1" uuid="0321dbe6-0fec-47cb-a848-b856f618aeec">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<componentElement>
+				<reportElement x="15" y="10" width="250" height="30" uuid="b059fd90-d8c9-47ae-9525-08368ca6749b">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
+					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
+					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
+				</reportElement>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="Dataset1" uuid="28a4f724-cf4b-4ff0-a5d4-06b8cac664f6">
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="120" uuid="f261a79d-6b17-42cd-b8d1-0971340d1953">
+						<jr:columnHeader style="Table_TD" height="15">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<box>
+								<pen lineWidth="0.5"/>
+							</box>
+							<textField>
+								<reportElement x="0" y="0" width="120" height="15" uuid="748879a3-e416-4fe5-bbdd-655453893d53"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="8" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA["Registration Number"]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="15">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<box>
+								<pen lineWidth="0.5"/>
+							</box>
+							<textField>
+								<reportElement x="0" y="0" width="120" height="15" uuid="4cae0c4b-70f8-41f0-a704-42060114a5c3"/>
+								<box leftPadding="0" rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font fontName="Arial" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{REGISTRATION_NUMBER}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="130" uuid="2893d69c-03bf-463b-ad85-91f8bc5264d2">
+						<jr:columnHeader style="Table_TD" height="15">
+							<box>
+								<pen lineWidth="0.5"/>
+							</box>
+							<textField>
+								<reportElement x="0" y="0" width="130" height="15" uuid="ff9e4a16-6fcc-4ed4-9597-939a284c5c60"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="8" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA["Description"]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="15">
+							<box>
+								<pen lineWidth="0.5"/>
+							</box>
+							<textField>
+								<reportElement x="0" y="0" width="130" height="15" uuid="11eae591-c16f-4041-98ae-12045613897b"/>
+								<box leftPadding="2"/>
+								<textElement textAlignment="Left" verticalAlignment="Middle">
+									<font fontName="Arial" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{motor_category_desc}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
 		</band>
 		<band height="1">
 			<line>
@@ -889,56 +890,8 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 					<pen lineWidth="0.25" lineStyle="Solid"/>
 				</graphicElement>
 			</line>
-			<textField>
-				<reportElement x="0" y="0" width="15" height="1" uuid="5946d452-d8a7-4f6f-a4ce-f5d89e0d9aee">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<leftPen lineWidth="0.5"/>
-				</box>
-				<textElement>
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="540" y="0" width="15" height="1" uuid="a6bb87fa-9abb-4919-8e82-55701b68af8f">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<rightPen lineWidth="0.5"/>
-				</box>
-				<textElement>
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
 		</band>
 		<band height="115">
-			<textField>
-				<reportElement x="0" y="0" width="15" height="115" uuid="eb3f13d5-652f-4993-b522-54a68f0b8451">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<leftPen lineWidth="0.5"/>
-				</box>
-				<textElement>
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="540" y="0" width="15" height="115" uuid="57d092ac-f899-48cf-a8af-617f0180d0d6">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<rightPen lineWidth="0.5"/>
-				</box>
-				<textElement>
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
 			<textField>
 				<reportElement x="15" y="1" width="100" height="15" uuid="b448c0b1-c8bb-4264-b825-02d1ec7ed7ee">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -973,7 +926,7 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 				</textElement>
 				<textFieldExpression><![CDATA["Invoice Total (Tshs)"]]></textFieldExpression>
 			</textField>
-			<textField pattern="# ##0.00">
+			<textField pattern="#,##0.00#;#,##0.00#-">
 				<reportElement x="95" y="17" width="80" height="12" uuid="fb44a9ef-3655-4fd5-941f-6a542e6e7fb5"/>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
@@ -997,7 +950,7 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 				</textElement>
 				<textFieldExpression><![CDATA["Vat Total (Tshs)"]]></textFieldExpression>
 			</textField>
-			<textField pattern="# ##0.00">
+			<textField pattern="#,##0.00#;#,##0.00#-">
 				<reportElement x="95" y="47" width="80" height="12" uuid="48852c9f-0667-4a1d-879a-38e980d72657"/>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
@@ -1030,7 +983,7 @@ new com.google.zxing.qrcode.QRCodeWriter().encode(
 com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 			</image>
 			<textField>
-				<reportElement x="382" y="103" width="138" height="12" uuid="6601afe5-97cb-4283-a14d-90d19f635e5f"/>
+				<reportElement x="448" y="103" width="92" height="12" uuid="6601afe5-97cb-4283-a14d-90d19f635e5f"/>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
@@ -1038,7 +991,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="302" y="103" width="80" height="12" uuid="b0c82d42-02b5-48eb-9be6-5f7c1e24bc9a"/>
+				<reportElement x="376" y="103" width="72" height="12" uuid="b0c82d42-02b5-48eb-9be6-5f7c1e24bc9a"/>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
@@ -1056,30 +1009,6 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 					<pen lineWidth="0.25" lineStyle="Solid"/>
 				</graphicElement>
 			</line>
-			<textField>
-				<reportElement x="0" y="0" width="15" height="1" uuid="1821b2ce-f545-45cb-be31-4f900698d69b">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<leftPen lineWidth="0.5"/>
-				</box>
-				<textElement>
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="540" y="0" width="15" height="1" uuid="bfb19f63-0723-40c8-afc4-21c856125970">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<rightPen lineWidth="0.5"/>
-				</box>
-				<textElement>
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
 		</band>
 		<band height="179">
 			<textField>
@@ -1094,30 +1023,6 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textFieldExpression><![CDATA["Please note the payment of Premium should be in"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="0" width="15" height="139" uuid="088560de-a328-4246-9ad5-d0da30901617">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<leftPen lineWidth="0.5"/>
-				</box>
-				<textElement>
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="540" y="0" width="15" height="139" uuid="4d80a766-8fcb-4e90-8241-788b3452798c">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<rightPen lineWidth="0.5"/>
-				</box>
-				<textElement>
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
-			<textField>
 				<reportElement x="200" y="0" width="30" height="15" uuid="bc6562a7-2343-4e8b-9481-9307eabb0359">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -1129,7 +1034,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textFieldExpression><![CDATA[$F{CURRENCY}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement mode="Transparent" x="340" y="0" width="51" height="15" forecolor="#C4C4C4" backcolor="#FFFFFF" uuid="e7e3abea-11d3-4a07-87cd-26f241eeb10f">
+				<reportElement mode="Transparent" x="340" y="0" width="51" height="15" forecolor="#808080" backcolor="#FFFFFF" uuid="e7e3abea-11d3-4a07-87cd-26f241eeb10f">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -1140,7 +1045,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textFieldExpression><![CDATA["Printed By :"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement mode="Transparent" x="391" y="0" width="71" height="15" forecolor="#C4C4C4" backcolor="#FFFFFF" uuid="d0ce482c-0cee-4486-84e2-def688fa1c22">
+				<reportElement mode="Transparent" x="391" y="0" width="71" height="15" forecolor="#808080" backcolor="#FFFFFF" uuid="d0ce482c-0cee-4486-84e2-def688fa1c22">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -1151,7 +1056,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textFieldExpression><![CDATA[$F{PRINTED_BY}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement mode="Transparent" x="462" y="0" width="78" height="15" forecolor="#C4C4C4" backcolor="#FFFFFF" uuid="61e8cd64-522d-4c95-a31a-f2cbd2f215f1">
+				<reportElement mode="Transparent" x="462" y="0" width="78" height="15" forecolor="#808080" backcolor="#FFFFFF" uuid="61e8cd64-522d-4c95-a31a-f2cbd2f215f1">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -1159,7 +1064,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="15" y="18" width="525" height="15" uuid="fea7d5fd-4e73-4ec1-9d3c-2825439ef970">
@@ -1241,7 +1146,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{BANK_NAME}+" "+"P.O.Box 1431, Exim Tower, Dar Es Salaam"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Exim Bank (Tanzania) Limited  P.O.Box 1431, Exim Tower, Das Es Salaam"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="115" y="63" width="85" height="15" uuid="94a970c0-c631-4fb3-b19d-5ea51c802ccf"/>
@@ -1251,7 +1156,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ACCOUNT_NUMBER}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["0300174027"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="200" y="63" width="90" height="15" uuid="0687816f-a388-4fcb-bc7e-54b8e75e4b38">
@@ -1273,7 +1178,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+				<textFieldExpression><![CDATA["0300174019"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="115" y="78" width="425" height="15" uuid="0dc18ae2-72d2-49b4-a121-9da555964c1d"/>
@@ -1300,7 +1205,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textFieldExpression><![CDATA["For direct transfer into our bank account please quote our tax invoice number"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement mode="Transparent" x="404" y="108" width="136" height="15" forecolor="#C4C4C4" backcolor="#FFFFFF" uuid="a7b76c66-088c-4141-9370-06104206ecc4">
+				<reportElement mode="Transparent" x="404" y="108" width="136" height="15" forecolor="#808080" backcolor="#FFFFFF" uuid="a7b76c66-088c-4141-9370-06104206ecc4">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -1311,7 +1216,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textFieldExpression><![CDATA[$F{APPROVED_BY}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement mode="Transparent" x="345" y="108" width="59" height="15" forecolor="#C4C4C4" backcolor="#FFFFFF" uuid="a8541bb3-33df-4ffb-9844-804160db7230">
+				<reportElement mode="Transparent" x="345" y="108" width="59" height="15" forecolor="#808080" backcolor="#FFFFFF" uuid="a8541bb3-33df-4ffb-9844-804160db7230">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -1319,21 +1224,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Approved By :"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="0" y="139" width="555" height="15" uuid="0bf0f906-2ab6-4d5b-969e-0e7f5fe74416">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.5"/>
-				</box>
-				<textElement>
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[(($F{APPROVED_BY})==null)?"":"Approved By :"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="203" y="123" width="148" height="16" uuid="abef5c4b-860a-4079-b92d-b802f51c08ce">
@@ -1342,7 +1233,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{pvPolicyNo}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

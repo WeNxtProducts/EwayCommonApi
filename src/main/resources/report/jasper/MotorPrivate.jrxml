@@ -6,7 +6,7 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="48"/>
-	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
+	<style name="Table 3_TH" mode="Opaque" backcolor="#F0F8FF">
 		<box>
 			<pen lineWidth="0.5" lineColor="#000000"/>
 			<topPen lineWidth="0.5" lineColor="#000000"/>
@@ -15,7 +15,7 @@
 			<rightPen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="Table_CH" mode="Opaque" backcolor="#BFE1FF">
+	<style name="Table 3_CH" mode="Opaque" backcolor="#BFE1FF">
 		<box>
 			<pen lineWidth="0.5" lineColor="#000000"/>
 			<topPen lineWidth="0.5" lineColor="#000000"/>
@@ -24,7 +24,7 @@
 			<rightPen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
+	<style name="Table 3_TD" mode="Opaque" backcolor="#FFFFFF">
 		<box>
 			<pen lineWidth="0.5" lineColor="#000000"/>
 			<topPen lineWidth="0.5" lineColor="#000000"/>
@@ -33,186 +33,56 @@
 			<rightPen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="Table 1_TH" mode="Opaque" backcolor="#F0F8FF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-			<topPen lineWidth="0.5" lineColor="#000000"/>
-			<leftPen lineWidth="0.5" lineColor="#000000"/>
-			<bottomPen lineWidth="0.5" lineColor="#000000"/>
-			<rightPen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="Table 1_CH" mode="Opaque" backcolor="#BFE1FF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-			<topPen lineWidth="0.5" lineColor="#000000"/>
-			<leftPen lineWidth="0.5" lineColor="#000000"/>
-			<bottomPen lineWidth="0.5" lineColor="#000000"/>
-			<rightPen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="Table 1_TD" mode="Opaque" backcolor="#FFFFFF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-			<topPen lineWidth="0.5" lineColor="#000000"/>
-			<leftPen lineWidth="0.5" lineColor="#000000"/>
-			<bottomPen lineWidth="0.5" lineColor="#000000"/>
-			<rightPen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
-	<subDataset name="TableDataSet 1" uuid="2dfcad32-0f3a-4426-ab2d-d52922456687">
-		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
+	<subDataset name="Dataset1" uuid="9e32c451-98c8-4b26-9f0a-7e8235e38ce2">
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-		<parameter name="pvPolicyNo" class="java.lang.String"/>
-		<queryString>
-			<![CDATA[SELECT MDD.VEHICLE_ID AS SNO,
-MDD.REGISTRATION_NUMBER AS REG_NO,
-MDD.VEHICLE_MAKE,
-MDD.VEHCILE_MODEL,
-MDD.VEHICLE_TYPE_DESC,
-MDD.CUBIC_CAPACITY AS CC,
-MDD.MANUFACTURE_YEAR AS VEHYEAR,
-MDD.COLOR_DESC,
-MDD.SEATING_CAPACITY NO_OF_SEATS,
-MDD.SECTION_NAME AS SECTION_NAME ,
-MDD.WIND_SCREEN_SUM_INSURED AS WIND_SCREEN_AMT,
-MDD.SUM_INSURED AS SUM_INSURED
-FROM home_position_master HPM,MOTOR_DATA_DETAILS MDD
-WHERE MDD.POLICY_NO=HPM.POLICY_NO AND HPM.POLICY_NO= $P{pvPolicyNo} ORDER BY SNO ASC]]>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
+		<parameter name="pvQuoteNo" class="java.lang.String"/>
+		<parameter name="pvVehicleId" class="java.lang.String"/>
+		<queryString language="SQL">
+			<![CDATA[SELECT
+  PCD.COVER_NAME,
+  PCD.SUM_INSURED,
+  CASE WHEN hpm.currency IN (cpm.currency_id) THEN PCD.PREMIUM_AFTER_DISCOUNT_LC ELSE PCD.PREMIUM_AFTER_DISCOUNT_FC END AS AFTER_DISCOUNT,
+  CASE WHEN hpm.currency IN (cpm.currency_id) THEN PCD.PREMIUM_INCLUDED_TAX_LC ELSE PCD.PREMIUM_INCLUDED_TAX_FC END AS INCLUDED_TAX
+  FROM 
+  home_position_master HPM,
+  Eway_insurance_company_master cpm,
+  POLICY_COVER_DATA PCD
+  WHERE
+  PCD.QUOTE_NO = $P{pvQuoteNo} 
+  AND HPM.QUOTE_NO = PCD.QUOTE_NO
+  AND CPM.COMPANY_ID = HPM.COMPANY_ID
+  AND PCD.VEHICLE_ID = $P{pvVehicleId} 
+  AND PCD.TAX_ID='0'
+  AND PCD.DISCOUNT_COVER_ID = '0'
+  AND cpm.status='Y'
+  AND (SELECT CURRENT_DATE AS TODAY_DATE FROM DUAL) BETWEEN CPM.EFFECTIVE_DATE_START AND CPM.EFFECTIVE_DATE_END]]>
 		</queryString>
-		<field name="SNO" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="VEHICLE_ID"/>
-			<property name="com.jaspersoft.studio.field.label" value="SNO"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+		<field name="COVER_NAME" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="COVER_NAME"/>
+			<property name="com.jaspersoft.studio.field.label" value="COVER_NAME"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="policy_cover_data"/>
 		</field>
-		<field name="REG_NO" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="REGISTRATION_NUMBER"/>
-			<property name="com.jaspersoft.studio.field.label" value="REG_NO"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
-		</field>
-		<field name="VEHICLE_MAKE" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="VEHICLE_MAKE"/>
-			<property name="com.jaspersoft.studio.field.label" value="VEHICLE_MAKE"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
-		</field>
-		<field name="VEHCILE_MODEL" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="VEHCILE_MODEL"/>
-			<property name="com.jaspersoft.studio.field.label" value="VEHCILE_MODEL"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
-		</field>
-		<field name="VEHICLE_TYPE_DESC" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="VEHICLE_TYPE_DESC"/>
-			<property name="com.jaspersoft.studio.field.label" value="VEHICLE_TYPE_DESC"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
-		</field>
-		<field name="CC" class="java.lang.Double">
-			<property name="com.jaspersoft.studio.field.name" value="CUBIC_CAPACITY"/>
-			<property name="com.jaspersoft.studio.field.label" value="CC"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
-		</field>
-		<field name="VEHYEAR" class="java.lang.Integer">
-			<property name="com.jaspersoft.studio.field.name" value="MANUFACTURE_YEAR"/>
-			<property name="com.jaspersoft.studio.field.label" value="VEHYEAR"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
-		</field>
-		<field name="COLOR_DESC" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="COLOR_DESC"/>
-			<property name="com.jaspersoft.studio.field.label" value="COLOR_DESC"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
-		</field>
-		<field name="NO_OF_SEATS" class="java.lang.Integer">
-			<property name="com.jaspersoft.studio.field.name" value="SEATING_CAPACITY"/>
-			<property name="com.jaspersoft.studio.field.label" value="NO_OF_SEATS"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
-		</field>
-		<field name="SECTION_NAME" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="SECTION_NAME"/>
-			<property name="com.jaspersoft.studio.field.label" value="SECTION_NAME"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
-		</field>
-		<field name="WIND_SCREEN_AMT" class="java.lang.Double">
-			<property name="com.jaspersoft.studio.field.name" value="WIND_SCREEN_SUM_INSURED"/>
-			<property name="com.jaspersoft.studio.field.label" value="WIND_SCREEN_AMT"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
-		</field>
-		<field name="SUM_INSURED" class="java.lang.Double">
+		<field name="SUM_INSURED" class="java.math.BigDecimal">
 			<property name="com.jaspersoft.studio.field.name" value="SUM_INSURED"/>
 			<property name="com.jaspersoft.studio.field.label" value="SUM_INSURED"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="policy_cover_data"/>
 		</field>
-	</subDataset>
-	<subDataset name="Table Dataset 2" uuid="8fc39529-9813-4206-818a-38ddc6ac3b98">
-		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
-		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-		<parameter name="pvPolicyNo" class="java.lang.String"/>
-		<queryString>
-			<![CDATA[SELECT 
-  MDD.DRIVER_ID, 
-  MDD.DRIVER_NAME, 
-  MDD.DRIVER_TYPEDESC, 
-  MDD.DRIVER_DOB, 
-  MDD.ID_NUMBER, 
-  (
-    SELECT 
-      CHASSIS_NUMBER 
-    FROM 
-      MOTOR_DATA_DETAILS 
-    WHERE 
-      QUOTE_NO = MDD.QUOTE_NO 
-      AND VEHICLE_ID = MDD.RISK_ID
-  ) AS CHASSISS_NUMBER 
-FROM 
-  MOTOR_DRIVER_DETAILS MDD 
-WHERE 
-  QUOTE_NO = (
-    SELECT 
-      QUOTE_NO 
-    FROM 
-      HOME_POSITION_MASTER 
-    WHERE 
-      POLICY_NO =  $P{pvPolicyNo} 
-  )]]>
-		</queryString>
-		<field name="DRIVER_ID" class="java.lang.Integer">
-			<property name="com.jaspersoft.studio.field.name" value="DRIVER_ID"/>
-			<property name="com.jaspersoft.studio.field.label" value="DRIVER_ID"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_driver_details"/>
+		<field name="AFTER_DISCOUNT" class="java.lang.Double">
+			<property name="com.jaspersoft.studio.field.name" value="AFTER_DISCOUNT"/>
+			<property name="com.jaspersoft.studio.field.label" value="AFTER_DISCOUNT"/>
 		</field>
-		<field name="DRIVER_NAME" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="DRIVER_NAME"/>
-			<property name="com.jaspersoft.studio.field.label" value="DRIVER_NAME"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_driver_details"/>
-		</field>
-		<field name="DRIVER_TYPEDESC" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="DRIVER_TYPEDESC"/>
-			<property name="com.jaspersoft.studio.field.label" value="DRIVER_TYPEDESC"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_driver_details"/>
-		</field>
-		<field name="DRIVER_DOB" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="DRIVER_DOB"/>
-			<property name="com.jaspersoft.studio.field.label" value="DRIVER_DOB"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_driver_details"/>
-		</field>
-		<field name="ID_NUMBER" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="ID_NUMBER"/>
-			<property name="com.jaspersoft.studio.field.label" value="ID_NUMBER"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_driver_details"/>
-		</field>
-		<field name="CHASSISS_NUMBER" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="CHASSISS_NUMBER"/>
-			<property name="com.jaspersoft.studio.field.label" value="CHASSISS_NUMBER"/>
+		<field name="INCLUDED_TAX" class="java.lang.Double">
+			<property name="com.jaspersoft.studio.field.name" value="INCLUDED_TAX"/>
+			<property name="com.jaspersoft.studio.field.label" value="INCLUDED_TAX"/>
 		</field>
 	</subDataset>
 	<parameter name="pvImagepath" class="java.lang.String"/>
 	<parameter name="pvPolicyNo" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[
-WITH MOTOR_DATA AS(
-
-SELECT 
-  DISTINCT
-  ROW_NUMBER() OVER (ORDER BY HPM.POLICY_NO) AS ROW_NUM,
+		<![CDATA[SELECT
   HPM.POLICY_NO,
+  HPM.QUOTE_NO,
   PIF.TITLE_DESC,
   PIF.CLIENT_NAME,
   HPM.DEBIT_NOTE_NO AS INVOICE_NO, 
@@ -222,41 +92,72 @@ SELECT
   HPM.expiry_date AS TO_DATE, 
   HPM.expiry_date  AS RENEWAL_DATE, 
   HPM.CURRENCY AS CURRENCY, 
-  CASE WHEN hpm.currency IN (cpm.currency_id) THEN HPM.PREMIUM_LC ELSE HPM.PREMIUM_FC END AS PREMIUM, 
-  CASE WHEN hpm.currency IN (cpm.currency_id) THEN HPM.VAT_PREMIUM_LC ELSE HPM.VAT_PREMIUM_FC END AS VAT, 
-  CASE WHEN hpm.currency IN (cpm.currency_id) THEN HPM.OVERALL_PREMIUM_LC ELSE HPM.OVERALL_PREMIUM_FC END AS TOTAL, 
+  CASE WHEN hpm.currency IN (cpm.currency_id) THEN MDD.ACTUAL_PREMIUM_LC ELSE MDD.ACTUAL_PREMIUM_FC END AS PREMIUM, 
+  CASE WHEN hpm.currency IN (cpm.currency_id) THEN HPM.VAT_PREMIUM_LC
+  
+   ELSE HPM.VAT_PREMIUM_FC END AS VAT, 
+  CASE WHEN hpm.currency IN (cpm.currency_id) THEN MDD.OVERALL_PREMIUM_LC ELSE MDD.OVERALL_PREMIUM_FC END AS TOTAL, 
   HPM.BRANCH_NAME AS PLACE, 
   MDD.INSURANCE_TYPE_DESC INSURANCE_COVER, 
   MDD.COMPANY_NAME AS COMPANY_NAME, 
   HPM.APPROVED_BY AS APPROVED_BY, 
   LUI.USER_NAME AS INTERMEDIARY, 
   LUI.USER_NAME AS PREPARED_BY, 
-  LUI.USER_NAME AS PRINTED_BY 
+  LUI.USER_NAME AS PRINTED_BY,
+  MDD.VEHICLE_ID AS SNO,
+MDD.REGISTRATION_NUMBER AS REG_NO,
+MDD.VEHICLE_MAKE,
+MDD.VEHCILE_MODEL,
+MDD.STICKER_NO,
+MDD.VEHICLE_TYPE_DESC,
+MDD.CUBIC_CAPACITY AS CC,
+MDD.MANUFACTURE_YEAR AS VEHYEAR,
+MDD.COLOR_DESC,
+MDD.SEATING_CAPACITY NO_OF_SEATS,
+MDD.POLICY_TYPE_DESC AS POLICY_TYPE_DESC,
+MDD.SUM_INSURED AS SUM_INSURED,
+MDD.CHASSIS_NUMBER,
+MDR.DRIVER_ID, 
+MDR.DRIVER_NAME, 
+MDR.DRIVER_TYPEDESC, 
+MDR.DRIVER_DOB, 
+MDR.ID_NUMBER,
+PCD.COVER_NAME,
+PCD.EXCESS_PERCENT,
+PCD.EXCESS_AMOUNT,
+PCD.EXCESS_DESC
 FROM 
   home_position_master HPM, 
-  MOTOR_DATA_DETAILS MDD, 
+  MOTOR_DATA_DETAILS MDD,
+  MOTOR_DRIVER_DETAILS MDR,
   LOGIN_USER_INFO LUI, 
   eway_insurance_company_master cpm,
-  Personal_info PIF 
+  Personal_info PIF,
+  POLICY_COVER_DATA PCD
 WHERE 
-  MDD.POLICY_NO = HPM.POLICY_NO 
+  MDD.POLICY_NO = HPM.POLICY_NO
+  AND MDR.QUOTE_NO = HPM.QUOTE_NO
+  AND MDD.VEHICLE_ID = MDR.RISK_ID
+  AND PCD.QUOTE_NO = HPM.QUOTE_NO
+  AND PCD.TAX_ID = '0'
+  AND PCD.DISCOUNT_COVER_ID = '0'
+  AND PCD.COVERAGE_TYPE = 'B'
+  AND MDD.VEHICLE_ID = PCD.VEHICLE_ID
   AND PIF.Customer_Id = HPM.Customer_Id
   AND HPM.LOGIN_ID = LUI.LOGIN_ID 
   AND cpm.company_id = hpm.company_id 
   AND cpm.status='Y'
   AND (SELECT CURRENT_DATE AS TODAY_DATE FROM DUAL) BETWEEN CPM.EFFECTIVE_DATE_START AND CPM.EFFECTIVE_DATE_END
-  AND HPM.POLICY_NO = $P{pvPolicyNo} 
-  )
-  SELECT * FROM MOTOR_DATA WHERE ROW_NUM = 1
-]]>
+  AND HPM.POLICY_NO = $P{pvPolicyNo}]]>
 	</queryString>
-	<field name="ROW_NUM" class="java.math.BigDecimal">
-		<property name="com.jaspersoft.studio.field.name" value="ROW_NUM"/>
-		<property name="com.jaspersoft.studio.field.label" value="ROW_NUM"/>
-	</field>
 	<field name="POLICY_NO" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="POLICY_NO"/>
 		<property name="com.jaspersoft.studio.field.label" value="POLICY_NO"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	</field>
+	<field name="QUOTE_NO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="QUOTE_NO"/>
+		<property name="com.jaspersoft.studio.field.label" value="QUOTE_NO"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
 	<field name="TITLE_DESC" class="java.lang.String">
@@ -270,30 +171,32 @@ WHERE
 		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
 	</field>
 	<field name="INVOICE_NO" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="INVOICE_NO"/>
+		<property name="com.jaspersoft.studio.field.name" value="DEBIT_NOTE_NO"/>
 		<property name="com.jaspersoft.studio.field.label" value="INVOICE_NO"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
-	<field name="ADDRESS_1" class="java.lang.String">
+	<field name="Address_1" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="ADDRESS_1"/>
-		<property name="com.jaspersoft.studio.field.label" value="ADDRESS_1"/>
+		<property name="com.jaspersoft.studio.field.label" value="Address_1"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
 	</field>
-	<field name="ADDRESS_2" class="java.lang.String">
+	<field name="Address_2" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="ADDRESS_2"/>
-		<property name="com.jaspersoft.studio.field.label" value="ADDRESS_2"/>
+		<property name="com.jaspersoft.studio.field.label" value="Address_2"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
 	</field>
 	<field name="FROM_DATE" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="FROM_DATE"/>
+		<property name="com.jaspersoft.studio.field.name" value="INCEPTION_DATE"/>
 		<property name="com.jaspersoft.studio.field.label" value="FROM_DATE"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
 	<field name="TO_DATE" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="TO_DATE"/>
+		<property name="com.jaspersoft.studio.field.name" value="EXPIRY_DATE"/>
 		<property name="com.jaspersoft.studio.field.label" value="TO_DATE"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
 	<field name="RENEWAL_DATE" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="RENEWAL_DATE"/>
+		<property name="com.jaspersoft.studio.field.name" value="EXPIRY_DATE"/>
 		<property name="com.jaspersoft.studio.field.label" value="RENEWAL_DATE"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
@@ -302,25 +205,25 @@ WHERE
 		<property name="com.jaspersoft.studio.field.label" value="CURRENCY"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
-	<field name="PREMIUM" class="java.math.BigDecimal">
+	<field name="PREMIUM" class="java.lang.Double">
 		<property name="com.jaspersoft.studio.field.name" value="PREMIUM"/>
 		<property name="com.jaspersoft.studio.field.label" value="PREMIUM"/>
 	</field>
-	<field name="VAT" class="java.math.BigDecimal">
+	<field name="VAT" class="java.lang.Double">
 		<property name="com.jaspersoft.studio.field.name" value="VAT"/>
 		<property name="com.jaspersoft.studio.field.label" value="VAT"/>
 	</field>
-	<field name="TOTAL" class="java.math.BigDecimal">
+	<field name="TOTAL" class="java.lang.Double">
 		<property name="com.jaspersoft.studio.field.name" value="TOTAL"/>
 		<property name="com.jaspersoft.studio.field.label" value="TOTAL"/>
 	</field>
 	<field name="PLACE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="PLACE"/>
+		<property name="com.jaspersoft.studio.field.name" value="BRANCH_NAME"/>
 		<property name="com.jaspersoft.studio.field.label" value="PLACE"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
 	<field name="INSURANCE_COVER" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="INSURANCE_COVER"/>
+		<property name="com.jaspersoft.studio.field.name" value="INSURANCE_TYPE_DESC"/>
 		<property name="com.jaspersoft.studio.field.label" value="INSURANCE_COVER"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
 	</field>
@@ -335,19 +238,129 @@ WHERE
 		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
 	<field name="INTERMEDIARY" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="INTERMEDIARY"/>
+		<property name="com.jaspersoft.studio.field.name" value="USER_NAME"/>
 		<property name="com.jaspersoft.studio.field.label" value="INTERMEDIARY"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="login_user_info"/>
 	</field>
 	<field name="PREPARED_BY" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="PREPARED_BY"/>
+		<property name="com.jaspersoft.studio.field.name" value="USER_NAME"/>
 		<property name="com.jaspersoft.studio.field.label" value="PREPARED_BY"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="login_user_info"/>
 	</field>
 	<field name="PRINTED_BY" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="PRINTED_BY"/>
+		<property name="com.jaspersoft.studio.field.name" value="USER_NAME"/>
 		<property name="com.jaspersoft.studio.field.label" value="PRINTED_BY"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="login_user_info"/>
+	</field>
+	<field name="SNO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="VEHICLE_ID"/>
+		<property name="com.jaspersoft.studio.field.label" value="SNO"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+	</field>
+	<field name="REG_NO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="REGISTRATION_NUMBER"/>
+		<property name="com.jaspersoft.studio.field.label" value="REG_NO"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+	</field>
+	<field name="VEHICLE_MAKE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="VEHICLE_MAKE"/>
+		<property name="com.jaspersoft.studio.field.label" value="VEHICLE_MAKE"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+	</field>
+	<field name="VEHCILE_MODEL" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="VEHCILE_MODEL"/>
+		<property name="com.jaspersoft.studio.field.label" value="VEHCILE_MODEL"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+	</field>
+	<field name="STICKER_NO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="STICKER_NO"/>
+		<property name="com.jaspersoft.studio.field.label" value="STICKER_NO"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+	</field>
+	<field name="VEHICLE_TYPE_DESC" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="VEHICLE_TYPE_DESC"/>
+		<property name="com.jaspersoft.studio.field.label" value="VEHICLE_TYPE_DESC"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+	</field>
+	<field name="CC" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="CUBIC_CAPACITY"/>
+		<property name="com.jaspersoft.studio.field.label" value="CC"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+	</field>
+	<field name="VEHYEAR" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="MANUFACTURE_YEAR"/>
+		<property name="com.jaspersoft.studio.field.label" value="VEHYEAR"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+	</field>
+	<field name="COLOR_DESC" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="COLOR_DESC"/>
+		<property name="com.jaspersoft.studio.field.label" value="COLOR_DESC"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+	</field>
+	<field name="NO_OF_SEATS" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="SEATING_CAPACITY"/>
+		<property name="com.jaspersoft.studio.field.label" value="NO_OF_SEATS"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+	</field>
+	<field name="POLICY_TYPE_DESC" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="POLICY_TYPE_DESC"/>
+		<property name="com.jaspersoft.studio.field.label" value="POLICY_TYPE_DESC"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+	</field>
+	<field name="SUM_INSURED" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="SUM_INSURED"/>
+		<property name="com.jaspersoft.studio.field.label" value="SUM_INSURED"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+	</field>
+	<field name="CHASSIS_NUMBER" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="CHASSIS_NUMBER"/>
+		<property name="com.jaspersoft.studio.field.label" value="CHASSIS_NUMBER"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+	</field>
+	<field name="DRIVER_ID" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="DRIVER_ID"/>
+		<property name="com.jaspersoft.studio.field.label" value="DRIVER_ID"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="motor_driver_details"/>
+	</field>
+	<field name="DRIVER_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="DRIVER_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="DRIVER_NAME"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="motor_driver_details"/>
+	</field>
+	<field name="DRIVER_TYPEDESC" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="DRIVER_TYPEDESC"/>
+		<property name="com.jaspersoft.studio.field.label" value="DRIVER_TYPEDESC"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="motor_driver_details"/>
+	</field>
+	<field name="DRIVER_DOB" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="DRIVER_DOB"/>
+		<property name="com.jaspersoft.studio.field.label" value="DRIVER_DOB"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="motor_driver_details"/>
+	</field>
+	<field name="ID_NUMBER" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ID_NUMBER"/>
+		<property name="com.jaspersoft.studio.field.label" value="ID_NUMBER"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="motor_driver_details"/>
+	</field>
+	<field name="COVER_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="COVER_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="COVER_NAME"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="policy_cover_data"/>
+	</field>
+	<field name="EXCESS_PERCENT" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="EXCESS_PERCENT"/>
+		<property name="com.jaspersoft.studio.field.label" value="EXCESS_PERCENT"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="policy_cover_data"/>
+	</field>
+	<field name="EXCESS_AMOUNT" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="EXCESS_AMOUNT"/>
+		<property name="com.jaspersoft.studio.field.label" value="EXCESS_AMOUNT"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="policy_cover_data"/>
+	</field>
+	<field name="EXCESS_DESC" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="EXCESS_DESC"/>
+		<property name="com.jaspersoft.studio.field.label" value="EXCESS_DESC"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="policy_cover_data"/>
 	</field>
 	<background>
 		<band splitType="Stretch"/>
@@ -495,7 +508,7 @@ WHERE
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ADDRESS_1}+", "+$F{ADDRESS_2}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{Address_1}+", "+$F{Address_2}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="100" height="25" uuid="70bad771-5317-4f85-872d-441ee0dab6b1"/>
@@ -601,7 +614,7 @@ WHERE
 				<reportElement x="240" y="0" width="315" height="14" uuid="bce8cc29-851c-4a49-b0a9-203bf6b0606f"/>
 				<box leftPadding="2">
 					<leftPen lineWidth="0.0"/>
-					<bottomPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
@@ -610,145 +623,123 @@ WHERE
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="48">
-			<textField>
-				<reportElement mode="Opaque" x="0" y="0" width="240" height="48" backcolor="#B3B3B3" uuid="3b08251a-6160-4a1e-b106-7d9ed6cfb715"/>
-				<box leftPadding="2">
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-				</box>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["PREMIUM DETAILS "]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement mode="Opaque" x="240" y="0" width="60" height="16" backcolor="#B3B3B3" uuid="5f8351d6-99ea-45cb-ace1-eeffcb3a6adc"/>
-				<box leftPadding="2">
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.0"/>
-				</box>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA["Premium"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement mode="Opaque" x="240" y="16" width="60" height="16" backcolor="#B3B3B3" uuid="c28d2fcd-7a55-4de1-8d26-c9f6dce0e8ff"/>
-				<box leftPadding="2">
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.0"/>
-				</box>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA["VAT "]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement mode="Opaque" x="240" y="32" width="126" height="16" backcolor="#B3B3B3" uuid="188d42b9-a568-4938-ac3d-6ec39eee12ec"/>
-				<box leftPadding="2">
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-				</box>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA["Total "]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement mode="Opaque" x="300" y="0" width="66" height="16" backcolor="#B3B3B3" uuid="6fd0a33c-c8a1-4467-b651-f6f7398f7161"/>
-				<box leftPadding="2">
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.0"/>
-				</box>
-				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement mode="Opaque" x="300" y="16" width="66" height="16" backcolor="#B3B3B3" uuid="402748c9-0e2c-4b2d-9c98-e21d5865cba0"/>
-				<box leftPadding="2">
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-				</box>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement mode="Opaque" x="366" y="0" width="64" height="16" backcolor="#B3B3B3" uuid="de79b815-8f88-4514-abf1-eaad914588e5"/>
-				<box leftPadding="2">
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.0"/>
-					<rightPen lineWidth="0.0"/>
-				</box>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{CURRENCY}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement mode="Opaque" x="366" y="16" width="64" height="16" backcolor="#B3B3B3" uuid="a15da8ab-dc10-4b8c-9a6d-56d02ba06739"/>
-				<box leftPadding="2">
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.0"/>
-				</box>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{CURRENCY}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement mode="Opaque" x="366" y="32" width="64" height="16" backcolor="#B3B3B3" uuid="23424bfb-5fc7-4bd3-af9d-14ca22350f80"/>
-				<box leftPadding="2">
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.0"/>
-				</box>
-				<textElement verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{CURRENCY}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement mode="Opaque" x="430" y="0" width="125" height="16" backcolor="#B3B3B3" uuid="e48d7d3b-4252-4c73-8d42-4e597a2e8082"/>
-				<box leftPadding="0" rightPadding="2">
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.5"/>
-				</box>
-				<textElement textAlignment="Right" verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{PREMIUM}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement mode="Opaque" x="430" y="16" width="125" height="16" backcolor="#B3B3B3" uuid="5546cfa0-28c6-4353-a647-f9f5bcd4858d"/>
-				<box leftPadding="0" rightPadding="2">
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.5"/>
-				</box>
-				<textElement textAlignment="Right" verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{VAT}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement mode="Opaque" x="430" y="32" width="125" height="16" backcolor="#B3B3B3" uuid="ec9a3733-d0f4-4aed-a0ec-ea58c6f0e319"/>
-				<box leftPadding="0" rightPadding="2">
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.5"/>
-				</box>
-				<textElement textAlignment="Right" verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$F{TOTAL}]]></textFieldExpression>
-			</textField>
+		<band height="35">
+			<componentElement>
+				<reportElement x="0" y="0" width="555" height="35" uuid="31e4b7ea-d46a-47f8-b9fb-63081598984b">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 3_TH"/>
+					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 3_CH"/>
+					<property name="com.jaspersoft.studio.table.style.detail" value="Table 3_TD"/>
+				</reportElement>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="Dataset1" uuid="a5347dea-e1af-4964-b5f9-9f0a4157f1a0">
+						<datasetParameter name="pvQuoteNo">
+							<datasetParameterExpression><![CDATA[$F{QUOTE_NO}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="pvVehicleId">
+							<datasetParameterExpression><![CDATA[$F{SNO}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="220" uuid="35dcc5c2-e0f3-43e2-836c-d717baaad164">
+						<jr:columnHeader style="Table 3_TD" height="15">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<textField>
+								<reportElement x="0" y="0" width="220" height="15" uuid="ee935801-5993-4ddb-baab-c50b1aa61c6b"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="8" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA["Cover Name"]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 3_TD" height="20">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<textField isBlankWhenNull="true">
+								<reportElement x="0" y="0" width="220" height="20" uuid="3b1bc941-3be0-4a3a-89e8-c64d153da17e"/>
+								<box leftPadding="2"/>
+								<textElement textAlignment="Left" verticalAlignment="Middle">
+									<font fontName="Arial" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{COVER_NAME}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="100" uuid="df2b3aba-157c-4096-9fff-54028c9b3746">
+						<jr:columnHeader style="Table 3_TD" height="15">
+							<textField>
+								<reportElement x="0" y="0" width="100" height="15" uuid="c8587dee-61f2-422b-a705-8693e5d73b03"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="8" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA["Sum Insured"]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 3_TD" height="20">
+							<textField pattern="#,##0.00" isBlankWhenNull="true">
+								<reportElement x="0" y="0" width="100" height="20" uuid="69fd3c60-f559-4032-abc9-42c64ef3e19b"/>
+								<box leftPadding="0" rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font fontName="Arial" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{SUM_INSURED}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="100" uuid="1162875e-6f37-497d-9bd0-dcd17eb9db0e">
+						<jr:columnHeader style="Table 3_TD" height="15">
+							<textField>
+								<reportElement x="0" y="0" width="100" height="15" uuid="1a8a7f78-6425-4fee-9f4c-cbaabf4cdd8d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="8" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA["After DisCount"]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 3_TD" height="20">
+							<textField pattern="#,##0.00" isBlankWhenNull="true">
+								<reportElement x="0" y="0" width="100" height="20" uuid="82134e23-e04d-4b1f-ab4d-5f1397cb24a8"/>
+								<box rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font fontName="Arial" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{AFTER_DISCOUNT}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="135" uuid="d4939dff-be90-4e64-b1d0-c2531d8cb31f">
+						<jr:columnHeader style="Table 3_TD" height="15">
+							<textField>
+								<reportElement x="0" y="0" width="135" height="15" uuid="f7387828-9b84-4e55-99d0-d35c5bbc3555"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="8" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA["InCluded Tax"]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 3_TD" height="20">
+							<textField pattern="#,##0.00" isBlankWhenNull="true">
+								<reportElement x="0" y="0" width="135" height="20" uuid="c78f0685-2364-4364-8e9e-c59416a37902"/>
+								<box rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font fontName="Arial" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{INCLUDED_TAX}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
 		</band>
-		<band height="15">
+		<band height="10">
 			<textField>
-				<reportElement x="0" y="0" width="554" height="15" uuid="350f46b6-f5dc-41fe-a953-3f1a5319c8a4"/>
+				<reportElement x="0" y="0" width="554" height="10" uuid="350f46b6-f5dc-41fe-a953-3f1a5319c8a4"/>
 				<textElement textAlignment="Left">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="20">
+		<band height="16">
 			<textField>
 				<reportElement x="0" y="0" width="139" height="16" uuid="ca4efff7-fa7f-4d4e-b390-ba9e589fed78"/>
 				<box leftPadding="2">
@@ -806,275 +797,243 @@ WHERE
 				<textFieldExpression><![CDATA["Vehicle Details "]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="65">
-			<componentElement>
-				<reportElement x="0" y="1" width="554" height="60" uuid="222d66a2-c32b-42c2-bf9c-f0397a95fc4d">
-					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
-					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
-					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
-					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
+		<band height="50">
+			<textField>
+				<reportElement x="0" y="0" width="60" height="30" uuid="9977d805-2e3b-46eb-b14e-4dea5a827b8f"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Reg. No."]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="60" y="0" width="79" height="30" uuid="77ffe49a-21a0-483b-8c1c-76026333d07e"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Make/ Model/ Body Type"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="139" y="0" width="41" height="30" uuid="3f8d3e14-3557-483b-9205-db87deba5dd4"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["CC"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="180" y="0" width="60" height="30" uuid="80b0102b-357d-4db7-95c2-31bd650dc871"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Year of mfg"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="240" y="0" width="40" height="30" uuid="528fef9f-245f-4c18-b634-1ae1520b15f7"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Seating"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="280" y="0" width="77" height="30" uuid="167a5eda-ded6-4f9d-bbaf-8ff88ca6f19d"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Stricker"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="357" y="0" width="70" height="30" uuid="a5301172-2e2c-44a5-98a3-3091db0f9798"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Coverage Type"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="427" y="0" width="43" height="30" uuid="269e9d2d-dfb4-4d1b-9040-dfc5ca078120"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Color"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="470" y="0" width="85" height="30" uuid="cd7c5317-aedb-4160-b8e2-8907029e9966"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Insured's Estimated Value"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="30" width="60" height="20" uuid="a3f0f7ca-b591-4168-a370-6205f031fdef">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="TableDataSet 1" uuid="f39f1aa8-b10e-4496-8dba-afae9a14cc66">
-						<datasetParameter name="pvPolicyNo">
-							<datasetParameterExpression><![CDATA[$P{pvPolicyNo}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-					</datasetRun>
-					<jr:column width="34" uuid="97c1632a-e12a-4a93-9118-41fd985f0ee3">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
-						<jr:columnHeader height="30" rowSpan="1">
-							<textField>
-								<reportElement x="0" y="0" width="34" height="30" uuid="958fac62-b883-46e1-9557-2e71ec537b50"/>
-								<box>
-									<topPen lineWidth="0.5"/>
-									<leftPen lineWidth="0.5"/>
-									<rightPen lineWidth="0.5"/>
-								</box>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA["Sr"]]></textFieldExpression>
-							</textField>
-						</jr:columnHeader>
-						<jr:detailCell style="Table_TD" height="30">
-							<textField>
-								<reportElement x="0" y="0" width="34" height="30" uuid="b56bcfcc-f0f5-496a-8cb1-c726abe189df"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{SNO}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="46" uuid="a90ed513-7252-48d8-8bfc-b16fcce48ae9">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
-						<jr:columnHeader height="30" rowSpan="1">
-							<textField>
-								<reportElement x="0" y="0" width="46" height="30" uuid="66b85334-a3e7-4e69-8d47-4ea23d96b7af"/>
-								<box>
-									<topPen lineWidth="0.5"/>
-									<rightPen lineWidth="0.5"/>
-								</box>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA["Reg. No"]]></textFieldExpression>
-							</textField>
-						</jr:columnHeader>
-						<jr:detailCell style="Table_TD" height="30">
-							<textField isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="46" height="30" uuid="8c6bcdf3-9f54-4cd1-b90a-c2faca6498a9"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{REG_NO}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="94" uuid="f5aa02e2-943a-40c4-a7df-addff2062192">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
-						<jr:columnHeader height="30" rowSpan="1">
-							<textField>
-								<reportElement x="0" y="0" width="94" height="30" uuid="2617248d-1765-418a-b2c1-d29cf43a95d4"/>
-								<box>
-									<topPen lineWidth="0.5"/>
-									<rightPen lineWidth="0.5"/>
-								</box>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA["Make/ Model/ Body Type"]]></textFieldExpression>
-							</textField>
-						</jr:columnHeader>
-						<jr:detailCell style="Table_TD" height="30">
-							<textField isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="94" height="30" uuid="1dba05f8-0a87-4468-a0cb-8569b5454071"/>
-								<box leftPadding="0"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{VEHICLE_MAKE}+"/"+$F{VEHCILE_MODEL}+"/"+$F{VEHICLE_TYPE_DESC}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="40" uuid="a2aaba5b-e80e-4eff-a396-4d6868194dd4">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
-						<jr:columnHeader height="30" rowSpan="1">
-							<textField>
-								<reportElement x="0" y="0" width="40" height="30" uuid="4a0fcee5-8928-4223-abaa-c3c8728d5b30"/>
-								<box>
-									<topPen lineWidth="0.5"/>
-									<rightPen lineWidth="0.5"/>
-								</box>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA["CC"]]></textFieldExpression>
-							</textField>
-						</jr:columnHeader>
-						<jr:detailCell style="Table_TD" height="30">
-							<textField isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="40" height="30" uuid="4ae0fba4-53cb-45b9-974e-a7bd076e56b0"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{CC}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="50" uuid="3b2f59cb-58b4-4fba-a3c4-c641afe0e1d8">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
-						<jr:columnHeader height="30" rowSpan="1">
-							<textField>
-								<reportElement x="0" y="0" width="50" height="30" uuid="67c44b99-6b26-4be5-b90c-ae4a0e038eeb"/>
-								<box>
-									<topPen lineWidth="0.5"/>
-									<rightPen lineWidth="0.5"/>
-								</box>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA["Year of Mfg"]]></textFieldExpression>
-							</textField>
-						</jr:columnHeader>
-						<jr:detailCell style="Table_TD" height="30">
-							<textField isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="50" height="30" uuid="7035c758-86a6-4ba4-81b6-abbe3ee9be30"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{VEHYEAR}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="50" uuid="8cf9f6f3-45bc-4609-8279-76705bd84140">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column6"/>
-						<jr:columnHeader height="30" rowSpan="1">
-							<textField>
-								<reportElement x="0" y="0" width="50" height="30" uuid="2a55dbdf-ca60-4872-a1a3-46d200161751"/>
-								<box>
-									<topPen lineWidth="0.5"/>
-									<rightPen lineWidth="0.5"/>
-								</box>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA["Color"]]></textFieldExpression>
-							</textField>
-						</jr:columnHeader>
-						<jr:detailCell style="Table_TD" height="30">
-							<textField isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="50" height="30" uuid="8f0f2af4-9903-4f69-a2fc-47ce59a049cf"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{COLOR_DESC}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="46" uuid="31115b6a-52c1-4d41-97ee-afe4c3548ddb">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column7"/>
-						<jr:columnHeader height="30" rowSpan="1">
-							<textField>
-								<reportElement x="0" y="0" width="46" height="30" uuid="e1f12603-87d3-4192-8b0f-a5a2e1f3580f"/>
-								<box>
-									<topPen lineWidth="0.5"/>
-									<rightPen lineWidth="0.5"/>
-								</box>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA["Seating"]]></textFieldExpression>
-							</textField>
-						</jr:columnHeader>
-						<jr:detailCell style="Table_TD" height="30">
-							<textField isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="46" height="30" uuid="d94b8e46-3837-47be-ab96-7508ff646061"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{NO_OF_SEATS}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="65" uuid="23460691-0af2-4ab9-a1b4-3cc3a1bdf2e5">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column8"/>
-						<jr:columnHeader height="30" rowSpan="1">
-							<textField>
-								<reportElement x="0" y="0" width="65" height="30" uuid="3bd325d8-0676-46f6-beea-f884efbbc736"/>
-								<box>
-									<topPen lineWidth="0.5"/>
-									<rightPen lineWidth="0.5"/>
-								</box>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA["Section Name"]]></textFieldExpression>
-							</textField>
-						</jr:columnHeader>
-						<jr:detailCell style="Table_TD" height="30">
-							<textField isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="65" height="30" uuid="a0964033-7695-4c72-88ab-f75e46637d2a"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{SECTION_NAME}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="59" uuid="df528543-e8d2-49fc-8839-bca05833d73b">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column9"/>
-						<jr:columnHeader height="30" rowSpan="1">
-							<textField>
-								<reportElement x="0" y="0" width="59" height="30" uuid="06fe1750-477b-4ca3-a5bc-84b51308de43"/>
-								<box>
-									<topPen lineWidth="0.5"/>
-									<rightPen lineWidth="0.5"/>
-								</box>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA["Wind Screen Amount"]]></textFieldExpression>
-							</textField>
-						</jr:columnHeader>
-						<jr:detailCell style="Table_TD" height="30">
-							<textField pattern="#,##0.00" isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="59" height="30" uuid="e4f938a3-6f01-4bec-9e55-17eb5ac901e9"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{WIND_SCREEN_AMT}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="71" uuid="eb3ed912-ff02-4353-a1d4-85cf8af9dcc0">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column10"/>
-						<jr:columnHeader height="30" rowSpan="1">
-							<textField>
-								<reportElement x="0" y="0" width="71" height="30" uuid="2744f373-fbfa-4c7e-9776-c80ced348ac4"/>
-								<box>
-									<topPen lineWidth="0.5"/>
-									<rightPen lineWidth="0.5"/>
-								</box>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA["Insured's Estimate of Value"]]></textFieldExpression>
-							</textField>
-						</jr:columnHeader>
-						<jr:detailCell style="Table_TD" height="30">
-							<textField pattern="#,##0.00" isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="71" height="30" uuid="f533c1ec-38eb-44a1-82bc-56d91bb56368"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{SUM_INSURED}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-				</jr:table>
-			</componentElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{REG_NO}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="60" y="30" width="79" height="20" uuid="fd2d2628-4341-4419-be4f-dfd586cf5916">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{VEHICLE_MAKE}+"/"+$F{VEHCILE_MODEL}+"/"+$F{VEHICLE_TYPE_DESC}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="139" y="30" width="41" height="20" uuid="81d1501d-ae16-4878-b810-be3495e12425">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CC}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="180" y="30" width="60" height="20" uuid="178e338a-d44c-4664-b352-911b2546d70f">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{VEHYEAR}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="240" y="30" width="40" height="20" uuid="2cb28eb6-4e53-4e5b-a34d-bf02922b82f2">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NO_OF_SEATS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="280" y="30" width="77" height="20" uuid="22f0d2dc-a594-4a02-899b-3b85d985a52c">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{STICKER_NO}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="357" y="30" width="70" height="20" uuid="773074ba-1588-4e34-b700-d3fdca0c4cd1">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{POLICY_TYPE_DESC}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="427" y="30" width="43" height="20" uuid="490b75f2-a513-41df-a680-fdb536b0137d">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{COLOR_DESC}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="470" y="30" width="85" height="20" uuid="d11a6e60-63fc-477f-80b7-579a68ec8b91">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SUM_INSURED}]]></textFieldExpression>
+			</textField>
 		</band>
 		<band height="20">
 			<textField>
@@ -1088,7 +1047,7 @@ WHERE
 				<textFieldExpression><![CDATA["VALIDITY OF THIS POLICY IS SUBJECT TO RECEIPT OF PREMIUM BY INSURER PRIOR TO INCEPTION OF RISK & SUBJECT TO REALISATON OF CHEQUE, WHEREVER APPLICABLE"]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="47">
+		<band height="12">
 			<textField>
 				<reportElement mode="Transparent" x="0" y="0" width="90" height="12" backcolor="#FFFFFF" uuid="a4475770-5a66-405e-b1e3-ac56687915fc"/>
 				<box leftPadding="5">
@@ -1109,157 +1068,178 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
-			<componentElement>
-				<reportElement mode="Transparent" x="0" y="12" width="555" height="35" isRemoveLineWhenBlank="true" uuid="24a53a96-466a-4810-bde2-6f6b1f94de0b">
-					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
-					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 1_TH"/>
-					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 1_CH"/>
-					<property name="com.jaspersoft.studio.table.style.detail" value="Table 1_TD"/>
+		</band>
+		<band height="35">
+			<textField>
+				<reportElement x="0" y="0" width="60" height="15" uuid="42855018-c573-4559-8a1a-57845d2c8aa2">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="Table Dataset 2" uuid="20c311eb-dc54-4346-ad1c-364d44331f75">
-						<datasetParameter name="pvPolicyNo">
-							<datasetParameterExpression><![CDATA[$P{pvPolicyNo}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-					</datasetRun>
-					<jr:column width="60" uuid="0d17d43d-e820-42ef-85ae-166b28d5ffd4">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
-						<jr:columnHeader style="Table 1_TD" height="15" rowSpan="1">
-							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<textField>
-								<reportElement x="0" y="0" width="60" height="15" uuid="b9a51c11-06ef-4188-9b67-40816cb541a2"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="9" isBold="true"/>
-								</textElement>
-								<textFieldExpression><![CDATA["Driver Id"]]></textFieldExpression>
-							</textField>
-						</jr:columnHeader>
-						<jr:detailCell style="Table 1_TD" height="22">
-							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<textField>
-								<reportElement x="0" y="0" width="60" height="22" uuid="06172a5b-edb6-4599-9a2b-4be19d26779e"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="9"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{DRIVER_ID}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="115" uuid="ad894416-8cfa-405d-845c-527163678091">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
-						<jr:columnHeader style="Table 1_TD" height="15" rowSpan="1">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<textField>
-								<reportElement x="0" y="0" width="115" height="15" uuid="67537bcf-cf0f-40ee-9238-25ddbae8b291"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="9" isBold="true"/>
-								</textElement>
-								<textFieldExpression><![CDATA["Driver Name"]]></textFieldExpression>
-							</textField>
-						</jr:columnHeader>
-						<jr:detailCell style="Table 1_TD" height="22">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<textField>
-								<reportElement x="0" y="0" width="115" height="22" uuid="6e27e4e9-0cc8-47e1-88f0-9419f3d898f5"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="9"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{DRIVER_NAME}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="70" uuid="d3d0be7f-5579-4f45-a36d-85912c091b57">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
-						<jr:columnHeader style="Table 1_TD" height="15" rowSpan="1">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<textField>
-								<reportElement x="0" y="0" width="70" height="15" uuid="8df7bdf7-60a9-491a-aee7-a5b243e1756c"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="9" isBold="true"/>
-								</textElement>
-								<textFieldExpression><![CDATA["Driver Type"]]></textFieldExpression>
-							</textField>
-						</jr:columnHeader>
-						<jr:detailCell style="Table 1_TD" height="22">
-							<textField>
-								<reportElement x="0" y="0" width="70" height="22" uuid="fac1d82e-8c6c-4408-be4e-2a65b8801f7b"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="9"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{DRIVER_TYPEDESC}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="70" uuid="4d62e7c1-fe54-4b18-8af1-713b15d940ef">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
-						<jr:columnHeader style="Table 1_TD" height="15" rowSpan="1">
-							<textField>
-								<reportElement x="0" y="0" width="70" height="15" uuid="ad105aa6-3e17-40f1-acce-032ab9f85589"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="9" isBold="true"/>
-								</textElement>
-								<textFieldExpression><![CDATA["Date of Birth"]]></textFieldExpression>
-							</textField>
-						</jr:columnHeader>
-						<jr:detailCell style="Table 1_TD" height="22">
-							<textField>
-								<reportElement x="0" y="0" width="70" height="22" uuid="ae551231-5ed0-4933-9533-9adb2e704fc7"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="9"/>
-								</textElement>
-								<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse($F{DRIVER_DOB}))]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="82" uuid="f0c77324-52af-4140-ad1a-1d803ede0982">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
-						<jr:columnHeader style="Table 1_TD" height="15" rowSpan="1">
-							<textField>
-								<reportElement x="0" y="0" width="82" height="15" uuid="fa3dc9b0-64ae-4165-a88b-fda162858a97"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="9" isBold="true"/>
-								</textElement>
-								<textFieldExpression><![CDATA["Id Number"]]></textFieldExpression>
-							</textField>
-						</jr:columnHeader>
-						<jr:detailCell style="Table 1_TD" height="22">
-							<textField>
-								<reportElement x="0" y="0" width="82" height="22" uuid="ec4f5669-d51b-4f47-ad5c-562156c3340d"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="9"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{ID_NUMBER}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="158" uuid="293959f0-2713-40ad-bd91-bea8445ec800">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column6"/>
-						<jr:columnHeader style="Table 1_TD" height="15" rowSpan="1">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<textField>
-								<reportElement x="0" y="0" width="158" height="15" uuid="cb7ae930-3458-46ab-8856-b512664eb8c2"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="9" isBold="true"/>
-								</textElement>
-								<textFieldExpression><![CDATA["Chassis Number"]]></textFieldExpression>
-							</textField>
-						</jr:columnHeader>
-						<jr:detailCell style="Table 1_TD" height="22">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<textField>
-								<reportElement x="0" y="0" width="158" height="22" uuid="1b275101-6b32-4e2a-b8cf-1e04a023473d"/>
-								<box leftPadding="0"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{CHASSISS_NUMBER}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-				</jr:table>
-			</componentElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Driver Id"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="60" y="0" width="115" height="15" uuid="57e6fc5b-6ba2-45b1-8a92-51e1abfc9063">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Driver Name"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="175" y="0" width="70" height="15" uuid="620f9413-ad27-4356-a681-e4d991c2f188">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Driver Type"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="245" y="0" width="70" height="15" uuid="f3b512c1-177a-432b-aa8c-2708d9f3b523">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Date of Birth"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="315" y="0" width="82" height="15" uuid="90ccb04e-c1b1-47fe-88f9-022b7a338643">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Id Number"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="397" y="0" width="158" height="15" uuid="a61a89a3-3f53-458e-8c04-98d602cf1cdd">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Chassis Number"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="15" width="60" height="20" uuid="877d5e5f-b4b8-4a97-8a14-589f98856627">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DRIVER_ID}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="60" y="15" width="115" height="20" uuid="2e1a5c8a-781a-4b39-8e65-3759138f520c">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DRIVER_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="175" y="15" width="70" height="20" uuid="35701f89-8988-4bfd-aa0d-5fc995cbc273">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DRIVER_TYPEDESC}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="245" y="15" width="70" height="20" uuid="022cca41-f799-4a91-9f93-11e1d112a3a6">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DRIVER_DOB}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="315" y="15" width="82" height="20" uuid="6f1cbf2d-ea6e-4f3f-b1e7-db5693e68fb1">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ID_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="397" y="15" width="158" height="20" uuid="d1b5cc66-39e4-47c3-9c5a-d719cfaa1d4a">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CHASSIS_NUMBER}]]></textFieldExpression>
+			</textField>
 		</band>
 		<band height="12">
 			<textField>
@@ -1509,6 +1489,116 @@ WHERE
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA["As per attached schedule I"]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="35">
+			<textField>
+				<reportElement x="0" y="0" width="180" height="15" uuid="bfc20da5-f76c-460a-8567-d69cff7dfeac">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Excess"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="180" y="0" width="130" height="15" uuid="11d0122d-7861-4404-a658-e8755084b551">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["% of Claim"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="310" y="0" width="130" height="15" uuid="f8555fb7-5f64-4ecd-bca7-9f106e125410">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Min Value"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="440" y="0" width="115" height="15" uuid="2696ea9c-8451-48e7-a8a6-8fa8f651a4b1">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["MaxValue"]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="440" y="15" width="115" height="20" uuid="af0df93f-9b56-48d9-8945-d2132c8bc8a2">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{EXCESS_DESC}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="310" y="15" width="130" height="20" uuid="28f493f9-04e4-4aad-bde5-ff549090cc35"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{EXCESS_AMOUNT}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="180" y="15" width="130" height="20" uuid="95002050-14ea-4389-a21f-9797d2fe1085"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{EXCESS_PERCENT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="15" width="180" height="20" uuid="35c254ab-ccfb-4407-bc73-f94695dbb742"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{COVER_NAME}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="12">
@@ -3068,7 +3158,7 @@ WHERE
 				<textFieldExpression><![CDATA["5. East Africa Means Tanzania, Kenya, Uganda, Rwanda & Burundi. "]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="10">
+		<band height="13">
 			<textField>
 				<reportElement x="0" y="0" width="555" height="10" uuid="28fade80-d1c0-477d-aff9-7d31bd514cf8"/>
 				<box leftPadding="2">
@@ -3081,6 +3171,9 @@ WHERE
 				</textElement>
 				<textFieldExpression><![CDATA["6. If any of the Limits/Excess mentioned above are modified in the policy schedule such modified Limits/ Excess shall apply"]]></textFieldExpression>
 			</textField>
+			<break>
+				<reportElement x="0" y="12" width="100" height="1" uuid="086c7745-e249-4080-8e9e-8732c34c274d"/>
+			</break>
 		</band>
 	</detail>
 	<pageFooter>
@@ -3277,7 +3370,4 @@ WHERE
 			</textField>
 		</band>
 	</pageFooter>
-	<summary>
-		<band height="42" splitType="Stretch"/>
-	</summary>
 </jasperReport>
