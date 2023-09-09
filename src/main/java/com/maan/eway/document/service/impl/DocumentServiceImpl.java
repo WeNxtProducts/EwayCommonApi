@@ -402,7 +402,7 @@ public class DocumentServiceImpl implements DocumentService{
 						// Vehicles
 						DocumentDropdownRes doc = new DocumentDropdownRes();
 						doc.setRiskId(mot.getVehicleId());
-						doc.setId(mot.getChassisNumber());
+						doc.setId(mot.getRegistrationNumber());
 						String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("M") ).collect(Collectors.toList()).get(0).getItemValue() ;					
 						doc.setIdType(idType);
 						idList.add(doc);	

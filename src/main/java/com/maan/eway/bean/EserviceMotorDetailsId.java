@@ -36,8 +36,5 @@ public class EserviceMotorDetailsId implements Serializable {
     private String     idNumber ;
     
     private Integer    riskId ;
-    
-    private String     insuranceType ;
-    
-     
+  
 }

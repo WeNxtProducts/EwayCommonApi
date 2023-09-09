@@ -263,10 +263,11 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			List<String> totalList = new ArrayList<>();
 			totalList.addAll(branchCode);
 			totalList.addAll(attachedBranchCode);
-			List<String> companies =loginBranch.stream().map(LoginBranchMaster ::getCompanyId ).collect(Collectors.toList()) ;
+			List<String> companies = new ArrayList<String>(); //loginBranch.stream().map(LoginBranchMaster ::getCompanyId ).collect(Collectors.toList()) ;
+			companies.add(login.getCompanyId());
 			Set<String> removeDuplicateCompany = new HashSet<>(companies);
 			Set<String> removeDuplicateBranch = new HashSet<>(totalList);
-			List<LoginBranchCriteriaRes> loginCriteriaRes = getBranchDetails(removeDuplicateBranch);
+			List<LoginBranchCriteriaRes> loginCriteriaRes = getBranchDetails(removeDuplicateBranch ,login.getCompanyId() );
 			
 			List<LoginBranchDetailsRes> loginBranchRes = new ArrayList<LoginBranchDetailsRes>();
 			
@@ -567,7 +568,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 		return companyList;
 	}
 	
-	private List<LoginBranchCriteriaRes> getBranchDetails(Set<String> removeDuplicateBranch) {
+	private List<LoginBranchCriteriaRes> getBranchDetails(Set<String> removeDuplicateBranch , String companyId) {
 		List<LoginBranchCriteriaRes> list = new ArrayList<LoginBranchCriteriaRes>();
 		try {
 			Date today = new Date();
@@ -682,8 +683,8 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			Predicate n1 = cb.equal(b.get("status"), "Y");
 			Predicate n2 = cb.equal(b.get("effectiveDateStart"), effectiveDate);
 			Predicate n3 = e0.in(removeDuplicateBranch) ;
-
-			query.where(n1, n2, n3).orderBy(orderList);
+			Predicate n4 =cb.equal(b.get("companyId"), companyId);
+			query.where(n1, n2, n3,n4).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<LoginBranchCriteriaRes> result = em.createQuery(query);

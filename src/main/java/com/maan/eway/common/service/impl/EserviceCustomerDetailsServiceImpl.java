@@ -286,17 +286,16 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 //				if (StringUtils.isBlank(req.getEmail1())) {
 //					errorList.add(new Error("27", "Email1", "Please Enter Email"));
 //				} else
-				if ( StringUtils.isBlank(req.getEmail1()) ) {
-					errorList.add(new Error("27", "Email1", "Please Enter Email "));
-					
-				} else if( req.getEmail1().length() > 100 ) {
-					errorList.add(new Error("27", "Email1", "Please Enter Email within 100 Characters"));
-				} else if(StringUtils.isNotBlank(req.getEmail1())) {
-					boolean b = isValidMail(req.getEmail1());
-					if (b == false) {
-						errorList.add(new Error("37", "Email", "Please Enter Email in correct format"));
+				if ( StringUtils.isNotBlank(req.getEmail1()) ) {
+					if( req.getEmail1().length() > 100 ) {
+						errorList.add(new Error("27", "Email1", "Please Enter Email within 100 Characters"));
+					} else if(StringUtils.isNotBlank(req.getEmail1())) {
+						boolean b = isValidMail(req.getEmail1());
+						if (b == false) {
+							errorList.add(new Error("37", "Email", "Please Enter Email in correct format"));
+						}
 					}
-				}
+				} 
 
 				if (StringUtils.isNotBlank(req.getEmail2()) && req.getEmail2().length() > 20) {
 					errorList.add(new Error("28", "Email2", "Please Enter Email2 within 20 Characters"));

@@ -68,8 +68,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="RISK_ID", nullable=false)
     private Integer    riskId ;
 
-    @Id
-    @Column(name="INSURANCE_TYPE", nullable=false, length=10)
+    @Column(name="INSURANCE_TYPE", length=10)
     private String     insuranceType ;
 
     //--- ENTITY DATA FIELDS 
@@ -222,7 +221,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="AGENCY_CODE", nullable=false, length=20)
     private String     agencyCode ;
 
-    @Column(name="INSURANCE_CLASS", nullable=false, length=20)
+    @Column(name="INSURANCE_CLASS", length=20)
     private String     insuranceClass ;
 
     @Column(name="SECTION_ID", nullable=false, length=20)
