@@ -108,8 +108,8 @@ public class WarrantyMasterServiceImpl implements WarrantyMasterService {
 			
 			if (StringUtils.isBlank(req.getRemarks())) {
 				errorList.add(new Error("04", "Remarks", "Please Select Remarks "));
-			}else if (req.getRemarks().length() > 100){
-				errorList.add(new Error("04","Remarks", "Please Enter Remarks within 100 Characters")); 
+			}else if (req.getRemarks().length() > 200){
+				errorList.add(new Error("04","Remarks", "Please Enter Remarks within 200 Characters")); 
 			}
 			
 			// Date Validation 

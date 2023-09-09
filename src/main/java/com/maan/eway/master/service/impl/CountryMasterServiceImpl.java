@@ -747,13 +747,16 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			Predicate n12 = cb.or(n1,n11);
 			javax.persistence.criteria.Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			javax.persistence.criteria.Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
-			Predicate n4 = null;
-			if(StringUtils.isBlank(req.getInsuranceId()))
-				n4 = cb.equal(c.get("companyId"),  "99999" );
-			else
-				n4 = cb.equal(c.get("companyId"), req.getInsuranceId() );
+//			Predicate n4 = null;
+//			if(StringUtils.isBlank(req.getInsuranceId()))
+//				n4 = cb.equal(c.get("companyId"),  "99999" );
+//			else
+//				n4 = cb.equal(c.get("companyId"), req.getInsuranceId() );
+			Predicate n4 = cb.equal(c.get("companyId"), req.getInsuranceId() );
+			Predicate n5 = cb.equal(c.get("companyId"), "99999"  );
+			Predicate n6 = cb.or(n4,n5);
 		
-			query.where(n12, n2,n3,n4).orderBy(orderList);
+			query.where(n12, n2,n3,n6).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<CountryMaster> result = em.createQuery(query);
