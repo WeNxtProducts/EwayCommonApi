@@ -1475,7 +1475,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 		
 		//CopyQuote Dropdown 
 		@Override
-		public List<ListItemValue> geCommonCoptyQuotetListItem(CopyQuoteDropDownReq req, String itemType) {
+		public List<ListItemValue> getCommonCoptyQuotetListItem(CopyQuoteDropDownReq req, String itemType) {
 			List<ListItemValue> list = new ArrayList<ListItemValue>();
 			try {
 				Date today = new Date();
@@ -1522,7 +1522,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 				Predicate n8 = cb.or(n4, n5);
 				Predicate n9 = cb.or(n6, n7);
 				Predicate n10 = cb.equal(c.get("itemType"), itemType);
-				query.where(n1, n2, n3, n4, n9, n10).orderBy(orderList);
+				query.where(n1, n2, n3, n8,n9, n10).orderBy(orderList);
 				// Get Result
 				TypedQuery<ListItemValue> result = em.createQuery(query);
 				list = result.getResultList();

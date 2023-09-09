@@ -1865,7 +1865,7 @@ public class GridServiceImpl implements GridService {
 
 			} else {
 				itemType = "COPY_QUOTE_BY_COMMON";
-				getList = buiService.geBuildingCoptyQuotetListItem(req, itemType);
+				getList = commonService.getCommonCoptyQuotetListItem(req, itemType);
 			}
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();

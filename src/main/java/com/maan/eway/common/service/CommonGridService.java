@@ -34,7 +34,6 @@ public interface CommonGridService {
 
 	CopyQuoteSuccessRes commonCopyQuote(CopyQuoteReq req, List<String> branches);
 
-	List<ListItemValue> geCommonCoptyQuotetListItem(CopyQuoteDropDownReq req,String itemType);
 
 	List<Tuple> validateCommonEndt(String quoteNo);
 
@@ -51,4 +50,6 @@ public interface CommonGridService {
 			String string);
 
 	List<ReferalGridCriteriaAdminRes> getCommonAdminReferalPendingDetailsCount(RevertGridReq req, String string);
+
+	List<ListItemValue> getCommonCoptyQuotetListItem(CopyQuoteDropDownReq req, String itemType);
 }
