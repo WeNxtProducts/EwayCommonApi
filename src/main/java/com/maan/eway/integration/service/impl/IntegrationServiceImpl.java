@@ -73,7 +73,7 @@ public boolean push(PremiaConfigMaster configMas , List<String> params ) {
 		
 		PremiaConfigMaster masterop = configMas  ;
 		if(masterop!=null ) {
-			PremiaConfigMaster masterdata = masterop ;
+			PremiaConfigMaster masterdata = masterop ; //col names
 			List<PremiaConfigDataMaster> configData = getPremiaConfigData(configMas.getCompanyId() ,configMas.getProductId() ,configMas.getPremiaId()  ) ;
 			List<Map<String, Object>> listFromQuery = new ArrayList<Map<String, Object>>();
 			
@@ -211,7 +211,7 @@ private List<String> fromQuerytoList(String selectquery){
 	if(selectquery.indexOf(",")!=-1) {
 		selectquery=selectquery.substring(selectquery.indexOf("SELECT")+6, selectquery.indexOf(" FROM"));
 		List<String> arrays=new ArrayList<String>();
-		String[] col_aliz = selectquery.split(",");
+		String[] col_aliz = selectquery.split(","); //column names
 		for(int i=0;i<col_aliz.length;i++) {
 			arrays.add(col_aliz[i]);
 		}
@@ -234,14 +234,11 @@ private Map<String,String> fromListToMaps(List<String> arrays){
 	return listmaps;
 }
 
-
-
-
 @Override
 public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 	PremiaResponse response = new PremiaResponse();
 	try {
-		HomePositionMaster home = homeRepo.findByQuoteNo(request.getQuoteNo());
+		HomePositionMaster home = homeRepo.findByQuoteNo(request.getQuoteNo()); //get all tables names and details
 		 List<PremiaConfigMaster> configMasterList =   getPremiaConfigMaster(home.getCompanyId() , home.getProductId() , request.getPremiaIds() );
 		
 		List<String> param=new ArrayList<String>();

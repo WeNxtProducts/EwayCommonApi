@@ -322,15 +322,19 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 				Root<ListItemValue> ocpm1 = effectiveDate.from(ListItemValue.class);
 				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
+				Predicate x3 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+				Predicate x4 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
 				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-				effectiveDate.where(a1,a2);
+				effectiveDate.where(a1,a2,x3,x4);
 				// Effective Date End Max Filter
 				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 				Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
 				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
 				Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
+				Predicate x1 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+				Predicate x2 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
 				Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-				effectiveDate2.where(a3,a4);
+				effectiveDate2.where(a3,a4,x1,x2);
 							
 				// Where
 				Predicate n1 = cb.equal(c.get("status"),"Y");
@@ -347,7 +351,7 @@ public class AdminDropDownServiceImpl  implements AdminDropDownService{
 				Predicate n10 = cb.equal(c.get("itemType"),itemType);
 				
 				
-				//Not company based
+				//Not company based 99999 setup
 				if(itemType.equalsIgnoreCase("TAX_FOR_DESC") ||itemType.equalsIgnoreCase("TERMS_TYPE")
 						||itemType.equalsIgnoreCase("POLICY_HOLDER_TYPE") ||
 						itemType.equalsIgnoreCase("CALCULATION_TYPE") || itemType.equalsIgnoreCase("COVERAGE_TYPE") || 

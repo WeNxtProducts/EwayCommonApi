@@ -1517,14 +1517,19 @@ public class MotorGridServiceImpl implements MotorGridService {
 				effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 				Predicate a1 = cb.equal(c.get("itemId"), ocpm1.get("itemId"));
 				Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-				effectiveDate.where(a1, a2);
+				Predicate b1= cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
+				Predicate b2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+				effectiveDate.where(a1,a2,b1,b2);
+				
 				// Effective Date End Max Filter
 				Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 				Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
 				effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
 				Predicate a3 = cb.equal(c.get("itemId"), ocpm2.get("itemId"));
 				Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-				effectiveDate2.where(a3, a4);
+				Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+				Predicate b4= cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
+				effectiveDate2.where(a3,a4,b3,b4);
 
 				// Where
 				Predicate n1 = cb.equal(c.get("status"), "Y");
@@ -2708,13 +2713,16 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 				Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 				Predicate n4 = cb.equal(c.get("companyId"), req.getInsuranceId());
-				//Predicate n5 = cb.equal(c.get("companyId"), "99999");
+				Predicate n5 = cb.equal(c.get("companyId"), "99999");
 				Predicate n6 = cb.equal(c.get("branchCode"), req.getBranchCode());
 				Predicate n7 = cb.equal(c.get("branchCode"), "99999");
-				//Predicate n8 = cb.or(n4, n5);
+				Predicate n8 = cb.or(n4, n5);
 				Predicate n9 = cb.or(n6, n7);
 				Predicate n10 = cb.equal(c.get("itemType"), itemType);
-				query.where(n1, n2, n3, n4, n9, n10).orderBy(orderList);
+				if(itemType.equalsIgnoreCase("COPY_QUOTE_BY_MOTOR"))
+					query.where(n1, n2, n3, n8, n9, n10).orderBy(orderList);
+				else
+					query.where(n1, n2, n3, n4, n9, n10).orderBy(orderList);
 				// Get Result
 				TypedQuery<ListItemValue> result = em.createQuery(query);
 				list = result.getResultList();

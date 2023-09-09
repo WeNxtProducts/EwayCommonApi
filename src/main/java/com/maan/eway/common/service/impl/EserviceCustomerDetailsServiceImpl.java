@@ -785,8 +785,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			String gender = getListItem (req.getCompanyId() , req.getBranchCode() ,"GENDER",req.getGender());// listRepo.findByItemTypeAndItemCode("GENDER", saveData.getGender());
 			String title = getListItem (req.getCompanyId() , req.getBranchCode() ,"NAME_TITLE",req.getTitle());//listRepo.findByItemTypeAndItemCode("NAME_TITLE", req.getTitle());
 			String language = getListItem (req.getCompanyId() , req.getBranchCode() ,"LANGUAGE",req.getLanguage());//listRepo.findByItemTypeAndItemCode("LANGUAGE", req.getLanguage());
-			String policyHolderType = getListItem (req.getCompanyId() , req.getBranchCode() ,"POLICY_HOLDER_TYPE",req.getPolicyHolderType());//listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_TYPE",	req.getPolicyHolderType());
-			String policyHolderTypeId = getListItem (req.getCompanyId() , req.getBranchCode() ,"POLICY_HOLDER_ID_TYPE",req.getPolicyHolderTypeid());// listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_ID_TYPE", req.getPolicyHolderTypeid());
+			String policyHolderType = getListItem ("99999" , req.getBranchCode() ,"POLICY_HOLDER_TYPE",req.getPolicyHolderType());//listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_TYPE",	req.getPolicyHolderType());
+			String policyHolderTypeId = getListItem ("99999" , req.getBranchCode() ,"POLICY_HOLDER_ID_TYPE",req.getPolicyHolderTypeid());// listRepo.findByItemTypeAndItemCode("POLICY_HOLDER_ID_TYPE", req.getPolicyHolderTypeid());
 			
 			if(StringUtils.isNotBlank(req.getMobileCode1())){		        
 				String mobileCode1 = getListItem (req.getCompanyId() , req.getBranchCode() ,"MOBILE_CODE",req.getMobileCode1());
@@ -810,7 +810,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 	        }			
 			
 			if (StringUtils.isNotBlank(req.getBusinessType())) {
-				String businessType =  getListItem (req.getCompanyId() , req.getBranchCode() ,"BUSINESS_TYPE",req.getBusinessType());//listRepo.findByItemTypeAndItemCode("BUSINESS_TYPE", req.getBusinessType());
+				String businessType =  getListItem ("99999" , req.getBranchCode() ,"BUSINESS_TYPE",req.getBusinessType());//listRepo.findByItemTypeAndItemCode("BUSINESS_TYPE", req.getBusinessType());
 				saveData.setBusinessTypeDesc(businessType);
 			}
 			String occupationDesc = getByOccupationId(req.getOccupation(), req.getCompanyId(),req.getProductId() , req.getBranchCode());
@@ -863,7 +863,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				savePersonalInfo.setBranchCode(req.getBranchCode());
 				savePersonalInfo.setBusinessType(req.getBusinessType());
 				if (StringUtils.isNotBlank(req.getBusinessType())) {
-					String businessType =  getListItem (req.getCompanyId() , req.getBranchCode() ,"BUSINESS_TYPE",req.getBusinessType());//listRepo.findByItemTypeAndItemCode("BUSINESS_TYPE", req.getBusinessType());
+					String businessType =  getListItem ("99999" , req.getBranchCode() ,"BUSINESS_TYPE",req.getBusinessType());//listRepo.findByItemTypeAndItemCode("BUSINESS_TYPE", req.getBusinessType());
 					savePersonalInfo.setBusinessTypeDesc(businessType);
 				}
 				savePersonalInfo.setRegionCode(req.getRegionCode());
@@ -989,14 +989,19 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
 			Predicate a1 = cb.equal(c.get("itemId"),ocpm1.get("itemId"));
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
-			effectiveDate.where(a1,a2);
+			Predicate b1= cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
+			Predicate b2 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+			effectiveDate.where(a1,a2,b1,b2);
+			
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<ListItemValue> ocpm2 = effectiveDate2.from(ListItemValue.class);
 			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
 			Predicate a3 = cb.equal(c.get("itemId"),ocpm2.get("itemId"));
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
-			effectiveDate2.where(a3,a4);
+			Predicate b3= cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+			Predicate b4= cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
+			effectiveDate2.where(a3,a4,b3,b4);
 						
 			// Where
 			Predicate n1 = cb.equal(c.get("status"),"Y");

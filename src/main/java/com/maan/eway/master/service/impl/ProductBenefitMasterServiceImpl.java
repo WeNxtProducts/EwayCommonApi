@@ -259,7 +259,7 @@ public class ProductBenefitMasterServiceImpl implements ProductBenefitMasterServ
 			String filePath = "";
 			
 			List<CoverMaster> coverList=getByCoverId(req);
-			List<ListItemValue> calcTypes = getListItem(req.getCompanyId() , req.getBranchCode() , "CALCULATION_TYPE");
+			List<ListItemValue> calcTypes = getListItem("99999" , req.getBranchCode() , "CALCULATION_TYPE");
 			String productName =  getCompanyProductMasterDropdown(req.getCompanyId() , req.getProductId()); 
 			String sectionName =  req.getSectionId().equalsIgnoreCase("99999") ? "All" : getProductSectionDropdown(req.getCompanyId() , req.getProductId(), req.getSectionId()); 
 			String companyName =  getInscompanyMasterDropdown(req.getCompanyId()) ; 
