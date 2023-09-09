@@ -42,6 +42,7 @@ import com.maan.eway.admin.res.MotorGridCriteriaAdminRes;
 import com.maan.eway.admin.res.MotorGridCriteriaRes;
 import com.maan.eway.admin.res.PortfolioAdminSearchRes;
 import com.maan.eway.admin.res.PortfolioGridCriteriaRes;
+import com.maan.eway.bean.ContentAndRisk;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.EndtTypeMaster;
@@ -80,6 +81,7 @@ import com.maan.eway.common.res.QuoteCriteriaResponse;
 import com.maan.eway.common.res.RejectCriteriaRes;
 import com.maan.eway.common.service.MotorGridService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
+import com.maan.eway.repository.ContentAndRiskRepository;
 import com.maan.eway.repository.CoverMasterRepository;
 import com.maan.eway.repository.DocumentTransactionDetailsRepository;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
@@ -163,6 +165,10 @@ public class MotorGridServiceImpl implements MotorGridService {
 	
 	 @Autowired
 	 private DataSource dataSource;
+	 
+	 
+	 @Autowired
+	 private ContentAndRiskRepository contentRepo;
 	 
 	 private boolean isOracle;
 	 private boolean isMySQL;
@@ -1444,17 +1450,17 @@ public class MotorGridServiceImpl implements MotorGridService {
 						savedata.setUpdatedDate(new Date());
 						savedata.setRequestReferenceNo(refNo);
 						savedata.setOldReqRefNo(req.getRequestReferenceNo());
-						if (req.getUserType().equalsIgnoreCase("Broker")
-								|| (req.getUserType().equalsIgnoreCase("User"))) {
-							branchCode = req.getBranchCode();
-							savedata.setApplicationId("1");
-						//	savedata.setBrokerBranchCode(branchCode);
-
-						} else if ("issuer".equalsIgnoreCase(userType)) {
-							savedata.setApplicationId(req.getLoginId());
-							branchCode = req.getBranchCode();
-						//	savedata.setBranchCode(branchCode);
-						}
+//						if (req.getUserType().equalsIgnoreCase("Broker")
+//								|| (req.getUserType().equalsIgnoreCase("User"))) {
+//							branchCode = req.getBranchCode();
+//							savedata.setApplicationId("1");
+//						//	savedata.setBrokerBranchCode(branchCode);
+//
+//						} else if ("issuer".equalsIgnoreCase(userType)) {
+//							savedata.setApplicationId(req.getLoginId());
+//							branchCode = req.getBranchCode();
+//						//	savedata.setBranchCode(branchCode);
+//						}
 						savedata.setPolicyStartDate(null);		
 						savedata.setPolicyEndDate(null);
 						savedata.setActualPremiumFc(BigDecimal.ZERO);
@@ -2613,6 +2619,69 @@ public class MotorGridServiceImpl implements MotorGridService {
 			return res;
 
 		}
+		
+		/*// Content And Risk
+		private CopyQuoteSuccessRes contentAndRiskEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo, String customerId,
+				String loginId, String prevPolicyNo, String prevQuoteNo, Integer count, String custRefNo) {
+			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
+			SectionDataDetails savedata = new SectionDataDetails();
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			try {
+				EndtTypeMaster entMaster = ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId()); 
+				List<ContentAndRisk> con = contentRepo.findByQuoteNo(request.getQuoteNo());
+				if(con.size() <= 0 ) {
+				List<ContentAndRisk> con1 = contentRepo.findByQuoteNo(prevQuoteNo);
+				List<ContentAndRisk> confilter = con1.stream().filter(o -> request.getVehicleId().equals(o.getRiskId())).collect(Collectors.toList());
+
+				List<ContentAndRisk> saveContList  = new ArrayList<ContentAndRisk>(); 
+				for(ContentAndRisk cont : confilter) {
+				ContentAndRisk content = new ContentAndRisk();
+				dozerMapper.map(cont, content);
+				content.setCreatedBy(request.getCreatedBy());
+				content.setQuoteNo(request.getQuoteNo());
+				content.setRequestReferenceNo(request.getRequestReferenceNo());
+				saveContList.add(content);
+				}
+				contentRepo.saveAllAndFlush(saveContList);
+
+
+				}
+				if (eserSec != null && eserSec.size()>0 ) {
+					for (SectionDataDetails data : eserSec) {
+						savedata = dozerMapper.map(data, SectionDataDetails.class);
+						savedata.setEntryDate(new Date());
+						savedata.setCustomerReferenceNo(custRefNo);
+						savedata.setRequestReferenceNo(refNo);
+						savedata.setCustomerId(customerId);
+						savedata.setQuoteNo(quoteNo);
+						savedata.setCreatedBy(loginId);
+						savedata.setUpdatedBy(loginId);
+						savedata.setUpdatedDate(new Date());
+						savedata.setOriginalPolicyNo(req.getPolicyNo());
+						savedata.setEndorsementDate(new Date());
+						savedata.setEndorsementRemarks(req.getEndtRemarks());
+						savedata.setEndorsementEffdate(req.getEndtEffectiveDate());
+						savedata.setEndtPrevPolicyNo(prevPolicyNo);
+						savedata.setEndtPrevQuoteNo(prevQuoteNo);
+						savedata.setEndtCount(new BigDecimal(count));
+						savedata.setEndtStatus("P");
+						savedata.setIsFinaceYn(entMaster.getEndtTypeCategoryId() == 2 ? "Y" : "N");
+						savedata.setEndtCategDesc(entMaster.getEndtTypeCategory());
+						savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
+						savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
+						savedata.setStatus("E");
+						savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+						sectionDataRepo.saveAndFlush(savedata);
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return res;
+
+		}*/
  		// Validaton
 		@Override
 		public List<Tuple> validateMotorEndt(String quoteNo) {
