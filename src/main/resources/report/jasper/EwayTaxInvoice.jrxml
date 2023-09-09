@@ -42,8 +42,9 @@
 	<subDataset name="Dataset1" uuid="b914f5dd-2149-4288-b612-424b5bf37dc1">
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
+		<parameter name="pvQuoteNo" class="java.lang.String"/>
 		<queryString language="SQL">
-			<![CDATA[SELECT REGISTRATION_NUMBER,motor_category_desc FROM motor_data_details WHERE Quote_no = 'Q04326']]>
+			<![CDATA[SELECT REGISTRATION_NUMBER,motor_category_desc FROM motor_data_details WHERE Quote_no =  $P{pvQuoteNo} ]]>
 		</queryString>
 		<field name="REGISTRATION_NUMBER" class="java.lang.String">
 			<property name="com.jaspersoft.studio.field.name" value="REGISTRATION_NUMBER"/>
@@ -70,6 +71,7 @@ PIF.ADDRESS_1,
 PIF.ADDRESS_2,
 PIF.VR_TIN_NO,
 HPM.POLICY_NO,
+HPM.QUOTE_NO,
 HPM.INCEPTION_DATE,
 HPM.EXPIRY_DATE,
 HPM.CURRENCY ,
@@ -162,6 +164,11 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 		<property name="com.jaspersoft.studio.field.label" value="POLICY_NO"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
+	<field name="QUOTE_NO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="QUOTE_NO"/>
+		<property name="com.jaspersoft.studio.field.label" value="QUOTE_NO"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	</field>
 	<field name="INCEPTION_DATE" class="java.sql.Timestamp">
 		<property name="com.jaspersoft.studio.field.name" value="INCEPTION_DATE"/>
 		<property name="com.jaspersoft.studio.field.label" value="INCEPTION_DATE"/>
@@ -182,7 +189,7 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 		<property name="com.jaspersoft.studio.field.label" value="DEBIT_NOTE_NO"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
-	<field name="QUOTE_NO" class="java.lang.String">
+	<field name="COLUMN_16" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="QUOTE_NO"/>
 		<property name="com.jaspersoft.studio.field.label" value="QUOTE_NO"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
@@ -818,7 +825,10 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="Dataset1" uuid="28a4f724-cf4b-4ff0-a5d4-06b8cac664f6">
+					<datasetRun subDataset="Dataset1" uuid="febd83e5-683c-4a42-a34d-d6109c272d47">
+						<datasetParameter name="pvQuoteNo">
+							<datasetParameterExpression><![CDATA[$F{QUOTE_NO}]]></datasetParameterExpression>
+						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
 					<jr:column width="120" uuid="f261a79d-6b17-42cd-b8d1-0971340d1953">
