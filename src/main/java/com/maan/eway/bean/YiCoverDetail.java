@@ -43,7 +43,7 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@Table(name="yi_policy_detail")
+@Table(name="Yi_Cover_Detail")
 
 
 public class YiCoverDetail implements Serializable {
