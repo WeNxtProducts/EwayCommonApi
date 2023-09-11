@@ -768,7 +768,24 @@ public class EserviceBuildingDetails implements Serializable {
     
     @Column(name="MS_REFNO")
     private Integer     msRefno ;
+    @Column(name="FIRE_BUILDING_SI  ")
+    private BigDecimal fireBuildingSi  ;
+    @Column(name="FIRE_PLANT_SI  ")
+    private BigDecimal firePlantSi  ;
+    @Column(name="FIRE_EQUIP_SI  ")
+    private BigDecimal fireEquipSi  ;
+    @Column(name="FIRE_STOCK_SI  ")
+    private BigDecimal fireStockSi  ;
     
+    @Column(name="FIRE_BUILDING_SI_LC  ")
+    private BigDecimal fireBuildingSiLc  ;
+    @Column(name="FIRE_PLANT_SI_LC  ")
+    private BigDecimal firePlantSiLc  ;
+    @Column(name="FIRE_EQUIP_SI_LC  ")
+    private BigDecimal fireEquipSiLc  ;
+    @Column(name="FIRE_STOCK_SI_LC  ")
+    private BigDecimal fireStockSiLc  ;
+   
     
   
 
