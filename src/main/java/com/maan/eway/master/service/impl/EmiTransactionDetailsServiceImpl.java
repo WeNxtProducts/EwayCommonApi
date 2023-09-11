@@ -539,10 +539,13 @@ public class EmiTransactionDetailsServiceImpl implements EmiTransactionDetailsSe
 					advanceAmount, balanceAmount = null, installment = 0d,exchangeDate=0d,curPremium=0d;
 			premiumWithTax = Double.valueOf(req.getPremiumWithTax());
 			if(!req.getCurrency().equalsIgnoreCase("TZS")) {
-				ExchangeMaster exchangeData=exchangeMasterRepo.findByCurrencyIdOrderByAmendIdDesc(req.getCurrency());
-				exchangeDate= exchangeData.getExchangeRate();
-				curPremium=exchangeDate*premiumWithTax;
-				premiumWithTax=Double.valueOf(Math.round(curPremium));
+				List<ExchangeMaster> exchangeData=exchangeMasterRepo.findByCurrencyIdOrderByAmendIdDesc(req.getCurrency());
+				if(exchangeData.size()>0) 
+					exchangeDate= exchangeData.get(0).getExchangeRate();
+					
+					curPremium=exchangeDate*premiumWithTax;
+					premiumWithTax=Double.valueOf(Math.round(curPremium));
+				
 			}
 			List<EmiMaster> list = getEmiMasterData(req.getCompanyId(), req.getProductId(), req.getPolicyType(),
 					premiumWithTax);
