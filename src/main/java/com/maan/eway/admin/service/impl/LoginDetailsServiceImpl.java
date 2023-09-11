@@ -338,6 +338,20 @@ this.repository = repo;
 				
 				LoginCreationRes productRes = loginProductService.saveIssuerProductDetails(productReq) ;
 			}
+			
+			//Remove unmatched branches
+			List<LoginBranchMaster> findBranches = loginBranchRepo.findByLoginIdAndCompanyId(loginData.getLoginId() ,  loginData.getCompanyId());
+			List<LoginBranchMaster> filtermatch = new ArrayList<LoginBranchMaster>();
+			
+			if(findBranches.size()>0) {
+				for (String branh :   req.getLoginInformation().getAttachedBranches() ) {
+					List<LoginBranchMaster> filter = findBranches.stream().filter(o -> o.getBranchCode().equalsIgnoreCase(branh) ).collect(Collectors.toList());		
+					filtermatch.add(filter.get(0));
+				}
+				findBranches.removeAll(filtermatch);
+				loginBranchRepo.deleteAll(findBranches);
+			}
+			
 			// Branch Insert 
 			for (String branch :   req.getLoginInformation().getAttachedBranches() ) {
 				AttachBrokerBranchReq branchReq = new AttachBrokerBranchReq();
