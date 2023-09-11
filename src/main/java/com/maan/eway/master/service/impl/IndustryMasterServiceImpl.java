@@ -344,7 +344,7 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
 			String createdBy = "" ;
 			
 			Integer industryId = 0 ;
-			ListItemValue data = listrepo.findByItemTypeAndItemCode("INDUSTRY_CATEGORY",req.getCategoryId());
+			ListItemValue data = listrepo.findByItemTypeAndItemCodeAndCompanyId("INDUSTRY_CATEGORY",req.getCategoryId(),req.getCompanyId());
 
 			if(StringUtils.isBlank(req.getIndustryId())) {
 				// Save
