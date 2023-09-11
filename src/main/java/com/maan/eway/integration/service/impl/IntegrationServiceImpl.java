@@ -29,12 +29,14 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.OccupationMaster;
 import com.maan.eway.bean.PremiaConfigDataMaster;
 import com.maan.eway.bean.PremiaConfigMaster;
 import com.maan.eway.integration.req.PremiaRequest;
 import com.maan.eway.integration.res.PremiaResponse;
+import com.maan.eway.integration.service.FrameReqService;
 import com.maan.eway.integration.service.IntegrationService;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.PremiaConfigDataMasterRepository;
@@ -53,11 +55,14 @@ private PremiaConfigMasterRepository pcmasterrepo;
 private HomePositionMasterRepository homeRepo;
 
 @Autowired
+private FrameReqService frameReqService;
+@Autowired
 private OracleQuery oracle;
 
 @PersistenceContext
 private EntityManager em;
 
+Gson json = new Gson(); 
 private Logger log=LogManager.getLogger(IntegrationServiceImpl.class);
 /*
  * 
@@ -68,7 +73,7 @@ private Logger log=LogManager.getLogger(IntegrationServiceImpl.class);
    get Frame Insert query
 */
 
-public boolean push(PremiaConfigMaster configMas , List<String> params ) {
+public boolean push(PremiaConfigMaster configMas , List<String> params,String quoteNo) {
 	try {
 		
 		PremiaConfigMaster masterop = configMas  ;
@@ -184,6 +189,45 @@ public boolean push(PremiaConfigMaster configMas , List<String> params ) {
 					
 					
 				}
+		/*		
+				//Framing External Api
+				HomePositionMaster home = homeRepo.findByQuoteNo(quoteNo);
+				
+				String policyNo = "";
+				String customerId="";
+				if (home != null ) {
+					policyNo = home.getPolicyNo();
+					customerId=home.getcustomerId();
+				}
+				System.out.println("*********EXTERNAL API CALL STARTS*********");
+				System.out.println("*********PolicyNo "+policyNo);
+				
+				if(configMas.getPremiaId()==6) {
+					
+				Object list = frameReqService.pushMotCommDiscountDetail(policyNo);
+				System.out.println("*********6.MotCommDiscountDetai:" + json.toJson(list));
+				}else if(configMas.getPremiaId()==4)  {
+					
+				Object list =frameReqService.pushMotDriverDetail(policyNo);
+				System.out.println("*********4.MotDriverDetail: " + json.toJson(list));
+				}/*else if(configMas.getPremiaId()==3)  {
+					//Object list = frameReqService.pushPgitPolRiskAddlInfo(policyNo);
+					
+						System.out.println("*********101 " + json.toJson(list));
+				}*/
+				/*	else if(configMas.getPremiaId()==5)  {
+				
+				Object list =frameReqService.pushYiCoverDetail(policyNo);
+				System.out.println("*********5.YiCoverDetail: " + json.toJson(list));
+				}else if(configMas.getPremiaId()==7)  {
+					
+				Object list =frameReqService.pushYiChargeDetail(policyNo);
+				System.out.println("*********7.YiChargeDetail: " + json.toJson(list));
+				}else if(configMas.getPremiaId()==1)  {
+					
+				Object list =frameReqService.pushYiPolicyDetail(policyNo);
+				System.out.println("*********1.YiPolicyDetail: " + json.toJson(list));
+				}*/
 			}
 			
 		 
@@ -245,7 +289,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 		param.add(request.getQuoteNo());
 		 
 		for (PremiaConfigMaster configMas :  configMasterList ) {
-			boolean push = push(configMas , param );
+			boolean push = push(configMas , param,request.getQuoteNo());
 			if(push ==true  ) {
 				response.setResponse("Success");	
 			} else {
