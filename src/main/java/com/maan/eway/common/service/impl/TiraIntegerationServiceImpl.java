@@ -78,18 +78,18 @@ public class TiraIntegerationServiceImpl {
 			if  (  product.getMotorYn().equalsIgnoreCase("M") ) {
 				url=tiraIntegPushLink;
 				
-				/*
-				 * // Call Integeration PremiaRequest premiaReq = new PremiaRequest();
-				 * premiaReq.setQuoteNo(tiraReq.getQuoteNo()); List<String> premiaIds = new
-				 * ArrayList<String>(); premiaIds.add( "1" ); premiaIds.add( "2" );
-				 * premiaIds.add( "3" ); premiaIds.add( "4" ); premiaIds.add( "5" );
-				 * premiaIds.add( "6" ); premiaIds.add( "7" ); premiaIds.add( "8" );
-				 * premiaIds.add( "9" ); premiaIds.add( "10" ); premiaIds.add( "11" );
-				 * premiaIds.add( "12" ); premiaIds.add( "13" ); premiaIds.add( "14" );
-				 * premiaReq.setPremiaIds(premiaIds);
-				 * 
-				 * service.pushPremiaIntegration(premiaReq);
-				 */
+				 em.flush();
+				  // Call Integeration 
+				PremiaRequest premiaReq = new PremiaRequest();
+				  premiaReq.setQuoteNo(tiraReq.getQuoteNo()); List<String> premiaIds = new
+				  ArrayList<String>(); premiaIds.add( "1" ); premiaIds.add( "2" );
+				  premiaIds.add( "3" ); premiaIds.add( "4" ); premiaIds.add( "5" );
+				  premiaIds.add( "6" ); premiaIds.add( "7" ); premiaIds.add( "8" );
+				 premiaIds.add( "9" ); premiaIds.add( "10" ); premiaIds.add( "11" );
+				  premiaReq.setPremiaIds(premiaIds);
+				  
+				 service.pushPremiaIntegration(premiaReq);
+				 
 			} 
 				
 				

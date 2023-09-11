@@ -3245,7 +3245,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				SectionDataDetails section = filterSec.get(0) ;
 				 
 				saveReq.setRiskId(mot.getVehicleId());
-				saveReq.setId(mot.getChassisNumber());
+				saveReq.setId(mot.getRegistrationNumber());
 				saveReq.setLocationId("1");
 				saveReq.setLocationName(homeData.getProductName());
 				saveReq.setSectionId(section.getSectionId()) ;
