@@ -20,18 +20,18 @@ import org.springframework.stereotype.Service;
 import com.maan.eway.notification.bean.MailDataDetails;
 import com.maan.eway.notification.repository.MailDataDetailsRepository;
 import com.maan.eway.notification.req.Mail;
-@Service
+
 public class MailJob implements Consumer<Mail> {
 
 	 
 	
-	@Autowired
+	/*@Autowired
 	private MailDataDetailsRepository mailRepo;
-	
+	*/
 	
 	 
 	public void pushMail(Mail m) {
-		   
+		   /*
 		String statusResponse=null;
 		try {
 			Properties prop = new Properties();
@@ -100,10 +100,10 @@ public class MailJob implements Consumer<Mail> {
 				.pushedEntryDate(new Date())
 				.status(statusResponse==null?"S":"F")
 				.toEmail(m.getMailTo())
-				.notifNo(m.getNotifNo())
+				//.notifNo(m.getNotifNo())
 				.build();
 		mailRepo.save(mdd);
-		 
+		 */
 	}
 	@Override
 	public void accept(Mail t) {

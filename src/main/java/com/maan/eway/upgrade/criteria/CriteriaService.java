@@ -701,9 +701,9 @@ public List<Tuple> getJoinResult(List<SpecCriteria> criterias,Integer limit,Inte
 		}
  		
 
- 		result.setFirstResult(limit* offset);
+ 		/*result.setFirstResult(limit* offset);
 		result.setMaxResults(offset);
-		
+		*/
 		//reqPrinter.reqPrint(cr.getWheres());
 		list =  result.getResultList();
 	 

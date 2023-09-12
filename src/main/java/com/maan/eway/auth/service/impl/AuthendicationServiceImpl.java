@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -75,26 +76,25 @@ import com.maan.eway.auth.token.JwtTokenUtil;
 import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CompanyProductMaster;
-import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginMasterId;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
-import com.maan.eway.bean.MailMaster;
-import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.bean.SessionMaster;
 import com.maan.eway.bean.SmsConfigMaster;
 import com.maan.eway.bean.SmsDataDetails;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.error.Error;
-import com.maan.eway.master.req.CompanyProductMasterGetAllReq;
 import com.maan.eway.notification.bean.MailDataDetails;
+import com.maan.eway.notification.bean.NotifTransactionDetails;
 import com.maan.eway.notification.repository.MailDataDetailsRepository;
+import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
 import com.maan.eway.notification.req.JobCredentials;
 import com.maan.eway.notification.req.Mail;
 import com.maan.eway.notification.req.Sms;
+import com.maan.eway.notification.service.NotificationService;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.LoginBranchMasterRepository;
@@ -106,7 +106,6 @@ import com.maan.eway.repository.ProductMasterRepository;
 import com.maan.eway.repository.SessionMasterRepository;
 import com.maan.eway.repository.SmsConfigMasterRepository;
 import com.maan.eway.repository.SmsDataDetailsRepository;
-import com.maan.eway.res.CompanyProductDropDownRes;
 import com.maan.eway.res.SuccessRes;
 
 
@@ -840,10 +839,10 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			
 			LoginUserInfo lu = userInfoRepo.findByLoginId(req.getLoginId()  );
 			
-			// Send Mail
+			// Send Mail &^ sms
 			sentDirectMail(req.getLoginId()  , tempPassword ,  ld ,  lu , cm  ) ;
 			// Send Sms
-			sentDirectSms(req.getLoginId()  , tempPassword ,  ld ,  lu , cm  ) ;
+			//sentDirectSms(req.getLoginId()  , tempPassword ,  ld ,  lu , cm  ) ;
 				 
 				 
 			
@@ -854,65 +853,66 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 		return msg;
 	}
 	
+	@Autowired
+	private NotificationService notificationService;
+	@Autowired 
+	private NotifTransactionDetailsRepository notifTrans;
+	
+	
+	
 	public CommonRes sentDirectMail(String loginId , String tempPassword , LoginMaster ld , LoginUserInfo lu , InsuranceCompanyMaster cm  ) {
 		CommonRes res = new CommonRes();
 		SuccessRes response = new SuccessRes();
 		try {
 			
-			MailMaster mailc = mailRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(ld.getCompanyId(),"99999","Y").get(0);													
 			
-			String name = lu.getUserName();
+			/*List<NotifTemplateMaster> templat = masterRepo.findByCompanyIdAndProductIdAndStatusAndNotifTemplatenameIgnoreCaseOrderByAmendIdDesc(
+					ld.getCompanyId(),99999L,"Y","TEMP_PASSWORD");
+			List<MailMaster> mailc = mailRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(ld.getCompanyId(),"99999","Y");													
+			List<SmsConfigMaster> smsc = smsRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(ld.getCompanyId(),"99999","Y");													
+ 			PushedStateChange p=new PushedStateChange(templat.get(0),mailc.get(0),smsc.get(0));*/
+ 			Calendar calend = Calendar.getInstance();
+			calend.setTime(new Date()); 
+			calend.add(Calendar.DATE, 1); 
+			/*String name = lu.getUserName();
 			String companylogo= cm.getCompanyLogo() ;
 			String companyAddress= cm.getCompanyAddress() ;
 			String mailBody= "Your Temporary Password Is : <p style=color:red;> " + tempPassword + " </p>";
 			String mailSubject= "Temporary Password";
 			String mailRegards= cm.getRegards() ;
+			*/
 			
-			String templatebody = getTemplateFrame( name , companylogo , companyAddress,  mailBody , 	mailSubject,	mailRegards) ; 
-			
-			// Mail Credentials 
-			
-			String tomailid=lu.getUserMail() ;
-			List<String> mailcc= new ArrayList<String>(); ;
-			mailcc.add(tomailid);
-			
-			Mail m=Mail.builder()
-					.mailBody(templatebody)
-					.mailRegards(mailRegards)
-					.mailSubject(mailSubject)
-					.mailTo(tomailid)
-					.mailcc(mailcc)
-					.credential(JobCredentials.builder().host(mailc.getSmtpHost()).port(mailc.getSmtpPort()).isSSL(true).password(mailc.getSmtpPwd()).username(mailc.getSmtpUser()).build())
-				//	.attachments(t.get("attachFilePath")==null?"":t.get("attachFilePath").toString())
-					.notifNo(0)
+ 			String tinyGroupId=String.valueOf(Instant.now().getEpochSecond());
+			NotifTransactionDetails nt = NotifTransactionDetails.builder()
+					.brokerCompanyName(lu.getUserName())
+					.brokerMailId(lu.getUserMail())					
+					.companyName(cm.getCompanyName())
+					.customerMailid(lu.getUserMail())					
+					.customerName(lu.getUserName())
+					.entryDate(new Date())
+					.notifcationPushDate(new Date())
+					.notifcationEndDate(calend.getTime())
+					.notifDescription(tempPassword)
+					//.notifNo(null)
+					.notifPriority(1)
+					.notifPushedStatus("P")
+					.notifTemplatename("TEMP_PASSWORD")											
+					.productName("Common")					
+					//.tinyUrl(n.getTinyUrl())
+					.companyid(ld.getCompanyId())
+					.productid(99999)
+					.companyLogo(cm.getCompanyLogo())
+					.companyAddress(cm.getCompanyAddress())											
+					.tinyUrlActive("N")
+					.tinyGroupId(tinyGroupId)
 					.build();
-			
-			// save Mail
-			MailDataDetails mdd=MailDataDetails.builder()
-					.fromEmail(m.getCredential().getUsername())
-					.mailBody(m.getMailBody())
-					.mailRegards(m.getMailRegards())
-					.mailResponse("Pending")
-					.mailSubject(m.getMailSubject())
-					.mailTranId(null)
-					.pushedEntryDate(new Date())
-					.status("P")
-					.toEmail(m.getMailTo())
-					.notifNo(m.getNotifNo())
-					.pushedBy("none")
-					.build();
-			mailDataRepo.saveAndFlush(mdd);
-			
-			// Push Mail
-			ExecutorService service = Executors.newFixedThreadPool(4);
-		    service.submit(new Runnable() {
-		        public void run() {
-		        	pushMail(m , mdd );
-		        }
-		    });
+			NotifTransactionDetails sv = notifTrans.save(nt);
+			List<NotifTransactionDetails> text=new LinkedList<NotifTransactionDetails>();
+			text.add(sv);
+			notificationService.jobProcess(text);
 			
 		 	response.setResponse("Temporary Password Sent Successfully");	
-			response.setSuccessId(tomailid);
+			response.setSuccessId(lu.getUserMail());
 			res.setCommonResponse(response);
 			res.setIsError(false);
 		
@@ -931,7 +931,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 		}
 		return res;
 	}
-	
+	/*
 	public CommonRes sentDirectSms(String loginId , String tempPassword , LoginMaster ld , LoginUserInfo lu , InsuranceCompanyMaster cm  ) {
 		CommonRes res = new CommonRes();
 		SuccessRes response = new SuccessRes();
@@ -998,8 +998,8 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			return res ;
 		}
 		return res;
-	}
-	
+	}*/
+	/*
 	public String pushMail(Mail m , MailDataDetails mdd) {
 		   
 		String statusResponse=null;
@@ -1065,8 +1065,8 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 		mailDataRepo.save(mdd);
 		return statusResponse ;
 		 
-	}
-	
+	}*/
+	/*
 	public String pushSms(Sms m , SmsDataDetails savedata) {
 
 		String statusResponse = null;
@@ -1075,13 +1075,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 		String statuscode="";
 		Integer statusvalue =0;
 		try {
-			/*
-			Properties prop = new Properties();
-			prop.put("MobileNo", m.getSmsTo());
-			prop.put("SmsContent", m.getSmsBody());
-			prop.put("SmsRegards", m.getSmsRegards()==null?m.getWhatsappRegards():m.getSmsRegards());
-			prop.put("SmsSubject", m.getSmsSubject());
-			*/	
+				
 			String mobileCode="";
 			RestTemplate restTemplate = new RestTemplate();
 			String fooResourceUrl = m.getCredential().getHost();
@@ -1123,7 +1117,7 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 		return statusResponse ;
 
 	}
-	
+	*/
 	
 	private String getTempPassword(String loginId) {
 		final String alphabet = "Aa2Bb@3Cc#4Dd$5Ee%6Ff7Gg&8Hh9Jj2Kk=3L4Mm5Nn@6Pp7Qq#8Rr$9Ss%2Tt3Uu&4Vv5Ww+6Xx=7Yy8Zz9";

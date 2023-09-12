@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -12,6 +13,7 @@ import javax.persistence.Tuple;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maan.eway.bean.MailMaster;
 import com.maan.eway.bean.NotifTemplateMaster;
 import com.maan.eway.bean.SmsConfigMaster;
@@ -21,25 +23,26 @@ import com.maan.eway.notification.req.Mail;
 import com.maan.eway.notification.req.Messenger;
 import com.maan.eway.notification.req.Sms;
 
-public class PushedStateChange implements  Function<Tuple,List<Object>>{
+public class PushedStateChange implements  Function<NotifTransactionDetails,List<Object>>{
 
 
 	private NotifTemplateMaster master;
  	 private MailMaster mailMaster;	 
 	 private SmsConfigMaster smsmaster;
-	 private NotifTransactionDetails sms;
+	 //private NotifTransactionDetails sms;
  
-	public PushedStateChange(NotifTransactionDetails sms,NotifTemplateMaster master, MailMaster mailMaster, SmsConfigMaster smsmaster) {
+	public PushedStateChange(NotifTemplateMaster master, MailMaster mailMaster, SmsConfigMaster smsmaster) {
 		this.master=master;
 		this.mailMaster=mailMaster;
 		this.smsmaster=smsmaster;
-		this.sms =sms;
+		//this.sms =sms;
 	}
 
 	@Override
-	public List<Object> apply(Tuple t) {
+	public List<Object> apply(NotifTransactionDetails obj) {
 		try {
-			//clazz = t.getClass();
+	        ObjectMapper oMapper = new ObjectMapper();
+			Map<String, Object> t = oMapper.convertValue(obj, Map.class);
 			
 			List<Object> a=new ArrayList<Object>();
 			if(master.getWhatsappRequired().equals("Y") ) {
@@ -63,9 +66,9 @@ public class PushedStateChange implements  Function<Tuple,List<Object>>{
 							.smsSubject((String) getContentFrame(t, master.getSmsSubject()))
 							.smsTo((String) smsTo)	
 							.smsFrom(smsmaster.getSenderId())
-							.credential(JobCredentials.builder().host(smsmaster.getSmsPartyUrl()).isSSL(true).password(smsmaster.getSmsUserPass()).username(smsmaster.getSmsUserName()).build())
-							.smsToCode(sms.getCustomerPhoneCode().toString())
-							.notifNo(Integer.parseInt(t.get("notifNo").toString()))
+							.credential(JobCredentials.builder().smtpHost(smsmaster.getSmsPartyUrl()).smtpPwd(smsmaster.getSmsUserPass()).smtpUser(smsmaster.getSmsUserName()).build())
+							.smsToCode(obj.getCustomerPhoneCode().toString())
+							.notifNo(t.get("notifNo")==null?0:Integer.parseInt(t.get("notifNo").toString()))
 							.build();
 					a.add(s);
 				}
@@ -83,20 +86,44 @@ public class PushedStateChange implements  Function<Tuple,List<Object>>{
 						List<String> asList = Arrays.asList(mailcsc);
 						mailcc= (asList.size()>5)?asList.subList(0, 5):asList;
 					}
-
+					List<String> tomails=new LinkedList<String>();
+					tomails.add(tomailid);
 					String mailSubject=(String) getContentFrame(t, master.getMailSubject());
-
+					List<String> files=new LinkedList<String>();
+					files.add(t.get("attachFilePath")==null?"":t.get("attachFilePath").toString());
 					String templatebody=getTemplateFrame(t, master);
-
+					 JobCredentials master =JobCredentials.builder()
+							 .address(mailMaster.getAddress())
+							 .amendId(mailMaster.getAmendId())
+							 .applicationId(mailMaster.getCompanyId())
+							 .authorizYn("Y")
+							 .branchCode(mailMaster.getBranchCode())
+							 .companyId(mailMaster.getCompanyId())
+							 .companyName(mailMaster.getCompanyId())
+							 .expDate(mailMaster.getEffectiveDateEnd().toString())
+							 .expTime(mailMaster.getEffectiveDateEnd().toString())
+							 .homeApplicationId(mailMaster.getCompanyId()).mailCc(null)
+							 .pwdCnt(BigDecimal.ZERO)
+							 .pwdLen(BigDecimal.ONE)
+							 .smtpHost(mailMaster.getSmtpHost())
+							 .smtpPort(new BigDecimal(mailMaster.getSmtpPort()))
+							 .smtpPwd(mailMaster.getSmtpPwd()).smtpUser(mailMaster.getSmtpUser())
+							 .sNo(mailMaster.getSNo())
+							 .toAddress("")
+							 .build();
+							 //.convertValue( mailMaster,JobCredentials.class);
+					 
+					 
 					Mail ml=Mail.builder()
-							.mailBody(templatebody)
-							.mailRegards(null)
-							.mailSubject(mailSubject)
-							.mailTo(tomailid)
-							.mailcc(mailcc)
-							.credential(JobCredentials.builder().host(mailMaster.getSmtpHost()).port(mailMaster.getSmtpPort()).isSSL(true).password(mailMaster.getSmtpPwd()).username(mailMaster.getSmtpUser()).build())
-							.attachments(t.get("attachFilePath")==null?"":t.get("attachFilePath").toString())
-							.notifNo(Integer.parseInt(t.get("notifNo").toString()))
+							.mailbody(templatebody)
+							.mailbodyContenttype("text/html")							
+							.subject(mailSubject)
+							.tomails(tomails)
+							.ccmails(mailcc)
+							.files(files)
+							.master(master)
+							//.credential(.host(mailMaster.getSmtpHost()).port(mailMaster.getSmtpPort()).isSSL(true).password(mailMaster.getSmtpPwd()).username(mailMaster.getSmtpUser()).build())
+							.notifNo(Long.parseLong(t.get("notifNo").toString()))
 							.build();
 					a.add(ml);
 				}
@@ -109,7 +136,7 @@ public class PushedStateChange implements  Function<Tuple,List<Object>>{
 	}
 
 	
-	private Object getValue(Tuple t, String fieldNameString) {
+	private Object getValue(Map<String, Object> t, String fieldNameString) {
 		 try {
 			Object o=(Object) t.get(fieldNameString);
 			if (o instanceof BigDecimal) {
@@ -124,7 +151,7 @@ public class PushedStateChange implements  Function<Tuple,List<Object>>{
 	}
 
 	 
-	private Object getContentFrame(Tuple t ,String messageTemplate) {
+	private Object getContentFrame(Map<String, Object> t ,String messageTemplate) {
 		try {
 			 
 			if(StringUtils.isNotBlank(messageTemplate)) {
@@ -140,7 +167,7 @@ public class PushedStateChange implements  Function<Tuple,List<Object>>{
 		}
 		return null;
 	} 
-	private String getTemplateFrame(Tuple t ,NotifTemplateMaster m) {
+	private String getTemplateFrame(Map<String, Object> t ,NotifTemplateMaster m) {
 		try {
 			 String baseTemplate="<div style=\"margin: 0px auto;width: 700px;max-width: 90%;padding-top: 20px;background-color: rgb(255,255,255);\">\r\n"
 			 		+ "        <div style=\"text-align: center; margin-bottom: 20px;\"> <img height=\"20px\"> </div>\r\n"

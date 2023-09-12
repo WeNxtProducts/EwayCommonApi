@@ -5,12 +5,14 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -450,7 +452,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 		return res;
 	}
 	
-	public List<Tuple> loadNotificationPending(Integer notifNo) {
+	public List<Tuple> loadNotificationPending(Long notifNo) {
 		 List<Tuple> list = new ArrayList<Tuple>();
 		try {
 			
@@ -594,7 +596,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			n.getTinyUrl();
 
 			// Calling pushNotification
-			res= pushNotification(n);
+			res= notiService.pushNotification(n);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -685,7 +687,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			
 			n.setPushedBy(req.getCreatedBy());
 			// Calling pushNotification
-			res = pushNotification(n);
+			res = notiService.pushNotification(n);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -780,7 +782,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			n.getTinyUrl();
 
 			// Calling pushNotification
-			res = pushNotification(n);
+			res = notiService.pushNotification(n);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -869,7 +871,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			n.getTinyUrl();
 
 			// Calling pushNotification
-			res= pushNotification(n);
+			res= notiService.pushNotification(n);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -944,92 +946,6 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 		}
 		return list;
 	}
-
-	public CommonRes pushNotification(Notification n) {
-		
-		
-		List<Error> validation = vad.pushValidation(n);
-		CommonRes c=new CommonRes();
-		
-		if(validation.isEmpty()) {
-			Calendar calend = Calendar.getInstance();
-			calend.setTime(n.getNotifcationDate()); 
-			calend.add(Calendar.DATE, 1); 
-			List<InsuranceCompanyMaster> coms = companyRepo.findByCompanyIdOrderByAmendIdDesc(n.getCompanyid());
-			String filesTobeAttch=null;
-			if(n.getAttachments()!=null && n.getAttachments().size()>0) {
-				filesTobeAttch = n.getAttachments().stream().collect(Collectors.joining(";"));
-			}
-				
-			
-					
-			NotifTransactionDetails nt = NotifTransactionDetails.builder()
-					.brokerCompanyName(n.getBroker().getBrokerCompanyName())
-					.brokerMailId(n.getBroker().getBrokerMailId())
-					.brokerMessengerCode(n.getBroker().getBrokerMessengerCode())
-					.brokerMessengerPhone(n.getBroker().getBrokerMessengerPhone())
-					.brokerPhoneCode(n.getBroker().getBrokerPhoneCode())
-					.brokerPhoneNo(n.getBroker().getBrokerPhoneNo())
-					.brokerName(n.getBroker().getBrokerName())
-					.companyName(n.getCompanyName())
-					.customerMailid(n.getCustomer().getCustomerMailid())
-					.customerPhoneCode(n.getCustomer().getCustomerPhoneCode())
-					.customerPhoneNo(n.getCustomer().getCustomerPhoneNo())
-					.customerMessengerCode(n.getCustomer().getCustomerMessengerCode())
-					.customerMessengerPhone(n.getCustomer().getCustomerMessengerPhone())
-					.customerName(n.getCustomer().getCustomerName())
-					.entryDate(new Date())
-					.notifcationPushDate(n.getNotifcationDate())
-					.notifcationEndDate(calend.getTime())
-					.notifDescription(n.getNotifDescription())
-					//.notifNo(null)
-					.notifPriority(n.getNotifPriority())
-					.notifPushedStatus("C")
-					.notifTemplatename(n.getNotifTemplatename())
-					.otp(n.getOtp())
-					.policyNo(n.getPolicyNo())
-					.quoteNo(n.getQuoteNo()) 
-					.uwMailid((n.getUnderwriters().size()>5)?n.getUnderwriters().subList(0, 5).stream().map(a -> a.getUwMailid()).collect(Collectors.joining(",")):
-						n.getUnderwriters().stream().map(a -> a.getUwMailid()).collect(Collectors.joining(",")))
-					.uwMessengerCode(n.getUnderwriters().get(0).getUwMessengerCode())
-					.uwMessengerPhone(n.getUnderwriters().get(0).getUwMessengerPhone())
-					.uwName(n.getUnderwriters().get(0).getUwName())
-					.uwPhonecode(n.getUnderwriters().get(0).getUwPhonecode())
-					.uwPhoneNo(n.getUnderwriters().get(0).getUwPhoneNo())
-					.productName(n.getProductName())
-					.sectionName(n.getSectionName())
-					.statusMessage(n.getStatusMessage())
-					.tinyUrl(n.getTinyUrl())
-					.notifPushedStatus(n.getNotifPushedStatus().toString())
-					.companyid(n.getCompanyid())
-					.productid(n.getProductid())
-					.companyLogo(coms.get(0).getCompanyLogo())
-					.companyAddress(coms.get(0).getCompanyAddress())
-					.attachFilePath(filesTobeAttch)
-					.pushedBy(n.getPushedBy())
-			.build();	
-			NotifTransactionDetails sv = notifTrans.save(nt);
-			c.setIsError(Boolean.FALSE);
-			c.setErroCode(100);
-			c.setIsError(null);
-			c.setMessage("Pushed Successfuly");
-			c.setCommonResponse(sv);
-			
-			//jobScheduler.enqueue(()->jobProcess(n,nt));
-			
-			
-		}else {
-			c.setErroCode(101);
-			c.setErrorMessage(validation);
-			c.setIsError(Boolean.TRUE);
-			c.setMessage("Have Validation");
-		}
-		
-		return  c;
-		
-		
- 	}
-	
 	private Object getContentFrame(Tuple t ,String messageTemplate ) {
 		try {
 			 
@@ -1132,7 +1048,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 		SuccessRes response = new SuccessRes();
 		try {
 			
-			String mailBody= req.getMailBody();
+		/*	String mailBody= req.getMailBody();
 			String mailSubject= req.getMailSubject();
 			String mailRegards=req.getMailRegards();
 			
@@ -1167,32 +1083,39 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 					.mailcc(mailcc)
 					.credential(JobCredentials.builder().host(mailc.getSmtpHost()).port(mailc.getSmtpPort()).isSSL(true).password(mailc.getSmtpPwd()).username(mailc.getSmtpUser()).build())
 					.attachments(t.get("attachFilePath")==null?"":t.get("attachFilePath").toString())
-					.notifNo(Integer.parseInt(t.get("notifNo").toString()))
+					.notifNo(Long.parseLong(t.get("notifNo").toString()))
 					.build();
 			
-			// save Mail
-			MailDataDetails mdd=MailDataDetails.builder()
-					.fromEmail(m.getCredential().getUsername())
-					.mailBody(m.getMailBody())
-					.mailRegards(m.getMailRegards())
-					.mailResponse("Pending")
-					.mailSubject(m.getMailSubject())
-					.mailTranId(null)
-					.pushedEntryDate(new Date())
-					.status("P")
-					.toEmail(m.getMailTo())
-					.notifNo(m.getNotifNo())
-					.pushedBy(req.getCreatedBy())
+
+ 			String tinyGroupId=String.valueOf(Instant.now().getEpochSecond());
+			NotifTransactionDetails nt = NotifTransactionDetails.builder()
+					.brokerCompanyName(lu.getUserName())
+					.brokerMailId(lu.getUserMail())					
+					.companyName(cm.getCompanyName())
+					.customerMailid(lu.getUserMail())					
+					.customerName(lu.getUserName())
+					.entryDate(new Date())
+					.notifcationPushDate(new Date())
+					.notifcationEndDate(calend.getTime())
+					.notifDescription(req.getMailSubject())
+					.no
+					//.notifNo(null)
+					.notifPriority(1)
+					.notifPushedStatus("P")
+					.notifTemplatename(template.getNotifTemplatename())											
+					.productName("Common")					
+					//.tinyUrl(n.getTinyUrl())
+					.companyid(req.getInsuranceId())
+					.productid(99999)
+					.companyLogo(cm.getCompanyLogo())
+					.companyAddress(cm.getCompanyAddress())											
+					.tinyUrlActive("N")
+					.tinyGroupId(tinyGroupId)
 					.build();
-			mailDataRepo.saveAndFlush(mdd);
-			
-			// Push Mail
-			ExecutorService service = Executors.newFixedThreadPool(4);
-		    service.submit(new Runnable() {
-		        public void run() {
-		        	pushMail(m , mdd );
-		        }
-		    });
+			NotifTransactionDetails sv = notifTrans.save(nt);
+			List<NotifTransactionDetails> text=new LinkedList<NotifTransactionDetails>();
+			text.add(sv);
+			notificationService.jobProcess(text);
 			
 		 	response.setResponse("Mail Sent Successfully");	
 			response.setSuccessId(req.getNotificationNo());
@@ -1200,7 +1123,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			res.setIsError(false);
 		
 			 
-			
+			*/
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1235,7 +1158,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 		SuccessRes response = new SuccessRes();
 		try {
 			String smsBody= req.getSmsBody();
-			String smsSubject= req.getSmsSubject();
+/*		String smsSubject= req.getSmsSubject();
 			String smsRegards=req.getSmsRegards();
 		
 			NotifTemplateGetReq ntr = new NotifTemplateGetReq();
@@ -1291,7 +1214,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			res.setCommonResponse(response);
 			res.setIsError(false);
 			
-	
+	*/
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is ---> " + e.getMessage());
@@ -1305,143 +1228,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 		return res;
 	}
 	
-	
-	public String pushMail(Mail m , MailDataDetails mdd) {
-		   
-		String statusResponse=null;
-		try {
-			Properties prop = new Properties();
-			prop.put("mail.smtp.host", m.getCredential().getHost());
-			prop.put("mail.smtp.port", m.getCredential().getPort());
-			if(m.getCredential().getIsSSL()) {
-				prop.put("mail.smtp.auth", "true");
-				prop.put("mail.smtp.starttls.enable", "true"); // TLS
-			}else {
-				prop.put("mail.smtp.auth", "false");
-				prop.put("mail.smtp.starttls.enable", "false"); // TLS
-			}
-			
-			Session session = Session.getInstance(prop, new javax.mail.Authenticator() {
-				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(m.getCredential().getUsername(), m.getCredential().getPassword());
-				}
-			});
-			MimeMessage mimeMessage = new MimeMessage(session);
-
-			mimeMessage.setFrom(new InternetAddress(m.getCredential().getUsername()));
-			
-			InternetAddress	to = new InternetAddress(m.getMailTo());
-			mimeMessage.addRecipient(Message.RecipientType.TO, to);
-			// Mail Cc
-			InternetAddress[] addressCc=null;
-			if (m.getMailcc() != null && m.getMailcc().size()>0 ) {
-				 addressCc = new InternetAddress[m.getMailcc().size()];
-				for (int i = 0; i < m.getMailcc().size(); i++) {
-					if (StringUtils.isNotBlank( m.getMailcc().get(i))) {
-						addressCc[i] = new InternetAddress( m.getMailcc().get(i)); 
-						mimeMessage.addRecipient(Message.RecipientType.CC, addressCc[i]); 
-					}
-				} 
-			}
-			 
-			mimeMessage.setSubject(m.getMailSubject());
-			mimeMessage.setContent(m.getMailBody(), "text/html");
-			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-			helper.setSubject(m.getMailSubject());
-			helper.setText(m.getMailBody(), true);
-			if(m.getAttachments()!=null && StringUtils.isNotBlank(m.getAttachments())) {
-				for (String attachPath : m.getAttachments().split(";")) {
-					File file=loadFilesFromPath(attachPath);
-					if (file != null && file.exists())
-						helper.addAttachment(file.getName(), file);
-				}
-			}
-			
-			
-			
-			Transport.send(mimeMessage);
-		}catch (Exception e) {
-			e.printStackTrace();
-			statusResponse=e.getLocalizedMessage();
-			return statusResponse ;
-		}
-		
-		statusResponse = "Success" ;
-		mdd.setMailResponse("Success");
-		mdd.setStatus("C");
-		mailDataRepo.save(mdd);
-		return statusResponse ;
-		 
-	}
-	
-	
-private File loadFilesFromPath(String attachPath) {
-		
-		try {
-			return new File(attachPath);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return null;
-	}
-
-public String pushSms(Sms m , SmsDataDetails savedata) {
-
-	String statusResponse = null;
-	String type="0";	
-	String dlr="1";
-	String statuscode="";
-	Integer statusvalue =0;
-	try {
-		/*
-		Properties prop = new Properties();
-		prop.put("MobileNo", m.getSmsTo());
-		prop.put("SmsContent", m.getSmsBody());
-		prop.put("SmsRegards", m.getSmsRegards()==null?m.getWhatsappRegards():m.getSmsRegards());
-		prop.put("SmsSubject", m.getSmsSubject());
-		*/	
-		String mobileCode="";
-		RestTemplate restTemplate = new RestTemplate();
-		String fooResourceUrl = m.getCredential().getHost();
-		if(StringUtils.isNotBlank( m.getSmsToCode())) {
-		mobileCode = m.getSmsToCode().replace("+", "");
-		}
-		String content="username="
-				+ URLEncoder.encode(m.getCredential().getUsername(), "UTF-8") + "&password="
-				+ m.getCredential().getPassword() + "&type="
-				+ URLEncoder.encode(type, "UTF-8") + "&dlr="
-				+ URLEncoder.encode(dlr, "UTF-8") + "&destination="
-				 + URLEncoder.encode(m.getSmsBody(), "UTF-8") + "&source="
-						+ URLEncoder.encode(mobileCode+m.getSmsFrom(), "UTF-8") + "&message="
-						+m.getSmsBody()+m.getSmsRegards()==null?"":m.getSmsRegards();
-		System.out.println("SMS request  ---> "+fooResourceUrl + "?"+content);
-		
-		ResponseEntity<String> response	  = restTemplate.getForEntity(fooResourceUrl + "?"+content, String.class);
-		
-		System.out.println("SMS Response"+response.getBody());
-		statuscode =response.getStatusCode()!=null? response.getStatusCode().toString() : "";
-		statusvalue = response.getStatusCodeValue() ;		
-	} catch (Exception e) {
-		e.printStackTrace();
-		statusResponse = e.getLocalizedMessage();
-		return statusResponse ;
-	}
-
-	if(statuscode.equalsIgnoreCase("200OK")) {
-	savedata.setResStatus("OK");
-	savedata.setResMessage("SMS Sent Successful");		
-	}
-	else {
-		savedata.setResStatus("Not OK");
-		savedata.setResMessage("SMS Sent Failed");					
-	}
-	savedata.setResTime(new Date());
-	smsDataRepo.save(savedata);
-	statusResponse = "Success" ;
-	return statusResponse ;
-
-}
+	 
 
 @Override
 public List<MailNotifGetRes> getSentMailList(NotifGetReq req) {

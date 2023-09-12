@@ -38,7 +38,6 @@ import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -125,7 +124,6 @@ import com.maan.eway.repository.UWReferralHistoryRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
 import com.maan.eway.req.calcengine.ReferralApi;
 import com.maan.eway.res.ReferalResponse;
-import com.maan.eway.res.calc.AdminReferral;
 import com.maan.eway.service.CalculatorEngine;
 import com.maan.eway.thread.MyTaskList;
 
@@ -1756,20 +1754,23 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 								
 								.build();
 				List<UnderWriter> underWrite = new ArrayList<UnderWriter>();
-				List<AdminReferral> referalList = calcEngine.getReferalList(r);
-				for(AdminReferral ref:referalList) {
-					UnderWriter underWriterReq = new UnderWriter();
-					underWriterReq.setUwMailid(ref.getMailId());
-					underWriterReq.setUwMessengerCode(Integer.parseInt(ref.getMobileCode()));
-					underWriterReq.setUwMessengerPhone(new BigDecimal(ref.getMobileNo()));
-					underWriterReq.setUwPhonecode(Integer.parseInt(ref.getMobileCode()));
-					underWriterReq.setUwPhoneNo(new BigDecimal(ref.getMobileNo()));
-					underWriterReq.setUwName(ref.getInsuranceId());
-					underWriterReq.setUwLoginId(ref.getLoginId());
-					underWriterReq.setUwuserType(ref.getUwuserType());
-					underWriterReq.setUwsubuserType(ref.getUwsubuserType());
-					underWrite.add(underWriterReq);
-				}				 
+				List<Tuple> underWriterList = getUnderWriterDetails(req.getRequestReferenceNo());
+				if(underWriterList!=null && !underWriterList.isEmpty()) {
+					for (Tuple underWriterData : underWriterList) {
+						UnderWriter underWriterReq = new UnderWriter();
+						underWriterReq.setUwMailid(underWriterData.get("userMail") == null ? "": underWriterData.get("userMail").toString());
+						underWriterReq.setUwMessengerCode(underWriterData.get("whatsappCodeDesc")==null?null :Integer.valueOf( underWriterData.get("whatsappCodeDesc").toString()));
+						underWriterReq.setUwMessengerPhone(underWriterData.get("whatsappNo")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("whatsappNo").toString()));
+						underWriterReq.setUwPhonecode(underWriterData.get("mobileCodeDesc")== null ? null:Integer.valueOf(underWriterData.get("mobileCodeDesc").toString()));
+						underWriterReq.setUwPhoneNo(underWriterData.get("userMobile")== null ? BigDecimal.ZERO :new BigDecimal(underWriterData.get("userMobile").toString()));
+						underWriterReq.setUwName(underWriterData.get("userName")==null ? "": underWriterData.get("userName").toString());
+						underWriterReq.setUwLoginId(underWriterData.get("loginId")==null ? "": underWriterData.get("loginId").toString()); 
+						underWriterReq.setUwuserType(underWriterData.get("userType")==null ? "": underWriterData.get("userType").toString());
+						underWriterReq.setUwsubuserType(underWriterData.get("subUserType")==null ? "": underWriterData.get("subUserType").toString());
+						underWrite.add(underWriterReq);
+					}
+				}
+				 				 
 				n.setUnderwriters(underWrite);
 				//Company Info
 				n.setCompanyid(cusRefNo.get(0).getCompanyId());
@@ -1850,7 +1851,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						}
 
 						// UnderWriter Info
-						List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),cusRefNo.get(0).getLoginId());
+						List<Tuple> underWriterList=getUnderWriterDetails(req.getRequestReferenceNo());
 						List<UnderWriter> underWrite = new ArrayList<UnderWriter>();
 						if (underWriterList != null) {
 							for (Tuple underWriterData : underWriterList) {
@@ -1942,7 +1943,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						}
 
 						// UnderWriter Info
-						List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),cusRefNo.get(0).getLoginId());
+						List<Tuple> underWriterList=getUnderWriterDetails(req.getRequestReferenceNo());
 						List<UnderWriter> underWrite = new ArrayList<UnderWriter>();
 						if (underWriterList != null) {
 							for (Tuple underWriterData : underWriterList) {
@@ -2036,7 +2037,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				}
 
 				// UnderWriter Info
-				List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),cusRefNo.get(0).getLoginId());
+				List<Tuple> underWriterList=getUnderWriterDetails(req.getRequestReferenceNo());
 				List<UnderWriter> underWrite = new ArrayList<UnderWriter>();
 				if (underWriterList != null) {
 					for (Tuple underWriterData : underWriterList) {
@@ -2130,7 +2131,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				}
 
 				// UnderWriter Info
-				List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),cusRefNo.get(0).getLoginId());
+				List<Tuple> underWriterList=getUnderWriterDetails(req.getRequestReferenceNo());
 				List<UnderWriter> underWrite = new ArrayList<UnderWriter>();
 				if (underWriterList != null) {
 					for (Tuple underWriterData : underWriterList) {
@@ -2182,8 +2183,24 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			}
 			return updateRes;
 		}
-
-		private List<Tuple> getUnderWriterDetails(String productId,String companyId,String branchCode,String loginId) {
+		private List<Tuple> getUnderWriterDetails(String requestReferenceNo){
+			List<Tuple> list = new ArrayList<Tuple>();
+			try {
+				List<UWReferralDetails> details = uwReferralRepo.findByRequestReferenceNo(requestReferenceNo);
+				if(!details.isEmpty()) {
+					UWReferralDetails uw = details.get(0);
+					List<String> logIns = details.stream().map(t -> t.getUwLoginId()).collect(Collectors.toList());
+					List<Tuple> underWriterDetails = getUnderWriterDetails(uw.getProductId().toString(), uw.getCompanyId(), uw.getBranchCode(), logIns);
+					return underWriterDetails;
+				}
+			}catch (Exception e) {
+				e.printStackTrace();
+				
+			}
+			return list;
+		}
+		
+		private List<Tuple> getUnderWriterDetails(String productId,String companyId,String branchCode,List<String> loginId) {
 			List<Tuple> list = new ArrayList<Tuple>();
 			try {
 				CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -2213,7 +2230,9 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						   u.get("updatedDate").alias("updatedDate"),u.get("userMail").alias("userMail"), 
 						   u.get("userMobile").alias("userMobile"),u.get("userName").alias("userName"), 
 						   u.get("vatRegNo").alias("vatRegNo"),u.get("whatsappCode").alias("whatsappCode"),
-						   u.get("whatsappCodeDesc").alias("whatsappCodeDesc"),u.get("whatsappNo").alias("whatsappNo"));			
+						   u.get("whatsappCodeDesc").alias("whatsappCodeDesc"),u.get("whatsappNo").alias("whatsappNo"),
+						   l.get("userType").alias("userType"),l.get("subUserType").alias("subUserType")
+						);			
 				List<String> subUserType = new ArrayList<String>(); 
 				subUserType.add("high");
 				subUserType.add("both");
@@ -2228,12 +2247,15 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 				Predicate n6 = cb.equal(p.get("loginId"),(l.get("loginId")));
 				Predicate n7 = cb.equal(b.get("branchCode"),branchCode);
 				Predicate n8 = cb.equal(p.get("productId"),productId);
+				Expression<String>e1=cb.lower(l.get("loginId"));
+				Predicate n10 = e1.in(p.get("loginId"),loginId);
+				
 				Calendar cal = new GregorianCalendar();
 				Date today = new Date();
 				cal.setTime(today);cal.add(Calendar.DAY_OF_MONTH, -1);;
 				today = cal.getTime();
 				Predicate n9 = cb.between(cb.literal(today),p.get("effectiveDateStart"), p.get("effectiveDateEnd"));
-				query.where(n1,n2,n3,n4,n5,n6,n7,n8,n9);
+				query.where(n1,n2,n3,n4,n5,n6,n7,n8,n9,n10);
 				TypedQuery<Tuple> result = em.createQuery(query);
 				list = result.getResultList();
 			} catch (Exception e) {

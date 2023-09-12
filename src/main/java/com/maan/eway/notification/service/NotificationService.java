@@ -15,8 +15,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -35,7 +37,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +49,9 @@ import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginUserInfo;
+import com.maan.eway.bean.MailMaster;
+import com.maan.eway.bean.NotifTemplateMaster;
+import com.maan.eway.bean.SmsConfigMaster;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.res.CommonRes;
@@ -56,11 +60,17 @@ import com.maan.eway.error.Error;
 import com.maan.eway.jasper.req.JasperDocumentReq;
 import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.jasper.service.JasperService;
+import com.maan.eway.notification.bean.MailDataDetails;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
+import com.maan.eway.notification.repository.MailDataDetailsRepository;
 import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
 import com.maan.eway.notification.req.Broker;
 import com.maan.eway.notification.req.Customer;
+import com.maan.eway.notification.req.Mail;
+import com.maan.eway.notification.req.MailDataDetailsDto;
+import com.maan.eway.notification.req.Messenger;
 import com.maan.eway.notification.req.Notification;
+import com.maan.eway.notification.req.Sms;
 import com.maan.eway.notification.req.UnderWriter;
 import com.maan.eway.notification.req.statealgo.NotificationStatus;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
@@ -70,6 +80,9 @@ import com.maan.eway.repository.EserviceCustomerDetailsRepository;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
 import com.maan.eway.repository.LoginUserInfoRepository;
+import com.maan.eway.repository.MailMasterRepository;
+import com.maan.eway.repository.NotifTemplateMasterRepository;
+import com.maan.eway.repository.SmsConfigMasterRepository;
 @Service
 public class NotificationService {
 	@Autowired 
@@ -221,7 +234,7 @@ public class NotificationService {
 							.notifcationPushDate(n.getNotifcationDate())
 							.notifcationEndDate(calend.getTime())
 							.notifDescription(n.getNotifDescription())
-							//.notifNo(null)
+							.notifNo(Instant.now().getEpochSecond())
 							.notifPriority(n.getNotifPriority())
 							.notifPushedStatus("P")
 							.notifTemplatename(n.getNotifTemplatename())
@@ -260,7 +273,9 @@ public class NotificationService {
 					generateTinyURL(n,loadTinyUrl,loadDropdown,nt);
 					uws.add(nt);
 				}
+				jobProcess(uws);
 				List<NotifTransactionDetails> saveAll = notifTrans.saveAll(uws);
+				//jobProcess(saveAll);
 				sv=saveAll.get(0);
 			}else {		
 				String tinyGroupId=String.valueOf(Instant.now().getEpochSecond());
@@ -283,7 +298,7 @@ public class NotificationService {
 						.notifcationPushDate(n.getNotifcationDate())
 						.notifcationEndDate(calend.getTime())
 						.notifDescription(n.getNotifDescription())
-						//.notifNo(null)
+						.notifNo(Instant.now().getEpochSecond())
 						.notifPriority(n.getNotifPriority())
 						.notifPushedStatus("P")
 						.notifTemplatename(n.getNotifTemplatename())
@@ -320,7 +335,13 @@ public class NotificationService {
 					
 				}
 				generateTinyURL(n,loadTinyUrl,loadDropdown,nt);
+				
+				
+				
 				sv = notifTrans.save(nt);
+				List<NotifTransactionDetails> text=new LinkedList<NotifTransactionDetails>();
+				text.add(sv);
+				jobProcess(text);
 			}
 			c.setIsError(Boolean.FALSE);
 			c.setErroCode(100);
@@ -342,7 +363,106 @@ public class NotificationService {
 		
 		
  	}
+	@Autowired
+	private MailMasterRepository mailRepo;
+
+	@Autowired
+	private NotifTemplateMasterRepository masterRepo;
+	@Autowired
+	private SmsConfigMasterRepository smsRepo;
 	
+	public void jobProcess(List<NotifTransactionDetails> transDetails) {		
+	
+		List<List<Object>> collect =null;
+		Date d=new Date();		
+		if(transDetails.size()>0) {		
+			try {
+			//List<Tuple> ne = rat.loadNotificationPending();
+			transDetails.stream().forEach(tr-> tr.setNotifPushedStatus("Y"));
+			//notRepo.saveAll(transDetails);
+
+			Map<String, Map<Integer, Map<String, List<NotifTransactionDetails>>>> groups = transDetails.stream().collect(Collectors.groupingBy(NotifTransactionDetails::getCompanyid,
+					Collectors.groupingBy(NotifTransactionDetails::getProductid,
+							Collectors.groupingBy(NotifTransactionDetails::getNotifTemplatename))));
+
+
+
+			synchronized (transDetails) {
+
+				for (Entry<String, Map<Integer, Map<String, List<NotifTransactionDetails>>>> g : groups.entrySet()){
+					Map<Integer, Map<String, List<NotifTransactionDetails>>> h = g.getValue();
+					for (Entry<Integer, Map<String, List<NotifTransactionDetails>>> h1 : h.entrySet()) {
+						Map<String, List<NotifTransactionDetails>> h2 = h1.getValue();
+						for (Entry<String, List<NotifTransactionDetails>> h3 : h2.entrySet()) {
+
+							List<NotifTransactionDetails> n=h3.getValue();
+							List<NotifTemplateMaster> templat = masterRepo.findByCompanyIdAndProductIdAndStatusAndNotifTemplatenameIgnoreCaseOrderByAmendIdDesc(n.get(0).getCompanyid(),Long.valueOf(n.get(0).getProductid()),"Y",n.get(0).getNotifTemplatename());
+							if(!templat.isEmpty()) {
+								
+								List<MailMaster> mailc = mailRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(n.get(0).getCompanyid(),"99999","Y");													
+								List<SmsConfigMaster> smsc = smsRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(n.get(0).getCompanyid(),"99999","Y");													
+
+							
+								
+								PushedStateChange p=new PushedStateChange(templat.get(0),mailc.get(0),smsc.get(0));
+								collect = n.stream().map(p).filter(dd->dd!=null).collect(Collectors.toList());					
+								List<Mail> totalMailJob=new ArrayList<Mail>();
+								
+					
+								
+								List<Sms> totalSmSJob=new ArrayList<Sms>();
+								
+								List<Messenger> totalMessnJob=new ArrayList<Messenger>();
+
+								if(!collect.isEmpty()) {
+									for (List<Object> list : collect) {
+										//totalJob.addAll(list);
+										for (Object o:list) {
+
+											if(o instanceof Mail) {
+												totalMailJob.add((Mail) o);
+											}else if(o instanceof Sms) {
+												totalSmSJob.add((Sms) o);
+											}else if(o instanceof Messenger) {
+												totalMessnJob.add((Messenger) o);
+											}
+
+										}
+									}
+									if(!totalMailJob.isEmpty()) {
+										MailJob job=new MailJob();
+										totalMailJob.stream().forEach(job);									
+									}
+									if(!totalSmSJob.isEmpty()) {
+										SmsJob sms=new SmsJob();
+										totalSmSJob.stream().forEach(sms);									
+									}
+
+
+								}
+							}
+							
+						}
+					}
+				}
+
+
+			}
+
+			transDetails.stream().forEach(tr-> tr.setNotifPushedStatus("C"));
+			
+			}catch (Exception e) {
+				e.printStackTrace();
+				transDetails.stream().forEach(tr-> tr.setNotifPushedStatus("E"));
+			
+			}finally {
+				notifTrans.saveAll(transDetails);
+			}
+		}
+
+		
+
+	}
 	public String getShorternURL(String encryptedURL) {
 		BufferedReader reader = null;
 		URL url =null;
@@ -696,6 +816,29 @@ public class NotificationService {
 		}
 		
 	
+		return null;
+	}
+	@Autowired
+	private MailDataDetailsRepository mailDataRepo;
+	public CommonRes pushMailStatus(MailDataDetailsDto m) {
+		try {
+			MailDataDetails mdd=MailDataDetails.builder()
+					.fromEmail(m.getFromEmail())
+					.mailBody(m.getMailBody())
+					.mailRegards(m.getMailRegards())
+					.mailResponse(m.getMailResponse())
+					.mailSubject(m.getMailSubject())
+					.mailTranId(null)
+					.pushedEntryDate(new Date())
+					.status(m.getStatus())
+					.toEmail(m.getToEmail())
+					.notifNo(m.getNotifNo())
+					.build();
+			mailDataRepo.save(mdd);
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 	

@@ -1,9 +1,7 @@
 package com.maan.eway.notification.controller;
 
-import java.time.Instant;
 import java.util.Map;
 
-import org.jobrunr.scheduling.JobScheduler;
 //import org.jobrunr.scheduling.JobScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.common.res.CommonRes;
+import com.maan.eway.notification.req.MailDataDetailsDto;
 import com.maan.eway.notification.req.Notification;
-import com.maan.eway.notification.service.JobRunrService;
 import com.maan.eway.notification.service.NotificationService;
 
 import io.swagger.annotations.Api;
@@ -46,7 +44,7 @@ public class NotificationController {
 	}
 	
 	
-	@Autowired
+	/*@Autowired
 	private JobScheduler jobScheduler;
 	
 	@Autowired
@@ -60,14 +58,18 @@ public class NotificationController {
 	 //jobs.schedule<JobRunrService>(Instant.now().plusSeconds(60),()-> x.jobProcess());
 	 
 	 jobScheduler.schedule(Instant.now(), () ->ourservice.jobProcess());
-	 /*
-	  * @Inject
-private JobRequestScheduler jobRequestScheduler;
-
-jobRequestScheduler.schedule(Instant.now().plusHours(24), 
-  new SendNewlyRegisteredEmailJobRequest());
-  */
-	  
+  
  }
-
+*/
+	
+	@PostMapping("/ack/mail")
+	public ResponseEntity<CommonRes> pushMailStatus(@RequestBody MailDataDetailsDto request) {
+	 	CommonRes data = notificationservice.pushMailStatus(request);
+	 	if (data != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}	
+	
 }

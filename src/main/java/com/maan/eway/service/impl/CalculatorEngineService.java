@@ -1925,7 +1925,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 			  criterias.add(c2);
 			  criterias.add(c3);
 			  
-			List<Tuple> joinResult = crservice.getJoinResult(criterias, 0, 50);
+			List<Tuple> joinResult = crservice.getJoinResult(criterias, 0, 0);
 			List<AdminReferral> list=new ArrayList<AdminReferral>();
 			for (Tuple tuple : joinResult) {
 				

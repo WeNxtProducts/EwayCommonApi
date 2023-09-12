@@ -15,11 +15,15 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.Date;
@@ -111,8 +115,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="SMTP_PORT")
     private Long     smtpPort ;
 
-
-    //--- ENTITY LINKS ( RELATIONSHIP )
 
 
 }

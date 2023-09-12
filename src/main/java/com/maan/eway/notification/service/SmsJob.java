@@ -15,26 +15,20 @@ import com.maan.eway.bean.SmsDataDetails;
 import com.maan.eway.notification.req.Sms;
 import com.maan.eway.repository.SmsDataDetailsRepository;
 
-@Service
+//@Service
 public class SmsJob implements Consumer<Sms> {
 
-	@Autowired
-	private SmsDataDetailsRepository smsRepo;
+	/*@Autowired
+	private SmsDataDetailsRepository smsRepo;*/
 	private String type="0";	
 	private String dlr="1";
 	String statuscode="";
-	Integer statusvalue =0;
+	Integer statusvalue =0;/*
 	public void pushSms(Sms m) {
 
 		String statusResponse = null;
 		try {
-			/*
-			Properties prop = new Properties();
-			prop.put("MobileNo", m.getSmsTo());
-			prop.put("SmsContent", m.getSmsBody());
-			prop.put("SmsRegards", m.getSmsRegards()==null?m.getWhatsappRegards():m.getSmsRegards());
-			prop.put("SmsSubject", m.getSmsSubject());
-			*/	
+				
 			String mobileCode="";
 			RestTemplate restTemplate = new RestTemplate();
 			String fooResourceUrl = m.getCredential().getHost();
@@ -85,10 +79,10 @@ public class SmsJob implements Consumer<Sms> {
 		smsRepo.save(savedata);
 
 	}
-
+*/
 	@Override
 	public void accept(Sms t) {
-		pushSms(t);
+	//	pushSms(t);
 
 	}
 

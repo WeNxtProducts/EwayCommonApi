@@ -54,7 +54,7 @@ private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="NOTIF_NO", nullable=false)
-    public Integer    notifNo ;
+    public Long    notifNo ;
 
     //--- ENTITY DATA FIELDS 
     @Column(name="CUSTOMER_NAME", length=20)
