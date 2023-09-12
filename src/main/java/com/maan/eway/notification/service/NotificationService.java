@@ -104,6 +104,10 @@ public class NotificationService {
 	@Autowired
 	private JobScheduler jobScheduler;
 	*/
+	
+	@Value(value = "${kafka.push.mail}")
+	private String kafkaLink;
+	
 	private Logger log = LogManager.getLogger(NotificationService.class);
 	
 	
@@ -430,7 +434,7 @@ public class NotificationService {
 										}
 									}
 									if(!totalMailJob.isEmpty()) {
-										MailJob job=new MailJob();
+										MailJob job=new MailJob(kafkaLink);
 										totalMailJob.stream().forEach(job);									
 									}
 									if(!totalSmSJob.isEmpty()) {

@@ -1,35 +1,31 @@
 package com.maan.eway.notification.service;
 
 import java.io.File;
-import java.util.Date;
-import java.util.Properties;
+import java.util.Arrays;
 import java.util.function.Consumer;
 
-import javax.mail.Message;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Service;
-
-import com.maan.eway.notification.bean.MailDataDetails;
-import com.maan.eway.notification.repository.MailDataDetailsRepository;
 import com.maan.eway.notification.req.Mail;
 
 public class MailJob implements Consumer<Mail> {
 
 	 
+	private String kafkaLink; 
 	
 	/*@Autowired
 	private MailDataDetailsRepository mailRepo;
 	*/
 	
 	 
+	public MailJob(String kafkaLink) {
+		super();
+		this.kafkaLink = kafkaLink;
+	}
 	public void pushMail(Mail m) {
 		   /*
 		String statusResponse=null;
@@ -104,12 +100,30 @@ public class MailJob implements Consumer<Mail> {
 				.build();
 		mailRepo.save(mdd);
 		 */
+		
+		
+
+		try {
+			
+			RestTemplate restTemplate = new RestTemplate();
+			HttpHeaders headers = new HttpHeaders();
+			headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			headers.set("Authorization", "Basic dmlzaW9uOnZpc2lvbkAxMjMj");
+			HttpEntity<Object> entityReq = new HttpEntity<>(m, headers);
+			System.out.println(entityReq.getBody());
+			 ResponseEntity<Object> response = restTemplate.postForEntity(kafkaLink, entityReq, Object.class);
+			System.out.println(response.getBody());
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 	@Override
 	public void accept(Mail t) {
 		pushMail(t);
 	}
-	
+	/*
 
 	private File loadFilesFromPath(String attachPath) {
 		
@@ -121,5 +135,5 @@ public class MailJob implements Consumer<Mail> {
 		
 		return null;
 	}
-
+*/
 }

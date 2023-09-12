@@ -15,7 +15,7 @@
 	<name>EwayCommonApi</name>
 	<description>CRM project for Spring Boot</description>
 	<properties>
-		<java.version>1.8</java.version>
+		<java.version>17</java.version>
 		<cache2k-version>2.6.1.Final</cache2k-version>
 	</properties>
 	<dependencies>
