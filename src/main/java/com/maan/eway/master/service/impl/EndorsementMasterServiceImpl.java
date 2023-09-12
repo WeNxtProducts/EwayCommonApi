@@ -254,7 +254,7 @@ public class EndorsementMasterServiceImpl implements EndorsementMasterService {
 			String createdBy ="";
 			Integer endtTypeId = 0;
 			
-			ListItemValue data = listrepo.findByItemTypeAndItemCode("ENDORSEMENT_TYPE",req.getEndtTypeCategoryId());
+			ListItemValue data = listrepo.findByItemTypeAndItemCodeAndCompanyId("ENDORSEMENT_TYPE",req.getEndtTypeCategoryId(),req.getCompanyId() );
 		//	ListItemValue calc = listrepo.findByItemTypeAndItemCode("CALCULATION_TYPE",req.getCalcTypeId());
 			
 			if(StringUtils.isBlank(req.getEndtTypeId())) {
