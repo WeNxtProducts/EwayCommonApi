@@ -67,36 +67,11 @@ public class BuildingSumInsuredDetails {
 	@JsonProperty("SectionId")
 	private List<String> sectionId;
 	
-	@JsonProperty("WorkmenCompSuminsured")
-    private String    workmenCompSuminsured;
+	
 	
 	@JsonProperty("ElecEquipSuminsured")
     private String     elecEquipSuminsured ;
-		
-
-	@JsonProperty("MoneySinglecarrySuminsured")
-    private String   moneySinglecarrySuminsured ;
-		
-	@JsonProperty("MoneyAnnualcarrySuminsured")
-    private String   moneyAnnualcarrySuminsured ;
 	
-	@JsonProperty("MoneyInsafeSuminsured")
-    private String   moneyInsafeSuminsured ;
-	
-	@JsonProperty("FidelityAnyoccuSuminsured")
-    private String   fidelityAnyoccuSuminsured ;
-	
-	@JsonProperty("FidelityAnnualSuminsured")
-    private String   fidelityAnnualSuminsured ;
-	
-	@JsonProperty("TpliabilityAnyoccuSuminsured")
-    private String tpliabilityAnyoccuSuminsured ;
-	
-	@JsonProperty("EmpliabilityAnnualSuminsured")
-    private String empliabilityAnnualSuminsured ;
-	
-	@JsonProperty("EmpliabilityExcessSuminsured")
-    private String empliabilityExcessSuminsured ;
 
 	@JsonProperty("GoodsSinglecarrySuminsured")
     private String   goodsSinglecarrySuminsured ;
@@ -123,35 +98,11 @@ public class BuildingSumInsuredDetails {
     @JsonProperty("CashValueablesSi")
     private String cashValueablesSi;
     
-    @JsonProperty("CashInHandDirectors")
-    private String cashInHandDirectors;
-    
-    @JsonProperty("CashInTransit")
-    private String cashInTransit;
-    
-    @JsonProperty("CashInHandEmployees")
-    private String cashInHandEmployees;
-    
-    @JsonProperty("CashInSafe")
-    private String cashInSafe;
-    
-    @JsonProperty("CashInPremises")
-    private String cashInPremises;
+ 
     
     @JsonProperty("RevenueFromStamps")
     private String revenueFromStamps;
-    
-    @JsonProperty("MoneyInSafeBusiness")
-    private String moneyInSafeBusiness;
-    
-    @JsonProperty("MoneyOutSafeBusiness")
-    private String moneyOutSafeBusiness;
-    
-    @JsonProperty("MoneyInPremises")
-    private String moneyInPremises;
-    
-    @JsonProperty("MoneyInLocker")
-    private String moneyInLocker;
+  
     
 	@JsonProperty("MiningPlantSi")
 	private String miningPlantSi;
@@ -170,4 +121,22 @@ public class BuildingSumInsuredDetails {
 	
 	@JsonProperty("PlantAllriskSi")
 	private String plantAllriskSi;
+	
+	@JsonProperty("MoneySafeLimit")
+    private String moneySafeLimit    ;
+	
+	@JsonProperty("MoneyOutofSafe")
+    private String moneyOutofSafe    ;
+	
+	@JsonProperty("MoneyDirectorResidence")
+    private String moneyDirectorResidence    ;
+	
+	@JsonProperty("MoneyCollector")
+    private String moneyCollector    ;
+	
+	@JsonProperty("MoneyAnnualEstimate")
+    private String moneyAnnualEstimate    ;
+	
+	@JsonProperty("MoneyMajorLoss")
+    private String moneyMajorLoss;
 }

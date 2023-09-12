@@ -2560,47 +2560,33 @@ public class QuoteServiceImpl implements QuoteService {
 //				 occupation.add(occu);
 //				 
 //			}
-			res.setOccupationType(build.getOccupationType());
-			res.setOccupationTypeDesc(build.getOccupationTypeDesc());
-			res.setLiabilityOccupationId(build.getLiabilityOccupationId());
-			res.setLiabilityOccupationDesc(build.getLiabilityOccupationDesc());
+			res.setOccupationType(filterPacc.size()> 0 ? filterPacc.get(0).getOccupationType() : build.getOccupationType());
+			res.setOccupationTypeDesc(filterPacc.size()> 0 ? filterPacc.get(0).getOccupationDesc() : build.getOccupationTypeDesc());
 			res.setPersonalAccSuminsured(filterPacc.size()> 0 ? filterPacc.get(0).getSumInsured().toPlainString() : "");
 			res.setCount(paccDatas.size()> 0 ? paccDatas.get(0).getCount().toString() : "");
+			res.setLiabilityOccupationId(filterLiability.size()> 0 ? filterLiability.get(0).getOccupationType() : "");
+			res.setLiabilityOccupationDesc(filterLiability.size()> 0 ? filterLiability.get(0).getOccupationDesc() : "");
 			
 			res.setBuildingSuminsured(build.getBuildingSuminsured() == null?"0" :build.getBuildingSuminsured().toPlainString());
 			res.setAllriskSuminsured(build.getAllriskSuminsured() == null?"0" :build.getAllriskSuminsured().toPlainString());
 			res.setPersonalIntermediarySuminsured(filterLiability.size()> 0 ? filterLiability.get(0).getSumInsured().toPlainString() : "");
 			res.setContentSuminsured(build.getContentSuminsured() == null?"0" :build.getContentSuminsured().toPlainString());
-		//	res.setOccupationDetails(occupation);
-			res.setMoneySinglecarrySuminsured(build.getMoneySinglecarrySuminsured() == null?"0" :build.getMoneySinglecarrySuminsured().toPlainString());
-			res.setMoneyAnnualcarrySuminsured(build.getMoneyAnnualcarrySuminsured() == null?"0" :build.getMoneyAnnualcarrySuminsured().toPlainString());
-			res.setMoneyInsafeSuminsured(build.getMoneyInsafeSuminsured() == null?"0" :build.getMoneyInsafeSuminsured().toPlainString());
-			res.setFidelityAnyoccuSuminsured(build.getFidelityAnyoccuSuminsured() == null?"0" :build.getFidelityAnyoccuSuminsured().toPlainString());
-			res.setFidelityAnnualSuminsured(build.getFidelityAnnualSuminsured() == null?"0" :build.getFidelityAnnualSuminsured().toPlainString());
-			res.setTpliabilityAnyoccuSuminsured(build.getTpliabilityAnyoccuSuminsured() == null?"0" :build.getTpliabilityAnyoccuSuminsured().toPlainString());
-			res.setEmpliabilityAnnualSuminsured(build.getEmpliabilityAnnualSuminsured() == null?"0" :build.getEmpliabilityAnnualSuminsured().toPlainString());
-			res.setEmpliabilityExcessSuminsured(build.getEmpliabilityExcessSuminsured() == null?"0" :build.getEmpliabilityExcessSuminsured().toPlainString());
+		
 			res.setElecEquipSuminsured(build.getElecEquipSuminsured() == null?"0" :build.getElecEquipSuminsured().toPlainString());
 			res.setGoodsSinglecarrySuminsured(build.getGoodsSinglecarrySuminsured() == null?"0" :build.getGoodsSinglecarrySuminsured().toPlainString());
 			res.setGoodsTurnoverSuminsured(build.getGoodsTurnoverSuminsured() == null?"0" :build.getGoodsTurnoverSuminsured().toPlainString());
-			res.setCashInHandDirectors(build.getCashInHandDirectors() == null?"0" :build.getCashInHandDirectors().toPlainString());
-			res.setCashInHandEmployees(build.getCashInHandEmployees() == null?"0" :build.getCashInHandEmployees().toPlainString());
-			res.setCashInPremises(build.getCashInPremises() == null?"0" :build.getGoodsTurnoverSuminsured().toPlainString());
-			res.setCashInSafe(build.getCashInSafe() == null?"0" :build.getCashInSafe().toPlainString());
-			res.setCashInTransit(build.getCashInTransit() == null?"0" :build.getCashInTransit().toPlainString());
 			res.setCashValueablesSi(build.getCashValueablesSi() == null?"0" :build.getCashValueablesSi().toPlainString());
 			res.setRevenueFromStamps(build.getRevenueFromStamps() == null?"0" :build.getRevenueFromStamps().toPlainString());
-			res.setMoneyInLocker(build.getMoneyInLocker() == null?"0" :build.getMoneyInLocker().toPlainString());
-			res.setMoneyInPremises(build.getMoneyInPremises() == null?"0" :build.getMoneyInPremises().toPlainString());
-			res.setMoneyInSafeBusiness(build.getMoneyInSafeBusiness() == null?"0" :build.getMoneyInSafeBusiness().toPlainString());
-			res.setMoneyOutSafeBusiness(build.getMoneyOutSafeBusiness() == null?"0" :build.getMoneyOutSafeBusiness().toPlainString());
-			res.setMoneyInPremises(build.getMoneyInPremises() == null?"0" :build.getMoneyInPremises().toPlainString());
-			res.setMoneyAnnualcarrySuminsured(build.getMoneyAnnualcarrySuminsured() == null?"0" :build.getMoneyAnnualcarrySuminsured().toPlainString());
-			res.setMoneySinglecarrySuminsured(build.getMoneySinglecarrySuminsured() == null?"0" :build.getMoneySinglecarrySuminsured().toPlainString());;
 			res.setMiningPlantSi(build.getMiningPlantSi()== null?"0" :build.getMiningPlantSi().toPlainString());
 			res.setNonminingPlantSi(build.getNonminingPlantSi() == null?"0" :build.getNonminingPlantSi().toPlainString());
 			res.setGensetsSi(build.getGensetsSi() == null?"0" :build.getGensetsSi().toPlainString());
 			res.setEquipmentSi(build.getEquipmentSi() == null?"0" :build.getEquipmentSi().toPlainString());
+			res.setMoneyAnnualEstimate(build.getMoneyAnnualEstimate()== null?"0" : build.getMoneyAnnualEstimate().toPlainString());
+			res.setMoneyCollector(build.getMoneyCollector()== null?"0" : build.getMoneyCollector().toPlainString() );
+			res.setMoneyDirectorResidence(build.getMoneyDirectorResidence()== null?"0" : build.getMoneyDirectorResidence().toPlainString() );
+			res.setMoneyOutofSafe(build.getMoneyOutofSafe()== null?"0" : build.getMoneyOutofSafe().toPlainString() );
+			res.setMoneySafeLimit(build.getMoneySafeLimit()== null?"0" : build.getMoneySafeLimit().toPlainString() );
+			res.setMoneyMajorLoss(build.getMoneyMajorLoss() == null?"0" : build.getMoneyMajorLoss().toPlainString() );
 			
 			Double sumInsured = paccDatas.stream().filter( o -> o.getSumInsured() != null ).mapToDouble(o -> Double.valueOf(o.getSumInsured().toPlainString() ) ).sum() ;
 			res.setSumInsured(sumInsured==null ? "" : sumInsured.toString());
