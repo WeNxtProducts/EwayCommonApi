@@ -2,7 +2,9 @@ package com.maan.eway.payment.service.impl;
 
 import java.util.Base64;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -10,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.PaymentDetail;
@@ -59,6 +62,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 				String redirect_url=null;
 				String cancel_url=null;
 				String webHookUrl=null;
+				String signedFields="";
 					if(vendor!=null) {
 						apiKey=vendor.getApiKey();
 						apiSecret=vendor.getApiSecretKey();
@@ -71,6 +75,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 						
 						redirect_url=redirect_url.replaceAll("<QuoteNo>", payment.getQuoteNo());
 						cancel_url=cancel_url.replaceAll("<QuoteNo>", payment.getQuoteNo());
+						signedFields=vendor.getSignedFields();
 					}
 					
 					// data
@@ -117,7 +122,15 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					orderDict.addProperty("buyer_remarks","None");
 					orderDict.addProperty("merchant_remarks","None");
 					orderDict.addProperty("no_of_items",  1);
-					
+					List<String> signRemove=new LinkedList<String>();
+					for (Entry<String, JsonElement> entry : orderDict.entrySet()) {
+								if(!signedFields.contains(entry.getKey())) {
+									signRemove.add(entry.getKey());
+								} 
+					}					
+					for(String key:signRemove) {
+						orderDict.remove(key);
+					}
 					// initalize a new Client instace with values of the base url, api key and api secret
 					ApigwClient client = new ApigwClient(baseUrl,apiKey,apiSecret);
 					//post data

@@ -53,8 +53,15 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 
 				 BigDecimal si=BigDecimal.ZERO;
 				 if(!"A".equals(t.getCalcType()))
-					 si=vehicles.get(0).get(t.getCoverBasedOn())==null?BigDecimal.ZERO:new BigDecimal(vehicles.get(0).get(t.getCoverBasedOn()).toString());
-				 
+					 si=vehicles.get(0).get(t.getCoverBasedOn())==null?null:new BigDecimal(vehicles.get(0).get(t.getCoverBasedOn()).toString());
+				 if(si==null) {
+					 discountLoading=false;
+					 CoverException build = CoverException.builder().message("No factor found")
+					 .isError(true).build();
+					 t.setError(build);
+					 t.setNotsutable(true);
+					 throw build;
+				 }
 				 if("Y".equals(t.getDependentCoveryn())) {
 					 if(calculatedcover!=null) {
 						Cover ct = calculatedcover.stream().filter(c->c.getCoverId().equals(t.getDependentCoverId())).findAny().orElse(null);

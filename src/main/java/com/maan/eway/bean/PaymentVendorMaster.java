@@ -109,6 +109,9 @@ private static final long serialVersionUID = 1L;
     private String     checkStatusUrl ;
     //--- ENTITY LINKS ( RELATIONSHIP )
 
+    
+    @Column(name="SIGNED_FIELDS")
+    private String signedFields;
 
 }
 

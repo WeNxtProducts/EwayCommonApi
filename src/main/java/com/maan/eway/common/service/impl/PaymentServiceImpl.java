@@ -2690,7 +2690,7 @@ public class PaymentServiceImpl implements PaymentService {
 				}
 
 				// UnderWriter Info
-				List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),cusRefNo.get(0).getLoginId());
+				/*List<Tuple> underWriterList=getUnderWriterDetails(cusRefNo.get(0).getProductId(),cusRefNo.get(0).getCompanyId(),cusRefNo.get(0).getBranchCode(),cusRefNo.get(0).getLoginId());
 				List<UnderWriter> underWrite = new ArrayList<UnderWriter>();
 				if (underWriterList != null) {
 					for (Tuple underWriterData : underWriterList) {
@@ -2704,7 +2704,7 @@ public class PaymentServiceImpl implements PaymentService {
 						underWrite.add(underWriterReq);
 					}
 				}
-				n.setUnderwriters(underWrite);
+				n.setUnderwriters(underWrite);*/
 				//Company Info
 				n.setCompanyid(cusRefNo.get(0).getCompanyId());
 				n.setCompanyName(cusRefNo.get(0).getCompanyName());
