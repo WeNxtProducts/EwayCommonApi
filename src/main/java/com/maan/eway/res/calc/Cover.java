@@ -192,6 +192,9 @@ public class Cover implements Serializable{
 				  private BigDecimal diffPremiumIncludedTaxLC;
 				  @JsonProperty("CoverageLimit")
 				  private BigDecimal     coverageLimit ;
+				  
+				  @JsonProperty("MinSumInsured")
+				  private BigDecimal minSumInsured;
 }
 
 

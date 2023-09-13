@@ -82,6 +82,7 @@ public class CoverFromPolicy implements Function<PolicyCoverData,Cover> {
 					//.regulatoryCode(t.getRegulatoryCode()==null?"N/A":t.getRegulatoryCode())
 					.effectiveDate(t.getCoverPeriodFrom())
 					.policyEndDate(t.getCoverPeriodTo())
+					.minSumInsured(t.getMinCoverageLimit()==null?BigDecimal.ZERO:t.getMinCoverageLimit())
 					.build();
 				return c;
 			 }			

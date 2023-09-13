@@ -296,6 +296,9 @@ private static final long serialVersionUID = 1L;
     private BigDecimal     minimumPremiumFc ;
     @Column(name="TAX_AMOUNT_LC")
     private BigDecimal     taxAmountLc ;
+    
+    @Column(name="MIN_COVERAGE_LIMIT")
+    private BigDecimal     minCoverageLimit;
 }
 
 

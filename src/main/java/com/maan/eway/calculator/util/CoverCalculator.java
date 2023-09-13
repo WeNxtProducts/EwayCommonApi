@@ -53,15 +53,8 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 				 
 				 BigDecimal si=BigDecimal.ZERO;
 				 if(!"A".equals(t.getCalcType()))
-					 si=vehicles.get(0).get(t.getCoverBasedOn())==null?null:new BigDecimal(vehicles.get(0).get(t.getCoverBasedOn()).toString());
-				 if(si==null) {
-					 discountLoading=false;
-					 CoverException build = CoverException.builder().message("No factor found")
-					 .isError(true).build();
-					 t.setError(build);
-					 t.setNotsutable(true);
-					 throw build;
-				 }
+					 si=vehicles.get(0).get(t.getCoverBasedOn())==null?BigDecimal.ZERO:new BigDecimal(vehicles.get(0).get(t.getCoverBasedOn()).toString());
+				 
 				 if("Y".equals(t.getDependentCoveryn())) {
 					 if(calculatedcover!=null) {
 						Cover ct = calculatedcover.stream().filter(c->c.getCoverId().equals(t.getDependentCoverId())).findAny().orElse(null);
@@ -77,7 +70,14 @@ public class CoverCalculator extends CommonCalculator implements Consumer<Cover>
 					 t.setPremiumBeforeDiscount(BigDecimal.ZERO);					 
 					 t.setPremiumBeforeDiscountLC(BigDecimal.ZERO);
 					 t.setCalcType("P");
-				 }else if("F".equals(t.getCalcType())) {
+				 }else if(t.getSumInsured().compareTo(t.getMinSumInsured())<0) {
+					    discountLoading=false;
+						CoverException build = CoverException.builder().message("Min SumInsured is:"+t.getMinSumInsured()+ " & SumInsured:"+t.getSumInsured())
+						.isError(true).build();
+						t.setError(build);
+						t.setNotsutable(true);
+						throw build;
+				 } if("F".equals(t.getCalcType())) {
 					 // Tuple vehicle,Tuple customer,Tuple common
 					 List<Tuple> factors = LoadFactorRates(engine, t.getCoverId(),t.getFactorTypeId(),engine.getVehicleId(),StringUtils.isBlank(t.getSubCoverId())?"0":t.getSubCoverId());
 					 

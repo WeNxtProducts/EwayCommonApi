@@ -76,6 +76,7 @@ public class CoverFromFactor implements Function<FactorRateRequestDetails,Cover>
 					.coverageLimit(t.getCoverageLimit())
 					.tiraSumInsured(t.getRegulatorySuminsured())
 					.tiraRate(t.getActualRate() ==null?0D:t.getActualRate().doubleValue())
+					.minSumInsured(t.getMinCoverageLimit()==null?BigDecimal.ZERO:t.getMinCoverageLimit())
 					.build();
 				return c;
 			 }			

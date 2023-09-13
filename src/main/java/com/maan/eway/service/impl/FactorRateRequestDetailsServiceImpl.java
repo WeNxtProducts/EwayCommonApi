@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -366,6 +367,8 @@ this.repository = repo;
 					saveCover.setRegulatorySuminsured(coverData.getTiraSumInsured()==null?BigDecimal.ZERO:coverData.getTiraSumInsured());
 					saveCover.setRegulatoryRate(coverData.getTiraRate()==null?BigDecimal.ZERO:new BigDecimal(coverData.getTiraRate()));
 					saveCover.setCoverageLimit(coverData.getCoverageLimit()==null?BigDecimal.ZERO:coverData.getCoverageLimit());
+					saveCover.setMinCoverageLimit(coverData.getMinSumInsured()==null?BigDecimal.ZERO:coverData.getMinSumInsured());
+				    //private BigDecimal     minCoverageLimit;
 					// Date Differents
 					Date periodStart =  coverData.getEffectiveDate();
 					Date periodEnd = coverData.getPolicyEndDate() ;
@@ -484,6 +487,7 @@ this.repository = repo;
 						saveSubCover.setIsSelected(subCoverData.getIsselected());
 						saveSubCover.setCoverageType(subCoverData.getCoverageType());
 						saveSubCover.setCoverageLimit(saveSubCover.getCoverageLimit()==null?BigDecimal.ZERO:saveSubCover.getCoverageLimit());
+						saveSubCover.setMinCoverageLimit(subCoverData.getMinSumInsured()==null?BigDecimal.ZERO:subCoverData.getMinSumInsured());
 //						if(subCoverData.getTaxes()!=null && subCoverData.getTaxes().size() > 0 ) {
 //							saveSubCover.setTax1(subCoverData.getTaxes().get(0).getTaxAmount()==null ? null : Double.valueOf(df.format(subCoverData.getTaxes().get(0).getTaxAmount())) );
 //							if(coverData.getTaxes().size() > 1  ) 
