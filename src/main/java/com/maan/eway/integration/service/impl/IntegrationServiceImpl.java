@@ -189,18 +189,54 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 					
 					
 				}
-		/*		
+		
 				//Framing External Api
 				HomePositionMaster home = homeRepo.findByQuoteNo(quoteNo);
 				
 				String policyNo = "";
-				String customerId="";
+				String reqRefNo="";
 				if (home != null ) {
 					policyNo = home.getPolicyNo();
-					customerId=home.getcustomerId();
+					reqRefNo = home.getRequestReferenceNo();
 				}
 				System.out.println("*********EXTERNAL API CALL STARTS*********");
 				System.out.println("*********PolicyNo "+policyNo);
+				
+				
+				if(configMas.getPremiaId()==11) {
+					
+					Object list = frameReqService.pushCreditLimitDetail(reqRefNo);
+					System.out.println("*********11.CreditLimitDetail:" + json.toJson(list));
+				} 
+				if(configMas.getPremiaId()==10) {
+								
+						Object list = frameReqService.pushYiPolicyApproval(policyNo);
+						System.out.println("*********10.YiPolicyApproval:" + json.toJson(list));
+					}
+				if(configMas.getPremiaId()==9) {
+					
+					Object list = frameReqService.pushYiPremCal(policyNo);
+					System.out.println("*********9.YiPremCal:" + json.toJson(list));
+				}
+				if(configMas.getPremiaId()==8) {
+					
+					Object list = frameReqService.pushYiVatDetail(policyNo);
+					System.out.println("*********8.YiVatDetail:" + json.toJson(list));
+				}
+				if(configMas.getPremiaId()==2) {
+					
+					Object list = frameReqService.pushYiSectionDetail(policyNo);
+					System.out.println("*********2.YiSectionDetail:" + json.toJson(list));
+				}
+				
+//				if(configMas.getPremiaId()==3) {
+//					
+//					Object list = frameReqService.pushPgitPolRiskAddlInfo(policyNo);
+//					System.out.println("*********3.PgitPolRiskAddlInfo:" + json.toJson(list));
+//				}
+				
+				
+				/*		
 				
 				if(configMas.getPremiaId()==6) {
 					
@@ -294,7 +330,7 @@ public PremiaResponse pushPremiaIntegration(PremiaRequest request) {
 				response.setResponse("Success");	
 			} else {
 				response.setResponse("Failed");
-			}
+			} 
 			
 		}
 	}catch(Exception e){

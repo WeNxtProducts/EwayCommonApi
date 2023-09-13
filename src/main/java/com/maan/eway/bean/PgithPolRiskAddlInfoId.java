@@ -5,20 +5,13 @@
 
 package com.maan.eway.bean;
 
-import lombok.*;
-import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
-
-
 import java.math.BigDecimal;
 
-/**
- * Composite primary key for entity "PgithPolRiskAddlInfo" ( stored in table "PGITH_POL_RISK_ADDL_INFO" )
- *
- * @author Telosys
- *
- */
+import lombok.Getter;
+import lombok.Setter;
+
+
 
 @Getter
 @Setter
@@ -27,9 +20,11 @@ public class PgithPolRiskAddlInfoId implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //--- ENTITY KEY ATTRIBUTES 
-    private BigDecimal praihSysId ;
+    private String     quotationPolicyNo ;
+    private String     riskId ;
+    private BigDecimal     praiCode23;
+    private BigDecimal     praiCode24;
+    private String     praiData01 ;
+    private String     praiData03 ;
     
-    private BigDecimal praihEndNoIdx ;
-    
-     
 }

@@ -5,20 +5,12 @@
 */
 package com.maan.eway.integration.service.impl;
 
-import java.math.BigDecimal;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.nio.charset.Charset;
 
-import javax.transaction.Transactional;
-
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -32,32 +24,41 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.maan.claimextintapi.req.InsertCreditLimitDetailReq;
+import com.maan.claimextintapi.req.InsertYiPolicyApprovalReq;
+import com.maan.eway.bean.CreditLimitDetail;
 import com.maan.eway.bean.MotCommDiscountDetail;
 import com.maan.eway.bean.MotDriverDetail;
 import com.maan.eway.bean.PgithPolRiskAddlInfo;
 import com.maan.eway.bean.YiChargeDetail;
 import com.maan.eway.bean.YiCoverDetail;
+import com.maan.eway.bean.YiPolicyApproval;
 import com.maan.eway.bean.YiPolicyDetail;
+import com.maan.eway.bean.YiPremCal;
+import com.maan.eway.bean.YiSectionDetail;
+import com.maan.eway.bean.YiVatDetail;
+import com.maan.eway.integration.req.InsertYiPremCalReq;
+import com.maan.eway.integration.req.InsertYiSectionDetailReq;
+import com.maan.eway.integration.req.InsertYiVatDetailReq;
 import com.maan.eway.integration.req.MotDriverDetailReq;
 import com.maan.eway.integration.req.MotcommDiscountDetailReq;
+import com.maan.eway.integration.req.PgitPolRiskAddlInfoReq;
 import com.maan.eway.integration.req.YiChargeDetailReq;
 import com.maan.eway.integration.req.YiCoverDetailReq;
 import com.maan.eway.integration.req.YiPolicyDetailReq;
 import com.maan.eway.integration.service.FrameReqService;
+import com.maan.eway.repository.CreditLimitDetailRepository;
 import com.maan.eway.repository.MotDriverDetailRepository;
 import com.maan.eway.repository.MotcommDiscountDetailRepository;
 import com.maan.eway.repository.PgitPolRiskAddlInfoRepository;
 import com.maan.eway.repository.YiChargeDetailRepository;
 import com.maan.eway.repository.YiCoverDetailRepository;
+import com.maan.eway.repository.YiPolicyApprovalRepository;
 import com.maan.eway.repository.YiPolicyDetailRepository;
+import com.maan.eway.repository.YiPremCalRepository;
+import com.maan.eway.repository.YiSectionDetailRepository;
+import com.maan.eway.repository.YiVatDetailRepository;
 
-
-
-
-
-/**
- * <h2>SurveyorApprovalDetailServiceimpl</h2>
- */
 @Service
 
 public class FrameReqServiceImpl implements FrameReqService {
@@ -73,9 +74,27 @@ public class FrameReqServiceImpl implements FrameReqService {
 	private MotcommDiscountDetailRepository motComRepo;
 	@Autowired
 	private YiPolicyDetailRepository yiPolicyReo;
+	
+	
+	@Autowired
+	private CreditLimitDetailRepository creditRepo;
+	
+	@Autowired
+	private YiPolicyApprovalRepository yipolicyRepo;
+	
+	@Autowired
+	private YiPremCalRepository yipremRepo;
+	
+	@Autowired
+	private YiSectionDetailRepository yisecRepo;
+	
+	@Autowired
+	private YiVatDetailRepository yivatRepo;
+	
 
 	@Value(value = "${BasicAuthPass}")
 	private String BasicAuthPass;
+	
 	@Value(value = "${BasicAuthName}")
 	private String BasicAuthName;
 
@@ -96,6 +115,21 @@ public class FrameReqServiceImpl implements FrameReqService {
 
 	@Value(value = "${YiPolicyDetail}")
 	private String YiPolicyDetailCall;
+	
+	@Value(value = "${CreditLimitDetail}")
+	private String CreditLimitDetailCall;
+
+	@Value(value = "${YiPolicyApproval}")
+	private String YiPolicyApprovalCall;
+
+	@Value(value = "${YiPremCal}")
+	private String YiPremCalCall;
+
+	@Value(value = "${YiSectionDetail}")
+	private String YiSectionDetailCall;
+
+	@Value(value = "${YiVatDetail}")
+	private String YiVatDetailCall;
 	
 	SimpleDateFormat sdfFormat = new SimpleDateFormat("dd/MM/yyyy");
 	SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-dd-MM");
@@ -153,32 +187,7 @@ public class FrameReqServiceImpl implements FrameReqService {
 
 		return response;
 	}
-/*	@Override
-	public Object pushPgitPolRiskAddlInfo(String policyNo) {
-		String url = PgitPolRiskAddlInfoCall;
-		String auth = BasicAuthName +":"+ BasicAuthPass;
-        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
-        String authHeader = "Basic " + new String( encodedAuth );
-        MotDriverDetailReq req1 = new MotDriverDetailReq();
-		List<PgithPolRiskAddlInfo> list = pgitPolRiskRepo.findByQuotationPolicyNo(policyNo);
-	
-		if (list != null && list.size() > 0) {
-			req1 = dozerMapper.map(list.get(0), MotDriverDetailReq.class);
-		}
-		RestTemplate restTemplate = new RestTemplate();
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		 headers.set("Authorization",authHeader);
-		HttpEntity<MotDriverDetailReq> entityReq = new HttpEntity<MotDriverDetailReq>(req1, headers);
 
-		ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
-		System.out.println(response.getBody());
-		System.out.println("Success");
-
-		return response;
-	}
-*/
 	@Override
 	public Object pushYiCoverDetail(String policyNo) {
 		String url = YiCoverdetailCall;
@@ -254,5 +263,215 @@ public class FrameReqServiceImpl implements FrameReqService {
 
 		return response;
 	}
+	////////////////////////////////////////////////////////////////
+	@Override
+	public Object pushCreditLimitDetail(String reqRefNo) {
+		try {
+		String url = CreditLimitDetailCall;
+		String auth = BasicAuthName +":"+ BasicAuthPass;
+        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+        String authHeader = "Basic " + new String( encodedAuth );
+        List<InsertCreditLimitDetailReq> reqList = new ArrayList<InsertCreditLimitDetailReq>();
+      
+		List<CreditLimitDetail> list =creditRepo.findByRequestreferenceno(reqRefNo); 
+		
+		if (list != null && list.size() > 0) {
+			for(CreditLimitDetail data : list) {
+				  InsertCreditLimitDetailReq req1 = new InsertCreditLimitDetailReq();
+				  req1 = dozerMapper.map(data,  InsertCreditLimitDetailReq.class);
+				  reqList.add(req1);
+				  }
+		}
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.set("Authorization",authHeader);
+		HttpEntity< List<InsertCreditLimitDetailReq>> entityReq = new HttpEntity< List<InsertCreditLimitDetailReq>>(reqList, headers);
+
+		ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
+		System.out.println(response.getBody());
+		System.out.println("Success");
+		return response;
+		}catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		
+	}
+	@Override
+	public Object pushYiPolicyApproval(String policyNo) {
+		try {
+		String url = YiPolicyApprovalCall;
+		String auth = BasicAuthName +":"+ BasicAuthPass;
+        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+        String authHeader = "Basic " + new String( encodedAuth );
+       
+		List<YiPolicyApproval> list =yipolicyRepo.findByQuotationPolicyNo(policyNo);
+		List<InsertYiPolicyApprovalReq> reqList = new ArrayList<InsertYiPolicyApprovalReq>();
+		if (list != null && list.size() > 0) {
+			
+			for(YiPolicyApproval data : list) {
+				 InsertYiPolicyApprovalReq req1 = new InsertYiPolicyApprovalReq();
+				  req1 = dozerMapper.map(data,   InsertYiPolicyApprovalReq.class);
+				  reqList.add(req1);
+				  }
+		}
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		 headers.set("Authorization",authHeader);
+		HttpEntity<   List<InsertYiPolicyApprovalReq>> entityReq = new HttpEntity<   List<InsertYiPolicyApprovalReq>>(reqList, headers);
+
+		ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
+		System.out.println(response.getBody());
+		System.out.println("Success");
+
+		return response;
+		}catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	@Override
+	public Object pushYiPremCal(String policyNo) {
+		try {
+		String url = YiPremCalCall;
+		String auth = BasicAuthName +":"+ BasicAuthPass;
+        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+        String authHeader = "Basic " + new String( encodedAuth );
+       
+		List<YiPremCal> list =yipremRepo.findByQuotationPolicyNo(policyNo);
+	
+		List<InsertYiPremCalReq> reqList = new ArrayList<InsertYiPremCalReq>();
+		if (list != null && list.size() > 0) {
+		
+			for(YiPremCal data : list) {
+				 InsertYiPremCalReq req1 = new   InsertYiPremCalReq();
+				 req1 = dozerMapper.map(data,     InsertYiPremCalReq.class);
+				  reqList.add(req1);
+				  }
+		}
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		 headers.set("Authorization",authHeader);
+		HttpEntity< List<InsertYiPremCalReq>> entityReq = new HttpEntity<List<InsertYiPremCalReq>>(reqList, headers);
+
+		ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
+		System.out.println(response.getBody());
+		System.out.println("Success");
+
+		return response;
+		}catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	@Override
+	public Object pushYiVatDetail(String policyNo) {
+		try {
+		String url = YiVatDetailCall;
+		String auth = BasicAuthName +":"+ BasicAuthPass;
+        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+        String authHeader = "Basic " + new String( encodedAuth );
+		List<YiVatDetail> list =yivatRepo.findByQuotationPolicyNo(policyNo);
+		List<InsertYiVatDetailReq> reqList = new ArrayList<InsertYiVatDetailReq>();
+		if (list != null && list.size() > 0) {
+
+			for(YiVatDetail data : list) {
+				InsertYiVatDetailReq req1 = new   InsertYiVatDetailReq();
+				 req1 = dozerMapper.map(data,  InsertYiVatDetailReq.class);
+				  reqList.add(req1);
+				  }
+			
+		}
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		 headers.set("Authorization",authHeader);
+		HttpEntity< List<InsertYiVatDetailReq>> entityReq = new HttpEntity<List<InsertYiVatDetailReq>>(reqList, headers);
+
+		ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
+		System.out.println(response.getBody());
+		System.out.println("Success");
+
+		return response;
+		}catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	@Override
+	public Object pushYiSectionDetail(String policyNo) {
+		try {
+		String url = YiSectionDetailCall;
+		String auth = BasicAuthName +":"+ BasicAuthPass;
+        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+        String authHeader = "Basic " + new String( encodedAuth );
+      
+		List<YiSectionDetail> list =yisecRepo.findByQuotationPolicyNo(policyNo);
+		List<InsertYiSectionDetailReq> reqList = new ArrayList<InsertYiSectionDetailReq>();
+		if (list != null && list.size() > 0) {
+		
+			for(YiSectionDetail data : list) {
+				  InsertYiSectionDetailReq req1 = new     InsertYiSectionDetailReq();
+				req1 = dozerMapper.map(data, InsertYiSectionDetailReq.class);
+				  reqList.add(req1);
+				  }
+		}
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.set("Authorization",authHeader);
+		HttpEntity<List<InsertYiSectionDetailReq>> entityReq = new HttpEntity<List<InsertYiSectionDetailReq>>(reqList, headers);
+
+		ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
+		System.out.println(response.getBody());
+		System.out.println("Success");
+		return response;
+	}catch (Exception e) {
+		e.printStackTrace();
+		return null;
+	}
+	}
+	
+	@Override
+	public Object pushPgitPolRiskAddlInfo(String policyNo) {
+		String url = PgitPolRiskAddlInfoCall;
+		String auth = BasicAuthName +":"+ BasicAuthPass;
+        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+        String authHeader = "Basic " + new String( encodedAuth );
+     
+		List<PgithPolRiskAddlInfo> list = pgitPolRiskRepo.findByQuotationPolicyNo(policyNo);
+		List<PgitPolRiskAddlInfoReq> reqList = new ArrayList<PgitPolRiskAddlInfoReq>();
+		
+		if (list != null && list.size() > 0) {
+			
+			for(PgithPolRiskAddlInfo data : list) {
+				PgitPolRiskAddlInfoReq req1 = new PgitPolRiskAddlInfoReq();
+				   req1 = dozerMapper.map(data, PgitPolRiskAddlInfoReq.class);
+				   reqList.add(req1);
+				  }
+		}
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		 headers.set("Authorization",authHeader);
+		HttpEntity<List<PgitPolRiskAddlInfoReq>> entityReq = new HttpEntity<List<PgitPolRiskAddlInfoReq>>(reqList, headers);
+
+		ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
+		System.out.println(response.getBody());
+		System.out.println("Success");
+
+		return response;
+	}
+
 	
 }

@@ -42,7 +42,7 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@Table(name="CreditLimitDetail")
+@Table(name="CREDIT_LIMIT_DETAIL")
 
 
 public class CreditLimitDetail implements Serializable {
@@ -97,8 +97,8 @@ private static final long serialVersionUID = 1L;
     @Column(name="P_WS_ERROR", length=500)
     private String     pWsError ;
 
-    @Column(name="P_WS_RESPONSE_ERROR", length=500)
-    private String     pWsResponseError ;
+    @Column(name="P_WS_RESPONSE_ERROR_DESC", length=500)
+    private String     pWsResponseErrorDesc ;
 
     @Column(name="PRODUCT", length=12)
     private String   product;

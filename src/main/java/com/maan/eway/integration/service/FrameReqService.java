@@ -1,7 +1,5 @@
 package com.maan.eway.integration.service;
 
-import java.util.List;
-
 public interface FrameReqService {
 
 	Object pushMotCommDiscountDetail(String policyNo);
@@ -14,6 +12,18 @@ public interface FrameReqService {
 
 	Object pushYiPolicyDetail(String policyNo);
 
-//	Object pushPgitPolRiskAddlInfo(String policyNo);
+
+	
+	Object pushCreditLimitDetail(String reqRefNo);
+
+	Object pushYiPolicyApproval(String policyNo);
+
+	Object pushYiPremCal(String policyNo);
+
+	Object pushYiVatDetail(String policyNo);
+
+	Object pushYiSectionDetail(String policyNo);
+	
+	Object pushPgitPolRiskAddlInfo(String policyNo);
 
 }
