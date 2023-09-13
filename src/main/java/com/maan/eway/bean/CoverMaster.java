@@ -152,9 +152,6 @@ private static final long serialVersionUID = 1L;
     @Column(name="FACTOR_TYPE_ID")
     private Integer    factorTypeId ;
 
-    @Column(name="MAX_SUMINSURED")
-    private BigDecimal     maxSuminsured ;
-
     @Column(name="IS_TAX_EXCEMPTED", length=1)
     private String     isTaxExcempted ;
 
