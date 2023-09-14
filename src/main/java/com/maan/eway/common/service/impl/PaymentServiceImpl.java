@@ -1718,12 +1718,12 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			trackingDetailsPayment(data, req.getCreatedBy());
 	
-		if(paymentStatus.equalsIgnoreCase("ACCEPTED") && ( paymentInfo.getEmiYn().equalsIgnoreCase("N") || paymentInfo.getInstallmentMonth().equalsIgnoreCase("0") )  ) {
+		/*if(paymentStatus.equalsIgnoreCase("ACCEPTED") && ( paymentInfo.getEmiYn().equalsIgnoreCase("N") || paymentInfo.getInstallmentMonth().equalsIgnoreCase("0") )  ) {
 			//// Call Tira Insert				
 						TiraFrameReqCall tiraReq = new TiraFrameReqCall();
 						tiraReq.setQuoteNo(data.getQuoteNo());					
 						tiraIntegService.callTiraIntegeration(tiraReq , token );
-		}
+		}*/
 	}catch(Exception e) {
 			e.printStackTrace();
 			log.info("Log Details"+e.getMessage());
