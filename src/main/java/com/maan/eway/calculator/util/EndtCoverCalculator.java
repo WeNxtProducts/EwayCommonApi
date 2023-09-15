@@ -152,7 +152,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					}.reversed());*/
 					 //new premium-old prem
 					  endorsement = t.getEndorsements().get(0);
-					  boolean dontGo=true;
+					  boolean dontGo=false;
 
 			 		
 			 		 
@@ -310,9 +310,9 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 							 endorsement.setProRataYn("Y");
 							 if(domath.compareTo(BigDecimal.ZERO)<0)
 								 dontGo=true;
-							 else if(endorsement.getPremiumAfterDiscountLC().compareTo(endorsement.getPremiumExcluedTaxLC())>0)
+							/* else if(endorsement.getPremiumAfterDiscountLC().compareTo(endorsement.getPremiumExcluedTaxLC())>0)
 							 	dontGo=false;
-							 
+							 */
 							 endorsement.setPremiumBeforeDiscount(domath.multiply(endorsement.getProRata()));
 							 endorsement.setPremiumBeforeDiscountLC((BigDecimal) decimalFormat.parse(decimalFormat.format(endorsement.getPremiumBeforeDiscount().multiply(endorsement.getExchangeRate()))));
 							 							 
