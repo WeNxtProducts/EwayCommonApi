@@ -172,9 +172,9 @@ public class FollowupDetailsServiceImpl  implements FollowupDetailsService{
 		try {
 			Integer followupid = 0;
 			
-			ListItemValue data = listrepo.findByItemTypeAndItemCode("FOLLOWUP_STATUS",req.getStatus());
+			ListItemValue data = listrepo.findByItemTypeAndItemCodeAndCompanyId("FOLLOWUP_STATUS",req.getStatus(), req.getCompanyId());
 			
-			//Insert
+			//Inserts
 			if(StringUtils.isBlank(req.getFollowupId().toString())) {
 			
 			//	Integer totalCount = getMasterTableCount(req.getCompanyId(),req.getProductId(),"99999");
