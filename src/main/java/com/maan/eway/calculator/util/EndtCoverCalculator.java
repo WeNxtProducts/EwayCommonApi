@@ -373,7 +373,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 endorsement.setPremiumIncludedTaxLC(totalWithTaxLC);
 					 if(("Y".equals(engine.getCoverModification()) && "Y".equals(t.getProRataYn()) && "Y".equals(t.getUserOpt()))
 							||
-							("N".equals(engine.getCoverModification()) && "Y".equals(t.getProRataYn()) && "Y".equals(t.getUserOpt())
+							("N".equals(engine.getCoverModification()) && "Y".equals(endorsement.getProRataYn()) && "Y".equals(t.getUserOpt())
 									&& dontGo )	
 							 ) {
 						 
