@@ -1016,10 +1016,6 @@ public class PgitPolRiskAddlInfoReq implements Serializable {
     @Column(name="P_WS_ERROR")
     private String     pWsError ;
 
-    
-
-
-
     @Column(name="SERVICE_ACTION")
     private String     serviceAction ;
 

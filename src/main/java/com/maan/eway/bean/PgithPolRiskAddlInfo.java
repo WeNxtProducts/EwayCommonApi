@@ -43,7 +43,7 @@ import lombok.ToString;
 @DynamicUpdate
 //@Builder
 @IdClass(PgithPolRiskAddlInfoId.class)
-@Table(name="PGITH_POL_RISK_ADDL_INFO_01")
+@Table(name="PGIT_POL_RISK_ADDL_INFO_01") 
 
 
 public class PgithPolRiskAddlInfo implements Serializable {

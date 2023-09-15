@@ -229,11 +229,11 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 					System.out.println("*********2.YiSectionDetail:" + json.toJson(list));
 				}
 				
-//				if(configMas.getPremiaId()==3) {
-//					
-//					Object list = frameReqService.pushPgitPolRiskAddlInfo(policyNo);
-//					System.out.println("*********3.PgitPolRiskAddlInfo:" + json.toJson(list));
-//				}
+				if(configMas.getPremiaId()==3) {
+					
+					Object list = frameReqService.pushPgitPolRiskAddlInfo(policyNo);
+					System.out.println("*********3.PgitPolRiskAddlInfo:" + json.toJson(list));
+				}
 				
 				
 				/*		
