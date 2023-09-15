@@ -653,8 +653,8 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 //Rating
 	@Override
 	public List<SearchEservieMotorDetailsViewRatingRes> buildingRating() {
-		// TODO Auto-generated method stub
-		return null;
+		List<SearchEservieMotorDetailsViewRatingRes> reslist = new ArrayList<SearchEservieMotorDetailsViewRatingRes>();
+		return reslist;
 	}
 
 	
