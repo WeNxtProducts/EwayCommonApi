@@ -321,6 +321,13 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="MS_REFNO")
     private Integer     msRefno ;
+    
+    @Column(name="CUSTOMER_NAME")
+    private String     customerName ;
+    @Column(name="AGENCY_CODE")
+    private String     agencyCode ;
+    @Column(name="BRANCH_NAME ")
+    private String     branchName  ;
 }
 
 
