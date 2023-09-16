@@ -163,6 +163,10 @@ public class MotorGridServiceImpl implements MotorGridService {
 	@Autowired 
 	private RatingFactorsUtil ratingutil;
 	
+	
+	@Autowired
+	private ContentAndRiskRepository contentRiskRepo;
+	
 	 @Autowired
 	 private DataSource dataSource;
 	 
@@ -1861,6 +1865,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 					// Copy Section Data Details
 					sectionDataDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
 					
+					// Copy CONDENT_AND_ALLRISK
+					contentAndRiskEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
 //					// Copy ESERVICE_CUSTOMER_DETAILS
 //					eserviceCustDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count,custRefNo);
 				}
@@ -2620,8 +2626,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 
 		}
 		
-		/*// Content And Risk
-		private CopyQuoteSuccessRes contentAndRiskEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo, String customerId,
+		// Content And Risk
+	/*	private CopyQuoteSuccessRes contentAndRiskEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo, String customerId,
 				String loginId, String prevPolicyNo, String prevQuoteNo, Integer count, String custRefNo) {
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 			SectionDataDetails savedata = new SectionDataDetails();
@@ -2682,6 +2688,50 @@ public class MotorGridServiceImpl implements MotorGridService {
 			return res;
 
 		}*/
+		private CopyQuoteSuccessRes contentAndRiskEndoCopyquote(CopyQuoteReq req, String refNo, String quoteNo, String customerId,String loginId, String prevPolicyNo, String prevQuoteNo, Integer count, String custRefNo) {
+			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
+			ContentAndRisk savedata = new ContentAndRisk();
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			try {
+				EndtTypeMaster entMaster =ratingutil.getEndtMasterData(req.getInsuranceId(),req.getProductId(),req.getEndtTypeId()); /*endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
+						req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
+						Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
+				
+				List<ContentAndRisk> content = contentRiskRepo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
+				if (content != null && content.size() > 0) {
+					for (ContentAndRisk data : content) {
+						savedata = dozerMapper.map(data, ContentAndRisk.class);
+						savedata.setEntryDate(new Date());
+						savedata.setRequestReferenceNo(refNo);
+						savedata.setQuoteNo(quoteNo);
+						savedata.setCreatedBy(loginId);
+						savedata.setUpdatedBy(loginId);
+						savedata.setUpdatedDate(new Date());
+						savedata.setOriginalPolicyNo(req.getPolicyNo());
+						savedata.setEndorsementDate(new Date());
+						savedata.setEndorsementRemarks(req.getEndtRemarks());
+						savedata.setEndorsementEffdate(req.getEndtEffectiveDate());
+						savedata.setEndtPrevPolicyNo(prevPolicyNo);
+						savedata.setEndtPrevQuoteNo(prevQuoteNo);
+						savedata.setEndtCount(new BigDecimal(count));
+						savedata.setEndtStatus("P");
+						savedata.setIsFinaceYn(entMaster.getEndtTypeCategoryId() == 2 ? "Y" : "N");
+						savedata.setEndtCategDesc(entMaster.getEndtTypeCategory());
+						savedata.setEndorsementType(Integer.parseInt(req.getEndtTypeId()));
+						savedata.setEndorsementTypeDesc(entMaster.getEndtTypeDesc());
+						savedata.setStatus("E");
+						savedata.setPolicyNo(req.getPolicyNo() + "-" + count);
+						contentRiskRepo.saveAndFlush(savedata);
+					}
+				}
+			
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Exception is ---> " + e.getMessage());
+				return null;
+			}
+			return res;
+		}
  		// Validaton
 		@Override
 		public List<Tuple> validateMotorEndt(String quoteNo) {
