@@ -376,6 +376,7 @@ public class EndorsementService {
 							.fieldsAllowed(fields)
 							.sectionModificationYn(ent.getSectionModificationYn())
 							.sectionModificationType(ent.getSectionModificationType())
+							.isCoverEndt(ent.getIsCoverendt())							
 							.build();
 					
 					ets.add(e);

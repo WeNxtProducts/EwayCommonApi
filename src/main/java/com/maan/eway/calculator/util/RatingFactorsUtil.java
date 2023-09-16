@@ -561,6 +561,7 @@ public class RatingFactorsUtil {
 						 			.endtTypeCategoryId(t.get("endtTypeCategoryId")==null?0:Integer.parseInt(t.get("endtTypeCategoryId").toString()))
 						 			.sectionModificationYn(t.get("sectionModificationYn")==null ? "" : t.get("sectionModificationYn").toString())
 						 			.sectionModificationType(t.get("sectionModificationType")==null ? "" : t.get("sectionModificationType").toString())
+						 			.isCoverendt(t.get("isCoverendt")==null?"N":t.get("isCoverendt").toString())
 						 			.updatedDate(null).build();
 				 result.add(e);
 				 }
