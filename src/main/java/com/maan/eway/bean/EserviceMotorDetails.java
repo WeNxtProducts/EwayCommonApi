@@ -546,8 +546,8 @@ private static final long serialVersionUID = 1L;
     private String     customerName ;
     
 
-    @Column(name="BRANCH_CODE")
-    private Integer     branchName ;
+    @Column(name="BRANCH_NAME")
+    private String     branchName ;
 }
 
 
