@@ -216,6 +216,8 @@ public interface DropDownService {
 
 	List<MotorWithAccessoriesRes> getMotAccDropdown(MotDropdownReq req);
 
+	List<DropDownRes> getPremiaSourceTypes(LovDropDownReq req);
+
 
 
 

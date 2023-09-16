@@ -40,6 +40,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CommonDataDetails;
@@ -59,6 +60,7 @@ import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
 import com.maan.eway.bean.PersonalInfo;
@@ -2624,13 +2626,13 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			   
 			
-			// Set Branch Details 
-			LoginBranchMaster loginBranch =  getBranchDetails(home.getCompanyId() ,home.getBrokerBranchCode() ,home.getLoginId() );
-			if( loginBranch !=null) {
-				home.setBranchName(loginBranch.getBranchName());
-				home.setBrokerBranchName(loginBranch.getBrokerBranchName());
-					
-			}
+//			// Set Branch Details 
+//			LoginBranchMaster loginBranch =  getBranchDetails(home.getCompanyId() ,home.getBrokerBranchCode() ,home.getLoginId() );
+//			if( loginBranch !=null) {
+//				home.setBranchName(loginBranch.getBranchName());
+//				home.setBrokerBranchName(loginBranch.getBrokerBranchName());
+//					
+//			}
 			
 			
 			// Primary KEy
@@ -2946,19 +2948,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			EserviceMotorDetails motorData = eserMotRepo.findByRequestReferenceNoAndRiskIdOrderByRiskIdAsc(request.getRequestReferenceNo() ,request.getVehicleId());
 			EserviceCustomerDetails custData = eserCustRepo.findByCustomerReferenceNo(motorData.getCustomerReferenceNo());
-			home.setCustomerName(custData.getClientName());
-			home.setSubUserType(motorData.getSubUserType());		
-			home.setAgencyCode(Integer.valueOf(motorData.getBrokerCode()));
-			home.setUserType(motorData.getSourceType() );
+			
+			// Souce Type 
+			
 			home.setCompanyId(motorData.getCompanyId());
-			home.setBranchCode(motorData.getBranchCode());
 			home.setProductId(Integer.valueOf(motorData.getProductId()));
 			home.setSectionId(Integer.valueOf(motorData.getSectionId()));
-			home.setBrokerBranchCode(motorData.getBrokerBranchCode());	
 			
-			home.setLoginId(motorData.getLoginId());
-			home.setBrokerCode(motorData.getBrokerCode());
-		//	home.setEffectiveDate(motorData.getPolicyStartDate());
+			//	home.setEffectiveDate(motorData.getPolicyStartDate());
 			home.setExpiryDate(motorData.getPolicyEndDate());
 			home.setAdminRemarks(motorData.getAdminRemarks());
 			home.setAdminReferralStatus(motorData.getStatus());			
@@ -2981,10 +2978,6 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setCompanyName(motorData.getCompanyName());
 			home.setCommissionType(motorData.getCommissionType());
 			home.setCommissionTypeDesc(motorData.getCommissionTypeDesc());
-			home.setSubUserType(motorData.getSubUserType());		
-			home.setBdmCode(motorData.getBdmCode());
-			home.setSourceType(motorData.getSourceType());
-			home.setApplicationId(motorData.getApplicationId());
 			home.setEndtTypeId(motorData.getEndorsementType()==null?null:String.valueOf(motorData.getEndorsementType()));
 			home.setEndtStatus(StringUtils.isBlank(motorData.getEndtStatus())?"":motorData.getEndtStatus());
 			home.setEndtDate(motorData.getEndorsementDate()==null?null:motorData.getEndorsementDate());
@@ -3000,6 +2993,23 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setOriginalPolicyNo(motorData.getOriginalPolicyNo()==null?"":motorData.getOriginalPolicyNo());
 			home.setQuoteNo(request.getQuoteNo());
 			home.setRequestReferenceNo(request.getRequestReferenceNo());
+			
+			// Source Type Details 
+			home.setBranchCode(motorData.getBranchCode()) ;
+		    home.setBranchName(motorData.getBranchName());
+			home.setSourceType(motorData.getSourceType());
+		    home.setSubUserType(motorData.getSourceType());
+		    home.setApplicationId(motorData.getApplicationId());
+		    home.setBrokerCode(motorData.getBrokerCode());
+		    home.setAgencyCode(Integer.valueOf(motorData.getAgencyCode()));
+		    home.setCustomerCode(motorData.getCustomerCode());
+		    home.setCustomerName(motorData.getBdmCode() !=null ? motorData.getCustomerName() :custData.getClientName());
+		    home.setBdmCode(motorData.getBdmCode());
+			home.setBrokerBranchCode(motorData.getBrokerBranchCode() );
+			home.setBrokerBranchName(motorData.getBrokerBranchName() );
+			home.setUserType(motorData.getSourceType() );
+			home.setLoginId(motorData.getLoginId());
+			
 			List<EserviceMotorDetails> motList = eserMotRepo.findByRequestReferenceNo(request.getRequestReferenceNo());
 			
 			List<EserviceMotorDetails> filterComActive = motList.stream().filter( o ->  (! o.getStatus().equalsIgnoreCase("D")) &&  o.getCommissionPercentage() !=null ).collect(Collectors.toList());
@@ -3058,15 +3068,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setBranchCode(travelData.getBranchCode());
 			home.setProductId(Integer.valueOf(travelData.getProductId()));
 			home.setSectionId(Integer.valueOf(travelData.getSectionId()));
-			home.setBrokerBranchCode(travelData.getBrokerBranchCode());	
-			home.setLoginId(travelData.getLoginId());
-			home.setApplicationId(travelData.getApplicationId());
-			home.setAgencyCode(Integer.valueOf(travelData.getBrokerCode()));
-			home.setSubUserType(travelData.getSubUserType());		
-			home.setAgencyCode(Integer.valueOf(travelData.getBrokerCode()));
 			home.setUserType(travelData.getSourceType() );
 			home.setAcExecutiveId(travelData.getAcExecutiveId()==null?null : Long.valueOf(travelData.getAcExecutiveId()));
-			home.setBrokerCode(travelData.getBrokerCode());
 		//	home.setEffectiveDate(travelData.getTravelStartDate());
 			home.setExpiryDate(travelData.getTravelEndDate());
 			home.setAdminRemarks(travelData.getAdminRemarks());
@@ -3085,14 +3088,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setPromocode(travelData.getPromocode());
 			home.setManualReferalYn(travelData.getManualReferalYn());
 			
-			home.setCustomerCode(travelData.getCustomerCode());
 			home.setProductName(travelData.getProductName());
 			home.setCompanyName(travelData.getCompanyName());
 			home.setCommissionType(travelData.getCommissionType());
 			home.setCommissionTypeDesc(travelData.getCommissionTypeDesc());
-			home.setSubUserType(travelData.getSubUserType());		
-			home.setBdmCode(travelData.getBdmCode());
-			home.setSourceType(travelData.getSourceType());
 			home.setApplicationId(travelData.getApplicationId());		
 			home.setEndtTypeId(travelData.getEndorsementType()==null?null:String.valueOf(travelData.getEndorsementType()));
 			home.setEndtStatus(StringUtils.isBlank(travelData.getEndtStatus())?"":travelData.getEndtStatus());
@@ -3109,6 +3108,22 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setOriginalPolicyNo(travelData.getOriginalPolicyNo()==null?"":travelData.getOriginalPolicyNo());
 			home.setCommissionPercentage(travelData.getCommissionPercentage());
 			home.setVatCommission(travelData.getVatCommission());
+			
+			// Source Type Details 
+			home.setBranchCode(travelData.getBranchCode()) ;
+		    home.setBranchName(travelData.getBranchName());
+			home.setSourceType(travelData.getSourceType());
+		    home.setSubUserType(travelData.getSourceType());
+		    home.setApplicationId(travelData.getApplicationId());
+		    home.setBrokerCode(travelData.getBrokerCode());
+		    home.setAgencyCode(Integer.valueOf(travelData.getAgencyCode()));
+		    home.setCustomerCode(travelData.getCustomerCode());
+		    home.setCustomerName(travelData.getBdmCode() !=null ? travelData.getCustomerName() :custData.getClientName());
+		    home.setBdmCode(travelData.getBdmCode());
+			home.setBrokerBranchCode(travelData.getBrokerBranchCode() );
+			home.setBrokerBranchName(travelData.getBrokerBranchName() );
+			home.setUserType(travelData.getSourceType() );
+			home.setLoginId(travelData.getLoginId());
 			
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -3134,15 +3149,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setBranchCode(buildingData.getBranchCode());
 			home.setProductId(Integer.valueOf(buildingData.getProductId()));
 			home.setSectionId(Integer.valueOf(0));
-			home.setBrokerBranchCode(buildingData.getBrokerBranchCode());	
-			home.setSubUserType(buildingData.getSubUserType());		
-			home.setAgencyCode(Integer.valueOf(buildingData.getBrokerCode()));
 			home.setUserType(buildingData.getSubUserType() );
-			home.setLoginId(buildingData.getLoginId());
-			home.setApplicationId(buildingData.getApplicationId());
-			home.setAgencyCode(Integer.valueOf(buildingData.getBrokerCode()));
 			home.setAcExecutiveId(buildingData.getAcExecutiveId()==null?null : Long.valueOf(buildingData.getAcExecutiveId()));
-			home.setBrokerCode(buildingData.getBrokerCode());
 		//	home.setEffectiveDate(buildingData.getPolicyStartDate());
 			home.setExpiryDate(buildingData.getPolicyEndDate());
 			home.setAdminRemarks(buildingData.getAdminRemarks());
@@ -3161,15 +3169,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setPromocode(buildingData.getPromocode());
 			home.setManualReferalYn(buildingData.getManualReferalYn());
 			
-			home.setCustomerCode(buildingData.getCustomerCode());
 			home.setProductName(buildingData.getProductDesc());
 			home.setCompanyName(buildingData.getCompanyName());
 			home.setCommissionType(buildingData.getCommissionType());
 			home.setCommissionTypeDesc(buildingData.getCommissionTypeDesc());
-			home.setSubUserType(buildingData.getSubUserType());		
-			home.setBdmCode(buildingData.getBdmCode());
-			home.setSourceType(buildingData.getSourceType());
-			home.setApplicationId(buildingData.getApplicationId());		
 			home.setEndtTypeId(buildingData.getEndorsementType()==null?null:String.valueOf(buildingData.getEndorsementType()));
 			home.setEndtStatus(StringUtils.isBlank(buildingData.getEndtStatus())?"":buildingData.getEndtStatus());
 			home.setEndtDate(buildingData.getEndorsementDate()==null?null:buildingData.getEndorsementDate());
@@ -3185,6 +3188,22 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setOriginalPolicyNo(buildingData.getOriginalPolicyNo()==null?"":buildingData.getOriginalPolicyNo());
 			home.setCommissionPercentage(buildingData.getCommissionPercentage());
 			home.setVatCommission(buildingData.getVatCommission());
+		
+			// Source Type Details 
+			home.setBranchCode(buildingData.getBranchCode()) ;
+		    home.setBranchName(buildingData.getBranchName());
+			home.setSourceType(buildingData.getSourceType());
+		    home.setSubUserType(buildingData.getSourceType());
+		    home.setApplicationId(buildingData.getApplicationId());
+		    home.setBrokerCode(buildingData.getBrokerCode());
+		    home.setAgencyCode(Integer.valueOf(buildingData.getAgencyCode()));
+		    home.setCustomerCode(buildingData.getCustomerCode());
+		    home.setCustomerName(buildingData.getBdmCode() !=null ? buildingData.getCustomerName() :custData.getClientName());
+		    home.setBdmCode(buildingData.getBdmCode());
+			home.setBrokerBranchCode(buildingData.getBrokerBranchCode() );
+			home.setBrokerBranchName(buildingData.getBrokerBranchName() );
+			home.setUserType(buildingData.getSourceType() );
+			home.setLoginId(buildingData.getLoginId());
 		}catch (Exception e) {
 			e.printStackTrace();
 			log.error("Exception is ---> " + e.getMessage());
@@ -3202,6 +3221,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			EserviceCommonDetails  eserCommonData = eserCommonRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() , request.getVehicleId()) ;
 			Long commonCount =  eserCommonRepo.countByRequestReferenceNo(request.getRequestReferenceNo() ) ;
+			EserviceCustomerDetails custData = eserCustRepo.findByCustomerReferenceNo(eserCommonData.getCustomerReferenceNo());
 			//List<EserviceSectionDetails> sections = eserSecRepo.findByRequestReferenceNoAndRiskIdAndProductIdOrderBySectionIdAsc(request.getRequestReferenceNo() , request.getVehicleId(),request.getProductId() );
 			home.setCompanyId(eserCommonData.getCompanyId());
 			home.setCustomerName(eserCommonData.getCustomerName() );
@@ -3258,6 +3278,22 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setOriginalPolicyNo(eserCommonData.getOriginalPolicyNo()==null?"":eserCommonData.getOriginalPolicyNo());
 			home.setCommissionPercentage(eserCommonData.getCommissionPercentage());
 			home.setVatCommission(eserCommonData.getVatCommission());
+			
+			// Source Type Details 
+			home.setBranchCode(eserCommonData.getBranchCode()) ;
+		    home.setBranchName(eserCommonData.getBranchName());
+			home.setSourceType(eserCommonData.getSourceType());
+		    home.setSubUserType(eserCommonData.getSourceType());
+		    home.setApplicationId(eserCommonData.getApplicationId());
+		    home.setBrokerCode(eserCommonData.getBrokerCode());
+		    home.setAgencyCode(Integer.valueOf(eserCommonData.getAgencyCode()));
+		    home.setCustomerCode(eserCommonData.getCustomerCode());
+		    home.setCustomerName(eserCommonData.getBdmCode() !=null ? eserCommonData.getCustomerName() :custData.getClientName());
+		    home.setBdmCode(eserCommonData.getBdmCode());
+			home.setBrokerBranchCode(eserCommonData.getBrokerBranchCode() );
+			home.setBrokerBranchName(eserCommonData.getBrokerBranchName() );
+			home.setUserType(eserCommonData.getSourceType() );
+			home.setLoginId(eserCommonData.getLoginId());
 			
 		}catch (Exception e) {
 			e.printStackTrace();

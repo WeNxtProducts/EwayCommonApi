@@ -1433,7 +1433,7 @@ public class DropDownServiceImpl  implements DropDownService{
 					itemType.equalsIgnoreCase("COPY_QUOTE_BY_COMMON") || itemType.equalsIgnoreCase("DOC_ID_TYPE") || 
 					itemType.equalsIgnoreCase("TAX_FOR") || itemType.equalsIgnoreCase("PAYMENT") || 
 					itemType.equalsIgnoreCase("PORTFOLIO_TYPES") || itemType.equalsIgnoreCase("TAX_FOR_DESC") || 
-					itemType.equalsIgnoreCase("MONTHS")) {  //not company based 
+					itemType.equalsIgnoreCase("MONTHS") || itemType.equalsIgnoreCase("PREMIA_SOURCE_TYPE")) {  //not company based 
 				query.where(n2,n3,n8,n9,n10,n12).orderBy(orderList);
 			}else {
 				query.where(n2,n3,n4,n9,n10,n12).orderBy(orderList);
@@ -3102,5 +3102,27 @@ public class DropDownServiceImpl  implements DropDownService{
 		return resList;	
 	}
 
+	
+	@Override
+	public List<DropDownRes> getPremiaSourceTypes(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			String itemType = "PREMIA_SOURCE_TYPE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
+			getList.sort(Comparator.comparing(ListItemValue :: getParam1));
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;	
+	}
 	
 }
