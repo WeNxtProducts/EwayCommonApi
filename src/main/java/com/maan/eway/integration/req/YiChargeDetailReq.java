@@ -36,125 +36,55 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class YiChargeDetailReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
+	@JsonProperty("ChargeCode")
+	private String chargeCode;
 
-    //----------------------------------------------------------------------
-    // ENTITY PRIMARY KEY 
-    //----------------------------------------------------------------------
+	@JsonProperty("Requestreferenceno")
+	private String requestreferenceno;
 
-	@JsonProperty("ClmapSysId")
-	private Long clmapSysId;
+	@JsonProperty("ServiceId")
+	private String serviceId;
 
-	@JsonProperty("ClmapPolSysId")
-	private Long clmapPolSysId;
+	@JsonProperty("QuotationPolicyNo")
+	private String quotationPolicyNo;
 
-	@JsonProperty("ClmapSectionCode")
-	private String clmapSectionCode;
+	@JsonProperty("ServiceAction")
+	private String serviceAction;
 
-	@JsonProperty("ClmapPolNo")
-	private String clmapPolNo;
+	@JsonProperty("ChgId")
+	private BigDecimal chgId;
 
-	@JsonProperty("ClmapCompCode")
-	private String clmapCompCode;
+	@JsonProperty("IndexNo")
+	private String indexNo;
 
-	@JsonProperty("ClmapDivnCode")
-	private String clmapDivnCode;
+	@JsonProperty("ChargeRate")
+	private Double chargeRate;
 
-	@JsonProperty("ClmapProdCode")
-	private String clmapProdCode;
+	@JsonProperty("RateModifiedYn")
+	private String rateModifiedYn;
 
-	@JsonProperty("ClmapDeptCode")
-	private String clmapDeptCode;
+	@JsonProperty("ChargeAmount")
+	private Double chargeAmount;
 
-	@JsonProperty("ClmapReinstDoneYn")
-	private String clmapReinstDoneYn;
+	@JsonProperty("ChargeModifiedYn")
+	private String chargeModifiedYn;
 
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("ClmapCrDt")
-	private Date clmapCrDt;
+	@JsonProperty("ProdCode")
+	private String prodCode;
 
-	@JsonProperty("ClmapCrUid")
-	private String clmapCrUid;
+	@JsonProperty("PWsResponseType")
+	private String pWsResponseType;
 
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("ClmapUpdDt")
-	private Date clmapUpdDt;
+	@JsonProperty("PWsError")
+	private String pWsError;
 
-	@JsonProperty("ClmapUpdUid")
-	private String clmapUpdUid;
+	@JsonProperty("RequestTime")
+	private Date requestTime;
 
-	@JsonProperty("ClmapTotLossYn")
-	private String clmapTotLossYn;
+	@JsonProperty("ResponseTime")
+	private Date responseTime;
 
-	@JsonProperty("ClmapPsecSysId")
-	private String clmapPsecSysId;
-
-	@JsonProperty("ClmapEndNoIdx")
-	private Integer clmapEndNoIdx;
-
-	@JsonProperty("ClmapEndSrNo")
-	private Integer clmapEndSrNo;
-
-	@JsonProperty("ClmapCoverCode")
-	private String clmapCoverCode;
-
-	@JsonProperty("ClmapPraiLvl1SysId")
-	private Long clmapPraiLvl1SysId;
-
-	@JsonProperty("ClmapPraiLvl1SrNo")
-	private Long clmapPraiLvl1SrNo;
-
-	@JsonProperty("ClmapPraiLvl1Desc")
-	private String clmapPraiLvl1Desc;
-
-	@JsonProperty("ClmapPraiLvl2SysId")
-	private Long clmapPraiLvl2SysId;
-
-	@JsonProperty("ClmapPraiLvl2SrNo")
-	private Long clmapPraiLvl2SrNo;
-
-	@JsonProperty("ClmapPraiLvl2Desc")
-	private String clmapPraiLvl2Desc;
-
-	@JsonProperty("ClmapPraiLvl3SysId")
-	private Long clmapPraiLvl3SysId;
-
-	@JsonProperty("ClmapPraiLvl3SrNo")
-	private Long clmapPraiLvl3SrNo;
-
-	@JsonProperty("ClmapPraiLvl3Desc")
-	private String clmapPraiLvl3Desc;
-
-	@JsonProperty("ClmapRemarks")
-	private String clmapRemarks;
-
-	@JsonProperty("ClmapReinstReqdYn")
-	private String clmapReinstReqdYn;
-
-	@JsonProperty("ClmapLossCode")
-	private String clmapLossCode;
-
-	@JsonProperty("ClmapInviteRenYn")
-	private String clmapInviteRenYn;
-
-	@JsonProperty("ClmapRetainNcdYn")
-	private String clmapRetainNcdYn;
-
-	@JsonProperty("ClmapSmiCode")
-	private String clmapSmiCode;
-
-	@JsonProperty("ClmapSmiSysId")
-	private Long clmapSmiSysId;
-
-	@JsonProperty("lmapStolenYn")
-	private String clmapStolenYn;
-
-	@JsonProperty("ClmapClmSysId")
-	private Long clmapClmSysId;
-
-	@JsonProperty("PraihLvl1SysId")
-	private String praihLvl1SysId;
-
-	@JsonProperty("PraihLvl2SysId")
-	private String praihLvl2SysId;
-
+	@JsonProperty("Status")
+	private String status;
 }

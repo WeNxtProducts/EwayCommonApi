@@ -37,124 +37,295 @@ public class YiPolicyDetailReq implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    //----------------------------------------------------------------------
-    // ENTITY PRIMARY KEY 
-    //----------------------------------------------------------------------
+    @JsonProperty("Requestreferenceno")
+    private String     requestreferenceno ;
 
-	@JsonProperty("ClmapSysId")
-	private Long clmapSysId;
+    @JsonProperty("ServiceId")
+    private String     serviceId ;
 
-	@JsonProperty("ClmapPolSysId")
-	private Long clmapPolSysId;
+    @JsonProperty("ServiceAction")
+    private String     serviceAction ;
 
-	@JsonProperty("ClmapSectionCode")
-	private String clmapSectionCode;
+    @JsonProperty("QuotationPolicyNo")
+    private String     quotationPolicyNo ;
 
-	@JsonProperty("ClmapPolNo")
-	private String clmapPolNo;
+    @JsonProperty("IndexNo")
+    private String     indexNo ;
 
-	@JsonProperty("ClmapCompCode")
-	private String clmapCompCode;
+    @JsonProperty("DivisionCode")
+    private String     divisionCode ;
 
-	@JsonProperty("ClmapDivnCode")
-	private String clmapDivnCode;
+    @JsonProperty("Product")
+    private String     product ;
 
-	@JsonProperty("ClmapProdCode")
-	private String clmapProdCode;
+    @JsonProperty("PolicyType")
+    private String     policyType ;
 
-	@JsonProperty("ClmapDeptCode")
-	private String clmapDeptCode;
+    @JsonProperty("BusinessType")
+    private String     businessType ;
 
-	@JsonProperty("ClmapReinstDoneYn")
-	private String clmapReinstDoneYn;
+    @JsonProperty("Customer")
+    private String     customer ;
 
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("ClmapCrDt")
-	private Date clmapCrDt;
+    @JsonProperty("SourceType")
+    private String     sourceType ;
 
-	@JsonProperty("ClmapCrUid")
-	private String clmapCrUid;
+    @JsonProperty("SourceCode")
+    private String     sourceCode ;
 
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@JsonProperty("ClmapUpdDt")
-	private Date clmapUpdDt;
+    @JsonProperty("Department")
+    private String     department ;
 
-	@JsonProperty("ClmapUpdUid")
-	private String clmapUpdUid;
+    @JsonProperty("PolicyIssueDt")
+    private Date       policyIssueDt ;
 
-	@JsonProperty("ClmapTotLossYn")
-	private String clmapTotLossYn;
+    @JsonProperty("PeriodFrom")
+    private Date       periodFrom ;
 
-	@JsonProperty("ClmapPsecSysId")
-	private String clmapPsecSysId;
+    @JsonProperty("PeriodTo")
+    private Date       periodTo ;
 
-	@JsonProperty("ClmapEndNoIdx")
-	private Integer clmapEndNoIdx;
+    @JsonProperty("DurType")
+    private String     durType ;
 
-	@JsonProperty("ClmapEndSrNo")
-	private Integer clmapEndSrNo;
+    @JsonProperty("CivilId")
+    private String     civilId ;
 
-	@JsonProperty("ClmapCoverCode")
-	private String clmapCoverCode;
+    @JsonProperty("ContactEmailId")
+    private String     contactEmailId ;
 
-	@JsonProperty("ClmapPraiLvl1SysId")
-	private Long clmapPraiLvl1SysId;
+    @JsonProperty("ContactNumber")
+    private String     contactNumber ;
 
-	@JsonProperty("ClmapPraiLvl1SrNo")
-	private Long clmapPraiLvl1SrNo;
+    @JsonProperty("ContactPerName")
+    private String     contactPerName ;
 
-	@JsonProperty("ClmapPraiLvl1Desc")
-	private String clmapPraiLvl1Desc;
+    @JsonProperty("CoverNoteNo")
+    private String     coverNoteNo ;
 
-	@JsonProperty("ClmapPraiLvl2SysId")
-	private Long clmapPraiLvl2SysId;
+    @JsonProperty("PremCurr")
+    private String     premCurr ;
 
-	@JsonProperty("ClmapPraiLvl2SrNo")
-	private Long clmapPraiLvl2SrNo;
+    @JsonProperty("QuoteReceivedDt")
+    private Date       quoteReceivedDt ;
 
-	@JsonProperty("ClmapPraiLvl2Desc")
-	private String clmapPraiLvl2Desc;
+    @JsonProperty("RaAllocationAt")
+    private String     raAllocationAt ;
 
-	@JsonProperty("ClmapPraiLvl3SysId")
-	private Long clmapPraiLvl3SysId;
+    @JsonProperty("RaApplYn")
+    private String     raApplYn ;
 
-	@JsonProperty("ClmapPraiLvl3SrNo")
-	private Long clmapPraiLvl3SrNo;
+    @JsonProperty("RenewalRecordYn ")
+    private String     renewalRecordYn ;
 
-	@JsonProperty("ClmapPraiLvl3Desc")
-	private String clmapPraiLvl3Desc;
+    @JsonProperty("SiCurr")
+    private String     siCurr ;
 
-	@JsonProperty("ClmapRemarks")
-	private String clmapRemarks;
+    @JsonProperty("SicCode")
+    private String     sicCode ;
 
-	@JsonProperty("ClmapReinstReqdYn")
-	private String clmapReinstReqdYn;
+    @JsonProperty("SicGroup")
+    private String     sicGroup ;
 
-	@JsonProperty("ClmapLossCode")
-	private String clmapLossCode;
+    @JsonProperty("TerrAcceptedYn")
+    private String     terrAcceptedYn ;
 
-	@JsonProperty("ClmapInviteRenYn")
-	private String clmapInviteRenYn;
+    @JsonProperty("Territoryjurisdiction")
+    private String     territoryjurisdiction ;
 
-	@JsonProperty("ClmapRetainNcdYn")
-	private String clmapRetainNcdYn;
+    @JsonProperty("TerrorismForAllRisk")
+    private String     terrorismForAllRisk ;
 
-	@JsonProperty("ClmapSmiCode")
-	private String clmapSmiCode;
+    @JsonProperty("CnIssueDate")
+    private Date       cnIssueDate ;
 
-	@JsonProperty("ClmapSmiSysId")
-	private Long clmapSmiSysId;
+    @JsonProperty("Donotrenewyn")
+    private String     donotrenewyn ;
 
-	@JsonProperty("lmapStolenYn")
-	private String clmapStolenYn;
+    @JsonProperty("AdviceDate")
+    private String     adviceDate ;
 
-	@JsonProperty("ClmapClmSysId")
-	private Long clmapClmSysId;
+    @JsonProperty("BookId")
+    private BigDecimal bookId ;
 
-	@JsonProperty("PraihLvl1SysId")
-	private String praihLvl1SysId;
+    @JsonProperty("BrokerRefNo")
+    private String     brokerRefNo ;
 
-	@JsonProperty("PraihLvl2SysId")
-	private String praihLvl2SysId;
+    @JsonProperty("BrokingSlip")
+    private String     brokingSlip ;
+
+    @JsonProperty("AddressLine1")
+    private String     addressLine1 ;
+
+    @JsonProperty("AddressLine2")
+    private String     addressLine2 ;
+
+    @JsonProperty("AddressLine3")
+    private String     addressLine3 ;
+
+    @JsonProperty("State")
+    private String     state ;
+
+    @JsonProperty("City")
+    private String     city ;
+
+    @JsonProperty("Country")
+    private String     country ;
+
+    @JsonProperty("CustRef")
+    private String     custRef ;
+
+    @JsonProperty("IssuedAt")
+    private String     issuedAt ;
+
+    @JsonProperty("Method")
+    private String     method ;
+
+    @JsonProperty("ModeOfPayment")
+    private String     modeOfPayment ;
+
+    @JsonProperty("FacYn")
+    private String     facYn ;
+
+    @JsonProperty("HypothecationYn")
+    private String     hypothecationYn ;
+
+    @JsonProperty("InstallmentYn")
+    private String     installmentYn ;
+
+    @JsonProperty("PolicyPeriod")
+    private String policyPeriod ;
+
+    @JsonProperty("PreInspReqYn")
+    private String     preInspReqYn ;
+
+    @JsonProperty("PremCalcType")
+    private String     premCalcType ;
+
+    @JsonProperty("InsuredFirstname")
+    private String     insuredFirstname ;
+
+    @JsonProperty("InsuredMiddlename")
+    private String     insuredMiddlename ;
+
+    @JsonProperty("InsuredLastname")
+    private String     insuredLastname ;
+
+    @JsonProperty("InsuredPhoneNumber")
+    private String     insuredPhoneNumber ;
+
+    @JsonProperty("InsuredEmailid")
+    private String     insuredEmailid ;
+
+    @JsonProperty("InsuredOccupation")
+    private String     insuredOccupation ;
+
+    @JsonProperty("RequestTime")
+    private Date       requestTime ;
+
+    @JsonProperty("ResponseTime")
+    private Date       responseTime ;
+
+    @JsonProperty("Status")
+    private String     status ;
+
+    @JsonProperty("PWsResponseType")
+    private String     pWsResponseType ;
+
+    @JsonProperty("PWsError")
+    private String     pWsError ;
+
+    @JsonProperty("CurrentStatus")
+    private String     currentStatus ;
+
+    @JsonProperty("ClaimIntmDays")
+    private Double     claimIntmDays ;
+
+    @JsonProperty("CnNoAsPolicyNoYn")
+    private String     cnNoAsPolicyNoYn ;
+
+    @JsonProperty("Insured")
+    private String     insured ;
+
+    @JsonProperty("IntegStatus")
+    private String     integStatus ;
+
+    @JsonProperty("QuotationType")
+    private String     quotationType ;
+
+    @JsonProperty("OldPolicyNo")
+    private String     oldPolicyNo ;
+
+    @JsonProperty("QuotationIssueDt")
+    private Date       quotationIssueDt ;
+
+    @JsonProperty("ValidityPeriod")
+    private String     validityPeriod ;
+
+    @JsonProperty("UwId")
+    private String     uwId ;
+
+    @JsonProperty("PremWarrentyYn")
+    private String     premWarrentyYn ;
+
+    @JsonProperty("ExcessOfLossIndicator")
+    private String     excessOfLossIndicator ;
+
+    @JsonProperty("IndividualAcNo")
+    private String     individualAcNo ;
+
+    @JsonProperty("SecCode")
+    private String     secCode ;
+
+    @JsonProperty("PolFleetYn")
+    private String     polFleetYn ;
+
+    @JsonProperty("PayMode")
+    private String     payMode ;
+
+    @JsonProperty("BANK_NAME")
+    private String     bankName ;
+
+    @JsonProperty("BranchName")
+    private String     branchName ;
+
+    @JsonProperty("DateOfCollection")
+    private Date       dateOfCollection ;
+
+    @JsonProperty("ChequeNo")
+    private String     chequeNo ;
+
+    @JsonProperty("ChequeDate")
+    private Date       chequeDate ;
+
+    @JsonProperty("CreditCardNo")
+    private String     creditCardNo ;
+
+    @JsonProperty("CardType")
+    private String     cardType ;
+
+    @JsonProperty("AuthorizationCode")
+    private String     authorizationCode ;
+
+    @JsonProperty("TransactionId")
+    private String     transactionId ;
+
+    @JsonProperty("TransactionDate")
+    private Date       transactionDate ;
+
+    @JsonProperty("RequestUserId")
+    private String     requestUserId ;
+
+    @JsonProperty("NequestUserId")
+    private String     netPremium ;
+
+    @JsonProperty("InsuredWilayat")
+    private String     insuredWilayat ;
+
+    @JsonProperty("InsuredVisaStatus")
+    private String     insuredVisaStatus ;
+
+    @JsonProperty("Promocode")
+    private String     promocode ;
 
 }
