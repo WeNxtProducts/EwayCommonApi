@@ -47,6 +47,7 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.DropDownSourceRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -576,6 +577,24 @@ public class GridController {
 				}
 			}
 			
+//-----------------------------------------CONTENT_TYPE_DROPDOWN_ISSUER-----------------------------------------------------------
+			// Portfolio Grids
+			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
+			@PostMapping("/portfoliodropdown")
+			public ResponseEntity<CommonRes> getallIssuerSourceType(@RequestBody IssuerQuoteReq req) {
+				reqPrinter.reqPrint(req);
+				CommonRes data = new CommonRes();
+				List<DropDownSourceRes> res = entityService.getallIssuerSourceType(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}
 			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
 			@PostMapping("/brokerdropdown")  // getExistingBrokerList for that particular issuer
 			public ResponseEntity<CommonRes> getExistingBrokerList(@RequestBody  GetExistingBrokerListReq req) {

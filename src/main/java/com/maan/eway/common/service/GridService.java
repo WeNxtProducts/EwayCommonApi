@@ -34,6 +34,7 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.DropDownSourceRes;
 import com.maan.eway.res.SuccessRes;
 
 public interface GridService {
@@ -101,6 +102,7 @@ public interface GridService {
 	PortFolioSearchGridRes searchBrokerPolicies(SearchBrokerPolicyReq req);
 
 	List<GetExistingBrokerListRes> getExistingBrokerList(GetExistingBrokerListReq req);
+	List<DropDownSourceRes> getallIssuerSourceType(IssuerQuoteReq req);
 
 
 }

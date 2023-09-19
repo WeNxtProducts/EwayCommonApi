@@ -129,6 +129,7 @@ import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.UWReferralDetailsRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.DropDownRes;
+import com.maan.eway.res.DropDownSourceRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.thread.MyTaskList;
 
@@ -4072,7 +4073,7 @@ public class GridServiceImpl implements GridService {
 				 
 				 TypedQuery<Tuple> typedQuery = em.createQuery(query);
 				 list=  typedQuery.getResultList();
-				 
+				 list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
 				 if(list!=null && list.size()>0) {
 					 
 					 for(Tuple data : list) {
@@ -4107,8 +4108,8 @@ public class GridServiceImpl implements GridService {
 				 
 				 TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
 				 list1=  typedQuery1.getResultList();
-				 
-				 if(list!=null && list.size()>0) {
+				 list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+				 if(list1!=null && list1.size()>0) {
 					 
 					 for(Tuple data : list1) {
 						 GetExistingBrokerRes res = new GetExistingBrokerRes();
@@ -4159,7 +4160,7 @@ public class GridServiceImpl implements GridService {
 				 
 				 TypedQuery<Tuple> typedQuery = em.createQuery(query);
 				 list=  typedQuery.getResultList();
-				 
+				 list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList()); 
 				 if(list!=null && list.size()>0) {
 					 
 					 for(Tuple data : list) {
@@ -4194,8 +4195,8 @@ public class GridServiceImpl implements GridService {
 				 
 				 TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
 				 list1=  typedQuery1.getResultList();
-				 
-				 if(list!=null && list.size()>0) {
+				list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+				 if(list1!=null && list1.size()>0) {
 					 
 					 for(Tuple data : list1) {
 						 GetExistingBrokerRes res = new GetExistingBrokerRes();
@@ -4244,7 +4245,7 @@ public class GridServiceImpl implements GridService {
 				 
 				 TypedQuery<Tuple> typedQuery = em.createQuery(query);
 				 list=  typedQuery.getResultList();
-				 
+				 list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
 				 if(list!=null && list.size()>0) {
 					 
 					 for(Tuple data : list) {
@@ -4279,8 +4280,8 @@ public class GridServiceImpl implements GridService {
 				 
 				 TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
 				 list1=  typedQuery1.getResultList();
-				 
-				 if(list!=null && list.size()>0) {
+				 list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+				 if(list1!=null && list1.size()>0) {
 					 
 					 for(Tuple data : list1) {
 						 GetExistingBrokerRes res = new GetExistingBrokerRes();
@@ -4328,7 +4329,7 @@ public class GridServiceImpl implements GridService {
 				 
 				 TypedQuery<Tuple> typedQuery = em.createQuery(query);
 				 list=  typedQuery.getResultList();
-				 
+				 list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
 				 if(list!=null && list.size()>0) {
 					 
 					 for(Tuple data : list) {
@@ -4363,8 +4364,8 @@ public class GridServiceImpl implements GridService {
 				 
 				 TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
 				 list1=  typedQuery1.getResultList();
-				 
-				 if(list!=null && list.size()>0) {
+				 list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+				 if(list1!=null && list1.size()>0) {
 					 
 					 for(Tuple data : list1) {
 						 GetExistingBrokerRes res = new GetExistingBrokerRes();
@@ -4385,5 +4386,86 @@ public class GridServiceImpl implements GridService {
 			return resList ;
 		}
 
-		
+		// Source Type Dropdown Portfolio
+		@Override
+		public List<DropDownSourceRes> getallIssuerSourceType(IssuerQuoteReq req) {
+
+			List<Tuple> list = new ArrayList<Tuple>();
+			List<Tuple> list1 = new ArrayList<Tuple>();
+			List<DropDownSourceRes> resList = new ArrayList<DropDownSourceRes>();
+			try {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+				Root<HomePositionMaster> m = query.from(HomePositionMaster.class);
+
+				query.multiselect(m.get("customerCode").alias("code"), m.get("customerName").alias("codeDesc"),
+						m.get("sourceType").alias("type")).distinct(true);
+
+				List<Predicate> predics = new ArrayList<Predicate>();
+				predics.add(cb.equal(m.get("applicationId"), req.getLoginId()));
+				predics.add(cb.equal(m.get("status"), req.getStatus()));
+				predics.add(cb.equal(m.get("productId"), req.getProductId()));
+				predics.add(cb.equal(m.get("companyId"), req.getInsuranceId()));
+				predics.add(cb.equal(m.get("branchCode"), req.getBranchCode()));
+				predics.add(cb.isNotNull(m.get("bdmCode")));
+
+				query.where(predics.toArray(new Predicate[0]));
+
+				TypedQuery<Tuple> typedQuery = em.createQuery(query);
+				list = typedQuery.getResultList();
+				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+				if (list != null && list.size() > 0) {
+
+					for (Tuple data : list) {
+						DropDownSourceRes res = new DropDownSourceRes();
+						res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+						res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+						res.setType(data.get("type") == null ? "" : data.get("type").toString());
+						resList.add(res);
+
+					}
+				}
+
+				CriteriaBuilder cb1 = em.getCriteriaBuilder();
+				CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
+
+				Root<HomePositionMaster> m1 = query1.from(HomePositionMaster.class);
+
+				query1.multiselect(m1.get("agencyCode").alias("code"), m1.get("loginId").alias("codeDesc"),
+						m1.get("sourceType").alias("type")).distinct(true);
+
+				List<Predicate> predics1 = new ArrayList<Predicate>();
+				predics1.add(cb1.equal(m1.get("applicationId"), req.getLoginId()));
+				predics1.add(cb1.equal(m1.get("status"), req.getStatus()));
+				predics1.add(cb1.equal(m1.get("productId"), req.getProductId()));
+				predics1.add(cb1.equal(m1.get("companyId"), req.getInsuranceId()));
+				predics.add(cb.equal(m.get("branchCode"), req.getBranchCode()));
+				predics1.add(cb1.isNull(m1.get("bdmCode")));
+
+				query1.where(predics1.toArray(new Predicate[0]));
+
+				TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
+				list1 = typedQuery1.getResultList();
+				list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+				if (list1 != null && list1.size() > 0) {
+
+					for (Tuple data : list1) {
+						DropDownSourceRes res = new DropDownSourceRes();
+						res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+						res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+						res.setType(data.get("type") == null ? "" : data.get("type").toString());
+						resList.add(res);
+
+					}
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return resList;
+
+		}
 }
