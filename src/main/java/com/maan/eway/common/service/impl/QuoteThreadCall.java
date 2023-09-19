@@ -3003,7 +3003,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		    home.setBrokerCode(motorData.getBrokerCode());
 		    home.setAgencyCode(Integer.valueOf(motorData.getAgencyCode().replaceAll("\\r", "" ).replaceAll("\\n", "" ) )) ;
 		    home.setCustomerCode(motorData.getCustomerCode());
-		    home.setCustomerName(motorData.getBdmCode() !=null ? motorData.getCustomerName() :custData.getClientName());
+		    home.setCustomerName(motorData.getCustomerName() );
 		    home.setBdmCode(motorData.getBdmCode());
 			home.setBrokerBranchCode(motorData.getBrokerBranchCode() );
 			home.setBrokerBranchName(motorData.getBrokerBranchName() );
@@ -3118,7 +3118,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		    home.setBrokerCode(travelData.getBrokerCode());
 		    home.setAgencyCode(Integer.valueOf(travelData.getAgencyCode().replaceAll("\\r", "" ).replaceAll("\\n", "" ) ));
 		    home.setCustomerCode(travelData.getCustomerCode());
-		    home.setCustomerName(travelData.getBdmCode() !=null ? travelData.getCustomerName() :custData.getClientName());
+		    home.setCustomerName(travelData.getCustomerName() );
 		    home.setBdmCode(travelData.getBdmCode());
 			home.setBrokerBranchCode(travelData.getBrokerBranchCode() );
 			home.setBrokerBranchName(travelData.getBrokerBranchName() );
@@ -3198,7 +3198,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		    home.setBrokerCode(buildingData.getBrokerCode());
 		    home.setAgencyCode(Integer.valueOf(buildingData.getAgencyCode().replaceAll("\\r", "" ).replaceAll("\\n", "" ) ));
 		    home.setCustomerCode(buildingData.getCustomerCode());
-		    home.setCustomerName(buildingData.getBdmCode() !=null ? buildingData.getCustomerName() :custData.getClientName());
+		    home.setCustomerName(buildingData.getCustomerName() );
 		    home.setBdmCode(buildingData.getBdmCode());
 			home.setBrokerBranchCode(buildingData.getBrokerBranchCode() );
 			home.setBrokerBranchName(buildingData.getBrokerBranchName() );
@@ -3288,7 +3288,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		    home.setBrokerCode(eserCommonData.getBrokerCode());
 		    home.setAgencyCode(Integer.valueOf(eserCommonData.getAgencyCode().replaceAll("\\r", "" ).replaceAll("\\n", "" ) ));
 		    home.setCustomerCode(eserCommonData.getCustomerCode());
-		    home.setCustomerName(eserCommonData.getBdmCode() !=null ? eserCommonData.getCustomerName() :custData.getClientName());
+		    home.setCustomerName( eserCommonData.getCustomerName() );
 		    home.setBdmCode(eserCommonData.getBdmCode());
 			home.setBrokerBranchCode(eserCommonData.getBrokerBranchCode() );
 			home.setBrokerBranchName(eserCommonData.getBrokerBranchName() );
