@@ -3001,7 +3001,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		    home.setSubUserType(motorData.getSourceType());
 		    home.setApplicationId(motorData.getApplicationId());
 		    home.setBrokerCode(motorData.getBrokerCode());
-		    home.setAgencyCode(Integer.valueOf(motorData.getAgencyCode()));
+		    home.setAgencyCode(Integer.valueOf(motorData.getAgencyCode().replaceAll("/r", "" ).replaceAll("/n", "" ) )) ;
 		    home.setCustomerCode(motorData.getCustomerCode());
 		    home.setCustomerName( motorData.getCustomerName() );
 		    home.setBdmCode(motorData.getBdmCode());
@@ -3116,7 +3116,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		    home.setSubUserType(travelData.getSourceType());
 		    home.setApplicationId(travelData.getApplicationId());
 		    home.setBrokerCode(travelData.getBrokerCode());
-		    home.setAgencyCode(Integer.valueOf(travelData.getAgencyCode()));
+		    home.setAgencyCode(Integer.valueOf(travelData.getAgencyCode().replaceAll("/r", "" ).replaceAll("/n", "" ) ));
 		    home.setCustomerCode(travelData.getCustomerCode());
 		    home.setCustomerName( travelData.getCustomerName() );
 		    home.setBdmCode(travelData.getBdmCode());
@@ -3196,7 +3196,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		    home.setSubUserType(buildingData.getSourceType());
 		    home.setApplicationId(buildingData.getApplicationId());
 		    home.setBrokerCode(buildingData.getBrokerCode());
-		    home.setAgencyCode(Integer.valueOf(buildingData.getAgencyCode()));
+		    home.setAgencyCode(Integer.valueOf(buildingData.getAgencyCode().replaceAll("/r", "" ).replaceAll("/n", "" ) ));
 		    home.setCustomerCode(buildingData.getCustomerCode());
 		    home.setCustomerName(buildingData.getCustomerName() );
 		    home.setBdmCode(buildingData.getBdmCode());
@@ -3286,7 +3286,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		    home.setSubUserType(eserCommonData.getSourceType());
 		    home.setApplicationId(eserCommonData.getApplicationId());
 		    home.setBrokerCode(eserCommonData.getBrokerCode());
-		    home.setAgencyCode(Integer.valueOf(eserCommonData.getAgencyCode()));
+		    home.setAgencyCode(Integer.valueOf(eserCommonData.getAgencyCode().replaceAll("/r", "" ).replaceAll("/n", "" ) ));
 		    home.setCustomerCode(eserCommonData.getCustomerCode());
 		    home.setCustomerName(eserCommonData.getBdmCode() !=null ? eserCommonData.getCustomerName() :custData.getClientName());
 		    home.setBdmCode(eserCommonData.getBdmCode());
