@@ -68,6 +68,7 @@ import com.maan.eway.bean.UWReferralDetails;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetApproverListReq;
+import com.maan.eway.common.req.GetExistingBrokerListReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.GetallReferralPendingDetailsRes;
 import com.maan.eway.common.req.IssuerQuoteReq;
@@ -82,6 +83,8 @@ import com.maan.eway.common.res.EserviceCustomerDetailsRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
 import com.maan.eway.common.res.GetApproverListRes;
 import com.maan.eway.common.res.GetCommonReferalDetailsRes;
+import com.maan.eway.common.res.GetExistingBrokerListRes;
+import com.maan.eway.common.res.GetExistingBrokerRes;
 import com.maan.eway.common.res.GetMotorReferalDetailsRes;
 import com.maan.eway.common.res.GetRejectedQuoteDetailsRes;
 import com.maan.eway.common.res.GetTravelReferalDetailsRes;
@@ -3993,5 +3996,394 @@ public class GridServiceImpl implements GridService {
 			}
 			return res ;
 		}
+
+		@Override
+		public List<GetExistingBrokerListRes> getExistingBrokerList(GetExistingBrokerListReq req) {
+			List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+			List<GetExistingBrokerRes> list = new ArrayList<GetExistingBrokerRes>();
+			DozerBeanMapper dozerMapper = new DozerBeanMapper();
+			try {
+				
+				CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(),
+						req.getProductId().toString());
+
+				
+				// Product Wise Get
+				if (product.getMotorYn().equalsIgnoreCase("M")) { //Motor
+					
+					list = getExistingBrokerListMotor(req);
+					
+				} else if (product.getMotorYn().equalsIgnoreCase("H")&& req.getProductId().equalsIgnoreCase(travelProductId)) {//Travel
+					
+					list = getExistingBrokerListTravel(req);
+					
+				} else if (product.getMotorYn().equalsIgnoreCase("A")) { //Asset
+					
+					list = getExistingBrokerListAsset(req);
+				} else {  // Common
+					
+					list = getExistingBrokerListCommon(req);
+				}
+				
+				if(list!=null && list.size()>0) {
+					list = list.stream().sorted(Comparator.comparing(GetExistingBrokerRes::getCodeDesc)).collect(Collectors.toList());
+						 
+					for(GetExistingBrokerRes data : list) {
+						GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+						res = dozerMapper.map(data, GetExistingBrokerListRes.class);
+						resList.add(res);
+						}
+				}		
+				
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return resList ;
+		}
+		
+
+		private List<GetExistingBrokerRes> getExistingBrokerListMotor(GetExistingBrokerListReq req) {
+			List<Tuple> list = new ArrayList<Tuple>();
+			List<Tuple> list1 = new ArrayList<Tuple>();
+			List<GetExistingBrokerRes> resList = new ArrayList<GetExistingBrokerRes>();
+			try {
+				 CriteriaBuilder cb = em.getCriteriaBuilder();
+				 CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+				 
+				 Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class); 
+				 
+				 query.multiselect(
+						 m.get("customerCode").alias("code"),
+						 m.get("customerName").alias("codeDesc"),
+						 m.get("sourceType").alias("type")
+						 ).distinct(true) ;
+				 
+				 List<Predicate> predics = new ArrayList<Predicate>();
+				 predics.add(cb.equal(m.get("applicationId"), req.getLoginId()));
+				 predics.add(cb.equal(m.get("status"), req.getStatus()));
+				 predics.add(cb.equal(m.get("productId"), req.getProductId()));
+				 predics.add(cb.equal(m.get("companyId"), req.getCompanyId()));
+				 predics.add(cb.isNotNull(m.get("bdmCode")));
+				 
+				 query.where(predics.toArray(new Predicate[0]));
+				 
+				 TypedQuery<Tuple> typedQuery = em.createQuery(query);
+				 list=  typedQuery.getResultList();
+				 
+				 if(list!=null && list.size()>0) {
+					 
+					 for(Tuple data : list) {
+						 GetExistingBrokerRes res = new GetExistingBrokerRes();
+						 res.setCode(data.get("code")==null?"":	data.get("code").toString());
+						 res.setCodeDesc(data.get("codeDesc")==null?"":	data.get("codeDesc").toString());
+						 res.setType(data.get("type")==null?"":	data.get("type").toString());
+						 resList.add(res);
+					
+					 }
+				 }	
+				 
+				 CriteriaBuilder cb1 = em.getCriteriaBuilder();
+				 CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
+				 
+				 Root<EserviceMotorDetails> m1 = query1.from(EserviceMotorDetails.class); 
+				 
+				 query1.multiselect(
+						 m1.get("agencyCode").alias("code"),
+						 m1.get("loginId").alias("codeDesc"),
+						 m1.get("sourceType").alias("type")
+						 ).distinct(true) ;
+				 
+				 List<Predicate> predics1 = new ArrayList<Predicate>();
+				 predics1.add(cb1.equal(m1.get("applicationId"), req.getLoginId()));
+				 predics1.add(cb1.equal(m1.get("status"), req.getStatus()));
+				 predics1.add(cb1.equal(m1.get("productId"), req.getProductId()));
+				 predics1.add(cb1.equal(m1.get("companyId"), req.getCompanyId()));
+				 predics1.add(cb1.isNull(m1.get("bdmCode")));
+				 
+				 query1.where(predics1.toArray(new Predicate[0]));
+				 
+				 TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
+				 list1=  typedQuery1.getResultList();
+				 
+				 if(list!=null && list.size()>0) {
+					 
+					 for(Tuple data : list1) {
+						 GetExistingBrokerRes res = new GetExistingBrokerRes();
+						 res.setCode(data.get("code")==null?"":	data.get("code").toString());
+						 res.setCodeDesc(data.get("codeDesc")==null?"":	data.get("codeDesc").toString());
+						 res.setType(data.get("type")==null?"":	data.get("type").toString());
+						 resList.add(res);
+					
+					 }
+				 }	
+				
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return resList ;
+		}
+		
+
+		private List<GetExistingBrokerRes> getExistingBrokerListCommon(GetExistingBrokerListReq req) {
+			
+
+			List<Tuple> list = new ArrayList<Tuple>();
+			List<Tuple> list1 = new ArrayList<Tuple>();
+			List<GetExistingBrokerRes> resList = new ArrayList<GetExistingBrokerRes>();
+			try {
+				 CriteriaBuilder cb = em.getCriteriaBuilder();
+				 CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+				 
+				 Root<EserviceCommonDetails> m = query.from(EserviceCommonDetails.class); 
+				 
+				 query.multiselect(
+						 m.get("customerCode").alias("code"),
+						 m.get("customerName").alias("codeDesc"),
+						 m.get("sourceType").alias("type")
+						 ).distinct(true) ;
+				 
+				 List<Predicate> predics = new ArrayList<Predicate>();
+				 predics.add(cb.equal(m.get("applicationId"), req.getLoginId()));
+				 predics.add(cb.equal(m.get("status"), req.getStatus()));
+				 predics.add(cb.equal(m.get("productId"), req.getProductId()));
+				 predics.add(cb.equal(m.get("companyId"), req.getCompanyId()));
+				 predics.add(cb.isNotNull(m.get("bdmCode")));
+				 
+				 query.where(predics.toArray(new Predicate[0]));
+				 
+				 TypedQuery<Tuple> typedQuery = em.createQuery(query);
+				 list=  typedQuery.getResultList();
+				 
+				 if(list!=null && list.size()>0) {
+					 
+					 for(Tuple data : list) {
+						 GetExistingBrokerRes res = new GetExistingBrokerRes();
+						 res.setCode(data.get("code")==null?"":	data.get("code").toString());
+						 res.setCodeDesc(data.get("codeDesc")==null?"":	data.get("codeDesc").toString());
+						 res.setType(data.get("type")==null?"":	data.get("type").toString());
+						 resList.add(res);
+					
+					 }
+				 }	
+				 
+				 CriteriaBuilder cb1 = em.getCriteriaBuilder();
+				 CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
+				 
+				 Root<EserviceCommonDetails> m1 = query1.from(EserviceCommonDetails.class); 
+				 
+				 query1.multiselect(
+						 m1.get("agencyCode").alias("code"),
+						 m1.get("loginId").alias("codeDesc"),
+						 m1.get("sourceType").alias("type")
+						 ).distinct(true) ;
+				 
+				 List<Predicate> predics1 = new ArrayList<Predicate>();
+				 predics1.add(cb1.equal(m1.get("applicationId"), req.getLoginId()));
+				 predics1.add(cb1.equal(m1.get("status"), req.getStatus()));
+				 predics1.add(cb1.equal(m1.get("productId"), req.getProductId()));
+				 predics1.add(cb1.equal(m1.get("companyId"), req.getCompanyId()));
+				 predics1.add(cb1.isNull(m1.get("bdmCode")));
+				 
+				 query1.where(predics1.toArray(new Predicate[0]));
+				 
+				 TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
+				 list1=  typedQuery1.getResultList();
+				 
+				 if(list!=null && list.size()>0) {
+					 
+					 for(Tuple data : list1) {
+						 GetExistingBrokerRes res = new GetExistingBrokerRes();
+						 res.setCode(data.get("code")==null?"":	data.get("code").toString());
+						 res.setCodeDesc(data.get("codeDesc")==null?"":	data.get("codeDesc").toString());
+						 res.setType(data.get("type")==null?"":	data.get("type").toString());
+						 resList.add(res);
+					
+					 }
+				 }	
+				
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return resList ;
+		
+		}
+
+		private List<GetExistingBrokerRes> getExistingBrokerListAsset(GetExistingBrokerListReq req) {
+			List<Tuple> list = new ArrayList<Tuple>();
+			List<Tuple> list1 = new ArrayList<Tuple>();
+			List<GetExistingBrokerRes> resList = new ArrayList<GetExistingBrokerRes>();
+			try {
+				 CriteriaBuilder cb = em.getCriteriaBuilder();
+				 CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+				 
+				 Root<EserviceBuildingDetails> m = query.from(EserviceBuildingDetails.class); 
+				 
+				 query.multiselect(
+						 m.get("customerCode").alias("code"),
+						 m.get("customerName").alias("codeDesc"),
+						 m.get("sourceType").alias("type")
+						 ).distinct(true) ;
+				 
+				 List<Predicate> predics = new ArrayList<Predicate>();
+				 predics.add(cb.equal(m.get("applicationId"), req.getLoginId()));
+				 predics.add(cb.equal(m.get("status"), req.getStatus()));
+				 predics.add(cb.equal(m.get("productId"), req.getProductId()));
+				 predics.add(cb.equal(m.get("companyId"), req.getCompanyId()));
+				 predics.add(cb.isNotNull(m.get("bdmCode")));
+				 
+				 query.where(predics.toArray(new Predicate[0]));
+				 
+				 TypedQuery<Tuple> typedQuery = em.createQuery(query);
+				 list=  typedQuery.getResultList();
+				 
+				 if(list!=null && list.size()>0) {
+					 
+					 for(Tuple data : list) {
+						 GetExistingBrokerRes res = new GetExistingBrokerRes();
+						 res.setCode(data.get("code")==null?"":	data.get("code").toString());
+						 res.setCodeDesc(data.get("codeDesc")==null?"":	data.get("codeDesc").toString());
+						 res.setType(data.get("type")==null?"":	data.get("type").toString());
+						 resList.add(res);
+					
+					 }
+				 }	
+				 
+				 CriteriaBuilder cb1 = em.getCriteriaBuilder();
+				 CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
+				 
+				 Root<EserviceBuildingDetails> m1 = query1.from(EserviceBuildingDetails.class); 
+				 
+				 query1.multiselect(
+						 m1.get("agencyCode").alias("code"),
+						 m1.get("loginId").alias("codeDesc"),
+						 m1.get("sourceType").alias("type")
+						 ).distinct(true) ;
+				 
+				 List<Predicate> predics1 = new ArrayList<Predicate>();
+				 predics1.add(cb1.equal(m1.get("applicationId"), req.getLoginId()));
+				 predics1.add(cb1.equal(m1.get("status"), req.getStatus()));
+				 predics1.add(cb1.equal(m1.get("productId"), req.getProductId()));
+				 predics1.add(cb1.equal(m1.get("companyId"), req.getCompanyId()));
+				 predics1.add(cb1.isNull(m1.get("bdmCode")));
+				 
+				 query1.where(predics1.toArray(new Predicate[0]));
+				 
+				 TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
+				 list1=  typedQuery1.getResultList();
+				 
+				 if(list!=null && list.size()>0) {
+					 
+					 for(Tuple data : list1) {
+						 GetExistingBrokerRes res = new GetExistingBrokerRes();
+						 res.setCode(data.get("code")==null?"":	data.get("code").toString());
+						 res.setCodeDesc(data.get("codeDesc")==null?"":	data.get("codeDesc").toString());
+						 res.setType(data.get("type")==null?"":	data.get("type").toString());
+						 resList.add(res);
+					
+					 }
+				 }	
+				
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return resList ;
+		}
+
+		private List<GetExistingBrokerRes> getExistingBrokerListTravel(GetExistingBrokerListReq req) {
+			List<Tuple> list = new ArrayList<Tuple>();
+			List<Tuple> list1 = new ArrayList<Tuple>();
+			List<GetExistingBrokerRes> resList = new ArrayList<GetExistingBrokerRes>();
+			try {
+				 CriteriaBuilder cb = em.getCriteriaBuilder();
+				 CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+				 
+				 Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class); 
+				 
+				 query.multiselect(
+						 m.get("customerCode").alias("code"),
+						 m.get("customerName").alias("codeDesc"),
+						 m.get("sourceType").alias("type")
+						 ).distinct(true) ;
+				 
+				 List<Predicate> predics = new ArrayList<Predicate>();
+				 predics.add(cb.equal(m.get("applicationId"), req.getLoginId()));
+				 predics.add(cb.equal(m.get("status"), req.getStatus()));
+				 predics.add(cb.equal(m.get("productId"), req.getProductId()));
+				 predics.add(cb.equal(m.get("companyId"), req.getCompanyId()));
+				 predics.add(cb.isNotNull(m.get("bdmCode")));
+				 
+				 query.where(predics.toArray(new Predicate[0]));
+				 
+				 TypedQuery<Tuple> typedQuery = em.createQuery(query);
+				 list=  typedQuery.getResultList();
+				 
+				 if(list!=null && list.size()>0) {
+					 
+					 for(Tuple data : list) {
+						 GetExistingBrokerRes res = new GetExistingBrokerRes();
+						 res.setCode(data.get("code")==null?"":	data.get("code").toString());
+						 res.setCodeDesc(data.get("codeDesc")==null?"":	data.get("codeDesc").toString());
+						 res.setType(data.get("type")==null?"":	data.get("type").toString());
+						 resList.add(res);
+					
+					 }
+				 }	
+				 
+				 CriteriaBuilder cb1 = em.getCriteriaBuilder();
+				 CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
+				 
+				 Root<EserviceTravelDetails> m1 = query1.from(EserviceTravelDetails.class); 
+				 
+				 query1.multiselect(
+						 m1.get("agencyCode").alias("code"),
+						 m1.get("loginId").alias("codeDesc"),
+						 m1.get("sourceType").alias("type")
+						 ).distinct(true) ;
+				 
+				 List<Predicate> predics1 = new ArrayList<Predicate>();
+				 predics1.add(cb1.equal(m1.get("applicationId"), req.getLoginId()));
+				 predics1.add(cb1.equal(m1.get("status"), req.getStatus()));
+				 predics1.add(cb1.equal(m1.get("productId"), req.getProductId()));
+				 predics1.add(cb1.equal(m1.get("companyId"), req.getCompanyId()));
+				 predics1.add(cb1.isNull(m1.get("bdmCode")));
+				 
+				 query1.where(predics1.toArray(new Predicate[0]));
+				 
+				 TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
+				 list1=  typedQuery1.getResultList();
+				 
+				 if(list!=null && list.size()>0) {
+					 
+					 for(Tuple data : list1) {
+						 GetExistingBrokerRes res = new GetExistingBrokerRes();
+						 res.setCode(data.get("code")==null?"":	data.get("code").toString());
+						 res.setCodeDesc(data.get("codeDesc")==null?"":	data.get("codeDesc").toString());
+						 res.setType(data.get("type")==null?"":	data.get("type").toString());
+						 resList.add(res);
+					
+					 }
+				 }	
+				
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return resList ;
+		}
+
 		
 }

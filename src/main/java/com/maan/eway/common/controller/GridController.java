@@ -17,6 +17,7 @@ import com.maan.eway.admin.res.GetallPortfolioActiveRes;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetApproverListReq;
+import com.maan.eway.common.req.GetExistingBrokerListReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.GetallReferralPendingDetailsRes;
 import com.maan.eway.common.req.IssuerQuoteReq;
@@ -29,6 +30,7 @@ import com.maan.eway.common.res.AdminPendingGridRes;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
 import com.maan.eway.common.res.GetApproverListRes;
+import com.maan.eway.common.res.GetExistingBrokerListRes;
 import com.maan.eway.common.res.GetallExistingRejectedLapsedRes;
 import com.maan.eway.common.res.GetallPolicyReportsRes;
 import com.maan.eway.common.res.GetallReferralApprovedDetailsRes;
@@ -37,7 +39,6 @@ import com.maan.eway.common.res.GetallReferralRejectedDetailsRes;
 import com.maan.eway.common.res.PortFolioDashBoardRes;
 import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.PortfolioGridRes;
-import com.maan.eway.common.res.PortfolioSearchDataRes;
 import com.maan.eway.common.res.RevertGridRes;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
 import com.maan.eway.common.service.GridService;
@@ -564,6 +565,23 @@ public class GridController {
 				reqPrinter.reqPrint(req);
 				CommonRes data = new CommonRes();
 				PortFolioSearchGridRes res = entityService.searchBrokerPolicies(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}
+			
+			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
+			@PostMapping("/brokerdropdown")  // getExistingBrokerList for that particular issuer
+			public ResponseEntity<CommonRes> getExistingBrokerList(@RequestBody  GetExistingBrokerListReq req) {
+				reqPrinter.reqPrint(req);
+				CommonRes data = new CommonRes();
+				List<GetExistingBrokerListRes> res = entityService.getExistingBrokerList(req);
 				data.setCommonResponse(res);
 				data.setIsError(false);
 				data.setErrorMessage(Collections.emptyList());

@@ -6,6 +6,7 @@ import com.maan.eway.admin.res.GetallPortfolioActiveRes;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetApproverListReq;
+import com.maan.eway.common.req.GetExistingBrokerListReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.GetallReferralPendingDetailsRes;
 import com.maan.eway.common.req.IssuerQuoteReq;
@@ -17,6 +18,7 @@ import com.maan.eway.common.req.UpdateLapsedQuoteReq;
 import com.maan.eway.common.res.AdminPendingGridRes;
 import com.maan.eway.common.res.GetAllMotorDetailsRes;
 import com.maan.eway.common.res.GetApproverListRes;
+import com.maan.eway.common.res.GetExistingBrokerListRes;
 import com.maan.eway.common.res.GetallExistingRejectedLapsedRes;
 import com.maan.eway.common.res.GetallPolicyReportsRes;
 import com.maan.eway.common.res.GetallReferralApprovedDetailsRes;
@@ -97,6 +99,8 @@ public interface GridService {
 
 
 	PortFolioSearchGridRes searchBrokerPolicies(SearchBrokerPolicyReq req);
+
+	List<GetExistingBrokerListRes> getExistingBrokerList(GetExistingBrokerListReq req);
 
 
 }
