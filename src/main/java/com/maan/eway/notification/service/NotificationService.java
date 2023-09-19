@@ -238,7 +238,7 @@ public class NotificationService {
 							.notifcationPushDate(n.getNotifcationDate())
 							.notifcationEndDate(calend.getTime())
 							.notifDescription(n.getNotifDescription())
-							.notifNo(Instant.now().getEpochSecond())
+							.notifNo(Instant.now().toEpochMilli())
 							.notifPriority(n.getNotifPriority())
 							.notifPushedStatus("P")
 							.notifTemplatename(n.getNotifTemplatename())
@@ -302,7 +302,7 @@ public class NotificationService {
 						.notifcationPushDate(n.getNotifcationDate())
 						.notifcationEndDate(calend.getTime())
 						.notifDescription(n.getNotifDescription())
-						.notifNo(Instant.now().getEpochSecond())
+						.notifNo(Instant.now().toEpochMilli())
 						.notifPriority(n.getNotifPriority())
 						.notifPushedStatus("P")
 						.notifTemplatename(n.getNotifTemplatename())
@@ -341,11 +341,11 @@ public class NotificationService {
 				generateTinyURL(n,loadTinyUrl,loadDropdown,nt);
 				
 				
-				
-				sv = notifTrans.save(nt);
 				List<NotifTransactionDetails> text=new LinkedList<NotifTransactionDetails>();
 				text.add(sv);
 				jobProcess(text);
+				sv = notifTrans.save(nt);
+				
 			}
 			c.setIsError(Boolean.FALSE);
 			c.setErroCode(100);
@@ -460,7 +460,7 @@ public class NotificationService {
 				transDetails.stream().forEach(tr-> tr.setNotifPushedStatus("E"));
 			
 			}finally {
-				notifTrans.saveAll(transDetails);
+				// notifTrans.saveAll(transDetails);
 			}
 		}
 
@@ -839,7 +839,10 @@ public class NotificationService {
 					.notifNo(m.getNotifNo())
 					.build();
 			mailDataRepo.save(mdd);
-			
+			CommonRes r=new CommonRes();
+			r.setIsError(false);
+			r.setMessage("Acknowledge successfully");
+			return r;
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

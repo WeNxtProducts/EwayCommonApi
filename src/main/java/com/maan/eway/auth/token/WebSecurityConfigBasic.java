@@ -29,7 +29,7 @@ public class WebSecurityConfigBasic extends WebSecurityConfigurerAdapter {
 	//	http.antMatcher("/post/notification/**").authorizeRequests().anyRequest().hasRole("USER").and().httpBasic();
 
 http
-                .requestMatchers().antMatchers("/basicauth/**","/embedded/create/**")
+                .requestMatchers().antMatchers("/basicauth/**","/embedded/create/**","post/notification/ack/mail")
                 .and()
                 .authorizeRequests().anyRequest().hasRole("USER")
                 .and()

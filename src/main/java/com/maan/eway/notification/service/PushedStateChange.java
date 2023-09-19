@@ -68,7 +68,7 @@ public class PushedStateChange implements  Function<NotifTransactionDetails,List
 							.smsFrom(smsmaster.getSenderId())
 							.credential(JobCredentials.builder().smtpHost(smsmaster.getSmsPartyUrl()).smtpPwd(smsmaster.getSmsUserPass()).smtpUser(smsmaster.getSmsUserName()).build())
 							.smsToCode(obj.getCustomerPhoneCode().toString())
-							.notifNo(t.get("notifNo")==null?0:Integer.parseInt(t.get("notifNo").toString()))
+							.notifNo(t.get("notifNo")==null?0L:Long.parseLong(t.get("notifNo").toString()))
 							.build();
 					a.add(s);
 				}
