@@ -2945,7 +2945,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			Predicate n5 = null;
 			if (req.getApplicationId().equalsIgnoreCase("1")) {
 				if ("broker".equalsIgnoreCase(req.getUserType())) {
-					n5 = cb.equal(m.get("bdmCode"), req.getBdmCode());
+					n5 = cb.equal(m.get("brokerCode"), req.getBdmCode());
 				} else {
 					n5 = cb.equal(m.get("loginId"), req.getLoginId());
 				}
@@ -3242,7 +3242,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), startDate);
 				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), startDate);
 				Predicate n10 = cb.equal(m.get("endtCount"), endtCount);
-				Predicate n12 = cb.equal(m.get("endtTypeId"), endtId); // 842 Desc: calcellation policy
+				Predicate n12 = cb.equal(m.get("endtTypeId"), endtId); // 842 Desc: cancellation policy
 		
 				
 				Predicate n5 = null;
