@@ -18,7 +18,7 @@
 	<parameter name="pvBranch" class="java.lang.String"/>
 	<parameter name="pvLoginId" class="java.lang.String"/>
 	<queryString language="SQL">
-		<![CDATA[SELECT 
+		<![CDATA[SELECT
 HPM.LOGIN_ID,
 HPM.QUOTE_NO,
   HPM.POLICY_NO,
@@ -122,7 +122,7 @@ WHERE
     FROM 
       EWAY_LOGIN_BRANCH_MASTER 
     WHERE 
-      LOGIN_ID = $P{pvLoginId} ))]]>
+      LOGIN_ID = $P{pvLoginId} )) ORDER BY branch_name,broker_name ASC]]>
 	</queryString>
 	<field name="LOGIN_ID" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="LOGIN_ID"/>

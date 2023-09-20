@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.jasper.req.JasperDocumentReq;
 import com.maan.eway.jasper.req.JasperReportDocReq;
+import com.maan.eway.jasper.req.PremiumReportReq;
 import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.jasper.service.JasperService;
 import com.maan.eway.service.PrintReqService;
@@ -108,6 +109,11 @@ public class JasperController {
 		}else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
+	}
+	
+	@PostMapping("/premium/report")
+	public CommonRes getPremiumReport(@RequestBody PremiumReportReq req) {
+		return jasper.getPremiumReport(req);
 	}
 	
 }

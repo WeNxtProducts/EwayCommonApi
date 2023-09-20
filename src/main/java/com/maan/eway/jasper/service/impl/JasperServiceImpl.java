@@ -6,7 +6,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -23,7 +25,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,15 +34,17 @@ import org.springframework.stereotype.Service;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.HomePositionMaster;
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.jasper.req.JasperDocumentReq;
 import com.maan.eway.jasper.req.JasperReportDocReq;
+import com.maan.eway.jasper.req.PremiumReportReq;
 import com.maan.eway.jasper.res.JasperDocumentRes;
+import com.maan.eway.jasper.res.PremiumReportRes;
 import com.maan.eway.jasper.service.JasperService;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.thread.GetFileFromPath;
 
-import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -413,6 +417,84 @@ public class JasperServiceImpl implements JasperService {
 			e.printStackTrace();
 		}
 		return res;
+	}
+
+	@Override
+	public CommonRes getPremiumReport(PremiumReportReq req) {
+		CommonRes response = new CommonRes();
+		Connection connection=null;
+		try {
+			String classpath = this.getClass().getClassLoader().getResource("").getPath();
+			classpath = classpath.replaceAll("%20", " ");
+			classpath = classpath.substring(1, classpath.length());
+			
+			String imagepath = classpath + "report/images/"; //windows system path
+			
+			String jasperPath = policyReportPath+req.getLoginId()+System.currentTimeMillis()+ ".pdf";
+
+			HashMap<String, Object> jasperParameter = new HashMap<String, Object>();
+			jasperParameter.put("pvStartDate", getFormattedDate(req.getStartDate()));
+			jasperParameter.put("pvEndDate", getFormattedDate(req.getEndDate()));
+			jasperParameter.put("pvBranch", req.getBranchCode());
+			jasperParameter.put("pvImagePath", imagepath);
+			jasperParameter.put("pvLoginId", req.getLoginId());
+			
+
+			connection=config.getDataSourceForJasper().getConnection();
+			
+			InputStream is = this.getClass().getResourceAsStream("/report/jasper/EwayPremiumReport.jrxml");
+						
+			JasperReport jr = JasperCompileManager.compileReport(is);
+
+			JasperPrint jp = JasperFillManager.fillReport(jr, jasperParameter, connection);
+
+			JasperExportManager.exportReportToPdfFile(jp, jasperPath);
+			
+			File file = new File(jasperPath);
+			
+			
+			byte[] bytes = FileUtils.readFileToByteArray(file);
+
+			String encodeToString = Base64.getEncoder().encodeToString(bytes);
+			
+            PremiumReportRes preRes = PremiumReportRes.builder()
+            		.base64(encodeToString)
+            		.fileName("PremiumReport.pdf")
+            		.build();		
+            response.setCommonResponse(preRes);
+            response.setIsError(false);
+            response.setErrorMessage(Collections.emptyList());
+            response.setMessage("Success");
+		}catch (Exception e) {
+			response.setCommonResponse(null);
+            response.setIsError(true);
+            response.setErrorMessage(Collections.emptyList());
+            response.setMessage("Failed");
+			e.printStackTrace();
+		}finally {
+			if(connection!=null)
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			
+		}
+		return response;
+	}
+	
+	private static String getFormattedDate(String input) {
+		String output ="";
+		SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MM/yyyy");
+		SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			Date date =sdf1.parse(input);
+			output=sdf2.format(date);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return output;
 	}
 	
 }

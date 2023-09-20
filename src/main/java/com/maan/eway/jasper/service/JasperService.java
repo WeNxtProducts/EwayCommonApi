@@ -1,7 +1,9 @@
 package com.maan.eway.jasper.service;
 
+import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.jasper.req.JasperDocumentReq;
 import com.maan.eway.jasper.req.JasperReportDocReq;
+import com.maan.eway.jasper.req.PremiumReportReq;
 import com.maan.eway.jasper.res.JasperDocumentRes;
 
 public interface JasperService {
@@ -15,6 +17,8 @@ public interface JasperService {
 	public JasperDocumentRes taxInvoice(String quoteNo);
 
 	public JasperDocumentRes creditNote(String quoteNo);
+
+	public CommonRes getPremiumReport(PremiumReportReq req);
 
 
 }
