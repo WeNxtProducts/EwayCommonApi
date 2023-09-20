@@ -940,6 +940,10 @@ public class CalculatorEngineService implements CalculatorEngine {
 						search = "vdRefno:" + engine.getVdRefNo() + ";locationId:" + engine.getVehicleId();
 						criteria = crservice.createCriteria(MsAssetDetails.class, search, "vdRefno");
 						vehicles = crservice.getResult(criteria, 0, 50);
+					}else if (oneProduct.equalsIgnoreCase("L")) {
+						search = "vdRefno:" + engine.getVdRefNo() + ";locationId:" + engine.getVehicleId();
+						criteria = crservice.createCriteria(MsAssetDetails.class, search, "vdRefno");
+						vehicles = crservice.getResult(criteria, 0, 50);
 					}
 
 					counter++;
