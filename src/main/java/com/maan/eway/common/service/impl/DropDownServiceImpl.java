@@ -42,6 +42,7 @@ import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.PlanTypeMaster;
+import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.GetMachineryContentReq;
 import com.maan.eway.common.req.GetOccupationsReq;
 import com.maan.eway.common.req.NcdDetailsGetReq;
@@ -1433,7 +1434,9 @@ public class DropDownServiceImpl  implements DropDownService{
 					itemType.equalsIgnoreCase("COPY_QUOTE_BY_COMMON") || itemType.equalsIgnoreCase("DOC_ID_TYPE") || 
 					itemType.equalsIgnoreCase("TAX_FOR") || itemType.equalsIgnoreCase("PAYMENT") || 
 					itemType.equalsIgnoreCase("PORTFOLIO_TYPES") || itemType.equalsIgnoreCase("TAX_FOR_DESC") || 
-					itemType.equalsIgnoreCase("MONTHS") || itemType.equalsIgnoreCase("PREMIA_SOURCE_TYPE")) {  //not company based 
+					itemType.equalsIgnoreCase("MONTHS") || itemType.equalsIgnoreCase("PREMIA_SOURCE_TYPE")
+					|| itemType.equalsIgnoreCase("PAYMENT_TYPE")
+					) {  //not company based 
 				query.where(n2,n3,n8,n9,n10,n12).orderBy(orderList);
 			}else {
 				query.where(n2,n3,n4,n9,n10,n12).orderBy(orderList);
@@ -3123,6 +3126,46 @@ public class DropDownServiceImpl  implements DropDownService{
 			return null;
 		}
 		return resList;	
+	}
+
+
+	@Override
+	public List<DropDownRes> lifePaymentTerms(LovDropDownReq req) {
+		List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("PAYMENT_MODE", "Y");
+			String itemType = "PAYMENT_TYPE" ;
+			List<ListItemValue> getList  = getListItem(req , itemType);
+			for (ListItemValue data : getList) {
+				DropDownRes res = new DropDownRes();
+				res.setCode(data.getItemCode());
+				res.setCodeDesc(data.getItemValue());
+				res.setStatus(data.getStatus());
+				resList.add(res);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	@Autowired
+	private RatingFactorsUtil ratingutil;
+	
+	@Override
+	public List<DropDownRes> lifePolicyTerms(LovDropDownReq req) {
+		///List<DropDownRes> resList = new ArrayList<DropDownRes>();
+		try {
+			List<DropDownRes> result=ratingutil.getLifePolicyTerms(req.getInsuranceId(),req.getProductId());
+			return result;			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}		
+		
 	}
 	
 }

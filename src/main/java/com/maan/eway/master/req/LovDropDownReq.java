@@ -11,6 +11,7 @@ public class LovDropDownReq {
 	private String insuranceId;
 	@JsonProperty("BranchCode")
 	private String branchCode;
-	
+	@JsonProperty("ProductId")
+	private String productId;
 
 }

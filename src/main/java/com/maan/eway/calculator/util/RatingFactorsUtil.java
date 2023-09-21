@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,6 +38,7 @@ import com.maan.eway.bean.DropdownTableDetails;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.FactorRateMaster;
 import com.maan.eway.bean.FactorTypeDetails;
+import com.maan.eway.bean.LifePolicytermsMaster;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.OneTimeTableDetails;
 import com.maan.eway.bean.PolicyCoverData;
@@ -49,6 +51,7 @@ import com.maan.eway.bean.TinyurlRequestDetail;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
 import com.maan.eway.req.calcengine.CalcEngine;
 import com.maan.eway.req.referal.ReferralRequest;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.calc.RatingInfo;
 import com.maan.eway.upgrade.criteria.CriteriaService;
 import com.maan.eway.upgrade.criteria.SpecCriteria;
@@ -726,6 +729,32 @@ public class RatingFactorsUtil {
 		}
 		return null;
 	
+	}
+
+	 
+	public List<DropDownRes> getLifePolicyTerms(String companyId,String productId) {
+		try {
+		String todayInString = DD_MM_YYYY.format(new Date());
+		String search="companyId:"+companyId+";productId:"+productId+";sectionId:99999;status:Y;"+todayInString+"~effectiveDateStart&effectiveDateEnd;";
+		SpecCriteria criteria = crservice.createCriteria(LifePolicytermsMaster.class, search, "policyTerms");
+		List<Tuple> prorata = crservice.getResult(criteria, 0, 50);
+		 List<DropDownRes> result=new LinkedList<DropDownRes>();
+		 if(prorata!=null && prorata.size()>0) {
+			 for(int i=0;i<prorata.size();i++) {
+				 Tuple t = prorata.get(i);
+				 DropDownRes b=new DropDownRes();
+				 b.setCode(t.get("policyTerms")==null?"":t.get("policyTerms").toString());
+				 b.setCodeDesc(t.get("policyTermsDesc")==null?"":t.get("policyTermsDesc").toString());
+				 
+				 result.add(b);
+				 
+			 }
+		 }
+		 return result;
+	}catch (Exception e) {
+		e.printStackTrace();
+	}
+		return null;
 	}
 
 }

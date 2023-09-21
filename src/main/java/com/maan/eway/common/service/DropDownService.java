@@ -218,6 +218,10 @@ public interface DropDownService {
 
 	List<DropDownRes> getPremiaSourceTypes(LovDropDownReq req);
 
+	List<DropDownRes> lifePaymentTerms(LovDropDownReq req);
+
+	List<DropDownRes> lifePolicyTerms(LovDropDownReq req);
+
 
 
 
