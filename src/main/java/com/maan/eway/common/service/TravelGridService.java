@@ -11,6 +11,7 @@ import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
+import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.res.GetTravelReferalDetailsRes;
 import com.maan.eway.common.res.GetTravelRejectedQuoteDetailsRes;
@@ -18,6 +19,7 @@ import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
 import com.maan.eway.common.res.TravelQuoteCriteriaResponse;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.res.CopyQuoteSuccessRes;
+import com.maan.eway.res.PotfolioPendingDropDownRes;
 
 public interface TravelGridService {
 
@@ -48,5 +50,7 @@ public interface TravelGridService {
 			String string);
 
 	List<ReferalGridCriteriaAdminRes> getTravelAdminReferalPendingDetailsCount(RevertGridReq req, String string);
+
+	List<PotfolioPendingDropDownRes> getTravelProtfolioDropdownPending(IssuerQuoteReq req, Date today);
 
 }

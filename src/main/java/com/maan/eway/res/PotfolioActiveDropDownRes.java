@@ -1,7 +1,6 @@
 package com.maan.eway.res;
 
 import java.io.Serializable;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -15,13 +14,17 @@ import lombok.ToString;
 @ToString
 @XmlRootElement
 @JsonDeserialize
-public class DropDownSourceRes {
+public class PotfolioActiveDropDownRes {
+
+	/**
+	 * 
+	 */
 	 
-	@JsonProperty("Active Policy")
-	private List<PotfolioActiveDropDownRes> activePolicy;
-	@JsonProperty("Pending Policy")
-	private List<PotfolioPendingDropDownRes> pendingPolicy;
-	@JsonProperty("Cancelled Policy")
-	private List<PotfolioRejectDropDownRes> canPolicy;
+	@JsonProperty("Code")
+	private String code;
+	@JsonProperty("CodeDesc")
+	private String codeDesc;
+	@JsonProperty("Type")
+	private String type;
 	
 }

@@ -22,6 +22,7 @@ import com.maan.eway.common.res.PortfolioSearchDataRes;
 import com.maan.eway.common.res.QuoteCriteriaResponse;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.res.CopyQuoteSuccessRes;
+import com.maan.eway.res.PotfolioPendingDropDownRes;
 
 public interface MotorGridService {
 	
@@ -67,5 +68,7 @@ public interface MotorGridService {
 	List<PortfolioSearchDataRes> getProtfolioSearchData(SearchBrokerPolicyReq req);
 
 	Long getProtfolioSearchDataCount(SearchBrokerPolicyReq req);
+
+	List<PotfolioPendingDropDownRes> getMotorProtfolioDropdownPending(IssuerQuoteReq req, Date today);
 
 }
