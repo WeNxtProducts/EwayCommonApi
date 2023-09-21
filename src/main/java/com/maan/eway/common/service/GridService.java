@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.maan.eway.admin.res.GetallPortfolioActiveRes;
 import com.maan.eway.common.req.CopyQuoteReq;
+import com.maan.eway.common.req.ExistingBrokerUserListReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetApproverListReq;
 import com.maan.eway.common.req.GetExistingBrokerListReq;
@@ -102,7 +103,9 @@ public interface GridService {
 	PortFolioSearchGridRes searchBrokerPolicies(SearchBrokerPolicyReq req);
 
 	List<GetExistingBrokerListRes> getExistingBrokerList(GetExistingBrokerListReq req);
-	List<DropDownSourceRes> getallIssuerSourceType(IssuerQuoteReq req);
+	DropDownSourceRes getallIssuerSourceType(IssuerQuoteReq req);
+
+	List<GetExistingBrokerListRes> getBrokerUserList(ExistingBrokerUserListReq req);
 
 
 }

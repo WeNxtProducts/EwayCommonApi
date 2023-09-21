@@ -66,6 +66,7 @@ import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.UWReferralDetails;
 import com.maan.eway.common.req.CopyQuoteReq;
+import com.maan.eway.common.req.ExistingBrokerUserListReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetApproverListReq;
 import com.maan.eway.common.req.GetExistingBrokerListReq;
@@ -130,6 +131,9 @@ import com.maan.eway.repository.UWReferralDetailsRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.DropDownSourceRes;
+import com.maan.eway.res.PotfolioActiveDropDownRes;
+import com.maan.eway.res.PotfolioPendingDropDownRes;
+import com.maan.eway.res.PotfolioRejectDropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.thread.MyTaskList;
 
@@ -4388,12 +4392,178 @@ public class GridServiceImpl implements GridService {
 
 		// Source Type Dropdown Portfolio
 		@Override
-		public List<DropDownSourceRes> getallIssuerSourceType(IssuerQuoteReq req) {
+		public DropDownSourceRes getallIssuerSourceType(IssuerQuoteReq req) {
+			DropDownSourceRes res = new DropDownSourceRes();
+			try {
+				
+				Date today = new Date();
+				Calendar cal = new GregorianCalendar();
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 1);
+				today = cal.getTime();
+				cal.set(Calendar.HOUR_OF_DAY, 1);
+				cal.set(Calendar.MINUTE, 1);
+				cal.add(Calendar.DAY_OF_MONTH, -30);
+				//Active
+				List<PotfolioActiveDropDownRes> activeList=potfolioActiveDropdown(req,today);
+				//Pending
+				List<PotfolioPendingDropDownRes> pendingList=potfolioPendingDropdown(req,today);
+				//Reject
+				List<PotfolioRejectDropDownRes> canList= potfolioRejectDropdown(req,today);
+				
+				res.setActivePolicy(activeList);
+				res.setPendingPolicy(pendingList);
+				res.setCanPolicy(canList);
 
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return res;
+
+		}
+		public List<PotfolioActiveDropDownRes> potfolioActiveDropdown(IssuerQuoteReq req,Date startDate) {
 			List<Tuple> list = new ArrayList<Tuple>();
 			List<Tuple> list1 = new ArrayList<Tuple>();
-			List<DropDownSourceRes> resList = new ArrayList<DropDownSourceRes>();
+			List<PotfolioActiveDropDownRes> resList = new ArrayList<PotfolioActiveDropDownRes>();
 			try {
+				
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+				Root<HomePositionMaster> m = query.from(HomePositionMaster.class);
+
+				query.multiselect(m.get("customerCode").alias("code"), m.get("customerName").alias("codeDesc"),
+						m.get("sourceType").alias("type")).distinct(true);
+
+//				// Endt Count Max Filter
+//				Subquery<Long> endtCount = query.subquery(Long.class);
+//				Root<HomePositionMaster> ocpm1 = endtCount.from(HomePositionMaster.class);
+//				endtCount.select(cb.max(ocpm1.get("endtCount")));
+//				Predicate a1 = cb.equal(ocpm1.get("originalPolicyNo"), m.get("originalPolicyNo"));
+//				Predicate a2 = cb.equal(ocpm1.get("status"),m.get("status"));
+//				endtCount.where(a1,a2);
+				
+				List<Predicate> predics = new ArrayList<Predicate>();
+				predics.add(cb.equal(m.get("applicationId"), req.getLoginId()));
+				predics.add(cb.equal(m.get("status"), "P"));
+				predics.add(cb.equal(m.get("productId"), req.getProductId()));
+				predics.add(cb.equal(m.get("companyId"), req.getInsuranceId()));
+				predics.add(cb.equal(m.get("branchCode"), req.getBranchCode()));
+				predics.add(cb.isNotNull(m.get("bdmCode")));
+				predics.add(cb.greaterThanOrEqualTo(m.get("expiryDate"), startDate));
+				predics.add(cb.lessThanOrEqualTo(m.get("entryDate"), startDate));
+//				predics.add(cb.equal(m.get("endtCount"), endtCount));  
+				predics.add(cb.notEqual(m.get("endtTypeId"),"842"));   
+				predics.add(cb.isNull(m.get("endtTypeId")));
+				query.where(predics.toArray(new Predicate[0]));
+
+				TypedQuery<Tuple> typedQuery = em.createQuery(query);
+				list = typedQuery.getResultList();
+				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+				if (list != null && list.size() > 0) {
+
+					for (Tuple data : list) {
+						PotfolioActiveDropDownRes res = new PotfolioActiveDropDownRes();
+						res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+						res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+						res.setType(data.get("type") == null ? "" : data.get("type").toString());
+						resList.add(res);
+
+					}
+				}
+
+				CriteriaBuilder cb1 = em.getCriteriaBuilder();
+				CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
+
+				Root<HomePositionMaster> m1 = query1.from(HomePositionMaster.class);
+
+				query1.multiselect(m1.get("agencyCode").alias("code"), m1.get("loginId").alias("codeDesc"),
+						m1.get("sourceType").alias("type")).distinct(true);
+
+//				// Endt Count Max Filter
+//				Subquery<Long> endtCount1 = query.subquery(Long.class);
+//				Root<HomePositionMaster> ocpm2 = endtCount.from(HomePositionMaster.class);
+//				endtCount.select(cb.max(ocpm2.get("endtCount")));
+//				Predicate a11 = cb.equal(ocpm2.get("originalPolicyNo"), m.get("originalPolicyNo"));
+//				Predicate a22 = cb.equal(ocpm2.get("status"),m.get("status"));
+//				endtCount1.where(a11,a22);
+				
+				List<Predicate> predics1 = new ArrayList<Predicate>();
+				predics1.add(cb1.equal(m1.get("applicationId"), req.getLoginId()));
+				predics1.add(cb1.equal(m1.get("status"), "P"));
+				predics1.add(cb1.equal(m1.get("productId"), req.getProductId()));
+				predics1.add(cb1.equal(m1.get("companyId"), req.getInsuranceId()));
+				predics1.add(cb1.equal(m.get("branchCode"), req.getBranchCode()));
+				predics1.add(cb1.isNull(m1.get("bdmCode")));
+				predics1.add(cb1.greaterThanOrEqualTo(m1.get("expiryDate"), startDate));
+				predics1.add(cb1.lessThanOrEqualTo(m1.get("entryDate"), startDate));
+//				predics1.add(cb1.equal(m1.get("endtCount"), endtCount1));  
+				predics1.add(cb1.notEqual(m1.get("endtTypeId"),"842"));   
+				predics1.add(cb1.isNull(m1.get("endtTypeId")));  
+
+				query1.where(predics1.toArray(new Predicate[0]));
+
+				TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
+				list1 = typedQuery1.getResultList();
+				list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+				if (list1 != null && list1.size() > 0) {
+
+					for (Tuple data : list1) {
+						PotfolioActiveDropDownRes res = new PotfolioActiveDropDownRes();
+
+						res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+						res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+						res.setType(data.get("type") == null ? "" : data.get("type").toString());
+						resList.add(res);
+
+					}
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return resList;
+
+		}
+		public List<PotfolioPendingDropDownRes> potfolioPendingDropdown(IssuerQuoteReq req,Date today) {
+			List<PotfolioPendingDropDownRes> list = new ArrayList<PotfolioPendingDropDownRes>();
+			try {
+				CompanyProductMaster product = getCompanyProductMasterDropdown(req.getInsuranceId(),
+						req.getProductId().toString());
+
+				
+				if (product.getMotorYn().equalsIgnoreCase("M")) {
+					list = motService.getMotorProtfolioDropdownPending(req, today);
+				} else if (product.getMotorYn().equalsIgnoreCase("H")
+						&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+					list = traService.getTravelProtfolioDropdownPending(req,today);
+				} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+					list = buiService.getBuildingProtfolioDropdownPending(req, today);
+				} else {
+					list = commonService.getCommonProtfolioDropdownPending(req, today);
+
+				}
+				
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return list;
+
+		}
+		public List<PotfolioRejectDropDownRes> potfolioRejectDropdown(IssuerQuoteReq req,Date startDate) {
+			List<Tuple> list = new ArrayList<Tuple>();
+			List<Tuple> list1 = new ArrayList<Tuple>();
+			List<PotfolioRejectDropDownRes> resList = new ArrayList<PotfolioRejectDropDownRes>();
+			try {
+				
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
 
@@ -4404,10 +4574,13 @@ public class GridServiceImpl implements GridService {
 
 				List<Predicate> predics = new ArrayList<Predicate>();
 				predics.add(cb.equal(m.get("applicationId"), req.getLoginId()));
-				predics.add(cb.equal(m.get("status"), req.getStatus()));
+//				predics.add(cb.equal(m.get("status"), req.getStatus()));
 				predics.add(cb.equal(m.get("productId"), req.getProductId()));
 				predics.add(cb.equal(m.get("companyId"), req.getInsuranceId()));
 				predics.add(cb.equal(m.get("branchCode"), req.getBranchCode()));
+				predics.add(cb.greaterThanOrEqualTo(m.get("expiryDate"), startDate));
+				predics.add(cb.lessThanOrEqualTo(m.get("entryDate"), startDate));
+				predics.add(cb.equal(m.get("endtTypeId"), "842"));
 				predics.add(cb.isNotNull(m.get("bdmCode")));
 
 				query.where(predics.toArray(new Predicate[0]));
@@ -4418,7 +4591,7 @@ public class GridServiceImpl implements GridService {
 				if (list != null && list.size() > 0) {
 
 					for (Tuple data : list) {
-						DropDownSourceRes res = new DropDownSourceRes();
+						PotfolioRejectDropDownRes res = new PotfolioRejectDropDownRes();
 						res.setCode(data.get("code") == null ? "" : data.get("code").toString());
 						res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
 						res.setType(data.get("type") == null ? "" : data.get("type").toString());
@@ -4437,11 +4610,14 @@ public class GridServiceImpl implements GridService {
 
 				List<Predicate> predics1 = new ArrayList<Predicate>();
 				predics1.add(cb1.equal(m1.get("applicationId"), req.getLoginId()));
-				predics1.add(cb1.equal(m1.get("status"), req.getStatus()));
+//				predics1.add(cb1.equal(m1.get("status"), req.getStatus()));
 				predics1.add(cb1.equal(m1.get("productId"), req.getProductId()));
 				predics1.add(cb1.equal(m1.get("companyId"), req.getInsuranceId()));
-				predics.add(cb.equal(m.get("branchCode"), req.getBranchCode()));
+				predics1.add(cb1.equal(m.get("branchCode"), req.getBranchCode()));
 				predics1.add(cb1.isNull(m1.get("bdmCode")));
+				predics1.add(cb1.greaterThanOrEqualTo(m.get("expiryDate"), startDate));
+				predics1.add(cb1.lessThanOrEqualTo(m.get("entryDate"), startDate));
+				predics1.add(cb1.equal(m.get("endtTypeId"), "842"));
 
 				query1.where(predics1.toArray(new Predicate[0]));
 
@@ -4451,7 +4627,8 @@ public class GridServiceImpl implements GridService {
 				if (list1 != null && list1.size() > 0) {
 
 					for (Tuple data : list1) {
-						DropDownSourceRes res = new DropDownSourceRes();
+						PotfolioRejectDropDownRes res = new PotfolioRejectDropDownRes();
+
 						res.setCode(data.get("code") == null ? "" : data.get("code").toString());
 						res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
 						res.setType(data.get("type") == null ? "" : data.get("type").toString());
@@ -4467,5 +4644,121 @@ public class GridServiceImpl implements GridService {
 			}
 			return resList;
 
+		}
+//__________________________________________________________________________________________________
+		@Override
+		public List<GetExistingBrokerListRes> getBrokerUserList(ExistingBrokerUserListReq req) {
+			List<GetExistingBrokerListRes> resList=new ArrayList<GetExistingBrokerListRes>();
+			List<Tuple> list = new ArrayList<Tuple>();
+			try {
+				Date today = new Date();
+				Calendar cal = new GregorianCalendar();
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 1);
+				today = cal.getTime();
+				cal.set(Calendar.HOUR_OF_DAY, 1);
+				cal.set(Calendar.MINUTE, 1);
+				cal.add(Calendar.DAY_OF_MONTH, -30);
+				Date before30 = cal.getTime();
+				if("Broker".equalsIgnoreCase(req.getUserType())){
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+					Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);	
+					query.multiselect(m.get("agencyCode").alias("code"), m.get("loginId").alias("codeDesc"),
+							m.get("sourceType").alias("type")).distinct(true);
+					
+					// Find All
+					Subquery<Long> oaCode = query.subquery(Long.class);
+					Root<LoginMaster> ocpm1 = oaCode.from(LoginMaster.class);
+					oaCode.select(ocpm1.get("oaCode"));
+					Predicate a1 = cb.equal(ocpm1.get("loginId"),req.getLoginId());
+					Predicate a3 = cb.equal(ocpm1.get("status"),"Y");
+					oaCode.where(a1,a3);
+					
+					List<Predicate> predics1 = new ArrayList<Predicate>();
+					predics1.add(cb.equal(m.get("applicationId"),req.getApplicationId()));
+					predics1.add(cb.equal(m.get("status"), "Y"));
+					predics1.add(cb.equal(m.get("productId"), req.getProductId()));
+					predics1.add(cb.equal(m.get("companyId"), req.getCompanyId()));
+					predics1.add(cb.equal(m.get("branchCode"), req.getBranchCode()));
+					predics1.add(cb.greaterThanOrEqualTo(m.get("updatedDate"), before30));
+					predics1.add(cb.lessThanOrEqualTo(m.get("updatedDate"),today));
+					predics1.add(cb.equal(m.get("brokerCode"), oaCode));
+					predics1.add(cb.isNotNull(m.get("sourceType")));
+					predics1.add(cb.isNotNull(m.get("loginId")));
+					query.where(predics1.toArray(new Predicate[0]));
+
+					TypedQuery<Tuple> typedQuery1 = em.createQuery(query);
+					list = typedQuery1.getResultList();
+
+					if (list != null && list.size() > 0) {
+
+						for (Tuple data : list) {
+							GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+
+							res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+							res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+							res.setType(data.get("type") == null ? "" : data.get("type").toString());
+							resList.add(res);
+
+						}
+					}
+					
+				}
+				if("User".equalsIgnoreCase(req.getUserType())){
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+					Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);	
+					query.multiselect(m.get("agencyCode").alias("code"), m.get("loginId").alias("codeDesc"),
+							m.get("sourceType").alias("type")).distinct(true);
+					
+					// Find All
+					Subquery<Long> agencyCode = query.subquery(Long.class);
+					Root<LoginMaster> ocpm1 = agencyCode.from(LoginMaster.class);
+					agencyCode.select(ocpm1.get("agencyCode"));
+					Predicate a1 = cb.equal(ocpm1.get("loginId"),req.getLoginId());
+					Predicate a3 = cb.equal(ocpm1.get("status"),"Y");
+					agencyCode.where(a1,a3);
+					
+					List<Predicate> predics1 = new ArrayList<Predicate>();
+					predics1.add(cb.equal(m.get("applicationId"),req.getApplicationId()));
+					predics1.add(cb.equal(m.get("status"), "Y"));
+					predics1.add(cb.equal(m.get("productId"), req.getProductId()));
+					predics1.add(cb.equal(m.get("companyId"), req.getCompanyId()));
+					predics1.add(cb.equal(m.get("branchCode"), req.getBranchCode()));
+					predics1.add(cb.greaterThanOrEqualTo(m.get("updatedDate"), before30));
+					predics1.add(cb.lessThanOrEqualTo(m.get("updatedDate"),today));
+					predics1.add(cb.equal(m.get("agencyCode"), agencyCode));
+					predics1.add(cb.isNotNull(m.get("sourceType")));
+					predics1.add(cb.isNotNull(m.get("loginId")));
+					query.where(predics1.toArray(new Predicate[0]));
+
+					TypedQuery<Tuple> typedQuery1 = em.createQuery(query);
+					list = typedQuery1.getResultList();
+
+					if (list != null && list.size() > 0) {
+
+						for (Tuple data : list) {
+							GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+
+							res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+							res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+							res.setType(data.get("type") == null ? "" : data.get("type").toString());
+							resList.add(res);
+
+						}
+					}
+					
+				}
+				
+			}catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return resList;
 		}
 }

@@ -60,6 +60,7 @@ import com.maan.eway.bean.UWReferralDetails;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
+import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.res.GetCommonReferalDetailsRes;
 import com.maan.eway.common.res.GetRejectedQuoteDetailsRes;
@@ -88,6 +89,7 @@ import com.maan.eway.repository.SeqCustrefnoRepository;
 import com.maan.eway.repository.SeqQuotenoRepository;
 import com.maan.eway.repository.SeqRefnoRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
+import com.maan.eway.res.PotfolioPendingDropDownRes;
 
 @Service
 @Transactional
@@ -3031,6 +3033,94 @@ public class CommonGridServiceImpl implements CommonGridService {
 				return null;
 			}
 			return referrals;
+		}
+
+		@Override
+		public List<PotfolioPendingDropDownRes> getCommonProtfolioDropdownPending(IssuerQuoteReq req, Date today) {
+			List<Tuple> list = new ArrayList<Tuple>();
+			List<Tuple> list1 = new ArrayList<Tuple>();
+			List<PotfolioPendingDropDownRes> resList = new ArrayList<PotfolioPendingDropDownRes>();
+			try {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+				Root<EserviceCommonDetails> m = query.from(EserviceCommonDetails.class);
+
+				query.multiselect(m.get("customerCode").alias("code"), m.get("customerName").alias("codeDesc"),
+						m.get("sourceType").alias("type")).distinct(true);
+
+				List<Predicate> predics = new ArrayList<Predicate>();
+				predics.add(cb.equal(m.get("applicationId"), req.getLoginId()));
+//				predics.add(cb.equal(m.get("status"), req.getStatus()));
+				predics.add(cb.equal(m.get("productId"), req.getProductId()));
+				predics.add(cb.equal(m.get("companyId"), req.getInsuranceId()));
+				predics.add(cb.equal(m.get("branchCode"), req.getBranchCode()));
+				predics.add(cb.isNotNull(m.get("bdmCode")));
+				predics.add(cb.equal(m.get("endtStatus"), "P")); 
+//				predics.add(cb.greaterThanOrEqualTo(m.get("expiryDate"), today));
+//				predics.add(cb.lessThanOrEqualTo(m.get("entryDate"), today));
+				query.where(predics.toArray(new Predicate[0]));
+
+				TypedQuery<Tuple> typedQuery = em.createQuery(query);
+				list = typedQuery.getResultList();
+				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code"))))
+						.collect(Collectors.toList());
+				if (list != null && list.size() > 0) {
+
+					for (Tuple data : list) {
+						PotfolioPendingDropDownRes res = new PotfolioPendingDropDownRes();
+						res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+						res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+						res.setType(data.get("type") == null ? "" : data.get("type").toString());
+						resList.add(res);
+
+					}
+				}
+
+				CriteriaBuilder cb1 = em.getCriteriaBuilder();
+				CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
+
+				Root<EserviceCommonDetails> m1 = query1.from(EserviceCommonDetails.class);
+
+				query1.multiselect(m1.get("agencyCode").alias("code"), m1.get("loginId").alias("codeDesc"),
+						m1.get("sourceType").alias("type")).distinct(true);
+
+				List<Predicate> predics1 = new ArrayList<Predicate>();
+				predics1.add(cb1.equal(m1.get("applicationId"), req.getLoginId()));
+//				predics1.add(cb1.equal(m1.get("status"), req.getStatus()));
+				predics1.add(cb1.equal(m1.get("productId"), req.getProductId()));
+				predics1.add(cb1.equal(m1.get("companyId"), req.getInsuranceId()));
+				predics1.add(cb1.equal(m.get("branchCode"), req.getBranchCode()));
+				predics1.add(cb1.isNull(m1.get("bdmCode")));
+				predics1.add(cb1.equal(m.get("endtStatus"), "P")); 
+//				predics1.add(cb1.greaterThanOrEqualTo(m.get("expiryDate"), today));
+//				predics1.add(cb1.lessThanOrEqualTo(m.get("entryDate"), today));
+				query1.where(predics1.toArray(new Predicate[0]));
+
+				TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
+				list1 = typedQuery1.getResultList();
+				list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code"))))
+						.collect(Collectors.toList());
+				if (list1 != null && list1.size() > 0) {
+
+					for (Tuple data : list1) {
+						PotfolioPendingDropDownRes res = new PotfolioPendingDropDownRes();
+
+						res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+						res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+						res.setType(data.get("type") == null ? "" : data.get("type").toString());
+						resList.add(res);
+
+					}
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return resList;
+
 		}
 
 }

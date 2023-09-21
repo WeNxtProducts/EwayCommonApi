@@ -10,6 +10,7 @@ import com.maan.eway.admin.res.ReferalGridCriteriaAdminRes;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
+import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.res.GetRejectedQuoteDetailsRes;
 import com.maan.eway.common.res.GetTravelReferalDetailsRes;
@@ -17,6 +18,7 @@ import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaResponse;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.res.CopyQuoteSuccessRes;
+import com.maan.eway.res.PotfolioPendingDropDownRes;
 
 public interface BuildingGridService {
 	
@@ -45,6 +47,8 @@ public interface BuildingGridService {
 			String string);
 
 	List<ReferalGridCriteriaAdminRes> getBuildingAdminReferalPendingDetailsCount(RevertGridReq req, String string);
+
+	List<PotfolioPendingDropDownRes> getBuildingProtfolioDropdownPending(IssuerQuoteReq req, Date today);
 
 
 }

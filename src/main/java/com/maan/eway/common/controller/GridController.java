@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maan.eway.admin.res.GetallPortfolioActiveRes;
 import com.maan.eway.common.req.CopyQuoteReq;
+import com.maan.eway.common.req.ExistingBrokerUserListReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetApproverListReq;
 import com.maan.eway.common.req.GetExistingBrokerListReq;
@@ -584,7 +585,7 @@ public class GridController {
 			public ResponseEntity<CommonRes> getallIssuerSourceType(@RequestBody IssuerQuoteReq req) {
 				reqPrinter.reqPrint(req);
 				CommonRes data = new CommonRes();
-				List<DropDownSourceRes> res = entityService.getallIssuerSourceType(req);
+				DropDownSourceRes res = entityService.getallIssuerSourceType(req);
 				data.setCommonResponse(res);
 				data.setIsError(false);
 				data.setErrorMessage(Collections.emptyList());
@@ -611,5 +612,21 @@ public class GridController {
 					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 				}
 			}
-			
+//______________________________________________BROKER DROPDOWN________________________________________			
+			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
+			@PostMapping("/brokeruserdropdown")  // Broker-->User1,User2... List Of User 
+			public ResponseEntity<CommonRes> getBrokerUserList(@RequestBody  ExistingBrokerUserListReq req) {
+				reqPrinter.reqPrint(req);
+				CommonRes data = new CommonRes();
+				List<GetExistingBrokerListRes> res = entityService.getBrokerUserList(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}	
 }
