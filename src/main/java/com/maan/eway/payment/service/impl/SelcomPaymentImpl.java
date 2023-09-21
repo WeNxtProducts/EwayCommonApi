@@ -110,15 +110,15 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					orderDict.addProperty("billing.postcode_or_pobox" , payment.getReqBillToAddrPostalCode());  
 					orderDict.addProperty("billing.country" , payment.getReqBillToCountry());  
 					orderDict.addProperty("billing.phone" , payment.getReqBillToPhone());
-					orderDict.addProperty("shipping.firstname" ,  payment.getReqBillToForename());
-					orderDict.addProperty("shipping.lastname" ,  payment.getReqBillToSurname());
+					/*orderDict.addProperty("shipping.firstname" ,  payment.getReqBillToForename());
+					orderDict.addProperty("shipping.lastname" ,  payment.getReqBillToSurname());*/
 					//orderDict.addProperty("shipping.address_1" , payment.getReqBillToAddressLine1());
 					orderDict.addProperty("shipping.address_2" , payment.getReqBillToAddressLine2());
 					orderDict.addProperty("shipping.city" , payment.getReqBillToAddressCity());
 					orderDict.addProperty("shipping.state_or_region" , payment.getReqBillToAddressState());  
 					orderDict.addProperty("shipping.postcode_or_pobox" , payment.getReqBillToAddrPostalCode());  
 					orderDict.addProperty("shipping.country" ,  payment.getReqBillToCountry()); 
-					orderDict.addProperty("shipping.phone" , payment.getReqBillToPhone());
+					//orderDict.addProperty("shipping.phone" , payment.getReqBillToPhone());
 					orderDict.addProperty("buyer_remarks","None");
 					orderDict.addProperty("merchant_remarks","None");
 					orderDict.addProperty("no_of_items",  1);
