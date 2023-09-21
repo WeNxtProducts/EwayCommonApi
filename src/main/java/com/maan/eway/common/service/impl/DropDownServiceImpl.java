@@ -118,7 +118,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "COVER_NOTE_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -141,7 +141,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("PAYMENT_MODE", "Y");
 			String itemType = "PAYMENT_MODE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -163,7 +163,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 	//		List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("ENDROSEMENT_TYPE", "Y");
 			String itemType = "ENDROSEMENT_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -186,7 +186,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("DISCOUNT_TYPE_OFFERED", "Y");
 			String itemType = "DISCOUNT_TYPE_OFFERED" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -209,7 +209,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("IS_TAX_EXEMPTED", "Y");
 			String itemType = "IS_TAX_EXEMPTED" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, "99999");
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -231,7 +231,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("TAX_EXEMPTION_TYPE", "Y");
 			String itemType = "TAX_EXEMPTION_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, "99999");
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -253,7 +253,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("POLICY_HOLDER_TYPE", "Y");
 			String itemType = "POLICY_HOLDER_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, "99999");
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -275,7 +275,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 	//		List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("POLICY_HOLDER_ID_TYPE", "Y");
 			String itemType = "POLICY_HOLDER_ID_TYPE" ;
-			List<ListItemValue> getList  = getListItemPolicy(req , itemType);
+			List<ListItemValue> getList  = getListItemPolicy(req , itemType, "99999");
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -297,7 +297,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("POLICY_HOLDER_GENDER", "Y");
 			String itemType = "GENDER" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -320,7 +320,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 	//		List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("NAME_TITLE", "Y");
 			String itemType = "NAME_TITLE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -343,7 +343,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("NOTIFICATION_TYPE", "Y");
 			String itemType = "NOTIFICATION_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, "99999" );
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -365,7 +365,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("MOTOR_CATEGORY", "Y");
 			String itemType = "MOTOR_CATEGORY" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -388,7 +388,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 	//		List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("MOTOR_TYPE", "Y");
 			String itemType = "MOTOR_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -411,7 +411,7 @@ public class DropDownServiceImpl  implements DropDownService{
 //		try {
 //		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("MOTOR_USAGE", "Y");
 //			String itemType = "MOTOR_USAGE" ;
-//			List<ListItemValue> getList  = getListItem(req , itemType);
+//			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 //			for (ListItemValue data : getList) {
 //				DropDownRes res = new DropDownRes();
 //				res.setCode(data.getItemCode());
@@ -435,7 +435,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("OWNER_CATEGORY", "Y");
 			String itemType = "OWNER_CATEGORY" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -459,7 +459,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("FLEET_TYPE", "Y");
 			String itemType = "FLEET_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -483,7 +483,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 	//		List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("REINSURANCE_CATEGORY", "Y");
 			String itemType = "REINSURANCE_CATEGORY" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -507,7 +507,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 	//		List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("PARTICIPANT_TYPE", "Y");
 			String itemType = "PARTICIPANT_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -531,7 +531,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("REINSURANCE_FORM", "Y");
 			String itemType = "REINSURANCE_FORM" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -555,7 +555,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("REINSURANCE_TYPE", "Y");
 			String itemType = "REINSURANCE_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -579,7 +579,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("CLAIM_FORM_DULLY_FILLED", "Y");
 			String itemType = "CLAIM_FORM_DULLY_FILLED" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -603,7 +603,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("LOSS_ASSESSMENT_OPTION", "Y");
 			String itemType = "LOSS_ASSESSMENT_OPTION" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -627,7 +627,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("ASSESSOR_ID_TYPE", "Y");
 			String itemType = "ASSESSOR_ID_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -651,7 +651,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("CLAIMANT_CATEGORY", "Y");
 			String itemType = "CLAIMANT_CATEGORY" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -675,7 +675,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("CLAIMANT_TYPE", "Y");
 			String itemType = "CLAIMANT_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -699,7 +699,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("CLAIMANT_ID_TYPE", "Y");
 			String itemType = "CLAIMANT_ID_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -723,7 +723,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("IS_REASSESSMENT", "Y");
 			String itemType = "IS_REASSESSMENT" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -747,7 +747,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("OFFER_ACCEPTED", "Y");
 			String itemType = "OFFER_ACCEPTED" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -771,7 +771,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("PARTIES_NOTIFIED", "Y");
 			String itemType = "PARTIES_NOTIFIED" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -795,7 +795,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 	//		List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeDesc("CLAIM_RESULTED_LITIGATION", "Y");
 			String itemType = "CLAIM_RESULTED_LITIGATION" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -818,7 +818,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("TONNAGE", "Y");
 			String itemType = "TONNAGE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -848,7 +848,7 @@ public class DropDownServiceImpl  implements DropDownService{
 				req2.setInsuranceId(req.getInsuranceId());
 				req2.setBranchCode(req.getBranchCode());
 				
-				List<ListItemValue> getList  = getListItem(req2 , itemType);
+				List<ListItemValue> getList  = getListItem(req2 , itemType, req.getInsuranceId());
 				for(ListItemValue data : getList) {				
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -915,7 +915,7 @@ public class DropDownServiceImpl  implements DropDownService{
 			
 			
 			String itemType = "INSURANCE_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -966,7 +966,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("TITLE", "Y");
 			String itemType = "TITLE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, "99999");
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -989,7 +989,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("BORROWER_TYPE", "Y");
 			String itemType = "BORROWER_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1012,7 +1012,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("CITY_LIMIT", "Y");
 			String itemType = "CITY_LIMIT" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1034,7 +1034,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("LANGUAGE", "Y");
 			String itemType = "LANGUAGE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1056,7 +1056,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("FUEL_TYPE", "Y");
 			String itemType = "FUEL_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1148,7 +1148,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeAsc("CONST_MATERIAL", "Y" , req.getInsuranceId());
 			String itemType = "CONSTRUCT_TYPE" ;
 			  
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1171,7 +1171,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeAsc("CONSECUTIVE_DAYS", "Y" , req.getInsuranceId());
 			String itemType = "CONSECUTIVE_DAYS" ;  
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1194,7 +1194,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusAndCompanyIdOrderByItemCodeAsc("BUILDING_TYPE", "Y" , req.getInsuranceId());
 			String itemType = "BUILDING_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1349,7 +1349,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		return list ;
 	}
 	
-	public synchronized List<ListItemValue> getListItem(LovDropDownReq req , String itemType) {
+	public synchronized List<ListItemValue> getListItem(LovDropDownReq req , String itemType, String companyId) {
 		List<ListItemValue> list = new ArrayList<ListItemValue>();
 		try {
 			Date today = new Date();
@@ -1395,53 +1395,19 @@ public class DropDownServiceImpl  implements DropDownService{
 			Predicate n1 = cb.equal(c.get("status"),"Y");
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
-			Predicate n4 = cb.equal(c.get("companyId"), req.getInsuranceId());
-			Predicate n5 = cb.equal(c.get("companyId"), "99999");
+			Predicate n4 = cb.equal(c.get("companyId"), companyId);
+		//	Predicate n5 = cb.equal(c.get("companyId"), "99999");
 			Predicate n6 = cb.equal(c.get("branchCode"), req.getBranchCode());
 			Predicate n7 = cb.equal(c.get("branchCode"), "99999");
-			Predicate n8 = cb.or(n4,n5);
+			//Predicate n8 = cb.or(n4,n5);
 			Predicate n9 = cb.or(n6,n7);
 			Predicate n10 = cb.equal(c.get("itemType"),itemType);
 			Predicate n11 = cb.equal(c.get("status"),"R");
 			Predicate n12 = cb.or(n1,n11);
-			
-			 
-			if(itemType.equalsIgnoreCase("TAX_FOR_DESC") ||itemType.equalsIgnoreCase("TERMS_TYPE")
-					||itemType.equalsIgnoreCase("POLICY_HOLDER_TYPE") ||
-					itemType.equalsIgnoreCase("CALCULATION_TYPE") || itemType.equalsIgnoreCase("COVERAGE_TYPE") || 
-					itemType.equalsIgnoreCase("PRODUCT_CATEGORY") || 
-					itemType.equalsIgnoreCase("USER_TYPE") || itemType.equalsIgnoreCase("Broker") || 
-					itemType.equalsIgnoreCase("USER") || itemType.equalsIgnoreCase("ISSUER") || 
-					itemType.equalsIgnoreCase("PRODUCT_ICONS") || 
-					itemType.equalsIgnoreCase("DOCUMENT_APPLICABLE") || itemType.equalsIgnoreCase("INDUSTRY_CATEGORY") || 
-					itemType.equalsIgnoreCase("RANGE") || itemType.equalsIgnoreCase("IS_TAX_EXEMPTED") || 
-					itemType.equalsIgnoreCase("DISCRETE") || itemType.equalsIgnoreCase("POLICY_HOLDER_TYPE") || 
-					itemType.equalsIgnoreCase("POLICY_HOLDER_ID_TYPE") || 
-					itemType.equalsIgnoreCase("PRODUCT_SHORT_CODE") || 
-					itemType.equalsIgnoreCase("PAYMENT_TYPES") || itemType.equalsIgnoreCase("NOTIFICATION_TYPE") || 
-					itemType.equalsIgnoreCase("TERMS_AND_CONDITION") || itemType.equalsIgnoreCase("TITLE") || 
-					itemType.equalsIgnoreCase("COPY_QUOTE_BY_BUILDING") || itemType.equalsIgnoreCase("BUSINESS_TYPE") || 
-					itemType.equalsIgnoreCase("COPY_QUOTE_BY_COMMON") || itemType.equalsIgnoreCase("SOURCE_TYPE") || 
-					itemType.equalsIgnoreCase("PROMOCODE_TYPE") || itemType.equalsIgnoreCase("COPY_QUOTE_BY_MOTOR") ||
-					
-					itemType.equalsIgnoreCase("COPY_QUOTE_BY_TRAVEL") ||
-					itemType.equalsIgnoreCase("COPY_QUOTE_BY_BUILDING") || itemType.equalsIgnoreCase("COPY_QUOTE_BY_COMMON") || 
-					itemType.equalsIgnoreCase("TERMS_TYPE") || itemType.equalsIgnoreCase("PROMOCODE_TYPE") || 
-					itemType.equalsIgnoreCase("TRACKING_STATUS") || itemType.equalsIgnoreCase("ADMIN_SEARCH_MOTOR") || 
-					itemType.equalsIgnoreCase("ADMIN_SEARCH_BUILDING") || itemType.equalsIgnoreCase("ADMIN_SEARCH_TRAVEL") || 
-					itemType.equalsIgnoreCase("ADMIN_SEARCH_COMMON") || itemType.equalsIgnoreCase("COPY_QUOTE_BY_MOTOR") || 
-					itemType.equalsIgnoreCase("COPY_QUOTE_BY_TRAVEL") || itemType.equalsIgnoreCase("COPY_QUOTE_BY_BUILDING") || 
-					itemType.equalsIgnoreCase("COPY_QUOTE_BY_COMMON") || itemType.equalsIgnoreCase("DOC_ID_TYPE") || 
-					itemType.equalsIgnoreCase("TAX_FOR") || itemType.equalsIgnoreCase("PAYMENT") || 
-					itemType.equalsIgnoreCase("PORTFOLIO_TYPES") || itemType.equalsIgnoreCase("TAX_FOR_DESC") || 
-					itemType.equalsIgnoreCase("MONTHS") || itemType.equalsIgnoreCase("PREMIA_SOURCE_TYPE")
-					|| itemType.equalsIgnoreCase("PAYMENT_TYPE")
-					) {  //not company based 
-				query.where(n2,n3,n8,n9,n10,n12).orderBy(orderList);
-			}else {
-				query.where(n2,n3,n4,n9,n10,n12).orderBy(orderList);
-			}
-			// Get Result
+		
+			query.where(n2,n3,n4,n9,n10,n12).orderBy(orderList);
+		
+
 			TypedQuery<ListItemValue> result = em.createQuery(query);
 			list = result.getResultList();
 			
@@ -1456,7 +1422,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		return list ;
 	}
 
-	public synchronized List<ListItemValue> getListItemPolicy(LovPolicyDropDownReq req , String itemType) {
+	public synchronized List<ListItemValue> getListItemPolicy(LovPolicyDropDownReq req , String itemType, String companyId) {
 		List<ListItemValue> list = new ArrayList<ListItemValue>();
 		try {
 			Date today = new Date();
@@ -1502,16 +1468,16 @@ public class DropDownServiceImpl  implements DropDownService{
 			Predicate n1 = cb.equal(c.get("status"),"Y");
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);	
-			Predicate n4 = cb.equal(c.get("companyId"), req.getInsuranceId());
-			Predicate n5 = cb.equal(c.get("companyId"), "99999");
+			Predicate n4 = cb.equal(c.get("companyId"), companyId);
+		//	Predicate n5 = cb.equal(c.get("companyId"), "99999");
 			Predicate n6 = cb.equal(c.get("branchCode"), req.getBranchCode());
 			Predicate n7 = cb.equal(c.get("branchCode"), "99999");
-			Predicate n8 = cb.or(n4,n5);
+		//	Predicate n8 = cb.or(n4,n5);
 			Predicate n9 = cb.or(n6,n7);
 			Predicate n10 = cb.equal(c.get("itemType"),itemType);
 
 			Predicate n11 = cb.equal(c.get("param1"),req.getParam1());
-			query.where(n1,n2,n3,n8,n9,n10,n11).orderBy(orderList);
+			query.where(n1,n2,n3,n4,n9,n10,n11).orderBy(orderList);
 			// Get Result
 			TypedQuery<ListItemValue> result = em.createQuery(query);
 			list = result.getResultList();
@@ -1620,7 +1586,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "SOURCE_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, "99999");
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1646,7 +1612,7 @@ public class DropDownServiceImpl  implements DropDownService{
 			LovDropDownReq req2 = new LovDropDownReq();
 			req2.setInsuranceId(req.getInsuranceId());
 			req2.setBranchCode(req.getBranchCode());			
-			List<ListItemValue> getList  = getListItem(req2 , itemType);
+			List<ListItemValue> getList  = getListItem(req2 , itemType, req.getInsuranceId());
 			
 			getList = getList.stream().filter( o -> o.getParam1()!=null && o.getParam1().equalsIgnoreCase(req.getGender()) ).collect(Collectors.toList());
 					
@@ -1673,7 +1639,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "BUILDING_PURPOSE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1696,7 +1662,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "BUILDING_USAGE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1719,7 +1685,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "PAYMENT_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, "99999");
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1765,7 +1731,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "PERSONAL" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1790,7 +1756,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "All Risk" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1813,7 +1779,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "DATA_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1836,7 +1802,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "TERMS_AND_CONDITION" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, "99999");
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1859,7 +1825,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "OCCUPATION_CATEGORY_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1882,7 +1848,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "BENEFIT_COVER_MONTH" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1905,7 +1871,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "QUOTE_STATUS" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1928,7 +1894,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "TERMS_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, "99999");
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1951,7 +1917,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "DRIVER_TYPES" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -1974,7 +1940,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "Electronic Items" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2052,7 +2018,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "INDUSTRY_CATEGORY" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2076,7 +2042,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "FOLLOWUP_STATUS" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2100,7 +2066,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "ENDT_DEPENDANT_FIELDS" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2124,7 +2090,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "POLICY_BENEFITS_TYPES" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2279,7 +2245,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "WALL_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2303,7 +2269,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "ROOF_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2327,7 +2293,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "AUDITENT_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			getList.sort(Comparator.comparing(ListItemValue :: getItemCode ) );
 			
 			for (ListItemValue data : getList) {
@@ -2353,7 +2319,7 @@ public class DropDownServiceImpl  implements DropDownService{
 	//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 
 		String itemType = "FIDELITY_EMPLOYEE_COUNT" ;
-		List<ListItemValue> getList  = getListItem(req , itemType);
+		List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 		getList.sort(Comparator.comparing(ListItemValue :: getItemCode ) );
 		for (ListItemValue data : getList) {
 			DropDownRes res = new DropDownRes();
@@ -2379,7 +2345,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 
 			String itemType = "NATURE_OF_TRADE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
@@ -2403,7 +2369,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "FIDELITY_SUMINSURED" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			getList.sort(Comparator.comparing(ListItemValue :: getItemCode ) );
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
@@ -2428,7 +2394,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "BURGLARY_INSURANCE_FOR" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2452,7 +2418,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "CEILING_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2476,7 +2442,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "WINDOWS_MATERIAL" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2500,7 +2466,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "DOORS_MATERIAL" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2524,7 +2490,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "NIGHT_LEFT_DOOR" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2548,7 +2514,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "BUILDING_OCCUPIED" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2572,7 +2538,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "KEYS_REQUIRED_TO_OPEN" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2620,7 +2586,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "INDEMITY_PERIOD" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2644,7 +2610,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "PLATE_GLASS_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2690,7 +2656,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "CONTENT_RISK" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2713,7 +2679,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "Electronic Accessories" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2737,7 +2703,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "SECTION_MODIFICATION_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2767,7 +2733,7 @@ public class DropDownServiceImpl  implements DropDownService{
 			req1.setInsuranceId(req.getInsuranceId());
 			
 			String itemType = "MACHINERY_BREAKDOWN" ;
-			List<ListItemValue> getList  = getListItem(req1 , itemType);
+			List<ListItemValue> getList  = getListItem(req1 , itemType, req.getInsuranceId());
 			
 			BuildingRiskDetails build = buildRepo.findByQuoteNo(req.getQuoteNo());
 			
@@ -2881,7 +2847,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "TAX_FOR" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, "99999");
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2905,7 +2871,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "PAYMENT" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, "99999");
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2929,7 +2895,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "PORTFOLIO_TYPES" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, "99999");
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2953,7 +2919,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "PLANT_ALL_RISK" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2977,7 +2943,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("COVER_NOTE_TYPE", "Y");
 			String itemType = "BUSINESS_ALL_RISK" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -2999,7 +2965,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			String itemType = "PLAN_BENEFITS" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -3021,7 +2987,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			String itemType = "CYBER_INSURANCE_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -3043,7 +3009,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			String itemType = "CYBER_INSURANCE_CONTENT" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
@@ -3065,7 +3031,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			String itemType = "TAX_FOR_DESC" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, "99999");
 			getList.sort(Comparator.comparing(ListItemValue :: getItemValue).reversed());
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
@@ -3111,7 +3077,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			String itemType = "PREMIA_SOURCE_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
 			getList.sort(Comparator.comparing(ListItemValue :: getParam1));
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
@@ -3135,7 +3101,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		try {
 		//	List<ListItemValue> getList = listRepo.findByItemTypeAndStatusOrderByItemCodeAsc("PAYMENT_MODE", "Y");
 			String itemType = "PAYMENT_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType);
+			List<ListItemValue> getList  = getListItem(req , itemType, "99999");
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getItemCode());
