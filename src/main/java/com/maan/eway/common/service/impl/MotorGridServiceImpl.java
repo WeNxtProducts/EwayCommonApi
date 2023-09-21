@@ -247,10 +247,12 @@ public class MotorGridServiceImpl implements MotorGridService {
 			Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
 			Predicate n9 = cb.isNull(m.get("endorsementType"));
 			Predicate n7 = null;
+			Predicate n11 = null;
 			if (req.getApplicationId().equalsIgnoreCase("1")) {
 				n7 = cb.equal(m.get("loginId"), req.getLoginId());
 			} else {
 				n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
+				n11 = cb.equal(m.get("loginId"), req.getLoginId());
 			}
 
 			Predicate n8 = null;
@@ -269,9 +271,11 @@ public class MotorGridServiceImpl implements MotorGridService {
 			riskId.where(a3);
 			
 			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
-			
+			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
 			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10).orderBy(orderList);
-
+			}else {
+				query.where(n1, n2, n3, n4, n5, n6, n7,n11, n8,n9,n10).orderBy(orderList);	
+			}
 			// Get Result
 			TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);

@@ -4648,7 +4648,7 @@ public class GridServiceImpl implements GridService {
 //__________________________________________________________________________________________________
 		@Override
 		public List<GetExistingBrokerListRes> getBrokerUserList(ExistingBrokerUserListReq req) {
-			List<GetExistingBrokerListRes> resList=new ArrayList<GetExistingBrokerListRes>();
+			List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
 			List<Tuple> list = new ArrayList<Tuple>();
 			try {
 				Date today = new Date();
@@ -4661,104 +4661,82 @@ public class GridServiceImpl implements GridService {
 				cal.set(Calendar.MINUTE, 1);
 				cal.add(Calendar.DAY_OF_MONTH, -30);
 				Date before30 = cal.getTime();
-				if("Broker".equalsIgnoreCase(req.getUserType())){
-					CriteriaBuilder cb = em.getCriteriaBuilder();
-					CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+				if(!("issuer".equalsIgnoreCase(req.getUserType()))){		
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
 
-					Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);	
-					query.multiselect(m.get("agencyCode").alias("code"), m.get("loginId").alias("codeDesc"),
-							m.get("sourceType").alias("type")).distinct(true);
-					
-					// Find All
-					Subquery<Long> oaCode = query.subquery(Long.class);
-					Root<LoginMaster> ocpm1 = oaCode.from(LoginMaster.class);
-					oaCode.select(ocpm1.get("oaCode"));
-					Predicate a1 = cb.equal(ocpm1.get("loginId"),req.getLoginId());
-					Predicate a3 = cb.equal(ocpm1.get("status"),"Y");
-					oaCode.where(a1,a3);
-					
-					List<Predicate> predics1 = new ArrayList<Predicate>();
-					predics1.add(cb.equal(m.get("applicationId"),req.getApplicationId()));
-					predics1.add(cb.equal(m.get("status"), "Y"));
-					predics1.add(cb.equal(m.get("productId"), req.getProductId()));
-					predics1.add(cb.equal(m.get("companyId"), req.getCompanyId()));
-					predics1.add(cb.equal(m.get("branchCode"), req.getBranchCode()));
-					predics1.add(cb.greaterThanOrEqualTo(m.get("updatedDate"), before30));
-					predics1.add(cb.lessThanOrEqualTo(m.get("updatedDate"),today));
-					predics1.add(cb.equal(m.get("brokerCode"), oaCode));
-					predics1.add(cb.isNotNull(m.get("sourceType")));
-					predics1.add(cb.isNotNull(m.get("loginId")));
-					query.where(predics1.toArray(new Predicate[0]));
+				Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
+				query.multiselect(m.get("agencyCode").alias("code"), m.get("loginId").alias("codeDesc"),
+						m.get("sourceType").alias("type")).distinct(true);
 
-					TypedQuery<Tuple> typedQuery1 = em.createQuery(query);
-					list = typedQuery1.getResultList();
+				// Find All
+				Subquery<Long> agencyCode = query.subquery(Long.class);
+				Root<LoginMaster> ocpm1 = agencyCode.from(LoginMaster.class);
+				agencyCode.select(ocpm1.get("agencyCode"));
+				Predicate a1 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
+				Predicate a3 = cb.equal(ocpm1.get("status"), "Y");
+				agencyCode.where(a1, a3);
 
-					if (list != null && list.size() > 0) {
-
-						for (Tuple data : list) {
-							GetExistingBrokerListRes res = new GetExistingBrokerListRes();
-
-							res.setCode(data.get("code") == null ? "" : data.get("code").toString());
-							res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
-							res.setType(data.get("type") == null ? "" : data.get("type").toString());
-							resList.add(res);
-
-						}
-					}
-					
-				}
-				if("User".equalsIgnoreCase(req.getUserType())){
-					CriteriaBuilder cb = em.getCriteriaBuilder();
-					CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
-
-					Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);	
-					query.multiselect(m.get("agencyCode").alias("code"), m.get("loginId").alias("codeDesc"),
-							m.get("sourceType").alias("type")).distinct(true);
-					
-					// Find All
-					Subquery<Long> agencyCode = query.subquery(Long.class);
-					Root<LoginMaster> ocpm1 = agencyCode.from(LoginMaster.class);
-					agencyCode.select(ocpm1.get("agencyCode"));
-					Predicate a1 = cb.equal(ocpm1.get("loginId"),req.getLoginId());
-					Predicate a3 = cb.equal(ocpm1.get("status"),"Y");
-					agencyCode.where(a1,a3);
-					
-					List<Predicate> predics1 = new ArrayList<Predicate>();
-					predics1.add(cb.equal(m.get("applicationId"),req.getApplicationId()));
-					predics1.add(cb.equal(m.get("status"), "Y"));
-					predics1.add(cb.equal(m.get("productId"), req.getProductId()));
-					predics1.add(cb.equal(m.get("companyId"), req.getCompanyId()));
-					predics1.add(cb.equal(m.get("branchCode"), req.getBranchCode()));
-					predics1.add(cb.greaterThanOrEqualTo(m.get("updatedDate"), before30));
-					predics1.add(cb.lessThanOrEqualTo(m.get("updatedDate"),today));
+				List<Predicate> predics1 = new ArrayList<Predicate>();
+				predics1.add(cb.equal(m.get("applicationId"), req.getApplicationId()));
+				predics1.add(cb.equal(m.get("status"), "Y"));
+				predics1.add(cb.equal(m.get("productId"), req.getProductId()));
+				predics1.add(cb.equal(m.get("companyId"), req.getCompanyId()));
+				predics1.add(cb.equal(m.get("branchCode"), req.getBranchCode()));
+				predics1.add(cb.greaterThanOrEqualTo(m.get("updatedDate"), before30));
+				predics1.add(cb.lessThanOrEqualTo(m.get("updatedDate"), today));
+				if ("Broker".equalsIgnoreCase(req.getUserType())) {
+					predics1.add(cb.equal(m.get("brokerCode"), agencyCode));
+				} else if ("User".equalsIgnoreCase(req.getUserType())) {
 					predics1.add(cb.equal(m.get("agencyCode"), agencyCode));
+				}
+				predics1.add(cb.isNotNull(m.get("sourceType")));
+				predics1.add(cb.isNotNull(m.get("loginId")));
+				query.where(predics1.toArray(new Predicate[0]));
+
+				TypedQuery<Tuple> typedQuery1 = em.createQuery(query);
+				list = typedQuery1.getResultList();
+				}else {
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+					Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
+					query.multiselect(m.get("brokerCode").alias("code"), m.get("loginId").alias("codeDesc"),
+							m.get("sourceType").alias("type"));
+					List<Predicate> predics1 = new ArrayList<Predicate>();
+					predics1.add(cb.equal(m.get("applicationId"), req.getApplicationId()));
+					predics1.add(cb.equal(m.get("status"), "Y"));
+					predics1.add(cb.equal(m.get("productId"), req.getProductId()));
+					predics1.add(cb.equal(m.get("companyId"), req.getCompanyId()));
+					predics1.add(cb.equal(m.get("branchCode"), req.getBranchCode()));
+					predics1.add(cb.greaterThanOrEqualTo(m.get("updatedDate"), before30));
+					predics1.add(cb.lessThanOrEqualTo(m.get("updatedDate"), today));
 					predics1.add(cb.isNotNull(m.get("sourceType")));
 					predics1.add(cb.isNotNull(m.get("loginId")));
 					query.where(predics1.toArray(new Predicate[0]));
 
 					TypedQuery<Tuple> typedQuery1 = em.createQuery(query);
 					list = typedQuery1.getResultList();
-
-					if (list != null && list.size() > 0) {
-
-						for (Tuple data : list) {
-							GetExistingBrokerListRes res = new GetExistingBrokerListRes();
-
-							res.setCode(data.get("code") == null ? "" : data.get("code").toString());
-							res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
-							res.setType(data.get("type") == null ? "" : data.get("type").toString());
-							resList.add(res);
-
-						}
-					}
-					
+					list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("codeDesc")))).collect(Collectors.toList());
 				}
-				
-			}catch (Exception e) {
+				if (list != null && list.size() > 0) {
+
+					for (Tuple data : list) {
+						GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+
+						res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+						res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+						res.setType(data.get("type") == null ? "" : data.get("type").toString());
+						resList.add(res);
+
+					}
+				}
+
+			} catch (Exception e) {
 				e.printStackTrace();
 				log.info("Log Details" + e.getMessage());
 				return null;
 			}
 			return resList;
 		}
-}
+	}
