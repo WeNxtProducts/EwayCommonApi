@@ -20,5 +20,7 @@ public interface JasperService {
 
 	public CommonRes getPremiumReport(PremiumReportReq req);
 
+	public CommonRes getPremiumReportDetails(PremiumReportReq req);
+
 
 }

@@ -12,12 +12,15 @@
 
 package com.maan.eway.repository;
 
-import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
-import com.maan.eway.bean.BranchMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+
+import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.BranchMasterId;
 /**
  * <h2>BranchMasterRepository</h2>
@@ -37,4 +40,7 @@ public interface BranchMasterRepository  extends JpaRepository<BranchMaster,Bran
 
 	List<BranchMaster> findTopByCompanyIdAndBranchCodeOrderByAmendIdDesc(String companyId, String branchCode);
 
+	@Query(value="SELECT HPM.LOGIN_ID, HPM.QUOTE_NO, HPM.POLICY_NO, UPPER( CONCAT( CONCAT(PIF.TITLE_DESC, '.'), PIF.CLIENT_NAME) ) AS CUSTOMER_NAME, HPM.inception_date AS START_DATE, HPM.expiry_date AS END_DATE, HPM.effective_date AS ISSUE_DATE, UPPER(HPM.BRANCH_NAME) AS BRANCH_NAME,( SELECT UPPER(USER_NAME) FROM login_user_info WHERE LOGIN_ID = HPM.LOGIN_ID ) AS BROKER_NAME, ( SELECT USER_TYPE FROM eway_login_master WHERE LOGIN_ID = ?1 ) AS USER_TYPE, ( SELECT SUB_USER_TYPE FROM eway_login_master WHERE LOGIN_ID = ?1 ) AS SUB_USER_TYPE, HPM.CURRENCY, HPM.PAYMENT_TYPE, ( SELECT PAYMENT_ID FROM PAYMENT_INFO WHERE QUOTE_NO = HPM.QUOTE_NO AND payment_status = 'ACCEPTED' ) AS PAYMENT_ID, MDD.POLICY_TYPE_DESC, HPM.DEBIT_NOTE_NO, MDD.SUM_INSURED, CASE WHEN HPM.CURRENCY IN ( SELECT CURRENCY_ID FROM EWAY_INSURANCE_COMPANY_MASTER WHERE HPM.COMPANY_ID = COMPANY_ID ) THEN ROUND(MDD.OVERALL_PREMIUM_LC, 2) ELSE ROUND(MDD.OVERALL_PREMIUM_FC, 2) END AS PERMIUM, ROUND(HPM.COMMISSION_PERCENTAGE, 1) AS COMMISSION_PERCENTAGE, ROUND(COMMISSION, 2) AS COMMISSION_AMOUNT FROM HOME_POSITION_MASTER HPM, PERSONAL_INFO PIF, MOTOR_DATA_DETAILS MDD WHERE HPM.CUSTOMER_ID = PIF.CUSTOMER_ID AND HPM.QUOTE_NO = MDD.QUOTE_NO AND HPM.PRODUCT_ID = '5' AND HPM.BRANCH_CODE = ?4 AND HPM.STATUS = 'P' AND HPM.POLICY_NO IS NOT NULL AND HPM.INCEPTION_DATE BETWEEN ?2 AND ?3 AND ( ( CASE WHEN ( SELECT SUB_USER_TYPE FROM eway_login_master WHERE LOGIN_ID = ?1 ) IN ('both') THEN '1' WHEN ( SELECT SUB_USER_TYPE FROM eway_login_master WHERE LOGIN_ID = ?1 ) IN ('low', 'high') THEN HPM.Application_id END ) = ( CASE WHEN ( SELECT SUB_USER_TYPE FROM eway_login_master WHERE LOGIN_ID = ?1 ) IN ('both') THEN '1' ELSE ?1 END ) OR ( CASE WHEN ( SELECT USER_TYPE FROM eway_login_master WHERE LOGIN_ID = ?1 )= 'Broker' THEN HPM.AGENCY_CODE END ) IN ( SELECT DISTINCT AGENCY_CODE FROM eway_login_master WHERE OA_CODE IN ( SELECT AGENCY_CODE FROM eway_login_master WHERE LOGIN_ID = ?1 ) ) OR HPM.AGENCY_CODE IN ( SELECT AGENCY_CODE FROM eway_login_master WHERE LOGIN_ID = ?1 ) )",nativeQuery=true)
+	List<Map<String,Object>> getPremiumReportDetails(String loginId,Date startDate,Date endDate,String branchCode);
+	
 }
