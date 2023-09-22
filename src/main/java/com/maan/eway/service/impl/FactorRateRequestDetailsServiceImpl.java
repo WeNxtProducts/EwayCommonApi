@@ -253,6 +253,7 @@ this.repository = repo;
 		String successRes = "" ;
 		try {
 			// Find Datas
+			req.setSectionId(StringUtils.isNotBlank(req.getSectionId())?req.getSectionId():"0");
 			Long factorCount = repository.countByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo(),Integer.valueOf(req.getVehicleId()), req.getInsuranceId() ,Integer.valueOf(req.getProductId()) ,Integer.valueOf(req.getSectionId()));
 			List<FactorRateRequestDetails> coverIds =null;
 			// Delete Old Datas

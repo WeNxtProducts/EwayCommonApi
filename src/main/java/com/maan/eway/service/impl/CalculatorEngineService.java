@@ -50,6 +50,7 @@ import com.maan.eway.bean.MsAssetDetails;
 import com.maan.eway.bean.MsCommonDetails;
 import com.maan.eway.bean.MsCustomerDetails;
 import com.maan.eway.bean.MsHumanDetails;
+import com.maan.eway.bean.MsLifeDetails;
 import com.maan.eway.bean.MsVehicleDetails;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PolicyCoverDataEndt;
@@ -941,8 +942,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 						criteria = crservice.createCriteria(MsAssetDetails.class, search, "vdRefno");
 						vehicles = crservice.getResult(criteria, 0, 50);
 					}else if (oneProduct.equalsIgnoreCase("L")) {
-						search = "vdRefno:" + engine.getVdRefNo() + ";locationId:" + engine.getVehicleId();
-						criteria = crservice.createCriteria(MsAssetDetails.class, search, "vdRefno");
+						search = "vdRefno:" + engine.getVdRefNo() + ";riskId:" + engine.getVehicleId();
+						criteria = crservice.createCriteria(MsLifeDetails.class, search, "vdRefno");
 						vehicles = crservice.getResult(criteria, 0, 50);
 					}
 
