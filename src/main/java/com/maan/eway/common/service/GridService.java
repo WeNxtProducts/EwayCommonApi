@@ -107,5 +107,8 @@ public interface GridService {
 
 	List<GetExistingBrokerListRes> getBrokerUserList(ExistingBrokerUserListReq req);
 
+	List<GetExistingBrokerListRes> getPortfolioBrokerUserList(ExistingBrokerUserListReq req);
+
+
 
 }
