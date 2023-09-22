@@ -171,7 +171,7 @@ public class OTPService {
 					if((errorlist==null || errorlist.size()==0) && StringUtils.isNotBlank(otp.getCustomerId()) &&  StringUtils.isNotBlank(otp.getReferenceNo())) {
 						List<ProductSectionMaster> prodctSects = productSectionRepo.findByProductIdAndCompanyId(Integer.parseInt(otp.getProductId()),otp.getCompanyId());
 						List<ProductSectionMaster> collect = prodctSects.stream().filter(distinctByKey(ProductSectionMaster::getMotorYn)).collect(Collectors.toList());
-						
+						String loginId = otpData.getMobileCode().concat(otpData.getMobileNo());
 						for (ProductSectionMaster productSectionMaster : collect) {
 							String motorYn = productSectionMaster.getMotorYn();
 							if(motorYn.equals("M")) {
@@ -179,21 +179,26 @@ public class OTPService {
 								
 								eserviceMotorRepo.deleteAll(referenceNos);
 								referenceNos.forEach(m->m.setCustomerReferenceNo(otp.getCustomerId()));
+								referenceNos.forEach(m->m.setLoginId(loginId ));
+								
 								eserviceMotorRepo.saveAll(referenceNos);
 							}else if(motorYn.equals("H")) {
 								EserviceTravelDetails referenceNos = eserviceTravelRepo.findByRequestReferenceNo(otp.getReferenceNo());
 								eserviceTravelRepo.delete(referenceNos);
 								referenceNos.setCustomerReferenceNo(otp.getCustomerId());
+								referenceNos.setLoginId(loginId);
 								eserviceTravelRepo.save(referenceNos);
 							}else if(motorYn.equals("A")) {
 								List<EserviceBuildingDetails> referenceNos = eservicebuildRepo.findByRequestReferenceNo(otp.getReferenceNo());
 								eservicebuildRepo.deleteAll(referenceNos);
 								referenceNos.forEach(m->m.setCustomerReferenceNo(otp.getCustomerId()));
+								referenceNos.forEach(m->m.setLoginId(loginId ));
 								eservicebuildRepo.saveAll(referenceNos);
 							}else {
 								List<EserviceCommonDetails> referenceNos = eservicecommonRepo.findByRequestReferenceNo(otp.getReferenceNo());
 								eservicecommonRepo.deleteAll(referenceNos);
 								referenceNos.forEach(m->m.setCustomerReferenceNo(otp.getCustomerId()));
+								referenceNos.forEach(m->m.setLoginId(loginId ));
 								eservicecommonRepo.saveAll(referenceNos);
 							}
 						}
