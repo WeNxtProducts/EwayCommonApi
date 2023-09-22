@@ -506,7 +506,7 @@ public class JasperServiceImpl implements JasperService {
 	public CommonRes getPremiumReportDetails(PremiumReportReq req) {
 		CommonRes response = new CommonRes();
 		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyy");
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 			LocalDate startDate =LocalDate.parse(req.getStartDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 			LocalDate endDate =LocalDate.parse(req.getEndDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             Date date1 = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) ;
@@ -525,7 +525,7 @@ public class JasperServiceImpl implements JasperService {
 					map.put("BranchName",p.get("BRANCH_NAME")==null?"":p.get("BRANCH_NAME"));
 					map.put("BrokerName", p.get("BROKER_NAME")==null?"":p.get("BROKER_NAME"));
 					map.put("SumInured", p.get("SUM_INSURED")==null?"":p.get("SUM_INSURED"));
-					map.put("Premium", p.get("PREMIUM")==null?"":p.get("PREMIUM"));
+					map.put("Premium", p.get("PERMIUM")==null?"":p.get("PERMIUM"));
 					map.put("PaymentType", p.get("PAYMENT_TYPE")==null?"":p.get("PAYMENT_TYPE"));
 					map.put("Currency", p.get("CURRENCY")==null?"":p.get("CURRENCY"));
 					return map;
