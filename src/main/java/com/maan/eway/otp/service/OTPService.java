@@ -180,7 +180,7 @@ public class OTPService {
 								eserviceMotorRepo.deleteAll(referenceNos);
 								referenceNos.forEach(m->m.setCustomerReferenceNo(otp.getCustomerId()));
 								referenceNos.forEach(m->m.setLoginId(loginId ));
-								
+								//referenceNos.forEach(m->m.setAgencyCode(loginId ));
 								eserviceMotorRepo.saveAll(referenceNos);
 							}else if(motorYn.equals("H")) {
 								EserviceTravelDetails referenceNos = eserviceTravelRepo.findByRequestReferenceNo(otp.getReferenceNo());
