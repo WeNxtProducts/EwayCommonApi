@@ -247,10 +247,12 @@ public class MotorGridServiceImpl implements MotorGridService {
 			Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
 			Predicate n9 = cb.isNull(m.get("endorsementType"));
 			Predicate n7 = null;
+			Predicate n11 = null;
 			if (req.getApplicationId().equalsIgnoreCase("1")) {
 				n7 = cb.equal(m.get("loginId"), req.getLoginId());
 			} else {
 				n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
+				n11 = cb.equal(m.get("loginId"), req.getLoginId());
 			}
 
 			Predicate n8 = null;
@@ -269,9 +271,11 @@ public class MotorGridServiceImpl implements MotorGridService {
 			riskId.where(a3);
 			
 			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
-			
+			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
 			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10).orderBy(orderList);
-
+			}else {
+				query.where(n1, n2, n3, n4, n5, n6, n7,n11, n8,n9,n10).orderBy(orderList);	
+			}
 			// Get Result
 			TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
@@ -312,10 +316,12 @@ public class MotorGridServiceImpl implements MotorGridService {
 			Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
 			Predicate n9 = cb.isNull(m.get("endorsementType"));
 			Predicate n7 = null;
+			Predicate n11 = null;
 			if (req.getApplicationId().equalsIgnoreCase("1")) {
 				n7 = cb.equal(m.get("loginId"), req.getLoginId());
 			} else {
 				n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
+				n11 = cb.equal(m.get("loginId"), req.getLoginId());
 			}
 
 			Predicate n8 = null;
@@ -335,7 +341,11 @@ public class MotorGridServiceImpl implements MotorGridService {
 			
 			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
 			
-			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10);
+			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
+				query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10);
+				}else {
+					query.where(n1, n2, n3, n4, n5, n6, n7,n11, n8,n9,n10);	
+				}
 
 			// Get Result
 			TypedQuery<Long> result = em.createQuery(query);
@@ -2945,6 +2955,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Predicate n13 = cb.or(n11,n12);
 				
 			Predicate n5 = null;
+			Predicate n14 = null;
 			if (req.getApplicationId().equalsIgnoreCase("1")) {
 				if ("broker".equalsIgnoreCase(req.getUserType())) {
 					n5 = cb.equal(m.get("brokerCode"), req.getBdmCode());
@@ -2953,6 +2964,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				}
 			} else {
 				n5 = cb.equal(m.get("applicationId"), req.getApplicationId());
+				n14 = cb.equal(m.get("loginId"), req.getLoginId());
 			}
 			
 				Predicate n6 = null;
@@ -2963,8 +2975,11 @@ public class MotorGridServiceImpl implements MotorGridService {
 					
 					n6 =cb.equal(m.get("branchCode"), req.getBranchCode());
 				}
-				
-				query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10,n13).orderBy(orderList);
+				if (req.getApplicationId().equalsIgnoreCase("1")) {
+					query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10,n13).orderBy(orderList);
+				}else {
+					query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10,n13,n14).orderBy(orderList);
+				}
 
 				// Get Result
 				TypedQuery<PortfolioGridCriteriaRes> result = em.createQuery(query);
@@ -3019,6 +3034,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				Predicate n13 = cb.or(n11,n12);
 			
 			Predicate n5 = null;
+			Predicate n14 = null;
 			if (req.getApplicationId().equalsIgnoreCase("1")) {
 				if ("broker".equalsIgnoreCase(req.getUserType())) {
 					n5 = cb.equal(m.get("bdmCode"), req.getBdmCode());
@@ -3027,6 +3043,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				}
 			} else {
 				n5 = cb.equal(m.get("applicationId"), req.getApplicationId());
+				n14 = cb.equal(m.get("loginId"), req.getLoginId());
 			}
 			
 				Predicate n6 = null;
@@ -3038,8 +3055,12 @@ public class MotorGridServiceImpl implements MotorGridService {
 					n6 =cb.equal(m.get("branchCode"), req.getBranchCode());
 				}
 				
-				query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10,n13);
-		
+			
+				if (req.getApplicationId().equalsIgnoreCase("1")) {
+					query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10,n13);
+				}else {
+					query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10,n13,n14);
+				}
 				TypedQuery<Long> result = em.createQuery(query);
 				List<Long> val = result.getResultList();
 					

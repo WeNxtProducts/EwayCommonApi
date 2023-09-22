@@ -116,4 +116,9 @@ public class JasperController {
 		return jasper.getPremiumReport(req);
 	}
 	
+	@PostMapping("/getPremiumReportDetails")
+	public CommonRes getPremiumReportDetails(@RequestBody PremiumReportReq req) {
+		return jasper.getPremiumReportDetails(req);
+	}
+	
 }

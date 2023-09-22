@@ -5,6 +5,9 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Calendar;
@@ -12,8 +15,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -458,7 +463,7 @@ public class JasperServiceImpl implements JasperService {
 			String encodeToString = Base64.getEncoder().encodeToString(bytes);
 			
             PremiumReportRes preRes = PremiumReportRes.builder()
-            		.base64(encodeToString)
+            		.base64("data:application/pdf;base64,"+encodeToString)
             		.fileName("PremiumReport.pdf")
             		.build();		
             response.setCommonResponse(preRes);
@@ -495,6 +500,56 @@ public class JasperServiceImpl implements JasperService {
 			e.printStackTrace();
 		}
 		return output;
+	}
+
+	@Override
+	public CommonRes getPremiumReportDetails(PremiumReportReq req) {
+		CommonRes response = new CommonRes();
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			LocalDate startDate =LocalDate.parse(req.getStartDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+			LocalDate endDate =LocalDate.parse(req.getEndDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            Date date1 = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) ;
+            Date date2 = Date.from(endDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) ;
+			List<Map<String,Object>> list =branchRepo.getPremiumReportDetails(req.getLoginId(), date1, date2, req.getBranchCode());
+			if(list.size()>0) {
+				List<Map<String,Object>> dataRes =list.parallelStream().map( p->{
+					LinkedHashMap<String,Object> map =new LinkedHashMap<String,Object>();
+					map.put("LoginId",p.get("LOGIN_ID")==null?"":p.get("LOGIN_ID"));
+					map.put("QuoteNo", p.get("QUOTE_NO")==null?"":p.get("QUOTE_NO"));
+					map.put("PolicyNo", p.get("POLICY_NO")==null?"":p.get("POLICY_NO"));
+					map.put("CustomerName", p.get("CUSTOMER_NAME")==null?"":p.get("CUSTOMER_NAME"));
+					map.put("StartDate", p.get("START_DATE")==null?"":sdf.format(p.get("START_DATE")));
+					map.put("EndDate", p.get("END_DATE")==null?"":sdf.format(p.get("END_DATE")));
+					map.put("IssueDate",p.get("ISSUED_DATE")==null?"":p.get("ISSUED_DATE"));
+					map.put("BranchName",p.get("BRANCH_NAME")==null?"":p.get("BRANCH_NAME"));
+					map.put("BrokerName", p.get("BROKER_NAME")==null?"":p.get("BROKER_NAME"));
+					map.put("SumInured", p.get("SUM_INSURED")==null?"":p.get("SUM_INSURED"));
+					map.put("Premium", p.get("PERMIUM")==null?"":p.get("PERMIUM"));
+					map.put("PaymentType", p.get("PAYMENT_TYPE")==null?"":p.get("PAYMENT_TYPE"));
+					map.put("Currency", p.get("CURRENCY")==null?"":p.get("CURRENCY"));
+					return map;
+				}).collect(Collectors.toList());
+				
+				 response.setCommonResponse(dataRes);
+		         response.setIsError(false);
+		         response.setErrorMessage(Collections.emptyList());
+		         response.setMessage("Success");
+				
+			}else{
+				 response.setCommonResponse(null);
+		         response.setIsError(true);
+		         response.setErrorMessage(Collections.emptyList());
+		         response.setMessage("Failed");
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			 response.setCommonResponse(null);
+	         response.setIsError(true);
+	         response.setErrorMessage(Collections.emptyList());
+	         response.setMessage("Failed");
+		}
+		return response;
 	}
 	
 }
