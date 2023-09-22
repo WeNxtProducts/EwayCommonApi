@@ -463,7 +463,7 @@ public class JasperServiceImpl implements JasperService {
 			String encodeToString = Base64.getEncoder().encodeToString(bytes);
 			
             PremiumReportRes preRes = PremiumReportRes.builder()
-            		.base64(encodeToString)
+            		.base64("data:application/pdf;base64,"+encodeToString)
             		.fileName("PremiumReport.pdf")
             		.build();		
             response.setCommonResponse(preRes);
