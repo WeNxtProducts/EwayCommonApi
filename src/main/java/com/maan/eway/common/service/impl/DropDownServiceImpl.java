@@ -3077,7 +3077,7 @@ public class DropDownServiceImpl  implements DropDownService{
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
 		try {
 			String itemType = "PREMIA_SOURCE_TYPE" ;
-			List<ListItemValue> getList  = getListItem(req , itemType, req.getInsuranceId());
+			List<ListItemValue> getList  = getListItem(req , itemType, "99999");
 			getList.sort(Comparator.comparing(ListItemValue :: getParam1));
 			for (ListItemValue data : getList) {
 				DropDownRes res = new DropDownRes();
