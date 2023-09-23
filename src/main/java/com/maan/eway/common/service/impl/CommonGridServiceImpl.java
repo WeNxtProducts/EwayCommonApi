@@ -3292,4 +3292,18 @@ public class CommonGridServiceImpl implements CommonGridService {
 
 		}
 
+		@Override
+		public List<GetExistingBrokerListRes> getBrokerUserListLapsedCommon(ExistingBrokerUserListReq req, Date today,
+				Date before30) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public List<GetExistingBrokerListRes> getBrokerUserListCommonRejected(ExistingBrokerUserListReq req, Date today,
+				Date before30) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
 }

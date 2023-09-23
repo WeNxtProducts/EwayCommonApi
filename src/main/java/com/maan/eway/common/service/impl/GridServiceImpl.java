@@ -4786,6 +4786,7 @@ public class GridServiceImpl implements GridService {
 			}
 			return resList;
 		}
+
 		private List<GetExistingBrokerListRes> getPortfolioActiveIssuerMotor(ExistingBrokerUserListReq req, Date today) {
 			List<Tuple> list = new ArrayList<Tuple>();
 			List<Tuple> list1 = new ArrayList<Tuple>();
@@ -4875,100 +4876,103 @@ public class GridServiceImpl implements GridService {
 
 		@Override
 		public List<GetExistingBrokerListRes> getCancelPolicyIssuerDropdownList(ExistingBrokerUserListReq req) {
-			List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
-			List<Tuple> list = new ArrayList<Tuple>();
-			try {
-				Date today = new Date();
-				Calendar cal = new GregorianCalendar();
-				cal.setTime(today);
-				cal.set(Calendar.HOUR_OF_DAY, 23);
-				cal.set(Calendar.MINUTE, 1);
-				today = cal.getTime();
-				if(!("issuer".equalsIgnoreCase(req.getUserType()))){		
-				CriteriaBuilder cb = em.getCriteriaBuilder();
-				CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+		List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+		List<Tuple> list = new ArrayList<Tuple>();
+		try {
+		Date today = new Date();
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 1);
+		today = cal.getTime();
+		if(!("issuer".equalsIgnoreCase(req.getUserType()))){	
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
 
-				Root<HomePositionMaster> m = query.from(HomePositionMaster.class);
-				query.multiselect(m.get("agencyCode").alias("code"), m.get("loginId").alias("codeDesc"),
-						m.get("sourceType").alias("type"));
+		Root<HomePositionMaster> m = query.from(HomePositionMaster.class);
+		query.multiselect(m.get("agencyCode").alias("code"), m.get("loginId").alias("codeDesc"),
+		m.get("sourceType").alias("type"));
 
-				// Find All
-				Subquery<Long> agencyCode = query.subquery(Long.class);
-				Root<LoginMaster> ocpm1 = agencyCode.from(LoginMaster.class);
-				agencyCode.select(ocpm1.get("agencyCode"));
-				Predicate a1 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
-				Predicate a3 = cb.equal(ocpm1.get("status"), "Y");
-				agencyCode.where(a1, a3);
+		// Find All
+		Subquery<Long> agencyCode = query.subquery(Long.class);
+		Root<LoginMaster> ocpm1 = agencyCode.from(LoginMaster.class);
+		agencyCode.select(ocpm1.get("agencyCode"));
+		Predicate a1 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
+		Predicate a3 = cb.equal(ocpm1.get("status"), "Y");
+		agencyCode.where(a1, a3);
 
-				
-				Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
-				//Predicate n2 = cb.isNotNull(m.get("applicationId"));
-				Predicate n3 = cb.equal(m.get("status"), "P");
-				Predicate n4 = cb.equal(m.get("productId"), req.getProductId());
-				Predicate n5 = cb.equal(m.get("companyId"), req.getCompanyId());
-				Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
-				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), today);
-				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), today);
-				Predicate n9 = cb.equal(m.get("endtTypeId"),"842");   
-				Predicate n12 =null;
-				if ("Broker".equalsIgnoreCase(req.getUserType())) {
-					n12 = cb.equal(m.get("brokerCode"), agencyCode);
-				} else if ("User".equalsIgnoreCase(req.getUserType())) {
-					n12 = cb.equal(m.get("agencyCode"), agencyCode);
-				}
-				Predicate n13 = cb.isNotNull(m.get("sourceType"));
-				Predicate n14 = cb.isNotNull(m.get("loginId"));
-				query.where(n1,n3,n4,n5,n6,n7,n8,n9,n12,n13,n14);
 
-				TypedQuery<Tuple> typedQuery1 = em.createQuery(query);
-				list = typedQuery1.getResultList();
-				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("codeDesc")))).collect(Collectors.toList());
-				if (list != null && list.size() > 0) {
-
-					for (Tuple data : list) {
-						GetExistingBrokerListRes res = new GetExistingBrokerListRes();
-
-						res.setCode(data.get("code") == null ? "" : data.get("code").toString());
-						res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
-						res.setType(data.get("type") == null ? "" : data.get("type").toString());
-						resList.add(res);
-
-					}
-				}
-				}else {
-					resList=getPortfolioCancelIssuerMotor(req,today) ;
-//					CriteriaBuilder cb = em.getCriteriaBuilder();
-//					CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
-//
-//					Root<HomePositionMaster> m = query.from(HomePositionMaster.class);
-//					query.multiselect(m.get("brokerCode").alias("code"), m.get("loginId").alias("codeDesc"),
-//							m.get("sourceType").alias("type"));
-//					Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
-//					//Predicate n2 = cb.isNotNull(m.get("applicationId"));
-//					Predicate n3 = cb.equal(m.get("status"), "P");
-//					Predicate n4 = cb.equal(m.get("productId"), req.getProductId());
-//					Predicate n5 = cb.equal(m.get("companyId"), req.getCompanyId());
-//					Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
-//					Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), today);
-//					Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), today);
-//					Predicate n9 = cb.notEqual(m.get("endtTypeId"),"842");   
-//					Predicate n13 = cb.isNotNull(m.get("sourceType"));
-//					Predicate n14 = cb.isNotNull(m.get("loginId"));
-//					query.where(n1,n3,n4,n5,n6,n7,n8,n9,n13,n14);
-//					
-//					TypedQuery<Tuple> typedQuery1 = em.createQuery(query);
-//					list = typedQuery1.getResultList();
-//					list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("codeDesc")))).collect(Collectors.toList());
-				}
-			
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Log Details" + e.getMessage());
-				return null;
-			}
-			return resList;
+		Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
+		//Predicate n2 = cb.isNotNull(m.get("applicationId"));
+		Predicate n3 = cb.equal(m.get("status"), "P");
+		Predicate n4 = cb.equal(m.get("productId"), req.getProductId());
+		Predicate n5 = cb.equal(m.get("companyId"), req.getCompanyId());
+		Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
+		Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), today);
+		Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), today);
+		Predicate n9 = cb.equal(m.get("endtTypeId"),"842");   
+		Predicate n12 =null;
+		if ("Broker".equalsIgnoreCase(req.getUserType())) {
+		n12 = cb.equal(m.get("brokerCode"), agencyCode);
+		} else if ("User".equalsIgnoreCase(req.getUserType())) {
+		n12 = cb.equal(m.get("agencyCode"), agencyCode);
 		}
+		Predicate n13 = cb.isNotNull(m.get("sourceType"));
+		Predicate n14 = cb.isNotNull(m.get("loginId"));
+		query.where(n1,n3,n4,n5,n6,n7,n8,n9,n12,n13,n14);
+
+		TypedQuery<Tuple> typedQuery1 = em.createQuery(query);
+		list = typedQuery1.getResultList();
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("codeDesc")))).collect(Collectors.toList());
+		if (list != null && list.size() > 0) {
+
+		for (Tuple data : list) {
+		GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+
+		res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+		res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+		res.setType(data.get("type") == null ? "" : data.get("type").toString());
+		resList.add(res);
+
+		}
+		}
+		}else {
+		resList=getPortfolioCancelIssuerMotor(req,today) ;
+//			 CriteriaBuilder cb = em.getCriteriaBuilder();
+//			 CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+		//
+//			 Root<HomePositionMaster> m = query.from(HomePositionMaster.class);
+//			 query.multiselect(m.get("brokerCode").alias("code"), m.get("loginId").alias("codeDesc"),
+//			 m.get("sourceType").alias("type"));
+//			 Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
+//			 //Predicate n2 = cb.isNotNull(m.get("applicationId"));
+//			 Predicate n3 = cb.equal(m.get("status"), "P");
+//			 Predicate n4 = cb.equal(m.get("productId"), req.getProductId());
+//			 Predicate n5 = cb.equal(m.get("companyId"), req.getCompanyId());
+//			 Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
+//			 Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), today);
+//			 Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), today);
+//			 Predicate n9 = cb.notEqual(m.get("endtTypeId"),"842");   
+//			 Predicate n13 = cb.isNotNull(m.get("sourceType"));
+//			 Predicate n14 = cb.isNotNull(m.get("loginId"));
+//			 query.where(n1,n3,n4,n5,n6,n7,n8,n9,n13,n14);
+		//	
+//			 TypedQuery<Tuple> typedQuery1 = em.createQuery(query);
+//			 list = typedQuery1.getResultList();
+//			 list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("codeDesc")))).collect(Collectors.toList());
+		}
+
+
+		} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Log Details" + e.getMessage());
+		return null;
+		}
+		return resList;
+		}
+		
+
+
 		private List<GetExistingBrokerListRes> getPortfolioCancelIssuerMotor(ExistingBrokerUserListReq req, Date today) {
 			List<Tuple> list = new ArrayList<Tuple>();
 			List<Tuple> list1 = new ArrayList<Tuple>();
@@ -5043,6 +5047,97 @@ public class GridServiceImpl implements GridService {
 					}
 				}
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return resList;
+		}
+		
+		@Override //dropdown
+		public List<GetExistingBrokerListRes> getBrokerUserListLapsed(ExistingBrokerUserListReq req) {
+			List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+		
+			try {
+				Date today = new Date();
+				Calendar cal = new GregorianCalendar();
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 1);
+				today = cal.getTime();
+				cal.set(Calendar.HOUR_OF_DAY, 1);
+				cal.set(Calendar.MINUTE, 1);
+				cal.add(Calendar.DAY_OF_MONTH, -30);
+				Date before30 = cal.getTime();
+				
+				CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(),
+						req.getProductId().toString());
+
+				
+				// Product Wise Get
+				if (product.getMotorYn().equalsIgnoreCase("M")) { //Motor
+					
+					resList = motService.getBrokerUserListLapsedMotor(req, today, before30);
+					
+				} else if (product.getMotorYn().equalsIgnoreCase("H")&& req.getProductId().equalsIgnoreCase(travelProductId)) {//Travel
+					
+					resList = traService.getBrokerUserListLapsedTravel(req, today, before30);
+					
+				} else if (product.getMotorYn().equalsIgnoreCase("A")) { //Asset
+					
+					resList = buiService.getBrokerUserListLapsedAsset(req, today, before30);
+				} else {  // Common
+					
+					resList = commonService.getBrokerUserListLapsedCommon(req, today, before30);
+				}
+				
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return resList;
+		}
+
+		@Override //dropdown
+		public List<GetExistingBrokerListRes> getBrokerUserListRejected(ExistingBrokerUserListReq req) {
+			List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+			
+			try {
+				Date today = new Date();
+				Calendar cal = new GregorianCalendar();
+				cal.setTime(today);
+				cal.set(Calendar.HOUR_OF_DAY, 23);
+				cal.set(Calendar.MINUTE, 1);
+				today = cal.getTime();
+				cal.set(Calendar.HOUR_OF_DAY, 1);
+				cal.set(Calendar.MINUTE, 1);
+				cal.add(Calendar.DAY_OF_MONTH, -30);
+				Date before30 = cal.getTime();
+				
+				CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(),
+						req.getProductId().toString());
+
+				
+				// Product Wise Get
+				if (product.getMotorYn().equalsIgnoreCase("M")) { //Motor
+					
+					resList = motService.getBrokerUserListMotorRejected(req, today, before30);
+					
+				} else if (product.getMotorYn().equalsIgnoreCase("H")&& req.getProductId().equalsIgnoreCase(travelProductId)) {//Travel
+					
+					resList = traService.getBrokerUserListTravelRejected(req, today, before30);
+					
+				} else if (product.getMotorYn().equalsIgnoreCase("A")) { //Asset
+					
+					resList = buiService.getBrokerUserListBuildingRejected(req, today, before30);
+				} else {  // Common
+					
+					resList = commonService.getBrokerUserListCommonRejected(req, today, before30);
+				}
+				
 
 			} catch (Exception e) {
 				e.printStackTrace();

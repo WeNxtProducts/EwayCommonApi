@@ -111,6 +111,10 @@ public interface GridService {
 
 	List<GetExistingBrokerListRes> getCancelPolicyIssuerDropdownList(ExistingBrokerUserListReq req);
 
+	List<GetExistingBrokerListRes> getBrokerUserListLapsed(ExistingBrokerUserListReq req);
+
+	List<GetExistingBrokerListRes> getBrokerUserListRejected(ExistingBrokerUserListReq req);
+
 
 
 }

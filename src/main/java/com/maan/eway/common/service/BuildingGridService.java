@@ -52,8 +52,14 @@ public interface BuildingGridService {
 
 	List<PotfolioPendingDropDownRes> getBuildingProtfolioDropdownPending(IssuerQuoteReq req, Date today);
 
+
 	List<GetExistingBrokerListRes> getBuildingExistingDropdown(ExistingBrokerUserListReq req, Date today,
 			Date before30);
+
+	List<GetExistingBrokerListRes> getBrokerUserListLapsedAsset(ExistingBrokerUserListReq req, Date today, Date before30);
+
+	List<GetExistingBrokerListRes> getBrokerUserListBuildingRejected(ExistingBrokerUserListReq req, Date today, Date before30);
+
 
 
 }

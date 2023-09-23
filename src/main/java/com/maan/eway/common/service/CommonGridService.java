@@ -59,5 +59,11 @@ public interface CommonGridService {
 
 	List<PotfolioPendingDropDownRes> getCommonProtfolioDropdownPending(IssuerQuoteReq req, Date today);
 
+
 	List<GetExistingBrokerListRes> getCommonExistingDropdown(ExistingBrokerUserListReq req, Date today, Date before30);
+
+	List<GetExistingBrokerListRes> getBrokerUserListLapsedCommon(ExistingBrokerUserListReq req, Date today, Date before30);
+
+	List<GetExistingBrokerListRes> getBrokerUserListCommonRejected(ExistingBrokerUserListReq req, Date today, Date before30);
+
 }

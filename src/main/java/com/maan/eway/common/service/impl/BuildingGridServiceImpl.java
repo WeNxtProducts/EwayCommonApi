@@ -3527,4 +3527,18 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 				return resList;
 
 			}
+
+			@Override
+			public List<GetExistingBrokerListRes> getBrokerUserListLapsedAsset(ExistingBrokerUserListReq req,
+					Date today, Date before30) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public List<GetExistingBrokerListRes> getBrokerUserListBuildingRejected(ExistingBrokerUserListReq req,
+					Date today, Date before30) {
+				// TODO Auto-generated method stub
+				return null;
+			}
 }

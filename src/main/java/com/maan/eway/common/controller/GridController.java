@@ -640,8 +640,10 @@ public class GridController {
 
 //_____________________________________________PORTFOLIO DROPDOWN___________________________________________
 			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
+
 			@PostMapping("/portfoliobrokerdropdown")  // Broker-->User1,User2...,Issuer--> Broker,direct,.... List Of User and List of others
 			public ResponseEntity<CommonRes> getPortfolioBrokerUserList(@RequestBody  ExistingBrokerUserListReq req) {
+				
 				reqPrinter.reqPrint(req);
 				CommonRes data = new CommonRes();
 				List<GetExistingBrokerListRes> res = entityService.getPortfolioBrokerUserList(req);
@@ -655,6 +657,8 @@ public class GridController {
 					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 				}
 			}
+			
+		
 			
 			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
 			@PostMapping("/cancelpolicyportfoliodropdown")  // Broker-->User1,User2...,Issuer--> Broker,direct,.... List Of User and List of others
@@ -671,5 +675,44 @@ public class GridController {
 				} else {
 					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 				}
+			}	
+			
+			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
+			@PostMapping("/brokeruserdropdownlapsed")  
+			public ResponseEntity<CommonRes> getBrokerUserListLapsed(@RequestBody  ExistingBrokerUserListReq req) {
+				reqPrinter.reqPrint(req);
+				CommonRes data = new CommonRes();
+				List<GetExistingBrokerListRes> res = entityService.getBrokerUserListLapsed(req);
+
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+
 			}
+
+		
+			
+			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
+			@PostMapping("/brokeruserdropdownrejected")  
+			public ResponseEntity<CommonRes> getBrokerUserListRejected(@RequestBody  ExistingBrokerUserListReq req) {
+				reqPrinter.reqPrint(req);
+				CommonRes data = new CommonRes();
+				List<GetExistingBrokerListRes> res = entityService.getBrokerUserListRejected(req);
+				data.setCommonResponse(res);
+				data.setIsError(false);
+				data.setErrorMessage(Collections.emptyList());
+				data.setMessage("Success");
+				if (res != null) {
+					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+				}
+			}	
+
 }

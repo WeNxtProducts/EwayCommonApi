@@ -55,7 +55,13 @@ public interface TravelGridService {
 
 	List<PotfolioPendingDropDownRes> getTravelProtfolioDropdownPending(IssuerQuoteReq req, Date today);
 
+
 	List<GetExistingBrokerListRes> getTravelExistingDropdown(ExistingBrokerUserListReq req, Date today,
 			Date before30);
+
+	List<GetExistingBrokerListRes> getBrokerUserListLapsedTravel(ExistingBrokerUserListReq req, Date today, Date before30);
+
+	List<GetExistingBrokerListRes> getBrokerUserListTravelRejected(ExistingBrokerUserListReq req, Date today, Date before30);
+
 
 }
