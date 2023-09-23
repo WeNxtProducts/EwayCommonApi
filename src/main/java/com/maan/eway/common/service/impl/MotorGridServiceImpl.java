@@ -4475,10 +4475,12 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 		
 						TypedQuery<Tuple> typedQuery1 = em.createQuery(query);
 						list = typedQuery1.getResultList();
-					}else {
-						resList = getBrokerListLapsedMotorIssuer(req, today,  before30) ; //Issuer
 						
-						list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("codeDesc")))).collect(Collectors.toList());
+							list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("codeDesc")))).collect(Collectors.toList());
+					}else {
+						resList = getBrokerListLapsedMotorIssuer(req, today,  before30) ;  //Issuer
+						
+						
 					}
 					
 					if (list != null && list.size() > 0) {
@@ -4542,11 +4544,12 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 
 						TypedQuery<Tuple> typedQuery1 = em.createQuery(query);
 						list = typedQuery1.getResultList();
+						 list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("codeDesc")))).collect(Collectors.toList());
 						}else {
 							
 							resList = getBrokerListRejectedMotorIssuer(req, today,  before30) ; //Issuer
 							
-							list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("codeDesc")))).collect(Collectors.toList());
+							
 						}
 							if (list != null && list.size() > 0) {
 
@@ -4605,6 +4608,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					 TypedQuery<Tuple> typedQuery = em.createQuery(query);
 					 list=  typedQuery.getResultList();
 					 list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+					 list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("codeDesc")))).collect(Collectors.toList());
 					 if(list!=null && list.size()>0) {
 						 
 						 for(Tuple data : list) {
@@ -4646,6 +4650,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					 TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
 					 list1=  typedQuery1.getResultList();
 					 list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+					 list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("codeDesc")))).collect(Collectors.toList());
 					 if(list1!=null && list1.size()>0) {
 						 
 						 for(Tuple data : list1) {
@@ -4699,6 +4704,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					 TypedQuery<Tuple> typedQuery = em.createQuery(query);
 					 list=  typedQuery.getResultList();
 					 list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+					 list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("codeDesc")))).collect(Collectors.toList());
 					 if(list!=null && list.size()>0) {
 						 
 						 for(Tuple data : list) {
@@ -4739,6 +4745,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					 TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
 					 list1=  typedQuery1.getResultList();
 					 list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+					 list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("codeDesc")))).collect(Collectors.toList());
 					 if(list1!=null && list1.size()>0) {
 						 
 						 for(Tuple data : list1) {
