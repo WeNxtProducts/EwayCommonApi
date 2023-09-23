@@ -3248,12 +3248,12 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					n5 = cb.equal(m.get("bdmCode"), req.getBdmCode());
 				} else {
 					n5 = cb.equal(m.get("loginId"), req.getLoginId());
-					n15 = cb.equal(m.get("customerName"), req.getLoginId());
-					n16 = cb.or(n14,n15);
 				}
 			} else {
 				n5 = cb.equal(m.get("applicationId"), req.getApplicationId());
 				n14 = cb.equal(m.get("loginId"), req.getLoginId());
+				n15 = cb.equal(m.get("customerName"), req.getLoginId());
+				n16 = cb.or(n14,n15);
 				
 			}
 			
