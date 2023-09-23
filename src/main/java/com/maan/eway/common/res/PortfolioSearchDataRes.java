@@ -124,4 +124,7 @@ public class PortfolioSearchDataRes {
 	
 	@JsonProperty("EndtPremium")
 	private BigDecimal endtPremium;
+	
+	@JsonProperty("ApplicationId")
+	private BigDecimal apllicationId;
 }

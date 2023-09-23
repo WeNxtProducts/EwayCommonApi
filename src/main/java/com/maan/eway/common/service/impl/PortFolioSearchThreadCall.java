@@ -143,8 +143,8 @@ private Logger log = LogManager.getLogger(getClass());
 						m.get("installmentPeriod").alias("installmentPeriod"),
 						m.get("effectiveDate").alias("effectiveDate"),
 						m.get("currency").alias("currency"),
-						m.get("originalPolicyNo").alias("originalPolicyNo")
-
+						m.get("originalPolicyNo").alias("originalPolicyNo"),
+						m.get("applicationId").alias("applicationId")
 						);
 
 				// Order By

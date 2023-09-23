@@ -61,6 +61,7 @@ public class PortfolioAdminSearchRes {
 		
 		private String currency;
 		private String originalPolicyNo;
+		private String applicationId;
 	
 		
 		
