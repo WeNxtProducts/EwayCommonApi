@@ -30,4 +30,7 @@ public class ValidateOtp {
 	@JsonProperty("ReferenceNo")
 	private String referenceNo;
 	
+	//@JsonProperty("AgencyCode")
+	private String createdAgencyCode;
+	
 }

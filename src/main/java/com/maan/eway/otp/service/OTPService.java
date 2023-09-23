@@ -24,6 +24,7 @@ import com.maan.eway.admin.req.UserCompanyProductGetReq;
 import com.maan.eway.admin.req.UserCreationReq;
 import com.maan.eway.admin.req.UserLoginReq;
 import com.maan.eway.admin.req.UserPersonalInfoReq;
+import com.maan.eway.admin.res.LoginCreationRes;
 import com.maan.eway.admin.service.LoginBranchService;
 import com.maan.eway.admin.service.LoginDetailsService;
 import com.maan.eway.admin.service.LoginProductService;
@@ -35,6 +36,7 @@ import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.InsuranceCompanyMaster;
 import com.maan.eway.bean.LoginBranchMaster;
+import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.OtpDataDetail;
 import com.maan.eway.bean.ProductSectionMaster;
@@ -180,25 +182,28 @@ public class OTPService {
 								eserviceMotorRepo.deleteAll(referenceNos);
 								referenceNos.forEach(m->m.setCustomerReferenceNo(otp.getCustomerId()));
 								referenceNos.forEach(m->m.setLoginId(loginId ));
-								//referenceNos.forEach(m->m.setAgencyCode(loginId ));
+								referenceNos.forEach(m->m.setAgencyCode(otp.getCreatedAgencyCode() ));
 								eserviceMotorRepo.saveAll(referenceNos);
 							}else if(motorYn.equals("H")) {
 								EserviceTravelDetails referenceNos = eserviceTravelRepo.findByRequestReferenceNo(otp.getReferenceNo());
 								eserviceTravelRepo.delete(referenceNos);
 								referenceNos.setCustomerReferenceNo(otp.getCustomerId());
 								referenceNos.setLoginId(loginId);
+								referenceNos.setAgencyCode(otp.getCreatedAgencyCode());
 								eserviceTravelRepo.save(referenceNos);
 							}else if(motorYn.equals("A")) {
 								List<EserviceBuildingDetails> referenceNos = eservicebuildRepo.findByRequestReferenceNo(otp.getReferenceNo());
 								eservicebuildRepo.deleteAll(referenceNos);
 								referenceNos.forEach(m->m.setCustomerReferenceNo(otp.getCustomerId()));
 								referenceNos.forEach(m->m.setLoginId(loginId ));
+								referenceNos.forEach(m->m.setAgencyCode(otp.getCreatedAgencyCode() ));
 								eservicebuildRepo.saveAll(referenceNos);
 							}else {
 								List<EserviceCommonDetails> referenceNos = eservicecommonRepo.findByRequestReferenceNo(otp.getReferenceNo());
 								eservicecommonRepo.deleteAll(referenceNos);
 								referenceNos.forEach(m->m.setCustomerReferenceNo(otp.getCustomerId()));
 								referenceNos.forEach(m->m.setLoginId(loginId ));
+								referenceNos.forEach(m->m.setAgencyCode(otp.getCreatedAgencyCode() ));
 								eservicecommonRepo.saveAll(referenceNos);
 							}
 						}
@@ -290,7 +295,11 @@ public class OTPService {
 			if(validation.size()==0)*/
 			Integer couts = loginMasterRepo.countByCompanyIdAndLoginId(otp.getCompanyId(), mobileNo);
 			if(couts==0) {
-				entityService.createUserLogin(userCreation);
+				LoginCreationRes createUserLogin = entityService.createUserLogin(userCreation);
+				otp.setCreatedAgencyCode(createUserLogin.getAgencyCode());
+			}else {
+				LoginMaster loginMaster = loginMasterRepo.findByCompanyIdAndLoginId(otp.getCompanyId(), mobileNo);
+				otp.setCreatedAgencyCode(loginMaster.getAgencyCode());
 			}
 			LoginBranchesSaveReq branch=new LoginBranchesSaveReq();
 			branch.setLoginId(mobileNo);
