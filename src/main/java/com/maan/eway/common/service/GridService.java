@@ -103,7 +103,8 @@ public interface GridService {
 	PortFolioSearchGridRes searchBrokerPolicies(SearchBrokerPolicyReq req);
 
 	List<GetExistingBrokerListRes> getExistingBrokerList(GetExistingBrokerListReq req);
-	DropDownSourceRes getallIssuerSourceType(IssuerQuoteReq req);
+	
+	List<GetExistingBrokerListRes> getPortfolioPendingDropdown(ExistingBrokerUserListReq req);
 
 	List<GetExistingBrokerListRes> getBrokerUserList(ExistingBrokerUserListReq req);
 
