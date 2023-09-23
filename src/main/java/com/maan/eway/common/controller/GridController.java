@@ -61,36 +61,39 @@ public class GridController {
 
 	@Autowired
 	private PrintReqService reqPrinter;
-	
+
 	@Autowired
-	private  GridService entityService;
-	//__________________________________________EXISTING QUOTE__________________________________________
+	private GridService entityService;
+
+	// __________________________________________EXISTING
+	// QUOTE__________________________________________
 	// EXISTINGQUOTE GRIDS
-	//********************
+	// ********************
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/existingquotedetails")
-	public ResponseEntity<CommonRes> getallExistingQuoteDetails(@RequestBody  ExistingQuoteReq req) {
+	public ResponseEntity<CommonRes> getallExistingQuoteDetails(@RequestBody ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 		GetallExistingRejectedLapsedRes res = entityService.getallExistingQuoteDetails(req);
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
 	}
-	//EXISTING DROPDOWN	
-	//*****************
-	// Broker-->User1,User2... List Of User 
+
+	// EXISTING DROPDOWN
+	// *****************
+	// Broker-->User1,User2... List Of User
 	// User1-->User1
 	// Issuer-->List of Source Type
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
-	@PostMapping("/brokeruserdropdown")  
-	public ResponseEntity<CommonRes> getBrokerUserList(@RequestBody  ExistingBrokerUserListReq req) {
+	@PostMapping("/brokeruserdropdown")
+	public ResponseEntity<CommonRes> getBrokerUserList(@RequestBody ExistingBrokerUserListReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 		List<GetExistingBrokerListRes> res = entityService.getBrokerUserList(req);
@@ -103,170 +106,203 @@ public class GridController {
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-	}	
-	//_________________________________________________________________________________________________
-	//LAPSED QUOTE 
-	//************
+	}
+
+	// _________________________________________________________________________________________________
+	// LAPSED QUOTE
+	// ************
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/lapsedquotedetails")
-	public ResponseEntity<CommonRes> getallLapsedQuoteDetails(@RequestBody  ExistingQuoteReq req) {
+	public ResponseEntity<CommonRes> getallLapsedQuoteDetails(@RequestBody ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 		GetallExistingRejectedLapsedRes res = entityService.getallLapsedQuoteDetails(req);
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-	//_________________________________________________________________________________________________
+	}
+
+	// _________________________________________________________________________________________________
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/rejectedquotedetails")
-	public ResponseEntity<CommonRes> getallRejectedQuoteDetails(@RequestBody  ExistingQuoteReq req) {
+	public ResponseEntity<CommonRes> getallRejectedQuoteDetails(@RequestBody ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 		GetallExistingRejectedLapsedRes res = entityService.getallRejectedQuoteDetails(req);
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-	
-	//_________________________________________________________________________________________________
+	}
+
+	// _________________________________________________________________________________________________
 	// Referral Grids
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/referralpending")
-	public ResponseEntity<CommonRes> getallReferralPendingDetails(@RequestBody  ExistingQuoteReq req) {
+	public ResponseEntity<CommonRes> getallReferralPendingDetails(@RequestBody ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 		GetallReferralPendingDetailsRes res = entityService.getallReferralPendingDetails(req);
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-	
+	}
+
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/referralapproved")
-	public ResponseEntity<CommonRes> getallReferralApprovedDetails(@RequestBody  ExistingQuoteReq req) {
+	public ResponseEntity<CommonRes> getallReferralApprovedDetails(@RequestBody ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 		GetallReferralApprovedDetailsRes res = entityService.getallReferralApprovedDetails(req);
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-	
+	}
+
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/referralrejected")
-	public ResponseEntity<CommonRes> getallReferralRejectedDetails(@RequestBody  ExistingQuoteReq req) {
+	public ResponseEntity<CommonRes> getallReferralRejectedDetails(@RequestBody ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 		GetallReferralRejectedDetailsRes res = entityService.getallReferralRejectedDetails(req);
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
+	}
+
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/referralrequote")
-	public ResponseEntity<CommonRes> getallReferralRequoteDetails(@RequestBody  ExistingQuoteReq req) {
+	public ResponseEntity<CommonRes> getallReferralRequoteDetails(@RequestBody ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 		GetallReferralDetailsCommonRes res = entityService.getallReferralRequoteDetails(req);
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
+	}
+
 	// Admin Referrral Grids
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/adminreferralpending")
-	public ResponseEntity<CommonRes> getallAdminReferralPendings(@RequestBody  ExistingQuoteReq req) {
+	public ResponseEntity<CommonRes> getallAdminReferralPendings(@RequestBody ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 		GetallReferralDetailsCommonRes res = entityService.getallAdminReferralPendings(req);
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-	
+	}
+
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/adminreferralapproved")
-	public ResponseEntity<CommonRes> getallAdminReferralApproved(@RequestBody  ExistingQuoteReq req) {
+	public ResponseEntity<CommonRes> getallAdminReferralApproved(@RequestBody ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 		GetallReferralDetailsCommonRes res = entityService.getallAdminReferralApproved(req);
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
+	}
+
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/adminreferralrejected")
-	public ResponseEntity<CommonRes> getallAdminReferralRejecteds(@RequestBody  ExistingQuoteReq req) {
+	public ResponseEntity<CommonRes> getallAdminReferralRejecteds(@RequestBody ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 		GetallReferralDetailsCommonRes res = entityService.getallAdminReferralRejected(req);
-			data.setCommonResponse(res);
-			data.setIsError(false);
-			data.setErrorMessage(Collections.emptyList());
-			data.setMessage("Success");
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-	
+	}
+
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/adminreferralrequote")
-	public ResponseEntity<CommonRes> getallAdminReferralRequote(@RequestBody  ExistingQuoteReq req) {
+	public ResponseEntity<CommonRes> getallAdminReferralRequote(@RequestBody ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
 
 		GetallReferralDetailsCommonRes res = entityService.getallAdminReferralRequote(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/copyquote")
+	public ResponseEntity<CommonRes> copyQuote(@RequestBody CopyQuoteReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<Error> validation = entityService.validateQuotoNo(req);
+		// validation
+		if (validation != null && validation.size() != 0) {
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
+		} else {
+			CopyQuoteSuccessRes res = entityService.copyQuote(req);
 			data.setCommonResponse(res);
 			data.setIsError(false);
 			data.setErrorMessage(Collections.emptyList());
@@ -276,443 +312,415 @@ public class GridController {
 			} else {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
-		
 		}
+	}
 
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-		@PostMapping("/copyquote")
-		public ResponseEntity<CommonRes> copyQuote(@RequestBody CopyQuoteReq req) {
-			reqPrinter.reqPrint(req);
-			CommonRes data = new CommonRes();
-			List<Error> validation = entityService.validateQuotoNo(req);
-			// validation
-			if (validation != null && validation.size() != 0) {
-				data.setCommonResponse(null);
-				data.setIsError(true);
-				data.setErrorMessage(validation);
-				data.setMessage("Failed");
-				return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
-
-			} else {
-				CopyQuoteSuccessRes res = entityService.copyQuote(req); 
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
+	@PostMapping("/searchmotordata")
+	public ResponseEntity<CommonRes> getbyReqRefNo(@RequestBody CopyQuoteReq req) {
+		CommonRes data = new CommonRes();
+		reqPrinter.reqPrint(req);
+		List<GetAllMotorDetailsRes> res = entityService.getbyReqRefNo(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
+	}
+
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-		@PostMapping("/searchmotordata")
-		public ResponseEntity<CommonRes> getbyReqRefNo(@RequestBody CopyQuoteReq req) {
-			CommonRes data = new CommonRes();
-			reqPrinter.reqPrint(req);
-			List<GetAllMotorDetailsRes> res = entityService.getbyReqRefNo(req);
+	@PostMapping("/dropdown/copyquoteby")
+	public ResponseEntity<CommonRes> copyQuoteByDropdown(@RequestBody CopyQuoteDropDownReq req) {
+		CommonRes data = new CommonRes();
+		List<DropDownRes> res = entityService.copyQuoteByDropdown(req);
+		data.setCommonResponse(res);
+		data.setErrorMessage(Collections.emptyList());
+		data.setIsError(false);
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/updatelapsedquote")
+	public ResponseEntity<CommonRes> updateLapsedQuoteDetails(@RequestBody UpdateLapsedQuoteReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		UpdateLapsedQuoteRes res = entityService.updateLapsedQuoteDetails(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	// Portfolio
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/portfolio/active")
+	public ResponseEntity<CommonRes> getallPortfolioActive(@RequestBody ExistingQuoteReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		GetallPortfolioActiveRes res = entityService.getallPortfolioActive(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/portfolio/pending")
+	public ResponseEntity<CommonRes> getallPortfolioPending(@RequestBody ExistingQuoteReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<PortfolioCustomerDetailsRes> res = entityService.getallPortfolioPending(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/portfolio/cancelled")
+	public ResponseEntity<CommonRes> getallPortfolioCancelled(@RequestBody ExistingQuoteReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		GetallPortfolioActiveRes res = entityService.getallPortfolioCancelled(req);
+
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	// Quote Grids
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/dropdown/issuerquotedetails")
+	public ResponseEntity<CommonRes> getallIssuerQuoteDetails(@RequestBody IssuerQuoteReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<DropDownRes> res = entityService.getallIssuerQuoteDetails(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	// Reports grid
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@PostMapping("/getall/policyreports")
+	public ResponseEntity<CommonRes> getallPolicyReports(@RequestBody GetallPolicyReportsReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<GetallPolicyReportsRes> res = entityService.getallPolicyReports(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	// Reports grid
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
+	@PostMapping("/admin/portfoliodashboard")
+	public ResponseEntity<CommonRes> getAllAdminPortfolio(@RequestBody PortFolioDashBoardReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<PortFolioDashBoardRes> res = entityService.getAllAdminPortfolio(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
+	@PostMapping("/admin/portfoliopendings")
+	public ResponseEntity<CommonRes> getAllPolicyPendingDashboard(@RequestBody PortFolioDashBoardReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<PortFolioDashBoardRes> res = entityService.getAllPolicyPendingDashboard(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
+	@PostMapping("/admin/portfoliogrid")
+	public ResponseEntity<CommonRes> getAllPolicyGrid(@RequestBody PortFolioGridReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<PortfolioGridRes> res = entityService.getAllPolicyGrid(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
+	@PostMapping("/getapproverlist")
+	public ResponseEntity<CommonRes> getApproverList(@RequestBody GetApproverListReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+
+		List<GetApproverListRes> res = entityService.getApproverList(req);
+		List<Error> validation = new ArrayList<Error>();
+
+		if (res.size() > 0) {
 			data.setCommonResponse(res);
-			data.setErrorMessage(Collections.emptyList());
 			data.setIsError(false);
+			data.setErrorMessage(Collections.emptyList());
 			data.setMessage("Success");
 			if (res != null) {
 				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
 			} else {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
+		} else {
+			Error err = new Error();
+			err.setCode("0");
+			err.setField("No UnderWritter");
+			err.setMessage("There Is No UnderWritter For This Product");
+			validation.add(err);
+			data.setCommonResponse(null);
+			data.setIsError(true);
+			data.setErrorMessage(validation);
+			data.setMessage("Failed");
+			return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
+
 		}
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-		@PostMapping("/dropdown/copyquoteby")
-		public ResponseEntity<CommonRes> copyQuoteByDropdown(@RequestBody CopyQuoteDropDownReq req) {
-			CommonRes data = new CommonRes();
-			List<DropDownRes> res = entityService.copyQuoteByDropdown(req);
-			data.setCommonResponse(res);
-			data.setErrorMessage(Collections.emptyList());
-			data.setIsError(false);
-			data.setMessage("Success");
-			if (res != null) {
-				return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-			} else {
-				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			}
+	}
+
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
+	@PostMapping("/uwpendinggrid")
+	public ResponseEntity<CommonRes> getUwPendingGrid(@RequestBody RevertGridReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		RevertGridRes res = entityService.getUwPendingGrid(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
-		
-		
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-		@PostMapping("/updatelapsedquote")
-		public ResponseEntity<CommonRes> updateLapsedQuoteDetails(@RequestBody  UpdateLapsedQuoteReq req) {
-			reqPrinter.reqPrint(req);
-			CommonRes data = new CommonRes();
-			UpdateLapsedQuoteRes res = entityService.updateLapsedQuoteDetails(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
-		
-			// Portfolio
-			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-			@PostMapping("/portfolio/active")
-			public ResponseEntity<CommonRes> getallPortfolioActive(@RequestBody ExistingQuoteReq req) {
-				reqPrinter.reqPrint(req);
-				CommonRes data = new CommonRes();
-				GetallPortfolioActiveRes res = entityService.getallPortfolioActive(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
+	}
 
-			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-			@PostMapping("/portfolio/pending")
-			public ResponseEntity<CommonRes> getallPortfolioPending(@RequestBody ExistingQuoteReq req) {
-				reqPrinter.reqPrint(req);
-				CommonRes data = new CommonRes();
-				List<PortfolioCustomerDetailsRes> res = entityService.getallPortfolioPending(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
+	@PostMapping("/superadminreferralpending")
+	public ResponseEntity<CommonRes> getReAllotUwPendingGrid(@RequestBody RevertGridReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		AdminPendingGridRes res = entityService.getReAllotUwPendingGrid(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 
-			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-			@PostMapping("/portfolio/cancelled")
-			public ResponseEntity<CommonRes> getallPortfolioCancelled(@RequestBody ExistingQuoteReq req) {
-				reqPrinter.reqPrint(req);
-				CommonRes data = new CommonRes();
-				GetallPortfolioActiveRes res = entityService.getallPortfolioCancelled(req);
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
+	@PostMapping("/updateuwreferraldetails")
+	public ResponseEntity<CommonRes> updateUwReferralDetails(@RequestBody List<RevertGridReq> req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		SuccessRes res = entityService.updateUwReferralDetails(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
+	@PostMapping("/searchbrokerpolicies")
+	public ResponseEntity<CommonRes> searchBrokerPolicies(@RequestBody SearchBrokerPolicyReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		PortFolioSearchGridRes res = entityService.searchBrokerPolicies(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 
-			// Quote Grids
-			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-			@PostMapping("/dropdown/issuerquotedetails")
-			public ResponseEntity<CommonRes> getallIssuerQuoteDetails(@RequestBody IssuerQuoteReq req) {
-				reqPrinter.reqPrint(req);
-				CommonRes data = new CommonRes();
-				List<DropDownRes> res = entityService.getallIssuerQuoteDetails(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
-			
-			//Reports grid
-			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
-			@PostMapping("/getall/policyreports")
-			public ResponseEntity<CommonRes> getallPolicyReports(@RequestBody GetallPolicyReportsReq req) {
-				reqPrinter.reqPrint(req);
-				CommonRes data = new CommonRes();
-				List<GetallPolicyReportsRes> res = entityService.getallPolicyReports(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
-			
-			
-			//Reports grid
-			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
-			@PostMapping("/admin/portfoliodashboard")
-			public ResponseEntity<CommonRes> getAllAdminPortfolio(@RequestBody PortFolioDashBoardReq req) {
-				reqPrinter.reqPrint(req);
-				CommonRes data = new CommonRes();
-				List<PortFolioDashBoardRes> res = entityService.getAllAdminPortfolio(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
-			
-			
-			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
-			@PostMapping("/admin/portfoliopendings")
-			public ResponseEntity<CommonRes> getAllPolicyPendingDashboard(@RequestBody PortFolioDashBoardReq req) {
-				reqPrinter.reqPrint(req);
-				CommonRes data = new CommonRes();
-				List<PortFolioDashBoardRes> res = entityService.getAllPolicyPendingDashboard(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
-			
-			
-			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
-			@PostMapping("/admin/portfoliogrid")
-			public ResponseEntity<CommonRes> getAllPolicyGrid(@RequestBody PortFolioGridReq req) {
-				reqPrinter.reqPrint(req);
-				CommonRes data = new CommonRes();
-				List<PortfolioGridRes> res = entityService.getAllPolicyGrid(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
-			
-			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
-			@PostMapping("/getapproverlist")
-			public ResponseEntity<CommonRes> getApproverList(@RequestBody GetApproverListReq req) {
-				reqPrinter.reqPrint(req);
-				CommonRes data = new CommonRes();
-				
-				List<GetApproverListRes> res = entityService.getApproverList(req);
-				List<Error> validation = new ArrayList<Error>();	
-				
-				if(res.size()>0) {
-					data.setCommonResponse(res);
-					data.setIsError(false);
-					data.setErrorMessage(Collections.emptyList());
-					data.setMessage("Success");
-					if (res != null) {
-						return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-					} else {
-						return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-					}
-				} else {
-					Error err = new Error();
-					err.setCode("0");
-					err.setField("No UnderWritter");
-					err.setMessage("There Is No UnderWritter For This Product");
-					validation.add(err);
-					data.setCommonResponse(null);
-					data.setIsError(true);
-					data.setErrorMessage(validation);
-					data.setMessage("Failed");
-					return new ResponseEntity<CommonRes>(data, HttpStatus.OK);
-
-				}
-			}
-		
-			
-
-			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
-			@PostMapping("/uwpendinggrid")
-			public ResponseEntity<CommonRes> getUwPendingGrid(@RequestBody RevertGridReq req) {
-				reqPrinter.reqPrint(req);
-				CommonRes data = new CommonRes();
-				RevertGridRes res = entityService.getUwPendingGrid(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
-			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
-			@PostMapping("/superadminreferralpending")
-			public ResponseEntity<CommonRes> getReAllotUwPendingGrid(@RequestBody RevertGridReq req) {
-				reqPrinter.reqPrint(req);
-				CommonRes data = new CommonRes();
-				AdminPendingGridRes res = entityService.getReAllotUwPendingGrid(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
-			
-			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
-			@PostMapping("/updateuwreferraldetails")
-			public ResponseEntity<CommonRes> updateUwReferralDetails(@RequestBody List<RevertGridReq> req) {
-				reqPrinter.reqPrint(req);
-				CommonRes data = new CommonRes();
-				SuccessRes res = entityService.updateUwReferralDetails(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
-			
-			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
-			@PostMapping("/searchbrokerpolicies")
-			public ResponseEntity<CommonRes> searchBrokerPolicies(@RequestBody  SearchBrokerPolicyReq req) {
-				reqPrinter.reqPrint(req);
-				CommonRes data = new CommonRes();
-				PortFolioSearchGridRes res = entityService.searchBrokerPolicies(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
-			
 //-----------------------------------------CONTENT_TYPE_DROPDOWN_ISSUER-----------------------------------------------------------
-			// Portfolio Grids
-			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
-			@PostMapping("/portfoliodropdown")
-			public ResponseEntity<CommonRes> getallIssuerSourceType(@RequestBody IssuerQuoteReq req) {
-				reqPrinter.reqPrint(req);
-				CommonRes data = new CommonRes();
-				DropDownSourceRes res = entityService.getallIssuerSourceType(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
-			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
-			@PostMapping("/brokerdropdown")  // getExistingBrokerList for that particular issuer
-			public ResponseEntity<CommonRes> getExistingBrokerList(@RequestBody  GetExistingBrokerListReq req) {
-				reqPrinter.reqPrint(req);
-				CommonRes data = new CommonRes();
-				List<GetExistingBrokerListRes> res = entityService.getExistingBrokerList(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
+
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
+	@PostMapping("/brokerdropdown") // getExistingBrokerList for that particular issuer
+	public ResponseEntity<CommonRes> getExistingBrokerList(@RequestBody GetExistingBrokerListReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<GetExistingBrokerListRes> res = entityService.getExistingBrokerList(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 
 //_____________________________________________PORTFOLIO DROPDOWN___________________________________________
-			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
+	
+	//Active
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
 
-			@PostMapping("/portfoliobrokerdropdown")  // Broker-->User1,User2...,Issuer--> Broker,direct,.... List Of User and List of others
-			public ResponseEntity<CommonRes> getPortfolioBrokerUserList(@RequestBody  ExistingBrokerUserListReq req) {
-				
-				reqPrinter.reqPrint(req);
-				CommonRes data = new CommonRes();
-				List<GetExistingBrokerListRes> res = entityService.getPortfolioBrokerUserList(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}
-			
-		
-			
-			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
-			@PostMapping("/cancelpolicyportfoliodropdown")  // Broker-->User1,User2...,Issuer--> Broker,direct,.... List Of User and List of others
-			public ResponseEntity<CommonRes> getCancelPolicyIssuerDropdownList(@RequestBody  ExistingBrokerUserListReq req) {
-				reqPrinter.reqPrint(req);
-				CommonRes data = new CommonRes();
-				List<GetExistingBrokerListRes> res = entityService.getCancelPolicyIssuerDropdownList(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}	
-			
-			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
-			@PostMapping("/brokeruserdropdownlapsed")  
-			public ResponseEntity<CommonRes> getBrokerUserListLapsed(@RequestBody  ExistingBrokerUserListReq req) {
-				reqPrinter.reqPrint(req);
-				CommonRes data = new CommonRes();
-				List<GetExistingBrokerListRes> res = entityService.getBrokerUserListLapsed(req);
+	@PostMapping("/portfoliobrokerdropdown") // Broker-->User1,User2...,Issuer--> Broker,direct,.... List Of User and
+												// List of others
+	public ResponseEntity<CommonRes> getPortfolioBrokerUserList(@RequestBody ExistingBrokerUserListReq req) {
 
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<GetExistingBrokerListRes> res = entityService.getPortfolioBrokerUserList(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 
-			}
+	//Pending
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
+	@PostMapping("/portfoliopendingdropdown")
+	public ResponseEntity<CommonRes> getPortfolioPendingDropdown(@RequestBody ExistingBrokerUserListReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<GetExistingBrokerListRes> res = entityService.getPortfolioPendingDropdown(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 
-		
-			
-			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
-			@PostMapping("/brokeruserdropdownrejected")  
-			public ResponseEntity<CommonRes> getBrokerUserListRejected(@RequestBody  ExistingBrokerUserListReq req) {
-				reqPrinter.reqPrint(req);
-				CommonRes data = new CommonRes();
-				List<GetExistingBrokerListRes> res = entityService.getBrokerUserListRejected(req);
-				data.setCommonResponse(res);
-				data.setIsError(false);
-				data.setErrorMessage(Collections.emptyList());
-				data.setMessage("Success");
-				if (res != null) {
-					return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
-				} else {
-					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-				}
-			}	
+	//Cancel
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
+	@PostMapping("/cancelpolicyportfoliodropdown") // Broker-->User1,User2...,Issuer--> Broker,direct,.... List Of User
+													// and List of others
+	public ResponseEntity<CommonRes> getCancelPolicyIssuerDropdownList(@RequestBody ExistingBrokerUserListReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<GetExistingBrokerListRes> res = entityService.getCancelPolicyIssuerDropdownList(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
+	@PostMapping("/brokeruserdropdownlapsed")
+	public ResponseEntity<CommonRes> getBrokerUserListLapsed(@RequestBody ExistingBrokerUserListReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<GetExistingBrokerListRes> res = entityService.getBrokerUserListLapsed(req);
+
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
+	@PostMapping("/brokeruserdropdownrejected")
+	public ResponseEntity<CommonRes> getBrokerUserListRejected(@RequestBody ExistingBrokerUserListReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<GetExistingBrokerListRes> res = entityService.getBrokerUserListRejected(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 
 }

@@ -3512,8 +3512,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					Root<LoginMaster> ocpm1 = agencyCode.from(LoginMaster.class);
 					agencyCode.select(ocpm1.get("agencyCode"));
 					Predicate a1 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
-					Predicate a3 = cb.equal(ocpm1.get("status"), "Y");
-					agencyCode.where(a1, a3);
+					agencyCode.where(a1);
 	
 					List<Predicate> predics1 = new ArrayList<Predicate>();
 					predics1.add(cb.equal(m.get("applicationId"), req.getApplicationId()));
@@ -3680,8 +3679,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					Root<LoginMaster> ocpm1 = agencyCode.from(LoginMaster.class);
 					agencyCode.select(ocpm1.get("agencyCode"));
 					Predicate a1 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
-					Predicate a3 = cb.equal(ocpm1.get("status"), "Y");
-					agencyCode.where(a1, a3);
+					agencyCode.where(a1);
 
 					List<Predicate> predics1 = new ArrayList<Predicate>();
 					predics1.add(cb.equal(m.get("applicationId"), req.getApplicationId()));

@@ -71,7 +71,7 @@ public interface MotorGridService {
 
 	Long getProtfolioSearchDataCount(SearchBrokerPolicyReq req);
 
-	List<PotfolioPendingDropDownRes> getMotorProtfolioDropdownPending(IssuerQuoteReq req, Date today);
+	List<GetExistingBrokerListRes> getMotorProtfolioDropdownPending(ExistingBrokerUserListReq req, Date today);
 
 	List<GetExistingBrokerListRes> getMotorExistingDropdown(ExistingBrokerUserListReq req, Date today, Date before30);
 
