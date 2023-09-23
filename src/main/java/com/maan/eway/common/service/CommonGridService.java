@@ -9,10 +9,12 @@ import com.maan.eway.admin.res.GetBuildingAdminReferalPendingDetailsRes;
 import com.maan.eway.admin.res.ReferalGridCriteriaAdminRes;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.req.CopyQuoteReq;
+import com.maan.eway.common.req.ExistingBrokerUserListReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.res.GetCommonReferalDetailsRes;
+import com.maan.eway.common.res.GetExistingBrokerListRes;
 import com.maan.eway.common.res.GetRejectedQuoteDetailsRes;
 import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaResponse;
@@ -56,4 +58,6 @@ public interface CommonGridService {
 	List<ListItemValue> getCommonCoptyQuotetListItem(CopyQuoteDropDownReq req, String itemType);
 
 	List<PotfolioPendingDropDownRes> getCommonProtfolioDropdownPending(IssuerQuoteReq req, Date today);
+
+	List<GetExistingBrokerListRes> getCommonExistingDropdown(ExistingBrokerUserListReq req, Date today, Date before30);
 }

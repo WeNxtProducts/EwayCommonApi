@@ -67,11 +67,15 @@ import com.maan.eway.bean.SeqQuoteno;
 import com.maan.eway.bean.UWReferralDetails;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.CopyQuoteReq;
+import com.maan.eway.common.req.ExistingBrokerUserListReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
+import com.maan.eway.common.req.GetExistingBrokerListReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.req.SearchBrokerPolicyReq;
+import com.maan.eway.common.res.GetExistingBrokerListRes;
+import com.maan.eway.common.res.GetExistingBrokerRes;
 import com.maan.eway.common.res.GetMotorReferalDetailsRes;
 import com.maan.eway.common.res.GetRejectedQuoteDetailsRes;
 import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
@@ -181,6 +185,153 @@ public class MotorGridServiceImpl implements MotorGridService {
 	 
 	 
 	// Exiting Motor Details
+	//DropDown
+	@Override
+	public List<GetExistingBrokerListRes> getMotorExistingDropdown(ExistingBrokerUserListReq req, Date today, Date before30) {
+		List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+		List<Tuple> list = new ArrayList<Tuple>();
+		try {
+		if(!("issuer".equalsIgnoreCase(req.getUserType()))){		
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+			Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
+			query.multiselect(m.get("agencyCode").alias("code"), m.get("loginId").alias("codeDesc"),
+					m.get("sourceType").alias("type")).distinct(true);
+
+			// Find All
+			Subquery<Long> agencyCode = query.subquery(Long.class);
+			Root<LoginMaster> ocpm1 = agencyCode.from(LoginMaster.class);
+			agencyCode.select(ocpm1.get("agencyCode"));
+			Predicate a1 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
+			Predicate a3 = cb.equal(ocpm1.get("status"), "Y");
+			agencyCode.where(a1, a3);
+
+			List<Predicate> predics1 = new ArrayList<Predicate>();
+			predics1.add(cb.equal(m.get("applicationId"), req.getApplicationId()));
+			predics1.add(cb.equal(m.get("status"), "Y"));
+			predics1.add(cb.equal(m.get("productId"), req.getProductId()));
+			predics1.add(cb.equal(m.get("companyId"), req.getCompanyId()));
+			predics1.add(cb.equal(m.get("branchCode"), req.getBranchCode()));
+			predics1.add(cb.greaterThanOrEqualTo(m.get("updatedDate"), before30));
+			predics1.add(cb.lessThanOrEqualTo(m.get("updatedDate"), today));
+			if ("Broker".equalsIgnoreCase(req.getUserType())) {
+				predics1.add(cb.equal(m.get("brokerCode"), agencyCode));
+			} else if ("User".equalsIgnoreCase(req.getUserType())) {
+				predics1.add(cb.equal(m.get("agencyCode"), agencyCode));
+			}
+			predics1.add(cb.isNotNull(m.get("sourceType")));
+			predics1.add(cb.isNotNull(m.get("loginId")));
+			query.where(predics1.toArray(new Predicate[0]));
+
+			TypedQuery<Tuple> typedQuery1 = em.createQuery(query);
+			list = typedQuery1.getResultList();
+			if (list != null && list.size() > 0) {
+				
+			for (Tuple data : list) {
+					GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+					res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+					res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+					res.setType(data.get("type") == null ? "" : data.get("type").toString());
+					resList.add(res);
+				
+						}
+			}
+			}else {
+				
+				resList=getExistingIssuerMotor(req,today,before30);
+			}
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Log Details" + e.getMessage());
+		return null;
+	}
+	return resList;
+}    
+ 
+private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUserListReq req, Date today,
+		Date before30) {
+	List<Tuple> list = new ArrayList<Tuple>();
+	List<Tuple> list1 = new ArrayList<Tuple>();
+	List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+	try {
+		{CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+		Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
+
+		query.multiselect(m.get("customerCode").alias("code"), m.get("customerName").alias("codeDesc"),
+				m.get("sourceType").alias("type"));
+		List<Predicate> predics = new ArrayList<Predicate>();
+		predics.add(cb.equal(m.get("applicationId"), req.getApplicationId()));
+		predics.add(cb.equal(m.get("status"), "Y"));
+		predics.add(cb.equal(m.get("productId"), req.getProductId()));
+		predics.add(cb.equal(m.get("companyId"), req.getCompanyId()));
+		predics.add(cb.equal(m.get("branchCode"), req.getBranchCode()));
+		predics.add(cb.greaterThanOrEqualTo(m.get("updatedDate"), before30));
+		predics.add(cb.lessThanOrEqualTo(m.get("updatedDate"), today));
+		predics.add(cb.isNotNull(m.get("bdmCode")));
+		query.where(predics.toArray(new Predicate[0]));
+
+		TypedQuery<Tuple> typedQuery = em.createQuery(query);
+		list = typedQuery.getResultList();
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+		if (list != null && list.size() > 0) {
+
+			for (Tuple data : list) {
+				GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+				res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+				res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+				res.setType(data.get("type") == null ? "" : data.get("type").toString());
+				resList.add(res);
+
+			}
+		}
+		}
+		{CriteriaBuilder cb1 = em.getCriteriaBuilder();
+		CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
+
+		Root<EserviceMotorDetails> m1 = query1.from(EserviceMotorDetails.class);
+
+		query1.multiselect(m1.get("brokerCode").alias("code"), m1.get("loginId").alias("codeDesc"),
+				m1.get("sourceType").alias("type"));
+
+		List<Predicate> predics1 = new ArrayList<Predicate>();
+		predics1.add(cb1.equal(m1.get("applicationId"), req.getApplicationId()));
+		predics1.add(cb1.equal(m1.get("status"), "Y"));
+		predics1.add(cb1.equal(m1.get("productId"), req.getProductId()));
+		predics1.add(cb1.equal(m1.get("companyId"), req.getCompanyId()));
+		predics1.add(cb1.equal(m1.get("branchCode"), req.getBranchCode()));
+		predics1.add(cb1.greaterThanOrEqualTo(m1.get("updatedDate"), before30));
+		predics1.add(cb1.lessThanOrEqualTo(m1.get("updatedDate"), today));
+		predics1.add(cb1.isNull(m1.get("bdmCode")));
+		query1.where(predics1.toArray(new Predicate[0]));
+
+		TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
+		list1 = typedQuery1.getResultList();
+		list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+		if (list1 != null && list1.size() > 0) {
+
+			for (Tuple data : list1) {
+				GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+				res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+				res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+				res.setType(data.get("type") == null ? "" : data.get("type").toString());
+				resList.add(res);
+
+			}
+		}
+		}
+
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Log Details" + e.getMessage());
+		return null;
+	}
+	return resList;
+}
+	 
+	//List
 	@Override
 	public QuoteCriteriaResponse getMotorExistingQuoteDetails(ExistingQuoteReq req,Date startDate, Date endDate, Integer limit, Integer offset) {
 			
@@ -248,12 +399,16 @@ public class MotorGridServiceImpl implements MotorGridService {
 			Predicate n9 = cb.isNull(m.get("endorsementType"));
 			Predicate n7 = null;
 			Predicate n11 = null;
+			Predicate n12 = null;
+			Predicate n13 = null;
 			if (req.getApplicationId().equalsIgnoreCase("1")) {
 				n7 = cb.equal(m.get("loginId"), req.getLoginId());
 			} else {
 				n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
 				n11 = cb.equal(m.get("loginId"), req.getLoginId());
-			}
+				n12 = cb.equal(m.get("customerName"), req.getLoginId());
+				n13 = cb.or(n11,n12);
+				}
 
 			Predicate n8 = null;
 			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
@@ -274,7 +429,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
 			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10).orderBy(orderList);
 			}else {
-				query.where(n1, n2, n3, n4, n5, n6, n7,n11, n8,n9,n10).orderBy(orderList);	
+				query.where(n1, n2, n3, n4, n5, n6, n7,n13, n8,n9,n10).orderBy(orderList);	
 			}
 			// Get Result
 			TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);
@@ -2956,6 +3111,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 				
 			Predicate n5 = null;
 			Predicate n14 = null;
+			Predicate n15 = null;
+			Predicate n16 = null;
 			if (req.getApplicationId().equalsIgnoreCase("1")) {
 				if ("broker".equalsIgnoreCase(req.getUserType())) {
 					n5 = cb.equal(m.get("brokerCode"), req.getBdmCode());
@@ -2965,6 +3122,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 			} else {
 				n5 = cb.equal(m.get("applicationId"), req.getApplicationId());
 				n14 = cb.equal(m.get("loginId"), req.getLoginId());
+				n15 = cb.equal(m.get("customerName"), req.getLoginId());
+				n16 = cb.or(n14,n15);
 			}
 			
 				Predicate n6 = null;
@@ -2978,7 +3137,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
 					query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10,n13).orderBy(orderList);
 				}else {
-					query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10,n13,n14).orderBy(orderList);
+					query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10,n13,n16).orderBy(orderList);
 				}
 
 				// Get Result
@@ -3035,15 +3194,20 @@ public class MotorGridServiceImpl implements MotorGridService {
 			
 			Predicate n5 = null;
 			Predicate n14 = null;
+			Predicate n15 = null;
+			Predicate n16 = null;
 			if (req.getApplicationId().equalsIgnoreCase("1")) {
 				if ("broker".equalsIgnoreCase(req.getUserType())) {
 					n5 = cb.equal(m.get("bdmCode"), req.getBdmCode());
 				} else {
 					n5 = cb.equal(m.get("loginId"), req.getLoginId());
+					n15 = cb.equal(m.get("customerName"), req.getLoginId());
+					n16 = cb.or(n14,n15);
 				}
 			} else {
 				n5 = cb.equal(m.get("applicationId"), req.getApplicationId());
 				n14 = cb.equal(m.get("loginId"), req.getLoginId());
+				
 			}
 			
 				Predicate n6 = null;
@@ -3059,7 +3223,7 @@ public class MotorGridServiceImpl implements MotorGridService {
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
 					query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10,n13);
 				}else {
-					query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10,n13,n14);
+					query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10,n13,n16);
 				}
 				TypedQuery<Long> result = em.createQuery(query);
 				List<Long> val = result.getResultList();
@@ -3269,10 +3433,16 @@ public class MotorGridServiceImpl implements MotorGridService {
 		
 				
 				Predicate n5 = null;
+				Predicate n13 = null;
+				Predicate n14 = null;
+				Predicate n15 = null;
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
 					n5 = cb.equal(m.get("loginId"), req.getLoginId());
 				} else {
 					n5 = cb.equal(m.get("applicationId"), req.getApplicationId());
+					n13 = cb.equal(m.get("loginId"), req.getLoginId());
+					n14 = cb.equal(m.get("customerName"), req.getLoginId());
+					n15 = cb.or(n13,n14);
 				}
 				Predicate n6 = null;
 				if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
@@ -3282,8 +3452,11 @@ public class MotorGridServiceImpl implements MotorGridService {
 				
 					n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
 				}
-
+				if (req.getApplicationId().equalsIgnoreCase("1")) {
 				query.where(n1,n2, n3, n4, n5, n6,n7,n8,n10,n12).orderBy(orderList);
+				}else {
+					query.where(n1,n2, n3, n4, n5, n6,n7,n8,n10,n12,n15).orderBy(orderList);
+				}
 
 				
 				TypedQuery<PortfolioGridCriteriaRes> result = em.createQuery(query);
@@ -3338,10 +3511,16 @@ public class MotorGridServiceImpl implements MotorGridService {
 		
 				
 				Predicate n5 = null;
+				Predicate n13 = null;
+				Predicate n14 = null;
+				Predicate n15 = null;
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
 					n5 = cb.equal(m.get("loginId"), req.getLoginId());
 				} else {
 					n5 = cb.equal(m.get("applicationId"), req.getApplicationId());
+					n13 = cb.equal(m.get("loginId"), req.getLoginId());
+					n14 = cb.equal(m.get("customerName"), req.getLoginId());
+					n15 = cb.or(n13,n14);
 				}
 				Predicate n6 = null;
 				if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
@@ -3351,8 +3530,11 @@ public class MotorGridServiceImpl implements MotorGridService {
 				
 					n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
 				}
-
-				query.where(n1,n2, n3, n4, n5, n6,n7,n8,n10,n12);
+				if (req.getApplicationId().equalsIgnoreCase("1")) {
+					query.where(n1, n2, n3, n4, n5, n6, n7, n8, n10, n12);
+				} else {
+					query.where(n1, n2, n3, n4, n5, n6, n7, n8, n10, n12, n15);
+				}
 				TypedQuery<Long> result = em.createQuery(query);
 				List<Long> val = result.getResultList();
 					
@@ -4200,7 +4382,8 @@ public class MotorGridServiceImpl implements MotorGridService {
 			}
 			return resList;
 
-			}	    
+			}
 
+		
 		
 	}

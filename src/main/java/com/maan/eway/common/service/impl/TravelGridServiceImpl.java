@@ -44,6 +44,7 @@ import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
@@ -64,10 +65,12 @@ import com.maan.eway.bean.TravelPassengerHistory;
 import com.maan.eway.bean.UWReferralDetails;
 import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.CopyQuoteReq;
+import com.maan.eway.common.req.ExistingBrokerUserListReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.RevertGridReq;
+import com.maan.eway.common.res.GetExistingBrokerListRes;
 import com.maan.eway.common.res.GetTravelReferalDetailsRes;
 import com.maan.eway.common.res.GetTravelRejectedQuoteDetailsRes;
 import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
@@ -167,6 +170,155 @@ public class TravelGridServiceImpl implements  TravelGridService {
 	
 	private Logger log = LogManager.getLogger(MotorGridServiceImpl.class);
 	
+	//EXISITING QUOTE
+	//DropDown
+	@Override
+	public List<GetExistingBrokerListRes> getTravelExistingDropdown(ExistingBrokerUserListReq req, Date today, Date before30) {
+		List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+		List<Tuple> list = new ArrayList<Tuple>();
+		try {
+		if(!("issuer".equalsIgnoreCase(req.getUserType()))){		
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+			Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
+			query.multiselect(m.get("agencyCode").alias("code"), m.get("loginId").alias("codeDesc"),
+					m.get("sourceType").alias("type")).distinct(true);
+
+			// Find All
+			Subquery<Long> agencyCode = query.subquery(Long.class);
+			Root<LoginMaster> ocpm1 = agencyCode.from(LoginMaster.class);
+			agencyCode.select(ocpm1.get("agencyCode"));
+			Predicate a1 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
+			Predicate a3 = cb.equal(ocpm1.get("status"), "Y");
+			agencyCode.where(a1, a3);
+
+			List<Predicate> predics1 = new ArrayList<Predicate>();
+			predics1.add(cb.equal(m.get("applicationId"), req.getApplicationId()));
+			predics1.add(cb.equal(m.get("status"), "Y"));
+			predics1.add(cb.equal(m.get("productId"), req.getProductId()));
+			predics1.add(cb.equal(m.get("companyId"), req.getCompanyId()));
+			predics1.add(cb.equal(m.get("branchCode"), req.getBranchCode()));
+			predics1.add(cb.greaterThanOrEqualTo(m.get("updatedDate"), before30));
+			predics1.add(cb.lessThanOrEqualTo(m.get("updatedDate"), today));
+			if ("Broker".equalsIgnoreCase(req.getUserType())) {
+				predics1.add(cb.equal(m.get("brokerCode"), agencyCode));
+			} else if ("User".equalsIgnoreCase(req.getUserType())) {
+				predics1.add(cb.equal(m.get("agencyCode"), agencyCode));
+			}
+			predics1.add(cb.isNotNull(m.get("sourceType")));
+			predics1.add(cb.isNotNull(m.get("loginId")));
+			query.where(predics1.toArray(new Predicate[0]));
+
+			TypedQuery<Tuple> typedQuery1 = em.createQuery(query);
+			list = typedQuery1.getResultList();
+			if (list != null && list.size() > 0) {
+				
+			for (Tuple data : list) {
+					GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+					res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+					res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+					res.setType(data.get("type") == null ? "" : data.get("type").toString());
+					resList.add(res);
+				
+						}
+			}
+			}else {
+				
+				resList=getExistingIssuerMotor(req,today,before30);
+			}
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Log Details" + e.getMessage());
+		return null;
+	}
+	return resList;
+}    
+ 
+private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUserListReq req, Date today,
+		Date before30) {
+	List<Tuple> list = new ArrayList<Tuple>();
+	List<Tuple> list1 = new ArrayList<Tuple>();
+	List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+	try {
+		{CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+		Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
+
+		query.multiselect(m.get("customerCode").alias("code"), m.get("customerName").alias("codeDesc"),
+				m.get("sourceType").alias("type"));
+		List<Predicate> predics = new ArrayList<Predicate>();
+		predics.add(cb.equal(m.get("applicationId"), req.getApplicationId()));
+		predics.add(cb.equal(m.get("status"), "Y"));
+		predics.add(cb.equal(m.get("productId"), req.getProductId()));
+		predics.add(cb.equal(m.get("companyId"), req.getCompanyId()));
+		predics.add(cb.equal(m.get("branchCode"), req.getBranchCode()));
+		predics.add(cb.greaterThanOrEqualTo(m.get("updatedDate"), before30));
+		predics.add(cb.lessThanOrEqualTo(m.get("updatedDate"), today));
+		predics.add(cb.isNotNull(m.get("bdmCode")));
+		query.where(predics.toArray(new Predicate[0]));
+
+		TypedQuery<Tuple> typedQuery = em.createQuery(query);
+		list = typedQuery.getResultList();
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+		if (list != null && list.size() > 0) {
+
+			for (Tuple data : list) {
+				GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+				res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+				res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+				res.setType(data.get("type") == null ? "" : data.get("type").toString());
+				resList.add(res);
+
+			}
+		}
+		}
+		{CriteriaBuilder cb1 = em.getCriteriaBuilder();
+		CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
+
+		Root<EserviceTravelDetails> m1 = query1.from(EserviceTravelDetails.class);
+
+		query1.multiselect(m1.get("brokerCode").alias("code"), m1.get("loginId").alias("codeDesc"),
+				m1.get("sourceType").alias("type"));
+
+		List<Predicate> predics1 = new ArrayList<Predicate>();
+		predics1.add(cb1.equal(m1.get("applicationId"), req.getApplicationId()));
+		predics1.add(cb1.equal(m1.get("status"), "Y"));
+		predics1.add(cb1.equal(m1.get("productId"), req.getProductId()));
+		predics1.add(cb1.equal(m1.get("companyId"), req.getCompanyId()));
+		predics1.add(cb1.equal(m1.get("branchCode"), req.getBranchCode()));
+		predics1.add(cb1.greaterThanOrEqualTo(m1.get("updatedDate"), before30));
+		predics1.add(cb1.lessThanOrEqualTo(m1.get("updatedDate"), today));
+		predics1.add(cb1.isNull(m1.get("bdmCode")));
+		query1.where(predics1.toArray(new Predicate[0]));
+
+		TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
+		list1 = typedQuery1.getResultList();
+		list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+		if (list1 != null && list1.size() > 0) {
+
+			for (Tuple data : list1) {
+				GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+				res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+				res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+				res.setType(data.get("type") == null ? "" : data.get("type").toString());
+				resList.add(res);
+
+			}
+		}
+		}
+
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Log Details" + e.getMessage());
+		return null;
+	}
+	return resList;
+}
+	
+	
+	
 	@Override
 	public TravelQuoteCriteriaResponse getTravelExistingQuoteDetails(ExistingQuoteReq req, Date startDate, Date endDate, Integer limit, Integer offset) {
 		TravelQuoteCriteriaResponse resp = new TravelQuoteCriteriaResponse();
@@ -215,10 +367,16 @@ public class TravelGridServiceImpl implements  TravelGridService {
 			Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
 			Predicate n9 = cb.isNull(m.get("endorsementType"));
 			Predicate n7 =  null ;
+//			Predicate n10 = null;
+//			Predicate n11 = null;
+//			Predicate n12 = null;
 			if (req.getApplicationId().equalsIgnoreCase("1") ) {
 				n7 = cb.equal(  m.get("loginId"),  req.getLoginId());
 			} else {
 				n7 = cb.equal(  m.get("applicationId"),  req.getApplicationId());
+//				n10 = cb.equal(  m.get("loginId"),  req.getLoginId());
+//				n11 = cb.equal(  m.get("customerName"),  req.getLoginId());
+//				n12 = cb.or(n10,n11);
 			}
 			
 			Predicate n8 = null;
@@ -228,7 +386,11 @@ public class TravelGridServiceImpl implements  TravelGridService {
 				n8 = cb.equal(  m.get("branchCode"),  req.getBranchCode());
 			}
 			query.where(n1,n2,n3,n4,n5,n6,n7,n8,n9).orderBy(orderList);
-			
+//			if (req.getApplicationId().equalsIgnoreCase("1") ) {
+//				query.where(n1,n2,n3,n4,n5,n6,n7,n8,n9).orderBy(orderList);
+//			}else {
+//				query.where(n1,n2,n3,n4,n5,n6,n7,n8,n9,n12).orderBy(orderList);
+//			}
 			
 			// Get Result
 			TypedQuery<TravelQuoteCriteriaRes> result = em.createQuery(query);

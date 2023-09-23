@@ -64,8 +64,9 @@ public class GridController {
 	
 	@Autowired
 	private  GridService entityService;
-	
-	// Quote Grids
+	//__________________________________________EXISTING QUOTE__________________________________________
+	// EXISTINGQUOTE GRIDS
+	//********************
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/existingquotedetails")
 	public ResponseEntity<CommonRes> getallExistingQuoteDetails(@RequestBody  ExistingQuoteReq req) {
@@ -82,7 +83,30 @@ public class GridController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 	}
-	
+	//EXISTING DROPDOWN	
+	//*****************
+	// Broker-->User1,User2... List Of User 
+	// User1-->User1
+	// Issuer-->List of Source Type
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
+	@PostMapping("/brokeruserdropdown")  
+	public ResponseEntity<CommonRes> getBrokerUserList(@RequestBody  ExistingBrokerUserListReq req) {
+		reqPrinter.reqPrint(req);
+		CommonRes data = new CommonRes();
+		List<GetExistingBrokerListRes> res = entityService.getBrokerUserList(req);
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}	
+	//_________________________________________________________________________________________________
+	//LAPSED QUOTE 
+	//************
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/lapsedquotedetails")
 	public ResponseEntity<CommonRes> getallLapsedQuoteDetails(@RequestBody  ExistingQuoteReq req) {
@@ -99,6 +123,7 @@ public class GridController {
 				return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			}
 		}
+	//_________________________________________________________________________________________________
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/rejectedquotedetails")
 	public ResponseEntity<CommonRes> getallRejectedQuoteDetails(@RequestBody  ExistingQuoteReq req) {
@@ -116,7 +141,7 @@ public class GridController {
 			}
 		}
 	
-	
+	//_________________________________________________________________________________________________
 	// Referral Grids
 	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
 	@PostMapping("/referralpending")
@@ -612,13 +637,14 @@ public class GridController {
 					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 				}
 			}
-//______________________________________________BROKER DROPDOWN________________________________________			
+
+//_____________________________________________PORTFOLIO DROPDOWN___________________________________________
 			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
-			@PostMapping("/brokeruserdropdown")  // Broker-->User1,User2... List Of User 
-			public ResponseEntity<CommonRes> getBrokerUserList(@RequestBody  ExistingBrokerUserListReq req) {
+			@PostMapping("/portfoliobrokerdropdown")  // Broker-->User1,User2...,Issuer--> Broker,direct,.... List Of User and List of others
+			public ResponseEntity<CommonRes> getPortfolioBrokerUserList(@RequestBody  ExistingBrokerUserListReq req) {
 				reqPrinter.reqPrint(req);
 				CommonRes data = new CommonRes();
-				List<GetExistingBrokerListRes> res = entityService.getBrokerUserList(req);
+				List<GetExistingBrokerListRes> res = entityService.getPortfolioBrokerUserList(req);
 				data.setCommonResponse(res);
 				data.setIsError(false);
 				data.setErrorMessage(Collections.emptyList());
@@ -628,14 +654,14 @@ public class GridController {
 				} else {
 					return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 				}
-			}	
-//_____________________________________________PORTFOLIO DROPDOWN___________________________________________
+			}
+			
 			@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
-			@PostMapping("/portfoliobrokerdropdown")  // Broker-->User1,User2...,Issuer--> Broker,direct,.... List Of User and List of others
-			public ResponseEntity<CommonRes> getPortfolioBrokerUserList(@RequestBody  ExistingBrokerUserListReq req) {
+			@PostMapping("/cancelpolicyportfoliodropdown")  // Broker-->User1,User2...,Issuer--> Broker,direct,.... List Of User and List of others
+			public ResponseEntity<CommonRes> getCancelPolicyIssuerDropdownList(@RequestBody  ExistingBrokerUserListReq req) {
 				reqPrinter.reqPrint(req);
 				CommonRes data = new CommonRes();
-				List<GetExistingBrokerListRes> res = entityService.getPortfolioBrokerUserList(req);
+				List<GetExistingBrokerListRes> res = entityService.getCancelPolicyIssuerDropdownList(req);
 				data.setCommonResponse(res);
 				data.setIsError(false);
 				data.setErrorMessage(Collections.emptyList());

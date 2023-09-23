@@ -10,11 +10,13 @@ import com.maan.eway.admin.res.GetMotorProtfolioActiveRes;
 import com.maan.eway.admin.res.MotorGridCriteriaAdminRes;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.common.req.CopyQuoteReq;
+import com.maan.eway.common.req.ExistingBrokerUserListReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.req.SearchBrokerPolicyReq;
+import com.maan.eway.common.res.GetExistingBrokerListRes;
 import com.maan.eway.common.res.GetMotorReferalDetailsRes;
 import com.maan.eway.common.res.GetRejectedQuoteDetailsRes;
 import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
@@ -70,5 +72,7 @@ public interface MotorGridService {
 	Long getProtfolioSearchDataCount(SearchBrokerPolicyReq req);
 
 	List<PotfolioPendingDropDownRes> getMotorProtfolioDropdownPending(IssuerQuoteReq req, Date today);
+
+	List<GetExistingBrokerListRes> getMotorExistingDropdown(ExistingBrokerUserListReq req, Date today, Date before30);
 
 }
