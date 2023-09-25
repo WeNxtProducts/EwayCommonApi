@@ -4661,101 +4661,104 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			}	
 	
 	
-			private List<GetExistingBrokerListRes> getBrokerListRejectedMotorIssuer(ExistingBrokerUserListReq req,
-					Date today, Date before30) {// Issuer
-
+			private List<GetExistingBrokerListRes> getBrokerListRejectedMotorIssuer(ExistingBrokerUserListReq req, Date today,Date before30) {//Issuer
+				
 				List<Tuple> list = new ArrayList<Tuple>();
 				List<Tuple> list1 = new ArrayList<Tuple>();
 				List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
 				try {
-					CriteriaBuilder cb = em.getCriteriaBuilder();
-					CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
-
-					Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
-
-					query.multiselect(m.get("customerCode").alias("code"), m.get("customerName").alias("codeDesc"),
-							m.get("sourceType").alias("type")).distinct(true);
-
-					List<Predicate> predics = new ArrayList<Predicate>();
-					predics.add(cb.equal(m.get("applicationId"), req.getApplicationId()));
-					predics.add(cb.equal(m.get("status"), "R"));
-					predics.add(cb.equal(m.get("productId"), req.getProductId()));
-					predics.add(cb.equal(m.get("companyId"), req.getCompanyId()));
-					predics.add(cb.isNotNull(m.get("bdmCode")));
-
+					 CriteriaBuilder cb = em.getCriteriaBuilder();
+					 CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+					 
+					 Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class); 
+					 
+					 query.multiselect(
+							 m.get("customerCode").alias("code"),
+							 m.get("customerName").alias("codeDesc"),
+							 m.get("sourceType").alias("type")
+							 ).distinct(true) ;
+					 
+					 List<Predicate> predics = new ArrayList<Predicate>();
+					 predics.add(cb.equal(m.get("applicationId"), req.getApplicationId()));
+					 predics.add(cb.equal(m.get("status"), "R"));
+					 predics.add(cb.equal(m.get("productId"), req.getProductId()));
+					 predics.add(cb.equal(m.get("companyId"), req.getCompanyId()));
+					 predics.add(cb.isNotNull(m.get("bdmCode")));
+					 
 					predics.add(cb.equal(m.get("branchCode"), req.getBranchCode()));
 					predics.add(cb.greaterThanOrEqualTo(m.get("updatedDate"), before30));
 					predics.add(cb.lessThanOrEqualTo(m.get("updatedDate"), today));
 					predics.add(cb.isNotNull(m.get("sourceType")));
-
-					query.where(predics.toArray(new Predicate[0]));
-
-					TypedQuery<Tuple> typedQuery = em.createQuery(query);
-					list = typedQuery.getResultList();
-					list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code"))))
-							.collect(Collectors.toList());
-					list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("codeDesc"))))
-							.collect(Collectors.toList());
-					if (list != null && list.size() > 0) {
-
-						for (Tuple data : list) {
-							GetExistingBrokerListRes res = new GetExistingBrokerListRes();
-							res.setCode(data.get("code") == null ? "" : data.get("code").toString());
-							res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
-							res.setType(data.get("type") == null ? "" : data.get("type").toString());
-							resList.add(res);
-
-						}
-					}
-
-					CriteriaBuilder cb1 = em.getCriteriaBuilder();
-					CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
-
-					Root<EserviceMotorDetails> m1 = query1.from(EserviceMotorDetails.class);
-
-					query1.multiselect(m1.get("agencyCode").alias("code"), m1.get("loginId").alias("codeDesc"),
-							m1.get("sourceType").alias("type")).distinct(true);
-
-					List<Predicate> predics1 = new ArrayList<Predicate>();
-					predics1.add(cb1.equal(m1.get("applicationId"), req.getApplicationId()));
-					predics1.add(cb1.equal(m1.get("status"), "R"));
-					predics1.add(cb1.equal(m1.get("productId"), req.getProductId()));
-					predics1.add(cb1.equal(m1.get("companyId"), req.getCompanyId()));
-					predics1.add(cb1.isNull(m1.get("bdmCode")));
-
+					 
+					 query.where(predics.toArray(new Predicate[0]));
+					 
+					 TypedQuery<Tuple> typedQuery = em.createQuery(query);
+					 list=  typedQuery.getResultList();
+					 list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+					 list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("codeDesc")))).collect(Collectors.toList());
+					 if(list!=null && list.size()>0) {
+						 
+						 for(Tuple data : list) {
+							 GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+							 res.setCode(data.get("code")==null?"":	data.get("code").toString());
+							 res.setCodeDesc(data.get("codeDesc")==null?"":	data.get("codeDesc").toString());
+							 res.setType(data.get("type")==null?"":	data.get("type").toString());
+							 resList.add(res);
+						
+						 }
+					 }	
+					 
+					 CriteriaBuilder cb1 = em.getCriteriaBuilder();
+					 CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
+					 
+					 Root<EserviceMotorDetails> m1 = query1.from(EserviceMotorDetails.class); 
+					 
+					 query1.multiselect(
+							 m1.get("agencyCode").alias("code"),
+							 m1.get("loginId").alias("codeDesc"),
+							 m1.get("sourceType").alias("type")
+							 ).distinct(true) ;
+					 
+					 List<Predicate> predics1 = new ArrayList<Predicate>();
+					 predics1.add(cb1.equal(m1.get("applicationId"),req.getApplicationId()));
+					 predics1.add(cb1.equal(m1.get("status"), "R"));
+					 predics1.add(cb1.equal(m1.get("productId"), req.getProductId()));
+					 predics1.add(cb1.equal(m1.get("companyId"), req.getCompanyId()));
+					 predics1.add(cb1.isNull(m1.get("bdmCode")));
+					 
 					predics1.add(cb1.equal(m1.get("branchCode"), req.getBranchCode()));
 					predics1.add(cb1.greaterThanOrEqualTo(m1.get("updatedDate"), before30));
 					predics1.add(cb1.lessThanOrEqualTo(m1.get("updatedDate"), today));
 					predics1.add(cb1.isNotNull(m1.get("sourceType")));
 					predics1.add(cb1.isNotNull(m1.get("loginId")));
-
-					query1.where(predics1.toArray(new Predicate[0]));
-
-					TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
-					list1 = typedQuery1.getResultList();
-					list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code"))))
-							.collect(Collectors.toList());
-					list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("codeDesc"))))
-							.collect(Collectors.toList());
-					if (list1 != null && list1.size() > 0) {
-
-						for (Tuple data : list1) {
-							GetExistingBrokerListRes res = new GetExistingBrokerListRes();
-							res.setCode(data.get("code") == null ? "" : data.get("code").toString());
-							res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
-							res.setType(data.get("type") == null ? "" : data.get("type").toString());
-							resList.add(res);
-
-						}
-					}
-
+					 
+					 query1.where(predics1.toArray(new Predicate[0]));
+					 
+					 TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
+					 list1=  typedQuery1.getResultList();
+					 list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+					 list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("codeDesc")))).collect(Collectors.toList());
+					 if(list1!=null && list1.size()>0) {
+						 
+						 for(Tuple data : list1) {
+							 GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+							 res.setCode(data.get("code")==null?"":	data.get("code").toString());
+							 res.setCodeDesc(data.get("codeDesc")==null?"":	data.get("codeDesc").toString());
+							 res.setType(data.get("type")==null?"":	data.get("type").toString());
+							 resList.add(res);
+						
+						 }
+					 }	
+					
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 					log.info("Log Details" + e.getMessage());
 					return null;
 				}
-				return resList;
+				return resList ;
 			}
+
 
 			private List<GetExistingBrokerListRes> getBrokerListLapsedMotorIssuer(ExistingBrokerUserListReq req, Date today, Date before30) {//Issuer dropdown
 				List<Tuple> list = new ArrayList<Tuple>();
