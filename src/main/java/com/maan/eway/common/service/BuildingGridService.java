@@ -50,7 +50,7 @@ public interface BuildingGridService {
 
 	List<ReferalGridCriteriaAdminRes> getBuildingAdminReferalPendingDetailsCount(RevertGridReq req, String string);
 
-	List<PotfolioPendingDropDownRes> getBuildingProtfolioDropdownPending(IssuerQuoteReq req, Date today);
+	List<GetExistingBrokerListRes> getBuildingProtfolioDropdownPending(ExistingBrokerUserListReq req, Date today);
 
 
 	List<GetExistingBrokerListRes> getBuildingExistingDropdown(ExistingBrokerUserListReq req, Date today,

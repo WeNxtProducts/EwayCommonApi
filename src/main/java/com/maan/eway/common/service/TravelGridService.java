@@ -53,7 +53,7 @@ public interface TravelGridService {
 
 	List<ReferalGridCriteriaAdminRes> getTravelAdminReferalPendingDetailsCount(RevertGridReq req, String string);
 
-	List<PotfolioPendingDropDownRes> getTravelProtfolioDropdownPending(IssuerQuoteReq req, Date today);
+	List<GetExistingBrokerListRes> getTravelProtfolioDropdownPending(ExistingBrokerUserListReq req, Date today);
 
 
 	List<GetExistingBrokerListRes> getTravelExistingDropdown(ExistingBrokerUserListReq req, Date today,

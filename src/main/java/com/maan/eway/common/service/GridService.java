@@ -116,6 +116,14 @@ public interface GridService {
 
 	List<GetExistingBrokerListRes> getBrokerUserListRejected(ExistingBrokerUserListReq req);
 
+	List<GetExistingBrokerListRes> getReferralPendingDropdown(ExistingBrokerUserListReq req);
+
+	List<GetExistingBrokerListRes> getReferralApprovedDropdown(ExistingBrokerUserListReq req);
+
+	List<GetExistingBrokerListRes> getReferralRejectDropdown(ExistingBrokerUserListReq req);
+
+	List<GetExistingBrokerListRes> getReferralRequoteDropdown(ExistingBrokerUserListReq req);
+
 
 
 }

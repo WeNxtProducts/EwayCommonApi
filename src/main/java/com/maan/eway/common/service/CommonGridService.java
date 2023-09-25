@@ -57,7 +57,7 @@ public interface CommonGridService {
 
 	List<ListItemValue> getCommonCoptyQuotetListItem(CopyQuoteDropDownReq req, String itemType);
 
-	List<PotfolioPendingDropDownRes> getCommonProtfolioDropdownPending(IssuerQuoteReq req, Date today);
+	List<GetExistingBrokerListRes> getCommonProtfolioDropdownPending(ExistingBrokerUserListReq req, Date today);
 
 
 	List<GetExistingBrokerListRes> getCommonExistingDropdown(ExistingBrokerUserListReq req, Date today, Date before30);

@@ -140,7 +140,7 @@ import com.maan.eway.thread.MyTaskList;
 @Service
 @Transactional
 public class GridServiceImpl implements GridService {
-  
+
 	@Value(value = "${travel.productId}")
 	private String travelProductId;
 
@@ -178,11 +178,9 @@ public class GridServiceImpl implements GridService {
 	private HomePositionMasterRepository homeRepo;
 
 	@Autowired
-	private UWReferralDetailsRepository uwReferalDetailsRepo ;
+	private UWReferralDetailsRepository uwReferalDetailsRepo;
 	@PersistenceContext
 	private EntityManager em;
-	
-	
 
 	private Logger log = LogManager.getLogger(GridServiceImpl.class);
 
@@ -192,7 +190,7 @@ public class GridServiceImpl implements GridService {
 		List<EserviceCustomerDetailsRes> custRes = new ArrayList<EserviceCustomerDetailsRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		QuoteCriteriaResponse cres = new QuoteCriteriaResponse();
-		 
+
 		try {
 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
@@ -215,17 +213,18 @@ public class GridServiceImpl implements GridService {
 
 			// Product Wise Get
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
-				cres = motService.getMotorExistingQuoteDetails(req,  before30, today, limit,
-						offset);
-				
+				cres = motService.getMotorExistingQuoteDetails(req, before30, today, limit, offset);
+
 				extingQuoteList = cres.getQuoteRes();
-				
-			} else if (product.getMotorYn().equalsIgnoreCase("H")&& req.getProductId().equalsIgnoreCase(travelProductId)) {
-				
-				TravelQuoteCriteriaResponse tcres = traService.getTravelExistingQuoteDetails(req, before30, today, limit,offset);
+
+			} else if (product.getMotorYn().equalsIgnoreCase("H")
+					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+
+				TravelQuoteCriteriaResponse tcres = traService.getTravelExistingQuoteDetails(req, before30, today,
+						limit, offset);
 				List<TravelQuoteCriteriaRes> textingQuoteList = new ArrayList<TravelQuoteCriteriaRes>();
 				textingQuoteList = tcres.getQuoteRes();
-				
+
 				for (TravelQuoteCriteriaRes data : textingQuoteList) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					dozerMapper.map(data, res);
@@ -234,31 +233,28 @@ public class GridServiceImpl implements GridService {
 				}
 				resp.setCustomerDetailsRes(custRes);
 				resp.setTotalCount(tcres.getTotalCount());
-				
+
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
-				cres =buiService.getBuildingExistingQuoteDetails(req, before30, today, limit,offset);
-				
+				cres = buiService.getBuildingExistingQuoteDetails(req, before30, today, limit, offset);
+
 				extingQuoteList = cres.getQuoteRes();
 				// Common
-			} else {  
-				cres = commonService.getCommonExistingQuoteDetails(req,  before30, today, limit,
-						offset);
+			} else {
+				cres = commonService.getCommonExistingQuoteDetails(req, before30, today, limit, offset);
 				extingQuoteList = cres.getQuoteRes();
 			}
-			
-			if ( !req.getProductId().equalsIgnoreCase(travelProductId)) {
 
-					for (QuoteCriteriaRes data : extingQuoteList) {
-						EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
-						dozerMapper.map(data, res);
-						custRes.add(res);
-					} 
-					resp.setCustomerDetailsRes(custRes);
-					resp.setTotalCount(cres.getTotalCount());
+			if (!req.getProductId().equalsIgnoreCase(travelProductId)) {
+
+				for (QuoteCriteriaRes data : extingQuoteList) {
+					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					dozerMapper.map(data, res);
+					custRes.add(res);
+				}
+				resp.setCustomerDetailsRes(custRes);
+				resp.setTotalCount(cres.getTotalCount());
 			}
-			
-			
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -328,7 +324,7 @@ public class GridServiceImpl implements GridService {
 		}
 		return product;
 	}
-	
+
 	public synchronized List<CompanyProductMaster> getCompanyProductList(String companyId) {
 		List<CompanyProductMaster> list = new ArrayList<CompanyProductMaster>();
 		try {
@@ -346,7 +342,7 @@ public class GridServiceImpl implements GridService {
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<CompanyProductMaster> query = cb.createQuery(CompanyProductMaster.class);
-			
+
 			// Find All
 			Root<CompanyProductMaster> c = query.from(CompanyProductMaster.class);
 			// Select
@@ -377,7 +373,7 @@ public class GridServiceImpl implements GridService {
 			Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
 			Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
 			Predicate n4 = cb.equal(c.get("companyId"), companyId);
-		//	Predicate n5 = cb.equal(c.get("productId"), productId);
+			// Predicate n5 = cb.equal(c.get("productId"), productId);
 			query.where(n1, n2, n3, n4).orderBy(orderList);
 			// Get Result
 			TypedQuery<CompanyProductMaster> result = em.createQuery(query);
@@ -389,8 +385,6 @@ public class GridServiceImpl implements GridService {
 		}
 		return list;
 	}
-	
-	
 
 	private static <T> java.util.function.Predicate<T> distinctByKey(
 			java.util.function.Function<? super T, ?> keyExtractor) {
@@ -424,13 +418,15 @@ public class GridServiceImpl implements GridService {
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
 				cres = motService.getMotorLapsedQuoteDetails(req, before30, limit, offset);
 				lapsedQuoteList = cres.getQuoteRes();
-				
-			} else if (product.getMotorYn().equalsIgnoreCase("H")&& req.getProductId().equalsIgnoreCase(travelProductId)) {
-					
-				TravelQuoteCriteriaResponse tcres = traService.getTravelLapsedQuoteDetails(req,  before30, limit, offset);
+
+			} else if (product.getMotorYn().equalsIgnoreCase("H")
+					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+
+				TravelQuoteCriteriaResponse tcres = traService.getTravelLapsedQuoteDetails(req, before30, limit,
+						offset);
 				List<TravelQuoteCriteriaRes> textingQuoteList = new ArrayList<TravelQuoteCriteriaRes>();
 				textingQuoteList = tcres.getQuoteRes();
-				
+
 				for (TravelQuoteCriteriaRes data : textingQuoteList) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					dozerMapper.map(data, res);
@@ -439,31 +435,29 @@ public class GridServiceImpl implements GridService {
 				}
 				resp.setCustomerDetailsRes(custRes);
 				resp.setTotalCount(tcres.getTotalCount());
-				
+
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
-				
-				cres = buiService.getBuildingLapsedQuoteDetails(req,  before30, limit, offset);
+
+				cres = buiService.getBuildingLapsedQuoteDetails(req, before30, limit, offset);
 				lapsedQuoteList = cres.getQuoteRes();
-				
+
 			} else {
 				cres = commonService.getCommonLapsedQuoteDetails(req, before30, limit, offset);
 				lapsedQuoteList = cres.getQuoteRes();
 			}
 
-			
-			if(!req.getProductId().equalsIgnoreCase(travelProductId)) {
+			if (!req.getProductId().equalsIgnoreCase(travelProductId)) {
 				for (QuoteCriteriaRes data : lapsedQuoteList) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				//	res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
+					// res.setCount(data.getIdsCount() == null ? "" :
+					// data.getIdsCount().toString());
 					custRes.add(res);
 				}
 				resp.setCustomerDetailsRes(custRes);
 				resp.setTotalCount(cres.getTotalCount());
 			}
-			
-			
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -477,7 +471,7 @@ public class GridServiceImpl implements GridService {
 		GetallExistingRejectedLapsedRes resp = new GetallExistingRejectedLapsedRes();
 		List<EserviceCustomerDetailsRes> custRes = new ArrayList<EserviceCustomerDetailsRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
-		GetRejectedQuoteDetailsRes cres = new GetRejectedQuoteDetailsRes(); 
+		GetRejectedQuoteDetailsRes cres = new GetRejectedQuoteDetailsRes();
 		try {
 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
@@ -489,7 +483,7 @@ public class GridServiceImpl implements GridService {
 			cal.set(Calendar.MINUTE, 1);
 			cal.add(Calendar.DAY_OF_MONTH, -30);
 			Date before30 = cal.getTime();
-			
+
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 
@@ -499,14 +493,15 @@ public class GridServiceImpl implements GridService {
 			List<RejectCriteriaRes> rejectedQuoteList = new ArrayList<RejectCriteriaRes>();
 			List<TravelRejectCriteriaRes> trejectedQuoteList = new ArrayList<TravelRejectCriteriaRes>();
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
-				cres = motService.getMotorRejectedQuoteDetails(req,before30, today, limit, offset);
-				rejectedQuoteList =  cres.getQuoteRes();
-				
+				cres = motService.getMotorRejectedQuoteDetails(req, before30, today, limit, offset);
+				rejectedQuoteList = cres.getQuoteRes();
+
 			} else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
-				
-				GetTravelRejectedQuoteDetailsRes tcres = traService.getTravelRejectedQuoteDetails(req,before30, today,limit, offset);
-				trejectedQuoteList =  tcres.getQuoteRes();
+
+				GetTravelRejectedQuoteDetailsRes tcres = traService.getTravelRejectedQuoteDetails(req, before30, today,
+						limit, offset);
+				trejectedQuoteList = tcres.getQuoteRes();
 				for (TravelRejectCriteriaRes data : trejectedQuoteList) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
@@ -515,17 +510,17 @@ public class GridServiceImpl implements GridService {
 				}
 				resp.setCustomerDetailsRes(custRes);
 				resp.setTotalCount(tcres.getTotalCount());
-				
+
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
-				cres = buiService.getBuildingRejectedQuoteDetails(req,before30, today,limit, offset);
-				rejectedQuoteList =  cres.getQuoteRes();
+				cres = buiService.getBuildingRejectedQuoteDetails(req, before30, today, limit, offset);
+				rejectedQuoteList = cres.getQuoteRes();
 			} else {
 				cres = commonService.getCommonRejectedQuoteDetails(req, before30, today, limit, offset);
-				rejectedQuoteList =  cres.getQuoteRes();
+				rejectedQuoteList = cres.getQuoteRes();
 			}
-			
+
 			if (!req.getProductId().equalsIgnoreCase(travelProductId)) {
-				
+
 				for (RejectCriteriaRes data : rejectedQuoteList) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
@@ -534,7 +529,6 @@ public class GridServiceImpl implements GridService {
 				resp.setCustomerDetailsRes(custRes);
 				resp.setTotalCount(cres.getTotalCount());
 			}
-			
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -567,71 +561,61 @@ public class GridServiceImpl implements GridService {
 
 			List<ReferalGridCriteriaRes> referralPendingList = new ArrayList<ReferalGridCriteriaRes>();
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
-				GetMotorReferalDetailsRes response = motService.getMotorReferalDetails(req, 
-						limit, offset, "RP");
+				GetMotorReferalDetailsRes response = motService.getMotorReferalDetails(req, limit, offset, "RP");
 				List<MotorGridCriteriaRes> referralPendingList2 = response.getMotorGridCriteriaResRes();
-				
-				resp.setTotalCount(String.valueOf( response.getTotalCount()));
-				
-			
-				
+
+				resp.setTotalCount(String.valueOf(response.getTotalCount()));
+
 				for (MotorGridCriteriaRes data : referralPendingList2) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				//	res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
+					// res.setCount(data.getIdsCount() == null ? "" :
+					// data.getIdsCount().toString());
 					custRes.add(res);
 				}
-			
-				
 
 			} else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
-				GetTravelReferalDetailsRes response = traService.getTravelReferalDetails(req,  limit, offset, "RP");
+				GetTravelReferalDetailsRes response = traService.getTravelReferalDetails(req, limit, offset, "RP");
 				referralPendingList = response.getReferalGridCriteriaRes();
-				
-				
-				resp.setTotalCount(String.valueOf( response.getTotalCount()));
-					
+
+				resp.setTotalCount(String.valueOf(response.getTotalCount()));
 
 				for (ReferalGridCriteriaRes data : referralPendingList) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				
+
 					custRes.add(res);
 				}
-				
+
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
 				GetTravelReferalDetailsRes response = buiService.getBuildingReferalDetails(req, limit, offset, "RP");
 				referralPendingList = response.getReferalGridCriteriaRes();
-				
-				resp.setTotalCount(String.valueOf( response.getTotalCount()));
-			
-				
 
-				
+				resp.setTotalCount(String.valueOf(response.getTotalCount()));
+
 				for (ReferalGridCriteriaRes data : referralPendingList) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-					
+
 					custRes.add(res);
 				}
-			
-				
+
 			} else {
-				GetCommonReferalDetailsRes response =  commonService.getCommonReferalDetails(req, limit, offset, "RP");
-						
+				GetCommonReferalDetailsRes response = commonService.getCommonReferalDetails(req, limit, offset, "RP");
+
 				List<ReferalCommonCriteriaRes> referralPendingList2 = response.getReferalCommonCriteriaRes();
-				
-				resp.setTotalCount(String.valueOf( response.getTotalCount()));
-		
-				
+
+				resp.setTotalCount(String.valueOf(response.getTotalCount()));
+
 				for (ReferalCommonCriteriaRes data : referralPendingList2) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				//	res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
+					// res.setCount(data.getIdsCount() == null ? "" :
+					// data.getIdsCount().toString());
 					custRes.add(res);
 				}
-				
+
 			}
 			resp.setCustRes(custRes);
 
@@ -681,69 +665,62 @@ public class GridServiceImpl implements GridService {
 
 			List<ReferalGridCriteriaRes> referralApprovedList = new ArrayList<ReferalGridCriteriaRes>();
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
-				
-				GetMotorReferalDetailsRes resp = motService.getMotorReferalDetails(req,  limit, offset,
-						"RA");
+
+				GetMotorReferalDetailsRes resp = motService.getMotorReferalDetails(req, limit, offset, "RA");
 				List<MotorGridCriteriaRes> List2 = resp.getMotorGridCriteriaResRes();
-				
+
 				for (MotorGridCriteriaRes data : List2) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				//	res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
+					// res.setCount(data.getIdsCount() == null ? "" :
+					// data.getIdsCount().toString());
 					custRes.add(res);
 				}
-			
+
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-				
-				
-				
+
 			} else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
 				GetTravelReferalDetailsRes resp = traService.getTravelReferalDetails(req, limit, offset, "RA");
 				referralApprovedList = resp.getReferalGridCriteriaRes();
-				
+
 				for (ReferalGridCriteriaRes data : referralApprovedList) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-					
+
 					custRes.add(res);
 				}
-				
+
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-			
-				
-				
+
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
-				GetTravelReferalDetailsRes resp = buiService.getBuildingReferalDetails(req,  limit, offset, "RA");
-				
+				GetTravelReferalDetailsRes resp = buiService.getBuildingReferalDetails(req, limit, offset, "RA");
+
 				referralApprovedList = resp.getReferalGridCriteriaRes();
-				
+
 				for (ReferalGridCriteriaRes data : referralApprovedList) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-			
+
 					custRes.add(res);
 				}
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-			
-				
-				
+
 			} else {
-				
-				GetCommonReferalDetailsRes resp = commonService.getCommonReferalDetails(req,
-						limit, offset, "RA");
+
+				GetCommonReferalDetailsRes resp = commonService.getCommonReferalDetails(req, limit, offset, "RA");
 				List<ReferalCommonCriteriaRes> referralPendingList2 = resp.getReferalCommonCriteriaRes();
-				
+
 				for (ReferalCommonCriteriaRes data : referralPendingList2) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				//	res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
+					// res.setCount(data.getIdsCount() == null ? "" :
+					// data.getIdsCount().toString());
 					custRes.add(res);
 				}
-				
+
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-			
-				
+
 			}
 			response.setCustRes(custRes);
 
@@ -793,65 +770,62 @@ public class GridServiceImpl implements GridService {
 
 			List<ReferalGridCriteriaRes> referralRejectedList = new ArrayList<ReferalGridCriteriaRes>();
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
-				GetMotorReferalDetailsRes resp =  motService.getMotorReferalDetails(req, limit, offset,
-						"RR");
+				GetMotorReferalDetailsRes resp = motService.getMotorReferalDetails(req, limit, offset, "RR");
 				List<MotorGridCriteriaRes> List2 = resp.getMotorGridCriteriaResRes();
-				
+
 				for (MotorGridCriteriaRes data : List2) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				//	res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
+					// res.setCount(data.getIdsCount() == null ? "" :
+					// data.getIdsCount().toString());
 					custRes.add(res);
 				}
-				
+
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-			
-				
+
 			} else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
-				GetTravelReferalDetailsRes resp = traService.getTravelReferalDetails(req,  limit, offset, "RR");
-				
+				GetTravelReferalDetailsRes resp = traService.getTravelReferalDetails(req, limit, offset, "RR");
+
 				referralRejectedList = resp.getReferalGridCriteriaRes();
 				for (ReferalGridCriteriaRes data : referralRejectedList) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				
+
 					custRes.add(res);
 				}
-				
+
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-			
-				
+
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
-				GetTravelReferalDetailsRes resp =  buiService.getBuildingReferalDetails(req,  limit, offset, "RR");
-				
+				GetTravelReferalDetailsRes resp = buiService.getBuildingReferalDetails(req, limit, offset, "RR");
+
 				referralRejectedList = resp.getReferalGridCriteriaRes();
 				for (ReferalGridCriteriaRes data : referralRejectedList) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-					
+
 					custRes.add(res);
 				}
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-				
-				
+
 			} else {
-				GetCommonReferalDetailsRes resp = commonService.getCommonReferalDetails(req,
-						limit, offset, "RR");
-				
+				GetCommonReferalDetailsRes resp = commonService.getCommonReferalDetails(req, limit, offset, "RR");
+
 				List<ReferalCommonCriteriaRes> referralPendingList2 = resp.getReferalCommonCriteriaRes();
-				
+
 				for (ReferalCommonCriteriaRes data : referralPendingList2) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				//	res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
+					// res.setCount(data.getIdsCount() == null ? "" :
+					// data.getIdsCount().toString());
 					custRes.add(res);
 				}
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-			
+
 			}
 			response.setCustRes(custRes);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -869,75 +843,69 @@ public class GridServiceImpl implements GridService {
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 
-		
-
 			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getInsuranceId(),
 					req.getProductId().toString());
 
 			List<ReferalGridCriteriaRes> adminReferralPendingList = new ArrayList<ReferalGridCriteriaRes>();
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
-				
+
 				GetMotorReferalDetailsRes resp = motService.getMotorAdminReferalDetails(req, limit, offset, "RP");
-						
-				
+
 				List<MotorGridCriteriaRes> adminReferralPendingList2 = resp.getMotorGridCriteriaResRes();
-				
+
 				for (MotorGridCriteriaRes data : adminReferralPendingList2) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				//	res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
+					// res.setCount(data.getIdsCount() == null ? "" :
+					// data.getIdsCount().toString());
 					custRes.add(res);
 				}
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-				
-				
 
 			} else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
-				GetTravelReferalDetailsRes resp = traService.getTravelAdminReferalDetails(req,  limit, offset, "RP");
-				adminReferralPendingList = resp.getReferalGridCriteriaRes()	;
-				
+				GetTravelReferalDetailsRes resp = traService.getTravelAdminReferalDetails(req, limit, offset, "RP");
+				adminReferralPendingList = resp.getReferalGridCriteriaRes();
+
 				for (ReferalGridCriteriaRes data : adminReferralPendingList) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-					
+
 					custRes.add(res);
 				}
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-				
-				
+
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
-				
-				GetTravelReferalDetailsRes resp = buiService.getBuildingAdminReferalDetails(req,  limit, offset,"RP");
-				adminReferralPendingList =  resp.getReferalGridCriteriaRes();
-				
+
+				GetTravelReferalDetailsRes resp = buiService.getBuildingAdminReferalDetails(req, limit, offset, "RP");
+				adminReferralPendingList = resp.getReferalGridCriteriaRes();
+
 				for (ReferalGridCriteriaRes data : adminReferralPendingList) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				
+
 					custRes.add(res);
 				}
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-			
-				
+
 			} else {
-				GetCommonReferalDetailsRes resp = commonService.getCommonAdminReferalDetails(req,  limit, offset, "RP");
-						
+				GetCommonReferalDetailsRes resp = commonService.getCommonAdminReferalDetails(req, limit, offset, "RP");
+
 				List<ReferalCommonCriteriaRes> adminReferralPendingList2 = resp.getReferalCommonCriteriaRes();
-			
+
 				for (ReferalCommonCriteriaRes data : adminReferralPendingList2) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				//	res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
+					// res.setCount(data.getIdsCount() == null ? "" :
+					// data.getIdsCount().toString());
 					custRes.add(res);
 				}
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-			
-				
+
 			}
-			
+
 			response.setCustRes(custRes);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -958,74 +926,70 @@ public class GridServiceImpl implements GridService {
 //			List<String> branches = new ArrayList<String>();
 //			List<LoginBranchMaster> loginBranch = loginBranchRepo.findByLoginId(req.getApplicationId());
 //			branches = loginBranch.stream().map(LoginBranchMaster::getBranchCode).collect(Collectors.toList());
-			
+
 			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getInsuranceId(),
 					req.getProductId().toString());
 
 			List<ReferalGridCriteriaRes> adminReferralApprovedList = new ArrayList<ReferalGridCriteriaRes>();
-			
+
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
-				GetMotorReferalDetailsRes resp = motService.getMotorAdminReferalDetails(req,  limit, offset,
-						"RA");
+				GetMotorReferalDetailsRes resp = motService.getMotorAdminReferalDetails(req, limit, offset, "RA");
 				List<MotorGridCriteriaRes> List2 = resp.getMotorGridCriteriaResRes();
-				
+
 				for (MotorGridCriteriaRes data : List2) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				//	res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
+					// res.setCount(data.getIdsCount() == null ? "" :
+					// data.getIdsCount().toString());
 					custRes.add(res);
 				}
-				
+
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-			
-			
+
 			} else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
 				GetTravelReferalDetailsRes resp = traService.getTravelAdminReferalDetails(req, limit, offset, "RA");
-				adminReferralApprovedList = resp.getReferalGridCriteriaRes()	;
-				
-				
-				for (ReferalGridCriteriaRes data : adminReferralApprovedList) {
-					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
-					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				
-					custRes.add(res);
-				}
-				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-			
-				
-			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
-				
-				GetTravelReferalDetailsRes resp =buiService.getBuildingAdminReferalDetails(req, limit, offset,	"RA");
-					
 				adminReferralApprovedList = resp.getReferalGridCriteriaRes();
-				
+
 				for (ReferalGridCriteriaRes data : adminReferralApprovedList) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				
+
 					custRes.add(res);
 				}
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-			
-				
+
+			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+
+				GetTravelReferalDetailsRes resp = buiService.getBuildingAdminReferalDetails(req, limit, offset, "RA");
+
+				adminReferralApprovedList = resp.getReferalGridCriteriaRes();
+
+				for (ReferalGridCriteriaRes data : adminReferralApprovedList) {
+					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
+
+					custRes.add(res);
+				}
+				response.setTotalCount(String.valueOf(resp.getTotalCount()));
+
 			} else {
-				GetCommonReferalDetailsRes resp = commonService.getCommonAdminReferalDetails(req,  limit, offset, "RA");
-						
+				GetCommonReferalDetailsRes resp = commonService.getCommonAdminReferalDetails(req, limit, offset, "RA");
+
 				List<ReferalCommonCriteriaRes> adminReferralApprovedList2 = resp.getReferalCommonCriteriaRes();
-				
+
 				for (ReferalCommonCriteriaRes data : adminReferralApprovedList2) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				//	res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
+					// res.setCount(data.getIdsCount() == null ? "" :
+					// data.getIdsCount().toString());
 					custRes.add(res);
 				}
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-			
-				
+
 			}
 			response.setCustRes(custRes);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -1051,67 +1015,63 @@ public class GridServiceImpl implements GridService {
 
 			List<ReferalGridCriteriaRes> adminReferralRejectedList = new ArrayList<ReferalGridCriteriaRes>();
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
-				GetMotorReferalDetailsRes resp = motService.getMotorAdminReferalDetails(req, limit, offset,"RR");
-						
+				GetMotorReferalDetailsRes resp = motService.getMotorAdminReferalDetails(req, limit, offset, "RR");
+
 				List<MotorGridCriteriaRes> List2 = resp.getMotorGridCriteriaResRes();
-				
+
 				for (MotorGridCriteriaRes data : List2) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				//	res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
+					// res.setCount(data.getIdsCount() == null ? "" :
+					// data.getIdsCount().toString());
 					custRes.add(res);
 				}
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-			
-				
-				
+
 			} else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
-				GetTravelReferalDetailsRes resp =  traService.getTravelAdminReferalDetails(req,limit, offset, "RR");
+				GetTravelReferalDetailsRes resp = traService.getTravelAdminReferalDetails(req, limit, offset, "RR");
 				adminReferralRejectedList = resp.getReferalGridCriteriaRes();
-				
+
 				for (ReferalGridCriteriaRes data : adminReferralRejectedList) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				
+
 					custRes.add(res);
 				}
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-				
-				
+
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
-				GetTravelReferalDetailsRes resp = buiService.getBuildingAdminReferalDetails(req,  limit, offset,"RR");
-						
+				GetTravelReferalDetailsRes resp = buiService.getBuildingAdminReferalDetails(req, limit, offset, "RR");
+
 				adminReferralRejectedList = resp.getReferalGridCriteriaRes();
-				
+
 				for (ReferalGridCriteriaRes data : adminReferralRejectedList) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-					
+
 					custRes.add(res);
 				}
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-				
-				
-				
+
 			} else {
-				GetCommonReferalDetailsRes resp = commonService.getCommonAdminReferalDetails(req,  limit, offset, "RR");
-						
+				GetCommonReferalDetailsRes resp = commonService.getCommonAdminReferalDetails(req, limit, offset, "RR");
+
 				List<ReferalCommonCriteriaRes> adminReferralRejectedList2 = resp.getReferalCommonCriteriaRes();
-				
+
 				for (ReferalCommonCriteriaRes data : adminReferralRejectedList2) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-					//res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
+					// res.setCount(data.getIdsCount() == null ? "" :
+					// data.getIdsCount().toString());
 					custRes.add(res);
 				}
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-				
-				
+
 			}
-			
+
 			response.setCustRes(custRes);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -1170,7 +1130,7 @@ public class GridServiceImpl implements GridService {
 					res = traService.travelCopyQuote(req, branches, loginId);
 				} else if (product.getMotorYn().equalsIgnoreCase("A")) {
 					res = buiService.buildingCopyQuote(req, branches, loginId);
-					
+
 				} else {
 					res = commonService.commonCopyQuote(req, branches);
 
@@ -1377,7 +1337,7 @@ public class GridServiceImpl implements GridService {
 //						res.set(data.get("accessoriesInformation")==null?null:data.get("accessoriesInformation").toString());
 //						res.set(data.get("numberOfAxels")==null?null:data.get("numberOfAxels").toString());
 //						res.set(data.get("axelDistance")==null?null:data.get("axelDistance").toString());
-			//			res.setSumInsured(data.get("sumInsured")==null?null:data.get("sumInsured").toString());
+						// res.setSumInsured(data.get("sumInsured")==null?null:data.get("sumInsured").toString());
 						res.setEndorsementType(
 								data.get("endorsementType") == null ? null : data.get("endorsementType").toString());
 						res.setEndorsementTypeDesc(data.get("endorsementTypeDesc") == null ? null
@@ -1582,7 +1542,7 @@ public class GridServiceImpl implements GridService {
 								data.get("brokerBranchCode") == null ? null : data.get("brokerBranchCode").toString());
 //						res.setCompanyName(data.get("companyName")==null?null:data.get("companyName").toString());
 //						res.setProductName(data.get("productName")==null?null:data.get("productName").toString());
-					//	res.setSumInsured(data.get("sumInsured")==null?null:data.get("sumInsured").toString());
+						// res.setSumInsured(data.get("sumInsured")==null?null:data.get("sumInsured").toString());
 						res.setCommissionType(
 								data.get("commissionType") == null ? null : data.get("commissionType").toString());
 //						res.setCommissionTypeDesc(data.get("commissionTypeDesc")==null?null:data.get("commissionTypeDesc").toString());
@@ -1638,7 +1598,7 @@ public class GridServiceImpl implements GridService {
 //						res.setSectionName(riskData.getProductDesc());	
 //					}
 					if (data != null) {
-						
+
 						res.setCustomerReferenceNo(data.get("customerReferenceNo") == null ? null
 								: data.get("customerReferenceNo").toString());
 						res.setBrokerBranchCode(
@@ -1694,7 +1654,7 @@ public class GridServiceImpl implements GridService {
 						res.setSubUserType(data.get("subUserType") == null ? null : data.get("subUserType").toString());
 						res.setApplicationId(
 								data.get("applicationId") == null ? null : data.get("applicationId").toString());
-				//		res.setSumInsured(data.get("sumInsured")==null?null:data.get("sumInsured").toString());
+						// res.setSumInsured(data.get("sumInsured")==null?null:data.get("sumInsured").toString());
 						res.setCurrency(data.get("currency") == null ? null : data.get("currency").toString());
 						res.setExchangeRate(
 								data.get("exchangeRate") == null ? null : data.get("exchangeRate").toString());
@@ -1735,12 +1695,12 @@ public class GridServiceImpl implements GridService {
 						res.setEndtCategDesc(
 								data.get("endtCategDesc") == null ? null : data.get("endtCategDesc").toString());
 						res.setSectionName(data.get("sectionDesc") == null ? null : data.get("sectionDesc").toString());
-						
+
 					}
 				} else {
 
 					if (data != null) {
-						res.setSumInsured(data.get("sumInsured")==null?null:data.get("sumInsured").toString());
+						res.setSumInsured(data.get("sumInsured") == null ? null : data.get("sumInsured").toString());
 						res.setRequestReferenceNo(data.get("requestReferenceNo") == null ? null
 								: data.get("requestReferenceNo").toString());
 						res.setBrokerBranchCode(
@@ -1752,7 +1712,7 @@ public class GridServiceImpl implements GridService {
 						res.setCompanyId(data.get("companyId") == null ? null : data.get("companyId").toString());
 						res.setBranchCode(data.get("branchCode") == null ? null : data.get("branchCode").toString());
 						res.setAgencyCode(data.get("agencyCode") == null ? null : data.get("agencyCode").toString());
-						
+
 						res.setStatus(data.get("status") == null ? null : data.get("status").toString());
 
 						String updatedDate = data.get("updatedDate") == null ? null
@@ -1805,7 +1765,7 @@ public class GridServiceImpl implements GridService {
 								data.get("endorsementType") == null ? null : data.get("endorsementType").toString());
 						res.setEndorsementTypeDesc(data.get("endorsementTypeDesc") == null ? null
 								: data.get("endorsementTypeDesc").toString());
-						res.setSumInsured(data.get("sumInsured")==null?null:data.get("sumInsured").toString());
+						res.setSumInsured(data.get("sumInsured") == null ? null : data.get("sumInsured").toString());
 						String endorsementDate = data.get("endorsementDate") == null ? null
 								: dateFormat.format(data.get("endorsementDate"));
 						res.setEndorsementDate(endorsementDate);
@@ -1929,71 +1889,66 @@ public class GridServiceImpl implements GridService {
 					req.getProductId().toString());
 
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
-				GetMotorReferalDetailsRes resp = motService.getMotorReferalDetails(req, limit, offset,
-						"RE");
+				GetMotorReferalDetailsRes resp = motService.getMotorReferalDetails(req, limit, offset, "RE");
 				List<MotorGridCriteriaRes> List2 = resp.getMotorGridCriteriaResRes();
-				
-				
+
 				for (MotorGridCriteriaRes data : List2) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				//	res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
+					// res.setCount(data.getIdsCount() == null ? "" :
+					// data.getIdsCount().toString());
 					custRes.add(res);
 				}
-				
+
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-			
-				
+
 			} else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
-				
-				GetTravelReferalDetailsRes resp = traService.getTravelReferalDetails(req,  limit, offset, "RE");
-				
+
+				GetTravelReferalDetailsRes resp = traService.getTravelReferalDetails(req, limit, offset, "RE");
+
 				referralRejectedList = resp.getReferalGridCriteriaRes();
 				for (ReferalGridCriteriaRes data : referralRejectedList) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				
+
 					custRes.add(res);
 				}
-				
+
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-			
-			
+
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
-				
-				GetTravelReferalDetailsRes resp =  buiService.getBuildingReferalDetails(req,limit, offset, "RE");
-				
+
+				GetTravelReferalDetailsRes resp = buiService.getBuildingReferalDetails(req, limit, offset, "RE");
+
 				referralRejectedList = resp.getReferalGridCriteriaRes();
 				for (ReferalGridCriteriaRes data : referralRejectedList) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-					
+
 					custRes.add(res);
 				}
-				
+
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-				
-			
+
 			} else {
-				
-				GetCommonReferalDetailsRes resp = commonService.getCommonReferalDetails(req,
-						 limit, offset, "RE");
-				
+
+				GetCommonReferalDetailsRes resp = commonService.getCommonReferalDetails(req, limit, offset, "RE");
+
 				List<ReferalCommonCriteriaRes> referralPendingList2 = resp.getReferalCommonCriteriaRes();
-			
+
 				for (ReferalCommonCriteriaRes data : referralPendingList2) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				//	res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
+					// res.setCount(data.getIdsCount() == null ? "" :
+					// data.getIdsCount().toString());
 					custRes.add(res);
 				}
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-				
+
 			}
 			response.setCustRes(custRes);
-			
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -2002,7 +1957,6 @@ public class GridServiceImpl implements GridService {
 		return response;
 	}
 
-	
 	@Override
 	public GetallReferralDetailsCommonRes getallAdminReferralRequote(ExistingQuoteReq req) {
 		List<EserviceCustomerDetailsRes> custRes = new ArrayList<EserviceCustomerDetailsRes>();
@@ -2020,67 +1974,66 @@ public class GridServiceImpl implements GridService {
 
 			List<ReferalGridCriteriaRes> adminReferralRejectedList = new ArrayList<ReferalGridCriteriaRes>();
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
-				GetMotorReferalDetailsRes resp =  motService.getMotorAdminReferalDetails(req,  limit, offset,"RE");
-						
+				GetMotorReferalDetailsRes resp = motService.getMotorAdminReferalDetails(req, limit, offset, "RE");
+
 				List<MotorGridCriteriaRes> List2 = resp.getMotorGridCriteriaResRes();
-				
+
 				for (MotorGridCriteriaRes data : List2) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				//	res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
+					// res.setCount(data.getIdsCount() == null ? "" :
+					// data.getIdsCount().toString());
 					custRes.add(res);
 				}
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-			
-				
+
 			} else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
-				
-				GetTravelReferalDetailsRes resp = traService.getTravelAdminReferalDetails(req,  limit, offset, "RE");
-				adminReferralRejectedList = resp.getReferalGridCriteriaRes()	;
-				
-				for (ReferalGridCriteriaRes data : adminReferralRejectedList) {
-					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
-					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				
-					custRes.add(res);
-				}
 
-				
-				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-			
-				
-			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
-				
-				GetTravelReferalDetailsRes resp = buiService.getBuildingAdminReferalDetails(req, limit, offset,"RE");
-						
+				GetTravelReferalDetailsRes resp = traService.getTravelAdminReferalDetails(req, limit, offset, "RE");
 				adminReferralRejectedList = resp.getReferalGridCriteriaRes();
-				
+
 				for (ReferalGridCriteriaRes data : adminReferralRejectedList) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-					
+
 					custRes.add(res);
 				}
 
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-			
+
+			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+
+				GetTravelReferalDetailsRes resp = buiService.getBuildingAdminReferalDetails(req, limit, offset, "RE");
+
+				adminReferralRejectedList = resp.getReferalGridCriteriaRes();
+
+				for (ReferalGridCriteriaRes data : adminReferralRejectedList) {
+					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
+					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
+
+					custRes.add(res);
+				}
+
+				response.setTotalCount(String.valueOf(resp.getTotalCount()));
+
 			} else {
-				GetCommonReferalDetailsRes resp =  commonService.getCommonAdminReferalDetails(req, limit, offset, "RE");
-						
+				GetCommonReferalDetailsRes resp = commonService.getCommonAdminReferalDetails(req, limit, offset, "RE");
+
 				List<ReferalCommonCriteriaRes> referralPendingList2 = resp.getReferalCommonCriteriaRes();
-				
+
 				for (ReferalCommonCriteriaRes data : referralPendingList2) {
 					EserviceCustomerDetailsRes res = new EserviceCustomerDetailsRes();
 					res = dozerMapper.map(data, EserviceCustomerDetailsRes.class);
-				//	res.setCount(data.getIdsCount() == null ? "" : data.getIdsCount().toString());
+					// res.setCount(data.getIdsCount() == null ? "" :
+					// data.getIdsCount().toString());
 					custRes.add(res);
 				}
 				response.setTotalCount(String.valueOf(resp.getTotalCount()));
-				
+
 			}
 			response.setCustRes(custRes);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -2171,11 +2124,13 @@ public class GridServiceImpl implements GridService {
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 
 			List<PortfolioGridCriteriaRes> portfolioActiveList = new ArrayList<PortfolioGridCriteriaRes>();
-		
-				GetMotorProtfolioActiveRes response = motService.getMotorProtfolioActive(req,  today, limit, offset, "P"); //forallproducts "p" policy
-				portfolioActiveList = response.getPortfolioList();
-				resp.setCount(response.getCount());
-		
+
+			GetMotorProtfolioActiveRes response = motService.getMotorProtfolioActive(req, today, limit, offset, "P"); // forallproducts
+																														// "p"
+																														// policy
+			portfolioActiveList = response.getPortfolioList();
+			resp.setCount(response.getCount());
+
 			for (PortfolioGridCriteriaRes data : portfolioActiveList) {
 				PortfolioCustomerDetailsRes res = new PortfolioCustomerDetailsRes();
 				res = dozerMapper.map(data, PortfolioCustomerDetailsRes.class);
@@ -2206,7 +2161,7 @@ public class GridServiceImpl implements GridService {
 			cal.set(Calendar.HOUR_OF_DAY, 1);
 			cal.set(Calendar.MINUTE, 1);
 			cal.add(Calendar.DAY_OF_MONTH, +365);
-		
+
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 
@@ -2242,9 +2197,9 @@ public class GridServiceImpl implements GridService {
 				list = motService.getMotorProtfolioPending(req, branches, today, limit, offset, "P");
 			} else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
-				list = traService.getTravelProtfolioPending(req, branches,today, limit, offset, "P");
+				list = traService.getTravelProtfolioPending(req, branches, today, limit, offset, "P");
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
-				list = buiService.getBuildingProtfolioPending(req, branches,today, limit, offset, "P");
+				list = buiService.getBuildingProtfolioPending(req, branches, today, limit, offset, "P");
 			} else {
 				list = commonService.getCommonProtfolioPending(req, branches, today, limit, offset, "P");
 
@@ -2279,20 +2234,21 @@ public class GridServiceImpl implements GridService {
 			cal.set(Calendar.HOUR_OF_DAY, 1);
 			cal.set(Calendar.MINUTE, 1);
 			cal.add(Calendar.DAY_OF_MONTH, -30);
-		
+
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 
-			GetMotorProtfolioActiveRes response = motService.getMotorPortfolioCancelled(req, today, limit, offset, "842");
+			GetMotorProtfolioActiveRes response = motService.getMotorPortfolioCancelled(req, today, limit, offset,
+					"842");
 			List<PortfolioGridCriteriaRes> list = response.getPortfolioList();
-			
+
 			for (PortfolioGridCriteriaRes data : list) {
 				PortfolioCustomerDetailsRes res = new PortfolioCustomerDetailsRes();
 				res = dozerMapper.map(data, PortfolioCustomerDetailsRes.class);
 				custRes.add(res);
 			}
 			resp.setCount(response.getCount());
-			resp.setCustRes(custRes);		
+			resp.setCustRes(custRes);
 			;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2305,7 +2261,7 @@ public class GridServiceImpl implements GridService {
 	@Override
 	public List<DropDownRes> getallIssuerQuoteDetails(IssuerQuoteReq req) {
 		List<DropDownRes> resList = new ArrayList<DropDownRes>();
-	
+
 		try {
 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
@@ -2359,58 +2315,64 @@ public class GridServiceImpl implements GridService {
 		List<Tuple> list = new ArrayList<Tuple>();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		try {
-			
+
 			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getInsuranceId(),
 					req.getProductId().toString());
-			
-			//Product wise
+
+			// Product wise
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
 				list = motService.getMotorReportDetails(req);
-				
-			} else if (product.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId)) {
-					
+
+			} else if (product.getMotorYn().equalsIgnoreCase("H")
+					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+
 				list = traService.getTravelReportDetails(req);
-				
+
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
-				//list = buiService.getBuildingReportDetails(req);
-			
+				// list = buiService.getBuildingReportDetails(req);
+
 			} else { // common
-				//list = commonService.getCommonReportDetails(req);
+				// list = commonService.getCommonReportDetails(req);
 			}
-			if(list.size()>0) {
-				
-				for(Tuple report : list) {
+			if (list.size() > 0) {
+
+				for (Tuple report : list) {
 					GetallPolicyReportsRes res = new GetallPolicyReportsRes();
-					res.setBranchName(report.get("branchName")==null?"":report.get("branchName").toString());
-					res.setBrokerName(report.get("brokerName")==null?"":report.get("brokerName").toString());		
-					res.setCommissionAmount(report.get("commissionAmount")==null?"":report.get("commissionAmount").toString());
-					res.setCommissionPercentage(report.get("commissionPercentage")==null?"":report.get("commissionPercentage").toString());
-					res.setCurrency(report.get("currency")==null?"":report.get("currency").toString());
-					res.setCustomerName(report.get("customerName")==null?"":report.get("customerName").toString());
-					res.setDebitNoteNo(report.get("debitNoteNo")==null?"":report.get("debitNoteNo").toString());
-					res.setEndDate(report.get("endDate")==null?"":dateFormat.format(report.get("endDate")));
-					res.setIssueDate(report.get("issueDate")==null?"":dateFormat.format(report.get("issueDate")));
-					res.setLoginId(report.get("loginId")==null?"":report.get("loginId").toString());
-					res.setPaymentId(report.get("paymentId")==null?"":report.get("paymentId").toString());				
-					res.setPaymentType(report.get("paymentType")==null?"":report.get("paymentType").toString());
-					res.setPolicyNo(report.get("policyNo")==null?"":report.get("policyNo").toString());
-					res.setPolicyTypeDesc(report.get("policyTypeDesc")==null?"":report.get("policyTypeDesc").toString());
-					res.setPremium(report.get("premium")==null?"":report.get("premium").toString());
-					res.setQuoteNo(report.get("quoteNo")==null?"":report.get("quoteNo").toString());
-					res.setStartDate(report.get("startDate")==null?"":dateFormat.format(report.get("startDate")));
-					res.setSubUserType(report.get("subUserType")==null?"":report.get("subUserType").toString());
-					
-					if (product.getMotorYn().equalsIgnoreCase("M")) 
-						res.setSumInsured(report.get("sumInsured")==null?"":report.get("sumInsured").toString());
-					if (product.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId))
-						res.setPassengerCount(report.get("passengerCount")==null?"":report.get("passengerCount").toString());
-					
-					
-					res.setUserType(report.get("userType")==null?"":report.get("userType").toString());					
+					res.setBranchName(report.get("branchName") == null ? "" : report.get("branchName").toString());
+					res.setBrokerName(report.get("brokerName") == null ? "" : report.get("brokerName").toString());
+					res.setCommissionAmount(
+							report.get("commissionAmount") == null ? "" : report.get("commissionAmount").toString());
+					res.setCommissionPercentage(report.get("commissionPercentage") == null ? ""
+							: report.get("commissionPercentage").toString());
+					res.setCurrency(report.get("currency") == null ? "" : report.get("currency").toString());
+					res.setCustomerName(
+							report.get("customerName") == null ? "" : report.get("customerName").toString());
+					res.setDebitNoteNo(report.get("debitNoteNo") == null ? "" : report.get("debitNoteNo").toString());
+					res.setEndDate(report.get("endDate") == null ? "" : dateFormat.format(report.get("endDate")));
+					res.setIssueDate(report.get("issueDate") == null ? "" : dateFormat.format(report.get("issueDate")));
+					res.setLoginId(report.get("loginId") == null ? "" : report.get("loginId").toString());
+					res.setPaymentId(report.get("paymentId") == null ? "" : report.get("paymentId").toString());
+					res.setPaymentType(report.get("paymentType") == null ? "" : report.get("paymentType").toString());
+					res.setPolicyNo(report.get("policyNo") == null ? "" : report.get("policyNo").toString());
+					res.setPolicyTypeDesc(
+							report.get("policyTypeDesc") == null ? "" : report.get("policyTypeDesc").toString());
+					res.setPremium(report.get("premium") == null ? "" : report.get("premium").toString());
+					res.setQuoteNo(report.get("quoteNo") == null ? "" : report.get("quoteNo").toString());
+					res.setStartDate(report.get("startDate") == null ? "" : dateFormat.format(report.get("startDate")));
+					res.setSubUserType(report.get("subUserType") == null ? "" : report.get("subUserType").toString());
+
+					if (product.getMotorYn().equalsIgnoreCase("M"))
+						res.setSumInsured(report.get("sumInsured") == null ? "" : report.get("sumInsured").toString());
+					if (product.getMotorYn().equalsIgnoreCase("H")
+							&& req.getProductId().equalsIgnoreCase(travelProductId))
+						res.setPassengerCount(
+								report.get("passengerCount") == null ? "" : report.get("passengerCount").toString());
+
+					res.setUserType(report.get("userType") == null ? "" : report.get("userType").toString());
 					resList.add(res);
-					}
+				}
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -2424,46 +2386,53 @@ public class GridServiceImpl implements GridService {
 		List<PortFolioDashBoardRes> resList = new ArrayList<PortFolioDashBoardRes>();
 		DecimalFormat df = new DecimalFormat("0.##");
 		try {
-			 List<CompanyProductMaster> productList  = getCompanyProductList(req.getInsuranceId());
-			 List<PortFolioAdminTupleRes> list =  getPortFolioDashBoard(req);
-			 
+			List<CompanyProductMaster> productList = getCompanyProductList(req.getInsuranceId());
+			List<PortFolioAdminTupleRes> list = getPortFolioDashBoard(req);
+
 			// Group By Product Id
-	//		 Map<Integer ,List<PortFolioAdminTupleRes>> groupByProductId = list.stream().collect(Collectors.groupingBy(PortFolioAdminTupleRes :: getProductId )) ;
-			 for (CompanyProductMaster product : productList  ) { 
-				 
-				 if(StringUtils.isBlank(req.getProductId()) || "99999".equalsIgnoreCase(req.getProductId()) || product.getProductId().equals(Integer.valueOf(req.getProductId())) ) {
-					
-					 List<PortFolioAdminTupleRes> filterProduct = list.stream().filter( o -> o.getProductId()!=null &&  o.getProductId().equals(product.getProductId() )  ).collect(Collectors.toList());
-					 
-					 // Map Broker List
-					 List<PortfolioBrokerListRes>     brokerResList = new ArrayList<PortfolioBrokerListRes>(); 
-					 for(PortFolioAdminTupleRes data : filterProduct) { 
-						 PortfolioBrokerListRes brokerRes = new PortfolioBrokerListRes();
-						 
-						 brokerRes.setBrokerCode(data.getOaCode()==null?"0" : data.getOaCode().toString());
-						 brokerRes.setBrokerLoginId(data.getLoginId() );
-						 brokerRes.setBrokerName(data.getBrokerName() );
-						 brokerRes.setSubUserType(data.getSubUserType() );
-						 brokerRes.setTotalCount(data.getCount()==null?0 : data.getCount());
-						 brokerRes.setTotalPremiumLc(data.getOverallPremiumLc()==null ? "0" : df.format(Double.valueOf(data.getOverallPremiumLc().toPlainString())));
-						 brokerRes.setTotalPremiumFc(data.getOverallPremiumFc()==null ? "0" : df.format(Double.valueOf(data.getOverallPremiumFc().toPlainString())));
-						 brokerRes.setUserType(data.getUserType());
-						 brokerResList.add(brokerRes);					 
-					 }
-					 brokerResList.sort(Comparator.comparing(PortfolioBrokerListRes :: getTotalCount  ).reversed());
-					 
-					 // Response 
-					 PortFolioDashBoardRes res = new PortFolioDashBoardRes();
-					 res.setBrokerList(brokerResList);
-					 res.setProductId(product.getProductId().toString());
-					 res.setProductName(product.getProductName());
-					 res.setBrokerCount(brokerResList.size() > 0 ? Long.valueOf(brokerResList.size()) : 0 ); 
-					 resList.add(res);
-				 }
-				 
+			// Map<Integer ,List<PortFolioAdminTupleRes>> groupByProductId =
+			// list.stream().collect(Collectors.groupingBy(PortFolioAdminTupleRes ::
+			// getProductId )) ;
+			for (CompanyProductMaster product : productList) {
+
+				if (StringUtils.isBlank(req.getProductId()) || "99999".equalsIgnoreCase(req.getProductId())
+						|| product.getProductId().equals(Integer.valueOf(req.getProductId()))) {
+
+					List<PortFolioAdminTupleRes> filterProduct = list.stream()
+							.filter(o -> o.getProductId() != null && o.getProductId().equals(product.getProductId()))
+							.collect(Collectors.toList());
+
+					// Map Broker List
+					List<PortfolioBrokerListRes> brokerResList = new ArrayList<PortfolioBrokerListRes>();
+					for (PortFolioAdminTupleRes data : filterProduct) {
+						PortfolioBrokerListRes brokerRes = new PortfolioBrokerListRes();
+
+						brokerRes.setBrokerCode(data.getOaCode() == null ? "0" : data.getOaCode().toString());
+						brokerRes.setBrokerLoginId(data.getLoginId());
+						brokerRes.setBrokerName(data.getBrokerName());
+						brokerRes.setSubUserType(data.getSubUserType());
+						brokerRes.setTotalCount(data.getCount() == null ? 0 : data.getCount());
+						brokerRes.setTotalPremiumLc(data.getOverallPremiumLc() == null ? "0"
+								: df.format(Double.valueOf(data.getOverallPremiumLc().toPlainString())));
+						brokerRes.setTotalPremiumFc(data.getOverallPremiumFc() == null ? "0"
+								: df.format(Double.valueOf(data.getOverallPremiumFc().toPlainString())));
+						brokerRes.setUserType(data.getUserType());
+						brokerResList.add(brokerRes);
+					}
+					brokerResList.sort(Comparator.comparing(PortfolioBrokerListRes::getTotalCount).reversed());
+
+					// Response
+					PortFolioDashBoardRes res = new PortFolioDashBoardRes();
+					res.setBrokerList(brokerResList);
+					res.setProductId(product.getProductId().toString());
+					res.setProductName(product.getProductName());
+					res.setBrokerCount(brokerResList.size() > 0 ? Long.valueOf(brokerResList.size()) : 0);
+					resList.add(res);
+				}
+
 			}
-			 resList.sort(Comparator.comparing(PortFolioDashBoardRes :: getBrokerCount  ).reversed()); 
-			 
+			resList.sort(Comparator.comparing(PortFolioDashBoardRes::getBrokerCount).reversed());
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -2486,27 +2455,22 @@ public class GridServiceImpl implements GridService {
 			cal.setTime(endDate);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			endDate = cal.getTime();
-			
+
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<PortFolioAdminTupleRes> query = cb.createQuery(PortFolioAdminTupleRes.class);
-			
+
 			// Find All
 			Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
 			Root<LoginMaster> l = query.from(LoginMaster.class);
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
-			
+
 			// Select
-			query.multiselect(  cb.count(h).alias("count")  ,
-								cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc") ,
-								cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc") ,
-								h.get("productId").alias("productId") ,
-								h.get("productName").alias("productName") ,
-								l.get("agencyCode").as(Integer.class).alias("oaCode") ,
-								u.get("userName").alias("brokerName") ,
-								l.get("userType").alias("userType") ,
-								l.get("subUserType").alias("subUserType"),
-								l.get("loginId").alias("loginId"));
+			query.multiselect(cb.count(h).alias("count"), cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc"),
+					cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc"), h.get("productId").alias("productId"),
+					h.get("productName").alias("productName"), l.get("agencyCode").as(Integer.class).alias("oaCode"),
+					u.get("userName").alias("brokerName"), l.get("userType").alias("userType"),
+					l.get("subUserType").alias("subUserType"), l.get("loginId").alias("loginId"));
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(h.get("productName")));
@@ -2515,69 +2479,65 @@ public class GridServiceImpl implements GridService {
 			Subquery<Long> loginId = query.subquery(Long.class);
 			Root<LoginMaster> ocpm1 = loginId.from(LoginMaster.class);
 			loginId.select(ocpm1.get("loginId"));
-			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
-			Predicate a2 = cb.equal(ocpm1.get("loginId") , h.get("loginId") );
-			Predicate a3 = cb.equal(ocpm1.get("oaCode") , l.get("agencyCode") );
-			loginId.where(a1, a2 ,a3);
-			
-			
+			Predicate a1 = cb.equal(ocpm1.get("companyId"), h.get("companyId"));
+			Predicate a2 = cb.equal(ocpm1.get("loginId"), h.get("loginId"));
+			Predicate a3 = cb.equal(ocpm1.get("oaCode"), l.get("agencyCode"));
+			loginId.where(a1, a2, a3);
+
 			// Where
 			List<Predicate> predicate = new ArrayList<Predicate>();
-			predicate.add(cb.equal(h.get("loginId"), loginId ));
+			predicate.add(cb.equal(h.get("loginId"), loginId));
 			predicate.add(cb.greaterThanOrEqualTo(h.get("effectiveDate"), startDate));
 			predicate.add(cb.lessThanOrEqualTo(h.get("effectiveDate"), endDate));
 			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
 			predicate.add(cb.equal(l.get("userType"), "Broker"));
 			predicate.add(cb.equal(u.get("loginId"), l.get("loginId")));
-			if(StringUtils.isNotBlank(req.getLoginId())  )  {
+			if (StringUtils.isNotBlank(req.getLoginId())) {
 				predicate.add(cb.equal(l.get("loginId"), req.getLoginId()));
 			}
-			
+
 			// Business Type Condition
-			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType() ;  
-					
-			if("N".equalsIgnoreCase(businessType) ) {
+			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType();
+
+			if ("N".equalsIgnoreCase(businessType)) {
 				predicate.add(cb.equal(h.get("status"), "P"));
 				Predicate n1 = cb.isNull(h.get("endtStatus"));
-				Predicate n2 = cb.equal(h.get("endtStatus"),"");
-				predicate.add(cb.or(n1,n2));
-				
-			} else if ("E".equalsIgnoreCase(businessType)  ) {
+				Predicate n2 = cb.equal(h.get("endtStatus"), "");
+				predicate.add(cb.or(n1, n2));
+
+			} else if ("E".equalsIgnoreCase(businessType)) {
 				predicate.add(cb.equal(h.get("status"), "P"));
 				predicate.add(cb.equal(h.get("endtStatus"), "C"));
 				predicate.add(cb.notEqual(h.get("endtTypeId"), "842"));
-				
-			} else if ("C".equalsIgnoreCase(businessType)  ) {
+
+			} else if ("C".equalsIgnoreCase(businessType)) {
 				predicate.add(cb.equal(h.get("status"), "P"));
 				predicate.add(cb.equal(h.get("endtStatus"), "C"));
 				predicate.add(cb.equal(h.get("endtTypeId"), "842"));
 			}
-			
-			// Product  & Branch Condition
-			if(StringUtils.isNotBlank(req.getProductId())  ) 
+
+			// Product & Branch Condition
+			if (StringUtils.isNotBlank(req.getProductId()))
 				predicate.add(cb.equal(h.get("productId"), req.getProductId()));
-			if(StringUtils.isNotBlank(req.getBranchCode()) &&  (!"99999".equalsIgnoreCase(req.getBranchCode())) )  
+			if (StringUtils.isNotBlank(req.getBranchCode()) && (!"99999".equalsIgnoreCase(req.getBranchCode())))
 				predicate.add(cb.equal(h.get("branchCode"), req.getBranchCode()));
-			
-			
-			query.where(predicate.toArray(new Predicate[0])).groupBy(h.get("productId") ,
-					h.get("productName") ,l.get("agencyCode"),u.get("userName") ,
-					l.get("userType"),l.get("subUserType") ,l.get("loginId") ) 
-			.orderBy(orderList);
-			
+
+			query.where(predicate.toArray(new Predicate[0])).groupBy(h.get("productId"), h.get("productName"),
+					l.get("agencyCode"), u.get("userName"), l.get("userType"), l.get("subUserType"), l.get("loginId"))
+					.orderBy(orderList);
+
 			// Get Result
 			TypedQuery<PortFolioAdminTupleRes> result = em.createQuery(query);
 			list = result.getResultList();
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
-			
+
 		}
-		return list ;
+		return list;
 	}
 
-	
 	public List<PortfolioAdminGridRes> getPortFolioGrid(PortFolioGridReq req) {
 		List<PortfolioAdminGridRes> list = new ArrayList<PortfolioAdminGridRes>();
 		try {
@@ -2592,124 +2552,110 @@ public class GridServiceImpl implements GridService {
 			cal.setTime(endDate);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			endDate = cal.getTime();
-			
-			Integer limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit()) ;
-			Integer offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset()) ;	
-					
+
+			Integer limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			Integer offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<PortfolioAdminGridRes> query = cb.createQuery(PortfolioAdminGridRes.class);
-			
+
 			// Find All
 			Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
 			Root<LoginMaster> l = query.from(LoginMaster.class);
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
-			
+
 			// Select
-			query.multiselect(  h.get("applicationId").alias("applicationId")  ,
-								h.get("noOfVehicles").as(Long.class).alias("count")  ,
-								h.get("overallPremiumLc").alias("overallPremiumLc") ,
-								h.get("overallPremiumFc").alias("overallPremiumFc") ,
-								h.get("currency").alias("currencyCode") ,
-								h.get("exchangeRate").alias("exchangeRate") ,
-								h.get("requestReferenceNo").alias("requestReferenceNo") ,
-								h.get("quoteNo").alias("quoteNo") ,
-								h.get("policyNo").alias("policyNo") ,
-								h.get("originalPolicyNo").alias("originalPolicyNo") ,
-								h.get("productId").alias("productId") ,
-								h.get("productName").alias("productName") ,
-								h.get("agencyCode").alias("oaCode") ,
-								h.get("loginId").alias("loginId") ,
-								h.get("referralDescription").alias("referralRemarks") ,
-								h.get("adminRemarks").alias("adminRemarks") ,
-								h.get("adminLoginId").alias("adminLoginId"),
-								h.get("status").alias("status"),
-								h.get("endtStatus").alias("endtStatus"),
-								h.get("customerName").alias("customerName") ,
-								h.get("inceptionDate").alias("policyStartDate") ,
-								h.get("expiryDate").alias("policyEndDate") ,
-								h.get("branchCode").alias("branchCode") ,
-								h.get("branchName").alias("branchName") ,
-								h.get("brokerBranchCode").alias("brokerBranchCode") ,
-								h.get("brokerBranchName").alias("brokerBranchName") ,
-								u.get("userName").alias("brokerName") ,
-								l.get("userType").alias("userType") ,
-								l.get("subUserType").alias("subUserType"),
-								h.get("effectiveDate").alias("updatedDate"),
-								h.get("endorsementRemarks").alias("endorsementRemarks"));
+			query.multiselect(h.get("applicationId").alias("applicationId"),
+					h.get("noOfVehicles").as(Long.class).alias("count"),
+					h.get("overallPremiumLc").alias("overallPremiumLc"),
+					h.get("overallPremiumFc").alias("overallPremiumFc"), h.get("currency").alias("currencyCode"),
+					h.get("exchangeRate").alias("exchangeRate"),
+					h.get("requestReferenceNo").alias("requestReferenceNo"), h.get("quoteNo").alias("quoteNo"),
+					h.get("policyNo").alias("policyNo"), h.get("originalPolicyNo").alias("originalPolicyNo"),
+					h.get("productId").alias("productId"), h.get("productName").alias("productName"),
+					h.get("agencyCode").alias("oaCode"), h.get("loginId").alias("loginId"),
+					h.get("referralDescription").alias("referralRemarks"), h.get("adminRemarks").alias("adminRemarks"),
+					h.get("adminLoginId").alias("adminLoginId"), h.get("status").alias("status"),
+					h.get("endtStatus").alias("endtStatus"), h.get("customerName").alias("customerName"),
+					h.get("inceptionDate").alias("policyStartDate"), h.get("expiryDate").alias("policyEndDate"),
+					h.get("branchCode").alias("branchCode"), h.get("branchName").alias("branchName"),
+					h.get("brokerBranchCode").alias("brokerBranchCode"),
+					h.get("brokerBranchName").alias("brokerBranchName"), u.get("userName").alias("brokerName"),
+					l.get("userType").alias("userType"), l.get("subUserType").alias("subUserType"),
+					h.get("effectiveDate").alias("updatedDate"),
+					h.get("endorsementRemarks").alias("endorsementRemarks"));
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.desc(h.get("effectiveDate")));
-		
+
 			// Broker condition
 			Subquery<Long> oaCode = query.subquery(Long.class);
 			Root<LoginMaster> ocpm1 = oaCode.from(LoginMaster.class);
 			oaCode.select(ocpm1.get("oaCode"));
-			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
-			Predicate a2 = cb.equal(ocpm1.get("loginId") ,req.getLoginId());
-			oaCode.where(a1, a2 );
-			
+			Predicate a1 = cb.equal(ocpm1.get("companyId"), h.get("companyId"));
+			Predicate a2 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
+			oaCode.where(a1, a2);
+
 			Subquery<Long> loginId = query.subquery(Long.class);
 			Root<LoginMaster> ocpm2 = loginId.from(LoginMaster.class);
-			Expression<String>e2=ocpm2.get("oaCode");
+			Expression<String> e2 = ocpm2.get("oaCode");
 			loginId.select(ocpm2.get("loginId"));
-			Predicate a6 = e2.in(oaCode );
+			Predicate a6 = e2.in(oaCode);
 			loginId.where(a6);
-			
+
 			// Where
 			List<Predicate> predicate = new ArrayList<Predicate>();
-			Expression<String>e0=h.get("loginId");
+			Expression<String> e0 = h.get("loginId");
 			predicate.add(e0.in(loginId));
 			predicate.add(cb.greaterThanOrEqualTo(h.get("effectiveDate"), startDate));
 			predicate.add(cb.lessThanOrEqualTo(h.get("effectiveDate"), endDate));
 			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
 			predicate.add(cb.equal(l.get("loginId"), h.get("loginId")));
 			predicate.add(cb.equal(u.get("loginId"), h.get("loginId")));
-			predicate.add(cb.equal(h.get("productId"),req.getProductId()));
+			predicate.add(cb.equal(h.get("productId"), req.getProductId()));
 			predicate.add(cb.equal(u.get("loginId"), l.get("loginId")));
-			
-			
+
 			// Business Type Condition
-			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType() ;  
-					
-			if("N".equalsIgnoreCase(businessType) ) {
+			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType();
+
+			if ("N".equalsIgnoreCase(businessType)) {
 				predicate.add(cb.equal(h.get("status"), "P"));
 				Predicate n1 = cb.isNull(h.get("endtStatus"));
-				Predicate n2 = cb.equal(h.get("endtStatus"),"");
-				predicate.add(cb.or(n1,n2));
-				
-			} else if ("E".equalsIgnoreCase(businessType)  ) {
+				Predicate n2 = cb.equal(h.get("endtStatus"), "");
+				predicate.add(cb.or(n1, n2));
+
+			} else if ("E".equalsIgnoreCase(businessType)) {
 				predicate.add(cb.equal(h.get("status"), "P"));
 				predicate.add(cb.equal(h.get("endtStatus"), "C"));
 				predicate.add(cb.notEqual(h.get("endtTypeId"), "842"));
-				
-			} else if ("C".equalsIgnoreCase(businessType)  ) {
+
+			} else if ("C".equalsIgnoreCase(businessType)) {
 				predicate.add(cb.equal(h.get("status"), "P"));
 				predicate.add(cb.equal(h.get("endtStatus"), "C"));
 				predicate.add(cb.equal(h.get("endtTypeId"), "842"));
 			}
-			
-			//  Branch Condition
-			if(StringUtils.isNotBlank(req.getBranchCode()) &&  (!"99999".equalsIgnoreCase(req.getBranchCode())) )  
+
+			// Branch Condition
+			if (StringUtils.isNotBlank(req.getBranchCode()) && (!"99999".equalsIgnoreCase(req.getBranchCode())))
 				predicate.add(cb.equal(h.get("branchCode"), req.getBranchCode()));
-			
-			
+
 			query.where(predicate.toArray(new Predicate[0])).orderBy(orderList);
-			
+
 			// Get Result
 			TypedQuery<PortfolioAdminGridRes> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			list = result.getResultList();
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
-			
+
 		}
-		return list ;
+		return list;
 	}
-	
+
 	public List<PortfolioAdminGridRes> getPortFolioTravelGrid(PortFolioGridReq req) {
 		List<PortfolioAdminGridRes> list = new ArrayList<PortfolioAdminGridRes>();
 		try {
@@ -2724,158 +2670,123 @@ public class GridServiceImpl implements GridService {
 			cal.setTime(endDate);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			endDate = cal.getTime();
-			
-			Integer limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit()) ;
-			Integer offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset()) ;	
-					
+
+			Integer limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			Integer offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<PortfolioAdminGridRes> query = cb.createQuery(PortfolioAdminGridRes.class);
-			
+
 			// Find All
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			Root<EserviceTravelDetails> h = query.from(EserviceTravelDetails.class);
 			Root<LoginMaster> l = query.from(LoginMaster.class);
 			Root<LoginBranchMaster> b = query.from(LoginBranchMaster.class);
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
-			
+
 			// Select
-			query.multiselect(  h.get("applicationId").alias("applicationId")  ,
-								cb.sum(h.get("totalPassengers")).as(Long.class).alias("count")  ,
-								cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc") ,
-								cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc") ,
-								h.get("currency").alias("currencyCode") ,
-								h.get("exchangeRate").alias("exchangeRate") ,
-								h.get("requestReferenceNo").alias("requestReferenceNo") ,
-								h.get("quoteNo").alias("quoteNo") ,
-								h.get("policyNo").alias("policyNo") ,
-								h.get("originalPolicyNo").alias("originalPolicyNo") ,
-								h.get("productId").as(Integer.class).alias("productId") ,
-								h.get("productName").alias("productName") ,
-								h.get("brokerCode").as(Integer.class).alias("oaCode") ,
-								h.get("loginId").alias("loginId") ,
-								h.get("referalRemarks").alias("referralRemarks") ,
-								h.get("adminRemarks").alias("adminRemarks") ,
-								h.get("adminLoginId").alias("adminLoginId"),
-								h.get("status").alias("status"),
-								h.get("endtStatus").alias("endtStatus"),
-								c.get("clientName").alias("customerName") ,
-								h.get("travelStartDate").alias("policyStartDate") ,
-								h.get("travelEndDate").alias("policyEndDate") ,
-								h.get("branchCode").alias("branchCode") ,
-								b.get("branchName").alias("branchName") ,
-								h.get("brokerBranchCode").alias("brokerBranchCode") ,
-								h.get("brokerBranchName").alias("brokerBranchName") ,
-								u.get("userName").alias("brokerName") ,
-								l.get("userType").alias("userType") ,
-								l.get("subUserType").alias("subUserType"),
-								h.get("updatedDate").alias("updatedDate"),
-								h.get("endorsementRemarks").alias("endorsementRemarks"));
+			query.multiselect(h.get("applicationId").alias("applicationId"),
+					cb.sum(h.get("totalPassengers")).as(Long.class).alias("count"),
+					cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc"),
+					cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc"),
+					h.get("currency").alias("currencyCode"), h.get("exchangeRate").alias("exchangeRate"),
+					h.get("requestReferenceNo").alias("requestReferenceNo"), h.get("quoteNo").alias("quoteNo"),
+					h.get("policyNo").alias("policyNo"), h.get("originalPolicyNo").alias("originalPolicyNo"),
+					h.get("productId").as(Integer.class).alias("productId"), h.get("productName").alias("productName"),
+					h.get("brokerCode").as(Integer.class).alias("oaCode"), h.get("loginId").alias("loginId"),
+					h.get("referalRemarks").alias("referralRemarks"), h.get("adminRemarks").alias("adminRemarks"),
+					h.get("adminLoginId").alias("adminLoginId"), h.get("status").alias("status"),
+					h.get("endtStatus").alias("endtStatus"), c.get("clientName").alias("customerName"),
+					h.get("travelStartDate").alias("policyStartDate"), h.get("travelEndDate").alias("policyEndDate"),
+					h.get("branchCode").alias("branchCode"), b.get("branchName").alias("branchName"),
+					h.get("brokerBranchCode").alias("brokerBranchCode"),
+					h.get("brokerBranchName").alias("brokerBranchName"), u.get("userName").alias("brokerName"),
+					l.get("userType").alias("userType"), l.get("subUserType").alias("subUserType"),
+					h.get("updatedDate").alias("updatedDate"), h.get("endorsementRemarks").alias("endorsementRemarks"));
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.desc(h.get("updatedDate")));
-		
+
 			// Broker condition
 			Subquery<Long> oaCode = query.subquery(Long.class);
 			Root<LoginMaster> ocpm1 = oaCode.from(LoginMaster.class);
 			oaCode.select(ocpm1.get("oaCode"));
-			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
-			Predicate a2 = cb.equal(ocpm1.get("loginId") ,req.getLoginId());
-			oaCode.where(a1, a2 );
-			
+			Predicate a1 = cb.equal(ocpm1.get("companyId"), h.get("companyId"));
+			Predicate a2 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
+			oaCode.where(a1, a2);
+
 			Subquery<Long> loginId = query.subquery(Long.class);
 			Root<LoginMaster> ocpm2 = loginId.from(LoginMaster.class);
-			Expression<String>e2=ocpm2.get("oaCode");
+			Expression<String> e2 = ocpm2.get("oaCode");
 			loginId.select(ocpm2.get("loginId"));
-			Predicate a6 = e2.in(oaCode );
+			Predicate a6 = e2.in(oaCode);
 			loginId.where(a6);
-			
+
 			// Where
 			List<Predicate> predicate = new ArrayList<Predicate>();
-			Expression<String>e1=h.get("loginId");
+			Expression<String> e1 = h.get("loginId");
 			predicate.add(e1.in(loginId));
 			predicate.add(cb.greaterThanOrEqualTo(h.get("updatedDate"), startDate));
 			predicate.add(cb.lessThanOrEqualTo(h.get("updatedDate"), endDate));
 			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
 			predicate.add(cb.equal(l.get("loginId"), h.get("loginId")));
 			predicate.add(cb.equal(u.get("loginId"), h.get("loginId")));
-			predicate.add(cb.equal(h.get("productId"),req.getProductId()));
+			predicate.add(cb.equal(h.get("productId"), req.getProductId()));
 			predicate.add(cb.equal(u.get("loginId"), l.get("loginId")));
-			predicate.add(cb.equal(h.get("customerReferenceNo"), c.get("customerReferenceNo") ));
-			predicate.add(cb.equal(b.get("loginId"), h.get("loginId") ));
-			predicate.add(cb.equal(b.get("branchCode"), h.get("branchCode") ));
-			predicate.add(cb.equal(b.get("brokerBranchCode"), h.get("brokerBranchCode") ));
-			
+			predicate.add(cb.equal(h.get("customerReferenceNo"), c.get("customerReferenceNo")));
+			predicate.add(cb.equal(b.get("loginId"), h.get("loginId")));
+			predicate.add(cb.equal(b.get("branchCode"), h.get("branchCode")));
+			predicate.add(cb.equal(b.get("brokerBranchCode"), h.get("brokerBranchCode")));
+
 			// Business Type Condition
-			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType() ;  
-					
-			// Pending Quote Condition 
-			if("Q".equalsIgnoreCase(businessType) ) {
+			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType();
+
+			// Pending Quote Condition
+			if ("Q".equalsIgnoreCase(businessType)) {
 				// Status Not
 				Expression<String> e0 = h.get("status");
 				List<String> statusNot = new ArrayList<String>();
 				statusNot.add("P");
 				statusNot.add("D");
-				predicate.add(e0.in(statusNot).not() );
-				
+				predicate.add(e0.in(statusNot).not());
+
 				// Endt Status Not
 //				Expression<String> e1 = h.get("endtStatus");
 //				List<String> endtStatusNot = new ArrayList<String>();
 //				endtStatusNot.add("C");
 //				predicate.add(e1.in(endtStatusNot).not() );
-			} 
-			
-			//  Branch Condition
-			if(StringUtils.isNotBlank(req.getBranchCode()) &&  (!"99999".equalsIgnoreCase(req.getBranchCode())) )  
+			}
+
+			// Branch Condition
+			if (StringUtils.isNotBlank(req.getBranchCode()) && (!"99999".equalsIgnoreCase(req.getBranchCode())))
 				predicate.add(cb.equal(h.get("branchCode"), req.getBranchCode()));
-			
-			
+
 			query.where(predicate.toArray(new Predicate[0]))
-		    .groupBy(h.get("applicationId") ,
-					 h.get("currency"),
-					 h.get("exchangeRate"),
-					 h.get("requestReferenceNo"),
-					 h.get("quoteNo"),
-					 h.get("policyNo"),
-					 h.get("originalPolicyNo"),
-					 h.get("productId"),
-					 h.get("productName"),
-					 h.get("brokerCode"),
-					 h.get("loginId"),
-					 h.get("referalRemarks"),
-					 h.get("adminRemarks"),
-					 h.get("adminLoginId"),
-					 h.get("status"),
-					 h.get("endtStatus"),
-					 c.get("clientName"),
-					 h.get("travelStartDate"),
-					 h.get("travelEndDate") ,
-					 h.get("branchCode"),
-					 b.get("branchName"),
-					 h.get("brokerBranchCode"),
-					 h.get("brokerBranchName"),
-					 u.get("userName"),
-					 l.get("userType"),
-					 l.get("subUserType"),
-					 h.get("updatedDate"),
-					 h.get("endorsementRemarks"))//;
-		    .orderBy(orderList);
-			
-			
+					.groupBy(h.get("applicationId"), h.get("currency"), h.get("exchangeRate"),
+							h.get("requestReferenceNo"), h.get("quoteNo"), h.get("policyNo"), h.get("originalPolicyNo"),
+							h.get("productId"), h.get("productName"), h.get("brokerCode"), h.get("loginId"),
+							h.get("referalRemarks"), h.get("adminRemarks"), h.get("adminLoginId"), h.get("status"),
+							h.get("endtStatus"), c.get("clientName"), h.get("travelStartDate"), h.get("travelEndDate"),
+							h.get("branchCode"), b.get("branchName"), h.get("brokerBranchCode"),
+							h.get("brokerBranchName"), u.get("userName"), l.get("userType"), l.get("subUserType"),
+							h.get("updatedDate"), h.get("endorsementRemarks"))// ;
+					.orderBy(orderList);
+
 			// Get Result
 			TypedQuery<PortfolioAdminGridRes> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			list = result.getResultList();
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
-			
+
 		}
-		return list ;
+		return list;
 	}
-	
+
 	public List<PortfolioAdminGridRes> getPortFolioMotorGrid(PortFolioGridReq req) {
 		List<PortfolioAdminGridRes> list = new ArrayList<PortfolioAdminGridRes>();
 		try {
@@ -2890,157 +2801,123 @@ public class GridServiceImpl implements GridService {
 			cal.setTime(endDate);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			endDate = cal.getTime();
-			
-			Integer limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit()) ;
-			Integer offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset()) ;	
-					
+
+			Integer limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			Integer offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<PortfolioAdminGridRes> query = cb.createQuery(PortfolioAdminGridRes.class);
-			
+
 			// Find All
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			Root<EserviceMotorDetails> h = query.from(EserviceMotorDetails.class);
 			Root<LoginMaster> l = query.from(LoginMaster.class);
 			Root<LoginBranchMaster> b = query.from(LoginBranchMaster.class);
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
-			
+
 			// Select
-			query.multiselect(  h.get("applicationId").alias("applicationId")  ,
-								cb.count(h).alias("count")  ,
-								cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc") ,
-								cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc") ,
-								h.get("currency").alias("currencyCode") ,
-								h.get("exchangeRate").alias("exchangeRate") ,
-								h.get("requestReferenceNo").alias("requestReferenceNo") ,
-								cb.max(h.get("quoteNo")).alias("quoteNo") ,
-								cb.max(h.get("policyNo")).alias("policyNo") ,
-								h.get("originalPolicyNo").alias("originalPolicyNo") ,
-								h.get("productId").as(Integer.class).alias("productId") ,
-								h.get("productName").alias("productName") ,
-								h.get("brokerCode").as(Integer.class).alias("oaCode") ,
-								h.get("loginId").alias("loginId") ,
-								cb.max(h.get("referalRemarks")).alias("referralRemarks") ,
-								h.get("adminRemarks").alias("adminRemarks") ,
-								h.get("adminLoginId").alias("adminLoginId"),
-								cb.max(h.get("status")).alias("status"),
-								cb.max(h.get("endtStatus")).alias("endtStatus"),
-								c.get("clientName").alias("customerName") ,
-								h.get("policyStartDate").alias("policyStartDate") ,
-								h.get("policyEndDate").alias("policyEndDate") ,
-								h.get("branchCode").alias("branchCode") ,
-								b.get("branchName").alias("branchName") ,
-								h.get("brokerBranchCode").alias("brokerBranchCode") ,
-								h.get("brokerBranchName").alias("brokerBranchName") ,
-								u.get("userName").alias("brokerName") ,
-								l.get("userType").alias("userType") ,
-								l.get("subUserType").alias("subUserType"),
-								cb.max(h.get("updatedDate")).alias("updatedDate"),
-								h.get("endorsementRemarks").alias("endorsementRemarks"));
+			query.multiselect(h.get("applicationId").alias("applicationId"), cb.count(h).alias("count"),
+					cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc"),
+					cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc"),
+					h.get("currency").alias("currencyCode"), h.get("exchangeRate").alias("exchangeRate"),
+					h.get("requestReferenceNo").alias("requestReferenceNo"), cb.max(h.get("quoteNo")).alias("quoteNo"),
+					cb.max(h.get("policyNo")).alias("policyNo"), h.get("originalPolicyNo").alias("originalPolicyNo"),
+					h.get("productId").as(Integer.class).alias("productId"), h.get("productName").alias("productName"),
+					h.get("brokerCode").as(Integer.class).alias("oaCode"), h.get("loginId").alias("loginId"),
+					cb.max(h.get("referalRemarks")).alias("referralRemarks"),
+					h.get("adminRemarks").alias("adminRemarks"), h.get("adminLoginId").alias("adminLoginId"),
+					cb.max(h.get("status")).alias("status"), cb.max(h.get("endtStatus")).alias("endtStatus"),
+					c.get("clientName").alias("customerName"), h.get("policyStartDate").alias("policyStartDate"),
+					h.get("policyEndDate").alias("policyEndDate"), h.get("branchCode").alias("branchCode"),
+					b.get("branchName").alias("branchName"), h.get("brokerBranchCode").alias("brokerBranchCode"),
+					h.get("brokerBranchName").alias("brokerBranchName"), u.get("userName").alias("brokerName"),
+					l.get("userType").alias("userType"), l.get("subUserType").alias("subUserType"),
+					cb.max(h.get("updatedDate")).alias("updatedDate"),
+					h.get("endorsementRemarks").alias("endorsementRemarks"));
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.desc(h.get("updatedDate")));
-		
+
 			// Broker condition
 			Subquery<Long> oaCode = query.subquery(Long.class);
 			Root<LoginMaster> ocpm1 = oaCode.from(LoginMaster.class);
 			oaCode.select(ocpm1.get("oaCode"));
-			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
-			Predicate a2 = cb.equal(ocpm1.get("loginId") ,req.getLoginId());
-			oaCode.where(a1, a2 );
-			
+			Predicate a1 = cb.equal(ocpm1.get("companyId"), h.get("companyId"));
+			Predicate a2 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
+			oaCode.where(a1, a2);
+
 			Subquery<Long> loginId = query.subquery(Long.class);
 			Root<LoginMaster> ocpm2 = loginId.from(LoginMaster.class);
-			Expression<String>e2=ocpm2.get("oaCode");
+			Expression<String> e2 = ocpm2.get("oaCode");
 			loginId.select(ocpm2.get("loginId"));
-			Predicate a6 = e2.in(oaCode );
+			Predicate a6 = e2.in(oaCode);
 			loginId.where(a6);
-			
+
 			// Where
 			List<Predicate> predicate = new ArrayList<Predicate>();
-			Expression<String>e1=h.get("loginId");
+			Expression<String> e1 = h.get("loginId");
 			predicate.add(e1.in(loginId));
 			predicate.add(cb.greaterThanOrEqualTo(h.get("updatedDate"), startDate));
 			predicate.add(cb.lessThanOrEqualTo(h.get("updatedDate"), endDate));
 			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
 			predicate.add(cb.equal(l.get("loginId"), h.get("loginId")));
 			predicate.add(cb.equal(u.get("loginId"), h.get("loginId")));
-			predicate.add(cb.equal(h.get("productId"),req.getProductId()));
+			predicate.add(cb.equal(h.get("productId"), req.getProductId()));
 			predicate.add(cb.equal(u.get("loginId"), l.get("loginId")));
-			predicate.add(cb.equal(h.get("customerReferenceNo"), c.get("customerReferenceNo") ));
-			predicate.add(cb.equal(b.get("loginId"), h.get("loginId") ));
-			predicate.add(cb.equal(b.get("branchCode"), h.get("branchCode") ));
-			predicate.add(cb.equal(b.get("brokerBranchCode"), h.get("brokerBranchCode") ));
-			
+			predicate.add(cb.equal(h.get("customerReferenceNo"), c.get("customerReferenceNo")));
+			predicate.add(cb.equal(b.get("loginId"), h.get("loginId")));
+			predicate.add(cb.equal(b.get("branchCode"), h.get("branchCode")));
+			predicate.add(cb.equal(b.get("brokerBranchCode"), h.get("brokerBranchCode")));
+
 			// Business Type Condition
-			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType() ;  
-					
-			// Pending Quote Condition 
-			if("Q".equalsIgnoreCase(businessType) ) {
+			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType();
+
+			// Pending Quote Condition
+			if ("Q".equalsIgnoreCase(businessType)) {
 				// Status Not
 				Expression<String> e0 = h.get("status");
 				List<String> statusNot = new ArrayList<String>();
 				statusNot.add("P");
 				statusNot.add("D");
-				predicate.add(e0.in(statusNot).not() );
-				
+				predicate.add(e0.in(statusNot).not());
+
 				// Endt Status Not
 //				Expression<String> e1 = h.get("endtStatus");
 //				List<String> endtStatusNot = new ArrayList<String>();
 //				endtStatusNot.add("C");
 //				predicate.add(e1.in(endtStatusNot).not() );
-			} 
-			
-			//  Branch Condition
-			if(StringUtils.isNotBlank(req.getBranchCode()) &&  (!"99999".equalsIgnoreCase(req.getBranchCode())) )  
+			}
+
+			// Branch Condition
+			if (StringUtils.isNotBlank(req.getBranchCode()) && (!"99999".equalsIgnoreCase(req.getBranchCode())))
 				predicate.add(cb.equal(h.get("branchCode"), req.getBranchCode()));
-			
-			
+
 			query.where(predicate.toArray(new Predicate[0]))
-			.groupBy(h.get("applicationId") ,
-					 h.get("currency"),
-					 h.get("exchangeRate"),
-					 h.get("requestReferenceNo"),
-					 h.get("quoteNo"),
-					 h.get("policyNo"),
-					 h.get("originalPolicyNo"),
-					 h.get("productId"),
-					 h.get("productName"),
-					 h.get("brokerCode"),
-					 h.get("loginId"),
-					 h.get("referalRemarks"),
-					 h.get("adminRemarks"),
-					 h.get("adminLoginId"),
-					 h.get("status"),
-					 h.get("endtStatus"),
-					 c.get("clientName"),
-					 h.get("policyStartDate"),
-					 h.get("policyEndDate") ,
-					 h.get("branchCode"),
-					 b.get("branchName"),
-					 h.get("brokerBranchCode"),
-					 h.get("brokerBranchName"),
-					 u.get("userName"),
-					 l.get("userType"),
-					 l.get("subUserType"),
-					 h.get("updatedDate"),
-					 h.get("endorsementRemarks") )//;
-		    .orderBy(orderList);
-			
+					.groupBy(h.get("applicationId"), h.get("currency"), h.get("exchangeRate"),
+							h.get("requestReferenceNo"), h.get("quoteNo"), h.get("policyNo"), h.get("originalPolicyNo"),
+							h.get("productId"), h.get("productName"), h.get("brokerCode"), h.get("loginId"),
+							h.get("referalRemarks"), h.get("adminRemarks"), h.get("adminLoginId"), h.get("status"),
+							h.get("endtStatus"), c.get("clientName"), h.get("policyStartDate"), h.get("policyEndDate"),
+							h.get("branchCode"), b.get("branchName"), h.get("brokerBranchCode"),
+							h.get("brokerBranchName"), u.get("userName"), l.get("userType"), l.get("subUserType"),
+							h.get("updatedDate"), h.get("endorsementRemarks"))// ;
+					.orderBy(orderList);
+
 			// Get Result
 			TypedQuery<PortfolioAdminGridRes> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			list = result.getResultList();
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
-			
+
 		}
-		return list ;
+		return list;
 	}
-	
+
 	public List<PortfolioAdminGridRes> getPortFolioBuildingGrid(PortFolioGridReq req) {
 		List<PortfolioAdminGridRes> list = new ArrayList<PortfolioAdminGridRes>();
 		try {
@@ -3055,157 +2932,122 @@ public class GridServiceImpl implements GridService {
 			cal.setTime(endDate);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			endDate = cal.getTime();
-			
-			Integer limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit()) ;
-			Integer offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset()) ;	
-					
+
+			Integer limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			Integer offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<PortfolioAdminGridRes> query = cb.createQuery(PortfolioAdminGridRes.class);
-			
+
 			// Find All
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			Root<EserviceBuildingDetails> h = query.from(EserviceBuildingDetails.class);
 			Root<LoginMaster> l = query.from(LoginMaster.class);
 			Root<LoginBranchMaster> b = query.from(LoginBranchMaster.class);
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
-			
+
 			// Select
-			query.multiselect(  h.get("applicationId").alias("applicationId")  ,
-								cb.count(h).alias("count")  ,
-								cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc") ,
-								cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc") ,
-								h.get("currency").alias("currencyCode") ,
-								h.get("exchangeRate").alias("exchangeRate") ,
-								h.get("requestReferenceNo").alias("requestReferenceNo") ,
-								h.get("quoteNo").alias("quoteNo") ,
-								h.get("policyNo").alias("policyNo") ,
-								h.get("originalPolicyNo").alias("originalPolicyNo") ,
-								h.get("productId").as(Integer.class).alias("productId") ,
-								h.get("productDesc").alias("productName") ,
-								h.get("brokerCode").as(Integer.class).alias("oaCode") ,
-								h.get("loginId").alias("loginId") ,
-								h.get("referalRemarks").alias("referralRemarks") ,
-								h.get("adminRemarks").alias("adminRemarks") ,
-								h.get("adminLoginId").alias("adminLoginId"),
-								h.get("status").alias("status"),
-								h.get("endtStatus").alias("endtStatus"),
-								c.get("clientName").alias("customerName") ,
-								h.get("policyStartDate").alias("policyStartDate") ,
-								h.get("policyEndDate").alias("policyEndDate") ,
-								h.get("branchCode").alias("branchCode") ,
-								b.get("branchName").alias("branchName") ,
-								h.get("brokerBranchCode").alias("brokerBranchCode") ,
-								h.get("brokerBranchName").alias("brokerBranchName") ,
-								u.get("userName").alias("brokerName") ,
-								l.get("userType").alias("userType") ,
-								l.get("subUserType").alias("subUserType"),
-								h.get("updatedDate").alias("updatedDate"),
-								h.get("endorsementRemarks").alias("endorsementRemarks"));
+			query.multiselect(h.get("applicationId").alias("applicationId"), cb.count(h).alias("count"),
+					cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc"),
+					cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc"),
+					h.get("currency").alias("currencyCode"), h.get("exchangeRate").alias("exchangeRate"),
+					h.get("requestReferenceNo").alias("requestReferenceNo"), h.get("quoteNo").alias("quoteNo"),
+					h.get("policyNo").alias("policyNo"), h.get("originalPolicyNo").alias("originalPolicyNo"),
+					h.get("productId").as(Integer.class).alias("productId"), h.get("productDesc").alias("productName"),
+					h.get("brokerCode").as(Integer.class).alias("oaCode"), h.get("loginId").alias("loginId"),
+					h.get("referalRemarks").alias("referralRemarks"), h.get("adminRemarks").alias("adminRemarks"),
+					h.get("adminLoginId").alias("adminLoginId"), h.get("status").alias("status"),
+					h.get("endtStatus").alias("endtStatus"), c.get("clientName").alias("customerName"),
+					h.get("policyStartDate").alias("policyStartDate"), h.get("policyEndDate").alias("policyEndDate"),
+					h.get("branchCode").alias("branchCode"), b.get("branchName").alias("branchName"),
+					h.get("brokerBranchCode").alias("brokerBranchCode"),
+					h.get("brokerBranchName").alias("brokerBranchName"), u.get("userName").alias("brokerName"),
+					l.get("userType").alias("userType"), l.get("subUserType").alias("subUserType"),
+					h.get("updatedDate").alias("updatedDate"), h.get("endorsementRemarks").alias("endorsementRemarks"));
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.desc(h.get("updatedDate")));
-		
+
 			// Broker condition
 			Subquery<Long> oaCode = query.subquery(Long.class);
 			Root<LoginMaster> ocpm1 = oaCode.from(LoginMaster.class);
 			oaCode.select(ocpm1.get("oaCode"));
-			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
-			Predicate a2 = cb.equal(ocpm1.get("loginId") ,req.getLoginId());
-			oaCode.where(a1, a2 );
-			
+			Predicate a1 = cb.equal(ocpm1.get("companyId"), h.get("companyId"));
+			Predicate a2 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
+			oaCode.where(a1, a2);
+
 			Subquery<Long> loginId = query.subquery(Long.class);
 			Root<LoginMaster> ocpm2 = loginId.from(LoginMaster.class);
-			Expression<String>e2=ocpm2.get("oaCode");
+			Expression<String> e2 = ocpm2.get("oaCode");
 			loginId.select(ocpm2.get("loginId"));
-			Predicate a6 = e2.in(oaCode );
+			Predicate a6 = e2.in(oaCode);
 			loginId.where(a6);
-			
+
 			// Where
 			List<Predicate> predicate = new ArrayList<Predicate>();
-			Expression<String>e1=h.get("loginId");
+			Expression<String> e1 = h.get("loginId");
 			predicate.add(e1.in(loginId));
 			predicate.add(cb.greaterThanOrEqualTo(h.get("updatedDate"), startDate));
 			predicate.add(cb.lessThanOrEqualTo(h.get("updatedDate"), endDate));
 			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
 			predicate.add(cb.equal(l.get("loginId"), h.get("loginId")));
 			predicate.add(cb.equal(u.get("loginId"), h.get("loginId")));
-			predicate.add(cb.equal(h.get("productId"),req.getProductId()));
+			predicate.add(cb.equal(h.get("productId"), req.getProductId()));
 			predicate.add(cb.equal(u.get("loginId"), l.get("loginId")));
-			predicate.add(cb.equal(h.get("customerReferenceNo"), c.get("customerReferenceNo") ));
-			predicate.add(cb.equal(b.get("loginId"), h.get("loginId") ));
-			predicate.add(cb.equal(b.get("branchCode"), h.get("branchCode") ));
-			predicate.add(cb.equal(b.get("brokerBranchCode"), h.get("brokerBranchCode") ));
-			
+			predicate.add(cb.equal(h.get("customerReferenceNo"), c.get("customerReferenceNo")));
+			predicate.add(cb.equal(b.get("loginId"), h.get("loginId")));
+			predicate.add(cb.equal(b.get("branchCode"), h.get("branchCode")));
+			predicate.add(cb.equal(b.get("brokerBranchCode"), h.get("brokerBranchCode")));
+
 			// Business Type Condition
-			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType() ;  
-					
-			// Pending Quote Condition 
-			if("Q".equalsIgnoreCase(businessType) ) {
+			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType();
+
+			// Pending Quote Condition
+			if ("Q".equalsIgnoreCase(businessType)) {
 				// Status Not
 				Expression<String> e0 = h.get("status");
 				List<String> statusNot = new ArrayList<String>();
 				statusNot.add("P");
 				statusNot.add("D");
-				predicate.add(e0.in(statusNot).not() );
-				
+				predicate.add(e0.in(statusNot).not());
+
 				// Endt Status Not
 //				Expression<String> e1 = h.get("endtStatus");
 //				List<String> endtStatusNot = new ArrayList<String>();
 //				endtStatusNot.add("C");
 //				predicate.add(e1.in(endtStatusNot).not() );
-			} 
-			
-			//  Branch Condition
-			if(StringUtils.isNotBlank(req.getBranchCode()) &&  (!"99999".equalsIgnoreCase(req.getBranchCode())) )  
+			}
+
+			// Branch Condition
+			if (StringUtils.isNotBlank(req.getBranchCode()) && (!"99999".equalsIgnoreCase(req.getBranchCode())))
 				predicate.add(cb.equal(h.get("branchCode"), req.getBranchCode()));
-			
-			
+
 			query.where(predicate.toArray(new Predicate[0]))
-			.groupBy(h.get("applicationId") ,
-					 h.get("currency"),
-					 h.get("exchangeRate"),
-					 h.get("requestReferenceNo"),
-					 h.get("quoteNo"),
-					 h.get("policyNo"),
-					 h.get("originalPolicyNo"),
-					 h.get("productId"),
-					 h.get("productDesc"),
-					 h.get("brokerCode"),
-					 h.get("loginId"),
-					 h.get("referalRemarks"),
-					 h.get("adminRemarks"),
-					 h.get("adminLoginId"),
-					 h.get("status"),
-					 h.get("endtStatus"),
-					 c.get("clientName"),
-					 h.get("policyStartDate"),
-					 h.get("policyEndDate") ,
-					 h.get("branchCode"),
-					 b.get("branchName"),
-					 h.get("brokerBranchCode"),
-					 h.get("brokerBranchName"),
-					 u.get("userName"),
-					 l.get("userType"),
-					 l.get("subUserType"),
-					 h.get("updatedDate"),
-					 h.get("endorsementRemarks") )//;
-		    .orderBy(orderList);
-			
+					.groupBy(h.get("applicationId"), h.get("currency"), h.get("exchangeRate"),
+							h.get("requestReferenceNo"), h.get("quoteNo"), h.get("policyNo"), h.get("originalPolicyNo"),
+							h.get("productId"), h.get("productDesc"), h.get("brokerCode"), h.get("loginId"),
+							h.get("referalRemarks"), h.get("adminRemarks"), h.get("adminLoginId"), h.get("status"),
+							h.get("endtStatus"), c.get("clientName"), h.get("policyStartDate"), h.get("policyEndDate"),
+							h.get("branchCode"), b.get("branchName"), h.get("brokerBranchCode"),
+							h.get("brokerBranchName"), u.get("userName"), l.get("userType"), l.get("subUserType"),
+							h.get("updatedDate"), h.get("endorsementRemarks"))// ;
+					.orderBy(orderList);
+
 			// Get Result
 			TypedQuery<PortfolioAdminGridRes> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			list = result.getResultList();
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
-			
+
 		}
-		return list ;
+		return list;
 	}
-	
+
 	public List<PortfolioAdminGridRes> getPortFolioHumanGrid(PortFolioGridReq req) {
 		List<PortfolioAdminGridRes> list = new ArrayList<PortfolioAdminGridRes>();
 		try {
@@ -3220,269 +3062,245 @@ public class GridServiceImpl implements GridService {
 			cal.setTime(endDate);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			endDate = cal.getTime();
-			
-			Integer limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit()) ;
-			Integer offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset()) ;	
-					
+
+			Integer limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			Integer offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
+
 			// Criteria
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<PortfolioAdminGridRes> query = cb.createQuery(PortfolioAdminGridRes.class);
-			
+
 			// Find All
 			Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
 			Root<EserviceCommonDetails> h = query.from(EserviceCommonDetails.class);
 			Root<LoginMaster> l = query.from(LoginMaster.class);
 			Root<LoginBranchMaster> b = query.from(LoginBranchMaster.class);
 			Root<LoginUserInfo> u = query.from(LoginUserInfo.class);
-			
+
 			// Select
-			query.multiselect(  h.get("applicationId").alias("applicationId")  ,
-					cb.count(h).alias("count")  ,
-					cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc") ,
-					cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc") ,
-					h.get("currency").alias("currencyCode") ,
-					h.get("exchangeRate").alias("exchangeRate") ,
-					h.get("requestReferenceNo").alias("requestReferenceNo") ,
-					cb.max(h.get("quoteNo")).alias("quoteNo") ,
-					cb.max(h.get("policyNo")).alias("policyNo") ,
-					h.get("originalPolicyNo").alias("originalPolicyNo") ,
-					h.get("productId").as(Integer.class).alias("productId") ,
-					h.get("productDesc").alias("productName") ,
-					h.get("brokerCode").as(Integer.class).alias("oaCode") ,
-					h.get("loginId").alias("loginId") ,
-					cb.max(h.get("referalRemarks")).alias("referralRemarks") ,
-					h.get("adminRemarks").alias("adminRemarks") ,
-					h.get("adminLoginId").alias("adminLoginId"),
-					cb.max(h.get("status")).alias("status"),
-					cb.max(h.get("endtStatus")).alias("endtStatus"),
-					c.get("clientName").alias("customerName") ,
-					h.get("policyStartDate").alias("policyStartDate") ,
-					h.get("policyEndDate").alias("policyEndDate") ,
-					h.get("branchCode").alias("branchCode") ,
-					b.get("branchName").alias("branchName") ,
-					h.get("brokerBranchCode").alias("brokerBranchCode") ,
-					h.get("brokerBranchName").alias("brokerBranchName") ,
-					u.get("userName").alias("brokerName") ,
-					l.get("userType").alias("userType") ,
-					l.get("subUserType").alias("subUserType"),
+			query.multiselect(h.get("applicationId").alias("applicationId"), cb.count(h).alias("count"),
+					cb.sum(h.get("overallPremiumLc")).alias("overallPremiumLc"),
+					cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc"),
+					h.get("currency").alias("currencyCode"), h.get("exchangeRate").alias("exchangeRate"),
+					h.get("requestReferenceNo").alias("requestReferenceNo"), cb.max(h.get("quoteNo")).alias("quoteNo"),
+					cb.max(h.get("policyNo")).alias("policyNo"), h.get("originalPolicyNo").alias("originalPolicyNo"),
+					h.get("productId").as(Integer.class).alias("productId"), h.get("productDesc").alias("productName"),
+					h.get("brokerCode").as(Integer.class).alias("oaCode"), h.get("loginId").alias("loginId"),
+					cb.max(h.get("referalRemarks")).alias("referralRemarks"),
+					h.get("adminRemarks").alias("adminRemarks"), h.get("adminLoginId").alias("adminLoginId"),
+					cb.max(h.get("status")).alias("status"), cb.max(h.get("endtStatus")).alias("endtStatus"),
+					c.get("clientName").alias("customerName"), h.get("policyStartDate").alias("policyStartDate"),
+					h.get("policyEndDate").alias("policyEndDate"), h.get("branchCode").alias("branchCode"),
+					b.get("branchName").alias("branchName"), h.get("brokerBranchCode").alias("brokerBranchCode"),
+					h.get("brokerBranchName").alias("brokerBranchName"), u.get("userName").alias("brokerName"),
+					l.get("userType").alias("userType"), l.get("subUserType").alias("subUserType"),
 					cb.max(h.get("updatedDate")).alias("updatedDate"),
 					h.get("endorsementRemarks").alias("endorsementRemarks"));
-			
+
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.desc(h.get("updatedDate")));
-		
+
 			// Broker condition
 			Subquery<Long> oaCode = query.subquery(Long.class);
 			Root<LoginMaster> ocpm1 = oaCode.from(LoginMaster.class);
 			oaCode.select(ocpm1.get("oaCode"));
-			Predicate a1 = cb.equal(ocpm1.get("companyId") , h.get("companyId") );
-			Predicate a2 = cb.equal(ocpm1.get("loginId") ,req.getLoginId());
-			oaCode.where(a1, a2 );
-			
+			Predicate a1 = cb.equal(ocpm1.get("companyId"), h.get("companyId"));
+			Predicate a2 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
+			oaCode.where(a1, a2);
+
 			Subquery<Long> loginId = query.subquery(Long.class);
 			Root<LoginMaster> ocpm2 = loginId.from(LoginMaster.class);
-			Expression<String>e2=ocpm2.get("oaCode");
+			Expression<String> e2 = ocpm2.get("oaCode");
 			loginId.select(ocpm2.get("loginId"));
-			Predicate a6 = e2.in(oaCode );
+			Predicate a6 = e2.in(oaCode);
 			loginId.where(a6);
-			
+
 			// Where
 			List<Predicate> predicate = new ArrayList<Predicate>();
-			Expression<String>e1=h.get("loginId");
+			Expression<String> e1 = h.get("loginId");
 			predicate.add(e1.in(loginId));
 			predicate.add(cb.greaterThanOrEqualTo(h.get("updatedDate"), startDate));
 			predicate.add(cb.lessThanOrEqualTo(h.get("updatedDate"), endDate));
 			predicate.add(cb.equal(h.get("companyId"), req.getInsuranceId()));
 			predicate.add(cb.equal(l.get("loginId"), h.get("loginId")));
 			predicate.add(cb.equal(u.get("loginId"), h.get("loginId")));
-			predicate.add(cb.equal(h.get("productId"),req.getProductId()));
+			predicate.add(cb.equal(h.get("productId"), req.getProductId()));
 			predicate.add(cb.equal(u.get("loginId"), l.get("loginId")));
-			predicate.add(cb.equal(h.get("customerReferenceNo"), c.get("customerReferenceNo") ));
-			predicate.add(cb.equal(b.get("loginId"), h.get("loginId") ));
-			predicate.add(cb.equal(b.get("branchCode"), h.get("branchCode") ));
-			predicate.add(cb.equal(b.get("brokerBranchCode"), h.get("brokerBranchCode") ));
-			
+			predicate.add(cb.equal(h.get("customerReferenceNo"), c.get("customerReferenceNo")));
+			predicate.add(cb.equal(b.get("loginId"), h.get("loginId")));
+			predicate.add(cb.equal(b.get("branchCode"), h.get("branchCode")));
+			predicate.add(cb.equal(b.get("brokerBranchCode"), h.get("brokerBranchCode")));
+
 			// Business Type Condition
-			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType() ;  
-					
-			// Pending Quote Condition 
-			if("Q".equalsIgnoreCase(businessType) ) {
+			String businessType = StringUtils.isBlank(req.getBusinessType()) ? "" : req.getBusinessType();
+
+			// Pending Quote Condition
+			if ("Q".equalsIgnoreCase(businessType)) {
 				// Status Not
 				Expression<String> e0 = h.get("status");
 				List<String> statusNot = new ArrayList<String>();
 				statusNot.add("P");
 				statusNot.add("D");
-				predicate.add(e0.in(statusNot).not() );
-				
+				predicate.add(e0.in(statusNot).not());
+
 				// Endt Status Not
 //							Expression<String> e1 = h.get("endtStatus");
 //							List<String> endtStatusNot = new ArrayList<String>();
 //							endtStatusNot.add("C");
 //							predicate.add(e1.in(endtStatusNot).not() );
-			} 
-			
-			//  Branch Condition
-			if(StringUtils.isNotBlank(req.getBranchCode()) &&  (!"99999".equalsIgnoreCase(req.getBranchCode())) )  
+			}
+
+			// Branch Condition
+			if (StringUtils.isNotBlank(req.getBranchCode()) && (!"99999".equalsIgnoreCase(req.getBranchCode())))
 				predicate.add(cb.equal(h.get("branchCode"), req.getBranchCode()));
-			
-			
+
 			query.where(predicate.toArray(new Predicate[0]))
-			.groupBy(h.get("applicationId") ,
-					 h.get("currency"),
-					 h.get("exchangeRate"),
-					 h.get("requestReferenceNo"),
-					 h.get("quoteNo"),
-					 h.get("policyNo"),
-					 h.get("originalPolicyNo"),
-					 h.get("productId"),
-					 h.get("productDesc"),
-					 h.get("brokerCode"),
-					 h.get("loginId"),
-					 h.get("referalRemarks"),
-					 h.get("adminRemarks"),
-					 h.get("adminLoginId"),
-					 h.get("status"),
-					 h.get("endtStatus"),
-					 c.get("clientName"),
-					 h.get("policyStartDate"),
-					 h.get("policyEndDate") ,
-					 h.get("branchCode"),
-					 b.get("branchName"),
-					 h.get("brokerBranchCode"),
-					 h.get("brokerBranchName"),
-					 u.get("userName"),
-					 l.get("userType"),
-					 l.get("subUserType"),
-					 h.get("updatedDate"),
-					 h.get("endorsementRemarks") )//;
-		    .orderBy(orderList);
-			
+					.groupBy(h.get("applicationId"), h.get("currency"), h.get("exchangeRate"),
+							h.get("requestReferenceNo"), h.get("quoteNo"), h.get("policyNo"), h.get("originalPolicyNo"),
+							h.get("productId"), h.get("productDesc"), h.get("brokerCode"), h.get("loginId"),
+							h.get("referalRemarks"), h.get("adminRemarks"), h.get("adminLoginId"), h.get("status"),
+							h.get("endtStatus"), c.get("clientName"), h.get("policyStartDate"), h.get("policyEndDate"),
+							h.get("branchCode"), b.get("branchName"), h.get("brokerBranchCode"),
+							h.get("brokerBranchName"), u.get("userName"), l.get("userType"), l.get("subUserType"),
+							h.get("updatedDate"), h.get("endorsementRemarks"))// ;
+					.orderBy(orderList);
+
 			// Get Result
 			TypedQuery<PortfolioAdminGridRes> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			list = result.getResultList();
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
-			
+
 		}
-		return list ;
+		return list;
 	}
-	
+
 	@Override
 	public List<PortFolioDashBoardRes> getAllPolicyPendingDashboard(PortFolioDashBoardReq req) {
 		List<PortFolioDashBoardRes> resList = new ArrayList<PortFolioDashBoardRes>();
 		DecimalFormat df = new DecimalFormat("0.##");
 		try {
 			// Thread Call Setup To Fetch List From 4 tables
-			 List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
-			 MyTaskList taskList = new MyTaskList(queue);
-			 PortFolioFetchThreadCall motorPendings = new PortFolioFetchThreadCall("getPortFolioMotorPendings" , req , em  );
-			 PortFolioFetchThreadCall travelPendings = new PortFolioFetchThreadCall("getPortFolioTravelPendings" , req , em  );
-			 PortFolioFetchThreadCall buildingPendings = new PortFolioFetchThreadCall("getPortFolioBuildingPendings" , req , em  );
-			 PortFolioFetchThreadCall humanPendings = new PortFolioFetchThreadCall("getPortFolioHumanPendings" , req , em  );
-			 
-			 queue.add(motorPendings);
-			 queue.add(travelPendings);
-			 queue.add(buildingPendings);
-			 queue.add(humanPendings);
-			 int threadCount = 4 ;
-			 int success = 0;
-			 ForkJoinPool forkjoin = new ForkJoinPool(threadCount); 
-             ConcurrentLinkedQueue<Future<Object>> invoke  = (ConcurrentLinkedQueue<Future<Object>>) forkjoin.invoke(taskList) ;
-             
-			 
-			 List<PortfolioAdminPendingRes> motorList   = new ArrayList<PortfolioAdminPendingRes>();
-			 List<PortfolioAdminPendingRes> travelList  = new ArrayList<PortfolioAdminPendingRes>();
-			 List<PortfolioAdminPendingRes> buildingList = new ArrayList<PortfolioAdminPendingRes>();
-			 List<PortfolioAdminPendingRes> humanList   = new ArrayList<PortfolioAdminPendingRes>();
+			List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
+			MyTaskList taskList = new MyTaskList(queue);
+			PortFolioFetchThreadCall motorPendings = new PortFolioFetchThreadCall("getPortFolioMotorPendings", req, em);
+			PortFolioFetchThreadCall travelPendings = new PortFolioFetchThreadCall("getPortFolioTravelPendings", req,
+					em);
+			PortFolioFetchThreadCall buildingPendings = new PortFolioFetchThreadCall("getPortFolioBuildingPendings",
+					req, em);
+			PortFolioFetchThreadCall humanPendings = new PortFolioFetchThreadCall("getPortFolioHumanPendings", req, em);
 
-			 for (Future<Object> callable : invoke) {
+			queue.add(motorPendings);
+			queue.add(travelPendings);
+			queue.add(buildingPendings);
+			queue.add(humanPendings);
+			int threadCount = 4;
+			int success = 0;
+			ForkJoinPool forkjoin = new ForkJoinPool(threadCount);
+			ConcurrentLinkedQueue<Future<Object>> invoke = (ConcurrentLinkedQueue<Future<Object>>) forkjoin
+					.invoke(taskList);
 
-	 				log.info(callable.getClass() + "," + callable.isDone());
+			List<PortfolioAdminPendingRes> motorList = new ArrayList<PortfolioAdminPendingRes>();
+			List<PortfolioAdminPendingRes> travelList = new ArrayList<PortfolioAdminPendingRes>();
+			List<PortfolioAdminPendingRes> buildingList = new ArrayList<PortfolioAdminPendingRes>();
+			List<PortfolioAdminPendingRes> humanList = new ArrayList<PortfolioAdminPendingRes>();
 
-	 				if (callable.isDone()) {
-	 					Map<String, Object> map = (Map<String, Object>) callable.get();
+			for (Future<Object> callable : invoke) {
 
-	 					for (Entry<String, Object> future : map.entrySet()) {
-	 						
-	 						if ("getPortFolioMotorPendings".equalsIgnoreCase(future.getKey())) {
-	 							motorList =  (List<PortfolioAdminPendingRes>) future.getValue();
-	 							
-	 						} else if ("getPortFolioTravelPendings".equalsIgnoreCase(future.getKey())) {
-	 							travelList = (List<PortfolioAdminPendingRes>)  future.getValue();
-	 							
-	 						} else if ("getPortFolioBuildingPendings".equalsIgnoreCase(future.getKey())) {
-	 							buildingList = (List<PortfolioAdminPendingRes>)  future.getValue();
-	 							
-	 						} else if ("getPortFolioHumanPendings".equalsIgnoreCase(future.getKey())) {
-	 							humanList = (List<PortfolioAdminPendingRes>)  future.getValue();
-	 						}
-	 					}
+				log.info(callable.getClass() + "," + callable.isDone());
 
-	 					success++;
-	 				}
-	 			}
-			 
-			 List<CompanyProductMaster> productList  = getCompanyProductList(req.getInsuranceId());
-			 
-			// Group By Product Id
-			 for (CompanyProductMaster product : productList  ) { 
-				 
-				 if(StringUtils.isBlank(req.getProductId()) || "99999".equalsIgnoreCase(req.getProductId()) || product.getProductId().equals(Integer.valueOf(req.getProductId())) ) {
-					 
-					 String productType = StringUtils.isBlank(product.getMotorYn()) ? "M" :product.getMotorYn() ; 
-					 List<PortfolioAdminPendingRes> filterProduct  = new ArrayList<PortfolioAdminPendingRes>();
-					 
-					if("H".equalsIgnoreCase(productType) && product.getProductId().equals(4) ) 
-						filterProduct = travelList ; //travelList.stream().filter( o -> o.getProductId()!=null &&  o.getProductId().equals(product.getProductId() )  ).collect(Collectors.toList());
-					
-					else if("M".equalsIgnoreCase(productType) )
-						filterProduct = motorList ; //motorList.stream().filter( o -> o.getProductId()!=null &&  o.getProductId().equals(product.getProductId() )  ).collect(Collectors.toList());
-					
-					else if("A".equalsIgnoreCase(productType) )
-						filterProduct = buildingList.stream().filter( o -> o.getProductId()!=null &&  o.getProductId().equals(product.getProductId() )  ).collect(Collectors.toList());
-					
-					else if("H".equalsIgnoreCase(productType) )
-						filterProduct = humanList.stream().filter( o -> o.getProductId()!=null &&  o.getProductId().equals(product.getProductId() )  ).collect(Collectors.toList());
-					 
-					 // Map Broker List
-					 List<PortfolioBrokerListRes>     brokerResList = new ArrayList<PortfolioBrokerListRes>();
-					 
-						
-					 for(PortfolioAdminPendingRes data : filterProduct) {
-						// System.out.println(format.format(price));
-						 PortfolioBrokerListRes brokerRes = new PortfolioBrokerListRes();
-						 
-						 brokerRes.setBrokerCode(data.getOaCode()==null?"0" : data.getOaCode().toString());
-						 brokerRes.setBrokerLoginId(data.getLoginId() );
-						 brokerRes.setBrokerName(data.getBrokerName() );
-						 brokerRes.setSubUserType(data.getSubUserType() );
-						 brokerRes.setTotalCount(data.getCount()==null?0 : data.getCount());
-						 brokerRes.setTotalPremiumLc(data.getOverallPremiumLc()==null ? "0" : df.format(Double.valueOf(data.getOverallPremiumLc().toPlainString())));
-						 brokerRes.setTotalPremiumFc(data.getOverallPremiumFc()==null ? "0" : df.format(Double.valueOf(data.getOverallPremiumFc().toPlainString())));
-						 brokerRes.setUserType(data.getUserType());
-						 brokerResList.add(brokerRes);					 
-					 }
-					 brokerResList.sort(Comparator.comparing(PortfolioBrokerListRes :: getTotalCount  ).reversed());
-					 
-					 // Response 
-					 PortFolioDashBoardRes res = new PortFolioDashBoardRes();
-					 res.setBrokerList(brokerResList);
-					 res.setProductId(product.getProductId().toString());
-					 res.setProductName(product.getProductName());
-					 res.setBrokerCount(brokerResList.size() > 0 ? Long.valueOf(brokerResList.size()) : 0 ); 
-					 resList.add(res);
-				 }
-				
-				 
-				 
+				if (callable.isDone()) {
+					Map<String, Object> map = (Map<String, Object>) callable.get();
+
+					for (Entry<String, Object> future : map.entrySet()) {
+
+						if ("getPortFolioMotorPendings".equalsIgnoreCase(future.getKey())) {
+							motorList = (List<PortfolioAdminPendingRes>) future.getValue();
+
+						} else if ("getPortFolioTravelPendings".equalsIgnoreCase(future.getKey())) {
+							travelList = (List<PortfolioAdminPendingRes>) future.getValue();
+
+						} else if ("getPortFolioBuildingPendings".equalsIgnoreCase(future.getKey())) {
+							buildingList = (List<PortfolioAdminPendingRes>) future.getValue();
+
+						} else if ("getPortFolioHumanPendings".equalsIgnoreCase(future.getKey())) {
+							humanList = (List<PortfolioAdminPendingRes>) future.getValue();
+						}
+					}
+
+					success++;
+				}
 			}
-			 resList.sort(Comparator.comparing(PortFolioDashBoardRes :: getBrokerCount  ).reversed()); 
-			 
+
+			List<CompanyProductMaster> productList = getCompanyProductList(req.getInsuranceId());
+
+			// Group By Product Id
+			for (CompanyProductMaster product : productList) {
+
+				if (StringUtils.isBlank(req.getProductId()) || "99999".equalsIgnoreCase(req.getProductId())
+						|| product.getProductId().equals(Integer.valueOf(req.getProductId()))) {
+
+					String productType = StringUtils.isBlank(product.getMotorYn()) ? "M" : product.getMotorYn();
+					List<PortfolioAdminPendingRes> filterProduct = new ArrayList<PortfolioAdminPendingRes>();
+
+					if ("H".equalsIgnoreCase(productType) && product.getProductId().equals(4))
+						filterProduct = travelList; // travelList.stream().filter( o -> o.getProductId()!=null &&
+													// o.getProductId().equals(product.getProductId() )
+													// ).collect(Collectors.toList());
+
+					else if ("M".equalsIgnoreCase(productType))
+						filterProduct = motorList; // motorList.stream().filter( o -> o.getProductId()!=null &&
+													// o.getProductId().equals(product.getProductId() )
+													// ).collect(Collectors.toList());
+
+					else if ("A".equalsIgnoreCase(productType))
+						filterProduct = buildingList.stream().filter(
+								o -> o.getProductId() != null && o.getProductId().equals(product.getProductId()))
+								.collect(Collectors.toList());
+
+					else if ("H".equalsIgnoreCase(productType))
+						filterProduct = humanList.stream().filter(
+								o -> o.getProductId() != null && o.getProductId().equals(product.getProductId()))
+								.collect(Collectors.toList());
+
+					// Map Broker List
+					List<PortfolioBrokerListRes> brokerResList = new ArrayList<PortfolioBrokerListRes>();
+
+					for (PortfolioAdminPendingRes data : filterProduct) {
+						// System.out.println(format.format(price));
+						PortfolioBrokerListRes brokerRes = new PortfolioBrokerListRes();
+
+						brokerRes.setBrokerCode(data.getOaCode() == null ? "0" : data.getOaCode().toString());
+						brokerRes.setBrokerLoginId(data.getLoginId());
+						brokerRes.setBrokerName(data.getBrokerName());
+						brokerRes.setSubUserType(data.getSubUserType());
+						brokerRes.setTotalCount(data.getCount() == null ? 0 : data.getCount());
+						brokerRes.setTotalPremiumLc(data.getOverallPremiumLc() == null ? "0"
+								: df.format(Double.valueOf(data.getOverallPremiumLc().toPlainString())));
+						brokerRes.setTotalPremiumFc(data.getOverallPremiumFc() == null ? "0"
+								: df.format(Double.valueOf(data.getOverallPremiumFc().toPlainString())));
+						brokerRes.setUserType(data.getUserType());
+						brokerResList.add(brokerRes);
+					}
+					brokerResList.sort(Comparator.comparing(PortfolioBrokerListRes::getTotalCount).reversed());
+
+					// Response
+					PortFolioDashBoardRes res = new PortFolioDashBoardRes();
+					res.setBrokerList(brokerResList);
+					res.setProductId(product.getProductId().toString());
+					res.setProductName(product.getProductName());
+					res.setBrokerCount(brokerResList.size() > 0 ? Long.valueOf(brokerResList.size()) : 0);
+					resList.add(res);
+				}
+
+			}
+			resList.sort(Comparator.comparing(PortFolioDashBoardRes::getBrokerCount).reversed());
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -3497,89 +3315,107 @@ public class GridServiceImpl implements GridService {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		DecimalFormat df = new DecimalFormat("0.##");
 		try {
-			
-				
+
 			// Fetch Data
 			List<PortfolioAdminGridRes> list = new ArrayList<PortfolioAdminGridRes>();
-			String bsType = StringUtils.isNotBlank(req.getBusinessType()) ? req.getBusinessType() :"N";
-			
-			if("N".equalsIgnoreCase(bsType) || "E".equalsIgnoreCase(bsType) || "C".equalsIgnoreCase(bsType) ) {
-				list =  getPortFolioGrid(req);
+			String bsType = StringUtils.isNotBlank(req.getBusinessType()) ? req.getBusinessType() : "N";
+
+			if ("N".equalsIgnoreCase(bsType) || "E".equalsIgnoreCase(bsType) || "C".equalsIgnoreCase(bsType)) {
+				list = getPortFolioGrid(req);
 			} else {
-				CompanyProductMaster product = getCompanyProductMasterDropdown(req.getInsuranceId(),req.getProductId());
-				String productType = StringUtils.isNotBlank(product.getMotorYn()) ? product.getMotorYn() :"M";
-				
-				if("H".equalsIgnoreCase(productType) && "4".equalsIgnoreCase(req.getProductId()) ) {
-					list =  getPortFolioTravelGrid(req);
-					
-				} else if("M".equalsIgnoreCase(productType)) {
-					list =  getPortFolioMotorGrid(req);
-					
-				} else if("A".equalsIgnoreCase(productType)) {
-					list =  getPortFolioBuildingGrid(req);
-					
-				} else if("H".equalsIgnoreCase(productType)) {
-					list =  getPortFolioHumanGrid(req);
+				CompanyProductMaster product = getCompanyProductMasterDropdown(req.getInsuranceId(),
+						req.getProductId());
+				String productType = StringUtils.isNotBlank(product.getMotorYn()) ? product.getMotorYn() : "M";
+
+				if ("H".equalsIgnoreCase(productType) && "4".equalsIgnoreCase(req.getProductId())) {
+					list = getPortFolioTravelGrid(req);
+
+				} else if ("M".equalsIgnoreCase(productType)) {
+					list = getPortFolioMotorGrid(req);
+
+				} else if ("A".equalsIgnoreCase(productType)) {
+					list = getPortFolioBuildingGrid(req);
+
+				} else if ("H".equalsIgnoreCase(productType)) {
+					list = getPortFolioHumanGrid(req);
 				}
-			}			
-			 
-			// Sort By Broker Name 
+			}
+
+			// Sort By Broker Name
 //			list.sort(Comparator.comparing(PortfolioAdminGridRes :: getBrokerName  ) 
 //					 .thenComparing(PortfolioAdminGridRes :: getUpdatedDate  ).reversed());
-			
+
 			// Sort By Updated Date
-			list.sort(Comparator.comparing(PortfolioAdminGridRes :: getUpdatedDate  ).reversed());
-					 
-			 // Map Broker List
-			 for(PortfolioAdminGridRes data : list) { 
-				 PortfolioGridRes res = new PortfolioGridRes();
-				 
-				 res.setApplicationId(data.getApplicationId()==null ? "" : data.getApplicationId().toString());
-				 res.setBrokerCode(data.getOaCode()==null?"":data.getOaCode().toString());				 
-				 res.setBrokerLoginId(data.getLoginId());
-				 res.setBrokerName(data.getBrokerName());
-				 res.setBranchCode(data.getBranchCode());
-				 res.setBranchName(data.getBranchName());
-				 res.setBrokerBranchCode(data.getBrokerBranchCode());
-				 res.setBrokerBranchName(data.getBrokerBranchName());
-				 res.setCount(data.getCount());
-				 res.setCurrencyCode(data.getCurrencyCode());
-				 res.setCustomerName(data.getCustomerName());
-				 res.setExchangeRate(data.getExchangeRate()==null ? "" : data.getExchangeRate().toPlainString());
-				 res.setOriginalPolicyNo(StringUtils.isNotBlank(data.getOriginalPolicyNo()) ? data.getOriginalPolicyNo() : data.getPolicyNo() );
-				 res.setOverallPremiumFc(data.getOverallPremiumFc()==null ? "0" : df.format(Double.valueOf(data.getOverallPremiumFc().toPlainString())));
-				 res.setOverallPremiumLc(data.getOverallPremiumLc()==null ? "0" : df.format(Double.valueOf(data.getOverallPremiumLc().toPlainString())));
-				 res.setPolicyStartDate(data.getPolicyStartDate()==null ? "" : sdf.format(data.getPolicyStartDate()));
-				 res.setPolicyEndDate(data.getPolicyEndDate()==null ? "" : sdf.format(data.getPolicyEndDate()));
-				 res.setPolicyNo(data.getPolicyNo());
-				 res.setQuoteNo(data.getQuoteNo());
-				 res.setRequestReferenceNo(data.getRequestReferenceNo());
-				 res.setSubUserType(data.getSubUserType());
-				 res.setUserType(data.getUserType());
-				 res.setProductId(data.getProductId()==null?"":data.getProductId().toString());
-				 res.setProductName(data.getProductName())	;
-				 res.setAdminRemarks(data.getAdminRemarks());
-				 res.setReferralRemarks(data.getReferralRemarks());
-				 res.setAdminLoginId(data.getAdminLoginId());
-				 res.setStatus(data.getStatus());
-				 res.setEndtSatus(data.getEndtStatus());
-				 res.setUpdatedDate(data.getUpdatedDate()==null ? "" : sdf.format(data.getUpdatedDate()));
-				 res.setEndorsementRemarks(data.getEndorsementRemarks());
-				 String statusDesc = StringUtils.isBlank(data.getStatus()) ? "" : "Y".equalsIgnoreCase(data.getStatus()) ? "Existing Quote" 
-						   : "R".equalsIgnoreCase(data.getStatus()) ? "Quote Rejected" : "N".equalsIgnoreCase(data.getStatus()) ? "Quote Deactivated"
-						   : "D".equalsIgnoreCase(data.getStatus()) ? "Quote Deleted"  : "RP".equalsIgnoreCase(data.getStatus()) ? "Refferral Pending"
-						   : "RA".equalsIgnoreCase(data.getStatus()) ? "Refferral Approved" : "RR".equalsIgnoreCase(data.getStatus()) ? "Refferral Rejected"		   
-						   : "RA".equalsIgnoreCase(data.getStatus()) ? "Refferral Request"	 : "P".equalsIgnoreCase(data.getStatus()) ? "Policy Converted" 
-						   : "E".equalsIgnoreCase(data.getStatus()) ? "Endorsement"	:"" 	;   
-				
-				 String endtStatusDesc = StringUtils.isBlank(data.getEndtStatus()) ? "" : "P".equalsIgnoreCase(data.getEndtStatus()) ? "Pending" 
-						 : "C".equalsIgnoreCase(data.getEndtStatus()) ? "Completed"  : "" ;
-				 
-				 res.setStatusDesc(statusDesc);
-				 res.setEndtStatusDesc(endtStatusDesc);
-				 resList.add(res);					 
-			 }
-			  
+			list.sort(Comparator.comparing(PortfolioAdminGridRes::getUpdatedDate).reversed());
+
+			// Map Broker List
+			for (PortfolioAdminGridRes data : list) {
+				PortfolioGridRes res = new PortfolioGridRes();
+
+				res.setApplicationId(data.getApplicationId() == null ? "" : data.getApplicationId().toString());
+				res.setBrokerCode(data.getOaCode() == null ? "" : data.getOaCode().toString());
+				res.setBrokerLoginId(data.getLoginId());
+				res.setBrokerName(data.getBrokerName());
+				res.setBranchCode(data.getBranchCode());
+				res.setBranchName(data.getBranchName());
+				res.setBrokerBranchCode(data.getBrokerBranchCode());
+				res.setBrokerBranchName(data.getBrokerBranchName());
+				res.setCount(data.getCount());
+				res.setCurrencyCode(data.getCurrencyCode());
+				res.setCustomerName(data.getCustomerName());
+				res.setExchangeRate(data.getExchangeRate() == null ? "" : data.getExchangeRate().toPlainString());
+				res.setOriginalPolicyNo(StringUtils.isNotBlank(data.getOriginalPolicyNo()) ? data.getOriginalPolicyNo()
+						: data.getPolicyNo());
+				res.setOverallPremiumFc(data.getOverallPremiumFc() == null ? "0"
+						: df.format(Double.valueOf(data.getOverallPremiumFc().toPlainString())));
+				res.setOverallPremiumLc(data.getOverallPremiumLc() == null ? "0"
+						: df.format(Double.valueOf(data.getOverallPremiumLc().toPlainString())));
+				res.setPolicyStartDate(data.getPolicyStartDate() == null ? "" : sdf.format(data.getPolicyStartDate()));
+				res.setPolicyEndDate(data.getPolicyEndDate() == null ? "" : sdf.format(data.getPolicyEndDate()));
+				res.setPolicyNo(data.getPolicyNo());
+				res.setQuoteNo(data.getQuoteNo());
+				res.setRequestReferenceNo(data.getRequestReferenceNo());
+				res.setSubUserType(data.getSubUserType());
+				res.setUserType(data.getUserType());
+				res.setProductId(data.getProductId() == null ? "" : data.getProductId().toString());
+				res.setProductName(data.getProductName());
+				res.setAdminRemarks(data.getAdminRemarks());
+				res.setReferralRemarks(data.getReferralRemarks());
+				res.setAdminLoginId(data.getAdminLoginId());
+				res.setStatus(data.getStatus());
+				res.setEndtSatus(data.getEndtStatus());
+				res.setUpdatedDate(data.getUpdatedDate() == null ? "" : sdf.format(data.getUpdatedDate()));
+				res.setEndorsementRemarks(data.getEndorsementRemarks());
+				String statusDesc = StringUtils.isBlank(data.getStatus()) ? ""
+						: "Y".equalsIgnoreCase(data.getStatus()) ? "Existing Quote"
+								: "R".equalsIgnoreCase(data.getStatus()) ? "Quote Rejected"
+										: "N".equalsIgnoreCase(data.getStatus()) ? "Quote Deactivated"
+												: "D".equalsIgnoreCase(data.getStatus()) ? "Quote Deleted"
+														: "RP".equalsIgnoreCase(data.getStatus()) ? "Refferral Pending"
+																: "RA".equalsIgnoreCase(data.getStatus())
+																		? "Refferral Approved"
+																		: "RR".equalsIgnoreCase(data.getStatus())
+																				? "Refferral Rejected"
+																				: "RA".equalsIgnoreCase(
+																						data.getStatus())
+																								? "Refferral Request"
+																								: "P".equalsIgnoreCase(
+																										data.getStatus())
+																												? "Policy Converted"
+																												: "E".equalsIgnoreCase(
+																														data.getStatus())
+																																? "Endorsement"
+																																: "";
+
+				String endtStatusDesc = StringUtils.isBlank(data.getEndtStatus()) ? ""
+						: "P".equalsIgnoreCase(data.getEndtStatus()) ? "Pending"
+								: "C".equalsIgnoreCase(data.getEndtStatus()) ? "Completed" : "";
+
+				res.setStatusDesc(statusDesc);
+				res.setEndtStatusDesc(endtStatusDesc);
+				resList.add(res);
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -3596,53 +3432,54 @@ public class GridServiceImpl implements GridService {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<LoginProductMaster> query = cb.createQuery(LoginProductMaster.class);
 			List<LoginProductMaster> list = new ArrayList<LoginProductMaster>();
-		
+
 			Root<LoginProductMaster> c = query.from(LoginProductMaster.class);
-		
+
 			query.select(c);
-			
+
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(c.get("loginId")));
-		
+
 			Subquery<String> loginId = query.subquery(String.class);
 			Root<LoginBranchMaster> ocpm2 = loginId.from(LoginBranchMaster.class);
 			loginId.select(ocpm2.get("loginId"));
 			Predicate a4 = cb.equal(ocpm2.get("branchCode"), req.getBranchCode());
 			Predicate a5 = cb.equal(c.get("loginId"), ocpm2.get("loginId"));
 			Predicate a3 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
-			loginId.where(a3,a4, a5);
-			
+			loginId.where(a3, a4, a5);
+
 			Predicate n1 = cb.equal(c.get("status"), "Y");
 			Predicate n2 = cb.equal(c.get("productId"), req.getProductId());
 			Predicate n3 = cb.equal(cb.lower(c.get("userType")), "issuer");
-			Predicate n4 =  cb.or(cb.equal(cb.lower(c.get("subUserType")), "high"), cb.equal(cb.lower(c.get("subUserType")), "both"));
+			Predicate n4 = cb.or(cb.equal(cb.lower(c.get("subUserType")), "high"),
+					cb.equal(cb.lower(c.get("subUserType")), "both"));
 			Predicate n5 = cb.equal(c.get("companyId"), req.getCompanyId());
-			Predicate n6 = cb.greaterThanOrEqualTo(c.get("sumInsuredEnd"), req.getSumInsured()) ;
-			Predicate n7 = cb.lessThanOrEqualTo(c.get("sumInsuredStart"), req.getSumInsured()) ;
+			Predicate n6 = cb.greaterThanOrEqualTo(c.get("sumInsuredEnd"), req.getSumInsured());
+			Predicate n7 = cb.lessThanOrEqualTo(c.get("sumInsuredStart"), req.getSumInsured());
 			Predicate n11 = cb.and(n6, n7);
-			
-			Predicate n9 = cb.greaterThanOrEqualTo(c.get("effectiveDateEnd"), new Date()) ;
-			Predicate n10 = cb.lessThanOrEqualTo(c.get("effectiveDateStart"), new Date()) ;
+
+			Predicate n9 = cb.greaterThanOrEqualTo(c.get("effectiveDateEnd"), new Date());
+			Predicate n10 = cb.lessThanOrEqualTo(c.get("effectiveDateStart"), new Date());
 			Predicate n12 = cb.and(n9, n10);
-					
+
 			Predicate n8 = cb.equal(c.get("loginId"), loginId);
-			
+
 			query.where(n1, n2, n3, n4, n5, n11, n8, n12).orderBy(orderList);
-		
+
 			TypedQuery<LoginProductMaster> result = em.createQuery(query);
 			list = result.getResultList();
-			
+
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getLoginId()))).collect(Collectors.toList());
-			
-			if(list.size()>0) {
-				
-				for(LoginProductMaster data : list) {
+
+			if (list.size() > 0) {
+
+				for (LoginProductMaster data : list) {
 					GetApproverListRes res = new GetApproverListRes();
-					res.setLoginId(data.getLoginId()==null?"":data.getLoginId());
+					res.setLoginId(data.getLoginId() == null ? "" : data.getLoginId());
 					resList.add(res);
-					
+
 				}
-			
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3655,54 +3492,56 @@ public class GridServiceImpl implements GridService {
 	@Override
 	public RevertGridRes getUwPendingGrid(RevertGridReq req) {
 		RevertGridRes res = new RevertGridRes();
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		try {
 			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
 			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
-			
+
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<UWReferralDetails> query = cb.createQuery(UWReferralDetails.class);
 			List<UWReferralDetails> list = new ArrayList<UWReferralDetails>();
-		
+
 			Root<UWReferralDetails> c = query.from(UWReferralDetails.class);
-		
+
 			query.select(c);
-			
+
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(c.get("entryDate")));
-			
-			Predicate n1 = cb.equal(c.get("companyId"),req.getInsuranceId());
-			Predicate n2 = cb.equal(c.get("branchCode"),req.getBranchCode());	
-			Predicate n3 = cb.equal(c.get("productId"),req.getProductId());	
+
+			Predicate n1 = cb.equal(c.get("companyId"), req.getInsuranceId());
+			Predicate n2 = cb.equal(c.get("branchCode"), req.getBranchCode());
+			Predicate n3 = cb.equal(c.get("productId"), req.getProductId());
 //			Predicate n4 = cb.equal(c.get("uwLoginId"), req.getLoginId());
 			Predicate n5 = cb.equal(c.get("requestReferenceNo"), req.getRequestReferenceNo());
-			
-			
-			query.where(n1,n2 ,n3, n5).orderBy(orderList);
-		
+
+			query.where(n1, n2, n3, n5).orderBy(orderList);
+
 			TypedQuery<UWReferralDetails> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
 			result.setMaxResults(offset);
 			list = result.getResultList();
-			
-			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getUwLoginId()))).collect(Collectors.toList());
-			
-			Long resCount=getUwPendingGridCount(req);
-			if(list.size()>0) {
-				List<RevertGridListRes> resList=new ArrayList<RevertGridListRes>();
-				for(UWReferralDetails data : list) {
+
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getUwLoginId())))
+					.collect(Collectors.toList());
+
+			Long resCount = getUwPendingGridCount(req);
+			if (list.size() > 0) {
+				List<RevertGridListRes> resList = new ArrayList<RevertGridListRes>();
+				for (UWReferralDetails data : list) {
 					RevertGridListRes res1 = new RevertGridListRes();
-					res1.setUnderWriterLoginId(data.getUwLoginId()==null?"":data.getUwLoginId());
-					res1.setBranchCode(data.getBranchCode()==null?"":data.getBranchCode());
-					res1.setProductId(data.getProductId()==null?"":data.getProductId().toString());
-					res1.setStatus(data.getUwStatus()==null?"":data.getUwStatus());
-					res1.setRequestReferenceNo(data.getRequestReferenceNo()==null?"":data.getRequestReferenceNo());
-					res1.setEntryDate(data.getEntryDate()==null?null:sdf.format(data.getEntryDate()));
-					res1.setUwStatus(data.getUwStatus()==null?null:data.getUwStatus());
+					res1.setUnderWriterLoginId(data.getUwLoginId() == null ? "" : data.getUwLoginId());
+					res1.setBranchCode(data.getBranchCode() == null ? "" : data.getBranchCode());
+					res1.setProductId(data.getProductId() == null ? "" : data.getProductId().toString());
+					res1.setStatus(data.getUwStatus() == null ? "" : data.getUwStatus());
+					res1.setRequestReferenceNo(
+							data.getRequestReferenceNo() == null ? "" : data.getRequestReferenceNo());
+					res1.setEntryDate(data.getEntryDate() == null ? null : sdf.format(data.getEntryDate()));
+					res1.setUwStatus(data.getUwStatus() == null ? null : data.getUwStatus());
 					resList.add(res1);
 				}
-			res.setCount(resCount);
-			res.setPendingList(resList);			}
+				res.setCount(resCount);
+				res.setPendingList(resList);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -3710,34 +3549,34 @@ public class GridServiceImpl implements GridService {
 		}
 		return res;
 	}
+
 	public Long getUwPendingGridCount(RevertGridReq req) {
-		Long count =0l;
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
+		Long count = 0l;
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		try {
-			
+
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<UWReferralDetails> query = cb.createQuery(UWReferralDetails.class);
 			List<UWReferralDetails> list = new ArrayList<UWReferralDetails>();
-		
+
 			Root<UWReferralDetails> c = query.from(UWReferralDetails.class);
-		
+
 			query.select(c);
-			
+
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(c.get("entryDate")));
-			
-			Predicate n1 = cb.equal(c.get("companyId"),req.getInsuranceId());
-			Predicate n2 = cb.equal(c.get("branchCode"),req.getBranchCode());	
-			Predicate n3 = cb.equal(c.get("productId"),req.getProductId());	
+
+			Predicate n1 = cb.equal(c.get("companyId"), req.getInsuranceId());
+			Predicate n2 = cb.equal(c.get("branchCode"), req.getBranchCode());
+			Predicate n3 = cb.equal(c.get("productId"), req.getProductId());
 			Predicate n5 = cb.equal(c.get("requestReferenceNo"), req.getRequestReferenceNo());
-			
-			
-			query.where(n1,n2 ,n3, n5).orderBy(orderList);
-		
+
+			query.where(n1, n2, n3, n5).orderBy(orderList);
+
 			TypedQuery<UWReferralDetails> result = em.createQuery(query);
 			list = result.getResultList();
-			count=Long.valueOf(list.size());
-			
+			count = Long.valueOf(list.size());
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
@@ -3751,701 +3590,683 @@ public class GridServiceImpl implements GridService {
 		AdminPendingGridRes custRes = new AdminPendingGridRes();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-		int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
-		int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
-		
-		CompanyProductMaster product = getCompanyProductMasterDropdown(req.getInsuranceId(),
-				req.getProductId().toString());
-		
-		List<BranchMaster> branchlist = getByBranchCode(req.getInsuranceId());
-		String branchName = "";
-		
-		List<AdminPendingGridListRes> resList = new ArrayList<AdminPendingGridListRes>();
-		List<ReferalGridCriteriaAdminRes> adminReferralPendingList = new ArrayList<ReferalGridCriteriaAdminRes>();
-		List<ReferalGridCriteriaAdminRes> adminReferralPendingListCount = new ArrayList<ReferalGridCriteriaAdminRes>();
-		
-		if (product.getMotorYn().equalsIgnoreCase("M")) {
-			
-			GetMotorAdminReferalPendingDetailsRes response = motService.getMotorAdminReferalPendingDetails(req,limit, offset, "RP");
-			List<MotorGridCriteriaAdminRes> adminReferralPendingList2 =response.getMotorGridCriteriaAdminRes();
-			
-			
-			for (MotorGridCriteriaAdminRes data : adminReferralPendingList2) {
-				AdminPendingGridListRes res = new AdminPendingGridListRes();
-				if(data.getBranchCode()!=null && StringUtils.isNotBlank(data.getBranchCode())) {
-					List<BranchMaster> filterProducts =  branchlist.stream().filter( o -> o.getBranchCode().equalsIgnoreCase(data.getBranchCode()) ).collect(Collectors.toList());
-					branchName = filterProducts.get(0).getBranchName();
-				}
-				res = dozerMapper.map(data, AdminPendingGridListRes.class);
-				res.setBranchName(branchName);
-				resList.add(res);
-			}
-			
-			custRes.setCount(response.getCount());
-			custRes.setAdminPendingGridListRes(resList);
-			
+			int limit = StringUtils.isBlank(req.getLimit()) ? 0 : Integer.valueOf(req.getLimit());
+			int offset = StringUtils.isBlank(req.getOffset()) ? 100 : Integer.valueOf(req.getOffset());
 
-		} else if (product.getMotorYn().equalsIgnoreCase("H") && req.getProductId().equalsIgnoreCase(travelProductId)) {
-			GetTravelAdminReferalPendingDetailsRes response = traService.getTravelAdminReferalPendingDetails(req, limit, offset, "RP");
-				
-			adminReferralPendingList = response.getReferalGridCriteriaAdminRes();
-			
-			
-			for (ReferalGridCriteriaAdminRes data : adminReferralPendingList) {
-				AdminPendingGridListRes res = new AdminPendingGridListRes();
-				if(data.getBranchCode()!=null && StringUtils.isNotBlank(data.getBranchCode())) {
-					List<BranchMaster> filterProducts =  branchlist.stream().filter( o -> o.getBranchCode().equalsIgnoreCase(data.getBranchCode()) ).collect(Collectors.toList());
-					branchName = filterProducts.get(0).getBranchName();
+			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getInsuranceId(),
+					req.getProductId().toString());
+
+			List<BranchMaster> branchlist = getByBranchCode(req.getInsuranceId());
+			String branchName = "";
+
+			List<AdminPendingGridListRes> resList = new ArrayList<AdminPendingGridListRes>();
+			List<ReferalGridCriteriaAdminRes> adminReferralPendingList = new ArrayList<ReferalGridCriteriaAdminRes>();
+			List<ReferalGridCriteriaAdminRes> adminReferralPendingListCount = new ArrayList<ReferalGridCriteriaAdminRes>();
+
+			if (product.getMotorYn().equalsIgnoreCase("M")) {
+
+				GetMotorAdminReferalPendingDetailsRes response = motService.getMotorAdminReferalPendingDetails(req,
+						limit, offset, "RP");
+				List<MotorGridCriteriaAdminRes> adminReferralPendingList2 = response.getMotorGridCriteriaAdminRes();
+
+				for (MotorGridCriteriaAdminRes data : adminReferralPendingList2) {
+					AdminPendingGridListRes res = new AdminPendingGridListRes();
+					if (data.getBranchCode() != null && StringUtils.isNotBlank(data.getBranchCode())) {
+						List<BranchMaster> filterProducts = branchlist.stream()
+								.filter(o -> o.getBranchCode().equalsIgnoreCase(data.getBranchCode()))
+								.collect(Collectors.toList());
+						branchName = filterProducts.get(0).getBranchName();
+					}
+					res = dozerMapper.map(data, AdminPendingGridListRes.class);
+					res.setBranchName(branchName);
+					resList.add(res);
 				}
-				res = dozerMapper.map(data, AdminPendingGridListRes.class);
-				res.setBranchName(branchName);
-				resList.add(res);
-			}
-			
-			custRes.setCount(response.getCount());
-			custRes.setAdminPendingGridListRes(resList);
-			
-		} else if (product.getMotorYn().equalsIgnoreCase("A")) {
-			GetBuildingAdminReferalPendingDetailsRes response = buiService.getBuildingAdminReferalPendingDetails(req, limit, offset,"RP");
-			adminReferralPendingList = response.getReferalGridCriteriaAdminRes();
-			
-			for (ReferalGridCriteriaAdminRes data : adminReferralPendingList) {
-				AdminPendingGridListRes res = new AdminPendingGridListRes();
-				if(data.getBranchCode()!=null && StringUtils.isNotBlank(data.getBranchCode())) {
-					List<BranchMaster> filterProducts =  branchlist.stream().filter( o -> o.getBranchCode().equalsIgnoreCase(data.getBranchCode()) ).collect(Collectors.toList());
-					branchName = filterProducts.get(0).getBranchName();
+
+				custRes.setCount(response.getCount());
+				custRes.setAdminPendingGridListRes(resList);
+
+			} else if (product.getMotorYn().equalsIgnoreCase("H")
+					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+				GetTravelAdminReferalPendingDetailsRes response = traService.getTravelAdminReferalPendingDetails(req,
+						limit, offset, "RP");
+
+				adminReferralPendingList = response.getReferalGridCriteriaAdminRes();
+
+				for (ReferalGridCriteriaAdminRes data : adminReferralPendingList) {
+					AdminPendingGridListRes res = new AdminPendingGridListRes();
+					if (data.getBranchCode() != null && StringUtils.isNotBlank(data.getBranchCode())) {
+						List<BranchMaster> filterProducts = branchlist.stream()
+								.filter(o -> o.getBranchCode().equalsIgnoreCase(data.getBranchCode()))
+								.collect(Collectors.toList());
+						branchName = filterProducts.get(0).getBranchName();
+					}
+					res = dozerMapper.map(data, AdminPendingGridListRes.class);
+					res.setBranchName(branchName);
+					resList.add(res);
 				}
-				res = dozerMapper.map(data, AdminPendingGridListRes.class);
-				res.setBranchName(branchName);
-				resList.add(res);
-			}
-			custRes.setCount(response.getCount());
-			custRes.setAdminPendingGridListRes(resList);
-			
-		} else {
-			GetBuildingAdminReferalPendingDetailsRes response = commonService .getCommonAdminReferalPendingDetails(req, limit, offset, "RP");
-		
-			List<ReferalGridCriteriaAdminRes> adminReferralPendingList2 = response.getReferalGridCriteriaAdminRes();		
-			
-			for (ReferalGridCriteriaAdminRes data : adminReferralPendingList2) {
-				AdminPendingGridListRes res = new AdminPendingGridListRes();
-				
-				if(data.getBranchCode()!=null && StringUtils.isNotBlank(data.getBranchCode())) {
-					List<BranchMaster> filterProducts =  branchlist.stream().filter( o -> o.getBranchCode().equalsIgnoreCase(data.getBranchCode()) ).collect(Collectors.toList());
-					branchName = filterProducts.get(0).getBranchName();
+
+				custRes.setCount(response.getCount());
+				custRes.setAdminPendingGridListRes(resList);
+
+			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+				GetBuildingAdminReferalPendingDetailsRes response = buiService
+						.getBuildingAdminReferalPendingDetails(req, limit, offset, "RP");
+				adminReferralPendingList = response.getReferalGridCriteriaAdminRes();
+
+				for (ReferalGridCriteriaAdminRes data : adminReferralPendingList) {
+					AdminPendingGridListRes res = new AdminPendingGridListRes();
+					if (data.getBranchCode() != null && StringUtils.isNotBlank(data.getBranchCode())) {
+						List<BranchMaster> filterProducts = branchlist.stream()
+								.filter(o -> o.getBranchCode().equalsIgnoreCase(data.getBranchCode()))
+								.collect(Collectors.toList());
+						branchName = filterProducts.get(0).getBranchName();
+					}
+					res = dozerMapper.map(data, AdminPendingGridListRes.class);
+					res.setBranchName(branchName);
+					resList.add(res);
 				}
-				res = dozerMapper.map(data, AdminPendingGridListRes.class);
-				res.setBranchName(branchName);
-				resList.add(res);
+				custRes.setCount(response.getCount());
+				custRes.setAdminPendingGridListRes(resList);
+
+			} else {
+				GetBuildingAdminReferalPendingDetailsRes response = commonService
+						.getCommonAdminReferalPendingDetails(req, limit, offset, "RP");
+
+				List<ReferalGridCriteriaAdminRes> adminReferralPendingList2 = response.getReferalGridCriteriaAdminRes();
+
+				for (ReferalGridCriteriaAdminRes data : adminReferralPendingList2) {
+					AdminPendingGridListRes res = new AdminPendingGridListRes();
+
+					if (data.getBranchCode() != null && StringUtils.isNotBlank(data.getBranchCode())) {
+						List<BranchMaster> filterProducts = branchlist.stream()
+								.filter(o -> o.getBranchCode().equalsIgnoreCase(data.getBranchCode()))
+								.collect(Collectors.toList());
+						branchName = filterProducts.get(0).getBranchName();
+					}
+					res = dozerMapper.map(data, AdminPendingGridListRes.class);
+					res.setBranchName(branchName);
+					resList.add(res);
+				}
+				custRes.setCount(response.getCount());
+				custRes.setAdminPendingGridListRes(resList);
+
 			}
-			custRes.setCount(response.getCount());
-			custRes.setAdminPendingGridListRes(resList);
-			
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
 		}
-		
-
-	} catch (Exception e) {
-		e.printStackTrace();
-		log.info("Log Details" + e.getMessage());
-		return null;
+		return custRes;
 	}
-	return custRes;
-}
 
-	//BranchName
-		public List<BranchMaster> getByBranchCode(String companyId) {
-			//BranchMaster res = new BranchMasterRes();
-			List<BranchMaster> list = new ArrayList<BranchMaster>();
-			try {
-				Date today = new Date();
-				Calendar cal = new GregorianCalendar();
-				cal.setTime(today);
-				cal.set(Calendar.HOUR_OF_DAY, 23);
-				cal.set(Calendar.MINUTE, 1);
-				today = cal.getTime();
-				// Criteria
-				CriteriaBuilder cb = em.getCriteriaBuilder();
-				CriteriaQuery<BranchMaster> query = cb.createQuery(BranchMaster.class);
-				
-				
-				// Find All
-				Root<BranchMaster>    c = query.from(BranchMaster.class);		
-				
-				// Select
-				query.select(c );
-				
-				// amendId Max Filter
-				Subquery<Long> amendId = query.subquery(Long.class);
-				Root<BranchMaster> ocpm1 = amendId.from(BranchMaster.class);
-				amendId.select(cb.max(ocpm1.get("amendId")));
-				Predicate a1 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode") );
-				
-				amendId.where(a1);
-				
-				// Order By
-				List<Order> orderList = new ArrayList<Order>();
-				orderList.add(cb.asc(c.get("branchCode")));
-				
-				// Where
-				Predicate n1 = cb.equal(c.get("amendId"), amendId);
-				Predicate n4 = cb.equal(c.get("companyId"), companyId);
-				query.where(n1,n4).orderBy(orderList);
-				
-				// Get Result
-				TypedQuery<BranchMaster> result = em.createQuery(query);			
-				list =  result.getResultList();  
-				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getBranchCode()))).collect(Collectors.toList());
-				list.sort(Comparator.comparing(BranchMaster :: getBranchName ));
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Exception is ---> " + e.getMessage());
-				return null;
-			}
-			return list;
+	// BranchName
+	public List<BranchMaster> getByBranchCode(String companyId) {
+		// BranchMaster res = new BranchMasterRes();
+		List<BranchMaster> list = new ArrayList<BranchMaster>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<BranchMaster> query = cb.createQuery(BranchMaster.class);
+
+			// Find All
+			Root<BranchMaster> c = query.from(BranchMaster.class);
+
+			// Select
+			query.select(c);
+
+			// amendId Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<BranchMaster> ocpm1 = amendId.from(BranchMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(c.get("branchCode"), ocpm1.get("branchCode"));
+
+			amendId.where(a1);
+
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("branchCode")));
+
+			// Where
+			Predicate n1 = cb.equal(c.get("amendId"), amendId);
+			Predicate n4 = cb.equal(c.get("companyId"), companyId);
+			query.where(n1, n4).orderBy(orderList);
+
+			// Get Result
+			TypedQuery<BranchMaster> result = em.createQuery(query);
+			list = result.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getBranchCode())))
+					.collect(Collectors.toList());
+			list.sort(Comparator.comparing(BranchMaster::getBranchName));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
 		}
+		return list;
+	}
 
-		@Override
-		public SuccessRes updateUwReferralDetails(List<RevertGridReq> reqList) {
-			SuccessRes res = new SuccessRes();
-			try {
-				List<String> loginIds = reqList.stream().map(RevertGridReq::getLoginId).collect(Collectors.toList());
+	@Override
+	public SuccessRes updateUwReferralDetails(List<RevertGridReq> reqList) {
+		SuccessRes res = new SuccessRes();
+		try {
+			List<String> loginIds = reqList.stream().map(RevertGridReq::getLoginId).collect(Collectors.toList());
 
-				List<UWReferralDetails> nonselected = uwReferalDetailsRepo
-						.findByRequestReferenceNoAndProductIdAndUwLoginIdNotIn(reqList.get(0).getRequestReferenceNo(),
-								Integer.valueOf(reqList.get(0).getProductId()), loginIds);
+			List<UWReferralDetails> nonselected = uwReferalDetailsRepo
+					.findByRequestReferenceNoAndProductIdAndUwLoginIdNotIn(reqList.get(0).getRequestReferenceNo(),
+							Integer.valueOf(reqList.get(0).getProductId()), loginIds);
 
-				nonselected.forEach(o -> {
-					o.setUwStatus("N");
-				});
+			nonselected.forEach(o -> {
+				o.setUwStatus("N");
+			});
 
-				uwReferalDetailsRepo.saveAll(nonselected);
-				for(RevertGridReq req:reqList) {
-				// Update Referral Details 
-				if(StringUtils.isNotBlank(req.getLoginId())) {
-					List<UWReferralDetails> uwList = uwReferalDetailsRepo.findByRequestReferenceNo(req.getRequestReferenceNo());
-					
-					uwList.forEach( o -> {
-						if( o.getUwLoginId().equals(req.getLoginId()) )
-							 o.setUwStatus("Y");
+			uwReferalDetailsRepo.saveAll(nonselected);
+			for (RevertGridReq req : reqList) {
+				// Update Referral Details
+				if (StringUtils.isNotBlank(req.getLoginId())) {
+					List<UWReferralDetails> uwList = uwReferalDetailsRepo
+							.findByRequestReferenceNo(req.getRequestReferenceNo());
+
+					uwList.forEach(o -> {
+						if (o.getUwLoginId().equals(req.getLoginId()))
+							o.setUwStatus("Y");
 					});
 					uwReferalDetailsRepo.saveAll(uwList);
 				}
 			}
-				res.setResponse("Updated Successfully");
-				res.setSuccessId(reqList.get(0).getRequestReferenceNo());
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Exception is ---> " + e.getMessage());
-				return null;
-			}
-			return res;
+			res.setResponse("Updated Successfully");
+			res.setSuccessId(reqList.get(0).getRequestReferenceNo());
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
 		}
+		return res;
+	}
 
-		@Override
-		public PortFolioSearchGridRes searchBrokerPolicies(SearchBrokerPolicyReq req) {
-			PortFolioSearchGridRes res = new PortFolioSearchGridRes();
-			try {
-					
-				// Thread Call Setup To Fetch List From 4 tables
-				 List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
-				 MyTaskList taskList = new MyTaskList(queue);
-				 PortFolioSearchThreadCall count = new PortFolioSearchThreadCall("getProtfolioSearchDataCount" , req , em  );
-				 PortFolioSearchThreadCall list = new PortFolioSearchThreadCall("getProtfolioSearchData" , req , em  );
-				 
-				 queue.add(count);
-				 queue.add(list);
-				 int threadCount = 2 ;
-				 int success = 0;
-				 ForkJoinPool forkjoin = new ForkJoinPool(threadCount); 
-	             ConcurrentLinkedQueue<Future<Object>> invoke  = (ConcurrentLinkedQueue<Future<Object>>) forkjoin.invoke(taskList) ;
-	             
-				 
-	             Long totalCount = 0L ;
-	             List<PortfolioSearchDataRes> resList = new ArrayList<PortfolioSearchDataRes>();
+	@Override
+	public PortFolioSearchGridRes searchBrokerPolicies(SearchBrokerPolicyReq req) {
+		PortFolioSearchGridRes res = new PortFolioSearchGridRes();
+		try {
 
-				 for (Future<Object> callable : invoke) {
+			// Thread Call Setup To Fetch List From 4 tables
+			List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
+			MyTaskList taskList = new MyTaskList(queue);
+			PortFolioSearchThreadCall count = new PortFolioSearchThreadCall("getProtfolioSearchDataCount", req, em);
+			PortFolioSearchThreadCall list = new PortFolioSearchThreadCall("getProtfolioSearchData", req, em);
 
-		 				log.info(callable.getClass() + "," + callable.isDone());
+			queue.add(count);
+			queue.add(list);
+			int threadCount = 2;
+			int success = 0;
+			ForkJoinPool forkjoin = new ForkJoinPool(threadCount);
+			ConcurrentLinkedQueue<Future<Object>> invoke = (ConcurrentLinkedQueue<Future<Object>>) forkjoin
+					.invoke(taskList);
 
-		 				if (callable.isDone()) {
-		 					Map<String, Object> map = (Map<String, Object>) callable.get();
+			Long totalCount = 0L;
+			List<PortfolioSearchDataRes> resList = new ArrayList<PortfolioSearchDataRes>();
 
-		 					for (Entry<String, Object> future : map.entrySet()) {
-		 						
-		 						if ("getProtfolioSearchDataCount".equalsIgnoreCase(future.getKey())) {
-		 							totalCount =  (Long) future.getValue();
-		 							
-		 						} else if ("getProtfolioSearchData".equalsIgnoreCase(future.getKey())) {
-		 							resList = (List<PortfolioSearchDataRes>)  future.getValue();
-		 							
-		 						} 
-		 					}
+			for (Future<Object> callable : invoke) {
 
-		 					success++;
-		 				}
-		 			}
-			//	List<PortfolioSearchDataRes> resList = new ArrayList<PortfolioSearchDataRes>();
-				//CompanyProductMaster product = getCompanyProductMasterDropdown(req.getInsuranceId(), req.getProductId());
+				log.info(callable.getClass() + "," + callable.isDone());
+
+				if (callable.isDone()) {
+					Map<String, Object> map = (Map<String, Object>) callable.get();
+
+					for (Entry<String, Object> future : map.entrySet()) {
+
+						if ("getProtfolioSearchDataCount".equalsIgnoreCase(future.getKey())) {
+							totalCount = (Long) future.getValue();
+
+						} else if ("getProtfolioSearchData".equalsIgnoreCase(future.getKey())) {
+							resList = (List<PortfolioSearchDataRes>) future.getValue();
+
+						}
+					}
+
+					success++;
+				}
+			}
+			// List<PortfolioSearchDataRes> resList = new
+			// ArrayList<PortfolioSearchDataRes>();
+			// CompanyProductMaster product =
+			// getCompanyProductMasterDropdown(req.getInsuranceId(), req.getProductId());
 
 //				Long totalCount = motService.getProtfolioSearchDataCount(req);
 //				resList = motService.getProtfolioSearchData(req);
-			
-				res.setPortFolioList(resList);
-				res.setTotalCount(totalCount);
 
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Log Details" + e.getMessage());
-				return null;
-			}
-			return res ;
+			res.setPortFolioList(resList);
+			res.setTotalCount(totalCount);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
 		}
+		return res;
+	}
 
-		@Override
-		public List<GetExistingBrokerListRes> getExistingBrokerList(GetExistingBrokerListReq req) {
-			List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
-			List<GetExistingBrokerRes> list = new ArrayList<GetExistingBrokerRes>();
-			DozerBeanMapper dozerMapper = new DozerBeanMapper();
-			try {
-				
-				CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(),
-						req.getProductId().toString());
+	@Override
+	public List<GetExistingBrokerListRes> getExistingBrokerList(GetExistingBrokerListReq req) {
+		List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+		List<GetExistingBrokerRes> list = new ArrayList<GetExistingBrokerRes>();
+		DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		try {
 
-				
-				// Product Wise Get
-				if (product.getMotorYn().equalsIgnoreCase("M")) { //Motor
-					
-					list = getExistingBrokerListMotor(req);
-					
-				} else if (product.getMotorYn().equalsIgnoreCase("H")&& req.getProductId().equalsIgnoreCase(travelProductId)) {//Travel
-					
-					list = getExistingBrokerListTravel(req);
-					
-				} else if (product.getMotorYn().equalsIgnoreCase("A")) { //Asset
-					
-					list = getExistingBrokerListAsset(req);
-				} else {  // Common
-					
-					list = getExistingBrokerListCommon(req);
+			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(),
+					req.getProductId().toString());
+
+			// Product Wise Get
+			if (product.getMotorYn().equalsIgnoreCase("M")) { // Motor
+
+				list = getExistingBrokerListMotor(req);
+
+			} else if (product.getMotorYn().equalsIgnoreCase("H")
+					&& req.getProductId().equalsIgnoreCase(travelProductId)) {// Travel
+
+				list = getExistingBrokerListTravel(req);
+
+			} else if (product.getMotorYn().equalsIgnoreCase("A")) { // Asset
+
+				list = getExistingBrokerListAsset(req);
+			} else { // Common
+
+				list = getExistingBrokerListCommon(req);
+			}
+
+			if (list != null && list.size() > 0) {
+				list = list.stream().sorted(Comparator.comparing(GetExistingBrokerRes::getCodeDesc))
+						.collect(Collectors.toList());
+
+				for (GetExistingBrokerRes data : list) {
+					GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+					res = dozerMapper.map(data, GetExistingBrokerListRes.class);
+					resList.add(res);
 				}
-				
-				if(list!=null && list.size()>0) {
-					list = list.stream().sorted(Comparator.comparing(GetExistingBrokerRes::getCodeDesc)).collect(Collectors.toList());
-						 
-					for(GetExistingBrokerRes data : list) {
-						GetExistingBrokerListRes res = new GetExistingBrokerListRes();
-						res = dozerMapper.map(data, GetExistingBrokerListRes.class);
-						resList.add(res);
-						}
-				}		
-				
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Log Details" + e.getMessage());
-				return null;
 			}
-			return resList ;
-		}
-		
 
-		private List<GetExistingBrokerRes> getExistingBrokerListMotor(GetExistingBrokerListReq req) {
-			List<Tuple> list = new ArrayList<Tuple>();
-			List<Tuple> list1 = new ArrayList<Tuple>();
-			List<GetExistingBrokerRes> resList = new ArrayList<GetExistingBrokerRes>();
-			try {
-				 CriteriaBuilder cb = em.getCriteriaBuilder();
-				 CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
-				 
-				 Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class); 
-				 
-				 query.multiselect(
-						 m.get("customerCode").alias("code"),
-						 m.get("customerName").alias("codeDesc"),
-						 m.get("sourceType").alias("type")
-						 ).distinct(true) ;
-				 
-				 List<Predicate> predics = new ArrayList<Predicate>();
-				 predics.add(cb.equal(m.get("applicationId"), req.getLoginId()));
-				 predics.add(cb.equal(m.get("status"), req.getStatus()));
-				 predics.add(cb.equal(m.get("productId"), req.getProductId()));
-				 predics.add(cb.equal(m.get("companyId"), req.getCompanyId()));
-				 predics.add(cb.isNotNull(m.get("bdmCode")));
-				 
-				 query.where(predics.toArray(new Predicate[0]));
-				 
-				 TypedQuery<Tuple> typedQuery = em.createQuery(query);
-				 list=  typedQuery.getResultList();
-				 list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
-				 if(list!=null && list.size()>0) {
-					 
-					 for(Tuple data : list) {
-						 GetExistingBrokerRes res = new GetExistingBrokerRes();
-						 res.setCode(data.get("code")==null?"":	data.get("code").toString());
-						 res.setCodeDesc(data.get("codeDesc")==null?"":	data.get("codeDesc").toString());
-						 res.setType(data.get("type")==null?"":	data.get("type").toString());
-						 resList.add(res);
-					
-					 }
-				 }	
-				 
-				 CriteriaBuilder cb1 = em.getCriteriaBuilder();
-				 CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
-				 
-				 Root<EserviceMotorDetails> m1 = query1.from(EserviceMotorDetails.class); 
-				 
-				 query1.multiselect(
-						 m1.get("agencyCode").alias("code"),
-						 m1.get("loginId").alias("codeDesc"),
-						 m1.get("sourceType").alias("type")
-						 ).distinct(true) ;
-				 
-				 List<Predicate> predics1 = new ArrayList<Predicate>();
-				 predics1.add(cb1.equal(m1.get("applicationId"), req.getLoginId()));
-				 predics1.add(cb1.equal(m1.get("status"), req.getStatus()));
-				 predics1.add(cb1.equal(m1.get("productId"), req.getProductId()));
-				 predics1.add(cb1.equal(m1.get("companyId"), req.getCompanyId()));
-				 predics1.add(cb1.isNull(m1.get("bdmCode")));
-				 
-				 query1.where(predics1.toArray(new Predicate[0]));
-				 
-				 TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
-				 list1=  typedQuery1.getResultList();
-				 list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
-				 if(list1!=null && list1.size()>0) {
-					 
-					 for(Tuple data : list1) {
-						 GetExistingBrokerRes res = new GetExistingBrokerRes();
-						 res.setCode(data.get("code")==null?"":	data.get("code").toString());
-						 res.setCodeDesc(data.get("codeDesc")==null?"":	data.get("codeDesc").toString());
-						 res.setType(data.get("type")==null?"":	data.get("type").toString());
-						 resList.add(res);
-					
-					 }
-				 }	
-				
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Log Details" + e.getMessage());
-				return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	private List<GetExistingBrokerRes> getExistingBrokerListMotor(GetExistingBrokerListReq req) {
+		List<Tuple> list = new ArrayList<Tuple>();
+		List<Tuple> list1 = new ArrayList<Tuple>();
+		List<GetExistingBrokerRes> resList = new ArrayList<GetExistingBrokerRes>();
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+			Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
+
+			query.multiselect(m.get("customerCode").alias("code"), m.get("customerName").alias("codeDesc"),
+					m.get("sourceType").alias("type")).distinct(true);
+
+			List<Predicate> predics = new ArrayList<Predicate>();
+			predics.add(cb.equal(m.get("applicationId"), req.getLoginId()));
+			predics.add(cb.equal(m.get("status"), req.getStatus()));
+			predics.add(cb.equal(m.get("productId"), req.getProductId()));
+			predics.add(cb.equal(m.get("companyId"), req.getCompanyId()));
+			predics.add(cb.isNotNull(m.get("bdmCode")));
+
+			query.where(predics.toArray(new Predicate[0]));
+
+			TypedQuery<Tuple> typedQuery = em.createQuery(query);
+			list = typedQuery.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+			if (list != null && list.size() > 0) {
+
+				for (Tuple data : list) {
+					GetExistingBrokerRes res = new GetExistingBrokerRes();
+					res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+					res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+					res.setType(data.get("type") == null ? "" : data.get("type").toString());
+					resList.add(res);
+
+				}
 			}
-			return resList ;
-		}
-		
 
-		private List<GetExistingBrokerRes> getExistingBrokerListCommon(GetExistingBrokerListReq req) {
-			
+			CriteriaBuilder cb1 = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
 
-			List<Tuple> list = new ArrayList<Tuple>();
-			List<Tuple> list1 = new ArrayList<Tuple>();
-			List<GetExistingBrokerRes> resList = new ArrayList<GetExistingBrokerRes>();
-			try {
-				 CriteriaBuilder cb = em.getCriteriaBuilder();
-				 CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
-				 
-				 Root<EserviceCommonDetails> m = query.from(EserviceCommonDetails.class); 
-				 
-				 query.multiselect(
-						 m.get("customerCode").alias("code"),
-						 m.get("customerName").alias("codeDesc"),
-						 m.get("sourceType").alias("type")
-						 ).distinct(true) ;
-				 
-				 List<Predicate> predics = new ArrayList<Predicate>();
-				 predics.add(cb.equal(m.get("applicationId"), req.getLoginId()));
-				 predics.add(cb.equal(m.get("status"), req.getStatus()));
-				 predics.add(cb.equal(m.get("productId"), req.getProductId()));
-				 predics.add(cb.equal(m.get("companyId"), req.getCompanyId()));
-				 predics.add(cb.isNotNull(m.get("bdmCode")));
-				 
-				 query.where(predics.toArray(new Predicate[0]));
-				 
-				 TypedQuery<Tuple> typedQuery = em.createQuery(query);
-				 list=  typedQuery.getResultList();
-				 list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList()); 
-				 if(list!=null && list.size()>0) {
-					 
-					 for(Tuple data : list) {
-						 GetExistingBrokerRes res = new GetExistingBrokerRes();
-						 res.setCode(data.get("code")==null?"":	data.get("code").toString());
-						 res.setCodeDesc(data.get("codeDesc")==null?"":	data.get("codeDesc").toString());
-						 res.setType(data.get("type")==null?"":	data.get("type").toString());
-						 resList.add(res);
-					
-					 }
-				 }	
-				 
-				 CriteriaBuilder cb1 = em.getCriteriaBuilder();
-				 CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
-				 
-				 Root<EserviceCommonDetails> m1 = query1.from(EserviceCommonDetails.class); 
-				 
-				 query1.multiselect(
-						 m1.get("agencyCode").alias("code"),
-						 m1.get("loginId").alias("codeDesc"),
-						 m1.get("sourceType").alias("type")
-						 ).distinct(true) ;
-				 
-				 List<Predicate> predics1 = new ArrayList<Predicate>();
-				 predics1.add(cb1.equal(m1.get("applicationId"), req.getLoginId()));
-				 predics1.add(cb1.equal(m1.get("status"), req.getStatus()));
-				 predics1.add(cb1.equal(m1.get("productId"), req.getProductId()));
-				 predics1.add(cb1.equal(m1.get("companyId"), req.getCompanyId()));
-				 predics1.add(cb1.isNull(m1.get("bdmCode")));
-				 
-				 query1.where(predics1.toArray(new Predicate[0]));
-				 
-				 TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
-				 list1=  typedQuery1.getResultList();
-				list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
-				 if(list1!=null && list1.size()>0) {
-					 
-					 for(Tuple data : list1) {
-						 GetExistingBrokerRes res = new GetExistingBrokerRes();
-						 res.setCode(data.get("code")==null?"":	data.get("code").toString());
-						 res.setCodeDesc(data.get("codeDesc")==null?"":	data.get("codeDesc").toString());
-						 res.setType(data.get("type")==null?"":	data.get("type").toString());
-						 resList.add(res);
-					
-					 }
-				 }	
-				
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Log Details" + e.getMessage());
-				return null;
+			Root<EserviceMotorDetails> m1 = query1.from(EserviceMotorDetails.class);
+
+			query1.multiselect(m1.get("agencyCode").alias("code"), m1.get("loginId").alias("codeDesc"),
+					m1.get("sourceType").alias("type")).distinct(true);
+
+			List<Predicate> predics1 = new ArrayList<Predicate>();
+			predics1.add(cb1.equal(m1.get("applicationId"), req.getLoginId()));
+			predics1.add(cb1.equal(m1.get("status"), req.getStatus()));
+			predics1.add(cb1.equal(m1.get("productId"), req.getProductId()));
+			predics1.add(cb1.equal(m1.get("companyId"), req.getCompanyId()));
+			predics1.add(cb1.isNull(m1.get("bdmCode")));
+
+			query1.where(predics1.toArray(new Predicate[0]));
+
+			TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
+			list1 = typedQuery1.getResultList();
+			list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code"))))
+					.collect(Collectors.toList());
+			if (list1 != null && list1.size() > 0) {
+
+				for (Tuple data : list1) {
+					GetExistingBrokerRes res = new GetExistingBrokerRes();
+					res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+					res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+					res.setType(data.get("type") == null ? "" : data.get("type").toString());
+					resList.add(res);
+
+				}
 			}
-			return resList ;
-		
-		}
 
-		private List<GetExistingBrokerRes> getExistingBrokerListAsset(GetExistingBrokerListReq req) {
-			List<Tuple> list = new ArrayList<Tuple>();
-			List<Tuple> list1 = new ArrayList<Tuple>();
-			List<GetExistingBrokerRes> resList = new ArrayList<GetExistingBrokerRes>();
-			try {
-				 CriteriaBuilder cb = em.getCriteriaBuilder();
-				 CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
-				 
-				 Root<EserviceBuildingDetails> m = query.from(EserviceBuildingDetails.class); 
-				 
-				 query.multiselect(
-						 m.get("customerCode").alias("code"),
-						 m.get("customerName").alias("codeDesc"),
-						 m.get("sourceType").alias("type")
-						 ).distinct(true) ;
-				 
-				 List<Predicate> predics = new ArrayList<Predicate>();
-				 predics.add(cb.equal(m.get("applicationId"), req.getLoginId()));
-				 predics.add(cb.equal(m.get("status"), req.getStatus()));
-				 predics.add(cb.equal(m.get("productId"), req.getProductId()));
-				 predics.add(cb.equal(m.get("companyId"), req.getCompanyId()));
-				 predics.add(cb.isNotNull(m.get("bdmCode")));
-				 
-				 query.where(predics.toArray(new Predicate[0]));
-				 
-				 TypedQuery<Tuple> typedQuery = em.createQuery(query);
-				 list=  typedQuery.getResultList();
-				 list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
-				 if(list!=null && list.size()>0) {
-					 
-					 for(Tuple data : list) {
-						 GetExistingBrokerRes res = new GetExistingBrokerRes();
-						 res.setCode(data.get("code")==null?"":	data.get("code").toString());
-						 res.setCodeDesc(data.get("codeDesc")==null?"":	data.get("codeDesc").toString());
-						 res.setType(data.get("type")==null?"":	data.get("type").toString());
-						 resList.add(res);
-					
-					 }
-				 }	
-				 
-				 CriteriaBuilder cb1 = em.getCriteriaBuilder();
-				 CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
-				 
-				 Root<EserviceBuildingDetails> m1 = query1.from(EserviceBuildingDetails.class); 
-				 
-				 query1.multiselect(
-						 m1.get("agencyCode").alias("code"),
-						 m1.get("loginId").alias("codeDesc"),
-						 m1.get("sourceType").alias("type")
-						 ).distinct(true) ;
-				 
-				 List<Predicate> predics1 = new ArrayList<Predicate>();
-				 predics1.add(cb1.equal(m1.get("applicationId"), req.getLoginId()));
-				 predics1.add(cb1.equal(m1.get("status"), req.getStatus()));
-				 predics1.add(cb1.equal(m1.get("productId"), req.getProductId()));
-				 predics1.add(cb1.equal(m1.get("companyId"), req.getCompanyId()));
-				 predics1.add(cb1.isNull(m1.get("bdmCode")));
-				 
-				 query1.where(predics1.toArray(new Predicate[0]));
-				 
-				 TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
-				 list1=  typedQuery1.getResultList();
-				 list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
-				 if(list1!=null && list1.size()>0) {
-					 
-					 for(Tuple data : list1) {
-						 GetExistingBrokerRes res = new GetExistingBrokerRes();
-						 res.setCode(data.get("code")==null?"":	data.get("code").toString());
-						 res.setCodeDesc(data.get("codeDesc")==null?"":	data.get("codeDesc").toString());
-						 res.setType(data.get("type")==null?"":	data.get("type").toString());
-						 resList.add(res);
-					
-					 }
-				 }	
-				
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Log Details" + e.getMessage());
-				return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	private List<GetExistingBrokerRes> getExistingBrokerListCommon(GetExistingBrokerListReq req) {
+
+		List<Tuple> list = new ArrayList<Tuple>();
+		List<Tuple> list1 = new ArrayList<Tuple>();
+		List<GetExistingBrokerRes> resList = new ArrayList<GetExistingBrokerRes>();
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+			Root<EserviceCommonDetails> m = query.from(EserviceCommonDetails.class);
+
+			query.multiselect(m.get("customerCode").alias("code"), m.get("customerName").alias("codeDesc"),
+					m.get("sourceType").alias("type")).distinct(true);
+
+			List<Predicate> predics = new ArrayList<Predicate>();
+			predics.add(cb.equal(m.get("applicationId"), req.getLoginId()));
+			predics.add(cb.equal(m.get("status"), req.getStatus()));
+			predics.add(cb.equal(m.get("productId"), req.getProductId()));
+			predics.add(cb.equal(m.get("companyId"), req.getCompanyId()));
+			predics.add(cb.isNotNull(m.get("bdmCode")));
+
+			query.where(predics.toArray(new Predicate[0]));
+
+			TypedQuery<Tuple> typedQuery = em.createQuery(query);
+			list = typedQuery.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+			if (list != null && list.size() > 0) {
+
+				for (Tuple data : list) {
+					GetExistingBrokerRes res = new GetExistingBrokerRes();
+					res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+					res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+					res.setType(data.get("type") == null ? "" : data.get("type").toString());
+					resList.add(res);
+
+				}
 			}
-			return resList ;
-		}
 
-		private List<GetExistingBrokerRes> getExistingBrokerListTravel(GetExistingBrokerListReq req) {
-			List<Tuple> list = new ArrayList<Tuple>();
-			List<Tuple> list1 = new ArrayList<Tuple>();
-			List<GetExistingBrokerRes> resList = new ArrayList<GetExistingBrokerRes>();
-			try {
-				 CriteriaBuilder cb = em.getCriteriaBuilder();
-				 CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
-				 
-				 Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class); 
-				 
-				 query.multiselect(
-						 m.get("customerCode").alias("code"),
-						 m.get("customerName").alias("codeDesc"),
-						 m.get("sourceType").alias("type")
-						 ).distinct(true) ;
-				 
-				 List<Predicate> predics = new ArrayList<Predicate>();
-				 predics.add(cb.equal(m.get("applicationId"), req.getLoginId()));
-				 predics.add(cb.equal(m.get("status"), req.getStatus()));
-				 predics.add(cb.equal(m.get("productId"), req.getProductId()));
-				 predics.add(cb.equal(m.get("companyId"), req.getCompanyId()));
-				 predics.add(cb.isNotNull(m.get("bdmCode")));
-				 
-				 query.where(predics.toArray(new Predicate[0]));
-				 
-				 TypedQuery<Tuple> typedQuery = em.createQuery(query);
-				 list=  typedQuery.getResultList();
-				 list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
-				 if(list!=null && list.size()>0) {
-					 
-					 for(Tuple data : list) {
-						 GetExistingBrokerRes res = new GetExistingBrokerRes();
-						 res.setCode(data.get("code")==null?"":	data.get("code").toString());
-						 res.setCodeDesc(data.get("codeDesc")==null?"":	data.get("codeDesc").toString());
-						 res.setType(data.get("type")==null?"":	data.get("type").toString());
-						 resList.add(res);
-					
-					 }
-				 }	
-				 
-				 CriteriaBuilder cb1 = em.getCriteriaBuilder();
-				 CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
-				 
-				 Root<EserviceTravelDetails> m1 = query1.from(EserviceTravelDetails.class); 
-				 
-				 query1.multiselect(
-						 m1.get("agencyCode").alias("code"),
-						 m1.get("loginId").alias("codeDesc"),
-						 m1.get("sourceType").alias("type")
-						 ).distinct(true) ;
-				 
-				 List<Predicate> predics1 = new ArrayList<Predicate>();
-				 predics1.add(cb1.equal(m1.get("applicationId"), req.getLoginId()));
-				 predics1.add(cb1.equal(m1.get("status"), req.getStatus()));
-				 predics1.add(cb1.equal(m1.get("productId"), req.getProductId()));
-				 predics1.add(cb1.equal(m1.get("companyId"), req.getCompanyId()));
-				 predics1.add(cb1.isNull(m1.get("bdmCode")));
-				 
-				 query1.where(predics1.toArray(new Predicate[0]));
-				 
-				 TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
-				 list1=  typedQuery1.getResultList();
-				 list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
-				 if(list1!=null && list1.size()>0) {
-					 
-					 for(Tuple data : list1) {
-						 GetExistingBrokerRes res = new GetExistingBrokerRes();
-						 res.setCode(data.get("code")==null?"":	data.get("code").toString());
-						 res.setCodeDesc(data.get("codeDesc")==null?"":	data.get("codeDesc").toString());
-						 res.setType(data.get("type")==null?"":	data.get("type").toString());
-						 resList.add(res);
-					
-					 }
-				 }	
-				
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Log Details" + e.getMessage());
-				return null;
+			CriteriaBuilder cb1 = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
+
+			Root<EserviceCommonDetails> m1 = query1.from(EserviceCommonDetails.class);
+
+			query1.multiselect(m1.get("agencyCode").alias("code"), m1.get("loginId").alias("codeDesc"),
+					m1.get("sourceType").alias("type")).distinct(true);
+
+			List<Predicate> predics1 = new ArrayList<Predicate>();
+			predics1.add(cb1.equal(m1.get("applicationId"), req.getLoginId()));
+			predics1.add(cb1.equal(m1.get("status"), req.getStatus()));
+			predics1.add(cb1.equal(m1.get("productId"), req.getProductId()));
+			predics1.add(cb1.equal(m1.get("companyId"), req.getCompanyId()));
+			predics1.add(cb1.isNull(m1.get("bdmCode")));
+
+			query1.where(predics1.toArray(new Predicate[0]));
+
+			TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
+			list1 = typedQuery1.getResultList();
+			list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code"))))
+					.collect(Collectors.toList());
+			if (list1 != null && list1.size() > 0) {
+
+				for (Tuple data : list1) {
+					GetExistingBrokerRes res = new GetExistingBrokerRes();
+					res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+					res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+					res.setType(data.get("type") == null ? "" : data.get("type").toString());
+					resList.add(res);
+
+				}
 			}
-			return resList ;
-		}
 
-		
-	
-		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+
+	}
+
+	private List<GetExistingBrokerRes> getExistingBrokerListAsset(GetExistingBrokerListReq req) {
+		List<Tuple> list = new ArrayList<Tuple>();
+		List<Tuple> list1 = new ArrayList<Tuple>();
+		List<GetExistingBrokerRes> resList = new ArrayList<GetExistingBrokerRes>();
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+			Root<EserviceBuildingDetails> m = query.from(EserviceBuildingDetails.class);
+
+			query.multiselect(m.get("customerCode").alias("code"), m.get("customerName").alias("codeDesc"),
+					m.get("sourceType").alias("type")).distinct(true);
+
+			List<Predicate> predics = new ArrayList<Predicate>();
+			predics.add(cb.equal(m.get("applicationId"), req.getLoginId()));
+			predics.add(cb.equal(m.get("status"), req.getStatus()));
+			predics.add(cb.equal(m.get("productId"), req.getProductId()));
+			predics.add(cb.equal(m.get("companyId"), req.getCompanyId()));
+			predics.add(cb.isNotNull(m.get("bdmCode")));
+
+			query.where(predics.toArray(new Predicate[0]));
+
+			TypedQuery<Tuple> typedQuery = em.createQuery(query);
+			list = typedQuery.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+			if (list != null && list.size() > 0) {
+
+				for (Tuple data : list) {
+					GetExistingBrokerRes res = new GetExistingBrokerRes();
+					res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+					res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+					res.setType(data.get("type") == null ? "" : data.get("type").toString());
+					resList.add(res);
+
+				}
+			}
+
+			CriteriaBuilder cb1 = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
+
+			Root<EserviceBuildingDetails> m1 = query1.from(EserviceBuildingDetails.class);
+
+			query1.multiselect(m1.get("agencyCode").alias("code"), m1.get("loginId").alias("codeDesc"),
+					m1.get("sourceType").alias("type")).distinct(true);
+
+			List<Predicate> predics1 = new ArrayList<Predicate>();
+			predics1.add(cb1.equal(m1.get("applicationId"), req.getLoginId()));
+			predics1.add(cb1.equal(m1.get("status"), req.getStatus()));
+			predics1.add(cb1.equal(m1.get("productId"), req.getProductId()));
+			predics1.add(cb1.equal(m1.get("companyId"), req.getCompanyId()));
+			predics1.add(cb1.isNull(m1.get("bdmCode")));
+
+			query1.where(predics1.toArray(new Predicate[0]));
+
+			TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
+			list1 = typedQuery1.getResultList();
+			list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code"))))
+					.collect(Collectors.toList());
+			if (list1 != null && list1.size() > 0) {
+
+				for (Tuple data : list1) {
+					GetExistingBrokerRes res = new GetExistingBrokerRes();
+					res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+					res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+					res.setType(data.get("type") == null ? "" : data.get("type").toString());
+					resList.add(res);
+
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	private List<GetExistingBrokerRes> getExistingBrokerListTravel(GetExistingBrokerListReq req) {
+		List<Tuple> list = new ArrayList<Tuple>();
+		List<Tuple> list1 = new ArrayList<Tuple>();
+		List<GetExistingBrokerRes> resList = new ArrayList<GetExistingBrokerRes>();
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+			Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
+
+			query.multiselect(m.get("customerCode").alias("code"), m.get("customerName").alias("codeDesc"),
+					m.get("sourceType").alias("type")).distinct(true);
+
+			List<Predicate> predics = new ArrayList<Predicate>();
+			predics.add(cb.equal(m.get("applicationId"), req.getLoginId()));
+			predics.add(cb.equal(m.get("status"), req.getStatus()));
+			predics.add(cb.equal(m.get("productId"), req.getProductId()));
+			predics.add(cb.equal(m.get("companyId"), req.getCompanyId()));
+			predics.add(cb.isNotNull(m.get("bdmCode")));
+
+			query.where(predics.toArray(new Predicate[0]));
+
+			TypedQuery<Tuple> typedQuery = em.createQuery(query);
+			list = typedQuery.getResultList();
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+			if (list != null && list.size() > 0) {
+
+				for (Tuple data : list) {
+					GetExistingBrokerRes res = new GetExistingBrokerRes();
+					res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+					res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+					res.setType(data.get("type") == null ? "" : data.get("type").toString());
+					resList.add(res);
+
+				}
+			}
+
+			CriteriaBuilder cb1 = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
+
+			Root<EserviceTravelDetails> m1 = query1.from(EserviceTravelDetails.class);
+
+			query1.multiselect(m1.get("agencyCode").alias("code"), m1.get("loginId").alias("codeDesc"),
+					m1.get("sourceType").alias("type")).distinct(true);
+
+			List<Predicate> predics1 = new ArrayList<Predicate>();
+			predics1.add(cb1.equal(m1.get("applicationId"), req.getLoginId()));
+			predics1.add(cb1.equal(m1.get("status"), req.getStatus()));
+			predics1.add(cb1.equal(m1.get("productId"), req.getProductId()));
+			predics1.add(cb1.equal(m1.get("companyId"), req.getCompanyId()));
+			predics1.add(cb1.isNull(m1.get("bdmCode")));
+
+			query1.where(predics1.toArray(new Predicate[0]));
+
+			TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
+			list1 = typedQuery1.getResultList();
+			list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code"))))
+					.collect(Collectors.toList());
+			if (list1 != null && list1.size() > 0) {
+
+				for (Tuple data : list1) {
+					GetExistingBrokerRes res = new GetExistingBrokerRes();
+					res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+					res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+					res.setType(data.get("type") == null ? "" : data.get("type").toString());
+					resList.add(res);
+
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
 //__________________________________________________________________________________________________
-		@Override
-		public List<GetExistingBrokerListRes> getBrokerUserList(ExistingBrokerUserListReq req) {
-			List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
-			try {
-				Date today = new Date();
-				Calendar cal = new GregorianCalendar();
-				cal.setTime(today);
-				cal.set(Calendar.HOUR_OF_DAY, 23);
-				cal.set(Calendar.MINUTE, 1);
-				today = cal.getTime();
-				cal.set(Calendar.HOUR_OF_DAY, 1);
-				cal.set(Calendar.MINUTE, 1);
-				cal.add(Calendar.DAY_OF_MONTH, -30);
-				Date before30 = cal.getTime();
-			
-				//Finding Product
-				
-				CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(),
-						req.getProductId().toString());
-				
-				if (product.getMotorYn().equalsIgnoreCase("M")) {
-					resList = motService.getMotorExistingDropdown(req, today,before30);
-				} /*else if (product.getMotorYn().equalsIgnoreCase("H")
-						&& req.getProductId().equalsIgnoreCase(travelProductId)) {
-					resList = traService.getTravelExistingDropdown(req,today,before30);
-				} else if (product.getMotorYn().equalsIgnoreCase("A")) {
-					resList = buiService.getBuildingExistingDropdown(req, today,before30);
-				} else {
-					resList = commonService.getCommonExistingDropdown(req, today,before30);
+	@Override
+	public List<GetExistingBrokerListRes> getBrokerUserList(ExistingBrokerUserListReq req) {
+		List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			cal.add(Calendar.DAY_OF_MONTH, -30);
+			Date before30 = cal.getTime();
 
-				}*/
+			// Finding Product
 
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Log Details" + e.getMessage());
-				return null;
+			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(),
+					req.getProductId().toString());
+
+			if (product.getMotorYn().equalsIgnoreCase("M")) {
+				resList = motService.getMotorExistingDropdown(req, today, before30);
+			} else if (product.getMotorYn().equalsIgnoreCase("H")
+					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+				resList = traService.getTravelExistingDropdown(req, today, before30);
+			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+				resList = buiService.getBuildingExistingDropdown(req, today, before30);
+			} else {
+				resList = commonService.getCommonExistingDropdown(req, today, before30);
+
 			}
-			return resList;
-		}
 
-		@Override
-		public List<GetExistingBrokerListRes> getPortfolioBrokerUserList(ExistingBrokerUserListReq req) {
-			List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
-			List<Tuple> list = new ArrayList<Tuple>();
-			try {
-				Date today = new Date();
-				Calendar cal = new GregorianCalendar();
-				cal.setTime(today);
-				cal.set(Calendar.HOUR_OF_DAY, 23);
-				cal.set(Calendar.MINUTE, 1);
-				today = cal.getTime();
-				if(!("issuer".equalsIgnoreCase(req.getUserType()))){		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public List<GetExistingBrokerListRes> getPortfolioBrokerUserList(ExistingBrokerUserListReq req) {
+		List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+		List<Tuple> list = new ArrayList<Tuple>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			if (!("issuer".equalsIgnoreCase(req.getUserType()))) {
 				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
 
@@ -4460,19 +4281,18 @@ public class GridServiceImpl implements GridService {
 				Predicate a1 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
 				agencyCode.where(a1);
 
-				
 				Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
-				//Predicate n2 = cb.isNotNull(m.get("applicationId"));
+				// Predicate n2 = cb.isNotNull(m.get("applicationId"));
 				Predicate n3 = cb.equal(m.get("status"), "P");
 				Predicate n4 = cb.equal(m.get("productId"), req.getProductId());
 				Predicate n5 = cb.equal(m.get("companyId"), req.getCompanyId());
 				Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
 				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), today);
 				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), today);
-				Predicate n9 = cb.notEqual(m.get("endtTypeId"),"842");   
-				Predicate n10 = cb.isNull(m.get("endtTypeId"));     
-				Predicate n11 = cb.or(n9,n10);
-				Predicate n12 =null;
+				Predicate n9 = cb.notEqual(m.get("endtTypeId"), "842");
+				Predicate n10 = cb.isNull(m.get("endtTypeId"));
+				Predicate n11 = cb.or(n9, n10);
+				Predicate n12 = null;
 				if ("Broker".equalsIgnoreCase(req.getUserType())) {
 					n12 = cb.equal(m.get("brokerCode"), agencyCode);
 				} else if ("User".equalsIgnoreCase(req.getUserType())) {
@@ -4480,11 +4300,12 @@ public class GridServiceImpl implements GridService {
 				}
 				Predicate n13 = cb.isNotNull(m.get("sourceType"));
 				Predicate n14 = cb.isNotNull(m.get("loginId"));
-				query.where(n1,n3,n4,n5,n6,n7,n8,n11,n12,n13,n14);
+				query.where(n1, n3, n4, n5, n6, n7, n8, n11, n12, n13, n14);
 
 				TypedQuery<Tuple> typedQuery1 = em.createQuery(query);
 				list = typedQuery1.getResultList();
-				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("codeDesc")))).collect(Collectors.toList());
+				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("codeDesc"))))
+						.collect(Collectors.toList());
 				if (list != null && list.size() > 0) {
 
 					for (Tuple data : list) {
@@ -4497,25 +4318,25 @@ public class GridServiceImpl implements GridService {
 
 					}
 				}
-				}else {
-					resList=getPortfolioActiveIssuerMotor(req,today) ;
-				}
-		
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Log Details" + e.getMessage());
-				return null;
+			} else {
+				resList = getPortfolioActiveIssuerMotor(req, today);
 			}
-			return resList;
-		}
 
-		private List<GetExistingBrokerListRes> getPortfolioActiveIssuerMotor(ExistingBrokerUserListReq req, Date today) {
-			List<Tuple> list = new ArrayList<Tuple>();
-			List<Tuple> list1 = new ArrayList<Tuple>();
-			List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
-			try {
-				{CriteriaBuilder cb = em.getCriteriaBuilder();
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	private List<GetExistingBrokerListRes> getPortfolioActiveIssuerMotor(ExistingBrokerUserListReq req, Date today) {
+		List<Tuple> list = new ArrayList<Tuple>();
+		List<Tuple> list1 = new ArrayList<Tuple>();
+		List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+		try {
+			{
+				CriteriaBuilder cb = em.getCriteriaBuilder();
 				CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
 
 				Root<HomePositionMaster> m = query.from(HomePositionMaster.class);
@@ -4530,15 +4351,16 @@ public class GridServiceImpl implements GridService {
 				Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
 				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), today);
 				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), today);
-				Predicate n9 = cb.notEqual(m.get("endtTypeId"),"842");   
-				Predicate n10 = cb.isNull(m.get("endtTypeId"));     
-				Predicate n11 = cb.or(n9,n10);
-				Predicate n12 =cb.isNotNull(m.get("bdmCode"));
-				query.where(n1,n2,n3,n4,n5,n6,n7,n8,n11,n12);
+				Predicate n9 = cb.notEqual(m.get("endtTypeId"), "842");
+				Predicate n10 = cb.isNull(m.get("endtTypeId"));
+				Predicate n11 = cb.or(n9, n10);
+				Predicate n12 = cb.isNotNull(m.get("bdmCode"));
+				query.where(n1, n2, n3, n4, n5, n6, n7, n8, n11, n12);
 
 				TypedQuery<Tuple> typedQuery = em.createQuery(query);
 				list = typedQuery.getResultList();
-				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code"))))
+						.collect(Collectors.toList());
 				if (list != null && list.size() > 0) {
 
 					for (Tuple data : list) {
@@ -4550,8 +4372,9 @@ public class GridServiceImpl implements GridService {
 
 					}
 				}
-				}
-				{CriteriaBuilder cb1 = em.getCriteriaBuilder();
+			}
+			{
+				CriteriaBuilder cb1 = em.getCriteriaBuilder();
 				CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
 
 				Root<HomePositionMaster> m1 = query1.from(HomePositionMaster.class);
@@ -4567,15 +4390,16 @@ public class GridServiceImpl implements GridService {
 				Predicate n6 = cb1.equal(m1.get("branchCode"), req.getBranchCode());
 				Predicate n7 = cb1.greaterThanOrEqualTo(m1.get("expiryDate"), today);
 				Predicate n8 = cb1.lessThanOrEqualTo(m1.get("entryDate"), today);
-				Predicate n9 = cb1.notEqual(m1.get("endtTypeId"),"842");   
-				Predicate n10 = cb1.isNull(m1.get("endtTypeId"));     
-				Predicate n11 = cb1.or(n9,n10);
+				Predicate n9 = cb1.notEqual(m1.get("endtTypeId"), "842");
+				Predicate n10 = cb1.isNull(m1.get("endtTypeId"));
+				Predicate n11 = cb1.or(n9, n10);
 				Predicate n12 = cb1.isNull(m1.get("bdmCode"));
-				query1.where(n1,n2,n3,n4,n5,n6,n7,n8,n11,n12);
+				query1.where(n1, n2, n3, n4, n5, n6, n7, n8, n11, n12);
 
 				TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
 				list1 = typedQuery1.getResultList();
-				list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
+				list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code"))))
+						.collect(Collectors.toList());
 				if (list1 != null && list1.size() > 0) {
 
 					for (Tuple data : list1) {
@@ -4587,300 +4411,436 @@ public class GridServiceImpl implements GridService {
 
 					}
 				}
-				}
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Log Details" + e.getMessage());
-				return null;
 			}
-			return resList;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
 		}
+		return resList;
+	}
 
-		//Portfolio  Pending Dropdown
-		@Override
-		public List<GetExistingBrokerListRes> getPortfolioPendingDropdown(ExistingBrokerUserListReq req) {
-			List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
-			try {
+	// Portfolio Pending Dropdown
+	@Override
+	public List<GetExistingBrokerListRes> getPortfolioPendingDropdown(ExistingBrokerUserListReq req) {
+		List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+		try {
 
-				Date today = new Date();
-				Calendar cal = new GregorianCalendar();
-				cal.setTime(today);
-				cal.set(Calendar.HOUR_OF_DAY, 23);
-				cal.set(Calendar.MINUTE, 1);
-				today = cal.getTime();
-				CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(),
-						req.getProductId().toString());
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(),
+					req.getProductId().toString());
 
-				if (product.getMotorYn().equalsIgnoreCase("M")) {
-					resList = motService.getMotorProtfolioDropdownPending(req, today);
-				} /*
-					 * else if (product.getMotorYn().equalsIgnoreCase("H") &&
-					 * req.getProductId().equalsIgnoreCase(travelProductId)) { resList =
-					 * traService.getTravelProtfolioDropdownPending(req,today); } else if
-					 * (product.getMotorYn().equalsIgnoreCase("A")) { resList =
-					 * buiService.getBuildingProtfolioDropdownPending(req, today); } else { resList
-					 * = commonService.getCommonProtfolioDropdownPending(req, today);
-					 * 
-					 * }
-					 */
+			if (product.getMotorYn().equalsIgnoreCase("M")) {
+				resList = motService.getMotorProtfolioDropdownPending(req, today);
+			} 
+			else if (product.getMotorYn().equalsIgnoreCase("H")
+					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+				resList = traService.getTravelProtfolioDropdownPending(req, today);
+			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+				resList = buiService.getBuildingProtfolioDropdownPending(req, today);
+			} else {
+				resList = commonService.getCommonProtfolioDropdownPending(req, today);
 
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Log Details" + e.getMessage());
-				return null;
 			}
-			return resList;
+				
 
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
 		}
-
-		@Override
-		public List<GetExistingBrokerListRes> getCancelPolicyIssuerDropdownList(ExistingBrokerUserListReq req) {
-			List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
-			List<Tuple> list = new ArrayList<Tuple>();
-			try {
-				Date today = new Date();
-				Calendar cal = new GregorianCalendar();
-				cal.setTime(today);
-				cal.set(Calendar.HOUR_OF_DAY, 23);
-				cal.set(Calendar.MINUTE, 1);
-				today = cal.getTime();
-				if (!("issuer".equalsIgnoreCase(req.getUserType()))) {
-					CriteriaBuilder cb = em.getCriteriaBuilder();
-					CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
-
-					Root<HomePositionMaster> m = query.from(HomePositionMaster.class);
-					query.multiselect(m.get("agencyCode").alias("code"), m.get("loginId").alias("codeDesc"),
-							m.get("sourceType").alias("type"));
-
-					// Find All
-					Subquery<Long> agencyCode = query.subquery(Long.class);
-					Root<LoginMaster> ocpm1 = agencyCode.from(LoginMaster.class);
-					agencyCode.select(ocpm1.get("agencyCode"));
-					Predicate a1 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
-					agencyCode.where(a1);
-
-					Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
-					// Predicate n2 = cb.isNotNull(m.get("applicationId"));
-					Predicate n3 = cb.equal(m.get("status"), "P");
-					Predicate n4 = cb.equal(m.get("productId"), req.getProductId());
-					Predicate n5 = cb.equal(m.get("companyId"), req.getCompanyId());
-					Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
-					Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), today);
-					Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), today);
-					Predicate n9 = cb.equal(m.get("endtTypeId"), "842");
-					Predicate n12 = null;
-					if ("Broker".equalsIgnoreCase(req.getUserType())) {
-						n12 = cb.equal(m.get("brokerCode"), agencyCode);
-					} else if ("User".equalsIgnoreCase(req.getUserType())) {
-						n12 = cb.equal(m.get("agencyCode"), agencyCode);
-					}
-					Predicate n13 = cb.isNotNull(m.get("sourceType"));
-					Predicate n14 = cb.isNotNull(m.get("loginId"));
-					query.where(n1, n3, n4, n5, n6, n7, n8, n9, n12, n13, n14);
-
-					TypedQuery<Tuple> typedQuery1 = em.createQuery(query);
-					list = typedQuery1.getResultList();
-					list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("codeDesc"))))
-							.collect(Collectors.toList());
-					if (list != null && list.size() > 0) {
-
-						for (Tuple data : list) {
-							GetExistingBrokerListRes res = new GetExistingBrokerListRes();
-
-							res.setCode(data.get("code") == null ? "" : data.get("code").toString());
-							res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
-							res.setType(data.get("type") == null ? "" : data.get("type").toString());
-							resList.add(res);
-
-						}
-					}
-				} else {
-					resList = getPortfolioCancelIssuerMotor(req, today);
-				}
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Log Details" + e.getMessage());
-				return null;
-			}
-			return resList;
-		}
-		
-
-
-		private List<GetExistingBrokerListRes> getPortfolioCancelIssuerMotor(ExistingBrokerUserListReq req, Date today) {
-			List<Tuple> list = new ArrayList<Tuple>();
-			List<Tuple> list1 = new ArrayList<Tuple>();
-			List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
-			try {
-				{CriteriaBuilder cb = em.getCriteriaBuilder();
-				CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
-
-				Root<HomePositionMaster> m = query.from(HomePositionMaster.class);
-
-				query.multiselect(m.get("customerCode").alias("code"), m.get("customerName").alias("codeDesc"),
-						m.get("sourceType").alias("type"));
-				Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
-				Predicate n2 = cb.isNotNull(m.get("applicationId"));
-				Predicate n3 = cb.equal(m.get("status"), "P");
-				Predicate n4 = cb.equal(m.get("productId"), req.getProductId());
-				Predicate n5 = cb.equal(m.get("companyId"), req.getCompanyId());
-				Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
-				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), today);
-				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), today);
-				Predicate n9 = cb.notEqual(m.get("endtTypeId"),"842"); 
-				Predicate n10 = cb.isNotNull(m.get("bdmCode"));
-				query.where(n1,n2,n3,n4,n5,n6,n7,n8,n9,n10);
-
-				TypedQuery<Tuple> typedQuery = em.createQuery(query);
-				list = typedQuery.getResultList();
-				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
-				if (list != null && list.size() > 0) {
-
-					for (Tuple data : list) {
-						GetExistingBrokerListRes res = new GetExistingBrokerListRes();
-						res.setCode(data.get("code") == null ? "" : data.get("code").toString());
-						res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
-						res.setType(data.get("type") == null ? "" : data.get("type").toString());
-						resList.add(res);
-
-					}
-				}
-				}
-				{CriteriaBuilder cb1 = em.getCriteriaBuilder();
-				CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
-
-				Root<HomePositionMaster> m1 = query1.from(HomePositionMaster.class);
-
-				query1.multiselect(m1.get("brokerCode").alias("code"), m1.get("loginId").alias("codeDesc"),
-						m1.get("sourceType").alias("type"));
-
-				Predicate n1 = cb1.equal(m1.get("applicationId"), req.getApplicationId());
-				Predicate n2 = cb1.isNotNull(m1.get("applicationId"));
-				Predicate n3 = cb1.equal(m1.get("status"), "P");
-				Predicate n4 = cb1.equal(m1.get("productId"), req.getProductId());
-				Predicate n5 = cb1.equal(m1.get("companyId"), req.getCompanyId());
-				Predicate n6 = cb1.equal(m1.get("branchCode"), req.getBranchCode());
-				Predicate n7 = cb1.greaterThanOrEqualTo(m1.get("expiryDate"), today);
-				Predicate n8 = cb1.lessThanOrEqualTo(m1.get("entryDate"), today);
-				Predicate n9 = cb1.notEqual(m1.get("endtTypeId"),"842"); 
-				Predicate n10 = cb1.isNull(m1.get("bdmCode"));
-				query1.where(n1,n2,n3,n4,n5,n6,n7,n8,n9,n10);
-
-				TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
-				list1 = typedQuery1.getResultList();
-				list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code")))).collect(Collectors.toList());
-				if (list1 != null && list1.size() > 0) {
-
-					for (Tuple data : list1) {
-						GetExistingBrokerListRes res = new GetExistingBrokerListRes();
-						res.setCode(data.get("code") == null ? "" : data.get("code").toString());
-						res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
-						res.setType(data.get("type") == null ? "" : data.get("type").toString());
-						resList.add(res);
-
-					}
-				}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Log Details" + e.getMessage());
-				return null;
-			}
-			return resList;
-		}
-		
-		@Override //dropdown
-		public List<GetExistingBrokerListRes> getBrokerUserListLapsed(ExistingBrokerUserListReq req) {
-			List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
-		
-			try {
-				Date today = new Date();
-				Calendar cal = new GregorianCalendar();
-				cal.setTime(today);
-				cal.set(Calendar.HOUR_OF_DAY, 23);
-				cal.set(Calendar.MINUTE, 1);
-				today = cal.getTime();
-				cal.set(Calendar.HOUR_OF_DAY, 1);
-				cal.set(Calendar.MINUTE, 1);
-				cal.add(Calendar.DAY_OF_MONTH, -30);
-				Date before30 = cal.getTime();
-				
-				CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(),
-						req.getProductId().toString());
-
-				
-				// Product Wise Get
-				if (product.getMotorYn().equalsIgnoreCase("M")) { //Motor
-					
-					resList = motService.getBrokerUserListLapsedMotor(req, today, before30);
-					
-				} else if (product.getMotorYn().equalsIgnoreCase("H")&& req.getProductId().equalsIgnoreCase(travelProductId)) {//Travel
-					
-					resList = traService.getBrokerUserListLapsedTravel(req, today, before30);
-					
-				} else if (product.getMotorYn().equalsIgnoreCase("A")) { //Asset
-					
-					resList = buiService.getBrokerUserListLapsedAsset(req, today, before30);
-				} else {  // Common
-					
-					resList = commonService.getBrokerUserListLapsedCommon(req, today, before30);
-				}
-				
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Log Details" + e.getMessage());
-				return null;
-			}
-			return resList;
-		}
-
-		@Override //dropdown
-		public List<GetExistingBrokerListRes> getBrokerUserListRejected(ExistingBrokerUserListReq req) {
-			List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
-			
-			try {
-				Date today = new Date();
-				Calendar cal = new GregorianCalendar();
-				cal.setTime(today);
-				cal.set(Calendar.HOUR_OF_DAY, 23);
-				cal.set(Calendar.MINUTE, 1);
-				today = cal.getTime();
-				cal.set(Calendar.HOUR_OF_DAY, 1);
-				cal.set(Calendar.MINUTE, 1);
-				cal.add(Calendar.DAY_OF_MONTH, -30);
-				Date before30 = cal.getTime();
-				
-				CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(),
-						req.getProductId().toString());
-
-				
-				// Product Wise Get
-				if (product.getMotorYn().equalsIgnoreCase("M")) { //Motor
-					
-					resList = motService.getBrokerUserListMotorRejected(req, today, before30);
-					
-				} else if (product.getMotorYn().equalsIgnoreCase("H")&& req.getProductId().equalsIgnoreCase(travelProductId)) {//Travel
-					
-					resList = traService.getBrokerUserListTravelRejected(req, today, before30);
-					
-				} else if (product.getMotorYn().equalsIgnoreCase("A")) { //Asset
-					
-					resList = buiService.getBrokerUserListBuildingRejected(req, today, before30);
-				} else {  // Common
-					
-					resList = commonService.getBrokerUserListCommonRejected(req, today, before30);
-				}
-				
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Log Details" + e.getMessage());
-				return null;
-			}
-			return resList;
-		}
+		return resList;
 
 	}
+
+	@Override
+	public List<GetExistingBrokerListRes> getCancelPolicyIssuerDropdownList(ExistingBrokerUserListReq req) {
+		List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+		List<Tuple> list = new ArrayList<Tuple>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			if (!("issuer".equalsIgnoreCase(req.getUserType()))) {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+				Root<HomePositionMaster> m = query.from(HomePositionMaster.class);
+				query.multiselect(m.get("agencyCode").alias("code"), m.get("loginId").alias("codeDesc"),
+						m.get("sourceType").alias("type"));
+
+				// Find All
+				Subquery<Long> agencyCode = query.subquery(Long.class);
+				Root<LoginMaster> ocpm1 = agencyCode.from(LoginMaster.class);
+				agencyCode.select(ocpm1.get("agencyCode"));
+				Predicate a1 = cb.equal(ocpm1.get("loginId"), req.getLoginId());
+				agencyCode.where(a1);
+
+				Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
+				// Predicate n2 = cb.isNotNull(m.get("applicationId"));
+				Predicate n3 = cb.equal(m.get("status"), "P");
+				Predicate n4 = cb.equal(m.get("productId"), req.getProductId());
+				Predicate n5 = cb.equal(m.get("companyId"), req.getCompanyId());
+				Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
+				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), today);
+				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), today);
+				Predicate n9 = cb.equal(m.get("endtTypeId"), "842");
+				Predicate n12 = null;
+				if ("Broker".equalsIgnoreCase(req.getUserType())) {
+					n12 = cb.equal(m.get("brokerCode"), agencyCode);
+				} else if ("User".equalsIgnoreCase(req.getUserType())) {
+					n12 = cb.equal(m.get("agencyCode"), agencyCode);
+				}
+				Predicate n13 = cb.isNotNull(m.get("sourceType"));
+				Predicate n14 = cb.isNotNull(m.get("loginId"));
+				query.where(n1, n3, n4, n5, n6, n7, n8, n9, n12, n13, n14);
+
+				TypedQuery<Tuple> typedQuery1 = em.createQuery(query);
+				list = typedQuery1.getResultList();
+				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("codeDesc"))))
+						.collect(Collectors.toList());
+				if (list != null && list.size() > 0) {
+
+					for (Tuple data : list) {
+						GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+
+						res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+						res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+						res.setType(data.get("type") == null ? "" : data.get("type").toString());
+						resList.add(res);
+
+					}
+				}
+			} else {
+				resList = getPortfolioCancelIssuerMotor(req, today);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	private List<GetExistingBrokerListRes> getPortfolioCancelIssuerMotor(ExistingBrokerUserListReq req, Date today) {
+		List<Tuple> list = new ArrayList<Tuple>();
+		List<Tuple> list1 = new ArrayList<Tuple>();
+		List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+		try {
+			{
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+				Root<HomePositionMaster> m = query.from(HomePositionMaster.class);
+
+				query.multiselect(m.get("customerCode").alias("code"), m.get("customerName").alias("codeDesc"),
+						m.get("sourceType").alias("type"));
+				Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
+				Predicate n2 = cb.isNotNull(m.get("applicationId"));
+				Predicate n3 = cb.equal(m.get("status"), "P");
+				Predicate n4 = cb.equal(m.get("productId"), req.getProductId());
+				Predicate n5 = cb.equal(m.get("companyId"), req.getCompanyId());
+				Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
+				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), today);
+				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), today);
+				Predicate n9 = cb.notEqual(m.get("endtTypeId"), "842");
+				Predicate n10 = cb.isNotNull(m.get("bdmCode"));
+				query.where(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10);
+
+				TypedQuery<Tuple> typedQuery = em.createQuery(query);
+				list = typedQuery.getResultList();
+				list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code"))))
+						.collect(Collectors.toList());
+				if (list != null && list.size() > 0) {
+
+					for (Tuple data : list) {
+						GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+						res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+						res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+						res.setType(data.get("type") == null ? "" : data.get("type").toString());
+						resList.add(res);
+
+					}
+				}
+			}
+			{
+				CriteriaBuilder cb1 = em.getCriteriaBuilder();
+				CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
+
+				Root<HomePositionMaster> m1 = query1.from(HomePositionMaster.class);
+
+				query1.multiselect(m1.get("brokerCode").alias("code"), m1.get("loginId").alias("codeDesc"),
+						m1.get("sourceType").alias("type"));
+
+				Predicate n1 = cb1.equal(m1.get("applicationId"), req.getApplicationId());
+				Predicate n2 = cb1.isNotNull(m1.get("applicationId"));
+				Predicate n3 = cb1.equal(m1.get("status"), "P");
+				Predicate n4 = cb1.equal(m1.get("productId"), req.getProductId());
+				Predicate n5 = cb1.equal(m1.get("companyId"), req.getCompanyId());
+				Predicate n6 = cb1.equal(m1.get("branchCode"), req.getBranchCode());
+				Predicate n7 = cb1.greaterThanOrEqualTo(m1.get("expiryDate"), today);
+				Predicate n8 = cb1.lessThanOrEqualTo(m1.get("entryDate"), today);
+				Predicate n9 = cb1.notEqual(m1.get("endtTypeId"), "842");
+				Predicate n10 = cb1.isNull(m1.get("bdmCode"));
+				query1.where(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10);
+
+				TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
+				list1 = typedQuery1.getResultList();
+				list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code"))))
+						.collect(Collectors.toList());
+				if (list1 != null && list1.size() > 0) {
+
+					for (Tuple data : list1) {
+						GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+						res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+						res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+						res.setType(data.get("type") == null ? "" : data.get("type").toString());
+						resList.add(res);
+
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	@Override // dropdown
+	public List<GetExistingBrokerListRes> getBrokerUserListLapsed(ExistingBrokerUserListReq req) {
+		List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			cal.add(Calendar.DAY_OF_MONTH, -30);
+			Date before30 = cal.getTime();
+
+			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(),
+					req.getProductId().toString());
+
+			// Product Wise Get
+			if (product.getMotorYn().equalsIgnoreCase("M")) { // Motor
+
+				resList = motService.getBrokerUserListLapsedMotor(req, today, before30);
+
+			} else if (product.getMotorYn().equalsIgnoreCase("H")
+					&& req.getProductId().equalsIgnoreCase(travelProductId)) {// Travel
+
+				resList = traService.getBrokerUserListLapsedTravel(req, today, before30);
+
+			} else if (product.getMotorYn().equalsIgnoreCase("A")) { // Asset
+
+				resList = buiService.getBrokerUserListLapsedAsset(req, today, before30);
+			} else { // Common
+
+				resList = commonService.getBrokerUserListLapsedCommon(req, today, before30);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	@Override // dropdown
+	public List<GetExistingBrokerListRes> getBrokerUserListRejected(ExistingBrokerUserListReq req) {
+		List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			cal.add(Calendar.DAY_OF_MONTH, -30);
+			Date before30 = cal.getTime();
+
+			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(),
+					req.getProductId().toString());
+
+			// Product Wise Get
+			if (product.getMotorYn().equalsIgnoreCase("M")) { // Motor
+
+				resList = motService.getBrokerUserListMotorRejected(req, today, before30);
+
+			} else if (product.getMotorYn().equalsIgnoreCase("H")
+					&& req.getProductId().equalsIgnoreCase(travelProductId)) {// Travel
+
+				resList = traService.getBrokerUserListTravelRejected(req, today, before30);
+
+			} else if (product.getMotorYn().equalsIgnoreCase("A")) { // Asset
+
+				resList = buiService.getBrokerUserListBuildingRejected(req, today, before30);
+			} else { // Common
+
+				resList = commonService.getBrokerUserListCommonRejected(req, today, before30);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+	@Override
+	public List<GetExistingBrokerListRes> getReferralPendingDropdown(ExistingBrokerUserListReq req) {
+		List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(),
+					req.getProductId().toString());
+
+			if (product.getMotorYn().equalsIgnoreCase("M")) {
+				resList = motService.getMotorRPDropdown(req, today);
+			} else if (product.getMotorYn().equalsIgnoreCase("H")
+					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+				resList = traService.getTravelProtfolioDropdownPending(req, today);
+			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+				resList = buiService.getBuildingProtfolioDropdownPending(req, today);
+			} else {
+				resList = commonService.getCommonProtfolioDropdownPending(req, today);
+
+			}
+				 
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+	
+	
+	@Override
+	public List<GetExistingBrokerListRes> getReferralApprovedDropdown(ExistingBrokerUserListReq req) {
+		List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(),
+					req.getProductId().toString());
+
+			if (product.getMotorYn().equalsIgnoreCase("M")) {
+				resList = motService.getMotorRADropdown(req, today);
+			} else if (product.getMotorYn().equalsIgnoreCase("H")
+					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+				resList = traService.getTravelProtfolioDropdownPending(req, today);
+			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+				resList = buiService.getBuildingProtfolioDropdownPending(req, today);
+			} else {
+				resList = commonService.getCommonProtfolioDropdownPending(req, today);
+
+			}
+				 
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+	@Override
+	public List<GetExistingBrokerListRes> getReferralRejectDropdown(ExistingBrokerUserListReq req) {
+		List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(),
+					req.getProductId().toString());
+
+			if (product.getMotorYn().equalsIgnoreCase("M")) {
+				resList = motService.getMotorRRDropdown(req, today);
+			} else if (product.getMotorYn().equalsIgnoreCase("H")
+					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+				resList = traService.getTravelProtfolioDropdownPending(req, today);
+			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+				resList = buiService.getBuildingProtfolioDropdownPending(req, today);
+			} else {
+				resList = commonService.getCommonProtfolioDropdownPending(req, today);
+
+			}
+				 
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+	@Override
+	public List<GetExistingBrokerListRes> getReferralRequoteDropdown(ExistingBrokerUserListReq req) {
+		List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(),
+					req.getProductId().toString());
+
+			if (product.getMotorYn().equalsIgnoreCase("M")) {
+				resList = motService.getMotorREDropdown(req, today);
+			} else if (product.getMotorYn().equalsIgnoreCase("H")
+					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+				resList = traService.getTravelProtfolioDropdownPending(req, today);
+			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+				resList = buiService.getBuildingProtfolioDropdownPending(req, today);
+			} else {
+				resList = commonService.getCommonProtfolioDropdownPending(req, today);
+
+			}
+				 
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+
+}
