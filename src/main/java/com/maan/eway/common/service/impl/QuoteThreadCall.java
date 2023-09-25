@@ -2643,6 +2643,13 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setAmendId(0);
 			home.setApplicationNo(0L);
 			
+			String loginId = "" ;
+			if(! "1".equalsIgnoreCase(home.getApplicationId()  )) {
+				loginId = home.getApplicationId();
+			} else {
+				loginId = home.getLoginId()  ;
+			}
+			
 			{
 				// Login Data
 				CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -2652,13 +2659,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 				
 				query.select(lm);
 
-				Predicate m1 = cb.equal(lm.get("loginId"), home.getLoginId());
+				Predicate m1 = cb.equal(lm.get("loginId"), loginId);
 				
 				query.where(m1);
 
 				TypedQuery<LoginMaster> result1 = em.createQuery(query);
 				List<LoginMaster> list1 = result1.getResultList();
 				if( list1.size()> 0 ) {
+					home.setSubUserType(list1.get(0).getSubUserType());
 					home.setUserType(list1.get(0).getUserType());
 				} else {
 					home.setUserType("broker");
