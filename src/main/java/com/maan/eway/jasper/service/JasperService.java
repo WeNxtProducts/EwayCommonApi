@@ -22,5 +22,7 @@ public interface JasperService {
 
 	public CommonRes getPremiumReportDetails(PremiumReportReq req);
 
+	public JasperDocumentRes illustration(String jsonFile);
+
 
 }

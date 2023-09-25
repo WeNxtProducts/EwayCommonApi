@@ -1,10 +1,14 @@
 package com.maan.eway.jasper.service.impl;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -55,6 +59,7 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JsonDataSource;
 
 @Service
 public class JasperServiceImpl implements JasperService {
@@ -206,6 +211,37 @@ public class JasperServiceImpl implements JasperService {
 				try {
 					connection.close();
 				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		}
+		return res;
+	}
+	private JasperDocumentRes getJasperPdfFileFromJson(String jasperPath, String filePath, Map<String, Object> input, String jsonFile) {
+		JasperDocumentRes res = new JasperDocumentRes();
+		InputStream inputStream=null;
+		try {
+			
+			File file = new File("d:\\"+jsonFile);
+			
+			JsonDataSource ds=new JsonDataSource(file);
+			inputStream = this.getClass().getResourceAsStream(jasperPath);
+			JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
+			
+			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, input, ds);
+			System.out.println("filePath name is ====> " + filePath);
+			JasperExportManager.exportReportToPdfFile(jasperPrint, filePath);
+			GetFileFromPath path = new GetFileFromPath(filePath);
+			res.setPdfoutfile(path.call().getImgUrl());
+			res.setPdfoutfilepath(filePath);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(inputStream!=null)
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 		}
@@ -550,6 +586,24 @@ public class JasperServiceImpl implements JasperService {
 	         response.setMessage("Failed");
 		}
 		return response;
+	}
+
+	@Override
+	public JasperDocumentRes illustration(String jsonFile) {
+		 try {
+			 	//String filePath = config.getPolicyPath() + "pdf";
+			 	String filePath="d:\\"+Instant.now().toEpochMilli();
+				String getPdfOutFilePath = filePath + ".pdf";
+				Map<String,Object> map = new HashMap<String,Object>();
+				map.put("pvImagePath", config.getImagePath().substring(1,config.getImagePath().length()-0));
+				//map.put("pvPolicyNo", homeData.getPolicyNo());
+				
+				JasperDocumentRes	res = getJasperPdfFileFromJson("/report/jasper/Illestration_2.jrxml", getPdfOutFilePath, map,jsonFile);
+				return res;
+		 }catch (Exception e) {
+			 e.printStackTrace();
+		}
+		return null;
 	}
 	
 }
