@@ -4553,7 +4553,7 @@ public class GridServiceImpl implements GridService {
 				Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
 				Predicate n7 = cb.greaterThanOrEqualTo(m.get("expiryDate"), today);
 				Predicate n8 = cb.lessThanOrEqualTo(m.get("entryDate"), today);
-				Predicate n9 = cb.notEqual(m.get("endtTypeId"), "842");
+				Predicate n9 = cb.equal(m.get("endtTypeId"), "842");
 				Predicate n10 = cb.isNotNull(m.get("bdmCode"));
 				query.where(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10);
 
@@ -4590,7 +4590,7 @@ public class GridServiceImpl implements GridService {
 				Predicate n6 = cb1.equal(m1.get("branchCode"), req.getBranchCode());
 				Predicate n7 = cb1.greaterThanOrEqualTo(m1.get("expiryDate"), today);
 				Predicate n8 = cb1.lessThanOrEqualTo(m1.get("entryDate"), today);
-				Predicate n9 = cb1.notEqual(m1.get("endtTypeId"), "842");
+				Predicate n9 = cb1.equal(m1.get("endtTypeId"), "842");
 				Predicate n10 = cb1.isNull(m1.get("bdmCode"));
 				query1.where(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10);
 
