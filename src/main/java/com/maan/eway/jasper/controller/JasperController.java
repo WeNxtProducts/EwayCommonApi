@@ -2,10 +2,13 @@ package com.maan.eway.jasper.controller;
 
 import java.util.Collections;
 
+import javax.websocket.server.PathParam;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -97,7 +100,7 @@ public class JasperController {
 	}
 	
 	@GetMapping("/creditNote")
-	private ResponseEntity<CommonRes> creditNote(@RequestParam ("quoteNo") String quoteNo){
+	private ResponseEntity<CommonRes>  creditNote(@RequestParam ("quoteNo") String quoteNo){
 		CommonRes data = new CommonRes();
 		JasperDocumentRes res = jasper.creditNote(quoteNo);
 		data.setCommonResponse(res);
@@ -119,6 +122,20 @@ public class JasperController {
 	@PostMapping("/getPremiumReportDetails")
 	public CommonRes getPremiumReportDetails(@RequestBody PremiumReportReq req) {
 		return jasper.getPremiumReportDetails(req);
+	}
+	@PostMapping("/illustration/{JsonFile}")
+	public ResponseEntity<JasperDocumentRes> illustration(@PathVariable("JsonFile") String jsonFile) {
+		//CommonRes data = new CommonRes();
+		JasperDocumentRes res = jasper.illustration(jsonFile);
+		/*data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");*/
+		if(res != null) {
+			return new ResponseEntity<JasperDocumentRes>(res, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
 	}
 	
 }
