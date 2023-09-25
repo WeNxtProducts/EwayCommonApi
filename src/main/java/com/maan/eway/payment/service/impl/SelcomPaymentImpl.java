@@ -89,9 +89,9 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					orderDict.addProperty("gateway_buyer_uuid", "");
 					List<InsuranceCompanyMaster> insInfo = insuranceRepo.findByCompanyIdAndStatusAndEffectiveDateStartBeforeAndEffectiveDateEndAfter(payment.getCompanyId(),"Y",new Date(),new Date());
 					if(insInfo.get(0).getCurrencyId().equals(payment.getCurrencyId()))						
-						orderDict.addProperty("amount",  payment.getPremiumLc());
+						orderDict.addProperty("amount",  payment.getPremiumLc().toPlainString());
 					else
-						orderDict.addProperty("amount",  payment.getPremiumFc());
+						orderDict.addProperty("amount",  payment.getPremiumFc().toPlainString());
 					
 					orderDict.addProperty("currency",payment.getCurrencyId());
 					
