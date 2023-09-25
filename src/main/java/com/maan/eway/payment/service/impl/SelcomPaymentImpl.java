@@ -82,7 +82,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					JsonObject orderDict = new JsonObject();
 					orderDict.addProperty("vendor",vendorCode);
 					orderDict.addProperty("order_id",payment.getMerchantReference());
-					orderDict.addProperty("buyer_email", payment.getCustomerEmail());
+					orderDict.addProperty("buyer_email", StringUtils.isBlank(payment.getCustomerEmail())?"":payment.getCustomerEmail() );
 					orderDict.addProperty("buyer_name", payment.getCustomerName());
 					orderDict.addProperty("buyer_userid", "");
 					orderDict.addProperty("buyer_phone", payment.getReqBillToPhone());

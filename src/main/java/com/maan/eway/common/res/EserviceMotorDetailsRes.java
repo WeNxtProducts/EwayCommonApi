@@ -214,5 +214,15 @@ public class EserviceMotorDetailsRes implements Serializable {
 	    private String commissionPercentage;	
 
 		@JsonProperty("VatCommission")
-	    private String vatCommission;	
+	    private String vatCommission;
+		
+		@JsonProperty("BorrowerTypeDesc")
+	    private String borrowerTypeDesc;
+		
+
+		@JsonProperty("BankCode")
+	    private String bankCode;
+		
+		@JsonProperty("BankName")
+	    private String bankName;
 }

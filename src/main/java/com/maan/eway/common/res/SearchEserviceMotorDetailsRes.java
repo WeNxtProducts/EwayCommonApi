@@ -129,6 +129,12 @@ public class SearchEserviceMotorDetailsRes implements Serializable {
 	@JsonProperty("FirstLossPayee")
 	private String     firstLossPayee ;
 
+
+	@JsonProperty("BorrowerType")
+	private String     borrowerType;
 	
+
+	@JsonProperty("BorrowerTypeDesc")
+	private String     borrowerTypeDesc;
 
 }

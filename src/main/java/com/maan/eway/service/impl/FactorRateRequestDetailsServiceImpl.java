@@ -11,6 +11,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -44,6 +45,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.maan.eway.bean.BankMaster;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CurrencyMaster;
 import com.maan.eway.bean.EndtTypeMaster;
@@ -72,6 +74,7 @@ import com.maan.eway.common.res.EserviceMotorDetailsRes;
 import com.maan.eway.common.res.EserviceTravelGetRes;
 import com.maan.eway.common.res.UpdateCoverRes;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.BankChangeStatusReq;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.EServiceSectionDetailsRepository;
 import com.maan.eway.repository.EmiTransactionDetailsRepository;
@@ -87,6 +90,7 @@ import com.maan.eway.repository.UWReferralDetailsRepository;
 import com.maan.eway.repository.UwQuestionsDetailsRepository;
 import com.maan.eway.req.FactorRateDetailsGetReq;
 import com.maan.eway.req.calcengine.CalcEngine;
+import com.maan.eway.res.DropDownRes;
 import com.maan.eway.res.EserviceBuildingsDetailsRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.res.calc.Cover;
@@ -1287,9 +1291,20 @@ this.repository = repo;
 				EserviceMotorDetailsRes  motorRes = new EserviceMotorDetailsRes();
 				dozerMapper.map(mot, motorRes);
 				//motorRes.setSectionName(mot.getSectionName());
+				motorRes.setBorrowerTypeDesc(mot.getBorrowerTypeDesc());
+				motorRes.setBankCode(mot.getBankCode());
+				if( StringUtils.isNotBlank(mot.getBankCode())) {
+					List<BankMaster> bankList = getBankMasterDropdown(mot.getCompanyId() ,mot.getBranchCode() , mot.getBankCode() );
+ 					if(bankList.size()> 0 ) {
+ 						motorRes.setBankName(bankList.get(0).getBankFullName());
+ 					}
+						
+				}
+				
 				riskDetails = motorRes ;
 				res.setRiskDetails(riskDetails);
-				res.setAccessoriesSumInsured(mot.getAcccessoriesSumInsured()==null?0.0:mot.getAcccessoriesSumInsured().doubleValue());				
+				res.setAccessoriesSumInsured(mot.getAcccessoriesSumInsured()==null?0.0:mot.getAcccessoriesSumInsured().doubleValue());
+				
 				motorDetailsList.add(res);
 			}
 			
@@ -1298,6 +1313,77 @@ this.repository = repo;
 			return null;
 			
 		}return motorDetailsList;
+	}
+	
+	public List<BankMaster> getBankMasterDropdown(String companyId , String branchCode , String bankCode) {
+		List<BankMaster> list = new ArrayList<BankMaster>();
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);;
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			cal.set(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 1);
+			Date todayEnd = cal.getTime();
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<BankMaster> query=  cb.createQuery(BankMaster.class);
+			
+			// Find All
+			Root<BankMaster> c = query.from(BankMaster.class);
+			//Select
+			query.select(c);
+			
+			
+			// Effective Date Start Max Filter
+			Subquery<Long> effectiveDate = query.subquery(Long.class);
+			Root<BankMaster> ocpm1 = effectiveDate.from(BankMaster.class);
+			effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+			Predicate a1 = cb.equal(c.get("bankCode"),ocpm1.get("bankCode"));
+			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
+			Predicate a6 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
+			effectiveDate.where(a1,a2,a5,a6);
+			// Effective Date End Max Filter
+			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+			Root<BankMaster> ocpm2 = effectiveDate2.from(BankMaster.class);
+			effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+			Predicate a3 = cb.equal(c.get("bankCode"),ocpm2.get("bankCode"));
+			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+			Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
+			Predicate a8 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
+			effectiveDate2.where(a3,a4,a7,a8);
+			
+			// Order By
+			List<Order> orderList = new ArrayList<Order>();
+			orderList.add(cb.asc(c.get("branchCode")));
+			
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n11 = cb.equal(c.get("status"),"R");
+			Predicate n12 = cb.or(n1,n11);
+			Predicate n2 = cb.equal(c.get("effectiveDateStart"),effectiveDate);
+			Predicate n3 = cb.equal(c.get("effectiveDateEnd"),effectiveDate2);
+			Predicate n4 = cb.equal(c.get("companyId"),companyId);
+			Predicate n5 = cb.equal(c.get("branchCode"), branchCode);
+			Predicate n6 = cb.equal(c.get("branchCode"), "99999");
+			Predicate n7 = cb.or(n5,n6);
+			Predicate n13 = cb.equal(c.get("bankCode"), bankCode);
+			query.where(n12,n2,n3,n4,n7,n13).orderBy(orderList);
+			
+			// Get Result
+			TypedQuery<BankMaster> result = em.createQuery(query);
+			list = result.getResultList(); 
+					
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return list;
 	}
 	
 	public  List<EservieMotorDetailsViewRes> getTravelDetails(FactorRateDetailsGetReq req) {

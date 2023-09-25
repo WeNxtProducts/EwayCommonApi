@@ -3238,11 +3238,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setSectionId(Integer.valueOf(0));
 			home.setBrokerBranchCode(eserCommonData.getBrokerBranchCode());	
 			home.setSubUserType(eserCommonData.getSubUserType());		
-			home.setAgencyCode(Integer.valueOf(eserCommonData.getBrokerCode()));
 			home.setUserType(eserCommonData.getSubUserType() );
 			home.setLoginId(eserCommonData.getLoginId());
 			home.setApplicationId(eserCommonData.getApplicationId());
-			home.setAgencyCode(Integer.valueOf(eserCommonData.getBrokerCode()));
 			home.setAcExecutiveId(eserCommonData.getAcExecutiveId()==null?null : Long.valueOf(eserCommonData.getAcExecutiveId()));
 			home.setBrokerCode(eserCommonData.getBrokerCode());
 		//	home.setEffectiveDate(eserCommonData.getPolicyStartDate());
