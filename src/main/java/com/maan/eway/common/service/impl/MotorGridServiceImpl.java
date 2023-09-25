@@ -4691,7 +4691,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					 
 					 List<Predicate> predics1 = new ArrayList<Predicate>();
 					 predics1.add(cb1.equal(m1.get("applicationId"),req.getApplicationId()));
-					 predics1.add(cb1.equal(m1.get("status"), "Y"));
+					 predics1.add(cb1.equal(m1.get("status"), "R"));
 					 predics1.add(cb1.equal(m1.get("productId"), req.getProductId()));
 					 predics1.add(cb1.equal(m1.get("companyId"), req.getCompanyId()));
 					 predics1.add(cb1.isNull(m1.get("bdmCode")));
