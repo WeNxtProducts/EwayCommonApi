@@ -140,6 +140,8 @@ public class CommonSearchServiceImpl implements CommonSearchService{
 //					cus.get("clientName").alias("clientName"),
 //					cus.get("mobileNo1").alias("mobileNumber"),cb.count(c).alias("idsCount"));
 			query.multiselect(/*c.alias("c"),*/
+
+					cus.get("customerReferenceNo").alias("customerReferenceNo"),
 					cus.get("clientName").alias("clientName"),
 					cus.get("mobileNo1").alias("mobileNumber"),cb.count(c).alias("idsCount"),
 					cb.max(c.get("requestReferenceNo")).alias("requestReferenceNo"),

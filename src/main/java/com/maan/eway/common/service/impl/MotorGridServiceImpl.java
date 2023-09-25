@@ -5424,4 +5424,12 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				return resList;
 			}
 
+			@Override
+			public List<GetExistingBrokerListRes> getAdminMotorRPropdown(ExistingBrokerUserListReq req, Date today) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			
+
 		}

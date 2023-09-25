@@ -4726,11 +4726,11 @@ public class GridServiceImpl implements GridService {
 				resList = motService.getMotorRPDropdown(req, today);
 			} else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
-				resList = traService.getTravelProtfolioDropdownPending(req, today);
+				resList = traService.getTravelReferalDropdown(req, today,"RP");
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
-				resList = buiService.getBuildingProtfolioDropdownPending(req, today);
+				resList = buiService.getBuildingReferalDropdown(req, today,"RP");
 			} else {
-				resList = commonService.getCommonProtfolioDropdownPending(req, today);
+				resList = commonService.getCommonReferalDropdown(req, today,"RP");
 
 			}
 				 
@@ -4761,11 +4761,11 @@ public class GridServiceImpl implements GridService {
 				resList = motService.getMotorRADropdown(req, today);
 			} else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
-				resList = traService.getTravelProtfolioDropdownPending(req, today);
+				resList = traService.getTravelReferalDropdown(req, today,"RA");
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
-				resList = buiService.getBuildingProtfolioDropdownPending(req, today);
+				resList = buiService.getBuildingReferalDropdown(req, today,"RA");
 			} else {
-				resList = commonService.getCommonProtfolioDropdownPending(req, today);
+				resList = commonService.getCommonReferalDropdown(req, today,"RA");
 
 			}
 				 
@@ -4794,11 +4794,11 @@ public class GridServiceImpl implements GridService {
 				resList = motService.getMotorRRDropdown(req, today);
 			} else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
-				resList = traService.getTravelProtfolioDropdownPending(req, today);
+				resList = traService.getTravelReferalDropdown(req, today,"RR");
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
-				resList = buiService.getBuildingProtfolioDropdownPending(req, today);
+				resList = buiService.getBuildingReferalDropdown(req, today,"RR");
 			} else {
-				resList = commonService.getCommonProtfolioDropdownPending(req, today);
+				resList = commonService.getCommonReferalDropdown(req, today,"RR");
 
 			}
 				 
@@ -4827,13 +4827,47 @@ public class GridServiceImpl implements GridService {
 				resList = motService.getMotorREDropdown(req, today);
 			} else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
-				resList = traService.getTravelProtfolioDropdownPending(req, today);
+				resList = traService.getTravelReferalDropdown(req, today,"RE");
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
-				resList = buiService.getBuildingProtfolioDropdownPending(req, today);
+				resList = buiService.getBuildingReferalDropdown(req, today,"RE");
 			} else {
-				resList = commonService.getCommonProtfolioDropdownPending(req, today);
+				resList = commonService.getCommonReferalDropdown(req, today,"RE");
 
 			}
+				 
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+	
+	@Override
+	public List<GetExistingBrokerListRes> getAdminReferralPendingDropdown(ExistingBrokerUserListReq req) {
+		List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 23);
+			cal.set(Calendar.MINUTE, 1);
+			today = cal.getTime();
+			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(),
+					req.getProductId().toString());
+
+			if (product.getMotorYn().equalsIgnoreCase("M")) {
+				resList = motService.getAdminMotorRPropdown(req, today);
+			} /*else if (product.getMotorYn().equalsIgnoreCase("H")
+					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+				resList = traService.getAdminTravelProtfolioDropdownPending(req, today);
+			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+				resList = buiService.getAdminBuildingProtfolioDropdownPending(req, today);
+			} else {
+				resList = commonService.getAdminCommonProtfolioDropdownPending(req, today);
+
+			}*/
 				 
 		} catch (Exception e) {
 			e.printStackTrace();

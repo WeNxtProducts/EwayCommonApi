@@ -233,6 +233,7 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 			Root<EserviceCustomerDetails> cus = query.from(EserviceCustomerDetails.class);
 			
 			query.multiselect(/*c.alias("c"),*/
+					cus.get("customerReferenceNo").alias("customerReferenceNo"),
 					cus.get("clientName").alias("clientName"),
 					cus.get("mobileNo1").alias("mobileNumber"),cb.count(c).alias("idsCount"),
 					cb.max(c.get("requestReferenceNo")).alias("requestReferenceNo"),

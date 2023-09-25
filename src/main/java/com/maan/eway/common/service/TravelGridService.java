@@ -63,5 +63,9 @@ public interface TravelGridService {
 
 	List<GetExistingBrokerListRes> getBrokerUserListTravelRejected(ExistingBrokerUserListReq req, Date today, Date before30);
 
+	List<GetExistingBrokerListRes> getTravelReferalDropdown(ExistingBrokerUserListReq req, Date today, String string);
+
+	
+
 
 }

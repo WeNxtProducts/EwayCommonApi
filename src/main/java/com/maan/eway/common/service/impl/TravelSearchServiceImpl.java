@@ -141,6 +141,8 @@ public class TravelSearchServiceImpl implements TravelSearchService {
 //					cus.get("clientName").alias("clientName"),cb.count(c).alias("idsCount"),
 //					cus.get("mobileNo1").alias("mobileNumber"));
 			query.multiselect(cb.max(cus.get("clientName")).alias("clientName"), cb.count(c).alias("idsCount"),
+
+					cus.get("customerReferenceNo").alias("customerReferenceNo"),
 					cus.get("mobileNo1").alias("mobileNumber"),
 					cb.max(c.get("companyId")).alias("companyId"), cb.max(c.get("productId")).alias("productId"),
 					cb.max(c.get("branchCode")).alias("branchCode"),

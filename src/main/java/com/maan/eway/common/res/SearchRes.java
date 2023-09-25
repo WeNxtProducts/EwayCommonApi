@@ -21,6 +21,9 @@ public class SearchRes {
 	@JsonProperty("PolicyNo")
 	private String policyNo;
 
+	@JsonProperty("CustomerReferenceNo")
+    private String   customerReferenceNo ;
+	
 	@JsonProperty("CustomerName")
 	private String clientName;
 
@@ -79,8 +82,7 @@ public class SearchRes {
 	private Date effectiveDate;
 	    
 /*	    
-	@JsonProperty("CustomerReferenceNo")
-	    private String   customerReferenceNo ;
+	
 	    @JsonProperty("BrokerBranchCode")
 	    private String     brokerBranchCode ;
 	  

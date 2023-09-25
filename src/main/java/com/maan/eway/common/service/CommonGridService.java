@@ -66,4 +66,6 @@ public interface CommonGridService {
 
 	List<GetExistingBrokerListRes> getBrokerUserListCommonRejected(ExistingBrokerUserListReq req, Date today, Date before30);
 
+	List<GetExistingBrokerListRes> getCommonReferalDropdown(ExistingBrokerUserListReq req, Date today, String string);
+
 }

@@ -60,6 +60,8 @@ public interface BuildingGridService {
 
 	List<GetExistingBrokerListRes> getBrokerUserListBuildingRejected(ExistingBrokerUserListReq req, Date today, Date before30);
 
+	List<GetExistingBrokerListRes> getBuildingReferalDropdown(ExistingBrokerUserListReq req, Date today, String string);
+
 
 
 }

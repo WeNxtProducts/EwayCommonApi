@@ -87,5 +87,7 @@ public interface MotorGridService {
 
 	List<GetExistingBrokerListRes> getMotorREDropdown(ExistingBrokerUserListReq req, Date today);
 
+	List<GetExistingBrokerListRes> getAdminMotorRPropdown(ExistingBrokerUserListReq req, Date today);
+
 
 }

@@ -307,6 +307,7 @@ public class SearchServiceImpl implements SearchService {
 				SearchRes res = new SearchRes();
 				if (product.getMotorYn().equalsIgnoreCase("M") ) {
 				res = dozermapper.map(data.get(0), SearchRes.class);
+				res.setCustomerReferenceNo(data.get("customerReferenceNo")==null?null:data.get("customerReferenceNo").toString());
 				res.setClientName(data.get("clientName")==null?null:data.get("clientName").toString());
 				res.setMobileNo1(data.get("mobileNumber").toString());
 				res.setBranchName(branchName);
