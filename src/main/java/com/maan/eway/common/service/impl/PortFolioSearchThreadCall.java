@@ -177,7 +177,7 @@ private Logger log = LogManager.getLogger(getClass());
 				Predicate n6 = e0.in(branches);
 				//Predicate n14 = cb.like(cb.lower(m.get("policyNo")), "%" + policyNo + "%");
 				//Predicate n14 = cb.equal(m.get("policyNo"),  policyNo );
-				Predicate n14 = cb.like(m.get("policyNo"), "%" + policyNo + "%");
+				Predicate n14 = cb.like(cb.lower(m.get("policyNo")), "%" + policyNo + "%");
 				query.where(n1, n2, n3, n4, n6,n7,n8,n9,n13,n14).orderBy(orderList);
 
 				// Get Result
