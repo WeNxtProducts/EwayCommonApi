@@ -846,8 +846,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 
 			//Personal Info Update
 			
-			if(StringUtils.isNotBlank(req.getEndtCategDesc())) {
-			if("Non Financial".equalsIgnoreCase(req.getEndtCategDesc().toString())) {
+			//Endorsement flow and B2C Flow
+			//Type=B2C
+			if(StringUtils.isNotBlank(req.getEndtCategDesc())||StringUtils.isNotBlank(req.getType())) {
+			if("Non Financial".equalsIgnoreCase(req.getEndtCategDesc().toString())||"b2c".equalsIgnoreCase(req.getType().toString())) {
 				PersonalInfo savePersonalInfo=new PersonalInfo();
 				HomePositionMaster homedata=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
 			//	PersonalInfo personalInfodata=personalInforepo.findByCustomerId(homedata.getCustomerId());

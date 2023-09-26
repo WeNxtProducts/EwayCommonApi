@@ -222,5 +222,8 @@ public class EserviceCustomerSaveReq {
 	
 	@JsonProperty("PinCode") 
 	private String pinCode;
+	
+	@JsonProperty("Type") 
+	private String type;
 
 }
