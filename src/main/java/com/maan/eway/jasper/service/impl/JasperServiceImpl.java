@@ -598,7 +598,7 @@ public class JasperServiceImpl implements JasperService {
 				map.put("pvImagePath", config.getImagePath().substring(1,config.getImagePath().length()-0));
 				//map.put("pvPolicyNo", homeData.getPolicyNo());
 				
-				JasperDocumentRes	res = getJasperPdfFileFromJson("/report/jasper/Illestration_2.jrxml", getPdfOutFilePath, map,jsonFile);
+				JasperDocumentRes	res = getJasperPdfFileFromJson("/report/jasper/Illestration.jrxml", getPdfOutFilePath, map,jsonFile);
 				return res;
 		 }catch (Exception e) {
 			 e.printStackTrace();
