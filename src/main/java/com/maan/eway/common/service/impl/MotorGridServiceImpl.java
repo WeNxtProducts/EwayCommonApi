@@ -5050,7 +5050,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 							}
 						}
 					} else {
-						resList = getReferalPendingIssuerMotor(req, today);
+						resList = getReferalApprovedIssuerMotor(req, today);
 					}
 
 				} catch (Exception e) {
