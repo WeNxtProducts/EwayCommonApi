@@ -172,13 +172,13 @@ private Logger log = LogManager.getLogger(getClass());
 				Predicate n11 = cb.notEqual(m.get("endtTypeId"),"842");
 				Predicate n12 = cb.isNull(m.get("endtTypeId"));
 				Predicate n13 = cb.or(n11,n12);
-				Predicate n5 = cb.equal(m.get("applicationId"), "1");
+			//	Predicate n5 = cb.equal(m.get("applicationId"), "1");
 				Expression<String> e0 = m.get("branchCode");
 				Predicate n6 = e0.in(branches);
 				//Predicate n14 = cb.like(cb.lower(m.get("policyNo")), "%" + policyNo + "%");
 				//Predicate n14 = cb.equal(m.get("policyNo"),  policyNo );
-				Predicate n14 = cb.like(cb.lower(m.get("policyNo")), "%" + policyNo + "%");
-				query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n13,n14).orderBy(orderList);
+				Predicate n14 = cb.like(m.get("policyNo"), "%" + policyNo + "%");
+				query.where(n1, n2, n3, n4, n6,n7,n8,n9,n13,n14).orderBy(orderList);
 
 				// Get Result
 				TypedQuery<PortfolioAdminSearchRes> result = em.createQuery(query);
@@ -262,13 +262,13 @@ private Logger log = LogManager.getLogger(getClass());
 				Predicate n11 = cb.notEqual(m.get("endtTypeId"),"842");
 				Predicate n12 = cb.isNull(m.get("endtTypeId"));
 				Predicate n13 = cb.or(n11,n12);
-				Predicate n5 = cb.equal(m.get("applicationId"), "1");
+			//	Predicate n5 = cb.equal(m.get("applicationId"), "1");
 				Expression<String> e0 = m.get("branchCode");
 				Predicate n6 = e0.in(branches);
 				//Predicate n14 = cb.like(cb.lower(m.get("policyNo")), "%" + policyNo + "%");
 //				Predicate n14 = cb.equal(m.get("policyNo"),  policyNo );
 				Predicate n14 = cb.like(cb.lower(m.get("policyNo")), "%" + policyNo + "%");
-				query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n13,n14).orderBy(orderList);
+				query.where(n1, n2, n3, n4, n6,n7,n8,n9,n13,n14).orderBy(orderList);
 
 				// Get Result
 				TypedQuery<Long> result = em.createQuery(query);

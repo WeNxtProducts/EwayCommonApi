@@ -368,16 +368,16 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
 			Predicate n9 = cb.isNull(m.get("endorsementType"));
 			Predicate n7 =  null ;
-//			Predicate n10 = null;
-//			Predicate n11 = null;
-//			Predicate n12 = null;
+			Predicate n10 = null;
+			Predicate n11 = null;
+			Predicate n12 = null;
 			if (req.getApplicationId().equalsIgnoreCase("1") ) {
 				n7 = cb.equal(  m.get("loginId"),  req.getLoginId());
 			} else {
 				n7 = cb.equal(  m.get("applicationId"),  req.getApplicationId());
-//				n10 = cb.equal(  m.get("loginId"),  req.getLoginId());
-//				n11 = cb.equal(  m.get("customerName"),  req.getLoginId());
-//				n12 = cb.or(n10,n11);
+				n10 = cb.equal(  m.get("loginId"),  req.getLoginId());
+				n11 = cb.equal(  m.get("customerName"),  req.getLoginId());
+				n12 = cb.or(n10,n11);
 			}
 			
 			Predicate n8 = null;
@@ -386,12 +386,12 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			} else {
 				n8 = cb.equal(  m.get("branchCode"),  req.getBranchCode());
 			}
-			query.where(n1,n2,n3,n4,n5,n6,n7,n8,n9).orderBy(orderList);
-//			if (req.getApplicationId().equalsIgnoreCase("1") ) {
-//				query.where(n1,n2,n3,n4,n5,n6,n7,n8,n9).orderBy(orderList);
-//			}else {
-//				query.where(n1,n2,n3,n4,n5,n6,n7,n8,n9,n12).orderBy(orderList);
-//			}
+		//	query.where(n1,n2,n3,n4,n5,n6,n7,n8,n9).orderBy(orderList);
+			if (req.getApplicationId().equalsIgnoreCase("1") ) {
+				query.where(n1,n2,n3,n4,n5,n6,n7,n8,n9).orderBy(orderList);
+			}else {
+				query.where(n1,n2,n3,n4,n5,n6,n7,n8,n9,n12).orderBy(orderList);
+			}
 			
 			// Get Result
 			TypedQuery<TravelQuoteCriteriaRes> result = em.createQuery(query);

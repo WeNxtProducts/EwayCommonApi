@@ -368,16 +368,16 @@ public class CommonGridServiceImpl implements CommonGridService {
 			Predicate n6 = cb.greaterThanOrEqualTo(m.get("updatedDate"), startDate);
 			Predicate n9 = cb.isNull(m.get("endorsementType"));
 			Predicate n7 = null;
-//			Predicate n11 = null;
-//			Predicate n12 = null;
-//			Predicate n13 = null;
+			Predicate n11 = null;
+			Predicate n12 = null;
+			Predicate n13 = null;
 			if (req.getApplicationId().equalsIgnoreCase("1")) {
 				n7 = cb.equal(m.get("loginId"), req.getLoginId());
 			} else {
 				n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
-//				n11 = cb.equal(m.get("loginId"), req.getLoginId());
-//				n12 = cb.equal(m.get("customerName"), req.getLoginId());
-//				n13 = cb.or(n11,n12);
+				n11 = cb.equal(m.get("loginId"), req.getLoginId());
+				n12 = cb.equal(m.get("customerName"), req.getLoginId());
+				n13 = cb.or(n11,n12);
 			}
 
 			Predicate n8 = null;
@@ -397,12 +397,12 @@ public class CommonGridServiceImpl implements CommonGridService {
 						
 						Predicate n10 = cb.equal(m.get("riskId"),  riskId );
 
-			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10).orderBy(orderList);
-//			if (req.getApplicationId().equalsIgnoreCase("1")) {
-//				query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10).orderBy(orderList);
-//			}else {
-//				query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10,n13).orderBy(orderList);
-//			}
+		//	query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10).orderBy(orderList);
+			if (req.getApplicationId().equalsIgnoreCase("1")) {
+				query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10).orderBy(orderList);
+			}else {
+				query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10,n13).orderBy(orderList);
+			}
 			
 			// Get Result
 			TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);
