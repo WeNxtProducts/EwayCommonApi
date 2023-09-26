@@ -24,8 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.maan.claimextintapi.req.InsertCreditLimitDetailReq;
-import com.maan.claimextintapi.req.InsertYiPolicyApprovalReq;
 import com.maan.eway.bean.CreditLimitDetail;
 import com.maan.eway.bean.MotCommDiscountDetail;
 import com.maan.eway.bean.MotDriverDetail;
@@ -37,6 +35,8 @@ import com.maan.eway.bean.YiPolicyDetail;
 import com.maan.eway.bean.YiPremCal;
 import com.maan.eway.bean.YiSectionDetail;
 import com.maan.eway.bean.YiVatDetail;
+import com.maan.eway.integration.req.InsertCreditLimitDetailReq;
+import com.maan.eway.integration.req.InsertYiPolicyApprovalReq;
 import com.maan.eway.integration.req.InsertYiPremCalReq;
 import com.maan.eway.integration.req.InsertYiSectionDetailReq;
 import com.maan.eway.integration.req.InsertYiVatDetailReq;
