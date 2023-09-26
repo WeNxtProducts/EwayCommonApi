@@ -848,8 +848,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			
 			//Endorsement flow and B2C Flow
 			//Type=B2C
-			if(StringUtils.isNotBlank(req.getEndtCategDesc())||StringUtils.isNotBlank(req.getType())) {
-			if("Non Financial".equalsIgnoreCase(req.getEndtCategDesc().toString())||"b2c".equalsIgnoreCase(req.getType().toString())) {
+			if(StringUtils.isNotBlank(req.getEndtCategDesc())) {
+			if("Non Financial".equalsIgnoreCase(req.getEndtCategDesc().toString())) {
 				PersonalInfo savePersonalInfo=new PersonalInfo();
 				HomePositionMaster homedata=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
 			//	PersonalInfo personalInfodata=personalInforepo.findByCustomerId(homedata.getCustomerId());
@@ -937,6 +937,95 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				savePersonalInfo.setStateName(req.getStateName());
 				personalInforepo.save(savePersonalInfo);
 			}
+			}else if(StringUtils.isNotBlank(req.getType())) {
+				if("b2c".equalsIgnoreCase(req.getType().toString())) {
+					PersonalInfo savePersonalInfo=new PersonalInfo();
+					HomePositionMaster homedata=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
+				//	PersonalInfo personalInfodata=personalInforepo.findByCustomerId(homedata.getCustomerId());
+					dozerMapper.map(req, saveData);
+					savePersonalInfo.setPinCode(req.getPinCode());
+					savePersonalInfo.setCustomerId(homedata.getCustomerId());
+					savePersonalInfo.setIdNumber(req.getIdNumber());
+					savePersonalInfo.setCreatedBy(createdBy);
+					savePersonalInfo.setUpdatedDate(new Date());
+					savePersonalInfo.setUpdatedBy(req.getCreatedBy());
+					savePersonalInfo.setCustomerReferenceNo(custRefNo);
+					savePersonalInfo.setAddress1(req.getAddress1());
+					savePersonalInfo.setAddress2(req.getAddress2());
+					savePersonalInfo.setAge(age);
+					savePersonalInfo.setBranchCode(req.getBranchCode());
+					savePersonalInfo.setBusinessType(req.getBusinessType());
+					if (StringUtils.isNotBlank(req.getBusinessType())) {
+						String businessType =  getListItem ("99999" , req.getBranchCode() ,"BUSINESS_TYPE",req.getBusinessType());//listRepo.findByItemTypeAndItemCode("BUSINESS_TYPE", req.getBusinessType());
+						savePersonalInfo.setBusinessTypeDesc(businessType);
+					}
+					savePersonalInfo.setRegionCode(req.getRegionCode());
+					savePersonalInfo.setIsTaxExempted(req.getIsTaxExempted());
+					savePersonalInfo.setCityCode(req.getCityCode());
+					savePersonalInfo.setCityName(req.getCityName());
+					savePersonalInfo.setClientName(req.getClientName());
+					savePersonalInfo.setClientStatus(req.getClientStatus());
+					savePersonalInfo.setClientStatusDesc(req.getClientStatus().equalsIgnoreCase("N") ? "DeActive" : "Active");
+					savePersonalInfo.setCompanyId(req.getCompanyId());
+					savePersonalInfo.setCreatedBy(req.getCreatedBy());
+					savePersonalInfo.setCustomerReferenceNo(req.getCustomerReferenceNo());
+					savePersonalInfo.setDobOrRegDate(req.getDobOrRegDate());
+					savePersonalInfo.setEmail1(req.getEmail1());
+					savePersonalInfo.setEmail2(req.getEmail2());
+					savePersonalInfo.setEmail3(req.getEmail3());
+					savePersonalInfo.setEndorsementDate(req.getEndorsementDate());
+					savePersonalInfo.setEndorsementEffdate(req.getEndorsementEffdate());
+					savePersonalInfo.setEndorsementRemarks(req.getEndorsementRemarks());
+					savePersonalInfo.setEndorsementType(req.getEndorsementType());
+					savePersonalInfo.setEndorsementTypeDesc(req.getEndorsementTypeDesc());
+					savePersonalInfo.setEndtCategDesc(req.getEndtCategDesc());
+					savePersonalInfo.setEndtCount(req.getEndtCount());
+					savePersonalInfo.setEndtPrevPolicyNo(req.getEndtPrevPolicyNo());
+					savePersonalInfo.setEndtPrevQuoteNo(req.getEndtPrevQuoteNo());
+					savePersonalInfo.setEndtStatus(req.getEndtStatus());
+					savePersonalInfo.setEntryDate(new Date());
+					savePersonalInfo.setFax(req.getFax());
+					savePersonalInfo.setGender(StringUtils.isBlank(req.getGender()) ? "M" : req.getGender());
+					savePersonalInfo.setOccupation(StringUtils.isBlank(req.getOccupation()) ? "2" : req.getOccupation());
+					savePersonalInfo.setGenderDesc(gender);
+					savePersonalInfo.setGenderDesc(gender);
+					savePersonalInfo.setTitleDesc(title);
+					savePersonalInfo.setLanguageDesc(language);
+					savePersonalInfo.setOccupationDesc(occupationDesc);
+					savePersonalInfo.setPolicyHolderTypeid(req.getPolicyHolderTypeid());
+					savePersonalInfo.setIdType(req.getIdType());
+					savePersonalInfo.setPolicyHolderTypeDesc(policyHolderType);
+					savePersonalInfo.setPolicyHolderTypeIdDesc(policyHolderTypeId);
+					savePersonalInfo.setIdType(req.getPolicyHolderTypeid());
+					savePersonalInfo.setIdTypeDesc(policyHolderTypeId);
+					savePersonalInfo.setMobileCode1(req.getMobileCode1());
+					savePersonalInfo.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
+					savePersonalInfo.setMobileCode3(req.getMobileCode3()==null?"":req.getMobileCode3());
+					savePersonalInfo.setWhatsappCode(req.getWhatsappCode());
+					if (StringUtils.isNotBlank(req.getMobileCode1())) {
+						ListItemValue mobiledesc1 = listRepo.findByItemTypeAndItemCodeAndCompanyId("MOBILE_CODE", req.getMobileCode1(),req.getCompanyId());
+						savePersonalInfo.setMobileCodeDesc1(mobiledesc1.getItemValue());
+
+					}
+					if (StringUtils.isNotBlank(req.getMobileCode2())) {
+						ListItemValue mobiledesc2 = listRepo.findByItemTypeAndItemCodeAndCompanyId("MOBILE_CODE", req.getMobileCode2(),req.getCompanyId());
+						savePersonalInfo.setMobileCodeDesc2(mobiledesc2.getItemValue());
+
+					}
+					if (StringUtils.isNotBlank(req.getMobileCode3())) {
+						ListItemValue mobiledesc3 = listRepo.findByItemTypeAndItemCodeAndCompanyId("MOBILE_CODE", req.getMobileCode3(),req.getCompanyId());
+						savePersonalInfo.setMobileCodeDesc3(mobiledesc3.getItemValue());
+
+					}
+					if (StringUtils.isNotBlank(req.getWhatsappCode())) {
+						ListItemValue whatsappCode = listRepo.findByItemTypeAndItemCodeAndCompanyId("MOBILE_CODE",
+								req.getWhatsappCode(),req.getCompanyId());
+						savePersonalInfo.setWhatsappcodeDesc(whatsappCode.getItemValue());
+
+					}
+					savePersonalInfo.setStateName(req.getStateName());
+					personalInforepo.save(savePersonalInfo);
+				}
 			}
 			// Response
 
