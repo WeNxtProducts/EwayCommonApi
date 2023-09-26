@@ -10,6 +10,6 @@ import lombok.Data;
 public class GetallPortfolioPendingRes {
 	   @JsonProperty("Count")
 	   private Long     Count ;
-	   @JsonProperty("PortfolioPendingList")
+	   @JsonProperty("PortfolioList")
 	   private List<PortfolioCustomerDetailsRes>     pendingList ;
 }
