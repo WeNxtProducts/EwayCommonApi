@@ -22,6 +22,7 @@ import com.maan.eway.common.res.GetApproverListRes;
 import com.maan.eway.common.res.GetExistingBrokerListRes;
 import com.maan.eway.common.res.GetallExistingRejectedLapsedRes;
 import com.maan.eway.common.res.GetallPolicyReportsRes;
+import com.maan.eway.common.res.GetallPortfolioPendingRes;
 import com.maan.eway.common.res.GetallReferralApprovedDetailsRes;
 import com.maan.eway.common.res.GetallReferralDetailsCommonRes;
 import com.maan.eway.common.res.GetallReferralRejectedDetailsRes;
@@ -77,7 +78,7 @@ public interface GridService {
 
 	GetallPortfolioActiveRes getallPortfolioActive(ExistingQuoteReq req);
 
-	List<PortfolioCustomerDetailsRes> getallPortfolioPending(ExistingQuoteReq req);
+	GetallPortfolioPendingRes getallPortfolioPending(ExistingQuoteReq req);
 
 	GetallPortfolioActiveRes getallPortfolioCancelled(ExistingQuoteReq req);
 

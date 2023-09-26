@@ -17,14 +17,13 @@ import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.req.SearchBrokerPolicyReq;
 import com.maan.eway.common.res.GetExistingBrokerListRes;
+import com.maan.eway.common.res.GetMotorProtfolioPendingRes;
 import com.maan.eway.common.res.GetMotorReferalDetailsRes;
 import com.maan.eway.common.res.GetRejectedQuoteDetailsRes;
-import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
 import com.maan.eway.common.res.PortfolioSearchDataRes;
 import com.maan.eway.common.res.QuoteCriteriaResponse;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.res.CopyQuoteSuccessRes;
-import com.maan.eway.res.PotfolioPendingDropDownRes;
 
 public interface MotorGridService {
 	
@@ -51,7 +50,7 @@ public interface MotorGridService {
 	GetMotorProtfolioActiveRes getMotorProtfolioActive(ExistingQuoteReq req, Date startDate,int limit,
 			int offset, String string);
 
-	List<PortfolioPendingGridCriteriaRes> getMotorProtfolioPending(ExistingQuoteReq req,List<String> branches,Date startDate,  int limit,
+	GetMotorProtfolioPendingRes getMotorProtfolioPending(ExistingQuoteReq req,List<String> branches,Date startDate,  int limit,
 			int offset, String string);
 
 	GetMotorProtfolioActiveRes getMotorPortfolioCancelled(ExistingQuoteReq req, Date startDate,  int limit,

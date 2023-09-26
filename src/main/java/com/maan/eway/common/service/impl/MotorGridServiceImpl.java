@@ -69,13 +69,12 @@ import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingBrokerUserListReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
-import com.maan.eway.common.req.GetExistingBrokerListReq;
 import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.req.SearchBrokerPolicyReq;
 import com.maan.eway.common.res.GetExistingBrokerListRes;
-import com.maan.eway.common.res.GetExistingBrokerRes;
+import com.maan.eway.common.res.GetMotorProtfolioPendingRes;
 import com.maan.eway.common.res.GetMotorReferalDetailsRes;
 import com.maan.eway.common.res.GetRejectedQuoteDetailsRes;
 import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
@@ -103,8 +102,6 @@ import com.maan.eway.repository.SeqCustrefnoRepository;
 import com.maan.eway.repository.SeqQuotenoRepository;
 import com.maan.eway.repository.SeqRefnoRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
-import com.maan.eway.res.PotfolioActiveDropDownRes;
-import com.maan.eway.res.PotfolioPendingDropDownRes;
 
 
 @Service
@@ -3310,8 +3307,10 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 		}
 
 		@Override
-		public List<PortfolioPendingGridCriteriaRes> getMotorProtfolioPending(ExistingQuoteReq req, List<String> branches,
+		public GetMotorProtfolioPendingRes getMotorProtfolioPending(ExistingQuoteReq req, List<String> branches,
 				Date startDate, int limit, int offset, String status) {
+			
+			GetMotorProtfolioPendingRes resp = new GetMotorProtfolioPendingRes();
 			List<PortfolioPendingGridCriteriaRes> portfolio = new ArrayList<PortfolioPendingGridCriteriaRes>();
 			try {
 				CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -3326,7 +3325,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				Root<HomePositionMaster> h1 = endtPre.from(HomePositionMaster.class);
 				endtPre.select(cb.sum(h1.get("endtPremium"))) ;
 				Predicate pm1 = cb.equal(h1.get("endtStatus"), m.get("endtStatus"));
-				Predicate pm2   = cb.like(h1.get("originalPolicyNo"), m.get("originalPolicyNo"));
+				Predicate pm2 = cb.like(h1.get("originalPolicyNo"), m.get("originalPolicyNo"));
 				endtPre.where(pm1,pm2);
 		
 				// Select
@@ -3418,7 +3417,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
 					query.where(n1, n2, n3, n4, n5, n6,n7,n8).groupBy((m.get("originalPolicyNo")),m.get("endtStatus"));
 				}else {
-					query.where(n1, n2, n3, n4, n5, n6,n7,n8,n11).groupBy((m.get("originalPolicyNo")),m.get("endtStatus"));	
+					query.where(n1, n2, n3, n4, n5, n6,n7,n8,n11).groupBy((m.get("originalPolicyNo")),m.get("endtStatus"));
 				}
 				
 				
@@ -3428,13 +3427,83 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				result.setMaxResults(offset);
 				portfolio = result.getResultList();
 				
+				resp.setPending(portfolio);
+				resp.setCount(totalProtfolioPending( req,  branches,startDate,  limit,  offset,  status));
+						
+				
 				
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.info("Log Details" + e.getMessage());
 				return null;
 			}
-			return portfolio;
+			return resp;
+		}
+
+		private Long totalProtfolioPending(ExistingQuoteReq req, List<String> branches, Date startDate, int limit,
+				int offset, String status) {
+			Long count = 0l;
+			try {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+				// Find All
+				Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+				Root<EserviceMotorDetails> m = query.from(EserviceMotorDetails.class);
+		//		Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+		
+				// Select
+				query.multiselect(cb.count(m));
+			
+				Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
+				Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
+				Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
+				Predicate n4 = cb.equal(m.get("endtStatus"), status); 
+				
+//				Predicate n7 = cb.greaterThanOrEqualTo(h.get("expiryDate"), startDate);
+//				Predicate n8 = cb.lessThanOrEqualTo(h.get("entryDate"), startDate);
+
+				Predicate n5 = null;
+				Predicate n9 = null;
+				Predicate n10 = null;
+				Predicate n11 = null;
+				if (req.getApplicationId().equalsIgnoreCase("1")) {
+					n5 = cb.equal(m.get("loginId"), req.getLoginId());
+				} else {
+					n5 = cb.equal(m.get("applicationId"), req.getApplicationId());
+					n9 = cb.equal(m.get("loginId"), req.getLoginId());
+					n10 = cb.equal(m.get("customerName"), req.getLoginId());
+					n11 = cb.or(n9,n10);
+					
+				}
+				Predicate n6 = null;
+				if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
+					Expression<String> e0 = m.get("brokerBranchCode");
+					n6 = e0.in(branches);
+				} else {
+					Expression<String> e0 = m.get("branchCode");
+					n6 = e0.in(branches);
+				}
+				if (req.getApplicationId().equalsIgnoreCase("1")) {
+					query.where(n1, n2, n3, n4, n5, n6).groupBy((m.get("originalPolicyNo")),m.get("endtStatus"));
+				}else {
+					query.where(n1, n2, n3, n4, n5, n6, n11).groupBy((m.get("originalPolicyNo")),m.get("endtStatus"));
+				}
+				
+				
+				// Get Result
+				TypedQuery<Long> result = em.createQuery(query);
+				List<Long> list  = result.getResultList();
+				
+				if(list.size()>0)
+					count = Long.valueOf(list.size());
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return count;
 		}
 
 		@Override

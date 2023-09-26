@@ -14,6 +14,7 @@ import com.maan.eway.common.req.ExistingQuoteReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.res.GetExistingBrokerListRes;
+import com.maan.eway.common.res.GetMotorProtfolioPendingRes;
 import com.maan.eway.common.res.GetRejectedQuoteDetailsRes;
 import com.maan.eway.common.res.GetTravelReferalDetailsRes;
 import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
@@ -42,7 +43,7 @@ public interface BuildingGridService {
 
 	CopyQuoteSuccessRes buildingEndt(CopyQuoteReq req, List<String> branches, String loginId);
 
-	List<PortfolioPendingGridCriteriaRes> getBuildingProtfolioPending(ExistingQuoteReq req, List<String> branches,
+	GetMotorProtfolioPendingRes getBuildingProtfolioPending(ExistingQuoteReq req, List<String> branches,
 			Date today, int limit, int offset, String string);
 
 	GetBuildingAdminReferalPendingDetailsRes getBuildingAdminReferalPendingDetails(RevertGridReq req, int limit, int offset,

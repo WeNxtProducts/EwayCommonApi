@@ -86,12 +86,14 @@ import com.maan.eway.common.res.GetApproverListRes;
 import com.maan.eway.common.res.GetCommonReferalDetailsRes;
 import com.maan.eway.common.res.GetExistingBrokerListRes;
 import com.maan.eway.common.res.GetExistingBrokerRes;
+import com.maan.eway.common.res.GetMotorProtfolioPendingRes;
 import com.maan.eway.common.res.GetMotorReferalDetailsRes;
 import com.maan.eway.common.res.GetRejectedQuoteDetailsRes;
 import com.maan.eway.common.res.GetTravelReferalDetailsRes;
 import com.maan.eway.common.res.GetTravelRejectedQuoteDetailsRes;
 import com.maan.eway.common.res.GetallExistingRejectedLapsedRes;
 import com.maan.eway.common.res.GetallPolicyReportsRes;
+import com.maan.eway.common.res.GetallPortfolioPendingRes;
 import com.maan.eway.common.res.GetallReferralApprovedDetailsRes;
 import com.maan.eway.common.res.GetallReferralDetailsCommonRes;
 import com.maan.eway.common.res.GetallReferralRejectedDetailsRes;
@@ -130,10 +132,6 @@ import com.maan.eway.repository.LoginBranchMasterRepository;
 import com.maan.eway.repository.UWReferralDetailsRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.DropDownRes;
-import com.maan.eway.res.DropDownSourceRes;
-import com.maan.eway.res.PotfolioActiveDropDownRes;
-import com.maan.eway.res.PotfolioPendingDropDownRes;
-import com.maan.eway.res.PotfolioRejectDropDownRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.thread.MyTaskList;
 
@@ -2148,7 +2146,8 @@ public class GridServiceImpl implements GridService {
 	}
 
 	@Override
-	public List<PortfolioCustomerDetailsRes> getallPortfolioPending(ExistingQuoteReq req) {
+	public GetallPortfolioPendingRes getallPortfolioPending(ExistingQuoteReq req) {
+		GetallPortfolioPendingRes resp = new GetallPortfolioPendingRes();
 		List<PortfolioCustomerDetailsRes> custRes = new ArrayList<PortfolioCustomerDetailsRes>();
 		DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
@@ -2193,30 +2192,46 @@ public class GridServiceImpl implements GridService {
 					req.getProductId().toString());
 
 			List<PortfolioPendingGridCriteriaRes> list = new ArrayList<PortfolioPendingGridCriteriaRes>();
+			GetMotorProtfolioPendingRes res = new GetMotorProtfolioPendingRes();
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
-				list = motService.getMotorProtfolioPending(req, branches, today, limit, offset, "P");
-			} else if (product.getMotorYn().equalsIgnoreCase("H")
-					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
-				list = traService.getTravelProtfolioPending(req, branches, today, limit, offset, "P");
+				
+				res =  motService.getMotorProtfolioPending(req, branches, today, limit, offset, "P");
+				list = res.getPending();
+				resp.setCount(res.getCount());				
+				
+			} else if (product.getMotorYn().equalsIgnoreCase("H")&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+				
+				res = 	traService.getTravelProtfolioPending(req, branches, today, limit, offset, "P");
+				list = res.getPending();
+				resp.setCount(res.getCount());
+				
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
-				list = buiService.getBuildingProtfolioPending(req, branches, today, limit, offset, "P");
+				
+				res = buiService.getBuildingProtfolioPending(req, branches, today, limit, offset, "P");
+				list = res.getPending();
+				resp.setCount(res.getCount());
+				
 			} else {
-				list = commonService.getCommonProtfolioPending(req, branches, today, limit, offset, "P");
+				
+				res =  commonService.getCommonProtfolioPending(req, branches, today, limit, offset, "P");
+				list = res.getPending();
+				resp.setCount(res.getCount());
 
 			}
 			for (PortfolioPendingGridCriteriaRes data : list) {
-				PortfolioCustomerDetailsRes res = new PortfolioCustomerDetailsRes();
-				res = dozerMapper.map(data, PortfolioCustomerDetailsRes.class);
+				PortfolioCustomerDetailsRes res1 = new PortfolioCustomerDetailsRes();
+				res1 = dozerMapper.map(data, PortfolioCustomerDetailsRes.class);
 				// res.setCount(data.getIdsCount()==null?"":data.getIdsCount().toString() );
-				custRes.add(res);
+				custRes.add(res1);
 			}
-
+			resp.setPendingList(custRes);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Log Details" + e.getMessage());
 			return null;
 		}
-		return custRes;
+		return resp;
 	}
 
 	@Override

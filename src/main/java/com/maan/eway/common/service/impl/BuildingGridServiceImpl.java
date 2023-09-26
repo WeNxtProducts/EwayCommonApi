@@ -47,9 +47,7 @@ import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
-import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
-import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginMaster;
@@ -65,9 +63,9 @@ import com.maan.eway.calculator.util.RatingFactorsUtil;
 import com.maan.eway.common.req.CopyQuoteReq;
 import com.maan.eway.common.req.ExistingBrokerUserListReq;
 import com.maan.eway.common.req.ExistingQuoteReq;
-import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.res.GetExistingBrokerListRes;
+import com.maan.eway.common.res.GetMotorProtfolioPendingRes;
 import com.maan.eway.common.res.GetRejectedQuoteDetailsRes;
 import com.maan.eway.common.res.GetTravelReferalDetailsRes;
 import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
@@ -97,7 +95,6 @@ import com.maan.eway.repository.SeqCustrefnoRepository;
 import com.maan.eway.repository.SeqQuotenoRepository;
 import com.maan.eway.repository.SeqRefnoRepository;
 import com.maan.eway.res.CopyQuoteSuccessRes;
-import com.maan.eway.res.PotfolioPendingDropDownRes;
 
 @Service
 @Transactional
@@ -3157,8 +3154,9 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 			}
 
 			@Override
-			public List<PortfolioPendingGridCriteriaRes> getBuildingProtfolioPending(ExistingQuoteReq req,
+			public GetMotorProtfolioPendingRes getBuildingProtfolioPending(ExistingQuoteReq req,
 					List<String> branches, Date startDate, int limit, int offset, String status) {
+				GetMotorProtfolioPendingRes resp = new GetMotorProtfolioPendingRes();
 				List<PortfolioPendingGridCriteriaRes> portfolio = new ArrayList<PortfolioPendingGridCriteriaRes>();
 				try {
 					CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -3176,7 +3174,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 					endtPre.where(pm1,pm2);
 			
 					// Select
-					query.multiselect(//cb.literal(Long.parseLong("1")).alias("idsCount"),
+					query.multiselect(
 							cb.count(m).as(Long.class).alias("idsCount"),
 							// Customer Info
 							cb.max(c.get("customerReferenceNo")).alias("customerReferenceNo"), 
@@ -3260,17 +3258,77 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 
 					// Get Result
 					TypedQuery<PortfolioPendingGridCriteriaRes> result = em.createQuery(query);
+					result.setFirstResult(limit * offset);
+					result.setMaxResults(offset);
 					portfolio = result.getResultList();
 					portfolio = portfolio.stream().filter(o -> !o.getIdsCount().equals(0L))
 							.collect(Collectors.toList());
+					
+					resp.setPending(portfolio);
+					resp.setCount(totalProtfolioPending( req,branches,startDate,limit,offset, status) );
+					
+					
+				
 				} catch (Exception e) {
 					e.printStackTrace();
 					log.info("Log Details" + e.getMessage());
 					return null;
 				}
-				return portfolio;
+				return resp;
 			}
 			
+			private Long totalProtfolioPending(ExistingQuoteReq req, List<String> branches, Date startDate, int limit,
+					int offset, String status) {
+				Long count = 0l;
+				try {
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+					Root<EserviceCustomerDetails> c = query.from(EserviceCustomerDetails.class);
+					Root<EserviceBuildingDetails> m = query.from(EserviceBuildingDetails.class);
+			//		Root<HomePositionMaster> h = query.from(HomePositionMaster.class);
+					
+					query.multiselect(cb.count(m));
+					
+					Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
+					Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
+					Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
+					Predicate n4 = cb.equal(m.get("endtStatus"), status);
+				//	Predicate n4 = cb.in(m.get("status")).value(Arrays.asList("E","D"));  
+//					Predicate n7 = cb.greaterThanOrEqualTo(h.get("expiryDate"), startDate);
+//					Predicate n8 = cb.lessThanOrEqualTo(h.get("entryDate"), startDate);
+
+					Predicate n5 = null;
+					if (req.getApplicationId().equalsIgnoreCase("1")) {
+						n5 = cb.equal(m.get("loginId"), req.getLoginId());
+					} else {
+						n5 = cb.equal(m.get("applicationId"), req.getApplicationId());
+					}
+					Predicate n6 = null;
+					if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
+						Expression<String> e0 = m.get("brokerBranchCode");
+						n6 = e0.in(branches);
+					} else {
+						Expression<String> e0 = m.get("branchCode");
+						n6 = e0.in(branches);
+					}
+
+					query.where(n1, n2, n3, n4, n5, n6).groupBy((m.get("originalPolicyNo")),m.get("endtStatus"));
+
+					TypedQuery<Long> result = em.createQuery(query);
+					List<Long> list  = result.getResultList();
+					
+					if(list.size()>0)
+						count = Long.valueOf(list.size());
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+					log.info("Log Details" + e.getMessage());
+					return null;
+				}
+				return count;
+			}
+
 			@Override
 			public synchronized GetBuildingAdminReferalPendingDetailsRes getBuildingAdminReferalPendingDetails(RevertGridReq req, int limit,
 					int offset, String status) {

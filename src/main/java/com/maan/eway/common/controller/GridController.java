@@ -34,11 +34,11 @@ import com.maan.eway.common.res.GetApproverListRes;
 import com.maan.eway.common.res.GetExistingBrokerListRes;
 import com.maan.eway.common.res.GetallExistingRejectedLapsedRes;
 import com.maan.eway.common.res.GetallPolicyReportsRes;
+import com.maan.eway.common.res.GetallPortfolioPendingRes;
 import com.maan.eway.common.res.GetallReferralApprovedDetailsRes;
 import com.maan.eway.common.res.GetallReferralDetailsCommonRes;
 import com.maan.eway.common.res.GetallReferralRejectedDetailsRes;
 import com.maan.eway.common.res.PortFolioDashBoardRes;
-import com.maan.eway.common.res.PortfolioCustomerDetailsRes;
 import com.maan.eway.common.res.PortfolioGridRes;
 import com.maan.eway.common.res.RevertGridRes;
 import com.maan.eway.common.res.UpdateLapsedQuoteRes;
@@ -48,7 +48,6 @@ import com.maan.eway.error.Error;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.res.CopyQuoteSuccessRes;
 import com.maan.eway.res.DropDownRes;
-import com.maan.eway.res.DropDownSourceRes;
 import com.maan.eway.res.SuccessRes;
 import com.maan.eway.service.PrintReqService;
 
@@ -388,7 +387,7 @@ public class GridController {
 	public ResponseEntity<CommonRes> getallPortfolioPending(@RequestBody ExistingQuoteReq req) {
 		reqPrinter.reqPrint(req);
 		CommonRes data = new CommonRes();
-		List<PortfolioCustomerDetailsRes> res = entityService.getallPortfolioPending(req);
+		GetallPortfolioPendingRes res = entityService.getallPortfolioPending(req);
 		data.setCommonResponse(res);
 		data.setIsError(false);
 		data.setErrorMessage(Collections.emptyList());

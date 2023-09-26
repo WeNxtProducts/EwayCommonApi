@@ -15,6 +15,7 @@ import com.maan.eway.common.req.GetallPolicyReportsReq;
 import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.res.GetExistingBrokerListRes;
+import com.maan.eway.common.res.GetMotorProtfolioPendingRes;
 import com.maan.eway.common.res.GetTravelReferalDetailsRes;
 import com.maan.eway.common.res.GetTravelRejectedQuoteDetailsRes;
 import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
@@ -45,7 +46,7 @@ public interface TravelGridService {
 
 	List<Tuple> getTravelReportDetails(GetallPolicyReportsReq req);
 
-	List<PortfolioPendingGridCriteriaRes> getTravelProtfolioPending(ExistingQuoteReq req, List<String> branches,
+	GetMotorProtfolioPendingRes getTravelProtfolioPending(ExistingQuoteReq req, List<String> branches,
 			Date today, int limit, int offset, String string);
 
 	GetTravelAdminReferalPendingDetailsRes getTravelAdminReferalPendingDetails(RevertGridReq req, int limit, int offset,

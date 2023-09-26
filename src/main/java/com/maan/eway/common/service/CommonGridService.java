@@ -15,6 +15,7 @@ import com.maan.eway.common.req.IssuerQuoteReq;
 import com.maan.eway.common.req.RevertGridReq;
 import com.maan.eway.common.res.GetCommonReferalDetailsRes;
 import com.maan.eway.common.res.GetExistingBrokerListRes;
+import com.maan.eway.common.res.GetMotorProtfolioPendingRes;
 import com.maan.eway.common.res.GetRejectedQuoteDetailsRes;
 import com.maan.eway.common.res.PortfolioPendingGridCriteriaRes;
 import com.maan.eway.common.res.QuoteCriteriaResponse;
@@ -43,7 +44,7 @@ public interface CommonGridService {
 
 
 
-	List<PortfolioPendingGridCriteriaRes> getCommonProtfolioPending(ExistingQuoteReq req, List<String> branches,Date startDate,  int limit,
+	GetMotorProtfolioPendingRes getCommonProtfolioPending(ExistingQuoteReq req, List<String> branches,Date startDate,  int limit,
 			int offset, String string);
 
 
