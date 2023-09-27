@@ -1,5 +1,7 @@
 package com.maan.eway.notification.req;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -33,6 +35,12 @@ public class DirectMailSentReq {
 	
 	@JsonProperty("NotifTemplateCode")
 	private String notifTemplateCode ;
+	
+	@JsonProperty("AttachmentFile")
+	private List<String> fileAttachment;
+	
+	@JsonProperty("Customer")
+	private Customer customer;
 	
 	
 }

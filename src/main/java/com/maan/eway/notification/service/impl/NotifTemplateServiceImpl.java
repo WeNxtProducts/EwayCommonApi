@@ -345,7 +345,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			nf.setRequestReferenceNo(req.getRequestReferenceNo());;
 		//	nf.setRemarks(req.getRemarks());
 			nf.setCreatedBy(req.getCreatedBy());
-			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
+	/*		CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
 
 			if(product.getMotorYn().equalsIgnoreCase("M") ) {
 				res =	motorPushNotification(nf);
@@ -366,15 +366,20 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			
 			NotifTransactionDetails ne = (NotifTransactionDetails) res.getCommonResponse() ;
 		    Tuple t =  loadNotificationPending(ne.getNotifNo()).get(0);
+			*/
+			String mailBody=template.getMailBody();
+			String mailSubject=template.getMailSubject();
+			String mailRegards=template.getMailRegards();
 			
-			String mailBody=(String) getContentFrame(t, template.getMailBody());
-		    String mailSubject=(String) getContentFrame(t, template.getMailSubject());
-			String mailRegards=(String) getContentFrame(t, template.getMailRegards());
-			
+			if(req.getAdditionalInfo()!=null && !req.getAdditionalInfo().isEmpty()) {
+				mailBody=(String) getContentFrame(req.getAdditionalInfo(), template.getMailBody());
+				mailSubject=(String) getContentFrame(req.getAdditionalInfo(), template.getMailSubject());
+				mailRegards=(String) getContentFrame(req.getAdditionalInfo(), template.getMailRegards());
+			}
 			mailTemplateRes.setMailBody(mailBody);
 			mailTemplateRes.setMailSubject(mailSubject);
 			mailTemplateRes.setMailRegards(mailRegards);
-			mailTemplateRes.setNotificationNo(ne.getNotifNo()==null?"":String.valueOf(ne.getNotifNo()));
+			//mailTemplateRes.setNotificationNo(ne.getNotifNo()==null?"":String.valueOf(ne.getNotifNo()));
 			mailTemplateRes.setNotifTemplateCode(req.getNotifTemplateCode());
 			res.setCommonResponse(mailTemplateRes);
 			res.setIsError(false);
@@ -411,7 +416,7 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			nf.setRequestReferenceNo(req.getRequestReferenceNo());
 			nf.setCreatedBy(req.getCreatedBy());
 	//		nf.setRemarks(req.getRemarks());
-			CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
+		/*	CompanyProductMaster product =  getCompanyProductMasterDropdown(req.getInsuranceId() , req.getProductId().toString());
 
 			if(product.getMotorYn().equalsIgnoreCase("M") ) {
 				res = 	motorPushNotification(nf);
@@ -426,15 +431,21 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 				res = commonPushNotification(nf);
 			} 
 			NotifTransactionDetails ne = (NotifTransactionDetails) res.getCommonResponse() ;
-			Tuple t =  loadNotificationPending(ne.getNotifNo()).get(0);
-			String smsBody=(String) getContentFrame(t, template.getSmsBodyEn());
-		    String smsSubject=(String) getContentFrame(t, template.getSmsSubject());
-			String smsRegards=(String) getContentFrame(t, template.getSmsRegards());
+			Tuple t =  loadNotificationPending(ne.getNotifNo()).get(0);*/
+			String smsBody=template.getSmsBodyEn();
+			String smsSubject=template.getSmsSubject();
+			String smsRegards=template.getSmsRegards();
+			
+			if(req.getAdditionalInfo()!=null && !req.getAdditionalInfo().isEmpty()) {
+				smsBody=(String) getContentFrame(req.getAdditionalInfo(), template.getSmsBodyEn());
+				smsSubject=(String) getContentFrame(req.getAdditionalInfo(),template.getSmsSubject());
+				smsRegards=(String) getContentFrame(req.getAdditionalInfo(),template.getSmsRegards());
+			}			
 			
 			smsTemplateRes.setSmsBody(smsBody);
 			smsTemplateRes.setSmsSubject(smsSubject);
 			smsTemplateRes.setSmsRegards(smsRegards);
-			smsTemplateRes.setNotificationNo(ne.getNotifNo()==null?"":String.valueOf(ne.getNotifNo()));
+			//smsTemplateRes.setNotificationNo(ne.getNotifNo()==null?"":String.valueOf(ne.getNotifNo()));
 			smsTemplateRes.setNotifTemplateCode(req.getNotifTemplateCode());
 			res.setCommonResponse(smsTemplateRes);
 			res.setIsError(false);
@@ -946,23 +957,25 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 		}
 		return list;
 	}
-	private Object getContentFrame(Tuple t ,String messageTemplate ) {
+
+	private Object getContentFrame(Map<String, Object> t ,String messageTemplate) {
 		try {
 			 
-		  
-			StringBuffer b=new StringBuffer(messageTemplate);
-			while (b.indexOf("{")!=-1 && b.indexOf("}")!=-1) {
-				 String tx = b.substring(b.indexOf("{")+1, b.indexOf("}"));
-				 b.replace(b.indexOf("{"), b.indexOf("}")+1, String.valueOf(t.get(tx)));
-			} 
-			return b.toString();
+			if(StringUtils.isNotBlank(messageTemplate)) {
+				StringBuffer b=new StringBuffer(messageTemplate);
+				while (b.indexOf("{")!=-1 && b.indexOf("}")!=-1) {
+					String tx = b.substring(b.indexOf("{")+1, b.indexOf("}"));
+					b.replace(b.indexOf("{"), b.indexOf("}")+1, String.valueOf(t.get(tx)));
+				} 
+				return b.toString();
+			}
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	} 
 	
-	
+	/*
 	private String getTemplateFrame(Tuple t ,NotifTemplateMaster m , String mailBody , 	String mailSubject,	String mailRegards) {
 		try {
 			 String baseTemplate="<div style=\"margin: 0px auto;width: 700px;max-width: 90%;padding-top: 20px;background-color: rgb(255,255,255);\">\r\n"
@@ -1040,90 +1053,36 @@ public class NotifTemplateServiceImpl implements  NotifTemplateService {
 			e.printStackTrace();
 		}
 		return null;
-	}
+	}*/
 
 	@Override
 	public CommonRes sentDirectMail(DirectMailSentReq req) {
 		CommonRes res = new CommonRes();
-		SuccessRes response = new SuccessRes();
+		//SuccessRes response = new SuccessRes();
 		try {
 			
-		/*	String mailBody= req.getMailBody();
-			String mailSubject= req.getMailSubject();
-			String mailRegards=req.getMailRegards();
-			
-			NotifTemplateGetReq ntr = new NotifTemplateGetReq();
-			ntr.setNotifTemplateCode(req.getNotifTemplateCode());
-			ntr.setInsuranceId(req.getInsuranceId());
-			ntr.setProductId(req.getProductId());
-			
-			NotifTemplateMaster template = getTemplateDetails(ntr) ;
-			
-			Tuple t =  loadNotificationPending(Integer.valueOf( req.getNotificationNo())).get(0);
-			MailMaster mailc = mailRepo.findByCompanyIdAndBranchCodeAndStatusOrderByAmendIdDesc(req.getInsuranceId(),"99999","Y").get(0);													
-
-			// Mail Credentials 
-			String tomailds=(String) getValue(t,template.getToEmail());
-			String tomailid=tomailds;
-			List<String> mailcc=null;
-			if(tomailds.indexOf(",")!=1) {
-				tomailid=tomailds.split(",")[0];
-			    String[] mailcsc = tomailid.split(",");
-			    List<String> asList = Arrays.asList(mailcsc);
-			    mailcc= (asList.size()>5)?asList.subList(0, 5):asList;
-			}
-			
-			String templatebody=getTemplateFrame(t, template ,  mailSubject ,mailBody , mailRegards);
-			
-			Mail m=Mail.builder()
-					.mailBody(templatebody)
-					.mailRegards(mailRegards)
-					.mailSubject(mailSubject)
-					.mailTo(tomailid)
-					.mailcc(mailcc)
-					.credential(JobCredentials.builder().host(mailc.getSmtpHost()).port(mailc.getSmtpPort()).isSSL(true).password(mailc.getSmtpPwd()).username(mailc.getSmtpUser()).build())
-					.attachments(t.get("attachFilePath")==null?"":t.get("attachFilePath").toString())
-					.notifNo(Long.parseLong(t.get("notifNo").toString()))
-					.build();
-			
-
- 			String tinyGroupId=String.valueOf(Instant.now().getEpochSecond());
-			NotifTransactionDetails nt = NotifTransactionDetails.builder()
-					.brokerCompanyName(lu.getUserName())
-					.brokerMailId(lu.getUserMail())					
-					.companyName(cm.getCompanyName())
-					.customerMailid(lu.getUserMail())					
-					.customerName(lu.getUserName())
-					.entryDate(new Date())
-					.notifcationPushDate(new Date())
-					.notifcationEndDate(calend.getTime())
-					.notifDescription(req.getMailSubject())
-					.no
-					//.notifNo(null)
-					.notifPriority(1)
-					.notifPushedStatus("P")
-					.notifTemplatename(template.getNotifTemplatename())											
-					.productName("Common")					
-					//.tinyUrl(n.getTinyUrl())
+ 			Notification n=Notification.builder()
+					.attachments(req.getFileAttachment())
+					.branchCode(null)
 					.companyid(req.getInsuranceId())
-					.productid(99999)
-					.companyLogo(cm.getCompanyLogo())
-					.companyAddress(cm.getCompanyAddress())											
-					.tinyUrlActive("N")
-					.tinyGroupId(tinyGroupId)
+					.companyName(null)
+					.customer(req.getCustomer())
+					.notifcationDate(new Date())
+					.notifDescription(req.getMailBody())
+					.notifPriority(1)
+					.notifPushedStatus(NotificationStatus.PENDING)
+					.notifTemplatename(req.getNotifTemplateCode())
+					.otp(null)
+					.policyNo(null)
+					.productid(Integer.parseInt(req.getProductId()))
+					.productName(null)
+					.pushedBy(req.getCreatedBy())
+					.quoteNo(req.getRequestReferenceNo())
+					.refNo(req.getRequestReferenceNo())
+					.sectionName(null)
+					.tinyUrl(null)					
 					.build();
-			NotifTransactionDetails sv = notifTrans.save(nt);
-			List<NotifTransactionDetails> text=new LinkedList<NotifTransactionDetails>();
-			text.add(sv);
-			notificationService.jobProcess(text);
-			
-		 	response.setResponse("Mail Sent Successfully");	
-			response.setSuccessId(req.getNotificationNo());
-			res.setCommonResponse(response);
-			res.setIsError(false);
-		
-			 
-			*/
+			 res = notiService.pushNotification(n); 
 			
 		} catch (Exception e) {
 			e.printStackTrace();

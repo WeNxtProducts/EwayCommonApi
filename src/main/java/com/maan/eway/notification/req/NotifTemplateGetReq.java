@@ -1,5 +1,7 @@
 package com.maan.eway.notification.req;
 
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -21,4 +23,8 @@ public class NotifTemplateGetReq {
 	
 	@JsonProperty("CreatedBy")
 	private String createdBy;
+	
+	@JsonProperty("AdditionalInfo")
+	private Map<String,Object> additionalInfo;
+	
 }

@@ -219,14 +219,14 @@ public class NotificationService {
 				String tinyGroupId=String.valueOf(Instant.now().getEpochSecond());
 				
 				for (UnderWriter underWriter : n.getUnderwriters()) {
-					NotifTransactionDetails nt = NotifTransactionDetails.builder()
-							.brokerCompanyName(n.getBroker().getBrokerCompanyName())
-							.brokerMailId(n.getBroker().getBrokerMailId())
-							.brokerMessengerCode(n.getBroker().getBrokerMessengerCode())
-							.brokerMessengerPhone(n.getBroker().getBrokerMessengerPhone())
-							.brokerPhoneCode(n.getBroker().getBrokerPhoneCode())
-							.brokerPhoneNo(n.getBroker().getBrokerPhoneNo())
-							.brokerName(n.getBroker().getBrokerName())
+					NotifTransactionDetails nt = NotifTransactionDetails.builder()							
+							.brokerCompanyName(n.getBroker()!=null ?n.getBroker().getBrokerCompanyName():"")
+							.brokerMailId(n.getBroker()!=null ? n.getBroker().getBrokerMailId():"")
+							.brokerMessengerCode(n.getBroker()!=null ?n.getBroker().getBrokerMessengerCode():0)
+							.brokerMessengerPhone(n.getBroker()!=null ?n.getBroker().getBrokerMessengerPhone():BigDecimal.ZERO)
+							.brokerPhoneCode(n.getBroker()!=null ?n.getBroker().getBrokerPhoneCode():0)
+							.brokerPhoneNo(n.getBroker()!=null ?n.getBroker().getBrokerPhoneNo():BigDecimal.ZERO)
+							.brokerName(n.getBroker()!=null ?n.getBroker().getBrokerName():"")
 							.companyName(n.getCompanyName())
 							.customerMailid(n.getCustomer().getCustomerMailid())
 							.customerPhoneCode(n.getCustomer().getCustomerPhoneCode())
@@ -284,13 +284,13 @@ public class NotificationService {
 			}else {		
 				String tinyGroupId=String.valueOf(Instant.now().getEpochSecond());
 				NotifTransactionDetails nt = NotifTransactionDetails.builder()
-						.brokerCompanyName(n.getBroker().getBrokerCompanyName())
-						.brokerMailId(n.getBroker().getBrokerMailId())
-						.brokerMessengerCode(n.getBroker().getBrokerMessengerCode())
-						.brokerMessengerPhone(n.getBroker().getBrokerMessengerPhone())
-						.brokerPhoneCode(n.getBroker().getBrokerPhoneCode())
-						.brokerPhoneNo(n.getBroker().getBrokerPhoneNo())
-						.brokerName(n.getBroker().getBrokerName())
+						.brokerCompanyName(n.getBroker()!=null ?n.getBroker().getBrokerCompanyName():"")
+						.brokerMailId(n.getBroker()!=null ? n.getBroker().getBrokerMailId():"")
+						.brokerMessengerCode(n.getBroker()!=null ?n.getBroker().getBrokerMessengerCode():0)
+						.brokerMessengerPhone(n.getBroker()!=null ?n.getBroker().getBrokerMessengerPhone():BigDecimal.ZERO)
+						.brokerPhoneCode(n.getBroker()!=null ?n.getBroker().getBrokerPhoneCode():0)
+						.brokerPhoneNo(n.getBroker()!=null ?n.getBroker().getBrokerPhoneNo():BigDecimal.ZERO)
+						.brokerName(n.getBroker()!=null ?n.getBroker().getBrokerName():"")
 						.companyName(n.getCompanyName())
 						.customerMailid(n.getCustomer().getCustomerMailid())
 						.customerPhoneCode(n.getCustomer().getCustomerPhoneCode())
@@ -342,14 +342,14 @@ public class NotificationService {
 				
 				
 				List<NotifTransactionDetails> text=new LinkedList<NotifTransactionDetails>();
-				text.add(sv);
+				text.add(nt);
 				jobProcess(text);
 				sv = notifTrans.save(nt);
 				
 			}
 			c.setIsError(Boolean.FALSE);
 			c.setErroCode(100);
-			c.setIsError(null);
+			//c.setIsError(null);
 			c.setMessage("Pushed Successfuly");
 			c.setCommonResponse(sv);
 			

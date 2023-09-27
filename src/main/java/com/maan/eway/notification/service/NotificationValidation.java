@@ -19,33 +19,34 @@ public class NotificationValidation {
 		Customer customer = n.getCustomer();
 		List<UnderWriter> underwriters = n.getUnderwriters();
 		List<Error>  errors = new ArrayList<Error>();
-		    
-		if(StringUtils.isBlank(broker.getBrokerCompanyName())) {
-			errors.add(new Error("01","BrokerCompanyName" , "Please Select BrokerCompanyName" ));
-		}
-			
-		if(StringUtils.isBlank(broker.getBrokerMailId())) {
-			errors.add(new Error("02","BrokerMailId" , "Please Select BrokerMailId" ));
-		}
-		
-		if(StringUtils.isBlank(broker.getBrokerName())) {
-			errors.add(new Error("03","BrokerName" , "Please Select BrokerName" ));
-		}
-		
-		if(broker.getBrokerMessengerCode()==null) {
-			errors.add(new Error("04","BrokerMessengerCode" , "Please Select BrokerMessengerCode" ));
-		}
-		
-		if(broker.getBrokerMessengerPhone()==null) {
-			errors.add(new Error("04","BrokerMessengerPhone" , "Please Select BrokerMessengerPhone" ));
-		}
-		
-		if(broker.getBrokerPhoneCode()==null) {
-			errors.add(new Error("04","BrokerPhoneCode" , "Please Select BrokerPhoneCode" ));
-		}
-		
-		if(broker.getBrokerPhoneNo()==null) {
-			errors.add(new Error("04","BrokerPhoneNo" , "Please Select BrokerPhoneNo" ));
+		if(broker!=null) {   
+			if(StringUtils.isBlank(broker.getBrokerCompanyName())) {
+				errors.add(new Error("01","BrokerCompanyName" , "Please Select BrokerCompanyName" ));
+			}
+
+			if(StringUtils.isBlank(broker.getBrokerMailId())) {
+				errors.add(new Error("02","BrokerMailId" , "Please Select BrokerMailId" ));
+			}
+
+			if(StringUtils.isBlank(broker.getBrokerName())) {
+				errors.add(new Error("03","BrokerName" , "Please Select BrokerName" ));
+			}
+
+			if(broker.getBrokerMessengerCode()==null) {
+				errors.add(new Error("04","BrokerMessengerCode" , "Please Select BrokerMessengerCode" ));
+			}
+
+			if(broker.getBrokerMessengerPhone()==null) {
+				errors.add(new Error("04","BrokerMessengerPhone" , "Please Select BrokerMessengerPhone" ));
+			}
+
+			if(broker.getBrokerPhoneCode()==null) {
+				errors.add(new Error("04","BrokerPhoneCode" , "Please Select BrokerPhoneCode" ));
+			}
+
+			if(broker.getBrokerPhoneNo()==null) {
+				errors.add(new Error("04","BrokerPhoneNo" , "Please Select BrokerPhoneNo" ));
+			}
 		}
 		
 		/*if(StringUtils.isBlank(customer.getCustomerMailid())) {
