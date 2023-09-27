@@ -391,7 +391,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				n8 = cb.equal(  m.get("branchCode"),  req.getBranchCode());
 			}
 
-			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9).orderBy(orderList);
+		//	query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9).orderBy(orderList);
 			if (req.getApplicationId().equalsIgnoreCase("1")) {
 			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9).orderBy(orderList);
 			}else {

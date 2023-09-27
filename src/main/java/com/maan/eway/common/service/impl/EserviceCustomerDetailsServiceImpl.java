@@ -934,7 +934,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					savePersonalInfo.setWhatsappcodeDesc(whatsappCode.getItemValue());
 
 				}
+				savePersonalInfo.setRegionCode(req.getRegionCode());
+				savePersonalInfo.setStateCode(req.getStateCode());
 				savePersonalInfo.setStateName(req.getStateName());
+				savePersonalInfo.setStatus(req.getStatus());
+				savePersonalInfo.setNationality(req.getNationality());
 				personalInforepo.save(savePersonalInfo);
 			}
 			}else if(StringUtils.isNotBlank(req.getType())) {
@@ -959,7 +963,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 						String businessType =  getListItem ("99999" , req.getBranchCode() ,"BUSINESS_TYPE",req.getBusinessType());//listRepo.findByItemTypeAndItemCode("BUSINESS_TYPE", req.getBusinessType());
 						savePersonalInfo.setBusinessTypeDesc(businessType);
 					}
-					savePersonalInfo.setRegionCode(req.getRegionCode());
+					
 					savePersonalInfo.setIsTaxExempted(req.getIsTaxExempted());
 					savePersonalInfo.setCityCode(req.getCityCode());
 					savePersonalInfo.setCityName(req.getCityName());
@@ -1023,7 +1027,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 						savePersonalInfo.setWhatsappcodeDesc(whatsappCode.getItemValue());
 
 					}
+					savePersonalInfo.setRegionCode(req.getRegionCode());
+					savePersonalInfo.setStateCode(req.getStateCode());
 					savePersonalInfo.setStateName(req.getStateName());
+					savePersonalInfo.setStatus(req.getStatus());
+					savePersonalInfo.setNationality(req.getNationality());
+					
 					personalInforepo.save(savePersonalInfo);
 				}
 			}
