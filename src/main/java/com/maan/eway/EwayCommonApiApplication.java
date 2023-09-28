@@ -1,5 +1,13 @@
 package com.maan.eway;
 
+import java.util.concurrent.Executor;
+
+import javax.sql.DataSource;
+
+//import org.jobrunr.configuration.JobRunr;
+//import org.jobrunr.scheduling.JobScheduler;
+//import org.jobrunr.server.JobActivator;
+//import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
 //import org.jobrunr.configuration.JobRunr;
 //import org.jobrunr.scheduling.JobScheduler;
 //import org.jobrunr.server.JobActivator;
@@ -7,7 +15,9 @@ package com.maan.eway;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableCaching
 @SpringBootApplication
 @EnableAsync
@@ -18,7 +28,7 @@ public class EwayCommonApiApplication {
 	}
 	
 
-	  /*	@Bean(name = "NoticationThread-M")
+	/*  	@Bean(name = "NoticationThread-M")
 	    public Executor threadPoolTaskExecutor() {
 	  		ThreadPoolTaskExecutor t = new ThreadPoolTaskExecutor();
 	  		t.setCorePoolSize(2);
@@ -38,8 +48,8 @@ public class EwayCommonApiApplication {
 	                .useBackgroundJobServer()
 	                .useDashboard(7894)	                
 	                .initialize();
-	    }  
-*/
+	    }  */
+
 
 
 }
