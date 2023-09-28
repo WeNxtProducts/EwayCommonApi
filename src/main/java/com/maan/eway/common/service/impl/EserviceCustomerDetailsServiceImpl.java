@@ -119,11 +119,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					errorList.add(new Error("02", "Address1", "Please Enter Address within 100 Characters"));
 				}
 				
-				if (StringUtils.isBlank(req.getStreet())) {
-					errorList.add(new Error("03", "Street", "Please Enter Street"));
-				} else if (req.getAddress1().length() > 100) {
-					errorList.add(new Error("03", "Street", "Please Enter Street within 100 Characters"));
-				}
+//				if (StringUtils.isBlank(req.getStreet())) {
+//					errorList.add(new Error("03", "Street", "Please Enter Street"));
+//				} else if (req.getAddress1().length() > 100) {
+//					errorList.add(new Error("03", "Street", "Please Enter Street within 100 Characters"));
+//				}
 				
 				/*if (StringUtils.isBlank(req.getAddress2())) {
 					errorList.add(new Error("02", "Address2", "Please Enter Address2 "));
@@ -589,7 +589,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					Predicate n32 = (cb.like(cb.lower(b.get("stateCode")), req.getStateCode().toLowerCase()));
 					Predicate n33 = (cb.like(cb.lower(b.get("stateName")), req.getStateName().toLowerCase()));
 					Predicate n34 = (cb.like(cb.lower(b.get("status")), req.getStatus().toLowerCase()));
-					Predicate n35 = (cb.like(cb.lower(b.get("street")), req.getStreet().toLowerCase()));
+				//	Predicate n35 = (cb.like(cb.lower(b.get("street")), req.getStreet().toLowerCase()));
 					Predicate n36 = (cb.like(cb.lower(b.get("taxExemptedId")), req.getTaxExemptedId().toLowerCase()));
 					Predicate n37 = (cb.equal(b.get("telephoneNo1"), req.getTelephoneNo1()));
 					Predicate n38 = (cb.equal(b.get("telephoneNo2"), req.getTelephoneNo2()));
@@ -601,7 +601,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					query.where(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10,
 							// n11,
 							n12, n13, n14, n15, n16, n17, n18, n19, n20, n21, n22, n23, n24, n25, n26, n27, n28, n29,
-							n30, n31, n32, n33, n34, n35, n36, n37, n38, n39, n40,n41,n42);
+							n30, n31, n32, n33, n34, /*n35,*/ n36, n37, n38, n39, n40,n41,n42);
 					// Get Result
 					TypedQuery<EserviceCustomerDetails> result = em.createQuery(query);
 					list = result.getResultList();
@@ -827,7 +827,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setIdTypeDesc(policyHolderTypeId);
 			saveData.setVrTinNo(req.getIdNumber());
 			saveData.setMobileCode1(req.getMobileCode1());
-			saveData.setStreet(req.getStreet());
+			//saveData.setStreet(req.getStreet());
 			saveData.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
 			saveData.setMobileCode3(req.getMobileCode3()==null?"":req.getMobileCode3());
 			saveData.setWhatsappCode(req.getWhatsappCode());
