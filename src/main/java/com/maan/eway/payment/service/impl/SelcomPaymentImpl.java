@@ -82,7 +82,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					JsonObject orderDict = new JsonObject();
 					orderDict.addProperty("vendor",vendorCode);
 					orderDict.addProperty("order_id",payment.getMerchantReference());
-					orderDict.addProperty("buyer_email", StringUtils.isBlank(payment.getCustomerEmail())?"":payment.getCustomerEmail() );
+					orderDict.addProperty("buyer_email", StringUtils.isBlank(payment.getCustomerEmail())?"info@alliance.co.tz":payment.getCustomerEmail() );
 					orderDict.addProperty("buyer_name", payment.getCustomerName());
 					orderDict.addProperty("buyer_userid", "");
 					orderDict.addProperty("buyer_phone", payment.getReqBillToPhone());
@@ -107,7 +107,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					orderDict.addProperty("billing.address_2" ,payment.getReqBillToAddressLine2());		
 					orderDict.addProperty("billing.city" , payment.getReqBillToAddressCity()); 
 					orderDict.addProperty("billing.state_or_region" , payment.getReqBillToAddressState());  
-					orderDict.addProperty("billing.postcode_or_pobox" , payment.getReqBillToAddrPostalCode());  
+					orderDict.addProperty("billing.postcode_or_pobox" ,StringUtils.isBlank(payment.getReqBillToAddrPostalCode())?"99999":payment.getReqBillToAddrPostalCode());  
 					orderDict.addProperty("billing.country" , payment.getReqBillToCountry());  
 					orderDict.addProperty("billing.phone" , payment.getReqBillToPhone());
 					/*orderDict.addProperty("shipping.firstname" ,  payment.getReqBillToForename());
@@ -116,7 +116,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 					orderDict.addProperty("shipping.address_2" , payment.getReqBillToAddressLine2());
 					orderDict.addProperty("shipping.city" , payment.getReqBillToAddressCity());
 					orderDict.addProperty("shipping.state_or_region" , payment.getReqBillToAddressState());  
-					orderDict.addProperty("shipping.postcode_or_pobox" , payment.getReqBillToAddrPostalCode());  
+					orderDict.addProperty("shipping.postcode_or_pobox" ,StringUtils.isBlank(payment.getReqBillToAddrPostalCode())?"99999":payment.getReqBillToAddrPostalCode());  
 					orderDict.addProperty("shipping.country" ,  payment.getReqBillToCountry()); 
 					//orderDict.addProperty("shipping.phone" , payment.getReqBillToPhone());
 					orderDict.addProperty("buyer_remarks","None");
