@@ -950,10 +950,16 @@ public class CommonGridServiceImpl implements CommonGridService {
 			Predicate n7 = cb.equal(m.get("riskId"), riskId);
 
 			Predicate n5 = null;
+			Predicate n9 = null;
+			Predicate n10 = null;
+			Predicate n11 = null;
 			if (req.getApplicationId().equalsIgnoreCase("1")) {
 				n5 = cb.equal(m.get("loginId"), req.getLoginId());
 			} else {
 				n5 = cb.equal(m.get("applicationId"), req.getApplicationId());
+				n9 = cb.equal(m.get("loginId"), req.getLoginId());
+				n10 = cb.equal(m.get("customerName"), req.getLoginId());
+				n11 = cb.or(n9,n10);
 			}
 			Predicate n6 = null;
 			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
@@ -969,7 +975,10 @@ public class CommonGridServiceImpl implements CommonGridService {
 			else if (req.getType().equalsIgnoreCase("E"))
 				n8 = cb.isNotNull(m.get("endorsementTypeDesc"));
 	
-			query.where(n1, n2, n3, n4, n5, n6,n7,n8);
+			if (req.getApplicationId().equalsIgnoreCase("1"))
+				query.where(n1, n2, n3, n4, n5, n6,n7,n8);
+			else
+				query.where(n1, n2, n3, n4, n5, n6,n7,n8,n11);
 				
 			// Get Result
 			TypedQuery<Long> result = em.createQuery(query);

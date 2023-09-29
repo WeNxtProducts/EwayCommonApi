@@ -146,7 +146,7 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 
 			query.multiselect(cb.max(cus.get("clientName")).alias("clientName"), cb.count(c).alias("idsCount"),
 
-					cus.get("customerReferenceNo").alias("customerReferenceNo"),
+				//	cus.get("customerReferenceNo").alias("customerReferenceNo"),
 					cus.get("mobileNo1").alias("mobileNumber"),
 					cb.max(c.get("requestReferenceNo")).alias("requestReferenceNo"),
 					cb.max(c.get("riskId")).alias("riskId"), 
