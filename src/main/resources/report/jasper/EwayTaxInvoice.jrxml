@@ -44,7 +44,7 @@
 		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
 		<parameter name="pvQuoteNo" class="java.lang.String"/>
 		<queryString language="SQL">
-			<![CDATA[SELECT REGISTRATION_NUMBER,motor_category_desc FROM motor_data_details WHERE Quote_no =  $P{pvQuoteNo} ]]>
+			<![CDATA[SELECT REGISTRATION_NUMBER,motor_category_desc FROM motor_data_details WHERE Quote_no =  $P{pvQuoteNo}]]>
 		</queryString>
 		<field name="REGISTRATION_NUMBER" class="java.lang.String">
 			<property name="com.jaspersoft.studio.field.name" value="REGISTRATION_NUMBER"/>
@@ -107,12 +107,13 @@ HPM.QUOTE_NO,
   HPM.VAT_PERCENT,
   PD.BANK_NAME,
   PD.ACCOUNT_NUMBER,
-  (SELECT SUM(SUM_INSURED) FROM motor_data_details WHERE MDD.QUOTE_NO=QUOTE_NO) AS TOTAL_SUM_INSURED
+    (SELECT SUM(SUM_INSURED) FROM POLICY_COVER_DATA WHERE quote_no=HPM.QUOTE_NO
+AND disc_load_id='0' AND tax_id='0' AND dependent_cover_yn='N')   
+ AS TOTAL_SUM_INSURED
 FROM HOME_POSITION_MASTER HPM INNER JOIN PERSONAL_INFO PIF ON HPM.CUSTOMER_ID=PIF.CUSTOMER_ID
 LEFT JOIN PAYMENT_DETAIL  PD ON PD.QUOTE_NO = HPM.QUOTE_NO
-LEFT JOIN MOTOR_DATA_DETAILS MDD
-ON HPM.QUOTE_NO=MDD.QUOTE_NO LEFT JOIN LOGIN_USER_INFO LUI ON HPM.LOGIN_ID=LUI.LOGIN_ID
-WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
+ LEFT JOIN LOGIN_USER_INFO LUI ON HPM.LOGIN_ID=LUI.LOGIN_ID
+WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 	</queryString>
 	<field name="PRINTED_BY" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="USER_NAME"/>
@@ -590,7 +591,7 @@ WHERE HPM.POLICY_NO= $P{pvPolicyNo}]]>
 				<textFieldExpression><![CDATA["Policy Period From :"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="61" y="0" width="119" height="15" uuid="97bb6f65-564a-49d5-951c-cc80a274641d">
+				<reportElement x="61" y="0" width="189" height="15" uuid="97bb6f65-564a-49d5-951c-cc80a274641d">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
