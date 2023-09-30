@@ -179,7 +179,12 @@ AND mdr.quote_no = mdd.quote_no]]>
   PIF.CLIENT_NAME,
   HPM.DEBIT_NOTE_NO AS INVOICE_NO, 
   PIF.Address_1,
-  PIF.Address_2, 
+  PIF.STATE_NAME AS REGION_NAME,
+  PIF.CITY_NAME AS DISTRICT_NAME,
+  (SELECT COUNTRY_NAME FROM `eway_country_master` WHERE COUNTRY_ID=PIF.NATIONALITY AND COMPANY_ID=HPM.COMPANY_ID AND STATUS='Y'
+  AND AMEND_ID=(SELECT MAX(AMEND_ID) FROM `eway_country_master` WHERE COUNTRY_ID=PIF.NATIONALITY AND COMPANY_ID=HPM.COMPANY_ID AND STATUS='Y'))
+  AS COUNTRY_NAME,
+  PIF.PIN_CODE AS PO_BOX,
   HPM.inception_date AS FROM_DATE, 
   HPM.expiry_date AS TO_DATE, 
   HPM.expiry_date  AS RENEWAL_DATE, 
@@ -259,9 +264,23 @@ WHERE
 		<property name="com.jaspersoft.studio.field.label" value="Address_1"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
 	</field>
-	<field name="Address_2" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ADDRESS_2"/>
-		<property name="com.jaspersoft.studio.field.label" value="Address_2"/>
+	<field name="REGION_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="STATE_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="REGION_NAME"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	</field>
+	<field name="DISTRICT_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="CITY_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="DISTRICT_NAME"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	</field>
+	<field name="COUNTRY_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="COUNTRY_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="COUNTRY_NAME"/>
+	</field>
+	<field name="PO_BOX" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PIN_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="PO_BOX"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
 	</field>
 	<field name="FROM_DATE" class="java.sql.Timestamp">
@@ -477,7 +496,7 @@ WHERE
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{Address_1}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{Address_1}+", "+$F{PO_BOX}+", "+$F{REGION_NAME}+", "+$F{DISTRICT_NAME}+", "+$F{COUNTRY_NAME}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="100" height="25" uuid="70bad771-5317-4f85-872d-441ee0dab6b1"/>
@@ -1589,10 +1608,10 @@ WHERE
 			</break>
 		</band>
 		<band height="37">
-			<printWhenExpression><![CDATA[ $F{ROWCOUNT} != 1]]></printWhenExpression>
+			<printWhenExpression><![CDATA[$F{ROWCOUNT} != 1]]></printWhenExpression>
 			<textField>
 				<reportElement x="0" y="21" width="555" height="16" uuid="976d1b85-e853-4ef3-937a-15cfd06701d9">
-					<printWhenExpression><![CDATA[ $F{ROWCOUNT} != 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{ROWCOUNT} != 1]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2">
 					<pen lineWidth="0.5"/>
@@ -1604,7 +1623,7 @@ WHERE
 			</textField>
 			<textField>
 				<reportElement x="0" y="5" width="555" height="16" uuid="c0d835d5-0996-4911-b0e5-d741fafd56cc">
-					<printWhenExpression><![CDATA[ $F{ROWCOUNT} != 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{ROWCOUNT} != 1]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2">
 					<pen lineWidth="0.5"/>
@@ -1616,10 +1635,10 @@ WHERE
 			</textField>
 		</band>
 		<band height="76">
-			<printWhenExpression><![CDATA[ $F{ROWCOUNT} != 1]]></printWhenExpression>
+			<printWhenExpression><![CDATA[$F{ROWCOUNT} != 1]]></printWhenExpression>
 			<textField>
 				<reportElement mode="Opaque" x="0" y="0" width="19" height="14" backcolor="#B3B3B3" uuid="99c356c1-8bbe-4e74-bc1d-14cf670692ec">
-					<printWhenExpression><![CDATA[ $F{ROWCOUNT} != 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{ROWCOUNT} != 1]]></printWhenExpression>
 				</reportElement>
 				<box>
 					<topPen lineWidth="0.5"/>
@@ -1634,7 +1653,7 @@ WHERE
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
 					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
-					<printWhenExpression><![CDATA[ $F{ROWCOUNT} != 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{ROWCOUNT} != 1]]></printWhenExpression>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="TableDataSet 1" uuid="89a6f98a-0e07-4588-a6b7-ecca605179bf">
@@ -1926,7 +1945,7 @@ WHERE
 			</componentElement>
 			<textField>
 				<reportElement mode="Opaque" x="60" y="0" width="495" height="14" backcolor="#B3B3B3" uuid="aac2498c-d1e1-44ee-aa6e-c21e41a8dca8">
-					<printWhenExpression><![CDATA[ $F{ROWCOUNT} != 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{ROWCOUNT} != 1]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2">
 					<topPen lineWidth="0.5"/>
@@ -1941,7 +1960,7 @@ WHERE
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="19" y="0" width="41" height="14" backcolor="#B3B3B3" uuid="8100d787-2fca-43d5-828c-626bd7ad2372">
-					<printWhenExpression><![CDATA[ $F{ROWCOUNT} != 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{ROWCOUNT} != 1]]></printWhenExpression>
 				</reportElement>
 				<box>
 					<topPen lineWidth="0.5"/>
