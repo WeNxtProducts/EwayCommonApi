@@ -1005,11 +1005,11 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				Predicate n11 = cb.equal(uw.get("companyId"), req.getInsuranceId()); 
 				Predicate n12 = cb.equal(uw.get("productId"), req.getProductId()); 
 				Predicate n13 = cb.equal(uw.get("branchCode"), req.getBranchCode()); 
-				query.where(n1, n2, n3, n4, n6,n8,n9,n10,n11,n12,n13,n14,n15,n18,n19).orderBy(orderList);
+				query.where(n1, n2, n3, n4, n6,n8,n9,n10,n11,n12,n13,n14,n18,n19).orderBy(orderList);
 						
 						
 			} else {
-				query.where(n1, n2, n3, n4, n6,n14,n15,n18,n19).orderBy(orderList);
+				query.where(n1, n2, n3, n4, n6,n14,n18,n19,n15).orderBy(orderList);
 					
 			}
 			
@@ -1074,11 +1074,11 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				Predicate n11 = cb.equal(uw.get("companyId"), req.getInsuranceId()); 
 				Predicate n12 = cb.equal(uw.get("productId"), req.getProductId()); 
 				Predicate n13 = cb.equal(uw.get("branchCode"), req.getBranchCode()); 
-				query.where(n7,n1, n2, n3, n4, n6,n8,n9,n10,n11,n12,n13,n15,n18,n19);
+				query.where(n7,n1, n2, n3, n4, n6,n8,n9,n10,n11,n12,n13,n18,n19);
 						
 						
 			} else {
-				query.where(n7,n1, n2, n3, n4, n6,n15,n18,n19);
+				query.where(n7,n1, n2, n3, n4, n6,n18,n19,n15);
 					
 			}
 			
@@ -1119,7 +1119,10 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Predicate n4 = cb.equal(m.get("status"), status);
 			Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode()); 
 			Predicate n7 = cb.isNotNull(m.get("endorsementTypeDesc")); 
-		
+			Predicate n19 = cb.equal(m.get("applicationId"), req.getApplicationId());
+			Predicate n16 = cb.equal(m.get("loginId"), req.getLoginId());
+			Predicate n17 = cb.equal(m.get("customerName"), req.getLoginId());
+			Predicate n18 = cb.or(n16,n17);
 			
 			// Uw Condition 
 			Predicate n15 = cb.equal(  m.get("sectionId"),  "0");
@@ -1131,11 +1134,11 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				Predicate n11 = cb.equal(uw.get("companyId"), req.getInsuranceId()); 
 				Predicate n12 = cb.equal(uw.get("productId"), req.getProductId()); 
 				Predicate n13 = cb.equal(uw.get("branchCode"), req.getBranchCode()); 
-				query.where(n7,n1, n2, n3, n4, n6,n8,n9,n10,n11,n12,n13,n15).orderBy(orderList);
+				query.where(n7,n1, n2, n3, n4, n6,n8,n9,n10,n11,n12,n13,n15,n18).orderBy(orderList);
 						
 						
 			} else {
-				query.where(n7,n1, n2, n3, n4, n6,n15).orderBy(orderList);
+				query.where(n7,n1, n2, n3, n4, n6,n15,n18,n19).orderBy(orderList);
 					
 			}
 			
@@ -4253,6 +4256,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 				List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
 				try {
 					{
+					
 						CriteriaBuilder cb = em.getCriteriaBuilder();
 						CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
 
@@ -4276,8 +4280,8 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 						//In 
 						Expression<String>e0=m.get("requestReferenceNo"); 
 						
-						Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
-						Predicate n2 = cb.isNotNull(m.get("applicationId"));
+//						Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
+//						Predicate n2 = cb.isNotNull(m.get("applicationId"));
 						Predicate n3 = cb.equal(m.get("companyId"), req.getCompanyId());
 						Predicate n4 = cb.equal(m.get("productId"), req.getProductId());
 						Predicate n5 = cb.equal(m.get("status"), "RP");
@@ -4289,7 +4293,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 							n15 = cb.isNull(m.get("endorsementTypeDesc")); 
 						else if (req.getType().equalsIgnoreCase("E"))
 							n15 = cb.isNotNull(m.get("endorsementTypeDesc"));
-						query.where(n1,n2,n3,n4,n5,n6, n8,n15,n16);
+						query.where(n3,n4,n5,n6, n8,n15,n16);
 
 						TypedQuery<Tuple> typedQuery = em.createQuery(query);
 						list = typedQuery.getResultList();
@@ -4306,8 +4310,9 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 
 							}
 						}
-					}
-					{
+				}
+					
+						{
 						CriteriaBuilder cb1 = em.getCriteriaBuilder();
 						CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
 
@@ -4318,28 +4323,33 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 
 						// Uw Condition
 
-						Subquery<Long> uwData = query1.subquery(Long.class);
-						Root<UWReferralDetails> uw = uwData.from(UWReferralDetails.class);
-						uwData.select(uw.get("requestReferenceNo"));
-						Predicate u2 = cb1.equal(uw.get("uwLoginId"), req.getApplicationId());
-						Predicate u3 = cb1.equal(uw.get("uwStatus"), "Y");
-						Predicate u4 = cb1.equal(uw.get("companyId"), req.getCompanyId());
-						Predicate u5 = cb1.equal(uw.get("productId"), req.getProductId());
-						Predicate u6 = cb1.equal(uw.get("branchCode"), req.getBranchCode());
-						uwData.where(u2,u3,u4,u5,u6);
+						Subquery<Long> uwData1 = query1.subquery(Long.class);
+						Root<UWReferralDetails> uw1 = uwData1.from(UWReferralDetails.class);
+						uwData1.select(uw1.get("requestReferenceNo"));
+						Predicate u12 = cb1.equal(uw1.get("uwLoginId"), req.getApplicationId());
+						Predicate u13 = cb1.equal(uw1.get("uwStatus"), "Y");
+						Predicate u14 = cb1.equal(uw1.get("companyId"), req.getCompanyId());
+						Predicate u15 = cb1.equal(uw1.get("productId"), req.getProductId());
+						Predicate u16 = cb1.equal(uw1.get("branchCode"), req.getBranchCode());
+						uwData1.where(u12,u13,u14,u15,u16);
 						
 						//In 
-						Expression<String>e0=m1.get("requestReferenceNo");
+						Expression<String>e01=m1.get("requestReferenceNo");
 						
-						Predicate n1 = cb1.equal(m1.get("applicationId"), req.getApplicationId());
-						Predicate n2 = cb1.isNotNull(m1.get("applicationId"));
-						Predicate n3 = cb1.equal(m1.get("companyId"), req.getCompanyId());
-						Predicate n4 = cb1.equal(m1.get("productId"), req.getProductId());
-						Predicate n5 = cb1.equal(m1.get("status"), "RP");
-						Predicate n6 = e0.in(uwData);
-						Predicate n8 = cb1.isNull(m1.get("bdmCode"));
-						Predicate n16 = cb1.equal(m1.get("sectionId"), "0");
-						query1.where(n1,n2,n3,n4,n5,n6,n8,n16);
+//						Predicate np1 = cb1.equal(m1.get("applicationId"), req.getApplicationId());
+//						Predicate np2 = cb1.isNotNull(m1.get("applicationId"));
+						Predicate np3 = cb1.equal(m1.get("companyId"), req.getCompanyId());
+						Predicate np4 = cb1.equal(m1.get("productId"), req.getProductId());
+						Predicate np5 = cb1.equal(m1.get("status"), "RP");
+						Predicate np6 = e01.in(uwData1);
+						Predicate np8 = cb1.isNull(m1.get("bdmCode"));
+						Predicate np7 = cb1.equal(m1.get("sectionId"), "0");
+						Predicate np9 = null;
+						if(req.getType().equalsIgnoreCase("Q"))
+							np9 = cb1.isNull(m1.get("endorsementTypeDesc")); 
+						else if (req.getType().equalsIgnoreCase("E"))
+							np9 = cb1.isNotNull(m1.get("endorsementTypeDesc"));
+						query1.where(np3,np4,np5,np6,np8,np7,np9);
 
 						TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
 						list1 = typedQuery1.getResultList();
@@ -4356,7 +4366,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 
 							}
 						}
-					}
+						}
 				} catch (Exception e) {
 					e.printStackTrace();
 					log.info("Log Details" + e.getMessage());
