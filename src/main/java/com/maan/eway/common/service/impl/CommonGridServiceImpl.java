@@ -3894,9 +3894,9 @@ public class CommonGridServiceImpl implements CommonGridService {
 					Predicate n8 = cb.isNotNull(m.get("bdmCode"));
 					Predicate n15 = null;
 					if(req.getType().equalsIgnoreCase("Q"))
-						n15 = cb1.isNull(m1.get("endorsementTypeDesc")); 
+						n15 = cb.isNull(m.get("endorsementTypeDesc")); 
 					else if (req.getType().equalsIgnoreCase("E"))
-						n15 = cb1.isNotNull(m1.get("endorsementTypeDesc"));
+						n15 = cb.isNotNull(m.get("endorsementTypeDesc"));
 					query1.where(n1, n2, n3, n4, n5, n6,n15);
 
 					TypedQuery<Tuple> typedQuery = em.createQuery(query);
