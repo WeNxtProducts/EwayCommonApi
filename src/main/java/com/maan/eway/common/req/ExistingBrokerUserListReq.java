@@ -25,6 +25,8 @@ public class ExistingBrokerUserListReq {
 	
 	@JsonProperty("BranchCode")
     private String    branchCode    ;
+	@JsonProperty("Type")
+    private String    type    ;
 
 
 }

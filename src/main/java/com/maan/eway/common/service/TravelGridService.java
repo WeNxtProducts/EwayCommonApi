@@ -66,6 +66,11 @@ public interface TravelGridService {
 
 	List<GetExistingBrokerListRes> getTravelReferalDropdown(ExistingBrokerUserListReq req, Date today, String string);
 
+	List<GetExistingBrokerListRes> getAdminTravelRPDropdown(ExistingBrokerUserListReq req, Date today);
+
+	List<GetExistingBrokerListRes> getTravelAdminReferalDropdown(ExistingBrokerUserListReq req, Date today,
+			String string);
+
 	
 
 

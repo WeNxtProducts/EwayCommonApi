@@ -42,7 +42,9 @@ import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.EndtTypeMaster;
+import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
+import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
@@ -797,6 +799,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Predicate n9 = null;
 			Predicate n10 = null;
 			Predicate n11 = null;
+
 			if (req.getApplicationId().equalsIgnoreCase("1") ) {
 				n5 = cb.equal(  m.get("loginId"),  req.getLoginId());
 			} else {
@@ -819,11 +822,12 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				n8 = cb.isNull(m.get("endorsementTypeDesc")); 
 			else if (req.getType().equalsIgnoreCase("E"))
 				n8 = cb.isNotNull(m.get("endorsementTypeDesc")); 
-			
-			if (req.getApplicationId().equalsIgnoreCase("1"))
-				query.where(n1,n2,n3,n4,n5,n6,n8).orderBy(orderList);
-			else
-				query.where(n1,n2,n3,n4,n5,n6,n8,n11).orderBy(orderList);
+
+			if (req.getApplicationId().equalsIgnoreCase("1") ) {
+			query.where(n1,n2,n3,n4,n5,n6,n8).orderBy(orderList);
+			}else {
+				query.where(n1,n2,n3,n4,n5,n6,n8,n11).orderBy(orderList);	
+			}
 			
 			// Get Result
 			TypedQuery<ReferalGridCriteriaRes> result = em.createQuery(query);
@@ -872,6 +876,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Predicate n9 = null;
 			Predicate n10 = null;
 			Predicate n11 = null;
+
 			if (req.getApplicationId().equalsIgnoreCase("1") ) {
 				n5 = cb.equal(  m.get("loginId"),  req.getLoginId());
 			} else {
@@ -894,11 +899,12 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				n8 = cb.isNull(m.get("endorsementTypeDesc")); 
 			else if (req.getType().equalsIgnoreCase("E"))
 				n8 = cb.isNotNull(m.get("endorsementTypeDesc")); 
-		
-			if (req.getApplicationId().equalsIgnoreCase("1"))
-				query.where(n1,n2,n3,n4,n5,n6,n8);
-			else
-				query.where(n1,n2,n3,n4,n5,n6,n8,n11);
+			if (req.getApplicationId().equalsIgnoreCase("1") ) {
+			query.where(n1,n2,n3,n4,n5,n6,n8);
+			}else {
+				query.where(n1,n2,n3,n4,n5,n6,n8,n11);	
+			}
+
 	
 			// Get Result
 			TypedQuery<Long> result = em.createQuery(query);
@@ -978,6 +984,10 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Predicate n3 = cb.equal(  m.get("productId"),  req.getProductId());
 			Predicate n4 = cb.equal(m.get("status"),status );
 			Predicate n6 = cb.equal(m.get("branchCode"),  req.getBranchCode());
+			Predicate n15 = cb.equal(m.get("applicationId"), req.getApplicationId());
+			Predicate n16 = cb.equal(m.get("loginId"), req.getLoginId());
+			Predicate n17 = cb.equal(m.get("customerName"), req.getLoginId());
+			Predicate n18 = cb.or(n16,n17);
 			
 			Predicate n14 = null;
 			if(req.getType().equalsIgnoreCase("Q"))
@@ -994,10 +1004,10 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				Predicate n11 = cb.equal(uw.get("companyId"), req.getInsuranceId()); 
 				Predicate n12 = cb.equal(uw.get("productId"), req.getProductId()); 
 				Predicate n13 = cb.equal(uw.get("branchCode"), req.getBranchCode()); 
-				query.where(n1,n2,n3,n4,n6,n8,n9,n10,n11,n12,n13,n14).orderBy(orderList);
+				query.where(n1,n2,n3,n4,n6,n8,n9,n10,n11,n12,n13,n14,n15,n18).orderBy(orderList);
 				
 			} else {
-				query.where(n1,n2,n3,n4,n6,n14).orderBy(orderList);
+				query.where(n1,n2,n3,n4,n6,n14,n15,n18).orderBy(orderList);
 				
 			}
 			
@@ -1045,7 +1055,10 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Predicate n4 = cb.equal(m.get("status"),status );
 			Predicate n6 = cb.equal(m.get("branchCode"),  req.getBranchCode());
 			Predicate n7 = cb.isNull(m.get("endorsementTypeDesc")); 
-	
+			Predicate n15 = cb.equal(m.get("applicationId"), req.getApplicationId());
+			Predicate n16 = cb.equal(m.get("loginId"), req.getLoginId());
+			Predicate n17 = cb.equal(m.get("customerName"), req.getLoginId());
+			Predicate n18 = cb.or(n16,n17);
 			// Uw Condition 
 			if("RP".equalsIgnoreCase(status)) {
 				Root<UWReferralDetails> uw = query.from(UWReferralDetails.class);
@@ -1055,10 +1068,10 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				Predicate n11 = cb.equal(uw.get("companyId"), req.getInsuranceId()); 
 				Predicate n12 = cb.equal(uw.get("productId"), req.getProductId()); 
 				Predicate n13 = cb.equal(uw.get("branchCode"), req.getBranchCode()); 
-				query.where(n7,n1,n2,n3,n4,n6,n8,n9,n10,n11,n12,n13);
+				query.where(n7,n1,n2,n3,n4,n6,n8,n9,n10,n11,n12,n13,n15,n18);
 				
 			} else {
-				query.where(n7,n1,n2,n3,n4,n6);
+				query.where(n7,n1,n2,n3,n4,n6,n15,n18);
 				
 			}
 			
@@ -1101,6 +1114,10 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Predicate n4 = cb.equal(m.get("status"),status );
 			Predicate n6 = cb.equal(m.get("branchCode"),  req.getBranchCode());
 			Predicate n7 = cb.isNotNull(m.get("endorsementTypeDesc")); 
+			Predicate n15 = cb.equal(m.get("applicationId"), req.getApplicationId());
+			Predicate n16 = cb.equal(m.get("loginId"), req.getLoginId());
+			Predicate n17 = cb.equal(m.get("customerName"), req.getLoginId());
+			Predicate n18 = cb.or(n16,n17);
 	
 			// Uw Condition 
 			if("RP".equalsIgnoreCase(status)) {
@@ -1111,10 +1128,10 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				Predicate n11 = cb.equal(uw.get("companyId"), req.getInsuranceId()); 
 				Predicate n12 = cb.equal(uw.get("productId"), req.getProductId()); 
 				Predicate n13 = cb.equal(uw.get("branchCode"), req.getBranchCode()); 
-				query.where(n7,n1,n2,n3,n4,n6,n8,n9,n10,n11,n12,n13).orderBy(orderList);
+				query.where(n7,n1,n2,n3,n4,n6,n8,n9,n10,n11,n12,n13,n15,n18).orderBy(orderList);
 				
 			} else {
-				query.where(n7,n1,n2,n3,n4,n6).orderBy(orderList);
+				query.where(n7,n1,n2,n3,n4,n6,n15,n18).orderBy(orderList);
 				
 			}
 			
@@ -4100,4 +4117,213 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			}
 			return resList;
 		}
+		
+		
+		@Override
+		public List<GetExistingBrokerListRes> getAdminTravelRPDropdown(ExistingBrokerUserListReq req,
+				Date today) {
+			List<Tuple> list = new ArrayList<Tuple>();
+			List<Tuple> list1 = new ArrayList<Tuple>();
+			List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+			try {
+				{
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+					Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
+
+					query.multiselect(m.get("customerCode").alias("code"), m.get("customerName").alias("codeDesc"),
+							m.get("sourceType").alias("type"));
+
+					// Uw Condition
+
+					Subquery<Long> uwData = query.subquery(Long.class);
+					Root<UWReferralDetails> uw = uwData.from(UWReferralDetails.class);
+					uwData.select(uw.get("requestReferenceNo"));
+					Predicate u2 = cb.equal(uw.get("uwLoginId"), req.getApplicationId());
+					Predicate u3 = cb.equal(uw.get("uwStatus"), "Y");
+					Predicate u4 = cb.equal(uw.get("companyId"), req.getCompanyId());
+					Predicate u5 = cb.equal(uw.get("productId"), req.getProductId());
+					Predicate u6 = cb.equal(uw.get("branchCode"), req.getBranchCode());
+					uwData.where(u2,u3,u4,u5,u6);
+					
+					//In 
+					Expression<String>e0=m.get("requestReferenceNo"); 
+					
+					Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
+					Predicate n2 = cb.isNotNull(m.get("applicationId"));
+					Predicate n3 = cb.equal(m.get("companyId"), req.getCompanyId());
+					Predicate n4 = cb.equal(m.get("productId"), req.getProductId());
+					Predicate n5 = cb.equal(m.get("status"), "RP");
+					Predicate n6 = e0.in(uwData);
+					Predicate n8 = cb.isNotNull(m.get("bdmCode"));
+					
+					Predicate n15 = null;
+					if(req.getType().equalsIgnoreCase("Q"))
+						n15 = cb.isNull(m.get("endorsementTypeDesc")); 
+					else if (req.getType().equalsIgnoreCase("E"))
+						n15 = cb.isNotNull(m.get("endorsementTypeDesc"));
+					query.where(n1,n2,n3,n4,n5,n6, n8,n15);
+
+					TypedQuery<Tuple> typedQuery = em.createQuery(query);
+					list = typedQuery.getResultList();
+					list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code"))))
+							.collect(Collectors.toList());
+					if (list != null && list.size() > 0) {
+
+						for (Tuple data : list) {
+							GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+							res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+							res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+							res.setType(data.get("type") == null ? "" : data.get("type").toString());
+							resList.add(res);
+
+						}
+					}
+				}
+				{
+					CriteriaBuilder cb1 = em.getCriteriaBuilder();
+					CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
+
+					Root<EserviceTravelDetails> m1 = query1.from(EserviceTravelDetails.class);
+
+					query1.multiselect(m1.get("brokerCode").alias("code"), m1.get("loginId").alias("codeDesc"),
+							m1.get("sourceType").alias("type"));
+
+					// Uw Condition
+
+					Subquery<Long> uwData = query1.subquery(Long.class);
+					Root<UWReferralDetails> uw = uwData.from(UWReferralDetails.class);
+					uwData.select(uw.get("requestReferenceNo"));
+					Predicate u2 = cb1.equal(uw.get("uwLoginId"), req.getApplicationId());
+					Predicate u3 = cb1.equal(uw.get("uwStatus"), "Y");
+					Predicate u4 = cb1.equal(uw.get("companyId"), req.getCompanyId());
+					Predicate u5 = cb1.equal(uw.get("productId"), req.getProductId());
+					Predicate u6 = cb1.equal(uw.get("branchCode"), req.getBranchCode());
+					uwData.where(u2,u3,u4,u5,u6);
+					
+					//In 
+					Expression<String>e0=m1.get("requestReferenceNo");
+					
+					Predicate n1 = cb1.equal(m1.get("applicationId"), req.getApplicationId());
+					Predicate n2 = cb1.isNotNull(m1.get("applicationId"));
+					Predicate n3 = cb1.equal(m1.get("companyId"), req.getCompanyId());
+					Predicate n4 = cb1.equal(m1.get("productId"), req.getProductId());
+					Predicate n5 = cb1.equal(m1.get("status"), "RP");
+					Predicate n6 = e0.in(uwData);
+					Predicate n8 = cb1.isNull(m1.get("bdmCode"));
+					query1.where(n1,n2,n3,n4,n5,n6,n8);
+
+					TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
+					list1 = typedQuery1.getResultList();
+					list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code"))))
+							.collect(Collectors.toList());
+					if (list1 != null && list1.size() > 0) {
+
+						for (Tuple data : list1) {
+							GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+							res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+							res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+							res.setType(data.get("type") == null ? "" : data.get("type").toString());
+							resList.add(res);
+
+						}
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return resList;
+		}
+		@Override
+		public List<GetExistingBrokerListRes> getTravelAdminReferalDropdown(ExistingBrokerUserListReq req,
+				Date today,String status) {
+			List<Tuple> list = new ArrayList<Tuple>();
+			List<Tuple> list1 = new ArrayList<Tuple>();
+			List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+			try {
+				{
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaQuery<Tuple> query = cb.createQuery(Tuple.class);
+
+					Root<EserviceTravelDetails> m = query.from(EserviceTravelDetails.class);
+
+					query.multiselect(m.get("customerCode").alias("code"), m.get("customerName").alias("codeDesc"),
+							m.get("sourceType").alias("type"));
+
+					
+					Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
+					Predicate n2 = cb.isNotNull(m.get("applicationId"));
+					Predicate n3 = cb.equal(m.get("companyId"), req.getCompanyId());
+					Predicate n4 = cb.equal(m.get("productId"), req.getProductId());
+					Predicate n5 = cb.equal(m.get("status"), status);
+					Predicate n8 = cb.isNotNull(m.get("bdmCode"));
+					
+					Predicate n15 = null;
+					if(req.getType().equalsIgnoreCase("Q"))
+						n15 = cb.isNull(m.get("endorsementTypeDesc")); 
+					else if (req.getType().equalsIgnoreCase("E"))
+						n15 = cb.isNotNull(m.get("endorsementTypeDesc"));
+					query.where(n1,n2,n3,n4,n5, n8,n15);
+
+					TypedQuery<Tuple> typedQuery = em.createQuery(query);
+					list = typedQuery.getResultList();
+					list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code"))))
+							.collect(Collectors.toList());
+					if (list != null && list.size() > 0) {
+
+						for (Tuple data : list) {
+							GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+							res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+							res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+							res.setType(data.get("type") == null ? "" : data.get("type").toString());
+							resList.add(res);
+
+						}
+					}
+				}
+				{
+					CriteriaBuilder cb1 = em.getCriteriaBuilder();
+					CriteriaQuery<Tuple> query1 = cb1.createQuery(Tuple.class);
+
+					Root<EserviceTravelDetails> m1 = query1.from(EserviceTravelDetails.class);
+
+					query1.multiselect(m1.get("brokerCode").alias("code"), m1.get("loginId").alias("codeDesc"),
+							m1.get("sourceType").alias("type"));
+
+					
+					Predicate n1 = cb1.equal(m1.get("applicationId"), req.getApplicationId());
+					Predicate n2 = cb1.isNotNull(m1.get("applicationId"));
+					Predicate n3 = cb1.equal(m1.get("companyId"), req.getCompanyId());
+					Predicate n4 = cb1.equal(m1.get("productId"), req.getProductId());
+					Predicate n5 = cb1.equal(m1.get("status"), status);
+					Predicate n8 = cb1.isNull(m1.get("bdmCode"));
+					query1.where(n1,n2,n3,n4,n5,n8);
+
+					TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
+					list1 = typedQuery1.getResultList();
+					list1 = list1.stream().filter(distinctByKey(o -> Arrays.asList(o.get("code"))))
+							.collect(Collectors.toList());
+					if (list1 != null && list1.size() > 0) {
+
+						for (Tuple data : list1) {
+							GetExistingBrokerListRes res = new GetExistingBrokerListRes();
+							res.setCode(data.get("code") == null ? "" : data.get("code").toString());
+							res.setCodeDesc(data.get("codeDesc") == null ? "" : data.get("codeDesc").toString());
+							res.setType(data.get("type") == null ? "" : data.get("type").toString());
+							resList.add(res);
+
+						}
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.info("Log Details" + e.getMessage());
+				return null;
+			}
+			return resList;
+		}
+
 }

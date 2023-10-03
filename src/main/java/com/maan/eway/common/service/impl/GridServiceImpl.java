@@ -4866,23 +4866,132 @@ public class GridServiceImpl implements GridService {
 			Date today = new Date();
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(today);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 1);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+			//cal.add(Calendar.DAY_OF_MONTH, -1);
 			today = cal.getTime();
 			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(),
 					req.getProductId().toString());
 
 			if (product.getMotorYn().equalsIgnoreCase("M")) {
 				resList = motService.getAdminMotorRPropdown(req, today);
-			} /*else if (product.getMotorYn().equalsIgnoreCase("H")
+			} else if (product.getMotorYn().equalsIgnoreCase("H")
 					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
-				resList = traService.getAdminTravelProtfolioDropdownPending(req, today);
+				resList = traService.getAdminTravelRPDropdown(req, today);
 			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
-				resList = buiService.getAdminBuildingProtfolioDropdownPending(req, today);
+				resList = buiService.getAdminBuildingRPDropdown(req, today);
 			} else {
-				resList = commonService.getAdminCommonProtfolioDropdownPending(req, today);
+				resList = commonService.getAdminCommonRPDropdown(req, today);
 
-			}*/
+			}
+				 
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+	
+	@Override
+	public List<GetExistingBrokerListRes> getAdminReferralApproveDropdown(ExistingBrokerUserListReq req) {
+		List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+			//cal.add(Calendar.DAY_OF_MONTH, -1);
+			today = cal.getTime();
+			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(),
+					req.getProductId().toString());
+
+			if (product.getMotorYn().equalsIgnoreCase("M")) {
+				resList = motService.getMotorAdminReferalDropdown(req, today,"RA");
+			} else if (product.getMotorYn().equalsIgnoreCase("H")
+					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+				resList = traService.getTravelAdminReferalDropdown(req, today,"RA");
+			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+				resList = buiService.getBuildingAdminReferalDropdown(req, today,"RA");
+			} else {
+				resList = commonService.getCommonAdminReferalDropdown(req, today,"RA");
+
+			}
+				 
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+	
+	@Override
+	public List<GetExistingBrokerListRes> getAdminReferralRejectDropdown(ExistingBrokerUserListReq req) {
+		List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+			//cal.add(Calendar.DAY_OF_MONTH, -1);
+			today = cal.getTime();
+			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(),
+					req.getProductId().toString());
+
+			if (product.getMotorYn().equalsIgnoreCase("M")) {
+				resList = motService.getMotorAdminReferalDropdown(req, today,"RR");
+			} else if (product.getMotorYn().equalsIgnoreCase("H")
+					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+				resList = traService.getTravelAdminReferalDropdown(req, today,"RR");
+			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+				resList = buiService.getBuildingAdminReferalDropdown(req, today,"RR");
+			} else {
+				resList = commonService.getCommonAdminReferalDropdown(req, today,"RR");
+
+			}
+				 
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Log Details" + e.getMessage());
+			return null;
+		}
+		return resList;
+	}
+	@Override
+	public List<GetExistingBrokerListRes> getAdminReferralReQuoteDropdown(ExistingBrokerUserListReq req) {
+		List<GetExistingBrokerListRes> resList = new ArrayList<GetExistingBrokerListRes>();
+
+		try {
+			Date today = new Date();
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(today);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+			//cal.add(Calendar.DAY_OF_MONTH, -1);
+			today = cal.getTime();
+			CompanyProductMaster product = getCompanyProductMasterDropdown(req.getCompanyId(),
+					req.getProductId().toString());
+
+			if (product.getMotorYn().equalsIgnoreCase("M")) {
+				resList = motService.getMotorAdminReferalDropdown(req, today,"RE");
+			} else if (product.getMotorYn().equalsIgnoreCase("H")
+					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
+				resList = traService.getTravelAdminReferalDropdown(req, today,"RE");
+			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
+				resList = buiService.getBuildingAdminReferalDropdown(req, today,"RE");
+			} else {
+				resList = commonService.getCommonAdminReferalDropdown(req, today,"RE");
+
+			}
 				 
 		} catch (Exception e) {
 			e.printStackTrace();
