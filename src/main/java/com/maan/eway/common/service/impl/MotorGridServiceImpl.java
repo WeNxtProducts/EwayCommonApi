@@ -1050,7 +1050,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			else if (req.getType().equalsIgnoreCase("E"))
 				n8 = cb.isNotNull(m.get("endorsementTypeDesc")); 
 				
-			query.where(n1, n2, n3, n4, n5, n6,n7, n8);
+		//	query.where(n1, n2, n3, n4, n5, n6,n7, n8);
 
 			if (req.getApplicationId().equalsIgnoreCase("1")) {
 				query.where(n1, n2, n3, n4, n5, n6, n7, n8);
