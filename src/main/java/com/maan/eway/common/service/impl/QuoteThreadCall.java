@@ -1417,11 +1417,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 				
 			} else if(request.getMotorYn().equalsIgnoreCase("A")) {
 				
-				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(1)   &&  o.getSectionId().equalsIgnoreCase(request.getSectionId())). collect(Collectors.toList());
+				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())   &&  o.getSectionId().equalsIgnoreCase(request.getSectionId())). collect(Collectors.toList());
 				coverReqList = VehicleList.get(0).getCoverIdList();
 			
 			} else   {
-				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getVehicleId())). collect(Collectors.toList());
+				VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId()==null?request.getVehicleId() :request.getGroupId())). collect(Collectors.toList());
 				coverReqList = VehicleList.get(0).getCoverIdList();
 			}
 			
@@ -1597,9 +1597,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setNoOfDays(new BigDecimal(diff));
 					coverData.setStatus("Y");
 					// Premium
-					//if(endtCovModify == true && alreadyOptCover==true && ( cov.getCoverageType().equalsIgnoreCase("E") || cov.getCoverageType().equalsIgnoreCase("T") && cov.getDiscLoadId() > 0 ) ) {
-					if(endtCovModify == true && alreadyOptCover==true && (  cov.getCoverageType().equalsIgnoreCase("T") && cov.getDiscLoadId() > 0 ) ) {
-						
+					if(endtCovModify == true && alreadyOptCover==true && ( cov.getCoverageType().equalsIgnoreCase("E") || cov.getCoverageType().equalsIgnoreCase("T") && cov.getDiscLoadId() > 0 ) ) {
+				//	if(endtCovModify == true && alreadyOptCover==true && ( cov.getCoverageType().equalsIgnoreCase("E") || cov.getCoverageType().equalsIgnoreCase("T") && cov.getDiscLoadId() > 0 ) ) {
+					
 						coverData.setDiffPremiumIncludedTaxLc(BigDecimal.ZERO);
 						coverData.setDiffPremiumIncludedTaxFc(BigDecimal.ZERO);
 						coverData.setPremiumBeforeDiscountFc(BigDecimal.ZERO);
