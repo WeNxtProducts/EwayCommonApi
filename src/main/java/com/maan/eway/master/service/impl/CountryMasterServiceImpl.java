@@ -138,15 +138,15 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 				if (list.size() > 0) {
 					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
 					
-					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
+					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) { //if old start date is past
 						amendId = list.get(0).getAmendId() + 1 ;
 						entryDate = new Date() ;
 						createdBy = req.getCreatedBy();
 						CountryMaster lastRecord = list.get(0);
-							lastRecord.setEffectiveDateEnd(oldEndDate);
+							lastRecord.setEffectiveDateEnd(oldEndDate); //change
 							repo.saveAndFlush(lastRecord);
 						
-					} else {
+					} else { //future
 						amendId = list.get(0).getAmendId() ;
 						entryDate = list.get(0).getEntryDate() ;
 						createdBy = list.get(0).getCreatedBy();
