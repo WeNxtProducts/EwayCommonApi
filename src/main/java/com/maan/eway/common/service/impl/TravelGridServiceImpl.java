@@ -42,9 +42,7 @@ import com.maan.eway.admin.res.ReferalGridCriteriaRes;
 import com.maan.eway.bean.CoverMaster;
 import com.maan.eway.bean.DocumentTransactionDetails;
 import com.maan.eway.bean.EndtTypeMaster;
-import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
-import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
@@ -799,7 +797,6 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Predicate n9 = null;
 			Predicate n10 = null;
 			Predicate n11 = null;
-
 			if (req.getApplicationId().equalsIgnoreCase("1") ) {
 				n5 = cb.equal(  m.get("loginId"),  req.getLoginId());
 			} else {
@@ -822,12 +819,11 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				n8 = cb.isNull(m.get("endorsementTypeDesc")); 
 			else if (req.getType().equalsIgnoreCase("E"))
 				n8 = cb.isNotNull(m.get("endorsementTypeDesc")); 
-
-			if (req.getApplicationId().equalsIgnoreCase("1") ) {
-			query.where(n1,n2,n3,n4,n5,n6,n8).orderBy(orderList);
-			}else {
-				query.where(n1,n2,n3,n4,n5,n6,n8,n11).orderBy(orderList);	
-			}
+			
+			if (req.getApplicationId().equalsIgnoreCase("1"))
+				query.where(n1,n2,n3,n4,n5,n6,n8).orderBy(orderList);
+			else
+				query.where(n1,n2,n3,n4,n5,n6,n8,n11).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<ReferalGridCriteriaRes> result = em.createQuery(query);
@@ -876,7 +872,8 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Predicate n9 = null;
 			Predicate n10 = null;
 			Predicate n11 = null;
-
+			
+			
 			if (req.getApplicationId().equalsIgnoreCase("1") ) {
 				n5 = cb.equal(  m.get("loginId"),  req.getLoginId());
 			} else {
@@ -899,12 +896,11 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				n8 = cb.isNull(m.get("endorsementTypeDesc")); 
 			else if (req.getType().equalsIgnoreCase("E"))
 				n8 = cb.isNotNull(m.get("endorsementTypeDesc")); 
-			if (req.getApplicationId().equalsIgnoreCase("1") ) {
-			query.where(n1,n2,n3,n4,n5,n6,n8);
-			}else {
-				query.where(n1,n2,n3,n4,n5,n6,n8,n11);	
-			}
-
+		
+			if (req.getApplicationId().equalsIgnoreCase("1"))
+				query.where(n1,n2,n3,n4,n5,n6,n8);
+			else
+				query.where(n1,n2,n3,n4,n5,n6,n8,n11);
 	
 			// Get Result
 			TypedQuery<Long> result = em.createQuery(query);
@@ -984,12 +980,13 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Predicate n3 = cb.equal(  m.get("productId"),  req.getProductId());
 			Predicate n4 = cb.equal(m.get("status"),status );
 			Predicate n6 = cb.equal(m.get("branchCode"),  req.getBranchCode());
+			
+			Predicate n14 = null;
 			Predicate n15 = cb.equal(m.get("applicationId"), req.getApplicationId());
 			Predicate n16 = cb.equal(m.get("loginId"), req.getLoginId());
 			Predicate n17 = cb.equal(m.get("customerName"), req.getLoginId());
 			Predicate n18 = cb.or(n16,n17);
 			
-			Predicate n14 = null;
 			if(req.getType().equalsIgnoreCase("Q"))
 					n14 = cb.isNull(m.get("endorsementTypeDesc")); 
 			else if (req.getType().equalsIgnoreCase("E"))
@@ -1118,7 +1115,6 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Predicate n16 = cb.equal(m.get("loginId"), req.getLoginId());
 			Predicate n17 = cb.equal(m.get("customerName"), req.getLoginId());
 			Predicate n18 = cb.or(n16,n17);
-	
 			// Uw Condition 
 			if("RP".equalsIgnoreCase(status)) {
 				Root<UWReferralDetails> uw = query.from(UWReferralDetails.class);
@@ -4325,5 +4321,4 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			}
 			return resList;
 		}
-
 }

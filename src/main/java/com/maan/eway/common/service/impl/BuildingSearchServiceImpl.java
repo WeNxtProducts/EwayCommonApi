@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maan.eway.bean.BrokerCommissionDetails;
+import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.EserviceBuildingDetails;
@@ -48,6 +49,7 @@ import com.maan.eway.bean.PremiaCustomerDetails;
 import com.maan.eway.common.req.SearchEservieMotorDetailsViewRatingRes;
 import com.maan.eway.common.req.SearchReq;
 import com.maan.eway.common.res.AdminViewQuoteRes;
+import com.maan.eway.common.res.DocumentDetails;
 import com.maan.eway.common.res.SearchCustomerDetailsRes;
 import com.maan.eway.common.service.BuildingSearchService;
 import com.maan.eway.master.req.CopyQuoteDropDownReq;
@@ -146,11 +148,11 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 
 			query.multiselect(cb.max(cus.get("clientName")).alias("clientName"), cb.count(c).alias("idsCount"),
 
-				//	cus.get("customerReferenceNo").alias("customerReferenceNo"),
+					cus.get("customerReferenceNo").alias("customerReferenceNo"),
 					cus.get("mobileNo1").alias("mobileNumber"),
 					cb.max(c.get("requestReferenceNo")).alias("requestReferenceNo"),
 					cb.max(c.get("riskId")).alias("riskId"), 
-					cb.max(c.get("customerReferenceNo")).alias("customerReferenceNo"),
+				//	cb.max(c.get("customerReferenceNo")).alias("customerReferenceNo"),
 					cb.max(c.get("productId")).alias("productId"),
 					cb.max(c.get("companyId")).alias("companyId"),
 					cb.selectCase().when(cb.max(c.get("quoteNo")).isNotNull(), cb.max(c.get("quoteNo")))
@@ -523,51 +525,21 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 			try {
 				// Find Motor Data
 
-				BuildingRiskDetails buildData = buildRiskRepo.findByQuoteNo(req.getQuoteNo());
-				List<EserviceSectionDetails> secDatas = eserSecRepo
-						.findByRequestReferenceNoOrderByRiskIdAsc(buildData.getRequestReferenceNo());
+				List<BuildingRiskDetails> buildings = buildRiskRepo.findByQuoteNo(req.getQuoteNo());
+				List<EserviceSectionDetails> secDatas = eserSecRepo.findByQuoteNo(req.getQuoteNo());
 
 				// Building Details
 				// Section Details
 
 				List<EserviceBuildingsDetailsRes> buildList = new ArrayList<EserviceBuildingsDetailsRes>();
 				EserviceBuildingsDetailsRes buildingRes = new EserviceBuildingsDetailsRes();
-				dozerMapper.map(buildData, buildingRes);
-				buildingRes.setDocumentsTitle(buildData.getProductDesc());
-
+				
 				// Broker Commission
-				List<BrokerCommissionDetails> policylist = getPolicyName(buildData.getCompanyId(),
-						buildData.getProductId().toString(), buildData.getCreatedBy(), buildData.getAgencyCode(),
-						"99999");
-				Double commissionPercent = 0.0;
-				if (policylist.size() > 0 && policylist != null) {
-					commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
-							: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());
-				} else {
-					commissionPercent = 5.0;
-				}
-				String premiumFc = buildData.getOverallPremiumFc().toString();
-				String vatPremiumFc = buildData.getOverallPremiumFc().toString();
-				BigDecimal commission = new BigDecimal(premiumFc).multiply(new BigDecimal(commissionPercent))
-						.divide(BigDecimal.valueOf(100D))
-						.setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP);
-				buildingRes.setOverAllPremiumFc(buildData.getOverallPremiumFc().toString() == null ? 0D
-						: Double.valueOf(buildData.getOverallPremiumFc().toString()));
-				buildingRes.setOverAllPremiumLc(buildData.getOverallPremiumLc().toString() == null ? 0D
-						: Double.valueOf(buildData.getOverallPremiumLc().toString()));
-				buildingRes.setPremiumFc(buildData.getActualPremiumFc().toString() == null ? 0
-						: Double.valueOf(buildData.getActualPremiumFc().toString()));
-				buildingRes.setPremiumLc(buildData.getActualPremiumLc().toString() == null ? 0
-						: Double.valueOf(buildData.getActualPremiumLc().toString()));
-				buildingRes.setCommissionAmount(commission.toString() == null ? "" : commission.toString());
-				buildingRes.setCommissionPercentage(
-						commissionPercent.toString() == null ? "" : commissionPercent.toString());
-
+				
 				List<SectionDetails> buildingSectionList = new ArrayList<SectionDetails>();
 				for (EserviceSectionDetails sec : secDatas) {
-					if (sec.getSectionId().equalsIgnoreCase("35")) {
-						List<CommonDataDetails> accData = commonDataRepo
-								.findByQuoteNoOrderByRiskIdAsc(req.getQuoteNo());
+					if (sec.getProductType().equalsIgnoreCase("H")) {
+						List<CommonDataDetails> accData = commonDataRepo.findByQuoteNoAndSectionIdOrderByRiskIdAsc(req.getQuoteNo(),sec.getSectionId());
 						for (CommonDataDetails acc : accData) {
 							SectionDetails buildSec = new SectionDetails();
 							buildSec.setSectionId(acc.getSectionId() == null ? "" : acc.getSectionId().toString());
@@ -589,6 +561,192 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 					}
 
 				}
+				
+				// Default Entry
+				List<BuildingRiskDetails> filterDefaultBuilding = buildings.stream().filter( o -> "0".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+				if(filterDefaultBuilding.size() > 0 ) {
+					BuildingRiskDetails buildData = filterDefaultBuilding.get(0);
+					dozerMapper.map(buildData, buildingRes);
+					buildingRes.setDocumentsTitle(buildData.getProductDesc());
+
+					
+					List<BrokerCommissionDetails> policylist = getPolicyName(buildData.getCompanyId(),
+							buildData.getProductId().toString(), buildData.getCreatedBy(), buildData.getAgencyCode(),
+							"99999");
+					Double commissionPercent = 0.0;
+					if (policylist.size() > 0 && policylist != null) {
+						commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
+								: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());
+					} else {
+						commissionPercent = 5.0;
+					}
+					
+					buildingRes.setDocumentsTitle(buildData.getProductDesc());
+					String premiumFc = String.valueOf(buildings.stream().filter( o -> o.getOverallPremiumFc() != null ).mapToDouble(o -> Double.valueOf(o.getOverallPremiumFc().toPlainString() ) ).sum()) ;
+					 String vatPremiumFc =	String.valueOf(buildings.stream().filter( o -> o.getOverallPremiumFc() != null ).mapToDouble(o -> Double.valueOf(o.getOverallPremiumFc().toPlainString() ) ).sum()) ;
+					 BigDecimal commission = new BigDecimal(premiumFc).multiply(new BigDecimal(commissionPercent)).divide(BigDecimal.valueOf(100D));
+						buildingRes.setCommissionAmount(commission.toString() == null ? "" : commission.toString());
+						buildingRes.setCommissionPercentage(commissionPercent.toString() == null ? "" : commissionPercent.toString());
+
+					 buildingRes.setOverAllPremiumFc(buildings.stream().filter( o -> o.getOverallPremiumFc() != null ).mapToDouble(o -> Double.valueOf(o.getOverallPremiumFc().toPlainString() ) ).sum() );
+					 buildingRes.setOverAllPremiumLc(buildings.stream().filter( o -> o.getOverallPremiumFc() != null ).mapToDouble(o -> Double.valueOf(o.getOverallPremiumFc().toPlainString() ) ).sum() );
+					 buildingRes.setPremiumFc(buildings.stream().filter( o -> o.getActualPremiumFc() != null ).mapToDouble(o -> Double.valueOf(o.getActualPremiumFc().toPlainString() ) ).sum() );
+					 buildingRes.setPremiumLc(buildings.stream().filter( o -> o.getActualPremiumLc() != null ).mapToDouble(o -> Double.valueOf(o.getActualPremiumLc().toPlainString() ) ).sum() );
+					 buildingRes.setCommissionAmount(commission==null?"":commission.toString());
+					 buildingRes.setVatCommission(String.valueOf(buildings.stream().filter( o -> o.getVatCommission() != null ).mapToDouble(o -> Double.valueOf(o.getVatCommission().toPlainString() ) ).sum()) );	
+					
+					buildingRes.setDocumentsTitle(StringUtils.isNotBlank(buildData.getSectionDesc() ) ? buildData.getSectionDesc() :   buildData.getProductDesc());
+					buildingRes.setLocationId(buildData.getRiskId().toString());
+					buildingRes.setLocationName(StringUtils.isNotBlank(buildData.getSectionDesc() ) ? buildData.getSectionDesc() :   buildData.getProductDesc());
+					buildingRes.setRiskId(buildData.getRiskId().toString());
+					buildingRes.setSuminsured(buildData.getBuildingSuminsured()==null?"" : buildData.getBuildingSuminsured().toPlainString());
+					buildingRes.setSectionId(StringUtils.isNotBlank(buildData.getSectionId() ) ?  buildData.getSectionId() :  "99999"  );
+				
+					List<EserviceSectionDetails>   buildSections = eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(buildData.getRequestReferenceNo());
+					List<String> sectionIds = buildSections.stream().filter( o -> o.getRiskId().equals(1)).map(EserviceSectionDetails :: getSectionId ).collect(Collectors.toList());
+					buildingRes.setRiskId(buildData.getRiskId().toString());
+					
+					
+					}
+					
+					// (i) Asset Related Sections
+					
+					// Building
+					List<BuildingRiskDetails> filterBuilding = buildings.stream().filter( o -> "1".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+					if(filterBuilding.size() > 0 ) {
+						BuildingRiskDetails build = filterBuilding.get(0);
+						buildingRes.setBuildingSuminsured(build.getBuildingSuminsured() == null?"0" :build.getBuildingSuminsured().toPlainString());
+					} 
+					
+					// Content
+					List<BuildingRiskDetails> filterContent = buildings.stream().filter( o -> "47".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+					if(filterContent.size() > 0 ) {
+						BuildingRiskDetails build = filterContent.get(0);
+						buildingRes.setContentSuminsured(build.getContentSuminsured() == null?"0" :build.getContentSuminsured().toPlainString());
+						
+					} 
+					
+					
+					// All Risk , Plant All Risk , Business All Risk
+					List<BuildingRiskDetails> filterAllRisk = buildings.stream().filter( o -> "3".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+					if(filterAllRisk.size() > 0 ) {
+						BuildingRiskDetails build = filterAllRisk.get(0);
+						buildingRes.setAllriskSuminsured(build.getAllriskSuminsured() == null?"0" :build.getAllriskSuminsured().toPlainString());
+						buildingRes.setMiningPlantSi(build.getMiningPlantSi()== null?"0" :build.getMiningPlantSi().toPlainString());
+						buildingRes.setNonminingPlantSi(build.getNonminingPlantSi() == null?"0" :build.getNonminingPlantSi().toPlainString());
+						buildingRes.setGensetsSi(build.getGensetsSi() == null?"0" :build.getGensetsSi().toPlainString());
+						buildingRes.setEquipmentSi(build.getEquipmentSi() == null?BigDecimal.ZERO :build.getEquipmentSi());
+					//	Double MiningPlantSi = build.getMiningPlantSi() == null?0D :Double.valueOf(build.getMiningPlantSi().toPlainString()) ;
+					//	Double NonminingPlantSi = build.getNonminingPlantSi() == null?0D :Double.valueOf(build.getNonminingPlantSi().toPlainString()) ;
+					//	Double GensetsSi = build.getGensetsSi() == null?0D :Double.valueOf(build.getGensetsSi().toPlainString()) ;
+					//	Double plantAllRiskSi = MiningPlantSi +NonminingPlantSi  + GensetsSi ;
+						//res.setPlantAllriskSi( plantAllRiskSi==null ? "" :plantAllRiskSi.toString());
+						
+					} 
+					
+					// Accidental Damage
+					List<BuildingRiskDetails> filterAccidental = buildings.stream().filter( o -> "56".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+					if(filterAccidental.size() > 0 ) {
+						BuildingRiskDetails build = filterAccidental.get(0);
+						//res.setContentSuminsured(build.getContentSuminsured() == null?"0" :build.getContentSuminsured().toPlainString());
+						
+					}
+					
+					// Burgalry
+					List<BuildingRiskDetails> filterBurglary = buildings.stream().filter( o -> "52".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+					if(filterBurglary.size() > 0 ) {
+						BuildingRiskDetails build = filterBurglary.get(0);
+						buildingRes.setStockInTradeSi(build.getStockInTradeSi()== null?"0" :build.getStockInTradeSi().toPlainString());
+						buildingRes.setGoodsSi(build.getGoodsSi() == null?"0" :build.getGoodsSi().toPlainString());	
+						buildingRes.setFurnitureSi(build.getFurnitureSi() == null?"0" :build.getFurnitureSi().toPlainString());
+						buildingRes.setCashValueablesSi(build.getCashValueablesSi() == null?"0" :build.getCashValueablesSi().toPlainString());
+						buildingRes.setApplianceSi(build.getApplianceSi() == null?"0" :build.getApplianceSi().toPlainString());
+					//	res.setGoodsSinglecarrySuminsured(build.getGoodsSinglecarrySuminsured() == null?"0" :build.getGoodsSinglecarrySuminsured().toPlainString());
+					//	res.setGoodsTurnoverSuminsured(build.getGoodsTurnoverSuminsured() == null?"0" :build.getGoodsTurnoverSuminsured().toPlainString());
+						 buildingRes.setInsuranceForId(build.getInsuranceForId()!=null ? Arrays.asList(build.getInsuranceForId().split(",")) : null )  ;
+						 buildingRes.setStockLossPercent(build.getStockLossPercent()==null ? null : build.getStockLossPercent().toString());
+						 buildingRes.setGoodsLossPercent(build.getGoodsLossPercent()==null ? null : build.getGoodsLossPercent().toString());
+						 buildingRes.setFurnitureLossPercent(build.getFurnitureLossPercent()==null ? null : build.getFurnitureLossPercent().toString());
+						 buildingRes.setApplianceLossPercent(build.getApplianceLossPercent()==null ? null : build.getApplianceLossPercent().toString());
+						 buildingRes.setCashValueablesLossPercent(build.getCashValueablesLossPercent()==null ? null : build.getCashValueablesLossPercent().toString());
+						 buildingRes.setStockInTradeSi(build.getStockInTradeSi()==null?"" : build.getStockInTradeSi().toPlainString());
+						 buildingRes.setGoodsSi(build.getGoodsSi()==null?"" : build.getGoodsSi().toPlainString());
+						 buildingRes.setFurnitureSi(build.getFurnitureSi()==null?"" : build.getFurnitureSi().toPlainString());
+						 buildingRes.setApplianceSi(build.getApplianceSi()==null?"" : build.getApplianceSi().toPlainString());
+						 buildingRes.setCashValueablesSi(build.getCashValueablesSi()==null?"" : build.getCashValueablesSi().toPlainString());
+						 buildingRes.setBuildingOwnerYn(build.getBuildingOwnerYn()==null?"" : build.getBuildingOwnerYn());
+						 buildingRes.setAccessibleWindows(build.getAccessibleWindows()==null ? "" : build.getAccessibleWindows().toString());	
+						 buildingRes.setAddress(build.getAddress()==null ? "" : (build.getAddress()));
+						 buildingRes.setBackDoors(build.getBackDoors()==null ? "" : build.getBackDoors().toString());
+						 buildingRes.setBuildingOccupied(build.getBuildingOccupied()==null ? "": build.getBuildingOccupied().toString());
+						 buildingRes.setCeilingType(build.getCeilingType()==null ? "": build.getCeilingType().toString());
+						 buildingRes.setDistrictCode(build.getDistrictCode()==null ? "": build.getDistrictCode().toString());
+						 buildingRes.setDoorsMaterialId(build.getDoorsMaterialId()==null? "": build.getDoorsMaterialId().toString());
+						 buildingRes.setFrontDoors(build.getFrontDoors()==null ? "" :build.getFrontDoors().toString());
+						 buildingRes.setInsuranceForId(build.getInsuranceForId()!= null ? Arrays.asList(build.getInsuranceForId().split(",")) : null )  ;
+						 buildingRes.setNatureOfTradeId(build.getNatureOfTradeId()==null ? "" : build.getNatureOfTradeId().toString());				
+						 buildingRes.setInternalWallType(build.getInternalWallType()==null? "" : build.getInternalWallType().toString());
+						 buildingRes.setNightLeftDoor(build.getNightLeftDoor()==null? "" : build.getNightLeftDoor().toString());
+						 buildingRes.setOccupiedYear(build.getOccupiedYear()==null ? "" : build.getOccupiedYear().toString());
+						 buildingRes.setShowWindow(build.getShowWindow()==null ? "" : build.getShowWindow().toString());
+						 buildingRes.setTrapDoors(build.getTrapDoors()==null  ? "" : build.getTrapDoors().toString());
+						 buildingRes.setWatchmanGuardHours(build.getWatchmanGuardHours()==null ? "" :build.getWatchmanGuardHours().toString());
+						 buildingRes.setWindowsMaterialId(build.getWindowsMaterialId()==null  ? "" :build.getWindowsMaterialId().toString());
+						 buildingRes.setBuildingBuildYear(build.getBuildingBuildYear()==null  ? "" :build.getBuildingBuildYear().toString());
+						 buildingRes.setRoofType(build.getRoofType()==null  ? "" :build.getRoofType().toString());
+						 buildingRes.setWallType(build.getWallType()==null  ? "" :build.getWallType().toString());				
+						 buildingRes.setRegionCode(build.getRegionCode()==null  ? "" :build.getRegionCode().toString());
+								
+					}
+					
+					// Fire And Material Damage
+					List<BuildingRiskDetails> filterFire = buildings.stream().filter( o -> "40".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+					if(filterFire.size() > 0 ) {
+						BuildingRiskDetails build = filterFire.get(0);
+						buildingRes.setStockInTradeSi(build.getStockInTradeSi()== null?"0" :build.getStockInTradeSi().toPlainString());
+						buildingRes.setBuildingSuminsured(build.getBuildingSuminsured() == null?"0" :build.getBuildingSuminsured().toPlainString());	
+						buildingRes.setFireEquipSi(build.getEquipmentSi() == null?"0" :build.getEquipmentSi().toPlainString());
+						buildingRes.setFirePlantSi(build.getFirePlantSi() == null?"0" :build.getFirePlantSi().toPlainString());
+						
+					}
+					
+					// Electronic Equipment
+					List<BuildingRiskDetails> filterElecEquip = buildings.stream().filter( o -> "39".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+					if(filterElecEquip.size() > 0 ) {
+						BuildingRiskDetails build = filterElecEquip.get(0);
+						buildingRes.setElecEquipSuminsured(build.getElecEquipSuminsured() == null?BigDecimal.ZERO :build.getElecEquipSuminsured());
+					}
+					
+					// Money
+					List<BuildingRiskDetails> filterMoney = buildings.stream().filter( o -> "42".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+					if(filterMoney.size() > 0 ) {
+						BuildingRiskDetails build = filterMoney.get(0);
+						buildingRes.setMoneyAnnualEstimate(build.getMoneyAnnualEstimate()== null?"0" : build.getMoneyAnnualEstimate().toPlainString());
+						buildingRes.setMoneyCollector(build.getMoneyCollector()== null?"0" : build.getMoneyCollector().toPlainString() );
+						buildingRes.setMoneyDirectorResidence(build.getMoneyDirectorResidence()== null?"0" : build.getMoneyDirectorResidence().toPlainString() );
+						buildingRes.setMoneyOutofSafe(build.getMoneyOutofSafe()== null?"0" : build.getMoneyOutofSafe().toPlainString() );
+						buildingRes.setMoneySafeLimit(build.getMoneySafeLimit()== null?"0" : build.getMoneySafeLimit().toPlainString() );
+						buildingRes.setMoneyMajorLoss(build.getMoneyMajorLoss() == null?"0" : build.getMoneyMajorLoss().toPlainString() );
+						
+					}
+					
+					// Machinery
+					List<BuildingRiskDetails> filterMachienry = buildings.stream().filter( o -> "41".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+					if(filterMachienry.size() > 0 ) {
+						BuildingRiskDetails build = filterMachienry.get(0);
+						Double ElecMachinesSi = build.getElecMachinesSi() == null?0D :Double.valueOf(build.getElecMachinesSi().toPlainString());
+						Double BoilerPlantsSi = build.getBoilerPlantsSi() == null?0D :Double.valueOf(build.getBoilerPlantsSi().toPlainString()) ;
+						Double EquipmentSi = build.getEquipmentSi() == null?0D :Double.valueOf(build.getEquipmentSi().toPlainString()) ;
+						Double GeneralMachineSi = build.getGeneralMachineSi() == null?0D :Double.valueOf(build.getGeneralMachineSi().toPlainString()) ;
+						Double MachineEquipSi = build.getMachineEquipSi() == null?0D :Double.valueOf(build.getMachineEquipSi().toPlainString()) ;
+						Double ManuUnitsSi = build.getManuUnitsSi() == null?0D :Double.valueOf(build.getManuUnitsSi().toPlainString()) ;
+						Double plantSi = build.getPowerPlantSi() == null?0D :Double.valueOf(build.getPowerPlantSi().toPlainString()) ;
+						Double machinerySi = ElecMachinesSi + BoilerPlantsSi + EquipmentSi + GeneralMachineSi + MachineEquipSi + ManuUnitsSi + plantSi ;
+								
+						buildingRes.setMachinerySi( machinerySi==null ? "" :machinerySi.toString());
+						
+					}
+				
 				buildingRes.setSectionDetails(buildingSectionList);
 
 				buildList.add(buildingRes);
@@ -655,8 +813,8 @@ public class BuildingSearchServiceImpl implements BuildingSearchService {
 //Rating
 	@Override
 	public List<SearchEservieMotorDetailsViewRatingRes> buildingRating() {
-		List<SearchEservieMotorDetailsViewRatingRes> reslist = new ArrayList<SearchEservieMotorDetailsViewRatingRes>();
-		return reslist;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	

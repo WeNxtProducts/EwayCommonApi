@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class GetExistingBrokerListReq {
-	
+
 	@JsonProperty("ProductId")
     private String    productId    ;
 	

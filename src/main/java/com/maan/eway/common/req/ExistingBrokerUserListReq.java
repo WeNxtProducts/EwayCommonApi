@@ -28,5 +28,4 @@ public class ExistingBrokerUserListReq {
 	@JsonProperty("Type")
     private String    type    ;
 
-
 }

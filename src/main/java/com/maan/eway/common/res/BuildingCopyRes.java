@@ -65,4 +65,7 @@ public class BuildingCopyRes {
 	@JsonProperty("EndtTypeDesc")
 	private String endTypeDesc;
 	
+	@JsonProperty("OriginalPolicyNo")
+	private String originalPolicyNo;
+	
 }

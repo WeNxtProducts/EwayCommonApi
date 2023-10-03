@@ -50,6 +50,7 @@ import com.google.gson.JsonPrimitive;
 import com.maan.eway.auth.token.EncryDecryService;
 import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.BranchMaster;
+import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CoverDocumentMaster;
@@ -76,6 +77,7 @@ import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.bean.PaymentRefno;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
+import com.maan.eway.bean.PolicyCoverDataIndividuals;
 import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.SeqPaymentid;
@@ -119,6 +121,7 @@ import com.maan.eway.notification.req.UnderWriter;
 import com.maan.eway.notification.req.statealgo.NotificationStatus;
 import com.maan.eway.notification.service.NotificationService;
 import com.maan.eway.payment.service.SelcomPaymentService;
+import com.maan.eway.repository.BuildingRiskDetailsRepository;
 import com.maan.eway.repository.CommonDataDetailsRepository;
 import com.maan.eway.repository.CoverDocumentMasterRepository;
 import com.maan.eway.repository.DocumentTransactionDetailsRepository;
@@ -197,7 +200,7 @@ public class PaymentServiceImpl implements PaymentService {
 	private EserviceCommonDetailsRepository eserCommonRepo ;
 	
 	@Autowired
-	private EserviceBuildingDetailsRepository eserviceBuildingRepo;
+	private BuildingRiskDetailsRepository buildingRiskRepo;
 	
 	@Autowired
 	private EServiceSectionDetailsRepository eserSecRepo ;
@@ -244,6 +247,9 @@ public class PaymentServiceImpl implements PaymentService {
 	
 	@Autowired
 	private EServiceMotorDetailsRepository eserMotRepo;
+	
+	@Autowired
+	private EserviceBuildingDetailsRepository eserBuildingRepo;
 	
 	@Autowired
 	private SmsDetailsImpl smsRepo ;
@@ -1685,7 +1691,7 @@ public class PaymentServiceImpl implements PaymentService {
 				List<DebitAndCredit> filterDebit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("DR")).collect(Collectors.toList());
 				List<DebitAndCredit> filterCredit = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")).collect(Collectors.toList());
 				// Debit
-				String debitNo = filterDebit.get(0).getDocNo() ;
+				String debitNo = filterDebit.size() > 0 ? filterDebit.get(0).getDocNo() : "";
 				// Credit
 				String creditNo ="";
 				if(filterCredit!=null && !filterCredit.isEmpty()){
@@ -1760,9 +1766,9 @@ public class PaymentServiceImpl implements PaymentService {
 
 			String policyNo = policyDetails.get(0).getPolicyNo();
 			// Debit
-			String debitNo = filterDebit.get(0).getDocNo() ;
-			Date debitDate = filterDebit.get(0).getEntryDate();
-			String debitTo = filterDebit.get(0).getDocType();
+			String debitNo = filterDebit.size() > 0 ?  filterDebit.get(0).getDocNo() :"" ;
+			Date debitDate = filterDebit.size() > 0 ? filterDebit.get(0).getEntryDate() : null;
+			String debitTo = filterDebit.size() > 0 ?  filterDebit.get(0).getDocType()  : "";
 			
 			String creditNo ="";
 			Date creditDate =null;
@@ -1893,7 +1899,7 @@ public class PaymentServiceImpl implements PaymentService {
 				}
 			}
 		} else if(product.getMotorYn().equalsIgnoreCase("A") ) {
-			List<EserviceBuildingDetails> cusRefNo = eserviceBuildingRepo
+			List<EserviceBuildingDetails> cusRefNo = eserBuildingRepo
 					.findByRequestReferenceNoAndProductId(data.getRequestReferenceNo().toString(), data.getProductId().toString());
 			for (EserviceBuildingDetails motor : cusRefNo) {
 				if (! motor.getStatus().equalsIgnoreCase("D") ) {
@@ -2012,363 +2018,242 @@ public class PaymentServiceImpl implements PaymentService {
 	
 	 public  String updateProductWisePolicyNo(String productId , String policyNo , String quoteNo,String endttypeId, String motorYn ) {
 		 String res = "" ;
-	       try {
+		 DozerBeanMapper dozerMapper = new DozerBeanMapper();
+		 try {
 	    	   
 	    	   if(motorYn.equalsIgnoreCase("M") ) {
-	    		   // Eservice Motor Update
-	    		   {
-	    		    CriteriaBuilder cb = em.getCriteriaBuilder();
-					// create update
-					CriteriaUpdate<EserviceMotorDetails> update = cb.createCriteriaUpdate(EserviceMotorDetails.class);
-					// set the root class
-					Root<EserviceMotorDetails> m = update.from(EserviceMotorDetails.class);
-					// set update and where clause
-					update.set("policyNo", policyNo);
-					update.set("status", "P");
-					/*if(StringUtils.isNotBlank(endttypeId))
-						update.set("endtStatus","C");*/
-					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
-					
-					// Cancellation Condition
-					if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
-						update.where(n1);
+	    		   
+	    		   // Update Main Motor
+	    		   List<MotorDataDetails> motorList =  motorRepo.findByQuoteNo(quoteNo);
+	    		   if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
+	    			   motorList.forEach( o -> {
+	    				   o.setPolicyNo(policyNo);
+	    				   o.setStatus("P");
+	    				   o.setEndtStatus("C");
+	    			   });
 					} else {
-						Predicate n2 = cb.notEqual(m.get("status"),"D" );
-						update.where(n1,n2);
+					   motorList.forEach( o -> {
+						   if( ! "D".equalsIgnoreCase(o.getStatus()) ) {
+							   o.setPolicyNo(policyNo);
+			    			   o.setStatus("P");
+			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
+			    		   }
+		    			    
+		    		   });
 					}
-					
-					// perform update
-					em.createQuery(update).executeUpdate();
-					
-	    		   }
-	    		   if(StringUtils.isNotBlank(endttypeId)){
-	    			 
-	   	    		    CriteriaBuilder cb = em.getCriteriaBuilder();
-	   					// create update
-	   					CriteriaUpdate<EserviceMotorDetails> update = cb.createCriteriaUpdate(EserviceMotorDetails.class);
-	   					// set the root class
-	   					Root<EserviceMotorDetails> m = update.from(EserviceMotorDetails.class);
-	   					
-	   					if(StringUtils.isNotBlank(endttypeId))
-	   						update.set("endtStatus","C");
-	   					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
-	   				   // Cancellation Condition
-						if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
-							update.where(n1);
-						} 
-						
-//						else {
-//							Predicate n2 = cb.notEqual(m.get("status"),"D" );
-//							update.where(n1,n2);
-//						}
-	   					 
-						// perform update
-	   					em.createQuery(update).executeUpdate();
-	   					
-	   	    		   
-	    		   }
-	    		   // Motor Data Details Update
-	    		   {
-		    		    CriteriaBuilder cb = em.getCriteriaBuilder();
-						// create update
-						CriteriaUpdate<MotorDataDetails> update = cb.createCriteriaUpdate(MotorDataDetails.class);
-						// set the root class
-						Root<MotorDataDetails> m = update.from(MotorDataDetails.class);
-						// set update and where clause
-						update.set("policyNo", policyNo);
-						update.set("status", "P");
-						
-						Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
-						// Cancellation Condition
-						if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
-							update.where(n1);
-						} else {
-							Predicate n2 = cb.notEqual(m.get("status"),"D" );
-							update.where(n1,n2);
-						}
-						// perform update
-						em.createQuery(update).executeUpdate();
-						
-	    		   }
+	    		   motorRepo.saveAllAndFlush(motorList);
+	    		  
+	    		// Update Eservice Motor
+	    		  List<EserviceMotorDetails> eserMotorsList =  eserMotRepo.findByQuoteNoOrderByRiskIdAsc(quoteNo);
+	    		  List<EserviceMotorDetails> updateEserList = new ArrayList<EserviceMotorDetails>(); 
+	    		  eserMotorsList.forEach( o -> {
+	    			  
+    			  List<MotorDataDetails> filterMotor = motorList.stream().filter( e -> e.getVehicleId().equals(o.getRiskId().toString())
+    					  && e.getSectionId().equals(Integer.valueOf(o.getSectionId())) ).collect(Collectors.toList());
+    			  
+    			  if( filterMotor.size()> 0 ) {
+    				  EserviceMotorDetails updateEser = o ; 
+    				  dozerMapper.map(filterMotor.get(0) , updateEser);
+    				  updateEserList.add(updateEser);
+    			   }
+	    		 
+	    		  });	    		   
+	    		  eserMotRepo.saveAllAndFlush(updateEserList);
+	    		  
 	    	   } else  if(motorYn.equalsIgnoreCase("H")  && productId.equalsIgnoreCase(travelProductId) ) {
-	    		   // Eservice Travel Update
-	    		   {
-	    		    CriteriaBuilder cb = em.getCriteriaBuilder();
-					// create update
-					CriteriaUpdate<EserviceTravelDetails> update = cb.createCriteriaUpdate(EserviceTravelDetails.class);
-					// set the root class
-					Root<EserviceTravelDetails> m = update.from(EserviceTravelDetails.class);
-					// set update and where clause
-					update.set("policyNo", policyNo);
-					update.set("status", "P");
-					if(StringUtils.isNotBlank(endttypeId))
-						update.set("endtStatus","C");
-					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
-					// Cancellation Condition
-					if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
-						update.where(n1);
-					} else {
-						Predicate n2 = cb.notEqual(m.get("status"),"D" );
-						update.where(n1,n2);
-					}
-					// perform update
-					em.createQuery(update).executeUpdate();
-					
-	    		   }
 	    		   
-	    		   if(StringUtils.isNotBlank(endttypeId)){
-		    			 
-	   	    		    CriteriaBuilder cb = em.getCriteriaBuilder();
-	   					// create update
-	   					CriteriaUpdate<EserviceTravelDetails> update = cb.createCriteriaUpdate(EserviceTravelDetails.class);
-	   					// set the root class
-	   					Root<EserviceTravelDetails> m = update.from(EserviceTravelDetails.class);
-	   					if(StringUtils.isNotBlank(endttypeId))
-	   						update.set("endtStatus","C");
-	   					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
-	   					 
-	   					update.where(n1);
-	   					// perform update
-	   					em.createQuery(update).executeUpdate();
-	   					
-	   	    		   
-	    		   }
-	    		   // Travel Data Details Update
-	    		   {
-		    		    CriteriaBuilder cb = em.getCriteriaBuilder();
-						// create update
-						CriteriaUpdate<TravelPassengerDetails> update = cb.createCriteriaUpdate(TravelPassengerDetails.class);
-						// set the root class
-						Root<TravelPassengerDetails> m = update.from(TravelPassengerDetails.class);
-						// set update and where clause
-						update.set("policyNo", policyNo);
-						update.set("status", "P");
-						
-						Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
-						// Cancellation Condition
-						if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
-							update.where(n1);
-						} else {
-							Predicate n2 = cb.notEqual(m.get("status"),"D" );
-							update.where(n1,n2);
-						}
-						// perform update
-						em.createQuery(update).executeUpdate();
-						
-	    		   }
+	    		   // Update Main Travel
+	    		   List<TravelPassengerDetails> passengerList =  passengerRepo.findByQuoteNo(quoteNo);
+	    		   if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
+	    			   passengerList.forEach( o -> {
+	    				   o.setPolicyNo(policyNo);
+	    				   o.setStatus("P");
+	    				   o.setEndtStatus("C");
+	    			   });
+					} else {
+						passengerList.forEach( o -> {
+						   if( ! "D".equalsIgnoreCase(o.getStatus()) ) {
+							   o.setPolicyNo(policyNo);
+			    			   o.setStatus("P");
+			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
+			    		   }
+		    			    
+		    		   });
+					}
+	    		   passengerRepo.saveAllAndFlush(passengerList);
+	    		  
+	    		// Update Eservice Travel
+	    		  EserviceTravelDetails eserTravel =  eserTraRepo.findByQuoteNo(quoteNo);
+	    		  eserTravel.setPolicyNo(policyNo);
+	    		  eserTravel.setStatus("P");
+	    		  eserTravel.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
+	    		  eserTraRepo.saveAndFlush(eserTravel);
+	    		  
 	    	   } else  if(motorYn.equalsIgnoreCase("A") ) {
-	    		   // Eservice Building Update
-	    		   {
-	    		    CriteriaBuilder cb = em.getCriteriaBuilder();
-					// create update
-					CriteriaUpdate<EserviceBuildingDetails> update = cb.createCriteriaUpdate(EserviceBuildingDetails.class);
-					// set the root class
-					Root<EserviceBuildingDetails> m = update.from(EserviceBuildingDetails.class);
-					// set update and where clause
-					update.set("policyNo", policyNo);
-					update.set("status", "P");
-					if(StringUtils.isNotBlank(endttypeId))
-						update.set("endtStatus","C");
-					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
-					// Cancellation Condition
-					if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
-						update.where(n1);
+	    		   
+	    		// Update Main Asset
+	    		   List<BuildingRiskDetails> buildingList =  buildingRiskRepo.findByQuoteNo(quoteNo);
+	    		   if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
+	    			   buildingList.forEach( o -> {
+	    				   o.setPolicyNo(policyNo);
+	    				   o.setStatus("P");
+	    				   o.setEndtStatus("C");
+	    			   });
 					} else {
-						Predicate n2 = cb.notEqual(m.get("status"),"D" );
-						update.where(n1,n2);
+						buildingList.forEach( o -> {
+						   if( ! "D".equalsIgnoreCase(o.getStatus()) ) {
+							   o.setPolicyNo(policyNo);
+			    			   o.setStatus("P");
+			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
+			    		   }
+		    			    
+		    		   });
 					}
-					// perform update
-					em.createQuery(update).executeUpdate();
-					
-	    		   }
-	    		   
-	    		   if(StringUtils.isNotBlank(endttypeId)){
-		    			 
-	   	    		    CriteriaBuilder cb = em.getCriteriaBuilder();
-	   					// create update
-	   					CriteriaUpdate<EserviceBuildingDetails> update = cb.createCriteriaUpdate(EserviceBuildingDetails.class);
-	   					// set the root class
-	   					Root<EserviceBuildingDetails> m = update.from(EserviceBuildingDetails.class);
-	   					update.set("policyNo", policyNo);
-	   					if(StringUtils.isNotBlank(endttypeId))
-	   						update.set("endtStatus","C");
-	   					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
-	   				  // Cancellation Condition
-						if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
-							update.where(n1);
-						} else {
-							Predicate n2 = cb.equal(m.get("status"),"D" );
-							update.where(n1,n2);
-						}
-	   					// perform update
-	   					em.createQuery(update).executeUpdate();
-	   					
-	   	    		   
-	    		   }
-	    		   
-	    		// Eservice Common Update
-	    		   {
-	    		    CriteriaBuilder cb = em.getCriteriaBuilder();
-					// create update
-					CriteriaUpdate<EserviceCommonDetails> update = cb.createCriteriaUpdate(EserviceCommonDetails.class);
-					// set the root class
-					Root<EserviceCommonDetails> m = update.from(EserviceCommonDetails.class);
-					// set update and where clause
-					update.set("policyNo", policyNo);
-					update.set("status", "P");
-					if(StringUtils.isNotBlank(endttypeId))
-						update.set("endtStatus","C");
-					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
-					// Cancellation Condition
-					if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
-						update.where(n1);
-					} 
-					else {
-						Predicate n2 = cb.notEqual(m.get("status"),"D" );
-						update.where(n1,n2);
+	    		   buildingRiskRepo.saveAllAndFlush(buildingList);
+	    		  
+	    		// Update Eservice Asset
+	    		   List<EserviceBuildingDetails> updateEserList = new ArrayList<EserviceBuildingDetails>();
+	    		   List<EserviceBuildingDetails> eserBuildingList =  eserBuildingRepo.findByQuoteNoOrderByRiskIdAsc(quoteNo);
+		    	   eserBuildingList.forEach( o -> {
+		    			  
+	    			  List<BuildingRiskDetails> filterAsset = buildingList.stream().filter( e -> e.getRiskId().equals(o.getRiskId())
+	    					  && e.getSectionId().equals(o.getSectionId()) ).collect(Collectors.toList());
+	    			  
+	    			  if( filterAsset.size()> 0 ) {
+	    				  EserviceBuildingDetails updateEser = o; 
+	    				  dozerMapper.map(filterAsset.get(0) , updateEser);
+	    				  updateEserList.add(updateEser);
+	    			   }
+		    		 
+		    		  });	    		   
+	    		   eserBuildingRepo.saveAllAndFlush(updateEserList);
+		    		  
+	    		
+	    		 
+	    		// Update Main Human
+	    		   List<CommonDataDetails> humanList =  commonRepo.findByQuoteNo(quoteNo);
+	    		   if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
+	    			   humanList.forEach( o -> {
+	    				   o.setPolicyNo(policyNo);
+	    				   o.setStatus("P");
+	    				   o.setEndtStatus("C");
+	    			   });
+					} else {
+						humanList.forEach( o -> {
+						   if( ! "D".equalsIgnoreCase(o.getStatus()) ) {
+							   o.setPolicyNo(policyNo);
+			    			   o.setStatus("P");
+			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
+			    		   }
+		    			    
+		    		   });
 					}
-					// perform update
-					em.createQuery(update).executeUpdate();
-					
-	    		   }
-	    		   if(StringUtils.isNotBlank(endttypeId)){
-		    			 
-	   	    		    CriteriaBuilder cb = em.getCriteriaBuilder();
-	   					// create update
-	   					CriteriaUpdate<EserviceCommonDetails> update = cb.createCriteriaUpdate(EserviceCommonDetails.class);
-	   					// set the root class
-	   					Root<EserviceCommonDetails> m = update.from(EserviceCommonDetails.class);
-	   					update.set("policyNo", policyNo);
-	   					if(StringUtils.isNotBlank(endttypeId))
-	   						update.set("endtStatus","C");
-	   					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
-	   				// Cancellation Condition
-						if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
-							update.where(n1);
-						} else {
-							Predicate n2 = cb.equal(m.get("status"),"D" );
-							update.where(n1,n2);
-						}
-	   					
-	   					// perform update
-	   					em.createQuery(update).executeUpdate();
-	   					
-	   	    		   
-	    		   }
+	    		   commonRepo.saveAllAndFlush(humanList);
+	    		  
 	    		   
-	    		   // Building Data Details Update
-//	    		   {
-//		    		    CriteriaBuilder cb = em.getCriteriaBuilder();
-//						// create update
-//						CriteriaUpdate<MotorDataDetails> update = cb.createCriteriaUpdate(MotorDataDetails.class);
-//						// set the root class
-//						Root<MotorDataDetails> m = update.from(MotorDataDetails.class);
-//						// set update and where clause
-//						update.set("policyNo", policyNo);
-//						update.set("status", "P");
-//						
-//						Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
-//						update.where(n1);
-//						// perform update
-//						em.createQuery(update).executeUpdate();
-//						
-//	    		   }
+	    		// Update Eservice Asset
+	    		   List<EserviceCommonDetails> updateHumanEserList = new ArrayList<EserviceCommonDetails>();
+	    		   List<EserviceCommonDetails> eserHumanList =  eserCommonRepo.findByQuoteNoOrderByRiskIdAsc(quoteNo);
+	    		   eserHumanList.forEach( o -> {
+		    			  
+	    			  List<CommonDataDetails> filterHuman = humanList.stream().filter( e -> e.getRiskId().equals(o.getRiskId())
+	    					  && e.getSectionId().equals(o.getSectionId()) ).collect(Collectors.toList());
+	    			  
+	    			  if( filterHuman.size()> 0 ) {
+	    				  EserviceCommonDetails updateEser = o ; 
+	    				  dozerMapper.map(filterHuman.get(0) , updateEser);
+	    				  updateHumanEserList.add(updateEser);
+	    			   }
+		    		 
+		    		  });	    		   
+	    		   eserCommonRepo.saveAllAndFlush(updateHumanEserList);
+		    		  
+	    		
+	    	
+	    		  
 	    	   } else {
-	    		// Eservice Common Update
-	    		   {
-	    		    CriteriaBuilder cb = em.getCriteriaBuilder();
-					// create update
-					CriteriaUpdate<EserviceCommonDetails> update = cb.createCriteriaUpdate(EserviceCommonDetails.class);
-					// set the root class
-					Root<EserviceCommonDetails> m = update.from(EserviceCommonDetails.class);
-					// set update and where clause
-					update.set("policyNo", policyNo);
-					update.set("status", "P");
-					if(StringUtils.isNotBlank(endttypeId))
-						update.set("endtStatus","C");
-					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
-					// Cancellation Condition
-					if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
-						update.where(n1);
+	    		// Update Main Human
+	    		   List<CommonDataDetails> humanList =  commonRepo.findByQuoteNo(quoteNo);
+	    		   if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
+	    			   humanList.forEach( o -> {
+	    				   o.setPolicyNo(policyNo);
+	    				   o.setStatus("P");
+	    				   o.setEndtStatus("C");
+	    			   });
 					} else {
-						Predicate n2 = cb.notEqual(m.get("status"),"D" );
-						update.where(n1,n2);
+						humanList.forEach( o -> {
+						   if( ! "D".equalsIgnoreCase(o.getStatus()) ) {
+							   o.setPolicyNo(policyNo);
+			    			   o.setStatus("P");
+			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
+			    		   }
+		    			    
+		    		   });
 					}
-					// perform update
-					em.createQuery(update).executeUpdate();
-					
-	    		   }
-	    		   if(StringUtils.isNotBlank(endttypeId)){
-		    			 
-	   	    		    CriteriaBuilder cb = em.getCriteriaBuilder();
-	   					// create update
-	   					CriteriaUpdate<EserviceCommonDetails> update = cb.createCriteriaUpdate(EserviceCommonDetails.class);
-	   					// set the root class
-	   					Root<EserviceCommonDetails> m = update.from(EserviceCommonDetails.class);
-	   					update.set("policyNo", policyNo);
-	   					if(StringUtils.isNotBlank(endttypeId))
-	   						update.set("endtStatus","C");
-	   					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
-	   				// Cancellation Condition
-						if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
-							update.where(n1);
-						} else {
-							Predicate n2 = cb.equal(m.get("status"),"D" );
-							update.where(n1,n2);
-						}
-	   					
-	   					// perform update
-	   					em.createQuery(update).executeUpdate();
-	   					
-	   	    		   
-	    		   }
-	    		   // Common Data Details Update
-	    		   {
-		    		    CriteriaBuilder cb = em.getCriteriaBuilder();
-						// create update
-						CriteriaUpdate<CommonDataDetails> update = cb.createCriteriaUpdate(CommonDataDetails.class);
-						// set the root class
-						Root<CommonDataDetails> m = update.from(CommonDataDetails.class);
-						// set update and where clause
-						update.set("policyNo", policyNo);
-						update.set("status", "P");
-						
-						Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
-						// Cancellation Condition
-						if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
-							update.where(n1);
-						} else {
-							Predicate n2 = cb.notEqual(m.get("status"),"D" );
-							update.where(n1,n2);
-						}
-						
-						// perform update
-						em.createQuery(update).executeUpdate();
-						
-	    		   }
+	    		   commonRepo.saveAllAndFlush(humanList);
+	    		  
+	    		// Update Eservice Asset
+	    		   List<EserviceCommonDetails> updateHumanEserList = new ArrayList<EserviceCommonDetails>();
+	    		   List<EserviceCommonDetails> eserHumanList =  eserCommonRepo.findByQuoteNoOrderByRiskIdAsc(quoteNo);
+	    		   eserHumanList.forEach( o -> {
+		    			  
+	    			  List<CommonDataDetails> filterHuman = humanList.stream().filter( e -> e.getRiskId().equals(o.getRiskId())
+	    					  && e.getSectionId().equals(o.getSectionId()) ).collect(Collectors.toList());
+	    			  
+	    			  if( filterHuman.size()> 0 ) {
+	    				  EserviceCommonDetails updateEser = o; 
+	    				  dozerMapper.map(filterHuman.get(0) , updateEser);
+	    				  updateHumanEserList.add(updateEser);
+	    			   }
+		    		 
+		    		  });	    		   
+	    		   eserCommonRepo.saveAllAndFlush(updateHumanEserList);
 	    	   }
 	    	   
+	    	   // Policy Cover Data
+	    	   {
+	    		   CriteriaBuilder cb = em.getCriteriaBuilder();
+					// create update
+					CriteriaUpdate<PolicyCoverData> update = cb.createCriteriaUpdate(PolicyCoverData.class);
+					// set the root class
+					Root<PolicyCoverData> m = update.from(PolicyCoverData.class);
+					// set update and where clause
+					update.set("policyNo", policyNo);
+					
+					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
+					// Cancellation Condition
+					if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
+						update.where(n1);
+					} else {
+						Predicate n2 = cb.notEqual(m.get("status"),"D" );
+						update.where(n1,n2);
+					}
+					// perform update
+					em.createQuery(update).executeUpdate();
+	    	   }
 	    	   
-	    	   // Policy Cover Data 
-	    	   CriteriaBuilder cb = em.getCriteriaBuilder();
-				// create update
-				CriteriaUpdate<PolicyCoverData> update = cb.createCriteriaUpdate(PolicyCoverData.class);
-				// set the root class
-				Root<PolicyCoverData> m = update.from(PolicyCoverData.class);
-				// set update and where clause
-				update.set("policyNo", policyNo);
-				
-				Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
-				// Cancellation Condition
-				if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
-					update.where(n1);
-				} else {
-					Predicate n2 = cb.notEqual(m.get("status"),"D" );
-					update.where(n1,n2);
-				}
-				// perform update
-				em.createQuery(update).executeUpdate();
-	    	   
+	    	   // Policy Cover Data Induviduals
+	    	   {
+	    		   CriteriaBuilder cb = em.getCriteriaBuilder();
+					// create update
+					CriteriaUpdate<PolicyCoverDataIndividuals> update = cb.createCriteriaUpdate(PolicyCoverDataIndividuals.class);
+					// set the root class
+					Root<PolicyCoverDataIndividuals> m = update.from(PolicyCoverDataIndividuals.class);
+					// set update and where clause
+					update.set("policyNo", policyNo);
+					
+					Predicate n1 = cb.equal(m.get("quoteNo"),quoteNo );
+					// Cancellation Condition
+					if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
+						update.where(n1);
+					} else {
+						Predicate n2 = cb.notEqual(m.get("status"),"D" );
+						update.where(n1,n2);
+					}
+					// perform update
+					em.createQuery(update).executeUpdate();  
+	    	   }
+	    	    
 	        } catch (Exception e) {
 				e.printStackTrace();
 				log.info( "Exception is ---> " + e.getMessage());

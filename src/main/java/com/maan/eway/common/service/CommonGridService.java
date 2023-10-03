@@ -73,5 +73,4 @@ public interface CommonGridService {
 
 	List<GetExistingBrokerListRes> getCommonAdminReferalDropdown(ExistingBrokerUserListReq req, Date today,
 			String string);
-
 }

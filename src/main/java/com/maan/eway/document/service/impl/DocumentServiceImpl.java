@@ -436,7 +436,7 @@ public class DocumentServiceImpl implements DocumentService{
 			try {
 				List<ListItemValue> docTypeList = getListItem( homeData.getCompanyId() , homeData.getBranchCode() , "DOC_ID_TYPE");
 				
-				BuildingRiskDetails buildingRisk = buildingRiskRepo.findByQuoteNo(homeData.getQuoteNo());
+				List<BuildingRiskDetails> buildingRisk = buildingRiskRepo.findByQuoteNo(homeData.getQuoteNo());
 				List<BuildingDetails> buildingList = buildingRepo.findByQuoteNo(homeData.getQuoteNo()); 
 				List<SectionDataDetails>  sectionDatas =  secRepo.findByQuoteNoOrderByRiskIdAsc(homeData.getQuoteNo());
 				List<ProductEmployeeDetails> employeeList = employeeRepo.findByQuoteNo(homeData.getQuoteNo()); 
@@ -477,7 +477,7 @@ public class DocumentServiceImpl implements DocumentService{
 									if(contents.size() >  0 ) {
 										for ( ContentAndRisk c : contents) {
 											DocumentDropdownRes doc = new DocumentDropdownRes();
-											doc.setRiskId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
+											doc.setRiskId(buildingRisk.size() > 0 ? buildingRisk.get(0).getRiskId().toString() :  "1" );
 											doc.setId(c.getSerialNoDesc()==null ? "1" : c.getSerialNoDesc());
 											String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("A") ).collect(Collectors.toList()).get(0).getItemValue() ;					
 											doc.setIdType(idType);
@@ -486,8 +486,8 @@ public class DocumentServiceImpl implements DocumentService{
 										
 									}else {
 										DocumentDropdownRes doc = new DocumentDropdownRes();
-										doc.setRiskId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
-										doc.setId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
+										doc.setRiskId(buildingRisk.size() > 0 ? buildingRisk.get(0).getRiskId().toString() :  "1" );
+										doc.setId(buildingRisk.size() > 0 ? buildingRisk.get(0).getRiskId().toString() :  "1" );
 										String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("A") ).collect(Collectors.toList()).get(0).getItemValue() ;					
 										doc.setIdType(idType);
 										idList.add(doc);
@@ -530,8 +530,8 @@ public class DocumentServiceImpl implements DocumentService{
 						// Asset Documents
 						List<DocumentDropdownRes> idList  = new ArrayList<DocumentDropdownRes>();
 						DocumentDropdownRes doc = new DocumentDropdownRes();
-						doc.setRiskId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
-						doc.setId(buildingRisk.getRiskId()==null ? "1" : buildingRisk.getRiskId().toString());
+						doc.setRiskId(buildingRisk.size() > 0 ? buildingRisk.get(0).getRiskId().toString() :  "1" );
+						doc.setId(buildingRisk.size() > 0 ? buildingRisk.get(0).getRiskId().toString() :  "1" );
 						String idType = docTypeList.stream().filter( o -> o.getItemCode().equalsIgnoreCase("A") ).collect(Collectors.toList()).get(0).getItemValue() ;					
 						doc.setIdType(idType);
 						idList.add(doc); 
@@ -549,8 +549,8 @@ public class DocumentServiceImpl implements DocumentService{
 					// Location 
 					if (sectionList.size() > 0 ) {
 						LocationWiseSections loc = new LocationWiseSections();
-						loc.setLocationId(buildingRisk.getRiskId()==null ? "1" :  buildingRisk.getRiskId().toString());
-						loc.setLocationName(buildingRisk.getProductDesc());
+						loc.setLocationId(buildingRisk.size() > 0 ? buildingRisk.get(0).getRiskId().toString() :  "1" );
+						loc.setLocationName(buildingRisk.size() > 0 ? buildingRisk.get(0).getProductDesc():  "" );
 						loc.setSectionList(sectionList);
 						resList.add(loc);
 					}

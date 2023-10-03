@@ -33,7 +33,4 @@ public class EndorsementType {
 	private String sectionModificationYn;
 	@JsonProperty("SectionModificationType") 
 	private String sectionModificationType;
-	
-	@JsonProperty("isCoverEndt")
-	private String isCoverEndt;
 }

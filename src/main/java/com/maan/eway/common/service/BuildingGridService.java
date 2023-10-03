@@ -68,6 +68,4 @@ public interface BuildingGridService {
 	List<GetExistingBrokerListRes> getBuildingAdminReferalDropdown(ExistingBrokerUserListReq req, Date today,
 			String string);
 
-
-
 }

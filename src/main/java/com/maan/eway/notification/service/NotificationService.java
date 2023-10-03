@@ -557,17 +557,17 @@ public class NotificationService {
 				 quoteNo=StringUtils.isBlank(cusRefNo.get(0).getQuoteNo().toString())?cusRefNo.get(0).getRequestReferenceNo():cusRefNo.get(0).getQuoteNo().toString();
 				 productName= cusRefNo.get(0).getProductName();
 			}else if (product.getMotorYn().equalsIgnoreCase("A") ) {
-				List<EserviceBuildingDetails> cusRefNo = eserBuildRepo.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());
+				EserviceBuildingDetails cusRefNo = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionId(req.getRequestReferenceNo(),1 ,"0");
 				
-				 customerRefNo=cusRefNo.get(0).getCustomerReferenceNo();
-				 applicationId=cusRefNo.get(0).getApplicationId();
-				 loginId = cusRefNo.get(0).getLoginId();
-				 companyId=cusRefNo.get(0).getCompanyId();
-				 companyName=cusRefNo.get(0).getCompanyName();
-				 policyNo=cusRefNo.get(0).getPolicyNo();
-				 sectionName=cusRefNo.get(0).getSectionDesc();
-				 quoteNo=StringUtils.isBlank(cusRefNo.get(0).getQuoteNo().toString())?cusRefNo.get(0).getRequestReferenceNo():cusRefNo.get(0).getQuoteNo().toString();
-				 productName= cusRefNo.get(0).getProductDesc();
+				 customerRefNo=cusRefNo.getCustomerReferenceNo();
+				 applicationId=cusRefNo.getApplicationId();
+				 loginId = cusRefNo.getLoginId();
+				 companyId=cusRefNo.getCompanyId();
+				 companyName=cusRefNo.getCompanyName();
+				 policyNo=cusRefNo.getPolicyNo();
+				 sectionName=cusRefNo.getSectionDesc();
+				 quoteNo=StringUtils.isBlank(cusRefNo.getQuoteNo().toString())?cusRefNo.getRequestReferenceNo():cusRefNo.getQuoteNo().toString();
+				 productName= cusRefNo.getProductDesc();
 				 
 			}else if (product.getMotorYn().equalsIgnoreCase("H")  && req.getProductId().equalsIgnoreCase(travelProductId) ) {
 				List<EserviceTravelDetails> cusRefNo = eserTraRepo.findByRequestReferenceNoAndProductId(req.getRequestReferenceNo(), req.getProductId());

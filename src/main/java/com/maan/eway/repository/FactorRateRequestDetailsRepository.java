@@ -109,4 +109,20 @@ public interface FactorRateRequestDetailsRepository  extends JpaRepository<Facto
 			String companyId,Integer productId,String requestRefNo,Integer vehicleId,Integer sectionId,
 			List<Integer> coverId);
 
+	List<FactorRateRequestDetails> findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndProductIdAndVehicleIdAndSectionIdOrderByVehicleIdAsc(
+			String requestReferenceNo, int i, int j, Integer vehicleId, Integer valueOf, Integer valueOf2);
+
+	List<FactorRateRequestDetails> findByRequestReferenceNoAndSectionIdAndDiscLoadIdAndTaxIdAndStatusOrderByVehicleIdAsc(
+			String requestReferenceNo, Integer valueOf, int i, int j, String string);
+
+	List<FactorRateRequestDetails> findByRequestReferenceNoAndSectionIdAndDiscLoadIdAndTaxIdAndStatusNotOrderByVehicleIdAsc(
+			String requestReferenceNo, Integer valueOf, int i, int j, String string);
+
+
+	Long countByRequestReferenceNoAndSectionIdNotIn(String requestReferenceNo, List<Integer> optedSectionIds);
+
+	@Transactional
+	void deleteByRequestReferenceNoAndSectionIdNotIn(String requestReferenceNo, List<Integer> optedSectionIds);
+
+	
 }

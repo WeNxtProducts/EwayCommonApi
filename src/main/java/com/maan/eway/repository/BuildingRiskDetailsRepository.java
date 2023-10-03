@@ -35,7 +35,7 @@ import com.maan.eway.bean.EserviceBuildingDetails;
  
 public interface BuildingRiskDetailsRepository  extends JpaRepository<BuildingRiskDetails,BuildingRiskDetailsId > , JpaSpecificationExecutor<BuildingRiskDetails> {
 
-	BuildingRiskDetails findByQuoteNo(String quoteNo);
+//	BuildingRiskDetails findByQuoteNo(String quoteNo);
 
 	Long countByQuoteNo(String quoteNo);
 
@@ -50,6 +50,12 @@ public interface BuildingRiskDetailsRepository  extends JpaRepository<BuildingRi
 	@Transactional
 	void deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal,
 			String originalPolicyNo);
+
+	List<BuildingRiskDetails> findByQuoteNo(String quoteNo);
+
+	BuildingRiskDetails findByQuoteNoAndSectionId(String quoteNo, String string);
+
+	List<BuildingRiskDetails> findByQuoteNoAndSectionIdNotOrderByRiskIdAsc(String quoteno, String string);
 
 
 

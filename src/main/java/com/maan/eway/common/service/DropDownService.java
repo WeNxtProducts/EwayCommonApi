@@ -223,6 +223,4 @@ public interface DropDownService {
 	List<DropDownRes> lifePolicyTerms(LovDropDownReq req);
 
 
-
-
 }

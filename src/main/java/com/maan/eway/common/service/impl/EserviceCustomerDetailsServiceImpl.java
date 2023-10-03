@@ -222,12 +222,12 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				}
 				if (StringUtils.isNotBlank(req.getPinCode())) {
 					 if (! req.getPinCode().matches("[0-9]+") ) {
-							errorList.add(new Error("18", "PinCode", "Please Enter Valid Number In Po Box"));
-						}
-						if (req.getPinCode().length() > 20) {
-						errorList.add(new Error("18", "PinCode", "Please Enter Po Box within 20 Characters"));
-						}
-				}
+						 errorList.add(new Error("18", "PinCode", "Please Enter Valid Number In Po Box"));
+						 
+					 } else if (req.getPinCode().length() > 20) {
+							errorList.add(new Error("18", "PinCode", "Please Enter Po Box within 20 Characters"));
+					}
+				} 
 				/*if (StringUtils.isBlank(req.getStreet())) {
 					errorList.add(new Error("19", "Street", "Please Enter Street"));
 				}
@@ -402,51 +402,52 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				if (StringUtils.isNotBlank(req.getPolicyHolderType()) && req.getPolicyHolderType().equalsIgnoreCase("1")) {
 
 					if (req.getDobOrRegDate() != null) {
-						 if (req.getDobOrRegDate().after(today)) {
-								errorList.add(new Error("38", "DobOrRegDate", "Please Enter Dob as Past Date"));
+						if (req.getDobOrRegDate().after(today)) {
+							errorList.add(new Error("38", "DobOrRegDate", "Please Enter Dob as Past Date"));
 
-							} else {
-								LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
-										.toLocalDate();
-								LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+						} else {
+							LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
+									.toLocalDate();
+							LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-								Integer years = Period.between(localDate1, localDate2).getYears();
-								if (years > 100) {
-									errorList.add(new Error("38", "DobOrRegDate", "Dob Not Accepted More than 100 Years"));
+							Integer years = Period.between(localDate1, localDate2).getYears();
+							if (years > 100) {
+								errorList.add(new Error("38", "DobOrRegDate", "Dob Not Accepted More than 100 Years"));
 
-								} else if (years < 18) {
-									errorList.add(new Error("38", "DobOrRegDate", "Dob Not Accepted Less than 18 Years For Induvidual"));
+							} else if (years < 18) {
+								errorList.add(new Error("38", "DobOrRegDate", "Dob Not Accepted Less than 18 Years For Induvidual"));
 
-								}
-			
 							}
+		
+						}
 
 					} 
 				}
 
 				if (req.getPolicyHolderType().equalsIgnoreCase("2")) {
-					cal.setTime(today);
-					cal.add(Calendar.DAY_OF_MONTH, +1);
-					cal.set(Calendar.HOUR_OF_DAY, 23);
-					cal.set(Calendar.MINUTE, 50);
-					Date tomorrow = cal.getTime();
+					
 					if (req.getDobOrRegDate() != null) {
-						 if (req.getDobOrRegDate().after(tomorrow)) {
-								errorList.add(new Error("38", "DobOrRegDate", "Please Enter RegDate as Past Date"));
+						cal.setTime(today);
+						cal.add(Calendar.DAY_OF_MONTH, +1);
+						cal.set(Calendar.HOUR_OF_DAY, 23);
+						cal.set(Calendar.MINUTE, 50);
+						Date tomorrow = cal.getTime();
+						if (req.getDobOrRegDate().after(tomorrow)) {
+							errorList.add(new Error("38", "DobOrRegDate", "Please Enter RegDate as Past Date"));
 
-							} else if(req.getDobOrRegDate()!=null ) {
-								LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
-										.toLocalDate();
-								LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+						} else if(req.getDobOrRegDate()!=null ) {
+							LocalDate localDate1 = req.getDobOrRegDate().toInstant().atZone(ZoneId.systemDefault())
+									.toLocalDate();
+							LocalDate localDate2 = today.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-								Integer years = Period.between(localDate1, localDate2).getYears();
-								if (years > 100) {
-									errorList.add(new Error("38", "DobOrRegDate", "RegDate Not Accepted More than 100 Years"));
+							Integer years = Period.between(localDate1, localDate2).getYears();
+							if (years > 100) {
+								errorList.add(new Error("38", "DobOrRegDate", "RegDate Not Accepted More than 100 Years"));
 
-								}
 							}
+						}
 
-					} 
+					}
 					
 				}
 
@@ -500,7 +501,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					errorList.add(new Error("45", "RegionCode", "Please Enter RegionCode "));
 				}
 				if (StringUtils.isBlank(req.getMobileCode1())) {
-					errorList.add(new Error("46", "Country Code", "Please Select Country Code "));
+					errorList.add(new Error("46", "MobileCode", "Please Select MobileCode "));
 				}
 				
 //				if (StringUtils.isBlank(req.getWhatsappCode())) {
@@ -775,15 +776,14 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setOccupation(StringUtils.isBlank(req.getOccupation()) ? "2" : req.getOccupation());
 			saveData.setBrokerBranchCode(req.getBrokerBranchCode());
 			// Age Calculation
-			int age  = 0 ;
-			if(req.getDobOrRegDate()!=null ) {
-				Date dob = req.getDobOrRegDate();
+			int age = 0 ;
+			Date dob = null;
+			if (req.getDobOrRegDate() !=null) {
+				dob = req.getDobOrRegDate();
 				Date today = new Date();
 				age = today.getYear() - dob.getYear();
-				
-				
 			}
-			saveData.setAge(age);
+
 			// From List Item Value
 			String gender = getListItem (req.getCompanyId() , req.getBranchCode() ,"GENDER",req.getGender());// listRepo.findByItemTypeAndItemCode("GENDER", saveData.getGender());
 			String title = getListItem (req.getCompanyId() , req.getBranchCode() ,"NAME_TITLE",req.getTitle());//listRepo.findByItemTypeAndItemCode("NAME_TITLE", req.getTitle());
@@ -826,6 +826,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			saveData.setIdType(req.getPolicyHolderTypeid());
 			saveData.setIdTypeDesc(policyHolderTypeId);
 			saveData.setVrTinNo(req.getIdNumber());
+			saveData.setAge(age);
 			saveData.setMobileCode1(req.getMobileCode1());
 			//saveData.setStreet(req.getStreet());
 			saveData.setMobileCode2(req.getMobileCode2()==null?"":req.getMobileCode2());
@@ -880,7 +881,7 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				savePersonalInfo.setCompanyId(req.getCompanyId());
 				savePersonalInfo.setCreatedBy(req.getCreatedBy());
 				savePersonalInfo.setCustomerReferenceNo(req.getCustomerReferenceNo());
-				savePersonalInfo.setDobOrRegDate(req.getDobOrRegDate());
+				savePersonalInfo.setDobOrRegDate(dob);
 				savePersonalInfo.setEmail1(req.getEmail1());
 				savePersonalInfo.setEmail2(req.getEmail2());
 				savePersonalInfo.setEmail3(req.getEmail3());

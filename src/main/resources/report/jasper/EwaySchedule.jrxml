@@ -64,7 +64,7 @@
 	</style>
 	<subDataset name="LocationDetails" uuid="d156ef96-0b0e-41a5-8e37-d6bdf7bec6c6">
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter "/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
 		<parameter name="pvQuoteNo" class="java.lang.String"/>
 		<queryString language="SQL">
 			<![CDATA[SELECT LOCATION_NAME,BUILDING_ADDRESS,BUILDING_SUMINSURED FROM Building_Details WHERE Quote_no =$P{pvQuoteNo}]]>
@@ -109,7 +109,7 @@ HOME_POSITION_MASTER HPM,PERSONAL_INFO PIF,LOGIN_USER_INFO LUI,EWAY_INSURANCE_CO
 EWAY_LOGIN_BRANCH_MASTER LBM
 WHERE
 HPM.CUSTOMER_ID = PIF.CUSTOMER_ID AND
-HPM.BROKER_CODE=LUI.AGENCY_CODE AND
+HPM.AGENCY_CODE=LUI.AGENCY_CODE AND
 HPM.COMPANY_ID=LCM.COMPANY_ID AND
 HPM.LOGIN_ID=LBM.LOGIN_ID AND
 HPM.COMPANY_ID=LBM.COMPANY_ID AND
@@ -122,7 +122,7 @@ HPM.COMPANY_ID=LCM.COMPANY_ID AND
 LCM.STATUS='Y' AND
 CURDATE() BETWEEN LCM.EFFECTIVE_DATE_START AND LCM.EFFECTIVE_DATE_END
 ) AND
-HPM.QUOTE_NO= $P{pvQuoteNo}]]>
+HPM.QUOTE_NO=  $P{pvQuoteNo} ]]>
 	</queryString>
 	<field name="POLICY_NO" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="POLICY_NO"/>
@@ -204,7 +204,7 @@ HPM.QUOTE_NO= $P{pvQuoteNo}]]>
 		<property name="com.jaspersoft.studio.field.label" value="VAT_PERCENT"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
-	<field name="PREMIUM" class="java.lang.Long">
+	<field name="PREMIUM" class="java.lang.Double">
 		<property name="com.jaspersoft.studio.field.name" value="PREMIUM"/>
 		<property name="com.jaspersoft.studio.field.label" value="PREMIUM"/>
 	</field>
@@ -212,7 +212,7 @@ HPM.QUOTE_NO= $P{pvQuoteNo}]]>
 		<property name="com.jaspersoft.studio.field.name" value="VAT"/>
 		<property name="com.jaspersoft.studio.field.label" value="VAT"/>
 	</field>
-	<field name="TOTAL" class="java.lang.Long">
+	<field name="TOTAL" class="java.lang.Double">
 		<property name="com.jaspersoft.studio.field.name" value="TOTAL"/>
 		<property name="com.jaspersoft.studio.field.label" value="TOTAL"/>
 	</field>

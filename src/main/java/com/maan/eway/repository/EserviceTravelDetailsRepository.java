@@ -72,4 +72,6 @@ public interface EserviceTravelDetailsRepository  extends JpaRepository<Eservice
 
 	List<EserviceTravelDetails> findByPolicyNo(String prevPolicyNo);
 
+	EserviceTravelDetails findByQuoteNo(String quoteNo);
+
 }

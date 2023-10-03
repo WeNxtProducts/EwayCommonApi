@@ -139,4 +139,10 @@ public class BuildingSumInsuredDetails {
 	
 	@JsonProperty("MoneyMajorLoss")
     private String moneyMajorLoss;
+	
+	@JsonProperty("FirePlantSi")
+    private String firePlantSi  ;
+    @JsonProperty("FireEquipSi")
+    private String fireEquipSi  ;
+    
 }

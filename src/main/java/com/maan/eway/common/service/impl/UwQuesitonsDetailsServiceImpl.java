@@ -184,6 +184,7 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 			Integer vehId = Integer.valueOf(req.get(0).getVehicleId());
 			String companyId = req.get(0).getCompanyId();
 			String productId = req.get(0).getProductId();
+			String sectionId = req.get(0).getProductId();
 			
 			// Save Old Datas
 			List<UwQuestionsDetails> oldDatas = uwRepo.findByRequestReferenceNoAndVehicleId(refNo , vehId);
@@ -279,16 +280,20 @@ public class UwQuesitonsDetailsServiceImpl implements UwQuestionsDetailsService 
 						
 					}			
 			} else  {
-					EserviceBuildingDetails buildData = eserBuildRepo.findByRequestReferenceNoAndRiskId(refNo , 1 )	;
-					MsAssetDetails assetData = msAssetRepo.findByVdRefno(Long.valueOf(buildData.getVdRefNo()) );
-					if(assetData !=null) {
-						cdRefNo = buildData.getCdRefno() ;
-						vdRefNo = buildData.getVdRefNo();
-						msRefNo = buildData.getMsRefno();
-						
-						assetData.setUwLoading(totalUwLoading);
-						msAssetRepo.saveAndFlush(assetData);
+					List<EserviceBuildingDetails> buildings = eserBuildRepo.findByRequestReferenceNo(refNo )	;
+					for (EserviceBuildingDetails buildData : buildings) {
+						MsAssetDetails assetData = msAssetRepo.findByVdRefno(Long.valueOf(buildData.getVdRefNo()) );
+						if(assetData !=null) {
+							cdRefNo = buildData.getCdRefno() ;
+							vdRefNo = buildData.getVdRefNo();
+							msRefNo = buildData.getMsRefno();
+							
+							assetData.setUwLoading(totalUwLoading);
+							msAssetRepo.saveAndFlush(assetData);
+						}
 					}
+					
+					
 			}
 			
 			

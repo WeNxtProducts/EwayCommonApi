@@ -83,5 +83,6 @@ public class QuoteThreadReq {
 	private List<VehicleNeedToRemove> vehicleNeedberemove; 
 	
 	private String originalPolicyNo;
+
 	
 }

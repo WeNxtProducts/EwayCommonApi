@@ -73,6 +73,10 @@ private static final long serialVersionUID = 1L;
     @Id
     @Column(name="QUOTE_NO", length=20)
     private String     quoteNo ;
+    
+    @Id
+    @Column(name="SECTION_ID", length=100)
+    private String  sectionId;
 
      //--- ENTITY DATA FIELDS 
     @Column(name="PRODUCT_ID", length=20)
@@ -480,8 +484,7 @@ private static final long serialVersionUID = 1L;
       @Column(name="TRAP_DOORS")
       private Integer trapDoors;
       
-      @Column(name="SECTION_ID", length=100)
-      private String  sectionId;
+     
       
       
       @Column(name="REVENUE_FROM_STAMPS")
@@ -667,8 +670,30 @@ private static final long serialVersionUID = 1L;
       private BigDecimal     moneyMajorLossLc;
       
       
+      @Column(name="STOCK_LOSS_PERCENT")
+		private Integer stockLossPercent ;
+      
+      @Column(name="GOODS_LOSS_PERCENT")
+      private Integer goodsLossPercent;
+      
+      @Column(name="FURNITURE_LOSS_PERCENT")
+      private Integer furnitureLossPercent;
+      
+      @Column(name="APPLIANCE_LOSS_PERCENT")
+      private Integer applianceLossPercent;
+      
+      @Column(name="CASH_VALUEABLES_LOSS_PERCENT")
+      private Integer cashValueablesLossPercent;
+      
+      @Column(name="FIRE_PLANT_SI  ")
+      private BigDecimal firePlantSi  ;
+      
+
       @Column(name="CUSTOMER_NAME")
       private String     customerName ;
+      
+      @Column(name="FIRE_PLANT_SI_LC")
+      private BigDecimal firePlantSiLc;
 }
 
 

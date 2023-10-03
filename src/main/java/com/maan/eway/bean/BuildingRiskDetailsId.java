@@ -35,5 +35,5 @@ public class BuildingRiskDetailsId implements Serializable {
     
     private String     quoteNo ;
     
-     
+    private String  sectionId;
 }

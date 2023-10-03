@@ -45,6 +45,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.BuildingRiskDetails;
+import com.maan.eway.bean.CommonDataDetails;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.EndtTypeMaster;
 import com.maan.eway.bean.EserviceBuildingDetails;
@@ -73,6 +75,8 @@ import com.maan.eway.common.req.IndividualReferalReq;
 import com.maan.eway.common.req.NewQuoteReq;
 import com.maan.eway.common.req.QuoteThreadReq;
 import com.maan.eway.common.req.VehicleIdsReq;
+import com.maan.eway.common.req.VehicleNeedToAdd;
+import com.maan.eway.common.req.VehicleNeedToRemove;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.GetApproverListRes;
 import com.maan.eway.common.res.NewQuoteRes;
@@ -566,21 +570,6 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			// OTher Referals
 			{
 				List<FactorRateRequestDetails> userOptCovers = new ArrayList<FactorRateRequestDetails>();
-				
-//				//UPDATE
-//				CriteriaBuilder cb = em.getCriteriaBuilder();
-//				// create update
-//				CriteriaUpdate<FactorRateRequestDetails> update = cb.createCriteriaUpdate(FactorRateRequestDetails.class);
-//				// set the root class
-//				Root<FactorRateRequestDetails> m = update.from(FactorRateRequestDetails.class);
-//				// set update and where clause
-//				update.set("userOpt", "N");
-//				
-//				Predicate n3 = cb.equal(m.get("requestReferenceNo"), req.getRequestReferenceNo() );
-//				Predicate n4 = cb.equal(m.get("productId"),req.getProductId());
-//				update.where(n3,n4);
-//				// perform update
-//				em.createQuery(update).executeUpdate();
 			
 				// Covers Referrral Checking
 				List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoOrderByVehicleIdAsc(req.getRequestReferenceNo()); 
@@ -667,8 +656,8 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 					cover.setUserOpt(userOptCond);
 					
 				}
-				facRateRepo.saveAll(nonOptCovers);
-				
+				facRateRepo.saveAllAndFlush(nonOptCovers);
+				em.flush();
 			}	
 			
 			
@@ -729,7 +718,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 						for (EserviceBuildingDetails build : buildingDatas ) {
 							List<IndividualReferalReq> filterInduRef = induRefs.stream().filter( o -> o.getRiskId().equals(build.getRiskId()) &&   StringUtils.isNotBlank(o.getReferals())   ).collect(Collectors.toList()) ;
 							String induRefDesc  = filterInduRef.size()> 0 ?  filterInduRef.get(0).getReferals() : "" ;
-							String induRefDesc3  = StringUtils.isBlank(otherReferals) ? induRefDesc : otherReferals ;//+ ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"")  ;
+							String induRefDesc3  = StringUtils.isBlank(otherReferals) ? induRefDesc : otherReferals;// + ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"")  ;
 							referralRemarks = StringUtils.isBlank(referralRemarks) ? induRefDesc : referralRemarks;// + ( StringUtils.isNotBlank(induRefDesc) ?  "~" +induRefDesc :"") ;
 							
 							build.setReferalRemarks(induRefDesc3) ;
@@ -742,36 +731,99 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 							
 							branchCode = build.getBranchCode();
 							
-							// Suminsured 
-							overAllSuminsured = build.getAllRiskSumInsuredLC()==null ? overAllSuminsured : build.getAllRiskSumInsuredLC().add(overAllSuminsured) ;
-							overAllSuminsured = build.getApplianceSiLc()==null ? overAllSuminsured : build.getApplianceSiLc().add(overAllSuminsured) ;
-							overAllSuminsured = build.getBoilerPlantsSiLC()==null ? overAllSuminsured : build.getBoilerPlantsSiLC().add(overAllSuminsured) ;
-							overAllSuminsured = build.getBuildingSumInsuredLC()==null ? overAllSuminsured : build.getBuildingSumInsuredLC().add(overAllSuminsured) ;
-							overAllSuminsured = build.getCashValueablesSiLc()==null ? overAllSuminsured : build.getCashValueablesSiLc().add(overAllSuminsured) ;
-							overAllSuminsured = build.getContentSumInsuredLC()==null ? overAllSuminsured : build.getContentSumInsuredLC().add(overAllSuminsured) ;
-							overAllSuminsured = build.getElecEquipSumInsuredLC()==null ? overAllSuminsured : build.getElecEquipSumInsuredLC().add(overAllSuminsured) ;
-							overAllSuminsured = build.getElecMachinesSiLC()==null ? overAllSuminsured : build.getElecMachinesSiLC().add(overAllSuminsured) ;
-							overAllSuminsured = build.getEquipmentSiLC()==null ? overAllSuminsured : build.getEquipmentSiLC().add(overAllSuminsured) ;
-							overAllSuminsured = build.getFurnitureSiLc()==null ? overAllSuminsured : build.getFurnitureSiLc().add(overAllSuminsured) ;
-							overAllSuminsured = build.getGeneralMachineSiLC()==null ? overAllSuminsured : build.getGeneralMachineSiLC().add(overAllSuminsured) ;
-							overAllSuminsured = build.getGensetsSiLC()==null ? overAllSuminsured : build.getGensetsSiLC().add(overAllSuminsured) ;
-							overAllSuminsured = build.getGoodsSiLc()==null ? overAllSuminsured : build.getGoodsSiLc().add(overAllSuminsured) ;
-							overAllSuminsured = build.getGoodsSilcnglEcarrySumInsuredLC()==null ? overAllSuminsured : build.getGoodsSilcnglEcarrySumInsuredLC().add(overAllSuminsured) ;
-							overAllSuminsured = build.getGoodsTurnoverSumInsuredLC()==null ? overAllSuminsured : build.getGoodsTurnoverSumInsuredLC().add(overAllSuminsured) ;
-							overAllSuminsured = build.getMachineEquipSiLC()==null ? overAllSuminsured : build.getMachineEquipSiLC().add(overAllSuminsured) ;
-							overAllSuminsured = build.getManuUnitsSiLC()==null ? overAllSuminsured : build.getManuUnitsSiLC().add(overAllSuminsured) ;
-							overAllSuminsured = build.getMiningPlantSiLC()==null ? overAllSuminsured : build.getMiningPlantSiLC().add(overAllSuminsured) ;
-							overAllSuminsured = build.getNonMiningPlantSiLC()==null ? overAllSuminsured : build.getNonMiningPlantSiLC().add(overAllSuminsured) ;
-							overAllSuminsured = build.getPlateGlassSiLC()==null ? overAllSuminsured : build.getPlateGlassSiLC().add(overAllSuminsured) ;
-							overAllSuminsured = build.getPowerPlantSiLC()==null ? overAllSuminsured : build.getPowerPlantSiLC().add(overAllSuminsured) ;
-							overAllSuminsured = build.getStockInTradeSiLc()==null ? overAllSuminsured : build.getStockInTradeSiLc().add(overAllSuminsured) ;
-							overAllSuminsured = build.getMoneyAnnualEstimateLc()==null ? overAllSuminsured : build.getMoneyAnnualEstimateLc().add(overAllSuminsured) ;
-							overAllSuminsured = build.getMoneyCollectorLc()==null ? overAllSuminsured : build.getMoneyAnnualEstimateLc().add(overAllSuminsured) ;
-							overAllSuminsured = build.getMoneyDirectorResidenceLc()==null ? overAllSuminsured : build.getMoneyDirectorResidenceLc().add(overAllSuminsured) ;
-							overAllSuminsured = build.getMoneyOutofSafeLc()==null ? overAllSuminsured : build.getMoneyOutofSafeLc().add(overAllSuminsured) ;
-							overAllSuminsured = build.getMoneySafeLimitLc()==null ? overAllSuminsured : build.getMoneySafeLimitLc().add(overAllSuminsured) ;
+							// Building Suminsured 
+							if(build.getBuildingSumInsuredLC()!=null ) {
+								overAllSuminsured =  build.getBuildingSumInsuredLC().add(overAllSuminsured) ;
+							} 
 							
-							List<EserviceCommonDetails> commonDatas = eserCommonRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
+							// Content
+							if(build.getContentSumInsuredLC()!=null && overAllSuminsured.compareTo(new BigDecimal("0"))==0   ) 
+								overAllSuminsured =  build.getContentSumInsuredLC().add(overAllSuminsured) ;
+							
+							// All Risk , Plant All Risk , Business All Risk
+							if(build.getAllRiskSumInsuredLC()!=null && overAllSuminsured.compareTo(new BigDecimal("0"))==0  ) 
+								overAllSuminsured =  build.getAllRiskSumInsuredLC().add(overAllSuminsured) ;
+						    
+							if(build.getMiningPlantSiLC()!=null ) 
+								overAllSuminsured = build.getMiningPlantSiLC().add(overAllSuminsured)  ;
+								
+					    	if(build.getNonMiningPlantSiLC()!=null ) 
+					    		overAllSuminsured = build.getNonMiningPlantSiLC().add(overAllSuminsured)  ;
+					    	
+					    	if(build.getGensetsSiLC()!=null ) 
+					    		overAllSuminsured = build.getGensetsSiLC().add(overAllSuminsured)  ;
+					    	
+							// Burgalry
+					    	if( overAllSuminsured.compareTo(new BigDecimal("0"))==0   ) {
+					    		if(build.getStockInTradeSiLc()!=null ) 
+									overAllSuminsured = build.getStockInTradeSiLc().add(overAllSuminsured)  ;
+								if(build.getGoodsSiLc()!=null ) 
+									overAllSuminsured = build.getGoodsSiLc().add(overAllSuminsured)  ;
+								if(build.getFurnitureSiLc()!=null ) 
+									overAllSuminsured = build.getFurnitureSiLc().add(overAllSuminsured)  ;
+								if(build.getCashValueablesSiLc()!=null ) 
+									overAllSuminsured = build.getCashValueablesSiLc().add(overAllSuminsured)  ;
+								if(build.getApplianceSiLc()!=null ) 
+									overAllSuminsured = build.getApplianceSiLc().add(overAllSuminsured)  ;
+									
+					    	}
+							
+							// Fire And Material Damage
+					    	if( overAllSuminsured.compareTo(new BigDecimal("0"))==0   ) {
+					    		if(build.getEquipmentSiLC()!=null ) 
+									overAllSuminsured = build.getEquipmentSiLC().add(overAllSuminsured)  ;
+								if(build.getFirePlantSiLc()!=null ) 
+									overAllSuminsured = build.getFirePlantSiLc().add(overAllSuminsured)  ;
+								
+					    	}
+							
+					    	// Electronic Equipment
+					    	if( overAllSuminsured.compareTo(new BigDecimal("0"))==0   ) {
+					    		if(build.getElecEquipSumInsuredLC()!=null ) {
+									overAllSuminsured = build.getElecEquipSumInsuredLC().add(overAllSuminsured)  ;
+									
+								}
+					    	}
+							
+							
+							// Money
+					    	if( overAllSuminsured.compareTo(new BigDecimal("0"))==0   ) {
+					    		if(build.getMoneyAnnualEstimateLc()!=null ) 
+									overAllSuminsured = build.getMoneyAnnualEstimateLc().add(overAllSuminsured)  ;
+								if(build.getMoneyCollectorLc()!=null ) 
+									overAllSuminsured = build.getMoneyCollectorLc().add(overAllSuminsured)  ;
+								if(build.getMoneyDirectorResidenceLc()!=null ) 
+									overAllSuminsured = build.getMoneyDirectorResidenceLc().add(overAllSuminsured)  ;
+								if(build.getMoneyOutofSafeLc()!=null ) 
+									overAllSuminsured = build.getMoneyOutofSafeLc().add(overAllSuminsured)  ;
+								if(build.getMoneySafeLimitLc()!=null ) 
+									overAllSuminsured = build.getMoneySafeLimitLc().add(overAllSuminsured)  ;
+								if(build.getMoneyMajorLossLc()!=null ) 
+									overAllSuminsured = build.getMoneyMajorLossLc().add(overAllSuminsured)  ;
+								
+					    	}
+							
+							// Machinery
+					    	if( overAllSuminsured.compareTo(new BigDecimal("0"))==0   ) {
+					    		if(build.getElecMachinesSiLC()!=null ) 
+									overAllSuminsured = build.getElecMachinesSiLC().add(overAllSuminsured)  ;
+								if(build.getBoilerPlantsSiLC()!=null ) 
+									overAllSuminsured = build.getBoilerPlantsSiLC().add(overAllSuminsured)  ;
+								if(build.getGeneralMachineSiLC()!=null ) 
+									overAllSuminsured = build.getGeneralMachineSiLC().add(overAllSuminsured)  ;
+								if(build.getMachineEquipSiLC()!=null ) 
+									overAllSuminsured = build.getMachineEquipSiLC().add(overAllSuminsured)  ;
+								if(build.getManuUnitsSiLC()!=null ) 
+									overAllSuminsured = build.getManuUnitsSiLC().add(overAllSuminsured)  ;
+								if(build.getPowerPlantSiLC()!=null ) 
+									overAllSuminsured = build.getPowerPlantSiLC().add(overAllSuminsured)  ;
+									
+					    	}
+							
+							
+						}
+						List<EserviceCommonDetails> commonDatas = eserCommonRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
+						if( overAllSuminsured.compareTo(new BigDecimal("0"))==0   ) {
 							for (EserviceCommonDetails commonData : commonDatas ) {
 								if(! "D".equalsIgnoreCase(commonData.getStatus()) ) {
 									overAllSuminsured = commonData.getSumInsuredLc()==null ? overAllSuminsured : commonData.getSumInsuredLc().add(overAllSuminsured) ;
@@ -782,6 +834,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 								
 							}
 						}
+						
 						
 					} else  {
 						List<EserviceCommonDetails> commonDatas = eserCommonRepo.findByRequestReferenceNoOrderByRiskIdAsc(req.getRequestReferenceNo());
@@ -1062,13 +1115,15 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			List<Callable<Object>> queue = new ArrayList<Callable<Object>>();
 			
 			// Multiple Vehicle Thread Call
+			
 			List<Integer> vehicleIds = req.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
 	    	List<EserviceMotorDetails> activeMotorList =  eserMotRepo.findByRequestReferenceNoAndRiskIdInAndStatusNotOrderByRiskIdAsc(req.getRequestReferenceNo(),vehicleIds ,"D");
 	    	List<Integer> activeVehicleIds = activeMotorList.stream().map(EserviceMotorDetails :: getRiskId  ).collect(Collectors.toList());
 	    	
-			for (Integer vehId :  activeVehicleIds ) {
+	 
+			for (Integer veh :  activeVehicleIds ) {
 					threadCount = threadCount +  2 ;
-	            	List<String> sectionId = req.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());
+	            	List<String> sectionId = req.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(veh)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());
 	            	
 	            	QuoteThreadReq request2 = new QuoteThreadReq();
 	            	request2.setCustomerId(request.getCustomerId());
@@ -1078,7 +1133,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	            	request2.setVehicleIdsList(request.getVehicleIdsList());
 	            	request2.setEndtPrevQuoteNo(request.getEndtPrevQuoteNo());
 	            	request2.setCreatedBy(request.getCreatedBy());
-	            	request2.setVehicleId(vehId);
+	            	request2.setVehicleId(veh);
 	            	request2.setSectionId(sectionId.get(0));
 	            	request2.setPolicyStartDate(request.getPolicyStartDate());
 	            	request2.setPolicyEndDate(request.getPolicyEndDate());
@@ -1088,7 +1143,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 	            	request2.setEndtCount(request.getEndtCount());
 	            	request2.setEndtFields(request.getEndtFields());
 	            	request2.setMotorYn(request.getMotorYn());
-	            	  
+	            	
 	            	QuoteThreadCall motorSave = new QuoteThreadCall("MotorSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo  
 	            			, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
 	            		    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
@@ -1238,24 +1293,26 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			int threadCount = 1 ;
 			request.setGroupId(1);
 			request.setVehicleId(1);
-			
-			QuoteThreadCall buildingSave = new QuoteThreadCall("BuildingSave" , request , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo  
-					, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
-				    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
-            queue.add(buildingSave);
-			
-			
 			List<Integer> vehicleIds = req.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId  ).collect(Collectors.toList());
-			List<EserviceSectionDetails> sectionList = eserSecRepo.findByRequestReferenceNoAndStatusNot(request.getRequestReferenceNo(),"D");
+			vehicleIds.removeIf ( o -> o.equals(1)  );
+			vehicleIds.add(1);
+			vehicleIds = vehicleIds.stream().distinct().collect(Collectors.toList());
+			List<EserviceSectionDetails> sectionList = eserSecRepo.findByRequestReferenceNoOrderBySectionIdAsc(request.getRequestReferenceNo());
 			
 			
 			for (Integer vehId :  vehicleIds ) {
-	            	threadCount = threadCount +  1 ;
 	            	List<String> sectionId = req.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(vehId)).map(VehicleIdsReq :: getSectionId   ).collect(Collectors.toList());
+	            	if(vehId.equals(1) ) {
+	            		sectionId.add("0");
+	            	}
 	            	
 	            	for ( String sec : sectionId) {
+	            		
 	            		List<EserviceSectionDetails> activeSection = sectionList.stream().filter( o -> o.getSectionId().equals(sec)).collect(Collectors.toList());
-		    			if(activeSection.size() > 0 ) {
+		    			if("0".equalsIgnoreCase(sec) ||  activeSection.size() > 0 ) {
+		    				EserviceSectionDetails secData = activeSection.size() > 0 ? activeSection.get(0) : new EserviceSectionDetails();
+		    				
+		    				
 		    				QuoteThreadReq request2 = new QuoteThreadReq();
 			            	request2.setCustomerId(request.getCustomerId());
 			            	request2.setProductId(request.getProductId());
@@ -1274,11 +1331,33 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			            	request2.setEndtCount(request.getEndtCount());
 			            	request2.setEndtFields(request.getEndtFields());
 			            	request2.setMotorYn(request.getMotorYn());
-			            	 
-			            	QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
-			            			, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
-			            		    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
-							queue.add(coverSave);	
+			            	
+			            	if("0".equalsIgnoreCase(sec)  ) {
+		            			threadCount = threadCount +  1 ;
+			            	
+		            		} else {
+		            			QuoteThreadCall coverSave = new QuoteThreadCall("CoverSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo 
+				            			, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
+				            		    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
+								queue.add(coverSave);	
+		    				
+		            			threadCount = threadCount +  2 ;
+		            		}
+			            	
+			            	if((!"0".equalsIgnoreCase(sec)) && "H".equalsIgnoreCase(secData.getProductType()) ) {
+			            		QuoteThreadCall humanSave = new QuoteThreadCall("CommonDataSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo  
+				    					, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
+				    				    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
+				                queue.add(humanSave);
+				                
+				        	} else {
+		    					QuoteThreadCall buildingSave = new QuoteThreadCall("BuildingSave" , request2 , em , eserCustRepo ,eserMotRepo  ,facRateRepo  ,perInfoRepo  , motorRepo ,driverRepo ,coverRepo  
+				    					, homeRepo , eserRepo , eserGroupRepo ,traPassRepo ,traPassHisRepo ,travelProductId,eserBuildRepo,eserSecRepo,eserCommonRepo,commonDataRepo,secRepo,buildRepo , docRepo
+				    				    , locRepo , contentRepo , pacRepo , docUniqueRepo , docTranRepo,pacRepo );
+				                queue.add(buildingSave);
+				                
+				            }
+			            	
 		    			}
 	            	
 	            	}
@@ -1442,11 +1521,11 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
 			}
 			
 			// Quote No Generate
-		//	if(StringUtils.isNotBlank( quoteNo) && (subUserType.equalsIgnoreCase("b2c")) ) {
-			// 	customerId = "C-" + generateCustId();// idf.format(new Date()) + random ;
-	        //    quoteNo  = "Q"+ generateQuoteNo();// idf.format(new Date()) + random ;
+			if(StringUtils.isNotBlank( quoteNo) && (subUserType.equalsIgnoreCase("b2c")) ) {
+			 	customerId = "C-" + generateCustId();// idf.format(new Date()) + random ;
+	            quoteNo  = "Q"+ generateQuoteNo();// idf.format(new Date()) + random ;
 	      //  } else
-	       if (StringUtils.isBlank( quoteNo)  ) {
+			} else if (StringUtils.isBlank( quoteNo)  ) {
 	       // 	Random rand = new Random();
 	       //     int random=rand.nextInt(90)+10; 
 	        	customerId = "C-" + generateCustId();// idf.format(new Date()) + random ;

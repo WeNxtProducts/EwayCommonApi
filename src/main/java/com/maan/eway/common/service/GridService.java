@@ -109,6 +109,7 @@ public interface GridService {
 
 	List<GetExistingBrokerListRes> getBrokerUserList(ExistingBrokerUserListReq req);
 
+
 	List<GetExistingBrokerListRes> getPortfolioBrokerUserList(ExistingBrokerUserListReq req);
 
 	List<GetExistingBrokerListRes> getCancelPolicyIssuerDropdownList(ExistingBrokerUserListReq req);
@@ -132,7 +133,5 @@ public interface GridService {
 	List<GetExistingBrokerListRes> getAdminReferralRejectDropdown(ExistingBrokerUserListReq req);
 
 	List<GetExistingBrokerListRes> getAdminReferralReQuoteDropdown(ExistingBrokerUserListReq req);
-
-
 
 }

@@ -505,18 +505,20 @@ private static final long serialVersionUID = 1L;
    
    @Column(name="ACCCESSORIES_SUM_INSURED_LC")
    private BigDecimal     acccessoriesSumInsuredLc ;
-   
+
    @Column(name="CUSTOMER_CODE")
    private String     customerCode ;
    
    @Column(name="SOURCE_TYPE")
    private String     sourceType ;
 
+  
    @Column(name="BDM_CODE")
    private String     bdmCode ;
    
    @Column(name="CUSTOMER_NAME")
    private String     customerName ;
+   
    
    @Column(name="BRANCH_NAME")
    private String     branchName ;

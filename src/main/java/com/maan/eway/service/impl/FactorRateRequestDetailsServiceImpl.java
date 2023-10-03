@@ -256,6 +256,16 @@ this.repository = repo;
 		SuccessRes res = new SuccessRes();
 		String successRes = "" ;
 		try {
+			// Delete Unopted Sections 
+			List<EserviceSectionDetails> secList = eserSecRepo.findByRequestReferenceNoAndProductIdOrderBySectionIdAsc(req.getRequestReferenceNo(), req.getProductId());
+			List<Integer> optedSectionIds = new ArrayList<Integer>();
+			secList.forEach( o -> { 	optedSectionIds.add(Integer.valueOf(o.getSectionId()));	} ); 					
+					
+			Long notSecCount = 	repository.countByRequestReferenceNoAndSectionIdNotIn(req.getRequestReferenceNo(), optedSectionIds );	
+			if(notSecCount > 0) {
+				repository.deleteByRequestReferenceNoAndSectionIdNotIn(req.getRequestReferenceNo(), optedSectionIds );
+			}
+					
 			// Find Datas
 			req.setSectionId(StringUtils.isNotBlank(req.getSectionId())?req.getSectionId():"0");
 			Long factorCount = repository.countByRequestReferenceNoAndVehicleIdAndCompanyIdAndProductIdAndSectionId(req.getRequestReferenceNo(),Integer.valueOf(req.getVehicleId()), req.getInsuranceId() ,Integer.valueOf(req.getProductId()) ,Integer.valueOf(req.getSectionId()));
@@ -358,6 +368,7 @@ this.repository = repo;
 						saveCover.setActualRate(new BigDecimal(coverData.getRate()));
 					}else {
 						saveCover.setActualRate(coverData.getTiraRate()==null?BigDecimal.ZERO:new BigDecimal(coverData.getTiraRate()));
+						saveCover.setUserOpt( userOpt);
 					}
 						
 						
@@ -515,6 +526,7 @@ this.repository = repo;
 							saveSubCover.setActualRate(new BigDecimal(subCoverData.getRate()));
 						}else {
 							saveSubCover.setActualRate(new BigDecimal(subCoverData.getTiraRate()));
+							saveSubCover.setUserOpt( userOpt);
 						}
 						///Double b=subCoverData.getPremiumBeforeDiscountLC()==null ? 0D : Double.valueOf(df.format(subCoverData.getPremiumBeforeDiscountLC()));
 					//	saveSubCover.setSumInsured(subCoverData.getSumInsured()==null?BigDecimal.ZERO :subCoverData.getSumInsured());
@@ -642,7 +654,7 @@ this.repository = repo;
 			} else if( product.getMotorYn().equalsIgnoreCase("A") ) {
 				
 				// Update Group Premium
-				EserviceBuildingDetails findData = eserBuildRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo() ,1 ); 
+				EserviceBuildingDetails findData = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionId(req.getRequestReferenceNo() ,1 , req.getSectionId()); 
 				findData.setActualPremiumLc(premiumLc ==null ? null :new BigDecimal(df.format(premiumLc )));
 				findData.setActualPremiumFc(premiumFc ==null ? null :new BigDecimal(df.format(premiumFc )));
 				findData.setOverallPremiumLc(overAllPremiumLc ==null ? null :new BigDecimal(df.format(overAllPremiumLc)));
@@ -653,7 +665,7 @@ this.repository = repo;
 			} else {
 				
 				// Update Group Premium
-				EserviceCommonDetails findData =eserCommonRepo.findByRequestReferenceNoAndRiskId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()) ); 
+				EserviceCommonDetails findData =eserCommonRepo.findByRequestReferenceNoAndRiskIdAndSectionId(req.getRequestReferenceNo() ,Integer.valueOf(req.getVehicleId()) , req.getSectionId()); 
 				if(findData !=null) {
 					findData.setActualPremiumLc(premiumLc ==null ? null :new BigDecimal(df.format(premiumLc )));
 					findData.setActualPremiumFc(premiumFc ==null ? null :new BigDecimal(df.format(premiumFc )));
@@ -1510,7 +1522,7 @@ this.repository = repo;
 					}
 					
 				} else {
-						EserviceBuildingDetails buildData = buildDatas.stream().filter( o -> o.getRiskId().equals(sec.getRiskId())  ).collect(Collectors.toList()).get(0);
+						EserviceBuildingDetails buildData = buildDatas.stream().filter( o -> o.getRiskId().equals(1) && o.getSectionId().equalsIgnoreCase(sec.getSectionId())).collect(Collectors.toList()).get(0);
 						
 						// Response 
 						EservieMotorDetailsViewRes res = new EservieMotorDetailsViewRes();
@@ -2132,8 +2144,7 @@ this.repository = repo;
 				findTra.setVatCommission(StringUtils.isNotBlank(req.getVatCommissison() ) ? new BigDecimal(req.getVatCommissison()) :  findTra.getVatCommission() );
 				eserTraRepo.save(findTra);
 			} else if(    productType.equalsIgnoreCase("A") ) {
-				EserviceBuildingDetails    findBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndCompanyIdAndProductId(req.getRequestReferenceNo() , 1 ,
-						req.getCompanyId() , 	 req.getProductId()  ) ;
+				EserviceBuildingDetails    findBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionId(req.getRequestReferenceNo() , 1 , req.getSectionId());
 				agencyCode = findBuild.getBrokerCode();
 				branchCode = findBuild.getBranchCode();
 				currencyId = findBuild.getCurrency();

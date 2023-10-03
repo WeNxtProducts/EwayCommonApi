@@ -6,9 +6,7 @@ import lombok.Data;
 
 @Data
 public class GetExistingBrokerListRes {
-	
 
-	
 	@JsonProperty("Code")
 	private String code;
 	@JsonProperty("CodeDesc")

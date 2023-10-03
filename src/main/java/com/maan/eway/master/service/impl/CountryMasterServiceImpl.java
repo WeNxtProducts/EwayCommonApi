@@ -138,15 +138,15 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 				if (list.size() > 0) {
 					Date beforeOneDay = new Date(new Date().getTime() - MILLIS_IN_A_DAY);
 					
-					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) { //if old start date is past
+					if ( list.get(0).getEffectiveDateStart().before(beforeOneDay)  ) {
 						amendId = list.get(0).getAmendId() + 1 ;
 						entryDate = new Date() ;
 						createdBy = req.getCreatedBy();
 						CountryMaster lastRecord = list.get(0);
-							lastRecord.setEffectiveDateEnd(oldEndDate); //change
+							lastRecord.setEffectiveDateEnd(oldEndDate);
 							repo.saveAndFlush(lastRecord);
 						
-					} else { //future
+					} else {
 						amendId = list.get(0).getAmendId() ;
 						entryDate = list.get(0).getEntryDate() ;
 						createdBy = list.get(0).getCreatedBy();
@@ -835,7 +835,8 @@ public class CountryMasterServiceImpl implements CountryMasterService {
 			// Get Result
 			TypedQuery<CountryMaster> result = em.createQuery(query);
 			list = result.getResultList();
-
+			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getCountryName().trim() ))).collect(Collectors.toList());
+			
 			for (CountryMaster data : list) {
 				// Response
 				DropDownRes res = new DropDownRes();

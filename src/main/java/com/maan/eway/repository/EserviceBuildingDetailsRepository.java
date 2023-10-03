@@ -38,18 +38,18 @@ public interface EserviceBuildingDetailsRepository  extends JpaRepository<Eservi
 	EserviceBuildingDetails findByRequestReferenceNoAndQuoteNoAndProductIdAndCompanyId(String requestReferenceNo,
 			String quoteNo, String productId, String companyId);
 
-	EserviceBuildingDetails findByRequestReferenceNoAndRiskId(String requestReferenceNo, Integer vehicleId);
+//	EserviceBuildingDetails findByRequestReferenceNoAndRiskId(String requestReferenceNo, Integer vehicleId);
 
 	Long countByRequestReferenceNo(String requestReferenceNo);
 
 	List<EserviceBuildingDetails> findByQuoteNoOrderByRiskIdAsc(String quoteNo);
 
-	EserviceBuildingDetails findByQuoteNo(String quoteNo);
+	//EserviceBuildingDetails findByQuoteNo(String quoteNo);
 
 	List<EserviceBuildingDetails> findByRequestReferenceNoAndProductId(String requestReferenceNo, String productId);
 
-	EserviceBuildingDetails findByRequestReferenceNoAndRiskIdAndCompanyIdAndProductId(String requestReferenceNo,
-			Integer vehicleId, String companyId, String productId);
+//	EserviceBuildingDetails findByRequestReferenceNoAndRiskIdAndCompanyIdAndProductId(String requestReferenceNo,
+//			Integer vehicleId, String companyId, String productId);
 	
 	Integer countByOriginalPolicyNoAndRiskId(String policyNo, int i);
 	List<EserviceBuildingDetails> findByOriginalPolicyNoAndRiskId(String policyNo, int i);
@@ -58,5 +58,10 @@ public interface EserviceBuildingDetailsRepository  extends JpaRepository<Eservi
 	List<EserviceBuildingDetails> findByCustomerId(String customerId);
 	List<EserviceBuildingDetails> findByRequestReferenceNo(String requestReferenceNo);
 	List<EserviceBuildingDetails> findByPolicyNo(String prevPolicyNo);
+	
+	EserviceBuildingDetails findByRequestReferenceNoAndRiskIdAndSectionId(String requestReferenceNo, int i,
+			String sectionId);
+	List<EserviceBuildingDetails> findByOriginalPolicyNoAndRiskIdAndSectionId(String policyNo, int i, String string);
+	Integer countByOriginalPolicyNoAndRiskIdAndSectionId(String policyNo, int i, String string);
 
 }

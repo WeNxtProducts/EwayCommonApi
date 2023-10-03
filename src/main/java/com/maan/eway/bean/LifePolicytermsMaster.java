@@ -65,7 +65,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="POLICY_TERMS", nullable=false)
     private Integer    policyTerms ;
 
-
+    @Id
     @Column(name="STATUS", nullable=false, length=6)
     private String     status ;
 
@@ -113,12 +113,6 @@ private static final long serialVersionUID = 1L;
 
     @Column(name="REMARKS", length=300)
     private String     remarks ;
-    
-    @Column(name="REGULATORY_CODE")
-    private String     regulatoryCode ;
-    
-    @Column(name="CORE_APP_CODE")
-    private String     coreAppCode ;
 
 
     //--- ENTITY LINKS ( RELATIONSHIP )

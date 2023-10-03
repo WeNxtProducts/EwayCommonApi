@@ -26,6 +26,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -39,8 +40,9 @@ import org.dozer.DozerBeanMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.BuildingDetails;
 import com.maan.eway.bean.BuildingRiskDetails;
 import com.maan.eway.bean.CommonDataDetails;
@@ -60,9 +62,10 @@ import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginBranchMaster;
 import com.maan.eway.bean.LoginMaster;
-import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
+import com.maan.eway.bean.MsAssetDetails;
+import com.maan.eway.bean.MsVehicleDetails;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.ProductEmployeeDetails;
@@ -75,6 +78,7 @@ import com.maan.eway.common.req.CoverIdsReq;
 import com.maan.eway.common.req.FrameOldDocSaveReq;
 import com.maan.eway.common.req.QuoteThreadReq;
 import com.maan.eway.common.req.VehicleIdsReq;
+import com.maan.eway.common.req.VehicleNeedToAdd;
 import com.maan.eway.common.req.VehicleNeedToRemove;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.common.res.QuoteThreadRes;
@@ -262,18 +266,17 @@ public class QuoteThreadCall implements Callable<Object>  {
 		
 			// Cover Calc
 			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndVehicleIdAndProductIdAndSectionIdAndStatusOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0,request.getVehicleId() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()),"Y");
-			List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
+		//	List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
 			
 			// Insert Other Covers
 			List<VehicleIdsReq> VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getVehicleId())).collect(Collectors.toList());
 			List<CoverIdsReq> coverReqList = VehicleList.get(0).getCoverIdList();
 			
 			List<FactorRateRequestDetails>  premiumCovers = new  ArrayList<FactorRateRequestDetails>();
-			premiumCovers.addAll(defaultCovers);
 			
 			for ( CoverIdsReq covReq :  coverReqList) {
 				 
-				List<FactorRateRequestDetails> filterNonDefaultCovers = covers.stream().filter( o -> (! o.getIsSelected().equalsIgnoreCase("D")) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());				
+				List<FactorRateRequestDetails> filterNonDefaultCovers = covers.stream().filter( o ->  o.getVehicleId().equals(request.getVehicleId()) && o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());				
 				
 				if(filterNonDefaultCovers != null && filterNonDefaultCovers.size()>0 ) {
 					if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
@@ -281,7 +284,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 						premiumCovers.addAll(filterNonDefaultCovers);
 						
 					}else {
-						List<FactorRateRequestDetails> filterNonDefaultSubCovers = filterNonDefaultCovers.stream().filter( o ->   (! o.getIsSelected().equalsIgnoreCase("D")) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))&& o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
+						List<FactorRateRequestDetails> filterNonDefaultSubCovers = filterNonDefaultCovers.stream().filter( o -> o.getVehicleId().equals(request.getVehicleId()) &&   o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))&& o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
 						premiumCovers.addAll(filterNonDefaultSubCovers);
 					}
 				}
@@ -298,7 +301,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			
 			// Find Motor
-			EserviceCommonDetails  eserCommonData = eserCommonRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() ,request.getVehicleId());
+			EserviceCommonDetails  eserCommonData = eserCommonRepo.findByRequestReferenceNoAndRiskIdAndSectionId(request.getRequestReferenceNo() ,request.getVehicleId() ,request.getSectionId());
 			String decimalDigits = currencyDecimalFormat(eserCommonData.getCompanyId() , eserCommonData.getCurrency() ).toString();
 			String stringFormat = "%0"+decimalDigits+"d" ;
 			String decimalLength = decimalDigits.equals("0") ?"" : String.format(stringFormat ,0L)  ;
@@ -312,10 +315,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			eserCommonData.setOverallPremiumLc(new BigDecimal(df.format(overAllPremiumLc)));
 			eserCommonData.setQuoteNo(request.getQuoteNo());
 			eserCommonData.setCustomerId(request.getCustomerId());
-			
-			
-			
-			
+		
 			// Save Details
 			CommonDataDetails commonData= new CommonDataDetails();
 			//MotorDataDetails motorData  = new MotorDataDetails();
@@ -327,7 +327,6 @@ public class QuoteThreadCall implements Callable<Object>  {
 			commonData.setRiskId(eserCommonData.getRiskId());
 			commonData.setStatus(eserCommonData.getStatus());
 			commonData.setSectionDesc(eserCommonData.getSectionName());		
-			List<FactorRateRequestDetails>  filterCover = covers.stream().filter( o -> o.getVehicleId().equals( eserCommonData.getRiskId())).collect(Collectors.toList());
 		//	commonData.setVdRefno(filterCover.get(0).getVdRefno());	
 		//	commonData.setMsRefno(filterCover.get(0).getMsRefno());		
 		//	commonData.setCdRefno(filterCover.get(0).getCdRefno());	
@@ -444,8 +443,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 				customerRefNo = motorData.getCustomerReferenceNo();
 				
 			} else if(request.getMotorYn().equalsIgnoreCase("A")) {
-				EserviceBuildingDetails buldingData = eserBuildRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo(),1 );
+				EserviceBuildingDetails buldingData = eserBuildRepo.findByRequestReferenceNo(request.getRequestReferenceNo() ).get(0);
 				customerRefNo = buldingData.getCustomerReferenceNo();
+				
 			}else {
 				EserviceCommonDetails commonData = eserCommonRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo(),request.getVehicleIdsList().get(0).getVehicleId());
 				customerRefNo = commonData.getCustomerReferenceNo();
@@ -488,18 +488,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 			}
 			// Cover Calc
 			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndVehicleIdAndProductIdAndSectionIdAndStatusOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0,request.getVehicleId() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()),"Y");
-			List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
-			
 			// Insert Other Covers
 			List<VehicleIdsReq> VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getVehicleId())).collect(Collectors.toList());
 			List<CoverIdsReq> coverReqList = VehicleList.get(0).getCoverIdList();
 			
 			List<FactorRateRequestDetails>  premiumCovers = new  ArrayList<FactorRateRequestDetails>();
-			premiumCovers.addAll(defaultCovers);
-			
 			for ( CoverIdsReq covReq :  coverReqList) {
 				 
-				List<FactorRateRequestDetails> filterNonDefaultCovers = covers.stream().filter( o -> (! o.getIsSelected().equalsIgnoreCase("D")) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());				
+				List<FactorRateRequestDetails> filterNonDefaultCovers = covers.stream().filter( o ->   o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());				
 				
 				if(filterNonDefaultCovers != null && filterNonDefaultCovers.size()>0 ) {
 					if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
@@ -507,7 +503,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 						premiumCovers.addAll(filterNonDefaultCovers);
 						
 					}else {
-						List<FactorRateRequestDetails> filterNonDefaultSubCovers = filterNonDefaultCovers.stream().filter( o ->   (! o.getIsSelected().equalsIgnoreCase("D")) &&  o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))&& o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
+						List<FactorRateRequestDetails> filterNonDefaultSubCovers = filterNonDefaultCovers.stream().filter( o ->    o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))&& o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
 						premiumCovers.addAll(filterNonDefaultSubCovers);
 					}
 				}
@@ -553,25 +549,50 @@ public class QuoteThreadCall implements Callable<Object>  {
 			motorData.setCustomerId(request.getCustomerId());
 			motorData.setVehicleId(eserMotors.getRiskId().toString());
 			motorData.setStatus(eserMotors.getStatus());
-			List<FactorRateRequestDetails>  filterCover = covers.stream().filter( o -> o.getVehicleId().equals( eserMotors.getRiskId())).collect(Collectors.toList());
-			motorData.setVdRefno(filterCover.get(0).getVdRefno());	
-			motorData.setMsRefno(filterCover.get(0).getMsRefno());		
-			motorData.setCdRefno(filterCover.get(0).getCdRefno());	
 			motorData.setActualPremiumFc(premiumFc);
 			motorData.setActualPremiumLc(premiumLc);
 			motorData.setOverallPremiumFc(overAllPremiumFc);
 			motorData.setOverallPremiumLc(overAllPremiumLc);
 			motorData.setVatPremium(new BigDecimal(taxPremium));
+			motorData.setCdRefno(eserMotors.getCdRefno()==null?null : eserMotors.getCdRefno().toString());
+			motorData.setVdRefno(eserMotors.getVdRefNo()==null?null : eserMotors.getVdRefNo().toString());
+			motorData.setMsRefno(eserMotors.getMsRefno()==null?null : eserMotors.getMsRefno().toString());
 			
+			// Map
+			ObjectMapper m = new ObjectMapper();
+			Map<String,String> motorKeyValue = m.convertValue(motorData , Map.class);
+			
+		    for (FactorRateRequestDetails cov : covers) {
+		    	List<FactorRateRequestDetails>  filterCovers = premiumCovers.stream().filter( o -> "N".equalsIgnoreCase(o.getDependentCoverYn()) && o.getVehicleId().equals(cov.getVehicleId()) &&  o.getSectionId().equals(Integer.valueOf(cov.getSectionId())) 
+		    			&&  o.getCoverId().equals(cov.getCoverId()) &&  o.getSubCoverId().equals(cov.getSubCoverId()) ).collect(Collectors.toList());
+		    	
+	    		Object motorKey =  motorKeyValue.get(cov.getCoverBasedOn());
+	    		if(motorKey!=null && filterCovers.size() > 0 ) {
+			    		motorKeyValue.put(cov.getCoverBasedOn(),  cov.getSumInsured()==null ?  null : cov.getSumInsured().toPlainString());	
+			    		
+		    	}	else if (motorKey!=null && "N".equalsIgnoreCase(cov.getDependentCoverYn())   ) {
+		    		motorKeyValue.put(cov.getCoverBasedOn(), null );
+		    	}
+		    	
+		    }
+		    
+		    MotorDataDetails refinedMotor = m.convertValue(motorKeyValue, MotorDataDetails.class);
+		    BigDecimal exchangeRate = refinedMotor.getExchangeRate()!=null ? new BigDecimal(refinedMotor.getExchangeRate()) : BigDecimal.ZERO ;
+		    refinedMotor.setSumInsuredLc(refinedMotor.getSumInsured()==null ? null : new BigDecimal(refinedMotor.getSumInsured()).multiply(exchangeRate) );
+		    refinedMotor.setAcccessoriesSumInsuredLc(refinedMotor.getAcccessoriesSumInsured()==null ? null : new BigDecimal(refinedMotor.getAcccessoriesSumInsured()).multiply(exchangeRate) );
+		    refinedMotor.setWindScreenSumInsuredLc(refinedMotor.getWindScreenSumInsured()==null ? null : new BigDecimal(refinedMotor.getWindScreenSumInsured()).multiply(exchangeRate) );
+		    refinedMotor.setTppdIncreaeLimitLc(refinedMotor.getTppdIncreaeLimit()==null ? null : new BigDecimal(refinedMotor.getTppdIncreaeLimit()).multiply(exchangeRate) );
+		    refinedMotor.setTppdFreeLimitLc(refinedMotor.getTppdFreeLimit()==null ? null : new BigDecimal(refinedMotor.getTppdFreeLimit()).multiply(exchangeRate) );
+		    
 			//Vehiclewise EndtPRemium
 			if(eserMotors.getEndorsementType()!=null) {
 				String prevQuoteNo=eserMotors.getEndtPrevQuoteNo();
 				List<PolicyCoverData>  Endtcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(request.getQuoteNo() ,0, 0);
 				BigDecimal endtPremium = updateEndtPremium(request.getQuoteNo(),eserMotors.getEndorsementEffdate(),prevQuoteNo, eserMotors.getRiskId(),Endtcovers);				
 				eserMotors.setEndtPremium(endtPremium.doubleValue());
-				motorData.setEndtPremium(endtPremium.doubleValue());
+				refinedMotor.setEndtPremium(endtPremium.doubleValue());
 				Double endtVatPremium = premiumCovers.stream().filter( o -> !o.getDiscLoadId().equals(0) && o.getCoverageType().equals("T") ).mapToDouble( o ->   o.getTaxAmount().doubleValue()  ).sum();
-				motorData.setEndVatPremium(new BigDecimal(endtVatPremium));
+				refinedMotor.setEndVatPremium(new BigDecimal(endtVatPremium));
 				
 				List<ContentAndRisk> con = contentRepo.findByQuoteNo(request.getQuoteNo());
 				if(con.size() <= 0 ) {
@@ -592,9 +613,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 					
 				}
 				
-			}   
+			} 
 			eserMotRepo.saveAndFlush(eserMotors);			
-			motorRepo.saveAndFlush(motorData);
+			motorRepo.saveAndFlush(refinedMotor);
+			   
 			log.error("Save Motor Info is ---> " + json.toJson(motorData));
 			
 			res.put("Response", "Success") ;
@@ -727,6 +749,35 @@ public class QuoteThreadCall implements Callable<Object>  {
 		return list ;
 	}
 	
+	public synchronized LoginMaster getLoginDetails(String loginId ) {
+		LoginMaster login = new LoginMaster();
+		try {
+			
+			// Criteria
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<LoginMaster> query=  cb.createQuery(LoginMaster.class);
+			// Find All
+			Root<LoginMaster> c = query.from(LoginMaster.class);
+			
+			//Select
+			query.select(c);
+						
+			// Where
+			Predicate n1 = cb.equal(c.get("status"),"Y");
+			Predicate n2 = cb.equal(c.get("loginId"),loginId);
+			query.where(n1,n2);
+			// Get Result
+			TypedQuery<LoginMaster> result = em.createQuery(query);
+			List<LoginMaster> list = result.getResultList();
+			login = list.size() > 0 ? list.get(0) : null ;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Exception is ---> " + e.getMessage());
+			return null;
+		}
+		return login ;
+	}
 	
 	public synchronized LoginBranchMaster getBranchDetails(String companyId ,String brokerBranchCode , String loginId ) {
 		LoginBranchMaster brokerBranch = new LoginBranchMaster();
@@ -879,50 +930,6 @@ public class QuoteThreadCall implements Callable<Object>  {
 		return res;
 	}
 	
-//	private synchronized  Map<String,Object>  copyQuoteDocumentDetails(QuoteThreadReq  request , String oldQuoteNo , String newQuoteNo ) {
-//		Map<String,Object> res= new HashMap<String,Object>() ;
-//	 DozerBeanMapper dozerMapper = new DozerBeanMapper();
-//		try {
-//			
-//			{
-//				List<Integer> ids = new ArrayList<Integer>();
-//				ids.add( request.getVehicleId());
-//				
-//				Long docInfo = docRepo.countByQuoteNoAndProductIdAndSectionId(request.getQuoteNo() , Integer.valueOf(request.getProductId()) , Integer.valueOf(request.getSectionId())  );
-//				if( docInfo <= 0  ) {
-//					// Other Doc
-//					List<DocumentTransactionDetails>   oldDocDetails = docRepo.findByQuoteNoAndProductIdAndSectionId( oldQuoteNo , request.getVehicleId() ,
-//							Integer.valueOf(request.getProductId()) , Integer.valueOf(request.getSectionId())   ) ; 
-//					List<DocumentTransactionDetails> saveDocList = new ArrayList<DocumentTransactionDetails>(); 
-//					if( oldDocDetails.size() > 0  ) {
-//					
-//						for ( DocumentTransactionDetails doc : oldDocDetails ) {
-//							DocumentTransactionDetails saveDoc = new DocumentTransactionDetails(); 		
-//							dozerMapper.map(doc , saveDoc);
-//							saveDoc.setQuoteNo(request.getQuoteNo() );
-//							saveDoc.setRequestReferenceNo(request.getRequestReferenceNo());
-//							saveDocList.add(saveDoc) ;
-//						}
-//						docRepo.saveAllAndFlush(saveDocList);
-//					}
-//				}
-//				
-//			
-//			}
-//			
-//			res.put("Response", "Success") ;
-//			res.put("Errors", null) ;
-//			
-//			
-//		}catch (Exception e) {
-//			e.printStackTrace();
-//			log.error("Exception is ---> " + e.getMessage());
-//			res.put("Response", "Failed") ;
-//			res.put("Errors", "Failed To Copy Vehicle Id : " + request.getVehicleId() + " Document Details" ) ;
-//		}
-//	
-//		return res;
-//	}
 	
 	private synchronized  Map<String,Object>  copyQuoteLocationDetails(QuoteThreadReq  request , String oldQuoteNo , String newQuoteNo ) {
 		Map<String,Object> res= new HashMap<String,Object>() ;
@@ -1020,20 +1027,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 	 DozerBeanMapper dozerMapper = new DozerBeanMapper();
 		try {
-	//		String SectionId = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getVehicleId() ) ).collect(Collectors.toList()).get(0).getSectionId();
-			
-			// Cover Calc
-		//	List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndVehicleIdAndProductIdAndSectionIdNotOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0,request.getGroupId() ,Integer.valueOf(request.getProductId()) ,35);
-			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndStatusOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0 ,"Y");
-			
-		//	List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
-			
-			// Insert Other Covers
-		//	List<VehicleIdsReq> VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getVehicleId())).collect(Collectors.toList());
-		//	List<CoverIdsReq> coverReqList = VehicleList.size() > 0 ? VehicleList.get(0).getCoverIdList() : request.getVehicleIdsList().get(0).getCoverIdList() ; 		
-			
+			List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndSectionIdAndDiscLoadIdAndTaxIdAndStatusNotOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getSectionId()) ,0,0 ,"D");
 			List<FactorRateRequestDetails>  premiumCovers = new  ArrayList<FactorRateRequestDetails>();
-			//premiumCovers.addAll(defaultCovers);
 			
 			for (VehicleIdsReq veh :  request.getVehicleIdsList() ) {
 				List<CoverIdsReq> coverReqList = veh.getCoverIdList().size() > 0 ? veh.getCoverIdList() : new ArrayList<CoverIdsReq>();
@@ -1065,21 +1060,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			
 			// Find Building
-			EserviceBuildingDetails eserBuild = eserBuildRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() ,1);
-			String decimalDigits = currencyDecimalFormat(eserBuild.getCompanyId() , eserBuild.getCurrency() ).toString();
-			String stringFormat = "%0"+decimalDigits+"d" ;
-			String decimalLength = decimalDigits.equals("0") ?"" : String.format(stringFormat ,0L)  ;
-			String pattern = StringUtils.isBlank(decimalLength) ?  "#####0" :   "#####0." + decimalLength;
-			DecimalFormat df = new DecimalFormat(pattern);
-			// Update Eservice Building
-			eserBuild.setActualPremiumFc(new BigDecimal(df.format(premiumFc)));
-			eserBuild.setActualPremiumLc(new BigDecimal(df.format(premiumLc)));
-			eserBuild.setOverallPremiumFc(new BigDecimal(df.format(overAllPremiumFc)));
-			eserBuild.setOverallPremiumLc(new BigDecimal(df.format(overAllPremiumLc)));
+			EserviceBuildingDetails eserBuild = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionId(request.getRequestReferenceNo() ,1 ,request.getSectionId());
 			eserBuild.setQuoteNo(request.getQuoteNo());
 			eserBuild.setCustomerId(request.getCustomerId());
-			
-		
 			
 			BuildingRiskDetails bulildDetails = new BuildingRiskDetails();
 			dozerMapper.map(eserBuild,bulildDetails);
@@ -1093,34 +1076,78 @@ public class QuoteThreadCall implements Callable<Object>  {
 				endtPremium = updateEndtPremium(request.getQuoteNo(),eserBuild.getEndorsementEffdate(),prevQuoteNo, eserBuild.getRiskId(),Endtcovers);				
 				eserBuild.setEndtPremium(endtPremium.doubleValue());
 				bulildDetails.setEndtPremium(endtPremium.doubleValue());
-			}   
-			eserBuildRepo.saveAndFlush(eserBuild);
-			buildRepo.saveAndFlush(bulildDetails);
-			
-			// Pacc
-			List<EserviceCommonDetails> findPacc = eserCommonRepo.findByRequestReferenceNo(request.getRequestReferenceNo());
-			findPacc.forEach( o -> o.setQuoteNo(request.getQuoteNo())  );
-		 	
-			List<CommonDataDetails> savePacList = new ArrayList<CommonDataDetails>();
-			for(EserviceCommonDetails pac : findPacc ) {
-				CommonDataDetails savePac = new CommonDataDetails();
-				dozerMapper.map(pac,savePac);
-				savePac.setQuoteNo(request.getQuoteNo());
-				savePac.setUpdatedDate(new Date());
-				savePac.setSectionDesc(pac.getSectionName());	
-				savePacList.add(savePac);
-				
-				if(eserBuild.getEndorsementType()!=null) {
-					String prevQuoteNo=eserBuild.getEndtPrevQuoteNo();
-					List<PolicyCoverData>  Endtcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(request.getQuoteNo() ,0, 0);
-					endtPremium = updateEndtPremium(request.getQuoteNo(),pac.getEndorsementEffdate(),prevQuoteNo, pac.getRiskId(),Endtcovers);				
-					pac.setEndtPremium(endtPremium.doubleValue());
-					savePac.setEndtPremium(endtPremium.doubleValue());
-				} 
-				
 			}
-			eserCommonRepo.saveAllAndFlush(findPacc);
-			commonDataRepo.saveAllAndFlush(savePacList);
+			// Map
+			if(premiumCovers.size()> 0 ) {
+				String decimalDigits = currencyDecimalFormat(eserBuild.getCompanyId() , eserBuild.getCurrency() ).toString();
+				String stringFormat = "%0"+decimalDigits+"d" ;
+				String decimalLength = decimalDigits.equals("0") ?"" : String.format(stringFormat ,0L)  ;
+				String pattern = StringUtils.isBlank(decimalLength) ?  "#####0" :   "#####0." + decimalLength;
+				DecimalFormat df = new DecimalFormat(pattern);
+				// Update Eservice Building
+				eserBuild.setActualPremiumFc(new BigDecimal(df.format(premiumFc)));
+				eserBuild.setActualPremiumLc(new BigDecimal(df.format(premiumLc)));
+				eserBuild.setOverallPremiumFc(new BigDecimal(df.format(overAllPremiumFc)));
+				eserBuild.setOverallPremiumLc(new BigDecimal(df.format(overAllPremiumLc)));
+				
+				// Main Table
+				bulildDetails.setActualPremiumFc(new BigDecimal(df.format(premiumFc)));
+				bulildDetails.setActualPremiumLc(new BigDecimal(df.format(premiumLc)));
+				bulildDetails.setOverallPremiumFc(new BigDecimal(df.format(overAllPremiumFc)));
+				bulildDetails.setOverallPremiumLc(new BigDecimal(df.format(overAllPremiumLc)));
+
+				ObjectMapper m = new ObjectMapper();
+				// Set Empty Un opted Covers
+				Map<String,String> assetKeyValue = m.convertValue(bulildDetails , Map.class);
+				for (FactorRateRequestDetails cov : covers ) {
+			    	List<FactorRateRequestDetails>  filterCovers = premiumCovers.stream().filter( o -> "N".equalsIgnoreCase(o.getDependentCoverYn()) && o.getVehicleId().equals(cov.getVehicleId()) &&  o.getSectionId().equals(Integer.valueOf(cov.getSectionId())) 
+			    			&&  o.getCoverId().equals(cov.getCoverId()) &&  o.getSubCoverId().equals(cov.getSubCoverId()) ).collect(Collectors.toList());
+			    	
+		    		Object assetKey =  assetKeyValue.get(cov.getCoverBasedOn());
+		    		if(assetKey!=null && filterCovers.size() > 0 ) {
+		    			assetKeyValue.put(cov.getCoverBasedOn(),  cov.getSumInsured()==null ?  null : cov.getSumInsured().toPlainString());	
+				    
+		    		}	else if (assetKey!=null && "N".equalsIgnoreCase(cov.getDependentCoverYn())   ) {
+		    			assetKeyValue.put(cov.getCoverBasedOn(),  null );
+			    	}
+			    	
+			    }
+			    
+				BuildingRiskDetails refinedBuilding = m.convertValue(assetKeyValue, BuildingRiskDetails.class);
+			    BigDecimal exchangeRate = refinedBuilding.getExchangeRate()!=null ? refinedBuilding.getExchangeRate() : BigDecimal.ONE ;
+			    refinedBuilding.setAllRiskSumInsuredLC(refinedBuilding.getAllriskSuminsured()==null ? null : refinedBuilding.getAllriskSuminsured().multiply(exchangeRate) );
+				refinedBuilding.setMiningPlantSiLC(refinedBuilding.getMiningPlantSi()==null ? null : refinedBuilding.getMiningPlantSi().multiply(exchangeRate) );
+				refinedBuilding.setGensetsSiLC(refinedBuilding.getGensetsSi()==null ? null : refinedBuilding.getGensetsSi().multiply(exchangeRate) );
+				refinedBuilding.setNonMiningPlantSiLC(refinedBuilding.getNonminingPlantSi()==null ? null : refinedBuilding.getNonminingPlantSi().multiply(exchangeRate) );
+				refinedBuilding.setEquipmentSiLC(refinedBuilding.getEquipmentSi()==null ? null : refinedBuilding.getEquipmentSi().multiply(exchangeRate) );
+				refinedBuilding.setStockInTradeSiLC(refinedBuilding.getStockInTradeSi()==null ? null : refinedBuilding.getStockInTradeSi().multiply(exchangeRate) );
+				refinedBuilding.setGoodsSiLC(refinedBuilding.getGoodsSi()==null ? null : refinedBuilding.getGoodsSi().multiply(exchangeRate) );
+				refinedBuilding.setFurnitureSiLC(refinedBuilding.getFurnitureSi()==null ? null : refinedBuilding.getFurnitureSi().multiply(exchangeRate) );
+				refinedBuilding.setApplianceSiLC(refinedBuilding.getApplianceSi()==null ? null : refinedBuilding.getApplianceSi().multiply(exchangeRate) );
+				refinedBuilding.setCashValuablesSiLC(refinedBuilding.getCashValueablesSi()==null ? null : refinedBuilding.getCashValueablesSi().multiply(exchangeRate) );	
+				refinedBuilding.setBuildingSumInsuredLC(refinedBuilding.getBuildingSuminsured()==null ? null : refinedBuilding.getBuildingSuminsured().multiply(exchangeRate) );
+				refinedBuilding.setFirePlantSiLc(refinedBuilding.getFirePlantSi()==null ? null : refinedBuilding.getFirePlantSi().multiply(exchangeRate) );
+				refinedBuilding.setStockInTradeSiLC(refinedBuilding.getStockInTradeSi()==null ? null : refinedBuilding.getStockInTradeSi().multiply(exchangeRate) );
+				refinedBuilding.setBuildingSumInsuredLC(refinedBuilding.getBuildingSuminsured()==null ? null : refinedBuilding.getBuildingSuminsured().multiply(exchangeRate) );
+				refinedBuilding.setEquipmentSiLC(refinedBuilding.getEquipmentSi()==null ? null : refinedBuilding.getEquipmentSi().multiply(exchangeRate) );
+				refinedBuilding.setBoilerPlantsSiLC(refinedBuilding.getBoilerPlantsSi()==null ? null : refinedBuilding.getBoilerPlantsSi().multiply(exchangeRate) );
+				refinedBuilding.setElecMachinesSiLC(refinedBuilding.getElecMachinesSi()==null ? null : refinedBuilding.getElecMachinesSi().multiply(exchangeRate) );
+				refinedBuilding.setEquipmentSiLC(refinedBuilding.getEquipmentSi()==null ? null : refinedBuilding.getEquipmentSi().multiply(exchangeRate) );
+				refinedBuilding.setGeneralMachineSiLC(refinedBuilding.getGeneralMachineSi()==null ? null : refinedBuilding.getGeneralMachineSi().multiply(exchangeRate) );
+				refinedBuilding.setMachineEquipSiLC(refinedBuilding.getMachineEquipSi()==null ? null : refinedBuilding.getMachineEquipSi().multiply(exchangeRate) );
+				refinedBuilding.setManuUnitsSiLC(refinedBuilding.getManuUnitsSi()==null ? null : refinedBuilding.getManuUnitsSi().multiply(exchangeRate) );
+				refinedBuilding.setPowerPlantSiLC(refinedBuilding.getPowerPlantSi()==null ? null : refinedBuilding.getPowerPlantSi().multiply(exchangeRate) );
+				refinedBuilding.setPlateGlassSiLC(refinedBuilding.getPlateGlassSi()==null ? null : refinedBuilding.getPlateGlassSi().multiply(exchangeRate) );
+				refinedBuilding.setContentSumInsuredLC(refinedBuilding.getContentSuminsured()==null ? null : refinedBuilding.getContentSuminsured().multiply(exchangeRate) );
+				refinedBuilding.setElecEquipSumInsuredLC(refinedBuilding.getElecEquipSuminsured()==null ? null : refinedBuilding.getElecEquipSuminsured().multiply(exchangeRate) );
+				buildRepo.saveAndFlush(refinedBuilding);
+				
+			} else {
+				buildRepo.saveAndFlush(bulildDetails);
+			}
+			
+		    eserBuildRepo.saveAndFlush(eserBuild);
+			
 			
 			res.put("Response", "Success") ;
 			res.put("Errors", null) ;
@@ -1137,7 +1164,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			e.printStackTrace();
 			log.error("Exception is ---> " + e.getMessage());
 			res.put("Response", "Failed") ;
-			res.put("Errors", "Failed To Save Vehicle Id : " + request.getVehicleId() + " Details" ) ;
+			res.put("Errors", "Failed To Save Section Id : " + request.getSectionId() + " Details" ) ;
 		}
 	
 		return res;
@@ -1171,31 +1198,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 				
 				covers = facRateRepo.findByRequestReferenceNoAndDiscLoadIdAndTaxIdAndProductIdAndSectionIdAndStatusOrderByVehicleIdAsc(request.getRequestReferenceNo() , 0,0 ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()),"Y");		
 				
-			//	List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o ->o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") && o.getDiscLoadId().equals(0)).collect(Collectors.toList() );
-				
-				// Insert Other Covers
-			//	List<VehicleIdsReq> VehicleList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId().equals(request.getGroupId())).collect(Collectors.toList());
-			//	List<CoverIdsReq> coverReqList = VehicleList.get(0).getCoverIdList();
-				
 				List<FactorRateRequestDetails>  premiumCovers = new  ArrayList<FactorRateRequestDetails>();
-			//	premiumCovers.addAll(defaultCovers);
 				List<FactorRateRequestDetails> filterNonDefaultCovers = covers.stream().filter( o -> o.getUserOpt()!=null && o.getUserOpt().equals("Y") && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0)).collect(Collectors.toList());				
 				premiumCovers.addAll(filterNonDefaultCovers);
-//				for ( CoverIdsReq covReq :  coverReqList) {
-//					 
-//					List<FactorRateRequestDetails> filterNonDefaultCovers = covers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(0)).collect(Collectors.toList());				
-//					
-//					if(filterNonDefaultCovers != null && filterNonDefaultCovers.size()>0 ) {
-//						if (covReq.getSubCoverYn().equalsIgnoreCase("N") ) {
-//							
-//							premiumCovers.addAll(filterNonDefaultCovers);
-//							
-//						}else {
-//							List<FactorRateRequestDetails> filterNonDefaultSubCovers = filterNonDefaultCovers.stream().filter( o ->  o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))&& o.getDiscLoadId().equals(0) ).collect(Collectors.toList());
-//							premiumCovers.addAll(filterNonDefaultSubCovers);
-//						}
-//					}
-//				}
+
 				premiumFc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0) && o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxFc()!=null && o.getPremiumExcludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxFc().doubleValue()  ).sum();					
 				overAllPremiumFc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0) && o.getDiscLoadId().equals(0) && o.getPremiumIncludedTaxFc()!=null && o.getPremiumIncludedTaxFc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumIncludedTaxFc().doubleValue()  ).sum();
 				premiumLc = premiumCovers.stream().filter( o -> o.getTaxId().equals(0) && o.getDiscLoadId().equals(0) && o.getPremiumExcludedTaxLc()!=null && o.getPremiumExcludedTaxLc().doubleValue() > 0D ).mapToDouble( o ->   o.getPremiumExcludedTaxLc().doubleValue()  ).sum();					
@@ -1234,39 +1240,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 //			// Save Travel Details
 			Long passengerCount = traPassRepo.countByQuoteNo(request.getQuoteNo());
 			List<TravelPassengerDetails> saveList = new ArrayList<TravelPassengerDetails>(); 
-//			if(eserTravel.getEndorsementType()==null && passengerCount <= 0) {
-//				List<EserviceTravelGroupDetails> groupDatas = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(request.getRequestReferenceNo() );
-//				Integer passId = 0 ;
-//				for ( EserviceTravelGroupDetails group : groupDatas ) {
-//					for ( int i = 0 ; i< group.getGrouppMembers() ; i++ ) {
-//						TravelPassengerDetails travelData  = new TravelPassengerDetails();
-//						passId = passId + 1 ;
-//						dozerMapper.map(eserTravel, travelData);
-//						travelData.setTravelId(eserTravel.getRiskId());
-//						travelData.setEntryDate(new Date());	
-//						travelData.setCreatedBy(request.getCreatedBy());
-//						travelData.setQuoteNo(request.getQuoteNo());
-//						travelData.setTravelId(1);
-//						travelData.setCustomerId(request.getCustomerId());
-//						travelData.setPassengerId(passId);
-//						travelData.setGroupId(group.getGroupId());
-//						
-//						travelData.setGroupCount(group.getGrouppMembers());
-//						travelData.setStatus(eserTravel.getStatus());
-//						List<FactorRateRequestDetails>  filterCover = covers.stream().filter( o -> o.getVehicleId().equals( request.getGroupId())).collect(Collectors.toList());
-//						filterCover = filterCover.size() > 0  ? filterCover : covers.stream().filter( o -> o.getVehicleId().equals(2)).collect(Collectors.toList());
-//								
-//						travelData.setVdRefno(filterCover.get(0).getVdRefno());	
-//						travelData.setMsRefno(filterCover.get(0).getMsRefno());		
-//						travelData.setCdRefno(filterCover.get(0).getCdRefno());	
-//						travelData.setActualPremiumFc(premiumFc);
-//						travelData.setActualPremiumLc(premiumLc);
-//						travelData.setOverallPremiumFc(overAllPremiumFc);
-//						travelData.setOverallPremiumLc(overAllPremiumLc);
-//						saveList.add(travelData);
-//					}
-//				}
-//			} else 
+
 				if(eserTravel.getEndorsementType()!=null && passengerCount <= 0) {
 					String prevQuoteNo=eserTravel.getEndtPrevQuoteNo();
 					List<PolicyCoverData>  Endtcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(request.getQuoteNo() ,0, 0);
@@ -1304,8 +1278,6 @@ public class QuoteThreadCall implements Callable<Object>  {
 			}
 			traPassRepo.saveAllAndFlush(saveList);
 			eserTraRepo.saveAndFlush(eserTravel);
-		//	traPassRepo.saveAndFlush(travelData);
-		//	log.error("Save Motor Info is ---> " + json.toJson(travelData));
 			
 			res.put("Response", "Success") ;
 			res.put("Errors", null) ;
@@ -1335,42 +1307,6 @@ public class QuoteThreadCall implements Callable<Object>  {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		try {
 			
-			if(request.getMotorYn().equalsIgnoreCase("H") && request.getProductId().equalsIgnoreCase(travelProductId)) {
-//				List<FactorRateRequestDetails>  covers = facRateRepo.findByRequestReferenceNoAndProductIdAndSectionIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()) , request.getGroupId());
-//				List<FactorRateRequestDetails>  devidedCovers = new ArrayList<FactorRateRequestDetails>();
-//				
-//				// Cover Amounts Devide By Group Count
-//				for ( FactorRateRequestDetails cover  : covers) {
-//					cover.setActualRate(cover.getActualRate()==null?null : getDevidedValue(  cover.getActualRate() ,request.getGroupCount()));
-//					cover.setMaxLodingAmount(cover.getMaxLodingAmount()==null?null : getDevidedValue(  cover.getMaxLodingAmount() ,request.getGroupCount()));
-//					cover.setMinimumPremium(cover.getMinimumPremium()==null?null : getDevidedValue(  cover.getMinimumPremium() ,request.getGroupCount()));
-//					cover.setPremiumAfterDiscountFc(cover.getPremiumAfterDiscountFc()==null?null : getDevidedValue(  cover.getPremiumAfterDiscountFc() ,request.getGroupCount()));
-//					cover.setPremiumAfterDiscountLc(cover.getPremiumAfterDiscountLc()==null?null : getDevidedValue(  cover.getPremiumAfterDiscountLc() ,request.getGroupCount()));
-//					cover.setPremiumBeforeDiscountFc(cover.getPremiumBeforeDiscountFc()==null?null : getDevidedValue(  cover.getPremiumBeforeDiscountFc() ,request.getGroupCount()));
-//					cover.setPremiumBeforeDiscountLc(cover.getPremiumBeforeDiscountLc()==null?null : getDevidedValue(  cover.getPremiumBeforeDiscountLc() ,request.getGroupCount()));
-//					cover.setPremiumExcludedTaxFc(cover.getPremiumExcludedTaxFc()==null?null : getDevidedValue(  cover.getPremiumExcludedTaxFc() ,request.getGroupCount()));
-//					cover.setPremiumExcludedTaxLc(cover.getPremiumExcludedTaxLc()==null?null : getDevidedValue(  cover.getPremiumExcludedTaxLc() ,request.getGroupCount()));
-//					cover.setPremiumIncludedTaxFc(cover.getPremiumIncludedTaxFc()==null?null : getDevidedValue(  cover.getPremiumIncludedTaxFc() ,request.getGroupCount()));
-//					cover.setPremiumIncludedTaxLc(cover.getPremiumIncludedTaxLc()==null?null : getDevidedValue(  cover.getPremiumIncludedTaxLc() ,request.getGroupCount()));
-//					cover.setRate(cover.getRate()==null?null : getDevidedValue(  cover.getRate() ,request.getGroupCount()));
-//					cover.setRegulSumInsured(cover.getRegulSumInsured()==null?null : getDevidedValue(  cover.getRegulSumInsured() ,request.getGroupCount()));
-//					cover.setSumInsured(cover.getSumInsured()==null?null : getDevidedValue(  cover.getSumInsured() ,request.getGroupCount()));
-//					cover.setTaxAmount(cover.getTaxAmount()==null?null : getDevidedValue(  cover.getTaxAmount() ,request.getGroupCount()));
-//					cover.setTaxRate(cover.getTaxRate()==null?null : getDevidedValue(  cover.getTaxRate() ,request.getGroupCount()));  
-//					devidedCovers.add(cover);
-//				}
-//				
-//				// Save Endt Covers
-//				if(StringUtils.isNotBlank(request.getEndtPrevQuoteNo()) ) {
-//					res = EndtCoverSavePoint(request , devidedCovers );
-//					
-//				} else {
-//					res = CoverSavePoint(devidedCovers ) ;
-//					
-//				}
-				
-				
-			} 
 				List<FactorRateRequestDetails> covers = facRateRepo.findByRequestReferenceNoAndProductIdAndSectionIdAndVehicleIdOrderByVehicleIdAsc(request.getRequestReferenceNo() ,Integer.valueOf(request.getProductId()) ,Integer.valueOf(request.getSectionId()) , request.getVehicleId());
 				
 				// Save Endt Covers
@@ -1466,10 +1402,6 @@ public class QuoteThreadCall implements Callable<Object>  {
 		Map<String,Object> res= new HashMap<String,Object>() ;
 		try {
 			// FindData 
-		//	List<FactorRateRequestDetails>  defaultCovers = covers.stream().filter( o -> o.getIsSelected()!=null &&  o.getIsSelected().equalsIgnoreCase("D") ).collect(Collectors.toList() );
-			
-			// Insert Default Covers
-	//		res = InsertEndtCoverDetails(PrevQuoteNo , defaultCovers , policyStartDate ,policyEndDate ,  noOfDays);
 						
 			List<VehicleIdsReq> VehicleList = new ArrayList<VehicleIdsReq>();
 			List<CoverIdsReq> coverReqList =new ArrayList<CoverIdsReq>();
@@ -1564,10 +1496,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					PolicyCoverData coverData  = new PolicyCoverData();
 					dozerMapper.map(cov, coverData);
 					coverData.setEntryDate(new Date());
-//					coverData.setCoverPeriodFrom(policyStartDate);
-//					coverData.setCoverPeriodTo(policyEndDate);
-//					coverData.setNoOfDays( noOfDays==null? null : new BigDecimal(noOfDays));
-//					
+					
 					coverData.setQuoteNo(request.getQuoteNo());
 					coverData.setIsSelected(cov.getIsSelected().equalsIgnoreCase("N") ? "Y" :cov.getIsSelected());
 					coverData.setCreatedBy(request.getCreatedBy());
@@ -1576,7 +1505,6 @@ public class QuoteThreadCall implements Callable<Object>  {
 					coverData.setIndividualId(request.getVehicleId());
 					coverData.setOriginalPolicyNo(request.getOriginalPolicyNo());
 					saveCovers.add(coverData);
-				//	log.error("Save Cover Info is ---> " + json.toJson(coverData));
 					
 				}
 				coverRepo.saveAllAndFlush(saveCovers);	
@@ -1957,34 +1885,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				});
 				
 				req.setVehicleNeedberemove(vehicleNeedberemove);
-				
-				
-				
-			//	List<TravelPassengerDetails> oldPassDatas = 	traPassRepo.findByQuoteNo(req.getQuoteNo());
-//				traPassRepo.deleteByQuoteNo(req.getQuoteNo());
-//				Long travelInfo =  traPassRepo.countByQuoteNo(req.getQuoteNo());
-//				if (travelInfo > 0  ) {
-//					// Delete data
-//					List<TravelPassengerDetails> oldPassDatas = 	traPassRepo.findByQuoteNo(req.getQuoteNo());
-//					traPassRepo.deleteByQuoteNo(req.getQuoteNo());
-//					
-//					// Find History
-//					for (TravelPassengerDetails passData :  oldPassDatas) {
-//						Long travelHisInfo =  traPassHisRepo.countByQuoteNoAndPassengerId(req.getQuoteNo() ,passData.getPassengerId());
-//						if (travelHisInfo > 0 ) {
-//							//Delete data
-//							traPassHisRepo.deleteByQuoteNoAndPassengerId(req.getQuoteNo(),passData.getPassengerId());
-//							
-//						}
-//						// Save New 
-//						TravelPassengerHistory traHistorySave = new TravelPassengerHistory(); 
-//						dozerMapper.map(passData, traHistorySave);
-//						traHistorySave.setEntryDate(new Date());
-//						traPassHisRepo.saveAndFlush(traHistorySave);
-//					}
-//					
-//					
-//				} else 
+			
 				if(StringUtils.isNotBlank(req.getEndtPrevQuoteNo()) && req.getEndtType().equalsIgnoreCase("842") ) {
 //					// Endorsement
 					Long travelInfo =  traPassRepo.countByQuoteNo(req.getEndtPrevQuoteNo());
@@ -2038,23 +1939,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 						traPassRepo.deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(req.getQuoteNo() , new BigDecimal(req.getEndtCount()) ,req.getOriginalPolicyNo() );
 					}
 				}
-//				}
-//				//Doc traces delete 
-//				List<EserviceSectionDetails> secs = eserSecRepo.findByRequestReferenceNoAndStatus(req.getRequestReferenceNo(),"Y");
-//				
-//				List<String> secIds = secs.stream().map(EserviceSectionDetails :: getSectionId).collect(Collectors.toList());
-//				
-//			
-//				List<DocumentTransactionDetails> doc = docRepo.findByQuoteNo(req.getQuoteNo());
-//				
-//				if (secIds.size()>0) {
-//					
-//					//unmatched based on sectionid
-//				
-//					List<DocumentTransactionDetails> docfilter = doc.stream().filter(o -> ! secIds.contains(o.getSectionId().toString())).collect(Collectors.toList());	
-//					docRepo.deleteAll(docfilter);
-//				}
-//				
+
 	 			res.put("Response", "Success") ;
 				res.put("Errors", null) ;
 				
@@ -2279,19 +2164,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				List<EserviceTravelGroupDetails> groupData = eserGroupRepo.findByRequestReferenceNoOrderByGroupIdAsc(request.getRequestReferenceNo() );
 				List<PolicyCoverData>  OldPolicyCovers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(request.getEndtPrevQuoteNo());
 				List<PolicyCoverData> rePopulateRecords = new ArrayList<PolicyCoverData>();
-				
-//				// Deleted Records
-//				List<PolicyCoverData>  fiterDeletedCovers = OldPolicyCovers.stream().filter( o ->  o.getStatus().equalsIgnoreCase("D") ).collect(Collectors.toList());
-//				List<PolicyCoverData> rePopulateRecords = new ArrayList<PolicyCoverData>();
-//				fiterDeletedCovers.forEach(ref ->  {
-//					PolicyCoverData pc = new PolicyCoverData();
-//					dozerMapper.map(ref , pc) ;
-//					pc.setQuoteNo(request.getQuoteNo());
-//					pc.setRequestReferenceNo(request.getRequestReferenceNo());
-//					pc.setPolicyNo(null);
-//					rePopulateRecords.add(pc) ;
-//					
-//				}) ;
+
 				
 				// Non Selected Records
 				List<PolicyCoverData>  deactivateOldCovers = OldPolicyCovers ; 
@@ -2393,27 +2266,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 				List<PolicyCoverData>  OldPolicyCovers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(request.getEndtPrevQuoteNo());
 				List<PolicyCoverData> rePopulateRecords = new ArrayList<PolicyCoverData>();
 				
-//				// Deleted Records
-//				List<PolicyCoverData>  fiterDeletedCovers = OldPolicyCovers.stream().filter( o ->  o.getStatus().equalsIgnoreCase("D") ).collect(Collectors.toList());
-//				List<PolicyCoverData> rePopulateRecords = new ArrayList<PolicyCoverData>();
-//				fiterDeletedCovers.forEach(ref ->  {
-//					PolicyCoverData pc = new PolicyCoverData();
-//					dozerMapper.map(ref , pc) ;
-//					pc.setQuoteNo(request.getQuoteNo());
-//					pc.setRequestReferenceNo(request.getRequestReferenceNo());
-//					pc.setPolicyNo(null);
-//					rePopulateRecords.add(pc) ;
-//					
-//				}) ;
-				
 
 				// Filter Deactivated Covers
 				List<VehicleIdsReq> collect = new ArrayList<VehicleIdsReq>();
-//				List<VehicleIdsReq> collect = request.getVehicleIdsList().stream()
-//						.filter( d -> request.getVehicleNeedberemove().stream().map( VehicleNeedToRemove :: getSectionId).anyMatch(  
-//								e ->  ! ( e.equals( d.getSectionId()  )))
-//						.filter( d -> request.getVehicleNeedberemove().stream().map( VehicleNeedToRemove :: getVehicleId).anyMatch(  
-//								e ->  ! e.equals( d.getVehicleId() ))).collect(Collectors.toList());
 				for(VehicleIdsReq o : request.getVehicleIdsList() ) {
 					List<VehicleNeedToRemove> filterVehicle =  request.getVehicleNeedberemove().stream().filter( e -> 
 					e.getVehicleId().equals(o.getVehicleId()) && e.getSectionId().equals(o.getSectionId()) ).collect(Collectors.toList());
@@ -2624,16 +2479,16 @@ public class QuoteThreadCall implements Callable<Object>  {
 				
 			}
 			
-			   
-			
-//			// Set Branch Details 
+			 LoginMaster loginData = getLoginDetails(home.getLoginId());
+			 home.setUserType(loginData!=null ? loginData.getUserType() : "Broker" );
+			 
+			 // Set Branch Details 
 //			LoginBranchMaster loginBranch =  getBranchDetails(home.getCompanyId() ,home.getBrokerBranchCode() ,home.getLoginId() );
 //			if( loginBranch !=null) {
 //				home.setBranchName(loginBranch.getBranchName());
 //				home.setBrokerBranchName(loginBranch.getBrokerBranchName());
 //					
 //			}
-			
 			
 			// Primary KEy
 			home.setQuoteNo(request.getQuoteNo());
@@ -2643,6 +2498,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setAmendId(0);
 			home.setApplicationNo(0L);
 			
+
 			String loginId = "" ;
 			if(! "1".equalsIgnoreCase(home.getApplicationId()  )) {
 				loginId = home.getApplicationId();
@@ -2672,8 +2528,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 					home.setUserType("broker");
 				}
 			}
-			 
-			
+		
 			//home.setLapsedDate(null);
 			//home.setLapsedRemarks(null);
 			//home.setLapsedUpdatedBy(null);
@@ -2883,58 +2738,6 @@ public class QuoteThreadCall implements Callable<Object>  {
 				}
 			}
 						
-//				if( veh.getSectionId().equalsIgnoreCase("35") && pacSec==false ) {
-//					EserviceSectionDetails filterSec = eserSec.stream().filter( o ->    o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList()).get(0);	
-//					filterSec.setUserOpt("Y");
-//					filterSec.setQuoteNo(request.getQuoteNo());
-//					filterSec.setUpdatedDate(new Date());
-//					updateEserSec.add(filterSec);
-//					
-//					SectionDataDetails  saveSec = new  SectionDataDetails();
-//					mapper.map(filterSec, saveSec)	;
-//					saveSec.setQuoteNo(request.getQuoteNo());
-//					saveSec.setUpdatedDate(new Date());
-//					secList.add(saveSec);
-//					pacSec= true ;
-//					
-//					
-//					
-//				} else if(!veh.getSectionId().equalsIgnoreCase("35") && request.getMotorYn().equalsIgnoreCase("M")  ) {
-//					List<EserviceSectionDetails> filterSecId =  updateEserSec.stream().filter( o ->  o.getRiskId().equals(veh.getVehicleId() ) && o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList());
-//					if(filterSecId.size() <=0 ) {
-//						
-//						EserviceSectionDetails filterSec = eserSec.stream().filter( o ->  o.getRiskId().equals(veh.getVehicleId() ) &&  o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList()).get(0);	
-//						filterSec.setUserOpt("Y");
-//						filterSec.setQuoteNo(request.getQuoteNo());
-//						filterSec.setUpdatedDate(new Date());
-//						updateEserSec.add(filterSec);
-//						
-//						SectionDataDetails  saveSec = new  SectionDataDetails();
-//						mapper.map(filterSec, saveSec)	;
-//						saveSec.setQuoteNo(request.getQuoteNo());
-//						saveSec.setUpdatedDate(new Date());
-//						secList.add(saveSec);	
-//					}
-//					
-//				} else if(!veh.getSectionId().equalsIgnoreCase("35") ) {
-//					List<EserviceSectionDetails> filterSecId =  updateEserSec.stream().filter( o ->  o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList());
-//					if(filterSecId.size() <=0 ) {
-//						
-//						EserviceSectionDetails filterSec = eserSec.stream().filter( o -> o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList()).get(0);	
-//						filterSec.setUserOpt("Y");
-//						filterSec.setQuoteNo(request.getQuoteNo());
-//						filterSec.setUpdatedDate(new Date());
-//						updateEserSec.add(filterSec);
-//						
-//						SectionDataDetails  saveSec = new  SectionDataDetails();
-//						mapper.map(filterSec, saveSec)	;
-//						saveSec.setQuoteNo(request.getQuoteNo());
-//						saveSec.setUpdatedDate(new Date());
-//						secList.add(saveSec);	
-//					}
-//					
-//				}
-//			}
 			secRepo.saveAllAndFlush(secList);
 			eserSecRepo.saveAllAndFlush(updateEserSec);
 			res.put("Response", "Success") ;
@@ -2956,14 +2759,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			EserviceMotorDetails motorData = eserMotRepo.findByRequestReferenceNoAndRiskIdOrderByRiskIdAsc(request.getRequestReferenceNo() ,request.getVehicleId());
 			EserviceCustomerDetails custData = eserCustRepo.findByCustomerReferenceNo(motorData.getCustomerReferenceNo());
-			
-			// Souce Type 
+			home.setCustomerName(custData.getClientName());
 			
 			home.setCompanyId(motorData.getCompanyId());
 			home.setProductId(Integer.valueOf(motorData.getProductId()));
 			home.setSectionId(Integer.valueOf(motorData.getSectionId()));
-			
-			//	home.setEffectiveDate(motorData.getPolicyStartDate());
+		//	home.setEffectiveDate(motorData.getPolicyStartDate());
 			home.setExpiryDate(motorData.getPolicyEndDate());
 			home.setAdminRemarks(motorData.getAdminRemarks());
 			home.setAdminReferralStatus(motorData.getStatus());			
@@ -2981,7 +2782,6 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setPromocode(motorData.getPromocode());
 			home.setManualReferalYn(motorData.getManualReferalYn());
 			
-			home.setCustomerCode(motorData.getCustomerCode());
 			home.setProductName(motorData.getProductName());
 			home.setCompanyName(motorData.getCompanyName());
 			home.setCommissionType(motorData.getCommissionType());
@@ -3009,16 +2809,17 @@ public class QuoteThreadCall implements Callable<Object>  {
 		    home.setSubUserType(motorData.getSourceType());
 		    home.setApplicationId(motorData.getApplicationId());
 		    home.setBrokerCode(motorData.getBrokerCode());
-		    home.setAgencyCode(Integer.valueOf(motorData.getAgencyCode().replaceAll("\\r", "" ).replaceAll("\\n", "" ) )) ;
+		    home.setAgencyCode(Integer.valueOf(motorData.getAgencyCode().replaceAll("\\r", "" ).replaceAll("\\n", "" ) ));
 		    home.setCustomerCode(motorData.getCustomerCode());
 		    home.setCustomerName(motorData.getCustomerName() );
 		    home.setBdmCode(motorData.getBdmCode());
 			home.setBrokerBranchCode(motorData.getBrokerBranchCode() );
 			home.setBrokerBranchName(motorData.getBrokerBranchName() );
-			home.setUserType(motorData.getSourceType() );
 			home.setLoginId(motorData.getLoginId());
 			
+			
 			List<EserviceMotorDetails> motList = eserMotRepo.findByRequestReferenceNo(request.getRequestReferenceNo());
+			
 			
 			List<EserviceMotorDetails> filterComActive = motList.stream().filter( o ->  (! o.getStatus().equalsIgnoreCase("D")) &&  o.getCommissionPercentage() !=null ).collect(Collectors.toList());
 			BigDecimal commPercentage = new BigDecimal(filterComActive.stream().mapToDouble( o ->   o.getCommissionPercentage().doubleValue()   ).sum() ); 					  
@@ -3073,10 +2874,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setCustomerName(custData.getClientName());
 			
 			home.setCompanyId(travelData.getCompanyId());
-			home.setBranchCode(travelData.getBranchCode());
 			home.setProductId(Integer.valueOf(travelData.getProductId()));
 			home.setSectionId(Integer.valueOf(travelData.getSectionId()));
-			home.setUserType(travelData.getSourceType() );
 			home.setAcExecutiveId(travelData.getAcExecutiveId()==null?null : Long.valueOf(travelData.getAcExecutiveId()));
 		//	home.setEffectiveDate(travelData.getTravelStartDate());
 			home.setExpiryDate(travelData.getTravelEndDate());
@@ -3100,7 +2899,6 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setCompanyName(travelData.getCompanyName());
 			home.setCommissionType(travelData.getCommissionType());
 			home.setCommissionTypeDesc(travelData.getCommissionTypeDesc());
-			home.setApplicationId(travelData.getApplicationId());		
 			home.setEndtTypeId(travelData.getEndorsementType()==null?null:String.valueOf(travelData.getEndorsementType()));
 			home.setEndtStatus(StringUtils.isBlank(travelData.getEndtStatus())?"":travelData.getEndtStatus());
 			home.setEndtDate(travelData.getEndorsementDate()==null?null:travelData.getEndorsementDate());
@@ -3126,7 +2924,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		    home.setBrokerCode(travelData.getBrokerCode());
 		    home.setAgencyCode(Integer.valueOf(travelData.getAgencyCode().replaceAll("\\r", "" ).replaceAll("\\n", "" ) ));
 		    home.setCustomerCode(travelData.getCustomerCode());
-		    home.setCustomerName(travelData.getCustomerName() );
+		    home.setCustomerName( travelData.getCustomerName() );
 		    home.setBdmCode(travelData.getBdmCode());
 			home.setBrokerBranchCode(travelData.getBrokerBranchCode() );
 			home.setBrokerBranchName(travelData.getBrokerBranchName() );
@@ -3147,17 +2945,15 @@ public class QuoteThreadCall implements Callable<Object>  {
 		try {
 			
 			
-			EserviceBuildingDetails  buildingData = eserBuildRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() , 1) ;
+			EserviceBuildingDetails  buildingData = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionId(request.getRequestReferenceNo() , 1,"0") ;
 			Long builCount =  eserBuildRepo.countByRequestReferenceNo(request.getRequestReferenceNo() ) ;
 			EserviceCustomerDetails custData = eserCustRepo.findByCustomerReferenceNo(buildingData.getCustomerReferenceNo());
 			home.setCustomerName(custData.getClientName());
 			
 			//List<EserviceSectionDetails> sections = eserSecRepo.findByRequestReferenceNoAndRiskIdAndProductIdOrderBySectionIdAsc(request.getRequestReferenceNo() , request.getVehicleId(),request.getProductId() );
 			home.setCompanyId(buildingData.getCompanyId());
-			home.setBranchCode(buildingData.getBranchCode());
 			home.setProductId(Integer.valueOf(buildingData.getProductId()));
 			home.setSectionId(Integer.valueOf(0));
-			home.setUserType(buildingData.getSubUserType() );
 			home.setAcExecutiveId(buildingData.getAcExecutiveId()==null?null : Long.valueOf(buildingData.getAcExecutiveId()));
 		//	home.setEffectiveDate(buildingData.getPolicyStartDate());
 			home.setExpiryDate(buildingData.getPolicyEndDate());
@@ -3196,7 +2992,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setOriginalPolicyNo(buildingData.getOriginalPolicyNo()==null?"":buildingData.getOriginalPolicyNo());
 			home.setCommissionPercentage(buildingData.getCommissionPercentage());
 			home.setVatCommission(buildingData.getVatCommission());
-		
+			
 			// Source Type Details 
 			home.setBranchCode(buildingData.getBranchCode()) ;
 		    home.setBranchName(buildingData.getBranchName());
@@ -3206,12 +3002,13 @@ public class QuoteThreadCall implements Callable<Object>  {
 		    home.setBrokerCode(buildingData.getBrokerCode());
 		    home.setAgencyCode(Integer.valueOf(buildingData.getAgencyCode().replaceAll("\\r", "" ).replaceAll("\\n", "" ) ));
 		    home.setCustomerCode(buildingData.getCustomerCode());
-		    home.setCustomerName(buildingData.getCustomerName() );
+		    home.setCustomerName( buildingData.getCustomerName() );
 		    home.setBdmCode(buildingData.getBdmCode());
 			home.setBrokerBranchCode(buildingData.getBrokerBranchCode() );
 			home.setBrokerBranchName(buildingData.getBrokerBranchName() );
 			home.setUserType(buildingData.getSourceType() );
 			home.setLoginId(buildingData.getLoginId());
+			
 		}catch (Exception e) {
 			e.printStackTrace();
 			log.error("Exception is ---> " + e.getMessage());
@@ -3226,23 +3023,17 @@ public class QuoteThreadCall implements Callable<Object>  {
 		HomePositionMaster home = new HomePositionMaster();
 		try {
 			
-			
 			EserviceCommonDetails  eserCommonData = eserCommonRepo.findByRequestReferenceNoAndRiskId(request.getRequestReferenceNo() , request.getVehicleId()) ;
 			Long commonCount =  eserCommonRepo.countByRequestReferenceNo(request.getRequestReferenceNo() ) ;
 			EserviceCustomerDetails custData = eserCustRepo.findByCustomerReferenceNo(eserCommonData.getCustomerReferenceNo());
+			
 			//List<EserviceSectionDetails> sections = eserSecRepo.findByRequestReferenceNoAndRiskIdAndProductIdOrderBySectionIdAsc(request.getRequestReferenceNo() , request.getVehicleId(),request.getProductId() );
 			home.setCompanyId(eserCommonData.getCompanyId());
 			home.setCustomerName(eserCommonData.getCustomerName() );
-			home.setBranchCode(eserCommonData.getBranchCode());
 			home.setProductId(Integer.valueOf(eserCommonData.getProductId()));
 			home.setSectionId(Integer.valueOf(0));
-			home.setBrokerBranchCode(eserCommonData.getBrokerBranchCode());	
-			home.setSubUserType(eserCommonData.getSubUserType());		
-			home.setUserType(eserCommonData.getSubUserType() );
-			home.setLoginId(eserCommonData.getLoginId());
-			home.setApplicationId(eserCommonData.getApplicationId());
+
 			home.setAcExecutiveId(eserCommonData.getAcExecutiveId()==null?null : Long.valueOf(eserCommonData.getAcExecutiveId()));
-			home.setBrokerCode(eserCommonData.getBrokerCode());
 		//	home.setEffectiveDate(eserCommonData.getPolicyStartDate());
 			home.setExpiryDate(eserCommonData.getPolicyEndDate());
 			home.setAdminRemarks(eserCommonData.getAdminRemarks());
@@ -3261,14 +3052,10 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setPromocode(eserCommonData.getPromocode());
 			home.setManualReferalYn(eserCommonData.getManualReferalYn());
 			
-			home.setCustomerCode(eserCommonData.getCustomerCode());
 			home.setProductName(eserCommonData.getProductDesc());
 			home.setCompanyName(eserCommonData.getCompanyName());
 		//	home.setCommissionType(eserCommonData.getCommissionType());
 		//	home.setCommissionTypeDesc(eserCommonData.getCommissionTypeDesc());
-			home.setBdmCode(eserCommonData.getBdmCode());
-			home.setSourceType(eserCommonData.getSourceType());
-			home.setApplicationId(eserCommonData.getApplicationId());				
 			home.setEndtTypeId(eserCommonData.getEndorsementType()==null?null:String.valueOf(eserCommonData.getEndorsementType()));
 			home.setEndtStatus(StringUtils.isBlank(eserCommonData.getEndtStatus())?"":eserCommonData.getEndtStatus());
 			home.setEndtDate(eserCommonData.getEndorsementDate()==null?null:eserCommonData.getEndorsementDate());

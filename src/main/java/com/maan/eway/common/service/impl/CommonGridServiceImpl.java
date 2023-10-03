@@ -45,7 +45,6 @@ import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceSectionDetails;
-import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginMaster;
@@ -900,13 +899,11 @@ public class CommonGridServiceImpl implements CommonGridService {
 				n8 = cb.isNull(m.get("endorsementTypeDesc")); 
 			else if (req.getType().equalsIgnoreCase("E"))
 				n8 = cb.isNotNull(m.get("endorsementTypeDesc"));
-
-			if (req.getApplicationId().equalsIgnoreCase("1")) {
-			query.where(n1, n2, n3, n4, n5, n6,n7,n8).orderBy(orderList);
-			}else {
+			
+			if (req.getApplicationId().equalsIgnoreCase("1"))
+				query.where(n1, n2, n3, n4, n5, n6,n7,n8).orderBy(orderList);
+			else
 				query.where(n1, n2, n3, n4, n5, n6,n7,n8,n11).orderBy(orderList);
-			}
-
 				
 			TypedQuery<ReferalCommonCriteriaRes> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
@@ -956,6 +953,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 			Predicate n9 = null;
 			Predicate n10 = null;
 			Predicate n11 = null;
+			
 			if (req.getApplicationId().equalsIgnoreCase("1")) {
 				n5 = cb.equal(m.get("loginId"), req.getLoginId());
 			} else {
@@ -1062,12 +1060,10 @@ public class CommonGridServiceImpl implements CommonGridService {
 		//	Predicate n6 = cb.equal(c.get("branchCode"), req.getBdmCode());
 			Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
 			Predicate n7 = cb.equal(m.get("riskId"), riskId);
-			
 			Predicate n15 = cb.equal(m.get("applicationId"), req.getApplicationId());
 			Predicate n16 = cb.equal(m.get("loginId"), req.getLoginId());
 			Predicate n17 = cb.equal(m.get("customerName"), req.getLoginId());
 			Predicate n18 = cb.or(n16,n17);
-	
 			Predicate n14 = null;
 			if(req.getType().equalsIgnoreCase("Q"))
 					n14 = cb.isNull(m.get("endorsementTypeDesc")); 
@@ -1155,7 +1151,6 @@ public class CommonGridServiceImpl implements CommonGridService {
 			Predicate n16 = cb.equal(m.get("loginId"), req.getLoginId());
 			Predicate n17 = cb.equal(m.get("customerName"), req.getLoginId());
 			Predicate n18 = cb.or(n16,n17);
-			
 			// Uw Condition 
 			if("RP".equalsIgnoreCase(status)) {
 				
@@ -2372,9 +2367,9 @@ public class CommonGridServiceImpl implements CommonGridService {
 					commonDataRepo.deleteAll(commonData);
 				}
 				//EserviceBuildingDetals
-				EserviceBuildingDetails buildingData = eseBuildingRepo.findByQuoteNo(quoteNo);
-				if (buildingData!=null) {
-					eseBuildingRepo.delete(buildingData);
+				List<EserviceBuildingDetails> buildingDatas = eseBuildingRepo.findByQuoteNoOrderByRiskIdAsc(quoteNo);
+				if (buildingDatas.size()>0) {
+					eseBuildingRepo.deleteAll(buildingDatas);
 				}
 				
 			} catch (Exception e) {
@@ -3899,10 +3894,10 @@ public class CommonGridServiceImpl implements CommonGridService {
 					Predicate n8 = cb.isNotNull(m.get("bdmCode"));
 					Predicate n15 = null;
 					if(req.getType().equalsIgnoreCase("Q"))
-						n15 = cb.isNull(m.get("endorsementTypeDesc")); 
+						n15 = cb1.isNull(m1.get("endorsementTypeDesc")); 
 					else if (req.getType().equalsIgnoreCase("E"))
-						n15 = cb.isNotNull(m.get("endorsementTypeDesc"));
-					query.where(n1, n2, n3, n4, n5, n8,n15);
+						n15 = cb1.isNotNull(m1.get("endorsementTypeDesc"));
+					query1.where(n1, n2, n3, n4, n5, n6,n15);
 
 					TypedQuery<Tuple> typedQuery = em.createQuery(query);
 					list = typedQuery.getResultList();
@@ -3934,12 +3929,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 					Predicate n4 = cb1.equal(m1.get("productId"), req.getProductId());
 					Predicate n5 = cb1.equal(m1.get("status"), status);
 					Predicate n6 = cb1.isNull(m1.get("bdmCode"));
-					Predicate n15 = null;
-					if(req.getType().equalsIgnoreCase("Q"))
-						n15 = cb1.isNull(m1.get("endorsementTypeDesc")); 
-					else if (req.getType().equalsIgnoreCase("E"))
-						n15 = cb1.isNotNull(m1.get("endorsementTypeDesc"));
-					query1.where(n1, n2, n3, n4, n5, n6,n15);
+					query1.where(n1, n2, n3, n4, n5, n6);
 
 					TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
 					list1 = typedQuery1.getResultList();
@@ -3964,6 +3954,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 			}
 			return resList;
 		}
+
 		@Override
 		public List<GetExistingBrokerListRes> getAdminCommonRPDropdown(ExistingBrokerUserListReq req,
 				Date today) {

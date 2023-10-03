@@ -56,6 +56,8 @@ public interface CommonDataDetailsRepository  extends JpaRepository<CommonDataDe
 	void deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal,
 			String originalPolicyNo);
 
+	List<CommonDataDetails> findByQuoteNoAndSectionIdNotOrderByRiskIdAsc(String quoteno, String string);
+
 	
 
 }

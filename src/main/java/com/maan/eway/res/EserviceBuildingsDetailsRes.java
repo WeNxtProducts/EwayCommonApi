@@ -348,4 +348,35 @@ public class EserviceBuildingsDetailsRes implements Serializable {
  
 	@JsonProperty("PolicyNo")
 	private String policyNo;
+
+
+	@JsonProperty("MoneySafeLimit")
+    private String moneySafeLimit    ;
+	
+	@JsonProperty("MoneyOutofSafe")
+    private String moneyOutofSafe    ;
+	
+	@JsonProperty("MoneyDirectorResidence")
+    private String moneyDirectorResidence    ;
+	
+	@JsonProperty("MoneyCollector")
+    private String moneyCollector    ;
+	
+	@JsonProperty("MoneyAnnualEstimate")
+    private String moneyAnnualEstimate    ;
+	
+	@JsonProperty("MoneyMajorLoss")
+    private String moneyMajorLoss;
+	
+	@JsonProperty("ElecEquipSuminsured")
+	private BigDecimal ElecEquipSuminsured;
+	
+	@JsonProperty("MachinerySi")
+    private String machinerySi;
+	
+	@JsonProperty("FireEquipSi")
+    private String fireEquipSi;
+	
+	@JsonProperty("FirePlantSi")
+    private String firePlantSi;
 }

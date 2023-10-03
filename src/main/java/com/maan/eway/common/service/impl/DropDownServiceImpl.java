@@ -2735,7 +2735,7 @@ public class DropDownServiceImpl  implements DropDownService{
 			String itemType = "MACHINERY_BREAKDOWN" ;
 			List<ListItemValue> getList  = getListItem(req1 , itemType, req.getInsuranceId());
 			
-			BuildingRiskDetails build = buildRepo.findByQuoteNo(req.getQuoteNo());
+			BuildingRiskDetails build = buildRepo.findByQuoteNoAndSectionId(req.getQuoteNo(),"41");
 			
 			for (ListItemValue data : getList) {
 				MachineryDropDownRes res = new MachineryDropDownRes();
@@ -2766,16 +2766,16 @@ public class DropDownServiceImpl  implements DropDownService{
 					}
 				}}
 				if(data.getItemCode().equals("3")) {
-					if(build.getElecEquipSuminsured()!=null) {
-						if(build.getElecEquipSuminsured().compareTo(BigDecimal.ZERO) > 0) {
+					if(build.getMachineEquipSi()!=null) {
+						if(build.getMachineEquipSi().compareTo(BigDecimal.ZERO) > 0) {
 					
 						res.setCode(data.getItemCode());
 						res.setCodeDesc(data.getItemValue());
 						res.setStatus(data.getStatus());
-						res.setSumInsured(build.getElecEquipSuminsured());
+						res.setSumInsured(build.getMachineEquipSi());
 						resList.add(res);
 						
-						sumInsured = sumInsured.add(build.getElecEquipSuminsured());
+						sumInsured = sumInsured.add(build.getMachineEquipSi());
 					}
 				}}
 				if(data.getItemCode().equals("4")) {
