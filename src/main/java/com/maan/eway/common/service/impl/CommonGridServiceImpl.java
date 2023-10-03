@@ -3897,7 +3897,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 						n15 = cb.isNull(m.get("endorsementTypeDesc")); 
 					else if (req.getType().equalsIgnoreCase("E"))
 						n15 = cb.isNotNull(m.get("endorsementTypeDesc"));
-					query1.where(n1, n2, n3, n4, n5, n6,n15);
+					query.where(n1, n2, n3, n4, n5, n8,n15);
 
 					TypedQuery<Tuple> typedQuery = em.createQuery(query);
 					list = typedQuery.getResultList();
