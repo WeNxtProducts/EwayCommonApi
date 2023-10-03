@@ -2624,7 +2624,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			home.setTax1(new BigDecimal(df.format(tax1)));
 			home.setTax2(new BigDecimal(df.format(tax2)));
 			home.setTax3(new BigDecimal(df.format(tax3)));
-			home.setEffectiveDate(new Date());
+			home.setEffectiveDate(home.getInceptionDate());
 			
 			List<Integer> vehicleIds = request.getVehicleIdsList().stream().map(VehicleIdsReq :: getVehicleId ).collect(Collectors.toList());
 			home.setVehicleNo(vehicleIds.size());
