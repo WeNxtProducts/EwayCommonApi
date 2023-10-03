@@ -99,8 +99,11 @@ public class ApigwClient {
             HttpPost request = new HttpPost(url);
             StringEntity params = new StringEntity( jsonData.toString());
 
+            System.out.println(url);
+            System.out.println( jsonData.toString());
             for (Object key : header.keySet()) {
                 request.addHeader(key.toString(), header.get(key).toString());
+                System.out.println(key.toString()+":"+ header.get(key).toString());
             }
 
             request.setEntity(params);
@@ -108,7 +111,7 @@ public class ApigwClient {
 
             HttpEntity httpEntity = hresp.getEntity();
             String apiOutput = EntityUtils.toString(httpEntity);
-            
+           
 
             return new Gson().fromJson(apiOutput, JsonObject.class);
         } catch (Exception ex) {

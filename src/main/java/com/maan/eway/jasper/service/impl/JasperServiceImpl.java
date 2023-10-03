@@ -593,7 +593,9 @@ public class JasperServiceImpl implements JasperService {
 		 try {
 			 	//String filePath = config.getPolicyPath() + "pdf";
 			 	String filePath="d:\\"+Instant.now().toEpochMilli();
-				String getPdfOutFilePath = filePath + ".pdf";
+			 	String filePath = config.getPolicyPath() + Instant.now().toEpochMilli();
+			 	//String filePath="d:\\"+Instant.now().toEpochMilli();
+			 	String getPdfOutFilePath = filePath + ".pdf";
 				Map<String,Object> map = new HashMap<String,Object>();
 				map.put("pvImagePath", config.getImagePath().substring(1,config.getImagePath().length()-0));
 				//map.put("pvPolicyNo", homeData.getPolicyNo());
