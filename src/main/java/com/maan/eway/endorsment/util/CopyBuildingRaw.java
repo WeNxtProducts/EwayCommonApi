@@ -376,6 +376,20 @@ public class CopyBuildingRaw {
 				Predicate pm3   = cb.like(h.get("policyNo"), m.get("policyNo"));
 				endtPre.where(pm1,pm2,pm3);
 		
+				// Over All Premium Fc
+				Subquery<Long> overAllPremiumFc = query.subquery(Long.class);
+				Root<HomePositionMaster> ocpm1 = overAllPremiumFc.from(HomePositionMaster.class);
+				overAllPremiumFc.select(cb.sum(ocpm1.get("overallPremiumFc")));
+				Predicate a1 = cb.equal(m.get("quoteNo"),ocpm1.get("quoteNo") );
+				overAllPremiumFc.where(a1);
+				
+				// Over All Premium Lc
+				Subquery<Long> overAllPremiumLc = query.subquery(Long.class);
+				Root<HomePositionMaster> ocpm2 = overAllPremiumLc.from(HomePositionMaster.class);
+				overAllPremiumLc.select(cb.sum(ocpm2.get("overallPremiumLc")));
+				Predicate a2 = cb.equal(m.get("quoteNo"),ocpm2.get("quoteNo") );
+				overAllPremiumLc.where(a2);
+				
 				// Select
 				query.multiselect(//cb.literal(Long.parseLong("1")).alias("idsCount"),
 						// Customer Info
@@ -398,7 +412,7 @@ public class CopyBuildingRaw {
 						cb.max(m.get("endorsementRemarks")).alias("endorsementRemarks"),
 						cb.max(m.get("endorsementDate")).alias("endorsementDate"),
 						//Home Position Master
-						cb.sum(m.get("overallPremiumLc")).alias("overallPremiumLc"), cb.sum(m.get("overallPremiumFc")).alias("overallPremiumFc"),
+						overAllPremiumLc.alias("overallPremiumLc"), overAllPremiumFc.alias("overallPremiumFc"),
 						endtPre.alias("endtPremium"),cb.max( m.get("currency")).alias("currency")
 						
 						);
