@@ -168,7 +168,8 @@ public class CopyBuildingRaw {
 				
 				pendingcount = BuildingList.stream().filter(m->m.getEndtStatus().equals("P")).count();
 				if(BuildingList.stream().filter(m->(m.getEndtStatus().equals("P") && (Integer.parseInt(ent.getEndtType())==m.getEndorsementType()))).count()>0) {
-					BuildingCopyRes res = dozerMapper.map(BuildingList.get(0) , BuildingCopyRes.class);
+					List<EserviceBuildingDetails> pendingList = BuildingList.stream().filter(m->(m.getEndtStatus().equals("P") && (Integer.parseInt(ent.getEndtType())==m.getEndorsementType()))).collect(Collectors.toList());
+					BuildingCopyRes res = dozerMapper.map(pendingList.get(0) , BuildingCopyRes.class);
 					
 					//List<EserviceBuildingDetails> prevDatas = eBuildingRepo.findByPolicyNoAndRiskId(prevPolicyNo , 1 );
 					//res.setOldRequestReferenceNo(prevDatas.get(0).getRequestReferenceNo() );
