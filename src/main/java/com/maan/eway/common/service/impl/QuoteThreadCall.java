@@ -1560,7 +1560,16 @@ public class QuoteThreadCall implements Callable<Object>  {
 							PolicyCoverData oldCoverData = filterOldCover.get(0) ;
 							periodStart = oldCoverData.getCoverPeriodFrom().before(request.getPolicyStartDate()) ? request.getPolicyStartDate() : oldCoverData.getCoverPeriodFrom();
 							periodEnd   = oldCoverData.getCoverPeriodTo().before(request.getPolicyEndDate()) ? request.getPolicyEndDate() : oldCoverData.getCoverPeriodTo();
-							alreadyOptCover = true ;
+							SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy"); 
+							String end1 = oldCoverData.getCoverPeriodTo() !=null ? sdf2.format(oldCoverData.getCoverPeriodTo()) : "";
+							String end2 = request.getPolicyEndDate() !=null ?  sdf2.format(request.getPolicyEndDate()) : "";
+							
+							if( end1.equalsIgnoreCase(end2) ) {
+								alreadyOptCover = true ;
+							} else {
+								alreadyOptCover = false ;
+							}
+							
 							
 						} else {
 							periodStart = effDate.before(request.getPolicyStartDate()) ? request.getPolicyStartDate() : effDate;
@@ -1575,7 +1584,15 @@ public class QuoteThreadCall implements Callable<Object>  {
         					PolicyCoverData oldSubCoverData = filterOldSubCover.get(0) ;
 							periodStart = oldSubCoverData.getCoverPeriodFrom().before(request.getPolicyStartDate()) ? request.getPolicyStartDate() : oldSubCoverData.getCoverPeriodFrom();
 							periodEnd   = oldSubCoverData.getCoverPeriodTo().before(request.getPolicyEndDate()) ? request.getPolicyEndDate() : oldSubCoverData.getCoverPeriodTo();
-							alreadyOptCover = true ;
+							SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy"); 
+							String end1 = oldSubCoverData.getCoverPeriodTo() !=null ? sdf2.format(oldSubCoverData.getCoverPeriodTo()) : "";
+							String end2 = request.getPolicyEndDate() !=null ?  sdf2.format(request.getPolicyEndDate()) : "";
+							
+							if( end1.equalsIgnoreCase(end2) ) {
+								alreadyOptCover = true ;
+							} else {
+								alreadyOptCover = false ;
+							}
 							
 						} else {
 							periodStart = effDate.before(request.getPolicyStartDate()) ? request.getPolicyStartDate() : effDate;
