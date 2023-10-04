@@ -101,7 +101,7 @@ public class JasperServiceImpl implements JasperService {
 
 			if (StringUtils.isNotBlank(homeData.getPolicyNo())) {
 				input.put("pvPolicyNo", homeData.getPolicyNo());
-				input.put("pvImagepath", config.getImagePath());
+				input.put("pvImagepath", config.getImagePath().substring(1, config.getImagePath().length()-0));
 
 				// directoryname=homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
 				filePath = config.getPolicyPath() + "pdf";
@@ -144,7 +144,11 @@ public class JasperServiceImpl implements JasperService {
 					res = getJasperPdfFile("/report/jasper/EwayTravelReport.jrxml", getPdfOutFilePath, input2);
 					
 				} else if (product.getMotorYn().equalsIgnoreCase("M")) {
-					res = getJasperPdfFile("/report/jasper/MotorPrivate.jrxml", getPdfOutFilePath, input);
+					if(homeData.getEndtCount() != 0) {
+						res = getJasperPdfFile("/report/jasper/MotorEndorsementSchedule.jrxml", getPdfOutFilePath, input);
+					}else {
+						res = getJasperPdfFile("/report/jasper/MotorPrivate.jrxml", getPdfOutFilePath, input);
+					}
 				}else if(product.getMotorYn().equalsIgnoreCase("A")&& "42".equalsIgnoreCase(homeData.getProductId().toString())) {
 					String imagePath = config.getImagePath().substring(1,config.getImagePath().length()-0);
 					Map<String,Object> input2 = new HashMap<>();
