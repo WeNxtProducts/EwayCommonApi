@@ -2028,7 +2028,7 @@ public class PaymentServiceImpl implements PaymentService {
 	    		   if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
 	    			   motorList.forEach( o -> {
 	    				   o.setPolicyNo(policyNo);
-	    				   o.setStatus("P");
+	    				   o.setStatus("D");
 	    				   o.setEndtStatus("C");
 	    			   });
 					} else {
@@ -2036,9 +2036,9 @@ public class PaymentServiceImpl implements PaymentService {
 						   if( ! "D".equalsIgnoreCase(o.getStatus()) ) {
 							   o.setPolicyNo(policyNo);
 			    			   o.setStatus("P");
+						   }
 			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
-			    		   }
-		    			    
+			    		    
 		    		   });
 					}
 	    		   motorRepo.saveAllAndFlush(motorList);
@@ -2067,7 +2067,7 @@ public class PaymentServiceImpl implements PaymentService {
 	    		   if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
 	    			   passengerList.forEach( o -> {
 	    				   o.setPolicyNo(policyNo);
-	    				   o.setStatus("P");
+	    				   o.setStatus("D");
 	    				   o.setEndtStatus("C");
 	    			   });
 					} else {
@@ -2075,9 +2075,9 @@ public class PaymentServiceImpl implements PaymentService {
 						   if( ! "D".equalsIgnoreCase(o.getStatus()) ) {
 							   o.setPolicyNo(policyNo);
 			    			   o.setStatus("P");
+						   }
 			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
-			    		   }
-		    			    
+			    		    
 		    		   });
 					}
 	    		   passengerRepo.saveAllAndFlush(passengerList);
@@ -2096,7 +2096,7 @@ public class PaymentServiceImpl implements PaymentService {
 	    		   if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
 	    			   buildingList.forEach( o -> {
 	    				   o.setPolicyNo(policyNo);
-	    				   o.setStatus("P");
+	    				   o.setStatus("D");
 	    				   o.setEndtStatus("C");
 	    			   });
 					} else {
@@ -2104,9 +2104,9 @@ public class PaymentServiceImpl implements PaymentService {
 						   if( ! "D".equalsIgnoreCase(o.getStatus()) ) {
 							   o.setPolicyNo(policyNo);
 			    			   o.setStatus("P");
+						   }
 			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
-			    		   }
-		    			    
+			    		    
 		    		   });
 					}
 	    		   buildingRiskRepo.saveAllAndFlush(buildingList);
@@ -2135,7 +2135,7 @@ public class PaymentServiceImpl implements PaymentService {
 	    		   if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
 	    			   humanList.forEach( o -> {
 	    				   o.setPolicyNo(policyNo);
-	    				   o.setStatus("P");
+	    				   o.setStatus("D");
 	    				   o.setEndtStatus("C");
 	    			   });
 					} else {
@@ -2143,8 +2143,9 @@ public class PaymentServiceImpl implements PaymentService {
 						   if( ! "D".equalsIgnoreCase(o.getStatus()) ) {
 							   o.setPolicyNo(policyNo);
 			    			   o.setStatus("P");
+						   }
 			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
-			    		   }
+			    		
 		    			    
 		    		   });
 					}
@@ -2177,7 +2178,7 @@ public class PaymentServiceImpl implements PaymentService {
 	    		   if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
 	    			   humanList.forEach( o -> {
 	    				   o.setPolicyNo(policyNo);
-	    				   o.setStatus("P");
+	    				   o.setStatus("D");
 	    				   o.setEndtStatus("C");
 	    			   });
 					} else {
@@ -2185,8 +2186,9 @@ public class PaymentServiceImpl implements PaymentService {
 						   if( ! "D".equalsIgnoreCase(o.getStatus()) ) {
 							   o.setPolicyNo(policyNo);
 			    			   o.setStatus("P");
+						   }   
 			    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
-			    		   }
+			    		   
 		    			    
 		    		   });
 					}
