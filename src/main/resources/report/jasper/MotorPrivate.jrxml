@@ -45,7 +45,7 @@ MDD.VEHICLE_TYPE_DESC TYPE,
 MDD.CUBIC_CAPACITY AS CC,
 MDD.MANUFACTURE_YEAR AS VEHYEAR,
 MDD.SEATING_CAPACITY NO_OF_SEATS,
-MDD.COLOR,
+MDD.COLOR_DESC AS COLOR,
 MDD.POLICY_TYPE_DESC COVER_TYPE,
 MDD.WIND_SCREEN_SUM_INSURED AS WIND_SCREEN_AMT,
 MDD.SUM_INSURED AS SUM_INSURED
@@ -94,7 +94,7 @@ ORDER BY SNO]]>
 			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
 		</field>
 		<field name="COLOR" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="COLOR"/>
+			<property name="com.jaspersoft.studio.field.name" value="COLOR_DESC"/>
 			<property name="com.jaspersoft.studio.field.label" value="COLOR"/>
 			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
 		</field>

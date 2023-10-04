@@ -95,7 +95,10 @@ INFO.USER_NAME AS BROKER_NAME,
 PIF.TITLE_DESC ,
 PIF.CLIENT_NAME,
 PIF.ADDRESS_1,
-PIF.ADDRESS_2,
+PIF.PIN_CODE AS PO_BOX,
+PIF.STATE_NAME AS REGION_NAME,
+PIF.CITY_NAME AS DISTRICT_NAME,
+(SELECT COUNTRY_NAME FROM EWAY_COUNTRY_MASTER WHERE COUNTRY_ID=PIF.NATIONALITY AND COMPANY_ID=HPM.COMPANY_ID AND STATUS='Y') AS COUNTRY_NAME,
 HPM.BRANCH_NAME,
 HPM.CREDIT_NO,
 HPM.CURRENCY,
@@ -119,17 +122,17 @@ CASE WHEN HPM.ENDT_COUNT= '0' THEN HPM.COMMISSION
         END
 END AS PREMIUM,
 CASE WHEN HPM.ENDT_COUNT= '0' THEN 
-       (HPM.VAT_PREMIUM_LC/HPM.VAT_PERCENT) 
+       (HPM.COMMISSION*HPM.VAT_PERCENT)/100 
      ELSE
        CASE
-       WHEN HPM.CREDIT_NO IS NOT NULL THEN (HPM.VAT_PREMIUM_LC/HPM.VAT_PERCENT)
+       WHEN HPM.CREDIT_NO IS NOT NULL THEN (HPM.COMMISSION*HPM.VAT_PERCENT)/100 
         END
 END AS VAT_PREMIUM_FC,
 CASE WHEN HPM.ENDT_COUNT= '0' THEN 
-       HPM.COMMISSION + (HPM.VAT_PREMIUM_LC/HPM.VAT_PERCENT)
+       HPM.COMMISSION + (HPM.COMMISSION*HPM.VAT_PERCENT)/100 
      ELSE
       CASE
-       WHEN HPM.CREDIT_NO IS NOT NULL THEN HPM.COMMISSION + (HPM.VAT_PREMIUM_LC/HPM.VAT_PERCENT)
+       WHEN HPM.CREDIT_NO IS NOT NULL THEN HPM.COMMISSION + (HPM.COMMISSION*HPM.VAT_PERCENT)/100 
         END
 END AS OVERALL_PREMIUM_FC,
 VAT_PERCENT AS VAT_PERCENT
@@ -143,7 +146,7 @@ COMP.AMEND_ID= (SELECT MAX(AMEND_ID) FROM EWAY_INSURANCE_COMPANY_MASTER
       WHERE COMPANY_ID=COMP.COMPANY_ID )
 AND HPM.STATUS = 'P'
 AND HPM.POLICY_NO= $P{pvPolicyNo} 
-ORDER BY HPM.ENTRY_DATE DESC ]]>
+ORDER BY HPM.ENTRY_DATE DESC]]>
 	</queryString>
 	<field name="BROKER_NAME" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="USER_NAME"/>
@@ -165,10 +168,24 @@ ORDER BY HPM.ENTRY_DATE DESC ]]>
 		<property name="com.jaspersoft.studio.field.label" value="ADDRESS_1"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
 	</field>
-	<field name="ADDRESS_2" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ADDRESS_2"/>
-		<property name="com.jaspersoft.studio.field.label" value="ADDRESS_2"/>
+	<field name="PO_BOX" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PIN_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="PO_BOX"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	</field>
+	<field name="REGION_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="STATE_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="REGION_NAME"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	</field>
+	<field name="DISTRICT_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="CITY_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="DISTRICT_NAME"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	</field>
+	<field name="COUNTRY_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="COUNTRY_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="COUNTRY_NAME"/>
 	</field>
 	<field name="BRANCH_NAME" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="BRANCH_NAME"/>
@@ -470,7 +487,7 @@ ORDER BY HPM.ENTRY_DATE DESC ]]>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="59" y="45" width="155" height="15" uuid="5bee4249-b37e-41ea-9614-db50abf2f298">
+				<reportElement x="59" y="45" width="291" height="15" uuid="5bee4249-b37e-41ea-9614-db50abf2f298">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -478,7 +495,7 @@ ORDER BY HPM.ENTRY_DATE DESC ]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ADDRESS_1}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{ADDRESS_1}+", "+$F{PO_BOX}+", "+$F{REGION_NAME}+", "+$F{DISTRICT_NAME}+", "+$F{COUNTRY_NAME}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="422" y="30" width="8" height="15" uuid="529d9370-2408-4b08-a291-df1440328de2">

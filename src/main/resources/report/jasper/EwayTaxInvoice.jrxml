@@ -68,8 +68,12 @@ HPM.AGENCY_CODE,
 PIF.TITLE_DESC ,
 PIF.CLIENT_NAME,
 PIF.ADDRESS_1,
-PIF.ADDRESS_2,
+PIF.PIN_CODE AS PO_BOX,
+PIF.STATE_NAME AS REGION_NAME,
+PIF.CITY_NAME AS DISTRICT_NAME,
+(SELECT COUNTRY_NAME FROM EWAY_COUNTRY_MASTER WHERE COUNTRY_ID=PIF.NATIONALITY AND COMPANY_ID=HPM.COMPANY_ID AND STATUS='Y') AS COUNTRY_NAME,
 PIF.VR_TIN_NO,
+(CASE WHEN PIF.ID_TYPE='6' THEN PIF.ID_NUMBER END) AS CUSTOMER_TIN,
 HPM.POLICY_NO,
 HPM.QUOTE_NO,
 HPM.INCEPTION_DATE,
@@ -150,15 +154,33 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 		<property name="com.jaspersoft.studio.field.label" value="ADDRESS_1"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
 	</field>
-	<field name="ADDRESS_2" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ADDRESS_2"/>
-		<property name="com.jaspersoft.studio.field.label" value="ADDRESS_2"/>
+	<field name="PO_BOX" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PIN_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="PO_BOX"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	</field>
+	<field name="REGION_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="STATE_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="REGION_NAME"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	</field>
+	<field name="DISTRICT_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="CITY_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="DISTRICT_NAME"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	</field>
+	<field name="COUNTRY_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="COUNTRY_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="COUNTRY_NAME"/>
 	</field>
 	<field name="VR_TIN_NO" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="VR_TIN_NO"/>
 		<property name="com.jaspersoft.studio.field.label" value="VR_TIN_NO"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	</field>
+	<field name="CUSTOMER_TIN" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="CUSTOMER_TIN"/>
+		<property name="com.jaspersoft.studio.field.label" value="CUSTOMER_TIN"/>
 	</field>
 	<field name="POLICY_NO" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="POLICY_NO"/>
@@ -190,7 +212,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 		<property name="com.jaspersoft.studio.field.label" value="DEBIT_NOTE_NO"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
-	<field name="COLUMN_16" class="java.lang.String">
+	<field name="COLUMN_20" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="QUOTE_NO"/>
 		<property name="com.jaspersoft.studio.field.label" value="QUOTE_NO"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
@@ -295,7 +317,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				</textElement>
 				<textFieldExpression><![CDATA["To:"]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="30" y="0" width="120" height="15" uuid="79b5add7-c94b-440b-8bbe-d37f769a7a14">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -307,14 +329,14 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textFieldExpression><![CDATA[$F{TITLE_DESC}+"."+$F{CLIENT_NAME}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="30" y="15" width="120" height="25" uuid="f7927e65-f0b3-49af-8c5e-fc989a4c7c2d">
+				<reportElement x="30" y="15" width="234" height="25" uuid="f7927e65-f0b3-49af-8c5e-fc989a4c7c2d">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement>
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ADDRESS_1}+" "+(($F{ADDRESS_2})==null?"":$F{ADDRESS_2})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{ADDRESS_1}+", "+$F{PO_BOX}+", "+$F{REGION_NAME}+", "+$F{DISTRICT_NAME}+", "+$F{COUNTRY_NAME}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="336" y="10" width="64" height="15" uuid="cc8a1628-a72c-4ab1-84f4-8ce66a4525ce">
@@ -327,7 +349,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				</textElement>
 				<textFieldExpression><![CDATA["Invoice Number"]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="410" y="10" width="99" height="15" uuid="901fdb86-bb2d-467c-b05f-ca392d912a15">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -348,7 +370,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				</textElement>
 				<textFieldExpression><![CDATA["Date"]]></textFieldExpression>
 			</textField>
-			<textField pattern="dd/MM/yyyy">
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
 				<reportElement x="410" y="25" width="99" height="15" uuid="d95455a1-9c93-46ca-ad39-5fb4315351ab">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -400,7 +422,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				</textElement>
 				<textFieldExpression><![CDATA["Intermediary :"]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="80" y="19" width="100" height="15" uuid="3dd380c2-de32-4c54-8a23-970a5b1ead16">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -409,9 +431,9 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{VR_TIN_NO}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{CUSTOMER_TIN}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="80" y="42" width="200" height="15" uuid="bf0ce5b4-8949-47aa-9a0a-04eef4702d45"/>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
@@ -439,9 +461,9 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{VR_TIN_NO}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="376" y="9" width="24" height="15" uuid="0363b37f-e62d-49df-8605-69d7e7d78696">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -452,7 +474,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				</textElement>
 				<textFieldExpression><![CDATA["VRN"]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="410" y="9" width="86" height="15" uuid="561f2d49-69f2-4334-9b2e-182c655939bf">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -492,7 +514,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				</textElement>
 				<textFieldExpression><![CDATA[":"]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="410" y="24" width="86" height="15" uuid="34c6895f-9d84-41a0-a748-b8e1dfac8714">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -590,7 +612,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				</textElement>
 				<textFieldExpression><![CDATA["Policy Period From :"]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="61" y="0" width="189" height="15" uuid="97bb6f65-564a-49d5-951c-cc80a274641d">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -601,7 +623,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{POLICY_NO}]]></textFieldExpression>
 			</textField>
-			<textField pattern="dd/MM/yyyy">
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
 				<reportElement x="95" y="15" width="55" height="15" uuid="4f9de3a2-1664-4fe6-8ada-d06985c98fc6">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -633,7 +655,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				</textElement>
 				<textFieldExpression><![CDATA["Policy Period To :"]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="392" y="0" width="28" height="15" uuid="42e46740-79c1-4ac6-8e28-d99f9600f481"/>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
@@ -641,7 +663,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{CURRENCY}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00#;#,##0.00#-">
+			<textField pattern="#,##0.00#;#,##0.00#-" isBlankWhenNull="true">
 				<reportElement x="420" y="0" width="70" height="15" uuid="b6e3c3b6-428b-478a-9582-5e5ed4172e43"/>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
@@ -649,7 +671,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{TOTAL_SUM_INSURED}]]></textFieldExpression>
 			</textField>
-			<textField pattern="dd/MM/yyyy">
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
 				<reportElement x="392" y="15" width="70" height="15" uuid="96f60020-d324-49f4-834b-fdd45248a14e"/>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
@@ -704,7 +726,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				</textElement>
 				<textFieldExpression><![CDATA["Currency"]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="487" y="0" width="45" height="15" uuid="586319c9-5ade-493d-8b3f-9fdbeecd4c0a">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -714,7 +736,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{CURRENCY}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00#;#,##0.00#-">
+			<textField pattern="#,##0.00#;#,##0.00#-" isBlankWhenNull="true">
 				<reportElement x="442" y="15" width="86" height="15" uuid="a0eb2977-b5be-4472-80b4-7cc21add73fa">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -726,7 +748,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{PERMIUM}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00#;#,##0.00#-">
+			<textField pattern="#,##0.00#;#,##0.00#-" isBlankWhenNull="true">
 				<reportElement x="442" y="30" width="86" height="15" uuid="ba2500d8-30bf-4b63-aa7b-2dd8eed7e261">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -738,7 +760,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{PERMIUM}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00#;#,##0.00#-">
+			<textField pattern="#,##0.00#;#,##0.00#-" isBlankWhenNull="true">
 				<reportElement x="442" y="45" width="86" height="20" uuid="543d91a2-bbb5-416a-9928-882230e0801e">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -750,7 +772,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{VAT_PERMIUM}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00#;#,##0.00#-">
+			<textField pattern="#,##0.00#;#,##0.00#-" isBlankWhenNull="true">
 				<reportElement x="442" y="65" width="86" height="15" uuid="f6a72648-cf5d-4949-8ad5-b76a3d30a35e">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -937,7 +959,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				</textElement>
 				<textFieldExpression><![CDATA["Invoice Total (Tshs)"]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00#;#,##0.00#-">
+			<textField pattern="#,##0.00#;#,##0.00#-" isBlankWhenNull="true">
 				<reportElement x="95" y="17" width="80" height="12" uuid="fb44a9ef-3655-4fd5-941f-6a542e6e7fb5"/>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
@@ -961,7 +983,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				</textElement>
 				<textFieldExpression><![CDATA["Vat Total (Tshs)"]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00#;#,##0.00#-">
+			<textField pattern="#,##0.00#;#,##0.00#-" isBlankWhenNull="true">
 				<reportElement x="95" y="47" width="80" height="12" uuid="48852c9f-0667-4a1d-879a-38e980d72657"/>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
@@ -1033,7 +1055,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				</textElement>
 				<textFieldExpression><![CDATA["Please note the payment of Premium should be in"]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="200" y="0" width="30" height="15" uuid="bc6562a7-2343-4e8b-9481-9307eabb0359">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -1055,7 +1077,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				</textElement>
 				<textFieldExpression><![CDATA["Printed By :"]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement mode="Transparent" x="391" y="0" width="71" height="15" forecolor="#808080" backcolor="#FFFFFF" uuid="d0ce482c-0cee-4486-84e2-def688fa1c22">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -1226,7 +1248,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{APPROVED_BY}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement mode="Transparent" x="345" y="108" width="59" height="15" forecolor="#808080" backcolor="#FFFFFF" uuid="a8541bb3-33df-4ffb-9844-804160db7230">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
