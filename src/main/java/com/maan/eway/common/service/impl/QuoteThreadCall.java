@@ -343,7 +343,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 				eserCommonData.setEndtPremium(endtPremium.doubleValue());
 				commonData.setEndtPremium(endtPremium.doubleValue());
 			} 
-			
+			List<VehicleIdsReq> filterCoverList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId()!=null && StringUtils.isNotBlank(o.getSectionId())	&&	            					
+					o.getVehicleId().equals(eserCommonData.getRiskId()) && o.getSectionId().equalsIgnoreCase(eserCommonData.getSectionId()) ).collect(Collectors.toList());
+		
+			if(filterCoverList.size()== 0 || filterCoverList.get(0).getCoverIdList()==null  || filterCoverList.get(0).getCoverIdList().size() == 0 ) {
+				commonData.setStatus("D");
+			}
 			eserCommonRepo.saveAndFlush(eserCommonData);
 			commonDataRepo.saveAndFlush(commonData);
 			log.error("Save Common Info is ---> " + json.toJson(commonData));
