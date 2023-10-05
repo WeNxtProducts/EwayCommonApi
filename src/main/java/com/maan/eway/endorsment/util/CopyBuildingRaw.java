@@ -209,7 +209,7 @@ public class CopyBuildingRaw {
 			
 			EndtTypeMaster entMaster=ratingutil.getEndtMasterData(ent.getCompanyId(),ent.getProductId().toPlainString(),ent.getEndtType());
 					/*endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(ent.getCompanyId(), ent.getProductId().intValue(), "Y",Integer.parseInt(ent.getEndtType()),new Date(), new Date());*/
-			List<EserviceBuildingDetails> BuildingList=eBuildingRepo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
+			List<EserviceBuildingDetails> BuildingList=eBuildingRepo.findByQuoteNoStatusNotOrderByRiskIdAsc(prevQuoteNo,"D");
 			List<EserviceBuildingDetails> newBuildingList=new ArrayList<EserviceBuildingDetails>();
 			++count;
 			for(EserviceBuildingDetails m :BuildingList) {
