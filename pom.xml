@@ -213,11 +213,11 @@
       <artifactId>cache2k-api</artifactId>
       <version>${cache2k-version}</version>
     </dependency>
-    <dependency>
+    <!-- <dependency>
     <groupId>com.oracle</groupId>
     <artifactId>ojdbc8</artifactId>
     <version>12.2.0.1</version>
-</dependency>
+</dependency> -->
     <dependency>
       <groupId>org.cache2k</groupId>
       <artifactId>cache2k-core</artifactId>
