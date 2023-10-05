@@ -650,7 +650,7 @@ public class GridController {
 	}
 
 	//Pending
-	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_ADMIN','ROLE_USER')")
 	@PostMapping("/portfoliopendingdropdown")
 	public ResponseEntity<CommonRes> getPortfolioPendingDropdown(@RequestBody ExistingBrokerUserListReq req) {
 		reqPrinter.reqPrint(req);
