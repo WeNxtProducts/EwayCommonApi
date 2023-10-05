@@ -62,6 +62,7 @@ import com.maan.eway.bean.EserviceBuildingDetails;
 import com.maan.eway.bean.EserviceCommonDetails;
 import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceMotorDetails;
+import com.maan.eway.bean.EserviceSectionDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.EserviceTravelGroupDetails;
 import com.maan.eway.bean.HomePositionMaster;
@@ -2255,7 +2256,43 @@ public class PaymentServiceImpl implements PaymentService {
 					// perform update
 					em.createQuery(update).executeUpdate();  
 	    	   }
-	    	    
+	    	   
+	    	   // Section Update
+	    	   List<SectionDataDetails> secList =  sddRepo.findByQuoteNo(quoteNo);
+    		   if(StringUtils.isNotBlank(endttypeId) && endttypeId.equalsIgnoreCase("842")) {
+    			   secList.forEach( o -> {
+    				   o.setPolicyNo(policyNo);
+    				   o.setStatus("D");
+    				   o.setEndtStatus("C");
+    			   });
+				} else {
+					secList.forEach( o -> {
+					   if( ! "D".equalsIgnoreCase(o.getStatus()) ) {
+						   o.setPolicyNo(policyNo);
+		    			   o.setStatus("P");
+					   }
+		    			   o.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
+		    		    
+	    		   });
+				}
+    		   sddRepo.saveAllAndFlush(secList);
+    		  
+    		// Update Eservice Asset
+    		   List<EserviceSectionDetails> updateEserList = new ArrayList<EserviceSectionDetails>();
+    		   List<EserviceSectionDetails> eserBuildingList =  sectionRepo.findByQuoteNoOrderByRiskIdAsc(quoteNo);
+	    	   eserBuildingList.forEach( o -> {
+	    			  
+    			  List<SectionDataDetails> filterAsset = secList.stream().filter( e -> e.getRiskId().equals(o.getRiskId())
+    					  && e.getSectionId().equals(o.getSectionId()) ).collect(Collectors.toList());
+    			  
+    			  if( filterAsset.size()> 0 ) {
+    				  EserviceSectionDetails updateEser = o; 
+    				  dozerMapper.map(filterAsset.get(0) , updateEser);
+    				  updateEserList.add(updateEser);
+    			   }
+	    		 
+	    		  });	    		   
+	    	   sectionRepo.saveAllAndFlush(updateEserList);
 	        } catch (Exception e) {
 				e.printStackTrace();
 				log.info( "Exception is ---> " + e.getMessage());

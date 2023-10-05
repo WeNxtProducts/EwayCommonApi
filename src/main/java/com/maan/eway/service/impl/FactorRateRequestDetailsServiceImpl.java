@@ -653,14 +653,14 @@ this.repository = repo;
 				
 			} else if( product.getMotorYn().equalsIgnoreCase("A") ) {
 				
-				// Update Group Premium
-				EserviceBuildingDetails findData = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionId(req.getRequestReferenceNo() ,1 , req.getSectionId()); 
-				findData.setActualPremiumLc(premiumLc ==null ? null :new BigDecimal(df.format(premiumLc )));
-				findData.setActualPremiumFc(premiumFc ==null ? null :new BigDecimal(df.format(premiumFc )));
-				findData.setOverallPremiumLc(overAllPremiumLc ==null ? null :new BigDecimal(df.format(overAllPremiumLc)));
-				findData.setOverallPremiumFc(overAllPremiumFc ==null ? null :new BigDecimal(df.format(overAllPremiumFc)));
-				
-				eserBuildRepo.save(findData);
+//				// Update Group Premium
+//				EserviceBuildingDetails findData = eserBuildRepo.findByRequestReferenceNoAndRiskIdAndSectionId(req.getRequestReferenceNo() ,1 , req.getSectionId()); 
+//				findData.setActualPremiumLc(premiumLc ==null ? null :new BigDecimal(df.format(premiumLc )));
+//				findData.setActualPremiumFc(premiumFc ==null ? null :new BigDecimal(df.format(premiumFc )));
+//				findData.setOverallPremiumLc(overAllPremiumLc ==null ? null :new BigDecimal(df.format(overAllPremiumLc)));
+//				findData.setOverallPremiumFc(overAllPremiumFc ==null ? null :new BigDecimal(df.format(overAllPremiumFc)));
+//				
+//				eserBuildRepo.save(findData);
 				
 			} else {
 				

@@ -264,7 +264,7 @@ public class CopyBuildingRaw {
 		try {
 			String newReqRefNo=buildingData.getRequestReferenceNo() ;
 		//	String  oldReqRefNo=buildingData.getOldRequestReferenceNo() ;
-			List<EserviceSectionDetails>  oldSecDatas = eserSecRepo.findByQuoteNoOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo()) ;
+			List<EserviceSectionDetails>  oldSecDatas = eserSecRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(buildingData.getEndtPrevQuoteNo(),"D") ;
 			
 			// Building Section Insert
 			Long buildSecCount = eserSecRepo.countByRequestReferenceNoAndRiskId(newReqRefNo, 1);

@@ -1151,6 +1151,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				buildRepo.saveAndFlush(refinedBuilding);
 				
 			} else {
+				bulildDetails.setStatus(bulildDetails.getSectionId().equalsIgnoreCase("0") ?  bulildDetails.getStatus() : "D" );
 				buildRepo.saveAndFlush(bulildDetails);
 			}
 			
@@ -2742,6 +2743,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 					saveSec.setQuoteNo(request.getQuoteNo());
 					saveSec.setUpdatedDate(new Date());
 					saveSec.setSectionDesc(filterSec.getSectionName());
+					List<VehicleIdsReq> filterCoverList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId()!=null && StringUtils.isNotBlank(o.getSectionId())	&&	            					
+	    					o.getVehicleId().equals(veh.getVehicleId()) && o.getSectionId().equalsIgnoreCase(veh.getSectionId()) ).collect(Collectors.toList());
+					if(filterCoverList.size() == 0 || filterCoverList.get(0).getCoverIdList()==null  || filterCoverList.get(0).getCoverIdList().size() == 0 ) {
+						saveSec.setStatus("D");
+					}
 					secList.add(saveSec);	
 				} else {
 					filterSecId =  eserSec.stream().filter( o ->   o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList());
@@ -2759,6 +2765,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 						saveSec.setQuoteNo(request.getQuoteNo());
 						saveSec.setUpdatedDate(new Date());
 						saveSec.setSectionDesc(filterSec.getSectionName());
+						List<VehicleIdsReq> filterCoverList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId()!=null && StringUtils.isNotBlank(o.getSectionId())	&&	            					
+		    					o.getVehicleId().equals(veh.getVehicleId()) && o.getSectionId().equalsIgnoreCase(veh.getSectionId()) ).collect(Collectors.toList());
+						if(filterCoverList.size() == 0 || filterCoverList.get(0).getCoverIdList()==null  || filterCoverList.get(0).getCoverIdList().size() == 0 ) {
+							saveSec.setStatus("D");
+						}
 						secList.add(saveSec);	
 					}
 				}
