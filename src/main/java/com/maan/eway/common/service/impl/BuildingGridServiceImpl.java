@@ -362,6 +362,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					c.get("clientName").alias("clientName"),
 					// Vehicle Info
 					m.get("companyId").alias("companyId"), m.get("productId").alias("productId"),
+					m.get("productDesc").alias("productName"),
 					m.get("branchCode").alias("branchCode"), m.get("requestReferenceNo").alias("requestReferenceNo"),
 					m.get("quoteNo").alias("quoteNo"),
 					m.get("customerId").alias("customerId"),
@@ -533,6 +534,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					c.get("clientName").alias("clientName"),
 					// Vehicle Info
 					m.get("companyId").alias("companyId"), m.get("productId").alias("productId"),
+					m.get("productDesc").alias("productName"),
 					m.get("branchCode").alias("branchCode"), m.get("requestReferenceNo").alias("requestReferenceNo"),
 					m.get("quoteNo").alias("quoteNo"),
 					m.get("customerId").alias("customerId"),

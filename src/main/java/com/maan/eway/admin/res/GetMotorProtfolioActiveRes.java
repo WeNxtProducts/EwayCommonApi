@@ -10,6 +10,9 @@ import lombok.Data;
 public class GetMotorProtfolioActiveRes {
 	@JsonProperty("Count")
 	private Long   count ;
+	
+	@JsonProperty("ProductName")
+	private String   ProductName ;
 
 	@JsonProperty("Portfolio")
     private List<PortfolioGridCriteriaRes> portfolioList;

@@ -1,12 +1,10 @@
 package com.maan.eway.common.service.impl;
 
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -14,7 +12,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -1185,7 +1182,9 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 			Predicate n7 = cb.or(n5,n6);
 			Predicate n8 = cb.equal(c.get("occupationId"),occupationId);
 			Predicate n9 = cb.equal(c.get("productId"),productId );
-			query.where(n1,n2,n3,n4,n7,n8,n9).orderBy(orderList);
+			Predicate n10 = cb.equal(c.get("productId"),"99999" );
+			Predicate n11 =  cb.or(n9, n10);
+			query.where(n1,n2,n3,n4,n7,n8,n11).orderBy(orderList);
 			TypedQuery<OccupationMaster> result = em.createQuery(query);
 			list = result.getResultList();
 

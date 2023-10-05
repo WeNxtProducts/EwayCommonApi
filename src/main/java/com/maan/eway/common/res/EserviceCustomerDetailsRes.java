@@ -13,6 +13,10 @@ import lombok.Data;
 
 @Data
 public class EserviceCustomerDetailsRes {
+	
+	   
+	   @JsonProperty("ProductName")
+	   private String     productName ;
 
 
     @JsonProperty("CustomerReferenceNo")

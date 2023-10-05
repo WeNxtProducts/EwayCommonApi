@@ -28,6 +28,7 @@ public class PortfolioGridCriteriaRes {
 	// Vehicle Info
 	private String     companyId ;
 	private int     productId ;
+	private String     productName ;
 	private String     branchCode ;
 	
 	private String   requestReferenceNo ;

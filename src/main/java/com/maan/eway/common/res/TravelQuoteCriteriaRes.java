@@ -22,6 +22,7 @@ public class TravelQuoteCriteriaRes {
 	// Vehicle Info
 	private String     companyId ;
 	private String     productId ;
+	private String     productName ;
 	private String     branchCode ;
 	
 	private String   requestReferenceNo ;

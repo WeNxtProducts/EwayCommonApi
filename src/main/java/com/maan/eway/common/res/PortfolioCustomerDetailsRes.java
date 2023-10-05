@@ -11,6 +11,8 @@ import lombok.Data;
 @Data
 public class PortfolioCustomerDetailsRes {
 
+    @JsonProperty("ProductName")
+	private String productName;
 
     @JsonProperty("CustomerReferenceNo")
     private String   customerReferenceNo ;
