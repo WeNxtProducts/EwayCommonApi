@@ -4114,7 +4114,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 					predics1.add(cb1.lessThanOrEqualTo(m1.get("updatedDate"), today));
 					predics1.add(cb1.isNotNull(m1.get("sourceType")));
 					predics1.add(cb1.isNotNull(m1.get("loginId")));
-					predics1.add(cb1.equal(us.get("loginId"), m.get("loginId")));
+					predics1.add(cb1.equal(us.get("loginId"), m1.get("loginId")));
 					 query1.where(predics1.toArray(new Predicate[0]));
 					 
 					 TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);

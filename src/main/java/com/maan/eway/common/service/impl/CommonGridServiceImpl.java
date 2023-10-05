@@ -3796,9 +3796,9 @@ public class CommonGridServiceImpl implements CommonGridService {
 				 
 				 Root<EserviceCommonDetails> m1 = query1.from(EserviceCommonDetails.class); 
 				 
-					Root<LoginUserInfo> us = query.from(LoginUserInfo.class);
-					query.multiselect( m.get("loginId").alias("code"),us.get("userName").alias("codeDesc"),
-							m.get("sourceType").alias("type")).distinct(true) ;
+					Root<LoginUserInfo> us = query1.from(LoginUserInfo.class);
+					query1.multiselect( m1.get("loginId").alias("code"),us.get("userName").alias("codeDesc"),
+							m1.get("sourceType").alias("type")).distinct(true) ;
 				 
 				 List<Predicate> predics1 = new ArrayList<Predicate>();
 				 predics1.add(cb1.equal(m1.get("applicationId"),req.getApplicationId()));
