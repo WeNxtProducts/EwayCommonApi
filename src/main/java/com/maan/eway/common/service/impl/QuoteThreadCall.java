@@ -1140,6 +1140,14 @@ public class QuoteThreadCall implements Callable<Object>  {
 				refinedBuilding.setPlateGlassSiLC(refinedBuilding.getPlateGlassSi()==null ? null : refinedBuilding.getPlateGlassSi().multiply(exchangeRate) );
 				refinedBuilding.setContentSumInsuredLC(refinedBuilding.getContentSuminsured()==null ? null : refinedBuilding.getContentSuminsured().multiply(exchangeRate) );
 				refinedBuilding.setElecEquipSumInsuredLC(refinedBuilding.getElecEquipSuminsured()==null ? null : refinedBuilding.getElecEquipSuminsured().multiply(exchangeRate) );
+				
+				// Burglary First Loss Percent
+				refinedBuilding.setApplianceLossPercent(refinedBuilding.getApplianceSi()!=null ? refinedBuilding.getApplianceLossPercent() : null ) ;
+				refinedBuilding.setCashValueablesLossPercent(refinedBuilding.getCashValueablesSi()!=null ? refinedBuilding.getCashValueablesLossPercent() : null );
+				refinedBuilding.setFurnitureLossPercent(refinedBuilding.getFurnitureSi()!=null ? refinedBuilding.getFurnitureLossPercent() : null );
+				refinedBuilding.setGoodsLossPercent(refinedBuilding.getGoodsSi()!=null ? refinedBuilding.getGoodsLossPercent() : null );
+				refinedBuilding.setStockLossPercent(refinedBuilding.getStockInTradeSi()!=null ? refinedBuilding.getStockLossPercent() : null );;
+				
 				buildRepo.saveAndFlush(refinedBuilding);
 				
 			} else {
