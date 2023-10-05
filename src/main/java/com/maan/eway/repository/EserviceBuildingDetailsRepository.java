@@ -63,6 +63,6 @@ public interface EserviceBuildingDetailsRepository  extends JpaRepository<Eservi
 			String sectionId);
 	List<EserviceBuildingDetails> findByOriginalPolicyNoAndRiskIdAndSectionId(String policyNo, int i, String string);
 	Integer countByOriginalPolicyNoAndRiskIdAndSectionId(String policyNo, int i, String string);
-	List<EserviceBuildingDetails> findByQuoteNoStatusNotOrderByRiskIdAsc(String prevQuoteNo, String string);
+	List<EserviceBuildingDetails> findByQuoteNoAndStatusNotOrderByRiskIdAsc(String prevQuoteNo, String string);
 
 }
