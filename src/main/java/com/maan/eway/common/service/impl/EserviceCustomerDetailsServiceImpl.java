@@ -1327,7 +1327,8 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				res.setWhatsappCode(data.getWhatsappCode()==null?"":data.getWhatsappCode());
 				res.setWhatsappDesc(data.getWhatsappCodeDesc()==null?"":data.getWhatsappCodeDesc());
 				res.setWhatsappNo(data.getWhatsappNo()==null?"":data.getWhatsappNo());
-												
+				res.setVrTinNo( data.getIdType().equalsIgnoreCase("6") ? data.getIdNumber() : data.getVrTinNo()  );
+				
 				resList.add(res);
 			}
 
