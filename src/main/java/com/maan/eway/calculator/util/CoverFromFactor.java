@@ -75,7 +75,7 @@ public class CoverFromFactor implements Function<FactorRateRequestDetails,Cover>
 					.policyEndDate(t.getCoverPeriodTo())
 					.coverageLimit(t.getCoverageLimit())
 					.tiraSumInsured(t.getRegulatorySuminsured())
-					.tiraRate(t.getActualRate() ==null?0D:t.getActualRate().doubleValue())
+					.tiraRate(t.getActualRate() ==null?(t.getRate()==null?0D: t.getRate().doubleValue() ):t.getActualRate().doubleValue())
 					.minSumInsured(t.getMinCoverageLimit()==null?BigDecimal.ZERO:t.getMinCoverageLimit())
 					.build();
 				return c;

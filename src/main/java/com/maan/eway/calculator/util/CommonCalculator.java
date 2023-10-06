@@ -157,11 +157,11 @@ public class CommonCalculator {
 		BigDecimal d=BigDecimal.ZERO;
 		//(3500/4)*100
 		if("P".equals(calctype)) {
-			d = premium.divide(new BigDecimal(rate),3, RoundingMode.HALF_UP ).multiply(new BigDecimal(100)); ///multiply(new BigDecimal(rate/100), round);			
+			d = premium.divide(new BigDecimal((rate>0D?rate:1D)),3, RoundingMode.HALF_UP ).multiply(new BigDecimal(100)); ///multiply(new BigDecimal(rate/100), round);			
 		 }else if("A".equals(calctype)) {
 			d=(new BigDecimal(rate));			
 		 }else if("M".equals(calctype)) {
-			 d = premium.divide(new BigDecimal(rate)).multiply(new BigDecimal(1000));			
+			 d = premium.divide(new BigDecimal((rate>0D?rate:1D))).multiply(new BigDecimal(1000));			
 		 }
 		
 		d = (BigDecimal) decimalFormat.parse(decimalFormat.format(d));
