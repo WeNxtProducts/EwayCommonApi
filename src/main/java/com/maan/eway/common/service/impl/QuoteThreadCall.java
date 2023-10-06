@@ -975,6 +975,13 @@ public class QuoteThreadCall implements Callable<Object>  {
 					if(filterCoverList.size() > 0 && filterCoverList.get(0).getCoverIdList()!=null  &&  filterCoverList.get(0).getCoverIdList().size() > 0 ) {
 						secIds.add(veh.getSectionId());
 					}
+				}else  {
+					filterSecId =  secs.stream().filter( o ->  o.getRiskId().equals(1) && o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList());
+					List<VehicleIdsReq> filterCoverList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId()!=null && StringUtils.isNotBlank(o.getSectionId())	&&	            					
+	    					o.getVehicleId().equals(veh.getVehicleId()) && o.getSectionId().equalsIgnoreCase(veh.getSectionId()) ).collect(Collectors.toList());
+					if(filterCoverList.size() > 0 && filterCoverList.get(0).getCoverIdList()!=null  &&  filterCoverList.get(0).getCoverIdList().size() > 0 ) {
+						secIds.add(veh.getSectionId());
+					}
 				}
 				
 			}
@@ -2031,6 +2038,13 @@ public class QuoteThreadCall implements Callable<Object>  {
 				for (VehicleIdsReq veh : req.getVehicleIdsList()) {
 					List<EserviceSectionDetails> filterSecId =  secs.stream().filter( o ->  o.getRiskId().equals(veh.getVehicleId() ) && o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList());
 					if(filterSecId.size() > 0 ) {
+						List<VehicleIdsReq> filterCoverList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId()!=null && StringUtils.isNotBlank(o.getSectionId())	&&	            					
+		    					o.getVehicleId().equals(veh.getVehicleId()) && o.getSectionId().equalsIgnoreCase(veh.getSectionId()) ).collect(Collectors.toList());
+						if(filterCoverList.size() > 0 && filterCoverList.get(0).getCoverIdList()!=null  &&  filterCoverList.get(0).getCoverIdList().size() > 0 ) {
+							secIds.add(veh.getSectionId());
+						}
+					} else  {
+						filterSecId =  secs.stream().filter( o ->  o.getRiskId().equals(1) && o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList());
 						List<VehicleIdsReq> filterCoverList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId()!=null && StringUtils.isNotBlank(o.getSectionId())	&&	            					
 		    					o.getVehicleId().equals(veh.getVehicleId()) && o.getSectionId().equalsIgnoreCase(veh.getSectionId()) ).collect(Collectors.toList());
 						if(filterCoverList.size() > 0 && filterCoverList.get(0).getCoverIdList()!=null  &&  filterCoverList.get(0).getCoverIdList().size() > 0 ) {
