@@ -143,7 +143,7 @@ public class JasperServiceImpl implements JasperService {
 
 					res = getJasperPdfFile("/report/jasper/EwayTravelReport.jrxml", getPdfOutFilePath, input2);
 					
-				} else if (product.getMotorYn().equalsIgnoreCase("M")) {
+				} else if (product.getMotorYn().equalsIgnoreCase("M") && !"46".equalsIgnoreCase(homeData.getProductId().toString())) {
 					if(homeData.getEndtCount() != 0 && !homeData.getPolicyNo().equalsIgnoreCase(homeData.getOriginalPolicyNo())) {
 						res = getJasperPdfFile("/report/jasper/MotorEndorsementSchedule.jrxml", getPdfOutFilePath, input);
 					}else {
@@ -160,14 +160,19 @@ public class JasperServiceImpl implements JasperService {
 					String path = JasperCompileManager.compileReportToFile(obj);
 					System.out.println("Jasper compileToReport path" +path);
 					res = getJasperPdfFile("/report/jasper/CyberInsurance.jrxml", getPdfOutFilePath, input2);
+				}else if(product.getMotorYn().equalsIgnoreCase("M") && "46".equalsIgnoreCase(homeData.getProductId().toString())){
+					Map<String,Object> map = new HashMap<String,Object>();
+					map.put("pvImagePath", config.getImagePath().substring(1,config.getImagePath().length()-0));
+					map.put("pvPolicyNo", homeData.getPolicyNo());
+					res = getJasperPdfFile("/report/jasper/EwayMotorCoverNote.jrxml", getPdfOutFilePath, map);
 				}else {
 					Map<String, Object> input2 = new HashMap<String, Object>();
 					input2.put("pvQuoteNo", req.getQuoteNo());
 					input2.put("pvImagepath", config.getImagePath().substring(1,config.getImagePath().length()-0));
-					input2.put("pvSubReportPath",config.getJasperFilePath() + "/report/jasper/");
+					input2.put("pvSubReportPath",config.getJasperFilePath() + "report/jasper/");
 					String obj[] =new String[2];
-					obj[0]= config.getJasperFilePath() + "/report/jasper/CoverageDetails.jrxml";
-					obj[1]= config.getJasperFilePath() +"/report/jasper/SectionDetails.jrxml";              // for linux system
+					obj[0]= config.getJasperFilePath() + "report/jasper/CoverageDetails.jrxml";
+					obj[1]= config.getJasperFilePath() +"report/jasper/SectionDetails.jrxml";              // for linux system
 				//	obj[0]=class_path +"/report/jasper/CoverageDetails.jrxml";
 				//	obj[1]=class_path +"/report/jasper/SectionDetails.jrxml";              // for linux system
 				//	obj[2]=class_path +"/report/jasper/VehicleDetails.jrxml";
