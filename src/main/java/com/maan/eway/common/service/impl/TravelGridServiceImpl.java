@@ -1123,7 +1123,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 //			Predicate n18 = cb.or(n16,n17);
 			
 			Predicate n16 = null;
-			Predicate n15 = cb.equal(m.get("applicationId"), req.getApplicationId());
+			Predicate n15 = cb.equal(m.get("adminLoginId"), req.getApplicationId());
 			if(StringUtils.isNotBlank(req.getBdmCode())){
 				n16= cb.equal(m.get("bdmCode"), req.getBdmCode());
 			}else {

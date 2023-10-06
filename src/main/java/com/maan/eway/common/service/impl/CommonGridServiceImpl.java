@@ -1036,7 +1036,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 		//	Predicate n6 = cb.equal(c.get("branchCode"), req.getBdmCode());
 			Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
 			Predicate n7 = cb.equal(m.get("riskId"), riskId);
-			Predicate n15 = cb.equal(m.get("applicationId"), req.getApplicationId());
+			Predicate n15 = cb.equal(m.get("adminLoginId"), req.getApplicationId());
 			Predicate n16 = null;
 			if(StringUtils.isNotBlank(req.getBdmCode())){
 				n16 = cb.equal(m.get("bdmCode"), req.getBdmCode());
@@ -1126,7 +1126,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 			Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
 			Predicate n7 = cb.equal(m.get("riskId"), riskId);
 			Predicate n14 = cb.isNull(m.get("endorsementTypeDesc")); 
-			Predicate n15 = cb.equal(m.get("applicationId"), req.getApplicationId());
+			Predicate n15 = cb.equal(m.get("adminLoginId"), req.getApplicationId());
 			Predicate n16 = null;
 			if(StringUtils.isNotBlank(req.getBdmCode())){
 				n16 = cb.equal(m.get("bdmCode"), req.getBdmCode());
@@ -1201,7 +1201,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 			Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
 			Predicate n7 = cb.equal(m.get("riskId"), riskId);
 			Predicate n14 = cb.isNotNull(m.get("endorsementTypeDesc")); 
-			Predicate n15 = cb.equal(m.get("applicationId"), req.getApplicationId());
+			Predicate n15 = cb.equal(m.get("adminLoginId"), req.getApplicationId());
 			Predicate n16 = null;
 			if(StringUtils.isNotBlank(req.getBdmCode())){
 				n16 = cb.equal(m.get("bdmCode"), req.getBdmCode());
@@ -4120,8 +4120,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 							m.get("sourceType").alias("type"));
 
 					
-					Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
-					Predicate n2 = cb.isNotNull(m.get("applicationId"));
+					Predicate n1 = cb.equal(m.get("adminLoginId"), req.getApplicationId());
+//					Predicate n2 = cb.isNotNull(m.get("applicationId"));
 					Predicate n3 = cb.equal(m.get("companyId"), req.getCompanyId());
 					Predicate n4 = cb.equal(m.get("productId"), req.getProductId());
 					Predicate n5 = cb.equal(m.get("status"), status);
@@ -4132,7 +4132,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 						n15 = cb.isNull(m.get("endorsementTypeDesc")); 
 					else if (req.getType().equalsIgnoreCase("E"))
 						n15 = cb.isNotNull(m.get("endorsementTypeDesc"));
-					query.where(n1,n2,n3,n4,n5, n8,n15);
+					query.where(n1,n3,n4,n5, n8,n15);
 
 					TypedQuery<Tuple> typedQuery = em.createQuery(query);
 					list = typedQuery.getResultList();
@@ -4160,8 +4160,8 @@ public class CommonGridServiceImpl implements CommonGridService {
 							m1.get("sourceType").alias("type"));
 
 					
-					Predicate n1 = cb1.equal(m1.get("applicationId"), req.getApplicationId());
-					Predicate n2 = cb1.isNotNull(m1.get("applicationId"));
+					Predicate n1 = cb1.equal(m1.get("adminLoginId"), req.getApplicationId());
+//					Predicate n2 = cb1.isNotNull(m1.get("applicationId"));
 					Predicate n3 = cb1.equal(m1.get("companyId"), req.getCompanyId());
 					Predicate n4 = cb1.equal(m1.get("productId"), req.getProductId());
 					Predicate n5 = cb1.equal(m1.get("status"), status);
@@ -4174,7 +4174,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 					else if (req.getType().equalsIgnoreCase("E"))
 						n15 = cb1.isNotNull(m1.get("endorsementTypeDesc"));
 					
-					query1.where(n1,n2,n3,n4,n5,n8,us1,n15);
+					query1.where(n1,n3,n4,n5,n8,us1,n15);
 
 					TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
 					list1 = typedQuery1.getResultList();

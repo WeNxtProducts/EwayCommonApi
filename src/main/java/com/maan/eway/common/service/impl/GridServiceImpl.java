@@ -4889,15 +4889,7 @@ public class GridServiceImpl implements GridService {
 			} else {
 				resList = commonService.getAdminCommonRPDropdown(req, today);
 
-			} /*else if (product.getMotorYn().equalsIgnoreCase("H")
-					&& req.getProductId().equalsIgnoreCase(travelProductId)) {
-				resList = traService.getAdminTravelProtfolioDropdownPending(req, today);
-			} else if (product.getMotorYn().equalsIgnoreCase("A")) {
-				resList = buiService.getAdminBuildingProtfolioDropdownPending(req, today);
-			} else {
-				resList = commonService.getAdminCommonProtfolioDropdownPending(req, today);
-
-			}*/
+			} 
 				 
 		} catch (Exception e) {
 			e.printStackTrace();
