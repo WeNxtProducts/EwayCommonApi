@@ -2757,8 +2757,8 @@ public class QuoteServiceImpl implements QuoteService {
 				List<BuildingRiskDetails> filterDefaultBuilding = buildings.stream().filter( o -> "0".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
 				if(filterDefaultBuilding.size() > 0 ) {
 					BuildingRiskDetails build = filterDefaultBuilding.get(0);
-					List<EserviceSectionDetails>   buildSections = eserSecRepo.findByRequestReferenceNoOrderByRiskIdAsc(build.getRequestReferenceNo());
-					List<String> sectionIds = buildSections.stream().filter( o -> o.getRiskId().equals(1)).map(EserviceSectionDetails :: getSectionId ).collect(Collectors.toList());
+					List<SectionDataDetails>   buildSections = secDataRepo.findByQuoteNoAndStatusNot(build.getQuoteNo(), "D");
+					List<String> sectionIds = buildSections.stream().filter( o -> o.getRiskId().equals(1)).map(SectionDataDetails :: getSectionId ).collect(Collectors.toList());
 					res.setCurrencyId(build.getCurrency());
 					res.setRiskId(build.getRiskId().toString());
 					res.setSectionId(sectionIds);
