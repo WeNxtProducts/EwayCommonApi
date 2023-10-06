@@ -2138,7 +2138,7 @@ public EserviceBuildingDetails eserviceBuildingCopyquote(CopyQuoteReq req, Strin
 
 //					List<Tuple> list = copyQuoteSearchDetails(searchKey, searchValue, companyId, loginId, userType,
 //							branches);
-		List<EserviceBuildingDetails> motors = repo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
+		List<EserviceBuildingDetails> motors = repo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(prevQuoteNo,"D");
 		++count;
 		if (motors.size() > 0) {
 			for (EserviceBuildingDetails data : motors) {
@@ -2297,7 +2297,7 @@ private CopyQuoteSuccessRes buildingRiskDetailsCopyQuote(CopyQuoteReq req, Strin
 				/*endtTypeRepo.findByCompanyIdAndProductIdAndStatusAndEndtTypeIdAndEffectiveDateStartLessThanEqualAndEffectiveDateEndGreaterThanEqual(
 				req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 				Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
-		List<BuildingRiskDetails> buildingRiskData=buildRiskRepo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
+		List<BuildingRiskDetails> buildingRiskData=buildRiskRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(prevQuoteNo,"D");
 		if (buildingRiskData!=null) {
 			for(BuildingRiskDetails data :buildingRiskData) {
 				savedata = dozerMapper.map(data, BuildingRiskDetails.class);
@@ -2444,7 +2444,7 @@ private CopyQuoteSuccessRes commonDataDetailsEndoCopyquote(CopyQuoteReq req, Str
 										 * Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());
 										 */
 
-		List<CommonDataDetails> eserSec = commonDataRepo.findByQuoteNo(prevQuoteNo);
+		List<CommonDataDetails> eserSec = commonDataRepo.findByQuoteNoAndStatusNot(prevQuoteNo,"D");
 		if (eserSec != null && eserSec.size() > 0) {
 			for (CommonDataDetails data : eserSec) {
 				savedata = dozerMapper.map(data, CommonDataDetails.class);
@@ -2539,7 +2539,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 						req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 						Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
 
-		List<EserviceSectionDetails> eserSec = eserSecRepo.findByQuoteNoOrderByRiskIdAsc(prevQuoteNo);
+		List<EserviceSectionDetails> eserSec = eserSecRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(prevQuoteNo,"D");
 		if (eserSec != null && eserSec.size()>0 ) {
 			for (EserviceSectionDetails data : eserSec) {
 				savedata = dozerMapper.map(data, EserviceSectionDetails.class);
@@ -2586,7 +2586,7 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 							req.getInsuranceId(), Integer.parseInt(req.getProductId()), "Y",
 							Integer.parseInt(req.getEndtTypeId()), new Date(), new Date());*/
 					
-					List<EserviceCommonDetails> commData = eserCommonRepo.findByQuoteNo(prevQuoteNo);
+					List<EserviceCommonDetails> commData = eserCommonRepo.findByQuoteNoAndStatusNotOrderByRiskIdAsc(prevQuoteNo,"D");
 					if (commData!=null && commData.size()>0 ) 
 						for(EserviceCommonDetails commData1:commData) {
 							savedata = dozerMapper.map(commData1, EserviceCommonDetails.class);
