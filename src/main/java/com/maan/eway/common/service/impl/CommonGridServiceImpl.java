@@ -2149,6 +2149,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 				String newQuoteNo =null;
 				String newCustRefNo=null;
 				String newCustId=null;
+				Integer preEndtId=null;
 				long pendingcount =0;
 				if (count > 0) {
 					List<EserviceCommonDetails> motors = repo.findByOriginalPolicyNo(req.getPolicyNo());
@@ -2186,6 +2187,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 						 newQuoteNo=motor.get(0).getQuoteNo();
 						 newCustRefNo=motor.get(0).getCustomerReferenceNo();
 						 newCustId=motor.get(0).getCustomerId();
+						 preEndtId=motor.get(0).getEndorsementType();
 						 count--;
 					}else {
 						motor=motors;
@@ -2193,11 +2195,13 @@ public class CommonGridServiceImpl implements CommonGridService {
 						if(motors.size()>1) {
 							prevPolicyNo=motors.get(0).getPolicyNo();
 							prevQuoteNo =motors.get(0).getQuoteNo();
+							 preEndtId=motor.get(0).getEndorsementType();
 						}else {
 //							prevPolicyNo=req.getPolicyNo();
 //							prevQuoteNo =motor.get(0).getEndtPrevQuoteNo();
 							prevPolicyNo =motor.get(0).getPolicyNo();
 							prevQuoteNo = motor.get(0).getQuoteNo();
+							 preEndtId=motor.get(0).getEndorsementType();
 						}
 					}
 					
@@ -2205,6 +2209,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 					motor=repo.findByPolicyNoAndStatus(req.getPolicyNo(),"P");
 					prevPolicyNo=req.getPolicyNo();
 					prevQuoteNo =motor.get(0).getQuoteNo();
+					 preEndtId=motor.get(0).getEndorsementType();
 				}
 				
 				if(pendingcount==0) 
@@ -2291,7 +2296,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 					 personolInfoEndoCopyQuote(req, customerId, prevPolicyNo,prevQuoteNo, count,custRefNo);
 
 					// Copy Quote Policy Cover Data
-					 policyCoverDataEndocopyQuote(req, refNo, quoteNo, loginId, prevPolicyNo,prevQuoteNo, count);
+					 policyCoverDataEndocopyQuote(req, refNo, quoteNo, loginId, prevPolicyNo,prevQuoteNo, count,preEndtId);
 
 					// Copy COVER_DOCUMENT_UPLOAD_DETAILS
 					coverDocumentUploadDetailsEndoCopyquote(req, refNo, quoteNo, customerId, loginId,prevPolicyNo,prevQuoteNo,count);
@@ -2605,7 +2610,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 
 		// Policy Cover Data Enst Copy Quote
 		public CopyQuoteSuccessRes policyCoverDataEndocopyQuote(CopyQuoteReq req, String refNo, String quoteNo,
-				String loginId, String prevPolicyNo, String prevQuoteNo, Integer count) {
+				String loginId, String prevPolicyNo, String prevQuoteNo, Integer count,Integer preEndtId) {
 			CopyQuoteSuccessRes res = new CopyQuoteSuccessRes();
 			PolicyCoverData savedata = new PolicyCoverData();
 			DozerBeanMapper dozerMapper = new DozerBeanMapper();
@@ -2624,7 +2629,14 @@ public class CommonGridServiceImpl implements CommonGridService {
 				BigDecimal endtAmt = BigDecimal.ZERO;
 				List<PolicyCoverData> policyCoverData = policyCoverDataRepo.findByQuoteNo(prevQuoteNo);
 				if (policyCoverData.size() > 0) {
-					for (PolicyCoverData data : policyCoverData) {
+					List<PolicyCoverData> oldData =null;
+					if (preEndtId != null && preEndtId > 0) {
+						oldData = policyCoverData.stream().filter(d -> (!preEndtId.equals(d.getDiscLoadId())))
+								.collect(Collectors.toList());
+					} else {
+						oldData = policyCoverData;
+					}
+					for (PolicyCoverData data : oldData) {
 						savedata = dozerMapper.map(data, PolicyCoverData.class);
 						savedata.setRequestReferenceNo(refNo);
 						savedata.setQuoteNo(quoteNo);
