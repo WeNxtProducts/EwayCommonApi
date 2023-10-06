@@ -4293,7 +4293,14 @@ private CopyQuoteSuccessRes eserviceSectionDetailsEndoCopyquote(CopyQuoteReq req
 						Predicate n6 = cb1.isNull(m1.get("bdmCode"));
 						Predicate n16 = cb1.equal(m1.get("sectionId"), "0");
 						Predicate us1 = cb1.equal(us.get("loginId"), m1.get("loginId"));
-						query1.where(n1, n2, n3, n4, n5, n6,n16,us1);
+						
+						Predicate n15 = null;
+						if(req.getType().equalsIgnoreCase("Q"))
+							n15 = cb1.isNull(m1.get("endorsementTypeDesc")); 
+						else if (req.getType().equalsIgnoreCase("E"))
+							n15 = cb1.isNotNull(m1.get("endorsementTypeDesc"));
+						
+						query1.where(n1, n2, n3, n4, n5, n6,n16,us1,n15);
 
 						TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
 						list1 = typedQuery1.getResultList();
