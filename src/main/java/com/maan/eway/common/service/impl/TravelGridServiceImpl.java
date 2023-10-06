@@ -976,7 +976,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			
 			Predicate n14 = null;
 			Predicate n16 = null;
-			Predicate n15 = cb.equal(m.get("applicationId"), req.getApplicationId());
+			Predicate n15 = cb.equal(m.get("adminLoginId"), req.getApplicationId());
 			if(StringUtils.isNotBlank(req.getBdmCode())){
 				n16= cb.equal(m.get("bdmCode"), req.getBdmCode());
 			}else {
@@ -1055,7 +1055,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 //			Predicate n18 = cb.or(n16,n17);
 			
 			Predicate n16 = null;
-			Predicate n15 = cb.equal(m.get("applicationId"), req.getApplicationId());
+			Predicate n15 = cb.equal(m.get("adminLoginId"), req.getApplicationId());
 			if(StringUtils.isNotBlank(req.getBdmCode())){
 				n16= cb.equal(m.get("bdmCode"), req.getBdmCode());
 			}else {
@@ -4337,8 +4337,8 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 							m.get("sourceType").alias("type"));
 
 					
-					Predicate n1 = cb.equal(m.get("applicationId"), req.getApplicationId());
-					Predicate n2 = cb.isNotNull(m.get("applicationId"));
+					Predicate n1 = cb.equal(m.get("adminLoginId"), req.getApplicationId());
+//					Predicate n2 = cb.isNotNull(m.get("applicationId"));
 					Predicate n3 = cb.equal(m.get("companyId"), req.getCompanyId());
 					Predicate n4 = cb.equal(m.get("productId"), req.getProductId());
 					Predicate n5 = cb.equal(m.get("status"), status);
@@ -4349,7 +4349,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 						n15 = cb.isNull(m.get("endorsementTypeDesc")); 
 					else if (req.getType().equalsIgnoreCase("E"))
 						n15 = cb.isNotNull(m.get("endorsementTypeDesc"));
-					query.where(n1,n2,n3,n4,n5, n8,n15);
+					query.where(n1,n3,n4,n5, n8,n15);
 
 					TypedQuery<Tuple> typedQuery = em.createQuery(query);
 					list = typedQuery.getResultList();
@@ -4380,8 +4380,8 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 							m1.get("sourceType").alias("type"));
 
 					
-					Predicate n1 = cb1.equal(m1.get("applicationId"), req.getApplicationId());
-					Predicate n2 = cb1.isNotNull(m1.get("applicationId"));
+					Predicate n1 = cb1.equal(m1.get("adminLoginId"), req.getApplicationId());
+				//	Predicate n2 = cb1.isNotNull(m1.get("applicationId"));
 					Predicate n3 = cb1.equal(m1.get("companyId"), req.getCompanyId());
 					Predicate n4 = cb1.equal(m1.get("productId"), req.getProductId());
 					Predicate n5 = cb1.equal(m1.get("status"), status);
@@ -4394,7 +4394,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					else if (req.getType().equalsIgnoreCase("E"))
 						n15 = cb1.isNotNull(m1.get("endorsementTypeDesc"));
 					
-					query1.where(n1,n2,n3,n4,n5,n8,  us1, n15);
+					query1.where(n1,n3,n4,n5,n8,  us1, n15);
 
 					TypedQuery<Tuple> typedQuery1 = em.createQuery(query1);
 					list1 = typedQuery1.getResultList();
