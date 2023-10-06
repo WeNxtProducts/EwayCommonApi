@@ -1059,7 +1059,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 				Predicate n11 = cb.equal(uw.get("companyId"), req.getInsuranceId()); 
 				Predicate n12 = cb.equal(uw.get("productId"), req.getProductId()); 
 				Predicate n13 = cb.equal(uw.get("branchCode"), req.getBranchCode()); 
-				query.where(n7,n1, n2, n3, n4, n6,n8,n9,n10,n11,n12,n13,n14,n15,n16)
+				query.where(n7,n1, n2, n3, n4, n6,n8,n9,n10,n11,n12,n13,n14,n16)
 			
 				.orderBy(orderList);
 				
@@ -1143,7 +1143,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 				Predicate n11 = cb.equal(uw.get("companyId"), req.getInsuranceId()); 
 				Predicate n12 = cb.equal(uw.get("productId"), req.getProductId()); 
 				Predicate n13 = cb.equal(uw.get("branchCode"), req.getBranchCode()); 
-				query.where(n7,n1, n2, n3, n4, n6,n8,n9,n10,n11,n12,n13,n14,n15,n16);
+				query.where(n7,n1, n2, n3, n4, n6,n8,n9,n10,n11,n12,n13,n14,n16);
 			
 			
 				
@@ -1219,7 +1219,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 				Predicate n11 = cb.equal(uw.get("companyId"), req.getInsuranceId()); 
 				Predicate n12 = cb.equal(uw.get("productId"), req.getProductId()); 
 				Predicate n13 = cb.equal(uw.get("branchCode"), req.getBranchCode()); 
-				query.where(n7,n1, n2, n3, n4, n6,n8,n9,n10,n11,n12,n13,n14,n15,n16)
+				query.where(n7,n1, n2, n3, n4, n6,n8,n9,n10,n11,n12,n13,n14,n16)
 			
 				.orderBy(orderList);
 				

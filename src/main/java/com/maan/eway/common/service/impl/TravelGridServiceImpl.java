@@ -975,11 +975,6 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Predicate n6 = cb.equal(m.get("branchCode"),  req.getBranchCode());
 			
 			Predicate n14 = null;
-//			Predicate n15 = cb.equal(m.get("applicationId"), req.getApplicationId());
-//			Predicate n16 = cb.equal(m.get("loginId"), req.getLoginId());
-//			Predicate n17 = cb.equal(m.get("customerName"), req.getLoginId());
-//			Predicate n18 = cb.or(n16,n17);
-			
 			Predicate n16 = null;
 			Predicate n15 = cb.equal(m.get("applicationId"), req.getApplicationId());
 			if(StringUtils.isNotBlank(req.getBdmCode())){
@@ -1002,10 +997,10 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				Predicate n11 = cb.equal(uw.get("companyId"), req.getInsuranceId()); 
 				Predicate n12 = cb.equal(uw.get("productId"), req.getProductId()); 
 				Predicate n13 = cb.equal(uw.get("branchCode"), req.getBranchCode()); 
-				query.where(n1,n2,n3,n4,n6,n8,n9,n10,n11,n12,n13,n14,n15,n16).orderBy(orderList);
+				query.where(n1,n2,n3,n4,n6,n8,n9,n10,n11,n12,n13,n14,n16).orderBy(orderList);
 				
 			} else {
-				query.where(n1,n2,n3,n4,n6,n14,n15,n15,n16).orderBy(orderList);
+				query.where(n1,n2,n3,n4,n6,n14,n15,n16).orderBy(orderList);
 				
 			}
 			
@@ -1076,10 +1071,10 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				Predicate n11 = cb.equal(uw.get("companyId"), req.getInsuranceId()); 
 				Predicate n12 = cb.equal(uw.get("productId"), req.getProductId()); 
 				Predicate n13 = cb.equal(uw.get("branchCode"), req.getBranchCode()); 
-				query.where(n7,n1,n2,n3,n4,n6,n8,n9,n10,n11,n12,n13,n15,n16);
+				query.where(n7,n1,n2,n3,n4,n6,n8,n9,n10,n11,n12,n13,n16);
 				
 			} else {
-				query.where(n7,n1,n2,n3,n4,n6,n15,n15,n16);
+				query.where(n7,n1,n2,n3,n4,n6,n15,n16);
 				
 			}
 			
@@ -1145,10 +1140,10 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				Predicate n11 = cb.equal(uw.get("companyId"), req.getInsuranceId()); 
 				Predicate n12 = cb.equal(uw.get("productId"), req.getProductId()); 
 				Predicate n13 = cb.equal(uw.get("branchCode"), req.getBranchCode()); 
-				query.where(n7,n1,n2,n3,n4,n6,n8,n9,n10,n11,n12,n13,n15,n16).orderBy(orderList);
+				query.where(n7,n1,n2,n3,n4,n6,n8,n9,n10,n11,n12,n13,n16).orderBy(orderList);
 				
 			} else {
-				query.where(n7,n1,n2,n3,n4,n6,n15,n15,n16).orderBy(orderList);
+				query.where(n7,n1,n2,n3,n4,n6,n15,n16).orderBy(orderList);
 				
 			}
 			
