@@ -1,6 +1,5 @@
 package com.maan.eway.auth.service.impl;
 
-import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.Instant;
@@ -16,19 +15,10 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import javax.mail.Message;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -46,8 +36,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -55,8 +43,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.util.CollectionUtils;
 
+import com.maan.eway.auth.dto.AuthToken2;
 import com.maan.eway.auth.dto.BrokerProductCompaniesRes;
 import com.maan.eway.auth.dto.BrokerProductsGetRes;
 import com.maan.eway.auth.dto.ChangePasswordReq;
@@ -83,17 +72,11 @@ import com.maan.eway.bean.LoginMasterId;
 import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.SessionMaster;
-import com.maan.eway.bean.SmsConfigMaster;
-import com.maan.eway.bean.SmsDataDetails;
 import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.error.Error;
-import com.maan.eway.notification.bean.MailDataDetails;
 import com.maan.eway.notification.bean.NotifTransactionDetails;
 import com.maan.eway.notification.repository.MailDataDetailsRepository;
 import com.maan.eway.notification.repository.NotifTransactionDetailsRepository;
-import com.maan.eway.notification.req.JobCredentials;
-import com.maan.eway.notification.req.Mail;
-import com.maan.eway.notification.req.Sms;
 import com.maan.eway.notification.service.NotificationService;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.InsuranceCompanyMasterRepository;
@@ -110,7 +93,7 @@ import com.maan.eway.res.SuccessRes;
 
 
 @Lazy
-@Service
+@Service 
 public class AuthendicationServiceImpl implements AuthendicationService, UserDetailsService {
 
 	@Autowired
@@ -161,6 +144,10 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 	
 	@Autowired
 	private  SmsDataDetailsRepository smsDataRepo ;
+	
+	@Autowired
+	private BCryptPasswordEncoder cryptoService;
+
 	
 	private Logger log = LogManager.getLogger(AuthendicationServiceImpl.class);
 	
@@ -1296,6 +1283,48 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			return null;
 		}
 		return data;
+	}
+
+	@Override
+	public AuthToken2 loginTokenRegenerate(LoginRequest req, HttpServletRequest http) {
+		AuthToken2 res = new AuthToken2();
+		try { 
+			LoginMaster user = loginRepo.findByLoginId(req.getLoginId() );
+			// Deactivate Old Session
+		List<SessionMaster>	sessionlist = sessionRep.findByLoginIdOrderByEntryDateDesc(req.getLoginId());
+		if(  sessionlist.size()>0 ) {
+			SessionMaster updatelogout = sessionlist.get(0);
+				updatelogout.setLogoutDate(new Date());
+				updatelogout.setStatus("DE-ACTIVE");
+				sessionRep.save(updatelogout);
+		}
+			
+		http.getSession().removeAttribute(user.getLoginId());
+		String token = jwtTokenUtil.doGenerateToken(user.getLoginId());
+		log.info("-----token------" + token);
+		SessionMaster session = new SessionMaster();
+		session.setLoginId(user.getLoginId());
+		session.setTokenId(token);
+		session.setStatus("ACTIVE");
+		String temptoken = bCryptPasswordEncoder.encode("CommercialClaim");
+		session.setTempTokenid(temptoken);
+		session.setUserType(user.getUserType());
+		session.setSubUserType(user.getSubUserType());
+		Date today = new Date(); 
+		session.setEntryDate(today);
+		session.setStartTime(today);
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MINUTE, 20);
+		Date endTime = cal.getTime();
+		session.setEndTime(endTime );
+		session =sessionRep.save(session);
+		
+		res.setToken(temptoken);
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
+		return res;
 	}
 }
 

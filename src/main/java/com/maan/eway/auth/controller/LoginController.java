@@ -2,6 +2,7 @@ package com.maan.eway.auth.controller;
 
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,13 +18,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maan.eway.auth.dto.AuthToken2;
 import com.maan.eway.auth.dto.CommonLoginRes;
 import com.maan.eway.auth.dto.LoginRequest;
 import com.maan.eway.auth.dto.LogoutRequest;
 import com.maan.eway.auth.service.AuthendicationService;
 import com.maan.eway.auth.service.LoginValidatedService;
 import com.maan.eway.auth.token.EncryDecryService;
-import com.maan.eway.auth.token.passwordEnc;
 import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.LoginMasterRepository;
@@ -137,5 +138,30 @@ public class LoginController {
 		return new ResponseEntity<CommonLoginRes>(body, HttpStatus.OK);
 		
 	}
+	
+	@PostMapping("/tokenregenrate")
+	public  ResponseEntity<CommonLoginRes>  loginTokenRegenerate(@RequestBody LoginRequest req, HttpServletRequest http) throws Exception {
+		CommonLoginRes res = new CommonLoginRes();
+		reqPrinter.reqPrint(req);
+		AuthToken2 res2 = new AuthToken2();
+	//	log.info("Error-->" + json.toJson(req));
+	/*	List<Error> error = loginValidationComponent.LoginTokenRegenerateValidation(req);
+		if (error != null && error.size() > 0) {
+			throw new CommonValidationException(error, null);
+		} */
+		
+		res2 = authservice.loginTokenRegenerate(req,http);
+		res.setCommonResponse(res2);
+		res.setErrorMessage(Collections.emptyList());
+		res.setIsError(false);
+		res.setMessage("Success");
+		if(res2 !=null) {
+			return new ResponseEntity<CommonLoginRes>(res, HttpStatus.CREATED);
+		}
+		else {
+			return new ResponseEntity<>(null, HttpStatus.CREATED);
+		}
+	}
+	
 	
 }

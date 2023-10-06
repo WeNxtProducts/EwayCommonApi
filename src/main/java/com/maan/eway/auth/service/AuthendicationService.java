@@ -2,6 +2,7 @@ package com.maan.eway.auth.service;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.maan.eway.auth.dto.AuthToken2;
 import com.maan.eway.auth.dto.ChangePasswordReq;
 import com.maan.eway.auth.dto.CommonLoginRes;
 import com.maan.eway.auth.dto.ForgetPasswordReq;
@@ -18,6 +19,8 @@ public interface AuthendicationService {
 	CommonLoginRes logout(LogoutRequest mslogin);
 
 	SuccessRes LoginForgetPassword(ForgetPasswordReq req);
+
+	AuthToken2 loginTokenRegenerate(LoginRequest req, HttpServletRequest http);
 
 
 /*	CommonCrmRes LoginChangePassword(ChangePasswordReq req);
