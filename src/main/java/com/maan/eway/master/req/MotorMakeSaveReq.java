@@ -51,6 +51,10 @@ public class MotorMakeSaveReq {
 	private String regulatoryCode;
 
 
-
+	@JsonProperty("BodyId")
+	private String bodyId;
+	
+	@JsonProperty("BodyNameEn")
+	private String bodyNameEn;
 	
 }

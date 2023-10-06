@@ -50,6 +50,11 @@ public class MotorMakeGetRes {
 	@JsonProperty("BranchCode")
 	private String branchCode;
 	
-	  
+
+	@JsonProperty("BodyId")
+	private String bodyId;
+	
+	@JsonProperty("BodyNameEn")
+	private String bodyNameEn;
 
 }

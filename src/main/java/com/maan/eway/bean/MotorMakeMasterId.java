@@ -37,5 +37,6 @@ public class MotorMakeMasterId implements Serializable {
     
     private String     branchCode ;
     
+    private Integer    bodyId ;
      
 }

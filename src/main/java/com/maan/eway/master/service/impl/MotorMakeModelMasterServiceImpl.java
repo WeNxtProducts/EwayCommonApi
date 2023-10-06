@@ -773,7 +773,8 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 			Predicate a3 = cb.equal(c.get("makeId"),ocpm1.get("makeId"));
 			Predicate a7 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 			Predicate a8 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
-			effectiveDate.where(a1,a2,a3,a7,a8);
+			Predicate a11 = cb.equal(c.get("bodyId"),ocpm1.get("bodyId"));
+			effectiveDate.where(a1,a2,a3,a7,a8,a11);
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<MotorMakeModelMaster> ocpm2 = effectiveDate2.from(MotorMakeModelMaster.class);
@@ -783,8 +784,8 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 			Predicate a6 = cb.equal(c.get("makeId"),ocpm2.get("makeId"));
 			Predicate a9 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
 			Predicate a10 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
-			
-			effectiveDate2.where(a4,a5,a6,a9,a10);
+			Predicate a12 = cb.equal(c.get("bodyId"),ocpm2.get("bodyId"));
+			effectiveDate2.where(a4,a5,a6,a9,a10,a12);
 			// Where
 			Predicate n1 = cb.equal(c.get("status"),"Y");
 			Predicate n9 = cb.equal(c.get("status"),"R");
@@ -796,7 +797,8 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 			Predicate n6 = cb.equal(c.get("branchCode"),"99999");
 			Predicate n7 = cb.or(n5,n6);
 			Predicate n8 = cb.equal(c.get("makeId"),req.getMakeId());
-			query.where(n10,n2,n3,n4,n7,n8).orderBy(orderList);
+			Predicate n11 = cb.equal(c.get("bodyId"),req.getBodyId());
+			query.where(n10,n2,n3,n4,n7,n8,n11).orderBy(orderList);
 			// Get Result
 			TypedQuery<MotorMakeModelMaster> result = em.createQuery(query);
 			list = result.getResultList();

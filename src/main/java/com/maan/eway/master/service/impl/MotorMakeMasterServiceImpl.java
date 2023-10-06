@@ -76,17 +76,21 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			else if (req.getMakeNameEn().length()>100) {
 				errorList.add(new Error("01", "Make Name En", "Please Enter Make Name En within 100 Characters "));
 			}else if (StringUtils.isBlank(req.getMakeId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
-				List<MotorMakeMaster> makeList = getMakeNameEnExistDetails(req.getMakeNameEn() , req.getInsuranceId() , req.getBranchCode());
+				List<MotorMakeMaster> makeList = getMakeNameEnExistDetails(req.getMakeNameEn() , req.getInsuranceId() , req.getBranchCode() , req.getBodyId());
 				if (makeList.size()>0 ) {
 					errorList.add(new Error("01", "Make Name En", "This Make Name Already Exist "));
 				}
 			}else if (StringUtils.isNotBlank(req.getMakeId()) &&  StringUtils.isNotBlank(req.getInsuranceId()) && StringUtils.isNotBlank(req.getBranchCode())) {
-				List<MotorMakeMaster> makeList = getMakeNameEnExistDetails(req.getMakeNameEn() , req.getInsuranceId() , req.getBranchCode());
+				List<MotorMakeMaster> makeList = getMakeNameEnExistDetails(req.getMakeNameEn() , req.getInsuranceId() , req.getBranchCode(), req.getBodyId());
 				
 				if (makeList.size()>0 &&  (! req.getMakeId().equalsIgnoreCase(makeList.get(0).getMakeId().toString())) ) {
 					errorList.add(new Error("01", "Make Name En", "This Make Name Already Exist "));
 				}
 				
+			}
+			
+			if (StringUtils.isBlank(req.getBodyId()) ) {
+				errorList.add(new Error("01", "BodyId", "Please Select Body Type"));
 			}
 			
 			// Date Validation 
@@ -126,7 +130,7 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 		}
 		return errorList;
 	}
-	public List<MotorMakeMaster> getMakeNameEnExistDetails(String makeNameEn , String InsuranceId , String branchCode) {
+	public List<MotorMakeMaster> getMakeNameEnExistDetails(String makeNameEn , String InsuranceId , String branchCode ,String bodyId) {
 		List<MotorMakeMaster> list = new ArrayList<MotorMakeMaster>();
 		try {
 			Date today = new Date();
@@ -145,17 +149,19 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			Root<MotorMakeMaster> ocpm1 = amendId.from(MotorMakeMaster.class);
 			amendId.select(cb.max(ocpm1.get("amendId")));
 			Predicate a1 = cb.equal(ocpm1.get("makeId"), b.get("makeId"));
+			Predicate a9 = cb.equal(b.get("bodyId"),ocpm1.get("bodyId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
 			Predicate a4 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a5 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"), today);
-			amendId.where(a1,a2,a3,a4,a5);
+			amendId.where(a1,a2,a3,a4,a5,a9);
 
 			Predicate n1 = cb.equal(b.get("amendId"), amendId);
 			Predicate n2 = cb.equal(cb.lower( b.get("makeNameEn")), makeNameEn.toLowerCase());
 			Predicate n3 = cb.equal(b.get("companyId"),InsuranceId);
 			Predicate n4 = cb.equal(b.get("branchCode"), branchCode);
 			Predicate n5 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n10 = cb.equal(b.get("bodyId"),bodyId);
 			Predicate n6 = cb.or(n4,n5);
 			query.where(n1,n2,n3,n6);
 			
@@ -381,7 +387,8 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			Predicate a1 = cb.equal(ocpm1.get("makeId"), c.get("makeId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), c.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), c.get("branchCode"));
-			amendId.where(a1, a2, a3);
+			Predicate a9 = cb.equal(c.get("bodyId"),ocpm1.get("bodyId"));
+			amendId.where(a1, a2, a3,a9);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -393,8 +400,9 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			Predicate n2 = cb.equal(c.get("branchCode"), req.getBranchCode());
 			Predicate n3 = cb.equal(c.get("makeId"), req.getMakeId());
 			Predicate n4 = cb.equal(c.get("branchCode"), "99999");
+			Predicate n7 = cb.equal(c.get("bodyId"),req.getBodyId());
 			Predicate n5 = cb.or(n2,n4);
-			query.where(n1,n3,n5,n6).orderBy(orderList);
+			query.where(n1,n3,n5,n6,n7).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<MotorMakeMaster> result = em.createQuery(query);
@@ -445,7 +453,8 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			Predicate a1 = cb.equal(ocpm1.get("makeId"), b.get("makeId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"), b.get("branchCode"));
-			amendId.where(a1, a2, a3);
+			Predicate a9 = cb.equal(b.get("bodyId"),ocpm1.get("bodyId"));
+			amendId.where(a1, a2, a3,a9);
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(b.get("branchCode")));
@@ -454,8 +463,9 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			Predicate n1 = cb.equal(b.get("companyId"), req.getInsuranceId());
 			Predicate n2 = cb.equal(b.get("branchCode"), req.getBranchCode());
 			Predicate n4 = cb.equal(b.get("branchCode"), "99999");
+			Predicate n8 = cb.equal(b.get("bodyId"),req.getBodyId());
 			Predicate n5 = cb.or(n2,n4);
-			query.where(n1,n5,n6).orderBy(orderList);
+			query.where(n1,n5,n6,n8).orderBy(orderList);
 
 			// Get Result
 			TypedQuery<MotorMakeMaster> result = em.createQuery(query);
@@ -507,8 +517,8 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			Predicate a1 = cb.equal(ocpm1.get("makeId"), b.get("makeId"));
 			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
 			Predicate a3 = cb.equal(ocpm1.get("branchCode"),b.get("branchCode"));
-
-			amendId.where(a1, a2,a3);
+			Predicate a9 = cb.equal(b.get("bodyId"),ocpm1.get("bodyId"));
+			amendId.where(a1, a2,a3,a9);
 
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -578,7 +588,8 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
 			Predicate a5 = cb.equal(c.get("companyId"),ocpm1.get("companyId"));
 			Predicate a6 = cb.equal(c.get("branchCode"),ocpm1.get("branchCode"));
-			effectiveDate.where(a1,a2,a5,a6);
+			Predicate a9 = cb.equal(c.get("bodyId"),ocpm1.get("bodyId"));
+			effectiveDate.where(a1,a2,a5,a6,a9);
 			// Effective Date End Max Filter
 			Subquery<Long> effectiveDate2 = query.subquery(Long.class);
 			Root<MotorMakeMaster> ocpm2 = effectiveDate2.from(MotorMakeMaster.class);
@@ -587,7 +598,8 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			Predicate a4 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
 			Predicate a7 = cb.equal(c.get("companyId"),ocpm2.get("companyId"));
 			Predicate a8 = cb.equal(c.get("branchCode"),ocpm2.get("branchCode"));
-			effectiveDate2.where(a3,a4,a7,a8);
+			Predicate a10 = cb.equal(c.get("bodyId"),ocpm2.get("bodyId"));
+			effectiveDate2.where(a3,a4,a7,a8,a10);
 			
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
@@ -603,7 +615,8 @@ public class MotorMakeMasterServiceImpl implements MotorMakeMasterService {
 			Predicate n5 = cb.equal(c.get("branchCode"), req.getBranchCode());
 			Predicate n6 = cb.equal(c.get("branchCode"), "99999");
 			Predicate n7 = cb.or(n5,n6);
-			query.where(n9,n2,n3,n4,n7).orderBy(orderList);
+			Predicate n10 = cb.equal(c.get("bodyId"), req.getBodyId());
+			query.where(n9,n2,n3,n4,n7,n10).orderBy(orderList);
 			
 			// Get Result
 			TypedQuery<MotorMakeMaster> result = em.createQuery(query);
