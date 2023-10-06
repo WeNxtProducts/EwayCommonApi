@@ -3057,10 +3057,12 @@ public class DropDownServiceImpl  implements DropDownService{
 			 
 			 for (MotorDataDetails data : motList ) {
 				 MotorWithAccessoriesRes res = new MotorWithAccessoriesRes();
-					res.setCode(data.getVehicleId());
-					res.setCodeDesc(data.getChassisNumber());
-					res.setSuminsured(data.getAcccessoriesSumInsured()==null?"" : data.getAcccessoriesSumInsured().toString());
-					resList.add(res);
+				 if(data.getAcccessoriesSumInsured()!=null && data.getAcccessoriesSumInsured() > 0 ) {
+					 res.setCode(data.getVehicleId());
+						res.setCodeDesc(data.getChassisNumber());
+						res.setSuminsured(data.getAcccessoriesSumInsured()==null?"" : data.getAcccessoriesSumInsured().toString());
+						resList.add(res); 
+				 }
 			 }
 			
 		} catch (Exception e) {
