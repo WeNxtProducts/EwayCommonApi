@@ -3167,20 +3167,21 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				
 			Predicate n5 = null;
 			Predicate n14 = null;
-			if (req.getApplicationId().equalsIgnoreCase("1")) {
-				if ("broker".equalsIgnoreCase(req.getUserType())) {
-					n5 = cb.equal(m.get("brokerCode"), req.getBdmCode());
-				} else {
-					n5 = cb.equal(m.get("loginId"), req.getLoginId());
-				}
-			} else {
+//			if (req.getApplicationId().equalsIgnoreCase("1")) {
+//				if ("broker".equalsIgnoreCase(req.getUserType())) {
+//					n5 = cb.equal(m.get("brokerCode"), req.getBdmCode());
+//				} else {
+//					n5 = cb.equal(m.get("loginId"), req.getLoginId());
+//				}
+//			} else {
+				
 				n5 = cb.equal(m.get("applicationId"), req.getApplicationId());
 				if(StringUtils.isNotBlank(req.getBdmCode())){
 					n14 = cb.equal(m.get("bdmCode"), req.getBdmCode());
 				}else {
 					n14 = cb.equal(m.get("loginId"), req.getLoginId());
 				}
-			}
+		//	}
 			
 				Predicate n6 = null;
 				if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
@@ -3190,11 +3191,13 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					
 					n6 =cb.equal(m.get("branchCode"), req.getBranchCode());
 				}
-				if (req.getApplicationId().equalsIgnoreCase("1")) {
-					query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10,n13).orderBy(orderList);
-				}else {
+				
+				
+//				if (req.getApplicationId().equalsIgnoreCase("1")) {
+//					query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10,n13).orderBy(orderList);
+//				}else {
 					query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10,n13,n14).orderBy(orderList);
-				}
+			//	}
 
 				// Get Result
 				TypedQuery<PortfolioGridCriteriaRes> result = em.createQuery(query);
@@ -3248,40 +3251,40 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				Predicate n12 = cb.isNull(m.get("endtTypeId"));     
 				Predicate n13 = cb.or(n11,n12);
 			
-			Predicate n5 = null;
-			Predicate n14 = null;
-		
-			if (req.getApplicationId().equalsIgnoreCase("1")) {
-				if ("broker".equalsIgnoreCase(req.getUserType())) {
-					n5 = cb.equal(m.get("bdmCode"), req.getBdmCode());
-				} else {
-					n5 = cb.equal(m.get("loginId"), req.getLoginId());
-				}
-			} else {
-				n5 = cb.equal(m.get("applicationId"), req.getApplicationId());
-				if(StringUtils.isNotBlank(req.getBdmCode())){
-					n14 = cb.equal(m.get("bdmCode"), req.getBdmCode());
-				}else {
-					n14 = cb.equal(m.get("loginId"), req.getLoginId());
-				}
-				
-			}
-			
-				Predicate n6 = null;
-				if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
+				Predicate n5 = null;
+				Predicate n14 = null;
+//				if (req.getApplicationId().equalsIgnoreCase("1")) {
+//					if ("broker".equalsIgnoreCase(req.getUserType())) {
+//						n5 = cb.equal(m.get("brokerCode"), req.getBdmCode());
+//					} else {
+//						n5 = cb.equal(m.get("loginId"), req.getLoginId());
+//					}
+//				} else {
 					
-					n6 =cb.equal(m.get("brokerBranchCode"),req.getBrokerBranchCode());
-				} else {
-					
-					n6 =cb.equal(m.get("branchCode"), req.getBranchCode());
-				}
+					n5 = cb.equal(m.get("applicationId"), req.getApplicationId());
+					if(StringUtils.isNotBlank(req.getBdmCode())){
+						n14 = cb.equal(m.get("bdmCode"), req.getBdmCode());
+					}else {
+						n14 = cb.equal(m.get("loginId"), req.getLoginId());
+					}
+			//	}
 				
-			
-				if (req.getApplicationId().equalsIgnoreCase("1")) {
-					query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10,n13);
-				}else {
-					query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10,n13,n14);
-				}
+					Predicate n6 = null;
+					if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
+						
+						n6 =cb.equal(m.get("brokerBranchCode"), req.getBrokerBranchCode());
+					} else {
+						
+						n6 =cb.equal(m.get("branchCode"), req.getBranchCode());
+					}
+					
+					
+//					if (req.getApplicationId().equalsIgnoreCase("1")) {
+//						query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10,n13).orderBy(orderList);
+//					}else {
+						query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9,n10,n13,n14);
+				//	}
+
 				TypedQuery<Long> result = em.createQuery(query);
 				List<Long> val = result.getResultList();
 					
