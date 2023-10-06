@@ -399,18 +399,16 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Predicate n9 = cb.isNull(m.get("endorsementType"));
 			Predicate n7 = null;
 			Predicate n11 = null;
-			
-			if (req.getApplicationId().equalsIgnoreCase("1")) {
-				n7 = cb.equal(m.get("loginId"), req.getLoginId());
-			} else {
-				if(StringUtils.isNotBlank(req.getBdmCode())){
-					n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
-					n11 = cb.equal(m.get("bdmCode"), req.getBdmCode());
-				}else {
-					n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
-					n11 = cb.equal(m.get("loginId"), req.getLoginId());
-				}
-				}
+			 
+			n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
+			if(StringUtils.isNotBlank(req.getBdmCode())){
+				
+				n11 = cb.equal(m.get("bdmCode"), req.getBdmCode());
+				
+			}else {
+				
+				n11 = cb.equal(m.get("loginId"), req.getLoginId());
+			}
 
 			Predicate n8 = null;
 			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
@@ -428,11 +426,9 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			riskId.where(a3);
 			
 			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
-			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
-				query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10).orderBy(orderList);
-			}else {
-				query.where(n1, n2, n3, n4, n5, n6, n7,n11, n8,n9,n10).orderBy(orderList);	
-			}
+		
+			query.where(n1, n2, n3, n4, n5, n6, n7,n11, n8,n9,n10).orderBy(orderList);	
+		
 			// Get Result
 			TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);
 			result.setFirstResult(limit * offset);
@@ -477,18 +473,14 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 
 			
 
-			if (req.getApplicationId().equalsIgnoreCase("1")) {
-				n7 = cb.equal(m.get("loginId"), req.getLoginId());
-			
-			} else {
-				if(StringUtils.isNotBlank(req.getBdmCode())){
-					n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
-					n11 = cb.equal(m.get("bdmCode"), req.getBdmCode());
-				}else {
-					n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
-					n11 = cb.equal(m.get("loginId"), req.getLoginId());
-				}
-
+			n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
+			if(StringUtils.isNotBlank(req.getBdmCode())){
+				
+				n11 = cb.equal(m.get("bdmCode"), req.getBdmCode());
+				
+			}else {
+				
+				n11 = cb.equal(m.get("loginId"), req.getLoginId());
 			}
 
 			Predicate n8 = null;
@@ -507,12 +499,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			riskId.where(a3);
 			
 			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
-		
-
-			if (req.getApplicationId().equalsIgnoreCase("1"))
-				query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10);
-			else
-				query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10,n11);
+			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10,n11);
 
 
 		
@@ -591,18 +578,14 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Predicate n7 = null;
 			Predicate n11 = null;
 			
-			if (req.getApplicationId().equalsIgnoreCase("1")) {
-				n7 = cb.equal(m.get("loginId"), req.getLoginId());
-			
-				
+			n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
+			if (StringUtils.isNotBlank(req.getBdmCode())) {
+
+				n11 = cb.equal(m.get("bdmCode"), req.getBdmCode());
+
 			} else {
-				if(StringUtils.isNotBlank(req.getBdmCode())){
-					n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
-					n11 = cb.equal(m.get("bdmCode"), req.getBdmCode());
-				}else {
-					n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
-					n11 = cb.equal(m.get("loginId"), req.getLoginId());
-				}
+
+				n11 = cb.equal(m.get("loginId"), req.getLoginId());
 			}
 
 			Predicate n8 = null;
@@ -622,10 +605,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			
 			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
 
-			if (req.getApplicationId().equalsIgnoreCase("1")) 
-				query.where(n1, n2, n3, n4, n5,  n7, n8,n9,n10).orderBy(orderList);
-			else
-				query.where(n1, n2, n3, n4, n5,  n7, n8,n9,n10,n11).orderBy(orderList);
+			query.where(n1, n2, n3, n4, n5,  n7, n8,n9,n10,n11).orderBy(orderList);
 			
 
 			TypedQuery<QuoteCriteriaRes> result = em.createQuery(query);
@@ -683,7 +663,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			
 			if (req.getApplicationId().equalsIgnoreCase("1")) {
 				n7 = cb.equal(m.get("loginId"), req.getLoginId());
-			
+				n11 = cb.equal(m.get("applicationId"), req.getApplicationId());
 				
 			} else {
 				if(StringUtils.isNotBlank(req.getBdmCode())){
@@ -712,10 +692,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			
 			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
 
-			if (req.getApplicationId().equalsIgnoreCase("1")) 
-				query.where(n1, n2, n3, n4, n5,  n7, n8,n9,n10);
-			else
-				query.where(n1, n2, n3, n4, n5,  n7, n8,n9,n10,n11);
+			query.where(n1, n2, n3, n4, n5,  n7, n8,n9,n10,n11);
 
 			TypedQuery<Long> result = em.createQuery(query);
 			List<Long> val = result.getResultList();
@@ -799,7 +776,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			
 			if (req.getApplicationId().equalsIgnoreCase("1")) {
 				n7 = cb.equal(m.get("loginId"), req.getLoginId());
-			
+				n11 = cb.equal(m.get("applicationId"), req.getApplicationId());
 			} else {
 				if(StringUtils.isNotBlank(req.getBdmCode())){
 					n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
@@ -826,11 +803,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			riskId.where(a3);
 			
 			Predicate n10 = cb.equal(m.get("riskId"),  riskId );
-			
-			if (req.getApplicationId().equalsIgnoreCase("1"))
-				query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10).orderBy(orderList);
-			else
-				query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10,n11).orderBy(orderList);
+			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10,n11).orderBy(orderList);
 
 			TypedQuery<RejectCriteriaRes> result = em.createQuery(query);
 			result.setFirstResult(limit * offset); 
@@ -918,6 +891,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 		
 			if (req.getApplicationId().equalsIgnoreCase("1")) {
 				n5 = cb.equal(m.get("loginId"), req.getLoginId());
+				n9 = cb.equal(m.get("applicationId"), req.getApplicationId());
 			} else {
 				if(StringUtils.isNotBlank(req.getBdmCode())){
 					n5 = cb.equal(m.get("applicationId"), req.getApplicationId());
@@ -942,11 +916,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				n8 = cb.isNull(m.get("endorsementTypeDesc")); 
 			else if (req.getType().equalsIgnoreCase("E"))
 				n8 = cb.isNotNull(m.get("endorsementTypeDesc")); 
-			if (req.getApplicationId().equalsIgnoreCase("1")) {	
-				query.where(n1, n2, n3, n4, n5, n6,n7, n8).orderBy(orderList);
-			}else {
-				query.where(n1, n2, n3, n4, n5, n6,n7, n8,n9).orderBy(orderList);
-			}
+			query.where(n1, n2, n3, n4, n5, n6,n7, n8,n9).orderBy(orderList);
 				
 			// Get Result
 			TypedQuery<Tuple> result = em.createQuery(query);
@@ -1033,6 +1003,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Predicate n9 = null;
 			if (req.getApplicationId().equalsIgnoreCase("1")) {
 				n5 = cb.equal(m.get("loginId"), req.getLoginId());
+				n9 = cb.equal(m.get("applicationId"), req.getApplicationId());
 			} else {
 				if(StringUtils.isNotBlank(req.getBdmCode())){
 					n5 = cb.equal(m.get("applicationId"), req.getApplicationId());
@@ -1058,11 +1029,8 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				n8 = cb.isNotNull(m.get("endorsementTypeDesc")); 
 			
 
-			if (req.getApplicationId().equalsIgnoreCase("1")) {
-				query.where(n1, n2, n3, n4, n5, n6, n7, n8);
-			} else {
-				query.where(n1, n2, n3, n4, n5, n6, n7, n8, n9);
-			}
+			query.where(n1, n2, n3, n4, n5, n6, n7, n8, n9);
+			
 				
 			// Get Result
 			TypedQuery<Long> result = em.createQuery(query);
@@ -3392,6 +3360,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
 					n5 = cb.equal(m.get("loginId"), req.getLoginId());
+					n9 = cb.equal(m.get("applicationId"), req.getApplicationId());
 				} else {
 					n5 = cb.equal(m.get("applicationId"), req.getApplicationId());
 					if(StringUtils.isNotBlank(req.getBdmCode())){
@@ -3409,11 +3378,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					Expression<String> e0 = m.get("branchCode");
 					n6 = e0.in(branches);
 				}
-				if (req.getApplicationId().equalsIgnoreCase("1")) {
-					query.where(n1, n2, n3, n4, n5, n6,n7,n8).groupBy((m.get("originalPolicyNo")),m.get("endtStatus"));
-				}else {
-					query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9).groupBy((m.get("originalPolicyNo")),m.get("endtStatus"));
-				}
+				query.where(n1, n2, n3, n4, n5, n6,n7,n8,n9).groupBy((m.get("originalPolicyNo")),m.get("endtStatus"));
 				
 				
 				// Get Result
@@ -3462,6 +3427,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				Predicate n9 = null;
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
 					n5 = cb.equal(m.get("loginId"), req.getLoginId());
+					n9 = cb.equal(m.get("applicationId"), req.getApplicationId());
 				} else {
 					n5 = cb.equal(m.get("applicationId"), req.getApplicationId());
 					if(StringUtils.isNotBlank(req.getBdmCode())){
@@ -3479,11 +3445,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 					Expression<String> e0 = m.get("branchCode");
 					n6 = e0.in(branches);
 				}
-				if (req.getApplicationId().equalsIgnoreCase("1")) {
-					query.where(n1, n2, n3, n4, n5, n6).groupBy((m.get("originalPolicyNo")),m.get("endtStatus"));
-				}else {
-					query.where(n1, n2, n3, n4, n5, n6, n9).groupBy((m.get("originalPolicyNo")),m.get("endtStatus"));
-				}
+				query.where(n1, n2, n3, n4, n5, n6, n9).groupBy((m.get("originalPolicyNo")),m.get("endtStatus"));
 				
 				
 				// Get Result
@@ -3583,6 +3545,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
 					n5 = cb.equal(m.get("loginId"), req.getLoginId());
+					n13 = cb.equal(m.get("applicationId"), req.getApplicationId());
 				} else {
 					n5 = cb.equal(m.get("applicationId"), req.getApplicationId());
 					if(StringUtils.isNotBlank(req.getBdmCode())){
@@ -3599,11 +3562,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				
 					n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
 				}
-				if (req.getApplicationId().equalsIgnoreCase("1")) {
-				query.where(n1,n2, n3, n4, n5, n6,n7,n8,n10,n12).orderBy(orderList);
-				}else {
-					query.where(n1,n2, n3, n4, n5, n6,n7,n8,n10,n12,n13).orderBy(orderList);
-				}
+				query.where(n1,n2, n3, n4, n5, n6,n7,n8,n10,n12,n13).orderBy(orderList);
 
 				
 				TypedQuery<PortfolioGridCriteriaRes> result = em.createQuery(query);
@@ -3661,6 +3620,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				Predicate n13 = null;
 				if (req.getApplicationId().equalsIgnoreCase("1")) {
 					n5 = cb.equal(m.get("loginId"), req.getLoginId());
+					n13 = cb.equal(m.get("applicationId"), req.getApplicationId());
 				} else {
 					n5 = cb.equal(m.get("applicationId"), req.getApplicationId());
 					if(StringUtils.isNotBlank(req.getBdmCode())){
@@ -3677,11 +3637,7 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				
 					n6 = cb.equal(m.get("branchCode"), req.getBranchCode());
 				}
-				if (req.getApplicationId().equalsIgnoreCase("1")) {
-					query.where(n1, n2, n3, n4, n5, n6, n7, n8, n10, n12);
-				} else {
-					query.where(n1, n2, n3, n4, n5, n6, n7, n8, n10, n12, n13);
-				}
+				query.where(n1, n2, n3, n4, n5, n6, n7, n8, n10, n12, n13);
 				TypedQuery<Long> result = em.createQuery(query);
 				List<Long> val = result.getResultList();
 					
