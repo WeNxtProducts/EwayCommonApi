@@ -964,8 +964,20 @@ public class QuoteThreadCall implements Callable<Object>  {
 			status.add("Y");
 			status.add("E");
 			
-			List<EserviceSectionDetails> secs = eserSecRepo.findByRequestReferenceNoAndStatusIn(request.getRequestReferenceNo(),status);
-			List<String> secIds = secs.stream().map(EserviceSectionDetails :: getSectionId).collect(Collectors.toList());
+			List<EserviceSectionDetails> secs = eserSecRepo.findByRequestReferenceNoAndStatusNot(request.getRequestReferenceNo(),"D");
+			List<String> secIds = new ArrayList<String>(); // secs.stream().map(EserviceSectionDetails :: getSectionId).collect(Collectors.toList());
+			
+			for (VehicleIdsReq veh : request.getVehicleIdsList()) {
+				List<EserviceSectionDetails> filterSecId =  secs.stream().filter( o ->  o.getRiskId().equals(veh.getVehicleId() ) && o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList());
+				if(filterSecId.size() > 0 ) {
+					List<VehicleIdsReq> filterCoverList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId()!=null && StringUtils.isNotBlank(o.getSectionId())	&&	            					
+	    					o.getVehicleId().equals(veh.getVehicleId()) && o.getSectionId().equalsIgnoreCase(veh.getSectionId()) ).collect(Collectors.toList());
+					if(filterCoverList.size() > 0 && filterCoverList.get(0).getCoverIdList()!=null  &&  filterCoverList.get(0).getCoverIdList().size() > 0 ) {
+						secIds.add(veh.getSectionId());
+					}
+				}
+				
+			}
 					
 			// COntent And All Risk	
 			Long contentCount = contentRepo.countByQuoteNo(newQuoteNo );
@@ -2012,9 +2024,21 @@ public class QuoteThreadCall implements Callable<Object>  {
 				
 				
 				//Additional info traces delete for Domestic & corporate plus
-				List<EserviceSectionDetails> secs = eserSecRepo.findByRequestReferenceNoAndStatus(req.getRequestReferenceNo(),"Y");
+				List<EserviceSectionDetails> secs = eserSecRepo.findByRequestReferenceNoAndStatusNot(req.getRequestReferenceNo(),"D");
 				
-				List<String> secIds = secs.stream().map(EserviceSectionDetails :: getSectionId).collect(Collectors.toList());
+				List<String> secIds = new ArrayList<String>(); // secs.stream().map(EserviceSectionDetails :: getSectionId).collect(Collectors.toList());
+				
+				for (VehicleIdsReq veh : req.getVehicleIdsList()) {
+					List<EserviceSectionDetails> filterSecId =  secs.stream().filter( o ->  o.getRiskId().equals(veh.getVehicleId() ) && o.getSectionId().equalsIgnoreCase( veh.getSectionId()) ).collect(Collectors.toList());
+					if(filterSecId.size() > 0 ) {
+						List<VehicleIdsReq> filterCoverList = request.getVehicleIdsList().stream().filter( o -> o.getVehicleId()!=null && StringUtils.isNotBlank(o.getSectionId())	&&	            					
+		    					o.getVehicleId().equals(veh.getVehicleId()) && o.getSectionId().equalsIgnoreCase(veh.getSectionId()) ).collect(Collectors.toList());
+						if(filterCoverList.size() > 0 && filterCoverList.get(0).getCoverIdList()!=null  &&  filterCoverList.get(0).getCoverIdList().size() > 0 ) {
+							secIds.add(veh.getSectionId());
+						}
+					}
+					
+				}
 				
 				List<ContentAndRisk> con = contentRepo.findByQuoteNo(req.getQuoteNo());
 				List<ProductEmployeeDetails> emp = empRepo.findByQuoteNo(req.getQuoteNo());

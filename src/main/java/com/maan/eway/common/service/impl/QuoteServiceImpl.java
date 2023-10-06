@@ -579,7 +579,7 @@ public class QuoteServiceImpl implements QuoteService {
 			// Find Motor Data
 			
 			List<BuildingRiskDetails> buildings = buildRiskRepo.findByQuoteNo(req.getQuoteNo());
-			List<SectionDataDetails> secDatas =  secDataRepo.findByQuoteNo(req.getQuoteNo());
+			List<SectionDataDetails> secDatas =  secDataRepo.findByQuoteNoAndStatusNot(req.getQuoteNo(),"D");
 			List<PolicyCoverData>  covers = coverRepo.findByQuoteNoOrderByVehicleIdAsc(req.getQuoteNo());
 			
 			
@@ -2767,14 +2767,14 @@ public class QuoteServiceImpl implements QuoteService {
 				// (i) Asset Related Sections
 				
 				// Building
-				List<BuildingRiskDetails> filterBuilding = buildings.stream().filter( o -> "1".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+				List<BuildingRiskDetails> filterBuilding = buildings.stream().filter( o -> "1".equalsIgnoreCase(o.getSectionId()) && ! "D".equalsIgnoreCase(o.getStatus())  ).collect(Collectors.toList());
 				if(filterBuilding.size() > 0 ) {
 					BuildingRiskDetails build = filterBuilding.get(0);
 					res.setBuildingSuminsured(build.getBuildingSuminsured() == null?"0" :build.getBuildingSuminsured().toPlainString());
 				} 
 				
 				// Content
-				List<BuildingRiskDetails> filterContent = buildings.stream().filter( o -> "47".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+				List<BuildingRiskDetails> filterContent = buildings.stream().filter( o -> "47".equalsIgnoreCase(o.getSectionId()) && ! "D".equalsIgnoreCase(o.getStatus())  ).collect(Collectors.toList());
 				if(filterContent.size() > 0 ) {
 					BuildingRiskDetails build = filterContent.get(0);
 					res.setContentSuminsured(build.getContentSuminsured() == null?"0" :build.getContentSuminsured().toPlainString());
@@ -2783,7 +2783,7 @@ public class QuoteServiceImpl implements QuoteService {
 				
 				
 				// All Risk , Plant All Risk , Business All Risk
-				List<BuildingRiskDetails> filterAllRisk = buildings.stream().filter( o -> "3".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+				List<BuildingRiskDetails> filterAllRisk = buildings.stream().filter( o -> "3".equalsIgnoreCase(o.getSectionId()) && ! "D".equalsIgnoreCase(o.getStatus()) ).collect(Collectors.toList());
 				if(filterAllRisk.size() > 0 ) {
 					BuildingRiskDetails build = filterAllRisk.get(0);
 					res.setAllriskSuminsured(build.getAllriskSuminsured() == null?"0" :build.getAllriskSuminsured().toPlainString());
@@ -2800,7 +2800,7 @@ public class QuoteServiceImpl implements QuoteService {
 				} 
 				
 				// Accidental Damage
-				List<BuildingRiskDetails> filterAccidental = buildings.stream().filter( o -> "56".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+				List<BuildingRiskDetails> filterAccidental = buildings.stream().filter( o -> "56".equalsIgnoreCase(o.getSectionId()) && ! "D".equalsIgnoreCase(o.getStatus()) ).collect(Collectors.toList());
 				if(filterAccidental.size() > 0 ) {
 					BuildingRiskDetails build = filterAccidental.get(0);
 					//res.setContentSuminsured(build.getContentSuminsured() == null?"0" :build.getContentSuminsured().toPlainString());
@@ -2808,7 +2808,7 @@ public class QuoteServiceImpl implements QuoteService {
 				}
 				
 				// Burgalry
-				List<BuildingRiskDetails> filterBurglary = buildings.stream().filter( o -> "52".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+				List<BuildingRiskDetails> filterBurglary = buildings.stream().filter( o -> "52".equalsIgnoreCase(o.getSectionId()) && ! "D".equalsIgnoreCase(o.getStatus()) ).collect(Collectors.toList());
 				if(filterBurglary.size() > 0 ) {
 					BuildingRiskDetails build = filterBurglary.get(0);
 					res.setStockInTradeSi(build.getStockInTradeSi()== null?"0" :build.getStockInTradeSi().toPlainString());;
@@ -2822,7 +2822,7 @@ public class QuoteServiceImpl implements QuoteService {
 				}
 				
 				// Fire And Material Damage
-				List<BuildingRiskDetails> filterFire = buildings.stream().filter( o -> "40".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+				List<BuildingRiskDetails> filterFire = buildings.stream().filter( o -> "40".equalsIgnoreCase(o.getSectionId()) && ! "D".equalsIgnoreCase(o.getStatus()) ).collect(Collectors.toList());
 				if(filterFire.size() > 0 ) {
 					BuildingRiskDetails build = filterFire.get(0);
 					res.setStockInTradeSi(build.getStockInTradeSi()== null?"0" :build.getStockInTradeSi().toPlainString());
@@ -2834,14 +2834,14 @@ public class QuoteServiceImpl implements QuoteService {
 				}
 				
 				// Electronic Equipment
-				List<BuildingRiskDetails> filterElecEquip = buildings.stream().filter( o -> "39".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+				List<BuildingRiskDetails> filterElecEquip = buildings.stream().filter( o -> "39".equalsIgnoreCase(o.getSectionId()) && ! "D".equalsIgnoreCase(o.getStatus()) ).collect(Collectors.toList());
 				if(filterElecEquip.size() > 0 ) {
 					BuildingRiskDetails build = filterElecEquip.get(0);
 					res.setElecEquipSuminsured(build.getElecEquipSuminsured() == null?"0" :build.getElecEquipSuminsured().toPlainString());
 				}
 				
 				// Money
-				List<BuildingRiskDetails> filterMoney = buildings.stream().filter( o -> "42".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+				List<BuildingRiskDetails> filterMoney = buildings.stream().filter( o -> "42".equalsIgnoreCase(o.getSectionId()) && ! "D".equalsIgnoreCase(o.getStatus()) ).collect(Collectors.toList());
 				if(filterMoney.size() > 0 ) {
 					BuildingRiskDetails build = filterMoney.get(0);
 					res.setMoneyAnnualEstimate(build.getMoneyAnnualEstimate()== null?"0" : build.getMoneyAnnualEstimate().toPlainString());
@@ -2854,7 +2854,7 @@ public class QuoteServiceImpl implements QuoteService {
 				}
 				
 				// Machinery
-				List<BuildingRiskDetails> filterMachienry = buildings.stream().filter( o -> "41".equalsIgnoreCase(o.getSectionId()) ).collect(Collectors.toList());
+				List<BuildingRiskDetails> filterMachienry = buildings.stream().filter( o -> "41".equalsIgnoreCase(o.getSectionId()) && ! "D".equalsIgnoreCase(o.getStatus())  ).collect(Collectors.toList());
 				if(filterMachienry.size() > 0 ) {
 					BuildingRiskDetails build = filterMachienry.get(0);
 					Double ElecMachinesSi = build.getElecMachinesSi() == null?0D :Double.valueOf(build.getElecMachinesSi().toPlainString());
