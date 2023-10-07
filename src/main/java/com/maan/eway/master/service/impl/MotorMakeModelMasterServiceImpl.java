@@ -813,14 +813,23 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 			// Get Result
 			TypedQuery<MotorMakeModelMaster> result = em.createQuery(query);
 			list = result.getResultList();
+			
+			List<DropDownRes> totalList = new ArrayList<DropDownRes>();
 			for (MotorMakeModelMaster data : list) {
 				// Response 
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getModelId().toString());
 				res.setCodeDesc(data.getModelNameEn());
 				res.setStatus(data.getStatus());
-				resList.add(res);
+				totalList.add(res);
 			}
+			List<DropDownRes> induvidualList = totalList.stream().filter( o -> !"99999".equalsIgnoreCase(o.getCode())  ).collect(Collectors.toList());
+			induvidualList.sort(Comparator.comparing( DropDownRes :: getCodeDesc));
+			resList.addAll(induvidualList);
+			
+			// Commercial
+			List<DropDownRes> otherList = totalList.stream().filter( o -> "99999".equalsIgnoreCase(o.getCode())  ).collect(Collectors.toList());
+			resList.addAll(otherList);
 		}
 			catch(Exception e) {
 				e.printStackTrace();
