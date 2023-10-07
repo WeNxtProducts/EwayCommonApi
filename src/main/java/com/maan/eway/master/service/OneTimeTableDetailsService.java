@@ -24,4 +24,6 @@ public interface OneTimeTableDetailsService  {
 
 	List<DropDownRes> integrationtable();
 
+	List<DropDownRes> exceltable(String type);
+
 }

@@ -163,5 +163,24 @@ public List<DropDownRes> integrationtable() {
 	}
 	return resList;
 }
+@Override
+public List<DropDownRes> exceltable(String type) {
+	List<DropDownRes> resList = new ArrayList<DropDownRes>();
+	try {
+		List<OneTimeTableDetails> getList = repo.findByItemTypeAndStatusOrderByItemCodeAsc(type, "Y");
+		for (OneTimeTableDetails data : getList) {
+			DropDownRes res = new DropDownRes();
+			res.setCode(data.getItemCode());
+			res.setCodeDesc(data.getItemValue());
+			res.setStatus(data.getStatus());
+			resList.add(res);
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is ---> " + e.getMessage());
+		return null;
+	}
+	return resList;
+}
 
 }

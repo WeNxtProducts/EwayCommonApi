@@ -146,5 +146,26 @@ public class OneTimeTableDetailsController {
 	}
 	
 	
+	@PreAuthorize("hasAnyRole('ROLE_APPROVER','ROLE_USER','ROLE_ADMIN')")
+	@GetMapping("/exceltable")
+	@ApiOperation(value = "This method is to exceltable Table Name Drop Down")
+	public ResponseEntity<CommonRes> exceltable() {
+		CommonRes data = new CommonRes();
+
+		List<DropDownRes> res = service.exceltable("EXCEL_UPLOAD_TABLE");
+		data.setCommonResponse(res);
+		data.setIsError(false);
+		data.setErrorMessage(Collections.emptyList());
+		data.setMessage("Success");
+
+		if (res != null) {
+			return new ResponseEntity<CommonRes>(data, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	
+	
 	
 }
