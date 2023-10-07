@@ -27,7 +27,7 @@ public class JasperConfiguration {
 	 
 	// Enable This Value For run in Jndi Server
 
-	//("${spring.datasource.jndi-name}")   //jndi uncommand for revion
+	//@Value("${spring.datasource.jndi-name}")   //jndi uncommand for revion
 	private String jndiDatasource;
 	
 	public String getDraftPath() {
