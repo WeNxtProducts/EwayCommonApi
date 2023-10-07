@@ -27,7 +27,4 @@ public class MotorMakeModelGetAllReq {
 	@JsonProperty("Offset")
 	private String offset;
 	
-	@JsonProperty("BodyId")
-	private String bodyId;
-	
 }
