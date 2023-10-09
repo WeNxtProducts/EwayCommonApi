@@ -129,7 +129,8 @@ public class JasperCustomServiceImple {
 			response.setPolicyTypeDesc(map.get("policyTypeDesc")==null?"":map.get("policyTypeDesc").toString());
 			response.setManufactureYear(map.get("manufactureYear")==null?"":map.get("manufactureYear").toString());
 			response.setUserName(map.get("userName")==null?"":map.get("userName").toString());
-			response.setUserMobile(map.get("companyName")==null?"":map.get("companyName").toString());
+			response.setUserMobile(map.get("userMobile")==null?"":map.get("userMobile").toString());
+			response.setCompanyName(map.get("companyName")==null?"":map.get("companyName").toString());
 			response.setBranchName(map.get("branchName")==null?"":map.get("branchName").toString());
 			response.setCurrency(map.get("currency")==null?"":map.get("currency").toString());
 			response.setSectionName(map.get("sectionName")==null?"":map.get("sectionName").toString());
