@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -25,18 +24,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.maan.eway.admin.req.AdditionalInfoReq;
-import com.maan.eway.admin.req.BrokerPersonalInfoReq;
 import com.maan.eway.admin.req.CommonLoginCreationReq;
 import com.maan.eway.admin.req.CommonLoginInformationReq;
 import com.maan.eway.admin.req.CommonPersonalInforReq;
 import com.maan.eway.bean.CityMaster;
 import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.StateMaster;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.CityMasterRepository;
 import com.maan.eway.repository.CountryMasterRepository;
 import com.maan.eway.repository.LoginMasterRepository;
+import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.StateMasterRepository;
 
 @Service
@@ -58,6 +58,9 @@ public class BasicLoginValidationService {
 	
 	@Autowired
 	private CountryMasterRepository countryRepo;
+	
+	@Autowired
+	private LoginUserInfoRepository userinfoRepo;
 	
 	
 	public List<Error>  commonLoginCreationValidation(CommonLoginCreationReq req ) {
@@ -155,6 +158,8 @@ public class BasicLoginValidationService {
 			if( loginReq.getAttachedCompanies()==null || loginReq.getAttachedCompanies().size() == 0 ) {
 				errors.add(new Error("06", "Attached Branch", "Please Choose Atleast One Branch"));
 			} */
+			
+			
 			// Personal Info Validation
 			CommonPersonalInforReq personalReq = req.getPersonalInformation() ; 
 			
@@ -165,7 +170,28 @@ public class BasicLoginValidationService {
 				errors.add(new Error("0", "CityCode", "Please Enter City Code"));
 			}else if(countCity < 0) {
 				errors.add(new Error("0", "CityCode", "Please Enter Valid City Code"));
-			} */
+			} */ 
+			
+			if( StringUtils.isBlank(personalReq.getCustomerCode()) ) {
+				errors.add(new Error("06", "Customer Code", "Please Enter Customer Code"));
+			} else
+			
+			if ( loginReq.getUserType().equalsIgnoreCase("Broker") ) {
+				
+				if (StringUtils.isNotBlank( loginReq.getLoginId()) ) {
+					
+					List<LoginUserInfo>  loginData = userinfoRepo.findByCustomerCode(personalReq.getCustomerCode());
+					
+					if(loginData !=null && loginData.size()>0) {
+						
+						if(! loginData.get(0).getLoginId().equalsIgnoreCase(loginReq.getLoginId()) )
+							errors.add(new Error("06", "Customer Code", "Already One Login Id Exists For This Customer Code"));
+					
+					}	
+				}
+				
+				
+			}
 			
 			
 			if( StringUtils.isBlank(personalReq.getUserMail()) ) {
@@ -199,6 +225,8 @@ public class BasicLoginValidationService {
 			} else if (personalReq.getCityName().length() > 100 ) {
 				errors.add(new Error("09", "City Name ", "City Name Must Be Under 100 Characters Only Allowed"));
 			}
+			
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
