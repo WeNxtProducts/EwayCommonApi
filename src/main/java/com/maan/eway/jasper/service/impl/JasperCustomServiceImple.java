@@ -88,7 +88,7 @@ public class JasperCustomServiceImple {
 				hpmRoot.get("branchName").alias("branchName"),
 				hpmRoot.get("currency").alias("currency"),
 				mddRoot.get("sectionName").alias("sectionName"),
-				mddRoot.get("vehcileModelDesc").alias("vehcileModelDesc"),
+				mddRoot.get("vehcileModel").alias("vehcileModel"),
 				cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")),hpmRoot.get("premiumLc"))
 						.otherwise(hpmRoot.get("vatPremiumFc")).alias("premium"),
 				cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(icmRoot.get("currencyId")), hpmRoot.get("vatPremiumLc"))
@@ -133,7 +133,7 @@ public class JasperCustomServiceImple {
 			response.setBranchName(map.get("branchName")==null?"":map.get("branchName").toString());
 			response.setCurrency(map.get("currency")==null?"":map.get("currency").toString());
 			response.setSectionName(map.get("sectionName")==null?"":map.get("sectionName").toString());
-			response.setVehcileModelDesc(map.get("vehcileModelDesc")==null?"":map.get("vehcileModelDesc").toString());
+			response.setVehcileModelDesc(map.get("vehcileModel")==null?"":map.get("vehcileModel").toString());
 			response.setPremium(map.get("premium")==null?"":map.get("premium").toString());
 			response.setVatPremium(map.get("vatPremium")==null?"":map.get("vatPremium").toString());
 			response.setOverallPremium(map.get("overallPremium")==null?"":map.get("overallPremium").toString());

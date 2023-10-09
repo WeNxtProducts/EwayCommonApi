@@ -111,9 +111,9 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="sectionName"/>
 		<fieldDescription><![CDATA[sectionName]]></fieldDescription>
 	</field>
-	<field name="vehcileModelDesc" class="java.lang.String">
-		<property name="net.sf.jasperreports.json.field.expression" value="vehcileModelDesc"/>
-		<fieldDescription><![CDATA[vehcileModelDesc]]></fieldDescription>
+	<field name="vehcileModel" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="vehcileModel"/>
+		<fieldDescription><![CDATA[vehcileModel]]></fieldDescription>
 	</field>
 	<field name="premium" class="java.math.BigDecimal">
 		<property name="net.sf.jasperreports.json.field.expression" value="premium"/>
@@ -593,7 +593,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{modelType}+","+$F{vehcileModelDesc}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{vehcileModel}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="332" y="25" width="109" height="20" uuid="3d4d30e7-a1a6-44de-8c74-0480558e6420">
@@ -606,7 +606,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{vehicleTypeDesc}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{modelType}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="441" y="25" width="109" height="20" uuid="7e49e919-76cf-40de-8114-5a89577df161">
