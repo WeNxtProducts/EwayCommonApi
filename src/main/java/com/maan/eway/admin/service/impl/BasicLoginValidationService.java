@@ -172,11 +172,12 @@ public class BasicLoginValidationService {
 				errors.add(new Error("0", "CityCode", "Please Enter Valid City Code"));
 			} */ 
 			
-			if( StringUtils.isBlank(personalReq.getCustomerCode()) ) {
-				errors.add(new Error("06", "Customer Code", "Please Enter Customer Code"));
-			} else
 			
-			if ( loginReq.getUserType().equalsIgnoreCase("Broker") ) {
+			if ( loginReq.getUserType().equalsIgnoreCase("Broker") || loginReq.getUserType().equalsIgnoreCase("User") ) {
+				
+				if( StringUtils.isBlank(personalReq.getCustomerCode()) ) {
+					errors.add(new Error("06", "Customer Code", "Please Enter Customer Code"));
+				} else
 				
 				if (StringUtils.isNotBlank( loginReq.getLoginId()) ) {
 					
