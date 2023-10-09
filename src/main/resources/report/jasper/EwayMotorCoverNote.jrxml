@@ -51,7 +51,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="vehicleTypeDesc"/>
 		<fieldDescription><![CDATA[vehicleTypeDesc]]></fieldDescription>
 	</field>
-	<field name="modelType" class="java.lang.Integer">
+	<field name="modelType" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="modelType"/>
 		<fieldDescription><![CDATA[modelType]]></fieldDescription>
 	</field>
@@ -63,7 +63,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="cubicCapacity"/>
 		<fieldDescription><![CDATA[cubicCapacity]]></fieldDescription>
 	</field>
-	<field name="vehicleMakeDesc" class="java.lang.String">
+	<field name="vehicleMakeDesc" class="java.lang.Integer">
 		<property name="net.sf.jasperreports.json.field.expression" value="vehicleMakeDesc"/>
 		<fieldDescription><![CDATA[vehicleMakeDesc]]></fieldDescription>
 	</field>
@@ -75,7 +75,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="seatingCapacity"/>
 		<fieldDescription><![CDATA[seatingCapacity]]></fieldDescription>
 	</field>
-	<field name="engineNumber" class="java.lang.Integer">
+	<field name="engineNumber" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="engineNumber"/>
 		<fieldDescription><![CDATA[engineNumber]]></fieldDescription>
 	</field>
@@ -111,7 +111,7 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="sectionName"/>
 		<fieldDescription><![CDATA[sectionName]]></fieldDescription>
 	</field>
-	<field name="vehcileModelDesc" class="java.lang.Integer">
+	<field name="vehcileModelDesc" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="vehcileModelDesc"/>
 		<fieldDescription><![CDATA[vehcileModelDesc]]></fieldDescription>
 	</field>
@@ -593,7 +593,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{vehcileModelDesc}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{modelType}+","+$F{vehcileModelDesc}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="332" y="25" width="109" height="20" uuid="3d4d30e7-a1a6-44de-8c74-0480558e6420">
