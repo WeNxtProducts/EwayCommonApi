@@ -1,8 +1,7 @@
 package com.maan.eway.jasper.service.impl;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -40,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
 import com.maan.eway.bean.BranchMaster;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.HomePositionMaster;
@@ -48,6 +48,7 @@ import com.maan.eway.jasper.req.JasperDocumentReq;
 import com.maan.eway.jasper.req.JasperReportDocReq;
 import com.maan.eway.jasper.req.PremiumReportReq;
 import com.maan.eway.jasper.res.JasperDocumentRes;
+import com.maan.eway.jasper.res.MotorCoverNoteRes;
 import com.maan.eway.jasper.res.PremiumReportRes;
 import com.maan.eway.jasper.service.JasperService;
 import com.maan.eway.repository.BranchMasterRepository;
@@ -82,6 +83,9 @@ public class JasperServiceImpl implements JasperService {
 	
 	@PersistenceContext
 	private EntityManager em;
+	
+	@Autowired
+	private JasperCustomServiceImple jasperCustomeImple;
 
 
 	@Override
@@ -163,8 +167,25 @@ public class JasperServiceImpl implements JasperService {
 				}else if(product.getMotorYn().equalsIgnoreCase("M") && "46".equalsIgnoreCase(homeData.getProductId().toString())){
 					Map<String,Object> map = new HashMap<String,Object>();
 					map.put("pvImagePath", config.getImagePath().substring(1,config.getImagePath().length()-0));
-					map.put("pvPolicyNo", homeData.getPolicyNo());
-					res = getJasperPdfFile("/report/jasper/EwayMotorCoverNote.jrxml", getPdfOutFilePath, map);
+					MotorCoverNoteRes MotorCoverNote = jasperCustomeImple.getMotorCoverNote(homeData.getPolicyNo());
+					Gson gson = new Gson();
+					String jsonString = gson.toJson(MotorCoverNote);
+					try {
+						FileWriter fileWriter = new FileWriter(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorCoveNote.json", false);
+						fileWriter.write(jsonString);
+						fileWriter.close();
+						File file = new File(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorCoveNote.json");
+						JsonDataSource JsonCon=new JsonDataSource(file);
+						InputStream inputStream = this.getClass().getResourceAsStream("/report/jasper/EwayMotorCoverNote.jrxml");
+						JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
+						JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, map, JsonCon);
+						JasperExportManager.exportReportToPdfFile(jasperPrint, policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorCoveNote.pdf");
+						GetFileFromPath JasFile = new GetFileFromPath(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorCoveNote.pdf");
+						res.setPdfoutfile(JasFile.call().getImgUrl());
+						res.setPdfoutfilepath(filePath);
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
 				}else {
 					Map<String, Object> input2 = new HashMap<String, Object>();
 					input2.put("pvQuoteNo", req.getQuoteNo());
