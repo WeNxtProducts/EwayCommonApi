@@ -22,14 +22,19 @@ import com.maan.eway.res.calc.CoverException;
 import com.maan.eway.res.calc.Endorsement;
 import com.maan.eway.res.calc.Tax;
 
-@Component
+//@Component
 public class EndtCoverCalculator  extends CommonCalculator implements Consumer<Cover> {
 	
 	
 	/*@Autowired
 	private CoverCalculator calc;*/
 	private Date effectiveDate;	
-	
+	private Boolean isPolicyPeriod;
+	public EndtCoverCalculator(Boolean isPolicyPeriod) {
+		// TODO Auto-generated constructor stub
+		this.isPolicyPeriod=isPolicyPeriod;
+	}
+
 	public void setEngine(CalcEngine engine,List<Cover> c,List<Tuple> result,List<Tuple> vehicles,List<Tuple> customers
 			,List<Tuple> prorata, RatingFactorsUtil crservice,Date effectiveDate,DecimalFormat decimalFormat) {		
 		this.setEngine(engine, c, result, vehicles, customers, prorata, crservice,decimalFormat);
@@ -371,7 +376,7 @@ public class EndtCoverCalculator  extends CommonCalculator implements Consumer<C
 					 
 					 endorsement.setPremiumIncludedTax(totalWithTax);
 					 endorsement.setPremiumIncludedTaxLC(totalWithTaxLC);
-					 if(("Y".equals(engine.getCoverModification()) && "Y".equals(t.getProRataYn()) && "Y".equals(t.getUserOpt()))
+					 if(("Y".equals(engine.getCoverModification()) && "Y".equals(t.getProRataYn()) && "Y".equals(t.getUserOpt()) && !isPolicyPeriod)
 							||
 							("N".equals(engine.getCoverModification()) && "Y".equals(endorsement.getProRataYn()) && "Y".equals(t.getUserOpt())
 									&& dontGo )	

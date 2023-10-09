@@ -175,6 +175,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 	@Autowired
 	private CommonDataDetailsRepository commonRepo;
 	
+	private Boolean isPolicyPeriod=Boolean.FALSE;
+	
 	/*
 	 * public void LoadSection(CalcEngine engine) {
 	 * 
@@ -263,6 +265,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 			e1.printStackTrace();
 		}
 		String isEndt=null;
+		
+		
 		List<Cover> retc = new ArrayList<Cover>();
 		try {
 
@@ -507,7 +511,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 						: vehicles.get(0).get("endtTypeId").toString();
 				if (StringUtils.isNotBlank(endtTypeId) && !"0".equals(endtTypeId)) {
 					// referalCalculator = referalCalculator(engine);
-					return endorsementCalculator(engine, endtCount,endtTypeId);
+					return endorsementCalculator(engine, endtCount,endtTypeId,isPolicyPeriod);
 
 				}
 			} catch (Exception e) {
@@ -566,9 +570,14 @@ public class CalculatorEngineService implements CalculatorEngine {
 								|| "P".equals(d.getCoverageType())))
 						.collect(Collectors.toList());
 				
+				
 				for (PolicyCoverData d : basecovers) {
 					List<Cover> operatedList = new ArrayList<Cover>();
-
+					//try {
+						isPolicyPeriod=engine.getPolicyEndDate().after(d.getCoverPeriodTo());
+					/*}catch (Exception e) {
+						e.printStackTrace();
+					}*/
 					DiscountFromPolicy discountUtil = new DiscountFromPolicy();
 					List<Discount> discounts = oldPolicyCovers.stream().filter(r -> d.getCoverId() == r.getCoverId())
 							.map(discountUtil).filter(dx -> dx != null).collect(Collectors.toList());
@@ -622,7 +631,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 	}
 
-	public EserviceMotorDetailsSaveRes endorsementCalculator(CalcEngine request, BigDecimal endtCount, String endtTypeId) {
+	public EserviceMotorDetailsSaveRes endorsementCalculator(CalcEngine request, BigDecimal endtCount, String endtTypeId, Boolean isPolicyPeriod) {
 		try {
 			List<Cover> retc = new ArrayList<Cover>();
 
@@ -834,7 +843,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 					totalcovers = subcovers.get("Y");
 				}
 
-				EndtCoverCalculator calc = new EndtCoverCalculator();
+				EndtCoverCalculator calc = new EndtCoverCalculator(isPolicyPeriod);
 				
 				if ((commontbl == null || commontbl.size() == 0) || (vehicles == null || vehicles.size() == 0)
 						|| (customers == null || customers.size() == 0)) {
