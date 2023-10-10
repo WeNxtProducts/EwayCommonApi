@@ -90,8 +90,8 @@ public class MotorCoverNoteRes {
 	@JsonProperty("SectionName")
 	private String sectionName;
 	
-	@JsonProperty("VehcileModelDesc")
-	private String vehcileModelDesc;
+	@JsonProperty("ModelNumber")
+	private String modelNumber;
 	
 	@JsonProperty("Premium")
 	private String premium;
