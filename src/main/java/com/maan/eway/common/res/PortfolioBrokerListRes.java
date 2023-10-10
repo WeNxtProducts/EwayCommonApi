@@ -30,4 +30,7 @@ public class PortfolioBrokerListRes {
 	   
 	   @JsonProperty("TotalPremiumFc")
 	   private String     totalPremiumFc;
+	   
+	   @JsonProperty("SourceType")
+	   private String     sourceType;
 }

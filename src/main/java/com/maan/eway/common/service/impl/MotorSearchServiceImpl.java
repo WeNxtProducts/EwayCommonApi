@@ -40,6 +40,7 @@ import com.maan.eway.bean.EserviceMotorDetails;
 import com.maan.eway.bean.FactorRateRequestDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PremiaCustomerDetails;
@@ -58,6 +59,7 @@ import com.maan.eway.master.req.CopyQuoteDropDownReq;
 import com.maan.eway.repository.EServiceMotorDetailsRepository;
 import com.maan.eway.repository.FactorRateRequestDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
+import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PremiaCustomerDetailsRepository;
@@ -95,7 +97,9 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 	@Autowired
 	private HomePositionMasterRepository homeRepo;
 	
-
+	@Autowired
+	private LoginUserInfoRepository  loginUserInfoRepo;
+	
 	
 	@Override
 	public List<ListItemValue> searchDropdownMotor(CopyQuoteDropDownReq req) { 
@@ -731,11 +735,14 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 			String customerId=homeData.get(0).getCustomerId();
 			String loginId = "";
 			String appId = "";
+			String aproverName = "";
 			String sourceType="";
 			String coustomerCode="";
 			String customerCodeName="";
+			String userName="";
 			String source=""; 
 			PersonalInfo list =new PersonalInfo();
+			LoginUserInfo loginUserData=new LoginUserInfo();
 			List<PremiaCustomerDetails> premiadata =null;
 			List<EserviceMotorDetails> motor = repo.findByCustomerId(customerId);
 			if (motor.size() > 0) {
@@ -744,17 +751,28 @@ public class MotorSearchServiceImpl implements MotorSearchService {
 				loginId = motor.get(0).getLoginId();
 				appId = motor.get(0).getApplicationId();
 				source = motor.get(0).getLoginId();
-				premiadata = premiaRepo.findByCustomerCode(coustomerCode);
-				if (premiadata.size() > 0) {
-					customerCodeName = premiadata.get(0).getCustomerName();
-				}
+				customerCodeName = motor.get(0).getCustomerName();
+//				premiadata = premiaRepo.findByCustomerCode(coustomerCode);
+//				if (premiadata.size() > 0) {
+//					customerCodeName = premiadata.get(0).getCustomerName();
+//				}
 			}
 			list = perRepo.findByCustomerId(homeData.get(0).getCustomerId());
-			
+			if ("Broker".equalsIgnoreCase(sourceType)) {
+				loginUserData=loginUserInfoRepo.findByLoginId(loginId);
+				userName=loginUserData.getUserName();
+				
+			}
+			if(!"1".equalsIgnoreCase(appId)){
+				loginUserData=loginUserInfoRepo.findByLoginId(appId);
+				aproverName=loginUserData.getUserName();
+			}
 			SearchCustomerDetailsRes res = new SearchCustomerDetailsRes();
 			res = dozerMapper.map(list,SearchCustomerDetailsRes.class);	
-			res.setLoginId(req.getLoginId());
-			res.setApplicationId(req.getApplicationId());
+			res.setLoginId(loginId);
+			res.setBrokerName(userName==null?"":userName);
+			res.setApplicationId(appId);
+			res.setApproverName(aproverName==null?"":aproverName);
 			res.setCustomerCode(coustomerCode);
 			res.setCustomerName(customerCodeName);	
 			res.setSourceType(sourceType);

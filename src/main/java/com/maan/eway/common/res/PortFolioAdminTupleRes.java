@@ -21,4 +21,9 @@ public class PortFolioAdminTupleRes {
 	private String userType ;
 	private String subUserType ;
 	private String loginId ;
+	private String customerCode ;
+	private String customerName ;
+	private String sourceType ;
+	private String bdmCode ;
+	
 }

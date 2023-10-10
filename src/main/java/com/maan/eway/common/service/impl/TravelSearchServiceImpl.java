@@ -38,6 +38,7 @@ import com.maan.eway.bean.EserviceCustomerDetails;
 import com.maan.eway.bean.EserviceTravelDetails;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
+import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PremiaCustomerDetails;
 import com.maan.eway.bean.TravelPassengerDetails;
@@ -53,6 +54,7 @@ import com.maan.eway.master.res.ProductGroupMasterDropDownRes;
 import com.maan.eway.master.service.ProductGroupMasterService;
 import com.maan.eway.repository.EserviceTravelDetailsRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
+import com.maan.eway.repository.LoginUserInfoRepository;
 import com.maan.eway.repository.PersonalInfoRepository;
 import com.maan.eway.repository.PremiaCustomerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerDetailsRepository;
@@ -82,6 +84,9 @@ public class TravelSearchServiceImpl implements TravelSearchService {
 	
 	@Autowired
 	private EserviceTravelDetailsRepository eTravelRepo;
+
+	@Autowired
+	private LoginUserInfoRepository loginUserRepo;
 	
 	private Logger log = LogManager.getLogger(TravelSearchServiceImpl.class);
 
@@ -394,6 +399,8 @@ public class TravelSearchServiceImpl implements TravelSearchService {
 		try {
 			String customerId = homeData.get(0).getCustomerId();
 			String loginId = "";
+			String userName = "";
+			String aproverName = "";
 			String appId = "";
 			String sourceType="";
 			String coustomerCode="";
@@ -401,7 +408,7 @@ public class TravelSearchServiceImpl implements TravelSearchService {
 			String source=""; 
 			PersonalInfo list =new PersonalInfo();
 			List<PremiaCustomerDetails> premiadata =null;
-			
+			LoginUserInfo loginUserData=new LoginUserInfo();
 			List<EserviceTravelDetails> motor = eTravelRepo.findByCustomerId(customerId);
 			if (motor.size() > 0) {
 				sourceType = motor.get(0).getSourceType();
@@ -409,19 +416,28 @@ public class TravelSearchServiceImpl implements TravelSearchService {
 				loginId = motor.get(0).getLoginId();
 				appId = motor.get(0).getApplicationId();
 				source = motor.get(0).getLoginId();
-				premiadata = premiaRepo.findByCustomerCode(coustomerCode);
-				if (premiadata.size() > 0) {
-					customerCodeName = premiadata.get(0).getCustomerName();
-				}
+				customerCodeName = motor.get(0).getCustomerName();
+//				premiadata = premiaRepo.findByCustomerCode(coustomerCode);
+//				if (premiadata.size() > 0) {
+//					customerCodeName = premiadata.get(0).getCustomerName();
+//				}
 			}
 			list = perRepo.findByCustomerId(homeData.get(0).getCustomerId());
-			
-			//Response
-		//	for (PersonalInfo data : list) {
+			if ("Broker".equalsIgnoreCase(sourceType)) {
+				loginUserData=loginUserRepo.findByLoginId(loginId);
+				userName=loginUserData.getUserName();
+				
+			}
+			if(!"1".equalsIgnoreCase(appId)){
+				loginUserData=loginUserRepo.findByLoginId(appId);
+				aproverName=loginUserData.getUserName();
+			}
 			SearchCustomerDetailsRes res = new SearchCustomerDetailsRes();
 			res = dozerMapper.map(list,SearchCustomerDetailsRes.class);	
-			res.setLoginId(req.getLoginId());
-			res.setApplicationId(req.getApplicationId());
+			res.setLoginId(loginId);
+			res.setBrokerName(userName==null?"":userName);
+			res.setApplicationId(appId);
+			res.setApproverName(aproverName==null?"":aproverName);
 			res.setCustomerCode(coustomerCode);
 			res.setCustomerName(customerCodeName);	
 			res.setSourceType(sourceType);

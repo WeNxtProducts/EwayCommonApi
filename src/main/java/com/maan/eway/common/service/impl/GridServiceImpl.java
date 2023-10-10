@@ -2422,9 +2422,14 @@ public class GridServiceImpl implements GridService {
 					for (PortFolioAdminTupleRes data : filterProduct) {
 						PortfolioBrokerListRes brokerRes = new PortfolioBrokerListRes();
 
-						brokerRes.setBrokerCode(data.getOaCode() == null ? "0" : data.getOaCode().toString());
+						if(StringUtils.isNotBlank(data.getBdmCode())){
+							brokerRes.setBrokerCode(data.getCustomerCode() == null ? "0" : data.getCustomerCode().toString());
+							brokerRes.setBrokerName(data.getCustomerName());
+						} else {
+							brokerRes.setBrokerCode(data.getOaCode() == null ? "0" : data.getOaCode().toString());
+							brokerRes.setBrokerName(data.getBrokerName());
+						}
 						brokerRes.setBrokerLoginId(data.getLoginId());
-						brokerRes.setBrokerName(data.getBrokerName());
 						brokerRes.setSubUserType(data.getSubUserType());
 						brokerRes.setTotalCount(data.getCount() == null ? 0 : data.getCount());
 						brokerRes.setTotalPremiumLc(data.getOverallPremiumLc() == null ? "0"
@@ -2432,6 +2437,7 @@ public class GridServiceImpl implements GridService {
 						brokerRes.setTotalPremiumFc(data.getOverallPremiumFc() == null ? "0"
 								: df.format(Double.valueOf(data.getOverallPremiumFc().toPlainString())));
 						brokerRes.setUserType(data.getUserType());
+						brokerRes.setSourceType(data.getSourceType());
 						brokerResList.add(brokerRes);
 					}
 					brokerResList.sort(Comparator.comparing(PortfolioBrokerListRes::getTotalCount).reversed());
@@ -2485,7 +2491,9 @@ public class GridServiceImpl implements GridService {
 					cb.sum(h.get("overallPremiumFc")).alias("overallPremiumFc"), h.get("productId").alias("productId"),
 					h.get("productName").alias("productName"), l.get("agencyCode").as(Integer.class).alias("oaCode"),
 					u.get("userName").alias("brokerName"), l.get("userType").alias("userType"),
-					l.get("subUserType").alias("subUserType"), l.get("loginId").alias("loginId"));
+					l.get("subUserType").alias("subUserType"), l.get("loginId").alias("loginId"),
+					h.get("customerCode").alias("customerCode"),h.get("customerName").alias("customerName"),
+					h.get("sourceType").alias("sourceType"),cb.max(h.get("bdmCode")).alias("bdmCode"));
 			// Order By
 			List<Order> orderList = new ArrayList<Order>();
 			orderList.add(cb.asc(h.get("productName")));
@@ -2538,7 +2546,8 @@ public class GridServiceImpl implements GridService {
 				predicate.add(cb.equal(h.get("branchCode"), req.getBranchCode()));
 
 			query.where(predicate.toArray(new Predicate[0])).groupBy(h.get("productId"), h.get("productName"),
-					l.get("agencyCode"), u.get("userName"), l.get("userType"), l.get("subUserType"), l.get("loginId"))
+					l.get("agencyCode"), u.get("userName"), l.get("userType"), l.get("subUserType"),
+					l.get("loginId"),h.get("customerCode"),h.get("customerName"),h.get("sourceType"))
 					.orderBy(orderList);
 
 			// Get Result

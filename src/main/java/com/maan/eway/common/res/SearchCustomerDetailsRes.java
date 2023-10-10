@@ -18,12 +18,18 @@ public class SearchCustomerDetailsRes {
 	@JsonProperty("LoginId")
 	private String loginId;
 	
+	@JsonProperty("BrokerName")
+	private String brokerName;
+	
+	
 //	@JsonProperty("CivilId")
 //	private String civilId;
 
 	@JsonProperty("ApplicationId")
 	private String applicationId;
 
+	@JsonProperty("ApproverName")
+	private String approverName;
 	
 	@JsonProperty("MobileCode1")
 	private String     mobileCodeDesc1 ;
