@@ -10,6 +10,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -1441,20 +1442,20 @@ public class PaymentServiceImpl implements PaymentService {
 			// Check Paymetn Info
 			if (StringUtils.isNotBlank(req.getQuoteNo()) && StringUtils.isNotBlank(req.getPaymentId()) ) {
 				PaymentInfo paymentInfo = paymentinforepo.findByQuoteNoAndPaymentId(req.getQuoteNo(), req.getPaymentId());
-				
-				if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Accepted") ) {
-					error.add(new Error("01","Accepted","This Payment Already Accepted "));
-					
-				} else if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Rejected") ) {
-					error.add(new Error("01","Rejected","This Payment Already Rejected "));
-					
-				} else if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Cancelled") ) {
-					error.add(new Error("01","Cancelled","This Payment Already Cancelled"));
-					
-				} else if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Pending") && StringUtils.isNotBlank(paymentInfo.getMerchantReference())  )  {
-					error.add(new Error("01","Cancelled","This Payment Already Pending"));
+				if(paymentInfo!=null) {
+					if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Accepted") ) {
+						error.add(new Error("01","Accepted","This Payment Already Accepted "));
+
+					} else if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Rejected") ) {
+						error.add(new Error("01","Rejected","This Payment Already Rejected "));
+
+					} else if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Cancelled") ) {
+						error.add(new Error("01","Cancelled","This Payment Already Cancelled"));
+
+					} /*else if(  paymentInfo.getPaymentStatus().equalsIgnoreCase("Pending") && StringUtils.isNotBlank(paymentInfo.getMerchantReference())  )  {
+						error.add(new Error("01","Cancelled","This Payment Already Pending"));
+					}*/
 				}
-				
 			}
 			
 			
@@ -1466,9 +1467,9 @@ public class PaymentServiceImpl implements PaymentService {
 				List<PaymentInfo> filterPendings = datas.stream().filter( o -> o.getPaymentStatus().equalsIgnoreCase("Pending") && ! o.getPaymentId().equalsIgnoreCase(req.getPaymentId()) ) .collect(Collectors.toList());		
 				List<PaymentInfo> filterAccepted = datas.stream().filter( o -> o.getPaymentStatus().equalsIgnoreCase("Accepted") && ! o.getPaymentId().equalsIgnoreCase(req.getPaymentId())  ).collect(Collectors.toList());		
 				
-				if(filterPendings.size()> 0) {
+				/*if(filterPendings.size()> 0) {
 					error.add(new Error("01","PaymentId","Already One Payment Id Pending Against This Quote No"));
-				}
+				}*/
 				
 				if(filterAccepted.size()> 0) {
 					PaymentInfo paymentInfo = paymentinforepo.findByQuoteNoAndPaymentId(req.getQuoteNo(), req.getPaymentId());
@@ -1636,8 +1637,19 @@ public class PaymentServiceImpl implements PaymentService {
 				paymentDetail.setPaymentStatus(paymentStatus);
 			}else if(req.getPaymentType().equalsIgnoreCase("4")) {
 				paymentStatus = "PENDING" ;
-				paymentDetail.setPaymentStatus(paymentStatus);
 				
+				
+				payment = selcomService.createOrderForPayment(paymentDetail);
+				if(payment !=null && "SUCCESS".equalsIgnoreCase(payment.get("result").getAsString())) {
+					JsonArray asJsonArray = payment.get("data").getAsJsonArray();
+					JsonObject asJsonObject = asJsonArray.get(0).getAsJsonObject();	
+					String jsonStr = asJsonObject.get("payment_gateway_url").getAsString();					
+					paymentDetail.setShorternUrl(new String(Base64.getDecoder().decode(jsonStr)));
+				}else {
+					paymentStatus = "FAILED" ;
+				}
+				
+				paymentDetail.setPaymentStatus(paymentStatus);
 			} else {
 				paymentStatus = "PENDING" ;
 				paymentDetail.setPaymentStatus(paymentStatus);
@@ -1646,8 +1658,8 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			
 			paymentdetailrepo.saveAndFlush(paymentDetail);
-			if(req.getPaymentType().equalsIgnoreCase("4")) 
-				 payment = selcomService.createOrderForPayment(refno);
+		//	if(req.getPaymentType().equalsIgnoreCase("4")) 
+				 
 			
 			log.info("Saved Details " + json.toJson(paymentDetail));
 			

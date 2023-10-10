@@ -3,6 +3,7 @@ package com.maan.eway.payment.service;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonObject;
+import com.maan.eway.bean.PaymentDetail;
 
 
 public interface SelcomPaymentService {
@@ -12,5 +13,5 @@ public interface SelcomPaymentService {
 	JsonObject methodWebhook(JsonObject jsObject);
 
 	JsonObject orderStatus(String orderId, String tokens);
-
+	JsonObject createOrderForPayment(PaymentDetail payment); 
 }

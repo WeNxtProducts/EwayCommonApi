@@ -2326,7 +2326,7 @@ this.repository = repo;
 						.findByQuoteNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndStatusOrderByCoverIdAsc(
 								endtPrevQuoteNo, Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
 								Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()), "Y");
-				Boolean isPolicyDateEndt=findCovers.get(0).getCoverPeriodTo().after(oldPolicyCovers.get(0).getCoverPeriodTo());
+				Boolean isPolicyDateEndt=((oldPolicyCovers.size()>0)? findCovers.get(0).getCoverPeriodTo().after(oldPolicyCovers.get(0).getCoverPeriodTo()):false);
 				resp=calcEngine.endorsementCalculator(engine,endtCount,endtTypdId,isPolicyDateEndt);
 			}
 			 

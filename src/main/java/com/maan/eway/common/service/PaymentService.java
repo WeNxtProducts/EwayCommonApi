@@ -2,6 +2,8 @@ package com.maan.eway.common.service;
 
 import java.util.List;
 
+import org.json.simple.JSONObject;
+
 import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PaymentInfo;
 import com.maan.eway.common.req.MakePaymentRes;
@@ -51,6 +53,7 @@ public interface PaymentService {
 	LoginEncryptResponse decryptTinyUrl(PaymentResUrlReq req);
 
 	List<DebitAndCredit>  generatePolicy(PaymentInfo paymentInfo, PaymentDetailsSaveReq req, PaymentDetail paymentDetail, String token);
+ 
 
 
 }

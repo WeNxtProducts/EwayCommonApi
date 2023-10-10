@@ -3,6 +3,7 @@ package com.maan.eway.payment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,10 +57,10 @@ public class SelcomPaymentController {
 	
 	@PostMapping("/v1/checkout/order-status/{orderId}")
 	@ApiOperation(value = "This method is to Payment ") 
-	public ResponseEntity<JsonObject> orderStatus(@RequestParam String orderId,@RequestHeader("Authorization") String tokens) {
+	public ResponseEntity<Object> orderStatus(@PathVariable("orderId") String orderId,@RequestHeader("Authorization") String tokens) {
 		JsonObject data = service.orderStatus(orderId,tokens);
 		if (data != null) {
-			return new ResponseEntity<JsonObject>(data, HttpStatus.CREATED);
+			return new ResponseEntity<Object>(data.toString(), HttpStatus.CREATED);
 		} else {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
