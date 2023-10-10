@@ -522,6 +522,9 @@ private static final long serialVersionUID = 1L;
    
    @Column(name="BRANCH_NAME")
    private String     branchName ;
+   
+   @Column(name="MOTOR_USAGE_DESC")
+   private String     motorUsageDesc ;
 }
 
 
