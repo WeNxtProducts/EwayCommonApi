@@ -98,7 +98,12 @@ public class BasicLoginValidationService {
 				errors.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral "));
 			}
 			
-			if (StringUtils.isBlank(loginReq.getCompanyId())) {
+			if(StringUtils.isNotBlank(loginReq.getSubUserType() )  && "SuperAdmin".equalsIgnoreCase(loginReq.getSubUserType())) {
+				if (loginReq.getAttachedCompanies()== null || loginReq.getAttachedCompanies().size()<=0 ) {
+					errors.add(new Error("05", "Companies", "Please Select Companies"));
+				}
+				
+			} else 	if (StringUtils.isBlank(loginReq.getCompanyId())) {
 				errors.add(new Error("05", "InsuranceId", "Please Select InsuranceId"));
 			}
 			

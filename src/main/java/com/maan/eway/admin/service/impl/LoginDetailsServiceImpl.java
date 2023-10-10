@@ -326,50 +326,52 @@ this.repository = repo;
 			}
 			
 			// Product Insert 
-			AttachCompnayProductRequest productReq = new AttachCompnayProductRequest();
-			productReq.setCreatedBy(req.getLoginInformation().getCreatedBy());
-			productReq.setInsuranceId(req.getLoginInformation().getCompanyId());
-			productReq.setLoginId(req.getLoginInformation().getLoginId());
-			productReq.setProductIds(req.getLoginInformation().getProductIds());
-			productReq.setReferralIds(req.getLoginInformation().getReferralIds());
-			
-			if((req.getLoginInformation().getSubUserType().equalsIgnoreCase("low")) ||
-			req.getLoginInformation().getSubUserType().equalsIgnoreCase("SuperAdmin")){
+			if(StringUtils.isNotBlank(req.getLoginInformation().getSubUserType() ) && ! "SuperAdmin".equalsIgnoreCase(req.getLoginInformation().getSubUserType() ) ) {
+				AttachCompnayProductRequest productReq = new AttachCompnayProductRequest();
+				productReq.setCreatedBy(req.getLoginInformation().getCreatedBy());
+				productReq.setInsuranceId(req.getLoginInformation().getCompanyId());
+				productReq.setLoginId(req.getLoginInformation().getLoginId());
+				productReq.setProductIds(req.getLoginInformation().getProductIds());
+				productReq.setReferralIds(req.getLoginInformation().getReferralIds());
 				
-				LoginCreationRes productRes = loginProductService.saveIssuerProductDetails(productReq) ;
-			}
-			
-			//Remove unmatched branches
-			List<LoginBranchMaster> findBranches = loginBranchRepo.findByLoginIdAndCompanyId(loginData.getLoginId() ,  loginData.getCompanyId());
-			List<LoginBranchMaster> filtermatch = new ArrayList<LoginBranchMaster>();
-			
-			if(findBranches.size()>0) {
-				for (String branh :   req.getLoginInformation().getAttachedBranches() ) {
-					List<LoginBranchMaster> filter = findBranches.stream().filter(o -> o.getBranchCode().equalsIgnoreCase(branh) ).collect(Collectors.toList());		
-					if(filter.size()>0)
-						filtermatch.add(filter.get(0));
+				if((req.getLoginInformation().getSubUserType().equalsIgnoreCase("low")) ) {
+					
+					LoginCreationRes productRes = loginProductService.saveIssuerProductDetails(productReq) ;
 				}
-				findBranches.removeAll(filtermatch);
-				loginBranchRepo.deleteAll(findBranches);
-			}
-			
-			// Branch Insert 
-			for (String branch :   req.getLoginInformation().getAttachedBranches() ) {
-				AttachBrokerBranchReq branchReq = new AttachBrokerBranchReq();
-				branchReq.setAddress1(req.getPersonalInformation().getAddress1());
-				branchReq.setAddress2(req.getPersonalInformation().getAddress2());
-				branchReq.setBranchCode(branch);
-				branchReq.setCreatedBy(req.getLoginInformation().getCreatedBy());
-				branchReq.setCompanyId(req.getLoginInformation().getCompanyId());
-				branchReq.setEmail(req.getPersonalInformation().getUserMail());
-				branchReq.setMobile(req.getPersonalInformation().getUserMobile() );
-				branchReq.setRemarks(req.getPersonalInformation().getRemarks());
-				branchReq.setStatus(req.getLoginInformation().getStatus());
-				branchReq.setLoginId(req.getLoginInformation().getLoginId());
 				
-				LoginCreationRes branchRes  = loginBranchService.attachBrokerCompanyBranch(branchReq);
+				//Remove unmatched branches
+				List<LoginBranchMaster> findBranches = loginBranchRepo.findByLoginIdAndCompanyId(loginData.getLoginId() ,  loginData.getCompanyId());
+				List<LoginBranchMaster> filtermatch = new ArrayList<LoginBranchMaster>();
+				
+				if(findBranches.size()>0) {
+					for (String branh :   req.getLoginInformation().getAttachedBranches() ) {
+						List<LoginBranchMaster> filter = findBranches.stream().filter(o -> o.getBranchCode().equalsIgnoreCase(branh) ).collect(Collectors.toList());		
+						if(filter.size()>0)
+							filtermatch.add(filter.get(0));
+					}
+					findBranches.removeAll(filtermatch);
+					loginBranchRepo.deleteAll(findBranches);
+				}
+				
+				// Branch Insert 
+				for (String branch :   req.getLoginInformation().getAttachedBranches() ) {
+					AttachBrokerBranchReq branchReq = new AttachBrokerBranchReq();
+					branchReq.setAddress1(req.getPersonalInformation().getAddress1());
+					branchReq.setAddress2(req.getPersonalInformation().getAddress2());
+					branchReq.setBranchCode(branch);
+					branchReq.setCreatedBy(req.getLoginInformation().getCreatedBy());
+					branchReq.setCompanyId(req.getLoginInformation().getCompanyId());
+					branchReq.setEmail(req.getPersonalInformation().getUserMail());
+					branchReq.setMobile(req.getPersonalInformation().getUserMobile() );
+					branchReq.setRemarks(req.getPersonalInformation().getRemarks());
+					branchReq.setStatus(req.getLoginInformation().getStatus());
+					branchReq.setLoginId(req.getLoginInformation().getLoginId());
+					
+					LoginCreationRes branchRes  = loginBranchService.attachBrokerCompanyBranch(branchReq);
+				}
+				
 			}
-			
+		
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -435,11 +437,10 @@ this.repository = repo;
 			
 			Integer oaCode = StringUtils.isBlank(loginReq.getOaCode()) ? 0 : Integer.valueOf(loginReq.getOaCode());
 			LoginMaster findBroker = loginRepo.findByAgencyCodeAndOaCode(loginReq.getOaCode() ,oaCode);
-			
-			// Branch Setup
-			String branches  = loginReq.getAttachedBranches()==null  || loginReq.getAttachedBranches().size()==0 ?"" : String.join(",", loginReq.getAttachedBranches());
-			String regions   = loginReq.getAttachedRegions()==null   || loginReq.getAttachedRegions().size()==0 ?"" : String.join(",", loginReq.getAttachedRegions());
 			String companies = loginReq.getAttachedCompanies()==null || loginReq.getAttachedCompanies().size()==0 ?"" : String.join(",", loginReq.getAttachedCompanies());
+			String regions   = loginReq.getAttachedRegions()==null   || loginReq.getAttachedRegions().size()==0 ?"" : String.join(",", loginReq.getAttachedRegions());
+			
+
 			String menuId = loginReq.getMenuId()==null || loginReq.getMenuId().size()==0 ?"" : String.join(",", loginReq.getMenuId());
 			
 			passwordEnc passEnc = new passwordEnc();
@@ -473,10 +474,13 @@ this.repository = repo;
 		//	saveLogin.setLpassDate(dateAfter);
 			saveLogin.setLpassDate(firstlogindate);
 			
+			// Branch Setup
+			String branches  = loginReq.getAttachedBranches()==null  || loginReq.getAttachedBranches().size()==0 ?"" : String.join(",", loginReq.getAttachedBranches());
 			saveLogin.setAttachedBranches(branches);
 			saveLogin.setAttachedRegions(regions);
 			saveLogin.setAttachedCompanies(companies);
 			saveLogin.setMenuIds(menuId);
+			saveLogin.setCompanyId(StringUtils.isNotBlank(req.getLoginInformation().getCompanyId() ) ? req.getLoginInformation().getCompanyId() : loginReq.getAttachedCompanies().get(0)  );
 			saveLogin.setBrokerCompanyYn(findBroker!=null ? findBroker.getBrokerCompanyYn() : loginReq.getBrokerCompanyYn());
 			
 			if( ! loginReq.getSubUserType().equalsIgnoreCase("bank") ) {
@@ -525,8 +529,9 @@ this.repository = repo;
 				userInfo.setStateName(stateCityNames.get(0).get("stateName") == null ? "" :  stateCityNames.get(0).get("stateName").toString());
 				//userInfo.setCountryName(stateCityNames.get(0).get("countryName") == null ? "" :  stateCityNames.get(0).get("countryName").toString());
 			}
-				
-		      List<InsuranceCompanyMaster> companyname=	insuranceRepo.findByCompanyIdOrderByAmendIdDesc(req.getLoginInformation().getCompanyId());			
+			 
+			
+		      List<InsuranceCompanyMaster> companyname=	insuranceRepo.findByCompanyIdOrderByAmendIdDesc(saveLogin.getCompanyId());			
 		      userInfo.setCompanyName(companyname.get(0).getCompanyName());
 		      
 		      
@@ -663,6 +668,8 @@ this.repository = repo;
 			updateLogin.setAttachedRegions(regions);
 			updateLogin.setAttachedCompanies(companies);
 			updateLogin.setMenuIds(findLogin.getMenuIds());
+			updateLogin.setCompanyId(StringUtils.isNotBlank(req.getLoginInformation().getCompanyId() ) ? req.getLoginInformation().getCompanyId() : loginReq.getAttachedCompanies().get(0)  );
+		
 			updateLogin.setBrokerCompanyYn(findBroker !=null ? findBroker.getBrokerCompanyYn() : loginReq.getBrokerCompanyYn());
 			
 			if( ! loginReq.getSubUserType().equalsIgnoreCase("bank") ) {
@@ -709,7 +716,7 @@ this.repository = repo;
 			//	updateUser.setCountryName(stateCityNames.get(0).get("countryName") == null ? "" :  stateCityNames.get(0).get("countryName").toString());;
 			}
 			
-			List<InsuranceCompanyMaster> companyname=	insuranceRepo.findByCompanyIdOrderByAmendIdDesc(req.getLoginInformation().getCompanyId());			
+			List<InsuranceCompanyMaster> companyname=	insuranceRepo.findByCompanyIdOrderByAmendIdDesc(updateLogin.getCompanyId());			
 			updateUser.setCompanyName(companyname.get(0).getCompanyName());
 		      
 			
@@ -1234,6 +1241,7 @@ this.repository = repo;
 			IssuerLoginGetRes loginInfo = new IssuerLoginGetRes();  
 			loginInfo = dozerMapper.map(loginData, IssuerLoginGetRes.class);
 			
+			
 			// UserData
 			LoginUserInfo userData = loginUserRepo.findByLoginId(req.getLoginId());	
 			IssuerPersonalInfoGetRes personalInfo = new IssuerPersonalInfoGetRes();
@@ -1256,6 +1264,13 @@ this.repository = repo;
 			List<String> branchIds = findBranches.stream().map( o -> o.getBranchCode()).collect(Collectors.toList());
 			
 			loginInfo.setGetBranches(branchIds);
+			
+			if(loginData!=null && StringUtils.isNotBlank(loginData.getAttachedCompanies()) ) {
+				String[] array = loginData.getAttachedCompanies().split(",");
+				List<String> comapanyIds = 	new ArrayList<String>(Arrays.asList(array)) ;
+				comapanyIds = comapanyIds.stream().filter( o -> StringUtils.isNotBlank(o)  ).collect(Collectors.toList());			
+				loginInfo.setGetCompanies(comapanyIds);
+			}
 			
 			// Response
 			res.setLoginInformation(loginInfo);

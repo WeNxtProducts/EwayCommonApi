@@ -44,6 +44,9 @@ public class ClaimLoginResponse {
 	@JsonProperty("CustomerName")
 	private String customerName ;
 	
+	@JsonProperty("AttachedCompanies")
+    private List<String>     getCompanies ;
+	
 	@JsonProperty("LoginBranchDetails")
     private List<LoginBranchDetailsRes> loginBranchDetails;
 

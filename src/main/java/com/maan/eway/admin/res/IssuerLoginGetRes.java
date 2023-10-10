@@ -28,10 +28,10 @@ public class IssuerLoginGetRes {
 	@JsonProperty("AttachedBranches")
     private List<String>     getBranches ;
 	
-/*	@JsonProperty("AttachedCompanies")
+	@JsonProperty("AttachedCompanies")
     private List<String>     getCompanies ;
 	
-	@JsonProperty("AttachedRegions")
+	/*	@JsonProperty("AttachedRegions")
     private List<String>     getRegions ; 
 	
 	@JsonProperty("Password")

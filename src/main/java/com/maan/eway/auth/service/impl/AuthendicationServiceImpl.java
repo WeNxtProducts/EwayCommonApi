@@ -239,6 +239,12 @@ public class AuthendicationServiceImpl implements AuthendicationService, UserDet
 			r.setCountryId(userInfo.getCountryCode() );
 			r.setCustomerCode(userInfo.getCustomerCode());
 			r.setCustomerName(userInfo.getCustomerName());
+			if(login!=null && StringUtils.isNotBlank(login.getAttachedCompanies()) ) {
+				String[] array = login.getAttachedCompanies().split(",");
+				List<String> comapanyIds = 	new ArrayList<String>(Arrays.asList(array)) ;
+				comapanyIds = comapanyIds.stream().filter( o -> StringUtils.isNotBlank(o)  ).collect(Collectors.toList());			
+				r.setGetCompanies(comapanyIds);
+			}
 			List<InsuranceCompanyMaster> companyList = companyRepo.findByCompanyIdAndStatusOrderByEffectiveDateEndDesc(login.getCompanyId(),"Y");
 			r.setCurrencyId(companyList.size() > 0 && StringUtils.isNotBlank(companyList.get(0).getCurrencyId()) ? companyList.get(0).getCurrencyId() : "TZS");			
 			// Branch Res	
