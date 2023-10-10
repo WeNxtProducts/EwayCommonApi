@@ -2222,25 +2222,25 @@ this.repository = repo;
 							}
 						}
 						
-//						// Discounts
-//						if( covReq.getDiscounts()!=null && covReq.getDiscounts().size() > 0 ) {
-//							for ( Discount disc : covReq.getDiscounts() ) {
-//								List<FactorRateRequestDetails> filterDiscount = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(Integer.valueOf(disc.getDiscountId())) && o.getTaxId().equals(0)  ).collect(Collectors.toList()); 
-//								if(filterDiscount.size()>0 ) {
-//									FactorRateRequestDetails  updateDisc = filterDiscount.get(0);
-//									updateDisc.setRate( disc.getDiscountAmount()==null ? BigDecimal.ZERO :disc.getDiscountAmount() );
-//									updateDisc.setCalcType("A");
-//									updateDisc.setMinimumPremium(disc.getDiscountAmount()==null?null: new BigDecimal(df.format(disc.getDiscountAmount())));
-//									updateDisc.setPremiumIncludedTaxFc(disc.getMaxAmount()==null?null:new BigDecimal(df.format(disc.getMaxAmount())));
-//									updateDisc.setPremiumIncludedTaxFc(disc.getMaxAmount()==null?null:new BigDecimal(df.format(disc.getMaxAmount())));
-//									updateDisc.setPremiumAfterDiscountFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
-//									updateDisc.setPremiumBeforeDiscountFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
-//									updateDisc.setPremiumExcludedTaxFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
-//									updateDisc.setPremiumIncludedTaxFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
-//									updateCoverList.add(updateDisc);
-//								}
-//							}
-//						}
+						// Discounts
+						if( covReq.getDiscounts()!=null && covReq.getDiscounts().size() > 0 ) {
+							for ( Discount disc : covReq.getDiscounts() ) {
+								List<FactorRateRequestDetails> filterDiscount = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getDiscLoadId().equals(Integer.valueOf(disc.getDiscountId())) && o.getTaxId().equals(0)  ).collect(Collectors.toList()); 
+								if(filterDiscount.size()>0 ) {
+									FactorRateRequestDetails  updateDisc = filterDiscount.get(0);
+									updateDisc.setRate( disc.getDiscountAmount()==null ? BigDecimal.ZERO :disc.getDiscountAmount() );
+									updateDisc.setCalcType(StringUtils.isBlank(disc.getDiscountCalcType()) ? "A" :disc.getDiscountCalcType());
+									updateDisc.setMinimumPremium(disc.getDiscountAmount()==null?null: new BigDecimal(df.format(disc.getDiscountAmount())));
+									updateDisc.setPremiumIncludedTaxFc(disc.getMaxAmount()==null?null:new BigDecimal(df.format(disc.getMaxAmount())));
+									updateDisc.setPremiumIncludedTaxFc(disc.getMaxAmount()==null?null:new BigDecimal(df.format(disc.getMaxAmount())));
+									updateDisc.setPremiumAfterDiscountFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
+									updateDisc.setPremiumBeforeDiscountFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
+									updateDisc.setPremiumExcludedTaxFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
+									updateDisc.setPremiumIncludedTaxFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
+									updateCoverList.add(updateDisc);
+								}
+							}
+						}
 					}
 				} else {
 					List<FactorRateRequestDetails> filterSubCover = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId()) && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId())) && o.getDiscLoadId().equals(0) && o.getTaxId().equals(0) ).collect(Collectors.toList());
@@ -2274,25 +2274,25 @@ this.repository = repo;
 							}
 						}
 						
-//						// Discounts
-//						if( covReq.getDiscounts()!=null && covReq.getDiscounts().size() > 0 ) {
-//							for ( Discount disc : covReq.getDiscounts() ) {
-//								List<FactorRateRequestDetails> filterDiscount = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId())  && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))  && o.getDiscLoadId().equals(Integer.valueOf(disc.getDiscountId())) && o.getTaxId().equals(0)  ).collect(Collectors.toList()); 
-//								if(filterDiscount.size()>0 ) {
-//									FactorRateRequestDetails  updateDisc = filterDiscount.get(0);
-//									updateDisc.setRate( disc.getDiscountAmount()==null ? BigDecimal.ZERO :disc.getDiscountAmount() );
-//									updateDisc.setCalcType("A");
-//									updateDisc.setMinimumPremium(disc.getDiscountAmount()==null?null: new BigDecimal(df.format(disc.getDiscountAmount())));
-//									updateDisc.setPremiumIncludedTaxFc(disc.getMaxAmount()==null?null:new BigDecimal(df.format(disc.getMaxAmount())));
-//									updateDisc.setPremiumIncludedTaxFc(disc.getMaxAmount()==null?null:new BigDecimal(df.format(disc.getMaxAmount())));
-//									updateDisc.setPremiumAfterDiscountFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
-//									updateDisc.setPremiumBeforeDiscountFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
-//									updateDisc.setPremiumExcludedTaxFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
-//									updateDisc.setPremiumIncludedTaxFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
-//									updateCoverList.add(updateDisc);
-//								}
-//							}
-//						}
+						// Discounts
+						if( covReq.getDiscounts()!=null && covReq.getDiscounts().size() > 0 ) {
+							for ( Discount disc : covReq.getDiscounts() ) {
+								List<FactorRateRequestDetails> filterDiscount = findCovers.stream().filter( o -> o.getCoverId().equals(covReq.getCoverId())  && o.getSubCoverId().equals(Integer.valueOf(covReq.getSubCoverId()))  && o.getDiscLoadId().equals(Integer.valueOf(disc.getDiscountId())) && o.getTaxId().equals(0)  ).collect(Collectors.toList()); 
+								if(filterDiscount.size()>0 ) {
+									FactorRateRequestDetails  updateDisc = filterDiscount.get(0);
+									updateDisc.setRate( disc.getDiscountAmount()==null ? BigDecimal.ZERO :disc.getDiscountAmount() );
+									updateDisc.setCalcType(StringUtils.isBlank(disc.getDiscountCalcType()) ? "A" :disc.getDiscountCalcType());
+									updateDisc.setMinimumPremium(disc.getDiscountAmount()==null?null: new BigDecimal(df.format(disc.getDiscountAmount())));
+									updateDisc.setPremiumIncludedTaxFc(disc.getMaxAmount()==null?null:new BigDecimal(df.format(disc.getMaxAmount())));
+									updateDisc.setPremiumIncludedTaxFc(disc.getMaxAmount()==null?null:new BigDecimal(df.format(disc.getMaxAmount())));
+									updateDisc.setPremiumAfterDiscountFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
+									updateDisc.setPremiumBeforeDiscountFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
+									updateDisc.setPremiumExcludedTaxFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
+									updateDisc.setPremiumIncludedTaxFc(disc.getDiscountAmount()==null ? null : new BigDecimal(df.format(disc.getDiscountAmount())));
+									updateCoverList.add(updateDisc);
+								}
+							}
+						}
 					}
 					
 				}
