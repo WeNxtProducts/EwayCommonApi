@@ -219,7 +219,7 @@
 				<textFieldExpression><![CDATA["The policyholder description in the certifcate below having proposed for insurance in respect of the Motor Vehicle described in the Certifcate and having paid sum of "+"<b>"+new java.text.DecimalFormat("#,##0.00").format($F{overallPremium})+" "+$F{currency}+"</b>"+" as premium. The risk is hereby applicable for the period between the dates specifed in the Certifcate unless the cover be terminated by the Company notice in writing in which case the insurance will thereupon cease and a proportionate part of the annual premium otherwise payable for such insurance will be charged for the time the Company has been on risk. The Policyholder warrants that the Motor Vehicle is only used for the purpose of "+"<b>"+$F{sectionName}+", "+$F{policyTypeDesc}+"<b>"]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="45">
+		<band height="30">
 			<textField>
 				<reportElement mode="Opaque" x="5" y="0" width="94" height="15" forecolor="#FFFFFF" backcolor="#F2120F" uuid="44a02770-6bfb-406e-ac9d-0c3884ce3a77">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -233,7 +233,7 @@
 				<textFieldExpression><![CDATA["Insured Name"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement mode="Opaque" x="5" y="15" width="94" height="30" forecolor="#FFFFFF" backcolor="#F2120F" uuid="cb8ff1d0-ea4a-49c2-af95-444ca11b185a">
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="5" y="15" width="94" height="15" forecolor="#FFFFFF" backcolor="#F2120F" uuid="cb8ff1d0-ea4a-49c2-af95-444ca11b185a">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -262,7 +262,7 @@
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="5" y="15" width="94" height="30" uuid="90b3400c-df8c-4339-964c-344dc8d2bbc3">
+				<reportElement stretchType="RelativeToTallestObject" x="5" y="15" width="94" height="15" uuid="90b3400c-df8c-4339-964c-344dc8d2bbc3">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -289,9 +289,10 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{customerName}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="99" y="15" width="181" height="30" uuid="fbb932f1-038f-4b87-a24b-efe4601bd62d">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement x="99" y="15" width="181" height="15" uuid="fbb932f1-038f-4b87-a24b-efe4601bd62d">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
 					<pen lineWidth="0.5"/>
@@ -315,7 +316,9 @@
 				<textFieldExpression><![CDATA["Cover Period"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement mode="Opaque" x="280" y="15" width="94" height="30" forecolor="#FFFFFF" backcolor="#F2120F" uuid="c8dbdc6e-395f-4c7c-9928-89e6c6057400"/>
+				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="280" y="15" width="94" height="15" forecolor="#FFFFFF" backcolor="#F2120F" uuid="c8dbdc6e-395f-4c7c-9928-89e6c6057400">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<box leftPadding="2">
 					<pen lineWidth="0.0"/>
 					<leftPen lineWidth="0.5"/>
@@ -342,8 +345,9 @@
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="280" y="15" width="94" height="30" uuid="abed338e-5ae5-4609-b3e3-f5f6b4269ae5">
+				<reportElement stretchType="RelativeToTallestObject" x="280" y="15" width="94" height="15" uuid="abed338e-5ae5-4609-b3e3-f5f6b4269ae5">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box>
 					<pen lineWidth="0.5"/>
@@ -369,8 +373,9 @@
 				<textFieldExpression><![CDATA["<b>"+"From : "+"</b>"+new SimpleDateFormat("dd/MM/yyyy").format($F{startDate})+"  "+"<b>"+"To : "+"</b>"+new SimpleDateFormat("dd/MM/yyyy").format($F{endDate})]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="374" y="15" width="176" height="30" uuid="6b6b32ce-4275-480b-97f3-932cd09d2af0">
+				<reportElement stretchType="RelativeToTallestObject" x="374" y="15" width="176" height="15" uuid="6b6b32ce-4275-480b-97f3-932cd09d2af0">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
 					<pen lineWidth="0.5"/>
@@ -555,7 +560,7 @@
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="5" y="25" width="109" height="20" uuid="7e4bf6ec-f770-4610-9cfa-4517b41df8cf">
+				<reportElement stretchType="RelativeToTallestObject" x="5" y="25" width="109" height="20" uuid="7e4bf6ec-f770-4610-9cfa-4517b41df8cf">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -568,8 +573,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{registrationNumber}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="114" y="25" width="109" height="20" uuid="c7e824ca-b69e-4990-b585-8b244c23d308">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="114" y="25" width="109" height="20" uuid="c7e824ca-b69e-4990-b585-8b244c23d308">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -582,7 +587,7 @@
 				<textFieldExpression><![CDATA[$F{vehicleTypeDesc}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="223" y="25" width="109" height="20" uuid="9fde6b6a-3b69-452e-a395-a2a0b2978d97">
+				<reportElement stretchType="RelativeToTallestObject" x="223" y="25" width="109" height="20" uuid="9fde6b6a-3b69-452e-a395-a2a0b2978d97">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -594,8 +599,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{modelNumber}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="332" y="25" width="109" height="20" uuid="3d4d30e7-a1a6-44de-8c74-0480558e6420">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="332" y="25" width="109" height="20" uuid="3d4d30e7-a1a6-44de-8c74-0480558e6420">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -608,7 +613,7 @@
 				<textFieldExpression><![CDATA[$F{modelType}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="441" y="25" width="109" height="20" uuid="7e49e919-76cf-40de-8114-5a89577df161">
+				<reportElement stretchType="RelativeToTallestObject" x="441" y="25" width="109" height="20" uuid="7e49e919-76cf-40de-8114-5a89577df161">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -753,7 +758,7 @@
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="5" y="15" width="109" height="20" uuid="5f0db23d-19c2-46d4-a0a9-9b03c3ce65c3">
+				<reportElement stretchType="RelativeToTallestObject" x="5" y="15" width="109" height="20" uuid="5f0db23d-19c2-46d4-a0a9-9b03c3ce65c3">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -766,8 +771,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cubicCapacity}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="114" y="15" width="109" height="20" uuid="cf429428-7b83-45a1-8975-60365bd63e55">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="114" y="15" width="109" height="20" uuid="cf429428-7b83-45a1-8975-60365bd63e55">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -780,7 +785,7 @@
 				<textFieldExpression><![CDATA[$F{vehicleMakeDesc}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="223" y="15" width="109" height="20" uuid="98883abb-8f9a-4beb-be09-b90cbfd0a7cc">
+				<reportElement stretchType="RelativeToTallestObject" x="223" y="15" width="109" height="20" uuid="98883abb-8f9a-4beb-be09-b90cbfd0a7cc">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -793,7 +798,7 @@
 				<textFieldExpression><![CDATA[$F{chassisNumber}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="332" y="15" width="109" height="20" uuid="c27843fd-a74c-441f-897f-ca74f7a4143f">
+				<reportElement stretchType="RelativeToTallestObject" x="332" y="15" width="109" height="20" uuid="c27843fd-a74c-441f-897f-ca74f7a4143f">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -806,7 +811,7 @@
 				<textFieldExpression><![CDATA[$F{seatingCapacity}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="441" y="15" width="109" height="20" uuid="02c7cfd6-fb30-4b2f-a26c-0bac3797758e">
+				<reportElement stretchType="RelativeToTallestObject" x="441" y="15" width="109" height="20" uuid="02c7cfd6-fb30-4b2f-a26c-0bac3797758e">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -819,7 +824,7 @@
 				<textFieldExpression><![CDATA[$F{engineNumber}]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="45">
+		<band height="30">
 			<textField>
 				<reportElement mode="Opaque" x="5" y="0" width="109" height="15" forecolor="#FFFFFF" backcolor="#F2120F" uuid="8657298a-78c8-4d5f-bbe5-c5e4b54a6fff">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -951,7 +956,7 @@
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="5" y="15" width="109" height="30" uuid="08cc6f72-8b09-4430-8b63-4069cbdca663">
+				<reportElement stretchType="RelativeToTallestObject" x="5" y="15" width="109" height="15" uuid="08cc6f72-8b09-4430-8b63-4069cbdca663">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2">
@@ -964,10 +969,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{fuelType}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="114" y="15" width="109" height="30" uuid="b6d3b6d3-022b-4b47-a00a-bfe6a2d31af4">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="114" y="15" width="109" height="15" uuid="b6d3b6d3-022b-4b47-a00a-bfe6a2d31af4"/>
 				<box leftPadding="2">
 					<bottomPen lineWidth="0.5"/>
 					<rightPen lineWidth="0.5"/>
@@ -978,9 +981,7 @@
 				<textFieldExpression><![CDATA[$F{motorUsageDesc}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="223" y="15" width="109" height="30" uuid="b2b52daa-cff2-4259-8191-9f24f65147ca">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
+				<reportElement stretchType="RelativeToTallestObject" x="223" y="15" width="109" height="15" uuid="b2b52daa-cff2-4259-8191-9f24f65147ca"/>
 				<box leftPadding="2">
 					<bottomPen lineWidth="0.5"/>
 					<rightPen lineWidth="0.5"/>
@@ -990,10 +991,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{manufactureYear}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToBandHeight" x="332" y="15" width="109" height="30" uuid="f4cbcc0b-6f00-4a77-9b00-19a05ac00897">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="332" y="15" width="109" height="15" uuid="f4cbcc0b-6f00-4a77-9b00-19a05ac00897"/>
 				<box leftPadding="2">
 					<bottomPen lineWidth="0.5"/>
 					<rightPen lineWidth="0.5"/>
@@ -1004,9 +1003,7 @@
 				<textFieldExpression><![CDATA[$F{insurerName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="441" y="15" width="109" height="30" uuid="947fcb3e-79f7-4932-b85d-6c5732873b0a">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
+				<reportElement stretchType="RelativeToTallestObject" x="441" y="15" width="109" height="15" uuid="947fcb3e-79f7-4932-b85d-6c5732873b0a"/>
 				<box leftPadding="2">
 					<bottomPen lineWidth="0.5"/>
 					<rightPen lineWidth="0.5"/>
