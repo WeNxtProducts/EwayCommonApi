@@ -72,11 +72,8 @@ public class MotorCoverNoteRes {
 	@JsonProperty("ManufactureYear")
 	private String manufactureYear;
 	
-	@JsonProperty("UserName")
-	private String userName;
-	
-	@JsonProperty("UserMobile")
-	private String userMobile;
+	@JsonProperty("AgentMobile")
+	private String agentMobile;
 	
 	@JsonProperty("CompanyName")
 	private String companyName;
@@ -101,5 +98,8 @@ public class MotorCoverNoteRes {
 	
 	@JsonProperty("OverallPremium")
 	private String overallPremium;
+	
+	@JsonProperty("MotorUsageDesc")
+	private String motorUsageDesc;
 
 }

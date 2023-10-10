@@ -91,13 +91,9 @@
 		<property name="net.sf.jasperreports.json.field.expression" value="manufactureYear"/>
 		<fieldDescription><![CDATA[manufactureYear]]></fieldDescription>
 	</field>
-	<field name="userName" class="java.lang.String">
-		<property name="net.sf.jasperreports.json.field.expression" value="userName"/>
-		<fieldDescription><![CDATA[userName]]></fieldDescription>
-	</field>
-	<field name="userMobile" class="java.lang.Long">
-		<property name="net.sf.jasperreports.json.field.expression" value="userMobile"/>
-		<fieldDescription><![CDATA[userMobile]]></fieldDescription>
+	<field name="agentMobile" class="java.lang.Long">
+		<property name="net.sf.jasperreports.json.field.expression" value="agentMobile"/>
+		<fieldDescription><![CDATA[agentMobile]]></fieldDescription>
 	</field>
 	<field name="companyName" class="java.lang.String">
 		<property name="net.sf.jasperreports.json.field.expression" value="companyName"/>
@@ -130,6 +126,10 @@
 	<field name="overallPremium" class="java.math.BigDecimal">
 		<property name="net.sf.jasperreports.json.field.expression" value="overallPremium"/>
 		<fieldDescription><![CDATA[overallPremium]]></fieldDescription>
+	</field>
+	<field name="motorUsageDesc" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="motorUsageDesc"/>
+		<fieldDescription><![CDATA[motorUsageDesc]]></fieldDescription>
 	</field>
 	<background>
 		<band splitType="Stretch"/>
@@ -975,7 +975,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{sectionName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{motorUsageDesc}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="223" y="15" width="109" height="30" uuid="b2b52daa-cff2-4259-8191-9f24f65147ca">
@@ -1001,7 +1001,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{userName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{insurerName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="441" y="15" width="109" height="30" uuid="947fcb3e-79f7-4932-b85d-6c5732873b0a">
@@ -1014,7 +1014,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{userMobile}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{agentMobile}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="35">

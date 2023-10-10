@@ -82,8 +82,9 @@ public class JasperCustomServiceImple {
 				mddRoot.get("fuelTypeDesc").alias("fuelType"),
 				mddRoot.get("policyTypeDesc").alias("policyTypeDesc"),
 				mddRoot.get("manufactureYear").alias("manufactureYear"),
-				luiRoot.get("userName").alias("userName"),
-				luiRoot.get("userMobile").alias("userMobile"),
+				cb.selectCase().when(cb.in(hpmRoot.get("sourceType")).value(Arrays.asList("Premia Broker","Premia Direct","Premia Agent")), piRoot.get("mobileNo1"))
+						.otherwise(luiRoot.get("userMobile")).alias("agentMobile"),
+				mddRoot.get("motorUsageDesc").alias("motorUsageDesc"),
 				hpmRoot.get("companyName").alias("companyName"),
 				hpmRoot.get("branchName").alias("branchName"),
 				hpmRoot.get("currency").alias("currency"),
@@ -128,8 +129,8 @@ public class JasperCustomServiceImple {
 			response.setFuelType(map.get("fuelType")==null?"":map.get("fuelType").toString());
 			response.setPolicyTypeDesc(map.get("policyTypeDesc")==null?"":map.get("policyTypeDesc").toString());
 			response.setManufactureYear(map.get("manufactureYear")==null?"":map.get("manufactureYear").toString());
-			response.setUserName(map.get("userName")==null?"":map.get("userName").toString());
-			response.setUserMobile(map.get("userMobile")==null?"":map.get("userMobile").toString());
+			response.setAgentMobile(map.get("agentMobile")==null?"":map.get("agentMobile").toString());
+			response.setMotorUsageDesc(map.get("motorUsageDesc")==null?"":map.get("motorUsageDesc").toString());
 			response.setCompanyName(map.get("companyName")==null?"":map.get("companyName").toString());
 			response.setBranchName(map.get("branchName")==null?"":map.get("branchName").toString());
 			response.setCurrency(map.get("currency")==null?"":map.get("currency").toString());
