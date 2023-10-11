@@ -1058,20 +1058,24 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			
 			query.multiselect(cb.count(m));
 		
-			// Where
+		
+			Predicate n7 = cb.isNull(m.get("endorsementTypeDesc")); 
 			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
 			Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
 			Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
 			Predicate n4 = cb.equal(m.get("status"), status);
 			Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode()); 
-			Predicate n7 = cb.isNull(m.get("endorsementTypeDesc")); 
+			
+		
+			Predicate n15 = null;
 			Predicate n16 = null;
-			Predicate n15 = cb.equal(m.get("adminLoginId"), req.getApplicationId());
+			n15 = cb.equal(m.get("adminLoginId"), req.getApplicationId());
 			if(StringUtils.isNotBlank(req.getBdmCode())){
 				n16 = cb.equal(m.get("bdmCode"), req.getBdmCode());
 			}else {
 				n16 = cb.equal(m.get("loginId"), req.getLoginId());
 			}
+			
 			
 			// Uw Condition 
 			Predicate n19 = cb.equal(  m.get("sectionId"),  "0");
@@ -1083,11 +1087,11 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				Predicate n11 = cb.equal(uw.get("companyId"), req.getInsuranceId()); 
 				Predicate n12 = cb.equal(uw.get("productId"), req.getProductId()); 
 				Predicate n13 = cb.equal(uw.get("branchCode"), req.getBranchCode()); 
-				query.where(n7,n1, n2, n3, n4, n6,n8,n9,n10,n11,n12,n13,n16,n19);
+				query.where(n1, n2, n3, n4, n6,n7, n8,n9,n10,n11,n12,n13,n16,n19);
 						
 						
 			} else {
-				query.where(n7,n1, n2, n3, n4, n6,n16,n19,n15);
+				query.where(n1, n2, n3, n4, n6,n7,n16,n19,n15);
 					
 			}
 			
@@ -1118,27 +1122,27 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			
 			query.multiselect(cb.count(m));
 			
-			// Order By
-			List<Order> orderList = new ArrayList<Order>();
-			orderList.add(cb.desc(m.get("updatedDate")));
-			// Where
+			
+			Predicate n7 = cb.isNotNull(m.get("endorsementTypeDesc")); 
 			Predicate n1 = cb.equal(c.get("customerReferenceNo"), m.get("customerReferenceNo"));
 			Predicate n2 = cb.equal(m.get("companyId"), req.getInsuranceId());
 			Predicate n3 = cb.equal(m.get("productId"), req.getProductId());
 			Predicate n4 = cb.equal(m.get("status"), status);
 			Predicate n6 = cb.equal(m.get("branchCode"), req.getBranchCode()); 
-			Predicate n7 = cb.isNotNull(m.get("endorsementTypeDesc")); 
 			
+		
+			Predicate n15 = null;
 			Predicate n16 = null;
-			Predicate n19 = cb.equal(m.get("adminLoginId"), req.getApplicationId());
+			n15 = cb.equal(m.get("adminLoginId"), req.getApplicationId());
 			if(StringUtils.isNotBlank(req.getBdmCode())){
 				n16 = cb.equal(m.get("bdmCode"), req.getBdmCode());
 			}else {
 				n16 = cb.equal(m.get("loginId"), req.getLoginId());
 			}
 			
+			
 			// Uw Condition 
-			Predicate n15 = cb.equal(  m.get("sectionId"),  "0");
+			Predicate n19 = cb.equal(  m.get("sectionId"),  "0");
 			if("RP".equalsIgnoreCase(status)) {
 				Root<UWReferralDetails> uw = query.from(UWReferralDetails.class);
 				Predicate n8 = cb.equal(uw.get("requestReferenceNo"), m.get("requestReferenceNo")); 
@@ -1147,14 +1151,13 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 				Predicate n11 = cb.equal(uw.get("companyId"), req.getInsuranceId()); 
 				Predicate n12 = cb.equal(uw.get("productId"), req.getProductId()); 
 				Predicate n13 = cb.equal(uw.get("branchCode"), req.getBranchCode()); 
-				query.where(n7,n1, n2, n3, n4, n6,n8,n9,n10,n11,n12,n13,n19,n16).orderBy(orderList);
+				query.where(n1, n2, n3, n4, n6,n7,n8,n9,n10,n11,n12,n13,n16,n19);
 						
 						
 			} else {
-				query.where(n7,n1, n2, n3, n4, n6,n15,n16,n19).orderBy(orderList);
+				query.where(n1, n2, n3, n4, n6,n7,n16,n19,n15);
 					
 			}
-			
 			// Get Result
 			TypedQuery<Long> result = em.createQuery(query);
 			List<Long> val = result.getResultList();

@@ -62,7 +62,6 @@ private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
  
-
 	@Id
 	@Column(name="SNO", nullable=false)
 	private Integer    sno ;
