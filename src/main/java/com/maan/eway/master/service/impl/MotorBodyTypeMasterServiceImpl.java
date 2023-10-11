@@ -771,21 +771,44 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			Predicate n7 = cb.or(n5,n6);
 			Predicate n12 = cb.equal(c.get("status"),"R");
 			Predicate n13 = cb.or(n1,n12);
-		
-			query.where(n13,n2,n3,n4,n7,n8).orderBy(orderList);
+			if (StringUtils.isNotBlank(req.getBodyType()) ) {
+				Predicate n14 = cb.equal(c.get("bodyType"), req.getBodyType() );
+				query.where(n13,n2,n3,n4,n7,n8,n14).orderBy(orderList);
+			} else {
+				query.where(n13,n2,n3,n4,n7,n8).orderBy(orderList);	
+			}
+			
 			// Get Result
 			TypedQuery<MotorBodyTypeMaster> result = em.createQuery(query);
 			list = result.getResultList();
 			list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getBodyId()))).collect(Collectors.toList());
 			list.sort(Comparator.comparing(MotorBodyTypeMaster :: getBodyNameEn ));
+			List<DropDownRes> totalList = new ArrayList<DropDownRes>();
+			
 			for (MotorBodyTypeMaster data : list) {
 				// Response
 				DropDownRes res = new DropDownRes();
 				res.setCode(data.getBodyId().toString());
 				res.setCodeDesc(data.getBodyNameEn());
 				res.setStatus(data.getStatus());
-				resList.add(res);
+				totalList.add(res);
 			}
+			
+			// Induvidual 
+			List<String> induvidualIds = new ArrayList<String>();  
+			induvidualIds.add("1");
+			induvidualIds.add("2");
+			induvidualIds.add("3");
+			induvidualIds.add("4");
+			induvidualIds.add("5");
+			List<DropDownRes> induvidualList = totalList.stream().filter( o -> induvidualIds.contains(o.getCode())  ).collect(Collectors.toList());
+			induvidualList.sort(Comparator.comparing( DropDownRes :: getCode));
+			resList.addAll(induvidualList);
+			
+			// Commercial
+			List<DropDownRes> commercialList = totalList.stream().filter( o -> ! induvidualIds.contains(o.getCode())  ).collect(Collectors.toList());
+			commercialList.sort(Comparator.comparing( DropDownRes :: getCodeDesc));
+			resList.addAll(commercialList);
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info("Exception is --->" + e.getMessage());
@@ -850,7 +873,13 @@ public class MotorBodyTypeMasterServiceImpl implements MotorBodyTypeMasterServic
 			Predicate n5 = cb.equal(c.get("branchCode"), req.getBranchCode());
 			Predicate n6 = cb.equal(c.get("branchCode"), "99999");
 			Predicate n7 = cb.or(n5,n6);
-			query.where(n1,n2,n3,n4,n7).orderBy(orderList);
+			if (StringUtils.isNotBlank(req.getBodyType()) ) {
+				Predicate n8 = cb.equal(c.get("bodyType"), req.getBodyType() );
+				query.where(n1,n2,n3,n4,n7,n8).orderBy(orderList);
+			} else {
+				query.where(n1,n2,n3,n4,n7).orderBy(orderList);	
+			}
+			
 			// Get Result
 			TypedQuery<MotorBodyTypeMaster> result = em.createQuery(query);
 			list = result.getResultList();

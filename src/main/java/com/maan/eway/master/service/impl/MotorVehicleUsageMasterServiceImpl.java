@@ -39,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.google.gson.Gson;
+import com.maan.eway.bean.MotorBodyTypeMaster;
 import com.maan.eway.bean.MotorVehicleUsageMaster;
 import com.maan.eway.bean.MotorVehicleUsageMaster;
 import com.maan.eway.bean.MotorVehicleUsageMaster;
@@ -46,6 +47,7 @@ import com.maan.eway.bean.MotorVehicleUsageMaster;
 
 import com.maan.eway.common.res.MotorVehicleUsageMasterGetRes;
 import com.maan.eway.error.Error;
+import com.maan.eway.master.req.BodyTypeDropDownReq;
 import com.maan.eway.master.req.MotorVehicleUsageChangeStatusReq;
 import com.maan.eway.master.req.MotorVehicleUsageMasterGetReq;
 import com.maan.eway.master.req.MotorVehicleUsageMasterGetallReq;
@@ -582,6 +584,12 @@ public List<DropDownRes> getVehicleUsageDropdown(UsageDropDownReq req) {
 		cal.set(Calendar.MINUTE, 1);
 		Date todayEnd = cal.getTime();
 		
+		String bodyType = "";
+		if(StringUtils.isNotBlank(req.getBodyId())  ) {
+			List<MotorBodyTypeMaster> bodyTypeList =  getBodyTypeMasterDropdown(req.getInsuranceId() , req.getBranchCode() ,req.getSectionId(), req.getBodyId() ) ;
+			bodyType = bodyTypeList.size() > 0 ? bodyTypeList.get(0).getBodyType() : "";
+		}
+		
 		// Criteria
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<MotorVehicleUsageMaster> query=  cb.createQuery(MotorVehicleUsageMaster.class);
@@ -626,7 +634,15 @@ public List<DropDownRes> getVehicleUsageDropdown(UsageDropDownReq req) {
 		Predicate n6 = cb.equal(c.get("branchCode"), req.getBranchCode());
 		Predicate n7 = cb.equal(c.get("branchCode"), "99999");
 		Predicate n8 = cb.or(n6,n7);
-		query.where(n12,n2,n3,n4,n5,n8).orderBy(orderList);
+		if(StringUtils.isNotBlank(bodyType)) {
+			Predicate n9 = cb.equal(c.get("bodyType"), bodyType);
+			query.where(n12,n2,n3,n4,n5,n8,n9).orderBy(orderList);
+			
+		} else {
+			query.where(n12,n2,n3,n4,n5,n8).orderBy(orderList);
+			
+		}
+		
 		// Get Result
 		TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
 		list = result.getResultList();
@@ -665,6 +681,7 @@ public SuccessRes changeStatusOfVehicleUsage(MotorVehicleUsageChangeStatusReq re
 		String createdBy = req.getCreatedBy();
 
 		String vehicleUsageId = "";
+		
 		
 			// Update
 			vehicleUsageId = req.getVehicleUsageId();
@@ -773,6 +790,13 @@ public List<DropDownRes> getInduvidualVehicleUsageDropdown( UsageDropDownReq req
 		cal.set(Calendar.MINUTE, 1);
 		Date todayEnd = cal.getTime();
 		
+		String bodyType = "";
+		if(StringUtils.isNotBlank(req.getBodyId())  ) {
+			List<MotorBodyTypeMaster> bodyTypeList =  getBodyTypeMasterDropdown(req.getInsuranceId() , req.getBranchCode() ,"", req.getBodyId() ) ;
+			bodyType = bodyTypeList.size() > 0 ? bodyTypeList.get(0).getBodyType() : "";
+		}
+		
+		
 		// Criteria
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<MotorVehicleUsageMaster> query=  cb.createQuery(MotorVehicleUsageMaster.class);
@@ -814,7 +838,13 @@ public List<DropDownRes> getInduvidualVehicleUsageDropdown( UsageDropDownReq req
 		Predicate n5 = cb.equal(c.get("branchCode"), req.getBranchCode());
 		Predicate n6 = cb.equal(c.get("branchCode"), "99999");
 		Predicate n7 = cb.or(n5,n6);
-		query.where(n1,n2,n3,n4,n7).orderBy(orderList);
+		if(StringUtils.isNotBlank(bodyType)) {
+			Predicate n8 = cb.equal(c.get("bodyType"), bodyType);
+			query.where(n1,n2,n3,n4,n7,n8).orderBy(orderList);
+		} else {
+			query.where(n1,n2,n3,n4,n7).orderBy(orderList);
+		}
+		
 		// Get Result
 		TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
 		list = result.getResultList();
@@ -838,6 +868,83 @@ public List<DropDownRes> getInduvidualVehicleUsageDropdown( UsageDropDownReq req
 	}
 
 
+public List<MotorBodyTypeMaster> getBodyTypeMasterDropdown(String companyId , String branchCode ,String sectionId , String bodyId ) {
+	List<MotorBodyTypeMaster> list = new ArrayList<MotorBodyTypeMaster>();
+	
+	try {
+		Date today = new Date();
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(today);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		;
+		cal.set(Calendar.MINUTE, 1);
+		today = cal.getTime();
+		cal.set(Calendar.HOUR_OF_DAY, 1);
+		cal.set(Calendar.MINUTE, 1);
+		Date todayEnd = cal.getTime();
+
+		// Criteria
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<MotorBodyTypeMaster> query = cb.createQuery(MotorBodyTypeMaster.class);
+		// Find All
+		Root<MotorBodyTypeMaster> c = query.from(MotorBodyTypeMaster.class);
+		// Select
+		query.select(c);
+		// Order By
+		List<Order> orderList = new ArrayList<Order>();
+		orderList.add(cb.asc(c.get("branchCode")));
+
+		// Effective Date Start Max Filter
+		Subquery<Long> effectiveDate = query.subquery(Long.class);
+		Root<MotorBodyTypeMaster> ocpm1 = effectiveDate.from(MotorBodyTypeMaster.class);
+		effectiveDate.select(cb.max(ocpm1.get("effectiveDateStart")));
+		Predicate a1 = cb.equal(c.get("bodyId"), ocpm1.get("bodyId"));
+		Predicate a2 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+		Predicate a3 = cb.equal(c.get("companyId"), ocpm1.get("companyId"));
+		Predicate a4 = cb.equal(c.get("branchCode"), ocpm1.get("branchCode"));
+		Predicate a5 = cb.equal(c.get("sectionId"), ocpm1.get("sectionId"));
+		effectiveDate.where(a1, a2,a3,a4,a5);
+		// Effective Date End Max Filter
+		Subquery<Long> effectiveDate2 = query.subquery(Long.class);
+		Root<MotorBodyTypeMaster> ocpm2 = effectiveDate2.from(MotorBodyTypeMaster.class);
+		effectiveDate2.select(cb.max(ocpm2.get("effectiveDateEnd")));
+		Predicate a6 = cb.equal(c.get("bodyId"), ocpm2.get("bodyId"));
+		Predicate a7 = cb.greaterThanOrEqualTo(ocpm2.get("effectiveDateEnd"), todayEnd);
+		Predicate a8 = cb.equal(c.get("companyId"), ocpm2.get("companyId"));
+		Predicate a9 = cb.equal(c.get("branchCode"), ocpm2.get("branchCode"));
+		Predicate a10 = cb.equal(c.get("sectionId"),  ocpm2.get("sectionId"));
+		
+		effectiveDate2.where(a6,a7,a8,a9,a10);
+		// Where
+		Predicate n1 = cb.equal(c.get("status"), "Y");
+		Predicate n2 = cb.equal(c.get("effectiveDateStart"), effectiveDate);
+		Predicate n3 = cb.equal(c.get("effectiveDateEnd"), effectiveDate2);
+		Predicate n8 = cb.equal(c.get("companyId"), companyId);
+		Predicate n5 = cb.equal(c.get("branchCode"), branchCode);
+		Predicate n6 = cb.equal(c.get("branchCode"), "99999");
+		Predicate n7 = cb.or(n5,n6);
+		Predicate n12 = cb.equal(c.get("status"),"R");
+		Predicate n13 = cb.or(n1,n12);
+		Predicate n14 = cb.equal(c.get("bodyId"), bodyId );
+		if(StringUtils.isNotBlank(sectionId) ) {
+			Predicate n15 = cb.equal(c.get("sectionId"), sectionId );
+			query.where(n2,n3,n8,n7,n13,n14,n15);
+		} else {
+			query.where(n2,n3,n8,n7,n13,n14);
+		}
+		
+		// Get Result
+		TypedQuery<MotorBodyTypeMaster> result = em.createQuery(query);
+		list = result.getResultList();
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getBodyId()))).collect(Collectors.toList());
+		list.sort(Comparator.comparing(MotorBodyTypeMaster :: getBodyNameEn ));
+	} catch (Exception e) {
+		e.printStackTrace();
+		log.info("Exception is --->" + e.getMessage());
+		return null;
+	}
+	return list;
+}
 
 
 

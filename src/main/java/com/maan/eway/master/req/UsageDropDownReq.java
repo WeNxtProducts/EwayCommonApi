@@ -14,4 +14,7 @@ public class UsageDropDownReq {
 	
 	@JsonProperty("BranchCode")
 	private String branchCode;
+	
+	@JsonProperty("BodyId")
+	private String bodyId;
 }

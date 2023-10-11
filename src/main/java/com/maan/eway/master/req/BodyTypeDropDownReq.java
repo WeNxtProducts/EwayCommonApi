@@ -15,4 +15,7 @@ public class BodyTypeDropDownReq {
 	
 	@JsonProperty("BranchCode")
 	private String branchCode;
+	
+	@JsonProperty("BodyType")
+	private String bodyType;
 }
