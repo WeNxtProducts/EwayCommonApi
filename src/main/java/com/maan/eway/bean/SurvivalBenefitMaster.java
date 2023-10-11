@@ -53,7 +53,7 @@ import lombok.ToString;
 @DynamicUpdate
 @Builder
 @IdClass(SurvivalBenefitMasterId.class)
-@Table(name="survival_benefit_master")
+@Table(name="LIFE_SURVIVAL_BENEFIT_MASTER")
 
 
 public class SurvivalBenefitMaster implements Serializable {

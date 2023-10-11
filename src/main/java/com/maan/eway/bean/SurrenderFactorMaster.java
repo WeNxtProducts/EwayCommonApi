@@ -43,7 +43,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Builder
 @IdClass(SurrenderFactorMasterId.class)
-@Table(name="surrender_factor_master")
+@Table(name="LIFE_SURRENDER_FACTOR_MASTER")
 
 
 public class SurrenderFactorMaster implements Serializable {
