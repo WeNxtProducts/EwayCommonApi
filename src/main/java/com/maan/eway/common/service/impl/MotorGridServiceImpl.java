@@ -774,18 +774,27 @@ private List<GetExistingBrokerListRes> getExistingIssuerMotor(ExistingBrokerUser
 			Predicate n7 = null;
 			Predicate n11 = null;
 			
-			if (req.getApplicationId().equalsIgnoreCase("1")) {
-				n7 = cb.equal(m.get("loginId"), req.getLoginId());
-				n11 = cb.equal(m.get("applicationId"), req.getApplicationId());
-			} else {
-				if(StringUtils.isNotBlank(req.getBdmCode())){
-					n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
-					n11 = cb.equal(m.get("bdmCode"), req.getBdmCode());
-				}else {
-					n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
-					n11 = cb.equal(m.get("loginId"), req.getLoginId());
-				}
+//			if (req.getApplicationId().equalsIgnoreCase("1")) {
+//				n7 = cb.equal(m.get("loginId"), req.getLoginId());
+//				n11 = cb.equal(m.get("applicationId"), req.getApplicationId());
+//			} else {
+//				if(StringUtils.isNotBlank(req.getBdmCode())){
+//					n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
+//					n11 = cb.equal(m.get("bdmCode"), req.getBdmCode());
+//				}else {
+//					n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
+//					n11 = cb.equal(m.get("loginId"), req.getLoginId());
+//				}
+//			}
+			
+			n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
+			if(StringUtils.isNotBlank(req.getBdmCode())){
+				n11 = cb.equal(m.get("bdmCode"), req.getBdmCode());
+			}else {
+				n11 = cb.equal(m.get("loginId"), req.getLoginId());
 			}
+			
+			
 
 			Predicate n8 = null;
 			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {

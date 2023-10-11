@@ -742,17 +742,17 @@ public class CommonGridServiceImpl implements CommonGridService {
 			Predicate n9 = cb.isNull(m.get("endorsementType"));
 			Predicate n7 = null;
 			Predicate n11 = null;
-			if (req.getApplicationId().equalsIgnoreCase("1")) {
-				n7 = cb.equal(m.get("loginId"), req.getLoginId());
-				n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
-			} else {
+//			if (req.getApplicationId().equalsIgnoreCase("1")) {
+//				n7 = cb.equal(m.get("loginId"), req.getLoginId());
+//				n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
+//			} else {
 				n7 = cb.equal(m.get("applicationId"), req.getApplicationId());
 				if(StringUtils.isNotBlank(req.getBdmCode())){
 					n11 = cb.equal(m.get("bdmCode"), req.getBdmCode());
 				}else {
 					n11 = cb.equal(m.get("loginId"), req.getLoginId());
 				}
-			}
+//			}
 
 			Predicate n8 = null;
 			if (req.getUserType().equalsIgnoreCase("Broker") || req.getUserType().equalsIgnoreCase("User")) {
@@ -769,7 +769,7 @@ public class CommonGridServiceImpl implements CommonGridService {
 			Predicate a3 = cb.equal(ocp.get("requestReferenceNo"), m.get("requestReferenceNo"));
 			riskId.where(a3);
 
-			Predicate n10 = cb.equal(m.get("riskId"), riskId);
+			Predicate n10 = cb.equal(m.get("riskId"), riskId==null?null:riskId);
 			query.where(n1, n2, n3, n4, n5, n6, n7, n8,n9,n10,n11).orderBy(orderList);
 			
 			// Get Result
