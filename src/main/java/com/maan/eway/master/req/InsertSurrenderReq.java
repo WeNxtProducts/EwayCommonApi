@@ -37,4 +37,9 @@ public class InsertSurrenderReq {
 	@JsonProperty("PolicyTerm")
     private Integer     policyTerm ;
 	
+	
+	@JsonProperty("SaveType")
+    private String     saveType ;
+
+	
 }

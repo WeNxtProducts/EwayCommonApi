@@ -29,11 +29,15 @@ public class SurvivalBenefitMasterId implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //--- ENTITY KEY ATTRIBUTES 
+    
+    
+    private Integer    sno ;
+    
     private Integer    policyTerms ;
     
     private Integer    endOfYear ;
     
-    private Double     amount ;
+//    private Double     amount ;
     
 //    private String     status ;
     

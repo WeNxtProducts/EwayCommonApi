@@ -7,6 +7,10 @@ import lombok.Data;
 @Data
 public class SurrenderReq {
 	
+	
+	@JsonProperty("Sno")
+    private Integer     sno ;
+	
 	@JsonProperty("PolicyYear")
     private Integer     policyYear ;
 

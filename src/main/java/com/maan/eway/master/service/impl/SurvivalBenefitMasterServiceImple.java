@@ -105,7 +105,7 @@ public class SurvivalBenefitMasterServiceImple implements SurvivalBenefitMasterS
 			 Set<Integer> uniqueElements = new HashSet<>();
 			if(req.getSurvivalReq().isEmpty() ) {
 				errorList.add(new Error("07","Surrender", "Please Enter Survival Details")); 
-			}else if(req.getSurvivalReq().size() > req.getPolicyTerm() ){
+			}else if(req.getSurvivalReq().size() > req.getPolicyTerm()){
 				errorList.add(new Error("07","Surrender", "Survival Details List Should Be Maximun" + req.getPolicyTerm() + " Rows")); 
 			}
 			
@@ -115,15 +115,6 @@ public class SurvivalBenefitMasterServiceImple implements SurvivalBenefitMasterS
 				
 				for(SurvivalReq data : req.getSurvivalReq()) {
 					row = row + 1;
-					
-					//Status Validation
-					if (StringUtils.isBlank(data.getStatus())) {
-						errorList.add(new Error("05", "Status", "Please Select Status in Row " + row));
-					} else if (data.getStatus().length() > 1) {
-						errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed in Row " + row));
-					}else if(!("Y".equalsIgnoreCase(data.getStatus())||"N".equalsIgnoreCase(data.getStatus())||"R".equalsIgnoreCase(data.getStatus())|| "P".equalsIgnoreCase(data.getStatus()))) {
-						errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral in Row "+ row));
-					} 
 					
 					//EndOfYear Validation
 					if (data.getEndOfYear()==null ) {
@@ -142,50 +133,64 @@ public class SurvivalBenefitMasterServiceImple implements SurvivalBenefitMasterS
 							errorList.add(new Error("07","Duplicate EndOfYear","End Of Year "+  data.getEndOfYear()+ " Already Exists "  +"in Row "+row ));
 					}
 					
-					//Amount %
-					if (data.getAmount()==null ) { 
-						errorList.add(new Error("07", "SurvivalBenefit Percentage", "Please Enter Survival Benefit Percentage in Row "+ row));
-					}else if (data.getAmount() <= 0){
-						errorList.add(new Error("07","SurvivalBenefit Percentage", "Please Enter Survival Benefit Percentage Greater Than Zero in Row "+ row)); 
-					}
-					else if (data.getAmount() > 100){
-						errorList.add(new Error("07","SurvivalBenefit Percentage", "Please Enter Survival Benefit Percentage Within 100"+" in Row "+row )); 
+					if(req.getSaveType().equalsIgnoreCase("Submit")){
+					
+						//Status Validation
+						if (StringUtils.isBlank(data.getStatus())) {
+							errorList.add(new Error("05", "Status", "Please Select Status in Row " + row));
+						} else if (data.getStatus().length() > 1) {
+							errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed in Row " + row));
+						}else if(!("Y".equalsIgnoreCase(data.getStatus())||"N".equalsIgnoreCase(data.getStatus())||"R".equalsIgnoreCase(data.getStatus())|| "P".equalsIgnoreCase(data.getStatus()))) {
+							errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral in Row "+ row));
+						} 
 						
-					} 
-					if (data.getAmount()!=null )
-						toalAmount = toalAmount + data.getAmount();
-					
-					
-					if(StringUtils.isNotBlank(data.getStatus()) && ! (data.getStatus().equalsIgnoreCase("P")) ) {
-						if (StringUtils.isBlank(data.getCoreAppCode())) {
-							errorList.add(new Error("07", "CoreAppCode", "Please Enter CoreAppCode in Row "+ row));
-						}else if (data.getCoreAppCode().length() > 20){
-							errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters in Row "+ row)); 
+						//Amount %
+						if (data.getAmount()==null ) { 
+							errorList.add(new Error("07", "SurvivalBenefit Percentage", "Please Enter Survival Benefit Percentage in Row "+ row));
+						}else if (data.getAmount() < 0){
+							errorList.add(new Error("07","SurvivalBenefit Percentage", "Please Enter Non-Negative Survival Benefit Percentage in Row "+ row)); 
 						}
-						if (StringUtils.isBlank(data.getRegulatoryCode())) {
-							errorList.add(new Error("08", "RegulatoryCode", "Please Enter RegulatoryCode in Row "+ row));
-						}else if (data.getRegulatoryCode().length() > 20){
-							errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters in Row "+ row)); 
-						}
-						if (StringUtils.isNotBlank(data.getRemarks()) && data.getRemarks().length() > 100){
-							errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters in Row " + row)); 
-						}
-						if (StringUtils.isBlank(data.getCalcType())) {
-							errorList.add(new Error("07", "Calc Type", "Please Select Calc Type in Row "+ row));
+						else if (data.getAmount() > 100){
+							errorList.add(new Error("07","SurvivalBenefit Percentage", "Please Enter Survival Benefit Percentage Within 100"+" in Row "+row )); 
+							
+						} 
+						if (data.getAmount()!=null )
+							toalAmount = toalAmount + data.getAmount();
+						
+						
+						if(StringUtils.isNotBlank(data.getStatus()) && ! (data.getStatus().equalsIgnoreCase("P")) ) {
+							if (StringUtils.isBlank(data.getCoreAppCode())) {
+								errorList.add(new Error("07", "CoreAppCode", "Please Enter CoreAppCode in Row "+ row));
+							}else if (data.getCoreAppCode().length() > 20){
+								errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters in Row "+ row)); 
+							}
+							if (StringUtils.isBlank(data.getRegulatoryCode())) {
+								errorList.add(new Error("08", "RegulatoryCode", "Please Enter RegulatoryCode in Row "+ row));
+							}else if (data.getRegulatoryCode().length() > 20){
+								errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters in Row "+ row)); 
+							}
+							if (StringUtils.isNotBlank(data.getRemarks()) && data.getRemarks().length() > 100){
+								errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters in Row " + row)); 
+							}
+							if (StringUtils.isBlank(data.getCalcType())) {
+								errorList.add(new Error("07", "Calc Type", "Please Select Calc Type in Row "+ row));
+							}
+							
 						}
 						
 					}
-					
 				}
-				if(toalAmount!=100)
-					errorList.add(new Error("07","SurvivalBenefit Total Percentage", "Survival Benefit Total Percentage Should Be 100"));
+				if(req.getSaveType().equalsIgnoreCase("Submit")){
+					if(toalAmount!=100)
+						errorList.add(new Error("07","SurvivalBenefit Total Percentage", "Survival Benefit Total Percentage Should Be 100"));
 				
-				Set<Integer> endyearfilter = uniqueElements.stream().filter(element -> element ==req.getPolicyTerm() ).collect(Collectors.toSet());
-				
-				if(endyearfilter.isEmpty())
-					errorList.add(new Error("07","EndOfYear", "Add End Of Year Upto "+ req.getPolicyTerm()));
+					//EndOfYear 
+//					Set<Integer> endyearfilter = uniqueElements.stream().filter(element -> element ==req.getPolicyTerm() ).collect(Collectors.toSet());
+//					
+//					if(endyearfilter.isEmpty())
+//						errorList.add(new Error("07","EndOfYear", "Add End Of Year Upto "+ req.getPolicyTerm()));
+					}
 			}
-			
 		
 		} catch (Exception e) {
 			log.error(e);
@@ -246,14 +251,13 @@ public class SurvivalBenefitMasterServiceImple implements SurvivalBenefitMasterS
 				Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId());
 				Predicate n3 = cb.equal(b.get("productId"),req.getProductId());
 				Predicate n4 = cb.equal(b.get("sectionId"),req.getSectionId());
+				Predicate n5 = cb.equal(b.get("amendId"),maxAmendId);
+				
 			
-				query.where(n1,n2,n3,n4).orderBy(orderList);
+				query.where(n1,n2,n3,n4,n5).orderBy(orderList);
 				
 			
 				TypedQuery<SurvivalBenefitMaster> result = em.createQuery(query);
-				int limit=0, offset=2;
-				result.setFirstResult(limit * offset);
-				result.setMaxResults(offset);
 				list = result.getResultList();
 				
 				
@@ -266,27 +270,29 @@ public class SurvivalBenefitMasterServiceImple implements SurvivalBenefitMasterS
 						entryDate = new Date() ;
 						createdBy = req.getCreatedBy();
 						
-						//UPDATE old data
-						CriteriaBuilder cb2 = em.getCriteriaBuilder();
-					
-						CriteriaUpdate<SurvivalBenefitMaster> update = cb2.createCriteriaUpdate(SurvivalBenefitMaster.class);
-					
-						Root<SurvivalBenefitMaster> m = update.from(SurvivalBenefitMaster.class);
-					
-						update.set("updatedBy", req.getCreatedBy());
-						update.set("updatedDate", entryDate);
-						update.set("effectiveDateEnd", oldEndDate);
+						if(req.getSaveType().equalsIgnoreCase("Submit")) { //old record update
+							//UPDATE old data
+							CriteriaBuilder cb2 = em.getCriteriaBuilder();
 						
-						List<Predicate> predics = new ArrayList<Predicate>();
-						predics.add(cb2.equal(m.get("policyTerms"), req.getPolicyTerm()));
-						predics.add(cb2.equal(m.get("companyId"), req.getCompanyId()));
-						predics.add(cb2.equal(m.get("amendId"), list.get(0).getAmendId() ));
-						predics.add(cb2.equal(m.get("productId"),req.getProductId()));
-						predics.add(cb.equal(b.get("sectionId"),req.getSectionId()));
+							CriteriaUpdate<SurvivalBenefitMaster> update = cb2.createCriteriaUpdate(SurvivalBenefitMaster.class);
 						
-						update.where(predics.toArray(new Predicate[0]) );
-				
-						em.createQuery(update).executeUpdate();
+							Root<SurvivalBenefitMaster> m = update.from(SurvivalBenefitMaster.class);
+						
+							update.set("updatedBy", req.getCreatedBy());
+							update.set("updatedDate", entryDate);
+							update.set("effectiveDateEnd", oldEndDate);
+							
+							List<Predicate> predics = new ArrayList<Predicate>();
+							predics.add(cb2.equal(m.get("policyTerms"), req.getPolicyTerm()));
+							predics.add(cb2.equal(m.get("companyId"), req.getCompanyId()));
+							predics.add(cb2.equal(m.get("amendId"), list.get(0).getAmendId() ));
+							predics.add(cb2.equal(m.get("productId"),req.getProductId()));
+							predics.add(cb.equal(b.get("sectionId"),req.getSectionId()));
+							
+							update.where(predics.toArray(new Predicate[0]) );
+					
+							em.createQuery(update).executeUpdate();
+						}
 						
 					} else { //future or today
 						amendId = list.get(0).getAmendId() ;
@@ -300,12 +306,18 @@ public class SurvivalBenefitMasterServiceImple implements SurvivalBenefitMasterS
 				res.setResponse("Updated Successfully");
 				
 			}
+			int sno = 0; 
 			List<SurvivalBenefitMaster> list1  = new ArrayList<SurvivalBenefitMaster>();
 			
 			for ( SurvivalReq data :  req.getSurvivalReq() ) {
-				
+				sno = sno + 1;
 				// Save New Records
 				saveData = mapper.map(data, SurvivalBenefitMaster.class ); 
+				
+				if(req.getSaveType().equalsIgnoreCase("Save"))
+					saveData.setStatus("P");
+				
+				saveData.setSno(sno);
 				saveData.setAmendId(amendId);
 				saveData.setCreatedBy(createdBy);
 				saveData.setEntryDate(entryDate);

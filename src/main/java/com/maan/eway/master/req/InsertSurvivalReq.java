@@ -36,4 +36,9 @@ public class InsertSurvivalReq {
 	
 	@JsonProperty("PolicyTerm")
     private Integer     policyTerm ;
+	
+	@JsonProperty("SaveType")
+    private String     saveType ;
+	
+
 }

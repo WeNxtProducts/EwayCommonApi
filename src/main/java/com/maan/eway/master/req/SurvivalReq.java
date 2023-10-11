@@ -7,6 +7,9 @@ import lombok.Data;
 @Data
 public class SurvivalReq {
 	
+	@JsonProperty("Sno")
+    private Integer     sno ;
+	
 	@JsonProperty("EndOfYear")
     private Integer     endOfYear ;
 

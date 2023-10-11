@@ -31,7 +31,7 @@ public class LifePolicytermsMasterId implements Serializable {
     //--- ENTITY KEY ATTRIBUTES 
     private Integer    policyTerms ;
     
-    private String     status ;
+//    private String     status ;
     
     private Integer    amendId ;
     

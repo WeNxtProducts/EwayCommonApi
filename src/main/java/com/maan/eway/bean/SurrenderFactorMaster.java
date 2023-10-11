@@ -51,16 +51,23 @@ public class SurrenderFactorMaster implements Serializable {
 private static final long serialVersionUID = 1L;
  
     //--- ENTITY PRIMARY KEY 
-    @Id
-    @Column(name="POLICY_TERMS", nullable=false)
-    private Integer    policyTerms ;
+
+
+	@Id
+	@Column(name="SNO", nullable=false)
+	private Integer    sno ;
+
+	@Id
+	@Column(name="POLICY_TERMS", nullable=false)
+	private Integer    policyTerms ;
+
 
     @Id
     @Column(name="POLICY_YEAR", nullable=false)
     private Integer    policyYear ;
 
-    @Id
-    @Column(name="AMOUNT", nullable=false)
+   
+    @Column(name="AMOUNT")
     private Double     amount ;
 
 

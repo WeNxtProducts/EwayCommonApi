@@ -48,6 +48,7 @@ public class InsertPolicyTermsReq  implements Serializable {
 	private String createdBy;
 	
 	
-
+	@JsonProperty("Type")
+	private String type;
 
 }

@@ -106,19 +106,10 @@ public class SurrenderMasterServiceImple implements SurrenderMasterService{
 				for(SurrenderReq data : req.getSurrenderReq()) {
 					row = row + 1;
 					
-					//Status Validation
-					if (StringUtils.isBlank(data.getStatus())) {
-						errorList.add(new Error("05", "Status", "Please Select Status in Row " + row));
-					} else if (data.getStatus().length() > 1) {
-						errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed in Row " + row));
-					}else if(!("Y".equalsIgnoreCase(data.getStatus())||"N".equalsIgnoreCase(data.getStatus())||"R".equalsIgnoreCase(data.getStatus())|| "P".equalsIgnoreCase(data.getStatus()))) {
-						errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral in Row "+ row));
-					} 
-					
 					//Policy Year Validation
 					if (data.getPolicyYear()==null ) {
 						errorList.add(new Error("07", "Policy Year", "Please Enter Policy Year in Row "+ row));
-					}else if (data.getPolicyYear() <= 0){
+					}else if (data.getPolicyYear() < 0){
 						errorList.add(new Error("07","Policy Year", "Please Enter Policy Year Greater Than Zero in Row "+ row)); 
 					}
 					else if (data.getPolicyYear() > req.getPolicyTerm()){
@@ -126,39 +117,51 @@ public class SurrenderMasterServiceImple implements SurrenderMasterService{
 						
 					} 
 					
-					//Amount
-					if (data.getAmount()==null ) {
-						errorList.add(new Error("07", "Surrender Percentage", "Please Enter Surrender Percentage in Row "+ row));
-					}else if (data.getAmount() <= 0){
-						errorList.add(new Error("07","Surrender Percentage", "Please Enter Surrender Percentage Greater Than Zero in Row "+ row)); 
-					}
-					else if (data.getAmount() > 100){
-						errorList.add(new Error("07","Surrender Percentage", "Please Enter Surrender Percentage Within 100"+" in Row "+row )); 
+					if(req.getSaveType().equalsIgnoreCase("Submit")){
+							
+						//Status Validation
+						if (StringUtils.isBlank(data.getStatus())) {
+							errorList.add(new Error("05", "Status", "Please Select Status in Row " + row));
+						} else if (data.getStatus().length() > 1) {
+							errorList.add(new Error("05", "Status", "Please Select Valid Status - One Character Only Allwed in Row " + row));
+						}else if(!("Y".equalsIgnoreCase(data.getStatus())||"N".equalsIgnoreCase(data.getStatus())||"R".equalsIgnoreCase(data.getStatus())|| "P".equalsIgnoreCase(data.getStatus()))) {
+							errorList.add(new Error("05", "Status", "Please Select Valid Status - Active or Deactive or Pending or Referral in Row "+ row));
+						} 
 						
-					} 
-					
-					
-					if(StringUtils.isNotBlank(data.getStatus()) && ! (data.getStatus().equalsIgnoreCase("P")) ) {
-						if (StringUtils.isBlank(data.getCoreAppCode())) {
-							errorList.add(new Error("07", "CoreAppCode", "Please Enter CoreAppCode in Row "+ row));
-						}else if (data.getCoreAppCode().length() > 20){
-							errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters in Row "+ row)); 
-						}
-						if (StringUtils.isBlank(data.getRegulatoryCode())) {
-							errorList.add(new Error("08", "RegulatoryCode", "Please Enter RegulatoryCode in Row "+ row));
-						}else if (data.getRegulatoryCode().length() > 20){
-							errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters in Row "+ row)); 
-						}
-						if (StringUtils.isNotBlank(data.getRemarks()) && data.getRemarks().length() > 100){
-							errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters in Row " + row)); 
-						}
-						if (StringUtils.isBlank(data.getCalcType())) {
-							errorList.add(new Error("07", "Calc Type", "Please Select Calc Type in Row "+ row));
-						}
 						
-					
+						//Amount
+						if (data.getAmount()==null ) {
+							errorList.add(new Error("07", "Surrender Percentage", "Please Enter Surrender Percentage in Row "+ row));
+						}else if (data.getAmount() < 0){
+							errorList.add(new Error("07","Surrender Percentage", "Please Enter  Non-Negative Surrender Percentage in Row "+ row)); 
+						}
+						else if (data.getAmount() > 100){
+							errorList.add(new Error("07","Surrender Percentage", "Please Enter Surrender Percentage Within 100"+" in Row "+row )); 
+							
+						} 
+						
+						
+						if(StringUtils.isNotBlank(data.getStatus()) && ! (data.getStatus().equalsIgnoreCase("P")) ) {
+							if (StringUtils.isBlank(data.getCoreAppCode())) {
+								errorList.add(new Error("07", "CoreAppCode", "Please Enter CoreAppCode in Row "+ row));
+							}else if (data.getCoreAppCode().length() > 20){
+								errorList.add(new Error("07","CoreAppCode", "Please Enter CoreAppCode within 20 Characters in Row "+ row)); 
+							}
+							if (StringUtils.isBlank(data.getRegulatoryCode())) {
+								errorList.add(new Error("08", "RegulatoryCode", "Please Enter RegulatoryCode in Row "+ row));
+							}else if (data.getRegulatoryCode().length() > 20){
+								errorList.add(new Error("08","RegulatoryCode", "Please Enter RegulatoryCode within 20 Characters in Row "+ row)); 
+							}
+							if (StringUtils.isNotBlank(data.getRemarks()) && data.getRemarks().length() > 100){
+								errorList.add(new Error("03","Remark", "Please Enter Remark within 100 Characters in Row " + row)); 
+							}
+							if (StringUtils.isBlank(data.getCalcType())) {
+								errorList.add(new Error("07", "Calc Type", "Please Select Calc Type in Row "+ row));
+							}
+							
+						
+						}
 					}
-					
 					
 				}
 			}
@@ -223,14 +226,14 @@ public class SurrenderMasterServiceImple implements SurrenderMasterService{
 				Predicate n2 = cb.equal(b.get("companyId"),req.getCompanyId());
 				Predicate n3 = cb.equal(b.get("productId"),req.getProductId());
 				Predicate n4 = cb.equal(b.get("sectionId"),req.getSectionId());
-			
-				query.where(n1,n2,n3,n4).orderBy(orderList);
+				Predicate n5 = cb.equal(b.get("amendId"),maxAmendId);
+				
+				
+				query.where(n1,n2,n3,n4,n5).orderBy(orderList);
 				
 			
 				TypedQuery<SurrenderFactorMaster> result = em.createQuery(query);
-				int limit=0, offset=2;
-				result.setFirstResult(limit * offset);
-				result.setMaxResults(offset);
+
 				list = result.getResultList();
 				
 				
@@ -243,28 +246,29 @@ public class SurrenderMasterServiceImple implements SurrenderMasterService{
 						entryDate = new Date() ;
 						createdBy = req.getCreatedBy();
 						
-						//UPDATE old data
-						CriteriaBuilder cb2 = em.getCriteriaBuilder();
-					
-						CriteriaUpdate<SurrenderFactorMaster> update = cb2.createCriteriaUpdate(SurrenderFactorMaster.class);
-					
-						Root<SurrenderFactorMaster> m = update.from(SurrenderFactorMaster.class);
-					
-						update.set("updatedBy", req.getCreatedBy());
-						update.set("updatedDate", entryDate);
-						update.set("effectiveDateEnd", oldEndDate);
+						if(req.getSaveType().equalsIgnoreCase("Submit")) { //old record update
+							//UPDATE old data
+							CriteriaBuilder cb2 = em.getCriteriaBuilder();
 						
-						List<Predicate> predics = new ArrayList<Predicate>();
-						predics.add(cb2.equal(m.get("policyTerms"), req.getPolicyTerm()));
-						predics.add(cb2.equal(m.get("companyId"), req.getCompanyId()));
-						predics.add(cb2.equal(m.get("amendId"), list.get(0).getAmendId() ));
-						predics.add(cb2.equal(m.get("productId"),req.getProductId()));
-						predics.add(cb.equal(b.get("sectionId"),req.getSectionId()));
+							CriteriaUpdate<SurrenderFactorMaster> update = cb2.createCriteriaUpdate(SurrenderFactorMaster.class);
 						
-						update.where(predics.toArray(new Predicate[0]) );
-				
-						em.createQuery(update).executeUpdate();
+							Root<SurrenderFactorMaster> m = update.from(SurrenderFactorMaster.class);
 						
+							update.set("updatedBy", req.getCreatedBy());
+							update.set("updatedDate", entryDate);
+							update.set("effectiveDateEnd", oldEndDate);
+							
+							List<Predicate> predics = new ArrayList<Predicate>();
+							predics.add(cb2.equal(m.get("policyTerms"), req.getPolicyTerm()));
+							predics.add(cb2.equal(m.get("companyId"), req.getCompanyId()));
+							predics.add(cb2.equal(m.get("amendId"), list.get(0).getAmendId() ));
+							predics.add(cb2.equal(m.get("productId"),req.getProductId()));
+							predics.add(cb2.equal(m.get("sectionId"),req.getSectionId()));
+							
+							update.where(predics.toArray(new Predicate[0]) );
+					
+							em.createQuery(update).executeUpdate();
+						}
 					} else { //future or today
 						amendId = list.get(0).getAmendId() ;
 						entryDate = list.get(0).getEntryDate() ;
@@ -277,12 +281,19 @@ public class SurrenderMasterServiceImple implements SurrenderMasterService{
 				res.setResponse("Updated Successfully");
 				
 			}
+			
+			int sno = 0;
 			List<SurrenderFactorMaster> list1  = new ArrayList<SurrenderFactorMaster>();
 			
 			for ( SurrenderReq data :  req.getSurrenderReq() ) {
 				
+				sno = sno + 1;
 				// Save New Records
-				saveData = mapper.map(data, SurrenderFactorMaster.class ); 
+				saveData = mapper.map(data, SurrenderFactorMaster.class );
+				if(req.getSaveType().equalsIgnoreCase("Save"))
+					saveData.setStatus("P");
+					
+				saveData.setSno(sno);
 				saveData.setAmendId(amendId);
 				saveData.setCreatedBy(createdBy);
 				saveData.setEntryDate(entryDate);

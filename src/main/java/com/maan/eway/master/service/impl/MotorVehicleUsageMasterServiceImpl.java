@@ -818,6 +818,8 @@ public List<DropDownRes> getInduvidualVehicleUsageDropdown( UsageDropDownReq req
 		// Get Result
 		TypedQuery<MotorVehicleUsageMaster> result = em.createQuery(query);
 		list = result.getResultList();
+		
+		list = list.stream().filter(distinctByKey(o -> Arrays.asList(o.getVehicleUsageId()))).collect(Collectors.toList());
 		for (MotorVehicleUsageMaster data : list) {
 			// Response 
 			DropDownRes res = new DropDownRes();

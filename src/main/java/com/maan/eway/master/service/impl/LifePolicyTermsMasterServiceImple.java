@@ -99,15 +99,16 @@ public class LifePolicyTermsMasterServiceImple implements LifePolicyTermsMasterS
 				errorList.add(new Error("07","PolicyTerm", "Please Enter Policy Term within 100")); 
 				
 			} 
-//			else if (req.getPolicyTerm()!=null &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getProductId()) && StringUtils.isNotBlank(req.getSectionId())) {
-//				List<LifePolicytermsMaster> old = repo.findByPolicyTermsAndProductIdAndSectionIdAndCompanyId(
-//						Integer.valueOf(req.getPolicyTerm()), Integer.valueOf(req.getProductId()),Integer.valueOf(req.getSectionId()),
-//						req.getCompanyId());
-//				if (old.size()>0 ) {
-//					errorList.add(new Error("01", "Policy Term", "This Policy Term Already Exist"));
-//				}
-//			
-//			}	
+			
+			else if ( req.getType().equalsIgnoreCase("N")  &&  StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getProductId()) && StringUtils.isNotBlank(req.getSectionId())) {
+				List<LifePolicytermsMaster> old = repo.findByPolicyTermsAndProductIdAndSectionIdAndCompanyId(
+						Integer.valueOf(req.getPolicyTerm()), Integer.valueOf(req.getProductId()),Integer.valueOf(req.getSectionId()),
+						req.getCompanyId());
+				if (old.size()>0 ) {
+					errorList.add(new Error("01", "Policy Term", "This Policy Term Already Exist"));
+				}
+			
+			}	
 			if (StringUtils.isBlank(req.getPolicyTermDesc())) {
 				errorList.add(new Error("08", "PolicyTermDesc", "Please Enter Policy Term Desc"));
 			}else if (req.getPolicyTermDesc().length() > 100){
@@ -137,8 +138,9 @@ public class LifePolicyTermsMasterServiceImple implements LifePolicyTermsMasterS
 				errorList.add(new Error("09", "CreatedBy", "Please Enter CreatedBy"));
 			}else if (req.getCreatedBy().length() > 100){
 				errorList.add(new Error("09","CreatedBy", "Please Enter CreatedBy within 100 Characters")); 
-			}		
-		
+			}	
+			
+			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
