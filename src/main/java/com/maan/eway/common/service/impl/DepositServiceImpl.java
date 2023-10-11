@@ -84,15 +84,15 @@ public class DepositServiceImpl implements DepositService {
 				cbcMaster.setDepositUtilized(0.0);
 				cbcMaster.setEntryDate(new Date());
 			}
-			if("C".equalsIgnoreCase(req.getPayableyn())) {
+			//if("C".equalsIgnoreCase(req.getPayableyn())) {
 				cbcMaster.setDepositAmount(Double.valueOf(req.getDepositAmount()));
-			}else if("R".equalsIgnoreCase(req.getPayableyn())) {
-				cbcMaster.setRefundAmount(Double.valueOf(req.getRefundAmount()));
-			}
+			//}else if("R".equalsIgnoreCase(req.getPayableyn())) {
+			//	cbcMaster.setRefundAmount(Double.valueOf(req.getRefundAmount()));
+			// }
 			cbcMaster.setBrokerId(req.getBrokerId());
 			cbcMaster.setBrokerName(brokerName);
-
-			cbcMaster.setProductId(StringUtils.isBlank(req.getProductId())?"":req.getProductId());  
+			cbcMaster.setCustomerId(StringUtils.isBlank(req.getCustomerid())?"99999":req.getCustomerid());
+			//cbcMaster.setProductId(StringUtils.isBlank(req.getProductId())?"":req.getProductId());  
 			cbcMaster.setStatus("Y");  
 			
 			DepositDetail depDetail = new DepositDetail();
@@ -104,15 +104,15 @@ public class DepositServiceImpl implements DepositService {
 				depDetail.setEntryDate(new Date());  
 				depDetail.setQuoteNo(req.getQuoteNo());
 			}
-				depDetail.setProductId(req.getProductId());
+				//depDetail.setProductId(req.getProductId());
 				depDetail.setBrokerId(Long.valueOf(req.getBrokerId()));
-				 
-				depDetail.setPremiumAmount(Double.valueOf(req.getPremiumAmount()));  
-				depDetail.setBalanceAmount(Double.valueOf(req.getBalanceAmount()));
+				depDetail.setCustomerId(StringUtils.isBlank(req.getCustomerid())?"99999":req.getCustomerid());
+				//depDetail.setPremiumAmount(Double.valueOf(req.getPremiumAmount()));  
+				//depDetail.setBalanceAmount(Double.valueOf(req.getBalanceAmount()));
 				depDetail.setPremium(Double.valueOf(req.getPremium()));
-				depDetail.setPolicyInsuranceFee(Double.valueOf(req.getPolicyInsuranceFee()));
-				depDetail.setVatAmount(Double.valueOf(req.getVatAmount()));
-				depDetail.setChargableType(req.getChargableType());
+				//depDetail.setPolicyInsuranceFee(Double.valueOf(req.getPolicyInsuranceFee()));
+				//depDetail.setVatAmount(Double.valueOf(req.getVatAmount()));
+				//depDetail.setChargableType(req.getChargableType());
 				depDetail.setBrokerName(brokerName);
 				
 				if(depDetail.getDepositNo()==null) {
@@ -188,45 +188,45 @@ public class DepositServiceImpl implements DepositService {
 	
 	private List<Error> saveDepositeMasterVali(SaveDepositeMasterReq req) {
 		List<Error> error = new ArrayList<>();
-		if(StringUtils.isBlank(req.getBalanceAmount())) {
-			error.add(new Error("500","BalanceAmount","Please Enter BalanceAmount"));
-		}
-		if(StringUtils.isBlank(req.getPayableyn())) {
-			error.add(new Error("500","Payableyn","Please Enter Payableyn"));
-		}
+//		if(StringUtils.isBlank(req.getBalanceAmount())) {
+//			error.add(new Error("500","BalanceAmount","Please Enter BalanceAmount"));
+//		}
+//		if(StringUtils.isBlank(req.getPayableyn())) {
+//			error.add(new Error("500","Payableyn","Please Enter Payableyn"));
+//		}
 		if(StringUtils.isBlank(req.getDepositAmount())) {
 			error.add(new Error("500","DepositAmount","Please Enter DepositAmount"));
 		}
-		if(StringUtils.isBlank(req.getRefundAmount())) {
-			error.add(new Error("500","RefundAmount","Please Enter RefundAmount"));
-		}
+//		if(StringUtils.isBlank(req.getRefundAmount())) {
+//			error.add(new Error("500","RefundAmount","Please Enter RefundAmount"));
+//		}
 		if(StringUtils.isBlank(req.getQuoteNo())) {
 			error.add(new Error("500","QuoteNo","Please Enter QuoteNo"));
 		}
-		if(StringUtils.isBlank(req.getProductId())) {
-			error.add(new Error("500","ProductId","Please Enter ProductId"));
-		}
+//		if(StringUtils.isBlank(req.getProductId())) {
+//			error.add(new Error("500","ProductId","Please Enter ProductId"));
+//		}
 		if(StringUtils.isBlank(req.getBrokerId())) {
 			error.add(new Error("500","BrokerId","Please Enter BrokerId"));
 		}
 		if(StringUtils.isBlank(req.getCustomerid())) {
 			error.add(new Error("500","Customerid","Please Enter CustomerId"));
 		}
-		if(StringUtils.isBlank(req.getPremiumAmount())) {
-			error.add(new Error("500","PremiumAmount","Please Enter PremiumAmount"));
-		}
+//		if(StringUtils.isBlank(req.getPremiumAmount())) {
+//			error.add(new Error("500","PremiumAmount","Please Enter PremiumAmount"));
+//		}
 		if(StringUtils.isBlank(req.getPremium())) {
 			error.add(new Error("500","Premium","Please Enter Premium"));
 		}
-		if(StringUtils.isBlank(req.getPolicyInsuranceFee())) {
-			error.add(new Error("500","PolicyInsuranceFee","Please Enter PolicyInsuranceFee"));
-		}
-		if(StringUtils.isBlank(req.getVatAmount())) {
-			error.add(new Error("500","VatAmount","Please Enter VatAmount"));
-		}
-		if(StringUtils.isBlank(req.getChargableType())) {
-			error.add(new Error("500","ChargableType","Please Enter ChargableType"));
-		}
+//		if(StringUtils.isBlank(req.getPolicyInsuranceFee())) {
+//			error.add(new Error("500","PolicyInsuranceFee","Please Enter PolicyInsuranceFee"));
+//		}
+//		if(StringUtils.isBlank(req.getVatAmount())) {
+//			error.add(new Error("500","VatAmount","Please Enter VatAmount"));
+//		}
+//		if(StringUtils.isBlank(req.getChargableType())) {
+//			error.add(new Error("500","ChargableType","Please Enter ChargableType"));
+//		}
 		return error;
 	}
 

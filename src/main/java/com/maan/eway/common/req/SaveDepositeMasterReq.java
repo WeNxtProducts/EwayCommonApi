@@ -6,24 +6,21 @@ import lombok.Data;
 
 @Data
 public class SaveDepositeMasterReq {
-
-	@JsonProperty("Originalpolicyno")
-	private String originalpolicyno;
 	
-	@JsonProperty("Payableyn")
-	private String payableyn;
+//	@JsonProperty("Payableyn")
+//	private String payableyn;
 	
 	@JsonProperty("DepositAmount")
 	private String depositAmount;
 	
-	@JsonProperty("RefundAmount")
-	private String refundAmount;
+//	@JsonProperty("RefundAmount")
+//	private String refundAmount;
 	
 	@JsonProperty("QuoteNo")
 	private String quoteNo;
 	
-	@JsonProperty("ProductId")
-	private String productId;
+//	@JsonProperty("ProductId")
+//	private String productId;
 	
 	@JsonProperty("BrokerId")
 	private String brokerId;
@@ -31,23 +28,23 @@ public class SaveDepositeMasterReq {
 	@JsonProperty("Customerid")
 	private String customerid;
 	
-	@JsonProperty("PremiumAmount")
-	private String premiumAmount;
-	
-	@JsonProperty("BalanceAmount")
-	private String balanceAmount;
+//	@JsonProperty("PremiumAmount")
+//	private String premiumAmount;
+//	
+//	@JsonProperty("BalanceAmount")
+//	private String balanceAmount;
 	
 	@JsonProperty("Premium")
 	private String premium;
 	
-	@JsonProperty("PolicyInsuranceFee")
-	private String policyInsuranceFee;
-	
-	@JsonProperty("VatAmount")
-	private String vatAmount;
-	
-	@JsonProperty("ChargableType")
-	private String chargableType;
+//	@JsonProperty("PolicyInsuranceFee")
+//	private String policyInsuranceFee;
+//	
+//	@JsonProperty("VatAmount")
+//	private String vatAmount;
+//	
+//	@JsonProperty("ChargableType")
+//	private String chargableType;
 	
 	@JsonProperty("DepositNo")
 	private String depositNo;

@@ -70,4 +70,7 @@ public class DepositcbcMaster implements Serializable{
 	
 	@Column(name="ENTRY_DATE")
 	private Date entryDate;
+	
+	@Column(name="CUSTOMER_ID")
+	private String customerId;
 }

@@ -87,5 +87,8 @@ public class DepositDetail implements Serializable  {
 	
 	@Column(name = "DEPOSIT_TYPE")
 	private String depositType;
+	
+	@Column(name="CUSTOMER_ID")
+	private String customerId;
 
 }
