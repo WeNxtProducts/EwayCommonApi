@@ -2,7 +2,7 @@
 <!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="EwayTaxInvoice" pageWidth="595" pageHeight="725" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="68d69835-f309-4f87-b998-2c406bffddf7">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwayTaxInvoice"/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
@@ -39,226 +39,111 @@
 			<rightPen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
-	<subDataset name="Dataset1" uuid="b914f5dd-2149-4288-b612-424b5bf37dc1">
-		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
-		<parameter name="pvQuoteNo" class="java.lang.String"/>
-		<queryString language="SQL">
-			<![CDATA[SELECT REGISTRATION_NUMBER,motor_category_desc FROM motor_data_details WHERE Quote_no =  $P{pvQuoteNo}]]>
+	<subDataset name="Table Dataset 1" uuid="04200da1-1f0e-4c21-a344-605326356ef3">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwayTaxInvoice"/>
+		<queryString language="json">
+			<![CDATA[dataset1List]]>
 		</queryString>
-		<field name="REGISTRATION_NUMBER" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="REGISTRATION_NUMBER"/>
-			<property name="com.jaspersoft.studio.field.label" value="REGISTRATION_NUMBER"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+		<field name="registrationNumber" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="registrationNumber"/>
+			<fieldDescription><![CDATA[registrationNumber]]></fieldDescription>
 		</field>
-		<field name="motor_category_desc" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="MOTOR_CATEGORY_DESC"/>
-			<property name="com.jaspersoft.studio.field.label" value="motor_category_desc"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+		<field name="motorCategoryDesc" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="motorCategoryDesc"/>
+			<fieldDescription><![CDATA[motorCategoryDesc]]></fieldDescription>
 		</field>
 	</subDataset>
 	<parameter name="pvImagePath" class="java.lang.String"/>
-	<parameter name="pvPolicyNo" class="java.lang.String"/>
-	<queryString language="SQL">
-		<![CDATA[SELECT DISTINCT
-LUI.USER_NAME AS PRINTED_BY,
-HPM.APPROVED_BY AS APPROVED_BY,
-LUI.USER_NAME,
-HPM.AGENCY_CODE,
-PIF.TITLE_DESC ,
-PIF.CLIENT_NAME,
-PIF.ADDRESS_1,
-PIF.PIN_CODE AS PO_BOX,
-PIF.STATE_NAME AS REGION_NAME,
-PIF.CITY_NAME AS DISTRICT_NAME,
-(SELECT COUNTRY_NAME FROM EWAY_COUNTRY_MASTER WHERE COUNTRY_ID=PIF.NATIONALITY AND COMPANY_ID=HPM.COMPANY_ID AND STATUS='Y') AS COUNTRY_NAME,
-PIF.VR_TIN_NO,
-(CASE WHEN PIF.ID_TYPE='6' THEN PIF.ID_NUMBER END) AS CUSTOMER_TIN,
-HPM.POLICY_NO,
-HPM.QUOTE_NO,
-HPM.INCEPTION_DATE,
-HPM.EXPIRY_DATE,
-HPM.CURRENCY ,
-HPM.DEBIT_NOTE_NO,
-HPM.QUOTE_NO,
- (SELECT VRN_NUMBER FROM eway_insurance_company_master ei WHERE ei.COMPANY_ID = HPM.COMPANY_ID AND (SELECT CURRENT_DATE FROM DUAL) BETWEEN ei.Effective_Date_Start  AND ei.Effective_Date_End) AS VRN_NUMBER,
- (SELECT TIN_NUMBER FROM eway_insurance_company_master ei WHERE ei.COMPANY_ID = HPM.COMPANY_ID AND (SELECT CURRENT_DATE FROM DUAL) BETWEEN ei.Effective_Date_Start  AND ei.Effective_Date_End) AS TIN_NUMBER,
- (SELECT USER_NAME FROM LOGIN_USER_INFO WHERE LOGIN_ID = HPM.LOGIN_ID) AS BROKER_NAME,
- CASE WHEN HPM.CURRENCY IN (
-    SELECT 
-      CURRENCY_ID 
-    FROM 
-      EWAY_INSURANCE_COMPANY_MASTER 
-    WHERE 
-      HPM.COMPANY_ID = COMPANY_ID
-  ) THEN ROUND(HPM.PREMIUM_LC,2) ELSE ROUND(HPM.PREMIUM_FC,2) END AS PERMIUM, 
-   CASE WHEN HPM.CURRENCY IN (
-    SELECT 
-      CURRENCY_ID 
-    FROM 
-      EWAY_INSURANCE_COMPANY_MASTER 
-    WHERE 
-      HPM.COMPANY_ID = COMPANY_ID
-  ) THEN ROUND(HPM.VAT_PREMIUM_LC,2) ELSE ROUND(HPM.VAT_PREMIUM_FC,2) END AS VAT_PERMIUM, 
-     CASE WHEN HPM.CURRENCY IN (
-    SELECT 
-      CURRENCY_ID 
-    FROM 
-      EWAY_INSURANCE_COMPANY_MASTER 
-    WHERE 
-      HPM.COMPANY_ID = COMPANY_ID
-  ) THEN ROUND(HPM.OVERALL_PREMIUM_LC,2) ELSE ROUND(HPM.OVERALL_PREMIUM_FC,2) END AS OVERALL_PREMIUM, 
-  HPM.VAT_PERCENT,
-  PD.BANK_NAME,
-  PD.ACCOUNT_NUMBER,
-    (SELECT SUM(SUM_INSURED) FROM POLICY_COVER_DATA WHERE quote_no=HPM.QUOTE_NO
-AND disc_load_id='0' AND tax_id='0' AND dependent_cover_yn='N')   
- AS TOTAL_SUM_INSURED
-FROM HOME_POSITION_MASTER HPM INNER JOIN PERSONAL_INFO PIF ON HPM.CUSTOMER_ID=PIF.CUSTOMER_ID
-LEFT JOIN PAYMENT_DETAIL  PD ON PD.QUOTE_NO = HPM.QUOTE_NO
- LEFT JOIN LOGIN_USER_INFO LUI ON HPM.LOGIN_ID=LUI.LOGIN_ID
-WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
+	<queryString language="JSON">
+		<![CDATA[]]>
 	</queryString>
-	<field name="PRINTED_BY" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="USER_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="PRINTED_BY"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="login_user_info"/>
+	<field name="userName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="userName"/>
+		<fieldDescription><![CDATA[userName]]></fieldDescription>
 	</field>
-	<field name="APPROVED_BY" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="APPROVED_BY"/>
-		<property name="com.jaspersoft.studio.field.label" value="APPROVED_BY"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="approvedBy" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="approvedBy"/>
+		<fieldDescription><![CDATA[approvedBy]]></fieldDescription>
 	</field>
-	<field name="USER_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="USER_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="USER_NAME"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="login_user_info"/>
+	<field name="agencyCode" class="java.lang.Integer">
+		<property name="net.sf.jasperreports.json.field.expression" value="agencyCode"/>
+		<fieldDescription><![CDATA[agencyCode]]></fieldDescription>
 	</field>
-	<field name="AGENCY_CODE" class="java.lang.Integer">
-		<property name="com.jaspersoft.studio.field.name" value="AGENCY_CODE"/>
-		<property name="com.jaspersoft.studio.field.label" value="AGENCY_CODE"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="customerName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="customerName"/>
+		<fieldDescription><![CDATA[customerName]]></fieldDescription>
 	</field>
-	<field name="TITLE_DESC" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="TITLE_DESC"/>
-		<property name="com.jaspersoft.studio.field.label" value="TITLE_DESC"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	<field name="address" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="address"/>
+		<fieldDescription><![CDATA[address]]></fieldDescription>
 	</field>
-	<field name="CLIENT_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="CLIENT_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="CLIENT_NAME"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	<field name="vrTinNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="vrTinNo"/>
+		<fieldDescription><![CDATA[vrTinNo]]></fieldDescription>
 	</field>
-	<field name="ADDRESS_1" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ADDRESS_1"/>
-		<property name="com.jaspersoft.studio.field.label" value="ADDRESS_1"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	<field name="customerTin" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="customerTin"/>
+		<fieldDescription><![CDATA[customerTin]]></fieldDescription>
 	</field>
-	<field name="PO_BOX" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="PIN_CODE"/>
-		<property name="com.jaspersoft.studio.field.label" value="PO_BOX"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	<field name="policyNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="policyNo"/>
+		<fieldDescription><![CDATA[policyNo]]></fieldDescription>
 	</field>
-	<field name="REGION_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="STATE_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="REGION_NAME"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	<field name="inceptionDate" class="java.sql.Timestamp">
+		<property name="net.sf.jasperreports.json.field.expression" value="inceptionDate"/>
+		<fieldDescription><![CDATA[inceptionDate]]></fieldDescription>
 	</field>
-	<field name="DISTRICT_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="CITY_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="DISTRICT_NAME"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	<field name="quoteNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="quoteNo"/>
+		<fieldDescription><![CDATA[quoteNo]]></fieldDescription>
 	</field>
-	<field name="COUNTRY_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="COUNTRY_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="COUNTRY_NAME"/>
+	<field name="expiryDate" class="java.sql.Timestamp">
+		<property name="net.sf.jasperreports.json.field.expression" value="expiryDate"/>
+		<fieldDescription><![CDATA[expiryDate]]></fieldDescription>
 	</field>
-	<field name="VR_TIN_NO" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="VR_TIN_NO"/>
-		<property name="com.jaspersoft.studio.field.label" value="VR_TIN_NO"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	<field name="currency" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="currency"/>
+		<fieldDescription><![CDATA[currency]]></fieldDescription>
 	</field>
-	<field name="CUSTOMER_TIN" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="CUSTOMER_TIN"/>
-		<property name="com.jaspersoft.studio.field.label" value="CUSTOMER_TIN"/>
+	<field name="debitNoteNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="debitNoteNo"/>
+		<fieldDescription><![CDATA[debitNoteNo]]></fieldDescription>
 	</field>
-	<field name="POLICY_NO" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="POLICY_NO"/>
-		<property name="com.jaspersoft.studio.field.label" value="POLICY_NO"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="vrnNumber" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="vrnNumber"/>
+		<fieldDescription><![CDATA[vrnNumber]]></fieldDescription>
 	</field>
-	<field name="QUOTE_NO" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="QUOTE_NO"/>
-		<property name="com.jaspersoft.studio.field.label" value="QUOTE_NO"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="tinNumber" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="tinNumber"/>
+		<fieldDescription><![CDATA[tinNumber]]></fieldDescription>
 	</field>
-	<field name="INCEPTION_DATE" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="INCEPTION_DATE"/>
-		<property name="com.jaspersoft.studio.field.label" value="INCEPTION_DATE"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="brokerName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="brokerName"/>
+		<fieldDescription><![CDATA[brokerName]]></fieldDescription>
 	</field>
-	<field name="EXPIRY_DATE" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="EXPIRY_DATE"/>
-		<property name="com.jaspersoft.studio.field.label" value="EXPIRY_DATE"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="premium" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="premium"/>
+		<fieldDescription><![CDATA[premium]]></fieldDescription>
 	</field>
-	<field name="CURRENCY" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="CURRENCY"/>
-		<property name="com.jaspersoft.studio.field.label" value="CURRENCY"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="vatPremium" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="vatPremium"/>
+		<fieldDescription><![CDATA[vatPremium]]></fieldDescription>
 	</field>
-	<field name="DEBIT_NOTE_NO" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="DEBIT_NOTE_NO"/>
-		<property name="com.jaspersoft.studio.field.label" value="DEBIT_NOTE_NO"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="overAllPremium" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="overAllPremium"/>
+		<fieldDescription><![CDATA[overAllPremium]]></fieldDescription>
 	</field>
-	<field name="COLUMN_20" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="QUOTE_NO"/>
-		<property name="com.jaspersoft.studio.field.label" value="QUOTE_NO"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="totSumInsured" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="totSumInsured"/>
+		<fieldDescription><![CDATA[totSumInsured]]></fieldDescription>
 	</field>
-	<field name="VRN_NUMBER" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="VRN_NUMBER"/>
-		<property name="com.jaspersoft.studio.field.label" value="VRN_NUMBER"/>
+	<field name="vatPercent" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="vatPercent"/>
+		<fieldDescription><![CDATA[vatPercent]]></fieldDescription>
 	</field>
-	<field name="TIN_NUMBER" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="TIN_NUMBER"/>
-		<property name="com.jaspersoft.studio.field.label" value="TIN_NUMBER"/>
-	</field>
-	<field name="BROKER_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="BROKER_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="BROKER_NAME"/>
-	</field>
-	<field name="PERMIUM" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="PERMIUM"/>
-		<property name="com.jaspersoft.studio.field.label" value="PERMIUM"/>
-	</field>
-	<field name="VAT_PERMIUM" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="VAT_PERMIUM"/>
-		<property name="com.jaspersoft.studio.field.label" value="VAT_PERMIUM"/>
-	</field>
-	<field name="OVERALL_PREMIUM" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="OVERALL_PREMIUM"/>
-		<property name="com.jaspersoft.studio.field.label" value="OVERALL_PREMIUM"/>
-	</field>
-	<field name="VAT_PERCENT" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="VAT_PERCENT"/>
-		<property name="com.jaspersoft.studio.field.label" value="VAT_PERCENT"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
-	</field>
-	<field name="BANK_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="BANK_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="BANK_NAME"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="payment_detail"/>
-	</field>
-	<field name="ACCOUNT_NUMBER" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ACCOUNT_NUMBER"/>
-		<property name="com.jaspersoft.studio.field.label" value="ACCOUNT_NUMBER"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="payment_detail"/>
-	</field>
-	<field name="TOTAL_SUM_INSURED" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="TOTAL_SUM_INSURED"/>
-		<property name="com.jaspersoft.studio.field.label" value="TOTAL_SUM_INSURED"/>
+	<field name="dataset1List" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="dataset1List"/>
+		<fieldDescription><![CDATA[dataset1List]]></fieldDescription>
 	</field>
 	<background>
 		<band height="685" splitType="Stretch">
@@ -305,7 +190,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textFieldExpression><![CDATA["TAX INVOICE"]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="40">
+		<band height="50">
 			<textField>
 				<reportElement x="15" y="0" width="15" height="15" uuid="0fe1ac8e-3ede-44f6-8265-481c0c486749">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -326,17 +211,17 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{TITLE_DESC}+"."+$F{CLIENT_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{customerName}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="30" y="15" width="234" height="25" uuid="f7927e65-f0b3-49af-8c5e-fc989a4c7c2d">
+			<textField textAdjust="StretchHeight">
+				<reportElement x="39" y="30" width="290" height="20" uuid="f7927e65-f0b3-49af-8c5e-fc989a4c7c2d">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement>
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ADDRESS_1}+", "+$F{PO_BOX}+", "+$F{REGION_NAME}+", "+$F{DISTRICT_NAME}+", "+$F{COUNTRY_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{address}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="336" y="10" width="64" height="15" uuid="cc8a1628-a72c-4ab1-84f4-8ce66a4525ce">
@@ -357,7 +242,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{DEBIT_NOTE_NO}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{debitNoteNo}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="375" y="25" width="25" height="15" uuid="eb32fc5a-780c-4a9b-babc-769b59606087">
@@ -378,7 +263,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{INCEPTION_DATE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{inceptionDate}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="400" y="25" width="10" height="15" uuid="737433ee-9cfb-43cc-a1da-34afd48175b3">
@@ -397,6 +282,17 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 					<font fontName="Arial" size="8" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[":"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="15" y="15" width="65" height="15" uuid="8fbbd918-ff31-4277-9484-55fae9b6a796">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box leftPadding="0"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Postal Address :"]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="57">
@@ -431,7 +327,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{CUSTOMER_TIN}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{customerTin}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="80" y="42" width="200" height="15" uuid="bf0ce5b4-8949-47aa-9a0a-04eef4702d45"/>
@@ -439,7 +335,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{BROKER_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{brokerName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="197" y="20" width="65" height="15" uuid="a72d1d96-ab31-4fd4-8df7-05b4884eceef">
@@ -461,7 +357,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{VR_TIN_NO}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{vrTinNo}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="376" y="9" width="24" height="15" uuid="0363b37f-e62d-49df-8605-69d7e7d78696">
@@ -483,7 +379,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{VRN_NUMBER}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{vrnNumber}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="400" y="9" width="10" height="15" uuid="4bb28a0f-7caa-41ba-9a73-021e17f83c88">
@@ -523,7 +419,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{TIN_NUMBER}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{tinNumber}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="320" y="42" width="80" height="15" uuid="a62de6a8-ede8-4139-b8ab-62bdd3599932">
@@ -621,7 +517,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{POLICY_NO}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{policyNo}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
 				<reportElement x="95" y="15" width="55" height="15" uuid="4f9de3a2-1664-4fe6-8ada-d06985c98fc6">
@@ -632,7 +528,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{INCEPTION_DATE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{inceptionDate}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="310" y="0" width="82" height="15" uuid="5397d90d-287e-4a04-a9d4-eff676be539f">
@@ -661,7 +557,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{CURRENCY}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{currency}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00#;#,##0.00#-" isBlankWhenNull="true">
 				<reportElement x="420" y="0" width="70" height="15" uuid="b6e3c3b6-428b-478a-9582-5e5ed4172e43"/>
@@ -669,7 +565,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{TOTAL_SUM_INSURED}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{totSumInsured}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
 				<reportElement x="392" y="15" width="70" height="15" uuid="96f60020-d324-49f4-834b-fdd45248a14e"/>
@@ -677,7 +573,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{EXPIRY_DATE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{expiryDate}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="1">
@@ -716,6 +612,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 			</textField>
 		</band>
 		<band height="103">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<textField>
 				<reportElement x="442" y="0" width="45" height="15" uuid="692cb576-a2d3-44ef-a329-505814aecab1">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -734,7 +631,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{CURRENCY}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{currency}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00#;#,##0.00#-" isBlankWhenNull="true">
 				<reportElement x="442" y="15" width="86" height="15" uuid="a0eb2977-b5be-4472-80b4-7cc21add73fa">
@@ -746,7 +643,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{PERMIUM}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{premium}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00#;#,##0.00#-" isBlankWhenNull="true">
 				<reportElement x="442" y="30" width="86" height="15" uuid="ba2500d8-30bf-4b63-aa7b-2dd8eed7e261">
@@ -758,7 +655,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{PERMIUM}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{premium}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00#;#,##0.00#-" isBlankWhenNull="true">
 				<reportElement x="442" y="45" width="86" height="20" uuid="543d91a2-bbb5-416a-9928-882230e0801e">
@@ -770,7 +667,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{VAT_PERMIUM}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{vatPremium}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00#;#,##0.00#-" isBlankWhenNull="true">
 				<reportElement x="442" y="65" width="86" height="15" uuid="f6a72648-cf5d-4949-8ad5-b76a3d30a35e">
@@ -782,7 +679,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{OVERALL_PREMIUM}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{overAllPremium}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="374" y="30" width="60" height="15" uuid="aaee1e7c-6aef-4bd3-907f-87fb868cdbf3"/>
@@ -798,7 +695,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Vat Output (Premium) - "+$F{VAT_PERCENT}+"%"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Vat Output (Premium) - "+$F{vatPercent}+"%"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="374" y="65" width="60" height="15" uuid="41d174b8-63b2-48f5-9dd0-460af41f1fb9"/>
@@ -841,72 +738,58 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				</graphicElement>
 			</line>
 			<componentElement>
-				<reportElement x="15" y="10" width="250" height="30" uuid="b059fd90-d8c9-47ae-9525-08368ca6749b">
+				<reportElement x="15" y="10" width="200" height="30" uuid="50d82287-78f5-4a03-b0c3-e40147cde8bf">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
 					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="Dataset1" uuid="febd83e5-683c-4a42-a34d-d6109c272d47">
-						<datasetParameter name="pvQuoteNo">
-							<datasetParameterExpression><![CDATA[$F{QUOTE_NO}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<datasetRun subDataset="Table Dataset 1" uuid="9e3a8099-4bef-40b4-811f-93bb5bb64a34">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("dataset1List")]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="120" uuid="f261a79d-6b17-42cd-b8d1-0971340d1953">
+					<jr:column width="100" uuid="b66654d0-5df9-4550-8bd3-33dfd0c1cfa6">
 						<jr:columnHeader style="Table_TD" height="15">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<box>
-								<pen lineWidth="0.5"/>
-							</box>
 							<textField>
-								<reportElement x="0" y="0" width="120" height="15" uuid="748879a3-e416-4fe5-bbdd-655453893d53"/>
+								<reportElement x="0" y="0" width="100" height="15" uuid="d04c447f-24b2-44d4-9444-4738eef94507"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8" isBold="true"/>
+									<font fontName="Arial" size="9" isBold="true"/>
 								</textElement>
 								<textFieldExpression><![CDATA["Registration Number"]]></textFieldExpression>
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="15">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<box>
-								<pen lineWidth="0.5"/>
-							</box>
 							<textField>
-								<reportElement x="0" y="0" width="120" height="15" uuid="4cae0c4b-70f8-41f0-a704-42060114a5c3"/>
-								<box leftPadding="0" rightPadding="2"/>
+								<reportElement x="0" y="0" width="100" height="15" uuid="f386e0ef-a9c5-4698-88b4-64595fa2bf4c"/>
+								<box rightPadding="2"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{REGISTRATION_NUMBER}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{registrationNumber}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="130" uuid="2893d69c-03bf-463b-ad85-91f8bc5264d2">
+					<jr:column width="100" uuid="9398738a-d495-4d0f-9005-c672c49018dc">
 						<jr:columnHeader style="Table_TD" height="15">
-							<box>
-								<pen lineWidth="0.5"/>
-							</box>
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							<textField>
-								<reportElement x="0" y="0" width="130" height="15" uuid="ff9e4a16-6fcc-4ed4-9597-939a284c5c60"/>
+								<reportElement x="0" y="0" width="100" height="15" uuid="a842f4a4-0022-42b8-910d-bcd7047d493e"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8" isBold="true"/>
+									<font fontName="Arial" size="9" isBold="true"/>
 								</textElement>
 								<textFieldExpression><![CDATA["Description"]]></textFieldExpression>
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="15">
-							<box>
-								<pen lineWidth="0.5"/>
-							</box>
 							<textField>
-								<reportElement x="0" y="0" width="130" height="15" uuid="11eae591-c16f-4041-98ae-12045613897b"/>
+								<reportElement x="0" y="0" width="100" height="15" uuid="ffeeeaa5-ab8c-4228-a9b2-79ba684cd4c4"/>
 								<box leftPadding="2"/>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{motor_category_desc}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{motorCategoryDesc}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -965,7 +848,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{PERMIUM}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{premium}]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="15" y="46" width="165" height="1" uuid="a1f67e31-98c0-4e30-9a8c-f1c67022143d">
@@ -989,7 +872,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{VAT_PERMIUM}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{vatPremium}]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="15" y="59" width="165" height="1" uuid="31d55b49-6a03-4b90-9942-a5ed212aec2e">
@@ -1012,7 +895,7 @@ WHERE HPM.POLICY_NO=  $P{pvPolicyNo} ]]>
 				<reportElement x="462" y="40" width="58" height="57" uuid="708489ad-0e4a-442a-b33b-aedb9fc2ea71"/>
 				<imageExpression><![CDATA[com.google.zxing.client.j2se.MatrixToImageWriter.toBufferedImage(
 new com.google.zxing.qrcode.QRCodeWriter().encode(
-"https://verify.tra.go.tz/"+$P{pvPolicyNo}+"_165322",
+"https://verify.tra.go.tz/"+"99999"+"_165322",
 com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 			</image>
 			<textField>
@@ -1064,7 +947,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{CURRENCY}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{currency}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Transparent" x="340" y="0" width="51" height="15" forecolor="#808080" backcolor="#FFFFFF" uuid="e7e3abea-11d3-4a07-87cd-26f241eeb10f">
@@ -1086,7 +969,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{PRINTED_BY}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{userName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Transparent" x="462" y="0" width="78" height="15" forecolor="#808080" backcolor="#FFFFFF" uuid="61e8cd64-522d-4c95-a31a-f2cbd2f215f1">
@@ -1246,7 +1129,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textElement verticalAlignment="Middle" markup="none">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{APPROVED_BY}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{approvedBy}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement mode="Transparent" x="345" y="108" width="59" height="15" forecolor="#808080" backcolor="#FFFFFF" uuid="a8541bb3-33df-4ffb-9844-804160db7230">
@@ -1257,7 +1140,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[(($F{APPROVED_BY})==null)?"":"Approved By :"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[(($F{approvedBy})==null)?"":"Approved By :"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="203" y="123" width="148" height="16" uuid="abef5c4b-860a-4079-b92d-b802f51c08ce">
