@@ -473,6 +473,7 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 	        saveData.setVehFueltype(req.getVehFueltype()==null?0:Integer.valueOf(req.getVehFueltype()));
 	        saveData.setRemarks(req.getRemarks());
 	        saveData.setBaserate(req.getBaseRate()==null?0:Integer.valueOf(req.getBaseRate()));
+	        saveData.setCoreBOdyId(req.getCoreBodyId()==null?"":req.getCoreBodyId());
 	        repo.saveAndFlush(saveData);
 			log.info("Saved Details is --> " + json.toJson(saveData));
 			
@@ -534,23 +535,24 @@ public class MotorMakeModelMasterServiceImpl implements MotorMakeModelMasterServ
 				// Response
 			// Map
 			res = mapper.map(list.get(0) , MotorMakeModelGetRes.class);
-			res.setRegulatoryCode(list.get(0).getRegulatoryCode());
-			res.setBatchId(list.get(0).getBatchId().toString());
-			res.setOtherBodyId1(list.get(0).getOthrBodyId1());
-			res.setOtherBodyId2(list.get(0).getOthrBodyId2());
-			res.setOtherMakeId1(list.get(0).getOthrMakeId1());
-			res.setOtherMakeId2(list.get(0).getOthrMakeId2());
-			res.setOtherModelId1(list.get(0).getOthrModelId1());
-			res.setOtherModelId2(list.get(0).getOthrModelId2());
-			res.setPrimaCode(list.get(0).getPremiaCode().toString());
-			res.setRefNo(list.get(0).getRefNo().toString());
-			res.setTplRate(list.get(0).getTplrate().toString());
-			res.setVehCc(list.get(0).getVehCc().toString());
-			res.setVehFueltype(list.get(0).getVehFueltype().toString());
-			res.setBaseRate(list.get(0).getBaserate().toString());
-			res.setNetRate(list.get(0).getNetrate().toString());		
-			res.setStatus(list.get(0).getStatus());
-			res.setRemarks(list.get(0).getRemarks());		
+			res.setRegulatoryCode(list.get(0).getRegulatoryCode()==null?"":list.get(0).getRegulatoryCode());
+			res.setBatchId(list.get(0).getBatchId()==null?"":list.get(0).getBatchId().toString());
+			res.setOtherBodyId1(list.get(0).getOthrBodyId1()==null?"":list.get(0).getOthrBodyId1());
+			res.setOtherBodyId2(list.get(0).getOthrBodyId2()==null?"":list.get(0).getOthrBodyId2());
+			res.setOtherMakeId1(list.get(0).getOthrMakeId1()==null?"":list.get(0).getOthrMakeId1());
+			res.setOtherMakeId2(list.get(0).getOthrMakeId2()==null?"":list.get(0).getOthrMakeId2());
+			res.setOtherModelId1(list.get(0).getOthrModelId1()==null?"":list.get(0).getOthrModelId1());
+			res.setOtherModelId2(list.get(0).getOthrModelId2()==null?"":list.get(0).getOthrModelId2());
+			res.setPrimaCode(list.get(0).getPremiaCode()==null?"":list.get(0).getPremiaCode().toString());
+			res.setRefNo(list.get(0).getRefNo()==null?"":list.get(0).getRefNo().toString());
+			res.setTplRate(list.get(0).getTplrate()==null?"":list.get(0).getTplrate().toString());
+			res.setVehCc(list.get(0).getVehCc()==null?"":list.get(0).getVehCc().toString());
+			res.setVehFueltype(list.get(0).getVehFueltype()==null?"":list.get(0).getVehFueltype().toString());
+			res.setBaseRate(list.get(0).getBaserate()==null?"":list.get(0).getBaserate().toString());
+			res.setNetRate(list.get(0).getNetrate()==null?"":list.get(0).getNetrate().toString());
+			res.setStatus(list.get(0).getStatus()==null?"":list.get(0).getStatus());
+			res.setRemarks(list.get(0).getRemarks()==null?"":list.get(0).getRemarks());	
+			res.setCoreBodyId(list.get(0).getCoreBOdyId()==null?"":list.get(0).getCoreBOdyId());	
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.info(e.getMessage());
