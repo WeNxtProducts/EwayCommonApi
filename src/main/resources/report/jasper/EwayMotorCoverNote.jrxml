@@ -1223,13 +1223,13 @@
 				<textFieldExpression><![CDATA["Date of Issue :"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="113" y="10" width="108" height="15" uuid="55765d3f-7aad-4bfa-a24c-8de89a8c4e25">
+				<reportElement x="113" y="10" width="219" height="15" uuid="55765d3f-7aad-4bfa-a24c-8de89a8c4e25">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{dateofIssue})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy hh:mm:ss:SSS").format($F{dateofIssue})]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
