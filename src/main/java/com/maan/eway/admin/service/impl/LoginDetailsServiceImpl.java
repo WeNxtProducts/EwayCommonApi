@@ -10,6 +10,7 @@ import static java.util.stream.Collectors.toCollection;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
@@ -1206,6 +1207,8 @@ this.repository = repo;
 		BrokerDatailsGetRes res = new BrokerDatailsGetRes();
 		DozerBeanMapper dozerMapper = new  DozerBeanMapper();
 		try {
+			String pattern = "#####0.00";
+		 	DecimalFormat df = new DecimalFormat(pattern);
 			// LoginData
 			LoginMaster loginData  = loginRepo.findByLoginId(req.getLoginId());
 			BrokerLoginDetailsGetRes loginInfo = new BrokerLoginDetailsGetRes();  
@@ -1215,7 +1218,7 @@ this.repository = repo;
 			LoginUserInfo userData = loginUserRepo.findByLoginId(req.getLoginId());	
 			BrokerPersonalDetailsGetRes personalInfo = new BrokerPersonalDetailsGetRes();
 			personalInfo = dozerMapper.map(userData, BrokerPersonalDetailsGetRes.class);
-			
+			personalInfo.setCreditLimit(df.format(userData.getCreditLimit()).toString());
 			
 			
 			// Response
