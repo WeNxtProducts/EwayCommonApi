@@ -47,6 +47,7 @@ import com.maan.eway.common.res.CommonRes;
 import com.maan.eway.jasper.req.JasperDocumentReq;
 import com.maan.eway.jasper.req.JasperReportDocReq;
 import com.maan.eway.jasper.req.PremiumReportReq;
+import com.maan.eway.jasper.res.CreditNoteRes;
 import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.jasper.res.MotorCoverNoteRes;
 import com.maan.eway.jasper.res.PremiumReportRes;
@@ -487,15 +488,26 @@ public class JasperServiceImpl implements JasperService {
 		HomePositionMaster homeData = homeRepo.findByQuoteNo(quoteNo);
 		try {
 			if(StringUtils.isNotBlank(homeData.getPolicyNo())) {
-				String filepath = config.getPolicyPath()+"pdf";
-				String getpdfFileOutFilePath = filepath+"/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+".pdf";
 				Map<String,Object> input = new HashMap<String,Object>();
 				input.put("pvImagePath", config.getImagePath().substring(1, config.getImagePath().length()-0));
-				input.put("pvPolicyNo", homeData.getPolicyNo());
-				/*String obj = config.getJasperFilePath()+"report/jasper/EwayCreditNote.jrxml";
-				String path = JasperCompileManager.compileReportToFile(obj);
-				System.out.println("Jasper compileToReport Path"+path);*/
-				res = getJasperPdfFile("/report/jasper/EwayCreditNote.jrxml", getpdfFileOutFilePath, input);
+				CreditNoteRes creditRes = jasperCustomeImple.getCreditNoteRes(homeData.getPolicyNo());
+				String JsonString = gson.toJson(creditRes);
+				try {
+					FileWriter filewriter = new FileWriter(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- CreditNote.json",false);
+					filewriter.write(JsonString);
+					filewriter.close();
+					File file = new File(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- CreditNote.json");
+					JsonDataSource ds = new JsonDataSource(file);
+					InputStream inputstream = this.getClass().getResourceAsStream("/report/jasper/EwayCreditNote.jrxml");
+					JasperReport jasperReport = JasperCompileManager.compileReport(inputstream);
+					JasperPrint jp = JasperFillManager.fillReport(jasperReport, input, ds);
+					JasperExportManager.exportReportToPdfFile(jp,policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- CreditNote.pdf");
+					GetFileFromPath path = new GetFileFromPath(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- CreditNote.pdf");
+					res.setPdfoutfile(path.call().getImgUrl());
+					res.setPdfoutfilepath(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- CreditNote.pdf");
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

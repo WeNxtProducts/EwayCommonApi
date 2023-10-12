@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="EwayCreditNote" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c809aacb-bde2-4106-8ddd-a5f5020cd51d">
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwayCreditNote"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
 		<box>
@@ -59,227 +59,131 @@
 	</style>
 	<subDataset name="Table Dataset 1" uuid="c4b19629-7b79-4fb5-bbf1-b74abd7ec655">
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwayCreditNote"/>
 		<parameter name="pvPolicyNo" class="java.lang.String"/>
-		<queryString language="SQL">
-			<![CDATA[SELECT section_desc FROM SECTION_DATA_DETAILS WHERE Quote_no= (SELECT quote_no FROM home_position_master WHERE policy_no = $P{pvPolicyNo} )]]>
+		<queryString language="JSON">
+			<![CDATA[sectionDescList]]>
 		</queryString>
-		<field name="section_desc" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="SECTION_DESC"/>
-			<property name="com.jaspersoft.studio.field.label" value="section_desc"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="section_data_details"/>
+		<field name="sectionDesc" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="sectionDesc"/>
+			<fieldDescription><![CDATA[sectionDesc]]></fieldDescription>
 		</field>
 	</subDataset>
 	<subDataset name="Table Dataset 2" uuid="ee75558a-5a89-4824-9523-d99f30c6b414">
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwayCreditNote"/>
 		<parameter name="pvPolicyNo" class="java.lang.String"/>
-		<queryString language="SQL">
-			<![CDATA[SELECT DISTINCT CORE_APP_CODE FROM PRODUCT_SECTION_MASTER PSD
-WHERE  STATUS='Y' AND (PRODUCT_ID,COMPANY_ID,SECTION_ID) IN (SELECT PRODUCT_ID,COMPANY_ID,SECTION_ID FROM section_data_details
-WHERE QUOTE_NO=(SELECT QUOTE_NO FROM HOME_POSITION_MASTER WHERE POLICY_NO= $P{pvPolicyNo} ))
-AND AMEND_ID = (SELECT MAX(AMEND_ID) FROM PRODUCT_SECTION_MASTER
-WHERE PRODUCT_ID=PSD.PRODUCT_ID AND COMPANY_ID=PSD.COMPANY_ID AND SECTION_ID=PSD.SECTION_ID AND STATUS='Y')]]>
+		<queryString language="JSON">
+			<![CDATA[riskCodeList]]>
 		</queryString>
-		<field name="CORE_APP_CODE" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="CORE_APP_CODE"/>
-			<property name="com.jaspersoft.studio.field.label" value="CORE_APP_CODE"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="product_section_master"/>
+		<field name="coreAppCode" class="java.lang.Integer">
+			<property name="net.sf.jasperreports.json.field.expression" value="coreAppCode"/>
+			<fieldDescription><![CDATA[coreAppCode]]></fieldDescription>
 		</field>
 	</subDataset>
 	<parameter name="pvImagePath" class="java.lang.String"/>
-	<parameter name="pvPolicyNo" class="java.lang.String"/>
-	<queryString>
-		<![CDATA[SELECT 
-INFO.USER_NAME AS BROKER_NAME,
-PIF.TITLE_DESC ,
-PIF.CLIENT_NAME,
-PIF.ADDRESS_1,
-PIF.PIN_CODE AS PO_BOX,
-PIF.STATE_NAME AS REGION_NAME,
-PIF.CITY_NAME AS DISTRICT_NAME,
-(SELECT COUNTRY_NAME FROM EWAY_COUNTRY_MASTER WHERE COUNTRY_ID=PIF.NATIONALITY AND COMPANY_ID=HPM.COMPANY_ID AND STATUS='Y') AS COUNTRY_NAME,
-HPM.BRANCH_NAME,
-HPM.CREDIT_NO,
-HPM.CURRENCY,
-HPM.PRODUCT_NAME,
-CASE WHEN HPM.ENDT_COUNT= '0'  THEN 'NEW BUSINESS' ELSE 'ENDORSEMENT' END AS BUSINESS,
-CASE WHEN HPM.ORIGINAL_POLICY_NO IS NULL THEN HPM.POLICY_NO ELSE HPM.ORIGINAL_POLICY_NO END AS POLICY_NO,
-CASE WHEN HPM.ORIGINAL_POLICY_NO IS NOT NULL THEN HPM.POLICY_NO ELSE NULL END AS ENDORSEMENT_NO,
-HPM.ENDT_TYPE_ID AS ENDT_CODE,
-HPM.ENDT_TYPE_DESC ,
-HPM.ENDORSEMENT_REMARKS,
-HPM.INCEPTION_DATE,
-HPM.EXPIRY_DATE,
-HPM.AGENCY_CODE,
-HPM.CUSTOMER_ID,
-INFO.USER_NAME AS  PREPARED_BY,
-HPM.APPROVED_BY AS APPROVED_BY,
-CASE WHEN HPM.ENDT_COUNT= '0' THEN HPM.COMMISSION 
-     ELSE 
-        CASE
-        WHEN HPM.CREDIT_NO IS NOT NULL THEN HPM.COMMISSION
-        END
-END AS PREMIUM,
-CASE WHEN HPM.ENDT_COUNT= '0' THEN 
-       (HPM.COMMISSION*HPM.VAT_PERCENT)/100 
-     ELSE
-       CASE
-       WHEN HPM.CREDIT_NO IS NOT NULL THEN (HPM.COMMISSION*HPM.VAT_PERCENT)/100 
-        END
-END AS VAT_PREMIUM_FC,
-CASE WHEN HPM.ENDT_COUNT= '0' THEN 
-       HPM.COMMISSION + (HPM.COMMISSION*HPM.VAT_PERCENT)/100 
-     ELSE
-      CASE
-       WHEN HPM.CREDIT_NO IS NOT NULL THEN HPM.COMMISSION + (HPM.COMMISSION*HPM.VAT_PERCENT)/100 
-        END
-END AS OVERALL_PREMIUM_FC,
-VAT_PERCENT AS VAT_PERCENT
-FROM HOME_POSITION_MASTER HPM INNER JOIN 
-PERSONAL_INFO PIF ON HPM.CUSTOMER_ID = PIF.CUSTOMER_ID
-LEFT JOIN EWAY_INSURANCE_COMPANY_MASTER COMP ON 
-HPM.CURRENCY = COMP.CURRENCY_ID AND HPM.COMPANY_ID = COMP.COMPANY_ID
-INNER JOIN LOGIN_USER_INFO INFO ON HPM.LOGIN_ID = INFO.LOGIN_ID
-WHERE
-COMP.AMEND_ID= (SELECT MAX(AMEND_ID) FROM EWAY_INSURANCE_COMPANY_MASTER
-      WHERE COMPANY_ID=COMP.COMPANY_ID )
-AND HPM.STATUS = 'P'
-AND HPM.POLICY_NO= $P{pvPolicyNo} 
-ORDER BY HPM.ENTRY_DATE DESC]]>
+	<queryString language="JSON">
+		<![CDATA[]]>
 	</queryString>
-	<field name="BROKER_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="USER_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="BROKER_NAME"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="login_user_info"/>
+	<field name="brokerName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="brokerName"/>
+		<fieldDescription><![CDATA[brokerName]]></fieldDescription>
 	</field>
-	<field name="TITLE_DESC" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="TITLE_DESC"/>
-		<property name="com.jaspersoft.studio.field.label" value="TITLE_DESC"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	<field name="customerName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="customerName"/>
+		<fieldDescription><![CDATA[customerName]]></fieldDescription>
 	</field>
-	<field name="CLIENT_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="CLIENT_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="CLIENT_NAME"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	<field name="address" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="address"/>
+		<fieldDescription><![CDATA[address]]></fieldDescription>
 	</field>
-	<field name="ADDRESS_1" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ADDRESS_1"/>
-		<property name="com.jaspersoft.studio.field.label" value="ADDRESS_1"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	<field name="branchName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="branchName"/>
+		<fieldDescription><![CDATA[branchName]]></fieldDescription>
 	</field>
-	<field name="PO_BOX" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="PIN_CODE"/>
-		<property name="com.jaspersoft.studio.field.label" value="PO_BOX"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	<field name="creditNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="creditNo"/>
+		<fieldDescription><![CDATA[creditNo]]></fieldDescription>
 	</field>
-	<field name="REGION_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="STATE_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="REGION_NAME"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	<field name="currency" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="currency"/>
+		<fieldDescription><![CDATA[currency]]></fieldDescription>
 	</field>
-	<field name="DISTRICT_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="CITY_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="DISTRICT_NAME"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	<field name="productName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="productName"/>
+		<fieldDescription><![CDATA[productName]]></fieldDescription>
 	</field>
-	<field name="COUNTRY_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="COUNTRY_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="COUNTRY_NAME"/>
+	<field name="business" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="business"/>
+		<fieldDescription><![CDATA[business]]></fieldDescription>
 	</field>
-	<field name="BRANCH_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="BRANCH_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="BRANCH_NAME"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="policyNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="policyNo"/>
+		<fieldDescription><![CDATA[policyNo]]></fieldDescription>
 	</field>
-	<field name="CREDIT_NO" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="CREDIT_NO"/>
-		<property name="com.jaspersoft.studio.field.label" value="CREDIT_NO"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="endorsementNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="endorsementNo"/>
+		<fieldDescription><![CDATA[endorsementNo]]></fieldDescription>
 	</field>
-	<field name="CURRENCY" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="CURRENCY"/>
-		<property name="com.jaspersoft.studio.field.label" value="CURRENCY"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="endtTypeId" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="endtTypeId"/>
+		<fieldDescription><![CDATA[endtTypeId]]></fieldDescription>
 	</field>
-	<field name="PRODUCT_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="PRODUCT_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="PRODUCT_NAME"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="endtTypeDesc" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="endtTypeDesc"/>
+		<fieldDescription><![CDATA[endtTypeDesc]]></fieldDescription>
 	</field>
-	<field name="BUSINESS" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="BUSINESS"/>
-		<property name="com.jaspersoft.studio.field.label" value="BUSINESS"/>
+	<field name="endorsementRemarks" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="endorsementRemarks"/>
+		<fieldDescription><![CDATA[endorsementRemarks]]></fieldDescription>
 	</field>
-	<field name="POLICY_NO" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="POLICY_NO"/>
-		<property name="com.jaspersoft.studio.field.label" value="POLICY_NO"/>
+	<field name="inceptionDate" class="java.sql.Timestamp">
+		<property name="net.sf.jasperreports.json.field.expression" value="inceptionDate"/>
+		<fieldDescription><![CDATA[inceptionDate]]></fieldDescription>
 	</field>
-	<field name="ENDORSEMENT_NO" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ENDORSEMENT_NO"/>
-		<property name="com.jaspersoft.studio.field.label" value="ENDORSEMENT_NO"/>
+	<field name="expiryDate" class="java.sql.Timestamp">
+		<property name="net.sf.jasperreports.json.field.expression" value="expiryDate"/>
+		<fieldDescription><![CDATA[expiryDate]]></fieldDescription>
 	</field>
-	<field name="ENDT_CODE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ENDT_TYPE_ID"/>
-		<property name="com.jaspersoft.studio.field.label" value="ENDT_CODE"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="agencyCode" class="java.lang.Integer">
+		<property name="net.sf.jasperreports.json.field.expression" value="agencyCode"/>
+		<fieldDescription><![CDATA[agencyCode]]></fieldDescription>
 	</field>
-	<field name="ENDT_TYPE_DESC" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ENDT_TYPE_DESC"/>
-		<property name="com.jaspersoft.studio.field.label" value="ENDT_TYPE_DESC"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="customerId" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="customerId"/>
+		<fieldDescription><![CDATA[customerId]]></fieldDescription>
 	</field>
-	<field name="ENDORSEMENT_REMARKS" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ENDORSEMENT_REMARKS"/>
-		<property name="com.jaspersoft.studio.field.label" value="ENDORSEMENT_REMARKS"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="approvedBy" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="approvedBy"/>
+		<fieldDescription><![CDATA[approvedBy]]></fieldDescription>
 	</field>
-	<field name="INCEPTION_DATE" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="INCEPTION_DATE"/>
-		<property name="com.jaspersoft.studio.field.label" value="INCEPTION_DATE"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="premium" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="premium"/>
+		<fieldDescription><![CDATA[premium]]></fieldDescription>
 	</field>
-	<field name="EXPIRY_DATE" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="EXPIRY_DATE"/>
-		<property name="com.jaspersoft.studio.field.label" value="EXPIRY_DATE"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="vatPremiumFc" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="vatPremiumFc"/>
+		<fieldDescription><![CDATA[vatPremiumFc]]></fieldDescription>
 	</field>
-	<field name="AGENCY_CODE" class="java.lang.Integer">
-		<property name="com.jaspersoft.studio.field.name" value="AGENCY_CODE"/>
-		<property name="com.jaspersoft.studio.field.label" value="AGENCY_CODE"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="overAllPremiumFc" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="overAllPremiumFc"/>
+		<fieldDescription><![CDATA[overAllPremiumFc]]></fieldDescription>
 	</field>
-	<field name="CUSTOMER_ID" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="CUSTOMER_ID"/>
-		<property name="com.jaspersoft.studio.field.label" value="CUSTOMER_ID"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="vatPercent" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="vatPercent"/>
+		<fieldDescription><![CDATA[vatPercent]]></fieldDescription>
 	</field>
-	<field name="PREPARED_BY" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="USER_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="PREPARED_BY"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="login_user_info"/>
+	<field name="quoteNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="quoteNo"/>
+		<fieldDescription><![CDATA[quoteNo]]></fieldDescription>
 	</field>
-	<field name="APPROVED_BY" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="APPROVED_BY"/>
-		<property name="com.jaspersoft.studio.field.label" value="APPROVED_BY"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="sectionDescList" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="sectionDescList"/>
+		<fieldDescription><![CDATA[sectionDescList]]></fieldDescription>
 	</field>
-	<field name="PREMIUM" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="PREMIUM"/>
-		<property name="com.jaspersoft.studio.field.label" value="PREMIUM"/>
-	</field>
-	<field name="VAT_PREMIUM_FC" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="VAT_PREMIUM_FC"/>
-		<property name="com.jaspersoft.studio.field.label" value="VAT_PREMIUM_FC"/>
-	</field>
-	<field name="OVERALL_PREMIUM_FC" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="OVERALL_PREMIUM_FC"/>
-		<property name="com.jaspersoft.studio.field.label" value="OVERALL_PREMIUM_FC"/>
-	</field>
-	<field name="VAT_PERCENT" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="VAT_PERCENT"/>
-		<property name="com.jaspersoft.studio.field.label" value="VAT_PERCENT"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="riskCodeList" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="riskCodeList"/>
+		<fieldDescription><![CDATA[riskCodeList]]></fieldDescription>
 	</field>
 	<background>
 		<band splitType="Stretch"/>
@@ -293,7 +197,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 		</band>
 	</pageHeader>
 	<detail>
-		<band height="101" splitType="Stretch">
+		<band height="96" splitType="Stretch">
 			<textField>
 				<reportElement mode="Opaque" x="0" y="0" width="555" height="15" backcolor="#C7C7C7" uuid="0669c937-cc95-4767-8b88-daf6cdeb30f0">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -333,7 +237,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{BROKER_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{brokerName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="360" y="30" width="62" height="15" uuid="1abc26fa-2ec8-4b07-901f-c7b44d5d2b1e">
@@ -355,7 +259,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{CREDIT_NO}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{creditNo}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="360" y="15" width="62" height="15" uuid="9c2d0008-1be6-4023-821d-cf081d53e3df">
@@ -379,7 +283,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{INCEPTION_DATE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{inceptionDate}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="1" y="30" width="50" height="15" uuid="a8c6433e-a5ba-4f6f-b097-471907b73630">
@@ -401,10 +305,10 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{TITLE_DESC}+" "+$F{CLIENT_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{customerName}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="1" y="60" width="50" height="15" uuid="90f3de03-1d9b-4bcf-949b-46f2db42e799">
+				<reportElement x="1" y="65" width="50" height="15" uuid="90f3de03-1d9b-4bcf-949b-46f2db42e799">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -415,7 +319,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textFieldExpression><![CDATA["Business"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="59" y="60" width="120" height="15" uuid="e1de9080-b0de-4c67-93b3-2aa480f10340">
+				<reportElement x="59" y="65" width="120" height="15" uuid="e1de9080-b0de-4c67-93b3-2aa480f10340">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -423,10 +327,10 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{BUSINESS}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{business}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="1" y="75" width="50" height="15" uuid="bb78fb54-bc8d-4e7f-96e2-f797701044ae">
+				<reportElement x="1" y="80" width="50" height="15" uuid="bb78fb54-bc8d-4e7f-96e2-f797701044ae">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -437,7 +341,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textFieldExpression><![CDATA["Vat Reg No"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="59" y="75" width="120" height="15" uuid="d73b8f57-15e7-49b3-8309-282c42872a66">
+				<reportElement x="59" y="80" width="120" height="15" uuid="d73b8f57-15e7-49b3-8309-282c42872a66">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -448,7 +352,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="15" width="1" height="85" uuid="988365e1-b9fd-4624-a8df-35d9c92e7d35">
+				<reportElement x="0" y="15" width="1" height="80" uuid="988365e1-b9fd-4624-a8df-35d9c92e7d35">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -461,7 +365,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="554" y="15" width="1" height="85" uuid="c00f1fd4-6c70-4d71-be48-790c62914024">
+				<reportElement x="554" y="15" width="1" height="80" uuid="c00f1fd4-6c70-4d71-be48-790c62914024">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -475,7 +379,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="100" width="555" height="1" uuid="15ceda29-c8e3-4cf9-be08-4b8542f4f524">
+				<reportElement x="0" y="95" width="555" height="1" uuid="15ceda29-c8e3-4cf9-be08-4b8542f4f524">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box>
@@ -486,8 +390,8 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="59" y="45" width="291" height="15" uuid="5bee4249-b37e-41ea-9614-db50abf2f298">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement x="59" y="45" width="291" height="20" uuid="5bee4249-b37e-41ea-9614-db50abf2f298">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -495,7 +399,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ADDRESS_1}+", "+$F{PO_BOX}+", "+$F{REGION_NAME}+", "+$F{DISTRICT_NAME}+", "+$F{COUNTRY_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{address}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="422" y="30" width="8" height="15" uuid="529d9370-2408-4b08-a291-df1440328de2">
@@ -516,7 +420,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textFieldExpression><![CDATA[":"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="51" y="60" width="8" height="15" uuid="11ed3866-1bce-492d-9e21-a545ccbcf6eb">
+				<reportElement x="51" y="65" width="8" height="15" uuid="11ed3866-1bce-492d-9e21-a545ccbcf6eb">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -525,7 +429,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textFieldExpression><![CDATA[":"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="51" y="75" width="8" height="15" uuid="95b51e0e-8732-4672-a251-2f197c648b86">
+				<reportElement x="51" y="80" width="8" height="15" uuid="95b51e0e-8732-4672-a251-2f197c648b86">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -597,7 +501,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{POLICY_NO}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{policyNo}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="327" y="19" width="80" height="15" uuid="a2c3a908-c92d-4ab0-98ef-647239355002">
@@ -631,7 +535,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{AGENCY_CODE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{agencyCode}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="15">
@@ -665,7 +569,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{INCEPTION_DATE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{inceptionDate}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="170" y="0" width="22" height="15" uuid="24d4fcf2-725d-4444-a68e-a5fe1a9ed183">
@@ -686,7 +590,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{EXPIRY_DATE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{expiryDate}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="327" y="0" width="80" height="15" uuid="7a7b25cf-46a3-4857-996d-a1edef5bb197">
@@ -720,7 +624,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{CUSTOMER_ID}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{customerId}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="15">
@@ -774,11 +678,8 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="Table Dataset 1" uuid="5fa8e460-3a4c-4537-91e8-f2d8da3beef0">
-						<datasetParameter name="pvPolicyNo">
-							<datasetParameterExpression><![CDATA[$P{pvPolicyNo}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<datasetRun subDataset="Table Dataset 1" uuid="9d2e302a-2bc3-4352-8790-c3e4a17a5222">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("sectionDescList")]]></dataSourceExpression>
 					</datasetRun>
 					<jr:column width="192" uuid="3e70009c-5f61-4be9-aad0-8a9cce1709c9">
 						<jr:detailCell style="Table_TD" height="15">
@@ -797,7 +698,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 								<textElement textAlignment="Left" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{section_desc}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{sectionDesc}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -831,11 +732,35 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 					<property name="com.jaspersoft.studio.table.style.detail" value="Table 1_TD"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="Table Dataset 2" uuid="fd10f99d-effe-43e7-aa4f-a8be91ccfb1b">
-						<datasetParameter name="pvPolicyNo">
-							<datasetParameterExpression><![CDATA[$P{pvPolicyNo}]]></datasetParameterExpression>
+					<datasetRun subDataset="Table Dataset 2" uuid="b1c303ee-c38f-403a-a502-132d89c8dd3a">
+						<datasetParameter name="JSON_INPUT_STREAM">
+							<datasetParameterExpression><![CDATA[$P{JSON_INPUT_STREAM}]]></datasetParameterExpression>
 						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						<datasetParameter name="net.sf.jasperreports.json.source">
+							<datasetParameterExpression><![CDATA[$P{net.sf.jasperreports.json.source}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="net.sf.jasperreports.json.sources">
+							<datasetParameterExpression><![CDATA[$P{net.sf.jasperreports.json.sources}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="net.sf.jasperreports.json.date.pattern">
+							<datasetParameterExpression><![CDATA[$P{net.sf.jasperreports.json.date.pattern}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="net.sf.jasperreports.json.number.pattern">
+							<datasetParameterExpression><![CDATA[$P{net.sf.jasperreports.json.number.pattern}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="JSON_LOCALE">
+							<datasetParameterExpression><![CDATA[$P{JSON_LOCALE}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="net.sf.jasperreports.json.locale.code">
+							<datasetParameterExpression><![CDATA[$P{net.sf.jasperreports.json.locale.code}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="JSON_TIME_ZONE">
+							<datasetParameterExpression><![CDATA[$P{JSON_TIME_ZONE}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="net.sf.jasperreports.json.timezone.id">
+							<datasetParameterExpression><![CDATA[$P{net.sf.jasperreports.json.timezone.id}]]></datasetParameterExpression>
+						</datasetParameter>
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("riskCodeList")]]></dataSourceExpression>
 					</datasetRun>
 					<jr:column width="138" uuid="f5a47306-1863-4866-8507-10bcb4f65667">
 						<jr:detailCell style="Table 1_TD" height="15">
@@ -850,7 +775,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 								<textElement verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{CORE_APP_CODE}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{coreAppCode}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -892,7 +817,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 			<textField>
 				<reportElement x="327" y="0" width="80" height="15" uuid="d37d1d12-4508-4a82-930f-69c30660f66b">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<printWhenExpression><![CDATA[$F{BUSINESS}.equals("ENDORSEMENT")]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{business}.equals("ENDORSEMENT")]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2">
 					<leftPen lineWidth="0.0"/>
@@ -905,7 +830,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 			<textField>
 				<reportElement x="407" y="0" width="8" height="15" uuid="86523ce2-80c8-4f08-bdcb-4454fce44691">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<printWhenExpression><![CDATA[$F{BUSINESS}.equals("ENDORSEMENT")]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{business}.equals("ENDORSEMENT")]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
@@ -915,7 +840,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 			<textField isBlankWhenNull="true">
 				<reportElement x="415" y="0" width="138" height="15" uuid="629bc36d-976d-48a6-a9c7-4d78f1a26251">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<printWhenExpression><![CDATA[$F{BUSINESS}.equals("ENDORSEMENT")]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{business}.equals("ENDORSEMENT")]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2">
 					<leftPen lineWidth="0.0"/>
@@ -924,7 +849,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ENDT_CODE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{endtTypeId}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement stretchType="RelativeToTallestObject" x="553" y="0" width="2" height="15" uuid="84608e99-9e12-4a9d-9804-bd58a342b630">
@@ -938,22 +863,22 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 			</textField>
 		</band>
 		<band height="15">
-			<printWhenExpression><![CDATA[$F{BUSINESS}.equals("ENDORSEMENT")]]></printWhenExpression>
+			<printWhenExpression><![CDATA[$F{business}.equals("ENDORSEMENT")]]></printWhenExpression>
 			<textField isBlankWhenNull="true">
 				<reportElement x="88" y="0" width="192" height="15" uuid="cc645bb8-6f2f-4c5c-8526-c9db9f577d51">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<printWhenExpression><![CDATA[$F{BUSINESS}.equals("ENDORSEMENT")]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{business}.equals("ENDORSEMENT")]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ENDORSEMENT_NO}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{endorsementNo}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="80" y="0" width="8" height="15" uuid="9f2a7e45-0785-4d82-909b-6535b98110c4">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<printWhenExpression><![CDATA[$F{BUSINESS}.equals("ENDORSEMENT")]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{business}.equals("ENDORSEMENT")]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
@@ -963,7 +888,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 			<textField>
 				<reportElement x="0" y="0" width="80" height="15" uuid="83c11896-f50d-4023-a569-b2b5edf5d614">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<printWhenExpression><![CDATA[$F{BUSINESS}.equals("ENDORSEMENT")]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{business}.equals("ENDORSEMENT")]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2">
 					<leftPen lineWidth="0.5"/>
@@ -992,7 +917,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 			<textField>
 				<reportElement x="80" y="0" width="8" height="15" uuid="d3ff446a-3612-4104-8def-bad76434d563">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<printWhenExpression><![CDATA[$F{BUSINESS}.equals("ENDORSEMENT")]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{business}.equals("ENDORSEMENT")]]></printWhenExpression>
 				</reportElement>
 				<box>
 					<bottomPen lineWidth="0.0"/>
@@ -1005,7 +930,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 			<textField>
 				<reportElement x="2" y="0" width="78" height="15" uuid="d37036b6-2fba-48b9-943f-a7625c3fcc90">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<printWhenExpression><![CDATA[$F{BUSINESS}.equals("ENDORSEMENT")]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{business}.equals("ENDORSEMENT")]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="0">
 					<leftPen lineWidth="0.0"/>
@@ -1019,7 +944,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 			<textField isBlankWhenNull="true">
 				<reportElement x="88" y="0" width="465" height="15" uuid="c7d65c51-c45d-4d56-ba23-653129f4efe3">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<printWhenExpression><![CDATA[$F{BUSINESS}.equals("ENDORSEMENT")]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{business}.equals("ENDORSEMENT")]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2">
 					<bottomPen lineWidth="0.0"/>
@@ -1028,7 +953,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ENDT_TYPE_DESC}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{endtTypeDesc}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="2" height="17" uuid="5fb1db05-bd90-4245-81a1-c6c7d43ebee9">
@@ -1104,7 +1029,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Premium - "+$F{PRODUCT_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Premium - "+$F{productName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="150" y="90" width="120" height="15" uuid="616a5601-e257-4740-b16f-aca473d44242">
@@ -1114,7 +1039,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Vat Output (Premium) - "+$F{VAT_PERCENT}+"%"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Vat Output (Premium) - "+$F{vatPercent}+"%"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="480" y="60" width="75" height="15" uuid="ddb0d666-dc7f-485f-b27a-aa426061cad0">
@@ -1125,7 +1050,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{CURRENCY}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{currency}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement x="480" y="75" width="75" height="15" uuid="4f200a08-dcb0-4fc1-8c10-55b450558690">
@@ -1136,7 +1061,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{PREMIUM}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{premium}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement x="480" y="90" width="75" height="15" uuid="8fe779fe-dd24-4239-ad8c-71af18d74f02">
@@ -1147,7 +1072,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{VAT_PREMIUM_FC}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{vatPremiumFc}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="110" width="192" height="15" uuid="7f41381b-e498-481c-832e-4cfb39955996">
@@ -1184,7 +1109,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{INCEPTION_DATE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{inceptionDate}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="140" width="40" height="15" uuid="0aaa1c6f-be0a-4e92-a620-679680107558">
@@ -1220,18 +1145,18 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{OVERALL_PREMIUM_FC}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{overAllPremiumFc}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="1" y="35" width="554" height="15" uuid="07a30e35-999b-4ad7-ba40-6c64f104c8cd">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<printWhenExpression><![CDATA[$F{BUSINESS}.equals("ENDORSEMENT")]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{business}.equals("ENDORSEMENT")]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="0"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA["THAT W.E.F INCEPTION POLICY STAYS "+$F{ENDT_TYPE_DESC}+" DUE TO "+$F{ENDORSEMENT_REMARKS}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["THAT W.E.F INCEPTION POLICY STAYS "+$F{endtTypeDesc}+" DUE TO "+$F{endorsementRemarks}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="70" splitType="Prevent">
@@ -1255,13 +1180,13 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				</textElement>
 				<textFieldExpression><![CDATA["Approved By :"]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="390" y="6" width="130" height="15" uuid="a945d0e8-fe6e-4ae6-ae5f-a9742d854bee"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="390" y="6" width="164" height="15" uuid="a945d0e8-fe6e-4ae6-ae5f-a9742d854bee"/>
 				<box leftPadding="2"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{PREPARED_BY}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{brokerName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="390" y="38" width="130" height="15" uuid="1c719416-a5a0-48c1-825e-05d1035fcdea"/>
@@ -1269,7 +1194,7 @@ ORDER BY HPM.ENTRY_DATE DESC]]>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{APPROVED_BY}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{approvedBy}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="38" width="158" height="15" uuid="efec7e4d-9d53-4d20-b32e-98e47431855e">
