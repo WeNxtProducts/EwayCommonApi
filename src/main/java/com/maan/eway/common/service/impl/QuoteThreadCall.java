@@ -1222,6 +1222,9 @@ public class QuoteThreadCall implements Callable<Object>  {
 			
 			// Update Eservice Travel
 			EserviceTravelDetails eserTravel = eserTraRepo.findByRequestReferenceNo(request.getRequestReferenceNo() );
+			eserTravel.setQuoteNo(request.getQuoteNo());
+			eserTraRepo.saveAndFlush(eserTravel);
+			
 			EserviceTravelGroupDetails groupData = eserGroupRepo.findByRequestReferenceNoAndGroupId(request.getRequestReferenceNo() , request.getGroupId());
 			List<FactorRateRequestDetails>  covers = new ArrayList<FactorRateRequestDetails>();
 			

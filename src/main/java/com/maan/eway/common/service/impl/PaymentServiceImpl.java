@@ -2098,7 +2098,7 @@ public class PaymentServiceImpl implements PaymentService {
 	    		// Update Eservice Travel
 	    		  EserviceTravelDetails eserTravel =  eserTraRepo.findByQuoteNo(quoteNo);
 	    		  eserTravel.setPolicyNo(policyNo);
-	    		  eserTravel.setStatus("P");
+	    		  eserTravel.setStatus(StringUtils.isNotBlank(endttypeId) && "842".equalsIgnoreCase(endttypeId) ? "D" : "P");
 	    		  eserTravel.setEndtStatus(StringUtils.isNotBlank(endttypeId) ? "C" : "");
 	    		  eserTraRepo.saveAndFlush(eserTravel);
 	    		  
