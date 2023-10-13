@@ -114,7 +114,7 @@
 			<property name="net.sf.jasperreports.json.field.expression" value="driverDOB"/>
 			<fieldDescription><![CDATA[driverDOB]]></fieldDescription>
 		</field>
-		<field name="iDNumber" class="java.lang.Integer">
+		<field name="iDNumber" class="java.lang.String">
 			<property name="net.sf.jasperreports.json.field.expression" value="iDNumber"/>
 			<fieldDescription><![CDATA[iDNumber]]></fieldDescription>
 		</field>
