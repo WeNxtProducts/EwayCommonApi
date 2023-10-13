@@ -1994,6 +1994,11 @@ public class QuoteThreadCall implements Callable<Object>  {
 					}
 				}
 
+				// Update Eservice Travel
+				EserviceTravelDetails eserTravel = eserTraRepo.findByRequestReferenceNo(request.getRequestReferenceNo() );
+				eserTravel.setQuoteNo(request.getQuoteNo());
+				eserTraRepo.saveAndFlush(eserTravel);
+				
 	 			res.put("Response", "Success") ;
 				res.put("Errors", null) ;
 				
