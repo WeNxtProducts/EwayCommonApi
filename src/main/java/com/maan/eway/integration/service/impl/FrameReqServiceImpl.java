@@ -24,6 +24,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+
+import com.maan.eway.integration.req.InsertCreditLimitDetailReq;
+import com.maan.eway.integration.req.InsertYiPolicyApprovalReq;
 import com.maan.eway.bean.CreditLimitDetail;
 import com.maan.eway.bean.MotCommDiscountDetail;
 import com.maan.eway.bean.MotDriverDetail;
@@ -143,18 +146,22 @@ public class FrameReqServiceImpl implements FrameReqService {
 		String auth = BasicAuthName +":"+ BasicAuthPass;
         byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
         String authHeader = "Basic " + new String( encodedAuth );
-        MotcommDiscountDetailReq req1 = new MotcommDiscountDetailReq();
+        List<MotcommDiscountDetailReq> reqlist = new ArrayList<MotcommDiscountDetailReq>();
 		List<MotCommDiscountDetail> list = motComRepo.findByQuotationPolicyNo(policyNo);
 	
 		if (list != null && list.size() > 0) {
-			req1 = dozerMapper.map(list.get(0), MotcommDiscountDetailReq.class);
+			for(MotCommDiscountDetail  reqData:list) {
+				MotcommDiscountDetailReq req = new MotcommDiscountDetailReq();
+				req = dozerMapper.map(reqData, MotcommDiscountDetailReq.class);
+				reqlist.add(req);
+			}
 		}
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		 headers.set("Authorization",authHeader);
-		HttpEntity<MotcommDiscountDetailReq> entityReq = new HttpEntity<MotcommDiscountDetailReq>(req1, headers);
+		HttpEntity<List<MotcommDiscountDetailReq>> entityReq = new HttpEntity<List<MotcommDiscountDetailReq>>(reqlist, headers);
 
 		ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
 		System.out.println(response.getBody());
@@ -168,18 +175,23 @@ public class FrameReqServiceImpl implements FrameReqService {
 		String auth = BasicAuthName +":"+ BasicAuthPass;
         byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
         String authHeader = "Basic " + new String( encodedAuth );
-        MotDriverDetailReq req1 = new MotDriverDetailReq();
+        List<MotDriverDetailReq> reqlist = new ArrayList<MotDriverDetailReq>();
 		List<MotDriverDetail> list = motDrivDetailsRepo.findByQuotationPolicyNo(policyNo);
 	
 		if (list != null && list.size() > 0) {
-			req1 = dozerMapper.map(list.get(0), MotDriverDetailReq.class);
+			
+			for(MotDriverDetail data:list) {
+				MotDriverDetailReq req1 = new MotDriverDetailReq();
+				req1 = dozerMapper.map(data, MotDriverDetailReq.class);
+				reqlist.add(req1);
+			}
 		}
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		 headers.set("Authorization",authHeader);
-		HttpEntity<MotDriverDetailReq> entityReq = new HttpEntity<MotDriverDetailReq>(req1, headers);
+		HttpEntity<List<MotDriverDetailReq>> entityReq = new HttpEntity<List<MotDriverDetailReq>>(reqlist, headers);
 
 		ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
 		System.out.println(response.getBody());
@@ -194,18 +206,22 @@ public class FrameReqServiceImpl implements FrameReqService {
 		String auth = BasicAuthName +":"+ BasicAuthPass;
         byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
         String authHeader = "Basic " + new String( encodedAuth );
-        YiCoverDetailReq req1 = new YiCoverDetailReq();
+        List<YiCoverDetailReq> reqlist = new ArrayList<YiCoverDetailReq>();
 		List<YiCoverDetail> list = yiCoverDetailRepo.findByQuotationPolicyNo(policyNo);
 	
 		if (list != null && list.size() > 0) {
-			req1 = dozerMapper.map(list.get(0), YiCoverDetailReq.class);
+			for (YiCoverDetail data : list) {
+				YiCoverDetailReq req1 = new YiCoverDetailReq();
+				req1 = dozerMapper.map(data, YiCoverDetailReq.class);
+				reqlist.add(req1);
+			}
 		}
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		 headers.set("Authorization",authHeader);
-		HttpEntity<YiCoverDetailReq> entityReq = new HttpEntity<YiCoverDetailReq>(req1, headers);
+		HttpEntity<List<YiCoverDetailReq>> entityReq = new HttpEntity<List<YiCoverDetailReq>>(reqlist, headers);
 
 		ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
 		System.out.println(response.getBody());
@@ -219,18 +235,22 @@ public class FrameReqServiceImpl implements FrameReqService {
 		String auth = BasicAuthName +":"+ BasicAuthPass;
         byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
         String authHeader = "Basic " + new String( encodedAuth );
-        YiChargeDetailReq req1 = new YiChargeDetailReq();
+        List<YiChargeDetailReq> reqlist = new ArrayList<YiChargeDetailReq>();
 		List<YiChargeDetail> list = yiChargeDetailRepo.findByQuotationPolicyNo(policyNo);
 	
 		if (list != null && list.size() > 0) {
-			req1 = dozerMapper.map(list.get(0), YiChargeDetailReq.class);
+			for (YiChargeDetail data : list) {
+				YiChargeDetailReq req1 = new YiChargeDetailReq();
+				req1 = dozerMapper.map(data, YiChargeDetailReq.class);
+				reqlist.add(req1);
+			}
 		}
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		 headers.set("Authorization",authHeader);
-		HttpEntity<YiChargeDetailReq> entityReq = new HttpEntity<YiChargeDetailReq>(req1, headers);
+		HttpEntity<List<YiChargeDetailReq>> entityReq = new HttpEntity<List<YiChargeDetailReq>>(reqlist, headers);
 
 		ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
 		System.out.println(response.getBody());
@@ -244,18 +264,22 @@ public class FrameReqServiceImpl implements FrameReqService {
 		String auth = BasicAuthName +":"+ BasicAuthPass;
         byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
         String authHeader = "Basic " + new String( encodedAuth );
-        YiPolicyDetailReq req1 = new YiPolicyDetailReq();
+        List<YiPolicyDetailReq> reqlist = new ArrayList<YiPolicyDetailReq>();
 		List<YiPolicyDetail> list = yiPolicyReo.findByQuotationPolicyNo(policyNo);
 	
 		if (list != null && list.size() > 0) {
-			req1 = dozerMapper.map(list.get(0), YiPolicyDetailReq.class);
+			YiPolicyDetailReq req1 = new YiPolicyDetailReq();
+			for (YiPolicyDetail data : list) {
+				req1 = dozerMapper.map(data, YiPolicyDetailReq.class);
+				reqlist.add(req1);
+			}
 		}
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		 headers.set("Authorization",authHeader);
-		HttpEntity<YiPolicyDetailReq> entityReq = new HttpEntity<YiPolicyDetailReq>(req1, headers);
+		HttpEntity<List<YiPolicyDetailReq>> entityReq = new HttpEntity<List<YiPolicyDetailReq>>(reqlist, headers);
 
 		ResponseEntity<Object> response = restTemplate.postForEntity(url, entityReq, Object.class);
 		System.out.println(response.getBody());

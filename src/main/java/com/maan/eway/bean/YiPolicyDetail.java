@@ -238,7 +238,7 @@ private static final long serialVersionUID = 1L;
     @Column(name="INSURED_EMAILID", length=240)
     private String     insuredEmailid ;
 
-    @Column(name="INSURED_OCCUPATION", length=12)
+    @Column(name="INSURED_OCCUPATION", length=100)
     private String     insuredOccupation ;
 
     @Temporal(TemporalType.TIMESTAMP)

@@ -27,36 +27,36 @@ public class PgitPolRiskAddlInfoReq implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-    @Column(name="QUOTATION_POLICY_NO")  //POLICY NO
+    @Column(name="QuotationPolicyNo")  //POLICY NO
     private String     quotationPolicyNo ;
 
   
-    @Column(name="RISK_ID")  //VEHCILE ID
+    @Column(name="RiskId")  //VEHCILE ID
     private String     riskId ;
    
-    @Column(name="PRAI_CODE_23") //TIRA PROD CODE
+    @Column(name="PraiCode23") //TIRA PROD CODE
     private BigDecimal     praiCode23;
 
   
-    @Column(name="PRAI_CODE_24")  //TIRA RISK CODE
+    @Column(name="PraiCode24")  //TIRA RISK CODE
     private BigDecimal     praiCode24;
    
-    @Column(name="PRAI_DATA_01") //Chassis No.
+    @Column(name="PraiData01") //Chassis No.
     private String     praiData01 ;
 
   
-    @Column(name="PRAI_DATA_03") //ENGINE No.
+    @Column(name="PraiData03") //ENGINE No.
     private String     praiData03 ;
     
 
     //--- ENTITY DATA FIELDS 
-    @Column(name="PRAIH_SYS_ID")
+    @Column(name="PraihSysId")
     private BigDecimal praihSysId ;
     
-    @Column(name="PRAIH_POL_SYS_ID")
+    @Column(name="PraihPolSysId")
     private BigDecimal praihPolSysId ;
     
-    @Column(name="PRAIH_END_NO_IDX")
+    @Column(name="PraihEndNoIdx")
     private BigDecimal praihEndNoIdx ;
 
     @Column(name="PRAI_END_SR_NO")

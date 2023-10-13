@@ -187,86 +187,65 @@ public boolean push(PremiaConfigMaster configMas , List<String> params,String qu
 						oracle.insert(insertQuery);
 					}
 					
-					
 				}
-		
-				//Framing External Api
+
+				// Framing External Api
 				HomePositionMaster home = homeRepo.findByQuoteNo(quoteNo);
-				
+
 				String policyNo = "";
-				String reqRefNo="";
-				if (home != null ) {
+				String reqRefNo = "";
+				if (home != null) {
 					policyNo = home.getPolicyNo();
 					reqRefNo = home.getRequestReferenceNo();
 				}
 				System.out.println("*********EXTERNAL API CALL STARTS*********");
-				System.out.println("*********PolicyNo "+policyNo);
-				
-				
-				if(configMas.getPremiaId()==11) {
-					
-					Object list = frameReqService.pushCreditLimitDetail(reqRefNo);
-					System.out.println("*********11.CreditLimitDetail:" + json.toJson(list));
-				} 
-				if(configMas.getPremiaId()==10) {
-								
-						Object list = frameReqService.pushYiPolicyApproval(policyNo);
-						System.out.println("*********10.YiPolicyApproval:" + json.toJson(list));
-					}
-				if(configMas.getPremiaId()==9) {
-					
-					Object list = frameReqService.pushYiPremCal(policyNo);
-					System.out.println("*********9.YiPremCal:" + json.toJson(list));
-				}
-				if(configMas.getPremiaId()==8) {
-					
-					Object list = frameReqService.pushYiVatDetail(policyNo);
-					System.out.println("*********8.YiVatDetail:" + json.toJson(list));
-				}
-				if(configMas.getPremiaId()==2) {
-					
+				System.out.println("*********PolicyNo " + policyNo);
+
+				if (configMas.getPremiaId() == 1) {
+					Object list = frameReqService.pushYiPolicyDetail(policyNo);
+					System.out.println("*********1.YiPolicyDetail: " + json.toJson(list));
+				} else if (configMas.getPremiaId() == 2) {
+
 					Object list = frameReqService.pushYiSectionDetail(policyNo);
 					System.out.println("*********2.YiSectionDetail:" + json.toJson(list));
-				}
-				
-				if(configMas.getPremiaId()==3) {
-					
+				} else if (configMas.getPremiaId() == 3) {
 					Object list = frameReqService.pushPgitPolRiskAddlInfo(policyNo);
 					System.out.println("*********3.PgitPolRiskAddlInfo:" + json.toJson(list));
+				} else if (configMas.getPremiaId() == 4) {
+
+					Object list = frameReqService.pushMotDriverDetail(policyNo);
+					System.out.println("*********4.MotDriverDetail: " + json.toJson(list));
+				} else if (configMas.getPremiaId() == 5) {
+
+					Object list = frameReqService.pushYiCoverDetail(policyNo);
+					System.out.println("*********5.YiCoverDetail: " + json.toJson(list));
+				} else if (configMas.getPremiaId() == 6) {
+
+					Object list = frameReqService.pushMotCommDiscountDetail(policyNo);
+					System.out.println("*********6.MotCommDiscountDetai:" + json.toJson(list));
+				} else if (configMas.getPremiaId() == 7) {
+
+					Object list = frameReqService.pushYiChargeDetail(policyNo);
+					System.out.println("*********7.YiChargeDetail: " + json.toJson(list));
+				} else if (configMas.getPremiaId() == 8) {
+
+					Object list = frameReqService.pushYiVatDetail(policyNo);
+					System.out.println("*********8.YiVatDetail:" + json.toJson(list));
+				} else if (configMas.getPremiaId() == 9) {
+
+					Object list = frameReqService.pushYiPremCal(policyNo);
+					System.out.println("*********9.YiPremCal:" + json.toJson(list));
+				} else if (configMas.getPremiaId() == 10) {
+
+					Object list = frameReqService.pushYiPolicyApproval(policyNo);
+					System.out.println("*********10.YiPolicyApproval:" + json.toJson(list));
+				} else if (configMas.getPremiaId() == 11) {
+
+					Object list = frameReqService.pushCreditLimitDetail(reqRefNo);
+					System.out.println("*********11.CreditLimitDetail:" + json.toJson(list));
 				}
-				
-				
-				/*		
-				
-				if(configMas.getPremiaId()==6) {
-					
-				Object list = frameReqService.pushMotCommDiscountDetail(policyNo);
-				System.out.println("*********6.MotCommDiscountDetai:" + json.toJson(list));
-				}else if(configMas.getPremiaId()==4)  {
-					
-				Object list =frameReqService.pushMotDriverDetail(policyNo);
-				System.out.println("*********4.MotDriverDetail: " + json.toJson(list));
-				}/*else if(configMas.getPremiaId()==3)  {
-					//Object list = frameReqService.pushPgitPolRiskAddlInfo(policyNo);
-					
-						System.out.println("*********101 " + json.toJson(list));
-				}*/
-				/*	else if(configMas.getPremiaId()==5)  {
-				
-				Object list =frameReqService.pushYiCoverDetail(policyNo);
-				System.out.println("*********5.YiCoverDetail: " + json.toJson(list));
-				}else if(configMas.getPremiaId()==7)  {
-					
-				Object list =frameReqService.pushYiChargeDetail(policyNo);
-				System.out.println("*********7.YiChargeDetail: " + json.toJson(list));
-				}else if(configMas.getPremiaId()==1)  {
-					
-				Object list =frameReqService.pushYiPolicyDetail(policyNo);
-				System.out.println("*********1.YiPolicyDetail: " + json.toJson(list));
-				}*/
 			}
-			
-		 
+
 		}
 		
 		return true;
