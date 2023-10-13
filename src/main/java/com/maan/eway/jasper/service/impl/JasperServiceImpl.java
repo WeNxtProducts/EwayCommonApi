@@ -136,9 +136,9 @@ public class JasperServiceImpl implements JasperService {
 					Map<String, Object> input2 = new HashMap<String, Object>();
 					input2.put("pvImagePath", config.getImagePath().substring(1,config.getImagePath().length()-0));
 					input2.put("pvPolicyNo", homeData.getPolicyNo());
-					input2.put("pvSubReportPath",config.getJasperFilePath() + "report/jasper/");
+					input2.put("pvSubReportPath",config.getJasperFilePath().replaceAll("%20", " ")  + "report/jasper/");
 					String obj ="";
-					obj= config.getJasperFilePath() + "report/jasper/EwayTravelSubReport.jrxml";
+					obj= config.getJasperFilePath().replaceAll("%20", " ") + "report/jasper/EwayTravelSubReport.jrxml";
 					
 							//String jrxml_path=obj.replace(".jasper", ".jrxml");
 							String path = JasperCompileManager.compileReportToFile(obj);
@@ -205,7 +205,7 @@ public class JasperServiceImpl implements JasperService {
 					Map<String, Object> input2 = new HashMap<String, Object>();
 					input2.put("pvQuoteNo", req.getQuoteNo());
 					input2.put("pvImagepath", config.getImagePath().substring(1,config.getImagePath().length()-0));
-					input2.put("pvSubReportPath",config.getJasperFilePath() + "report/jasper/");
+					input2.put("pvSubReportPath",config.getJasperFilePath().replaceAll("%20", " ")  + "report/jasper/");
 					String obj[] =new String[2];
 //					obj[0]= config.getJasperFilePath() + "report/jasper/CoverageDetails.jrxml";
 //					obj[1]= config.getJasperFilePath() +"report/jasper/SectionDetails.jrxml";              // for windows system
