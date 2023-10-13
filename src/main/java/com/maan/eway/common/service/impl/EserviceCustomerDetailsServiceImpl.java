@@ -218,10 +218,11 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 					errorList.add(new Error("18", "RegionCode", "Please Enter RegionCode within 20 Characters"));
 				}
 				if (StringUtils.isNotBlank(req.getPinCode())) {
-					 if (! req.getPinCode().matches("[0-9]+") ) {
-						 errorList.add(new Error("18", "PinCode", "Please Enter Valid Number In Po Box"));
-						 
-					 } else if (req.getPinCode().length() > 20) {
+//					 if (! req.getPinCode().matches("[0-9a-bA-Z]+") ) {
+//						 errorList.add(new Error("18", "PinCode", "Please Enter Valid Number In Po Box"));
+//						 
+//					 } else
+					if (req.getPinCode().length() > 20) {
 							errorList.add(new Error("18", "PinCode", "Please Enter Po Box within 20 Characters"));
 					}
 				} 
