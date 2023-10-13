@@ -1831,8 +1831,8 @@ public class PaymentServiceImpl implements PaymentService {
 			data.setPaymentType(paymentDetail.getPaymentTypedesc());
 			data.setPaymentStatus(paymentInfo.getEmiYn().equalsIgnoreCase("N") ? paymentInfo.getPaymentStatus() :"Pending");
 			data.setPolicyNo(policyNo);
-
-			data.setStatus("P");
+			
+			data.setStatus(StringUtils.isNotBlank(data.getEndtTypeId()) && "842".equalsIgnoreCase(data.getEndtTypeId()) ? "D" : "P");
 			data.setIntegrationStatus("S");
 			data.setEmiYn(paymentInfo.getEmiYn());
 			data.setInstallmentPeriod(paymentInfo.getInstallmentPeriod());
