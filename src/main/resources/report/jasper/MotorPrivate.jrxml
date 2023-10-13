@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Motor Private" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1f1ed881-bfa7-4566-9d9a-33bcfbf24536">
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MotorPrivate"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
 		<box>
@@ -31,324 +31,193 @@
 		</box>
 	</style>
 	<subDataset name="TableDataSet 1" uuid="2dfcad32-0f3a-4426-ab2d-d52922456687">
-		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MotorPrivate"/>
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 		<parameter name="pvPolicyNo" class="java.lang.String"/>
 		<parameter name="pvSticker" class="java.lang.String"/>
-		<queryString>
-			<![CDATA[SELECT
-MDD.VEHICLE_ID AS SNO,
-MDD.REGISTRATION_NUMBER AS REG_NO,
-MDD.VEHICLE_MAKE MAKE,
-MDD.VEHCILE_MODEL MODEL,
-MDD.VEHICLE_TYPE_DESC TYPE,
-MDD.CUBIC_CAPACITY AS CC,
-MDD.MANUFACTURE_YEAR AS VEHYEAR,
-MDD.SEATING_CAPACITY NO_OF_SEATS,
-MDD.COLOR_DESC AS COLOR,
-MDD.POLICY_TYPE_DESC COVER_TYPE,
-MDD.WIND_SCREEN_SUM_INSURED AS WIND_SCREEN_AMT,
-MDD.SUM_INSURED AS SUM_INSURED
-FROM home_position_master HPM,MOTOR_DATA_DETAILS MDD 
-WHERE MDD.POLICY_NO=HPM.POLICY_NO AND HPM.POLICY_NO= $P{pvPolicyNo}
-ORDER BY SNO]]>
+		<queryString language="JSON">
+			<![CDATA[vehicleDetails]]>
 		</queryString>
-		<field name="SNO" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="VEHICLE_ID"/>
-			<property name="com.jaspersoft.studio.field.label" value="SNO"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+		<field name="vehicleId" class="java.lang.Integer">
+			<property name="net.sf.jasperreports.json.field.expression" value="vehicleId"/>
+			<fieldDescription><![CDATA[vehicleId]]></fieldDescription>
 		</field>
-		<field name="REG_NO" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="REGISTRATION_NUMBER"/>
-			<property name="com.jaspersoft.studio.field.label" value="REG_NO"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+		<field name="registrationNumber" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="registrationNumber"/>
+			<fieldDescription><![CDATA[registrationNumber]]></fieldDescription>
 		</field>
-		<field name="MAKE" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="VEHICLE_MAKE"/>
-			<property name="com.jaspersoft.studio.field.label" value="MAKE"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+		<field name="vehicleMake" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="vehicleMake"/>
+			<fieldDescription><![CDATA[vehicleMake]]></fieldDescription>
 		</field>
-		<field name="MODEL" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="VEHCILE_MODEL"/>
-			<property name="com.jaspersoft.studio.field.label" value="MODEL"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+		<field name="vehcileModel" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="vehcileModel"/>
+			<fieldDescription><![CDATA[vehcileModel]]></fieldDescription>
 		</field>
-		<field name="TYPE" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="VEHICLE_TYPE_DESC"/>
-			<property name="com.jaspersoft.studio.field.label" value="TYPE"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+		<field name="vehicleTypeDesc" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="vehicleTypeDesc"/>
+			<fieldDescription><![CDATA[vehicleTypeDesc]]></fieldDescription>
 		</field>
-		<field name="CC" class="java.lang.Double">
-			<property name="com.jaspersoft.studio.field.name" value="CUBIC_CAPACITY"/>
-			<property name="com.jaspersoft.studio.field.label" value="CC"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+		<field name="cubicCapacity" class="java.math.BigDecimal">
+			<property name="net.sf.jasperreports.json.field.expression" value="cubicCapacity"/>
+			<fieldDescription><![CDATA[cubicCapacity]]></fieldDescription>
 		</field>
-		<field name="VEHYEAR" class="java.lang.Integer">
-			<property name="com.jaspersoft.studio.field.name" value="MANUFACTURE_YEAR"/>
-			<property name="com.jaspersoft.studio.field.label" value="VEHYEAR"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+		<field name="manufactureYear" class="java.lang.Integer">
+			<property name="net.sf.jasperreports.json.field.expression" value="manufactureYear"/>
+			<fieldDescription><![CDATA[manufactureYear]]></fieldDescription>
 		</field>
-		<field name="NO_OF_SEATS" class="java.lang.Integer">
-			<property name="com.jaspersoft.studio.field.name" value="SEATING_CAPACITY"/>
-			<property name="com.jaspersoft.studio.field.label" value="NO_OF_SEATS"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+		<field name="seatingCapacity" class="java.lang.Integer">
+			<property name="net.sf.jasperreports.json.field.expression" value="seatingCapacity"/>
+			<fieldDescription><![CDATA[seatingCapacity]]></fieldDescription>
 		</field>
-		<field name="COLOR" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="COLOR_DESC"/>
-			<property name="com.jaspersoft.studio.field.label" value="COLOR"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+		<field name="colorDesc" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="colorDesc"/>
+			<fieldDescription><![CDATA[colorDesc]]></fieldDescription>
 		</field>
-		<field name="COVER_TYPE" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="POLICY_TYPE_DESC"/>
-			<property name="com.jaspersoft.studio.field.label" value="COVER_TYPE"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+		<field name="policyTypeDesc" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="policyTypeDesc"/>
+			<fieldDescription><![CDATA[policyTypeDesc]]></fieldDescription>
 		</field>
-		<field name="WIND_SCREEN_AMT" class="java.lang.Double">
-			<property name="com.jaspersoft.studio.field.name" value="WIND_SCREEN_SUM_INSURED"/>
-			<property name="com.jaspersoft.studio.field.label" value="WIND_SCREEN_AMT"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+		<field name="windScreenSumInsuredLc" class="java.math.BigDecimal">
+			<property name="net.sf.jasperreports.json.field.expression" value="windScreenSumInsuredLc"/>
+			<fieldDescription><![CDATA[windScreenSumInsuredLc]]></fieldDescription>
 		</field>
-		<field name="SUM_INSURED" class="java.lang.Double">
-			<property name="com.jaspersoft.studio.field.name" value="SUM_INSURED"/>
-			<property name="com.jaspersoft.studio.field.label" value="SUM_INSURED"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+		<field name="sumInsured" class="java.math.BigDecimal">
+			<property name="net.sf.jasperreports.json.field.expression" value="sumInsured"/>
+			<fieldDescription><![CDATA[sumInsured]]></fieldDescription>
+		</field>
+		<field name="stickerNumber" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="stickerNumber"/>
+			<fieldDescription><![CDATA[stickerNumber]]></fieldDescription>
 		</field>
 	</subDataset>
 	<subDataset name="TableDataSet 2" uuid="c82202eb-0a72-4347-bdcd-9dc22d3ca69b">
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MotorPrivate"/>
 		<parameter name="pvQuoteNo" class="java.lang.String"/>
-		<queryString language="SQL">
-			<![CDATA[SELECT
-mdr.DRIVER_ID, 
-mdr.DRIVER_NAME, 
-mdr.DRIVER_TYPEDESC, 
-mdr.DRIVER_DOB, 
-mdr.ID_NUMBER,
-mdd.chassis_number
-FROM
-motor_driver_details mdr,
-motor_data_details mdd
-WHERE
-mdr.quote_no = $P{pvQuoteNo} 
-AND mdr.risk_id = mdd.vehicle_id
-AND mdr.quote_no = mdd.quote_no]]>
+		<queryString language="JSON">
+			<![CDATA[driverDetails]]>
 		</queryString>
-		<field name="DRIVER_ID" class="java.lang.Integer">
-			<property name="com.jaspersoft.studio.field.name" value="DRIVER_ID"/>
-			<property name="com.jaspersoft.studio.field.label" value="DRIVER_ID"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_driver_details"/>
+		<field name="driverId" class="java.lang.Integer">
+			<property name="net.sf.jasperreports.json.field.expression" value="driverId"/>
+			<fieldDescription><![CDATA[driverId]]></fieldDescription>
 		</field>
-		<field name="DRIVER_NAME" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="DRIVER_NAME"/>
-			<property name="com.jaspersoft.studio.field.label" value="DRIVER_NAME"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_driver_details"/>
+		<field name="driverName" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="driverName"/>
+			<fieldDescription><![CDATA[driverName]]></fieldDescription>
 		</field>
-		<field name="DRIVER_TYPEDESC" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="DRIVER_TYPEDESC"/>
-			<property name="com.jaspersoft.studio.field.label" value="DRIVER_TYPEDESC"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_driver_details"/>
+		<field name="driverTypeDesc" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="driverTypeDesc"/>
+			<fieldDescription><![CDATA[driverTypeDesc]]></fieldDescription>
 		</field>
-		<field name="DRIVER_DOB" class="java.sql.Timestamp">
-			<property name="com.jaspersoft.studio.field.name" value="DRIVER_DOB"/>
-			<property name="com.jaspersoft.studio.field.label" value="DRIVER_DOB"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_driver_details"/>
+		<field name="driverDOB" class="java.sql.Timestamp">
+			<property name="net.sf.jasperreports.json.field.expression" value="driverDOB"/>
+			<fieldDescription><![CDATA[driverDOB]]></fieldDescription>
 		</field>
-		<field name="ID_NUMBER" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="ID_NUMBER"/>
-			<property name="com.jaspersoft.studio.field.label" value="ID_NUMBER"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_driver_details"/>
+		<field name="iDNumber" class="java.lang.Integer">
+			<property name="net.sf.jasperreports.json.field.expression" value="iDNumber"/>
+			<fieldDescription><![CDATA[iDNumber]]></fieldDescription>
 		</field>
-		<field name="chassis_number" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="CHASSIS_NUMBER"/>
-			<property name="com.jaspersoft.studio.field.label" value="chassis_number"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+		<field name="chassisNumber" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="chassisNumber"/>
+			<fieldDescription><![CDATA[chassisNumber]]></fieldDescription>
 		</field>
 	</subDataset>
 	<parameter name="pvImagepath" class="java.lang.String"/>
-	<parameter name="pvPolicyNo" class="java.lang.String"/>
-	<queryString>
-		<![CDATA[SELECT DISTINCT
-(SELECT COUNT(*) FROM MOTOR_DATA_DETAILS WHERE POLICY_NO=HPM.POLICY_NO ) AS ROWCOUNT,
-  CPM.COMPANY_ID,
-  CPM.EFFECTIVE_DATE_START,
-  CPM.EFFECTIVE_DATE_END,
-  HPM.POLICY_NO,
-  HPM.QUOTE_NO,
-  PIF.TITLE_DESC,
-  PIF.CLIENT_NAME,
-  HPM.DEBIT_NOTE_NO AS INVOICE_NO, 
-  PIF.Address_1,
-  PIF.STATE_NAME AS REGION_NAME,
-  PIF.CITY_NAME AS DISTRICT_NAME,
-  (SELECT COUNTRY_NAME FROM `eway_country_master` WHERE COUNTRY_ID=PIF.NATIONALITY AND COMPANY_ID=HPM.COMPANY_ID AND STATUS='Y'
-  AND AMEND_ID=(SELECT MAX(AMEND_ID) FROM `eway_country_master` WHERE COUNTRY_ID=PIF.NATIONALITY AND COMPANY_ID=HPM.COMPANY_ID AND STATUS='Y'))
-  AS COUNTRY_NAME,
-  PIF.PIN_CODE AS PO_BOX,
-  HPM.inception_date AS FROM_DATE, 
-  HPM.expiry_date AS TO_DATE, 
-  HPM.expiry_date  AS RENEWAL_DATE, 
-  HPM.CURRENCY AS CURRENCY,
-  HPM.STICKER_NUMBER,
-  MDD.INSURANCE_TYPE_DESC INSURANCE_COVER,
-  CASE WHEN hpm.currency IN (cpm.currency_ids) THEN HPM.PREMIUM_LC ELSE HPM.PREMIUM_FC END AS PREMIUM,
-  CASE WHEN hpm.currency IN (cpm.currency_ids) THEN HPM.VAT_PREMIUM_LC ELSE HPM.VAT_PREMIUM_FC END AS VAT,
-  CASE WHEN hpm.currency IN (cpm.currency_ids) THEN HPM.OVERALL_PREMIUM_LC ELSE HPM.OVERALL_PREMIUM_FC END AS TOTAL, 
-  HPM.BRANCH_NAME AS PLACE, 
-  HPM.APPROVED_BY AS APPROVED_BY, 
-  LUI.USER_NAME AS INTERMEDIARY, 
-  LUI.USER_NAME AS PREPARED_BY, 
-  LUI.USER_NAME AS PRINTED_BY
-FROM 
-  home_position_master HPM, 
-  LOGIN_USER_INFO LUI, 
-  company_product_master cpm,
-  Personal_info PIF,
-  MOTOR_DATA_DETAILS MDD
-WHERE 
-  MDD.POLICY_NO = HPM.POLICY_NO
-  AND PIF.Customer_Id = HPM.Customer_Id
-  AND HPM.LOGIN_ID = LUI.LOGIN_ID 
-  AND cpm.company_id = hpm.company_id 
-  AND cpm.status='Y'
-  AND HPM.PRODUCT_ID=CPM.PRODUCT_ID
-  AND (SELECT CURRENT_DATE AS TODAY_DATE FROM DUAL) BETWEEN TRIM(CPM.EFFECTIVE_DATE_START) AND TRIM(CPM.EFFECTIVE_DATE_END)
-  AND HPM.POLICY_NO =  $P{pvPolicyNo}]]>
+	<queryString language="JSON">
+		<![CDATA[]]>
 	</queryString>
-	<field name="ROWCOUNT" class="java.lang.Long">
-		<property name="com.jaspersoft.studio.field.name" value="ROWCOUNT"/>
-		<property name="com.jaspersoft.studio.field.label" value="ROWCOUNT"/>
+	<field name="companyId" class="java.lang.Integer">
+		<property name="net.sf.jasperreports.json.field.expression" value="companyId"/>
+		<fieldDescription><![CDATA[companyId]]></fieldDescription>
 	</field>
-	<field name="COMPANY_ID" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="COMPANY_ID"/>
-		<property name="com.jaspersoft.studio.field.label" value="COMPANY_ID"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="company_product_master"/>
+	<field name="effectiveDateStart" class="java.sql.Timestamp">
+		<property name="net.sf.jasperreports.json.field.expression" value="effectiveDateStart"/>
+		<fieldDescription><![CDATA[effectiveDateStart]]></fieldDescription>
 	</field>
-	<field name="EFFECTIVE_DATE_START" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="EFFECTIVE_DATE_START"/>
-		<property name="com.jaspersoft.studio.field.label" value="EFFECTIVE_DATE_START"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="company_product_master"/>
+	<field name="effectiveDateEnd" class="java.sql.Timestamp">
+		<property name="net.sf.jasperreports.json.field.expression" value="effectiveDateEnd"/>
+		<fieldDescription><![CDATA[effectiveDateEnd]]></fieldDescription>
 	</field>
-	<field name="EFFECTIVE_DATE_END" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="EFFECTIVE_DATE_END"/>
-		<property name="com.jaspersoft.studio.field.label" value="EFFECTIVE_DATE_END"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="company_product_master"/>
+	<field name="policyNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="policyNo"/>
+		<fieldDescription><![CDATA[policyNo]]></fieldDescription>
 	</field>
-	<field name="POLICY_NO" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="POLICY_NO"/>
-		<property name="com.jaspersoft.studio.field.label" value="POLICY_NO"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="quoteNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="quoteNo"/>
+		<fieldDescription><![CDATA[quoteNo]]></fieldDescription>
 	</field>
-	<field name="QUOTE_NO" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="QUOTE_NO"/>
-		<property name="com.jaspersoft.studio.field.label" value="QUOTE_NO"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="customerName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="customerName"/>
+		<fieldDescription><![CDATA[customerName]]></fieldDescription>
 	</field>
-	<field name="TITLE_DESC" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="TITLE_DESC"/>
-		<property name="com.jaspersoft.studio.field.label" value="TITLE_DESC"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	<field name="debitNoteNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="debitNoteNo"/>
+		<fieldDescription><![CDATA[debitNoteNo]]></fieldDescription>
 	</field>
-	<field name="CLIENT_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="CLIENT_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="CLIENT_NAME"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	<field name="address" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="address"/>
+		<fieldDescription><![CDATA[address]]></fieldDescription>
 	</field>
-	<field name="INVOICE_NO" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="DEBIT_NOTE_NO"/>
-		<property name="com.jaspersoft.studio.field.label" value="INVOICE_NO"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="inceptionDate" class="java.sql.Timestamp">
+		<property name="net.sf.jasperreports.json.field.expression" value="inceptionDate"/>
+		<fieldDescription><![CDATA[inceptionDate]]></fieldDescription>
 	</field>
-	<field name="Address_1" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ADDRESS_1"/>
-		<property name="com.jaspersoft.studio.field.label" value="Address_1"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	<field name="expiryDate" class="java.sql.Timestamp">
+		<property name="net.sf.jasperreports.json.field.expression" value="expiryDate"/>
+		<fieldDescription><![CDATA[expiryDate]]></fieldDescription>
 	</field>
-	<field name="REGION_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="STATE_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="REGION_NAME"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	<field name="renewalDate" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="renewalDate"/>
+		<fieldDescription><![CDATA[renewalDate]]></fieldDescription>
 	</field>
-	<field name="DISTRICT_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="CITY_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="DISTRICT_NAME"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	<field name="currency" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="currency"/>
+		<fieldDescription><![CDATA[currency]]></fieldDescription>
 	</field>
-	<field name="COUNTRY_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="COUNTRY_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="COUNTRY_NAME"/>
+	<field name="stickerNumber" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="stickerNumber"/>
+		<fieldDescription><![CDATA[stickerNumber]]></fieldDescription>
 	</field>
-	<field name="PO_BOX" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="PIN_CODE"/>
-		<property name="com.jaspersoft.studio.field.label" value="PO_BOX"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="personal_info"/>
+	<field name="insuranceTypeDesc" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="insuranceTypeDesc"/>
+		<fieldDescription><![CDATA[insuranceTypeDesc]]></fieldDescription>
 	</field>
-	<field name="FROM_DATE" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="INCEPTION_DATE"/>
-		<property name="com.jaspersoft.studio.field.label" value="FROM_DATE"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="premium" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="premium"/>
+		<fieldDescription><![CDATA[premium]]></fieldDescription>
 	</field>
-	<field name="TO_DATE" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="EXPIRY_DATE"/>
-		<property name="com.jaspersoft.studio.field.label" value="TO_DATE"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="vatPremium" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="vatPremium"/>
+		<fieldDescription><![CDATA[vatPremium]]></fieldDescription>
 	</field>
-	<field name="RENEWAL_DATE" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="EXPIRY_DATE"/>
-		<property name="com.jaspersoft.studio.field.label" value="RENEWAL_DATE"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="totalPremium" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="totalPremium"/>
+		<fieldDescription><![CDATA[totalPremium]]></fieldDescription>
 	</field>
-	<field name="CURRENCY" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="CURRENCY"/>
-		<property name="com.jaspersoft.studio.field.label" value="CURRENCY"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="branchName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="branchName"/>
+		<fieldDescription><![CDATA[branchName]]></fieldDescription>
 	</field>
-	<field name="STICKER_NUMBER" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="STICKER_NUMBER"/>
-		<property name="com.jaspersoft.studio.field.label" value="STICKER_NUMBER"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="approvedBy" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="approvedBy"/>
+		<fieldDescription><![CDATA[approvedBy]]></fieldDescription>
 	</field>
-	<field name="INSURANCE_COVER" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="INSURANCE_TYPE_DESC"/>
-		<property name="com.jaspersoft.studio.field.label" value="INSURANCE_COVER"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="motor_data_details"/>
+	<field name="userName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="userName"/>
+		<fieldDescription><![CDATA[userName]]></fieldDescription>
 	</field>
-	<field name="PREMIUM" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="PREMIUM"/>
-		<property name="com.jaspersoft.studio.field.label" value="PREMIUM"/>
+	<field name="noOfVehicle" class="java.lang.Integer">
+		<property name="net.sf.jasperreports.json.field.expression" value="noOfVehicle"/>
+		<fieldDescription><![CDATA[noOfVehicle]]></fieldDescription>
 	</field>
-	<field name="VAT" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="VAT"/>
-		<property name="com.jaspersoft.studio.field.label" value="VAT"/>
+	<field name="vehicleDetails" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="vehicleDetails"/>
+		<fieldDescription><![CDATA[vehicleDetails]]></fieldDescription>
 	</field>
-	<field name="TOTAL" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="TOTAL"/>
-		<property name="com.jaspersoft.studio.field.label" value="TOTAL"/>
-	</field>
-	<field name="PLACE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="BRANCH_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="PLACE"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
-	</field>
-	<field name="APPROVED_BY" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="APPROVED_BY"/>
-		<property name="com.jaspersoft.studio.field.label" value="APPROVED_BY"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
-	</field>
-	<field name="INTERMEDIARY" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="USER_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="INTERMEDIARY"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="login_user_info"/>
-	</field>
-	<field name="PREPARED_BY" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="USER_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="PREPARED_BY"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="login_user_info"/>
-	</field>
-	<field name="PRINTED_BY" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="USER_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="PRINTED_BY"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="login_user_info"/>
+	<field name="driverDetails" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="driverDetails"/>
+		<fieldDescription><![CDATA[driverDetails]]></fieldDescription>
 	</field>
 	<background>
 		<band splitType="Stretch"/>
@@ -411,7 +280,7 @@ WHERE
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{POLICY_NO}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{policyNo}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="280" y="0" width="140" height="14" uuid="669fb9af-ad6b-4120-b380-7675fb09586b"/>
@@ -446,7 +315,7 @@ WHERE
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{TITLE_DESC}+"."+$F{CLIENT_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{customerName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="100" height="14" uuid="d888abef-bbcc-42fc-b0a1-1d5165ef0d11"/>
@@ -471,7 +340,7 @@ WHERE
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{INVOICE_NO}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{debitNoteNo}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="100" height="14" uuid="6a58f576-8a24-45c9-9fde-8a1f8ee53929"/>
@@ -496,7 +365,7 @@ WHERE
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{Address_1}+", "+$F{PO_BOX}+", "+$F{REGION_NAME}+", "+$F{DISTRICT_NAME}+", "+$F{COUNTRY_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{address}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="100" height="25" uuid="70bad771-5317-4f85-872d-441ee0dab6b1"/>
@@ -534,7 +403,7 @@ WHERE
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{FROM_DATE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{inceptionDate}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="100" y="0" width="32" height="14" uuid="50a62b2a-59d0-4a29-9b79-352612d2ff82"/>
@@ -558,7 +427,7 @@ WHERE
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{TO_DATE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{expiryDate}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="240" y="0" width="315" height="14" uuid="daee1878-bbe4-4e3c-9514-24227d6d1d63"/>
@@ -596,7 +465,7 @@ WHERE
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new Date($F{RENEWAL_DATE}.getTime() + 24*60*60*1000))]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{renewalDate}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="240" y="0" width="315" height="14" uuid="bce8cc29-851c-4a49-b0a9-203bf6b0606f"/>
@@ -690,7 +559,7 @@ WHERE
 				<textElement verticalAlignment="Bottom">
 					<font isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{CURRENCY}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{currency}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="366" y="16" width="64" height="16" backcolor="#B3B3B3" uuid="a15da8ab-dc10-4b8c-9a6d-56d02ba06739"/>
@@ -703,7 +572,7 @@ WHERE
 				<textElement verticalAlignment="Bottom">
 					<font isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{CURRENCY}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{currency}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="366" y="32" width="64" height="16" backcolor="#B3B3B3" uuid="23424bfb-5fc7-4bd3-af9d-14ca22350f80"/>
@@ -716,7 +585,7 @@ WHERE
 				<textElement verticalAlignment="Bottom">
 					<font isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{CURRENCY}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{currency}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
 				<reportElement mode="Opaque" x="430" y="0" width="125" height="16" backcolor="#B3B3B3" uuid="e48d7d3b-4252-4c73-8d42-4e597a2e8082"/>
@@ -729,7 +598,7 @@ WHERE
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
 					<font isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{PREMIUM}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{premium}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
 				<reportElement mode="Opaque" x="430" y="16" width="125" height="16" backcolor="#B3B3B3" uuid="5546cfa0-28c6-4353-a647-f9f5bcd4858d"/>
@@ -742,7 +611,7 @@ WHERE
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
 					<font isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{VAT}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{vatPremium}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
 				<reportElement mode="Opaque" x="430" y="32" width="125" height="16" backcolor="#B3B3B3" uuid="ec9a3733-d0f4-4aed-a0ec-ea58c6f0e319"/>
@@ -755,7 +624,7 @@ WHERE
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
 					<font isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{TOTAL}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{totalPremium}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="15">
@@ -769,10 +638,10 @@ WHERE
 		</band>
 		<band height="95">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
-			<printWhenExpression><![CDATA[$F{ROWCOUNT} == 1]]></printWhenExpression>
+			<printWhenExpression><![CDATA[$F{noOfVehicle} == 1]]></printWhenExpression>
 			<textField>
 				<reportElement x="0" y="0" width="555" height="16" uuid="f06ac2d9-f957-4e9b-b39a-14ed63db5a36">
-					<printWhenExpression><![CDATA[$F{ROWCOUNT} == 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{noOfVehicle} == 1]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2">
 					<pen lineWidth="0.5"/>
@@ -780,11 +649,11 @@ WHERE
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Insurance Cover :    "+$F{INSURANCE_COVER}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Insurance Cover :    "+$F{insuranceTypeDesc}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="0" y="16" width="19" height="14" backcolor="#B3B3B3" uuid="365784f3-9f17-476a-b7ec-8d9f9624a9b1">
-					<printWhenExpression><![CDATA[$F{ROWCOUNT} == 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{noOfVehicle} == 1]]></printWhenExpression>
 				</reportElement>
 				<box>
 					<topPen lineWidth="0.5"/>
@@ -795,7 +664,7 @@ WHERE
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="19" y="16" width="41" height="14" backcolor="#B3B3B3" uuid="bbc46c51-d90e-4ae5-ba7b-8da39b004718">
-					<printWhenExpression><![CDATA[$F{ROWCOUNT} == 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{noOfVehicle} == 1]]></printWhenExpression>
 				</reportElement>
 				<box>
 					<topPen lineWidth="0.5"/>
@@ -811,17 +680,11 @@ WHERE
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
 					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
-					<printWhenExpression><![CDATA[$F{ROWCOUNT} == 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{noOfVehicle} == 1]]></printWhenExpression>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="TableDataSet 1" uuid="f8c257a9-238c-42c6-9371-fbdc5c5e58c4">
-						<datasetParameter name="pvPolicyNo">
-							<datasetParameterExpression><![CDATA[$P{pvPolicyNo}]]></datasetParameterExpression>
-						</datasetParameter>
-						<datasetParameter name="pvSticker">
-							<datasetParameterExpression><![CDATA[$F{STICKER_NUMBER}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<datasetRun subDataset="TableDataSet 1" uuid="fed5222c-d57e-437a-abee-57ad7a7c00c5">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("vehicleDetails")]]></dataSourceExpression>
 					</datasetRun>
 					<jr:column width="19" uuid="5ce3b4fa-5224-4afb-819e-5b80c96e29ff">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
@@ -845,7 +708,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{SNO}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{vehicleId}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -870,7 +733,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{REG_NO}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{registrationNumber}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -895,7 +758,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{MAKE}+" / "+$F{MODEL}+" / "+$F{TYPE}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{vehicleMake}+" / "+$F{vehcileModel}+" / "+$F{vehicleTypeDesc}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -920,7 +783,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{CC}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{cubicCapacity}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -945,7 +808,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{VEHYEAR}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{manufactureYear}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -970,7 +833,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$P{pvSticker}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{stickerNumber}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -995,7 +858,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{NO_OF_SEATS}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{seatingCapacity}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1020,7 +883,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{COLOR}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{colorDesc}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1045,7 +908,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{COVER_TYPE}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{policyTypeDesc}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1070,7 +933,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{WIND_SCREEN_AMT}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{windScreenSumInsuredLc}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1095,7 +958,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{SUM_INSURED}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{sumInsured}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1103,7 +966,7 @@ WHERE
 			</componentElement>
 			<textField>
 				<reportElement mode="Opaque" x="60" y="16" width="495" height="14" backcolor="#B3B3B3" uuid="c8e92bbb-ccf9-41e6-b6be-096f94c06e52">
-					<printWhenExpression><![CDATA[$F{ROWCOUNT} == 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{noOfVehicle} == 1]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2">
 					<topPen lineWidth="0.5"/>
@@ -1160,11 +1023,8 @@ WHERE
 					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="TableDataSet 2" uuid="a52a358d-0be8-431e-9000-0329c52029e0">
-						<datasetParameter name="pvQuoteNo">
-							<datasetParameterExpression><![CDATA[$F{QUOTE_NO}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<datasetRun subDataset="TableDataSet 2" uuid="ad56ba19-d4c8-46fb-abff-085ffc4b3cd9">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("driverDetails")]]></dataSourceExpression>
 					</datasetRun>
 					<jr:column width="40" uuid="e7dd8e40-e419-473b-86b3-b7ff64d6aaa2">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
@@ -1185,7 +1045,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{DRIVER_ID}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{driverId}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1207,7 +1067,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{DRIVER_NAME}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{driverName}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1229,7 +1089,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{DRIVER_TYPEDESC}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{driverTypeDesc}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1251,7 +1111,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{DRIVER_DOB}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{driverDOB}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1273,7 +1133,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{ID_NUMBER}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{iDNumber}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1295,7 +1155,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{chassis_number}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{chassisNumber}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1608,10 +1468,10 @@ WHERE
 			</break>
 		</band>
 		<band height="37">
-			<printWhenExpression><![CDATA[$F{ROWCOUNT} != 1]]></printWhenExpression>
+			<printWhenExpression><![CDATA[$F{noOfVehicle} != 1]]></printWhenExpression>
 			<textField>
 				<reportElement x="0" y="21" width="555" height="16" uuid="976d1b85-e853-4ef3-937a-15cfd06701d9">
-					<printWhenExpression><![CDATA[$F{ROWCOUNT} != 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{noOfVehicle} != 1]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2">
 					<pen lineWidth="0.5"/>
@@ -1619,11 +1479,11 @@ WHERE
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Insurance Cover :    "+$F{INSURANCE_COVER}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Insurance Cover :    "+$F{insuranceTypeDesc}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="5" width="555" height="16" uuid="c0d835d5-0996-4911-b0e5-d741fafd56cc">
-					<printWhenExpression><![CDATA[$F{ROWCOUNT} != 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{noOfVehicle} != 1]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2">
 					<pen lineWidth="0.5"/>
@@ -1631,14 +1491,14 @@ WHERE
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA["SCHEDULE FORMING PART AND ATTACHED TO POLICY NO  : "+$F{POLICY_NO}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["SCHEDULE FORMING PART AND ATTACHED TO POLICY NO  : "+$F{policyNo}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="76">
-			<printWhenExpression><![CDATA[$F{ROWCOUNT} != 1]]></printWhenExpression>
+			<printWhenExpression><![CDATA[$F{noOfVehicle} != 1]]></printWhenExpression>
 			<textField>
 				<reportElement mode="Opaque" x="0" y="0" width="19" height="14" backcolor="#B3B3B3" uuid="99c356c1-8bbe-4e74-bc1d-14cf670692ec">
-					<printWhenExpression><![CDATA[$F{ROWCOUNT} != 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{noOfVehicle} != 1]]></printWhenExpression>
 				</reportElement>
 				<box>
 					<topPen lineWidth="0.5"/>
@@ -1653,17 +1513,11 @@ WHERE
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
 					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
-					<printWhenExpression><![CDATA[$F{ROWCOUNT} != 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{noOfVehicle} != 1]]></printWhenExpression>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="TableDataSet 1" uuid="89a6f98a-0e07-4588-a6b7-ecca605179bf">
-						<datasetParameter name="pvPolicyNo">
-							<datasetParameterExpression><![CDATA[$P{pvPolicyNo}]]></datasetParameterExpression>
-						</datasetParameter>
-						<datasetParameter name="pvSticker">
-							<datasetParameterExpression><![CDATA[$F{STICKER_NUMBER}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<datasetRun subDataset="TableDataSet 1" uuid="b85565b3-fb1a-4e43-8e75-f3ec5315d358">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("vehicleDetails")]]></dataSourceExpression>
 					</datasetRun>
 					<jr:column width="19" uuid="42b2628a-dc58-491e-93c8-61af6c575382">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
@@ -1687,7 +1541,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{SNO}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{vehicleId}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1712,7 +1566,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{REG_NO}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{registrationNumber}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1737,7 +1591,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{MAKE}+" / "+$F{MODEL}+" / "+$F{TYPE}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{vehicleMake}+" / "+$F{vehcileModel}+" / "+$F{vehicleTypeDesc}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1762,7 +1616,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{CC}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{cubicCapacity}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1787,7 +1641,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{VEHYEAR}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{manufactureYear}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1812,7 +1666,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$P{pvSticker}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{stickerNumber}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1837,7 +1691,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{NO_OF_SEATS}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{seatingCapacity}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1862,7 +1716,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{COLOR}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{colorDesc}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1887,7 +1741,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{COVER_TYPE}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{policyTypeDesc}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1912,7 +1766,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{WIND_SCREEN_AMT}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{windScreenSumInsuredLc}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1937,7 +1791,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{SUM_INSURED}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{stickerNumber}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1945,7 +1799,7 @@ WHERE
 			</componentElement>
 			<textField>
 				<reportElement mode="Opaque" x="60" y="0" width="495" height="14" backcolor="#B3B3B3" uuid="aac2498c-d1e1-44ee-aa6e-c21e41a8dca8">
-					<printWhenExpression><![CDATA[$F{ROWCOUNT} != 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{noOfVehicle} != 1]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2">
 					<topPen lineWidth="0.5"/>
@@ -1960,7 +1814,7 @@ WHERE
 			</textField>
 			<textField>
 				<reportElement mode="Opaque" x="19" y="0" width="41" height="14" backcolor="#B3B3B3" uuid="8100d787-2fca-43d5-828c-626bd7ad2372">
-					<printWhenExpression><![CDATA[$F{ROWCOUNT} != 1]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{noOfVehicle} != 1]]></printWhenExpression>
 				</reportElement>
 				<box>
 					<topPen lineWidth="0.5"/>
@@ -1997,7 +1851,7 @@ WHERE
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{POLICY_NO}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{policyNo}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="12">
@@ -3521,7 +3375,7 @@ WHERE
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[(($F{PLACE} )== null? "Not Available" : $F{PLACE})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[(($F{branchName})== null? "Not Available" :$F{branchName})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="172" y="24" width="92" height="13" uuid="5efd3519-17bb-451b-9df4-a922e22510b6"/>
@@ -3555,7 +3409,7 @@ WHERE
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{INTERMEDIARY}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{userName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="37" width="60" height="13" uuid="a7e2f9ec-6ae5-48ab-af45-1fa42511e53c"/>
@@ -3583,7 +3437,7 @@ WHERE
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{APPROVED_BY}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{approvedBy}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="60" y="50" width="102" height="13" uuid="50c231c9-1a04-4d41-9c6f-7bd3cca9c8b6"/>
@@ -3591,7 +3445,7 @@ WHERE
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{PREPARED_BY}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{userName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="162" y="50" width="63" height="13" uuid="5789505f-6785-4a1e-9f5a-1eb62cab494c"/>
@@ -3629,7 +3483,7 @@ WHERE
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{PRINTED_BY}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{userName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="225" y="63" width="115" height="13" uuid="d5b94fd9-0433-4f25-9bf6-bce3748e9814"/>

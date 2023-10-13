@@ -1229,7 +1229,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy hh:mm:ss:SSS").format($F{dateofIssue})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format($F{dateofIssue})]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

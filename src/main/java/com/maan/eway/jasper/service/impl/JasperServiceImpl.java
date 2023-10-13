@@ -50,6 +50,7 @@ import com.maan.eway.jasper.req.PremiumReportReq;
 import com.maan.eway.jasper.res.CreditNoteRes;
 import com.maan.eway.jasper.res.JasperDocumentRes;
 import com.maan.eway.jasper.res.MotorCoverNoteRes;
+import com.maan.eway.jasper.res.MotorPrivateRes;
 import com.maan.eway.jasper.res.PremiumReportRes;
 import com.maan.eway.jasper.res.TaxInvoiceRes;
 import com.maan.eway.jasper.service.JasperService;
@@ -103,16 +104,11 @@ public class JasperServiceImpl implements JasperService {
 			CompanyProductMaster product =  getCompanyProductMasterDropdown(homeData.getCompanyId() , homeData.getProductId().toString());
 
 			Map<String, Object> input = new HashMap<String, Object>();
-			
-			// String directoryname=null ;
-			// File Save Path
 			String filePath = null;
 
 			if (StringUtils.isNotBlank(homeData.getPolicyNo())) {
 				input.put("pvPolicyNo", homeData.getPolicyNo());
 				input.put("pvImagepath", config.getImagePath().substring(1, config.getImagePath().length()-0));
-
-				// directoryname=homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "");
 				filePath = config.getPolicyPath() + "pdf";
 				getPdfOutFilePath = filePath + "/" + homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")
 						+ ".pdf";
@@ -120,8 +116,6 @@ public class JasperServiceImpl implements JasperService {
 			} else {
 				input.put("QuoteNo", req.getQuoteNo());
 				input.put("imagePath", config.getImagePath());
-
-				// directoryname=req.getQuoteNo().replaceAll("[\\/:*?\"<>|]*", "");
 				filePath = config.getDraftPath() + "pdf";
 				getPdfOutFilePath = filePath + "/" + req.getQuoteNo() + ".pdf";
 			}
@@ -156,7 +150,24 @@ public class JasperServiceImpl implements JasperService {
 					if(homeData.getEndtCount() != 0 && !homeData.getPolicyNo().equalsIgnoreCase(homeData.getOriginalPolicyNo())) {
 						res = getJasperPdfFile("/report/jasper/MotorEndorsementSchedule.jrxml", getPdfOutFilePath, input);
 					}else {
-						res = getJasperPdfFile("/report/jasper/MotorPrivate.jrxml", getPdfOutFilePath, input);
+						MotorPrivateRes motPrivateRes = jasperCustomeImple.getMotorPrivate(homeData.getPolicyNo());
+						String JsonString = gson.toJson(motPrivateRes);
+						try {
+							FileWriter filewriter = new FileWriter(policyReportPath.subSequence(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorPrivate.json",false);
+							filewriter.write(JsonString);
+							filewriter.close();
+							File file = new File(policyReportPath.subSequence(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorPrivate.json");
+							JsonDataSource ds = new JsonDataSource(file);
+							InputStream inputStream = this.getClass().getResourceAsStream("/report/jasper/MotorPrivate.jrxml");
+							JasperReport jr = JasperCompileManager.compileReport(inputStream);
+							JasperPrint jp = JasperFillManager.fillReport(jr, input,ds);
+							JasperExportManager.exportReportToPdfFile(jp, policyReportPath.subSequence(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorPrivate.pdf");
+							GetFileFromPath path = new GetFileFromPath(policyReportPath.subSequence(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorPrivate.pdf");
+							res.setPdfoutfile(path.call().getImgUrl());
+							res.setPdfoutfilepath(policyReportPath.subSequence(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- MotorPrivate.pdf");
+						}catch(Exception e) {
+							e.printStackTrace();
+						}
 					}
 				}else if(product.getMotorYn().equalsIgnoreCase("A")&& "42".equalsIgnoreCase(homeData.getProductId().toString())) {
 					String imagePath = config.getImagePath().substring(1,config.getImagePath().length()-0);
@@ -196,10 +207,10 @@ public class JasperServiceImpl implements JasperService {
 					input2.put("pvImagepath", config.getImagePath().substring(1,config.getImagePath().length()-0));
 					input2.put("pvSubReportPath",config.getJasperFilePath() + "report/jasper/");
 					String obj[] =new String[2];
-					obj[0]= config.getJasperFilePath() + "report/jasper/CoverageDetails.jrxml";
-					obj[1]= config.getJasperFilePath() +"report/jasper/SectionDetails.jrxml";              // for windows system
-//					obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jrxml";
-//					obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/SectionDetails.jrxml";		 // for linux system
+//					obj[0]= config.getJasperFilePath() + "report/jasper/CoverageDetails.jrxml";
+//					obj[1]= config.getJasperFilePath() +"report/jasper/SectionDetails.jrxml";              // for windows system
+					obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jrxml";
+					obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/SectionDetails.jrxml";		 // for linux system
                 for(String s :obj) {
 					// String jrxml_path=s.replace(".jasper", ".jrxml");
 					String path = JasperCompileManager.compileReportToFile(s);
