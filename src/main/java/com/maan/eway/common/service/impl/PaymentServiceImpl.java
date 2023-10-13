@@ -1680,8 +1680,8 @@ public class PaymentServiceImpl implements PaymentService {
 			data.setPaymentMode(req.getPaymentType());
 			data.setPaymentType(paymentDetail.getPaymentTypedesc());
 			data.setPaymentStatus(paymentInfo.getEmiYn().equalsIgnoreCase("N") ? paymentInfo.getPaymentStatus() :"Pending");
-			data.setEffectiveDate(new Date());
-			
+			data.setEffectiveDate(data.getInceptionDate());
+			data.setPolicyCovertedDate(new Date());			
 			homerepo.saveAndFlush(data);
 			// Update Emi 
 			if (  paymentInfo.getEmiYn().equalsIgnoreCase("Y" )) {

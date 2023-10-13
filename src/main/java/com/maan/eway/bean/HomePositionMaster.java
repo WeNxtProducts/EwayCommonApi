@@ -679,6 +679,10 @@ private BigDecimal       endtPremium ;
 @Column(name="ENDT_PREMIUM_LC")
 private BigDecimal       endtPremiumLc ;
 
+@Temporal(TemporalType.TIMESTAMP)
+@Column(name="POLICY_COVERTED_DATE")
+private Date       policyCovertedDate ;
+
 }
 
 
