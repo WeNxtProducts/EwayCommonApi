@@ -602,7 +602,8 @@ public class JasperServiceImpl implements JasperService {
 			LocalDate endDate =LocalDate.parse(req.getEndDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             Date date1 = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) ;
             Date date2 = Date.from(endDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) ;
-			List<Map<String,Object>> list =branchRepo.getPremiumReportDetails(req.getLoginId(), date1, date2, req.getBranchCode());
+            String branchCode =StringUtils.isBlank(req.getBranchCode())?"99999":req.getBranchCode();
+			List<Map<String,Object>> list =branchRepo.getPremiumReportDetails(req.getProductId(), branchCode, date1, date2, req.getLoginId());
 			if(list.size()>0) {
 				List<Map<String,Object>> dataRes =list.parallelStream().map( p->{
 					LinkedHashMap<String,Object> map =new LinkedHashMap<String,Object>();
@@ -619,6 +620,9 @@ public class JasperServiceImpl implements JasperService {
 					map.put("Premium", p.get("PERMIUM")==null?"":p.get("PERMIUM"));
 					map.put("PaymentType", p.get("PAYMENT_TYPE")==null?"":p.get("PAYMENT_TYPE"));
 					map.put("Currency", p.get("CURRENCY")==null?"":p.get("CURRENCY"));
+					map.put("PolicyDesc", p.get("POLICY_TYPE_DESC")==null?"":p.get("POLICY_TYPE_DESC"));
+					map.put("CommisionAmt", p.get("COMMISION_AMOUNT")==null?"":p.get("COMMISION_AMOUNT"));
+					map.put("ProductName", p.get("PRODUCT_NAME")==null?"":p.get("PRODUCT_NAME"));
 					return map;
 				}).collect(Collectors.toList());
 				

@@ -18,4 +18,7 @@ public class PremiumReportReq {
 	
 	@JsonProperty("LoginId")
 	private String loginId;
+	
+	@JsonProperty("ProductId")
+	private String productId;
 }
