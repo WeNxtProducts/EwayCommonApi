@@ -136,9 +136,9 @@ public class JasperServiceImpl implements JasperService {
 					Map<String, Object> input2 = new HashMap<String, Object>();
 					input2.put("pvImagePath", config.getImagePath().substring(1,config.getImagePath().length()-0));
 					input2.put("pvPolicyNo", homeData.getPolicyNo());
-					input2.put("pvSubReportPath",config.getJasperFilePath() + "report/jasper/");
+					input2.put("pvSubReportPath",config.getJasperFilePath().replaceAll("%20", " ")  + "report/jasper/");
 					String obj ="";
-					obj= config.getJasperFilePath() + "report/jasper/EwayTravelSubReport.jrxml";
+					obj= config.getJasperFilePath().replaceAll("%20", " ") + "report/jasper/EwayTravelSubReport.jrxml";
 					
 							//String jrxml_path=obj.replace(".jasper", ".jrxml");
 							String path = JasperCompileManager.compileReportToFile(obj);
@@ -205,7 +205,7 @@ public class JasperServiceImpl implements JasperService {
 					Map<String, Object> input2 = new HashMap<String, Object>();
 					input2.put("pvQuoteNo", req.getQuoteNo());
 					input2.put("pvImagepath", config.getImagePath().substring(1,config.getImagePath().length()-0));
-					input2.put("pvSubReportPath",config.getJasperFilePath() + "report/jasper/");
+					input2.put("pvSubReportPath",config.getJasperFilePath().replaceAll("%20", " ")  + "report/jasper/");
 					String obj[] =new String[2];
 //					obj[0]= config.getJasperFilePath() + "report/jasper/CoverageDetails.jrxml";
 //					obj[1]= config.getJasperFilePath() +"report/jasper/SectionDetails.jrxml";              // for windows system
@@ -545,6 +545,8 @@ public class JasperServiceImpl implements JasperService {
 			jasperParameter.put("pvBranch", req.getBranchCode());
 			jasperParameter.put("pvImagePath", imagepath);
 			jasperParameter.put("pvLoginId", req.getLoginId());
+			jasperParameter.put("pvProductId", req.getProductId());
+
 			
 
 			connection=config.getDataSourceForJasper().getConnection();
@@ -632,7 +634,7 @@ public class JasperServiceImpl implements JasperService {
 					map.put("PaymentType", p.get("PAYMENT_TYPE")==null?"":p.get("PAYMENT_TYPE"));
 					map.put("Currency", p.get("CURRENCY")==null?"":p.get("CURRENCY"));
 					map.put("PolicyDesc", p.get("POLICY_TYPE_DESC")==null?"":p.get("POLICY_TYPE_DESC"));
-					map.put("CommisionAmt", p.get("COMMISION_AMOUNT")==null?"":p.get("COMMISION_AMOUNT"));
+					map.put("CommisionAmt", p.get("COMMISSION_AMOUNT")==null?"":p.get("COMMISSION_AMOUNT"));
 					map.put("ProductName", p.get("PRODUCT_NAME")==null?"":p.get("PRODUCT_NAME"));
 					return map;
 				}).collect(Collectors.toList());

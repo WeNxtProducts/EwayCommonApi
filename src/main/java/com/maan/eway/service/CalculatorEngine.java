@@ -19,7 +19,7 @@ public interface CalculatorEngine {
 	EserviceMotorDetailsSaveRes  calculator(CalcEngine engine,String token);
 	EserviceMotorDetailsSaveRes referalCalculator(CalcEngine request);
 	 List<DebitAndCredit> commissionCalc(CalcCommission request);
-
+	 void loadOnetimetable(CalcEngine engine) ;
 	 List<AdminReferral> getReferalList(ReferralApi request);
 	 EserviceMotorDetailsSaveRes endorsementCalculator(CalcEngine request, BigDecimal endtCount,String endtTypeId,Boolean isPolicyDateEndt);
 }
