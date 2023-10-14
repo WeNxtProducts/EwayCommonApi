@@ -545,6 +545,8 @@ public class JasperServiceImpl implements JasperService {
 			jasperParameter.put("pvBranch", req.getBranchCode());
 			jasperParameter.put("pvImagePath", imagepath);
 			jasperParameter.put("pvLoginId", req.getLoginId());
+			jasperParameter.put("pvProductId", req.getProductId());
+
 			
 
 			connection=config.getDataSourceForJasper().getConnection();
@@ -632,7 +634,7 @@ public class JasperServiceImpl implements JasperService {
 					map.put("PaymentType", p.get("PAYMENT_TYPE")==null?"":p.get("PAYMENT_TYPE"));
 					map.put("Currency", p.get("CURRENCY")==null?"":p.get("CURRENCY"));
 					map.put("PolicyDesc", p.get("POLICY_TYPE_DESC")==null?"":p.get("POLICY_TYPE_DESC"));
-					map.put("CommisionAmt", p.get("COMMISION_AMOUNT")==null?"":p.get("COMMISION_AMOUNT"));
+					map.put("CommisionAmt", p.get("COMMISSION_AMOUNT")==null?"":p.get("COMMISSION_AMOUNT"));
 					map.put("ProductName", p.get("PRODUCT_NAME")==null?"":p.get("PRODUCT_NAME"));
 					return map;
 				}).collect(Collectors.toList());
