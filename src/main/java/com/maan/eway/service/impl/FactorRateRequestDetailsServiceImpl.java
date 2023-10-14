@@ -45,6 +45,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.gson.Gson;
 import com.maan.eway.bean.BankMaster;
 import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CurrencyMaster;
@@ -2078,7 +2079,7 @@ this.repository = repo;
 	private PolicyCoverDataRepository coverDataRepo;
 	
 	@Override
-	public UpdateCoverRes updateFactorRatePremiumDetails(UpdateFactorRateReq req) {
+	public synchronized UpdateCoverRes updateFactorRatePremiumDetails(UpdateFactorRateReq req) {
 		UpdateCoverRes res = new UpdateCoverRes();
 		try {
 			String agencyCode = "";
@@ -2315,20 +2316,28 @@ this.repository = repo;
 			engine.setMsVehicleDetails(null);
 			engine.setEffectiveDate(findCovers.get(0).getCoverPeriodFrom());
 			engine.setPolicyEndDate(findCovers.get(0).getCoverPeriodTo());
+			Gson json = new Gson();
+			log.info( "Referral Calc Request --> " +  json.toJson(engine) );
 			
 			EserviceMotorDetailsSaveRes resp=null;
 			if(StringUtils.isBlank(endtTypdId)) {
 				resp=calcEngine.referalCalculator(engine);
 			}else {
-				EndtTypeMaster endt=ratingutil.getEndtMasterData(engine.getInsuranceId(), engine.getProductId(),endtTypdId);
-				engine.setCoverModification(endt.getIsCoverendt());
-				List<PolicyCoverData> oldPolicyCovers = coverDataRepo
-						.findByQuoteNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndStatusOrderByCoverIdAsc(
-								endtPrevQuoteNo, Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
-								Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()), "Y");
-				calcEngine.loadOnetimetable(engine);
-				Boolean isPolicyDateEndt=((oldPolicyCovers.size()>0)? findCovers.get(0).getCoverPeriodTo().after(oldPolicyCovers.get(0).getCoverPeriodTo()):false);
-				resp=calcEngine.endorsementCalculator(engine,endtCount,endtTypdId,isPolicyDateEndt);
+				
+					EndtTypeMaster endt=ratingutil.getEndtMasterData(engine.getInsuranceId(), engine.getProductId(),endtTypdId);
+					engine.setCoverModification(endt.getIsCoverendt());
+					List<PolicyCoverData> oldPolicyCovers = coverDataRepo
+							.findByQuoteNoAndVehicleIdAndCompanyIdAndProductIdAndSectionIdAndStatusOrderByCoverIdAsc(
+									endtPrevQuoteNo, Integer.parseInt(engine.getVehicleId()), engine.getInsuranceId(),
+									Integer.parseInt(engine.getProductId()), Integer.parseInt(engine.getSectionId()), "Y");
+					
+					Boolean isPolicyDateEndt=((oldPolicyCovers.size()>0)? findCovers.get(0).getCoverPeriodTo().after(oldPolicyCovers.get(0).getCoverPeriodTo()):false);
+				
+				//	synchronized (engine) {
+						calcEngine.loadOnetimetable(engine);
+					resp=calcEngine.endorsementCalculator(engine,endtCount,endtTypdId,isPolicyDateEndt);
+				//}
+				
 			}
 			 
 		
