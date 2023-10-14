@@ -200,11 +200,11 @@ private static final long serialVersionUID = 1L;
     @Column(name="BRANCH_CODE", length=20)
     private String     branchCode ;
 
-    @Column(name="POLICY_HODER_TYPE_DESC", length=100)
-    private String     policyHoderTypeDesc ;
-
-    @Column(name="POLICY_HODER_TYPE_ID_DESC", length=100)
-    private String     policyHoderTypeIdDesc ;
+//    @Column(name="POLICY_HODER_TYPE_DESC", length=100)
+//    private String     policyHoderTypeDesc ;
+//
+//    @Column(name="POLICY_HODER_TYPE_ID_DESC", length=100)
+//    private String     policyHoderTypeIdDesc ;
 
     @Column(name="POLICY_HOLDER_TYPE_DESC", length=100)
     private String     policyHolderTypeDesc ;
