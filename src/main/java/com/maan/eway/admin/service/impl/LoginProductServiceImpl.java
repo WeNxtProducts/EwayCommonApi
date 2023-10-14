@@ -3034,7 +3034,7 @@ List<Error> errorList = new ArrayList<Error>();
 				res.setResponse("Updated Successfully ");
 				res.setSuccessId(productId);
 
-				dozerMapper.map(req, saveData);
+			//	dozerMapper.map(req, saveData);
 				saveData.setProductId(Integer.valueOf(productId));
 				saveData.setProductName(productName);
 				saveData.setEffectiveDateStart(startDate);
@@ -3053,7 +3053,7 @@ List<Error> errorList = new ArrayList<Error>();
 				saveData.setMakerYn(req.getCheckerYn());
 				saveData.setCreditYn(req.getCreditYn()==null?"N":req.getCreditYn());
 				saveData.setBackDays(req.getBackDays()==null?0:Integer.valueOf(req.getBackDays()));
-
+				saveData.setLoginId(login.getLoginId());
 				if ("5".equalsIgnoreCase(req.getProductId().toString())) {
 					saveData.setPolicyTypeId(req.getPolicyTypeId());
 					saveData.setPolicyTypeDesc(req.getPolicyTypeDesc());
