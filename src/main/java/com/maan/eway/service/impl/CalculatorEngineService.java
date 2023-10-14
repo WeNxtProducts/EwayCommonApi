@@ -507,8 +507,8 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 			/// Endoresment calculation
 			try {
-				String endtTypeId = vehicles.get(0).get("endtTypeId") == null ? ""
-						: vehicles.get(0).get("endtTypeId").toString();
+				String endtTypeId =vehicles!=null &&  vehicles.get(0).get("endtTypeId") == null ? ""
+						: vehicles!=null ?  vehicles.get(0).get("endtTypeId").toString() :"";
 				if (StringUtils.isNotBlank(endtTypeId) && !"0".equals(endtTypeId)) {
 					// referalCalculator = referalCalculator(engine);
 					return endorsementCalculator(engine, endtCount,endtTypeId,isPolicyPeriod);
