@@ -1218,7 +1218,7 @@ this.repository = repo;
 			LoginUserInfo userData = loginUserRepo.findByLoginId(req.getLoginId());	
 			BrokerPersonalDetailsGetRes personalInfo = new BrokerPersonalDetailsGetRes();
 			personalInfo = dozerMapper.map(userData, BrokerPersonalDetailsGetRes.class);
-			personalInfo.setCreditLimit(df.format(userData.getCreditLimit()).toString());
+			personalInfo.setCreditLimit(userData.getCreditLimit()!=null ?  df.format(userData.getCreditLimit()) : "");
 			
 			
 			// Response
