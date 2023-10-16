@@ -378,7 +378,7 @@ public class QuoteThreadServiceImpl implements QuoteThreadService {
  				List<Callable<Object>> queue2 = new ArrayList<Callable<Object>>();
  				
  				MyTaskList taskList2 = new MyTaskList(queue2);
- 				if( productThreads.getCoverQueue().size() > 0) {
+ 				if(productThreads.getCoverQueue()!=null && productThreads.getCoverQueue().size() > 0) {
  					threadCount = productThreads.getCoverQueue().size() ;
  	 				queue2.addAll(productThreads.getCoverQueue());
  	 				ForkJoinPool forkjoin = new ForkJoinPool(threadCount); 
