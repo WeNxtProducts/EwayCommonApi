@@ -80,6 +80,7 @@ import com.maan.eway.bean.PaymentRefno;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
 import com.maan.eway.bean.PolicyCoverDataIndividuals;
+import com.maan.eway.bean.PolicyDrcrDetail;
 import com.maan.eway.bean.ProductEmployeeDetails;
 import com.maan.eway.bean.SectionDataDetails;
 import com.maan.eway.bean.SeqPaymentid;
@@ -1786,7 +1787,7 @@ public class PaymentServiceImpl implements PaymentService {
 			String creditNo ="";
 			Date creditDate =null;
 			String creditTo = "";
-			BigDecimal commission = null;
+			BigDecimal commission = new BigDecimal(0);
 			BigDecimal commissionPercent = null;
 			if(filterCredit!=null && !filterCredit.isEmpty()) {
 			// Credit
@@ -1796,9 +1797,16 @@ public class PaymentServiceImpl implements PaymentService {
 			 
 			 
 			// Commision
-			 commission=policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") 
+			 List<DebitAndCredit> commissionList = policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") 
 						&& (o.getChargeCode().equals(new BigDecimal(1005)) || o.getChargeCode().equals(new BigDecimal(1001)) )
-						).collect(Collectors.toList()).get(0).getAmountFc();
+						).collect(Collectors.toList())	;
+			 for ( DebitAndCredit o : commissionList) {
+				 commission= commission.add(o.getAmountFc());
+				 
+			 };
+//			 commission= policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR") 
+//						&& (o.getChargeCode().equals(new BigDecimal(1005)) || o.getChargeCode().equals(new BigDecimal(1001)) )
+//					 	).collect(Collectors.toList()).get(0).getAmountFc();
 			 commissionPercent=	policyDetails.stream().filter( o -> o.getDrcrFlag().equalsIgnoreCase("CR")
 						&& (o.getChargeCode().equals(new BigDecimal(1007))
 								||

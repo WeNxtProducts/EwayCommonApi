@@ -507,8 +507,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 
 			/// Endoresment calculation
 			try {
-				String endtTypeId =vehicles!=null &&  vehicles.get(0).get("endtTypeId") == null ? ""
-						: vehicles!=null ?  vehicles.get(0).get("endtTypeId").toString() :"";
+				String endtTypeId = vehicles.get(0).get("endtTypeId") == null ? "" :  vehicles.get(0).get("endtTypeId").toString() ;
 				if (StringUtils.isNotBlank(endtTypeId) && !"0".equals(endtTypeId)) {
 					// referalCalculator = referalCalculator(engine);
 					return endorsementCalculator(engine, endtCount,endtTypeId,isPolicyPeriod);
@@ -1220,24 +1219,25 @@ public class CalculatorEngineService implements CalculatorEngine {
  				//List<EserviceMotorDetailsRes> motors = (List<EserviceMotorDetailsRes>) v1.getRiskDetails();
 				for (MotorDataDetails v : motors) {
 					Double commissionPercent = 0.0;
-					/*List<BrokerCommissionDetails> policylist = getPolicyName(request.getInsuranceId(),
-							request.getProductId(), request.getCreatedBy(), request.getAgencyCode(), v.getPolicyType());
+					//commissionPercent=v.getCommissionPercentage().doubleValue();
+					
+					List<BrokerCommissionDetails> policylist = getPolicyName(v.getCompanyId(),
+							v.getProductId().toString(), v.getLoginId(), v.getAgencyCode(), v.getPolicyType());
 					 
 						if(policylist.size()>0 && policylist!=null) {
 						
-					commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
+								commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
 							: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());
 						}
 						else {
 							commissionPercent=5.0;
-						}*/
-					commissionPercent=v.getCommissionPercentage().doubleValue();
+						}
 					
 					String premiumFc = v.getActualPremiumFc().toString();
 					String vatPremiumFc = v.getVatPremium()==null  ?"0" : v.getVatPremium().toPlainString();
 
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
-						premiumFc = v.getEndtPremium().toString();
+						premiumFc = v.getEndtPremium() ==null ? "0" : v.getEndtPremium().toString();
 						vatPremiumFc = v.getEndVatPremium()==null  ?"0" :  v.getEndVatPremium().toPlainString();
 					}
 
@@ -1351,7 +1351,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 									res.setStatus("Y");
 									res.setRiskId(v.getVehicleId());
 									res.setQuoteInfo(v1);
-									res.setSectionId(request.getSectionId());
+									res.setSectionId(v.getInsuranceClass());
 									resList.add(res);
 								}
 							}
@@ -1368,24 +1368,25 @@ public class CalculatorEngineService implements CalculatorEngine {
 				List<TravelPassengerDetails> motors = travelRepo.findByQuoteNoOrderByTravelIdAsc(request.getQuoteno());
 
  				for (TravelPassengerDetails v : motors) {
-
-					/*List<BrokerCommissionDetails> policylist = getPolicyName(request.getInsuranceId(),
-							request.getProductId(), request.getCreatedBy(), request.getAgencyCode(), v.getSectionId().toString());*/
-					 Double commissionPercent = v.getCommissionPercentage().doubleValue();
-					/*	if(policylist.size()>0 && policylist!=null) {
+ 					Double commissionPercent = 0.0;
+ 					// Double commissionPercent = v.getCommissionPercentage().doubleValue();
+ 					
+					List<BrokerCommissionDetails> policylist = getPolicyName(v.getCompanyId(),
+							v.getProductId().toString(), v.getLoginId(), v1.getQuoteDetails().getAgencyCode(), "99999");
+						if(policylist.size()>0 && policylist!=null) {
 						
-					commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
+							commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
 							: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());
 						}
 						else {
 							commissionPercent=5.0;
-						}*/
+						}
 					String premiumFc = v.getActualPremiumFc().toString();
-					String vatPremiumFc = v.getActualPremiumFc().toString();
+					String vatPremiumFc = String.valueOf( v.getOverallPremiumFc() -  v.getActualPremiumFc());
 
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
-						premiumFc = v1.getQuoteDetails().getEndtPremium().toPlainString();
-						vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax().toPlainString();
+						premiumFc = v.getEndtPremium() ==null ? "0" : v.getEndtPremium().toString();
+						vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax() ==null ?"0" : v1.getQuoteDetails().getEndtPremiumTax().toPlainString();
 					}
 
 					BigDecimal commission = new BigDecimal(premiumFc).multiply(new BigDecimal(commissionPercent))
@@ -1502,7 +1503,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 									res.setQuoteNo(request.getQuoteno());
 									res.setStatus("Y");
 									res.setQuoteInfo(v1);
-									res.setSectionId(request.getSectionId());
+									res.setSectionId(v.getSectionId().toString());
 									res.setRiskId(v.getTravelId().toString());
 									resList.add(res);
 								}
@@ -1520,24 +1521,29 @@ public class CalculatorEngineService implements CalculatorEngine {
 				List<BuildingRiskDetails> motors = buildingRepo.findByQuoteNoAndSectionIdNotOrderByRiskIdAsc(request.getQuoteno() ,"0");
 
  				for (BuildingRiskDetails v : motors) {
-
-					/*List<BrokerCommissionDetails> policylist = getPolicyName(request.getInsuranceId(),
-							request.getProductId(), request.getCreatedBy(), request.getAgencyCode(),"99999");*/
-					 Double commissionPercent = v.getCommissionPercentage().doubleValue();
-						/*if(policylist.size()>0 && policylist!=null) {
+ 					 Double commissionPercent = 0.0;
+					List<BrokerCommissionDetails> policylist = getPolicyName(v.getCompanyId(),
+							v.getProductId().toString(), v.getLoginId(), v.getAgencyCode(),"99999");
+					 // Double commissionPercent = v.getCommissionPercentage().doubleValue();
+						if(policylist.size()>0 && policylist!=null) {
 						
 					commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
 							: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());
 						}
 						else {
 							commissionPercent=5.0;
-						}*/
+						}
 					String premiumFc = v.getActualPremiumFc().toString();
-					String vatPremiumFc = v.getActualPremiumFc().toString();
+					String vatPremiumFc = String.valueOf( v.getOverallPremiumFc().subtract( v.getActualPremiumFc()));
 
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
-						premiumFc = v1.getQuoteDetails().getEndtPremium().toPlainString();
-						vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax().toPlainString();
+						premiumFc = v.getEndtPremium() ==null ? "0" : v.getEndtPremium().toString();
+						if(! premiumFc.equalsIgnoreCase("0") ) {
+							BigDecimal vatPremiumPercent = v1.getQuoteDetails().getEndtPremium().divide(new BigDecimal(premiumFc) );
+							vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax() ==null ?"0" : (v1.getQuoteDetails().getEndtPremiumTax().divide(vatPremiumPercent).setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP)).toPlainString();
+						//	vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax() ==null ?"0" : v1.getQuoteDetails().getEndtPremiumTax().toPlainString();
+
+						}
 					}
 
 					BigDecimal commission = new BigDecimal(premiumFc).multiply(new BigDecimal(commissionPercent))
@@ -1655,7 +1661,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 									res.setQuoteNo(request.getQuoteno());
 									res.setStatus("Y");
 									res.setQuoteInfo(v1);
-									res.setSectionId(request.getSectionId());
+									res.setSectionId(v.getSectionId());
 									res.setRiskId(v.getRiskId().toString());
 									resList.add(res);
 								}
@@ -1666,27 +1672,33 @@ public class CalculatorEngineService implements CalculatorEngine {
 				}
  				
  				// Human Icluded
- 				List<CommonDataDetails> humans = commonRepo.findByQuoteNoOrderByRiskIdAsc(request.getQuoteno());
+ 				List<CommonDataDetails> humans = commonRepo.findByQuoteNo(request.getQuoteno());
 
  				for (CommonDataDetails v : humans) {
 
-					/*List<BrokerCommissionDetails> policylist = getPolicyName(request.getInsuranceId(),
-							request.getProductId(), request.getCreatedBy(), request.getAgencyCode(),"99999");*/
-					 Double commissionPercent =v.getCommissionPercentage().doubleValue();
-					/*	if(policylist.size()>0 && policylist!=null) {
+					List<BrokerCommissionDetails> policylist = getPolicyName(v.getCompanyId(),
+							v.getProductId().toString(), v.getLoginId(), v.getAgencyCode(),"99999");
+					 Double commissionPercent =0.0 ; //v.getCommissionPercentage().doubleValue();
+						if(policylist.size()>0 && policylist!=null) {
 						
-					commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
+							commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
 							: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());
 						}
 						else {
 							commissionPercent=5.0;
-						}*/
+						}
 					String premiumFc = v.getActualPremiumFc().toString();
-					String vatPremiumFc = v.getActualPremiumFc().toString();
+					String vatPremiumFc =String.valueOf( v.getOverallPremiumFc().subtract( v.getActualPremiumFc()));
 
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
-						premiumFc = v1.getQuoteDetails().getEndtPremium().toPlainString();
-						vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax().toPlainString();
+						premiumFc = v.getEndtPremium() ==null ? "0" : v.getEndtPremium().toString();
+						if(! premiumFc.equalsIgnoreCase("0") ) {
+							BigDecimal vatPremiumPercent = v1.getQuoteDetails().getEndtPremium().divide(new BigDecimal(premiumFc) );
+							vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax() ==null ?"0" : (v1.getQuoteDetails().getEndtPremiumTax().divide(vatPremiumPercent).setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP)).toPlainString();
+						//	vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax() ==null ?"0" : v1.getQuoteDetails().getEndtPremiumTax().toPlainString();
+
+						}
+
 					}
 
 					BigDecimal commission = new BigDecimal(premiumFc).multiply(new BigDecimal(commissionPercent))
@@ -1805,7 +1817,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 								res.setQuoteNo(request.getQuoteno());
 								res.setStatus("Y");
 								res.setQuoteInfo(v1);
-								res.setSectionId(request.getSectionId());
+								res.setSectionId(v.getSectionId());
 								res.setRiskId(v.getRiskId().toString());
 								resList.add(res);
 							}
@@ -1824,23 +1836,29 @@ public class CalculatorEngineService implements CalculatorEngine {
 
  				for (CommonDataDetails v : motors) {
 
-					/*List<BrokerCommissionDetails> policylist = getPolicyName(request.getInsuranceId(),
-							request.getProductId(), request.getCreatedBy(), request.getAgencyCode(),"99999");*/
+					List<BrokerCommissionDetails> policylist = getPolicyName(v.getCompanyId(),
+							v.getProductId().toString(), v.getLoginId(), v.getAgencyCode(),"99999");
 					 Double commissionPercent =v.getCommissionPercentage().doubleValue();
-					/*	if(policylist.size()>0 && policylist!=null) {
+						if(policylist.size()>0 && policylist!=null) {
 						
 					commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
 							: Double.valueOf(policylist.get(0).getCommissionPercentage().toString());
 						}
 						else {
 							commissionPercent=5.0;
-						}*/
+						}
 					String premiumFc = v.getActualPremiumFc().toString();
-					String vatPremiumFc = v.getActualPremiumFc().toString();
+					String vatPremiumFc = String.valueOf( v.getOverallPremiumFc().subtract( v.getActualPremiumFc()));
 
 					if (StringUtils.isNotBlank(v1.getQuoteDetails().getEndtTypeId())) {
-						premiumFc = v1.getQuoteDetails().getEndtPremium().toPlainString();
-						vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax().toPlainString();
+						premiumFc = v.getEndtPremium() ==null ? "0" : v.getEndtPremium().toString();
+						if(! premiumFc.equalsIgnoreCase("0") ) {
+							BigDecimal vatPremiumPercent = v1.getQuoteDetails().getEndtPremium().divide(new BigDecimal(premiumFc) );
+							vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax() ==null ?"0" : (v1.getQuoteDetails().getEndtPremiumTax().divide(vatPremiumPercent).setScale(new MathContext(3, RoundingMode.HALF_UP).getPrecision(), RoundingMode.HALF_UP)).toPlainString();
+						//	vatPremiumFc = v1.getQuoteDetails().getEndtPremiumTax() ==null ?"0" : v1.getQuoteDetails().getEndtPremiumTax().toPlainString();
+
+						}
+
 					}
 
 					BigDecimal commission = new BigDecimal(premiumFc).multiply(new BigDecimal(commissionPercent))
@@ -1959,7 +1977,7 @@ public class CalculatorEngineService implements CalculatorEngine {
 								res.setQuoteNo(request.getQuoteno());
 								res.setStatus("Y");
 								res.setQuoteInfo(v1);
-								res.setSectionId(request.getSectionId());
+								res.setSectionId(v.getSectionId());
 								res.setRiskId(v.getRiskId().toString());
 								resList.add(res);
 							}
