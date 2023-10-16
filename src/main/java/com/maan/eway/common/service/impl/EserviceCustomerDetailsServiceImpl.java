@@ -942,9 +942,10 @@ public class EserviceCustomerDetailsServiceImpl implements EserviceCustomerDetai
 				personalInforepo.save(savePersonalInfo);
 			}
 			}else if(StringUtils.isNotBlank(req.getType())) {
-				if("b2c".equalsIgnoreCase(req.getType().toString())) {
+				HomePositionMaster homedata=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
+				if("b2c".equalsIgnoreCase(req.getType().toString()) && homedata !=null ) {
 					PersonalInfo savePersonalInfo=new PersonalInfo();
-					HomePositionMaster homedata=homePosistionRepo.findByQuoteNo(req.getQuoteNo());
+					
 				//	PersonalInfo personalInfodata=personalInforepo.findByCustomerId(homedata.getCustomerId());
 					dozerMapper.map(req, saveData);
 					savePersonalInfo.setPinCode(req.getPinCode());
