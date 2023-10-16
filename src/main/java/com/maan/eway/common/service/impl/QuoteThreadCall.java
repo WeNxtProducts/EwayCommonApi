@@ -1100,9 +1100,12 @@ public class QuoteThreadCall implements Callable<Object>  {
 			if(eserBuild.getEndorsementType()!=null) {
 				String prevQuoteNo=eserBuild.getEndtPrevQuoteNo();
 				List<PolicyCoverData>  Endtcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(request.getQuoteNo() ,0, 0);
-				endtPremium = updateEndtPremium(request.getQuoteNo(),eserBuild.getEndorsementEffdate(),prevQuoteNo, eserBuild.getRiskId(),Endtcovers,Integer.valueOf(bulildDetails.getProductId()) , Integer.valueOf(bulildDetails.getSectionId()));				
-				eserBuild.setEndtPremium(endtPremium.doubleValue());
-				bulildDetails.setEndtPremium(endtPremium.doubleValue());
+				if(! "0".equalsIgnoreCase(bulildDetails.getSectionId()) ) {
+					endtPremium = updateEndtPremium(request.getQuoteNo(),eserBuild.getEndorsementEffdate(),prevQuoteNo, eserBuild.getRiskId(),Endtcovers,Integer.valueOf(bulildDetails.getProductId()) , Integer.valueOf(bulildDetails.getSectionId()));				
+						
+				}
+				eserBuild.setEndtPremium(endtPremium!=null ? endtPremium.doubleValue() : null);
+				bulildDetails.setEndtPremium(endtPremium!=null ? endtPremium.doubleValue() : null);
 			}
 			// Map
 			if(premiumCovers.size()> 0 ) {
