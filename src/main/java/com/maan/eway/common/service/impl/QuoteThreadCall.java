@@ -108,7 +108,10 @@ import com.maan.eway.repository.TravelPassengerDetailsRepository;
 import com.maan.eway.repository.TravelPassengerHistoryRepository;
 import com.maan.eway.res.SuccessRes;
 
+import lombok.Data;
 
+
+@Data
 public class QuoteThreadCall implements Callable<Object>  {
 	
 	private Logger log = LogManager.getLogger(getClass());
@@ -339,7 +342,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			if(eserCommonData.getEndorsementType()!=null) {
 				String prevQuoteNo=eserCommonData.getEndtPrevQuoteNo();
 				List<PolicyCoverData>  Endtcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(request.getQuoteNo() ,0, 0);
-				endtPremium = updateEndtPremium(request.getQuoteNo(),eserCommonData.getEndorsementEffdate(),prevQuoteNo, eserCommonData.getRiskId(),Endtcovers);				
+				endtPremium = updateEndtPremium(request.getQuoteNo(),eserCommonData.getEndorsementEffdate(),prevQuoteNo, eserCommonData.getRiskId(),Endtcovers,Integer.valueOf(eserCommonData.getProductId()) , Integer.valueOf(eserCommonData.getSectionId()) );				
 				eserCommonData.setEndtPremium(endtPremium.doubleValue());
 				commonData.setEndtPremium(endtPremium.doubleValue());
 			} 
@@ -378,7 +381,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 		return res;
 	}
 	
-	private BigDecimal updateEndtPremium(String quoteNo,Date effDate,String prevQuoteNo,Integer riskId, List<PolicyCoverData> covers) {
+	private BigDecimal updateEndtPremium(String quoteNo,Date effDate,String prevQuoteNo,Integer riskId, List<PolicyCoverData> covers, Integer productId , Integer sectionId ) {
 		try {
 			List<PolicyCoverData> newCovers=null;
 			List<PolicyCoverData>  totalcovers =null;
@@ -390,8 +393,8 @@ public class QuoteThreadCall implements Callable<Object>  {
 				 oldcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdAndStatusNotOrderByVehicleIdAsc(prevQuoteNo ,0, 0 ,"D");
 			 }else {
 				 newCovers=covers.stream().filter(i -> i.getVehicleId().doubleValue()==riskId.doubleValue()).collect(Collectors.toList());
-				 totalcovers = coverRepo.findByQuoteNoAndVehicleIdOrderByVehicleIdAsc(quoteNo,riskId);
-				 oldcovers = coverRepo.findByQuoteNoAndVehicleIdAndDiscLoadIdAndTaxIdAndStatusNotOrderByVehicleIdAsc(prevQuoteNo ,riskId,0, 0 ,"D");
+				 totalcovers = coverRepo.findByQuoteNoAndVehicleIdAndProductIdAndSectionIdOrderByVehicleIdAsc(quoteNo,riskId,productId,sectionId);
+				 oldcovers = coverRepo.findByQuoteNoAndVehicleIdAndDiscLoadIdAndTaxIdAndStatusNotAndProductIdAndSectionIdOrderByVehicleIdAsc(prevQuoteNo ,riskId,0, 0 ,"D",productId,sectionId);
 			 }
 			
 			Double removedCoverPremium =  (totalcovers.stream().filter( o ->   o.getPremiumIncludedTaxFc()!=null 
@@ -593,7 +596,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			if(eserMotors.getEndorsementType()!=null) {
 				String prevQuoteNo=eserMotors.getEndtPrevQuoteNo();
 				List<PolicyCoverData>  Endtcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(request.getQuoteNo() ,0, 0);
-				BigDecimal endtPremium = updateEndtPremium(request.getQuoteNo(),eserMotors.getEndorsementEffdate(),prevQuoteNo, eserMotors.getRiskId(),Endtcovers);				
+				BigDecimal endtPremium = updateEndtPremium(request.getQuoteNo(),eserMotors.getEndorsementEffdate(),prevQuoteNo, eserMotors.getRiskId(),Endtcovers,Integer.valueOf(eserMotors.getProductId()) , Integer.valueOf(eserMotors.getSectionId()));				
 				eserMotors.setEndtPremium(endtPremium.doubleValue());
 				refinedMotor.setEndtPremium(endtPremium.doubleValue());
 				Double endtVatPremium = premiumCovers.stream().filter( o -> !o.getDiscLoadId().equals(0) && o.getCoverageType().equals("T") ).mapToDouble( o ->   o.getTaxAmount().doubleValue()  ).sum();
@@ -1097,7 +1100,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			if(eserBuild.getEndorsementType()!=null) {
 				String prevQuoteNo=eserBuild.getEndtPrevQuoteNo();
 				List<PolicyCoverData>  Endtcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(request.getQuoteNo() ,0, 0);
-				endtPremium = updateEndtPremium(request.getQuoteNo(),eserBuild.getEndorsementEffdate(),prevQuoteNo, eserBuild.getRiskId(),Endtcovers);				
+				endtPremium = updateEndtPremium(request.getQuoteNo(),eserBuild.getEndorsementEffdate(),prevQuoteNo, eserBuild.getRiskId(),Endtcovers,Integer.valueOf(bulildDetails.getProductId()) , Integer.valueOf(bulildDetails.getSectionId()));				
 				eserBuild.setEndtPremium(endtPremium.doubleValue());
 				bulildDetails.setEndtPremium(endtPremium.doubleValue());
 			}
@@ -1280,7 +1283,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 				if(eserTravel.getEndorsementType()!=null && passengerCount <= 0) {
 					String prevQuoteNo=eserTravel.getEndtPrevQuoteNo();
 					List<PolicyCoverData>  Endtcovers = coverRepo.findByQuoteNoAndDiscLoadIdAndTaxIdOrderByVehicleIdAsc(request.getQuoteNo() ,0, 0);
-					BigDecimal endtPremium = updateEndtPremium(request.getQuoteNo(),eserTravel.getEndorsementEffdate(),prevQuoteNo, 0,Endtcovers);				
+					BigDecimal endtPremium = updateEndtPremium(request.getQuoteNo(),eserTravel.getEndorsementEffdate(),prevQuoteNo, 0,Endtcovers,Integer.valueOf(eserTravel.getProductId()) , Integer.valueOf(eserTravel.getSectionId()));				
 					eserTravel.setEndtPremium(endtPremium.doubleValue());
 					
 					// Copy Previuos Data 
@@ -1835,7 +1838,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 
 						
 			
-						BigDecimal endtPremium = updateEndtPremium(request.getQuoteNo(),effDate,ref.getEndtPrevQuoteNo(),ref.getRiskId() ,Endtcovers);
+						BigDecimal endtPremium = updateEndtPremium(request.getQuoteNo(),effDate,ref.getEndtPrevQuoteNo(),ref.getRiskId() ,Endtcovers,Integer.valueOf(motorData.getProductId()) , Integer.valueOf(motorData.getSectionId()));
 						motorData.setEndtPremium(endtPremium.doubleValue());
 						
 						motorData.setActualPremiumFc(endtPremium.doubleValue());
@@ -2711,7 +2714,7 @@ public class QuoteThreadCall implements Callable<Object>  {
 			//Overall Endt Premium
 			if(StringUtils.isNotBlank(home.getEndtTypeId())) {
 				 
-				BigDecimal endtPremium = updateEndtPremium(request.getQuoteNo(),home.getEndorsementEffdate(),home.getEndtPrevQuoteNo(),0,covers);
+				BigDecimal endtPremium = updateEndtPremium(request.getQuoteNo(),home.getEndorsementEffdate(),home.getEndtPrevQuoteNo(),0,covers,null,null);
 					
 				endtChargeOrRefund="REFUND";
 				if(endtPremium.doubleValue()>=0) {

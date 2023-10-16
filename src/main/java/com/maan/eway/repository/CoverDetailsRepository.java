@@ -74,5 +74,11 @@ public interface CoverDetailsRepository  extends JpaRepository<PolicyCoverData,P
 	@Transactional
 	void deleteByQuoteNoNotAndEndtCountAndOriginalPolicyNo(String quoteNo, BigDecimal bigDecimal, String originalPolicyNo);
 
+	List<PolicyCoverData> findByQuoteNoAndVehicleIdAndProductIdAndSectionIdOrderByVehicleIdAsc(String quoteNo,
+			Integer riskId, Integer productId, Integer sectionId);
+
+	List<PolicyCoverData> findByQuoteNoAndVehicleIdAndDiscLoadIdAndTaxIdAndStatusNotAndProductIdAndSectionIdOrderByVehicleIdAsc(
+			String prevQuoteNo, Integer riskId, int i, int j, String string, Integer productId, Integer sectionId);
+
 
 }
