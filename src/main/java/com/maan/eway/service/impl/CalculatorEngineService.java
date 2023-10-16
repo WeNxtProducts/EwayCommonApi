@@ -1220,9 +1220,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 				for (MotorDataDetails v : motors) {
 					Double commissionPercent = 0.0;
 					//commissionPercent=v.getCommissionPercentage().doubleValue();
-					
+					String loginId = "b2c".equalsIgnoreCase(v.getSourceType()) ? "guest" : v.getLoginId() ;
 					List<BrokerCommissionDetails> policylist = getPolicyName(v.getCompanyId(),
-							v.getProductId().toString(), v.getLoginId(), v.getBrokerCode(), v.getPolicyType());
+							v.getProductId().toString(), loginId, v.getBrokerCode(), v.getPolicyType());
 					 
 						if(policylist.size()>0 && policylist!=null) {
 						
@@ -1370,9 +1370,9 @@ public class CalculatorEngineService implements CalculatorEngine {
  				for (TravelPassengerDetails v : motors) {
  					Double commissionPercent = 0.0;
  					// Double commissionPercent = v.getCommissionPercentage().doubleValue();
- 					
+ 					String loginId = "b2c".equalsIgnoreCase(v.getSourceType()) ? "guest" : v.getLoginId() ;
 					List<BrokerCommissionDetails> policylist = getPolicyName(v.getCompanyId(),
-							v.getProductId().toString(), v.getLoginId(), v1.getQuoteDetails().getBrokerCode(), "99999");
+							v.getProductId().toString(), loginId, v1.getQuoteDetails().getBrokerCode(), "99999");
 						if(policylist.size()>0 && policylist!=null) {
 						
 							commissionPercent = policylist.get(0).getCommissionPercentage().toString() == null ? 0
@@ -1522,8 +1522,9 @@ public class CalculatorEngineService implements CalculatorEngine {
 
  				for (BuildingRiskDetails v : motors) {
  					 Double commissionPercent = 0.0;
+ 					String loginId = "b2c".equalsIgnoreCase(v.getSourceType()) ? "guest" : v.getLoginId() ;
 					List<BrokerCommissionDetails> policylist = getPolicyName(v.getCompanyId(),
-							v.getProductId().toString(), v.getLoginId(), v.getBrokerCode(),"99999");
+							v.getProductId().toString(), loginId, v.getBrokerCode(),"99999");
 					 // Double commissionPercent = v.getCommissionPercentage().doubleValue();
 						if(policylist.size()>0 && policylist!=null) {
 						
@@ -1675,9 +1676,9 @@ public class CalculatorEngineService implements CalculatorEngine {
  				List<CommonDataDetails> humans = commonRepo.findByQuoteNo(request.getQuoteno());
 
  				for (CommonDataDetails v : humans) {
-
+ 					String loginId = "b2c".equalsIgnoreCase(v.getSourceType()) ? "guest" : v.getLoginId() ;
 					List<BrokerCommissionDetails> policylist = getPolicyName(v.getCompanyId(),
-							v.getProductId().toString(), v.getLoginId(), v.getBrokerCode(),"99999");
+							v.getProductId().toString(), loginId, v.getBrokerCode(),"99999");
 					 Double commissionPercent =0.0 ; //v.getCommissionPercentage().doubleValue();
 						if(policylist.size()>0 && policylist!=null) {
 						
@@ -1835,9 +1836,9 @@ public class CalculatorEngineService implements CalculatorEngine {
  				List<CommonDataDetails> motors = commonRepo.findByQuoteNoOrderByRiskIdAsc(request.getQuoteno());
 
  				for (CommonDataDetails v : motors) {
-
+ 					String loginId = "b2c".equalsIgnoreCase(v.getSourceType()) ? "guest" : v.getLoginId() ;
 					List<BrokerCommissionDetails> policylist = getPolicyName(v.getCompanyId(),
-							v.getProductId().toString(), v.getLoginId(), v.getBrokerCode(),"99999");
+							v.getProductId().toString(), loginId, v.getBrokerCode(),"99999");
 					 Double commissionPercent =v.getCommissionPercentage().doubleValue();
 						if(policylist.size()>0 && policylist!=null) {
 						
