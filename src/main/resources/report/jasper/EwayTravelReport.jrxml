@@ -2,7 +2,7 @@
 <!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="EwayTravelReport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a38c4307-b80c-4367-9551-f8676f2c35b4">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwayTravelReport"/>
 	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
 		<box>
 			<pen lineWidth="0.5" lineColor="#000000"/>
@@ -31,146 +31,100 @@
 		</box>
 	</style>
 	<subDataset name="Table Dataset1" uuid="30f1d43b-5352-4c00-81a2-ae4c9d840938">
-		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter4.xml"/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwayTravelReport"/>
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-		<parameter name="pvPolicyNo" class="java.lang.String"/>
-		<queryString>
-			<![CDATA[SELECT ROW_NUMBER() OVER (ORDER BY PASSENGER_NAME) AS SNO,UPPER(PASSENGER_NAME) PASSANGER_NAME,DOB,AGE,RELATION_DESC,PASSPORT_NO,TRAVEL_COVER_DURATION FROM TRAVEL_PASSENGER_DETAILS  WHERE QUOTE_NO = (SELECT QUOTE_NO FROM HOME_POSITION_MASTER WHERE POLICY_NO =  $P{pvPolicyNo} ) order by PASSENGER_NAME]]>
+		<queryString language="JSON">
+			<![CDATA[passangerDetails]]>
 		</queryString>
-		<field name="SNO" class="java.math.BigDecimal">
-			<property name="com.jaspersoft.studio.field.name" value="SNO"/>
-			<property name="com.jaspersoft.studio.field.label" value="SNO"/>
+		<field name="passengerName" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="passengerName"/>
+			<fieldDescription><![CDATA[passengerName]]></fieldDescription>
 		</field>
-		<field name="PASSANGER_NAME" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="PASSANGER_NAME"/>
-			<property name="com.jaspersoft.studio.field.label" value="PASSANGER_NAME"/>
+		<field name="dob" class="java.sql.Timestamp">
+			<property name="net.sf.jasperreports.json.field.expression" value="dob"/>
+			<fieldDescription><![CDATA[dob]]></fieldDescription>
 		</field>
-		<field name="DOB" class="java.sql.Timestamp">
-			<property name="com.jaspersoft.studio.field.name" value="DOB"/>
-			<property name="com.jaspersoft.studio.field.label" value="DOB"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="travel_passenger_details"/>
+		<field name="age" class="java.lang.Integer">
+			<property name="net.sf.jasperreports.json.field.expression" value="age"/>
+			<fieldDescription><![CDATA[age]]></fieldDescription>
 		</field>
-		<field name="AGE" class="java.math.BigDecimal">
-			<property name="com.jaspersoft.studio.field.name" value="AGE"/>
-			<property name="com.jaspersoft.studio.field.label" value="AGE"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="travel_passenger_details"/>
+		<field name="relationDesc" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="relationDesc"/>
+			<fieldDescription><![CDATA[relationDesc]]></fieldDescription>
 		</field>
-		<field name="RELATION_DESC" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="RELATION_DESC"/>
-			<property name="com.jaspersoft.studio.field.label" value="RELATION_DESC"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="travel_passenger_details"/>
+		<field name="passportNo" class="java.lang.String">
+			<property name="net.sf.jasperreports.json.field.expression" value="passportNo"/>
+			<fieldDescription><![CDATA[passportNo]]></fieldDescription>
 		</field>
-		<field name="PASSPORT_NO" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="PASSPORT_NO"/>
-			<property name="com.jaspersoft.studio.field.label" value="PASSPORT_NO"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="travel_passenger_details"/>
+		<field name="travelCoverDuration" class="java.lang.Integer">
+			<property name="net.sf.jasperreports.json.field.expression" value="travelCoverDuration"/>
+			<fieldDescription><![CDATA[travelCoverDuration]]></fieldDescription>
 		</field>
-		<field name="TRAVEL_COVER_DURATION" class="java.math.BigDecimal">
-			<property name="com.jaspersoft.studio.field.name" value="TRAVEL_COVER_DURATION"/>
-			<property name="com.jaspersoft.studio.field.label" value="TRAVEL_COVER_DURATION"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="travel_passenger_details"/>
+		<field name="sno" class="java.lang.Integer">
+			<property name="net.sf.jasperreports.json.field.expression" value="sno"/>
+			<fieldDescription><![CDATA[sno]]></fieldDescription>
 		</field>
 	</subDataset>
 	<parameter name="pvImagePath" class="java.lang.String"/>
-	<parameter name="pvPolicyNo" class="java.lang.String"/>
 	<parameter name="pvSubReportPath" class="java.lang.String"/>
-	<queryString language="SQL">
-		<![CDATA[SELECT 
-HPM.QUOTE_NO,
-HPM.POLICY_NO,
-(SELECT UPPER(CONCAT(CONCAT(PIF.TITLE_DESC,'.'),PIF.CLIENT_NAME)) FROM personal_info  PIF WHERE PIF.Customer_Id=HPM.Customer_Id) AS INSURED_NAME,
-(SELECT PIF.Address_1 FROM personal_info PIF WHERE PIF.Customer_Id=HPM.Customer_Id) AS ADDRESS1,
-(SELECT PIF.Address_2 FROM personal_info PIF WHERE PIF.Customer_Id=HPM.Customer_Id) AS ADDRESS2,
-(SELECT TELEPHONE_NO_1 FROM PERSONAL_INFO PI WHERE PI.CUSTOMER_ID = HPM.CUSTOMER_ID) AS PHONE_NUMBER,
-(SELECT AGENCY_CODE FROM EWAY_LOGIN_MASTER LM WHERE LM.LOGIN_ID = HPM.LOGIN_ID) AS AGENCY_CODE,
-HPM.inception_date AS FROM_DATE,
-HPM.expiry_date AS TO_DATE,
-HPM.CURRENCY AS CURRENCY,
-CASE WHEN HPM.CURRENCY IN (
-    SELECT 
-      CURRENCY_ID 
-    FROM 
-      EWAY_INSURANCE_COMPANY_MASTER 
-    WHERE 
-      HPM.COMPANY_ID = COMPANY_ID
-  ) THEN (SELECT SUM(OVERALL_PREMIUM_LC) FROM TRAVEL_PASSENGER_DETAILS TPD WHERE TPD.QUOTE_NO=HPM.QUOTE_NO)
-  ELSE (SELECT SUM(OVERALL_PREMIUM_FC) FROM TRAVEL_PASSENGER_DETAILS TPD WHERE TPD.QUOTE_NO=HPM.QUOTE_NO)
-  END AS OVERALL_PREMIUM,
-  CASE WHEN HPM.CURRENCY IN (
-    SELECT 
-      CURRENCY_ID 
-    FROM 
-      EWAY_INSURANCE_COMPANY_MASTER 
-    WHERE 
-      HPM.COMPANY_ID = COMPANY_ID
-  ) THEN (SELECT SUM(ACTUAL_PREMIUM_LC) FROM TRAVEL_PASSENGER_DETAILS TPD WHERE TPD.QUOTE_NO=HPM.QUOTE_NO)
-  ELSE (SELECT SUM(ACTUAL_PREMIUM_FC) FROM TRAVEL_PASSENGER_DETAILS TPD WHERE TPD.QUOTE_NO=HPM.QUOTE_NO)
-  END AS PREMIUM,
-  (SELECT COUNT(*) FROM TRAVEL_PASSENGER_DETAILS TPD WHERE TPD.QUOTE_NO=HPM.QUOTE_NO) AS NO_OF_PASSENGER
-FROM
-HOME_POSITION_MASTER HPM
-WHERE
-    HPM.PRODUCT_ID='4'
-AND HPM.STATUS='P'
-AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
+	<queryString language="JSON">
+		<![CDATA[]]>
 	</queryString>
-	<field name="QUOTE_NO" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="QUOTE_NO"/>
-		<property name="com.jaspersoft.studio.field.label" value="QUOTE_NO"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="quoteNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="quoteNo"/>
+		<fieldDescription><![CDATA[quoteNo]]></fieldDescription>
 	</field>
-	<field name="POLICY_NO" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="POLICY_NO"/>
-		<property name="com.jaspersoft.studio.field.label" value="POLICY_NO"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="policyNo" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="policyNo"/>
+		<fieldDescription><![CDATA[policyNo]]></fieldDescription>
 	</field>
-	<field name="INSURED_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="INSURED_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="INSURED_NAME"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="customerName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="customerName"/>
+		<fieldDescription><![CDATA[customerName]]></fieldDescription>
 	</field>
-	<field name="ADDRESS1" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ADDRESS1"/>
-		<property name="com.jaspersoft.studio.field.label" value="ADDRESS1"/>
+	<field name="address" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="address"/>
+		<fieldDescription><![CDATA[address]]></fieldDescription>
 	</field>
-	<field name="ADDRESS2" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ADDRESS2"/>
-		<property name="com.jaspersoft.studio.field.label" value="ADDRESS2"/>
+	<field name="telephoneNo1" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="telephoneNo1"/>
+		<fieldDescription><![CDATA[telephoneNo1]]></fieldDescription>
 	</field>
-	<field name="PHONE_NUMBER" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="PHONE_NUMBER"/>
-		<property name="com.jaspersoft.studio.field.label" value="PHONE_NUMBER"/>
+	<field name="agencyCode" class="java.lang.Integer">
+		<property name="net.sf.jasperreports.json.field.expression" value="agencyCode"/>
+		<fieldDescription><![CDATA[agencyCode]]></fieldDescription>
 	</field>
-	<field name="AGENCY_CODE" class="java.lang.Integer">
-		<property name="com.jaspersoft.studio.field.name" value="AGENCY_CODE"/>
-		<property name="com.jaspersoft.studio.field.label" value="AGENCY_CODE"/>
+	<field name="inceptionDate" class="java.sql.Timestamp">
+		<property name="net.sf.jasperreports.json.field.expression" value="inceptionDate"/>
+		<fieldDescription><![CDATA[inceptionDate]]></fieldDescription>
 	</field>
-	<field name="FROM_DATE" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="INCEPTION_DATE"/>
-		<property name="com.jaspersoft.studio.field.label" value="FROM_DATE"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="expiryDate" class="java.sql.Timestamp">
+		<property name="net.sf.jasperreports.json.field.expression" value="expiryDate"/>
+		<fieldDescription><![CDATA[expiryDate]]></fieldDescription>
 	</field>
-	<field name="TO_DATE" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="EXPIRY_DATE"/>
-		<property name="com.jaspersoft.studio.field.label" value="TO_DATE"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="overAllPremium" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="overAllPremium"/>
+		<fieldDescription><![CDATA[overAllPremium]]></fieldDescription>
 	</field>
-	<field name="CURRENCY" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="CURRENCY"/>
-		<property name="com.jaspersoft.studio.field.label" value="CURRENCY"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
+	<field name="premium" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="premium"/>
+		<fieldDescription><![CDATA[premium]]></fieldDescription>
 	</field>
-	<field name="OVERALL_PREMIUM" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="OVERALL_PREMIUM"/>
-		<property name="com.jaspersoft.studio.field.label" value="OVERALL_PREMIUM"/>
+	<field name="noOfPassanger" class="java.lang.Integer">
+		<property name="net.sf.jasperreports.json.field.expression" value="noOfPassanger"/>
+		<fieldDescription><![CDATA[noOfPassanger]]></fieldDescription>
 	</field>
-	<field name="PREMIUM" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="PREMIUM"/>
-		<property name="com.jaspersoft.studio.field.label" value="PREMIUM"/>
+	<field name="currency" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="currency"/>
+		<fieldDescription><![CDATA[currency]]></fieldDescription>
 	</field>
-	<field name="NO_OF_PASSENGER" class="java.lang.Long">
-		<property name="com.jaspersoft.studio.field.name" value="NO_OF_PASSENGER"/>
-		<property name="com.jaspersoft.studio.field.label" value="NO_OF_PASSENGER"/>
+	<field name="passangerDetails" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="passangerDetails"/>
+		<fieldDescription><![CDATA[passangerDetails]]></fieldDescription>
+	</field>
+	<field name="travelCoverDetails" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="travelCoverDetails"/>
+		<fieldDescription><![CDATA[travelCoverDetails]]></fieldDescription>
 	</field>
 	<background>
 		<band splitType="Stretch"/>
@@ -236,7 +190,7 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{INSURED_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{customerName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="110" y="15" width="166" height="15" uuid="244d9284-1c5c-4a9c-a05f-bbaf1f2623b0">
@@ -250,7 +204,7 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{POLICY_NO}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{policyNo}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="390" y="15" width="165" height="15" uuid="151a6aec-8f3b-450a-9b16-28d4045f5e2e">
@@ -264,7 +218,7 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{NO_OF_PASSENGER}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{noOfPassanger}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="280" y="15" width="110" height="15" uuid="6050d523-6753-4c03-9438-19dff52b6ca3">
@@ -306,7 +260,7 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{QUOTE_NO}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{quoteNo}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="30" width="110" height="15" uuid="e68ebfbc-0857-42bf-b9e5-ed66526e82c7">
@@ -333,7 +287,7 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{CURRENCY}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{currency}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="280" y="30" width="110" height="15" uuid="a7638628-526f-4b0f-96f1-b55002a5afd4">
@@ -361,7 +315,7 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{PHONE_NUMBER}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{telephoneNo1}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="71" width="110" height="15" uuid="f58fd11a-30d7-41d3-831c-93762fc72ab9"/>
@@ -399,7 +353,7 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{PREMIUM}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{premium}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="280" y="71" width="110" height="15" uuid="bc76a0e7-bfba-4f9a-af12-6f00c56c2b86">
@@ -440,7 +394,7 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle" markup="html">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{FROM_DATE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{inceptionDate}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="280" y="45" width="110" height="26" uuid="6ebcbcd0-8e3e-47b2-8ad8-97b28cacd02d">
@@ -456,7 +410,7 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 				</textElement>
 				<textFieldExpression><![CDATA["Address"]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="390" y="45" width="165" height="26" uuid="435f5ab7-6f3d-4289-862b-340f1a333317">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -468,7 +422,7 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ADDRESS1}+" "+$F{ADDRESS2}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{address}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
 				<reportElement x="146" y="58" width="130" height="13" uuid="32f99968-75ff-4949-b80b-19364c71dcea">
@@ -482,7 +436,7 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{TO_DATE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{expiryDate}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="86" width="110" height="15" uuid="853346cc-a017-4240-b6a0-c91227c0baba"/>
@@ -507,7 +461,7 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{AGENCY_CODE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{agencyCode}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="280" y="86" width="110" height="15" uuid="da4e36ab-d030-4b69-b084-e07cb660d389">
@@ -537,7 +491,7 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{OVERALL_PREMIUM}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{overAllPremium}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
 				<reportElement x="110" y="45" width="30" height="13" uuid="690b4ebd-1c18-488a-95a0-63b60d2c3083">
@@ -596,11 +550,8 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="Table Dataset1" uuid="e0cff9ff-ee8a-47f0-bc22-a505f6cb8a07">
-						<datasetParameter name="pvPolicyNo">
-							<datasetParameterExpression><![CDATA[$P{pvPolicyNo}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<datasetRun subDataset="Table Dataset1" uuid="e4ca3ced-1374-4fe3-9fdb-7a3f05f8e251">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("passangerDetails")]]></dataSourceExpression>
 					</datasetRun>
 					<jr:column width="50" uuid="c22f61b2-d435-41f0-94c8-8bfaed26a456">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
@@ -621,7 +572,7 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="9"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{SNO}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{sno}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -642,7 +593,7 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="9"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{PASSANGER_NAME}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{passengerName}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -663,7 +614,7 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="9"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{DOB}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{dob}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -684,7 +635,7 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="9"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{AGE}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{age}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -705,7 +656,7 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="9"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{PASSPORT_NO}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{passportNo}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -726,7 +677,7 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="9"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{RELATION_DESC}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{relationDesc}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -750,7 +701,7 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="9"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{TRAVEL_COVER_DURATION}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{travelCoverDuration}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -764,10 +715,7 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<subreportParameter name="pvPolicyNo">
-					<subreportParameterExpression><![CDATA[$P{pvPolicyNo}]]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("travelCoverDetails")]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{pvSubReportPath}+"EwayTravelSubReport.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
@@ -988,7 +936,7 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 				<textElement textAlignment="Left" verticalAlignment="Bottom">
 					<font fontName="Arial" size="9" isUnderline="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["01/10/2022"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="261" y="34" width="70" height="14" uuid="78660861-76fb-414b-996b-92896d366ec9"/>
@@ -1044,7 +992,4 @@ AND HPM.POLICY_NO=  $P{pvPolicyNo}]]>
 			</textField>
 		</band>
 	</pageFooter>
-	<summary>
-		<band height="42" splitType="Stretch"/>
-	</summary>
 </jasperReport>

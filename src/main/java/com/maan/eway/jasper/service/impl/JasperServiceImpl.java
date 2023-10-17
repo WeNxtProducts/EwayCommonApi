@@ -53,6 +53,7 @@ import com.maan.eway.jasper.res.MotorCoverNoteRes;
 import com.maan.eway.jasper.res.MotorPrivateRes;
 import com.maan.eway.jasper.res.PremiumReportRes;
 import com.maan.eway.jasper.res.TaxInvoiceRes;
+import com.maan.eway.jasper.res.TravelReportRes;
 import com.maan.eway.jasper.service.JasperService;
 import com.maan.eway.repository.BranchMasterRepository;
 import com.maan.eway.repository.HomePositionMasterRepository;
@@ -135,17 +136,29 @@ public class JasperServiceImpl implements JasperService {
 				if (product.getMotorYn().equalsIgnoreCase("H") && travelProductId.equals(homeData.getProductId().toString())) {
 					Map<String, Object> input2 = new HashMap<String, Object>();
 					input2.put("pvImagePath", config.getImagePath().substring(1,config.getImagePath().length()-0));
-					input2.put("pvPolicyNo", homeData.getPolicyNo());
-					input2.put("pvSubReportPath",config.getJasperFilePath().replaceAll("%20", " ")  + "report/jasper/");
-					String obj ="";
-					obj= config.getJasperFilePath().replaceAll("%20", " ") + "report/jasper/EwayTravelSubReport.jrxml";
-					
-							//String jrxml_path=obj.replace(".jasper", ".jrxml");
-							String path = JasperCompileManager.compileReportToFile(obj);
+					input2.put("pvSubReportPath",config.getJasperFilePath().replaceAll("%20", " ")+ "report/jasper/");
+					String obj= config.getJasperFilePath().replaceAll("%20", " ") + "report/jasper/EwayTravelSubReport.jrxml";
+							String jrxml_path=obj.replace(".jasper", ".jrxml");
+							String path = JasperCompileManager.compileReportToFile(jrxml_path);
 							System.out.println("Jasper compileToReport path" +path);		
-
-					res = getJasperPdfFile("/report/jasper/EwayTravelReport.jrxml", getPdfOutFilePath, input2);
-					
+					TravelReportRes travelRes = jasperCustomeImple.getTravelReport(homeData.getPolicyNo());
+					String jsonString = gson.toJson(travelRes);
+					try {
+						FileWriter filewriter = new FileWriter(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- TravelReport.json",false);
+						filewriter.write(jsonString);
+						filewriter.close();
+						File file = new File(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- TravelReport.json");
+						JsonDataSource ds = new JsonDataSource(file);
+						InputStream inputStream = this.getClass().getResourceAsStream("/report/jasper/EwayTravelReport.jrxml");
+						JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
+						JasperPrint jasperprint = JasperFillManager.fillReport(jasperReport, input2,ds);
+						JasperExportManager.exportReportToPdfFile(jasperprint,policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- TravelReport.pdf");
+						GetFileFromPath travelPath = new GetFileFromPath(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- TravelReport.pdf");
+						res.setPdfoutfile(travelPath.call().getImgUrl());
+						res.setPdfoutfilepath(policyReportPath.substring(0, policyReportPath.length()-13)+"JsonFile/"+homeData.getPolicyNo().replaceAll("[\\/:*?\"<>|]*", "")+"- TravelReport.pdf");
+					}catch(Exception e) {
+						e.printStackTrace();
+					}					
 				} else if (product.getMotorYn().equalsIgnoreCase("M") && !"46".equalsIgnoreCase(homeData.getProductId().toString())) {
 					if(homeData.getEndtCount() != 0 && !homeData.getPolicyNo().equalsIgnoreCase(homeData.getOriginalPolicyNo())) {
 						res = getJasperPdfFile("/report/jasper/MotorEndorsementSchedule.jrxml", getPdfOutFilePath, input);
@@ -212,8 +225,8 @@ public class JasperServiceImpl implements JasperService {
 					obj[0] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/CoverageDetails.jrxml";
 					obj[1] = config.getJasperFilePath().replaceAll("%20", " ")+"report/jasper/SectionDetails.jrxml";		 // for linux system
                 for(String s :obj) {
-					// String jrxml_path=s.replace(".jasper", ".jrxml");
-					String path = JasperCompileManager.compileReportToFile(s);
+					String jrxml_path=s.replace(".jasper", ".jrxml");
+					String path = JasperCompileManager.compileReportToFile(jrxml_path);
 					System.out.println("Jasper compileToReport path" +path);
 					}
 					

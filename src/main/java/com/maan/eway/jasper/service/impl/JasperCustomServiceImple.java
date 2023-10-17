@@ -27,6 +27,7 @@ import com.maan.eway.bean.CompanyProductMaster;
 import com.maan.eway.bean.CountryMaster;
 import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.InsuranceCompanyMaster;
+import com.maan.eway.bean.LoginMaster;
 import com.maan.eway.bean.LoginUserInfo;
 import com.maan.eway.bean.MotorDataDetails;
 import com.maan.eway.bean.MotorDriverDetails;
@@ -34,8 +35,10 @@ import com.maan.eway.bean.MotorMakeModelMaster;
 import com.maan.eway.bean.PaymentDetail;
 import com.maan.eway.bean.PersonalInfo;
 import com.maan.eway.bean.PolicyCoverData;
+import com.maan.eway.bean.ProductGroupMaster;
 import com.maan.eway.bean.ProductSectionMaster;
 import com.maan.eway.bean.SectionDataDetails;
+import com.maan.eway.bean.TravelPassengerDetails;
 import com.maan.eway.jasper.res.CreditDataSetOne;
 import com.maan.eway.jasper.res.CreditDataSetTwo;
 import com.maan.eway.jasper.res.CreditNoteRes;
@@ -45,6 +48,9 @@ import com.maan.eway.jasper.res.MotorPrivateRes;
 import com.maan.eway.jasper.res.MotorPrivateVehicleDetails;
 import com.maan.eway.jasper.res.TaxDataSetOneRes;
 import com.maan.eway.jasper.res.TaxInvoiceRes;
+import com.maan.eway.jasper.res.TravelDataSetOneRes;
+import com.maan.eway.jasper.res.TravelDataSetTwoRes;
+import com.maan.eway.jasper.res.TravelReportRes;
 import com.maan.eway.repository.MotorDataDetailsRepository;
 import com.maan.eway.repository.MotorDriverDetailsRepository;
 
@@ -498,6 +504,145 @@ public class JasperCustomServiceImple {
 			response.setNoOfVehicle(map.get("noOfVehicle")==null?"":map.get("noOfVehicle").toString());
 			response.setVehicleDetails(vehicleDetailsRes);
 			response.setDriverDetails(driverDetailsRes);
+		}
+		return response;
+	}
+
+	public TravelReportRes getTravelReport(String policyNo) {
+		TravelReportRes response = new TravelReportRes();
+		List<TravelDataSetOneRes> travelDataSetOne = new ArrayList<TravelDataSetOneRes>();
+		List<TravelDataSetTwoRes> travelDataSetTwo = new ArrayList<TravelDataSetTwoRes>();
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
+		Root<HomePositionMaster> hpmRoot = cq.from(HomePositionMaster.class);
+		Root<PersonalInfo> piRoot = cq.from(PersonalInfo.class);
+		Root<LoginMaster> lmRoot = cq.from(LoginMaster.class);
+		
+		Subquery<Integer> countryNameAmd = cq.subquery(Integer.class);
+		Root<CountryMaster> SubCmAmd = countryNameAmd.from(CountryMaster.class);
+		countryNameAmd.select(cb.max(SubCmAmd.get("amendId"))).where(cb.equal(SubCmAmd.get("countryId"), piRoot.get("nationality")),cb.equal(SubCmAmd.get("companyId"), hpmRoot.get("companyId")),
+				cb.equal(SubCmAmd.get("status"), "Y"));
+		
+		Subquery<String> countryName = cq.subquery(String.class);
+		Root<CountryMaster> SubCm = countryName.from(CountryMaster.class);
+		countryName.select(SubCm.get("countryName")).where(cb.equal(SubCm.get("countryId"), piRoot.get("nationality")),
+				cb.equal(SubCm.get("companyId"), hpmRoot.get("companyId")),cb.equal(SubCm.get("status"), "Y"),cb.equal(SubCm.get("amendId"), countryNameAmd));
+		
+		Subquery<String> currencyId =cq.subquery(String.class);
+		Root<InsuranceCompanyMaster> icmRoot = currencyId.from(InsuranceCompanyMaster.class);
+		currencyId.select(icmRoot.get("currencyId")).where(cb.equal(hpmRoot.get("companyId"), icmRoot.get("companyId")));
+		
+		Subquery<Double> overAllPremiumLc = cq.subquery(Double.class);
+		Root<TravelPassengerDetails> SuboverAllPremiumLcRoot = overAllPremiumLc.from(TravelPassengerDetails.class);
+		overAllPremiumLc.select(cb.sum(SuboverAllPremiumLcRoot.get("overallPremiumLc")).as(Double.class))
+			.where(cb.equal(SuboverAllPremiumLcRoot.get("quoteNo"), hpmRoot.get("quoteNo")));
+		
+		Subquery<Double> overAllPremiumFc = cq.subquery(Double.class);
+		Root<TravelPassengerDetails> SuboverAllPremiumFcRoot = overAllPremiumFc.from(TravelPassengerDetails.class);
+		overAllPremiumFc.select(cb.sum(SuboverAllPremiumFcRoot.get("overallPremiumFc")).as(Double.class))
+			.where(cb.equal(SuboverAllPremiumFcRoot.get("quoteNo"), hpmRoot.get("quoteNo")));
+		
+		Subquery<Double> premiumLc = cq.subquery(Double.class);
+		Root<TravelPassengerDetails> SubpremiumLcRoot = premiumLc.from(TravelPassengerDetails.class);
+		premiumLc.select(cb.sum(SubpremiumLcRoot.get("actualPremiumLc")).as(Double.class))
+			.where(cb.equal(SubpremiumLcRoot.get("quoteNo"), hpmRoot.get("quoteNo")));
+		
+		Subquery<Double> premiumFc = cq.subquery(Double.class);
+		Root<TravelPassengerDetails> SubpremiumFcRoot = premiumFc.from(TravelPassengerDetails.class);
+		premiumFc.select(cb.sum(SubpremiumFcRoot.get("actualPremiumFc")).as(Double.class))
+			.where(cb.equal(SubpremiumFcRoot.get("quoteNo"), hpmRoot.get("quoteNo")));
+		
+		Subquery<Long> noOfPassanger = cq.subquery(Long.class);
+		Root<TravelPassengerDetails> SubnoOfPassanger= noOfPassanger.from(TravelPassengerDetails.class);
+		noOfPassanger.select(cb.count(SubnoOfPassanger)).where(cb.equal(SubnoOfPassanger.get("quoteNo"), hpmRoot.get("quoteNo")));
+		
+		cq.multiselect(hpmRoot.get("quoteNo").alias("quoteNo"),hpmRoot.get("policyNo").alias("policyNo"),cb.upper(cb.concat(piRoot.get("titleDesc"),
+				cb.concat(".", piRoot.get("clientName")))).alias("customerName"),cb.concat(piRoot.get("address1"), cb.concat(cb.coalesce(piRoot.get("pinCode"), ""),
+						cb.concat(cb.selectCase().when(cb.isNull(piRoot.get("pinCode")), "").when(cb.equal(piRoot.get("pinCode"), ""), "").otherwise(",").as(String.class), cb.coalesce(piRoot.get("stateName"), 
+								cb.concat(",", cb.concat(piRoot.get("cityName"), cb.concat(",", countryName))))))).alias("address"),
+				piRoot.get("telephoneNo1").alias("telephoneNo1"),lmRoot.get("agencyCode").alias("agencyCode"),hpmRoot.get("inceptionDate").alias("inceptionDate"),hpmRoot.get("expiryDate").alias("expiryDate"),
+				hpmRoot.get("currency").alias("currency"),cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(currencyId), overAllPremiumLc).otherwise(overAllPremiumFc).alias("overAllPremium"),
+				cb.selectCase().when(cb.in(hpmRoot.get("currency")).value(currencyId), premiumLc).otherwise(premiumFc).alias("premium"),
+				noOfPassanger.alias("noOfPassanger"))
+		.where(cb.equal(piRoot.get("customerId"), hpmRoot.get("customerId")),cb.equal(lmRoot.get("loginId"), hpmRoot.get("loginId")),
+				cb.equal(hpmRoot.get("productId"), "4"),cb.equal(hpmRoot.get("status"), "P"),cb.equal(hpmRoot.get("policyNo"), policyNo));
+		
+		List<Tuple> list = em.createQuery(cq).getResultList();
+		if(!CollectionUtils.isEmpty(list)) {
+			Tuple map = list.get(0);
+			CriteriaBuilder cb1 = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> cq1 = cb1.createQuery(Tuple.class);
+			Root<TravelPassengerDetails> tpdRoot1 = cq1.from(TravelPassengerDetails.class);
+			cq1.multiselect(cb.upper(tpdRoot1.get("passengerName")).alias("passengerName"),tpdRoot1.get("dob").alias("dob"),tpdRoot1.get("age").alias("age"),
+					tpdRoot1.get("relationDesc").alias("relationDesc"),tpdRoot1.get("passportNo").alias("passportNo"),tpdRoot1.get("travelCoverDuration").alias("travelCoverDuration"))
+			.where(cb.equal(tpdRoot1.get("quoteNo"), map.get("quoteNo"))).orderBy(cb.asc(tpdRoot1.get("passengerName")));
+			
+			List<Tuple> passangerDetails = em.createQuery(cq1).getResultList();
+					
+			for(int i=0;i<passangerDetails.size();i++) {
+				TravelDataSetOneRes o = new TravelDataSetOneRes();
+				o.setSno(String.valueOf(i+1));
+				o.setPassengerName(passangerDetails.get(i).get("passengerName")==null?"":passangerDetails.get(i).get("passengerName").toString());
+				o.setDob(passangerDetails.get(i).get("dob")==null?"":passangerDetails.get(i).get("dob").toString());
+				o.setAge(passangerDetails.get(i).get("age")==null?"":passangerDetails.get(i).get("age").toString());
+				o.setRelationDesc(passangerDetails.get(i).get("relationDesc")==null?"":passangerDetails.get(i).get("relationDesc").toString());
+				o.setPassportNo(passangerDetails.get(i).get("passportNo")==null?"":passangerDetails.get(i).get("passportNo").toString());
+				o.setTravelCoverDuration(passangerDetails.get(i).get("travelCoverDuration")==null?"":passangerDetails.get(i).get("travelCoverDuration").toString());
+				travelDataSetOne.add(o);
+			}
+			
+			CriteriaBuilder cb2 = em.getCriteriaBuilder();
+			CriteriaQuery<Tuple> cq2 = cb2.createQuery(Tuple.class);
+			Root<HomePositionMaster> hpmRoot2 = cq2.from(HomePositionMaster.class);
+			Root<TravelPassengerDetails> tpdRoot2 = cq2.from(TravelPassengerDetails.class);
+			Root<ProductGroupMaster> pgmRoot2 = cq2.from(ProductGroupMaster.class);
+			Root<PolicyCoverData> pcdRoot2 = cq2.from(PolicyCoverData.class);
+			
+			Subquery<Long> sumInsured = cq2.subquery(Long.class);
+			Root<PolicyCoverData> SubsumInsured = sumInsured.from(PolicyCoverData.class);
+			sumInsured.select(cb.sum(SubsumInsured.get("sumInsured"))).where(cb.equal(SubsumInsured.get("vehicleId"), tpdRoot2.get("travelId")),
+					cb.equal(SubsumInsured.get("quoteNo"), hpmRoot2.get("quoteNo")));
+			
+			Subquery<String> currencyId2 = cq2.subquery(String.class);
+			Root<InsuranceCompanyMaster> icmRoot2 = currencyId2.from(InsuranceCompanyMaster.class);
+			currencyId2.select(icmRoot2.get("currencyId")).where(cb.equal(pcdRoot2.get("companyId"), icmRoot2.get("companyId")));
+			
+			cq2.multiselect(pgmRoot2.get("bandDesc").alias("bandDesc"),tpdRoot2.get("planTypeDesc").alias("planTypeDesc"),pcdRoot2.get("coverName").alias("coverName"),
+					sumInsured.alias("sumInsured"),pcdRoot2.get("rate").alias("rate"),pcdRoot2.get("currency").alias("currency"),pcdRoot2.get("taxRate").alias("taxRate"),
+				cb.selectCase().when(cb.in(pcdRoot2.get("currency")).value(currencyId2), pcdRoot2.get("premiumIncludedTaxLc")).otherwise(pcdRoot2.get("premiumIncludedTaxFc")).alias("premium"))
+			.where(cb.equal(tpdRoot2.get("quoteNo"), hpmRoot2.get("quoteNo")),cb.equal(pgmRoot2.get("groupId"),tpdRoot2.get("groupId")),
+					cb.equal(hpmRoot2.get("productId"), "4"),cb.equal(hpmRoot2.get("status"), "P"),cb.equal(hpmRoot2.get("quoteNo"), pcdRoot2.get("quoteNo")),cb.equal(pcdRoot2.get("vehicleId"), tpdRoot2.get("groupId")),
+					cb.equal(pcdRoot2.get("discLoadId"), "0"),cb.equal(pcdRoot2.get("taxId"), "0"),cb.equal(hpmRoot2.get("policyNo"),policyNo)).distinct(true);
+			
+			List<Tuple> travelSubReport = em.createQuery(cq2).getResultList();
+			travelSubReport.forEach(k -> {
+				TravelDataSetTwoRes h = TravelDataSetTwoRes.builder()
+					.bandDesc(k.get("bandDesc")==null?"":k.get("bandDesc").toString())
+					.planTypeDesc(k.get("planTypeDesc")==null?"":k.get("planTypeDesc").toString())
+					.coverName(k.get("coverName")==null?"":k.get("coverName").toString())
+					.sumInsured(k.get("sumInsured")==null?"":k.get("sumInsured").toString())
+					.taxRate(k.get("taxRate")==null?"":k.get("taxRate").toString())
+					.rate(k.get("rate")==null?"":k.get("rate").toString())
+					.currency(k.get("currency")==null?"":k.get("currency").toString())
+					.premium(k.get("premium")==null?"":k.get("premium").toString())
+					.build();
+				travelDataSetTwo.add(h);
+			});
+			response.setQuoteNo(map.get("quoteNo")==null?"":map.get("quoteNo").toString());
+			response.setPolicyNo(map.get("policyNo")==null?"":map.get("policyNo").toString());
+			response.setCustomerName(map.get("customerName")==null?"":map.get("customerName").toString());
+			response.setAddress(map.get("address")==null?"":map.get("address").toString());
+			response.setTelephoneNo1(map.get("telephoneNo1")==null?"":map.get("telephoneNo1").toString());
+			response.setAgencyCode(map.get("agencyCode")==null?"":map.get("agencyCode").toString());
+			response.setInceptionDate(map.get("inceptionDate")==null?"":map.get("inceptionDate").toString());
+			response.setExpiryDate(map.get("expiryDate")==null?"":map.get("expiryDate").toString());
+			response.setCurrency(map.get("currency")==null?"":map.get("currency").toString());
+			response.setOverAllPremium(map.get("overAllPremium")==null?"":map.get("overAllPremium").toString());
+			response.setPremium(map.get("premium")==null?"":map.get("premium").toString());
+			response.setNoOfPassanger(map.get("noOfPassanger")==null?"":map.get("noOfPassanger").toString());
+			response.setQuoteNo(map.get("quoteNo")==null?"":map.get("quoteNo").toString());
+			response.setPassangerDetails(travelDataSetOne);
+			response.setTravelCoverDetails(travelDataSetTwo);
 		}
 		return response;
 	}

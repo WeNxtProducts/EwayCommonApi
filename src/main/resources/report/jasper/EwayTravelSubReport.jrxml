@@ -2,7 +2,7 @@
 <!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="EwayTravelSubReport" pageWidth="575" pageHeight="600" columnWidth="555" leftMargin="2" rightMargin="18" topMargin="20" bottomMargin="20" uuid="327e6e5c-eeaf-42c4-b773-9717dc9b6d37">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="EwayTravelReport"/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
@@ -13,85 +13,43 @@
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
 	<parameter name="pvPolicyNo" class="java.lang.String"/>
-	<queryString language="SQL">
-		<![CDATA[WITH COVER_DETAILS AS(
-SELECT
- PGM.BAND_DESC AS GROUP_DESC,
- PLAN_TYPE_DESC,
- COVER_NAME,
- (SELECT SUM(SUM_INSURED) FROM POLICY_COVER_DATA 
- WHERE VEHICLE_ID = TPD.TRAVEL_ID AND HPM.QUOTE_NO=QUOTE_NO)  AS SUM_INSURED,
- RATE,
- PCD.CURRENCY,
- TAX_RATE,
- CASE
-   WHEN PCD.CURRENCY IN (
-     SELECT CURRENCY_ID
-     FROM EWAY_INSURANCE_COMPANY_MASTER
-     WHERE PCD.COMPANY_ID = COMPANY_ID
-   ) THEN PREMIUM_INCLUDED_TAX_LC
-   ELSE PREMIUM_INCLUDED_TAX_FC
- END AS PREMIUM
- FROM
- HOME_POSITION_MASTER HPM,
- TRAVEL_PASSENGER_DETAILS TPD ,
- PRODUCT_GROUP_MASTER PGM,
- POLICY_COVER_DATA PCD
- WHERE 
- TPD.QUOTE_NO=HPM.QUOTE_NO
- AND PGM.GROUP_ID = TPD.GROUP_ID
- AND HPM.PRODUCT_ID='4'
- AND HPM.STATUS='P'
- AND HPM.POLICY_NO = $P{pvPolicyNo} 
- AND HPM.QUOTE_NO=PCD.QUOTE_NO
- AND PCD.VEHICLE_ID = TPD.GROUP_ID
- AND DISC_LOAD_ID = '0'
- AND TAX_ID = '0'
- )
- SELECT GROUP_DESC,PLAN_TYPE_DESC,COVER_NAME,SUM_INSURED,RATE,CURRENCY,TAX_RATE,PREMIUM FROM COVER_DETAILS
- GROUP BY GROUP_DESC,PLAN_TYPE_DESC,COVER_NAME,SUM_INSURED,RATE,CURRENCY,TAX_RATE,PREMIUM]]>
+	<queryString language="JSON">
+		<![CDATA[travelCoverDetails]]>
 	</queryString>
-	<field name="GROUP_DESC" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="GROUP_DESC"/>
-		<property name="com.jaspersoft.studio.field.label" value="GROUP_DESC"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="product_group_master"/>
+	<field name="bandDesc" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="bandDesc"/>
+		<fieldDescription><![CDATA[bandDesc]]></fieldDescription>
 	</field>
-	<field name="PLAN_TYPE_DESC" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="PLAN_TYPE_DESC"/>
-		<property name="com.jaspersoft.studio.field.label" value="PLAN_TYPE_DESC"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="travel_passenger_details"/>
+	<field name="coverName" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="coverName"/>
+		<fieldDescription><![CDATA[coverName]]></fieldDescription>
 	</field>
-	<field name="COVER_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="COVER_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="COVER_NAME"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="policy_cover_data"/>
+	<field name="planTypeDesc" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="planTypeDesc"/>
+		<fieldDescription><![CDATA[planTypeDesc]]></fieldDescription>
 	</field>
-	<field name="SUM_INSURED" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="SUM_INSURED"/>
-		<property name="com.jaspersoft.studio.field.label" value="SUM_INSURED"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="policy_cover_data"/>
+	<field name="sumInsured" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="sumInsured"/>
+		<fieldDescription><![CDATA[sumInsured]]></fieldDescription>
 	</field>
-	<field name="RATE" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="RATE"/>
-		<property name="com.jaspersoft.studio.field.label" value="RATE"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="policy_cover_data"/>
+	<field name="rate" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="rate"/>
+		<fieldDescription><![CDATA[rate]]></fieldDescription>
 	</field>
-	<field name="CURRENCY" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="CURRENCY"/>
-		<property name="com.jaspersoft.studio.field.label" value="CURRENCY"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="policy_cover_data"/>
+	<field name="currency" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="currency"/>
+		<fieldDescription><![CDATA[currency]]></fieldDescription>
 	</field>
-	<field name="TAX_RATE" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="TAX_RATE"/>
-		<property name="com.jaspersoft.studio.field.label" value="TAX_RATE"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="policy_cover_data"/>
+	<field name="taxRate" class="java.lang.String">
+		<property name="net.sf.jasperreports.json.field.expression" value="taxRate"/>
+		<fieldDescription><![CDATA[taxRate]]></fieldDescription>
 	</field>
-	<field name="PREMIUM" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.name" value="PREMIUM"/>
-		<property name="com.jaspersoft.studio.field.label" value="PREMIUM"/>
+	<field name="premium" class="java.math.BigDecimal">
+		<property name="net.sf.jasperreports.json.field.expression" value="premium"/>
+		<fieldDescription><![CDATA[premium]]></fieldDescription>
 	</field>
 	<group name="Group_desc Group 1">
-		<groupExpression><![CDATA[$F{GROUP_DESC}+$F{COVER_NAME}]]></groupExpression>
+		<groupExpression><![CDATA[$F{bandDesc}+$F{coverName}]]></groupExpression>
 		<groupHeader>
 			<band height="36">
 				<textField>
@@ -119,7 +77,7 @@ SELECT
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font fontName="Arial" size="9"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{GROUP_DESC}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{bandDesc}]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement x="0" y="18" width="244" height="18" uuid="67cb0fd3-9618-40cc-86e2-c19a48162659">
@@ -216,7 +174,7 @@ SELECT
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{COVER_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{coverName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="244" y="0" width="89" height="18" printWhenGroupChanges="Group_desc Group 1" uuid="bf14c350-fd06-4cd2-b208-326415255062"/>
@@ -227,7 +185,7 @@ SELECT
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{SUM_INSURED}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{sumInsured}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="334" y="0" width="50" height="18" printWhenGroupChanges="Group_desc Group 1" uuid="c88a897c-390e-4346-aba9-0e6205633c8d"/>
@@ -238,7 +196,7 @@ SELECT
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{RATE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{rate}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="384" y="0" width="50" height="18" printWhenGroupChanges="Group_desc Group 1" uuid="ea3a81d0-3016-41f6-ac2f-e1b2dcadb9f3"/>
@@ -249,7 +207,7 @@ SELECT
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{CURRENCY}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{currency}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="434" y="0" width="50" height="18" printWhenGroupChanges="Group_desc Group 1" uuid="71c1d445-4c2a-48ea-a6cc-233926655fb4"/>
@@ -260,9 +218,9 @@ SELECT
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{TAX_RATE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{taxRate}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement x="484" y="0" width="70" height="18" printWhenGroupChanges="Group_desc Group 1" uuid="f3e112f1-97ef-43b7-895e-812042d7bc65"/>
 				<box rightPadding="2">
 					<bottomPen lineWidth="0.5"/>
@@ -271,7 +229,7 @@ SELECT
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Arial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{PREMIUM}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{premium}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
