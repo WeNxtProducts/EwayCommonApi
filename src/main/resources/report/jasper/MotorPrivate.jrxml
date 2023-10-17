@@ -110,7 +110,7 @@
 			<property name="net.sf.jasperreports.json.field.expression" value="driverTypeDesc"/>
 			<fieldDescription><![CDATA[driverTypeDesc]]></fieldDescription>
 		</field>
-		<field name="driverDOB" class="java.sql.Timestamp">
+		<field name="driverDOB" class="java.lang.String">
 			<property name="net.sf.jasperreports.json.field.expression" value="driverDOB"/>
 			<fieldDescription><![CDATA[driverDOB]]></fieldDescription>
 		</field>
@@ -1106,7 +1106,7 @@
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="20">
-							<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+							<textField isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="80" height="20" uuid="f3815032-0921-45c4-9515-675aaa81cb0c"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Arial" size="8"/>

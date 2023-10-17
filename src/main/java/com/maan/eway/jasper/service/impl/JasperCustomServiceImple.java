@@ -67,7 +67,7 @@ public class JasperCustomServiceImple {
 	
 	@Autowired
 	private MotorDriverDetailsRepository motordriverRepo;
-	
+		
 	private String RenewalDate(String Input) {
 		DateTimeFormatter inputformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
 		LocalDateTime dateTime = LocalDateTime.parse(Input, inputformatter);
@@ -470,15 +470,15 @@ public class JasperCustomServiceImple {
 			});
 			List<MotorDriverDetails> driverDetails = motordriverRepo.findByQuoteNo(map.get("quoteNo").toString());
 			driverDetails.forEach(d -> {
-				MotorPrivateDriverDetails y = MotorPrivateDriverDetails.builder()
-					.driverId(d.getDriverId()==null?"":d.getDriverId().toString())
-					.driverName(d.getDriverName()==null?"":d.getDriverName().toString())
-					.driverTypeDesc(d.getDriverTypedesc()==null?"":d.getDriverTypedesc().toString())
-					.driverDOB(d.getDriverDob()==null?"":d.getDriverDob().toString())
-					.iDNumber(d.getIdNumber()==null?"":d.getIdNumber().toString())
-					.chassisNumber(vehicleDetails.get(0).getChassisNumber()==null?"":vehicleDetails.get(0).getChassisNumber().toString())
-					.build();
-				driverDetailsRes.add(y);
+					MotorPrivateDriverDetails y = MotorPrivateDriverDetails.builder()
+							.driverId(d.getDriverId()==null?"":d.getDriverId().toString())
+							.driverName(d.getDriverName()==null?"":d.getDriverName().toString())
+							.driverTypeDesc(d.getDriverTypedesc()==null?"":d.getDriverTypedesc().toString())
+							.driverDOB(d.getDriverDob()==null?"":LocalDateTime.parse(d.getDriverDob().toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+							.iDNumber(d.getIdNumber()==null?"":d.getIdNumber().toString())
+							.chassisNumber(vehicleDetails.get(0).getChassisNumber()==null?"":vehicleDetails.get(0).getChassisNumber().toString())
+							.build();
+						driverDetailsRes.add(y);
 			});
 			
 			response.setCompanyId(map.get("companyId")==null?"":map.get("companyId").toString());
