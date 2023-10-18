@@ -75,6 +75,9 @@ public class SavePaymentDepositReq {
 
 	@JsonProperty("DepositNo")
 	private String depositNo;
+	
+	@JsonProperty("CompanyId")
+	private String companyId;
 
 
 }

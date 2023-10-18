@@ -10,8 +10,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
@@ -22,10 +24,13 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.maan.eway.bean.BankMaster;
 import com.maan.eway.bean.DepositDetail;
 import com.maan.eway.bean.DepositcbcMaster;
+import com.maan.eway.bean.HomePositionMaster;
 import com.maan.eway.bean.ListItemValue;
 import com.maan.eway.bean.LoginMaster;
+import com.maan.eway.bean.LoginProductMaster;
 import com.maan.eway.bean.PaymentDeposit;
 import com.maan.eway.bean.ProductMaster;
 import com.maan.eway.common.req.SaveDepositeMasterReq;
@@ -41,6 +46,7 @@ import com.maan.eway.common.service.DepositService;
 import com.maan.eway.error.Error;
 import com.maan.eway.repository.DepositDetailRepository;
 import com.maan.eway.repository.DepositcbcMasterRepository;
+import com.maan.eway.repository.HomePositionMasterRepository;
 import com.maan.eway.repository.PaymentDepositRepository;
 
 @Service
@@ -61,6 +67,9 @@ public class DepositServiceImpl implements DepositService {
 	@Autowired
 	private PaymentDepositRepository paymentDepositRepo;
 	
+	@Autowired
+	private HomePositionMasterRepository homeRepo;
+	
 	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	
 	private Logger log = LogManager.getLogger(DepositServiceImpl.class);
@@ -73,16 +82,18 @@ public class DepositServiceImpl implements DepositService {
 		int count=0;
 		try {
 			if(CollectionUtils.isEmpty(error)) {
+			String cbcNo ="";
 			DepositcbcMaster cbcMaster = new DepositcbcMaster();
 			List<DepositcbcMaster> cbcList = depositcbcRepo.findByCbcNo(StringUtils.isBlank(req.getCbcNo())?"":req.getCbcNo());
 			String brokerName = getBrokerNameById(req.getBrokerId());
 			if(!CollectionUtils.isEmpty(cbcList)) {
 				cbcMaster = cbcList.get(0);
 			}else {
-				String cbcNo = getCbcNumber();
+				 cbcNo = getCbcNumber();
 				cbcMaster.setCbcNo("CBC"+cbcNo);  
 				cbcMaster.setDepositUtilized(0.0);
 				cbcMaster.setEntryDate(new Date());
+				cbcMaster.setCompanyId(req.getCompanyId());
 			}
 			//if("C".equalsIgnoreCase(req.getPayableyn())) {
 				cbcMaster.setDepositAmount(Double.valueOf(req.getDepositAmount()));
@@ -94,11 +105,14 @@ public class DepositServiceImpl implements DepositService {
 			cbcMaster.setCustomerId(StringUtils.isBlank(req.getCustomerid())?"99999":req.getCustomerid());
 			//cbcMaster.setProductId(StringUtils.isBlank(req.getProductId())?"":req.getProductId());  
 			cbcMaster.setStatus("Y");  
+			cbcMaster.setCompanyId(req.getCompanyId());
 			
 			DepositDetail depDetail = new DepositDetail();
 			Optional<DepositDetail> optDetail = depositdetailRepo.findById(StringUtils.isBlank(req.getDepositNo())?0L:Long.valueOf(req.getDepositNo()));
+			Long depositNo=null;
 			if(optDetail.isPresent()) {
 				depDetail = optDetail.get();
+				depositNo=depDetail.getDepositNo();
 			}else {
 				depDetail.setStatus("D");
 				depDetail.setEntryDate(new Date());  
@@ -109,20 +123,42 @@ public class DepositServiceImpl implements DepositService {
 				depDetail.setCustomerId(StringUtils.isBlank(req.getCustomerid())?"99999":req.getCustomerid());
 				//depDetail.setPremiumAmount(Double.valueOf(req.getPremiumAmount()));  
 				//depDetail.setBalanceAmount(Double.valueOf(req.getBalanceAmount()));
-				depDetail.setPremium(Double.valueOf(req.getPremium()));
+				//depDetail.setPremium(Double.valueOf(req.getPremium()));
 				//depDetail.setPolicyInsuranceFee(Double.valueOf(req.getPolicyInsuranceFee()));
 				//depDetail.setVatAmount(Double.valueOf(req.getVatAmount()));
 				//depDetail.setChargableType(req.getChargableType());
 				depDetail.setBrokerName(brokerName);
+				depDetail.setDepositType("C");
+				
 				
 				if(depDetail.getDepositNo()==null) {
-					depDetail.setDepositNo(DepositMax());
+					depositNo=DepositMax();
+					depDetail.setDepositNo(depositNo);
 				}
 				depDetail.setCbcNo(cbcMaster.getCbcNo());
 				depositdetailRepo.save(depDetail);
 				if(!optDetail.isPresent()) {
 					depositcbcRepo.save(cbcMaster);
 				}
+				
+				//Framing Request  Save Payment Details
+				SavePaymentDepositReq paymentSaveReq= new SavePaymentDepositReq();
+				paymentSaveReq.setCbcNo(cbcNo);
+				paymentSaveReq.setPaymentType("1");
+				paymentSaveReq.setLoginId(req.getLoginId());
+				paymentSaveReq.setPremium("");
+				paymentSaveReq.setChequeNo("");
+				paymentSaveReq.setChequeDate(null);
+				paymentSaveReq.setAccountNo("");
+				paymentSaveReq.setIbanNumber("");
+				paymentSaveReq.setMicrNo("");
+				paymentSaveReq.setPayeeName("");
+				paymentSaveReq.setReferenceNo("");
+				paymentSaveReq.setDepositNo(depositNo.toString());
+				paymentSaveReq.setCompanyId(req.getCompanyId());
+				savePaymentDeposit(paymentSaveReq);
+			
+				
 				count = 1;
 				if(count == 1) {
 					response.setStatus(true);
@@ -200,9 +236,9 @@ public class DepositServiceImpl implements DepositService {
 //		if(StringUtils.isBlank(req.getRefundAmount())) {
 //			error.add(new Error("500","RefundAmount","Please Enter RefundAmount"));
 //		}
-		if(StringUtils.isBlank(req.getQuoteNo())) {
-			error.add(new Error("500","QuoteNo","Please Enter QuoteNo"));
-		}
+//		if(StringUtils.isBlank(req.getQuoteNo())) {
+//			error.add(new Error("500","QuoteNo","Please Enter QuoteNo"));
+//		}
 //		if(StringUtils.isBlank(req.getProductId())) {
 //			error.add(new Error("500","ProductId","Please Enter ProductId"));
 //		}
@@ -215,9 +251,9 @@ public class DepositServiceImpl implements DepositService {
 //		if(StringUtils.isBlank(req.getPremiumAmount())) {
 //			error.add(new Error("500","PremiumAmount","Please Enter PremiumAmount"));
 //		}
-		if(StringUtils.isBlank(req.getPremium())) {
-			error.add(new Error("500","Premium","Please Enter Premium"));
-		}
+//		if(StringUtils.isBlank(req.getPremium())) {
+//			error.add(new Error("500","Premium","Please Enter Premium"));
+//		}
 //		if(StringUtils.isBlank(req.getPolicyInsuranceFee())) {
 //			error.add(new Error("500","PolicyInsuranceFee","Please Enter PolicyInsuranceFee"));
 //		}
@@ -237,7 +273,7 @@ public class DepositServiceImpl implements DepositService {
 		String result = "";
 		try {
 			if(CollectionUtils.isEmpty(error)) {
-				if(Double.parseDouble(req.getPremium())>0) {
+				if(Double.parseDouble(req.getPremium())<0) {
 					result = getCancelDepositDetails(req);
 				}else {
 					result = getDepositDetails(req,"update");
@@ -258,8 +294,23 @@ public class DepositServiceImpl implements DepositService {
 	
 	private List<Error> savePremiumDepositVali(SavePremiumDepositReq req) {
 		List<Error> error = new ArrayList<>();
+		String creditLimit="";
 		if(StringUtils.isBlank(req.getBrokerId())) {
+			
 			error.add(new Error("500","BrokerId","Please Enter BrokerId"));
+		}
+		
+//		HomePositionMaster homeData=homeRepo.findByQuoteNo(req.getQuoteNo());
+//		if(homeData!=null) {
+//			
+//		}
+		
+		if(StringUtils.isNotBlank(req.getBrokerId())&&StringUtils.isNotBlank(req.getProductId())&& StringUtils.isNotBlank(req.getCompanyId()) && StringUtils.isNotBlank(req.getPolicyTypeId())) {
+			List<LoginProductMaster> loginList= getExistingBrokerById(req.getBrokerId() , req.getCompanyId() ,req.getProductId(),req.getPolicyTypeId());
+			creditLimit=loginList.get(0).getCreditYn();
+			if((!"Y".equalsIgnoreCase(creditLimit))||StringUtils.isBlank(creditLimit)) {
+				error.add(new Error("500","BrokerId","Credit Option is not Available"));
+			}
 		}
 		if(StringUtils.isBlank(req.getPremium())) {
 			error.add(new Error("500","Premium","Please Enter Premium"));
@@ -267,19 +318,71 @@ public class DepositServiceImpl implements DepositService {
 		if(StringUtils.isBlank(req.getProductId())) {
 			error.add(new Error("500","ProductId","Please Enter ProductId"));
 		}
+		if(StringUtils.isBlank(req.getCompanyId())) {
+			error.add(new Error("500","Company","Please Enter Company Id"));
+		}
+		if(StringUtils.isBlank(req.getPolicyTypeId())) {
+			error.add(new Error("500","PolicyType","Please Enter Policy Type"));
+		}
 		if(StringUtils.isBlank(req.getQuoteNo())) {
 			error.add(new Error("500","QuoteNo","Please Enter QuoteNo"));
 		}
-		if(StringUtils.isBlank(req.getPolicyfee())) {
-			error.add(new Error("500","Policyfee","Please Enter Policyfee"));
-		}
-		if(StringUtils.isBlank(req.getVattaxamt())) {
-			error.add(new Error("500","Vattaxamt","Please Enter Vattaxamt"));
-		}
+//		if(StringUtils.isBlank(req.getPolicyfee())) {
+//			error.add(new Error("500","Policyfee","Please Enter Policyfee"));
+//		}
+//		if(StringUtils.isBlank(req.getVattaxamt())) {
+//			error.add(new Error("500","Vattaxamt","Please Enter Vattaxamt"));
+//		}
 		if(StringUtils.isBlank(req.getCustomerId())) {
 			error.add(new Error("500","CustomerId","Please Enter CustomerId"));
 		}
 		return error;
+	}
+
+	public List<LoginProductMaster> getExistingBrokerById(String brokerId , String InsuranceId , String productId,String policyTypeId) {
+		List<LoginProductMaster> list = new ArrayList<LoginProductMaster>();
+		try {
+			Date today = new Date();
+			// Find Latest Record
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<LoginProductMaster> query = cb.createQuery(LoginProductMaster.class);
+
+			// Find All
+			Root<LoginProductMaster> b = query.from(LoginProductMaster.class);
+
+			// Select
+			query.select(b);
+
+			// Effective Date Max Filter
+			Subquery<Long> amendId = query.subquery(Long.class);
+			Root<LoginProductMaster> ocpm1 = amendId.from(LoginProductMaster.class);
+			amendId.select(cb.max(ocpm1.get("amendId")));
+			Predicate a1 = cb.equal(ocpm1.get("loginId"), b.get("loginId"));
+			Predicate a2 = cb.equal(ocpm1.get("companyId"), b.get("companyId"));
+			Predicate a3 = cb.equal(ocpm1.get("productId"), b.get("productId"));
+			Predicate a4 = cb.equal(ocpm1.get("policyTypeId"), b.get("policyTypeId"));
+			Predicate a5 = cb.lessThanOrEqualTo(ocpm1.get("effectiveDateStart"), today);
+			Predicate a6 = cb.greaterThanOrEqualTo(ocpm1.get("effectiveDateEnd"), today);
+			amendId.where(a1,a2,a3,a4,a5,a6);
+
+			Predicate n1 = cb.equal(b.get("amendId"), amendId);
+			Predicate n2 = cb.equal( b.get("agencyCode"), brokerId);
+			Predicate n3 = cb.equal(b.get("companyId"),InsuranceId);
+			Predicate n4 = cb.equal(b.get("productId"), productId);
+			Predicate n5 = cb.equal(b.get("policyTypeId"),policyTypeId);
+			
+			query.where(n1,n2,n3,n4,n5);
+			
+			// Get Result
+			TypedQuery<LoginProductMaster> result = em.createQuery(query);
+			list = result.getResultList();		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info(e.getMessage());
+
+		}
+		return list;
 	}
 
 	public String getDepositDetails(SavePremiumDepositReq req, String type) {
@@ -292,28 +395,32 @@ public class DepositServiceImpl implements DepositService {
 				if(cunt==0) {
 					result="DEPOSIT IS NOT AVAILABLE FOR THIS BROKER";
 				}
-				if("3".equals(req.getProductId())) {
-					list=depositcbcRepo.findByBrokerIdAndProductIdLike(req.getBrokerId(),req.getProductId());
-				}else {
-					list=depositcbcRepo.findByBrokerId(req.getBrokerId());
-				}
+				list=depositcbcRepo.findByBrokerId(req.getBrokerId());
+				/*
+				 * if("3".equals(req.getProductId())) {
+				 * list=depositcbcRepo.findByBrokerIdAndProductIdLike(req.getBrokerId(),req.
+				 * getProductId()); }else {
+				 * 
+				 * }
+				 */
 				if(list!=null && list.size()>0) {
 					cbcNo=list.get(0).getCbcNo()==null?"0":list.get(0).getCbcNo().toString();
+					customerOption="NONE";
 					String depositAMount=list.get(0).getDepositAmount()==null?"0":list.get(0).getDepositAmount().toString();
 					String utilizedAmt=list.get(0).getDepositUtilized()==null?"0":list.get(0).getDepositUtilized().toString();
 					String refundAmt=list.get(0).getRefundAmount()==null?"0":list.get(0).getRefundAmount().toString();
 					totalAmount=String.valueOf(Double.valueOf(depositAMount)-Double.valueOf(utilizedAmt)+Double.valueOf(refundAmt));
 				}else {
-					result="DEPOSIT IS NOT AVAILABLE FOR THIS CUSTOMER";
+					result="DEPOSIT IS NOT AVAILABLE FOR THIS BROKER";
 				}
 				if("NONE".equals(customerOption)) {
 					list = getDepositbalanceCheck(req.getBrokerId(),req.getCustomerId(),req.getProductId(),req.getPremium());	
 					if(list!=null && list.size()>0) {
-						cbcNo=list.get(0).getCbcNo()==null?"0":list.get(0).getCbcNo().toString();
-						String depositAMount=list.get(0).getDepositAmount()==null?"0":list.get(0).getDepositAmount().toString();
-						String utilizedAmt=list.get(0).getDepositUtilized()==null?"0":list.get(0).getDepositUtilized().toString();
-						String refundAmt=list.get(0).getRefundAmount()==null?"0":list.get(0).getRefundAmount().toString();
-						totalAmount=String.valueOf(Double.valueOf(depositAMount)-Double.valueOf(utilizedAmt)+Double.valueOf(refundAmt));
+						//cbcNo=list.get(0).getCbcNo()==null?"0":list.get(0).getCbcNo().toString();
+						//String depositAMount=list.get(0).getDepositAmount()==null?"0":list.get(0).getDepositAmount().toString();
+						//String utilizedAmt=list.get(0).getDepositUtilized()==null?"0":list.get(0).getDepositUtilized().toString();
+						//String refundAmt=list.get(0).getRefundAmount()==null?"0":list.get(0).getRefundAmount().toString();
+						//totalAmount=String.valueOf(Double.valueOf(depositAMount)-Double.valueOf(utilizedAmt)+Double.valueOf(refundAmt));
 					}else {
 						result="DEPOSIT AMOUNT IS LOW POLICY CANNOT BE GENERATED  AND  AVAILABLE BALANCE AMOUNT IS "+totalAmount;
 					}
@@ -378,47 +485,21 @@ public class DepositServiceImpl implements DepositService {
 	}
 
 	public List<DepositcbcMaster> getDepositbalanceCheck(String brokerId, String customerId, String productId, String premium) {
-		boolean personal = false, opencoverres = false;
 		double totalAmount = 0.00;
 		List<DepositcbcMaster> list = null;
 		try {
-			List<String> depositType = new ArrayList<String>();
-			depositType.add("INDIVIDUAL");
-			depositType.add("FLOAT");
-			if ("11".equals(productId)) {
-				if (personal && opencoverres) {
-					list = depositcbcRepo.findByBrokerIdAndProductIdLikeAndStatus(brokerId, productId, "Y");
-					if (!CollectionUtils.isEmpty(list)) {
-						String depositAMount = list.get(0).getDepositAmount() == null ? "0": list.get(0).getDepositAmount().toString();
-						String utilizedAmt = list.get(0).getDepositUtilized() == null ? "0": list.get(0).getDepositUtilized().toString();
-						totalAmount = Double.valueOf(depositAMount) - Double.valueOf(utilizedAmt);
-					}
-					if (totalAmount >= 0) {
-
-					} else {
-						list = null;
-					}
-
-				}
+			list = depositcbcRepo.findByStatusAndBrokerId("Y",brokerId);
+			if (!CollectionUtils.isEmpty(list)) {
+				String depositAMount = list.get(0).getDepositAmount() == null ? "0": list.get(0).getDepositAmount().toString();
+				String utilizedAmt = list.get(0).getDepositUtilized() == null ? "0": list.get(0).getDepositUtilized().toString();
+				String refundamount = list.get(0).getRefundAmount() == null ? "0": list.get(0).getRefundAmount().toString();
+				totalAmount = Double.valueOf(depositAMount) - Double.valueOf(utilizedAmt)+Double.parseDouble(refundamount);
+			}
+			if (totalAmount >= 0) {
 
 			} else {
-				if (personal) {
-					list = depositcbcRepo.findByBrokerIdAndProductIdLikeAndStatus(
-							brokerId, productId, "Y");
-					if (!CollectionUtils.isEmpty(list)) {
-						String depositAMount = list.get(0).getDepositAmount() == null ? "0": list.get(0).getDepositAmount().toString();
-						String utilizedAmt = list.get(0).getDepositUtilized() == null ? "0": list.get(0).getDepositUtilized().toString();
-						totalAmount = Double.valueOf(depositAMount) - Double.valueOf(utilizedAmt);
-					}
-					if (totalAmount >= 0) {
-
-					} else {
-						list = null;
-					}
-
-				}
+				list = null;
 			}
-
 		} catch (Exception e) {
 			log.info(e);
 		}
@@ -508,7 +589,7 @@ public class DepositServiceImpl implements DepositService {
 		try {
 			if(CollectionUtils.isEmpty(error)) {
 				String brokerId = getbrokerIdByLoginId(req.getLoginId());
-				String cbcNo = "";
+				/*String cbcNo = "";
 				if(StringUtils.isBlank(req.getCbcNo())) {
 					cbcNo = "CBC"+getCbcNumber();
 					DepositcbcMaster cbcMaster = DepositcbcMaster.builder()
@@ -525,16 +606,17 @@ public class DepositServiceImpl implements DepositService {
 					depositcbcRepo.save(cbcMaster);
 				}else {
 					cbcNo = req.getCbcNo();
-				}
+				}*/
 				
 					PaymentDeposit paymentdep = PaymentDeposit.builder()
-						.cbcNo(cbcNo)
+						.cbcNo(req.getCbcNo())
 						.quoteNo(StringUtils.isBlank(req.getQuoteNo())?"":req.getQuoteNo())
-						.depositNo(StringUtils.isBlank(req.getDepositNo())?DepositMax():Long.valueOf(req.getDepositNo()))
+						//.depositNo(StringUtils.isBlank(req.getDepositNo())?DepositMax():Long.valueOf(req.getDepositNo()))
+						.depositNo(Long.valueOf(req.getDepositNo()))
 						.paymentType(req.getPaymentType())
-						.paymentTypeDesc(getPaymentTypeDesc(req.getPaymentType()))
+						.paymentTypeDesc(getPaymentTypeDesc(req.getPaymentType(),req.getCompanyId()))
 						.createdBy(req.getLoginId())
-						.premium(Double.valueOf(req.getPremium()))
+						.premium(req.getPremium()==""?0.0:Double.valueOf(req.getPremium()))
 						.chequeNo(req.getChequeNo())
 						.chequeDate(StringUtils.isBlank(req.getChequeDate())?null:sdf.parse(req.getChequeDate()))
 						.AccountNo(req.getAccountNo())
@@ -546,7 +628,7 @@ public class DepositServiceImpl implements DepositService {
 						.build();
 					paymentDepositRepo.save(paymentdep);
 				
-				Optional<DepositcbcMaster> depositcbc = depositcbcRepo.findById(cbcNo);
+				/*Optional<DepositcbcMaster> depositcbc = depositcbcRepo.findById(cbcNo);
 				DepositcbcMaster NewcbcMaster = new DepositcbcMaster();
 				if(depositcbc.isPresent()) {
 					NewcbcMaster = depositcbc.get();
@@ -559,13 +641,13 @@ public class DepositServiceImpl implements DepositService {
 					NewcbcMaster.setDepositUtilized(NewcbcMaster.getDepositUtilized() - Double.valueOf(req.getPremium()));
 					NewcbcMaster.setPolicyrefundamount(NewcbcMaster.getPolicyrefundamount()==null?0.0:NewcbcMaster.getPolicyrefundamount() + Double.parseDouble(req.getPremium()));
 				}
-				depositcbcRepo.save(NewcbcMaster);
+				depositcbcRepo.save(NewcbcMaster);*/
 
 				Optional<DepositDetail> detailMaster = depositdetailRepo.findById(StringUtils.isBlank(req.getDepositNo())?0L:Long.valueOf(req.getDepositNo()));
 				DepositDetail k = new DepositDetail();
 				if(detailMaster.isPresent()) {
 					k = detailMaster.get();
-				}
+				}else {
 				DepositDetail depDetail = DepositDetail.builder()
 					.quoteNo(StringUtils.isBlank(req.getQuoteNo())?"":req.getQuoteNo())
 					.productId(req.getProductId())
@@ -573,7 +655,7 @@ public class DepositServiceImpl implements DepositService {
 					.premiumAmount(Double.valueOf(req.getPremiumAmount()))
 					.entryDate(new Date())
 					.status(req.getStatus())
-					.cbcNo(cbcNo)
+					.cbcNo(req.getCbcNo())
 					.depositNo(k.getDepositNo()==null?DepositMax():k.getDepositNo())
 					.balanceAmount(Double.parseDouble(req.getBalanceAmount()))
 					.receiptNo(StringUtils.isBlank(req.getReceiptNo())?"":req.getReceiptNo())
@@ -585,6 +667,7 @@ public class DepositServiceImpl implements DepositService {
 					.depositType("C".equalsIgnoreCase(req.getDepositType())?"Deposit":"Refund")
 					.build();
 				depositdetailRepo.save(depDetail);
+				}
 				res.setCommonResponse("Insert/Update SuccessFully");
 				res.setIsError(false);
 				res.setMessage("SUCCESS");
@@ -613,56 +696,56 @@ public class DepositServiceImpl implements DepositService {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	private String getPaymentTypeDesc(String paymentType) {
+	private String getPaymentTypeDesc(String paymentType,String companyId) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<ListItemValue> lRoot = cq.from(ListItemValue.class);
 		cq.select(lRoot.get("itemValue").as(String.class))
-			.where(cb.equal(lRoot.get("itemType"), "PAYMENT_MODE"),cb.equal(lRoot.get("itemCode"), paymentType));
+			.where(cb.equal(lRoot.get("itemType"), "PAYMENT_MODE"),cb.equal(lRoot.get("itemCode"), paymentType),cb.equal(lRoot.get("companyId"),companyId));
 		return em.createQuery(cq).getSingleResult();
 	}
 
 	private List<Error> savePaymentDepositVali(SavePaymentDepositReq req) {
 		List<Error> error = new ArrayList<>();
-		if(StringUtils.isBlank(req.getCbcNo())) {
-			if(StringUtils.isBlank(req.getLoginId())) {
-				error.add(new Error("500","LoginId","Please Enter LoginId"));
-			}
-			if(StringUtils.isBlank(req.getProductId())) {
-				error.add(new Error("500","ProductId","Please Enter ProductId"));
-			}
-		}
-		if(StringUtils.isBlank(req.getPaymentType())) {
-			error.add(new Error("500","PaymentType","Please Enter PaymentType"));
-		}
-		if(StringUtils.isBlank(req.getPremium())) {
-			error.add(new Error("500","Premium","Please Enter Premium"));
-		}
-		if(StringUtils.isBlank(req.getPayeeName())) {
-			error.add(new Error("500","PayeeName","Please Enter PayeeName"));
-		}
-		if(StringUtils.isBlank(req.getPremiumAmount())) {
-			error.add(new Error("500","PremiumAmount","Please Enter PremiumAmount"));
-		}
-		if(StringUtils.isBlank(req.getStatus())) {
-			error.add(new Error("500","Status","Please Enter Status"));
-		}
-		if(StringUtils.isBlank(req.getBalanceAmount())) {
-			error.add(new Error("500","BalanceAmount","Please Enter BalanceAmount"));
-		}
-		if(StringUtils.isBlank(req.getPolicyInsuranceFee())) {
-			error.add(new Error("500","PolicyInsuranceFee","Please Enter PolicyInsuranceFee"));
-		}
-		if(StringUtils.isBlank(req.getVatAmount())) {
-			error.add(new Error("500","VatAmount","Please Enter VatAmount"));
-		}
-		if(StringUtils.isBlank(req.getDepositType())) {
-			error.add(new Error("500","DepositType","Please Enter DepositType"));
-		}else if("C".equalsIgnoreCase(req.getDepositType())) {
-			if(StringUtils.isBlank(req.getDepositAmount())) {
-				error.add(new Error("500","DepositAmount","Please Enter DepositAmount"));
-			}
-		}
+//		if(StringUtils.isBlank(req.getCbcNo())) {
+//			if(StringUtils.isBlank(req.getLoginId())) {
+//				error.add(new Error("500","LoginId","Please Enter LoginId"));
+//			}
+//			if(StringUtils.isBlank(req.getProductId())) {
+//				error.add(new Error("500","ProductId","Please Enter ProductId"));
+//			}
+//		}
+//		if(StringUtils.isBlank(req.getPaymentType())) {
+//			error.add(new Error("500","PaymentType","Please Enter PaymentType"));
+//		}
+//		if(StringUtils.isBlank(req.getPremium())) {
+//			error.add(new Error("500","Premium","Please Enter Premium"));
+//		}
+//		if(StringUtils.isBlank(req.getPayeeName())) {
+//			error.add(new Error("500","PayeeName","Please Enter PayeeName"));
+//		}
+//		if(StringUtils.isBlank(req.getPremiumAmount())) {
+//			error.add(new Error("500","PremiumAmount","Please Enter PremiumAmount"));
+//		}
+//		if(StringUtils.isBlank(req.getStatus())) {
+//			error.add(new Error("500","Status","Please Enter Status"));
+//		}
+//		if(StringUtils.isBlank(req.getBalanceAmount())) {
+//			error.add(new Error("500","BalanceAmount","Please Enter BalanceAmount"));
+//		}
+//		if(StringUtils.isBlank(req.getPolicyInsuranceFee())) {
+//			error.add(new Error("500","PolicyInsuranceFee","Please Enter PolicyInsuranceFee"));
+//		}
+//		if(StringUtils.isBlank(req.getVatAmount())) {
+//			error.add(new Error("500","VatAmount","Please Enter VatAmount"));
+//		}
+//		if(StringUtils.isBlank(req.getDepositType())) {
+//			error.add(new Error("500","DepositType","Please Enter DepositType"));
+//		}else if("C".equalsIgnoreCase(req.getDepositType())) {
+//			if(StringUtils.isBlank(req.getDepositAmount())) {
+//				error.add(new Error("500","DepositAmount","Please Enter DepositAmount"));
+//			}
+//		}
 		if("2".equalsIgnoreCase(req.getPaymentType())) {
 			if(StringUtils.isBlank(req.getChequeNo())) {
 				error.add(new Error("500","ChequeNo","Please Enter ChequeNo"));

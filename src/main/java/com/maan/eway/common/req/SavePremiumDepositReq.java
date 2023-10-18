@@ -30,4 +30,10 @@ public class SavePremiumDepositReq {
 	@JsonProperty("CustomerId")
 	private String customerId;
 	
+	@JsonProperty("InsuranceId")
+	private String companyId;
+	
+	@JsonProperty("PolicyTypeId")
+	private String policyTypeId;
+	
 }

@@ -26,4 +26,5 @@ public interface DepositcbcMasterRepository extends JpaRepository<DepositcbcMast
 
 	List<DepositcbcMaster> findByStatusAndBrokerId(String string, String brokerId);
 
+
 }

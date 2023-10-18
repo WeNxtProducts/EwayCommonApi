@@ -73,4 +73,7 @@ public class DepositcbcMaster implements Serializable{
 	
 	@Column(name="CUSTOMER_ID")
 	private String customerId;
+	
+	@Column(name="COMPANY_ID")
+	private String companyId;
 }

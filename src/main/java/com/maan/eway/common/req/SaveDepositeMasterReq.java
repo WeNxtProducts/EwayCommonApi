@@ -19,8 +19,8 @@ public class SaveDepositeMasterReq {
 	@JsonProperty("QuoteNo")
 	private String quoteNo;
 	
-//	@JsonProperty("ProductId")
-//	private String productId;
+	@JsonProperty("ProductId")
+	private String productId;
 	
 	@JsonProperty("BrokerId")
 	private String brokerId;
@@ -51,6 +51,12 @@ public class SaveDepositeMasterReq {
 	
 	@JsonProperty("CbcNo")
 	private String cbcNo;
+	
+	@JsonProperty("CompanyId")
+	private String companyId;
+	
+	@JsonProperty("LoginId")
+	private String loginId;
 	
 	
 }
