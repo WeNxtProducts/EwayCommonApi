@@ -19,35 +19,92 @@
 	<parameter name="pvLoginId" class="java.lang.String"/>
 	<parameter name="pvProductId" class="java.lang.String"/>
 	<queryString language="SQL">
-		<![CDATA[SELECT * FROM (
-SELECT 
-  HPM.LOGIN_ID,
-  HPM.QUOTE_NO,
-  HPM.POLICY_NO,
-  HPM.PRODUCT_ID,
-  UPPER(CONCAT(CONCAT(PIF.TITLE_DESC,'.'),PIF.CLIENT_NAME)) AS CUSTOMER_NAME, 
-  HPM.inception_date AS START_DATE,
-  HPM.expiry_date AS END_DATE,
-  HPM.effective_date AS ISSUE_DATE,
+		<![CDATA[SELECT 
+  HPM.LOGIN_ID, 
+  HPM.QUOTE_NO, 
+  HPM.POLICY_NO, 
+  UPPER(
+    CONCAT(
+      CONCAT(PIF.TITLE_DESC, '.'), 
+      PIF.CLIENT_NAME
+    )
+  ) AS CUSTOMER_NAME, 
+  HPM.inception_date AS START_DATE, 
+  HPM.expiry_date AS END_DATE, 
+  HPM.effective_date AS ISSUE_DATE, 
   UPPER(HPM.BRANCH_NAME) AS BRANCH_NAME, 
-  CASE WHEN HPM.SOURCE_TYPE IN ('Premia Broker','Premia Direct','Premia Agent') THEN HPM.CUSTOMER_NAME
-       ELSE  (SELECT 
+  CASE WHEN HPM.SOURCE_TYPE IN(
+    'Premia Broker', 'Premia Direct', 
+    'Premia Agent'
+  ) THEN HPM.CUSTOMER_NAME ELSE(
+    SELECT 
       UPPER(USER_NAME) 
     FROM 
       login_user_info 
     WHERE 
-      LOGIN_ID = HPM.LOGIN_ID)
-  END AS BROKER_NAME, 
-    HPM.USER_TYPE AS USER_TYPE,
-    HPM.SUB_USER_TYPE AS SUB_USER_TYPE,
+      LOGIN_ID = HPM.LOGIN_ID
+  ) END AS BROKER_NAME, 
+  HPM.USER_TYPE AS USER_TYPE, 
+  HPM.SUB_USER_TYPE AS SUB_USER_TYPE, 
   HPM.CURRENCY, 
   HPM.PAYMENT_TYPE, 
-  (SELECT PAYMENT_ID FROM PAYMENT_INFO WHERE QUOTE_NO=HPM.QUOTE_NO AND payment_status='ACCEPTED') AS PAYMENT_ID, 
-  HPM.PRODUCT_NAME,
-  (SELECT POLICY_TYPE_DESC FROM MOTOR_DATA_DETAILS WHERE QUOTE_NO=HPM.QUOTE_NO AND VEHICLE_ID='1') AS POLICY_TYPE_DESC, 
+  (
+    SELECT 
+      PAYMENT_ID 
+    FROM 
+      PAYMENT_INFO 
+    WHERE 
+      QUOTE_NO = HPM.QUOTE_NO 
+      AND payment_status = 'ACCEPTED'
+  ) AS PAYMENT_ID, 
+  HPM.PRODUCT_NAME, 
+  CASE WHEN HPM.PRODUCT_ID = '4' THEN (
+    SELECT 
+      DISTINCT SECTION_NAME 
+    FROM 
+      TRAVEL_PASSENGER_DETAILS 
+    WHERE 
+      QUOTE_NO = HPM.QUOTE_NO
+  ) WHEN HPM.PRODUCT_ID = '5' THEN (
+    SELECT 
+      POLICY_TYPE_DESC 
+    FROM 
+      MOTOR_DATA_DETAILS 
+    WHERE 
+      QUOTE_NO = HPM.QUOTE_NO 
+      AND VEHICLE_ID = '1'
+  ) ELSE (
+    SELECT 
+      POLICY_TYPE_NAME 
+    FROM 
+      POLICY_TYPE_MASTER 
+    WHERE 
+      STATUS = 'Y' 
+      AND PRODUCT_ID = HPM.PRODUCT_ID 
+      AND COMPANY_ID = HPM.COMPANY_ID 
+      AND AMEND_ID = (
+        SELECT 
+          MAX(AMEND_ID) 
+        FROM 
+          POLICY_TYPE_MASTER 
+        WHERE 
+          STATUS = 'Y' 
+          AND PRODUCT_ID = HPM.PRODUCT_ID 
+          AND COMPANY_ID = HPM.COMPANY_ID
+      )
+  ) END AS POLICY_TYPE_DESC, 
   HPM.DEBIT_NOTE_NO, 
- (SELECT SUM(SUM_INSURED) FROM POLICY_COVER_DATA WHERE QUOTE_NO=HPM.QUOTE_NO
-        AND TAX_ID='0' AND DISC_LOAD_ID='0' AND COVERAGE_TYPE='B') AS SUM_INSURED,
+  (
+    SELECT 
+      SUM(SUM_INSURED) 
+    FROM 
+      POLICY_COVER_DATA 
+    WHERE 
+      QUOTE_NO = HPM.QUOTE_NO 
+      AND TAX_ID = '0' 
+      AND DISC_LOAD_ID = '0' 
+      AND COVERAGE_TYPE = 'B'
+  ) AS SUM_INSURED, 
   CASE WHEN HPM.CURRENCY IN (
     SELECT 
       CURRENCY_ID 
@@ -55,190 +112,86 @@ SELECT
       EWAY_INSURANCE_COMPANY_MASTER 
     WHERE 
       HPM.COMPANY_ID = COMPANY_ID
-  ) THEN ROUND(HPM.OVERALL_PREMIUM_LC,2) ELSE ROUND(HPM.OVERALL_PREMIUM_FC,2) END AS PERMIUM, 
+  ) THEN ROUND(HPM.OVERALL_PREMIUM_LC, 2) ELSE ROUND(HPM.OVERALL_PREMIUM_FC, 2) END AS PERMIUM, 
   ROUND(HPM.COMMISSION_PERCENTAGE, 1) AS COMMISSION_PERCENTAGE, 
-  ROUND(COMMISSION,2) AS COMMISSION_AMOUNT
+  ROUND(COMMISSION, 2) AS COMMISSION_AMOUNT 
 FROM 
   HOME_POSITION_MASTER HPM, 
-  PERSONAL_INFO PIF
+  PERSONAL_INFO PIF 
 WHERE 
   HPM.CUSTOMER_ID = PIF.CUSTOMER_ID 
-  AND HPM.PRODUCT_ID='5'
-  AND HPM.BRANCH_CODE = '01' 
+  AND HPM.PRODUCT_ID = $P{pvProductId} 
+  AND (
+    CASE WHEN '99999' = $P{pvBranch} THEN '1' ELSE HPM.BRANCH_CODE END
+  ) = (
+    CASE WHEN '99999' = $P{pvBranch} THEN '1' ELSE $P{pvBranch} END
+  ) 
   AND HPM.STATUS = 'P' 
   AND HPM.POLICY_NO IS NOT NULL 
-  AND HPM.INCEPTION_DATE BETWEEN '2023-06-01' AND '2023-07-15'
-  AND ((
-  CASE WHEN (
-    SELECT
-      SUB_USER_TYPE
-    FROM
-      eway_login_master
-    WHERE
-      LOGIN_ID =  $P{pvLoginId} 
-  ) IN ('both') THEN '1'
-  WHEN 
-  (SELECT
-      SUB_USER_TYPE
-    FROM
-      eway_login_master
-    WHERE
-      LOGIN_ID =  $P{pvLoginId}  
-  ) IN ('low','high') THEN HPM.Application_id
-  END )
-  =
-  (CASE WHEN (
-    SELECT
-      SUB_USER_TYPE
-    FROM
-      eway_login_master
-    WHERE
-      LOGIN_ID =  $P{pvLoginId} 
-  ) IN ('both') THEN '1'
- ELSE $P{pvLoginId} 
-  END)
-    OR
-     (CASE WHEN (
-    SELECT 
-      USER_TYPE 
-    FROM 
-      eway_login_master 
-    WHERE 
-      LOGIN_ID = $P{pvLoginId} 
-  )= 'Broker' THEN HPM.AGENCY_CODE  END )
-  IN
-  (   SELECT 
-     DISTINCT AGENCY_CODE 
-    FROM 
-      eway_login_master 
-    WHERE 
-      OA_CODE IN (
+  AND REGEXP_SUBSTR(HPM.EFFECTIVE_DATE,'[^ ]+') BETWEEN $P{pvStartDate} 
+  AND $P{pvEndDate}
+  AND (
+    (
+      CASE WHEN (
         SELECT 
-          AGENCY_CODE 
+          SUB_USER_TYPE 
         FROM 
           eway_login_master 
         WHERE 
-          LOGIN_ID = $P{pvLoginId}))
-       OR
-       HPM.AGENCY_CODE IN ( SELECT 
-      AGENCY_CODE 
-    FROM 
-      eway_login_master 
-    WHERE 
-      LOGIN_ID = $P{pvLoginId} ))
- UNION
- SELECT 
-  HPM.LOGIN_ID,
-  HPM.QUOTE_NO,
-  HPM.POLICY_NO,
-  HPM.PRODUCT_ID,
-  UPPER(CONCAT(CONCAT(PIF.TITLE_DESC,'.'),PIF.CLIENT_NAME)) AS CUSTOMER_NAME, 
-  HPM.inception_date AS START_DATE,
-  HPM.expiry_date AS END_DATE,
-  HPM.effective_date AS ISSUE_DATE,
-  UPPER(HPM.BRANCH_NAME) AS BRANCH_NAME, 
-  CASE WHEN HPM.SOURCE_TYPE IN ('Premia Broker','Premia Direct','Premia Agent') THEN HPM.CUSTOMER_NAME
-       ELSE  (SELECT 
-      UPPER(USER_NAME) 
-    FROM 
-      login_user_info 
-    WHERE 
-      LOGIN_ID = HPM.LOGIN_ID)
-  END AS BROKER_NAME, 
-    HPM.USER_TYPE AS USER_TYPE,
-    HPM.SUB_USER_TYPE AS SUB_USER_TYPE,
-  HPM.CURRENCY, 
-  HPM.PAYMENT_TYPE, 
-  (SELECT PAYMENT_ID FROM PAYMENT_INFO WHERE QUOTE_NO=HPM.QUOTE_NO AND payment_status='ACCEPTED') AS PAYMENT_ID, 
-  HPM.PRODUCT_NAME,
-  CASE WHEN HPM.PRODUCT_ID='4' THEN (SELECT DISTINCT SECTION_NAME FROM TRAVEL_PASSENGER_DETAILS WHERE QUOTE_NO=HPM.QUOTE_NO)
-  ELSE
-  (SELECT POLICY_TYPE_NAME FROM POLICY_TYPE_MASTER WHERE STATUS='Y' AND PRODUCT_ID=HPM.PRODUCT_ID AND COMPANY_ID=HPM.COMPANY_ID AND
-  AMEND_ID = (SELECT MAX(AMEND_ID) FROM POLICY_TYPE_MASTER WHERE STATUS='Y' AND PRODUCT_ID=HPM.PRODUCT_ID AND COMPANY_ID=HPM.COMPANY_ID))
-  END
-  AS POLICY_TYPE_DESC, 
-  HPM.DEBIT_NOTE_NO, 
- (SELECT SUM(SUM_INSURED) FROM POLICY_COVER_DATA WHERE QUOTE_NO=HPM.QUOTE_NO
-        AND TAX_ID='0' AND DISC_LOAD_ID='0' AND COVERAGE_TYPE='B') AS SUM_INSURED,
-  CASE WHEN HPM.CURRENCY IN (
-    SELECT 
-      CURRENCY_ID 
-    FROM 
-      EWAY_INSURANCE_COMPANY_MASTER 
-    WHERE 
-      HPM.COMPANY_ID = COMPANY_ID
-  ) THEN ROUND(HPM.OVERALL_PREMIUM_LC,2) ELSE ROUND(HPM.OVERALL_PREMIUM_FC,2) END AS PERMIUM, 
-  ROUND(HPM.COMMISSION_PERCENTAGE, 1) AS COMMISSION_PERCENTAGE, 
-  ROUND(COMMISSION,2) AS COMMISSION_AMOUNT
-FROM 
-  HOME_POSITION_MASTER HPM, 
-  PERSONAL_INFO PIF
-WHERE 
-  HPM.CUSTOMER_ID = PIF.CUSTOMER_ID 
-  AND HPM.PRODUCT_ID NOT IN ('5') 
-  AND HPM.BRANCH_CODE = '01' 
-  AND HPM.STATUS = 'P' 
-  AND HPM.POLICY_NO IS NOT NULL 
-  AND HPM.INCEPTION_DATE BETWEEN '2023-06-01' AND '2023-07-15'
-  AND ((
-  CASE WHEN (
-    SELECT
-      SUB_USER_TYPE
-    FROM
-      eway_login_master
-    WHERE
-      LOGIN_ID =  $P{pvLoginId} 
-  ) IN ('both') THEN '1'
-  WHEN 
-  (SELECT
-      SUB_USER_TYPE
-    FROM
-      eway_login_master
-    WHERE
-      LOGIN_ID =  $P{pvLoginId}  
-  ) IN ('low','high') THEN HPM.Application_id
-  END )
-  =
-  (CASE WHEN (
-    SELECT
-      SUB_USER_TYPE
-    FROM
-      eway_login_master
-    WHERE
-      LOGIN_ID =  $P{pvLoginId} 
-  ) IN ('both') THEN '1'
- ELSE $P{pvLoginId} 
-  END)
-    OR
-     (CASE WHEN (
-    SELECT 
-      USER_TYPE 
-    FROM 
-      eway_login_master 
-    WHERE 
-      LOGIN_ID = $P{pvLoginId} 
-  )= 'Broker' THEN HPM.AGENCY_CODE  END )
-  IN
-  (   SELECT 
-     DISTINCT AGENCY_CODE 
-    FROM 
-      eway_login_master 
-    WHERE 
-      OA_CODE IN (
+          LOGIN_ID = $P{pvLoginId}
+      ) IN ('both') THEN '1' WHEN (
         SELECT 
-          AGENCY_CODE 
+          SUB_USER_TYPE 
         FROM 
           eway_login_master 
         WHERE 
-          LOGIN_ID = $P{pvLoginId}))
-       OR
-       HPM.AGENCY_CODE IN ( SELECT 
-      AGENCY_CODE 
-    FROM 
-      eway_login_master 
-    WHERE 
-      LOGIN_ID = $P{pvLoginId} )))X
-      WHERE PRODUCT_ID= $P{pvProductId} ]]>
+          LOGIN_ID = $P{pvLoginId}
+      ) IN ('low', 'high') THEN HPM.Application_id END
+    ) = (
+      CASE WHEN (
+        SELECT 
+          SUB_USER_TYPE 
+        FROM 
+          eway_login_master 
+        WHERE 
+          LOGIN_ID = $P{pvLoginId}
+      ) IN ('both') THEN '1' ELSE $P{pvLoginId} END
+    ) 
+    OR (
+      CASE WHEN (
+        SELECT 
+          USER_TYPE 
+        FROM 
+          eway_login_master 
+        WHERE 
+          LOGIN_ID = $P{pvLoginId}
+      )= 'Broker' THEN HPM.AGENCY_CODE END
+    ) IN (
+      SELECT 
+        DISTINCT AGENCY_CODE 
+      FROM 
+        eway_login_master 
+      WHERE 
+        OA_CODE IN (
+          SELECT 
+            AGENCY_CODE 
+          FROM 
+            eway_login_master 
+          WHERE 
+            LOGIN_ID = $P{pvLoginId}
+        )
+    ) 
+    OR HPM.AGENCY_CODE IN (
+      SELECT 
+        AGENCY_CODE 
+      FROM 
+        eway_login_master 
+      WHERE 
+        LOGIN_ID = $P{pvLoginId}
+    )
+  )
+  ORDER BY HPM.EFFECTIVE_DATE DESC
+]]>
 	</queryString>
 	<field name="LOGIN_ID" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="LOGIN_ID"/>
@@ -255,26 +208,22 @@ WHERE
 		<property name="com.jaspersoft.studio.field.label" value="POLICY_NO"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
-	<field name="PRODUCT_ID" class="java.lang.Integer">
-		<property name="com.jaspersoft.studio.field.name" value="PRODUCT_ID"/>
-		<property name="com.jaspersoft.studio.field.label" value="PRODUCT_ID"/>
-	</field>
 	<field name="CUSTOMER_NAME" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="CUSTOMER_NAME"/>
 		<property name="com.jaspersoft.studio.field.label" value="CUSTOMER_NAME"/>
 	</field>
 	<field name="START_DATE" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="START_DATE"/>
+		<property name="com.jaspersoft.studio.field.name" value="INCEPTION_DATE"/>
 		<property name="com.jaspersoft.studio.field.label" value="START_DATE"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
 	<field name="END_DATE" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="END_DATE"/>
+		<property name="com.jaspersoft.studio.field.name" value="EXPIRY_DATE"/>
 		<property name="com.jaspersoft.studio.field.label" value="END_DATE"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
 	<field name="ISSUE_DATE" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="ISSUE_DATE"/>
+		<property name="com.jaspersoft.studio.field.name" value="EFFECTIVE_DATE"/>
 		<property name="com.jaspersoft.studio.field.label" value="ISSUE_DATE"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
@@ -289,10 +238,12 @@ WHERE
 	<field name="USER_TYPE" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="USER_TYPE"/>
 		<property name="com.jaspersoft.studio.field.label" value="USER_TYPE"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
 	<field name="SUB_USER_TYPE" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="SUB_USER_TYPE"/>
 		<property name="com.jaspersoft.studio.field.label" value="SUB_USER_TYPE"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
 	<field name="CURRENCY" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="CURRENCY"/>
@@ -311,6 +262,7 @@ WHERE
 	<field name="PRODUCT_NAME" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="PRODUCT_NAME"/>
 		<property name="com.jaspersoft.studio.field.label" value="PRODUCT_NAME"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="home_position_master"/>
 	</field>
 	<field name="POLICY_TYPE_DESC" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="POLICY_TYPE_DESC"/>
