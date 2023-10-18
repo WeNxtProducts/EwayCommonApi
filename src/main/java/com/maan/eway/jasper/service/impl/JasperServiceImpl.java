@@ -555,7 +555,7 @@ public class JasperServiceImpl implements JasperService {
 			HashMap<String, Object> jasperParameter = new HashMap<String, Object>();
 			jasperParameter.put("pvStartDate", getFormattedDate(req.getStartDate()));
 			jasperParameter.put("pvEndDate", getFormattedDate(req.getEndDate()));
-			jasperParameter.put("pvBranch", req.getBranchCode());
+			jasperParameter.put("pvBranch", StringUtils.isBlank(req.getBranchCode())?"99999":req.getBranchCode());
 			jasperParameter.put("pvImagePath", imagepath);
 			jasperParameter.put("pvLoginId", req.getLoginId());
 			jasperParameter.put("pvProductId", req.getProductId());
