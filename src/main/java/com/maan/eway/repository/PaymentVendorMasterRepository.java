@@ -35,4 +35,7 @@ public interface PaymentVendorMasterRepository  extends JpaRepository<PaymentVen
 
 	List<PaymentVendorMaster> findByCompanyIdAndStatusAndVendorIdOrderByAmendIdDesc(String companyId, String status,String vendorId);
 
+	List<PaymentVendorMaster> findByCompanyIdAndStatusAndVendorIdAndUserTypeAndProductIdOrderByAmendIdDesc(
+			String companyId, String string, String string2, String userytype, Integer productId);
+
 }

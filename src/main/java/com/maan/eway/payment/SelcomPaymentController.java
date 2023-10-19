@@ -43,14 +43,14 @@ public class SelcomPaymentController {
 	@ApiOperation(value = "This method is to Payment Sava")
 	//@RequestBody
 	public ResponseEntity<JsonObject> methodWebhook(@RequestBody JsonObject jsObject) {
-		new Runnable() {
+		/*new Runnable() {
 			
 			@Override
 			public void run() {
-				service.methodWebhook(jsObject);
+				
 			}
-		};
-		
+		};*/
+		service.methodWebhook(jsObject);
 		jsObject.addProperty("AcknowledegeStatus", true);
 		return new ResponseEntity<JsonObject>(jsObject, HttpStatus.CREATED);	
 	}

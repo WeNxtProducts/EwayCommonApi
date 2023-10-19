@@ -15,7 +15,6 @@ package com.maan.eway.bean;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import javax.persistence.Table;
 
 import lombok.*;
 import javax.persistence.*;
@@ -112,7 +111,13 @@ private static final long serialVersionUID = 1L;
     
     @Column(name="SIGNED_FIELDS")
     private String signedFields;
-
+    
+    @Column(name="USER_TYPE")
+    private String userType;
+    
+    
+    @Column(name="PRODUCT_ID")
+    private Integer productId;
 }
 
 

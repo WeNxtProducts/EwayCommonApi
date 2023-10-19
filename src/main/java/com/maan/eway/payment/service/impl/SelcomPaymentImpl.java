@@ -6,6 +6,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,8 +76,22 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 			try {
 				
 				if(payment!=null ) {
-					List<PaymentVendorMaster> paymentId= paymentVendorRepo.findByCompanyIdAndStatusAndVendorIdOrderByAmendIdDesc(payment.getCompanyId(),"Y","1");
-					PaymentVendorMaster vendor = paymentId.get(0);
+					PaymentInfo paymentInfo = paymentinforepo.findByQuoteNoAndPaymentId(payment.getQuoteNo(), payment.getPaymentId());
+					
+					String userytype="b2b";
+					if(paymentInfo.getSubUserType().equalsIgnoreCase("b2c")) {
+						userytype="b2c";
+					}
+
+					List<PaymentVendorMaster> paymentId= paymentVendorRepo.findByCompanyIdAndStatusAndVendorIdAndUserTypeAndProductIdOrderByAmendIdDesc(payment.getCompanyId(),"Y","1",userytype,paymentInfo.getProductId());
+					PaymentVendorMaster vendor =null;
+					if(paymentId!=null && paymentId.size()>0) {						 
+						 vendor = paymentId.get(0);
+					}else {
+						paymentId=paymentVendorRepo.findByCompanyIdAndStatusAndVendorIdAndUserTypeAndProductIdOrderByAmendIdDesc(payment.getCompanyId(),"Y","1",userytype,99999);
+						 vendor = paymentId.get(0);
+					}
+					
 					String apiKey = null;
 					String apiSecret = null;
 					String baseUrl = null;
@@ -160,7 +184,7 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 	@Override
 	public JsonObject methodWebhook(JsonObject jsonData) {
 		try {
-			log.info("WEBHOOK START");
+			log.info("WEBHOOK START"+jsonData);
 			 for (String key : jsonData.keySet()) {
 				 log.info(key.toString() + "="+jsonData.get(key).getAsString());
 		            
@@ -267,4 +291,89 @@ public class SelcomPaymentImpl implements SelcomPaymentService {
 		return null;
 	}
 
+	/*
+	@PersistenceContext
+    private EntityManager em;
+	
+	private List<PaymentDetail> getPendingPaymentDetails(String quoteNo){
+		try {
+			CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+			CriteriaQuery<Object[]> criteriaQuery = criteriaBuilder.createQuery(Object[].class);
+			Root<PaymentDetail> paymentDetailRoot = criteriaQuery.from(PaymentDetail.class);
+			// SELECT clause
+			criteriaQuery.multiselect(
+			    paymentDetailRoot.get("QUOTE_NO"),
+			    paymentDetailRoot.get("PAYMENT_ID"),
+			    paymentDetailRoot.get("MERCHANT_REFERENCE"),
+			    paymentDetailRoot.get("SHORTERN_URL"),
+			    paymentDetailRoot.get("PREMIUM"),
+			    paymentDetailRoot.get("CUSTOMER_NAME"),
+			    paymentDetailRoot.get("CUSTOMER_EMAIL"),
+			    paymentDetailRoot.get("REQ_BILL_TO_PHONE"),
+			    paymentDetailRoot.get("REQ_BILL_TO_COMPANY_NAME"),
+			    paymentDetailRoot.get("AUTH_TRANS_REF_NO"),
+			    paymentDetailRoot.get("PAYMENT_STATUS")
+			);
+			
+			// Define the subquery
+			Subquery<Long> subquery = criteriaQuery.subquery(Long.class);
+			Root<PaymentDetail> subqueryRoot = subquery.from(PaymentDetail.class);
+			Expression<Long> oneLiteral = criteriaBuilder.literal(1L);
+
+			subquery.select(oneLiteral);
+			subquery.where(
+			    criteriaBuilder.equal(
+			        criteriaBuilder.upper(subqueryRoot.get("PAYMENT_STATUS")),
+			        criteriaBuilder.upper(criteriaBuilder.literal("ACCEPTED"))
+			    )
+			);
+
+			// Main query WHERE clause
+			Predicate mainWhereClause = criteriaBuilder.and(
+			    criteriaBuilder.equal(paymentDetailRoot.get("QUOTE_NO"), "Q00222"),
+			    criteriaBuilder.not(criteriaBuilder.exists(subquery)),
+			    criteriaBuilder.lessThan(
+			        criteriaBuilder.sum(
+			            criteriaBuilder.function(
+			                "interval",
+			                Integer.class,
+			                paymentDetailRoot.get("ENTRY_DATE"),
+			                criteriaBuilder.parameter(Integer.class, "interval"),
+			                criteriaBuilder.literal("SECOND")
+			            ),
+			            criteriaBuilder.literal(1)
+			        ),
+			        criteriaBuilder.currentTimestamp()
+			    ),
+			    criteriaBuilder.between(
+			        criteriaBuilder.currentTimestamp(),
+			        criteriaBuilder.function(
+			            "interval",
+			            java.sql.Timestamp.class,
+			            paymentDetailRoot.get("ENTRY_DATE"),
+			            criteriaBuilder.parameter(Integer.class, "displayTime"),
+			            criteriaBuilder.literal("MINUTE")
+			        ),
+			        criteriaBuilder.currentTimestamp()
+			    ),
+			    criteriaBuilder.equal(
+			        criteriaBuilder.upper(paymentDetailRoot.get("PAYMENT_STATUS")),
+			        criteriaBuilder.upper(criteriaBuilder.literal("PENDING"))
+			    )
+			);
+
+			criteriaQuery.where(mainWhereClause);
+			criteriaQuery.orderBy(criteriaBuilder.desc(paymentDetailRoot.get("ENTRY_DATE")));
+
+			// Execute the query
+			TypedQuery<Object[]> typedQuery = em.createQuery(criteriaQuery);
+			typedQuery.setParameter("interval", 1); // Set the interval parameter
+			typedQuery.setParameter("displayTime", 1); // Set the displayTime parameter
+			List<Object[]> result = typedQuery.getResultList();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}*/
+	
 }
